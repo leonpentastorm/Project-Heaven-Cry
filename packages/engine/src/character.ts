@@ -1311,16 +1311,16 @@ export const FOCUS_REV = 1;
 /** A save from when a carried focus counted (item 77): a focus only in the pack goes to a free off hand (the Evoker
  * first, for a character with Sigil words; else the Emanator), so nobody loses their magic to the new rule. A two-handed
  * weapon or a full off hand leaves it in the pack, with a note. Runs once (c.focusRev). Returns notes. */
-/** Perks that changed id (rules 1.13: Grapple became Iron Grip, Origami Hands became Both Hands). */
-export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', origami_hands: 'both_hands' };
-/** A save from before a perk or trait was renamed or removed: the renamed ones follow their new id (tier kept), and an
- * id the data no longer has is taken off the sheet, so no screen meets an item it can't look up. */
+/** A save from before a perk or trait was renamed or removed: the renamed ones follow their new id (tier kept: a skill's
+ * perk_remap, rules 1.13's Grapple to Iron Grip and Origami Hands to Both Hands among them), and an id the data no
+ * longer has is taken off the sheet, so no screen meets an item it can't look up. */
 /** Rules 1.70 item 5538 (the 0.32 lanes' one fix, found by the Body, Mind and Soul lanes alike): a removed perk a skill's
  * perk_remap table names is never dropped as unknown before the table is read. While the sheet's stamp for that skill is
  * under the table's rev it stays as it is, for migrateCharacterPerks to map in its order (old perks, then passives, as
  * far as the steps reach); a sheet already stamped follows the table here (tier kept; null: taken off). */
 const remapRow = (c: Character, id: string): { pending: boolean; to: string | null } | null => {
-  for (const s of SKILLS as any[]) { const t = remapOf(s); if (t?.perks && id in t.perks) return { pending: (c.perkRev?.[s.id] ?? 0) < t.rev, to: t.perks[id] ?? null }; }
+  // (an alpha's table only renames: never pending, no stamp; migrateCharacterPerks)
+  for (const s of SKILLS as any[]) { const t = remapOf(s); if (t?.perks && id in t.perks) return { pending: s.slot !== 'alpha' && (c.perkRev?.[s.id] ?? 0) < t.rev, to: t.perks[id] ?? null }; }
   return null;
 };
 export function migrateCharacterItems(c: Character): string[] {
@@ -1330,7 +1330,7 @@ export function migrateCharacterItems(c: Character): string[] {
   if ((c.perks || []).some((x) => !known(x.id))) {
     const out: Character['perks'] = [];
     for (const x of c.perks) {
-      const to = known(x.id) ? x.id : PERK_RENAMED[x.id] ?? remapRow(c, x.id)?.to ?? undefined;
+      const to = known(x.id) ? x.id : remapRow(c, x.id)?.to ?? undefined;
       if (!to || !known(to)) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
       if (to !== x.id) notes.push(c.name + ': ' + (PERK[to] || rawItem('perk:' + to)).name + ' replaces an older perk.');
       if (!out.some((y) => y.id === to)) out.push({ ...x, id: to });
@@ -1383,7 +1383,7 @@ export const levelUpDue = (c: Character | null | undefined): boolean =>
 const remapOf = (s: any): { rev: number; perks?: Record<string, string | null>; passives?: Record<string, string> } | null => (s?.perk_remap && typeof s.perk_remap.rev === 'number' ? s.perk_remap : null);
 /** The stamp a sheet made now carries: every skill with a table at its rev (none: no field, a sheet is as it was). */
 function perkRevNow(): { perkRev?: Record<string, number> } {
-  const m: Record<string, number> = {}; for (const s of SKILLS) { const t = remapOf(s); if (t) m[s.id] = t.rev; }
+  const m: Record<string, number> = {}; for (const s of SKILLS as any[]) { const t = remapOf(s); if (t && s.slot !== 'alpha') m[s.id] = t.rev; } // (an alpha's table renames: no stamp)
   return Object.keys(m).length ? { perkRev: m } : {};
 }
 /** The skills with an old save's re-pick still offered, and the preselection each holds now. */
@@ -1394,13 +1394,22 @@ export const pendingRepicks = (c: Character | null | undefined): { skill: string
  * drops one), the named passives it had (an unlock at points it reaches) become the perks that replace them, in that
  * order, as far as its perk steps reach (a tier II that does not fit is held at I; no passive above the step count);
  * the sheet holds them now and is offered one free re-pick. An alpha keeps every step it holds (stepsEarned owes a new
- * one only when its schedule owes more). Nothing is written for a skill with no table. Says nothing in the story. */
+ * one only when its schedule owes more): its table only renames (each old id it names becomes its new one, tier kept;
+ * null takes it off), with no re-pick and no stamp (a rename is the same whenever it is read; nothing is written for a
+ * sheet that holds no old id). Nothing is written for a skill with no table. Says nothing in the story. */
 export function migrateCharacterPerks(c: Character): string[] {
   for (const s of SKILLS as any[]) {
-    const t = remapOf(s); if (!t || (c.perkRev?.[s.id] ?? 0) >= t.rev) continue;
+    const t = remapOf(s); if (!t) continue;
+    if (s.slot === 'alpha') { // an alpha's table renames (rules 1.13: Grapple is Iron Grip), never re-picks, never stamps
+      const map = t.perks || {}; if (!c.perks.some((x) => x.id in map)) continue;
+      const out: Character['perks'] = [];
+      for (const x of c.perks) { const to = x.id in map ? map[x.id] : x.id; if (to && (PERK[to] || to === x.id) && !out.some((y) => y.id === to)) out.push(to === x.id ? x : { ...x, id: to }); }
+      c.perks = out; continue;
+    }
+    if ((c.perkRev?.[s.id] ?? 0) >= t.rev) continue;
     c.perkRev = { ...(c.perkRev || {}), [s.id]: t.rev };
     const p = P(c, s.id), gone = (id: string) => id in (t.perks || {}) && !PERK[id];
-    if (s.slot === 'alpha' || p < ladderSchedule(s.id).perk_steps[0]) { c.perks = c.perks.filter((x) => !gone(x.id)); continue; } // a removed id under the steps: nothing to map it into
+    if (p < ladderSchedule(s.id).perk_steps[0]) { c.perks = c.perks.filter((x) => !gone(x.id)); continue; } // a removed id under the steps: nothing to map it into
     const map = t.perks || {}, mine = (id: string) => id in map || (PERK[id]?.tier === 'acquired' && PERK[id].skills.includes(s.id));
     const old = c.perks.filter((x) => mine(x.id)), pre: { id: string; tier: 'I' | 'II' }[] = [];
     for (const x of old) { const to = x.id in map ? map[x.id] : x.id; if (to && PERK[to] && !pre.some((y) => y.id === to)) pre.push({ id: to, tier: x.tier === 'II' ? 'II' : 'I' }); }

@@ -3578,8 +3578,8 @@ for _s in items("skills"):
     _t = _s.get("perk_remap")
     if _t is None: continue
     _w = f"skills:{_s.get('id')}.perk_remap"
-    # the migration (character.ts migrateCharacterPerks) skips an alpha: a table there would never be read (m6, the 0.32 merge)
-    if _s.get("slot") == "alpha": errors.append(f"{_w}: an alpha skill takes no perk_remap (the old-save re-pick skips alphas: rules 1.70 item 5538)"); continue
+    # an alpha's table only renames (character.ts migrateCharacterPerks: no re-pick), so it has no passives (0.32 consolidation)
+    if _s.get("slot") == "alpha" and isinstance(_t, dict) and "passives" in _t: errors.append(f"{_w}: an alpha skill's perk_remap only renames perks (no passives: the old-save re-pick skips alphas)")
     _own = lambda pid: pid in _PK and _PK[pid].get("tier") == "acquired" and _s.get("id") in (_PK[pid].get("skills") or [])
     if not (isinstance(_t, dict) and isinstance(_t.get("rev"), int) and _t["rev"] >= 1 and set(_t) <= {"rev", "perks", "passives", "note"}): errors.append(f"{_w}: {{rev: n >= 1, perks?, passives?, note?}}"); continue
     for _o, _n in (_t.get("perks") or {}).items():

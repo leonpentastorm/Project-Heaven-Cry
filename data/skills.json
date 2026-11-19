@@ -754,6 +754,13 @@
     },
     {
       "id": "raw_power",
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "grapple": "iron_grip"
+        },
+        "note": "rules 1.13: the perk was renamed (an old save's id follows it, tier kept; was character.ts PERK_RENAMED)"
+      },
       "name": "Raw Power",
       "attribute": "strength",
       "core": "body",
@@ -1286,6 +1293,13 @@
     },
     {
       "id": "dexterity",
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "origami_hands": "both_hands"
+        },
+        "note": "rules 1.13: the perk was renamed (an old save's id follows it, tier kept; was character.ts PERK_RENAMED)"
+      },
       "name": "Dexterity",
       "attribute": "agility",
       "core": "body",

@@ -5,7 +5,7 @@ import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import '../src';
 import { addItems, clearAddedItems } from '../src/effects/hooks';
 import { price, pay, refund, spend, resLeft } from '../src/effects/cost';
-import { fightWith, withGame } from './helpers/perkfight';
+import { fightWith, withGame, storyWith } from './helpers/perkfight';
 import ACTIONSJ from '../../../data/actions.json';
 
 // ---------------------------------------------------------------------------------------------- A1
@@ -132,5 +132,22 @@ describe('A6: Chain Smoker\'s Hacking Cough is a seen_range row (no sight hook o
     const v = hideAt([], 1).vision, add = (TRAITSJ as any).items.find((t: any) => t.id === 'chain_smoker').effects.find((e: any) => e.stat === 'seen_range').value;
     expect(hideAt([], v + 1).hidden).toBe(true);
     const s = hideAt(['chain_smoker'], v + add); expect(s.hidden).toBe(false); expect(s.err).toBeTruthy();
+  });
+});
+
+// ---------------------------------------------------------------------------------------------- A10
+import SKILLSJ from '../../../data/skills.json';
+describe('A10: a renamed alpha perk follows its skill\'s perk_remap (one rename mechanism, in data)', () => {
+  const remapOf = (sid: string) => (SKILLSJ as any).items.find((s: any) => s.id === sid).perk_remap.perks;
+  const old = () => { const s = storyWith([{}]); const g = JSON.parse(JSON.stringify(s.g)); const c: any = Object.values(g.characters)[0];
+    c.perks = [{ id: 'grapple', tier: 'II' }, { id: 'origami_hands', tier: 'I' }, { id: 'bulwark', tier: 'I' }]; return g; };
+  it('an old save is mapped at the load door, tiers kept; an alpha rename table stamps nothing', () => {
+    const want = [{ id: remapOf('raw_power').grapple, tier: 'II' }, { id: remapOf('dexterity').origami_hands, tier: 'I' }, { id: 'bulwark', tier: 'I' }];
+    const c: any = Object.values(migrateLoaded(old()).characters)[0]; expect(c.perks).toEqual(want);
+    expect(c.perkRev?.raw_power).toBeUndefined(); expect(c.perkRev?.dexterity).toBeUndefined();
+  });
+  it('a renamed id already held next to its new one is held once', () => {
+    const g = old(); const c: any = Object.values(g.characters)[0]; c.perks.push({ id: 'iron_grip', tier: 'I' });
+    expect((Object.values(migrateLoaded(g).characters)[0] as any).perks.filter((x: any) => x.id === 'iron_grip')).toEqual([{ id: 'iron_grip', tier: 'II' }]);
   });
 });
