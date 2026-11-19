@@ -7194,6 +7194,7 @@
             {
               "op": "grant_action",
               "action": "tend_raise",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7334,6 +7335,7 @@
         {
           "op": "grant_action",
           "action": "tend_settle",
+          "tab": "tend",
           "ap": 1,
           "uses": "at_will",
           "res": {
@@ -7401,6 +7403,7 @@
             {
               "op": "grant_action",
               "action": "tend_settle",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7468,6 +7471,7 @@
             {
               "op": "grant_action",
               "action": "tend_settle",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7522,6 +7526,7 @@
             {
               "op": "grant_action",
               "action": "tend_soothe",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7670,6 +7675,7 @@
         {
           "op": "grant_action",
           "action": "tend_tug",
+          "tab": "tend",
           "ap": 1,
           "uses": "at_will",
           "res": {
@@ -7793,6 +7799,7 @@
             {
               "op": "grant_action",
               "action": "tend_tug",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -7916,6 +7923,7 @@
             {
               "op": "grant_action",
               "action": "tend_tug",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {
@@ -8026,6 +8034,7 @@
             {
               "op": "grant_action",
               "action": "tend_guide",
+              "tab": "tend",
               "ap": 1,
               "uses": "at_will",
               "res": {

@@ -13180,3 +13180,6 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       each unit of the set as the event's target. Five Stars II's Shaken reaches rank-and-file foes only (`targets.if
       {target_not_tier: [elite, boss]}`, as Flush Out's reach): an Elite or a Boss is never in its set (rules 1.75 item
       6224 completed). Its card says "each rank-and-file foe (never an Elite or a Boss)".
+6501. **A grant's tab** (`grant_action tab`: a door's tab, `shadow`, `tend` or `figments`): an item's action may sit on a
+      door's tab instead of its item's (Perks, Class). The Tending verbs that moved onto Camaraderie's perks (rules 1.75
+      item 6213: Raise, Settle, Soothe, Tug, Guide) carry `tab: tend` and show on the TEND tab again.

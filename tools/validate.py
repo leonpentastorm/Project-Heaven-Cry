@@ -2389,6 +2389,7 @@ if TRIG:
                     for k, v in r["if"].items(): check_pred(k, v, w)
                 if "tied" in r: check_pred("target_tied", r["tied"], w) if "target_tied" in PRED else errors.append(f"{w}: reach.tied needs ties (P8)")
         if "prayer" in g and g["prayer"] not in ("whisper", "hymn"): errors.append(f"{w}: a grant_action's prayer is whisper or hymn")
+        if "tab" in g and g["tab"] not in ("shadow", "tend", "figments"): errors.append(f"{w}: a grant_action's tab is a door's tab: shadow, tend or figments (rules 1.77 item 6501)")
         if "tier" in g and g["tier"] not in (1, 2, 3): errors.append(f"{w}: a prayer's tier is 1, 2 or 3")
         lim = g.get("limit")
         if lim is not None and not (isinstance(lim, dict) and lim.get("per") in LIMIT_SCOPES | {"per_turn", "per_round", "per_combat", "per_scene", "per_session", "per_rest"} and isinstance(lim.get("n", 1), int)): errors.append(f"{w}: a grant_action's limit is {{per, n}}")
