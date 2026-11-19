@@ -921,7 +921,7 @@ const H: Record<string, Handler> = {
     if (e.revive) { ring(p, OK, 700, { from: 0.4, to: 1.4, width: 6 }); floatText('UP', p, OK, { big: true }); }
     else floatText('+' + fmtFloat(e.heal || 0), p, OK);
   },
-  heal(e) { const p = centre(e.at); if (!p) return; pluses(p, OK, 6); flash(tokOf(e.target, e.at), 'heal'); floatText(e.revive ? 'UP' + (e.amount ? ' +' + fmtFloat(e.amount) : '') : '+' + fmtFloat(e.amount || 0), p, OK, { big: !!e.revive }); play('crystal', p, { rate: 1.3, gain: 0.7 }); },
+  heal(e) { const p = centre(e.at); if (!p) return; pluses(p, OK, 6); flash(tokOf(e.target, e.at), 'heal'); floatText(e.revive ? 'UP' + (e.amount ? ' +' + fmtFloat(e.amount) : '') : '+' + fmtFloat(e.amount || 0), p, OK, { big: !!e.revive }); play('heal_shimmer', p, { rate: jitter(0.05), gain: 0.8 }); },
   hurt(e) {
     const p = at(e.at); if (!p) return;
     const why = e.why || '', tok = tokOrGhost(e.target, e.at, !!e.killed);
@@ -1537,7 +1537,7 @@ function showSilent(m: Record<string, number>) {
     const u = unit(id), p = u ? at(u.pos) : null; if (!p) continue;
     const tok = tokOf(id, u!.pos);
     if (d < 0) { shake(tok, 0.5); flash(tok, 'hurt'); floatText('−' + fmtFloat(-d), p, HP); play(u!.robot ? 'hit_metal' : 'hit_flesh', p, { rate: jitter(), gain: 0.55 }); }
-    else { pluses(p, OK, 5); flash(tok, 'heal'); floatText('+' + fmtFloat(d), p, OK); play('crystal', p, { rate: 1.3, gain: 0.5 }); }
+    else { pluses(p, OK, 5); flash(tok, 'heal'); floatText('+' + fmtFloat(d), p, OK); play('heal_shimmer', p, { gain: 0.6 }); }
   }
 }
 export function playFx(e: Partial<FxEvent> & { k: string }, stream?: string, tempo = 1, due?: number) {

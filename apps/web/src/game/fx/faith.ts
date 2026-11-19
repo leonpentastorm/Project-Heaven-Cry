@@ -315,6 +315,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
    *  impact and its sound). Nothing touched but a state: the prayer's own name (its data's `name`) where it lands. */
   const landOn = (e: any, from: Pt | null, ink: string, delay: number) => {
     const hits: string[] = Array.isArray(e._hits) ? e._hits : [], entry = prayerData(e);
+    if (e._el === 'shock' && hits.length) play('thunder' as Sfx, at(posAny(hits[0])), { gain: 0.9, delay }); // the storm's prayers: thunder as the bolts land
     const side = (id: string) => (K.sideOf ? K.sideOf(id) : null), mine = K.sideOf ? K.sideOf(e.unit) : null;
     hits.forEach((id, i) => {
       const q = at(posAny(id)); if (!q) return;

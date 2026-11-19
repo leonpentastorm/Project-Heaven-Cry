@@ -70,4 +70,10 @@ export const SFX_CREDITS: Credit[] = [
   { what: 'Medieval Sound Effects: Weapon Textures: Scythian Recurve Shoot, English Longbow Shoot and Crossbow Shoot (a bow\'s and a crossbow\'s loose)', who: 'Ben Jaszczak & Brian Nelson (submitted by MedicineStorm)', licence: 'CC0', url: 'https://opengameart.org/content/medieval-sound-effects-weapon-textures' },
   { what: 'Rocket launch (the breacher tube\'s launch)', who: 'qubodup', licence: 'CC0', url: 'https://opengameart.org/content/rocket-launch' },
   { what: 'Wick\'s footsteps and the stand-ins', who: 'synthesised in the game' },
+  // 0.32 effects lane (19 Nov 2026): trimmed, faded, mono, levelled (-16 LUFS, a -3 dBFS limiter); masters in audio/sfx/.
+  { what: 'Just a random fanfare (the VICTORY fanfare)', who: 'Spring Spring', licence: 'CC0', url: 'https://opengameart.org/content/just-a-random-fanfare' },
+  { what: 'Sad game over (the DEFEAT sting)', who: 'Emma_MA', licence: 'CC0', url: 'https://opengameart.org/content/sad-game-over' },
+  { what: 'New thing get! (the LEVEL UP sting)', who: 'congusbongus', licence: 'CC0', url: 'https://opengameart.org/content/new-thing-get' },
+  { what: "Magic Words + Healing Sound Effect: health_restore (a heal's shimmer)", who: 'Spring Spring', licence: 'CC0', url: 'https://opengameart.org/content/magic-words-healing-sound-effect' },
+  { what: "Rain + Long Thunder (the storm prayers' thunderclap, cut from its first strike)", who: 'WuxiaScrub', licence: 'CC0', url: 'https://opengameart.org/content/rain-long-thunder' },
 ];
