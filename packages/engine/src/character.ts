@@ -16,7 +16,7 @@ import { skillRollMod } from './effects/core';
 import { allPendingDoorPicks } from './doorpicks';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
-import { feedOf, showFeedNumber } from './effects/feed';
+import { feedOf } from './effects/feed';
 
 export interface Sheet {
   name: string; portrait: string; origin: string;
@@ -829,7 +829,6 @@ export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1
 /** The Strain limit (rules 1.70 item 5539, Leon's ruling): the number block soul_modules.json strain.limit (3, +1 at
  * Composure 1, 2, 4, 6 and 8; Will Power gives none), then what items add (stat strain_limit). */
 export const strainLimit = (c: Character) => fx(c, 'strain_limit', numberOf((SOUL_RULES as any).strain.limit, (of) => (of.startsWith('skill:') ? P(c, of.slice(6)) : 0)));
-showFeedNumber('strain_limit', (x) => strainLimit(x));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
 export const readyDesigns = (c: Character) => fx(c, 'ready_designs', numberOf((SOUL_RULES as any).limits.ready_designs, (of) => (of.startsWith('skill:') ? P(c, of.slice(6)) : 0))); // rules 1.75 item 6205: Lore Master's (a number block)
 // ---------- rules 1.8: practice, module gates and picks (spec: Soul magic 12, sections 4 and 5) ----------
@@ -1379,7 +1378,7 @@ export const levelUpDue = (c: Character | null | undefined): boolean =>
  * the perk that replaces it), or null. Each attribute's step fills its skills' tables. */
 const remapOf = (s: any): { rev: number; perks?: Record<string, string | null>; passives?: Record<string, string> } | null => (s?.perk_remap && typeof s.perk_remap.rev === 'number' ? s.perk_remap : null);
 /** The stamp a sheet made now carries: every skill with a table at its rev (none: no field, a sheet is as it was). */
-export function perkRevNow(): { perkRev?: Record<string, number> } {
+function perkRevNow(): { perkRev?: Record<string, number> } {
   const m: Record<string, number> = {}; for (const s of SKILLS) { const t = remapOf(s); if (t) m[s.id] = t.rev; }
   return Object.keys(m).length ? { perkRev: m } : {};
 }

@@ -25,7 +25,7 @@ export const callSkillName = (def: CallDef): string => SKILL[def.skill]?.name ||
 export const callRangeAt = (level: number): number => CALL_RULES.range_base + CALL_RULES.range_per_point * level;
 export const callStepAt = (def: CallDef, level: number): number => def.steps.filter((s) => level >= s.at).length;
 /** The price row at these points (calls.json rules.price: the last row whose `from` they reach; the first under it). */
-export const callPriceAt = (level: number): CallPriceRow => [...CALL_RULES.price].reverse().find((r) => level >= r.from) || CALL_RULES.price[0];
+const callPriceAt = (level: number): CallPriceRow => [...CALL_RULES.price].reverse().find((r) => level >= r.from) || CALL_RULES.price[0];
 /** The Call's AP at these points (the one price table). */
 export const callBaseAp = (level: number): number => callPriceAt(level).ap;
 /** How many times a turn each Call may be made at these points. */
