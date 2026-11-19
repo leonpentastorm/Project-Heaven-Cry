@@ -12,10 +12,10 @@ vi.stubGlobal('localStorage', { getItem: (k: string) => store[k] ?? null, setIte
 const fresh = (): GameState => { const g = newGame('ROOM02', { id: 'host', name: 'Leon' }); g.settings.play = 'survival'; return g; };
 let G: GameState = fresh(), role = 'host', me = 'host';
 const narrator: any = { provider: 'anthropic', key: '', model: 'claude-opus-5-5', baseUrl: '', effort: 'medium', remember: false, scripted: false };
-const act = vi.fn(), toast = vi.fn(), openTipOn = vi.fn();
+const act = vi.fn(), toast = vi.fn(), openTipOn = vi.fn(), goTo = vi.fn();
 vi.mock('../game/store', () => ({
   getState: () => ({ game: G, me: { id: me, name: me }, role, code: 'ROOM02', conn: 'online', library: [], narrator, savedAt: 0 }),
-  act: (a: any) => act(a), go: () => {}, leaveRoom: () => {}, saveNow: () => {}, setNarrator: () => {}, toast: (t: string) => toast(t), retryNarrator: () => {},
+  act: (a: any) => act(a), go: (...a: any[]) => goTo(...a), leaveRoom: () => {}, saveNow: () => {}, setNarrator: () => {}, toast: (t: string) => toast(t), retryNarrator: () => {},
 }));
 vi.mock('../game/actionTip', async (orig) => ({ ...(await orig() as any), openTipOn: (el: any) => openTipOn(el) }));
 vi.mock('../game/report', () => ({ openReport: () => {} }));
@@ -30,7 +30,7 @@ const html = async (v: any) => {
   const { readFileSync } = await import('node:fs');
   return renderToStaticMarkup(renderTemplate(parseTemplate(readFileSync(new URL('../templates/room.template.html', import.meta.url), 'utf8')), v) as any);
 };
-const kade = { c1: { id: 'c1', owner: 'host', name: 'Kade', level: 1, origin: '', skills: {}, attrs: {}, portrait: '' } as any };
+const kade = { c1: { id: 'c1', owner: 'host', name: 'Kade', level: 1, origin: '', skills: {}, attrs: {}, portrait: '', unspent: { skill: 0, attr: 0 }, perks: [] } as any }; // (a whole enough character for the engine's levelUpDue)
 
 beforeEach(() => { G = fresh(); role = 'host'; me = 'host'; act.mockClear(); toast.mockClear(); openTipOn.mockClear(); for (const k of Object.keys(store)) delete store[k]; });
 
@@ -115,6 +115,20 @@ describe('the room around the picker', () => {
     v.startSession(); expect(act).toHaveBeenCalledWith({ type: 'run/start' });
     G.settings.play = 'campaign'; v = vals();
     expect(v.startLabel).toMatch(/API key/); expect(v.notReady).toBe(true);
+  });
+  it('outside playtest 0.31.10 row 2: Start the run with unclaimed perk steps asks the camp prompt first; the safe answer opens Level up, going on starts the run', async () => {
+    const { newCharacter, levelUpDue } = await import('@engine');
+    const { currentDialog, answerDialog } = await import('../game/dialog');
+    const { levelUpAsk } = await import('../game/campView');
+    const c: any = newCharacter('c1', 'host', { name: 'Vess', portrait: '', origin: '', kit: 'tank', traits: [], skills: { empathy: 7 }, attrs: {}, cores: { body: 1, mind: 1, soul: 1 }, identity: {} } as any);
+    expect(levelUpDue(c)).toBe(true); // perk steps (and a fork) open from creation
+    G.characters = { c1: c } as any; goTo.mockClear();
+    vals().startSession();
+    expect(currentDialog()?.title).toBe(levelUpAsk(true)!.title); expect(act).not.toHaveBeenCalled();
+    answerDialog(false); await Promise.resolve(); await Promise.resolve();
+    expect(goTo).toHaveBeenCalledWith('levelup', { levelupChar: 'c1' }); expect(act).not.toHaveBeenCalled();
+    vals().startSession(); answerDialog(true); await Promise.resolve(); await Promise.resolve();
+    expect(act).toHaveBeenCalledWith({ type: 'run/start' });
   });
   it('the Proving Ground is a text button under the cards, not a fourth card', async () => {
     const v = vals(); expect(v.proveLabel).toMatch(/^⚔ Proving Ground · practice range/);

@@ -29,7 +29,7 @@ import {
   planEvoke, drawGlyph, evoke, findPattern, glyphCost, sigilReady,  dir8, secretFrom, scuff, strikeTurret, compileSpell, grammarError,
   enemyMagic, W, isElement, isAffliction, isBoonWord,  MAX_GLYPHS, SIGIL_REV, sigilPower, lineMultFor,
 } from './sigil';
-import { type Glyph, vent, swapCore, SPELL_AP, FLUX_MAX, CORE_CHARGE, fluxMaxOf, coreChargeOf, unitSave, condOn, ventAp, coreAp } from './magic';
+import { type Glyph, vent, swapCore, SPELL_AP, CORE_CHARGE, fluxMaxOf, coreChargeOf, unitSave, condOn, ventAp, coreAp } from './magic';
 import { fooledBy } from './illusion';
 import { tilesAround, canStand, foesOf } from './kit';
 import { withAp, canPay } from './effects/cost';

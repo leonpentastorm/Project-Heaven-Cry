@@ -275,3 +275,18 @@ describe('class moves that cast paint the grid (item 489 c)', () => {
     expect(shortWhy('Something new.')).toBe('can\'t now');
   });
 });
+
+describe('outside playtest 0.31.10 row 3: a click on your own end glyph', () => {
+  it('never arms a FIRE · SEEK at yourself; a refused click drops the aim picked before, so Confirm goes dark', () => {
+    const { cb, u, es, rng } = setup(['fire', 'seek']);
+    walk(cb, rng, u, ['fire', 'seek'], ['3,5', '2,5']); // you stand on the end glyph you drew last
+    const e = es[0]; e.pos = '6,5';
+    let v = evokeView(cb, u, '2,5', {});
+    expect(v.pickable.has(u.pos)).toBe(false);
+    const k = evokeClick(v, cb, u, '6,5', {}); expect(k.choice!.aims).toEqual(['6,5']);
+    v = evokeView(cb, u, '2,5', k.choice!); expect(v.ok).toBe(true);
+    const r = evokeClick(v, cb, u, u.pos, k.choice!);
+    expect(r.refused).toBe(true); expect(r.choice!.aims).toEqual([]); expect(r.toast).toMatch(/Not on yourself/);
+    expect(evokeView(cb, u, '2,5', r.choice!).ok).toBe(false);
+  });
+});

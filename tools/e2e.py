@@ -14,11 +14,14 @@
               --slow       real speed for everything (the test pace is the default for the `rules` suites)
               --no-retry   don't run a failed suite again alone
               --base URL   test another server (e.g. the live site); nothing is built or started
+              --port N     the room server's port (default 8787; PHC_E2E_PORT sets it too): one per worktree, so two
+                           lanes can run browser suites at once. The runner stops only the server on ITS port (the one
+                           it started, or an old one left on that port), never another lane's.
 
 The groups are in apps/web/e2e/groups.json. EVERY suite in the folder must be in `rules` or in `anim`: this script stops
 with an error when one is in neither (a suite nobody runs rots), and so does `npm run check` (apps/web/src/e2e-groups.test.ts).
 
-It builds the game (screen data + vite), starts the room server on port 8787 if it isn't up, warms it, runs the suites,
+It builds the game (screen data + vite), starts the room server on its port (8787, or --port) if it isn't up, warms it, runs the suites,
 prints ONE line per suite and only the FAIL lines of those that failed, and stops the server if it started it.
 
 **The retry rule.** A suite that fails while others run beside it is run ONCE more, alone, after the rest. If it passes
@@ -58,11 +61,20 @@ def kill_tree(p, sig=9):
     except Exception:
         try: p.kill()
         except Exception: pass
-def kill_servers():
-    """Stop every room server on this machine (wrangler dev and its workerd): one from before would serve the old worker."""
-    if not WIN: subprocess.run('pkill -f "wrangler dev"; pkill -f workerd', shell=True); return
-    ps = ("Get-CimInstance Win32_Process | Where-Object { $_.Name -eq 'workerd.exe' -or ($_.Name -eq 'node.exe' -and $_.CommandLine -match 'wrangler' "
-          r"-and $_.CommandLine -match '\bdev\b') } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }")
+def kill_servers(port):
+    """Stop the room server listening on this port (its workerd, and the wrangler dev that started it): one from before
+    would serve the old worker. Only this port's: another worktree's server, on its own port, is left alone (0.31.12;
+    it used to stop every wrangler and workerd on the machine)."""
+    if not WIN:
+        sh = (f"for pid in $(lsof -t -iTCP:{port} -sTCP:LISTEN 2>/dev/null || fuser {port}/tcp 2>/dev/null); do "
+              "pp=$(ps -o ppid= -p $pid 2>/dev/null | tr -d ' '); "
+              "if [ -n \"$pp\" ] && ps -o args= -p $pp 2>/dev/null | grep -q wrangler; then kill -9 $pp 2>/dev/null; fi; kill -9 $pid 2>/dev/null; done")
+        subprocess.run(sh, shell=True); return
+    ps = (f"Get-NetTCPConnection -LocalPort {port} -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -Unique | "
+          "ForEach-Object { $pr = Get-CimInstance Win32_Process -Filter \"ProcessId=$_\"; "
+          "if ($pr) { $pa = Get-CimInstance Win32_Process -Filter \"ProcessId=$($pr.ParentProcessId)\"; "
+          "if ($pa -and $pa.Name -eq 'node.exe' -and $pa.CommandLine -match 'wrangler') { taskkill /F /T /PID $pa.ProcessId | Out-Null } }; "
+          "Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }")
     subprocess.run(['powershell', '-NoProfile', '-NonInteractive', '-Command', ps], capture_output=True)
 E2E = os.path.join(ROOT, 'apps/web/e2e')
 G = json.load(open(os.path.join(E2E, 'groups.json')))
@@ -87,6 +99,9 @@ def opt(name, default=None):
         i = args.index(name); v = args[i + 1] if i + 1 < len(args) else default; del args[i:i + 2]; return v
     return default
 jobs = int(opt('--jobs', '3')); base = opt('--base')
+# the room server's port: one per worktree (0.31.12), so two lanes' runs never meet; its debugger port beside it
+port = int(opt('--port', os.environ.get('PHC_E2E_PORT') or '8787'))
+INSPECTOR = None if port == 8787 else port + 1442
 no_build = '--no-build' in args; slow = '--slow' in args; no_retry = '--no-retry' in args
 errs = group_errors()
 if errs: sys.exit('the groups are wrong:\n  ' + '\n  '.join(errs))
@@ -146,13 +161,13 @@ def start_server():
         kill_tree(started)
         try: started.wait(timeout=10)
         except Exception: pass
-    kill_servers(); time.sleep(1)
+    kill_servers(port); time.sleep(1)
     if server_starts and os.path.exists(log):
         try: os.replace(log, os.path.join(ROOT, f'.check/e2e/server.{server_starts}.log'))
         except OSError: pass
     # (warnings and errors only: a line for every file served was 120,000 lines a run. On a nearly full disk the rooms'
     # saved state goes to the memory disk with the browsers' files: the server stops when it cannot write it.)
-    cmd = ['npm', 'run', 'dev', '-w', '@phc/server', '--', '--log-level', 'warn'] + (['--persist-to', os.path.join(SUITE_TMP, 'wrangler')] if SUITE_TMP else [])
+    cmd = ['npm', 'run', 'dev', '-w', '@phc/server', '--', '--log-level', 'warn', '--port', str(port)] + (['--inspector-port', str(INSPECTOR)] if INSPECTOR else []) + (['--persist-to', os.path.join(SUITE_TMP, 'wrangler')] if SUITE_TMP else [])
     started = subprocess.Popen(exe(cmd), cwd=ROOT, stdout=open(log, 'w'), stderr=subprocess.STDOUT, **GROUP)
     server_starts += 1
     for _ in range(240):
@@ -170,14 +185,14 @@ def ensure_server():
         print(f'note  the room server had stopped (.check/e2e/server.log); starting it again', flush=True)
         start_server(); return True
 if not base:
-    base = 'http://127.0.0.1:8787'
+    base = f'http://127.0.0.1:{port}'
     if not no_build:
         t0 = time.time()
         for cmd in (['python3', 'design/canvas-build/build.py', '--web'], ['npm', 'run', 'build']):
             p = subprocess.run(exe(cmd), cwd=ROOT, capture_output=True, text=True, encoding='utf-8', errors='replace')
             if p.returncode: print((p.stdout + p.stderr)[-1500:]); sys.exit('build failed: ' + ' '.join(cmd))
         print(f'built ({time.time() - t0:.0f}s)', flush=True)
-        kill_servers()  # a server from before would serve the old build's worker
+        kill_servers(port)  # a server from before (on this port) would serve the old build's worker
         time.sleep(1)
     if not up(base): start_server()
     else: ours = False; warm(base)  # a server someone else started (npm run dev -w @phc/server): used as it is, never restarted
@@ -264,7 +279,7 @@ finally:
     if SUITE_TMP: shutil.rmtree(SUITE_TMP, ignore_errors=True)
     if started:
         kill_tree(started, 15)
-        kill_servers()
+        kill_servers(port)  # (only the one it started: this port's)
 mins = f'  ({(time.time() - t_all) / 60:.1f} min)'
 if failed: print(f'{len(failed)} of {len(names)} FAILED: ' + ' '.join(failed) + (f' · and {len(flaky)} passed only alone: ' + ' '.join(flaky) if flaky else '') + mins)
 elif flaky: print(f'GREEN, BUT {len(flaky)} PASSED ONLY ALONE (a suite that cannot share the machine; fix the suite): ' + ' '.join(flaky) + mins)

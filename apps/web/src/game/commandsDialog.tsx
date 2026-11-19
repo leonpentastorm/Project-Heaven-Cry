@@ -15,8 +15,8 @@ import { tipProps } from './actionTip';
 
 const INK: Record<string, string> = { attack: '#F65157', sigils: SIGIL_INK, outbursts: SOUL_INK };
 const UI = "'Chakra Petch', sans-serif";
-const btn = (on = false): React.CSSProperties => ({ minHeight: 36, padding: '0 14px', borderRadius: 8, border: '1px solid ' + (on ? '#E7EBF3' : '#2E3A50'), background: on ? '#E7EBF3' : 'transparent', color: on ? '#0A0D13' : '#E7EBF3', fontFamily: 'inherit', fontWeight: 700, fontSize: 13, cursor: 'pointer' });
-const mini: React.CSSProperties = { display: 'grid', placeItems: 'center', width: 24, height: 24, padding: 0, borderRadius: 6, border: '1px solid #2E3A50', background: 'transparent', color: '#C9D3E3', fontFamily: 'inherit', fontSize: 12, fontWeight: 700, cursor: 'pointer' };
+const btn = (on = false): React.CSSProperties => ({ minHeight: 36, padding: '0 14px', borderRadius: 8, border: '1px solid ' + (on ? '#E7EBF3' : '#2E3A50'), background: on ? '#E7EBF3' : 'transparent', color: on ? '#0A0D13' : '#E7EBF3', fontFamily: 'inherit', fontWeight: 700, fontSize: 'var(--fs-sub)', cursor: 'pointer' });
+const mini: React.CSSProperties = { display: 'grid', placeItems: 'center', width: 24, height: 24, padding: 0, borderRadius: 6, border: '1px solid #2E3A50', background: 'transparent', color: '#C9D3E3', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer' };
 
 /** Four borders with a heavier left one (no shorthand mixed with longhand: React warns when they change). */
 const edges = (all: string, left: string): React.CSSProperties => ({ borderTop: all, borderRight: all, borderBottom: all, borderLeft: left });
@@ -72,9 +72,9 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
       <div ref={box} role="dialog" aria-modal="true" aria-labelledby="phc-cmds-title" data-phc-cmds-dialog="" tabIndex={-1} onKeyDown={onKey}
         style={{ width: 'min(760px, 100%)', maxHeight: 'min(92vh, 900px)', display: 'flex', flexDirection: 'column', gap: 12, padding: 18, borderRadius: 14, background: '#10151F', border: '1px solid #232D3F', borderTop: '3px solid #FFFFFF', boxShadow: '0 24px 70px rgba(0,0,0,.7)', outline: 'none' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2' }}>TURN CARD · {name.toUpperCase()}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2' }}>TURN CARD · {name.toUpperCase()}</span>
           <span id="phc-cmds-title" style={{ fontFamily: "'Spectral', serif", fontSize: 24, fontWeight: 600 }}>Your four commands</span>
-          <span style={{ fontSize: 12, lineHeight: 1.45, color: '#C9D3E3' }}>The turn card offers these on keys 1–4. Pick a slot, then an action. Your picks keep their slots; the slots left on <b>Smart</b> take the smart default in its order, skipping your picks, and follow the fight (Clear jam when you jam, Release while you hold an Outburst). Saved for {name} in this browser.</span>
+          <span style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.45, color: '#C9D3E3' }}>The turn card offers these on keys 1–4. Pick a slot, then an action. Your picks keep their slots; the slots left on <b>Smart</b> take the smart default in its order, skipping your picks, and follow the fight (Clear jam when you jam, Release while you hold an Outburst). Saved for {name} in this browser.</span>
         </div>
         <div role="group" aria-label="The four slots" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 8 }}>
           {[0, 1, 2, 3].map((i) => {
@@ -84,27 +84,27 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
               <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 8, borderRadius: 10, background: on ? '#1C2536' : '#0D1119', ...edges(on ? '2px solid #FFFFFF' : '2px solid #232D3F', '4px solid ' + ink) }}>
                 <button type="button" data-slot={i + 1} aria-pressed={on} onClick={() => setAt(i)} {...tipProps('Fill slot ' + (i + 1))}
                   style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 0, border: 0, background: 'transparent', color: 'inherit', fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
-                  <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 11, fontWeight: 700 }}>{i + 1}</span>
+                  <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 'var(--fs-sub)', fontWeight: 700 }}>{i + 1}</span>
                   <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-                    <span style={{ fontSize: 14, fontWeight: 700, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: c?.off ? '#7F8BA1' : '#E7EBF3' }}>{c ? c.label : '—'}</span>
-                    <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: e ? '#FFFFFF' : '#A3AEC2' }}>{e ? 'YOUR PICK' : set ? 'SMART (NOT IN YOUR KIT NOW)' : 'SMART'}</span>
-                    {c?.off && <span style={{ fontSize: 10, color: '#A3AEC2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.sub}</span>}
+                    <span style={{ fontSize: 'var(--fs-body)', fontWeight: 700, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: c?.off ? '#7F8BA1' : '#E7EBF3' }}>{c ? c.label : '—'}</span>
+                    <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', color: e ? '#FFFFFF' : '#A3AEC2' }}>{e ? 'YOUR PICK' : set ? 'SMART (NOT IN YOUR KIT NOW)' : 'SMART'}</span>
+                    {c?.off && <span style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{c.sub}</span>}
                   </span>
                 </button>
                 <span style={{ display: 'flex', gap: 4 }}>
                   <button type="button" aria-label={'Move slot ' + (i + 1) + ' left'} disabled={i === 0} onClick={() => move(i, -1)} style={{ ...mini, opacity: i === 0 ? 0.35 : 1 }}>‹</button>
                   <button type="button" aria-label={'Move slot ' + (i + 1) + ' right'} disabled={i === 3} onClick={() => move(i, 1)} style={{ ...mini, opacity: i === 3 ? 0.35 : 1 }}>›</button>
-                  <button type="button" aria-label={'Slot ' + (i + 1) + ' back to smart'} disabled={!set} onClick={() => clear(i)} style={{ ...mini, width: 'auto', padding: '0 7px', fontSize: 10, letterSpacing: '0.08em', opacity: set ? 1 : 0.35 }}>SMART</button>
+                  <button type="button" aria-label={'Slot ' + (i + 1) + ' back to smart'} disabled={!set} onClick={() => clear(i)} style={{ ...mini, width: 'auto', padding: '0 7px', fontSize: 'var(--fs-sub)', letterSpacing: '0.08em', opacity: set ? 1 : 0.35 }}>SMART</button>
                 </span>
               </div>
             );
           })}
         </div>
         <div aria-label={'Actions for slot ' + (at + 1)} style={{ flex: '1 1 auto', minHeight: 120, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 10, paddingRight: 4 }}>
-          {!u && <span style={{ fontSize: 13, color: '#A3AEC2' }}>{name} isn't in this fight: their commands can be set once they are.</span>}
+          {!u && <span style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>{name} isn't in this fight: their commands can be set once they are.</span>}
           {tabs.map((t) => (
             <div key={t} role="group" aria-label={TAB_NAME[t] || t} style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
-              <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: INK[t] || '#A3AEC2' }}>{(TAB_NAME[t] || t).toUpperCase()}</span>
+              <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: INK[t] || '#A3AEC2' }}>{(TAB_NAME[t] || t).toUpperCase()}</span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 5 }}>
                 {cat.filter((e) => e.tab === t).map((e) => {
                   const inSlot = slots.indexOf(e.action), here = inSlot === at, ink = INK[e.tab];
@@ -112,10 +112,10 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
                     <button key={e.action} type="button" data-cmd={e.action} aria-pressed={here} onClick={() => pick(e.action)} {...tipProps(e.text)}
                       style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 2, padding: '6px 10px', borderRadius: 8, ...edges('1px solid ' + (here ? '#FFFFFF' : '#232D3F'), '3px solid ' + (ink || (here ? '#FFFFFF' : '#232D3F'))), background: here ? '#1C2536' : '#10151F', color: '#E7EBF3', fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
                       <span style={{ display: 'flex', justifyContent: 'space-between', gap: 8 }}>
-                        <span style={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.label}</span>
-                        <span style={{ flex: 'none', fontSize: 11, fontWeight: 700, color: '#C9D3E3' }}>{inSlot >= 0 ? 'SLOT ' + (inSlot + 1) + ' · ' : ''}{e.cost}</span>
+                        <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.label}</span>
+                        <span style={{ flex: 'none', fontSize: 'var(--fs-sub)', fontWeight: 700, color: '#C9D3E3' }}>{inSlot >= 0 ? 'SLOT ' + (inSlot + 1) + ' · ' : ''}{e.cost}</span>
                       </span>
-                      {e.why && <span style={{ fontSize: 10, color: '#A3AEC2' }}>Not now: {e.why.replace(/\.$/, '')}</span>}
+                      {e.why && <span style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>Not now: {e.why.replace(/\.$/, '')}</span>}
                     </button>
                   );
                 })}
@@ -125,11 +125,11 @@ export function CommandsDialog({ game, charId, onClose }: { game: GameState | nu
         </div>
         {/* Which side of the screen the card comes in on (this browser, every character). */}
         <div role="radiogroup" aria-label="Card side" style={{ display: 'flex', flexWrap: 'wrap', gap: 6, alignItems: 'center' }}>
-          <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: '#A3AEC2', marginRight: 4 }}>CARD SIDE</span>
+          <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: '#A3AEC2', marginRight: 4 }}>CARD SIDE</span>
           {([['auto', 'Auto', 'The left, unless the card would cover your unit there: then the right'], ['left', '◧ Left', 'Always on the left of the screen'], ['right', 'Right ◨', 'Always on the right of the screen']] as [CardSide, string, string][]).map(([v, label, title]) => (
             <button key={v} type="button" role="radio" aria-checked={side === v} data-card-side={v} {...tipProps(title)} onClick={() => setSide(v)} style={{ ...btn(side === v), minHeight: 32, padding: '0 12px' }}>{label}</button>
           ))}
-          <span style={{ fontSize: 11, color: '#A3AEC2' }}>{side === 'auto' ? 'Moves to the right when it would cover your unit.' : 'Every character, in this browser.'}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>{side === 'auto' ? 'Moves to the right when it would cover your unit.' : 'Every character, in this browser.'}</span>
         </div>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
           <button type="button" onClick={() => { setSlots([null, null, null, null]); setAt(0); }} style={btn()}>Reset to smart default</button>

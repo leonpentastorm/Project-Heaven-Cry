@@ -131,6 +131,18 @@ const effVal = (entry: any, op: 'heal' | 'shield', fallback = 0): number => {
   return find(entry?.effects) ?? fallback;
 };
 const hymnEntry = (id: string): any => { for (const p of FAITH_PATRONS) for (const h of p.hymns || []) if (h.id === id) return h; return null; };
+/** 0.31.11: a prayer's number for the card that shows it: its heal or shield through prayerAmount (the formula the prayer
+ * heals and shields with), its damage (of the effect's own damage_type) through the same terms prayerStrike hands to harm (Blessing power, the Level
+ * term); in a fight the unit's own power and level, else the character's. Before the target's own bonuses. */
+function prayerFigure(entry: any, c: Character, u: Unit | null): PrayerPreview['amount'] | null {
+  const power = u?.blessPower || blessingPower(c), lvl = u ? levelTerm(u) : term(mendFactor(c.level), 'level');
+  const h = effVal(entry, 'heal'); if (h) return { kind: 'heal', n: Math.round(prayerAmount('heal', h, power, lvl)) };
+  const s = effVal(entry, 'shield'); if (s) return { kind: 'shield', n: Math.round(prayerAmount('shield', s, power, lvl)) };
+  const d = prayerDamage(entry); if (!d) return null;
+  const sa = prayerStrike(d, power, u ? dealTerm(u) : term(levelOf('blessing', c.level), 'level'));
+  const type = String(fxOf(entry, 'stat_mod', (q) => q.stat === 'hp' && Number(q.value) < 0)?.damage_type || 'soul'); // the effect's own damage type (Thunderclap: lightning)
+  return { kind: 'damage', type, n: amountOf({ kind: 'damage', base: sa.base, round: 'round' }, null, { level: null, mults: sa.mults }).amount };
+}
 /** Mother Ember's healing intervention: (base + per × Devotion) × Blessing power × the heal Level term (heal-shield-percent
  * spec: it gains the `mend` column; it never passes the cap). Its own numbers, not the damage interventions'. */
 export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_PATRON.mother_ember?.intervention?.effects || [])[0] || {}; return amountOf({ kind: 'heal', base: e.value ?? 10, per: [{ of: 'devotion', value: e.per_devotion ?? 3 }], profile: 'blessing', round: 'round' }, null, { level: null, counts: { devotion: devotionNow(c) }, mults: [term(power, 'stat: blessing power'), mendDial(), term(mendFactor(c.level), 'level')] }).amount; };
@@ -237,6 +249,9 @@ export interface PrayerPreview {
   targets: string[];
   /** What the target is: self_or_ally, self, ally, enemy, tile, none, two_units, two_allies, downed_ally, dead_ally. */
   target: string;
+  /** 0.31.11: what it heals, shields or deals for this character (the faith card's number), as the prayer lands it
+   *  (prayerFigure: the one prayer formula), before the target's own bonuses; absent for a prayer with no amount. */
+  amount?: { kind: 'heal' | 'shield' | 'damage'; n: number; /** damage only: the effect's damage_type (soul when it names none) */ type?: string };
 }
 export interface PrayerArgs { targetId?: string; targetId2?: string; tile?: string }
 
@@ -268,7 +283,8 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
   const belief = beliefOf(c), faith = faithOf(c), own = patronOf(c);
   const ap = u ? price({ cb, u, c }, kind === 'whisper' ? 'whisper' : 'pray', AP_COST[kind]).ap : AP_COST[kind];
   const target = pe.entry.target || (kind === 'hymn' ? 'self_or_ally' : 'none'); // an old-shape Blessing goes at you or an ally
-  const info = { ...base, ap, effectText: pe.entry.text || '', name: pe.entry.name || id, patron: pe.patron?.id || null, target, targets: targetsOf(g, c, u, cb, target) };
+  const fig = prayerFigure(pe.entry, c, u);
+  const info = { ...base, ap, effectText: pe.entry.text || '', name: pe.entry.name || id, patron: pe.patron?.id || null, target, targets: targetsOf(g, c, u, cb, target), ...(fig ? { amount: fig } : {}) };
   const m = prayerMod(g, c, u);
   // The mode and the gate.
   let gate: number | null = null, mode: PrayerPreview['mode'] = 'standing', roll: PrayerPreview['roll'], overreach: PrayerPreview['overreach'];
@@ -385,7 +401,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
     hymns,
     miracle: p?.miracle ? { id: p.miracle.id, name: p.miracle.name, text: p.miracle.text, usedThisSession: c.miracleSession === sessionN(g), preview: previewPrayer(g, who, 'miracle', p.miracle.id) } : null,
     pieces: { ...(c.faithPieces || {}) },
-    vow: u?.vow || null, vows: VOWS.map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, fulfilledWhen: v.fulfilled_when || '', needsAlly: !!v.needs_ally })),
+    vow: u?.vow || null, vows: VOWS.filter((v) => !(cb && vowNoFoe(cb, u, v))).map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, fulfilledWhen: v.fulfilled_when || '', needsAlly: !!v.needs_ally })),
     rites: (p?.rites || []).map((r: any) => ({ id: r.id, name: r.name, text: r.text, engine: !!r.engine, keptThisSession: c.ritesKept?.[p.id + '.' + r.id] === sessionN(g), ...riteState(g, c, r) })),
     rule: p?.rule || null,
     cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: lim.left(cb && u ? 'per_turn' : 'per_round', 1, WHISPER_KEY) <= 0, miracleUsed: c.miracleSession === sessionN(g), hymnWait: cd, hymnCooldown: prayerCooldown(c), vowCut: !!(cb && u && u.faith?.hymnCut), vowBanked: !!(cb && u && u.faith?.vowBank) },
@@ -591,6 +607,9 @@ function breakVow(cb: Combat, u: Unit, why: string) {
   const p = patronOf(c); if (p) speak(G(), cb, rngOf(), c, p, 'vow_broken');
 }
 const vowOn = (u: Unit | null | undefined, id: string) => !!u?.vow && u.vow.state === 'sworn' && u.vow.id === id;
+/** A vow that needs a foe who can yield (patrons.json `needs_yielding_foe`: Mercy) has none in this fight (canYield, the
+ * one answer): it is not offered and can't be sworn (row 16 of the outside playtest: Mercy in a fight of machines). */
+const vowNoFoe = (cb: Combat, u: Unit | null | undefined, v: any): boolean => !!v?.needs_yielding_foe && !cb.units.some((x) => x.side !== (u?.side || 'pc') && !x.dead && canYield(x));
 /** Rules 1.22 (items 1283-1284): a vow's moment came in the fight. The Hymn this fighter is waiting for comes 1 round
  * sooner (each wait is shortened once, never under 2 rounds); with no Hymn waiting, the fulfilment is kept for the next
  * one (one kept at most). At most one a round; a moment that could change nothing is not spent and says nothing. The
@@ -1437,6 +1456,7 @@ function swearVow(g: GameState, a: Extract<FaithAction, { type: 'faith/vow' }>, 
   if (u.vow) return 'One vow a fight.';
   if (cb.round !== 1 || fs(u).acted) return 'Swear a vow at the start of the fight, before you act.';
   if (u.dead || u.downed) return 'You can\'t swear anything right now.';
+  if (vowNoFoe(cb, u, v)) return 'No enemy here can yield.';
   let allyId: string | undefined;
   if (v.needs_ally) {
     const al = cb.units.find((x) => (x.id === a.allyId || (x.charId && x.charId === a.allyId)) && x !== u && x.side === u.side && !x.dead);

@@ -42,7 +42,7 @@ ok('the round goes on after both refreshes: the host speaks, the round closes, t
 const watchClose = guest.getByRole('button', { name: 'Close and wait for the story' });
 if (await watchClose.waitFor({ timeout: 30000 }).then(() => true, () => false)) await watchClose.click();
 await guest.getByRole('button', { name: /What is Durability\?/ }).first().click();
-await guest.waitForSelector('text=EPCCG · ARTICLE 5');
+await guest.waitForSelector('.phc-ep-lore'); // the skill page leads with its lore (0.31.11)
 ok('the "?" on a skill opens its EPCCG entry', true);
 await shot(guest, '30-epccg');
 await guest.getByRole('button', { name: /Close the EPCCG entry/ }).click();

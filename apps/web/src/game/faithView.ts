@@ -20,7 +20,7 @@ export function tagCapsText(t: FaithView['tagXp']): { text: string; capped: bool
   const here = t.where === 'fight' ? { n: t.fight, cap: t.caps.fight, w: 'THIS FIGHT' } : { n: t.scene, cap: t.caps.scene, w: 'THIS SCENE' };
   const sess = t.caps.session != null ? ' · ' + t.session + '/' + t.caps.session + ' THIS SESSION' : '';
   const capped = here.n >= here.cap || (t.caps.session != null && t.session >= t.caps.session);
-  return { text: 'LIKED TAGS · ' + here.n + '/' + here.cap + ' ' + here.w + sess + (capped ? ' · CAPPED' : ''), capped };
+  return { text: 'Favour ' + here.n + ' / ' + here.cap + (capped ? ' · capped' : ''), capped };
 }
 /** The pact cooldown after leaving one (item 710), in the patrons' silence: "Nobody answers yet: 88 days". */
 export const cooldownText = (days: number) => 'Nobody answers yet: ' + days + (days === 1 ? ' day' : ' days');
@@ -46,7 +46,7 @@ export function oddsText(p: PrayerPreview): string {
 
 // ---------- the prayer buttons ----------
 export interface PrayerButton {
-  key: string; kind: PrayerKindUI; id: string; name: string; text: string; icon: string;
+  key: string; kind: PrayerKindUI; id: string; name: string; text: string; /** The engine's number for you ("Heal 20", "34 lightning"), '' when none: shown beside text. */ figure: string; icon: string;
   /** "1 AP", "3 AP". */ ap: string;
   /** The gate or the dice: "ANYONE", "HYMN I · DEVOTION 3", "BY DICE · TN 14", "FAITH 7 · DEVOTION 10". */ gate: string;
   odds: string; /** An overreach: its TN, and what a miss costs in Devotion XP; the Miracle: its price (rules 1.6.2). */ warn?: string;
@@ -57,9 +57,12 @@ function button(kind: PrayerKindUI, id: string, name: string, text: string, p: P
   const gate = kind === 'whisper' ? (p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? 12) : 'ANYONE')
     : kind === 'miracle' ? 'FAITH ' + MIRACLE_FAITH + ' · DEVOTION ' + (p.gate ?? GATE.miracle)
     : p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? '?') : 'HYMN ' + ROMAN[tier] + ' · DEVOTION ' + (p.gate ?? '?');
+  // the engine's own number for this character when the prayer has one ("Heal 20", "Shield 20", "27 soul", "34 lightning"),
+  // shown BESIDE the card's full text, never instead of it (0.31.11 item A: Thunderclap's push and Shaken stay said)
+  const fig = p.amount ? (p.amount.kind === 'heal' ? 'Heal ' + p.amount.n : p.amount.kind === 'shield' ? 'Shield ' + p.amount.n : p.amount.n + ' ' + (p.amount.type || 'soul')) : '';
   return {
-    key: kind + ':' + id, kind, id, name, text, icon: prayerIconUri(kind, kind === 'hymn' ? id : id, p.patron, tier), ap: p.ap + ' AP', gate,
-    odds: oddsText(p), warn: p.mode === 'overreach' && p.overreach ? 'Overreach: TN ' + p.overreach.tn + ' · a miss costs ' + DEVOTION_XP.overreachMiss + ' Devotion XP'
+    key: kind + ':' + id, kind, id, name, text, figure: fig, icon: prayerIconUri(kind, kind === 'hymn' ? id : id, p.patron, tier), ap: p.ap + ' AP', gate,
+    odds: oddsText(p), warn: p.mode === 'overreach' && p.overreach ? 'Overreach: roll ' + p.overreach.tn + ' or lose ' + DEVOTION_XP.overreachMiss + ' Devotion'
       : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : undefined,
     ok: !!p.ok, why: p.ok ? undefined : p.why || 'Not now.', target: p.target || 'none', patron: p.patron, tier, source,
   };
@@ -122,7 +125,7 @@ const rounds = (n: number) => n + (n === 1 ? ' ROUND' : ' ROUNDS');
 /** The Hymns' heading (rules 1.22): how often a Hymn comes, when the next one does, and what the vow did to the wait. */
 export function hymnHeadText(cd: FaithView['cooldowns'] | null | undefined): string {
   if (!cd || !cd.hymnWait) return 'HYMNS';
-  return 'HYMNS · EVERY ' + rounds(cd.hymnWait) + (cd.hymnRoundsLeft > 0 ? ' · NEXT IN ' + rounds(cd.hymnRoundsLeft) : ' · READY') + (cd.vowCut ? ' · YOUR VOW: 1 ROUND SOONER' : cd.vowBanked ? ' · YOUR VOW: THE NEXT WAIT 1 ROUND SHORTER' : '');
+  return 'HYMNS' + (cd.hymnRoundsLeft > 0 ? ' · next in ' + rounds(cd.hymnRoundsLeft).toLowerCase() : ' · ready') + (cd.vowCut ? ' · YOUR VOW: 1 ROUND SOONER' : cd.vowBanked ? ' · YOUR VOW: THE NEXT WAIT 1 ROUND SHORTER' : '');
 }
 export function faithPanel(v: FaithView | null): FaithPanel | null {
   if (!v) return null;

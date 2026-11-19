@@ -12,7 +12,7 @@ import { gearIconUri } from '../game/gearIcons';
 const { TECHNIQUE, TECHNIQUES, physOf, readyCap, readyTechniques, drillOf, drillMarks, picksOwed, pickable, weaponProps, weaponSystem, weaponTeaches, groupName, groupsOf, propText, PHYS_RULES } = phys;
 const SYS = [['melee', 'MELEE'], ['ranged', 'RANGED']];
 const INK = { melee: '#F68A38', ranged: '#E3BF51' }; // Strength (Raw Power, Athletics) and Agility (Dexterity): the skills that wield them
-const chip = (on, off, ink = '#E7EBF3') => 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.5; ' : 'pointer; ')
+const chip = (on, off, ink = '#E7EBF3') => 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.5; ' : 'pointer; ')
   + (on ? 'border: 1px solid ' + ink + '; background: #1C2536; color: #FFFFFF' : 'border: 1px dashed #2E3A50; background: transparent; color: #A3AEC2');
 const card = 'display: flex; flex-direction: column; gap: 6px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F';
 /** Run an action; a refusal is a toast, never a thrown error on screen. */
@@ -44,7 +44,7 @@ export function armsTabVals(sc, g, c) {
         return { key: t.id, name: t.name, free: t.free, tag, hasTag: !!tag, ...((ic) => ({ icon: ic, hasIcon: !!ic }))(techIconOf(t.id)),
           text: t.text, lines: (t.lines || []).map(lineView), hasLines: (t.lines || []).length > 0, help: t.name + ': ' + t.text, ap: t.ap.base === 'flat' ? (t.ap.value || 0) + ' AP' : t.ap.base === 'reaction' ? 'reaction' : 'weapon AP' + (t.ap.add ? ' +' + t.ap.add : '') };
       }) })).filter((gr) => gr.items.length);
-    return { key: sys, title, ink: INK[sys], titleStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + INK[sys], groups, has: groups.length > 0 };
+    return { key: sys, title, ink: INK[sys], titleStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.16em; color: ' + INK[sys], groups, has: groups.length > 0 };
   });
   // ---------- ready lists ----------
   const ready = SYS.map(([sys, title]) => {
@@ -54,7 +54,7 @@ export function armsTabVals(sc, g, c) {
       return { key: id, label: TECHNIQUE[id].name + (on ? ' ✓' : ''), pressed: on ? 'true' : 'false', off, title: fight ? lockText : full ? cap + ' ready: take one out first.' : (on ? 'Take it out of your ready list.' : 'Ready it.'),
         style: chip(on, off && !on, INK[sys]), toggle: () => { if (off) return toast(fight ? lockText : cap + ' ready: take one out first.'); run({ type: 'phys/ready', charId: c.id, system: sys, ids: on ? now.filter((x) => x !== id) : [...now, id] }); } };
     });
-    return { key: sys, title: title + ' · READY ' + now.length + ' / ' + cap, titleStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; color: ' + INK[sys], items, has: items.length > 0, none: !items.length,
+    return { key: sys, title: title + ' · READY ' + now.length + ' / ' + cap, titleStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.16em; color: ' + INK[sys], items, has: items.length > 0, none: !items.length,
       empty: 'You know no ' + sys + ' techniques beyond the ones everyone knows. Drill a weapon to learn more.', why: sys === 'melee' ? 'Cap: 3 + half the better of Raw Power and Athletics.' : 'Cap: 3 + half your Dexterity.' };
   });
   // ---------- drill: every weapon drilled or held ----------
@@ -65,7 +65,7 @@ export function armsTabVals(sc, g, c) {
     const w = WEAPON[wid], d = drillOf(c, wid), M = drillMarks(c, wid), next = M.find((m) => !m.reached), owed = picksOwed(c, wid), open = S.arPick === wid && owed > 0;
     const top = marksAt[marksAt.length - 1], fill = Math.min(100, Math.round((d / top) * 100));
     const marks = M.map((m, i) => ({ key: 'm' + i, label: 'MARK ' + ['I', 'II', 'III'][i] + ' · ' + m.at, gives: m.gives === 'signature' ? (TECHNIQUE[m.id]?.name || m.id) + ' (its signature)' : 'a pick of any ' + weaponSystem(wid) + ' technique', reached: m.reached,
-      style: 'display: flex; justify-content: space-between; gap: 8px; font-size: 13px; ' + (m.reached ? 'color: #E7EBF3' : 'color: #7F8BA1'), mark: m.reached ? '✓' : '○' }));
+      style: 'display: flex; justify-content: space-between; gap: 8px; font-size: var(--fs-sub); ' + (m.reached ? 'color: #E7EBF3' : 'color: #7F8BA1'), mark: m.reached ? '✓' : '○' }));
     const picks = open ? pickable(c, wid).map((id) => ({ key: id, label: TECHNIQUE[id].name, title: TECHNIQUE[id].text, style: chip(false, false, INK[weaponSystem(wid)]), pick: () => { run({ type: 'phys/pick', charId: c.id, weaponId: wid, id }); sc.setState({ arPick: null }); } })) : [];
     return { key: wid, name: w.name, icon: gearIconUri(wid), hasIcon: !!gearIconUri(wid), total: d + ' drill', next: next ? (next.at - d) + ' drill to mark ' + ['I', 'II', 'III'][M.indexOf(next)] : 'All three marks reached',
       props: weaponProps(wid).map((p) => p.toUpperCase()).join(' · '), held: held.includes(wid) ? 'IN HAND' : '', hasHeld: held.includes(wid),
@@ -83,7 +83,7 @@ export function armsTabVals(sc, g, c) {
     const total = types.reduce((n, t) => n + (draft[t] || 0), 0);
     const set = (t, n) => sc.setState({ arQuiver: { ...(sc.state.arQuiver || {}), [q.i]: { ...draft, [t]: Math.max(0, n) } } });
     const mark = enchantMark(q.ench);
-    return { key: 'q' + q.i, name: q.name + ' · ' + q.rarity.toUpperCase() + (q.worn ? ' · WORN' : ' · READY'), icon: gearIconUri(bow), hasIcon: !!gearIconUri(bow), cap: 'Holds ' + cap, total: total + ' / ' + cap + ' loaded', over: total > cap, totalStyle: 'font-size: 13px; font-weight: 700; color: ' + (total > cap ? '#F65157' : '#E7EBF3'),
+    return { key: 'q' + q.i, name: q.name + ' · ' + q.rarity.toUpperCase() + (q.worn ? ' · WORN' : ' · READY'), icon: gearIconUri(bow), hasIcon: !!gearIconUri(bow), cap: 'Holds ' + cap, total: total + ' / ' + cap + ' loaded', over: total > cap, totalStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + (total > cap ? '#F65157' : '#E7EBF3'),
       hasEnch: !!mark, enchText: mark ? mark.text : '', enchStyle: mark ? mark.style : '',
       rows: types.map((t) => { const n = draft[t] || 0, have = (arrows[t] || 0) + (saved[t] || 0);
         return { key: t, label: (t === 'standard' ? 'Standard' : t.replace(/_/g, ' ')) + ' arrows', have: have + ' to hand', n: String(n), dec: () => set(t, n - 1), inc: () => set(t, n + 1), decOff: fight || n <= 0, incOff: fight || n >= have || total >= cap }; }),

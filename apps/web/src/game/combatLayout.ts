@@ -91,7 +91,7 @@ export function startPanelDrag(e: PointerEvent, panel: PanelId, layout: CombatLa
   const ghost = document.createElement('div');
   ghost.textContent = '⠿ ' + PANEL_NAME[panel];
   ghost.setAttribute('aria-hidden', 'true');
-  Object.assign(ghost.style, { position: 'fixed', zIndex: '90', pointerEvents: 'none', padding: '6px 12px', borderRadius: '8px', background: '#1C2536', border: '1px solid #FFFFFF', color: '#FFFFFF', font: "700 12px 'Chakra Petch', sans-serif", letterSpacing: '0.12em', boxShadow: '0 8px 24px rgba(0,0,0,.5)' });
+  Object.assign(ghost.style, { position: 'fixed', zIndex: '90', pointerEvents: 'none', padding: '6px 12px', borderRadius: '8px', background: '#1C2536', border: '1px solid #FFFFFF', color: '#FFFFFF', font: "700 var(--fs-sub) 'Chakra Petch', sans-serif", letterSpacing: '0.12em', boxShadow: '0 8px 24px rgba(0,0,0,.5)' });
   const line = document.createElement('div');
   line.setAttribute('aria-hidden', 'true');
   Object.assign(line.style, { position: 'fixed', zIndex: '89', pointerEvents: 'none', height: '3px', borderRadius: '2px', background: '#FFFFFF', display: 'none', boxShadow: '0 0 12px rgba(255,255,255,.6)' });
@@ -185,7 +185,7 @@ export function splitKey(e: KeyboardEvent, current: number, rowW: number, swap: 
 
 /** The layout's own CSS: grips, drop highlights, the splitter. Narrow windows (the stacked layout) hide the controls. */
 export const LAYOUT_CSS = [
-  '.phc-grip{position:absolute;top:6px;right:6px;z-index:6;width:26px;height:22px;display:grid;place-items:center;padding:0;border-radius:6px;border:1px solid #2E3A50;background:#10151F;color:#A3AEC2;font:700 13px/1 \'Chakra Petch\',sans-serif;cursor:grab;touch-action:none;opacity:.55;transition:opacity .15s}',
+  '.phc-grip{position:absolute;top:6px;right:6px;z-index:6;width:26px;height:22px;display:grid;place-items:center;padding:0;border-radius:6px;border:1px solid #2E3A50;background:#10151F;color:#A3AEC2;font:700 var(--fs-sub)/1 \'Chakra Petch\',sans-serif;cursor:grab;touch-action:none;opacity:.55;transition:opacity .15s}',
   '.phc-grip:hover,.phc-grip:focus-visible,[data-phc-panel]:hover>.phc-grip{opacity:1;color:#FFFFFF;border-color:#A3AEC2}.phc-grip:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
   '.phc-dragging,.phc-dragging *{cursor:grabbing!important;user-select:none!important}.phc-splitting,.phc-splitting *{cursor:col-resize!important;user-select:none!important}',
   '.phc-drag-src{opacity:.4;outline:2px dashed #A3AEC2;outline-offset:2px;border-radius:12px}',

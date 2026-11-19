@@ -11,9 +11,9 @@ import { tipProps } from './actionTip';
 type Tab = 'story' | 'people' | 'threads' | 'facts' | 'more';
 const ATT = ['−3 hostile', '−2 hostile', '−1 unfriendly', '0 neutral', '+1 friendly', '+2 warm', '+3 devoted'];
 const ink = { text: '#E7EBF3', muted: '#A3AEC2', line: '#232D3F', panel: '#10151F', raised: '#1C2536', red: '#F65157', green: '#6FEA77' };
-const btn: React.CSSProperties = { minHeight: 32, padding: '0 10px', borderRadius: 8, border: '1px solid #2E3A50', background: 'transparent', color: ink.text, fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer' };
-const field: React.CSSProperties = { width: '100%', boxSizing: 'border-box', padding: '6px 8px', borderRadius: 6, border: '1px solid #2E3A50', background: '#0D1119', color: ink.text, fontFamily: 'inherit', fontSize: 13 };
-const label: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.14em', color: ink.muted };
+const btn: React.CSSProperties = { minHeight: 32, padding: '0 10px', borderRadius: 8, border: '1px solid #2E3A50', background: 'transparent', color: ink.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 600, cursor: 'pointer' };
+const field: React.CSSProperties = { width: '100%', boxSizing: 'border-box', padding: '6px 8px', borderRadius: 6, border: '1px solid #2E3A50', background: '#0D1119', color: ink.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)' };
+const label: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: ink.muted };
 const edit = (e: MemEdit) => act({ type: 'memory/edit', edit: e });
 
 function Record({ head, sub, body, fields, values, onSave, onRemove }: {
@@ -26,14 +26,14 @@ function Record({ head, sub, body, fields, values, onSave, onRemove }: {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 10, borderRadius: 10, background: '#0D1119', border: '1px solid ' + ink.line }}>
       <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 14, fontWeight: 700, color: ink.text }}>{head}</span>
-        {sub && <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.08em', color: ink.muted }}>{sub}</span>}
+        <span style={{ fontSize: 'var(--fs-body)', fontWeight: 700, color: ink.text }}>{head}</span>
+        {sub && <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.08em', color: ink.muted }}>{sub}</span>}
         <span style={{ marginLeft: 'auto', display: 'flex', gap: 6 }}>
           <button type="button" style={btn} onClick={() => setOpen(!open)}>{open ? 'Cancel' : 'Edit'}</button>
           {onRemove && <button type="button" style={{ ...btn, color: ink.red, borderColor: '#5A2A30' }} onClick={() => { askConfirm({ title: 'Delete "' + head + '"?', body: 'The Narrator forgets it from its next turn.', confirm: 'Delete', danger: true }).then((ok) => { if (ok) onRemove(); }); }}>Delete</button>}
         </span>
       </div>
-      {!open && body && <span style={{ fontSize: 13, lineHeight: 1.5, color: '#C9D3E3', whiteSpace: 'pre-wrap' }}>{body}</span>}
+      {!open && body && <span style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.5, color: '#C9D3E3', whiteSpace: 'pre-wrap' }}>{body}</span>}
       {open && (
         <div className="phc-drop-in" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 8 }}>
           {fields.map((f) => (
@@ -77,7 +77,7 @@ export function MemoryPanel({ game, isHost, side, compact = false }: { game: Gam
     <>
       <button ref={btnRef} type="button" data-phc-float="memory" data-phc-float-place={place} onClick={() => setOpen(true)} aria-label="The Narrator's memory (host)" {...tipProps(compact && !hover ? 'The Narrator\'s memory' : undefined)}
         onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}
-        style={{ position: 'fixed', [side]: compact ? 64 : 16, bottom: compact ? 16 : 64, zIndex: 9, minHeight: 40, minWidth: 40, padding: compact && !hover ? 0 : '0 14px', borderRadius: 999, border: '1px solid #3B475D', background: ink.panel, color: ink.text, fontFamily: 'inherit', fontSize: 12, fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
+        style={{ position: 'fixed', [side]: compact ? 64 : 16, bottom: compact ? 16 : 64, zIndex: 9, minHeight: 40, minWidth: 40, padding: compact && !hover ? 0 : '0 14px', borderRadius: 999, border: '1px solid #3B475D', background: ink.panel, color: ink.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 600, cursor: 'pointer', boxShadow: '0 4px 14px rgba(0,0,0,0.5)', ...floatStyle }}>
         {compact && !hover ? '◈' : '◈ Memory'}
       </button>
       {pres.shown && (
@@ -86,7 +86,7 @@ export function MemoryPanel({ game, isHost, side, compact = false }: { game: Gam
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                 <span style={label}>THE NARRATOR'S MEMORY · HOST ONLY</span>
-                <span style={{ fontSize: 12, color: ink.muted }}>Everything the Narrator remembers, secrets and spoilers included. Fix what it got wrong; it reads this every turn.</span>
+                <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Everything the Narrator remembers, secrets and spoilers included. Fix what it got wrong; it reads this every turn.</span>
               </div>
               <button type="button" style={{ ...btn, marginLeft: 'auto', minHeight: 38 }} onClick={() => setOpen(false)}>Close</button>
             </div>
@@ -100,7 +100,7 @@ export function MemoryPanel({ game, isHost, side, compact = false }: { game: Gam
               {[...m.chapters].reverse().filter((c: any) => match(c.title + c.summary)).map((c: any) => <Record key={'c' + c.n} head={'Chapter ' + c.n + ': ' + c.title} sub={'SCENES ' + c.scenes[0] + '–' + c.scenes[1]} body={c.summary} values={{ title: c.title, summary: c.summary }} fields={[{ key: 'title', name: 'Title', type: 'text' }, { key: 'summary', name: 'Summary', type: 'area' }]} onSave={(p) => edit({ kind: 'chapter', n: c.n, ...p })} onRemove={() => edit({ kind: 'chapter', n: c.n, remove: true })} />)}
               <span style={label}>SCENES NOT YET IN A CHAPTER</span>
               {[...m.scenes].reverse().filter((x: any) => match(x.title + x.summary)).map((x: any) => <Record key={'s' + x.n} head={'Scene ' + x.n + ': ' + x.title} sub={x.zone} body={x.summary} values={{ title: x.title, summary: x.summary }} fields={[{ key: 'title', name: 'Title', type: 'text' }, { key: 'summary', name: 'Summary', type: 'area' }]} onSave={(p) => edit({ kind: 'scene', n: x.n, ...p })} onRemove={() => edit({ kind: 'scene', n: x.n, remove: true })} />)}
-              {!m.scenes.length && <span style={{ fontSize: 13, color: ink.muted }}>None: scene summaries appear when the Narrator closes a scene.</span>}
+              {!m.scenes.length && <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>None: scene summaries appear when the Narrator closes a scene.</span>}
             </>}
 
             {tab === 'people' && <>
@@ -128,7 +128,7 @@ export function MemoryPanel({ game, isHost, side, compact = false }: { game: Gam
                 <Record key={f.id} head={f.text} sub={['SCENE ' + f.scene, 'IMPORTANCE ' + f.importance, f.canon ? 'CANON (ENGINE)' : '', f.secret ? 'SECRET' : '', f.about.join(', ')].filter(Boolean).join(' · ')}
                   values={{ text: f.text, importance: f.importance, secret: f.secret, canon: f.canon }} fields={[...FACT, { key: 'canon', name: 'Canon (the Narrator may not contradict it)', type: 'check' }]}
                   onSave={(x) => edit({ kind: 'fact', id: f.id, patch: x })} onRemove={() => edit({ kind: 'fact', id: f.id, remove: true })} />))}
-              {m.facts.length > 300 && <span style={{ fontSize: 12, color: ink.muted }}>Showing the 300 latest of {m.facts.length}; search to find older ones.</span>}
+              {m.facts.length > 300 && <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Showing the 300 latest of {m.facts.length}; search to find older ones.</span>}
             </>}
 
             {tab === 'more' && <>

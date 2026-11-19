@@ -464,7 +464,7 @@ async function fogPart() {
     const marks = [...document.querySelectorAll('button.phc-tok .phc-plan[data-tip-text]')].filter((m) => (m.textContent || '').trim() && (m.getAttribute('data-tip-text') || '').endsWith(': ' + (m.textContent || '').trim())).map((m) => m.closest('button.phc-tok').getAttribute('aria-label').split(' ')[0] + ' ' + m.getAttribute('data-tip-text'));
     const dock = (document.querySelector('.phc-cb-dock') || document.body).innerText || '';
     const attrs = [...document.querySelectorAll('button.phc-tok, button.phc-tok *')].map((e) => (e.getAttribute('data-tip-text') || '') + ' ' + (e.getAttribute('aria-label') || '')).join(' ');
-    return { marks, card: (dock.match(/Fog lurker/g) || []).length, plain: (dock.match(/Plain sight/g) || []).length, onTiles: /Fog lurker/.test(attrs), covered: document.querySelectorAll('button.phc-tok[aria-label*="it covers this tile"]').length };
+    return { marks, card: (dock.match(/Fog lurker/g) || []).length, plain: (dock.match(/Plain sight/g) || []).length, onTiles: /Fog lurker/.test(attrs), covered: [...document.querySelectorAll('button.phc-tok')].filter((b) => [...b.querySelectorAll('span[aria-hidden="true"]')].some((x) => /background: rgba\([^)]*, 0\.3\)/.test(x.getAttribute('style') || ''))).length /* the area's layer (pickOverlay.ts); the tiles' names no longer say it */ };
   });
   const base = await shown();
   const clickTile = async (r) => { await p.locator('button.phc-tok[aria-label^="' + r + ' "]').first().click({ force: true }); await pause(p, 350); };

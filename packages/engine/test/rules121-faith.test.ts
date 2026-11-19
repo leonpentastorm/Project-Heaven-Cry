@@ -66,7 +66,7 @@ describe('the data (rules 1.21): the numbers the spec gives', () => {
     expect(WHISPER.rebuke.text).toMatch(/20 Soul damage/);
     expect(hymn('nerukhan', 'judgement').text).toMatch(/56 Soul damage.*30% more/);
     expect(hymn('old_overcast', 'lightning_rod').text).toMatch(/56 lightning damage.*for 23 ×/);
-    expect(hymn('old_overcast', 'thunderclap').text).toMatch(/takes 20 lightning damage/);
+    expect(hymn('old_overcast', 'thunderclap').text).toMatch(/20 lightning damage/);
     expect(FAITH_PATRON.nerukhan.miracle.text).toMatch(/130 Soul damage/);
     expect(hymn('the_laughing_mask', 'lucky_break').text).toMatch(/next 2 failed attack rolls/);
     expect(hymn('counting_weaver', 'foreknowing').text).toMatch(/next 2 attacks/);

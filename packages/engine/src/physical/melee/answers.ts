@@ -4,8 +4,11 @@
 import { technique, strike, canStrike, answer, canAnswer, landed, stop, onHook, meleeFx, fallFx } from './shared';
 import type { Tech } from './shared';
 import type { StrikeOpts } from '../types';
-import { say, alive, active, dist, type Unit } from '../../combat';
+import { say, alive, active, dist, rollWithPick, weaponVia, type Unit } from '../../combat';
+import { emit, boundGame } from '../../effects/hooks';
+import { uses } from '../../effects/uses';
 import { canReact } from '../../tactics';
+import { answerKind } from '../core';
 import { mod, holdsShield } from '../../character';
 import { rollVs } from '../../rolls';
 import { weaponPhys } from '../data';
@@ -34,10 +37,16 @@ function attackTotal(att: Unit, tgt: Unit): number | null {
 }
 /** Could this strike be made now (reach, sight)? The strike's own preview on a copy of the Tech: nothing is rolled or kept. */
 const couldStrike = (t: Tech, o: StrikeOpts) => strike({ ...t, preview: true, pv: { ...t.pv, attacks: [], notes: [] } } as Tech, o).ok;
-/** The user's attack skill with the hand that parries: the unit's attack with the main hand; the off hand's hits_with skill. */
-function attackSkill(t: Tech): number {
-  if (t.hand === 'off' && t.c) return mod((t.c.skills as any)[weaponPhys(t.weaponId).hits_with] || 0);
-  return t.u.attack ?? 0;
+/** The user's attack skill with the hand that parries: the unit's attack with the main hand; the off hand's hits_with
+ * skill. A parry is a melee roll, so an item's roll_with (the Guard door: Durability while holding Guard) puts its
+ * skill in place of the weapon's when it would, through THE choice (combat.ts rollWithPick), asked the way the engine's
+ * other previews ask ('attack_preview' with a melee preview: physical/core.ts apFor; outside playtest 0.31.10 row 5). */
+function attackSkill(t: Tech, att: Unit): number {
+  const off = t.hand === 'off' && !!t.c, sk = off ? weaponPhys(t.weaponId).hits_with : weaponVia(t.u, 'melee');
+  const base = off ? mod((t.c!.skills as any)[sk] || 0) : t.u.attack ?? 0;
+  const hk: any = emit(t.cb, 'attack_preview', { att: t.u, tgt: att, mode: 'melee', melee: true, ap: 0, techAp: 0, reach: 1, ignoreCover: false, terms: [], fail: null, free: true, preview: true, cb: t.cb, mods: t.cb.mods || [] });
+  const rw = rollWithPick(t.c, sk, hk?.rollWith);
+  return base + (rw ? rw.delta : 0);
 }
 /** A shield in the user's off hand (a character's off-hand item of the shield category). */
 /** A shield in a hand, either hand (rules 1.56; the one prop test, rules 1.57 A1): the Parry bonus comes once, however many. */
@@ -66,14 +75,23 @@ technique({
         if (canAnswer(t.cb, v, 'parry', att) && canReact(t.cb, v, 'protect')) return;
       }
       const vs = attackTotal(att, v); if (vs == null) return;
+      // Item 5530 (the lead's ruling on row 5): the reaction is spent only when the Parry stops the blow. The roll comes
+      // first, under the same gate an Answer has (answer(): canAnswer, canReact); a failed Parry is said and spends
+      // nothing, so the blow stays unanswered and Retort may still answer it.
+      if (t.preview || !canAnswer(t.cb, t.u, 'parry', att) || !canReact(t.cb, t.u, answerKind('parry'))) return;
+      // The lead's ruling of 19 Nov 2026 (amends item 5530): one Parry try a round per unit (techniques.json parry
+      // numbers.tries_a_round), won or lost: a lost Parry still spends no reaction, but the unit does not roll another
+      // Parry that round. One cell of the counters primitive (effects/uses.ts, scope per_round), taken before the roll.
+      if (!uses({ key: 'technique:parry', u: t.u, c: null, cb: t.cb, g: boundGame() }).take('per_round', t.num('tries_a_round', 1))) return;
+      ctx.parried = true;
+      const shield = shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, // with any weapon (Leon's ruling, 10 Nov 2026)
+         bonus = attackSkill(t, att) + shield;
+      const rv = rollVs(t.cb, t.rng, { by: t.u, mod: bonus, tn: vs, nat: false, over: true, why: 'parry' }), won = rv.ok; // it must BEAT the attack's total
+      const tell = () => { say(t.cb, t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': ' + rv.text + (shield ? ' (incl. +' + shield + ' shield)' : '') + (won ? ' · the hit is halved' : ' · it gets through') + '.');
+        meleeFx(t, 'parry', { from: att.pos, to: v.pos, attacker: att.id, ally: forAlly ? v.id : null, won }); };
+      if (!won) { ROLLS.delete(att); tell(); return; }
       answer(t, att, () => {
-        ROLLS.delete(att); ctx.parried = true;
-        const shield = shieldInOffHand(t) ? t.num('shield_bonus', 2) : 0, // with any weapon (Leon's ruling, 10 Nov 2026)
-           bonus = attackSkill(t) + shield;
-        const rv = rollVs(t.cb, t.rng, { by: t.u, mod: bonus, tn: vs, nat: false, over: true, why: 'parry' }), won = rv.ok; // it must BEAT the attack's total
-        say(t.cb, t.u.name + ' parries' + (forAlly ? ' for ' + v.name : '') + ': ' + rv.text + (shield ? ' (incl. +' + shield + ' shield)' : '') + (won ? ' · the hit is halved' : ' · it gets through') + '.');
-        meleeFx(t, 'parry', { from: att.pos, to: v.pos, attacker: att.id, ally: forAlly ? v.id : null, won });
-        if (!won) return;
+        ROLLS.delete(att); tell();
         ctx.parryWon = true; // a Parried hit costs the one it lands on no Momentum (physical/rules.ts)
         ctx.dmg = ctx.dmg * t.num('halve', 0.5);
         if (t.line('light')) landed(t, t.num('light_momentum', 1));

@@ -2,6 +2,7 @@
 // The amount control (rules 1.55 item 54; Leon: "Give menu need +10, +100, max and editable number"): its arithmetic
 // (amount.ts) and the one control (AmountField.tsx): a typed number kept inside what is held, non-numbers ignored, the
 // steps −100 to +100 and MAX greyed when they can't apply, the total held, Enter confirms, the keys, the engine's words.
+import { fontPx } from './typeScale';
 import { describe, expect, it } from 'vitest';
 import { createElement, act } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -58,6 +59,6 @@ describe('AmountField', () => {
     act(() => { input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true })); }); expect(entered.length).toBe(1);
     act(() => { input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', shiftKey: true, bubbles: true })); }); expect(seen.at(-1)).toBe(1230);
     expect(el.querySelector('[data-phc-amount-why]')!.textContent).toBe('Give 1 credit or more.');
-    for (const b of el.querySelectorAll('button, input, span')) { const fs = parseFloat((b as HTMLElement).style.fontSize || '13'); expect(fs).toBeGreaterThanOrEqual(13); }
+    for (const b of el.querySelectorAll('button, input, span')) { const fs = fontPx((b as HTMLElement).style.fontSize || '13px'); expect(fs).toBeGreaterThanOrEqual(13); }
   });
 });

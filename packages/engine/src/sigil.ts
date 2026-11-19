@@ -31,7 +31,7 @@ import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE, maxSigilWords, att
 import { ENEMY_LEVELS } from './data';
 import {
   type Glyph, type Zone, type SpellAmount, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, saveAgainst, strengthFor, withVia,
-  SPELL_AP, FLUX_MAX, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
+  SPELL_AP, fluxMaxOf, CORE_CHARGE, swapCore, vent, ventAp, coreAp, withElement, withSpellFrom, magicSpellWords, condName, condRoundsOf, type Trace,
   saveTn, withDoor,
 } from './magic';
 import { makeObject, OBJ } from './objects';
@@ -635,7 +635,11 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   const emptyOk = !!(sp.spread || sp.push || sp.workings.length || sp.stay || sp.wait || sp.watch);
   // KIN (spec: Filter): you and your allies can't be picked; your own tile is the one exception (the self-target rule).
   const kinBars = (k: string) => sp.kin && k !== u.pos && cb.units.some((x) => x.pos === k && !x.dead && x.side === u.side);
-  const pickable = [u.pos, ...area.filter((k) => emptyOk || cb.units.some((x) => x.pos === k && !x.dead))].filter((k, i, s) => s.indexOf(k) === i && !(sp.push && k === u.pos) && !kinBars(k));
+  // item 5501 (0.31.12): the self-target rule heals, shields, blinks, hides or centres a Burst; a Line that would only
+  // harm you (a harmful Subject, no Boon, Working, Burst, CHAIN, KIN or placement) is no aim on your own tile (a CHAIN
+  // from your tile jumps on to the creatures round you)
+  const harmsOnlyYou = sp.harmful && !sp.subjects.some(isBoonWord) && !sp.workings.length && !sp.spread && !sp.chain && !sp.kin && !sp.stay && !sp.wait && !sp.watch;
+  const pickable = [u.pos, ...area.filter((k) => emptyOk || cb.units.some((x) => x.pos === k && !x.dead))].filter((k, i, s) => s.indexOf(k) === i && !((sp.push || harmsOnlyYou) && k === u.pos) && !kinBars(k));
   const aims = [aim, ...(opts.aims || []).slice(aim && opts.aims?.[0] === aim ? 1 : 0)].filter(Boolean) as string[];
   const needsAim = true;
   if (!aims.length) return { ...base, ok: false, why: 'Pick a target in the area (or yourself).', targets: [], needsAim, area, pickable, missiles: [], affected: [], fizzle: false };
@@ -646,6 +650,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
   for (let i = 0; i < Math.min(nMiss, aims.length); i++) {
     const a = aims[i], self = a === u.pos;
     if (self && sp.push) return { ...base, ok: false, why: 'PUSH is refused on your own tile: a cone needs a way to face.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
+    if (self && harmsOnlyYou) return { ...base, ok: false, why: 'Not on yourself: it would only hit you.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
     if (!self && kinBars(a)) return { ...base, ok: false, why: 'KIN: you and your allies can\'t be picked (only your own tile).', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
     if (!self && !laneOf[a]) return { ...base, ok: false, why: 'Out of the area: pick a tinted tile' + (sp.reach ? '' : ' (Touch reaches 1 tile)') + ', or yourself.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
     if (!self && !emptyOk && !cb.units.some((x) => x.pos === a && !x.dead)) return { ...base, ok: false, why: 'Pick a creature: only a Working, SPREAD or PUSH may land on empty ground.', needsAim, area, pickable, missiles, affected, fizzle: false, refusedAim: a };
@@ -905,7 +910,7 @@ export function previewDraw(cb: Combat, u: Unit, word: string, tile?: string, st
   }
   { const n0 = whyNot(cb, u, gc.ap); if (n0) return no(n0, base); }
   if (m!.charge < gc.charge) return no('Not enough charge in the core (' + m!.charge + ' left, ' + w.word + ' needs ' + gc.charge + '): swap a core (2 AP).', base);
-  return { ok: true, tile: at, ...base, fades, overload: m!.flux + gc.flux > FLUX_MAX, capLeft: Math.max(0, capG - mine.length - 1) };
+  return { ok: true, tile: at, ...base, fades, overload: m!.flux + gc.flux > fluxMaxOf(u, cb), capLeft: Math.max(0, capG - mine.length - 1) };
 }
 /** Draw one glyph on your own tile (spec: Drawing): Glyph AP, the word's charge, its Flux. The oldest of yours fades past
  * your cap of glyphs on the ground. tile defaults to (and must be) your own. stroke (rules 1.10): the stroke it extends
@@ -1391,7 +1396,7 @@ export function patternAt(cb: Combat, tile: string, u?: Unit | null, stroke?: st
     side: start?.side || null, readable: !!u && words.every((w) => u.mg?.words.includes(w)),
     capLeft: u ? Math.max(0, groundCap(u, cb) - mine) : 0, lineLeft: Math.max(0, Math.min(MAX_GLYPHS, m?.maxWords ?? MAX_GLYPHS) - words.length),
     costNow: { charge: m?.charge ?? 0, ap: u?.ap ?? 0, flux: m?.flux ?? 0 }, costAfter: { charge: (m?.charge ?? 0) - charge, ap: (u?.ap ?? 0) - SPELL_AP.evoke, flux: m?.flux ?? 0, evokeCharge: charge },
-    overloadWarning: !!m && m.flux >= FLUX_MAX ? 'Your Evoker is at ' + m.flux + ' Flux: the next glyph overloads it. Vent first (1 AP).' : null,
+    overloadWarning: !!m && !!u && m.flux >= fluxMaxOf(u, cb) ? 'Your Evoker is at ' + m.flux + ' Flux: the next glyph overloads it. Vent first (1 AP).' : null,
     spell: typeof p === 'string' || why ? null : compileSpell(p.words),
     /** Rules 1.10: the stroke under the tile (its id, tiles in the order drawn, who started it); null for an old 1.4 glyph. */
     strokeId: mm?.stroke?.id ?? null,
@@ -1489,7 +1494,7 @@ export function enemyCast(cb: Combat, rng: Rng, u: Unit): boolean {
   const P = paths(cb, u.pos, u.id), maxW = Math.min(MAX_GLYPHS, m.maxWords);
   for (const words of combos(m.words, maxW)) {
     const sp = compileSpell(words), L = words.length, charge = words.reduce((t, x) => t + glyphCost(cb, u, x, true, u.pos).charge, 0) + Math.max(1, L - (m.coreSave || 0));
-    const fluxIn = words.reduce((t, x) => t + ((W(x) as any)?.flux ?? 1), 0), needVent = m.flux + fluxIn > FLUX_MAX, needCore = charge > m.charge;
+    const fluxIn = words.reduce((t, x) => t + ((W(x) as any)?.flux ?? 1), 0), needVent = m.flux + fluxIn > fluxMaxOf(u, cb), needCore = charge > m.charge;
     if (needCore && m.cores < 1) continue;
     const cost = L * glyphApOf(u) + apForTiles(L - 1, u.bank, u.movement) + SPELL_AP.evoke + (needVent ? ventAp(u, cb) : 0) + (needCore ? coreAp(u, cb) : 0);
     if (!canPay(cb, u, cost)) continue;

@@ -110,7 +110,7 @@ describe('junctions on screen (rules 1.10, items 917-920)', () => {
     expect(v0.pattern!.words.map((w) => w.word)).toEqual(['FIRE', 'SEEK']);
     const B = v0.junction[1].key, v1 = evokeView(cb, u, '3,5', { stroke: B }, null, () => true);
     expect(v1.junction[1].on).toBe(true); expect(v1.pattern!.words.map((w) => w.word)).toEqual(['SEEK', 'SPARK']);
-    u.pos = '3,6'; const v2 = evokeView(cb, u, '3,5', { stroke: B, aims: ['3,6'] }, null, () => true);
+    u.pos = '3,6'; cb.units.find((x) => x.side === 'foe')!.pos = '3,1'; const v2 = evokeView(cb, u, '3,5', { stroke: B, aims: ['3,1'] }, null, () => true); // item 5501: a foe up the Line (a harm-only Line is no aim on your own tile)
     expect(v2.payload && v2.payload.stroke).toBe(B);
   });
 });

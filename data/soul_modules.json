@@ -116,21 +116,7 @@
     },
     "provisional": true,
     "text": "A character's Damage school starts from 37 (rules 1.56, fitted with no perk steps; 31 in rules 1.26, 40 on 12 Nov, 28 in rules 1.17, 20 before). An enemy caster's starts from 24, so that with the flatter stage table its Outbursts deal about what the enemy table was fitted with. A natural 20 on a Bolt's or Lance's roll is a critical: ×1.5 damage, up to ×2.0 with everything on your sheet and gear.",
-    "modes": {
-      "finish": {
-        "mult": 0.8,
-        "mult_low": 1.4,
-        "low_hp": 0.5
-      },
-      "brand": {
-        "mult": 0.8,
-        "condition": "marked"
-      },
-      "drain": {
-        "mult": 0.8,
-        "heal_of_damage": 0.25
-      }
-    }
+    "modes_note": "The Damage school's ways (finish, brand, drain) are the school's own `modes` (schools[damage].modes, 0.31.11), read by the engine and by the ways' lines."
   },
   "aura": {
     "tick_damage": 5,
@@ -195,7 +181,7 @@
       "id": "damage",
       "name": "Damage",
       "base_cost": 20,
-      "text": "Deals {=damage} damage × your Soul multiplier × the stage multiplier. Pick how it strikes: Strike (the full damage), Finish (×0.8, or ×1.4 against a target at half its HP or less), Brand (×0.8, and the target is Marked for your side) or Drain (×0.8, and you heal for a quarter of the HP it takes). A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
+      "text": "Deals {=damage} damage × your Soul multiplier × the stage multiplier, in the way you pick. A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
       "damage": 40,
       "hit": "will_power_vs_defense",
       "options": [
@@ -213,10 +199,25 @@
       "provisional": true,
       "identity": "The school that ends a fight.",
       "option_text": {
-        "strike": "Strike: the full damage.",
-        "finish": "Finish: ×0.8 damage, or ×1.4 against a target at half its HP or less.",
-        "brand": "Brand: ×0.8 damage, and a target it hits is Marked: your side gets +1 to hit it and it can't hide.",
-        "drain": "Drain: ×0.8 damage, and you heal for a quarter of the HP it takes."
+        "strike": "Strike: full damage.",
+        "finish": "Finish: {=modes.finish.mult|pct}% damage; {=modes.finish.mult_low|pct}% against a foe at {=modes.finish.low_hp|pct}% HP or less.",
+        "brand": "Brand: {=modes.brand.mult|pct}% damage; a foe it hits is Marked (easier to hit, can't hide).",
+        "drain": "Drain: {=modes.drain.mult|pct}% damage; you heal {=modes.drain.heal_of_damage|pct}% of the HP it takes."
+      },
+      "modes": {
+        "finish": {
+          "mult": 0.8,
+          "mult_low": 1.4,
+          "low_hp": 0.5
+        },
+        "brand": {
+          "mult": 0.8,
+          "condition": "marked"
+        },
+        "drain": {
+          "mult": 0.8,
+          "heal_of_damage": 0.25
+        }
       },
       "stack": "Shelved. Twice in one design: the same way deals half again its damage; a second way rides at half strength."
     },

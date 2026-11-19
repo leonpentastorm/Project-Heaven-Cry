@@ -27,7 +27,7 @@ export const CAMERA_CSS = [
   '.phc-cam-mini-map{display:block;padding:0;border:1px solid #3B475D;border-radius:6px;background:rgba(5,7,11,.9);box-shadow:0 2px 10px rgba(0,0,0,.6);cursor:crosshair;touch-action:none;line-height:0}',
   '.phc-cam-mini-map canvas{display:block;border-radius:5px}',
   '.phc-cam-mini-map:focus-visible,.phc-cam-mini-tog:focus-visible,.phc-cam-arrow:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}',
-  '.phc-cam-mini-tog{min-height:22px;padding:0 8px;border-radius:6px;border:1px solid #2E3A50;background:rgba(16,21,31,.92);color:#A3AEC2;font:700 10px/1 \'Chakra Petch\',sans-serif;letter-spacing:.12em;cursor:pointer}',
+  '.phc-cam-mini-tog{min-height:22px;padding:0 8px;border-radius:6px;border:1px solid #2E3A50;background:rgba(16,21,31,.92);color:#A3AEC2;font:700 var(--fs-sub)/1 \'Chakra Petch\',sans-serif;letter-spacing:.12em;cursor:pointer}',
   '.phc-cam-mini-tog:hover{border-color:#A3AEC2;color:#E7EBF3}',
   '.phc-cam-arrow{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;padding:0;border-radius:50%;border:2px solid currentColor;background:rgba(5,7,11,.88);pointer-events:auto;cursor:pointer;display:grid;place-items:center;box-shadow:0 0 10px rgba(0,0,0,.7);animation:phcCamArrow calc(.9s * var(--phc-k, 1)) ease-in-out infinite}',
   '.phc-cam-arrow svg{display:block}',

@@ -30,7 +30,7 @@ export function stageView(g: GameState, me: string): StageViewV | null {
     const c = g.characters[cid];
     return { charId: cid, name: c?.name || cid, mine: c?.owner === me, canPick: c?.owner === me || isHost, worth: (c ? capRoom(c) : 0) + ' left',
       cards: offer.map((id, i) => { const row = relicRow(id)!, w = worthOf(id);
-        return { i, id, name: row?.name || id, text: row?.text || '', worth: w, worthLine: w ? 'Uses ' + w + ' boon room · ' + Math.max(0, (c ? capRoom(c) : 0) - w) + ' left after' : 'Uses no boon room', why: c ? boonProblem(c, offer, id) : null }; }) };
+        return { i, id, name: row?.name || id, text: row?.text || '', worth: w, worthLine: w ? 'Room ' + w : 'No room used', why: c ? boonProblem(c, offer, id) : null }; }) };
   }).sort((a, b) => Number(b.mine) - Number(a.mine));
   const tiles: TileCardV[] = (r.tiles || []).map((t) => {
     const s = settingCard(t.setting)!, art = s?.backdrop && A[s.backdrop] ? A[s.backdrop] : '';

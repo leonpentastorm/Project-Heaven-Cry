@@ -120,6 +120,7 @@ _SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where i
     ("faith", "hymn_floor"): (_hymn_r.get("floor"), "patrons.json prayer.hymn.cooldown_rule.floor"),
     ("will_power", "pumps"): (((_cyc_r.get("free_pumps") or [{}])[0]).get("pumps"), "soul_modules.json cycle.free_pumps.0.pumps"),
 }
+_LADDER_GROWS = {"elemental_taken", "guard_pool", "hymn_wait"}  # packages/engine/src/ladder.ts LADDER_GROWS
 for s in items("skills"):
     if not isinstance(s, dict):
         continue
@@ -132,8 +133,12 @@ for s in items("skills"):
     seen = set()
     for i, r in enumerate(rows):
         w = f"skills:{sid}: per_point.rows.{i}"
-        if not isinstance(r, dict) or set(r) != {"at", "text"} or not isinstance(r.get("text"), str) or not r["text"].strip():
-            errors.append(f"{w}: a row is {{at, text}} with a text"); continue
+        if not isinstance(r, dict) or not {"at", "text"} <= set(r) <= {"at", "text", "grows"} or not isinstance(r.get("text"), str) or not r["text"].strip():
+            errors.append(f"{w}: a row is {{at, text}} with a text (and a capped row's grows)"); continue
+        # 0.31.11: a capped per-point row names the engine value it grows (packages/engine/src/ladder.ts LADDER_GROWS), so
+        # the ladder shows it only on the levels where it still adds
+        if "grows" in r and (r["grows"] not in _LADDER_GROWS or r["at"] != "each"):
+            errors.append(f"{w}: grows {r['grows']!r} is not one of {sorted(_LADDER_GROWS)} on an each row")
         m = _AT.match(str(r["at"]))
         if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10):
             errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n or at n (n 1 to 10)")
@@ -1055,8 +1060,8 @@ if "actions" in data:
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
                 errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
-        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap)
-            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down)
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
@@ -1363,6 +1368,13 @@ if isinstance(pat, dict) and pat.get("tags"):
         for f in ("id", "name", "words", "broken_when"):
             if f not in v:
                 errors.append(f"patrons: vow {v.get('id')} has no {f}")
+        # what a vow needs before it can be sworn (faith.ts swearVow and faithView read them): a flag, true or absent
+        for f in ("needs_ally", "needs_yielding_foe"):
+            if f in v and v[f] is not True:
+                errors.append(f"patrons: vow {v.get('id')}: {f} is true or absent")
+        for f in v:
+            if f.startswith("needs_") and f not in ("needs_ally", "needs_yielding_foe"):
+                errors.append(f"patrons: vow {v.get('id')}: '{f}' is not a need the engine reads (needs_ally, needs_yielding_foe)")
     for p in items("patrons"):
         pid = p.get("id")
         for f in ("costume", "archetype", "accent", "likes", "taboos", "rule", "rites", "intervention", "hymns", "miracle", "lines"):
@@ -1677,6 +1689,16 @@ if isinstance(tq, dict):
             for pr in l.get("props") or []:
                 if pr not in props_ok:
                     errors.append(f"{where}: line {i} names '{pr}', not a {sysm} property")
+        # 0.31.12: an option of the technique offered only with a property line (descriptors.ts techPicks reads it)
+        on = t.get("opt_needs")
+        if on is not None:
+            line_props = {pr for l in (t.get("lines") or []) for pr in (l.get("props") or [])}
+            if not isinstance(on, dict) or not on:
+                errors.append(f"{where}: opt_needs is an object of option id: property")
+            else:
+                for oid, pr in on.items():
+                    if not isinstance(oid, str) or not oid or pr not in line_props:
+                        errors.append(f"{where}: opt_needs.{oid} names '{pr}', not one of the technique's property lines")
         for k, v in (t.get("numbers") or {}).items():
             if not isinstance(v, (int, float)) or isinstance(v, bool):
                 errors.append(f"{where}: numbers.{k} must be a number")
@@ -2578,10 +2600,10 @@ if _sv is not None:
         def _mtrack(path, v):
             if not isinstance(v, str) or (_ost_ids is not None and v not in _ost_ids):
                 errors.append(f"{_w}.{path}: {v!r} is not a track in the engine's OstId list (packages/engine/src/music.ts)")
-        if not isinstance(_mu, dict) or set(_mu) - {"about", "camp", "map", "place", "boon"} or not {"camp", "map", "place", "boon"} <= set(_mu):
-            errors.append(f"{_w}: an object of camp, map, place and boon (and about)")
+        if not isinstance(_mu, dict) or set(_mu) - {"about", "camp", "map", "place", "boon", "quiet"} or not {"camp", "map", "place", "boon", "quiet"} <= set(_mu):
+            errors.append(f"{_w}: an object of camp, map, place, boon and quiet (and about)")
         else:
-            _mtrack("camp", _mu["camp"]); _mtrack("boon", _mu["boon"])
+            _mtrack("camp", _mu["camp"]); _mtrack("boon", _mu["boon"]); _mtrack("quiet", _mu["quiet"])
             _mm = _mu["map"] if isinstance(_mu["map"], dict) else {}
             if "default" not in _mm: errors.append(f"{_w}.map: needs a `default` track")
             for _k, _v in _mm.items():

@@ -118,7 +118,8 @@ def skill_perks(sid):
             continue
         t = p["tiers"]
         out.append({"id": p["id"], "name": p["name"], "icon": BLOBS.get("wick-perk-" + p["id"].replace("_", "-"), ""),
-                    "meta": perk_meta(p), "t1": cap(t["I"]["text"]), "t2": cap(t["II"]["text"])})
+                    "meta": perk_meta(p), "t1": cap(t["I"]["text"]), "t2": cap(t["II"]["text"]),
+                    "s1": t["I"].get("short", ""), "s2": t["II"].get("short", "")})  # the perk row's card lines (0.31.11)
     return out
 
 EP_TPL = (BUILD / "epccg.template.html").read_text()
@@ -154,7 +155,8 @@ def skills():
 def attrs():
     order = ["endurance", "strength", "agility", "perception", "intelligence", "expression", "insight", "determination", "virtue"]
     a = {x["id"]: x for x in load("attributes.json")["items"]}
-    return [{"id": i, "name": a[i]["name"], "core": a[i]["core"], "ink": INK[i], "fx": ATTR_FX[i]} for i in order]
+    # gives: what one more point gives, in the game's numbers (attributes.json player, 0.31.11: one copy, in data)
+    return [{"id": i, "name": a[i]["name"], "core": a[i]["core"], "ink": INK[i], "fx": ATTR_FX[i], "gives": a[i].get("player", "")} for i in order]
 
 def classes():
     # Class Roster Revision 3: one class per attribute; "sig" is the class's three skills (its attribute's).

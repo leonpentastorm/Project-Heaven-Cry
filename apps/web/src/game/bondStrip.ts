@@ -25,7 +25,7 @@ export function bondStripVals(cb: any, u: any, c: any, face: (id: string) => str
       rounds: x.rounds != null ? x.rounds + (x.rounds === 1 ? ' rd' : ' rds') : '', hasRounds: x.rounds != null,
       tip: x.name + (foe ? ' (enemy, Bonded)' : ' (ally, Bonded)') + ' · ' + (x.downed ? 'Downed' : x.hp + ' / ' + x.maxHp + ' HP') + (x.conds.length ? ' · ' + x.conds.join(', ') : '') + (echoT ? ' · ' + echoT : '') + (x.rounds != null ? ' · the Bond holds ' + x.rounds + ' more round' + (x.rounds === 1 ? '' : 's') : ''),
       imgStyle: 'width: 30px; height: 30px; object-fit: cover; background: #000; flex: none; ' + (foe ? 'border-radius: 5px; border: 2px solid ' + RED : 'border-radius: 50%; border: 2px solid ' + INSIGHT_INK),
-      badgeStyle: 'display: grid; place-items: center; width: 30px; height: 30px; flex: none; font-size: 10px; font-weight: 700; border-radius: ' + (foe ? '5px' : '50%') + '; border: 2px solid ' + (foe ? RED : INSIGHT_INK) + '; color: ' + (foe ? RED : INSIGHT_INK),
+      badgeStyle: 'display: grid; place-items: center; width: 30px; height: 30px; flex: none; font-size: var(--fs-sub); font-weight: 700; border-radius: ' + (foe ? '5px' : '50%') + '; border: 2px solid ' + (foe ? RED : INSIGHT_INK) + '; color: ' + (foe ? RED : INSIGHT_INK),
       hpTrack: 'display: block; height: 4px; border-radius: 2px; background: #1C2536; overflow: hidden',
       hpFill: 'display: block; height: 100%; width: ' + pct(x.hp, x.maxHp) + '%; background: ' + RED };
   };

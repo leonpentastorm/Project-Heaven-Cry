@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { apply, relicRow, worthOf, BOON_CAP, START_BOON, loadoutView, RACK, type GameState } from '@engine';
 import { survivalRoom, ownerOf } from '../../../../packages/engine/test/helpers/survival';
-import { boonCards, lineWord, campChecklist, campHelp, campConfirm, freeAction, campGuard } from './campView';
+import { boonCards, lineWord, campChecklist, campHelp, campConfirm, freeAction, campGuard, levelUpGuard, campLevelUpAsk } from './campView';
 import { currentDialog, answerDialog } from './dialog';
 import { runView } from './runView';
 import { ATTR_INK } from './classView';
@@ -53,7 +53,7 @@ describe('the camp as a checklist (rules 1.55 item 49)', () => {
     expect(ch.map((k) => k.key)).toEqual(['weapon', 'budget', 'boon']);
     expect(ch[0]).toMatchObject({ n: 1, title: 'FREE WEAPON', state: 'NOT PICKED', done: false, glyph: '○' });
     expect(ch[1]).toMatchObject({ n: 2, state: v.budget + ' of ' + v.budget + ' cr left', meter: { left: v.budget, total: v.budget } });
-    expect(campHelp(v)).toBe('Before the run: take one free weapon and spend your budget on anything else.');
+    expect(campHelp(v)).toBe('');
     const [a, b] = v.rack;
     expect(freeAction(a.free, v, 'weapon')).toBe('Take (free)');
     expect(campConfirm(v)).toEqual({ open: ['weapon'], text: 'You have not taken your free weapon. It costs nothing.', back: 'Go back and pick', go: 'Start without it' });
@@ -67,7 +67,7 @@ describe('the camp as a checklist (rules 1.55 item 49)', () => {
   it('a caster: the focus step, both open asks for both; Recommended ticks every free pick', () => {
     let g = fresh(), v = loadoutView(g as any, 'p2')!;
     expect(campChecklist(v).map((k) => k.key)).toEqual(['weapon', 'focus', 'budget', 'boon']);
-    expect(campHelp(v)).toBe('Before the run: take one free weapon, one free focus and spend your budget on anything else.');
+    expect(campHelp(v)).toBe('');
     expect(campConfirm(v)!.text).toBe('You have not taken your free weapon or your free focus. They cost nothing.');
     expect(campConfirm(v)!.go).toBe('Start without them');
     expect(v.recommended.lines.some((l) => l.endsWith('(free)'))).toBe(true);
@@ -85,4 +85,20 @@ describe('the camp as a checklist (rules 1.55 item 49)', () => {
     const done = loadoutView(apply(fresh(), { type: 'run/loadout', charId: 'c1', op: 'recommended' } as any, 'host') as any, 'host')!;
     campGuard(done, false, () => ran++); expect(currentDialog()).toBeNull(); expect(ran).toBe(3);
 });
+});
+
+describe('outside playtest 0.31.10 row 2: Start the run with a level-up due', () => {
+  it('asks first; the safe answer opens Level up; going on without runs Ready once', async () => {
+    const g = camp(); (g.characters.c1 as any).unspent = { ...(g.characters.c1 as any).unspent, skill: 2 };
+    const v = loadoutView(g as any, 'host')!;
+    expect(v.levelUp).toBe(true);
+    let ran = 0, opened = 0;
+    levelUpGuard(v, () => ran++, () => opened++);
+    expect(currentDialog()?.title).toBe('Level up first?'); answerDialog(false); await Promise.resolve(); await Promise.resolve();
+    expect([ran, opened]).toEqual([0, 1]);
+    levelUpGuard(v, () => ran++, () => opened++); answerDialog(true); await Promise.resolve(); await Promise.resolve();
+    expect([ran, opened]).toEqual([1, 1]);
+    const plain = loadoutView(camp() as any, 'p2')!;
+    expect(plain.levelUp).toBe(false); expect(campLevelUpAsk(plain)).toBeNull();
+  });
 });

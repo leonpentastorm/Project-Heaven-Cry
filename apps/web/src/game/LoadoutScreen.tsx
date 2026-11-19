@@ -24,7 +24,7 @@ import { MoveOn } from './runPanels';
 import { PlaceBar } from './PlaceBar';
 import { shownLines } from './previewLines';
 
-const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: I.muted };
+const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: I.muted };
 /** Names wrap inside their card, never over the next one. */
 const wrap: React.CSSProperties = { minWidth: 0, overflowWrap: 'anywhere' };
 const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scrollbar-thumb{background:#2A3447;border-radius:6px}'
@@ -49,7 +49,7 @@ const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scroll
   + '.phc-camp-carry{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 28px}'
   + '@media (max-width:700px){.phc-camp-carry{grid-template-columns:minmax(0,1fr)}}'
   // a stat row: label | value (| the better one's value); the label always shown, whole, wrapping
-  + '.phc-camp-stats{margin:0;display:grid;gap:3px 10px;font-size:14px;line-height:1.3}'
+  + '.phc-camp-stats{margin:0;display:grid;gap:3px 10px;font-size:var(--fs-body);line-height:1.3}'
   + '.phc-camp-stats dt{color:#A3AEC2;overflow-wrap:break-word}.phc-camp-stats dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:break-word}';
 /** A card's picture: the one resolver (gearIcons.ts), which reads the engine's ids as they come (rounds, magazines,
  *  body armour of a class), the same picture the sheet's GEAR tab and the shop show. */
@@ -57,7 +57,7 @@ const iconOf = (id: string): string => gearIconUri(id, undefined, { large: true 
 const head = (title: string, note?: string) => (
   <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, margin: '4px 0 12px' }}>
     <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>{title}</h2>
-    {note ? <span style={{ fontSize: 14, color: I.muted }}>{note}</span> : null}
+    {note ? <span style={{ fontSize: 'var(--fs-body)', color: I.muted }}>{note}</span> : null}
     <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
   </div>
 );
@@ -82,7 +82,7 @@ function Stepper({ c, charId, big }: { c: LoadoutCardV; charId: string; big?: bo
     </div>
   );
 }
-const Why = ({ c }: { c: LoadoutCardV }) => <span data-phc-camp-why="" style={{ fontSize: 13, lineHeight: 1.35, color: c.why ? I.muted : I.ok, ...wrap }}>{c.why || '✓ You can take this'}</span>;
+const Why = ({ c }: { c: LoadoutCardV }) => <span data-phc-camp-why="" style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.35, color: c.why ? I.muted : I.ok, ...wrap }}>{c.why || ''}</span>;
 
 /** A free pick (the free weapon or focus; rules 1.55 item 49): FREE where a price would be (in green, with the word), and a
  * button that says what pressing it does: Take (free), Swap to this (free), or ✓ YOURS (press again to put it back). */
@@ -97,13 +97,13 @@ function PickCard({ c, slot, charId, v }: { c: LoadoutCardV; slot: 'weapon' | 'f
           <Icon src={iconOf(c.id)} name={c.name} text={c.text || ''} />
           <span style={{ display: 'flex', flexDirection: 'column', gap: 3, ...wrap }}>
             <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{label(c.name)}</span>
-            <span data-phc-camp-freetag="" style={{ fontSize: 14, fontWeight: 700, letterSpacing: '0.12em', color: I.ok }}>{c.picked ? '✓ YOURS · FREE' : 'FREE'}</span>
+            <span data-phc-camp-freetag="" style={{ fontSize: 'var(--fs-body)', fontWeight: 700, letterSpacing: '0.12em', color: I.ok }}>{c.picked ? '✓ YOURS · FREE' : 'FREE'}</span>
           </span>
         </div>
         <dl className="phc-camp-stats" data-phc-camp-stats="" style={{ width: '100%', gridTemplateColumns: 'minmax(6.5em, 1fr) minmax(0, auto)' }}>
           {shownLines(c.preview.lines, 4).map((l) => <React.Fragment key={l.key}><dt {...tipProps(l.label)}>{label(l.label)}</dt><dd>{l.value}</dd></React.Fragment>)}
         </dl>
-        {off ? <span style={{ fontSize: 13, color: I.muted, ...wrap }}>{c.why}</span> : null}
+        {off ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, ...wrap }}>{c.why}</span> : null}
         <span data-phc-camp-take-free={word} aria-hidden="true" style={{ marginTop: 'auto', alignSelf: 'stretch', minHeight: 40, display: 'grid', placeItems: 'center', borderRadius: 10, fontSize: 15, fontWeight: 700,
           ...(c.picked ? { border: '2px solid ' + I.ok, color: I.ok } : off ? { border: '1px solid ' + I.line, color: I.muted } : { background: I.text, color: I.ground }) }}>{word}</span>
       </button>
@@ -118,14 +118,14 @@ function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: strin
         <Icon src={iconOf(c.id)} size={46} name={c.name} text={c.text || ''} />
         <span style={{ display: 'flex', flexDirection: 'column', gap: 3, ...wrap }}>
           <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 17, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{c.name}</span>
-          {tag ? <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>{tag}</span> : null}
+          {tag ? <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>{tag}</span> : null}
         </span>
       </div>
       {compare && compare.length ? (
         <dl className="phc-camp-stats" data-phc-camp-compare="" data-phc-camp-stats="" style={{ gridTemplateColumns: 'minmax(6.5em, 1fr) minmax(0, auto) minmax(0, auto)' }}>
-          <dt aria-hidden="true" style={{ fontSize: 13 }} />
-          <dd aria-hidden="true" style={{ fontSize: 13, fontWeight: 400, color: I.muted }}>Free</dd>
-          <dd aria-hidden="true" style={{ fontSize: 13, fontWeight: 400, color: I.muted }}>This</dd>
+          <dt aria-hidden="true" style={{ fontSize: 'var(--fs-sub)' }} />
+          <dd aria-hidden="true" style={{ fontSize: 'var(--fs-sub)', fontWeight: 400, color: I.muted }}>Free</dd>
+          <dd aria-hidden="true" style={{ fontSize: 'var(--fs-sub)', fontWeight: 400, color: I.muted }}>This</dd>
           {compare.slice(0, 4).map((r) => <React.Fragment key={r.key}>
             <dt {...tipProps(r.label)}>{label(r.label)}</dt>
             <dd style={{ color: I.muted, fontWeight: 400 }}>{r.free}</dd>
@@ -134,11 +134,11 @@ function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: strin
         </dl>) : c.preview.lines.length ? (
         <dl className="phc-camp-stats" data-phc-camp-stats="" style={{ gridTemplateColumns: 'minmax(6.5em, 1fr) minmax(0, auto)' }}>
           {shownLines(c.preview.lines, 2).map((l) => <React.Fragment key={l.key}><dt {...tipProps(l.label)}>{label(l.label)}</dt><dd>{l.value}</dd></React.Fragment>)}
-        </dl>) : <span style={{ fontSize: 14, color: I.muted }}>{c.preview.category}</span>}
+        </dl>) : <span style={{ fontSize: 'var(--fs-body)', color: I.muted }}>{c.preview.category}</span>}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 'auto' }}>
         <span style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-camp-price="" style={{ fontSize: 20, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{c.price}</span>
-          <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.06em' }}>CREDITS{c.per > 1 ? ' · ' + c.per + ' ROUNDS' : ''}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, letterSpacing: '0.06em' }}>CREDITS{c.per > 1 ? ' · for ' + c.per : ''}</span>
         </span>
         <Stepper c={c} charId={charId} big />
       </div>
@@ -163,9 +163,9 @@ function BoonStep({ v, charId }: { v: LoadoutViewV; charId: string }) {
                 border: k.chosen ? '2px solid ' + I.white : '1px solid ' + (off ? I.line : '#3B475D'), background: k.chosen ? 'linear-gradient(180deg, rgba(44,56,78,.98) 0%, rgba(28,37,54,.98) 100%)' : 'linear-gradient(180deg, rgba(28,37,54,.94) 0%, rgba(16,21,31,.94) 100%)', color: I.text, fontFamily: 'inherit', textAlign: 'center', cursor: off ? 'default' : 'pointer' }}>
               <span style={{ display: 'grid', placeItems: 'center', width: 96, height: 96, flexShrink: 0, borderRadius: '50%', border: '1px solid ' + k.ink, background: I.ground, color: I.white }} dangerouslySetInnerHTML={{ __html: boonIconSvg(k.id, 56) }} />
               <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 26, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{k.name}</span>
-              <span data-phc-line={k.line} style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: k.ink }}>{k.lineWord.toUpperCase()}</span>
+              <span data-phc-line={k.line} style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', color: k.ink }}>{k.lineWord.toUpperCase()}</span>
               <span style={{ fontSize: 16, lineHeight: 1.5, color: '#DCE2EC', ...wrap }}>{k.text}</span>
-              <span style={{ marginTop: 'auto', fontSize: 14, color: I.white }}>{k.worthLine}</span>
+              <span style={{ marginTop: 'auto', fontSize: 'var(--fs-body)', color: I.white }}>{k.worthLine}</span>
               <span aria-hidden="true" data-phc-boon-choose={k.chosen ? 'chosen' : off ? 'off' : 'choose'} style={{ alignSelf: 'stretch', minHeight: 44, display: 'grid', placeItems: 'center', borderRadius: 10, fontSize: 15, fontWeight: 700, letterSpacing: '0.12em',
                 ...(k.chosen ? { background: 'transparent', border: '2px solid ' + I.ok, color: I.ok } : off ? { background: 'transparent', border: '1px solid ' + I.line, color: I.muted } : { background: I.text, color: I.ground, border: 0 }) }}>{k.chosen ? '✓ CHOSEN' : 'CHOOSE'}</span>
             </button>
@@ -182,15 +182,15 @@ function Carrying({ v, wide }: { v: LoadoutViewV; wide?: boolean }) {
     const rows = v.carrying.filter((r) => r.free === free), groups: string[] = []; for (const r of rows) if (!groups.includes(r.group)) groups.push(r.group);
     return (
       <div data-phc-camp-carry-col={free ? 'free' : 'bought'} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-        {!groups.length ? <><span style={kick}>{free ? 'FREE' : 'BOUGHT'}</span><span style={{ fontSize: 14, color: I.muted }}>{free ? 'Nothing yet: bare fists.' : 'Nothing bought yet.'}</span></> : null}
+        {!groups.length ? <><span style={kick}>{free ? 'FREE' : 'BOUGHT'}</span><span style={{ fontSize: 'var(--fs-body)', color: I.muted }}>{free ? 'Nothing yet: bare fists.' : 'Nothing bought yet.'}</span></> : null}
         {groups.map((gr) => (
           <div key={gr} style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 8 }}>
             <span style={kick}>{gr.toUpperCase()}</span>
             {rows.filter((r) => r.group === gr).map((r: CarryRowV, i) => (
-              <div key={i} data-phc-camp-carry-row="" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, lineHeight: 1.35 }}>
+              <div key={i} data-phc-camp-carry-row="" style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 'var(--fs-body)', lineHeight: 1.35 }}>
                 <span style={{ flex: 1, ...wrap }}>{r.label}</span>
-                {r.kg ? <span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums', fontSize: 13, whiteSpace: 'nowrap' }}>{r.kg} kg</span> : null}
-                {r.put ? <button type="button" data-phc-camp-put="" aria-label={(r.putLabel || 'Remove') + ': ' + r.label} onClick={() => act(r.put as any)} style={{ minHeight: 30, padding: '0 10px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>{r.putLabel || 'Remove'}</button> : null}
+                {r.kg ? <span style={{ color: I.muted, fontVariantNumeric: 'tabular-nums', fontSize: 'var(--fs-sub)', whiteSpace: 'nowrap' }}>{r.kg} kg</span> : null}
+                {r.put ? <button type="button" data-phc-camp-put="" aria-label={(r.putLabel || 'Remove') + ': ' + r.label} onClick={() => act(r.put as any)} style={{ minHeight: 30, padding: '0 10px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>{r.putLabel || 'Remove'}</button> : null}
               </div>))}
           </div>))}
       </div>
@@ -212,7 +212,7 @@ function CheckChip({ k, on, mark }: { k: CampCheckV; on: () => void; mark?: Reco
   return (
     <button type="button" data-phc-camp-check={k.key} data-phc-done={k.done ? '1' : '0'} onClick={on} {...(mark || {})} {...tipProps(k.n + ' · ' + k.title + ': ' + k.hint)}
       style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 2, minWidth: 0, maxWidth: 260, minHeight: 52, padding: '6px 12px', borderRadius: 10, border: '1px solid ' + (k.done ? I.ok : '#3B475D'), background: I.panel, color: I.text, fontFamily: 'inherit', textAlign: 'left', cursor: 'pointer' }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: I.muted, whiteSpace: 'nowrap' }}>{sign ? <img data-phc-camp-sign={k.key} src={sign} alt="" width={16} height={16} style={{ width: 16, height: 16, marginRight: 6, verticalAlign: -3 }} /> : null}{k.n + ' · ' + k.title}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.1em', color: I.muted, whiteSpace: 'nowrap' }}>{sign ? <img data-phc-camp-sign={k.key} src={sign} alt="" width={16} height={16} style={{ width: 16, height: 16, marginRight: 6, verticalAlign: -3 }} /> : null}{k.n + ' · ' + k.title}</span>
       {k.meter ? (
         <span data-phc-camp-budget="" style={{ display: 'flex', flexDirection: 'column', gap: 4, width: '100%' }}>
           <span style={{ fontSize: 15, fontWeight: 700, color: tone, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}><span data-phc-camp-left="">{k.meter.left}</span> of {k.meter.total} cr left</span>
@@ -261,16 +261,16 @@ export function LoadoutScreen() {
       <PlaceBar marks={{ 'data-phc-camp-bar': '' }} name="The camp" backdrop={campBackdrop()} sub={<span data-phc-camp-help="">{campHelp(v)}</span>}
         tabs={<nav aria-label="What to do at the camp" data-phc-camp-checklist="" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', padding: '10px 0' }}>
           {checks.map((k) => <CheckChip key={k.key} k={k} on={() => open(k.key)} mark={k.key === 'weapon' ? { 'data-phc-camp-step': '1' } : k.key === 'boon' ? { 'data-phc-camp-step': '2', ...(step === 2 ? { 'aria-current': 'step' } : {}) } : undefined} />)}
-          <span style={{ alignSelf: 'center', fontSize: 13, color: I.muted }}>used <span data-phc-camp-used="">{v.spent}</span> · what you don't spend, you keep</span>
+          <span style={{ alignSelf: 'center', fontSize: 'var(--fs-sub)', color: I.muted }}>used <span data-phc-camp-used="">{v.spent}</span> · unspent credits stay with you</span>
         </nav>}
         actions={<>
           {!v.boon.chosen && !v.ready && v.boon.cards.length ? (
             <button type="button" data-phc-camp-next="" onClick={toBoon} disabled={step === 2} {...tipProps(step === 2 ? 'Choose one of the three.' : null)} style={pill(step !== 2)}>{step === 2 ? 'Choose a boon' : 'Next: starting boon ›'}</button>
           ) : <MoveOn />}
           {!solo && v.isHost ? <button type="button" data-phc-camp-close="" onClick={() => act({ type: 'run/ready', close: true } as any)} {...tipProps('Everyone sets out now. Anyone still away gets the Recommended loadout and the first starting boon.')}
-            style={{ minHeight: 42, padding: '0 14px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>Start for everyone{v.waiting.length ? ' (waiting: ' + v.waiting.join(', ') + ')' : ''}</button> : null}
+            style={{ minHeight: 42, padding: '0 14px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 'var(--fs-body)', fontWeight: 700, cursor: 'pointer' }}>Start for everyone{v.waiting.length ? ' (waiting: ' + v.waiting.join(', ') + ')' : ''}</button> : null}
         </>}
-        foot={last ? <span data-phc-camp-refusal="" role="status" style={{ fontSize: 14, color: I.white }}>{last}</span> : null} />
+        foot={last ? <span data-phc-camp-refusal="" role="status" style={{ fontSize: 'var(--fs-body)', color: I.white }}>{last}</span> : null} />
       <main aria-label={step === 1 ? 'Loadout' : 'Starting boon'} data-phc-camp-take="" data-phc-camp-on={step} style={{ padding: '18px 20px 20px' }}>
         {step === 1 ? <>
           {/* the one-click way through (rules 1.55 item 49) */}
@@ -278,8 +278,8 @@ export function LoadoutScreen() {
           <button type="button" data-phc-camp-recommended="" disabled={v.ready || !!v.recommended.why} aria-disabled={v.ready || !!v.recommended.why} onClick={() => act({ type: 'run/loadout', charId, op: 'recommended' } as any)}
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 4, width: '100%', maxWidth: 760, marginBottom: 26, padding: '14px 18px', borderRadius: 12, border: 0, background: v.ready || v.recommended.why ? I.raised : I.text, color: v.ready || v.recommended.why ? I.muted : I.ground, fontFamily: 'inherit', textAlign: 'left', cursor: v.ready || v.recommended.why ? 'default' : 'pointer' }}>
             <span style={{ fontSize: 18, fontWeight: 700 }}>Not sure? Take the recommended kit</span>
-            <span data-phc-camp-rec-line="" style={{ fontSize: 14, lineHeight: 1.4, ...wrap }}>{(v.recommended.lines.length ? v.recommended.lines.join(' · ') : 'Nothing') + ' · keeps ' + v.recommended.left + ' credits'}</span>
-            {v.recommended.why ? <span data-phc-camp-rec-why="" style={{ fontSize: 14, lineHeight: 1.4, color: I.white, ...wrap }}>{"Can't take it: " + v.recommended.why}</span> : null}
+            <span data-phc-camp-rec-line="" style={{ fontSize: 'var(--fs-body)', lineHeight: 1.4, ...wrap }}>{(v.recommended.lines.length ? v.recommended.lines.join(' · ') : 'Nothing') + ' · keeps ' + v.recommended.left + ' credits'}</span>
+            {v.recommended.why ? <span data-phc-camp-rec-why="" style={{ fontSize: 'var(--fs-body)', lineHeight: 1.4, color: I.white, ...wrap }}>{"Can't take it: " + v.recommended.why}</span> : null}
           </button>
           <section data-phc-camp-row="weapon" style={{ marginBottom: 30 }}>
             {stepHead(1, 'Your free weapon', 'Pick one. It costs nothing and you can swap it freely here.')}
@@ -304,8 +304,8 @@ export function LoadoutScreen() {
                   <div key={a.id} data-phc-camp-family={a.id} data-phc-camp-cards={(a.again ? 1 : 0) + (a.better ? 1 : 0)} style={{ minWidth: 0 }}>
                     <span style={{ ...kick, display: 'block', marginBottom: 8 }}>{a.name.toUpperCase()}</span>
                     <div className="phc-camp-pair" role="group" aria-label={a.name}>
-                      {a.again ? <ShelfCard c={a.again} charId={charId} tag="ANOTHER ONE" /> : null}
-                      {a.better ? <ShelfCard c={a.better} charId={charId} tag="THE BETTER ONE" compare={a.better.compare} /> : null}
+                      {a.again ? <ShelfCard c={a.again} charId={charId} tag="FREE" /> : null}
+                      {a.better ? <ShelfCard c={a.better} charId={charId} tag="" compare={a.better.compare} /> : null}
                     </div>
                   </div>))}
               </div>

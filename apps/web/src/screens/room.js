@@ -10,7 +10,8 @@ import { act, getState, go, retryNarrator, setNarrator, toast, homeScreen } from
 import { shellVals } from './shell';
 import { openReport } from '../game/report';
 import { importCharacter } from '../game/charfile';
-import { validateSheet, CLASS } from '@engine';
+import { validateSheet, CLASS, levelUpDue } from '@engine';
+import { askLevelUp, levelUpAsk } from '../game/campView';
 import { openProvingGround } from '../game/sandbox';
 import { classOf } from '../game/commands';
 import { modeCards, radioKey, narratorOptional, startsRun, testSeed } from '../game/modes';
@@ -65,7 +66,7 @@ export class RoomLogic extends DCLogic {
       rememberNote: !!n.key && !n.remember ? 'Not remembered in this browser: tick "Remember the key" to keep it after you close the tab.' : '',
       testKey: () => this.testKey(), testOff: S.testing || (providerInfo(n.provider).needsKey && !n.key) || (providerInfo(n.provider).editableBase && !baseOf(n)), testLabel: S.testing ? 'Testing…' : 'Test key',
       testShow: !!T || S.testing, testText: S.testing ? 'Asking ' + providerInfo(n.provider).label.replace(/ \(.*\)$/, '') + '…' : T ? (T.ok ? '✓ ' : '✗ ') + T.text : '',
-      testStyle: 'font-size: 13px; line-height: 1.45; color: ' + (S.testing ? '#A3AEC2' : T && T.ok ? '#6FEA77' : '#F65157'),
+      testStyle: 'font-size: var(--fs-sub); line-height: 1.45; color: ' + (S.testing ? '#A3AEC2' : T && T.ok ? '#6FEA77' : '#F65157'),
       retryNow: isHost && inSession && !!(g.narrator && g.narrator.error) && S.keyChanged,
       retryNarr: () => { retryNarrator(); this.backToSession(g); },
     };
@@ -97,14 +98,14 @@ export class RoomLogic extends DCLogic {
   }
   renderVals() {
     const st = getState(), g = st.game, isHost = st.role === 'host';
-    if (!g) return { ...lightboxVals(this), ...shellVals(this, 'room'), report: openReport, code: st.code || '', connText: 'CONNECTING…', connStyle: 'font-size: 13px; color: #A3AEC2', players: [], squad: [], starts: [], start: { lore: [] }, modes: [], modeCards: [], showModes: false, narrOpen: true, tones: [], notReady: true, startLabel: 'Waiting for the host…', startStyle: 'min-height: 52px; border-radius: 12px; border: 0; background: #1C2536; color: #A3AEC2', copyInvite: () => {}, copyLabel: 'Copy invite link', create: () => {}, toggleBring: () => {}, saved: [], cantAdd: true };
+    if (!g) return { ...lightboxVals(this), ...shellVals(this, 'room'), report: openReport, code: st.code || '', connText: 'CONNECTING…', connStyle: 'font-size: var(--fs-sub); color: #A3AEC2', players: [], squad: [], starts: [], start: { lore: [] }, modes: [], modeCards: [], showModes: false, narrOpen: true, tones: [], notReady: true, startLabel: 'Waiting for the host…', startStyle: 'min-height: 52px; border-radius: 12px; border: 0; background: #1C2536; color: #A3AEC2', copyInvite: () => {}, copyLabel: 'Copy invite link', create: () => {}, toggleBring: () => {}, saved: [], cantAdd: true };
     const S = g.settings, me = st.me.id, host = g.players.find((p) => p.id === g.hostId);
     const mine = Object.values(g.characters).filter((c) => c.owner === me);
     const players = [...g.players, ...Array(Math.max(0, 4 - g.players.length)).fill(null)].map((p) => {
-      if (!p) return { name: 'Open seat', initials: '+', note: 'Share the room code', badgeStyle: 'display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; flex: none; font-size: 13px; font-weight: 700; border: 1px dashed #3B475D; color: #A3AEC2', style: 'display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F' };
+      if (!p) return { name: 'Open seat', initials: '+', note: 'Share the room code', badgeStyle: 'display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; flex: none; font-size: var(--fs-sub); font-weight: 700; border: 1px dashed #3B475D; color: #A3AEC2', style: 'display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid #232D3F' };
       const n = Object.values(g.characters).filter((c) => c.owner === p.id).length;
       return { key: p.id, name: p.name + (p.id === me ? ' (you)' : ''), initials: p.initials, note: (p.id === g.hostId ? 'Host · ' : '') + (p.online ? (n ? 'Plays ' + n : 'Building a character') : 'Offline'),
-        badgeStyle: 'display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; flex: none; font-size: 13px; font-weight: 700; background: ' + p.color + '; color: #0A0D13' + (p.online ? '' : '; opacity: 0.4'),
+        badgeStyle: 'display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; flex: none; font-size: var(--fs-sub); font-weight: 700; background: ' + p.color + '; color: #0A0D13' + (p.online ? '' : '; opacity: 0.4'),
         style: 'display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; background: #10151F; border: 1px solid ' + p.color };
     });
     const squad = Object.values(g.characters).map((c) => {
@@ -113,8 +114,8 @@ export class RoomLogic extends DCLogic {
       const cls = classOf(c), kit = cls ? cls.name : 'Classless';
       return { key: c.id, name: c.name, img: c.portrait, hasImg: !!c.portrait, noImg: !c.portrait, zoom: zoomer(this, c.portrait, c.name, 'portrait'),
         line: [c.origin, kit, 'Level ' + c.level].filter(Boolean).join(' · '), hasCls: !!cls, clsIcon: cls ? cls.icon : '', owner: p.initials + ' · ' + p.name.toUpperCase(),
-        ownerStyle: 'align-self: flex-start; padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; background: ' + p.color + '; color: #0A0D13',
-        state: '✓ LOCKED IN', stateStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.12em; color: #6FEA77',
+        ownerStyle: 'align-self: flex-start; padding: 2px 8px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; background: ' + p.color + '; color: #0A0D13',
+        state: '✓ LOCKED IN', stateStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.12em; color: #6FEA77',
         canRemove: g.phase === 'lobby' && (c.owner === me || isHost), remove: () => act({ type: 'char/remove', charId: c.id }),
         style: 'display: flex; flex-direction: column; gap: 8px; padding: 14px; border-radius: 12px; background: #10151F; border: 1px solid #232D3F; border-left: 4px solid ' + p.color };
     });
@@ -133,8 +134,8 @@ export class RoomLogic extends DCLogic {
         + (m.selected ? 'border: 2px solid #FFFFFF; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18)' : 'border: 2px solid #232D3F') + (m.locked ? '; opacity: 0.62' : ''),
       artBox: 'position: relative; display: grid; place-items: center; width: 100%; height: clamp(96px, 10vw, 220px); overflow: hidden; background: #1C2536; border-bottom: 1px solid #232D3F' + (m.locked ? '; filter: grayscale(0.7)' : ''),
       nameStyle: 'font-size: 20px; font-weight: 700; letter-spacing: 0.14em; color: ' + (m.locked ? '#A3AEC2' : '#E7EBF3'),
-      statusStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: ' + (m.locked ? '#A3AEC2' : '#FFFFFF'),
-      lineStyle: 'font-size: 13px; line-height: 1.45; color: ' + (m.locked ? '#A3AEC2' : '#C9D3E3') }));
+      statusStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: ' + (m.locked ? '#A3AEC2' : '#FFFFFF'),
+      lineStyle: 'font-size: var(--fs-sub); line-height: 1.45; color: ' + (m.locked ? '#A3AEC2' : '#C9D3E3') }));
     const fights = run ? (run.stats && run.stats.fights) || [] : [];
     const runV = run ? { kicker: 'SURVIVAL · STAGE ' + run.stage + ' · SEED ' + run.seed, title: run.state === 'over' ? 'The last run' : 'The run is under way',
       text: run.state === 'over' && run.end ? (run.end.how === 'retired' ? 'The squad retired' : 'The squad fell') + ' after ' + run.end.cleared + (run.end.cleared === 1 ? ' stage' : ' stages') + ' cleared and ' + run.end.nodes + (run.end.nodes === 1 ? ' node' : ' nodes') + ' walked, '
@@ -159,7 +160,7 @@ export class RoomLogic extends DCLogic {
     const lib = st.library.filter((c) => !c.draft && !validateSheet(c));
     return {
       ...lightboxVals(this), code: g.code, connText: st.conn === 'online' ? '● ONLINE' : st.conn === 'host-away' ? '● HOST AWAY' : '● RECONNECTING',
-      connStyle: 'font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + (st.conn === 'online' ? '#6FEA77' : '#FFFFFF'),
+      connStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + (st.conn === 'online' ? '#6FEA77' : '#FFFFFF'),
       copyLabel: this.state.copied ? 'Copied ✓' : 'Copy invite link',
       copyInvite: () => { const url = location.origin + '/?room=' + g.code; navigator.clipboard?.writeText(url).then(() => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); }, () => toast('Invite link: ' + url, true)); },
       canLoad: isHost && g.phase === 'lobby', loadCampaign: (e) => { const f = e.target.files && e.target.files[0]; if (!f) return;
@@ -180,7 +181,9 @@ export class RoomLogic extends DCLogic {
       ...this.narratorVals(),
       // In session the big button is the way back (UI pass 2.1), never a greyed "In session".
       notReady, startLabel: why || (g.phase !== 'lobby' ? 'Return to the session ›' : runsMode ? 'Start the run' : g.players.length > 1 && offline.length ? 'Start session · ' + offline.map((p) => p.name).join(', ') + ' has no character yet' : 'Start session'),
-      startSession: () => (g.phase !== 'lobby' ? this.backToSession(g) : act(runsMode ? { type: 'run/start', ...(testSeed() ? { seed: testSeed() } : {}) } : { type: 'session/start' })),
+      // a run's start asks first when one of my characters has a level-up due (unclaimed perk steps, a fork, points: the
+      // engine's levelUpDue), the same prompt as the camp's Ready (outside playtest 0.31.10 row 2)
+      startSession: () => (g.phase !== 'lobby' ? this.backToSession(g) : runsMode ? ((due) => askLevelUp(levelUpAsk(!!due), due ? 'lobby:' + due.id : '', () => act({ type: 'run/start', ...(testSeed() ? { seed: testSeed() } : {}) }), () => go('levelup', { levelupChar: due.id })))(Object.values(g.characters).find((c) => c.owner === me && levelUpDue(c))) : act({ type: 'session/start' })),
       startNote: g.phase !== 'lobby' && !(g.story && g.story.complete) ? (isHost ? 'Changes here apply from the Narrator\'s next turn.' : 'The session is on: this only takes you back.') : '',
       returnStory: !!(g.story && g.story.complete), toStory: () => this.backToSession(g),
       // The Proving Ground (practice mode): endless waves, no Narrator, no key needed; the squad as locked in, or a test character.

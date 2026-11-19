@@ -1,7 +1,7 @@
 // Rules 1.65 (the picking contract, C1): the ONE overlay every aimed action uses on the fight's grid. It draws the
 // engine's own marks (descriptors.ts previewDescriptor: GridMarks), by kind, for every system alike:
 //
-//   reach    every tile the action could be aimed at from here       shaded, a dashed edge, on select
+//   reach    every tile the action could be aimed at from here       shaded, a line round its boundary, on select
 //   choice   the tiles the open pick takes (units: tone 'choice')    outlined in the action's ink, a ◇ on a unit
 //   area     what the aim covers (the hovered aim, else the picked)  filled in the ink
 //   target   the units it would touch, with the engine's word        ringed, a badge with the word (or ENEMY / ALLY)
@@ -16,19 +16,31 @@ export interface PickMarks { reach: Iterable<string>; choice: Set<string>; choic
 
 /** A colour with an alpha, from #RRGGBB. */
 const rgba = (hex: string, a: number) => { const n = parseInt(hex.slice(1), 16); return 'rgba(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ', ' + a + ')'; };
-const BADGE = 'position: absolute; z-index: 4; padding: 0 4px; border-radius: 4px; font-size: 10px; font-weight: 700; line-height: 14px; letter-spacing: 0.04em; white-space: nowrap; pointer-events: none; ';
+const BADGE = 'position: absolute; z-index: 4; padding: 0 4px; border-radius: 4px; font-size: var(--fs-sub); font-weight: 700; line-height: 14px; letter-spacing: 0.04em; white-space: nowrap; pointer-events: none; ';
 const HOSTILE = '#F65157', ALLY = '#7FD4FF';
 
+/** The sides of a reach tile on the reach's boundary (its neighbour across that side is not in reach), as inset
+ * shadows in the colour: '' for a tile inside the reach. */
+export function reachEdge(k: string, reach: Set<string>, colour: string): string {
+  const [x, y] = k.split(',').map(Number), out: string[] = [];
+  if (!reach.has((x - 1) + ',' + y)) out.push('inset 2px 0 0 0 ' + colour);
+  if (!reach.has((x + 1) + ',' + y)) out.push('inset -2px 0 0 0 ' + colour);
+  if (!reach.has(x + ',' + (y - 1))) out.push('inset 0 2px 0 0 ' + colour);
+  if (!reach.has(x + ',' + (y + 1))) out.push('inset 0 -2px 0 0 ' + colour);
+  return out.join(', ');
+}
 /** The overlay's tiles: reach, choices, the area and whom it touches. ink: the action's own colour. */
 export function pickTiles(cb: any, m: PickMarks | null | undefined, side: 'pc' | 'foe', ink = '#E7EBF3'): Record<string, SgTile> {
   const out: Record<string, SgTile> = {}; if (!m) return out;
   const T = (k: string) => (out[k] ||= { layer: '', marks: [], note: '' });
   const note = (t: SgTile, w: string) => { t.note += (t.note ? ' · ' : '') + w; };
   const inReach = new Set(m.reach);
-  for (const k of inReach) { if (m.choice.has(k)) continue; const t = T(k); t.layer = 'background: ' + rgba(ink, 0.06) + '; outline: 1px dashed ' + rgba(ink, 0.55) + '; outline-offset: -2px'; note(t, 'in reach'); }
+  // the reach is one shaded region with a line round its edge only (0.31.12: a dashed outline on every tile of a prayer's
+  // whole sight was too heavy): a tile draws the sides whose neighbour is out of reach
+  for (const k of inReach) { if (m.choice.has(k)) continue; const t = T(k); const edge = reachEdge(k, inReach, rgba(ink, 0.6)); t.layer = 'background: ' + rgba(ink, 0.06) + (edge ? '; box-shadow: ' + edge : ''); note(t, 'in reach'); }
   // a choice is drawn over its reach: its card says both (rules 1.65: reach, then the open pick's choices inside it)
-  for (const k of m.choice) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.12) + '; outline: 2px solid ' + rgba(ink, 0.85) + '; outline-offset: -2px'; if (inReach.has(k)) note(t, 'in reach'); note(t, 'you can pick this tile'); }
-  for (const k of m.area) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.3) + '; outline: 2px solid ' + ink + '; outline-offset: -2px'; note(t, 'it covers this tile'); }
+  for (const k of m.choice) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.12) + '; outline: 2px solid ' + rgba(ink, 0.85) + '; outline-offset: -2px'; note(t, 'click to aim'); }
+  for (const k of m.area) { const t = T(k); t.layer = 'background: ' + rgba(ink, 0.3) + '; outline: 2px solid ' + ink + '; outline-offset: -2px'; }
   const at = (id: string) => (cb.units || []).find((y: any) => y.id === id && !y.dead) || (cb.units || []).find((y: any) => y.id === id);
   for (const id of m.choiceUnits) {
     const x = at(id); if (!x) continue; const t = T(x.pos);

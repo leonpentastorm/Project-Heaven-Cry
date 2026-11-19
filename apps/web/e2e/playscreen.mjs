@@ -70,7 +70,7 @@ ok('a shot at "' + after.at + '" spends a round (' + before + ' -> ' + after.loa
 await click(host, 'Area map');
 await host.waitForSelector('div[aria-label="Your status"]', { timeout: 30000 });
 const hud = await host.locator('div[aria-label="Your status"]').textContent();
-ok('the area map shows HP, AP and ammo: ' + hud.replace(/\s+/g, ' ').slice(0, 90), /HP/.test(hud) && /AP/.test(hud) && /loaded/.test(hud));
+ok('the area map shows HP, AP and ammo: ' + hud.replace(/\s+/g, ' ').slice(0, 90), /HP/.test(hud) && /AP/.test(hud) && /AMMO\s*\d+ \/ \d+/.test(hud));
 const log = await host.locator('div[aria-label="What just happened"]').textContent();
 ok('the area map has a log with the shot', !after.at || /fires at/.test(log));
 if (SHOTS) await host.screenshot({ path: SHOTS + '/play-area.png' });

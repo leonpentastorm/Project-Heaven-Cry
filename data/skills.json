@@ -77,31 +77,32 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Guard (plates that soak hits on you) holds {=per_point.numbers.pool} more plate, up to {=per_point.numbers.pool_max}; a Bulwark holds more by its rank."
+            "grows": "guard_pool",
+            "text": "+{=per_point.numbers.pool} Guard plate held (max {=per_point.numbers.pool_max})"
           },
           {
             "at": "at 1",
-            "text": "The Guard technique gives you {=per_point.numbers.guard_base} plate."
+            "text": "Guard technique: +{=per_point.numbers.guard_base} plate"
           },
           {
             "at": "at 1",
-            "text": "Brace always gives {=per_point.numbers.brace} plates, whatever your points."
+            "text": "Brace: +{=per_point.numbers.brace} plates"
           },
           {
             "at": "from 1",
-            "text": "A shield in one hand adds {=per_point.numbers.shield} to every plate gain; a shield in each hand multiplies every gain by {=per_point.numbers.two_shields} instead. Neither lets you hold more plates."
+            "text": "Shield in hand: +{=per_point.numbers.shield} plate a gain for each shield (one in each hand: +{=per_point.numbers.two_shields})"
           },
           {
             "at": "each from 2",
-            "text": "The Guard technique gives {=per_point.numbers.guard_per_point} more plate."
+            "text": "Guard technique: +{=per_point.numbers.guard_per_point} plate"
           },
           {
             "at": "at 3",
-            "text": "Challenge (taunt the foes around you), Retort (throw part of a melee hit back) and Set Against the Blow (a critical on you lands as a plain hit) open."
+            "text": "Challenge · Retort · Set Against the Blow"
           },
           {
             "at": "at 5",
-            "text": "Slam (push away every foe next to you) and Last Plate (once a fight, a killing blow leaves you standing) open."
+            "text": "Slam · Last Plate"
           }
         ]
       },
@@ -117,7 +118,7 @@
           "adjudication": "engine",
           "provisional": true,
           "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your melee attacks (a shield's own strike and its follow included) roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door); a gun, a bow or a throw rolls with its own skill. The blow's damage still grows with the weapon's own attribute, never with Durability. Set Against the Blow (Durability {=unlocks.1.effects.1.if.self_skill.durability}): while you hold Guard, a critical hit on you lands as an ordinary hit (its critical multiplier is taken out) and leaves no injury. Close Guard (an Answer): while you hold Guard, {=unlocks.1.effects.3.share|pct}% of a foe's blow on an ally next to you comes to you instead, and your plates soak it. Retort (Durability {=unlocks.1.effects.5.if.self_skill.durability}, an Answer): a foe hits you in melee while you hold Guard: {=unlocks.1.effects.5.and.0.value|abs} Guard and your reaction throw {=unlocks.1.amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies). Challenge (Durability {=unlocks.1.effects.6.if.self_skill.durability}): {=unlocks.1.effects.6.ap} AP and {=unlocks.1.effects.6.res.guard} Guard, named at one foe you see within {=unlocks.1.effects.6.reach.tiles} tiles: every foe you see within {=unlocks.1.effects.6.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else). Last Plate (Durability {=unlocks.1.effects.4.if.self_skill.durability}): once a fight, a blow that would drop you leaves you on {=unlocks.1.effects.4.value} HP and breaks every plate. Slam (Durability {=unlocks.1.effects.7.if.self_skill.durability}): {=unlocks.1.effects.7.ap} AP and {=unlocks.1.effects.7.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.7.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
-          "player": "Raise plates with the Guard technique (any weapon) or Brace. While you hold plates, your melee attacks roll with Durability when it is higher, and Close Guard takes part of a hit on a friend next to you.",
+          "player": "plates soak hits · melee rolls with Durability when higher",
           "effects": [
             {
               "op": "roll_with",
@@ -496,20 +497,36 @@
           "name": "Second Wind",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover {=unlocks.5.numbers.heal_share|pct}% of your max HP.",
-          "player": "{=.effects.0.ap} AP, once a fight: heal {=.numbers.heal_share|pct}% of your max HP.",
+          "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover {=unlocks.5.amounts.heal.per.0.value|pct}% of your max HP.",
+          "player": "{=.effects.0.ap} AP, once a fight: heal {=.amounts.heal.per.0.value|pct}% max HP",
           "effects": [
             {
               "op": "grant_action",
               "action": "second_wind",
+              "label": "Second Wind",
               "ap": 2,
-              "uses": "per_combat"
+              "uses": "per_combat",
+              "scope": ["combat"],
+              "effects": [
+                {
+                  "op": "mend",
+                  "when": "acted",
+                  "amount": "heal",
+                  "say": "Second Wind{then}."
+                }
+              ]
             }
           ],
+          "amounts": {
+            "heal": {
+              "kind": "heal",
+              "base": 0,
+              "per": [{ "of": "self:max_hp", "value": 0.25 }],
+              "heal_kind": "perk"
+            }
+          },
           "adjudication": "engine",
-          "numbers": {
-            "heal_share": 0.25
-          }
+          "item": true
         },
         "6": {
           "name": "Fork: Stand Fast or Drive",
@@ -633,15 +650,16 @@
         "rows": [
           {
             "at": "each",
-            "text": "your Guard plates soak more of every hit, by {=per_point.numbers.feed|pct}% for every point here times every point in Durability."
+            "text": "+{=per_point.numbers.feed|pct}% Guard soak"
           },
           {
             "at": "each",
-            "text": "You take {=per_point.numbers.elemental_taken|pct}% less elemental damage."
+            "grows": "elemental_taken",
+            "text": "+{=per_point.numbers.elemental_taken|pct}% elemental resistance"
           },
           {
             "at": "each",
-            "text": "Every level gives you {=per_point.numbers.hp_per_level} more max HP."
+            "text": "+{=per_point.numbers.hp_per_level} max HP a level"
           }
         ]
       },
@@ -652,7 +670,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Ignore the penalty from one injured limb (arm or leg injury).",
-          "player": "One injured arm or leg no longer holds you back.",
+          "player": "One injured limb no longer slows you",
           "effects": [
             {
               "op": "stat_mod",
@@ -672,7 +690,7 @@
           "category": "AP Mod",
           "mastery": 2,
           "text": "When you drop to 0 HP, take one more turn with {=unlocks.5.effects.0.ap} AP before you fall Downed.",
-          "player": "When your HP runs out, you get one more turn with {=.effects.0.ap} AP before you fall Downed.",
+          "player": "When your HP runs out: one more turn with {=.effects.0.ap} AP before you fall Downed",
           "effects": [
             {
               "op": "grant_action",
@@ -786,11 +804,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "You sense what you cannot see {=per_point.numbers.sense} better: by sound, smell and touch."
+            "text": "+{=per_point.numbers.sense} to sense what you cannot see"
           },
           {
             "at": "each",
-            "text": "Your Warn reaches {=per_point.numbers.call_range} tile further."
+            "text": "+{=per_point.numbers.call_range} tile Warn reach"
           }
         ]
       },
@@ -801,7 +819,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "Learn one physical tell of an NPC you're close to (pulse, sweat, scent). +{=unlocks.3.effects.1.value} on your next social roll against them.",
-          "player": "Read one tell of someone close to you (pulse, sweat, scent): +{=.effects.1.value} on your next social roll against them.",
+          "player": "{=.effects.1.value} on your next social roll against someone close",
           "effects": [
             {
               "op": "narrator",
@@ -825,7 +843,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Nothing moving on the ground within your Vision range can ambush you: you act in the surprise round.",
-          "player": "Nothing moving on the ground within your Vision range can surprise you: you act in the surprise round.",
+          "player": "Act in the surprise round against anything moving on the ground in sight",
           "effects": [
             {
               "op": "grant_action",
@@ -961,19 +979,19 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.hit} to hit with heavy melee weapons and bare hands."
+            "text": "+{=per_point.numbers.hit} to hit: heavy melee, bare hands"
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.damage|pct}% physical damage."
+            "text": "+{=per_point.numbers.damage|pct}% physical damage"
           },
           {
             "at": "each",
-            "text": "Your melee techniques are harder to save against."
+            "text": "Melee techniques: harder to save against"
           },
           {
             "at": "each from 2",
-            "text": "+{=per_point.numbers.counter} to your counter-attacks."
+            "text": "+{=per_point.numbers.counter} to counter-attacks"
           }
         ]
       },
@@ -987,7 +1005,7 @@
           "category": "Combat Interaction",
           "mastery": 1,
           "text": "A melee technique of yours that pushes its target moves it {=unlocks.3.effects.0.tiles} tile further.",
-          "player": "A melee technique of yours that pushes its target pushes it {=.effects.0.tiles} tile further.",
+          "player": "Pushes go {=.effects.0.tiles} tile further",
           "effects": [
             {
               "op": "knockback",
@@ -1019,7 +1037,7 @@
           "category": "Combat Interaction",
           "mastery": 2,
           "text": "When a Finisher of yours takes its target out, you are left with {=unlocks.5.effects.0.set} Momentum.",
-          "player": "When a Finisher (a strike that spends all your Momentum) takes its target out, you keep {=.effects.0.set} Momentum.",
+          "player": "A Finisher kill keeps {=.effects.0.set} Momentum",
           "effects": [
             {
               "op": "resource",
@@ -1152,11 +1170,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "your Momentum wears off slower when you walk or get hit, by {=per_point.numbers.feed|pct}% for every point here times every point in Raw Power."
+            "text": "+{=per_point.numbers.feed|pct}% Momentum kept"
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.save} on Body saves: against poison, knock-downs, pushes and pins."
+            "text": "+{=per_point.numbers.save} on Body saves"
           }
         ]
       },
@@ -1167,7 +1185,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Fear can't stop you moving or acting; you only keep its −2 to hit.",
-          "player": "Fear can't stop you moving or acting; you keep only its penalty to hit.",
+          "player": "Fear can't stop your moves or actions",
           "effects": [
             {
               "op": "stat_mod",
@@ -1187,7 +1205,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "Allies within {=unlocks.5.effects.0.value} tiles roll Fear saves with your Guts in place of their own.",
-          "player": "Allies within {=.effects.0.value} tiles of you roll their Fear saves with your Guts instead of their own.",
+          "player": "Allies within {=.effects.0.value} tiles save against Fear with your Guts",
           "effects": [
             {
               "op": "stat_mod",
@@ -1304,11 +1322,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Threaten reaches {=per_point.numbers.call_range} tile further."
+            "text": "+{=per_point.numbers.call_range} tile Threaten reach"
           },
           {
             "at": "each",
-            "text": "Your Threaten is harder to shake off."
+            "text": "Threaten: harder to shake off"
           }
         ]
       },
@@ -1319,7 +1337,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "Even a failed threat leaves the target Shaken: {=unlocks.3.numbers.next_roll} on their next roll against you.",
-          "player": "Even a failed threat leaves them Shaken: {=.numbers.next_roll} on their next roll against you.",
+          "player": "A failed threat still leaves them Shaken: {=.numbers.next_roll} on their next roll against you",
           "effects": [
             {
               "op": "condition",
@@ -1343,7 +1361,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Before initiative, one enemy that can see you makes a Heart save against Fear or loses its first turn.",
-          "player": "Before the first turn, one enemy that can see you makes a Heart save against Fear or loses its first turn.",
+          "player": "Before the first turn, one foe saves (Heart) or loses its first turn",
           "effects": [
             {
               "op": "grant_action",
@@ -1463,27 +1481,27 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.hit} to hit with guns, light blades and thrown weapons."
+            "text": "+{=per_point.numbers.hit} to hit: guns, light blades, thrown"
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.crit|pct}% critical damage."
+            "text": "+{=per_point.numbers.crit|pct}% critical damage"
           },
           {
             "at": "each",
-            "text": "You throw half a tile further."
+            "text": "+½ tile throw range"
           },
           {
             "at": "each",
-            "text": "Your shooting techniques are harder to save against."
+            "text": "Shooting techniques: harder to save against"
           },
           {
             "at": "at 3",
-            "text": "Near Miss (a held shot that misses still adds Pressure) and Shaken Nerves (foes save worse for each Pressure on them) open."
+            "text": "Near Miss · Shaken Nerves"
           },
           {
             "at": "at 5",
-            "text": "Flush Out opens: your Flush, or a Dexterity blow on a Pressed foe, can leave it Afraid of you."
+            "text": "Flush Out: can leave a foe Afraid"
           }
         ]
       },
@@ -1521,7 +1539,7 @@
           "adjudication": "engine",
           "provisional": true,
           "text": "Pressure is Dexterity's door: every hit you roll with Dexterity presses its target, a gun's, a bow's, a thrown knife's, a light blade's or a Dexterity glove's alike (a glove whose blows roll with Dexterity counts). A ranged hit adds Pressure (the first on each target each turn); a blow rolled with Dexterity adds {=unlocks.1.effects.3.value} (at most {=unlocks.1.effects.3.limit.n} on a target a turn) and does not shed your own; a blow rolled with anything else sheds your own. Slide is yours from the first point (its own card). From Dexterity {=unlocks.1.effects.0.if.self_skill.dexterity}, Near Miss: an attack of yours rolled with Dexterity off your own turn (a held shot: Overwatch, Deny, Cover Me, Dead to Rights; a Riposte) that misses still adds {=unlocks.1.effects.0.value} Pressure (once a turn for each target): your lane holds even when the round or the blade goes wide; and Shaken Nerves: every save a foe makes against you is harder by {=unlocks.1.effects.1.value.per.0.value} for each Pressure pip on it (at most {=unlocks.1.effects.1.value.max}). From Dexterity {=unlocks.1.effects.2.if.self_skill.dexterity}, Flush Out: your Flush also makes its target save (Heart) or be Afraid of you for {=unlocks.1.effects.2.rounds} round: it won't come at you or shoot at you; and its blade twin: a Pressed foe (Pressure {=unlocks.1.effects.4.if.target_res.pressure.at_least} or more) you hit with a blow rolled with Dexterity saves the same way or is Afraid of you for {=unlocks.1.effects.4.rounds} round (once a turn; never an Elite or a Boss: only a Flush frightens those).",
-          "player": "Every hit you roll with Dexterity adds Pressure (pips that make a foe aim worse), and Slide is yours.",
+          "player": "Dexterity hits add Pressure · Slide",
           "effects": [
             {
               "op": "resource",
@@ -1651,7 +1669,7 @@
           "category": "AP Mod",
           "mastery": 1,
           "text": "Reloading costs {=unlocks.3.effects.0.value|abs} AP less.",
-          "player": "Reloading costs {=.effects.0.value|abs} AP less.",
+          "player": "Reload costs {=.effects.0.value|abs} AP less",
           "effects": [
             {
               "op": "stat_mod",
@@ -1681,7 +1699,7 @@
           "category": "AP Mod",
           "mastery": 2,
           "text": "Once per combat, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs 0 AP.",
-          "player": "Once a fight, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs no AP.",
+          "player": "Once a fight: your first attack with a weapon you draw costs no AP",
           "effects": [
             {
               "op": "cost_mod",
@@ -1816,11 +1834,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "you shake off more of your own Pressure at the end of a plain turn, and Slide reaches further, by {=per_point.numbers.feed|pct}% for every point here times every point in Dexterity."
+            "text": "+{=per_point.numbers.feed|pct}% Pressure shed · Slide reach"
           },
           {
             "at": "each from 2",
-            "text": "+{=per_point.numbers.defense} Defense: you are harder to hit."
+            "text": "+{=per_point.numbers.defense} Defense"
           }
         ]
       },
@@ -1834,7 +1852,7 @@
           "category": "Combat Interaction",
           "mastery": 1,
           "text": "Move over cover and obstacles at no extra movement cost.",
-          "player": "Move over cover and obstacles at no extra movement cost.",
+          "player": "Cross cover at no extra movement",
           "effects": [
             {
               "op": "stat_mod",
@@ -1854,7 +1872,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "While wearing no torso armour (Class 0), attacks against you roll twice and take the worse result.",
-          "player": "While you wear no torso armour, attacks on you roll twice and take the worse result.",
+          "player": "No torso armour: attacks on you roll twice, take the worse",
           "effects": [
             {
               "op": "disadvantage",
@@ -1967,11 +1985,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.init} Initiative: you act earlier in the round."
+            "text": "+{=per_point.numbers.init} Initiative"
           },
           {
             "at": "each",
-            "text": "Your Cue reaches {=per_point.numbers.call_range} tile further."
+            "text": "+{=per_point.numbers.call_range} tile Cue reach"
           }
         ]
       },
@@ -1982,7 +2000,7 @@
           "category": "Combat Starter",
           "mastery": 1,
           "text": "You act in the surprise round even when your side is the one surprised.",
-          "player": "You act in the surprise round even when your side is the one surprised.",
+          "player": "Act in the surprise round, even when surprised",
           "effects": [
             {
               "op": "grant_action",
@@ -2003,7 +2021,7 @@
           "category": "Conversation Quirk",
           "mastery": 2,
           "text": "Once per scene, interrupt an NPC mid-sentence or mid-action to act first: grab, draw, leave, or speak.",
-          "player": "Once a scene, cut in on someone mid-sentence or mid-action and act first: grab, draw, leave or speak.",
+          "player": "Once a scene: cut in and act first",
           "effects": [
             {
               "op": "grant_action",
@@ -2138,11 +2156,11 @@
         "rows": [
           {
             "at": "every 2",
-            "text": "Enemies need {=per_point.numbers.spot} more to spot you while you sneak."
+            "text": "+{=per_point.numbers.spot} to the roll foes need to spot you while you sneak"
           },
           {
             "at": "each",
-            "text": "Your traps, poisons and unseen acts are harder to save against."
+            "text": "Traps, poisons and unseen acts: harder to save against"
           }
         ]
       },
@@ -2158,7 +2176,7 @@
           "adjudication": "engine",
           "provisional": true,
           "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once. Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy.",
-          "player": "You fill Shadow while unseen: {=.effects.0.value} for a turn you end Hidden without attacking, {=.effects.1.value} for a move from cover to cover nobody sees (once a turn), {=.effects.2.value} for a kill nobody sees; at most {=.effects.0.limit.n} a turn. While an enemy can see you, you lose {=.effects.3.value|abs} at the start of your turn. Spend it all on a Break, one big attack from Hidden. Go to Ground: Hide costs you {=.effects.8.value|abs} AP less (never under {=.effects.8.min}). First Shade: your first Hide of a fight, with no Shadow, gives you {=.effects.9.value} at once. Tagged: from Hidden you get +{=.effects.10.value} to hit a Marked enemy.",
+          "player": "+{=.effects.0.value} for a turn ended Hidden · +{=.effects.1.value} for a cover-to-cover move · +{=.effects.2.value} for an unseen kill. Go to Ground: Hide costs {=.effects.8.value|abs} AP less · First Shade: +{=.effects.9.value} Shadow on your first Hide · Tagged: +{=.effects.10.value} to hit a Marked foe",
           "effects": [
             {
               "op": "resource",
@@ -2410,7 +2428,7 @@
           "category": "Combat Interaction",
           "mastery": 1,
           "text": "A perk step in this skill. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=unlocks.3.effects.1.value}) instead of finding you outright. Ghost Kill: drop a foe while no enemy's eyes reach you and you sink back into Hidden (once a turn; not while Marked). The Shadow verbs of this rung open: Lift, Decoy, Read Intent and Cut the Strap.",
-          "player": "Close Quarters: a foe that ends its turn next to you while you are Hidden has to roll to spot you (at +{=.effects.1.value}) instead of finding you outright. Ghost Kill: once a turn, drop a foe while no enemy can see you and you slip back into Hidden (not while Marked). New moves from Hidden: Lift (steal a grenade or a magazine), Decoy (a noise every foe believes is you), Read Intent (see a foe's next action) and Cut the Strap (disarm a foe next to you).",
+          "player": "Close Quarters · Ghost Kill · New moves: Lift (steal), Decoy (noise), Read Intent (see next action), Cut the Strap (disarm)",
           "effects": [
             {
               "op": "perk_choice",
@@ -2422,6 +2440,16 @@
               "when": "spot",
               "value": 4,
               "label": "Close Quarters"
+            },
+            {
+              "op": "mark",
+              "flag": "ghost_eyes",
+              "when": "attack_roll",
+              "if": {
+                "self_sight": [
+                  "in_view"
+                ]
+              }
             },
             {
               "op": "mark",
@@ -2438,6 +2466,7 @@
               "when": "acted",
               "if": {
                 "flag": "ghost",
+                "no_flag": "ghost_eyes",
                 "self_sight": [
                   "out_of_view"
                 ],
@@ -2470,7 +2499,20 @@
             },
             {
               "op": "mark",
+              "flag": "ghost_eyes",
+              "clear": true,
+              "when": "acted",
+              "priority": 120
+            },
+            {
+              "op": "mark",
               "flag": "ghost",
+              "clear": true,
+              "when": "turn_start"
+            },
+            {
+              "op": "mark",
+              "flag": "ghost_eyes",
               "clear": true,
               "when": "turn_start"
             }
@@ -2494,7 +2536,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Vault, Open Seam, Foul the Action, Pick and Douse.",
-          "player": "Still Breath: while you stand next to cover, foes roll {=.effects.0.value} to spot you. Your Shadow holds one more. New moves: Fade (slip back into Hidden by cover even when seen), Vault (hop a low barrier), Open Seam (lower a foe's Defense), Foul the Action (spoil a foe's weapon), Pick (open or lock a door) and Douse (put out a lamp).",
+          "player": "Still Breath: {=.effects.0.value} to foes' spot rolls while you stand beside cover · Shadow holds more · New moves: Fade (slip back into Hidden), Vault (hop a barrier), Open Seam (lower Defense), Foul the Action (spoil a weapon), Pick (open or lock), Douse (put out a lamp)",
           "effects": [
             {
               "op": "roll_mod",
@@ -2525,7 +2567,7 @@
           "name": "Mastery 3",
           "mastery": 3,
           "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Shadow Run: once a turn, a move made Hidden from cover to cover costs {=unlocks.7.effects.1.value} AP less (at least {=unlocks.7.effects.1.min}). Your Shadow holds one more, and the Shadow verbs of this rung open: Timing, Rig, Plant and Disable.",
-          "player": "Shadow Run: once a turn, a move you make Hidden from cover to cover costs {=.effects.1.value|abs} AP less (never under {=.effects.1.min}). Your Shadow holds one more. New moves: Timing (a foe loses an AP next turn), Rig (set a trap), Plant (a tracker that Marks a foe) and Disable (stun a machine).",
+          "player": "Shadow Run: a Hidden cover-to-cover move costs {=.effects.1.value|abs} AP less (min {=.effects.1.min}) · Shadow holds more · New moves: Timing (foe loses AP), Rig (set a trap), Plant (a tracker), Disable (stun a machine)",
           "effects": [
             {
               "op": "perk_choice",
@@ -2565,7 +2607,7 @@
           "name": "Mastery 4",
           "mastery": 4,
           "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. The Shadow verbs of this rung open: Parting Cut and Hijack.",
-          "player": "New move: Hijack (take control of a machine next to you). Parting Cut is listed here but not in the game yet.",
+          "player": "New move: Hijack (take control of a machine)",
           "effects": [],
           "adjudication": "engine"
         },
@@ -2671,15 +2713,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "While you are Hidden, foes need more to find you: the more points you have here and in Ingenuity, the more, up to {=per_point.numbers.feed_at_double} more with both at the top (each point here times each point there gives {=per_point.numbers.feed|pct}% of that)."
+            "text": "+{=per_point.numbers.feed|pct}% foes' search difficulty while Hidden, up to +{=per_point.numbers.feed_at_double}"
           },
           {
             "at": "each",
-            "text": "You take {=per_point.numbers.crit_taken|pct}% less critical damage."
+            "text": "−{=per_point.numbers.crit_taken|pct}% critical damage taken"
           },
           {
             "at": "each",
-            "text": "Analyze reaches {=per_point.numbers.range} tile further."
+            "text": "+{=per_point.numbers.range} tile Analyze reach"
           }
         ]
       },
@@ -2690,7 +2732,7 @@
           "category": "AP Mod",
           "mastery": 1,
           "text": "Analyze costs 1 AP.",
-          "player": "Analyze costs {=.effects.0.value|abs} AP less.",
+          "player": "Analyze costs {=.effects.0.value|abs} AP less",
           "effects": [
             {
               "op": "stat_mod",
@@ -2710,7 +2752,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "Enemies you've analyzed deal {=unlocks.5.effects.0.value_pct}% less damage to your whole squad.",
-          "player": "Enemies you have analysed deal {=.effects.0.value_pct}% less damage to your whole squad.",
+          "player": "−{=.effects.0.value_pct}% damage from foes you have analysed",
           "effects": [
             {
               "op": "damage_reduction",
@@ -2836,15 +2878,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "You notice traps, hidden things and hidden enemies {=per_point.numbers.notice} better."
+            "text": "+{=per_point.numbers.notice} to notice traps and hidden foes"
           },
           {
             "at": "each",
-            "text": "You notice them {=per_point.numbers.notice_range} tile further off."
+            "text": "+{=per_point.numbers.notice_range} tile notice range"
           },
           {
             "at": "each",
-            "text": "Your Spot reaches {=per_point.numbers.call_range} tile further."
+            "text": "+{=per_point.numbers.call_range} tile Spot reach"
           }
         ]
       },
@@ -2855,7 +2897,7 @@
           "category": "Combat Starter",
           "mastery": 1,
           "text": "When a hidden enemy aims at you, you learn which direction it's in.",
-          "player": "When a hidden enemy aims at you, you learn which direction it is in.",
+          "player": "Know which way a hidden foe aiming at you is",
           "effects": [
             {
               "op": "stat_mod",
@@ -2875,7 +2917,7 @@
           "category": "Conversation Quirk",
           "mastery": 2,
           "text": "In any conversation, you notice concealed weapons and hostile intent.",
-          "player": "In any conversation, you notice hidden weapons and hostile intent.",
+          "player": "Notice hidden weapons and hostile intent in talk",
           "effects": [
             {
               "op": "narrator",
@@ -3020,23 +3062,23 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.sigil|pct}% Sigil power (spells of glyphs drawn on the ground)."
+            "text": "+{=per_point.numbers.sigil|pct}% Sigil power"
           },
           {
             "at": "each",
-            "text": "You know {=per_point.numbers.words} more Sigil word."
+            "text": "+{=per_point.numbers.words} Sigil word"
           },
           {
             "at": "each",
-            "text": "Your Sigils' conditions are harder to save against."
+            "text": "Sigil conditions: harder to save against"
           },
           {
             "at": "every 2",
-            "text": "Your Sigils reach {=per_point.numbers.range} tile further and last {=per_point.numbers.rounds} round longer."
+            "text": "+{=per_point.numbers.range} tile Sigil reach · +{=per_point.numbers.rounds} round duration"
           },
           {
             "at": "every 3",
-            "text": "Each Sigil burns {=per_point.numbers.charge} less core charge."
+            "text": "−{=per_point.numbers.charge} core charge a Sigil"
           }
         ]
       },
@@ -3049,7 +3091,7 @@
           "category": "Active Skill",
           "mastery": 1,
           "text": "Draw a spell one word longer than your Max Sigil words (never past 4 glyphs), for +{=unlocks.3.effects.1.value|abs} Core charge.",
-          "player": "Draw a spell one word longer than you know (never past four glyphs), for {=.effects.1.value|abs} more core charge.",
+          "player": "One glyph past what you know for {=.effects.1.value|abs} more core charge",
           "effects": [
             {
               "op": "grant_action",
@@ -3087,7 +3129,7 @@
           "category": "Combat Interaction",
           "mastery": 2,
           "text": "Once per combat, draw the glyphs of two Sigil spells and pay the Glyph AP of the longer spell only.",
-          "player": "Once a fight, draw the glyphs of two Sigil spells and pay only the longer one's glyph AP.",
+          "player": "Once a fight: draw two Sigil spells for the longer one's glyph AP",
           "effects": [
             {
               "op": "grant_action",
@@ -3219,11 +3261,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "your Flux limit (the heat your glyphs can build) rises by {=per_point.numbers.feed|pct}% for every point here times every point in Brain Power."
+            "text": "+{=per_point.numbers.feed|pct}% Flux limit"
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.save} on Brain saves: against confusion, illusions and your mind being turned."
+            "text": "+{=per_point.numbers.save} on Brain saves"
           }
         ]
       },
@@ -3234,7 +3276,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Once per scene, ask the Narrator one factual question about technology, biology or history. The answer is true.",
-          "player": "Once a scene, ask the Narrator one factual question about technology, biology or history; the answer is true.",
+          "player": "Once a scene: one true fact about technology, biology or history",
           "effects": [
             {
               "op": "grant_action",
@@ -3259,7 +3301,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "+{=unlocks.5.effects.0.value} on your saves against a spell or condition that has already hit you this combat.",
-          "player": "+{=.effects.0.value} on saves against a spell or condition that has already hit you this fight.",
+          "player": "{=.effects.0.value} on saves against what already hit you this fight",
           "effects": [
             {
               "op": "save_mod",
@@ -3383,11 +3425,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Persuading an enemy in a fight is harder for it to resist."
+            "text": "Persuasion in a fight: harder to resist"
           },
           {
             "at": "each",
-            "text": "Your Brief reaches {=per_point.numbers.call_range} tile further."
+            "text": "+{=per_point.numbers.call_range} tile Brief reach"
           }
         ]
       },
@@ -3398,7 +3440,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "When an NPC makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, they lose credibility with everyone listening.",
-          "player": "When someone makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, everyone listening trusts them less.",
+          "player": "Expose a claim: listeners trust the speaker less",
           "effects": [
             {
               "op": "narrator",
@@ -3417,7 +3459,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Debate the enemy leader before a fight. On a success, every enemy has {=unlocks.5.numbers.ap_loss} AP less in the first round.",
-          "player": "Debate the enemy leader before a fight; on a success, every enemy has {=.numbers.ap_loss} AP less in the first round.",
+          "player": "Before a fight: every foe has {=.numbers.ap_loss} AP less in round one",
           "effects": [
             {
               "op": "grant_action",
@@ -3543,23 +3585,23 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Figments (shapes you build of mana) reach {=per_point.numbers.range} tile further."
+            "text": "+{=per_point.numbers.range} tile Figment reach"
           },
           {
             "at": "each",
-            "text": "Your Figments are more accurate."
+            "text": "More accurate Figments"
           },
           {
             "at": "at 2",
-            "text": "You can Picture the Hand."
+            "text": "Picture the Hand"
           },
           {
             "at": "at 8",
-            "text": "Four ready designs, and one more shape from your second fork."
+            "text": "Four ready designs · one more shape from your second fork"
           },
           {
             "at": "at 10",
-            "text": "Every shape is yours, and five ready designs."
+            "text": "Every shape · five ready designs"
           }
         ]
       },
@@ -3573,7 +3615,7 @@
           "category": "Active Skill",
           "mastery": 0,
           "text": "The door, its whole loop, smaller: Picture (a Figment built of mana), the Double, one held; projection range four tiles plus your Visualization. Needs the Visualizer (figments.json).",
-          "player": "With the Visualizer in hand, Picture a Figment: the Double (a decoy of you) or the Snare. You hold one at a time, and it reaches four tiles plus your Visualization. Glimmer (a fake you, painted in light), Redraw (move a Figment) and Cash in (unmake it for its charge back) are yours too.",
+          "player": "With the Visualizer: Picture the Double or the Snare · one held · Glimmer · Redraw · Cash in",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3584,7 +3626,7 @@
           "category": "Active Skill",
           "mastery": 1,
           "text": "A perk step in this skill; two ready designs, one trait each (figments.json ladder).",
-          "player": "Ready designs: Figments you set up out of a fight, each with a trait (an extra power), to Picture in one go. You keep two, with one trait each.",
+          "player": "Ready designs: two, one trait each",
           "effects": [
             {
               "op": "perk_choice",
@@ -3600,7 +3642,7 @@
           "category": "Fork",
           "mastery": 0,
           "text": "The door's first fork: choose one of the Eye, the Wall or the Ward, out of a fight, kept for good (figments.json ladder).",
-          "player": "Choose one, out of a fight, kept for good.",
+          "player": "Choose one, kept for good",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3611,7 +3653,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "Two Figments held; three ready designs (figments.json ladder).",
-          "player": "Two Figments held at once, and three ready designs.",
+          "player": "Two held · three ready designs",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3622,7 +3664,7 @@
           "category": "Fork",
           "mastery": 0,
           "text": "The door's second fork: choose one of the Beast, the Blade, the Husk or the Sentinel, out of a fight, kept for good (figments.json ladder).",
-          "player": "Choose one, out of a fight, kept for good.",
+          "player": "Choose one, kept for good",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3632,7 +3674,7 @@
           "name": "Mastery 3",
           "mastery": 3,
           "text": "Three Figments held; two traits a design. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "player": "Three Figments held at once, two traits a design, and one more shape from your first fork.",
+          "player": "Three held · two traits a design · one more shape from your first fork",
           "effects": [
             {
               "op": "perk_choice",
@@ -3646,7 +3688,7 @@
           "name": "Mastery 4",
           "mastery": 4,
           "text": "A destroyed Figment no longer Snaps. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "player": "A destroyed Figment no longer Snaps (a Snap costs you AP on your next turn), and you get one more shape from either fork.",
+          "player": "A destroyed Figment no longer Snaps · one more shape from either fork",
           "effects": [],
           "adjudication": "engine"
         },
@@ -3740,15 +3782,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "your Figments have more HP: {=per_point.numbers.feed|pct}% more for every point here times every point in Visualization."
+            "text": "+{=per_point.numbers.feed|pct}% Figment HP"
           },
           {
             "at": "each",
-            "text": "You take {=per_point.numbers.ambush_taken|pct}% less damage from ambushes."
+            "text": "−{=per_point.numbers.ambush_taken|pct}% damage from ambushes"
           },
           {
             "at": "each from 3",
-            "text": "Field Repair restores more."
+            "text": "Field Repair restores more"
           }
         ]
       },
@@ -3759,7 +3801,7 @@
           "category": "AP Mod",
           "mastery": 1,
           "text": "{=unlocks.3.effects.0.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=unlocks.3.effects.0.repair_base|pct}% + {=unlocks.3.effects.0.repair_per_point|pct}% per Improvisation point above 3 of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=unlocks.3.amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, 10 minutes per charge restores 50%.",
-          "player": "{=.effects.0.ap} AP and one spare part, on you or something next to you: clear a jam, restore {=.effects.0.repair_base|pct}% of a weapon's durability (more above three points), or repair a machine or Figment for {=.amounts.repair.base} (a Downed machine gets back up).",
+          "player": "{=.effects.0.ap} AP and a spare part: clear a jam · restore {=.effects.0.repair_base|pct}% weapon durability · repair a machine or Figment for {=.amounts.repair.base}",
           "effects": [
             {
               "op": "grant_action",
@@ -3791,7 +3833,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "The weapon in your main hand never jams and never breaks.",
-          "player": "The weapon in your main hand never jams and never breaks.",
+          "player": "Main-hand weapon never jams or breaks",
           "effects": [
             {
               "op": "immunity",
@@ -3907,11 +3949,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "An offer of terms is harder to refuse."
+            "text": "Offers of terms: harder to refuse"
           },
           {
             "at": "each",
-            "text": "Your Rally reaches {=per_point.numbers.call_range} tile further."
+            "text": "+{=per_point.numbers.call_range} tile Rally reach"
           }
         ]
       },
@@ -3922,7 +3964,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "A failed lie doesn't get exposed straight away; the listener is only suspicious.",
-          "player": "A failed lie isn't exposed straight away; the listener only grows suspicious.",
+          "player": "A failed lie only raises suspicion",
           "effects": [
             {
               "op": "narrator",
@@ -3941,7 +3983,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Before a fight, one attempt to talk the enemy down. On a success, the leader stands down, or the rank-and-file walk away.",
-          "player": "Before a fight, one try to talk the enemy down: on a success the leader stands down, or the rank-and-file walk away.",
+          "player": "Before a fight: talk the enemy down",
           "effects": [
             {
               "op": "grant_action",
@@ -4078,15 +4120,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "Healing you give grows."
+            "text": "More healing given"
           },
           {
             "at": "from 1",
-            "text": "With an Attuner in hand, it opens Bonds (a thread to a friend) and Tending (healing a friend through it)."
+            "text": "Opens Bonds and Tending (needs an Attuner): a Bond can be put on a friend or an enemy"
           },
           {
             "at": "each",
-            "text": "With an Attuner, you hold more Bonds and gain more Tending moves as it grows."
+            "text": "More Bonds held · more Tending moves"
           }
         ]
       },
@@ -4099,7 +4141,7 @@
           "category": "Combat Interaction",
           "mastery": 1,
           "text": "You see the HP state and morale of every creature in your Vision range.",
-          "player": "You see the health and morale of every creature in your Vision range.",
+          "player": "See the health and morale of everyone in sight",
           "effects": [
             {
               "op": "stat_mod",
@@ -4129,7 +4171,7 @@
           "category": "Active Skill",
           "mastery": 2,
           "text": "{=unlocks.5.effects.0.ap} AP: a humanoid enemy below 50% HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
-          "player": "{=.effects.0.ap} AP: a humanoid enemy below half its HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
+          "player": "{=.effects.0.ap} AP: a humanoid foe below half HP saves (Heart) or yields",
           "effects": [
             {
               "op": "grant_action",
@@ -4267,15 +4309,15 @@
         "rows": [
           {
             "at": "each",
-            "text": "What you heal through a Bond heals you too: the more points you have here and in Empathy, the more, up to {=per_point.numbers.feed_at_double|pct}% of it with both at the top (each point here times each point there gives {=per_point.numbers.feed|pct}% of that). It does not count as healing you give."
+            "text": "+{=per_point.numbers.feed|pct}% of Bond healing heals you too, up to {=per_point.numbers.feed_at_double|pct}%"
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.heal|pct}% healing you receive."
+            "text": "+{=per_point.numbers.heal|pct}% healing received"
           },
           {
             "at": "at 5",
-            "text": "Share a Hit also covers a Bonded friend you can see."
+            "text": "Share a Hit also covers a Bonded friend in sight"
           }
         ]
       },
@@ -4286,7 +4328,7 @@
           "category": "Reaction",
           "mastery": 0,
           "text": "Your reaction, when an ally next to you is hit (from {=unlocks.1.effects.1.if.self_skill.camaraderie} points also a Bonded ally you see): you take {=unlocks.1.effects.0.share.base|pct}% of the damage instead, +{=unlocks.1.effects.0.share.per.0.value|pct}% a point of Camaraderie (at most {=unlocks.1.effects.0.share.max|pct}%). It needs no focus. An Answer: on until you switch it off, like every Answer.",
-          "player": "Your reaction when a friend next to you is hit: you take {=.effects.0.share.base|pct}% of the damage instead, {=.effects.0.share.per.0.value|pct}% more for each point (at most {=.effects.0.share.max|pct}%). It needs no focus, and it stays on until you switch it off.",
+          "player": "Take {=.effects.0.share.base|pct}% of a hit on a friend beside you · +{=.effects.0.share.per.0.value|pct}% a point (max {=.effects.0.share.max|pct}%)",
           "effects": [
             {
               "op": "redirect",
@@ -4356,7 +4398,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Once per round, when an ally next to you is attacked, they use your Defense in place of their own if yours is higher.",
-          "player": "Once a round, a friend next to you who is attacked uses your Defense if it is higher.",
+          "player": "Once a round: a friend beside you uses your Defense if higher",
           "effects": [
             {
               "op": "stat_mod",
@@ -4381,7 +4423,7 @@
           "category": "Passive",
           "mastery": 2,
           "text": "Carry a Downed ally at full Movement, and stabilise them for {=unlocks.5.effects.0.value|abs} AP.",
-          "player": "Carry a Downed friend at full Movement, and stabilise them for {=.effects.0.value|abs} AP.",
+          "player": "Carry a Downed friend at full Movement · stabilise for {=.effects.0.value|abs} AP",
           "effects": [
             {
               "op": "stat_mod",
@@ -4498,11 +4540,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Taunt reaches {=per_point.numbers.call_range} tile further."
+            "text": "+{=per_point.numbers.call_range} tile Taunt reach"
           },
           {
             "at": "each",
-            "text": "Your Taunt is harder to shake off."
+            "text": "Taunt: harder to shake off"
           }
         ]
       },
@@ -4513,7 +4555,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "When an NPC speaks in code or hides their meaning, the Narrator tells you what they really mean.",
-          "player": "When someone speaks in code or hides their meaning, the Narrator tells you what they really mean.",
+          "player": "Hear what coded talk really means",
           "effects": [
             {
               "op": "narrator",
@@ -4532,7 +4574,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Before a fight, taunt one enemy in metaphor. It makes a Heart save or must target you first, at {=unlocks.5.numbers.hit} to hit.",
-          "player": "Before a fight, taunt one enemy in metaphor: it makes a Heart save or must attack you first, at {=.numbers.hit} to hit.",
+          "player": "Before a fight: a foe saves (Heart) or must attack you first, {=.numbers.hit} to hit",
           "effects": [
             {
               "op": "grant_action",
@@ -4686,31 +4728,31 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.soul|pct}% Soul power and +{=per_point.numbers.syphon|pct}% mana syphoned."
+            "text": "+{=per_point.numbers.soul|pct}% Soul power · +{=per_point.numbers.syphon|pct}% mana syphoned"
           },
           {
             "at": "each",
-            "text": "Your Outbursts (Soul spells you charge, then release) are harder to save against."
+            "text": "Outbursts: harder to save against"
           },
           {
             "at": "every 2",
-            "text": "+{=per_point.numbers.strain} Strain limit (what your heart can take), and your Outbursts reach {=per_point.numbers.reach} tile further."
+            "text": "+{=per_point.numbers.strain} Strain limit · +{=per_point.numbers.reach} tile Outburst reach"
           },
           {
             "at": "every 2",
-            "text": "You keep {=per_point.numbers.designs} more design ready."
+            "text": "+{=per_point.numbers.designs} design ready"
           },
           {
             "at": "every 3",
-            "text": "{=per_point.numbers.slots} more module slot in a design."
+            "text": "+{=per_point.numbers.slots} module slot"
           },
           {
             "at": "from 3",
-            "text": "{=per_point.numbers.pumps} Pump of an Outburst each round is free."
+            "text": "{=per_point.numbers.pumps} free Pump a round"
           },
           {
             "at": "from 7",
-            "text": "A held Outburst swells without Strain."
+            "text": "A held Outburst swells with no Strain"
           }
         ]
       },
@@ -4722,8 +4764,8 @@
           "name": "Overdraw",
           "category": "Active Skill",
           "mastery": 1,
-          "text": "Once a turn, a Pump can be an Overdraw: it adds 2 stages instead of 1, so it needs stage 2 or lower. It costs only the Pump's own AP. Your first Overdraw of a fight costs no Strain. Each one after it costs you 1 Strain once the Pump is done.",
-          "player": "Once a turn, a Pump can add two stages instead of one (from stage two or lower) for the Pump's own AP; your first of a fight costs no Strain, each after it one Strain.",
+          "text": "Once a turn: a Pump adds 2 stages · +1 Strain after the first",
+          "player": "Overdraw, once a turn: a Pump adds two stages · the first of a fight costs no Strain, then one Strain",
           "effects": [
             {
               "op": "grant_action",
@@ -4756,7 +4798,7 @@
           "category": "Combat Interaction",
           "mastery": 2,
           "text": "Once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release.",
-          "player": "Once a fight, the first Strain that would Mana Short you is refused: your Strain falls to your limit, with no Stun and no wild release.",
+          "player": "Once a fight: the Strain that would Mana Short you is refused",
           "effects": [
             {
               "op": "grant_action",
@@ -4898,11 +4940,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "your Strain limit rises by {=per_point.numbers.feed|pct}% for every point here times every point in Will Power."
+            "text": "+{=per_point.numbers.feed|pct}% Strain limit"
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.save} on Heart saves: against fear, despair and losing your nerve."
+            "text": "+{=per_point.numbers.save} on Heart saves"
           }
         ]
       },
@@ -4913,7 +4955,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "Interrogators and lie-readers take −{=unlocks.3.effects.0.value} against you.",
-          "player": "Anyone questioning you or reading your lies takes −{=.effects.0.value} against you.",
+          "player": "Anyone questioning you or reading your lies takes −{=.effects.0.value}",
           "effects": [
             {
               "op": "tn_mod",
@@ -4933,7 +4975,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Until you first act in a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it (once a combat, if your weapon reaches). A Call doesn't count as acting.",
-          "player": "Until you first act in a fight, enemies attacking you are at −{=.effects.0.value} to hit, and the first to miss gives you a free attack on it (once a fight, if your weapon reaches); a Call does not count as acting.",
+          "player": "Until you first act: foes −{=.effects.0.value} to hit you · the first miss gives you a free attack",
           "effects": [
             {
               "op": "stat_mod",
@@ -5054,7 +5096,7 @@
         "rows": [
           {
             "at": "each",
-            "text": "Your Name It reaches {=per_point.numbers.call_range} tile further."
+            "text": "+{=per_point.numbers.call_range} tile Name It reach"
           }
         ]
       },
@@ -5065,7 +5107,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Once per scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true.",
-          "player": "Once a scene, ask the Narrator one question about a supernatural creature, curse or relic; the answer is true.",
+          "player": "Once a scene: one true fact about a creature, curse or relic",
           "effects": [
             {
               "op": "grant_action",
@@ -5090,7 +5132,7 @@
           "category": "AP Mod",
           "mastery": 2,
           "text": "{=unlocks.5.effects.0.ap} AP: an ally gets +{=unlocks.5.numbers.save} on their next save against a supernatural effect.",
-          "player": "{=.effects.0.ap} AP: a friend gets +{=.numbers.save} on their next save against a supernatural effect.",
+          "player": "{=.effects.0.ap} AP: a friend +{=.numbers.save} on their next save against the supernatural",
           "effects": [
             {
               "op": "grant_action",
@@ -5231,15 +5273,16 @@
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.blessing|pct}% Blessing power."
+            "text": "+{=per_point.numbers.blessing|pct}% Blessing power"
           },
           {
             "at": "each",
-            "text": "Hymns (strong prayers that must wait) come back {=per_point.numbers.hymn_cut} round sooner, never sooner than {=per_point.numbers.hymn_floor} rounds."
+            "grows": "hymn_wait",
+            "text": "Hymns return {=per_point.numbers.hymn_cut} round sooner (min {=per_point.numbers.hymn_floor})"
           },
           {
             "at": "each",
-            "text": "Your Blessings' conditions are harder to save against."
+            "text": "Blessings: harder to save against"
           }
         ]
       },
@@ -5252,7 +5295,7 @@
           "category": "Active Skill",
           "mastery": 1,
           "text": "Once per combat, reset your prayer cooldown.",
-          "player": "Once a fight, reset your prayers' wait.",
+          "player": "Once a fight: reset your prayers' wait",
           "effects": [
             {
               "op": "grant_action",
@@ -5283,7 +5326,7 @@
           "category": "Combat Interaction",
           "mastery": 2,
           "text": "Your patron's blows (Smite, Amen, Rebuke, a Hymn's or an intervention's harm) deal {=unlocks.5.effects.0.value|pct}% more to a foe your squad has Marked (Marking is Shadow's).",
-          "player": "Your patron's blows (Smite, Amen, Rebuke, a Hymn's or an intervention's harm) deal {=.effects.0.value|pct}% more to a foe your squad has Marked.",
+          "player": "+{=.effects.0.value|pct}% damage from your patron's blows on a Marked foe",
           "effects": [
             {
               "op": "damage_vs",
@@ -5429,11 +5472,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Every shield your prayers give (Protection, a Hymn's shield, the Ward) is {=per_point.numbers.feed|pct}% stronger for every point here times every point in Faith."
+            "text": "+{=per_point.numbers.feed|pct}% prayer shields"
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.shield|pct}% to every shield you are given."
+            "text": "+{=per_point.numbers.shield|pct}% shields received"
           }
         ]
       },
@@ -5474,7 +5517,7 @@
           "category": "Passive",
           "mastery": 1,
           "text": "Before a major decision, ask the Narrator for its worst likely consequence. The answer is honest.",
-          "player": "Before a big decision, ask the Narrator for its worst likely result; the answer is honest.",
+          "player": "Before a big decision: its worst likely result",
           "effects": [
             {
               "op": "narrator",
@@ -5493,7 +5536,7 @@
           "category": "AP Mod",
           "mastery": 2,
           "text": "While protecting innocents, your first action each turn costs {=unlocks.5.effects.0.value|abs} AP less.",
-          "player": "While you protect innocents, your first action each turn costs {=.effects.0.value|abs} AP less.",
+          "player": "While you protect innocents, your first action each turn costs {=.effects.0.value|abs} AP less",
           "effects": [
             {
               "op": "stat_mod",
@@ -5610,11 +5653,11 @@
         "rows": [
           {
             "at": "each",
-            "text": "Karma moves {=per_point.numbers.karma} further each time it changes, up or down."
+            "text": "Karma moves +{=per_point.numbers.karma} further"
           },
           {
             "at": "each",
-            "text": "Your Order reaches {=per_point.numbers.call_range} tile further."
+            "text": "+{=per_point.numbers.call_range} tile Order reach"
           }
         ]
       },
@@ -5625,7 +5668,7 @@
           "category": "Conversation Quirk",
           "mastery": 1,
           "text": "Lower-ranked NPCs (soldiers, guards, clerks) follow reasonable orders without a roll.",
-          "player": "Lower-ranked people (soldiers, guards, clerks) follow reasonable orders without a roll.",
+          "player": "Lower ranks follow reasonable orders, no roll",
           "effects": [
             {
               "op": "narrator",
@@ -5644,7 +5687,7 @@
           "category": "Combat Starter",
           "mastery": 2,
           "text": "Your squad has +{=unlocks.5.effects.0.value} AP in round 1, and enemy rank-and-file make a Heart save or hesitate (−{=unlocks.5.effects.0.value} AP).",
-          "player": "Your squad has +{=.effects.0.value} AP in the first round, and enemy rank-and-file make a Heart save or lose {=.effects.0.value} AP.",
+          "player": "Squad +{=.effects.0.value} AP in round one · foes save (Heart) or lose {=.effects.0.value} AP",
           "effects": [
             {
               "op": "stat_mod",

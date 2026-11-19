@@ -68,15 +68,16 @@ describe('the "?" skill page', () => {
     for (const s of D.skills as any[]) {
       const v = epccgVals(holder({ epccg: s.id }));
       expect(v.epOpen).toBe(true);
-      expect(v.ep.line).toBe(slotLine(s.slot));
-      expect(v.ep.line + v.ep.attrName).not.toMatch(/[αβγ]|Body|Mind|Soul/);
+      expect(v.ep.slot).toBe(({ alpha: 'FIGHT', beta: 'SURVIVE', gamma: 'TALK · NOTICE' } as any)[s.slot]);
+      expect(v.ep.slot + v.ep.attrName).not.toMatch(/[αβγ]|Body|Mind|Soul/);
       expect(v.ep.attrName).toBe(D.attrs.find((a: any) => a.id === s.attr).name);
-      // what a point gives: the road map's ten steps and the head line (rules 1.54 item 4119)
-      expect(v.ep.steps).toHaveLength(10); expect(v.ep.head.map((h: any) => h.text)).toEqual(roadMap(s.id).head);
+      // what a point gives: the road map's ten levels, each row its per-point gains then its own (no head block)
+      expect(v.ep.steps).toHaveLength(10); expect((v.ep as any).head).toBeUndefined();
+      for (const h of roadMap(s.id).head) if (!/\(from \d+\)$/.test(h)) expect(v.ep.steps.some((st: any) => st.text.includes(h)), s.id + ': ' + h).toBe(true); // a capped gain stops before 10 (0.31.11)
     }
     expect(slotLine('alpha')).toBe('How you fight');
     expect(slotLine('beta')).toBe('How you survive');
-    expect(slotLine('gamma')).toBe('How you talk and notice: it rolls 1 better on checks');
+    expect(slotLine('gamma')).toBe('How you talk and notice · +1 on checks');
   });
   it('the attribute in its header opens the attribute page', () => {
     const h = holder({ epccg: 'dexterity' });
@@ -92,7 +93,7 @@ describe('the attribute page', () => {
     for (const a of D.attrs as any[]) {
       const h = holder({ attrPage: a.id }), v = attrPageVals(h);
       expect(v.apOpen).toBe(true);
-      expect(v.ap.gives.map((g: any) => g.text.toLowerCase()).join(', ')).toBe((ATTR_GIVES as any)[a.id].toLowerCase());
+      expect(v.ap.gives.map((g: any) => g.text.toLowerCase()).join(' · ')).toBe((ATTR_GIVES as any)[a.id].toLowerCase());
       expect(v.ap.skills).toHaveLength(3);
       expect(v.ap.skills.map((k: any) => k.slot)).toEqual([slotLine('alpha'), slotLine('beta'), slotLine('gamma')]);
       for (const k of v.ap.skills) { expect(k.give).toBe(perPoint(k.key)); expect(k.give.length).toBeGreaterThan(0); }

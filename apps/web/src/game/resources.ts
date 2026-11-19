@@ -15,7 +15,7 @@ import { doorLineOf, feedLineOf } from './doorView';
 import { forkChipsLine } from './forkLine';
 import { enchantMark } from './quiverView';
 import { proseTip } from './actionTip';
-import { WEAPON, FLUX_MAX, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
+import { WEAPON, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
 
 export type ResKind = 'bar' | 'pips' | 'text';
@@ -227,7 +227,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     }
     const rAp = reloadApOf(u, c, w, g), type = ammoName(u ? u.ammoType : c?.loadedType);
     const low = now > 0 && now < cap && now <= Math.max(1, Math.ceil(cap * 0.25));
-    const row: ResRow = { key: 'ammo', label: 'Ammo', value: now + ' / ' + cap + ' loaded' + (spareTxt ? ' · ' + spareTxt : ''), now, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body,
+    const row: ResRow = { key: 'ammo', label: 'Ammo', value: now + ' / ' + cap + (spareTxt ? ' · ' + (spareTxt.startsWith('spares:') ? 'plenty' : spare + (loose ? ' loose' : ' spare')) : ''), now, max: cap, kind: cap <= 12 ? 'pips' : 'bar', colour: RES_INK.body,
       sub: (w.name || wid) + (type ? ' · ' + type + ' rounds' : ''),
       hint: 'Rounds in the ' + (w.name || 'gun').toLowerCase() + '. ' + (spare > 0 ? 'Reload: ' + rAp + ' AP' + (loose ? ' (round by round from loose rounds).' : ' (a fresh ' + (w.reload_unit || 'magazine') + ').') : 'No spares left: pick some up, or switch weapons.') };
     // each gun's jam on its own ammo row (Hands 5d: the guns jam apart); Heat, which they pool, has its own row
@@ -300,10 +300,13 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     else if (charge <= 3) Object.assign(row, cores > 0 ? { warn: 'LOW', level: 'caution', hint: 'Only ' + charge + ' charge left: swap core (2 AP) when it runs out (most words cost 1–3).' } : { warn: 'LOW', level: 'caution', hint: 'Only ' + charge + ' charge left and no spare cores.' });
     rows.push(row);
     const flux = mg ? mg.flux : sm.flux || 0;
-    const fr: ResRow = { key: 'flux', label: 'Flux', value: flux + ' / ' + FLUX_MAX, now: flux, max: FLUX_MAX, kind: 'pips', colour: RES_INK.mind,
-      hint: 'Each glyph adds 1 Flux. Past ' + FLUX_MAX + ' the Evoker overloads (10 damage per Flux over, locked a round). Vent (1 AP) clears it.' };
-    if (flux >= FLUX_MAX) Object.assign(fr, { warn: 'OVERLOAD NEXT', level: 'alert', hint: 'At ' + FLUX_MAX + ': the next glyph overloads the Evoker. Vent (1 AP) first.' });
-    else if (flux >= FLUX_MAX - 1) Object.assign(fr, { warn: 'OVERLOAD SOON', level: 'caution', hint: 'Flux ' + flux + ' of ' + FLUX_MAX + ': two more glyphs overload the Evoker. Vent (1 AP) dumps it into the air.' });
+    // the limit the reducer keeps (the engine's fluxMaxOf, the game bound: Rumination's feed reads the character; row 13
+    // of the outside playtest: the meter said 6 while the header and the rule said 7)
+    const FMAX: number = E.fluxMaxOf(mg && u ? u : c, mg && u ? cb : null, g ?? null); // (out of a fight: the sheet's own)
+    const fr: ResRow = { key: 'flux', label: 'Flux', value: flux + ' / ' + FMAX, now: flux, max: FMAX, kind: 'pips', colour: RES_INK.mind,
+      hint: 'Each glyph adds 1 Flux. Past ' + FMAX + ' the Evoker overloads (10 damage per Flux over, locked a round). Vent (1 AP) clears it.' };
+    if (flux >= FMAX) Object.assign(fr, { warn: 'OVERLOAD NEXT', level: 'alert', hint: 'At ' + FMAX + ': the next glyph overloads the Evoker. Vent (1 AP) first.' });
+    else if (flux >= FMAX - 1) Object.assign(fr, { warn: 'OVERLOAD SOON', level: 'caution', hint: 'Flux ' + flux + ' of ' + FMAX + ': two more glyphs overload the Evoker. Vent (1 AP) dumps it into the air.' });
     rows.push(fr);
   }
   // ---- Soul magic: MP (MP blue), Strain and the held Outburst (Soul violet) ----
@@ -397,7 +400,7 @@ export const RES_CSS = [
 ].join('\n');
 
 export function chipStyle(level?: string): string {
-  const base = 'flex: none; padding: 1px 8px; border-radius: 4px; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; line-height: 18px; white-space: nowrap; ';
+  const base = 'flex: none; padding: 1px 8px; border-radius: 4px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; line-height: 18px; white-space: nowrap; ';
   return base + (level === 'alert' ? 'background: #F65157; color: #0A0D13; border: 1px solid #F65157' : level === 'ready' ? 'background: transparent; color: #6FEA77; border: 1px solid #6FEA77' : 'background: #0A0D13; color: #FFFFFF; border: 1px solid #FFFFFF');
 }
 const pct = (r: ResRow) => (r.max ? Math.max(0, Math.min(100, ((r.now ?? 0) / r.max) * 100)) : 0);
@@ -432,12 +435,12 @@ export function resRowView(r: ResRow, compact = false) {
     card: JSON.stringify({ name: r.label.toUpperCase(), chips: [r.value, r.warn || ''].filter(Boolean), lines: [...(r.sub ? [{ key: 'sub', kind: 'note', label: '', text: r.sub }] : []), ...proseTip(r.hint).lines], look: 'meter' }),
     aria: r.label + ': ' + r.value + (r.sub ? ' (' + r.sub + ')' : '') + (r.warn ? '. ' + r.warn : '') + '. ' + r.hint,
     isBar: r.kind === 'bar', isPips: r.kind === 'pips', isText: r.kind === 'text',
-    labelStyle: 'flex: none; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; color: ' + r.colour + (compact ? '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0' : ''),
+    labelStyle: 'flex: none; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + r.colour + (compact ? '; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0' : ''),
     // The full block wraps (the narrow area-map HUD must still show the spares); only the compact rows cut with an ellipsis.
     valueStyle: 'flex: 1 1 auto; min-width: 0; font-size: ' + (compact ? 14 : 15) + 'px; font-weight: 700; color: #E7EBF3; font-variant-numeric: tabular-nums; ' + (compact ? 'white-space: nowrap; overflow: hidden; text-overflow: ellipsis' : 'white-space: normal; overflow-wrap: anywhere; line-height: 1.25'),
     miniValueStyle: 'flex: none; font-size: 15px; font-weight: 700; color: #E7EBF3; white-space: nowrap; font-variant-numeric: tabular-nums; text-align: right',
     warnStyle: chipStyle(r.level),
-    subStyle: 'display: block; font-size: 12px; font-weight: 500; line-height: 1.3; color: #A3AEC2; overflow-wrap: anywhere',
+    subStyle: 'display: block; font-size: var(--fs-sub); font-weight: 500; line-height: 1.3; color: #A3AEC2; overflow-wrap: anywhere',
     trackStyle: 'position: relative; display: block; height: ' + (compact ? 8 : 10) + 'px; border-radius: 3px; background: #1C2536; overflow: hidden',
     fillStyle: 'display: block; height: 100%; width: ' + pct(r) + '%; background: ' + ink,
     pips: pipsOf(r, compact),
@@ -491,4 +494,4 @@ export function sigilChip(rows: ResRow[]): SigilChip | null {
 }
 /** The chip's style on a 48 px map token: on the right edge, just below centre (clear of Pressure's pips and word on the top
  *  edge and the health word chip on the bottom edge; characters only, so never under a hostile's kind badge). */
-export const sigilChipStyle = (c: SigilChip) => 'position: absolute; right: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 5; padding: 0 3px; border-radius: 4px; font-size: 13px; line-height: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + c.ink + '; border: 1px solid ' + c.ink;
+export const sigilChipStyle = (c: SigilChip) => 'position: absolute; right: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 5; padding: 0 3px; border-radius: 4px; font-size: var(--fs-sub); line-height: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + c.ink + '; border: 1px solid ' + c.ink;

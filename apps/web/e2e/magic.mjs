@@ -79,7 +79,7 @@ ok('no "no Evoker" warning with an Evoker', !/no Evoker/i.test(sigSec));
 // A focus counts only in a hand (spec: Hands 2, item 630): the Evoker fills the off hand, so the looted Emanator stays
 // in the pack. It keeps its MP (the bar shows), and the sheet says where it is and why Outbursts draw on the air.
 ok('the Soul section lists Red Hand with its MP bar', /Red Hand/.test(soulSec) && /MP/.test(soulSec) && !/No Emanator/i.test(soulSec));
-ok('the Soul section says the Emanator is in the pack, not in hand', /Needs an Emanator in hand/.test(soulSec) && /in the pack \(not in hand\)/.test(soulSec) && /Evoker\s*in your off hand/.test(sigSec));
+ok('the Soul section says the Emanator is in the pack, not in hand', /Needs an Emanator in hand/.test(soulSec) && /in the pack \(not in hand\)|stowed/.test(soulSec) && /Evoker[^]{0,40}?off hand/.test(sigSec));
 console.log('  sigil:', sigSec.replace(/\s+/g, ' ').slice(0, 220));
 console.log('  soul :', soulSec.replace(/\s+/g, ' ').slice(0, 260));
 await snap('03-sheet-tab');

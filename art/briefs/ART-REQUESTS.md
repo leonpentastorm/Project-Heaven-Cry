@@ -91,6 +91,16 @@ kind, foe face, shopkeeper and Boss, every patron, Whisper, Hymn and Miracle, ev
 Shadow verb, the three fight banners (start, won, lost) and the class and door art (delivered, waiting for a screen).
 Row S7 below (the Ork warlord and upper-realm patch portraits) is **done**: both are in the catalog and used.
 
+### 0c. Banner marks added in 0.31.12 (requested 19 Nov 2026)
+
+White-ink signs, the same set and style as the fight banners' `banner-fight-start` / `-won` / `-lost` / `-field`
+(1024 × 1024, transparent, the STYLE-LOCK applies). Until drawn the banner shows a plain glyph.
+
+| id | where | direction |
+| --- | --- | --- |
+| `banner-fight-approach` | the APPROACH banner (a fight opened with no foe seeing the squad) | an eye half-closed or a footstep in fog: unseen, moving quietly |
+| `banner-level-up` | the LEVEL UP banner (any character of the room gains a level; any screen) | a rising chevron or a step mark climbing: growth, not a weapon |
+
 ### 2. Outburst feelings and modules
 
 | # | For | Status | What it must show | Direction | Goes to |

@@ -2,7 +2,7 @@
 // its step and effect; collapsed into "Feelings ▸" with a search past six), the colour and glyph of each feeling, the
 // residue tiles' tint, the unlock card, and the practice bar. The engine is the one source of numbers (previewPump,
 // previewOutburstPlan, practiceOf); this file only words and styles them.
-import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, moduleShelved, MODULE, SKILL } from '@engine';
+import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, moduleShelved, MODULE, SKILL, fightWith } from '@engine';
 import { feelingIcon, moduleIcon, heartMark, paintedStyle } from './heartIcons';
 import { tipAttrs } from './actionTip';
 
@@ -79,11 +79,14 @@ export function feelingTip(f: any, extra: { why?: string | null } = {}) {
 export const FEELINGS_OPEN_MAX = 6;
 export interface FeelingBtn { id: string; name: string; ink: string; icon: string; iconStyle: string; ok: boolean; why: string; step: number; mult: number; stepText: string; effect: string; cost: string; free: boolean; does: string }
 /** One button per feeling the unit knows: its step and multiplier after, its effect, and why it can't be poured now. */
-export function feelingButtons(cb: any, u: any): FeelingBtn[] {
+export function feelingButtons(cb: any, u: any, mods?: string[] | null): FeelingBtn[] {
   const m = u?.mg; if (!m || !m.held) return [];
   const known: string[] = (m.feelings || []).filter((f: string) => (FEELING as any)[f]);
+  // the switches the Pump action carries (Overdraw: 2 stages), on the fight as the reducer puts them (engine fightWith):
+  // the price shown is the one charged (outside playtest 0.31.10 row 6)
+  const pcb = fightWith(cb, mods);
   return FEELINGS.filter((f: any) => known.includes(f.id)).map((f: any) => {
-    const p = previewPump(cb, u, f.id), ink = feelingInk(f.id);
+    const p = previewPump(pcb, u, f.id), ink = feelingInk(f.id);
     const step = p.step ?? (f.step?.base ?? PLAIN_STEP);
     return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), iconStyle: iconStyle(feelingIconSrc(f.id, ink), ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: (step >= 0 ? '+' : '−') + Math.abs(r2(step)).toFixed(1), // rules 1.19: Calm and Relief take the multiplier down
       effect: feelingText(f), cost: p.ok ? (p.mp ? (p.free ? '0 AP' : p.ap + ' AP') + ' · ' + p.mp + ' MP' : p.free ? 'FREE' : p.ap + ' AP') : '', free: !!(p.ok && p.free), does: '' }; // rules 1.24: a Pump's MP
@@ -100,11 +103,11 @@ export function feelingRows(btns: FeelingBtn[], open: boolean, query: string, ru
     rows: list.map((b) => ({ key: b.id, name: b.name, icon: b.icon, iconStyle: b.iconStyle, ink: b.ink, off: !b.ok, cost: b.ok ? b.cost : '✕ ' + b.why.replace(/\.$/, ''), step: b.stepText, effect: b.effect,
       ...tipAttrs({ name: b.name, cost: [...(b.ok ? [b.cost] : []), 'step ' + b.stepText, '×' + b.mult + ' after'], text: b.effect, why: b.why || null }), pick: () => { if (b.ok) run('pump:' + b.id); },
       style: 'display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; grid-template-rows: auto auto; gap: 0 6px; align-items: center; min-height: 34px; padding: 3px 7px; border-radius: 8px; text-align: left; font-family: inherit; color: #E7EBF3; cursor: ' + (b.ok ? 'pointer' : 'default') + '; border: 1px solid ' + rgba(b.ink, b.ok ? 0.75 : 0.3) + '; background: ' + rgba(b.ink, b.ok ? 0.12 : 0.04) + (b.ok ? '' : '; opacity: 0.55'),
-      nameStyle: 'font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
-      stepStyle: 'font-size: 13px; font-weight: 700; color: ' + b.ink,
-      costStyle: 'grid-column: 2 / 4; font-size: 13px; font-weight: 600; line-height: 1.25; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis' })),
+      nameStyle: 'font-size: var(--fs-sub); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis',
+      stepStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + b.ink,
+      costStyle: 'grid-column: 2 / 4; font-size: var(--fs-sub); font-weight: 600; line-height: 1.25; color: #A3AEC2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis' })),
     gridStyle: 'display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px',
-    toggleStyle: 'align-self: flex-start; min-height: 26px; padding: 0 10px; border-radius: 99px; border: 1px solid #3A2E5C; background: #120E1E; color: #E7EBF3; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer',
+    toggleStyle: 'align-self: flex-start; min-height: 26px; padding: 0 10px; border-radius: 99px; border: 1px solid #3A2E5C; background: #120E1E; color: #E7EBF3; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.06em; cursor: pointer',
   };
 }
 /** Revert Pump's button: free, on your turn, while a pump of this turn can be taken back. */

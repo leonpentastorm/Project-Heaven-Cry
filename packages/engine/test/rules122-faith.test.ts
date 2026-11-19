@@ -63,7 +63,7 @@ describe('the data (rules 1.22): the numbers the spec gives', () => {
     const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(56); expect(eff(l, 'chain_damage').value).toBe(23); expect(l.text).toMatch(/56 lightning damage.*for 23 ×/);
     const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(56); expect(eff(j, 'vs_status_damage').mult).toBe(1.3); expect(j.text).toMatch(/56 Soul damage.*30% more/);
     expect(prayerDamage(hymn('old_overcast', 'thunderclap'))).toBe(20);
-    expect(eff(hymn('mother_ember', 'warm_hands'), 'heal').value).toBe(28); expect(hymn('mother_ember', 'warm_hands').text).toMatch(/heals 28 ×/); // rules 1.36
+    expect(eff(hymn('mother_ember', 'warm_hands'), 'heal').value).toBe(28); // rules 1.36 (the card no longer prints the base: the engine's preview shows the number)
     expect(eff(hymn('nerukhan', 'saints_shield'), 'shield').value).toBe(34); expect(hymn('nerukhan', 'saints_shield').text).toMatch(/shield of 34 ×/);
     expect(eff(hymn('nerukhan', 'absolution'), 'heal').value).toBe(19); expect(hymn('nerukhan', 'absolution').text).toMatch(/heals 19 ×/);
     expect(eff(WHISPER.health, 'heal').value).toBe(8.5); expect(eff(WHISPER.protection, 'shield').value).toBe(10); // rules 1.36: the Whispers' new bases

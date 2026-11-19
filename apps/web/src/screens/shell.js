@@ -15,7 +15,7 @@ import { providerInfo } from '../narrator/providers';
 import { MODELS } from '../narrator/anthropic';
 
 const SAVED_MS = 4000;
-const btnStyle = (on) => 'min-height: 34px; padding: 0 14px; border-radius: 8px; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; cursor: pointer; white-space: nowrap; ' +
+const btnStyle = (on) => 'min-height: 34px; padding: 0 14px; border-radius: 8px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.06em; cursor: pointer; white-space: nowrap; ' +
   (on ? 'border: 1px solid #6FEA77; background: transparent; color: #6FEA77' : 'border: 1px solid #2E3A50; background: transparent; color: #E7EBF3');
 
 /** Save, with the button saying so (Saved ✓ for 4 s). */
@@ -85,9 +85,9 @@ export function narratorVals(self, g, opts) {
     nc: {
       word, short, dot, sandbox: SB, notSandbox: !SB, open, expanded: open ? 'true' : 'false', headZ: open ? 46 : 'auto', // closed: under the area map and the other dialogs (z 10 and up)
       toggle: () => (SB ? null : self.setState({ shNarr: !self.state.shNarr })), close,
-      style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 34px; max-width: 300px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; white-space: nowrap; ' +
+      style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 34px; max-width: 300px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; white-space: nowrap; ' +
         'border: 1px solid ' + (err ? '#F65157' : open ? '#E7EBF3' : '#2E3A50') + '; background: ' + (err ? 'rgba(246, 81, 87, 0.08)' : '#10151F') + '; color: ' + ink + (SB ? '; cursor: default' : '; cursor: pointer'),
-      dotStyle: 'font-size: 13px; color: ' + ink + (live ? '; animation: phcPulse 1.2s ease-in-out infinite' : ''),
+      dotStyle: 'font-size: var(--fs-sub); color: ' + ink + (live ? '; animation: phcPulse 1.2s ease-in-out infinite' : ''),
       title: SB ? 'The Proving Ground has no Narrator' : 'The Narrator: state, spend, voice, key' + (err ? ' · stuck: ' + err : ''),
       stuck: !!err && !SB, retryHost: !!err && isHost && !SB, retry: () => { retryNarrator(); close(); },
       voice: vtxt, voiceTitle: VS.status === 'ready' ? 'Kokoro on ' + (VS.device === 'webgpu' ? 'WebGPU · ' + VS.gpu : 'the CPU' + (VS.fellBack ? ' (WebGPU failed: ' + VS.fellBack + ')' : '')) + ' · ' + VS.dtype : VS.status === 'failed' ? 'Kokoro failed: ' + VS.error : 'Settings › Voice: install Kokoro, or pick a voice',

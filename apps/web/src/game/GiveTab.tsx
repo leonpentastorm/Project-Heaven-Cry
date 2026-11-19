@@ -14,7 +14,7 @@ import { FRAME_INK as I } from './FullScreenFrame';
 import ASSETS from './assets.json';
 
 const A = ASSETS as Record<string, string>;
-const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
+const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
 /** A character's portrait for the receiver cards (its own art, by asset key or URL), or ''. */
 const portraitOf = (p: string) => (!p ? '' : /^(data:|https?:|\/)/.test(p) ? p : A[p + '-lg'] || A[p] || A['char-' + p + '-lg'] || A['char-' + p] || '');
 
@@ -27,9 +27,9 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
   const [to, setTo] = React.useState<string | null>(null), [sel, setSel] = React.useState<string>('credits'), [n, setN] = React.useState(1);
   if (!v || !v.from) return <p style={{ color: I.muted }}>You have no character here.</p>;
   if (v.none) return <section data-phc-give="" data-phc-give-none=""><h2 style={{ margin: '6px 0 12px', fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Give</h2><p style={{ fontSize: 16, color: I.muted, lineHeight: 1.6, maxWidth: 560 }}>{v.none}</p>{v.rows.filter((r) => r.use).map((r) => { const no = r.use!.why[v.from!.id]; // rules 1.61 addendum item 4765: solo, a line's use on yourself still shows
-      return <div key={'solo-use-' + r.key} data-phc-give-solo-use={r.key} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginTop: 8 }}><span style={{ fontSize: 14.5, fontWeight: 600 }}>{r.label}</span>
+      return <div key={'solo-use-' + r.key} data-phc-give-solo-use={r.key} style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginTop: 8 }}><span style={{ fontSize: 'var(--fs-body)', fontWeight: 600 }}>{r.label}</span>
         <button type="button" data-phc-give-use={v.from!.id} disabled={!!no} onClick={() => act({ ...(r.use!.action as any), targetId: v.from!.id })} style={{ minHeight: 40, padding: '0 16px', borderRadius: 12, border: '1px solid ' + I.line, background: no ? 'transparent' : I.raised, color: no ? I.muted : I.text, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: no ? 'default' : 'pointer' }}>{r.use!.label + ' yourself'}</button>
-        {no ? <span data-phc-give-use-why="" style={{ fontSize: 13, color: I.muted }}>{no}</span> : null}</div>; })}</section>;
+        {no ? <span data-phc-give-use-why="" style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{no}</span> : null}</div>; })}</section>;
   const who = to && v.to.find((t) => t.id === to) ? to : v.to[0].id, target = v.to.find((t) => t.id === who)!;
   const row = v.rows.find((r) => r.key === sel) || v.rows[0];
   const most = Math.max(0, row.qty), amount = Math.max(0, Math.min(n, most));
@@ -51,8 +51,8 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
           background: on ? I.raised : 'rgba(16,21,31,0.8)', border: '1px solid ' + (on ? I.white : I.line), opacity: w && r.kind === 'never' ? 0.7 : 1 }}>
         <span style={{ width: 40, height: 40, flexShrink: 0, display: 'grid', placeItems: 'center' }}>{icon ? <img data-zoom={r.label} src={icon} alt="" width={36} height={36} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 18, color: I.muted }}>{r.kind === 'credits' ? '¤' : '—'}</span>}</span>
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
-          <span style={{ fontSize: 14.5, fontWeight: 600 }}>{r.label}{r.kind === 'held' ? <span style={{ fontSize: 13, color: I.muted, fontWeight: 700, letterSpacing: '0.1em' }}> · IN HAND OR WORN</span> : null}</span>
-          {r.kind === 'never' || (w && r.kind !== 'held') ? <span style={{ fontSize: 13, color: I.muted }}>{w}</span> : r.kind === 'held' ? <span style={{ fontSize: 13, color: I.muted }}>Put it in your pack first.</span> : null}
+          <span style={{ fontSize: 'var(--fs-body)', fontWeight: 600 }}>{r.label}{r.kind === 'held' ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, fontWeight: 700, letterSpacing: '0.1em' }}> · IN HAND OR WORN</span> : null}</span>
+          {r.kind === 'never' || (w && r.kind !== 'held') ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{w}</span> : r.kind === 'held' ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>Put it in your pack first.</span> : null}
         </span>
         <span style={{ fontSize: 15, fontWeight: 700, fontVariantNumeric: 'tabular-nums', color: I.white }}>{r.kind === 'credits' ? r.qty.toLocaleString('en') : r.qty > 1 ? '×' + r.qty : ''}</span>
       </button>
@@ -62,7 +62,7 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
     <section data-phc-give="" data-phc-give-compact={compact ? '' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: compact ? 10 : 18 }}>
       {compact ? null : <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
         <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>Give</h2>
-        <span style={{ fontSize: 13, color: I.muted }}>It arrives at once.</span>
+        <span style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>It arrives at once.</span>
       </div>}
       <div>
         <span style={kick}>TO</span>
@@ -82,11 +82,11 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
         ) : null}
         <button type="button" data-phc-give-go="" disabled={!!why || row.kind === 'never'} onClick={send}
           style={{ minHeight: 46, padding: '0 20px', borderRadius: 12, border: 0, background: why || row.kind === 'never' ? I.raised : I.text, color: why || row.kind === 'never' ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15.5, fontWeight: 700, cursor: why ? 'default' : 'pointer' }}>{word}</button>
-        {why && !(sized && !row.why[who]) ? <span data-phc-give-reason="" style={{ fontSize: 13, color: I.muted }}>{why}</span> : null}
+        {why && !(sized && !row.why[who]) ? <span data-phc-give-reason="" style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{why}</span> : null}
         {row.use ? [target.id, v.from!.id].map((id) => { const u = row.use!, no = u.why[id], name = id === v.from!.id ? 'yourself' : target.name; // rules 1.55 item 32: use it on the friend picked, or on yourself
           return <button key={'use-' + id} type="button" data-phc-give-use={id} disabled={!!no} aria-label={no ? u.label + ' ' + name + ': ' + no : undefined} onClick={() => act({ ...(u.action as any), targetId: id })}
             style={{ minHeight: 46, padding: '0 18px', borderRadius: 12, border: '1px solid ' + I.line, background: no ? 'transparent' : I.raised, color: no ? I.muted : I.text, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: no ? 'default' : 'pointer' }}>{u.label + ' ' + name}</button>; }) : null}
-        {row.use ? [...new Set([target.id, v.from!.id].map((id) => row.use!.why[id]).filter(Boolean))].map((no) => <span key={'use-why-' + no} data-phc-give-use-why="" style={{ fontSize: 13, color: I.muted }}>{no}</span>) : null}
+        {row.use ? [...new Set([target.id, v.from!.id].map((id) => row.use!.why[id]).filter(Boolean))].map((no) => <span key={'use-why-' + no} data-phc-give-use-why="" style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{no}</span>) : null}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <span style={kick}>WHAT</span>
@@ -114,7 +114,7 @@ export function GiveInline({ rowKey, charId }: { rowKey: string; charId: string 
   if (!open.length && !uses.length && !row.use) return null;
   const why = open.length && most > 1 ? giveProblem(g as any, me, { ...(row.action as any), to: open[0].id, qty: amount }) : null;
   const give = (to: string) => { act({ ...(row.action as any), to, qty: amount }); setN(1); };
-  const b: React.CSSProperties = { minHeight: 30, padding: '0 10px', borderRadius: 6, border: '1px solid ' + I.text, background: I.panel, color: I.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' };
+  const b: React.CSSProperties = { minHeight: 30, padding: '0 10px', borderRadius: 6, border: '1px solid ' + I.text, background: I.panel, color: I.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer' };
   return (
     <div data-phc-give-inline={rowKey} style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
       {open.length && most > 1 ? <AmountField value={amount} max={most} min={1} onChange={setN} onEnter={() => { if (!why && open.length === 1) give(open[0].id); }} compact why={why} label={'How many ' + row.label + ' to give'} /> : null}
@@ -122,7 +122,7 @@ export function GiveInline({ rowKey, charId }: { rowKey: string; charId: string 
         {open.map((t) => <button key={'g' + t.id} type="button" data-phc-give-inline-to={t.id} disabled={!!why} onClick={() => give(t.id)} style={b}>{'Give ' + (most > 1 ? amount + ' ' : '') + 'to ' + t.name}</button>)}
         {uses.map((x) => <button key={'u' + x.id} type="button" data-phc-give-use={x.id} onClick={() => act({ ...(row.use!.action as any), targetId: x.id })} style={b}>{row.use!.label + ' ' + (x.id === v.from!.id ? 'yourself' : x.name)}</button>)}
       </div>
-      {row.use && !uses.length && selfNo ? <span data-phc-give-use-why="" style={{ fontSize: 13, color: I.muted }}>{row.use.label + ': ' + selfNo}</span> : null}
+      {row.use && !uses.length && selfNo ? <span data-phc-give-use-why="" style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{row.use.label + ': ' + selfNo}</span> : null}
     </div>
   );
 }

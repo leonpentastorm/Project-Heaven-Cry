@@ -208,12 +208,12 @@ for (const [vw, vh] of (process.env.FP_NARR ? [] : [[1280, 720], [1600, 900]])) 
     const t = document.querySelector('.phc-grid button.phc-tok[aria-label^="' + ref + ' ·"]'); if (!t) return null; t.scrollIntoView({ block: 'center', inline: 'center' }); const r = t.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }, me1.pos);
   if (box) { await p.mouse.move(box.x, box.y); await settle(p, 250); }
   const z = box ? await p.evaluate(({ x, y }) => { const el = document.elementFromPoint(x, y), t = el && el.closest('button.phc-tok'); return t ? getComputedStyle(t).zIndex : 'no-tile'; }, box) : 'no-box';
-  const popOn = await p.evaluate(() => Array.from(document.querySelectorAll('.phc-grid .phc-pop')).some((e) => getComputedStyle(e).display !== 'none'));
+  const popOn = await p.evaluate(() => Array.from(document.querySelectorAll('.phc-grid .phc-pop')).some((e) => getComputedStyle(e).display !== 'none' && getComputedStyle(e).visibility !== 'hidden'));
   ok(tag + ' the hovered tile is not raised over its neighbours (z-index ' + z + '), its card opens on hover (' + popOn + ')', (z === 'auto' || z === '0') && popOn);
   await p.screenshot({ path: shotsDir + tag + '-05-hover.png' });
   // the card opens on the pointer only: after a click and the pointer gone, it is closed
-  await p.mouse.click(box ? box.x : 5, box ? box.y : 5); await settle(p, 200); await p.mouse.move(vw - 5, vh - 5); await settle(p, 250);
-  const popAfter = await p.evaluate(() => Array.from(document.querySelectorAll('.phc-grid .phc-pop')).some((e) => getComputedStyle(e).display !== 'none'));
+  await p.mouse.click(box ? box.x : 5, box ? box.y : 5); await settle(p, 200); await p.mouse.move(vw - 5, vh - 5); await settle(p, 450); // (the card lingers 0.2 s so its condition signs can be reached: 0.31.12)
+  const popAfter = await p.evaluate(() => Array.from(document.querySelectorAll('.phc-grid .phc-pop')).some((e) => getComputedStyle(e).display !== 'none' && getComputedStyle(e).visibility !== 'hidden'));
   ok(tag + ' the token card closes when the pointer leaves (after a click too)', !popAfter);
   ok(tag + ' no page errors' + (p.errors.length ? ': ' + p.errors.slice(0, 2).join(' | ') : ''), !p.errors.length);
   await p.context().close();

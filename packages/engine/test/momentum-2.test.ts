@@ -208,3 +208,31 @@ describe('a Launch kill is a Finisher everywhere: Follow Through and the end of 
     expect(chainOf(f.cb, f.unit(f.pc.id)).ended).toBe(true);
   });
 });
+
+// Item 5531 (the lead's ruling on row 15d of the outside playtest): after a Finisher the chain is locked to every action
+// the technique data places in a melee group: the Breaker's Barrel In (action id `lunge`, read as the Lunge technique)
+// is refused in the list, the preview and the reducer, in the data's one sentence; the basic Shove (no Momentum) is not.
+import { actionsFor } from '../src';
+describe('item 5531: the Finisher lock holds Barrel In; Shove stays', () => {
+  it('a Breaker who Coups is refused Barrel In this turn, with the chain\'s own words, and may still Shove', () => {
+    const f = fight({ m: 3, foes: [{ at: 'D5' }, { at: 'E7' }] }); weak(f.foe); f.unit(f.foe.id).hp = 1; rig({ hit: true, die: 12 });
+    f.tech('coup', { targetId: f.foe.id }); rig(null);
+    expect(chainOf(f.cb, f.unit(f.pc.id)).ended).toBe(true);
+    f.momentum(f.pc, 2); f.pc.ap = 9; const other = f.foes[1];
+    const list = withGame(f.g, () => actionsFor(f.g, f.pc.id, 'host'));
+    const bi = list.find((d: any) => d.id.includes('fighter.lunge'))!; expect(bi).toBeTruthy();
+    expect(bi.why).toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
+    expect(refusal(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'class:fighter.lunge', actionId: 'lunge', targetId: other.id } as any))).toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
+    f.put(f.unit(other.id), 'D5');
+    expect(refusal(() => f.act({ type: 'combat/shove', unitId: f.pc.id, targetId: other.id } as any))).toBe('');
+  });
+  it('item K (0.31.11): the list reads the chain as the technique gate does (chainOf, the stamp of this turn), so a chain kept from an earlier turn locks nothing', () => {
+    const f = fight({ m: 3, foes: [{ at: 'D5' }, { at: 'E7' }] }); weak(f.foe); f.unit(f.foe.id).hp = 1; rig({ hit: true, die: 12 });
+    f.tech('coup', { targetId: f.foe.id }); rig(null);
+    f.momentum(f.pc, 2); f.pc.ap = 9;
+    const pc = f.unit(f.pc.id); (pc as any).chain = { ...(pc as any).chain, t: 'an earlier turn' }; // ended, but not this turn's
+    expect(chainOf(f.cb, pc).ended).toBe(false);
+    const bi = withGame(f.g, () => actionsFor(f.g, f.pc.id, 'host')).find((d: any) => d.id.includes('fighter.lunge'))!;
+    expect(bi.why || '').not.toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
+  });
+});

@@ -188,6 +188,7 @@ await lvl.waitFor({ timeout: 20000 }).catch(() => {});
 if (await lvl.count()) await lvl.click();
 await p.waitForSelector('.phc-lu-class', { timeout: 20000 }).catch(() => {});
 ok('the level-up screen shows the class panel', (await p.locator('.phc-lu-class').count()) > 0);
+await p.evaluate(() => { const f = document.querySelector('.phc-lu-class-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 200); // a held class folds its panel to one line: open it
 ok('class name, rank and emblem: ' + ((await p.locator('.phc-lu-class-name').first().textContent().catch(() => '')) || '').trim() + ' ' + ((await p.locator('.phc-lu-rank').first().textContent().catch(() => '')) || '').trim(),
   new RegExp(FIGHTER, 'i').test(await p.locator('.phc-lu-class-name').first().textContent().catch(() => '')) && (await p.locator('.phc-lu-class img.phc-lu-emblem, .phc-lu-class img').count()) > 0);
 ok('the Fighter moves are listed: ' + (await p.locator('.phc-lu-move').count()), (await p.locator('.phc-lu-move[data-move^="class:fighter."]').count()) >= 3);

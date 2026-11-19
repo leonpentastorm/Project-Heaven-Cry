@@ -16,7 +16,7 @@
           "door_pick": "fork.guard.provoke"
         }
       ],
-      "text": "While you hold Guard, the first foe each round whose blow lands on your plates is Taunted by you for {=effects.1.rounds} round, with no save, once the blow is done (a Boss too: it is never forced, but it is worse at hitting anyone else).",
+      "text": "First foe to hit your plates each round is Taunted for {=effects.1.rounds} round, no save",
       "effects": [
         {
           "op": "mark",
@@ -98,7 +98,7 @@
           "door_pick": "fork.guard.cover_them"
         }
       ],
-      "text": "An Answer (on until you switch it off): while you hold Guard, the first ranged hit each round on an ally within {=effects.0.if.target_within} tiles of you lands on you instead. Your plates soak it as any blow, and it costs {=effects.0.and.0.value|abs} Guard more. It uses your reaction, once a round.",
+      "text": "{=effects.0.and.0.value|abs} Guard and your reaction: the first ranged hit each round on an ally within {=effects.0.if.target_within} tiles lands on you",
       "effects": [
         {
           "op": "redirect",
@@ -166,7 +166,7 @@
           "door_pick": "fork.guard.stand_fast"
         }
       ],
-      "text": "Your Slam is a shockwave: it pushes nobody; every foe within {=numbers.within} tiles is Taunted by you for {=numbers.rounds} round with no save (a Boss too, never forced) and makes Slam's Body save or is Off Balance. Slam's price is unchanged.",
+      "text": "Slam pushes nobody: every foe within {=numbers.within} tiles is Taunted for {=numbers.rounds} round and saves or is Off Balance",
       "numbers": {
         "within": 2,
         "rounds": 1
@@ -188,7 +188,7 @@
           "door_pick": "fork.guard.drive"
         }
       ],
-      "text": "Your Slam pushes {=numbers.tiles} tiles, and the Off Balance save you force is at {=effects.0.value|signed}. Each foe you knock Off Balance gives you back a plate (at most {=effects.1.limit.n} a turn). You stay where you are.",
+      "text": "Slam pushes {=numbers.tiles} tiles · Off Balance save {=effects.0.value|signed} · each foe floored gives a plate (max {=effects.1.limit.n} a turn)",
       "numbers": {
         "tiles": 2
       },
@@ -243,7 +243,7 @@
           "door_pick": "fork.shadow.light_fingers"
         }
       ],
-      "text": "Your Lift costs {=numbers.shadow} Shadow and takes any one thing the foe carries that is not in its hands (a stim, a core, a grenade, a charm, a spare magazine), straight into your pack. A grenade taken so is ready to throw.",
+      "text": "Lift costs {=numbers.shadow} Shadow and takes anything the foe carries, straight to your pack",
       "numbers": {
         "shadow": 1
       },
@@ -269,7 +269,7 @@
           "door_pick": "fork.shadow.lend_the_dark"
         }
       ],
-      "text": "{=numbers.ap} AP and {=numbers.shadow} Shadow, from Hidden, once a turn: an ally within {=numbers.reach} tiles that no enemy can see becomes Hidden (a new entry: its next attack is an ambush).",
+      "text": "{=numbers.ap} AP · {=numbers.shadow} Shadow · once a turn: an unseen ally within {=numbers.reach} tiles becomes Hidden",
       "numbers": {
         "ap": 1,
         "shadow": 1,
@@ -295,7 +295,7 @@
           "door_pick": "fork.shadow.lightkiller"
         }
       ],
-      "text": "Once a fight, {=numbers.ap} AP and {=numbers.shadow} Shadow: you and the tiles next to you go dark for {=numbers.rounds} rounds; a dark tile blocks sight through it as smoke does.",
+      "text": "Once a fight · {=numbers.ap} AP · {=numbers.shadow} Shadow: you and adjacent tiles go dark for {=numbers.rounds} rounds",
       "numbers": {
         "ap": 1,
         "shadow": 2,
@@ -323,7 +323,7 @@
           "door_pick": "fork.shadow.spotter"
         }
       ],
-      "text": "While you are Hidden, the first weapon hit each round any ally lands on a Marked foe counts as an ambush (×{=effects.0.value}) and costs you {=effects.0.and.0.value|abs} Shadow. A hit that is already an ambush gains nothing more.",
+      "text": "Hidden: the first ally weapon hit each round on a Marked foe is an ambush, +{=effects.0.value|more}% damage, for {=effects.0.and.0.value|abs} Shadow",
       "effects": [
         {
           "op": "damage_mult",
@@ -377,7 +377,7 @@
           "door_pick": "fork.tend.keep_the_thread"
         }
       ],
-      "text": "Your Snap costs {=effects.0.value} MP, and on a Bonded enemy it keeps the Bond: no Daze, the Bond holds. A Snap on an ally still ends the Bond. (Let Go still ends a Bond, free. A Boss's Bond still ends on its own clock.)",
+      "text": "Snap costs {=effects.0.value} MP · on a Bonded enemy it keeps the Bond",
       "effects": [
         {
           "op": "cost_mod",
@@ -408,7 +408,7 @@
           "door_pick": "fork.tend.short_thread"
         }
       ],
-      "text": "Tending you give a Bonded ally within {=effects.0.if.target_within} tiles is ×{=numbers.near} (not ×{=numbers.through}), and your Touch reaches {=numbers.touch} tiles.",
+      "text": "Tending a Bonded ally within {=effects.0.if.target_within} tiles: +{=numbers.near|more}% healing, not +{=numbers.through|more}% · Touch reach {=numbers.touch} tiles",
       "numbers": {
         "near": 1.4,
         "through": 1.2,
@@ -462,7 +462,7 @@
           "door_pick": "fork.tend.shared_pulse"
         }
       ],
-      "text": "Your Mend on a Bonded ally also sends {=numbers.share|pct}% of it down every Bond you hold to an ally, the Mend's own target included.",
+      "text": "Your Mend on a Bonded ally sends {=numbers.share|pct}% of it down every other Bond",
       "numbers": {
         "share": 0.25
       },
@@ -511,7 +511,7 @@
           "door_pick": "fork.tend.long_thread"
         }
       ],
-      "text": "Your Bond reaches {=numbers.reach} tiles further when you make it, and the first Mend or Shield you give each Bonded ally each round costs {=numbers.ap|abs} AP less (at least {=numbers.min}).",
+      "text": "Bond reach +{=numbers.reach} tiles · first Mend or Shield on each Bonded ally each round costs {=numbers.ap|abs} AP less (min {=numbers.min})",
       "numbers": {
         "reach": 3,
         "ap": -1,
@@ -539,7 +539,7 @@
           "door_pick": "fork.prayer.round_of_blessings"
         }
       ],
-      "text": "Each Whisper you say on an ally who was not blessed in the last round takes {=numbers.cut} round off your Hymn's wait (never under its floor). With no Hymn of yours waiting, your next prayer roll is {=numbers.roll|signed} instead.",
+      "text": "Whisper an ally unblessed last round: Hymn wait {=numbers.cut} round shorter, or next prayer roll {=numbers.roll|signed}",
       "numbers": {
         "cut": 1,
         "roll": 2
@@ -566,7 +566,7 @@
           "door_pick": "fork.prayer.steadfast"
         }
       ],
-      "text": "Once a round, off your turn, you may say a Whisper as your reaction when a foe attacks an ally you see.",
+      "text": "Once a round, off your turn: say a Whisper as a reaction when a foe attacks an ally you see",
       "effects": [],
       "shelved": true,
       "waits_for": [
@@ -589,7 +589,7 @@
           "door_pick": "fork.prayer.benediction"
         }
       ],
-      "text": "Your Whisper on an ally may be said wide, for {=numbers.ap} AP more: it also reaches every ally within {=numbers.within} tile of its target, at {=numbers.share|pct}%. A wide Whisper adds {=numbers.wait} round to your Hymn's wait.",
+      "text": "A Whisper on an ally may go wide: +{=numbers.ap} AP · allies within {=numbers.within} tile get {=numbers.share|pct}% · +{=numbers.wait} round Hymn wait",
       "numbers": {
         "ap": 1,
         "within": 1,
@@ -619,7 +619,7 @@
           "door_pick": "fork.prayer.held_breath"
         }
       ],
-      "text": "If your turn ends with no Whisper said, it is held ({=numbers.held} at most); on a later turn of this fight you may say it as well as that turn's Whisper.",
+      "text": "A turn with no Whisper is held (max {=numbers.held}): say it later as well as that turn's Whisper",
       "numbers": {
         "held": 1
       },
@@ -645,7 +645,7 @@
           "door_pick": "fork.momentum.rolling_start"
         }
       ],
-      "text": "Your Charge's straight run is {=effects.0.value|abs} tile shorter. A Charge costs no Momentum and, if it hits, builds {=effects.2.value} Momentum.",
+      "text": "Charge: {=effects.0.value|abs} tile shorter run · costs no Momentum · a hit builds {=effects.2.value} Momentum",
       "effects": [
         {
           "op": "stat_mod",
@@ -688,7 +688,7 @@
           "door_pick": "fork.momentum.grindstone"
         }
       ],
-      "text": "A plain melee hit on a foe hit in melee in the last {=effects.1.rounds} rounds, by you or by anyone holding Grindstone, builds {=effects.0.value} more Momentum (two in all).",
+      "text": "Melee hit on a foe meleed in the last {=effects.1.rounds} rounds (by you or a Grindstone holder): +{=effects.0.value} Momentum",
       "effects": [
         {
           "op": "resource",
@@ -736,7 +736,7 @@
           "door_pick": "fork.momentum.spill"
         }
       ],
-      "text": "When a Finisher of yours drops a foe, the damage past its last HP strikes the nearest other foe next to it (no roll; its armour applies).",
+      "text": "A Finisher kill sends the overkill into the nearest other foe beside it, no roll",
       "effects": [],
       "shelved": true,
       "waits_for": [
@@ -759,7 +759,7 @@
           "door_pick": "fork.momentum.headlong"
         }
       ],
-      "text": "Once a turn, your Charge may be paid with {=numbers.momentum} Momentum instead of its AP. A Charge so paid builds no Momentum.",
+      "text": "Once a turn: pay a Charge with {=numbers.momentum} Momentum instead of AP · builds no Momentum",
       "numbers": {
         "momentum": 2
       },
@@ -783,7 +783,7 @@
           "door_pick": "fork.pressure.converging_fire"
         }
       ],
-      "text": "Each ally's hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a glove) on a foe hit that way this round, by you or by anyone holding Converging Fire, adds {=effects.0.value} more Pressure (once a round for each foe).",
+      "text": "Allies' Dexterity hits on a foe already hit that way this round: +{=effects.0.value} Pressure, once a round a foe",
       "effects": [
         {
           "op": "resource",
@@ -791,7 +791,9 @@
           "if": {
             "actor": "ally",
             "target": "foe",
-            "rolled_with": ["dexterity"],
+            "rolled_with": [
+              "dexterity"
+            ],
             "target_has": [
               "in_your_sights"
             ]
@@ -812,7 +814,9 @@
           "if": {
             "actor": "self",
             "target": "foe",
-            "rolled_with": ["dexterity"]
+            "rolled_with": [
+              "dexterity"
+            ]
           },
           "condition": "in_your_sights",
           "target": "target",
@@ -836,7 +840,7 @@
           "door_pick": "fork.pressure.walk_it_in"
         }
       ],
-      "text": "Your attack rolled with Dexterity (a shot, a throw, a blade's cut, a glove's blow) that misses a foe still lays {=effects.0.value} Pressure on it (once a turn for each foe).",
+      "text": "A Dexterity attack that misses still lays +{=effects.0.value} Pressure (once a turn per foe)",
       "effects": [
         {
           "op": "resource",
@@ -844,7 +848,9 @@
           "if": {
             "actor": "self",
             "target": "foe",
-            "rolled_with": ["dexterity"]
+            "rolled_with": [
+              "dexterity"
+            ]
           },
           "resource": "pressure",
           "value": 1,
@@ -873,7 +879,7 @@
           "door_pick": "fork.pressure.through_the_gap"
         }
       ],
-      "text": "Once a turn, when your attack rolled with Dexterity hits a foe and leaves it at its Pressure cap (a Soldier Broken, an Elite Suppressed, a Boss Pressed), your next move this turn costs {=effects.3.value|abs} AP less (a move up to your Movement is free) and draws no opportunity attack. It is not the turn's one free move.",
+      "text": "Once a turn, a Dexterity hit that caps a foe's Pressure: next move {=effects.3.value|abs} AP less, no opportunity attacks",
       "effects": [
         {
           "op": "mark",
@@ -881,7 +887,9 @@
           "if": {
             "actor": "self",
             "target": "foe",
-            "rolled_with": ["dexterity"]
+            "rolled_with": [
+              "dexterity"
+            ]
           },
           "flag": "landed"
         },
@@ -962,7 +970,7 @@
           "door_pick": "fork.pressure.lockdown"
         }
       ],
-      "text": "A foe your attack rolled with Dexterity hits and leaves at its Pressure cap is also Slowed for {=effects.1.rounds} round, with no save.",
+      "text": "A Dexterity hit that leaves a foe at its Pressure cap also Slows it for {=effects.1.rounds} round, no save",
       "effects": [
         {
           "op": "mark",
@@ -970,7 +978,9 @@
           "if": {
             "actor": "self",
             "target": "foe",
-            "rolled_with": ["dexterity"]
+            "rolled_with": [
+              "dexterity"
+            ]
           },
           "flag": "landed"
         },
@@ -1019,7 +1029,7 @@
           "door_pick": "fork.sigil.overflux"
         }
       ],
-      "text": "Drawing past your Flux limit no longer Overloads you: your Evoker does not lock and nothing is vented. Each glyph you draw while over costs you the Overload's damage for each Flux over.",
+      "text": "Past your Flux limit: no Overload · each glyph over costs the Overload's damage a Flux",
       "effects": [],
       "shelved": true,
       "waits_for": [
@@ -1042,7 +1052,7 @@
           "door_pick": "fork.sigil.clean_vent"
         }
       ],
-      "text": "Once a turn, a Vent of {=numbers.min} Flux or more shoves every foe next to you {=numbers.push} tile and scorches it for {=numbers.base} × the Flux vented.",
+      "text": "Once a turn: a Vent of {=numbers.min}+ Flux shoves adjacent foes {=numbers.push} tile, {=numbers.base} damage a Flux vented",
       "numbers": {
         "min": 2,
         "push": 1,
@@ -1070,7 +1080,7 @@
           "door_pick": "fork.sigil.written_in_advance"
         }
       ],
-      "text": "A Line that has stood on the ground since before your last turn ended Evokes at ×{=numbers.mult}.",
+      "text": "A Line that stood since before your last turn ended Evokes with +{=numbers.mult|more}% damage",
       "numbers": {
         "mult": 1.2
       },
@@ -1096,7 +1106,7 @@
           "door_pick": "fork.sigil.running_script"
         }
       ],
-      "text": "When you Evoke, the glyph you Evoke from stays drawn; your next Line may start from it.",
+      "text": "The glyph you Evoke from stays drawn: your next Line may start there",
       "effects": [],
       "shelved": true,
       "waits_for": [
@@ -1119,7 +1129,7 @@
           "door_pick": "fork.soul.ride_the_edge"
         }
       ],
-      "text": "A Release made while your Strain is exactly at your limit is ×{=numbers.mult}.",
+      "text": "A Release at exactly your Strain limit: +{=numbers.mult|more}% damage",
       "numbers": {
         "mult": 1.15
       },
@@ -1143,7 +1153,7 @@
           "door_pick": "fork.soul.slow_burn"
         }
       ],
-      "text": "Each turn you start holding an Outburst, your Strain falls {=numbers.calm} more.",
+      "text": "Each turn you start holding an Outburst, Strain falls {=numbers.calm} more",
       "numbers": {
         "calm": 1
       },
@@ -1169,7 +1179,7 @@
           "door_pick": "fork.soul.blood_price"
         }
       ],
-      "text": "A Pump may be paid in HP instead of MP: {=numbers.hp_per_mp} HP for each MP. Never when it would Down you.",
+      "text": "A Pump may be paid in HP: {=numbers.hp_per_mp} HP per MP · never down to Downed",
       "numbers": {
         "hp_per_mp": 0.5
       },
@@ -1195,7 +1205,7 @@
           "door_pick": "fork.soul.clean_break"
         }
       ],
-      "text": "A Release at stage {=numbers.stage} lowers your Strain by {=numbers.calm} once it lands.",
+      "text": "A Release at stage {=numbers.stage} lowers Strain by {=numbers.calm}",
       "numbers": {
         "stage": 4,
         "calm": 2

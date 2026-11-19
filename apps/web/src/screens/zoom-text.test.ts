@@ -20,6 +20,16 @@ describe('the enlarged view shows the text', () => {
     for (const f of readdirSync(here).filter((x) => x.endsWith('.js'))) for (const m of src(here, f).matchAll(/zoomer\((?:this|self), ([^()]|\([^()]*\))*?'(perk|icon|skill)'\s*\)/g)) bad.push(f + ': ' + m[0].slice(0, 70));
     expect(bad).toEqual([]);
   });
+  // 0.31.12 (owed fix): a token's hover card's condition signs enlarge too (its name and text), and can be reached: the
+  // card lingers a moment after the pointer leaves the token, and only its signs take a click (the card lets clicks
+  // through to the tiles under it, as before)
+  it("the token hover card's condition signs open the lightbox", async () => {
+    const { expand } = await import('./shared');
+    const card = expand('<!--TOKPOP:t-->'), img = (card.match(/<img[^>]*phc-cond-icon[^>]*>/) || [''])[0];
+    expect(img).toContain('data-zoom="{{sc.word}}"'); expect(img).toContain('data-zoom-text="{{sc.tip}}"'); expect(img).toContain('phc-pop-zoom');
+    const css = src(new URL('../', import.meta.url), 'main.tsx');
+    expect(css).toContain('.phc-pop .phc-pop-zoom{pointer-events:auto}'); expect(css).toMatch(/\.phc-tok \.phc-pop\{[^}]*transition:visibility 0s \.\d+s/);
+  });
   it('the lightbox shows name, picture and text', async () => {
     const { zoomer, lightboxVals } = await import('./shared');
     const self: any = { state: {}, setState(s: any) { Object.assign(this.state, s); } };

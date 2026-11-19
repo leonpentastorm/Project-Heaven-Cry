@@ -35,7 +35,7 @@
 // Sounds go through cue() (exported: App.tsx uses it for the combat transition). It plays the wished file names below
 // when sfx.ts has a file for them, else stand-ins from the existing set plus a small synthesised hit.
 import React from 'react';
-import { type GameState, WEAPON, CLASS, FLUX_MAX, isUnseenId, SETTING, runSetting, survivalRun, RULES } from '@engine';
+import { type GameState, WEAPON, CLASS, isUnseenId, SETTING, runSetting, survivalRun, RULES } from '@engine';
 import { roundLabel } from './fieldView';
 import { ART, ART_BIG, IMG } from '../screens/shared';
 import { castFight } from './cast';
@@ -93,22 +93,24 @@ export function cue(name: Cue) {
 
 // ---------- what a banner and a cut-in show ----------
 /** What a banner is: a unit's turn, the area map's round, or one of the fight's banners (rules 1.62 item 4900). */
-type CardKind = 'turn' | 'round' | 'fight' | 'victory' | 'defeat' | 'field';
-/** The fight's big banners (BATTLE START, VICTORY, DEFEAT, FREE ROAM): drawn in the middle of the screen. */
-const BIG: CardKind[] = ['fight', 'victory', 'defeat', 'field'];
+type CardKind = 'turn' | 'round' | 'approach' | 'fight' | 'victory' | 'defeat' | 'field' | 'level_up';
+/** The fight's big banners (APPROACH, BATTLE START, VICTORY, DEFEAT, FREE ROAM): drawn in the middle of the screen. */
+const BIG: CardKind[] = ['approach', 'fight', 'victory', 'defeat', 'field', 'level_up'];
 /** Rules 1.62 item 4900: the fight's banners' words and the least time each is fully on screen (data). */
-const CARDS: { hold_ms: number; joined: { name: string; fog?: string }; won: { name: string }; lost: { name: string };
+const CARDS: { hold_ms: number; approach: { name: string; sub: string }; level_up: { name: string; sub: string; sounds: string[] }; joined: { name: string; fog?: string }; won: { name: string }; lost: { name: string };
   end: { hold_ms: number; sound_gap_ms: number; won: { sounds: string[] }; lost: { sounds: string[] }; felled: string; rounds: string; close: string } } = (RULES as any).combat.cards;
 /** 0.31.1: the end panel (VICTORY or DEFEAT) holds the screen; while it is pending or up, a run's field (its bar, its leave
  *  vote) and the fight-over dialog are hidden (html[data-phc-end-card], the CSS below), so nothing comes before it. */
 const END_FLAG = 'data-phc-end-card';
 const setEndFlag = (on: boolean) => { if (typeof document === 'undefined') return; ensureCss(); if (on) document.documentElement.setAttribute(END_FLAG, ''); else document.documentElement.removeAttribute(END_FLAG); };
-/** A turn's round in words: on a run fight's field its round of its rounds (rules 1.62 item 4906), else ROUND n. */
+/** A turn's round in words: before contact the approach's line (rules item 5522: no round passes yet); on a run fight's
+ * field its round of its rounds (rules 1.62 item 4906), else ROUND n. */
 const roundWords = (cb: any, round: number): string => { const f = cb && cb.field && typeof cb.field === 'object' ? cb.field : null;
+  if (cb && cb.approach) return String((RULES as any).combat.approach.line).toUpperCase();
   return f && round >= f.from ? roundLabel({ round: round - f.from + 1, of: f.of }).toUpperCase() : 'ROUND ' + round; };
 interface Banner { id: string; kind: CardKind; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number; k?: number;
   /** the slab behind (default: red for a hostile, else white), the mark before the kicker, the sign drawn with no picture */
-  slab?: string; mark?: string; glyph?: string; /** the end panel's lines (what the engine holds: foes felled, rounds) */ stats?: { label: string; value: string }[]; /** the artist's white-ink sign for the glyph (banner-fight-*, catalog interface_icons), drawn in the stripe colour; '' keeps the glyph */ glyphArt?: string; /** an end card's line of what follows (data) */ after?: string }
+  slab?: string; mark?: string; glyph?: string; /** its own sounds (sfx names, data), played in place of the banner cue */ sounds?: string[]; /** the end panel's lines (what the engine holds: foes felled, rounds) */ stats?: { label: string; value: string }[]; /** the artist's white-ink sign for the glyph (banner-fight-*, catalog interface_icons), drawn in the stripe colour; '' keeps the glyph */ glyphArt?: string; /** an end card's line of what follows (data) */ after?: string }
 interface Cut { k?: number; id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
   hp: [number, number]; ap: number; weapon: string; /** What this unit spends, below HP (game/resources.ts): every row, in the You card's order. */ res: ResRow[]; cmds: Command[]; at?: string; right?: boolean }
 
@@ -150,6 +152,20 @@ function fightCard(g: GameState, cb: any, meId: string): Banner {
   const fog = (cb.order as string[]).some((id) => isUnseenId(id));
   return { id: 'f' + Date.now(), kind: 'fight', kicker: cb.name, kickerColor: '#FFFFFF', name: CARDS.joined.name, sub: [setting, who, fog ? CARDS.joined.fog || '' : ''].filter(Boolean).join(' · '),
     stripe: '#F65157', slab: '#F65157', mark: '', glyph: '!', glyphArt: ART('banner-fight-start'), img: b && !b.unseen ? b.img : '', mine: false, foe: false, hold: CARDS.hold_ms };
+}
+/** APPROACH (rules item 5522): a fight that opens with no foe seeing the squad (Combat.approach) shows this first; BATTLE
+ * START follows at contact. Its words are the data's (rules.json combat.cards.approach). */
+function approachCard(cb: any): Banner {
+  return { id: 'a' + Date.now(), kind: 'approach', kicker: cb.name, kickerColor: '#FFFFFF', name: CARDS.approach.name, sub: CARDS.approach.sub,
+    stripe: '#FFFFFF', slab: '#A3AEC2', mark: '', glyph: '◌', glyphArt: ART('banner-fight-approach'), img: '', mine: false, foe: false, hold: CARDS.hold_ms };
+}
+/** LEVEL UP (rules item 5524): a character of the room has gained a level; every player sees it, on any screen. Words
+ * and sounds are the data's (rules.json combat.cards.level_up); the level is the character's own. */
+function levelUpCard(g: GameState, charId: string): Banner {
+  const c: any = g.characters[charId], owner = c ? g.players.find((p) => p.id === c.owner) : null;
+  return { id: 'l' + charId + ':' + (c?.level || 0) + ':' + Date.now(), kind: 'level_up', kicker: c?.name || '', kickerColor: owner?.color || '#FFFFFF', name: CARDS.level_up.name,
+    sub: CARDS.level_up.sub.replace('{level}', String(c?.level || '')), stripe: '#FFFFFF', slab: '#6FEA77', mark: '', glyph: '▲', glyphArt: ART('banner-level-up'), img: '', mine: false, foe: false,
+    hold: CARDS.hold_ms, sounds: CARDS.level_up.sounds };
 }
 /** VICTORY or DEFEAT: the fight's name and, in a Survival run, the line of what follows (data/survival.json run.after_fight);
  *  its lines read what the engine holds now: a run's fight record (rules 1.44 kills, rounds), else the fight's own units
@@ -282,6 +298,9 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const slotUntil = React.useRef(0);
   /** A fight's end is known and its cards are not yet queued: the turn banners and their cut-ins hold. */
   const endPending = React.useRef(false);
+  /** Cards that wait for the fight's end panel (LEVEL UP): shown when it closes, or when no panel comes. */
+  const afterEnd = React.useRef<Banner[]>([]);
+  const flushAfterEnd = () => { const q = afterEnd.current; afterEnd.current = []; for (const b of q) showCard(b); };
   const showCard = (b0: Banner, reserved = false) => {
     if (document.hidden) return;
     const k = fightPace(), b = { ...b0, k }, total = BIG.includes(b.kind) ? bigTotal(b, reducedMotion()) : ((reducedMotion() ? 300 : 520) + b.hold) * k;
@@ -289,7 +308,8 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     const busy = slotUntil.current - Date.now();
     if (!reserved && busy > 0) { slotUntil.current += total + 30; later(() => showCard(b0, true), busy + 30); return; }
     setBanner(b); slotUntil.current = Math.max(slotUntil.current, Date.now() + total);
-    if (b.kind !== 'fight') cue(b.kind === 'defeat' ? 'banner_foe' : 'banner_mine'); // BATTLE START: the combat-in's own sting plays
+    if (b.sounds && b.sounds.length) b.sounds.forEach((n, i) => later(() => { try { sfx(n as Sfx); } catch { /* sound never breaks the game */ } }, i * (CARDS.end.sound_gap_ms || 0))); // its own (LEVEL UP)
+    else if (b.kind !== 'fight') cue(b.kind === 'defeat' ? 'banner_foe' : 'banner_mine'); // BATTLE START: the combat-in's own sting plays
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), total);
   };
   /** The end panel's close (null when none is up): at its time, or on a click; then a run's field opens (FREE ROAM). */
@@ -306,6 +326,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
       const g2 = live.current.game, cb2 = g2?.combat;
       if (cb2 && cb2.field && !cb2.over && live.current.screen === 'combat' && !document.hidden) showCard(fieldCard(cb2)); // a run's field: FREE ROAM, after the panel
       endPending.current = false; // the field's first turn banner follows
+      flushAfterEnd(); // a LEVEL UP waiting on the panel, after FREE ROAM in the slot
     };
     endClose.current = close;
     if (document.hidden) { close(); setEndFlag(false); return; }
@@ -316,7 +337,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   };
   const showRound = (round: number, mineToo: boolean) => {
     if (document.hidden) return;
-    const b: Banner = { id: 'r' + round + ':' + Date.now(), kind: 'round', kicker: 'AREA MAP', kickerColor: '#A3AEC2', name: 'ROUND ' + round + (mineToo ? ' · YOUR MOVE' : ' · THE SQUAD MOVES'), sub: 'Say one thing · spend your AP · end your turn',
+    const b: Banner = { id: 'r' + round + ':' + Date.now(), kind: 'round', kicker: 'AREA MAP', kickerColor: '#A3AEC2', name: 'ROUND ' + round + (mineToo ? ' · YOUR MOVE' : ' · THE SQUAD MOVES'), sub: '',
       stripe: '#FFFFFF', img: IMG['emblem-ahoc-seal'] || '', mine: mineToo, foe: false, hold: ROUND_HOLD };
     setBanner(b); cue('round');
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), (reducedMotion() ? 300 : 520) + b.hold);
@@ -343,7 +364,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const liveFights = React.useRef(new Set<string>());
   React.useEffect(() => {
     if (!cb || screen !== 'combat') {
-      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); endPending.current = false; if (endClose.current) { endClose.current = null; setEndFlag(false); } }
+      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); endPending.current = false; if (endClose.current) { endClose.current = null; setEndFlag(false); } flushAfterEnd(); }
       // Away on another screen (level up, the sheet): what happened meanwhile isn't announced late.
       else if (seen.current && seen.current.fight === fightId) seen.current = { fight: fightId, n: lastN, key: turnKey };
       return;
@@ -355,7 +376,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     if (stream && !cb.over) liveFights.current.add(stream);
     // FIGHT: at once (it plays over the combat-in), before the first turn's banner, which waits for it.
     if (newFight && stream && begun.current === stream && cb.round === 1 && carded(game!, cb)) {
-      begun.current = null; if (!cb.approach) showCard(fightCard(game!, cb, meId)); else unjoined.current = stream; // rules 1.64 item 5008: not yet joined: BATTLE START waits for contact
+      begun.current = null; if (!cb.approach) showCard(fightCard(game!, cb, meId)); else { unjoined.current = stream; showCard(approachCard(cb)); } // rules 1.64 item 5008: not yet joined: APPROACH now (rules item 5522), BATTLE START waits for contact
     }
     // Rules 1.64 item 5008: contact joins the fight: BATTLE START now
     if (stream && unjoined.current === stream && !cb.approach && carded(game!, cb)) { unjoined.current = null; showCard(fightCard(game!, cb, meId)); }
@@ -433,7 +454,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     const until = Date.now() + 20000 * fightPace(); // a safety net only: the card waits for the fight's last effect
     const still = () => { const { game: g2, screen: sc } = live.current; return !!endOf(g2?.combat) && sc === 'combat' && combatStreamKey(g2) === stream; };
     const tryShow = () => {
-      if (!still()) { endPending.current = false; setEndFlag(false); return; }
+      if (!still()) { endPending.current = false; setEndFlag(false); flushAfterEnd(); return; }
       const waitFx = (clock.on || hasLayer()) && clock.at < lastFx;
       // Its last effect has started: the card waits for it (and anything queued with it) to finish, and for a cut-in.
       const rest = waitFx ? 100 : cutInActive() ? 120 : fxBusyUntil() - performance.now();
@@ -442,6 +463,20 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     };
     tryShow();
   }, [overKey]);
+
+  // ----- LEVEL UP (rules item 5524): a character's level rose in the room's state; every player sees it, on any screen -----
+  // (Not the Proving Ground's level tool. A reload or a late join sees the levels as they are: nothing is announced late.)
+  const levels = React.useRef<{ code: string; at: Record<string, number> } | null>(null);
+  const levelSig = game ? Object.values(game.characters).map((c: any) => c.id + ':' + (c.level || 0)).join(',') : '';
+  React.useEffect(() => {
+    if (!game) { levels.current = null; return; }
+    const now: Record<string, number> = {}; for (const c of Object.values(game.characters) as any[]) now[c.id] = c.level || 0;
+    const was = levels.current; levels.current = { code: game.code, at: now };
+    if (!was || was.code !== game.code || game.sandbox) return;
+    // after a fight's end panel (VICTORY or DEFEAT) when one is up or pending: it comes first
+    const show = (b: Banner) => { if (endPending.current || endClose.current) afterEnd.current.push(b); else showCard(b); }; // the end panel first: it flushes these when it closes
+    for (const id of Object.keys(now)) if (was.at[id] != null && now[id] > was.at[id]) show(levelUpCard(game, id));
+  }, [game?.code, levelSig]);
 
   // ----- the cut-in: auto-dismiss, any click or key dismisses, 1–4 picks a command -----
   const hovering = React.useRef(false);
@@ -518,7 +553,7 @@ function TurnBanner({ b, rm }: { b: Banner; rm: boolean }) {
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, fontFamily: "'Chakra Petch', sans-serif" }}>
               <span style={{ fontSize: b.mine ? 15 : 13, fontWeight: 700, letterSpacing: '0.32em', color: b.kickerColor, textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{b.mark ?? (b.mine ? '▶ ' : b.foe ? '⚠ ' : '')}{b.kicker}</span>
               <span style={{ fontSize: 'clamp(22px, 3.4vw, 34px)', fontWeight: 700, fontStyle: 'italic', lineHeight: 1.05, color: '#FFFFFF', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textTransform: 'uppercase', letterSpacing: '0.04em' }}>{b.name}</span>
-              {b.sub && <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{b.sub}</span>}
+              {b.sub && <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{b.sub}</span>}
             </span>
           </span>
           {!rm && <span aria-hidden="true" style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '30%', background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.18), transparent)', animation: 'phcBannerShine ' + Math.round(700 * k) + 'ms ease-out ' + Math.round(150 * k) + 'ms both' }} />}
@@ -577,10 +612,10 @@ function EndPanel({ b, rm, onClose }: { b: Banner; rm: boolean; onClose: () => v
       <BigBanner b={b} rm={rm} inline />
       {!!b.stats?.length && <div data-phc-end-stats="" style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', fontFamily: "'Chakra Petch', sans-serif" }}>
         {b.stats.map((x) => <span key={x.label} style={{ display: 'flex', alignItems: 'baseline', gap: 10, padding: '8px 18px', background: '#10151F', border: '1px solid #232D3F', borderTop: '3px solid ' + b.stripe }}>
-          <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{x.label}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{x.label}</span>
           <span style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>{x.value}</span></span>)}
       </div>}
-      <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 12, fontWeight: 700, letterSpacing: '0.22em', color: '#A3AEC2', textTransform: 'uppercase' }}>{CARDS.end.close}</span>
+      <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.22em', color: '#A3AEC2', textTransform: 'uppercase' }}>{CARDS.end.close}</span>
       <style>{'@keyframes ' + name + '{0%{opacity:0}' + p1 + '%{opacity:1}' + p2 + '%{opacity:1}100%{opacity:0}}'}</style>
     </div>
   );
@@ -590,7 +625,7 @@ function Bar({ label, v, max, color }: { label: string; v: number; max: number; 
   const pct = Math.max(0, Math.min(100, (v / Math.max(1, max)) * 100));
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '34px minmax(0, 1fr) 84px', gap: 8, alignItems: 'center' }}>
-      <span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color }}>{label}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.1em', color }}>{label}</span>
       <span style={{ height: 10, background: '#1C2536', transform: 'skewX(-20deg)', overflow: 'hidden' }}><span style={{ display: 'block', width: pct + '%', height: '100%', background: color }} /></span>
       <span style={{ fontSize: 15, fontWeight: 700, color: '#E7EBF3', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{v} / {max}</span>
     </div>
@@ -639,32 +674,32 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
           {!rm && <div aria-hidden="true" style={{ position: 'absolute', inset: 0, overflow: 'hidden', clipPath: slab }}><div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, transparent 35%, rgba(255,255,255,.35) 50%, transparent 65%)', animation: 'phcCutStreak ' + T(600) + ' ease-out ' + T(200) + ' both' }} /></div>}
         </div>
         <div style={{ position: 'relative', flex: 1, minWidth: 0, [R ? 'marginRight' : 'marginLeft']: -40, padding: R ? '18px 52px 18px 22px' : '18px 22px 18px 52px', background: '#0A0D13', clipPath: R ? 'polygon(0 0, 86% 0, 100% 100%, 0 100%)' : 'polygon(14% 0, 100% 0, 100% 100%, 0 100%)', borderTop: '3px solid #FFFFFF', display: 'flex', flexDirection: 'column', gap: 8, boxShadow: '0 20px 60px rgba(0,0,0,.7)' }}>
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.3em', color: '#FFFFFF' }}>▶ {c.kicker}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.3em', color: '#FFFFFF' }}>▶ {c.kicker}</span>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 'clamp(26px, 4vw, 38px)', fontWeight: 600, lineHeight: 1.05, color: '#FFFFFF', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{c.name}</span>
-          <span className="phc-cut-class" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', color: c.color }}>{c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 18, height: 18, flex: 'none' }} />}{c.line.toUpperCase()}</span>
+          <span className="phc-cut-class" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: c.color }}>{c.clsIcon && <img className="phc-class-emblem" src={c.clsIcon} alt="" style={{ width: 18, height: 18, flex: 'none' }} />}{c.line.toUpperCase()}</span>
           <Bar label="HP" v={c.hp[0]} max={c.hp[1]} color="#F65157" />
           {c.res.length > 0 && <div role="list" aria-label="Your resources" data-cols={two ? 2 : 1} style={two ? { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: '5px 12px' } : { display: 'flex', flexDirection: 'column', gap: 5 }}>{c.res.map((r) => <ResLine key={r.key} r={r} />)}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ width: 34, fontSize: 13, fontWeight: 700, letterSpacing: '0.1em', color: '#FFFFFF' }}>AP</span>
+            <span style={{ width: 34, fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.1em', color: '#FFFFFF' }}>AP</span>
             <span aria-label={c.ap + ' AP'} style={{ display: 'flex', gap: 4 }}>{Array.from({ length: Math.max(0, Math.min(9, Math.round(c.ap))) }, (_, i) => <span key={i} style={{ width: 14, height: 14, transform: 'rotate(45deg)', background: '#FFFFFF' }} />)}</span>
           </div>
-          <span style={{ fontSize: 12, color: '#A3AEC2' }}>{c.weapon}</span>
+          <span style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>{c.weapon}</span>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 6, marginTop: 4 }}>
             {c.cmds.map((cmd, i) => (
               <button key={cmd.key} type="button" className="phc-cut-cmd" disabled={cmd.off} onClick={() => onPick(c, cmd)} data-sfx="click" data-act={cmd.action} {...tipProps(cmd.off ? cmd.label + ': ' + cmd.sub : undefined)}
                 style={{ display: 'flex', alignItems: 'center', gap: 10, minHeight: 50, padding: '6px 10px', borderTop: '1px solid #3B475D', borderRight: '1px solid #3B475D', borderBottom: '1px solid #3B475D', borderLeft: '4px solid ' + (cmd.off ? '#3B475D' : i === 0 ? '#F65157' : c.color), background: '#10151F', color: cmd.off ? '#7F8BA1' : '#E7EBF3', opacity: cmd.off ? 0.7 : 1, fontFamily: 'inherit', textAlign: 'left', cursor: cmd.off ? 'default' : 'pointer', animation: rm ? undefined : 'phcCmdIn' + sfx2 + ' ' + T(300) + ' cubic-bezier(.2,.8,.2,1) ' + T(260 + i * 60) + ' both' }}>
-                <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 11, fontWeight: 700 }}>{cmd.key}</span>
+                <span style={{ display: 'grid', placeItems: 'center', width: 22, height: 22, flex: 'none', border: '1px solid currentColor', fontSize: 'var(--fs-sub)', fontWeight: 700 }}>{cmd.key}</span>
                 <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>
                   <span style={{ fontSize: 15, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase' }}>{cmd.label}</span>
-                  <span className="phc-cut-sub" style={{ fontSize: 11, color: '#A3AEC2', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cmd.sub}</span>
+                  <span className="phc-cut-sub" style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{cmd.sub}</span>
                 </span>
               </button>
             ))}
           </div>
           <span style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-            <span style={{ fontSize: 10, letterSpacing: '0.14em', color: '#7F8BA1' }}>PRESS 1–4 · ANY OTHER KEY OR CLICK TO PLAY ON</span>
+            <span style={{ fontSize: 'var(--fs-sub)', letterSpacing: '0.14em', color: '#7F8BA1' }}>PRESS 1–4 · ANY OTHER KEY OR CLICK TO PLAY ON</span>
             <button type="button" data-phc-customise="" onClick={() => onCustomise(c)} aria-keyshortcuts="C" aria-haspopup="dialog" {...tipProps("Choose which four commands this card offers")}
-              style={{ marginLeft: 'auto', padding: '2px 8px', border: '1px solid #3B475D', background: 'transparent', color: '#C9D3E3', fontFamily: 'inherit', fontSize: 10, fontWeight: 700, letterSpacing: '0.14em', cursor: 'pointer' }}>⚙ CUSTOMISE (C)</button>
+              style={{ marginLeft: 'auto', padding: '2px 8px', border: '1px solid #3B475D', background: 'transparent', color: '#C9D3E3', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', cursor: 'pointer' }}>⚙ CUSTOMISE (C)</button>
           </span>
         </div>
       </div>
@@ -673,4 +708,4 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
 }
 
 /** For tests: what a banner and a cut-in would show for a unit. */
-export const _test = { bannerFor, cutFor, estMs, fightCard, endCard, fieldCard, bigTotal, CARDS };
+export const _test = { bannerFor, cutFor, estMs, approachCard, levelUpCard, fightCard, endCard, fieldCard, bigTotal, roundWords, CARDS };

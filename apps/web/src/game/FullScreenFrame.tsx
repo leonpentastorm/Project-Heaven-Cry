@@ -75,7 +75,7 @@ export function FullScreenFrame(p: FrameProps) {
         </div>} />
       {/* 3. the shelves */}
       <main role="tabpanel" data-phc-shelves="" aria-label={p.tabs.find((t) => t.id === p.tab)?.label} style={{ padding: '18px 20px 32px' }}>{p.children}</main>
-      {p.onClose ? <div style={{ padding: '0 20px 24px' }}><button type="button" data-phc-close="" onClick={p.onClose} {...tipProps(p.closeTip || null)} style={{ minHeight: 40, padding: '0 16px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>Close for everyone</button></div> : null}
+      {p.onClose ? <div style={{ padding: '0 20px 24px' }}><button type="button" data-phc-close="" onClick={p.onClose} {...tipProps(p.closeTip || null)} style={{ minHeight: 40, padding: '0 16px', borderRadius: 10, border: '1px solid #3B475D', background: 'transparent', color: I.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer' }}>Close for everyone</button></div> : null}
     </div>
   );
 }

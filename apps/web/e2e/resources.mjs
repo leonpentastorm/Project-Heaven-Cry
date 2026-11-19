@@ -85,7 +85,7 @@ if (await cut.count()) {
   await dismissCut(); await pause(p, 1200); await p.mouse.move(1435, 895);
 } else ok('the turn cut-in came up after the reload (it shows for a turn of yours)', false);
 let t = await rowText('ammo');
-ok('gunner: ammo in words, loaded / capacity and spares, RELOAD: ' + t, /AMMO/.test(t) && /3 \/ \d+ loaded/.test(t) && /spare/.test(t) && /RELOAD/.test(t));
+ok('gunner: ammo in words, loaded / capacity and spares, RELOAD: ' + t, /AMMO/.test(t) && /(^|\D)3 \/ \d+/.test(t) && /spare/.test(t) && /RELOAD/.test(t));
 // 0.31.0: a meter at 0 with nothing this fight (Heat, cool) is folded into the row's "+N" chip, which names it; a click opens it
 if (!(await youCard().locator('[data-res="heat"]').count())) {
   const more = youCard().locator('[data-meter-more]');
@@ -108,7 +108,7 @@ await youCard().locator('[data-res="ammo"]').first().hover(); await pause(p, 500
 const atipTxt = ((await p.locator('.phc-atip').first().textContent().catch(() => '')) || '');
 ok('hovering a row shows its hint (what to do) in the one card: ' + atipTxt.slice(0, 90), (await p.locator('.phc-atip').count()) === 1 && /\S/.test(await tipOf(youCard().locator('[data-res="ammo"]'))) && /AMMO/.test(atipTxt) && /RELOAD/.test(atipTxt));
 const big = await p.locator('.phc-atip').first().evaluate((el) => ({ label: parseFloat(getComputedStyle(el.querySelector('.phc-atip-n')).fontSize), value: parseFloat(getComputedStyle(el.querySelector('.phc-atip-c')).fontSize), text: el.querySelector('.phc-atip-c').textContent })).catch((e) => ({ err: String(e) }));
-ok('readable hover card: label ≥ 13 px, value ≥ 15 px (the mini grows on hover): ' + JSON.stringify(big), big.label >= 13 && big.value >= 15 && /3 \/ \d+ loaded/.test(big.text || ''));
+ok('readable hover card: label ≥ 13 px, value ≥ 15 px (the mini grows on hover): ' + JSON.stringify(big), big.label >= 13 && big.value >= 15 && /(^|\D)3 \/ \d+/.test(big.text || ''));
 await snap('gunner-hover-1440');
 // 1280×720: the full card steps aside; the 2–3 most urgent rows sit under the bar.
 await p.setViewportSize(SMALL); await settle();
@@ -159,7 +159,9 @@ const onTab = async (id) => {
   await p.waitForFunction((id) => document.querySelector('[role="tab"][data-tab="' + id + '"]')?.getAttribute('aria-selected') === 'true', id, { timeout: 30000 });
 };
 await onTab('outbursts');
-ok('Soul: with the HEART panel up, Strain and the held Outburst are said there, not again in the unit panel', !(await youCard().locator('[data-res="strain"], [data-res="held"]').count()) && (await p.locator('.phc-heart-panel').count()) > 0);
+{ const hel = await youCard().locator('[data-res="held"]').count(), str = await youCard().locator('[data-res="strain"]').count();
+  // (0.31.9, Leon: Strain is pinned among the urgent meters while an Outburst is held, once; the held Outburst itself is said only in the HEART panel)
+  ok('Soul: with the HEART panel up, the held Outburst is said there, not again in the unit panel; Strain is pinned once (held ' + hel + ', strain ' + str + ')', hel === 0 && str <= 1 && (await p.locator('.phc-heart-panel').count()) > 0); }
 await onTab('move');
 t = await rowText('strain');
 ok('Soul: Strain vs its limit, NEAR THE LIMIT: ' + t, /STRAIN/.test(t) && /\d+ \/ \d+/.test(t) && /NEAR THE LIMIT/.test(t));
@@ -205,7 +207,7 @@ const mapBtn = p.getByRole('button', { name: /area map/i }).first();
 if (await mapBtn.count()) { await mapBtn.click().catch(() => {}); await pause(p, 500); }
 const hud = p.locator('[aria-label="Your status"] [aria-label="Your resources"]').first();
 const ht = ((await hud.textContent().catch(() => '')) || '').replace(/\s+/g, ' ');
-ok('area-map HUD: the resources block under HP: ' + ht.slice(0, 120), (await hud.count()) > 0 && /AMMO/.test(ht) && /loaded/.test(ht) && /EVOKER CHARGE/.test(ht));
+ok('area-map HUD: the resources block under HP: ' + ht.slice(0, 120), (await hud.count()) > 0 && /AMMO/.test(ht) && /AMMO\s*\d+ \/ \d+/.test(ht) && /EVOKER CHARGE/.test(ht));
 // The two-handed rifle stowed the kit's Evoker (spec: Hands 2, item 630): its charge still shows, marked STOWED.
 ok('area-map HUD: the stowed Evoker keeps its charge row, marked STOWED (' + (ht.match(/EVOKER CHARGE.{0,60}/) || [''])[0] + ')', /EVOKER CHARGE[^A-Z]*\d+ \/ 10[^]*?STOWED/.test(ht));
 await snap('areamap-1440');

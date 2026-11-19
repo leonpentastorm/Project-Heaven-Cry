@@ -38,6 +38,7 @@ export * from './run/stage';
 export * from './run/tally';
 export * from './credits';
 export * from './give';
+export * from './ladder';
 export * from './recipes';
 export * from './gearpreview';
 export * from './run/shop';

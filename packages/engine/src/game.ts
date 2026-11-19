@@ -3351,7 +3351,7 @@ function runAction(g: GameState, a: Action, by: string) {
         const pack = packOf(c!).map((x) => ({ ...x })), got = o!.materials!.flatMap((m) => lineGoods(m.item, m.n)); // rules 1.54 (Core Rules item 4111): whole, through grantGoods
         grantGoods(c!, pack, got);
         c!.pack = pack;
-        took = c!.name + ' takes the materials: ' + got.map((it) => itemLabel(it)).join(', ') + '.';
+        took = c!.name + ': ' + got.map((it) => '+' + itemLabel(it).replace(' × ', ' ')).join(' · ');
       } else {
         const w = o!.weapons[Number(a.choice)]; if (!w) fail('No such weapon in the pick.');
         const pack = packOf(c!).map((x) => ({ ...x }));
@@ -3561,7 +3561,7 @@ function runFight(g: GameState, n: RunNode) {
  * credits now; the fight's own end (runFieldClose) and the picks wait for the party to leave. */
 function runFightOver(g: GameState) {
   const cb = g.combat!, r = g.run!, n = runNode(r, r.at)!, k = payKindOf(n), won = cb.over === 'win' || fightBack(g, cb, true); // a loss closes at once
-  const fights = r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, outcome: (won ? 'win' : 'loss') as 'win' | 'loss', rounds: cb.round, tally: fightTally(cb.tape || [], cb.units, cb.round) } : f));
+  const fights = r.stats.fights.map((f, i, l) => (i === l.length - 1 ? { ...f, outcome: (won ? 'win' : 'loss') as 'win' | 'loss', rounds: cb.round, tally: fightTally(cb.tape || [], cb.units, cb.round, cb) } : f));
   if (!won) runFlux(g);
   r.stats = { ...r.stats, fights }; delete cb.tape; // the tally is kept; the tape is not
   cb.summary = (won ? 'Won' : 'Lost') + ' "' + cb.name + '" in ' + counted(cb.round, 'round') + '. ' + cb.units.filter((u) => u.side === 'pc' && !u.companion).map((u) => u.name + (u.dead ? ' (dead)' : u.downed ? ' (down)' : ' ' + u.hp + '/' + u.maxHp + ' HP')).join(', ') + '.';

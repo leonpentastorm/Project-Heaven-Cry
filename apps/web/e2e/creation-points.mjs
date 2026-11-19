@@ -34,6 +34,17 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   await p.locator('[data-arch-preview] button', { hasText: /^Use / }).click(); await settle(p, 300);
   ok(at + 'the Holdfast preset (id bulwark) lands on the points step with every point placed (' + await budgets() + ')', (await budgets()) === '✓ ALL 10 PLACED | ✓ ALL 10 PLACED' && /^✓ Every point is placed/.test(await text('[data-points-todo]')));
   ok(at + 'no sideways page scroll (' + await sideways() + ' px over)', (await sideways()) <= 1);
+  // the sticky Back / Next bar never covers a card: at the foot of the page the last card ends above the bar and its
+  // fade, and a card brought into view by the keyboard stops above them; a skill's line is never cut
+  const foot = await p.evaluate(async () => { const f = document.querySelector('footer.phc-cc-foot'), cards = [...document.querySelectorAll('[data-points] .phc-sk')];
+    window.scrollTo(0, document.documentElement.scrollHeight); await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const top = f.getBoundingClientRect().top - 28, last = Math.max(...cards.map((c) => c.getBoundingClientRect().bottom));
+    window.scrollTo(0, 0); await new Promise((r) => requestAnimationFrame(r));
+    const mid = cards[Math.floor(cards.length / 2)]; mid.scrollIntoView({ block: 'end' }); await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const midOk = mid.getBoundingClientRect().bottom <= f.getBoundingClientRect().top - 27;
+    const cut = [...document.querySelectorAll('[data-points] .phc-pt-line')].filter((l) => l.scrollHeight > l.clientHeight + 1 || getComputedStyle(l).webkitLineClamp !== 'none').length;
+    window.scrollTo(0, 0); return { last: Math.round(last), top: Math.round(top), midOk, cut }; });
+  ok(at + 'the Back / Next bar covers no card (last card ends at ' + foot.last + ', the fade of the bar starts at ' + foot.top + '; a card scrolled to stops above it: ' + foot.midOk + '); no skill line cut (' + foot.cut + ')', foot.last <= foot.top && foot.midOk && foot.cut === 0);
   // The gate is the layout: three families, nine attributes, each skill inside its attribute's block and under its header.
   const lay = await p.evaluate(() => {
     const fams = [...document.querySelectorAll('[data-family]')].map((f) => f.querySelector('h2').textContent);
@@ -45,7 +56,8 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
     return { fams, attrs: attrs.length, skills: document.querySelectorAll('[data-skill]').length, under, cut, hMin: Math.min(...hs), hMax: Math.max(...hs), words: document.querySelector('[data-points]').innerText };
   });
   ok(at + 'Body, Mind and Soul as headings; 9 attributes; 27 skills, each three under their attribute', lay.fams.join() === 'BODY,MIND,SOUL' && lay.attrs === 9 && lay.skills === 27 && lay.under);
-  ok(at + 'no name is cut short' + (lay.cut.length ? ' (' + lay.cut.join(', ') + ')' : '') + '; every skill row one height (' + lay.hMin + '–' + lay.hMax + ')', !lay.cut.length && lay.hMax - lay.hMin <= 1);
+  // (a skill's line is never cut now, so a card is as tall as its line: the rows are no longer one height)
+  ok(at + 'no name is cut short' + (lay.cut.length ? ' (' + lay.cut.join(', ') + ')' : '') + ' (rows ' + lay.hMin + '–' + lay.hMax + ' px)', !lay.cut.length);
   // (Proficiency's own line names the Sigil Core, the thing a mage loads: that is not a Core point.)
   const stray = lay.words.replace(/Sigil Core|core charges?/gi, '').match(/\bcores?\b|rules \d|today's rule|[a-z]_[a-z]/i);
   ok(at + 'nothing on the step says Core, and nothing reads like a rules reference or an id' + (stray ? ' (' + stray[0] + ')' : ''), !stray);
@@ -62,26 +74,26 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
 
   // From scratch: drive a skill past its attribute.
   await p.locator('[data-points-reset]').click();
-  ok(at + 'Reset all gives every point back (' + await budgets() + ')', (await budgets()) === '10 LEFT OF 10 | 10 LEFT OF 10' && /Still to place: 10 Skill points and 10 Attribute points\./.test(await text('[data-points-todo]')));
+  ok(at + 'Reset all gives every point back (' + await budgets() + ')', (await budgets()) === '10 LEFT OF 10 | 10 LEFT OF 10' && (await text('[data-points-todo]')) === '');
   await up('skill', 'dexterity').click();
   ok(at + 'Dexterity 1 fits under Agility 1: ' + await note(), (await note()) === '✓ Dexterity 1: 1 Skill point spent.' && (await val('attr', 'agility')) === '1');
-  ok(at + 'the next point is marked as taking the attribute up before the click', (await text('[data-skill-need="dexterity"]')) === '· TAKES AGILITY TO 2');
+  ok(at + 'the next point is marked as taking the attribute up before the click', (await text('[data-skill-need="dexterity"]')) === '· Needs Agility 2');
   for (let i = 0; i < 3; i++) await up('skill', 'dexterity').click();
-  ok(at + 'Dexterity past Agility spends the Attribute points: ' + await note(), (await note()) === '✓ Dexterity 4 needs Agility 4: 1 Attribute point spent.' && (await val('skill', 'dexterity')) === '4' && (await val('attr', 'agility')) === '4');
+  ok(at + 'Dexterity past Agility spends the Attribute points: ' + await note(), (await note()) === '✓ Agility raised to 4 for Dexterity' && (await val('skill', 'dexterity')) === '4' && (await val('attr', 'agility')) === '4');
   ok(at + 'both budgets moved (' + await budgets() + ')', (await budgets()) === '6 LEFT OF 10 | 7 LEFT OF 10');
   ok(at + 'the header chip agrees', /6 SKILL · 7 ATTRIBUTE LEFT/.test(await p.locator('header').first().innerText()));
   // The attribute won't drop under its skill.
   await refused(down('attr', 'agility'));
   ok(at + 'lowering Agility under Dexterity is refused, naming the skill: ' + await note(), (await note()) === '✗ Agility can\'t drop to 3 while Dexterity is 4: lower Dexterity first.' && (await val('attr', 'agility')) === '4');
   // What the next point gives, on the screen.
-  ok(at + 'Agility shows what its next point gives', (await text('[data-attr-next="agility"]')) === 'Next point: +0.5 tile of movement an AP, +1 Initiative.');
+  ok(at + 'Agility shows what its next point gives', (await text('[data-attr-next="agility"]')) === '+0.5 tile of movement an AP · +1 Initiative');
   // The skill card (rules 1.54 item 4119): its portrait, its tag, its roll as a chip, and ONE line: what the next point gives.
   const card = await p.evaluate(() => { const k = document.querySelector('[data-skill="dexterity"]'), img = k.querySelector('[data-skill-face] img'), r = img.getBoundingClientRect();
     return { tag: k.querySelector('[data-skill-tag]').textContent, need: (k.querySelector('[data-skill-need]') || {}).textContent || '', mod: k.querySelector('[data-skill-mod]').textContent,
       lines: k.querySelectorAll('.phc-pt-line').length, nextAt: k.querySelector('[data-skill-next]').getAttribute('data-next-at'), next: k.querySelector('[data-skill-next]').textContent,
       face: img.complete && img.naturalWidth > 0, fw: Math.round(r.width), fh: Math.round(r.height), font: parseFloat(getComputedStyle(k.querySelector('[data-skill-next]')).fontSize) }; });
   ok(at + 'Dexterity\'s card: portrait ' + card.fw + '×' + card.fh + ', tag ' + card.tag + ', roll chip ' + card.mod + ', one next-point line for point ' + card.nextAt + ' at ' + card.font + ' px',
-    card.face && card.fw >= 44 && card.fh >= 56 && card.tag === 'FIGHT' && /TAKES AGILITY TO 5/.test(card.need) && card.mod === '+3' && card.lines === 1 && card.nextAt === '5' && /^Next point: \S/.test(card.next) && card.font >= 13);
+    card.face && card.fw >= 44 && card.fh >= 56 && card.tag === 'FIGHT' && /Needs Agility 5/.test(card.need) && card.mod === '+3' && card.lines === 1 && card.nextAt === '5' && /^\S/.test(card.next) && card.font >= 13);
   ok(at + 'every skill card has a portrait and one next-point line', await p.evaluate(() => [...document.querySelectorAll('[data-points] [data-skill]')].every((k) => k.querySelectorAll('[data-skill-face] img').length === 1 && k.querySelectorAll('[data-skill-next]').length === 1)));
   // Keyboard: Tab reaches the stepper, Enter presses it, the arrow keys step it; focus stays on the stepper.
   await down('skill', 'athletics').focus();
@@ -93,7 +105,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   ok(at + 'every stepper has a label', await p.evaluate(() => [...document.querySelectorAll('[data-points] button:not([tabindex="-1"])')].every((b) => (b.getAttribute('aria-label') || b.textContent || '').trim().length > 3)));
   // The shot: a skill just driven past its attribute, the status line saying so.
   await up('skill', 'dexterity').click();
-  ok(at + 'one more: ' + await note(), (await note()) === '✓ Dexterity 5 needs Agility 5: 1 Attribute point spent.');
+  ok(at + 'one more: ' + await note(), (await note()) === '✓ Agility raised to 5 for Dexterity');
   await p.evaluate(() => window.scrollTo(0, 0)); await p.mouse.move(W - 4, H - 4); await settle(p, 250);
   await p.screenshot({ path: SHOTS + '/creation-points-' + W + '.png' });
   // The whole step in one picture: the budget bar is held in its place for it (a full-page capture draws a sticky bar mid-page).
@@ -107,7 +119,7 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   ok(at + 'Agility reset: ' + await note(), (await note()) === '✓ Agility reset: 6 Skill points and 3 Attribute points back.' && (await val('attr', 'agility')) === '1' && (await budgets()) === '10 LEFT OF 10 | 10 LEFT OF 10');
   // A pip sets a value in one click.
   await p.locator('[data-skill="faith"] .phc-pip').nth(2).click();
-  ok(at + 'a pip sets Faith to 3 in one click: ' + await note(), (await note()) === '✓ Faith 3 needs Virtue 3: 2 Attribute points spent.');
+  ok(at + 'a pip sets Faith to 3 in one click: ' + await note(), (await note()) === '✓ Virtue raised to 3 for Faith');
   // No Attribute points left.
   for (let i = 0; i < 6; i++) await up('attr', 'endurance').click();
   for (let i = 0; i < 2; i++) await up('attr', 'strength').click();
@@ -125,7 +137,7 @@ await p.locator('[data-trait="mind_without_fog"] button').last().click();
 await step('Skills');
 ok('Mind Without Fog shows its 2 extra Attribute points (' + await budgets() + '; ' + await text('[data-budget-note]') + ')', (await budgets()) === '7 LEFT OF 10 | 2 LEFT OF 12' && (await text('[data-budget-note]')) === '+2 from Mind Without Fog');
 await up('skill', 'faith').click();
-ok('and they can be spent: ' + await note(), (await note()) === '✓ Faith 4 needs Virtue 4: 1 Attribute point spent.');
+ok('and they can be spent: ' + await note(), (await note()) === '✓ Virtue raised to 4 for Faith');
 await p.screenshot({ path: SHOTS + '/creation-points-1440-fog.png' });
 // The road map (rules 1.54 item 4119): Will Power's "?" shows ten rows, its own points lit, no line twice in a row.
 await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 200);
@@ -134,22 +146,28 @@ ok('Will Power raised to 2 (' + await val('skill', 'will_power') + ')', (await v
 await p.evaluate(() => window.scrollTo(0, 0)); await p.mouse.move(1276, 716); await settle(p, 150);
 if (process.env.LANE_SHOTS) await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-creation-skills.png' });
 await p.locator('[data-skill="will_power"] [data-skill-face]').click(); await settle(p, 350);
-// 0.31.8: what each point gives is closed by default: open it
+// the lore is the face (Leon, 19 Nov): the quote, the lore paragraph, At high levels, Good for, Bad for, open; the three
+// folds closed; with them closed the face fits 1280x720 without scrolling inside the panel
+{ const face = await p.evaluate(() => { const box = document.querySelector('[role="dialog"] article');
+    return { lore: !!document.querySelector('.phc-ep-lore .phc-ep-quote') && !!document.querySelector('.phc-ep-intro'), rows: [...document.querySelectorAll('.phc-ep-lorerow')].map((r) => r.getAttribute('data-lore')).join(),
+      folds: ['.phc-ep-fold', '.phc-ep-perks-fold'].map((s) => document.querySelector(s)?.getAttribute('aria-expanded')).join(), scroll: box.scrollHeight - box.clientHeight }; });
+  ok('Will Power\'s "?" leads with the lore (' + face.rows + '), its folds closed (' + face.folds + '), the face fits 1280x720 (' + face.scroll + ' px to scroll)', face.lore && face.rows === 'high,good,bad' && face.folds === 'false,false' && face.scroll <= 1); }
 await p.evaluate(() => { const f = document.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 200);
 const road = await p.evaluate(() => { const steps = [...document.querySelectorAll('.phc-ep-road .phc-ep-step')];
-  return { n: steps.map((s) => s.getAttribute('data-step')).join(), now: steps.filter((s) => s.getAttribute('data-state') === 'now').map((s) => s.getAttribute('data-step')).join(),
+  return { n: steps.map((s) => s.getAttribute('data-step')).join(), next: steps.filter((s) => s.getAttribute('data-state') === 'next').map((s) => s.getAttribute('data-step')).join(),
     owned: steps.filter((s) => s.getAttribute('data-state') === 'owned').map((s) => s.getAttribute('data-step')).join(),
     repeats: steps.filter((s) => { const t = [...s.querySelectorAll('.phc-ep-row')].map((x) => x.textContent); return new Set(t).size !== t.length; }).length,
+    oneLine: steps.every((s) => s.querySelectorAll('.phc-ep-rowtext').length === 1),
     perkSteps: steps.filter((s) => s.querySelectorAll('img.phc-icon').length > 0).map((s) => s.getAttribute('data-step')).join(),
-    small: [...document.querySelectorAll('.phc-ep-road .phc-ep-row, .phc-ep-head')].filter((x) => parseFloat(getComputedStyle(x).fontSize) < 13).length,
-    head: (document.querySelector('.phc-ep-head') || {}).textContent || '', every: [...document.querySelectorAll('.phc-ep-road .phc-ep-sub')].map((x) => x.textContent).join('|'), old: document.querySelectorAll('.phc-ep-give').length }; });
-ok('Will Power\'s "?" shows ten rows (' + road.n + '), point ' + road.now + ' lit, ' + road.owned + ' owned, no line twice in a row (' + road.repeats + ')',
-  road.n === '1,2,3,4,5,6,7,8,9,10' && road.now === '2' && road.owned === '1' && road.repeats === 0 && road.old === 0);
-ok('…EVERY POINT says what every point gives, one line a row (' + road.every + '), the perk steps show their icons (' + road.perkSteps + '), no rules text under 13 px (' + road.small + ')', /^EVERY POINT\|AT \d/.test(road.every) && /^\S/.test(road.head) && road.small === 0 && /3/.test(road.perkSteps));
+    small: [...document.querySelectorAll('.phc-ep-road .phc-ep-rowtext')].filter((x) => parseFloat(getComputedStyle(x).fontSize) < 15).length,
+    text: (document.querySelector('[role="dialog"] article') || {}).innerText || '' }; });
+ok('Will Power\'s "?" shows ten level rows (' + road.n + '), ' + road.owned + ' owned, ' + road.next + ' next, one line a row, no piece twice in a row (' + road.repeats + ')',
+  road.n === '1,2,3,4,5,6,7,8,9,10' && road.next === '3' && road.owned === '1,2' && road.repeats === 0 && road.oneLine);
+ok('…no EVERY POINT block and no "AT 3 / 5" header; the perk steps show their icons (' + road.perkSteps + '); the rows at 15 px or more (' + road.small + ' under)', !/EVERY POINT|\bAT \d+ \//.test(road.text) && road.small === 0 && /3/.test(road.perkSteps));
 ok('no sideways page scroll with the pop-up open (' + await sideways() + ' px over)', (await sideways()) <= 1);
-// the pop-up scrolls inside itself: the shot shows its road map, as a player scrolling down to it sees it
+// the pop-up scrolls inside itself: the shot shows its ladder, as a player scrolling down to it sees it
 await p.evaluate(() => document.querySelector('.phc-ep-road .phc-ep-track').scrollIntoView({ block: 'start' })); await settle(p, 150);
-ok('the road map ten rows fit the 1280×720 window once scrolled to (all in view; the Call, door and every-point lines sit above them)', await p.evaluate(() => [...document.querySelectorAll('.phc-ep-road .phc-ep-step')].every((s) => { const r = s.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })));
+ok('the ladder\'s ten rows fit the 1280×720 window together', await p.evaluate(() => [...document.querySelectorAll('.phc-ep-road .phc-ep-step')].every((s) => { const r = s.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })));
 if (process.env.LANE_SHOTS) await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-popup-willpower.png' });
 await p.getByRole('button', { name: 'Close the EPCCG entry' }).click(); await settle(p, 200);
 for (let i = 0; i < 2; i++) { await p.locator('[data-points-undo]').click(); await settle(p, 60); }

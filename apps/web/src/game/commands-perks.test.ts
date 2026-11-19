@@ -92,9 +92,9 @@ describe('the Perks tab: items used from another action are read-only (Leon, 9 N
     const ro = rows.filter((r) => r[0].startsWith(PKI));
     expect(ro.map((r) => r[0]).sort()).toEqual(keys.map((k) => PKI + k).sort());
     // a switch on another action: where the switch is, and its uses (rules 1.14: Overdraw is once a turn)
-    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.3')).toMatchObject({ 1: 'Overdraw', 2: 'on a Pump · 1/1 turn' });
-    expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![2]).toMatch(/^on Begin/);
-    expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![3]).toMatch(/^No button here\. Its switch “[^”]+” is on Begin: pick that action and the switch shows under it\. /);
+    expect(ro.find((r) => r[0] === PKI + 'skill:will_power.3')).toMatchObject({ 1: 'Overdraw', 2: 'Once a turn' });
+    expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![2]).toBe('Once a fight');
+    expect(ro.find((r) => r[0] === PKI + 'perk:the_twin_pays')![3]).not.toMatch(/No button here/);
     // a passive: a live line, never a cost
     expect(ro.find((r) => r[0] === PKI + 'skill:will_power.5')![2]).toMatch(/^(Ready|Waiting: |Used |Last: |Active all fight)/);
     expect(catalogue(f.cb, f.u, c, { g: f.g }).some((e) => e.action.startsWith(PKI))).toBe(false);

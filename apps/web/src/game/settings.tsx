@@ -27,9 +27,9 @@ export function closeSettings() { open = null; emit(); }
 export const settingsOpen = () => open;
 
 const C = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', edge: '#3B475D', text: '#E7EBF3', muted: '#A3AEC2', white: '#FFFFFF', ok: '#6FEA77' };
-const lab: React.CSSProperties = { fontSize: 11, fontWeight: 700, letterSpacing: '0.16em', color: C.muted };
-const note: React.CSSProperties = { fontSize: 12, lineHeight: 1.45, color: C.muted };
-const btn = (on = false): React.CSSProperties => ({ minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid ' + (on ? C.text : '#2E3A50'), background: on ? C.raised : 'transparent', color: on ? C.white : C.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 600, cursor: 'pointer' });
+const lab: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: C.muted };
+const note: React.CSSProperties = { fontSize: 'var(--fs-sub)', lineHeight: 1.45, color: C.muted };
+const btn = (on = false): React.CSSProperties => ({ minHeight: 34, padding: '0 12px', borderRadius: 8, border: '1px solid ' + (on ? C.text : '#2E3A50'), background: on ? C.raised : 'transparent', color: on ? C.white : C.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 600, cursor: 'pointer' });
 
 function usePrefs(): UiPrefs {
   const [, force] = React.useReducer((x: number) => x + 1, 0);
@@ -51,10 +51,10 @@ function useNarrowWindow(): boolean {
  *  and the value on one line, the slider full width under them, then the test button and what it covers. */
 function Volume({ name, what, value, max = 100, onChange, test, testLabel, id }: { name: string; what?: string; value: number; max?: number; onChange: (v: number) => void; test?: () => void; testLabel?: string; id: string }) {
   const narrow = React.useContext(NarrowCtx);
-  const label = <label htmlFor={id} style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.08em', color: C.text, minWidth: 0 }}>{name}</label>;
+  const label = <label htmlFor={id} style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.08em', color: C.text, minWidth: 0 }}>{name}</label>;
   const slider = <input id={id} data-phc-vol={id} type="range" min={0} max={max} step={5} value={value} onChange={(e) => onChange(Number(e.target.value))} aria-label={name + ' volume'} style={{ width: '100%', minWidth: 0, margin: 0, accentColor: C.white, ...(narrow ? { gridColumn: '1 / -1' } : {}) }} />;
-  const val = <span style={{ fontSize: 13, fontWeight: 700, color: C.text, textAlign: 'right' }}>{value}%</span>;
-  const tb = test ? <button type="button" data-sfx="none" onClick={test} style={{ ...btn(), minHeight: 30, fontSize: 12, whiteSpace: 'nowrap', ...(narrow ? { justifySelf: 'start' } : {}) }}>▶ {testLabel || 'Test'}</button> : null;
+  const val = <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, color: C.text, textAlign: 'right' }}>{value}%</span>;
+  const tb = test ? <button type="button" data-sfx="none" onClick={test} style={{ ...btn(), minHeight: 30, fontSize: 'var(--fs-sub)', whiteSpace: 'nowrap', ...(narrow ? { justifySelf: 'start' } : {}) }}>▶ {testLabel || 'Test'}</button> : null;
   if (narrow) return (
     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto', alignItems: 'center', gap: '6px 12px' }}>
       {label}{val}{slider}
@@ -82,7 +82,7 @@ function AudioTab() {
       test={() => sfx('gun_rifle')} testLabel="A shot" />
     <Volume id="ui" name="INTERFACE" what="Buttons, tabs, hovers and chimes." value={p.ui} onChange={(x) => setUiPrefs({ ui: x })} test={() => sfx('start')} testLabel="A click" />
     <Volume id="voice" name="NARRATOR VOICE" what="The voice that reads the Narrator's lines (engine and voices: the Voice tab)." value={v.volume} onChange={(x) => setVoicePrefs({ volume: x })} />
-    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" checked={p.mute} onChange={(e) => setUiPrefs({ mute: e.target.checked })} /> Mute every sound effect and the music</label>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 'var(--fs-body)' }}><input type="checkbox" checked={p.mute} onChange={(e) => setUiPrefs({ mute: e.target.checked })} /> Mute every sound effect and the music</label>
   </>;
 }
 
@@ -90,7 +90,7 @@ function Choice<T extends string>({ label, value, options, onPick, attr }: { lab
   const narrow = React.useContext(NarrowCtx);
   return (
     <div role="group" aria-label={label} style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-      <span style={{ minWidth: narrow ? '100%' : 150, fontSize: 13, fontWeight: 700, letterSpacing: '0.08em' }}>{label.toUpperCase()}</span>
+      <span style={{ minWidth: narrow ? '100%' : 150, fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.08em' }}>{label.toUpperCase()}</span>
       {options.map(([v, l]) => <button key={v} type="button" {...{ [attr]: v }} aria-pressed={value === v} onClick={() => onPick(v)} style={btn(value === v)}>{value === v ? '● ' : ''}{l}</button>)}
     </div>
   );
@@ -115,10 +115,10 @@ function DisplayTab() {
   return <>
     <span style={lab}>THE ♪ MUSIC AND ◈ MEMORY BUTTONS</span>
     <Volume id="float" name="OPACITY" what="How solid the floating buttons are at rest. They come up to full when the pointer is near or their panel is open." value={p.float} onChange={(x) => setUiPrefs({ float: Math.max(20, x) })} />
-    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" data-phc-float-fade="" checked={p.floatFade} onChange={(e) => setUiPrefs({ floatFade: e.target.checked })} /> Fade them when the pointer is away (off: they stay at the opacity above)</label>
-    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" data-phc-float-slide="" checked={p.floatSlide !== false} onChange={(e) => setUiPrefs({ floatSlide: e.target.checked })} /> Slide them down to a tab at the screen's edge when the pointer is away (never under Reduce motion)</label>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 'var(--fs-body)' }}><input type="checkbox" data-phc-float-fade="" checked={p.floatFade} onChange={(e) => setUiPrefs({ floatFade: e.target.checked })} /> Fade them when the pointer is away (off: they stay at the opacity above)</label>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 'var(--fs-body)' }}><input type="checkbox" data-phc-float-slide="" checked={p.floatSlide !== false} onChange={(e) => setUiPrefs({ floatSlide: e.target.checked })} /> Slide them down to a tab at the screen's edge when the pointer is away (never under Reduce motion)</label>
     <span style={lab}>COMFORT</span>
-    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}><input type="checkbox" checked={p.reduceMotion} onChange={(e) => setUiPrefs({ reduceMotion: e.target.checked })} /> Reduce motion (no parallax, no running)</label>
+    <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 'var(--fs-body)' }}><input type="checkbox" checked={p.reduceMotion} onChange={(e) => setUiPrefs({ reduceMotion: e.target.checked })} /> Reduce motion (no parallax, no running)</label>
     <div><button type="button" onClick={() => { resetTips(); setTips(true); }} style={btn(tips)}>{tips ? 'Tips will show again ✓' : 'Show tips again'}</button></div>
   </>;
 }
@@ -128,7 +128,7 @@ export function SettingsBody({ tab: initial = 'audio', compact: compactProp = fa
   const narrowWin = useNarrowWindow(), compact = compactProp || narrowWin;
   const [tab, setTab] = React.useState<SettingsTab>(initial);
   React.useEffect(() => setTab(initial), [initial]);
-  const tabBtn = (on: boolean): React.CSSProperties => ({ textAlign: 'left', minHeight: 38, padding: '0 14px', borderRadius: 8, border: 0, borderLeft: '3px solid ' + (on ? C.white : 'transparent'), background: on ? C.raised : 'transparent', color: on ? C.white : C.muted, fontFamily: 'inherit', fontSize: 14, fontWeight: 700, letterSpacing: '0.06em', cursor: 'pointer' });
+  const tabBtn = (on: boolean): React.CSSProperties => ({ textAlign: 'left', minHeight: 38, padding: '0 14px', borderRadius: 8, border: 0, borderLeft: '3px solid ' + (on ? C.white : 'transparent'), background: on ? C.raised : 'transparent', color: on ? C.white : C.muted, fontFamily: 'inherit', fontSize: 'var(--fs-body)', fontWeight: 700, letterSpacing: '0.06em', cursor: 'pointer' });
   return (
     <NarrowCtx.Provider value={narrowWin}>
     <div data-phc-settings="" style={{ display: 'flex', flexDirection: compact ? 'column' : 'row', gap: compact ? 12 : 20, minHeight: 0, minWidth: 0 }}>

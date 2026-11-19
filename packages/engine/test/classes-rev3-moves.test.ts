@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest';
 import {
   CLASS, d20, healingMult, applyCond, condOn, moveUnit, beginTurn, objectsOf, manaOf, strainLimit, readyDesigns, enemyIntent, coverageOf, itemInfo, handlerOf, paths,
   type Unit, type Combat, type Character,
-  mendFactor, levelFactor, resolveAttack,
+  mendFactor, levelFactor, resolveAttack, SOUL_RULES, FEELING,
 } from '../src';
 import { makeObject } from '../src/objects';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
@@ -296,19 +296,44 @@ describe('Bard', () => {
 
 // ======================================================================================================== CHANNELER
 describe('Channeler', () => {
-  it('Iron Heart (rules 1.68): no Strain limit of its own; once a fight, Strain that would go over the limit stops at it', () => {
+  it('Iron Heart (rules 1.69 item 5451): once a fight, on Mana Shock, 2 Strain off (a real Pump with Rage shorts the heart)', () => {
     const f = fightWith([cls('channeler', 3, SOUL), cls('guardian', 3, SOUL)], [{}]);
     const [c, g] = f.pcs;
-    expect(strainLimit(charOf(f, c))).toBe(strainLimit(charOf(f, g)));
-    const u = f.turn(c); f.unit(u.id).ap = 9; const m = f.unit(u.id).mg!; m.strain = m.strainLimit;
-    const d = m.designs.find((x) => x.school === 'damage')!.id;
+    expect(strainLimit(charOf(f, c))).toBe(strainLimit(charOf(f, g))); // no Strain limit of its own
+    for (const e of f.foes) e.hp = e.maxHp = 99999; // the wild Release must not end the fight (its end clears the Shock)
+    const u = f.turn(c); tough(f.unit(u.id)); f.unit(u.id).ap = 60;
+    Object.assign(f.unit(u.id).mg!, { emanator: true, mp: 9999, mpMax: 9999, firstUsed: true, freePumps: 0, freePumpsMax: 0, feelings: Object.keys(FEELING) });
+    const d = f.unit(u.id).mg!.designs.find((x) => x.school === 'damage')!.id;
     act(f, f.unit(u.id), { type: 'combat/outburst', design: d, hold: true });
-    expect(f.unit(u.id).mg!.strain).toBe(m.strainLimit); expect(logHas(f.cb, /Iron Heart/)).toBe(true);
-    act(f, f.unit(u.id), { type: 'combat/letgo' } as any);
-    f.unit(u.id).mg!.strain = m.strainLimit; f.unit(u.id).ap = 9;
-    act(f, f.unit(u.id), { type: 'combat/outburst', design: d, hold: true });
-    expect(f.unit(u.id).mg!.strain).toBeGreaterThan(m.strainLimit); // the second time it goes over (once a fight)
-    expect(f.cb.log.filter((l) => /Iron Heart/.test(l)).length).toBe(1);
+    const m = () => f.unit(u.id).mg!, OVER: number = (SOUL_RULES as any).strain.short_at_over, RAGE: number = (FEELING as any).rage.pour.strain;
+    m().strain = m().strainLimit + OVER - RAGE;
+    act(f, f.unit(u.id), { type: 'combat/pump', feeling: 'rage' });
+    // the Short came (3 over), the Shock began, and Iron Heart took 2 off through the Strain row (its own line)
+    expect(m().shock).toBe(true);
+    expect(m().strain).toBe(m().strainLimit + OVER - 2);
+    expect(logCount(f.cb, /^Iron Heart: /)).toBe(1);
+    const at = f.cb.log.findIndex((l) => /^Iron Heart: /.test(l));
+    expect(f.cb.log.slice(0, at).some((l) => /Mana Shock/.test(l))).toBe(true); // after the Shock's line
+    // the friend without the move: no relief on its own heart
+    expect(f.cb.log.filter((l) => /^Iron Heart: /.test(l) && l.includes(f.unit(g.id).name)).length).toBe(0);
+  });
+  it('Iron Heart is once a fight: a second Shock in the same fight takes nothing off', () => {
+    const f = fightWith([cls('channeler', 3, SOUL)], [{}]);
+    for (const e of f.foes) e.hp = e.maxHp = 99999;
+    const u = f.turn(f.pcs[0]); tough(f.unit(u.id)); f.unit(u.id).ap = 60;
+    Object.assign(f.unit(u.id).mg!, { emanator: true, mp: 9999, mpMax: 9999, firstUsed: true, freePumps: 0, freePumpsMax: 0, feelings: Object.keys(FEELING) });
+    const d = f.unit(u.id).mg!.designs.find((x) => x.school === 'damage')!.id, m = () => f.unit(u.id).mg!;
+    const OVER: number = (SOUL_RULES as any).strain.short_at_over, RAGE: number = (FEELING as any).rage.pour.strain;
+    const shortIt = () => { act(f, f.unit(u.id), { type: 'combat/outburst', design: d, hold: true }); m().strain = m().strainLimit + OVER - RAGE; act(f, f.unit(u.id), { type: 'combat/pump', feeling: 'rage' }); };
+    shortIt();
+    expect(logCount(f.cb, /^Iron Heart: /)).toBe(1);
+    // the Shock ends, the heart is held again and shorted again: no second relief
+    expect(m().held).toBeFalsy(); // the Short let the held Outburst go wild
+    m().strain = 0; delete (m() as any).shock; f.unit(u.id).ap = 60;
+    shortIt();
+    expect(m().shock).toBe(true);
+    expect(m().strain).toBe(m().strainLimit + OVER);
+    expect(logCount(f.cb, /^Iron Heart: /)).toBe(1);
   });
   it('Occult Library: one more ready design; learn one more tone out of a fight, once', () => {
     const s = storyWith([cls('channeler', 5, SOUL), cls('channeler', 3, SOUL)]);

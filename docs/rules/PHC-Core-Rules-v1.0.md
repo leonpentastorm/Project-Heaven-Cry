@@ -845,7 +845,7 @@ Weapon skills and lore:
 | Hatchet | 22 | 1 | 120 | thrown 5 tiles |
 | Legion gladius | 19 | 1.3 | 300 | |
 | ✓ Sabre | 20 | 1.5 | 400 | |
-| Kemizuchi duelling blade | 24, +1 accuracy | 1.2 | 550 | |
+| Kemizuchi duelling blade | 19, +1 accuracy | 1.2 | 550 | item 5527 (was 24) |
 | Katana (rules 1.32) | 20 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
 | Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4534) |
 
@@ -886,7 +886,7 @@ Weapon skills and lore:
 | Knuckledusters | 20 | 0.3 | 120 | *(rules 1.56, the unarmed fighter: was 16 and 60)* |
 | Striking gloves | 17 | 0.3 | 120 | Dexterity *(rules 1.56, the unarmed fighter)* |
 | Iron mitts | 25 | 1.2 | 500 | *(rules 1.56, the unarmed fighter)* |
-| Kemizuchi strikers | 21 | 0.4 | 500 | Dexterity *(rules 1.56, the unarmed fighter)* |
+| Kemizuchi strikers | 19 | 0.4 | 500 | Dexterity *(rules 1.56, the unarmed fighter)*; item 5527 (was 21) |
 | Hellraiser servo-fist | 30 | 2.5 | 1,200 | Raw Power 3 (rules 1.13; was Proficiency 3) |
 | Bite and claws | 18 | 0 | none | a beast companion's own weapon: never carried, bought or dropped (not one of the 3 types) |
 | Figment claws | 30 | 0 | none | a Beast Figment's own weapon (rules 1.34): never carried, bought or dropped |
@@ -1689,7 +1689,7 @@ Every word answers one question:
 - **Across the Line:** you stand next to the glyphs **from the side** (not beyond either end). The area runs **straight across**, away from you, covering **the whole Line**: row 1 is the Line moved one step away from you, row 2 two steps, and so on, as deep as the range. The step is the perpendicular for a horizontal or vertical Line; for a diagonal Line it is the step north, south, east or west that leads away from you (the north or south one when both do), so the band has no gaps.
 - **The area is as wide as the whole Line** (Leon: even lengths included) and **as deep as the range**: the Reach word's range (+ the range bonus), or **1 tile for Touch**. Example: a Line on N15–Q15, standing on Q14: with SEEK, pick any target in N16–Q23; with no Reach word (Touch), only in N16–Q16.
 - **When you finish a Line you stand on the last glyph you drew**, an end, so the spell runs along the Line past the first glyph: **back the way you came**. To fire across it, or the other way, step off first. The preview draws the direction before you Evoke (Leon).
-- **You can always target yourself** (your own tile), whatever the Reach, even though your tile is never in the area: to heal, shield, blink or hide yourself, or to centre a burst on yourself. This is Touch's one exception (Leon: no RETURN word). A Burst centred on you covers you too: add KIN to keep yourself and your allies out of it (and QUICKEN always skips you). PUSH is refused on your own tile.
+- **You can always target yourself** (your own tile), whatever the Reach, even though your tile is never in the area: to heal, shield, blink or hide yourself, or to centre a burst on yourself. This is Touch's one exception (Leon: no RETURN word). A Burst centred on you covers you too: add KIN to keep yourself and your allies out of it (and QUICKEN always skips you). PUSH is refused on your own tile. *(0.31.12, item 5501: a Line that would only harm you is refused on your own tile.)*
 - **Picking the target.** Inside the area you pick a creature (or yourself); a Working, SPREAD or PUSH may pick an empty tile. A SEEK bolt leaves from the Line (from the far-end glyph when the area runs along it, from the glyph in the target's lane when it runs across) and stops at the first creature or full cover on its way: that is where it hits or bursts. The area only limits where you aim; a Burst may reach past it.
 - **On a Stack** (only with the two-glyph hook): the area is all around **you** (centred on where you stand, not on the Stack), out to the range, in sight (item 489).
 
@@ -6834,6 +6834,7 @@ Shadow Step perk are untouched).
 7. **Ghost Kill** (item 4336; opens at **Ingenuity 3**, item 4342). With Ingenuity 3: an attack that drops a foe, made
    while no enemy's eyes reach your tile and you are not Marked, sinks you back into Hidden after the action (the same
    entry: no fresh ambush; once a turn). It is checked after a Break's reveal, and its mark never outlives the action.
+   The eyes are counted as the attack is made, the victim's among them (item 5505).
    The lead's ruling (16 Nov 2026): too much for a 1-point dip; everything else of the door stays at Ingenuity 1.
 8. **Seen on the map** (item 4337). Each of these moments carries an effect from its data row (`fx`): going Hidden,
    Shadow gained and lost, a Break, Tag, Ghost Kill; a Hidden token darkens to its outline over a pool of shadow, with
@@ -12256,3 +12257,231 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     items, weapons, conditions, survival, actions and pressure; designer fields (note, source, rules, about, `*_note`,
     `*_about`), the `pending` and `retired` lists and shelved rows are exempt. Slide's text no longer repeats its AP and
     its once-a-turn: the row and its chips say them.
+
+### Rules 1.69 (0.31.11), the Mana Shock trigger (19 Nov 2026)
+
+5450. **The trigger `mana_shock`** (approved by the lead for Iron Heart): an item's data row may listen to a heart
+    entering the Mana Shock. It fires once, where the Shock begins (after the Mana Short, Strain still over the
+    limit), whether the Short came from Strain added (a Begin, a Pump's feeling, the swell) or from the turn's end; the
+    holder is the unit that enters it. One hook (`mana_shock`, `magic.ts manaShort`, `{u, strain, limit}`), one row of
+    the closed trigger list (`effects/triggers.ts TRIGGERS`). Proof: `test/mana-shock-trigger.test.ts` (a real Pump
+    with Rage that shorts the heart).
+5451. **Iron Heart, Leon's ruling (17 Nov 2026):** once a fight, when you reach Mana Shock, relieve 2 Strain. Built
+    (0.31.11) as one data row on item 5450's trigger, through item 5453's Strain row: `{when: "mana_shock", limit:
+    {per: "per_combat", n: 1}, op: "resource", resource: "strain", value: -2}`; card text "Once a fight, on Mana Shock:
+    −2 Strain". Item 5401's rule (Strain over the limit stops at it) and its bespoke handler are gone. The relief comes
+    after the entry: a heart 3 over is left 1 over, still in the Shock, and the next turn's start calms it back to the
+    limit before that turn's end can charge the Shock's share. Proof: `test/classes-rev3-moves.test.ts` (a real Pump
+    with Rage that shorts the heart; once a fight).
+5452. **A skill ladder's capped per-point gains** (the "?" page and the level-up row's next line; the lead's ruling of
+    19 Nov 2026): a per-point row that stops adding before the skill's top is shown only on the levels where it still
+    adds, and the last of them says it is the most ("+10% elemental resistance (max)" at Pain Threshold 6). The row
+    names in data the engine value it grows (`skills.json per_point.rows[].grows`: `elemental_taken`, `guard_pool`,
+    `hymn_wait`); the engine reads that value through its own function at each point for the character (or a blank
+    one) and returns the last point where it moves (`ladder.ts ladderCaps`). So Pain Threshold's elemental resistance
+    stops at its 60% cap (6), Durability's plates held at the pool's cap for a non-Bulwark (a class pool that already
+    holds more shows no per-point plate), Faith's Hymn wait at its floor (sooner with a higher Virtue). Share a Hit's
+    per-point share (Camaraderie's unlock, up to 50%) has no per-point row: a row may only read its skill's
+    per_point.numbers, and the share's numbers are the unlock's effect; it stays in the unlock's own line (ruling
+    needed to give it a row). Proof: `packages/engine/test/ladder-caps.test.ts`, `apps/web/src/screens/roadmap.test.ts`.
+5453. **Strain is a resource row** (the piece N3b, approved by the lead for Iron Heart): `data/actions.json resources.strain`
+    (`mg.strain` on the unit, setter `strain`), so the item op `resource` reads and changes Strain like any other
+    resource. The setter (`magic.ts`) goes through the one Strain-change function each way, with its limit: a gain
+    through `addStrain` (the `strain` hook, the Short at 3 over, the Shock), a loss through `easeStrain`
+    (`strain_change`, then the Shock's end when the heart is back at its limit). It has no `max`: Strain may stand over
+    the limit. A unit with no heart has no Strain to change.
+5454. **Approved engine surface, 0.31.11** (the lead's approvals at the release merge, 19 Nov 2026; these stay): the
+    exports `ladderCaps` and `LADDER_GROWS` (`ladder.ts`) with the `grows` field on a skill's `per_point.rows[]` (item
+    5452); the `amount` field on `PrayerPreview` (`faith.ts prayerFigure`: `{kind: heal | shield | damage, n, type?}`,
+    `type` the effect's own `damage_type`, soul when it names none); `fightTally(tape, units, rounds, cb?)` and
+    `TapeEv.by` (`run/tally.ts`: a blow that names its dealer, an owned unit's blows and kills its owner's; item 5504).
+5455. **The 0.31.11 release step** (the lead's brief, 19 Nov 2026): a prayer card's number is shown beside its full text,
+    never instead of it, and names its damage type (Thunderclap: lightning); the Damage school's ways read their
+    multipliers from the school's own `modes` (`soul_modules.json schools[damage].modes`, moved from `damage.modes`;
+    the engine's `damageModeMult` reads every school's modes) and say them once, in percent, on the WAY rows; the skill
+    page's three folds keep one state a fold kind for all skills; Iron Heart's card has no item-level use (its effect's
+    limit is the one spent); Cover Them's card says what it costs (1 Guard and your reaction); the texts this release
+    touched say results, not multipliers (Durability's shield row, Triage, Shape, Armoured, Hollow). Parry: item 5530,
+    amended. The level-up TO CHOOSE strip shows only chips that fit whole and counts the rest on '+N more'.
+
+### 0.31.12, the outside playtest's blockers (19 Nov 2026)
+
+Rows 1 to 8 of `docs/design/proposals/2026-11-18-outside-playtest/TRIAGE.md`. The item numbers start at 5501 so they
+do not meet a parallel lane's; the lead renumbers at the merge if needed.
+
+5501. **Your own tile is no aim for a Line that would only harm you** (row 3: a click on your own end glyph armed a
+    SPARK · SEEK at yourself, 64 damage). The self-target rule (Sigil magic, "You can always target yourself") is for
+    healing, shielding, blinking or hiding yourself and for centring a Burst on yourself. A Line whose Subjects harm
+    (an Element or an Affliction) with no Boon, no Working, no Burst (SPREAD), no CHAIN (it jumps on from you to the
+    creatures round you), no KIN and nothing placed (STAY, WAIT, WATCH) is refused on your own tile before anything is spent, and your tile is not offered as a pick. `sigil.ts
+    planEvoke`. Proof: `test/playtest-1118.test.ts` (the reducer's `combat/evoke`).
+5502. **Parry rolls with what the Guard door gives** (row 5: a Durability 7 tank holding Guard parried with d20 +2, not
+    +9). A parry is a melee roll: an item's `roll_with` (Durability's door: Durability in place of the weapon's skill
+    while holding Guard, when higher) chooses its skill as it does a melee attack's (`combat.ts rollWithPick`, asked
+    through `attack_preview` as the other previews ask). The shield's +2 is added as before. `physical/melee/answers.ts`.
+    Recorded on purpose: `builds-allin` (the all-in tank at level 9 now parries the vermin's blow) and 4 replays of 29.
+    *(Superseded by item 5530: a failed Parry spends no reaction and Retort may answer the same blow.)* **Retort is unchanged and needs a ruling to change:** Parry and Retort answer the same blow, and a unit makes one
+    reaction an event (rules 1.28), so with both switched on Parry answers first (it is the earlier phase, before the
+    damage) and Retort waits; switched off in the Answer list, Parry leaves the blow to Retort. Proof:
+    `test/playtest-1118.test.ts` (the foe's blow through `resolveAttack`).
+5503. **Previews that lie** (row 7). (a) An attack's preview from Hidden counts the ambush as the attack does: an
+    unspent Hidden entry makes the preview's damage an ambush's (`combat.ts previewAttack` reads `ambushReady`, as
+    `resolveAttack` does; it showed the plain damage, and Shadow's Break, which replaces the ambush term, showed a third
+    of what it dealt). (b) The fight screen's target card previews the attack with the switches Confirm sends (the
+    descriptor's mods on the fight: `techView.ts targetAttackPreview`). (c) A greyed switch is never shown on (Break at 0
+    Shadow; `effects/actions.ts togglesFor`), and the action never carries it. Recorded on purpose: `weapons`,
+    `costs-weapons` and `rules-weapons` (4 lines each: the ambush preview, 74.6 was 111.8 dealt). **Not built (needs a
+    new primitive):** the Momentum line of a melee preview counts only the technique's own cost and the plain attack's
+    +1; what items add on a hit (Rolling Start's +1, the Breaker's +2 against the Shaken, Charge's run) are `resource`
+    ops on the `hit` trigger, which a preview skips (it changes nothing). Proof: `test/playtest-1118.test.ts`,
+    `apps/web/src/game/targetPreview.test.ts` (the card's damage is what the reducer then deals).
+5504. **A data `deal` is seen, said and credited** (row 8: a Volatile Figment's burst was silent and the scoreboard gave
+    a Figment's damage and kills to "No one"). The item op `deal` (`effects/triggers.ts`) now emits the blow as any hurt
+    is (its number over the token, a dropped foe falls), naming its dealer, and a row with no `say` of its own writes
+    "<label>: N damage to <target>". The run's tally (`run/tally.ts fightTally`) credits an item's blow to its dealer,
+    and an owned unit's blows and kills (a Figment, a turret, a drone) to its owner (`owned.ts ownerOf`). Recorded on
+    purpose: `conditions.log` (24 lines: Felt Shame's and Given Shame's blows now said) and 9 replays of 29 (the log and
+    the effects only: the same actions). The core runner's `deal` (`effects/core.ts`, an item's own action) still emits
+    no `hurt`: its text is said by the action's line. Proof: `test/playtest-1118.test.ts` (a foe's blow through
+    `resolveAttack` destroys a Volatile Figment; its burst drops the foe; the tally gives the owner the damage and the kill).
+5505. **Ghost Kill counts the eyes as the attack is made** (row 11: a melee kill in plain sight sank the Operative back
+    into Hidden, while the Shadow meter's Eye said Seen). Item 7's "made while no enemy's eyes reach your tile" is read
+    at the attack's roll, the victim alive and its eyes counted (the one sight test, `tactics.ts sightOf`, word
+    `in_view`): a foe that sees you as you kill it saw the kill. It was read only after the action, with the victim
+    dead, so a lone victim's eyes never counted. Data only (`skills.json ingenuity.unlocks.3`: a mark on `attack_roll`,
+    the condition's `no_flag`, both marks cleared after the action and at the turn's start). Proof:
+    `test/playtest-1118.test.ts` (melee and shots through the reducer's `combat/attack`).
+5506. **The Primed boon's Momentum lands** (row 12: Primed's +1 Momentum at the fight's start did nothing). The
+    Momentum meter is made by the engine's own start of the fight, after every item's `combat_start` op has run, so an
+    item's Momentum then had no meter to go into (Guard and Shadow, made with the unit, were given). Primed's Momentum
+    step is now given at the holder's first turn start of each fight (`turn_start`, once a fight), when the meter
+    stands: data only (`survival.json boon.primed`). The fight's other Momentum start (the door's 1 and the stat
+    `momentum_start`) is unchanged. Proof: `test/playtest-1118.test.ts` (each door's meter at the first turn, with and
+    without Primed).
+5507. **A choice the weapon can't take is not offered** (row 15: Run Through offered Leave it in on a Maul, and the
+    Confirm then refused it). A technique's option that needs a property line (Run Through's Leave it in: Reach; Bash's
+    Push: Heavy; Trip's Go down with it: Bare) is offered only with a weapon that has that line for the technique; with
+    one option left there is no choice step (`descriptors.ts TECH_OPTIONS`, `techPicks`; the gate is data since the fix round: `techniques.json` `opt_needs`, option id: property, checked by the validator). Proof:
+    `test/playtest-1118.test.ts` (the Maul's and the Glaive's Run Through steps).
+5508. **Begin and Snap are one row** (row 15): the Outburst action's Begin-or-Snap step is drawn by the screen's own
+    footer row (the step's renderer), so the action box no longer adds a second pair of chips. Proof:
+    `apps/web/src/screens/combat-heart.test.ts`.
+5509. **Mercy is sworn only where a foe can yield** (row 16: the Mercy vow was offered in a fight of machines). A vow
+    marked `needs_yielding_foe` (patrons.json: Mercy) is not offered, and is refused ("No enemy here can yield."), in a
+    fight where no living enemy can yield (`yielding.ts canYield`, the one answer). `faith.ts faithView`, `swearVow`.
+    Proof: `test/playtest-1118.test.ts`.
+5510. **Sigil Savant works in a Survival run** (row 16: both of its actions were refused in a run, "works in a story,
+    not in a run", while a run's rest node, a long rest, still set Rigid's practised words). Muscle Memory and Practise
+    words carry the `run` scope (`perks/d.ts`), so the path map, the camp and a shop take them as a story does. Proof:
+    `test/playtest-1118.test.ts` (both through the reducer's `story/perk` on the path map).
+5511. **A door's feed is read with the game bound, on every screen** (row 13: Guard's plate read 7 on the SHIELDS block
+    and 9 in the blow; the Flux limit read 6 on the meter and the Vent row and 7 in the rule). A feed (Pain Threshold's on
+    Guard's soak, Rumination's on the Flux limit) reads the unit's character, which only a bound game gives; unbound it
+    fell to nothing. `actionsFor` now runs with its game bound, and the fight screen's shield views and Flux meter ask the
+    engine's own numbers (`shieldsView`, `fluxMaxOf`) bound; the meter no longer reads the base `FLUX_MAX`. No rule
+    changed. Proof: `test/playtest-1118.test.ts` (the Vent row), `apps/web/src/screens/combat-guard-soak.test.ts`.
+
+### 0.31.12 lane 2, the approach, the alarm and the end of a fight (19 Nov 2026)
+
+5520. **No walking the fog before VICTORY: reproduced, case (a)** (Leon: "whatever makes you have to walk all the fog
+    before victory shows up even if you kill all foes too"). Through the reducer a fight is won in the very action that
+    drops its last foe (`combat.ts checkOver`, after every action in `game.ts`), wherever the squad stands and with the
+    map still in the fog; a run's field (FREE ROAM) opens in that action, and the screen's VICTORY reads that state. So
+    VICTORY never waited on the fog: the foes Leon had to walk to were **alive in the fog, never seen**, and nothing sent
+    them at the squad once it was found (a fight opened in the approach seeds each side's knowledge with where the other
+    stood at the start only). The fix is the alarm (item 5521). Proof: `test/fog-victory.test.ts` (a run fight joined
+    from the approach, unexplored tiles on the map, the last foe dropped by a `combat/attack`: the field is open in that
+    same action).
+5521. **The alarm** (owed fix; ATTACK-PLAN-2026-11-19 lane 2): when a fight opened in the approach (item 5008) is
+    joined, every foe group on the map learns where each character not Hidden stands now (`combat.ts joinFight` →
+    `raiseAlarm`, writing the foe side's `seenAt`, which `knownTile` and `enemySearchTile` already read), so a group that
+    never saw the squad comes for it, where before it searched the tiles the squad started on. A Hidden character stays
+    unknown; the foes' own Hidden (ambushers, skulkers) keep their rule. The log says it once,
+    `rules.json combat.approach.alarm_log` (PROVISIONAL wording). A fight that opens seen is unchanged (its opening
+    already gives each side where the other stands). No new primitive (the side's seen map is item 1.37's). Measured with
+    the run simulator (`survival-run.ts simRun`, gear route, stage 1 only), before → after: solo gunner GUARD-1 to 40,
+    26 → 26 of 40; duo SIM-1 to 20, 17 → 17; four 15 → 14; mixed 16 → 17 (74 → 74 of 100). Replays unchanged (29 of
+    29; no run fight in them). Proof: `test/fog-alarm.test.ts` (through the reducer: a free walk off the start, contact
+    by passes, the foe side knows the squad's tile now, the line once; the farthest foe closes in).
+5522. **The approach gets its own banner** (Leon, 18 Nov: "add a phase when you enter the combat node but have not found
+    any enemy yet, with its own popup banner too, the first one every fight if the enemy do not see you at all"): a
+    fight that opens in the approach (item 5008) shows the big banner **APPROACH**, sub-line "Unseen · moving is free"
+    (`rules.json combat.cards.approach`, PROVISIONAL), first, the same component and hold as the others
+    (`apps/web turnIntro.tsx approachCard`); BATTLE START then shows at contact, as before. A fight that opens with a foe
+    seeing the squad shows BATTLE START only. The turn strip keeps YOUR TURN; while the approach lasts its sub-line (and
+    a turn banner's) reads `combat.approach.line`, now "Approach · unseen" in place of the round. Its mark is the glyph ◌
+    until the white-ink sign `banner-fight-approach` is drawn (`art/briefs/ART-REQUESTS.md` 0c). Proof:
+    `apps/web/src/game/turnIntro-banners.test.tsx` (through the reducer: an unseen fight's first big card is APPROACH,
+    BATTLE START after contact; PHC-0003's seen fight shows BATTLE START only).
+5523. **The quiet phases' music** (Leon, 18 Nov: "make the songs the same as roam mode"): a run fight's approach (before
+    contact) and its field after a win (FREE ROAM) play the run's one calm track, `survival.json music.quiet` (**Survival:
+    Path Map**, PROVISIONAL), from that one field (`music.ts musicFor`); the fight's song starts at contact (with BATTLE
+    START) and stops at VICTORY, when the calm track returns for FREE ROAM. Before, the approach and the field played the
+    fight's song. The client needs no change (it plays what the engine picks and preloads the run's track). Proof:
+    `test/survival-music.test.ts` (through the reducer: an unseen fight plays the quiet track; contact, the fight song;
+    the win's field, the quiet track; off the field, the run's own track).
+5524. **LEVEL UP for the whole room** (owed fix): when a character's level rises (XP through `giveXp`, any source), every
+    player's page shows the big banner **LEVEL UP**, the character's name above it and "Level N" under it
+    (`rules.json combat.cards.level_up`, PROVISIONAL), the same component and hold as the fight's banners, on any screen;
+    after a fight's VICTORY or DEFEAT panel when one is up. One banner a character. Not for the Proving Ground's level
+    tool, and a reload or a late join announces nothing. The client reads the characters' levels in the room's state
+    (no new event: an fx kind for a level gained would be a new primitive). Its sound is the game's own `feel_unlock`
+    chime (no level-up sound is in the repo; none was downloaded), its mark the glyph ▲ until the white-ink sign
+    `banner-level-up` is drawn (`art/briefs/ART-REQUESTS.md` 0c). Proof: `apps/web/src/game/turnIntro-levelup.test.tsx`
+    (a two-player Survival room through the reducer: fights won until a level rises; both pages show LEVEL UP, once a
+    character, after VICTORY).
+5525. **The reach is drawn by its boundary** (owed fix, "the prayer reach boundary"; the to-do's "a prayer outlines every
+    tile in sight (heavy)"): the one pick overlay (`apps/web pickOverlay.ts`) shades an action's reach and draws a line
+    round its outer edge only (`reachEdge`: the sides whose neighbour is out of reach), no longer a dashed outline on
+    every tile. Every action's reach, not only a prayer's; nothing about which tiles are in reach changed (the engine's
+    `prayerAim` and previews). Each tile's hover note still says "in reach". Proof: `apps/web/src/game/pickOverlay.test.ts`.
+    Not done here (needs a ruling): a prayer with no data `range` still reaches every tile its caster sees.
+5526. **A token's hover card's condition signs enlarge** (owed fix): each condition sign in a token's hover card carries
+    the one lightbox's `data-zoom` (its name) and `data-zoom-text` (its text), as the fight panel's strip already did. To
+    reach it, the card lingers 0.2 s after the pointer leaves the token (`apps/web main.tsx`: visibility with a hide
+    delay in place of display none), and only its signs take a click; the rest of the card still lets clicks through to
+    the tiles under it, and a click on a sign enlarges only (the tile is not picked). Proof:
+    `apps/web/src/screens/zoom-text.test.ts`; the browser suite `fight-panel.mjs` reads the card's visibility now.
+5527. **The Kemizuchi duelling blade and strikers on the melee line** (owed fix; the line is
+    `rules.json balance.ceilings.melee.allin` **165**% of the plain rifle): measured with `melee-measure` (masterwork,
+    24 turns a cell, levels 1 / 5 / 10 / 20), the all-in duelling blade peaked at 209% (damage 24) and the strikers at
+    181% (damage 21), over their peers (katana 175, sabre 171, gladius 160, striking gloves 146). Both weapon rows'
+    `damage` is now **19** (PROVISIONAL, as the rows are): all in, blade 130 / 146 / 162 / 145%, strikers 118 / 142 /
+    161 / 138%; normal share, blade 101 / 113 / 128 / 135% (the katana 98 / 109 / 144 / 141%: the blade's Lunge reach
+    is what it pays for), strikers 88 / 119 / 133 / 143% (still the best glove). Prices unchanged. **Recorded on
+    purpose:** `weapons`, `costs-weapons`, `rules-weapons` (and its log): the two weapons' lines only (10 lines each).
+    The Dexterity melee line as a whole (the sabre and katana over 165 at level 10 all in) is the lead's balance item,
+    not changed here.
+
+### 0.31.12 fix round, the review's findings and the lead's rulings (19 Nov 2026)
+
+5530. **A failed Parry keeps your reaction; Retort may answer the same blow** (the lead's ruling on row 5, 19 Nov
+    2026; supersedes the "Retort is unchanged" sentence of item 5502). Parry spends your reaction only when it stops the
+    blow (it beats the attack's total and the hit is halved). A Parry that fails is still rolled and said ("it gets
+    through"), but no reaction is spent and the blow is not marked answered, so Retort (its Answer switched on, Guard
+    held, Durability 3) may then answer the same blow when it lands. `physical/melee/answers.ts`.
+    **Amended (the lead's ruling, 19 Nov 2026): one Parry try a round per unit.** A lost Parry still spends no
+    reaction (so Retort may answer), but that unit rolls no other Parry until the next round, won or lost
+    (`techniques.json` parry `numbers.tries_a_round`: 1; one cell of the counters primitive, `effects/uses.ts` scope
+    `per_round`, taken before the roll). Proof: `test/playtest-1118.test.ts` (a second blow in the same round through
+    `resolveAttack` rolls no Parry; the next round rolls one). **Not built (needs a new primitive):** the refusals that
+    `tactics.ts react` makes after its gate (the event already answered, the last reaction kept for a held shot, a
+    `reaction_window` cancel) are still decided after the d20: a won Parry that `react` then refuses is rolled and
+    dropped unsaid. Deciding them first needs a read-only form of `react`'s refusals (one function `react` itself
+    calls), which is an addition to the exported surface.
+5531. **After a Finisher the chain is locked to every action that builds or spends Momentum** (the lead's ruling on
+    row 15d). The lock is read from data: an item's action whose id the technique data places in a melee group (a
+    technique row's id, or `techniques.json rules.group_actions`) is refused after a Finisher this turn, as a melee
+    technique is (`effects/actions.ts` entryOf, the one gate of the list, the preview and the reducer). The Breaker's
+    Barrel In (action `lunge`) is read as the Lunge technique, an Opener, by its id (the chain already counted it so),
+    so it is locked; Launch counts as a Finisher. Shove (no Momentum either way) stays open. The refusal is one line of
+    data (`techniques.json rules.chain_ended`), read by the technique gate and the action list. Barrel In's id sharing
+    the Lunge technique's is a finding for the lead (a distinct id would need its own `group_actions` row).
+5532. **Start the run asks about a level-up due, from the lobby too** (row 2 at creation): Start the run in a Survival
+    room's lobby asks the camp's own prompt ("Level up first?") when one of the player's characters has a level-up due
+    (the engine's `levelUpDue`: unclaimed perk steps, a fork, points); the safe answer opens Level up for that
+    character, "Start without" starts the run. One prompt for both places (`apps/web/src/game/campView.ts` levelUpAsk).
+5533. **A sign with no picture enlarges too** (the token card's condition signs): a glyph-only sign carries the same
+    enlarge request (its name and text) and the lightbox shows the glyph large where a picture would be.
+5534. **The Throw row's browser check** is a step of `apps/web/e2e/picking.mjs` (a frag grenade from the pack: the
+    Throw row on the Attack tab, its reach, its blast under the pointer, a tile past its range refused). Not yet run.

@@ -77,7 +77,7 @@ describe('rules 1.54 items 2 to 4: the pick (Materials or One weapon) and Surviv
     const had = (cid: string, id: string) => has(g, cid, (x) => (x.item || x.id) === id);
     const p = apply(g, { type: 'run/pick', charId: 'c1', choice: 'materials' }, 'host');
     for (const m of o.materials!) expect(has(p, 'c1', (x) => (x.item || x.id) === m.item)).toBe(had('c1', m.item) + m.n);
-    expect(p.story.entries.at(-1)!.text).toMatch(/takes the materials: /);
+    expect(p.story.entries.at(-1)!.text).toMatch(/: \+\d+ /);
     expect(p.run!.note!.picks!.c1).toBe(p.story.entries.at(-1)!.text); // the stop's note says what was taken (the run board's This stop)
     // the card as the engine gives it to the screen: names, counts, what it sells for, the action the reducer takes
     const v = materialsView(g, 'c1')!;

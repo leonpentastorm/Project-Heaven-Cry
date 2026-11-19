@@ -43,6 +43,7 @@ export function fogLog(log: string[], marks: LogMark[] | undefined, me: Side): {
     let line = log[i];
     const swap = (list: string[] | undefined, by: string, word: string) => { for (const n of [...(list || [])].sort((a, b) => b.length - a.length)) line = line.replace(new RegExp('(^|[^' + word + '])' + escRe(n) + '(?![' + word + '])', 'g'), (_x, a) => a + by); };
     swap(s.n, UNSEEN_LOG, '\\w'); swap(s.t, UNSEEN_TILE, '\\w,');
+    line = line.replace(/Initiative: (.*)$/, (_x, list: string) => { const it = list.split(' · '), un = it.filter((x) => x.startsWith(UNSEEN_LOG)).length; return 'Initiative: ' + [...it.filter((x) => !x.startsWith(UNSEEN_LOG)), ...(un ? [un + ' unseen'] : [])].join(' · '); }); // the unseen are one count, not a name each
     out.push(line.replace(/^something unseen/, 'Something unseen'));
   }
   before.push(out.length);

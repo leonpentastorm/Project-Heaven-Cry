@@ -27,22 +27,22 @@ export function UpgradeCard({ s, onFocus, choice }: { s: UpgradeCardData; onFocu
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 20, fontWeight: 600, lineHeight: 1.2 }}>{s.title.split(': ')[0]}</span>
-          {s.title.includes(': ') ? <span data-phc-step="" style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: I.white, textTransform: 'uppercase' }}>{s.title.split(': ').slice(1).join(': ')}</span> : null}
-          {s.note ? <span style={{ fontSize: 13, color: I.muted, lineHeight: 1.4 }}>{s.note}</span> : null}
+          {s.title.includes(': ') ? <span data-phc-step="" style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', color: I.white, textTransform: 'uppercase' }}>{s.title.split(': ').slice(1).join(': ')}</span> : null}
+          {s.note ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, lineHeight: 1.4 }}>{s.note}</span> : null}
         </div>
       </div>
-      {w ? <div data-phc-repair-bar="" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><span style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>DURABILITY</span><WearBar w={w} to={w.max} label={s.title.split(': ')[0]} /></div>
+      {w ? <div data-phc-repair-bar="" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}><span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>DURABILITY</span><WearBar w={w} to={w.max} label={s.title.split(': ')[0]} /></div>
         : s.lines.length ? (
-        <div data-phc-upgrade-lines="" style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '4px 10px', fontSize: 13.5, alignItems: 'baseline' }}>
-          {s.lines.map((l) => <React.Fragment key={l.label}><span style={{ color: I.muted }}>{l.label.replace(/ \(.*\)$/, '')}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{l.before}</span><span aria-hidden="true" style={{ color: I.muted }}>→</span><b style={{ fontVariantNumeric: 'tabular-nums', color: I.ok }}>{l.after} <span style={{ fontSize: 13 }}>▲ better</span></b></React.Fragment>)}
+        <div data-phc-upgrade-lines="" style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '4px 10px', fontSize: 'var(--fs-sub)', alignItems: 'baseline' }}>
+          {s.lines.map((l) => <React.Fragment key={l.label}><span style={{ color: I.muted }}>{l.label.replace(/ \(.*\)$/, '')}</span><span style={{ fontVariantNumeric: 'tabular-nums' }}>{l.before}</span><span aria-hidden="true" style={{ color: I.muted }}>→</span><b style={{ fontVariantNumeric: 'tabular-nums', color: I.ok }}>{l.after}</b></React.Fragment>)}
         </div>
       ) : null}
       <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 12, flexWrap: 'wrap' }}>
-        {s.price != null ? <div style={{ display: 'flex', flexDirection: 'column' }}><span data-phc-price="" style={{ fontSize: 26, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{s.price ? s.price.toLocaleString('en') : 'Free'}</span>{s.price ? <span style={{ fontSize: 13, color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : null}</div> : null}
+        {s.price != null ? <div style={{ display: 'flex', flexDirection: 'column' }}><span data-phc-price="" style={{ fontSize: 26, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{s.price ? s.price.toLocaleString('en') : 'Free'}</span>{s.price ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, letterSpacing: '0.08em' }}>CREDITS</span> : null}</div> : null}
         <button type="button" data-phc-upgrade-go="" data-phc-choice={choice ? s.key : undefined} data-phc-why={choice && s.why ? '' : undefined} aria-disabled={s.why ? 'true' : undefined} onClick={(e) => { if (s.why) openTipOn(e.currentTarget.closest('article')); else act(s.action as any); }}
           style={{ marginLeft: 'auto', minHeight: 42, padding: '0 18px', borderRadius: 10, border: 0, background: s.why ? 'transparent' : I.text, outline: s.why ? '1px solid #3B475D' : 'none', color: s.why ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>{s.verb || (w ? 'Repair' : 'Upgrade')}</button>
       </div>
-      <span data-phc-status="" style={{ minHeight: 18, fontSize: 13, color: s.why ? I.muted : I.ok }}>{s.why || (s.verb ? '✓ The armourer can do it' : w ? '✓ You can repair it' : '✓ You can upgrade it')}</span>
+      <span data-phc-status="" style={{ minHeight: 18, fontSize: 'var(--fs-sub)', color: s.why ? I.muted : I.ok }}>{s.why || ''}</span>
     </article>
   );
 }

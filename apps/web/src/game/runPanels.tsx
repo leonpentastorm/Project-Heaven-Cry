@@ -24,11 +24,11 @@ import { Portal } from './modeCentre';
 import { placeClosed, closePlace } from './placeMark';
 import { ICON } from './runIconSizes';
 import { WearBar } from './WearBar';
-import { campGuard } from './campView';
+import { campGuard, levelUpGuard } from './campView';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
-const kick: React.CSSProperties = { fontSize: 13, fontWeight: 700, letterSpacing: '0.14em', color: ink.muted };
-const btn = (primary: boolean, off = false): React.CSSProperties => ({ minHeight: 38, padding: '0 12px', borderRadius: 10, border: primary && !off ? '1px solid ' + ink.white : '1px solid #2E3A50', background: off ? 'transparent' : primary ? ink.text : 'transparent', color: off ? ink.muted : primary ? ink.ground : ink.text, fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: off ? 'default' : 'pointer', whiteSpace: 'nowrap' });
+const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: ink.muted };
+const btn = (primary: boolean, off = false): React.CSSProperties => ({ minHeight: 38, padding: '0 12px', borderRadius: 10, border: primary && !off ? '1px solid ' + ink.white : '1px solid #2E3A50', background: off ? 'transparent' : primary ? ink.text : 'transparent', color: off ? ink.muted : primary ? ink.ground : ink.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: off ? 'default' : 'pointer', whiteSpace: 'nowrap' });
 
 /** The small map of the whole stage (the path map's own layout, drawn small): the trails, the way walked, the stops
  * (the Boss and where the squad stands by their markers) and the camp. */
@@ -61,11 +61,11 @@ function RunPanel({ g, me }: { g: GameState; me: string }) {
   const here = v.nodes.find((n) => n.state === 'here');
   return (
     <div data-phc-panel="run" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-      <span data-phc-run-where="" style={{ fontSize: 14, fontWeight: 700 }}>Stage {v.stage} · {v.depth ? 'Stop ' + v.depth + ' of ' + v.rows : 'At the camp'}</span>
+      <span data-phc-run-where="" style={{ fontSize: 'var(--fs-body)', fontWeight: 700 }}>Stage {v.stage} · {v.depth ? 'Stop ' + v.depth + ' of ' + v.rows : 'At the camp'}</span>
       <span style={{ fontFamily: "'Spectral', serif", fontSize: 17, lineHeight: 1.2 }}>{v.setting}</span>
-      <span style={{ fontSize: 13, color: ink.muted }}>{here ? here.word + (v.depth < v.rows ? ' · ' + (v.rows - v.depth) + ' stops to the Boss' : '') : v.rows + ' stops to the Boss'}</span>
+      <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{here ? here.word + (v.depth < v.rows ? ' · ' + (v.rows - v.depth) + ' stops to the Boss' : '') : v.rows + ' stops to the Boss'}</span>
       <SmallMap v={v} />
-      <span data-phc-run-seed="" style={{ fontSize: 13, color: ink.muted }}>Seed {v.seed}</span>
+      <span data-phc-run-seed="" style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Seed {v.seed}</span>
     </div>
   );
 }
@@ -84,21 +84,21 @@ function RunBoard({ g, me }: { g: GameState; me: string }) {
     <div data-phc-panel="run_board" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <span style={kick}>THIS STOP</span>
-        <span data-phc-board-stop="" style={{ fontSize: 14 }}>{v.note ? v.note.title : here ? here.word : 'The camp'}</span>
-        {(v.note?.picks || []).map((l, i) => <span key={i} data-phc-board-pick="" style={{ fontSize: 13, lineHeight: 1.35, color: '#C9D3E3' }}>{l}</span>)}
+        <span data-phc-board-stop="" style={{ fontSize: 'var(--fs-body)' }}>{v.note ? v.note.title : here ? here.word : 'The camp'}</span>
+        {(v.note?.picks || []).map((l, i) => <span key={i} data-phc-board-pick="" style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.35, color: '#C9D3E3' }}>{l}</span>)}
       </div>
       {v.party.filter((p) => p.boons.length).map((p) => (
         <div key={p.id} data-phc-member-boons={p.id} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           <span style={kick}>{(mine.length && p.mine ? 'YOUR BOONS' : p.name.toUpperCase() + '\'S BOONS')} · <span data-phc-member-cap={p.id}>{p.worth}</span></span>
           <span style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
             {p.boons.map((b) => <span key={b.id} data-phc-held={b.id} {...tipProps(b.name + (b.camp ? ' (from the camp)' : '') + '. ' + b.text + ' Worth ' + b.worth + '.')}
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px 2px 3px', borderRadius: 8, background: ink.raised, fontSize: 13 }}>
+              style={{ display: 'inline-flex', alignItems: 'center', gap: 4, padding: '2px 8px 2px 3px', borderRadius: 8, background: ink.raised, fontSize: 'var(--fs-sub)' }}>
               <span style={{ display: 'inline-grid', color: ink.white }} dangerouslySetInnerHTML={{ __html: boonIconSvg(b.id, ICON.boonHeld) }} />{b.name}{b.camp ? <span style={{ color: ink.muted }}>· Camp</span> : null}</span>)}
           </span>
         </div>))}
       {log.length ? <div data-phc-visit-log="" style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         <span style={kick}>THIS VISIT</span>
-        {log.slice(0, 6).map((l, i) => <span key={i} style={{ fontSize: 13, lineHeight: 1.35, color: '#C9D3E3' }}>{l}</span>)}
+        {log.slice(0, 6).map((l, i) => <span key={i} style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.35, color: '#C9D3E3' }}>{l}</span>)}
       </div> : null}
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         <button type="button" data-phc-report-run="" {...tipProps('Saves one file with the seed, the stages, every fight\'s tally and each character\'s build. Nothing is sent.')} onClick={() => downloadRunReport(g, scrub, toast)} style={btn(false)}>Report a run</button>
@@ -116,7 +116,7 @@ export function campPhase(g: GameState, me: string): Phase | null {
   const lv = loadoutView(g as any, me); if (!lv) return null;
   const solo = lv.solo;
   if (lv.readyWhy) return { key: 'ready', label: solo ? 'Start the run' : 'Ready', attr: { 'data-phc-phase': 'ready' }, why: lv.readyWhy }; // the engine's refusal, in its words
-  return { key: 'ready', label: solo ? 'Start the run' : lv.ready ? '✓ Ready (undo)' : 'Ready', attr: { 'data-phc-phase': 'ready', 'data-phc-camp-ready': '' }, go: () => campGuard(lv, false, () => act({ type: 'run/ready', ...(lv.ready ? { undo: true } : {}) } as any)) }; // rules 1.55 item 49: a free pick still open asks first
+  return { key: 'ready', label: solo ? 'Start the run' : lv.ready ? '✓ Ready (undo)' : 'Ready', attr: { 'data-phc-phase': 'ready', 'data-phc-camp-ready': '' }, go: () => levelUpGuard(lv, () => campGuard(lv, false, () => act({ type: 'run/ready', ...(lv.ready ? { undo: true } : {}) } as any)), () => go('levelup', { levelupChar: lv.me.id })) }; // rules 1.55 item 49: a free pick still open asks first; a level-up due asks before that (playtest 0.31.10 row 2)
 }
 function phaseOf(g: GameState, me: string, v: RunViewV): Phase | null {
   const r = g.run!;
@@ -161,19 +161,19 @@ function RunSquad({ g, me }: { g: GameState; me: string }) {
       <div role="list" aria-label="The squad" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
         {v.party.map((p) => (
           <div role="listitem" key={p.id} data-phc-member={p.id} data-phc-ready={marks[p.id] && marks[p.id].startsWith('✓') ? '1' : '0'} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '5px 8px', borderRadius: 8, background: ink.panel, borderLeft: '3px solid ' + p.color }}>
-            <span style={{ display: 'grid', placeItems: 'center', width: 24, height: 24, flex: 'none', borderRadius: '50%', fontSize: 13, fontWeight: 700, background: p.color, color: ink.ground }}>{p.initials}</span>
+            <span style={{ display: 'grid', placeItems: 'center', width: 24, height: 24, flex: 'none', borderRadius: '50%', fontSize: 'var(--fs-sub)', fontWeight: 700, background: p.color, color: ink.ground }}>{p.initials}</span>
             <span style={{ display: 'flex', flexDirection: 'column', minWidth: 0, flex: 1 }}>
-              <span style={{ fontSize: 13, fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}{p.mine ? ' (you)' : ''}</span>
-              <span style={{ fontSize: 13, color: ink.muted }}>Level {p.level} · <span style={{ color: p.hp < p.maxHp ? ink.hp : ink.muted }}>HP {p.hp}/{p.maxHp}</span> · <span data-phc-credits={p.id} style={{ color: ink.white }}>{p.credits} credits</span></span>
-              {p.wear && p.wear.state !== 'sound' ? <span data-phc-member-wear="main" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 90 }}>{p.weapon}</span><WearBar w={p.wear} label={p.weapon} compact /></span> : null}
-              {p.worn.map((x, i) => <span key={i} data-phc-member-wear="other" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 90 }}>{x.name}</span><WearBar w={x.w} label={x.name} compact /></span>)}
+              <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}{p.mine ? ' (you)' : ''}</span>
+              <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Level {p.level} · <span style={{ color: p.hp < p.maxHp ? ink.hp : ink.muted }}>HP {p.hp}/{p.maxHp}</span> · <span data-phc-credits={p.id} style={{ color: ink.white }}>{p.credits} credits</span></span>
+              {p.wear && p.wear.state !== 'sound' ? <span data-phc-member-wear="main" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)', color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 90 }}>{p.weapon}</span><WearBar w={p.wear} label={p.weapon} compact /></span> : null}
+              {p.worn.map((x, i) => <span key={i} data-phc-member-wear="other" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 'var(--fs-sub)', color: ink.muted }}><span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: 90 }}>{x.name}</span><WearBar w={x.w} label={x.name} compact /></span>)}
             </span>
-            {marks[p.id] ? <span data-phc-mark={p.id} style={{ flex: 'none', fontSize: 13, fontWeight: 700, color: marks[p.id].startsWith('✓') ? ink.white : ink.muted }}>{marks[p.id]}</span> : null}
-            {p.levelUp && p.mine ? <button type="button" data-phc-levelup={p.id} onClick={() => go('levelup', { levelupChar: p.id })} {...tipProps('Level up: spend your points')} style={{ ...btn(true), minHeight: 28, padding: '0 8px', fontSize: 13 }}>★</button> : null}
+            {marks[p.id] ? <span data-phc-mark={p.id} style={{ flex: 'none', fontSize: 'var(--fs-sub)', fontWeight: 700, color: marks[p.id].startsWith('✓') ? ink.white : ink.muted }}>{marks[p.id]}</span> : null}
+            {p.levelUp && p.mine ? <button type="button" data-phc-levelup={p.id} onClick={() => go('levelup', { levelupChar: p.id })} {...tipProps('Level up: spend your points')} style={{ ...btn(true), minHeight: 28, padding: '0 8px', fontSize: 'var(--fs-sub)' }}>★</button> : null}
           </div>))}
       </div>
       {ph ? <button type="button" {...ph.attr} aria-disabled={ph.go ? undefined : 'true'} {...tipProps(ph.why || null)} onClick={() => { if (ph.go) ph.go(); else if (ph.why) toast(ph.why); }} style={{ ...btn(true, !ph.go), minHeight: 40, width: '100%' }}>{ph.label}</button>
-        : v.waiting ? <span data-phc-waiting="" style={{ fontSize: 13, color: ink.white }}>{v.waiting}</span> : null}
+        : v.waiting ? <span data-phc-waiting="" style={{ fontSize: 'var(--fs-sub)', color: ink.white }}>{v.waiting}</span> : null}
     </div>
   );
 }

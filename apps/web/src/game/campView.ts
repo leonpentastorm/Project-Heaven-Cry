@@ -44,7 +44,7 @@ export function campChecklist(v: LoadoutViewV): CampCheckV[] {
   return out;
 }
 /** The one sentence of help under the camp's title. */
-export const campHelp = (v: LoadoutViewV): string => 'Before the run: take one free weapon' + (v.freePicks.focus.offered ? ', one free focus' : '') + ' and spend your budget on anything else.';
+export const campHelp = (_v: LoadoutViewV): string => ''; // the three steps under it say it (wording pass 2, section 11)
 /** What a free pick's button says: the one taken, a swap, or the first take. */
 export function freeAction(c: LoadoutCardV, v: LoadoutViewV, slot: 'weapon' | 'focus'): string {
   if (c.picked) return '✓ YOURS';
@@ -61,6 +61,25 @@ export function campConfirm(v: LoadoutViewV, next = false): { open: ('weapon' | 
     go: (next ? 'Go on without ' : 'Start without ') + (open.length > 1 ? 'them' : 'it') };
 }
 
+/** Outside playtest 0.31.10 row 2: Start the run (Ready) with a level-up due (the engine's levelUpDue: points, a perk
+ * step, a fork) asks first; the safe answer (Escape and the backdrop included) opens Level up. Null: nothing to ask. */
+export function campLevelUpAsk(v: LoadoutViewV | null): LevelUpAsk | null {
+  return !v || v.ready ? null : levelUpAsk(!!v.levelUp);
+}
+/** The one level-up question, asked by the camp's Ready and the lobby's Start the run alike; null when nothing is due. */
+export interface LevelUpAsk { title: string; text: string; back: string; go: string }
+export const levelUpAsk = (due: boolean): LevelUpAsk | null => (due ? { title: 'Level up first?', text: 'Perks or points are waiting.', back: 'Open Level up', go: 'Start without' } : null);
+let waivedLevel = '';
+/** Ask `q` (a level-up due), then run `then`; the safe answer runs `open` (Level up). Asked once for the same `key`. */
+export function askLevelUp(q: LevelUpAsk | null, key: string, then: () => void, open: () => void): void {
+  if (!q || waivedLevel === key) { then(); return; }
+  void askConfirm({ title: q.title, body: q.text, confirm: q.go, cancel: q.back, danger: true }).then((go) => { if (go) { waivedLevel = key; then(); } else open(); });
+}
+/** The camp's: ask about a level-up due, then run `then` (the free-pick guard and Ready); asked once for the same
+ * character and seed. */
+export function levelUpGuard(v: LoadoutViewV | null, then: () => void, open: () => void): void {
+  askLevelUp(campLevelUpAsk(v), v ? v.me.id + ':' + v.seed : '', then, open);
+}
 /** Ask before moving on (the camp's header Next, the right panel's Ready) when a free pick is still open, in the house
  * dialog (dialog.tsx askConfirm; the safe answer, Escape and the backdrop included, is Go back and pick, which runs
  * `back`); `then` runs at once when nothing is open, or once the player goes on without. Once passed for the same open

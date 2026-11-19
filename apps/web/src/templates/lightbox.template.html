@@ -2,10 +2,11 @@
 <div role="dialog" aria-modal="true" aria-label="{{lb.caption}}" class="{{lbCls}}" style="position: fixed; inset: 0; z-index: 40; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; background: rgba(5, 7, 11, 0.94)">
 <div style="display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; justify-content: center">
 <span style="font-family: 'Spectral', serif; font-size: 18px; color: #E7EBF3">{{lb.caption}}</span>
-<span style="font-size: 12px; letter-spacing: 0.12em; color: #A3AEC2">{{lb.kind}}</span>
+<span style="font-size: var(--fs-sub); letter-spacing: 0.12em; color: #A3AEC2">{{lb.kind}}</span>
 </div>
-<img class="phc-m-card" src="{{lb.img}}" alt="{{lb.caption}}" style="{{lb.imgStyle}}">
-<sc-if value="{{lb.hasText}}" hint-placeholder-val="{{false}}"><p data-lb-text="1" style="max-width: min(92vw, 560px); margin: 0; text-align: center; font-size: 14px; line-height: 1.45; color: #C9D1DE">{{lb.text}}</p></sc-if>
+<sc-if value="{{lb.hasImg}}" hint-placeholder-val="{{true}}"><img class="phc-m-card" src="{{lb.img}}" alt="{{lb.caption}}" style="{{lb.imgStyle}}"></sc-if>
+<sc-if value="{{lb.hasGlyph}}" hint-placeholder-val="{{false}}"><span class="phc-m-card" data-lb-glyph="1" aria-hidden="true" style="display: grid; place-items: center; width: min(60vw, 240px); height: min(60vw, 240px); border-radius: 16px; background: #10151F; font-size: min(30vw, 120px); line-height: 1; color: #E7EBF3">{{lb.glyph}}</span></sc-if>
+<sc-if value="{{lb.hasText}}" hint-placeholder-val="{{false}}"><p data-lb-text="1" style="max-width: min(92vw, 560px); margin: 0; text-align: center; font-size: var(--fs-body); line-height: 1.45; color: #C9D1DE">{{lb.text}}</p></sc-if>
 <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap; justify-content: center">
 <button type="button" onClick="{{closeLb}}" aria-label="Close the enlarged image" style="min-height: 40px; padding: 0 16px; border-radius: 9px; border: 1px solid #2E3A50; background: #10151F; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Close ✕</button>
 </div>

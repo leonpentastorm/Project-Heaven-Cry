@@ -102,7 +102,7 @@ export function GroupList<T>({ section, ink, groups, render }: { section: string
     return <div key={g.key} role="group" aria-label={g.label} data-ws-group={g.key} style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
       {searching ? <span style={cssOf(headCss(ink, false))}>{g.label.toUpperCase()}{count(g)}</span>
         : <button type="button" data-ws-toggle="1" aria-expanded={go} onClick={() => setOpen(section, g.key, !go)} style={cssOf(headCss(ink, false))}><span aria-hidden="true">{go ? '▾' : '▸'}</span>{g.label.toUpperCase()}{count(g)}</button>}
-      {go && g.note && <span style={{ fontSize: 11, color: '#A3AEC2' }}>{g.note}</span>}
+      {go && g.note && <span style={{ fontSize: 'var(--fs-sub)', color: '#A3AEC2' }}>{g.note}</span>}
       {go && render(g.items, g)}
     </div>; })}</>;
 }

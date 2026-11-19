@@ -4523,6 +4523,11 @@
         "self": "target",
         "about": "a unit rolls to spot a Hidden one (the holder is the Hidden one; roll_mod changes the roll or, with roll: \"tn\", its TN; cancel)"
       },
+      "mana_shock": {
+        "hook": "mana_shock",
+        "self": "actor",
+        "about": "a unit enters Mana Shock (after its Mana Short, Strain still over its limit)"
+      },
       "combat_over": {
         "hook": "combat_over",
         "self": null,
@@ -5001,7 +5006,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "actor_res": {
@@ -5022,7 +5028,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "target_res": {
@@ -5043,7 +5050,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "self_has_res": {
@@ -5064,7 +5072,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "self_lacks_res": {
@@ -5085,7 +5094,8 @@
           "vcharge",
           "shadow",
           "ledger",
-          "devotion_xp"
+          "devotion_xp",
+          "strain"
         ]
       },
       "patron": {
@@ -5318,6 +5328,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5363,6 +5374,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5408,6 +5420,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5457,6 +5470,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5558,6 +5572,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5605,6 +5620,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5651,6 +5667,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5698,6 +5715,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5747,6 +5765,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5792,6 +5811,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5837,6 +5857,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5893,6 +5914,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [],
@@ -5935,6 +5957,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -5980,6 +6003,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [
@@ -6025,6 +6049,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [],
@@ -6067,6 +6092,7 @@
           "reaction",
           "to_hit",
           "spot",
+          "mana_shock",
           "combat_over"
         ],
         "fields": [

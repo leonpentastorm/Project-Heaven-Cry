@@ -162,7 +162,7 @@ describe('the camp (rules 1.52)', () => {
     // over the budget: refused in words, nothing changes
     g = lo(g, 'Kade', { op: 'take', key: 'stock:armour:1' });
     const sum = priceOf('stim_injector')! + priceOf('armour:1')! + priceOf('field_kit')!;
-    expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key: 'field_kit' })).toBe('Over the budget by ' + (sum - LOADOUT.budget) + ' credits (' + sum + ' of ' + LOADOUT.budget + ').');
+    expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key: 'field_kit' })).toBe((sum - LOADOUT.budget) + ' over budget');
     expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key: 'field_kit', qty: -1 })).toBe('Kade has none of that to put back.');
     expect(refused(g, { type: 'run/loadout', charId: c.id, op: 'take', key: 'nonsense' })).toBe('The camp doesn\'t stock that.');
   });

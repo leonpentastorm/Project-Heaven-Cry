@@ -41,11 +41,11 @@ describe('the points step: layout', () => {
     const l = screen();
     let v = l.renderVals();
     expect(meter(v, 0)).toBe('10 LEFT OF 10'); expect(meter(v, 1)).toBe('10 LEFT OF 10');
-    expect(v.points.todo).toBe('◆ Still to place: 10 Skill points and 10 Attribute points.');
+    expect(v.points.todo).toBe('');
     press(l, 'durability', 1);
     v = l.renderVals();
     expect(meter(v, 0)).toBe('9 LEFT OF 10');
-    expect(v.points.todo).toBe('◆ Still to place: 9 Skill points and 10 Attribute points.');
+    expect(v.points.todo).toBe('');
     expect(v.budgetChip).toBe('9 SKILL · 10 ATTRIBUTE LEFT');
   });
   it('Mind Without Fog shows its 2 extra Attribute points', () => {
@@ -65,13 +65,13 @@ describe('the points step: a skill pulls its attribute up', () => {
     press(l, 'dexterity', 1); // Agility starts at 1: Dexterity 1 fits under it
     expect(l.state.note).toEqual({ kind: 'ok', text: 'Dexterity 1: 1 Skill point spent.' });
     press(l, 'dexterity', 1);
-    expect(l.state.note.text).toBe('Dexterity 2 needs Agility 2: 1 Attribute point spent.');
+    expect(l.state.note.text).toBe('Agility raised to 2 for Dexterity');
     press(l, 'dexterity', 2);
-    expect(l.state.note.text).toBe('Dexterity 4 needs Agility 4: 1 Attribute point spent.');
+    expect(l.state.note.text).toBe('Agility raised to 4 for Dexterity');
     const v = l.renderVals();
     expect(attrOf(v, 'agility').val).toBe(4); expect(skillOf(v, 'dexterity').pts).toBe(4);
     expect(meter(v, 0)).toBe('6 LEFT OF 10'); expect(meter(v, 1)).toBe('7 LEFT OF 10');
-    expect(v.points.note).toBe('✓ Dexterity 4 needs Agility 4: 1 Attribute point spent.');
+    expect(v.points.note).toBe('✓ Agility raised to 4 for Dexterity');
   });
   it('a skill under its attribute costs no Attribute point; the next one that would says so before the click', () => {
     const l = screen();
@@ -82,11 +82,11 @@ describe('the points step: a skill pulls its attribute up', () => {
     expect(attrOf(l.renderVals(), 'agility').val).toBe(3);
     expect(meter(l.renderVals(), 1)).toBe('8 LEFT OF 10');
     k = skillOf(l.renderVals(), 'athletics');
-    expect(k.need).toBe('TAKES AGILITY TO 4'); expect(k.incAria).toMatch(/^Raise Athletics from 3 to 4 for 1 Skill point and 1 Attribute point: Agility rises from 3 to 4\./);
+    expect(k.need).toBe('Needs Agility 4'); expect(k.incAria).toMatch(/^Raise Athletics from 3 to 4 for 1 Skill point and 1 Attribute point: Agility rises from 3 to 4\./);
   });
   it('a pip sets a skill straight to a value and spends every Attribute point that takes', () => {
     const r: any = _setSkill({ skills: {}, aSet: {} }, 'dexterity', 4);
-    expect(r).toMatchObject({ ok: true, skills: { dexterity: 4 }, text: 'Dexterity 4 needs Agility 4: 3 Attribute points spent.', what: 'Dexterity 0 → 4 and Agility 1 → 4' });
+    expect(r).toMatchObject({ ok: true, skills: { dexterity: 4 }, text: 'Agility raised to 4 for Dexterity', what: 'Dexterity 0 → 4 and Agility 1 → 4' });
     expect(r.aSet.agility).toBe(4);
   });
   it('lowering a skill leaves its attribute, and says how to get the points back', () => {
@@ -112,7 +112,7 @@ describe('the points step: refusals say what is short and what to do', () => {
     expect(_setAttr(st, 'virtue', 2)).toEqual({ ok: false, text: 'No Attribute points left: lower another attribute first.' });
     expect(_setSkill({ skills: {}, aSet: { strength: 7, agility: 3 } }, 'faith', 5).text).toBe('Faith 5 needs Virtue 5. That takes 4 Attribute points and you have 2: lower another attribute first.');
     // with Mind Without Fog's 2 extra points the same click goes through
-    expect(_setSkill(st, 'durability', 5, 2)).toMatchObject({ ok: true, text: 'Durability 5 needs Endurance 5: 1 Attribute point spent.' });
+    expect(_setSkill(st, 'durability', 5, 2)).toMatchObject({ ok: true, text: 'Endurance raised to 5 for Durability' });
   });
   it('no attribute above 7 at creation, so no skill above 7 either', () => {
     expect(BUDGET.attrCap).toBe(7);
@@ -183,19 +183,34 @@ describe('the points step: undo and reset', () => {
   });
 });
 
+describe('the points step: the same rows as level up', () => {
+  it('the line of a skill is never cut and has no hover box repeating it; the family headings carry no blurb', async () => {
+    const { readFileSync } = await import('node:fs');
+    const TPL = readFileSync(new URL('../templates/create.template.html', import.meta.url), 'utf-8'), JS = readFileSync(new URL('./create.js', import.meta.url), 'utf-8');
+    const line = /<span class="phc-pt-line"[^>]*>/.exec(TPL)![0];
+    expect(line).not.toMatch(/tip=/);
+    expect(JS).not.toMatch(/\.phc-pt-line\{[^}]*line-clamp/);
+    expect(TPL).not.toMatch(/tip="\{\{c\.about\}\}"/);
+    expect(JS).toMatch(/scroll-padding-bottom/);
+    const v = screen().renderVals();
+    for (const f of v.families) expect((f as any).about).toBeUndefined();
+    for (const k of v.families.flatMap((f: any) => f.attrs).flatMap((a: any) => a.cards)) { expect(k.lineTitle).not.toBe(k.line); expect(k.lineTitle).not.toContain(k.name + ':'); }
+  });
+});
+
 describe('the points step: what the next point gives', () => {
   it('an attribute shows its per-point line in the game\'s numbers', () => {
     const v = screen().renderVals();
-    expect(attrOf(v, 'endurance').next).toBe('Next point: +15 max HP, +10% chance to ignore an injury.');
-    expect(attrOf(v, 'agility').next).toBe('Next point: +0.5 tile of movement an AP, +1 Initiative.');
-    expect(attrOf(v, 'virtue').next).toBe('Next point: Hymns come back a little sooner.'); // rules 1.24: Max MP left Virtue
-    expect(attrOf(v, 'endurance').upAria).toBe('Raise Endurance from 1 to 2 for 1 Attribute point. Gives +15 max HP, +10% chance to ignore an injury.');
+    expect(attrOf(v, 'endurance').next).toBe('+15 max HP · +10% to ignore an injury');
+    expect(attrOf(v, 'agility').next).toBe('+0.5 tile of movement an AP · +1 Initiative');
+    expect(attrOf(v, 'virtue').next).toBe('Hymns return sooner'); // rules 1.24: Max MP left Virtue
+    expect(attrOf(v, 'endurance').upAria).toBe('Raise Endurance from 1 to 2 for 1 Attribute point. Gives +15 max HP · +10% to ignore an injury.');
   });
   it('a skill shows the roll it gives as a chip (the engine\'s check modifier) and one line: what its next point gives (the road map)', () => {
     const l = screen();
     let k = skillOf(l.renderVals(), 'durability');
     expect(k.modChip).toBe('−2'); expect(k.modTitle).toBe('Roll −2 now, 0 with the next point'); expect(k.nextAt).toBe(1);
-    expect(k.line).toBe('Next point: ' + nextLine('durability', 0));
+    expect(k.line).toBe(nextLine('durability', 0));
     expect(k.incAria).toBe('Raise Durability from 0 to 1 for 1 Skill point. Roll 0. ' + nextLine('durability', 0));
     // the third skill under an attribute rolls checks one better
     k = skillOf(l.renderVals(), 'sensory');
@@ -203,11 +218,11 @@ describe('the points step: what the next point gives', () => {
     expect(k.modTitle).toBe('Roll −2 now, +1 with the next point');
     press(l, 'durability', 2);
     k = skillOf(l.renderVals(), 'durability');
-    expect(k.nextAt).toBe(3); expect(k.line).toBe('Next point: ' + nextLine('durability', 2)); expect(k.line).toContain('Perk: ');
+    expect(k.nextAt).toBe(3); expect(k.line).toBe(nextLine('durability', 2)); expect(k.line).toContain('Perk: ');
     const fresh = screen().renderVals();
     for (const s of D.skills as any[]) {
       const line = skillOf(fresh, s.id).line;
-      expect(nextLine(s.id, 0).length, s.id).toBeGreaterThan(0); expect(line, s.id).toBe('Next point: ' + nextLine(s.id, 0)); expect(line, s.id).not.toContain('{=');
+      expect(nextLine(s.id, 0).length, s.id).toBeGreaterThan(0); expect(line, s.id).toBe(nextLine(s.id, 0)); expect(line, s.id).not.toContain('{=');
     }
   });
   it('every stepper has a label saying what it changes and its value', () => {
@@ -248,7 +263,7 @@ describe('the points step: archetypes and Lock in', () => {
     const l = screen({ sampleName: 'Test', startStep: 'skills' });
     press(l, 'dexterity', 4); press(l, 'athletics', 3); press(l, 'faith', 3);
     expect(validateSheet(l.sheet())).toBe('Place every Attribute point.');
-    expect(l.renderVals().points.todo).toBe('◆ Still to place: 5 Attribute points.');
+    expect(l.renderVals().points.todo).toBe('');
     expect(l.renderVals().checks.find((c: any) => /Attribute points/.test(c.label)).mark).toBe('◆');
     for (let i = 0; i < 5; i++) attrOf(l.renderVals(), 'endurance').up();
     expect(l.renderVals().points.todo).toMatch(/^✓/);
@@ -258,7 +273,7 @@ describe('the points step: archetypes and Lock in', () => {
   it('Mind Without Fog taken after the points are placed leaves 2 Attribute points to place; dropped, 2 too many', () => {
     const l = screen({ sampleName: 'Test', sampleArch: 'bulwark', startStep: 'skills' });
     l.state.traits = ['mind_without_fog'];
-    expect(l.renderVals().points.todo).toBe('◆ Still to place: 2 Attribute points.');
+    expect(l.renderVals().points.todo).toBe('');
     attrOf(l.renderVals(), 'virtue').up(); attrOf(l.renderVals(), 'virtue').up();
     expect(validateSheet(l.sheet())).toBeNull();
     l.state.traits = [];

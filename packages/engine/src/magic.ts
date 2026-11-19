@@ -16,7 +16,7 @@ import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
 import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult, toHitAdd } from './rolls';
-import { emit, boundGame, statQuery, onHook, charOfUnit, growthHeld, harmHeld, ifFails } from './effects/hooks';
+import { emit, boundGame, bindGame, statQuery, onHook, charOfUnit, growthHeld, harmHeld, ifFails } from './effects/hooks';
 import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
@@ -29,7 +29,7 @@ import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
 import { grantGoods, lootToPack } from './containers';
 import { itemWords, wordCostMods, immune, mendShown } from './effects/core';
-import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive } from './effects/cost';
+import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive, setResSetter } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
 import { tilesIn, rngOf } from './kit';
 import { feedOf, showFeedNumber } from './effects/feed';
@@ -115,7 +115,17 @@ export const FLUX_MAX: number = Number((RULES as any).mana?.sigil?.flux?.safe_ma
 if (!(FLUX_MAX > 0)) throw new Error('data/rules.json mana.sigil.flux.safe_max is missing');
 /** This unit's Flux limit: FLUX_MAX (fed by Rumination) plus what its items add (stat `flux_max`: a variant's Holds more Flux, rules 1.56 L4). */
 /** Rules 1.60 item 4608 (the beta feeds: Rumination): FLUX_MAX x the Flux limit's feed, rounded, then what items add. */
-export const fluxMaxOf = (u: Unit, cb?: Combat | null): number => Math.round(FLUX_MAX * feedOf(u, 'flux_limit')) + statQuery({ u, cb: cb || null }, 'flux_max').add;
+/** Bound to `g` while `fn` reads (preview.ts withGame does the same; it can't be imported here: preview imports this file's importers). */
+const inGame = <T>(g: any, fn: () => T): T => { const was = bindGame(g || null); try { return fn(); } finally { bindGame(was); } };
+/** A stat query's who for a unit, or for a character sheet out of a fight (no tile: its own points and items). */
+const whoOf = (u: Unit | Character, cb?: Combat | null) => ((u as any).pos === undefined ? { c: u as Character } : { u: u as Unit, cb: cb || null });
+/** `u`: a unit, or a character sheet (the sheet out of a fight: its own points and items). `g`: the game to read the
+ *  character through (a screen's call passes it; inside an action the game is already bound). */
+export function fluxMaxOf(u: Unit | Character, cb?: Combat | null, g?: any): number {
+  if (g !== undefined) return inGame(g, () => fluxMaxOf(u, cb));
+  const who = whoOf(u, cb);
+  return Math.round(FLUX_MAX * feedOf(u, 'flux_limit')) + statQuery(who, 'flux_max').add;
+}
 showFeedNumber('flux_limit', (x) => Math.round(FLUX_MAX * feedOf(x, 'flux_limit')));
 export { CORE_CHARGE, coreChargeOf };
 /** The standard mana core's item id (a resource's neutral item: every core line is lootToPack of it). */
@@ -739,8 +749,9 @@ export const stageSaveTn = (stage: number) => Math.floor(Math.max(0, stage) / 2)
 export const stageRounds = (stage: number) => (SRD.extra_round_at != null && stage >= SRD.extra_round_at ? 1 : 0);
 export const stageTiles = (stage: number) => ((SRD.extra_tile_at as number[]) || []).filter((s) => stage >= s).length;
 export const stageBoonRounds = (stage: number) => ((SRD.boon_round_at as number[]) || []).filter((s) => stage >= s).length;
-/** The Damage school's ways to strike (rules 1.19; soul_modules.json damage.modes): the multiplier on one target. */
-const DMODE: any = SR.damage?.modes || {};
+/** The Damage school's ways to strike (rules 1.19; a school's own `modes` in soul_modules.json, read by its ways'
+ *  lines too since 0.31.11): the multiplier on one target. */
+const DMODE: any = Object.assign({}, ...Object.values(SCHOOL).map((s: any) => s.modes || {}));
 export function damageModeMult(option: string | undefined, t?: Unit | null): number {
   const md = option ? DMODE[option] : null; if (!md) return 1;
   if (md.mult_low != null && t && t.maxHp > 0 && t.hp <= t.maxHp * (md.low_hp ?? 0.5)) return md.mult_low;
@@ -940,6 +951,15 @@ function easeStrain(cb: Combat, u: Unit, n: number, way: string): number {
   shockEnds(cb, u);
   return was - m.strain;
 }
+/** Rules 1.69 item 5453 (N3b): Strain is a resource row (data/actions.json resources.strain, setter "strain"), so an item's
+ * `resource` op reads and changes it through the one Strain-change function each way, with its limit: up through
+ * addStrain (the strain hook, the Short and the Shock), down through easeStrain (strain_change, then the Shock's end).
+ * Returns what really changed; a unit with no heart has no Strain to change. */
+setResSetter('strain', (cb, u, n, _by, why) => {
+  const m = heart(u); if (!cb || !m || !n) return 0; const was = m.strain;
+  if (n > 0) addStrain(cb, rngOf(), u, n, why || 'an item'); else easeStrain(cb, u, -n, why || 'an item');
+  return m.strain - was;
+});
 /** Rules 1.56 (the Mana Shock): it lasts while Strain is over the limit (MagicUnit.shock); asked wherever Strain falls
  * and at the turn's end (a limit that rose). */
 function shockEnds(cb: Combat, u: Unit): boolean {
@@ -1000,6 +1020,8 @@ export function manaShort(cb: Combat, rng: Rng, u: Unit, limit?: number): string
     if (!cb.overworld && cb.order?.[cb.turn] === u.id) m.shockOwn = true;
     emitFx(cb, 'cond', { target: u.id, at: u.pos, id: MANA_SHOCK.id }); // the state's word on the token, no hurt flash (fx/play.ts cond)
     say(cb, u.name + ' is in ' + MANA_SHOCK.name + ' (Strain ' + m.strain + '/' + lim + '): ' + MANA_SHOCK.text);
+    // Rules 1.69: the one point where a heart enters the Shock (the item ops trigger `mana_shock` listens here).
+    emit(cb, 'mana_shock', { u, strain: m.strain, limit: lim, cb });
   }
   return ' · MANA SHORT';
 }

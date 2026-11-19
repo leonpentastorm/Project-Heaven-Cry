@@ -13,6 +13,7 @@ import mainT from '../templates/main.template.html?raw';
 import combatT from '../templates/combat.template.html?raw';
 import levelupT from '../templates/levelup.template.html?raw';
 import lightboxT from '../templates/lightbox.template.html?raw';
+import sharedSrc from '../screens/shared.js?raw';
 import giveSrc from './GiveTab.tsx?raw';
 import shopSrc from './ShopScreen.tsx?raw';
 import upgradeSrc from './UpgradeCard.tsx?raw';
@@ -133,7 +134,10 @@ describe('click to enlarge reaches every icon slot', () => {
   it("the templates' icon slots", () => {
     for (const src of ['fo.icon', 'm.icon', 's.icon', 'dw.icon', 'qv.icon', 'kt.icon', 'tm.icon', 'pe.icon', 'fa.witnessed.icon', 'fa.vow.icon', 'classHead.icon']) expect(zoomed(mainT, src), 'main ' + src).toBe(true);
     for (const src of ['sc.icon', 'v.icon', 'a.icon', 'a.head.icon', 'pe.icon', 'r.icon', 'd.icon', 'tb.icon']) expect(zoomed(combatT, src), 'combat ' + src).toBe(true);
-    for (const src of ['fo.icon', 'f.icon', 'pk.icon']) expect(zoomed(levelupT, src), 'levelup ' + src).toBe(true);
+    for (const src of ['fo.icon', 'f.icon']) expect(zoomed(levelupT, src), 'levelup ' + src).toBe(true);
+    // a perk is a row (screens/shared.js PERKROW_TPL): the level-up chooser and the sheet place it; its icon enlarges
+    expect(levelupT).toContain('<!--PERKROW:cp-->'); expect(mainT).toContain('<!--PERKROW:k.row-->');
+    expect(zoomed(sharedSrc, 'X.icon'), 'the perk row').toBe(true);
     expect(lightboxT).toContain('{{lb.text}}');
   });
   it("the Survival screens' pictures (Give, shop, Sell, Forge and upgrade cards, rewards, materials, camp, place cards)", () => {

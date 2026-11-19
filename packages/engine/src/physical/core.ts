@@ -68,12 +68,9 @@ export const handlerOf = (id: string): TechHandler | null => HANDLERS[id] || nul
 export const NOT_BUILT = 'This technique isn\'t in the game yet.';
 
 // ---------- this turn ----------
-/** A stamp for "this turn of this unit": the round and the turn index. */
-export const turnStamp = (cb: Combat) => cb.round + '.' + cb.turn;
-/** The user's melee chain this turn: how many melee techniques, the last one, and whether a Finisher ended it. */
-export function chainOf(cb: Combat, u: Unit): { t: string; n: number; last: string | null; ended: boolean } {
-  const c = u.chain; return c && c.t === turnStamp(cb) ? c : { t: turnStamp(cb), n: 0, last: null, ended: false }; // reading writes nothing
-}
+// turnStamp and chainOf live in physical/data.ts (a leaf the item actions read without a cycle: item K, 0.31.11)
+import { turnStamp, chainOf } from './data';
+export { turnStamp, chainOf };
 /** The chain to write to (kept on the unit). */
 function chainFor(cb: Combat, u: Unit) { const c = chainOf(cb, u); u.chain = c; return c; }
 /** A melee technique (or an action counted in a melee group: the Breaker's Launch) joins the chain; a Finisher ends it
@@ -82,6 +79,9 @@ function noteChain(cb: Combat, u: Unit, id: string) {
   if (techSystemOf(id) !== 'melee') return;
   const ch = chainFor(cb, u); ch.n++; ch.last = id; if (techGroupOf(id) === 'finisher') ch.ended = true;
 }
+// Item 5531: a Finisher's lock holds until the unit's next turn begins; the chain is cleared then (what the action
+// list's gate reads, effects/actions.ts entryOf: u.chain.ended)
+onHook('turn_start', (ctx: any) => { if (ctx.u?.chain) delete ctx.u.chain; });
 // An action that is no technique row but counts in a group (techniques.json rules.group_actions) joins the chain when done.
 onHook('action_done', (ctx: any, cb) => { if (ctx.world || !ctx.u || ctx.a?.type === 'combat/technique') return; const id = actionTechOf(ctx.a); if (id && techGroupOf(id)) noteChain(cb, ctx.u, id); });
 /** Per-technique state on a unit (plain JSON, saved with the fight). */
@@ -381,7 +381,7 @@ function gate(cb: Combat, u: Unit, def: TechDef, args: TechArgs): string | null 
   if (!def.free && !wield && weaponId !== 'fists' && (condOn(u, 'disarmed') || condOn(u, 'lowered'))) return condOn(u, 'disarmed') ? 'Disarmed: recover your weapon first (2 AP).' : 'Your weapon is lowered: raise it first (1 AP).';
   if (def.system === 'melee') {
     const ch = chainOf(cb, u);
-    if (ch.ended) return 'Your chain has ended: a Finisher is the last melee technique of a turn.';
+    if (ch.ended) return PHYS_RULES.chain_ended; // (item 5531: the same words refuse an item's action in a melee group: effects/actions.ts)
     if (def.group === 'opener' && ch.n > 0) return 'An Opener is only the first melee technique of your turn.';
     if (def.group === 'finisher') { const need = finisherNeed(cb, u, def); if (momentumOf(u) < need) return 'Needs Momentum ' + need + '.'; }
     const cost = momentumCost(u, def, args); if (cost && momentumOf(u) < cost) return 'Needs ' + cost + ' Momentum: land a plain attack first.';
