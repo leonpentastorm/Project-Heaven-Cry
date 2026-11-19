@@ -410,6 +410,7 @@
       "verb:shadow.plant#plant": "allowed",
       "verb:shadow.read_intent#read_intent": "allowed",
       "verb:shadow.rig#rig": "allowed",
+      "verb:shadow.stalk#stalk": "allowed",
       "verb:shadow.tag#tag": "allowed",
       "verb:shadow.timing#timing": "allowed",
       "verb:shadow.vault#vault": "allowed",
