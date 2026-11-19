@@ -6,8 +6,9 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { PERK, SKILL, applyCond, condOn, previewAttack, saveAgainst, resolveAttack, migrateLoaded, strainLimit, swellFree, readyDesigns, pendingRepicks, stepsTaken, saveBonus, type Unit } from '../src';
+import { PERK, SKILL, applyCond, condOn, previewAttack, saveAgainst, resolveAttack, beginTurn, applyDamage, setDowned, migrateLoaded, strainLimit, swellFree, readyDesigns, pendingRepicks, stepsTaken, saveBonus, type Unit } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
+import { tiesOf } from '../src/kit';
 import forksJ from '../../../data/forks.json';
 import soulJ from '../../../data/soul_modules.json';
 import classesJ from '../../../data/classes.json';
@@ -178,3 +179,97 @@ describe('old saves (rules 1.70 item 5538 with the Determination tables)', () =>
   });
 });
 void readFileSync; void fileURLToPath;
+
+// ================================================================================================ Insight
+/** A door user (an Attuner in the off hand) and a friend against two Soldiers; Bonds made by the real tend.bond action. */
+function bondFight(spec: any = {}, friend: any = {}) {
+  const s: any = storyWith([{ name: 'Medic', level: 6, weapon: 'service_pistol', attrs: { insight: 5 }, ...spec, skills: { empathy: 5, ...(spec.skills || {}) } }, { name: 'Gun', level: 6, ...friend }]);
+  s.g.characters[s.chars[0].id].offHand = { id: 'attuner' };
+  s.act({ type: 'narrator/turn', turn: { narration: 'Fight', combat: { name: 'Bonds', map: 'yard16', difficulty: 'standard', level: 6,
+    enemies: [{ name: 'Soldier 1', tier: 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level: 6 }, { name: 'Soldier 2', tier: 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level: 6 }] } } });
+  const cb = () => s.g.combat, U = (id: string) => cb().units.find((u: any) => u.id === id);
+  const me = cb().units.find((u: any) => u.name === 'Medic'), al = cb().units.find((u: any) => u.name === 'Gun'), foes = cb().units.filter((u: any) => u.side === 'foe');
+  me.pos = '3,5'; al.pos = '3,7'; foes[0].pos = '9,5'; foes[1].pos = '9,8';
+  const c = cb(); c.turn = c.order.indexOf(me.id); delete c.window; withGame(s.g, () => beginTurn(c, s.g.rng)); U(me.id).ap = 12; U(me.id).mg.mp = 900;
+  const act = (id: string, t: any, actionId?: string, more: any = {}) => { try { s.act({ type: 'combat/perk', unitId: me.id, id, ...(actionId ? { actionId } : {}), ...(t ? { targetId: t.id } : {}), ...more }); return null; } catch (e: any) { return String(e?.message || e); } };
+  const bond = (t: any) => { const x = U(t.id); x.sv = { heart: -99, body: -99, brain: -99 }; for (let i = 0; i < 6 && !tiesOf(cb(), U(me.id), 'bond', 'from').some((k: any) => k.to === t.id); i++) { U(me.id).ap = 12; expect(act('verb:tend.bond', U(t.id))).toBeNull(); } delete U(t.id).sv; };
+  return { s, cb, U, me, al, foes, act, bond };
+}
+
+describe('Empathy (items 6210 to 6212)', () => {
+  it('Snap opens at 2 and Shield at 5; Touch is gone', () => {
+    const at = (e: number) => { const r = bondFight({ skills: { empathy: e } }); r.bond(r.al); const shield = r.act('verb:tend.shield', r.U(r.al.id)); r.U(r.me.id).ap = 12; return { shield, snap: r.act('verb:tend.snap', r.U(r.al.id)) }; }; // the Shield first: a Snap ends the Bond
+    expect(at(1).snap).not.toBeNull(); expect(at(2).snap).toBeNull();
+    expect(at(4).shield).not.toBeNull(); expect(at(5).shield).toBeNull();
+    expect(bondFight().act('verb:tend.touch', null)).not.toBeNull();
+  });
+  it('Taut Thread II: an attack on a Bonded foe rolls with Empathy when it is higher; I does not', () => {
+    const via = (tier: string) => { const r = bondFight({ skills: { empathy: 9, dexterity: 0 }, perks: { shared_breath: tier } }); r.bond(r.foes[0]);
+      return withGame(r.s.g, () => previewAttack(r.cb(), r.U(r.me.id), r.U(r.foes[0].id), 'shot', { free: true })).via; };
+    expect(via('II')).toBe('empathy'); expect(via('I')).not.toBe('empathy');
+  });
+  it('Threads That Hold: a Mend on a Bonded friend is its multiplier more; the Bonds to friends hold while you are Downed', () => {
+    const mend = (perks: any) => { const r = bondFight({ skills: { empathy: 10 }, perks }); r.bond(r.al); r.U(r.al.id).hp = 1; r.s.g.rng.state = 77;
+      expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull(); return { healed: r.U(r.al.id).hp - 1, r }; };
+    const a = mend({}).healed, b = mend({ threads_that_hold: 'mastered' });
+    const mult = (PERK as any).threads_that_hold.effects[0].value;
+    expect(Math.abs(b.healed - Math.floor(a * mult))).toBeLessThanOrEqual(1);
+    withGame(b.r.s.g, () => setDowned(b.r.U(b.r.me.id), true));
+    expect(tiesOf(b.r.cb(), b.r.U(b.r.me.id), 'bond', 'from').some((k: any) => k.to === b.r.al.id)).toBe(true);
+  });
+  it('Long Thread: the first Mend on each Bonded friend each round costs 1 AP less (min 1); the second full', () => {
+    const r = bondFight({ skills: { empathy: 8 }, picks: ['fork.tend.long_thread'] }); r.bond(r.al); r.U(r.me.id).ap = 12;
+    const plain = bondFight({ skills: { empathy: 8 } }); plain.bond(plain.al); plain.U(plain.me.id).ap = 12;
+    let a = plain.U(plain.me.id).ap; plain.act('verb:tend.mend', plain.U(plain.al.id)); const full = a - plain.U(plain.me.id).ap;
+    a = r.U(r.me.id).ap; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull(); expect(a - r.U(r.me.id).ap).toBe(Math.max(1, full - 1));
+    a = r.U(r.me.id).ap; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull(); expect(a - r.U(r.me.id).ap).toBe(full);
+  });
+});
+
+describe('Camaraderie (item 6213)', () => {
+  it('Nobody Left Behind I: a Downed friend beside you takes half; I has no Raise (II has)', () => {
+    const hit = (perks: any) => { const r = bondFight({ skills: { camaraderie: 5 }, perks }); const al = r.U(r.al.id); al.pos = '3,6'; withGame(r.s.g, () => setDowned(al, true));
+      const res: any = withGame(r.s.g, () => applyDamage(r.cb(), al, 40, { by: r.U(r.foes[0].id), type: 'weapon', ranged: true } as any)); return { r, took: res.amount }; }; // a Downed unit's hit: the amount that lands after taking
+    const plain = hit({}), half = hit({ nobody_left_behind: 'I' }), mult = (PERK as any).nobody_left_behind.tiers.I.effects[1].value;
+    expect(plain.took).toBeGreaterThan(0); expect(Math.abs(half.took - Math.floor(plain.took * mult))).toBeLessThanOrEqual(1);
+    expect(half.r.act('nobody_left_behind', half.r.U(half.r.al.id), 'tend_raise')).not.toBeNull();
+  });
+  it('Steady Hands I: Settle only; II adds Soothe', () => {
+    const r = bondFight({ skills: { camaraderie: 3 }, perks: { steady_hands: 'I' } });
+    expect(r.act('steady_hands', r.U(r.al.id), 'tend_settle')).toBeNull(); expect(condOn(r.U(r.al.id), 'settled')).toBe(true);
+    expect(r.act('steady_hands', r.U(r.al.id), 'tend_soothe')).not.toBeNull();
+  });
+  it('Many Hands: Share a Hit reaches a friend within 3 tiles', () => {
+    const share = () => { const r = bondFight({ skills: { camaraderie: 10 }, perks: { many_hands: 'mastered' } }); r.U(r.al.id).pos = '3,8'; r.U(r.foes[0].id).attack = 60; const hp = r.U(r.me.id).hp;
+      withGame(r.s.g, () => resolveAttack(r.cb(), r.s.g.rng, r.U(r.foes[0].id), r.U(r.al.id), 'shot', null, { noAp: true })); return hp - r.U(r.me.id).hp; };
+    let got = 0; for (let i = 0; i < 6 && !got; i++) got = share();
+    expect(got).toBeGreaterThan(0);
+  });
+});
+
+describe('Insinuation (items 6214 to 6216)', () => {
+  it('Veiled Insult: 0 AP, once a fight at I (twice at II); a failed save is Taunted', () => {
+    const uses = (tier: string) => { const r = bondFight({ skills: { implication: 5 }, perks: { veiled_insult: tier } }); r.U(r.foes[0].id).sv = { heart: -99 }; let n = 0;
+      for (let i = 0; i < 3; i++) { r.s.g.rng.state = 1000 + i; const ap = r.U(r.me.id).ap; if (r.act('veiled_insult', r.U(r.foes[0].id), 'veiled_insult') === null) { n++; expect(ap - r.U(r.me.id).ap).toBe(0); } }
+      expect(condOn(r.U(r.foes[0].id), 'taunted')).toBe(true); return n; };
+    expect(uses('I')).toBe(1); expect(uses('II')).toBe(2);
+  });
+  it('Quiet Thread: I you are never Traced; II nor are your Bonded friends', () => {
+    const traced = (tier?: string) => { const r = bondFight({ skills: { implication: 5, camaraderie: 3 }, perks: { steady_hands: 'I', ...(tier ? { quiet_thread: tier } : {}) } }); r.bond(r.foes[0]); r.bond(r.al);
+      r.act('steady_hands', r.U(r.al.id), 'tend_settle'); return { me: condOn(r.U(r.me.id), 'traced'), al: condOn(r.U(r.al.id), 'traced') }; };
+    const none = traced(), i = traced('I'), ii = traced('II');
+    expect(none.me || none.al).toBe(true); expect(i.me).toBe(false); expect(ii.me).toBe(false); expect(ii.al).toBe(false);
+  });
+});
+
+describe('old saves (the Insight tables)', () => {
+  it('Soulmate and Sweet Talker load mapped; the Camaraderie and Insinuation passives come after; a re-pick is offered', () => {
+    const s = storyWith([{ skills: { camaraderie: 5, implication: 5 } }]); const id = s.chars[0].id;
+    const old = JSON.parse(JSON.stringify(s.g)); const c0 = old.characters[id];
+    delete c0.perkRev; c0.perks = [{ id: 'soulmate', tier: 'II' }, { id: 'sweet_talker', tier: 'I' }];
+    const c = migrateLoaded(old).characters[id];
+    expect(c.perks.filter((x: any) => PERK[x.id]?.skills.includes('camaraderie'))).toEqual([{ id: 'pull_together', tier: 'II' }]);
+    expect(c.perks.filter((x: any) => PERK[x.id]?.skills.includes('implication'))).toEqual([{ id: 'veiled_insult', tier: 'I' }, { id: 'between_the_lines', tier: 'I' }]);
+    expect(pendingRepicks(c).map((x: any) => x.skill).sort()).toEqual(['camaraderie', 'implication']);
+  });
+});

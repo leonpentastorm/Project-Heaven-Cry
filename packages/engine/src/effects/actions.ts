@@ -177,7 +177,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
       // 0.28.3 (rules 1.55 item 45): a unit-aimed verb whose own op moves the target to the event's tile (Guide's
       // displace to: "tile") takes that tile as a second pick: the legal tiles are shown, and a missing or wrong one is
       // refused in words before anything is paid (it was sent with no tile: the AP and MP went, nobody moved)
-      const step = mine.find((e) => e?.op === 'displace' && e.to === 'tile' && e.target === 'target');
+      const step = [...mine, ...(g.effects || [])].find((e: any) => e?.op === 'displace' && e.to === 'tile' && e.target === 'target'); // rules 1.75 item 6213: any item's grant (Guide on a perk: its ops lifted to acted) takes the tile too
       if (step) { d.thenTile = true; d.preview = (h, args) => stepTileWhy(h, reach, step, args); }
     }
     return d;
@@ -229,7 +229,7 @@ export function dataAp(info: ItemInfo, actionId: string): number | string {
 function costOf(h: Holder, d: ActionDef, args: ActionArgs): Priced {
   const ap = typeof d.ap === 'function' ? d.ap(h, args) : d.ap === 'data' ? apFromData(dataAp(h.info, d.id), h.u) : d.ap, res = typeof d.res === 'function' ? d.res(h, args) : d.res;
   const site = d.site ?? h.key + '#' + d.id; // rules 1.33: a data action may name its cost site (Triage's 'triage': what items answer as ap_cost:triage)
-  return price({ cb: h.cb, u: h.u, c: h.c }, site, { ap, res: res || undefined }, { item: h.key });
+  return price({ cb: h.cb, u: h.u, c: h.c }, site, { ap, res: res || undefined }, { item: h.key, ...(args.targetId ? { targetId: args.targetId } : {}) }); // rules 1.70 P3: the id it is priced with (Long Thread's once a Bonded friend, rules 1.75 item 6212)
 }
 /** The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`:
  * Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. */
@@ -378,7 +378,7 @@ export function previewPerkAction(x: Who, id: string, args: ActionArgs & { actio
   const r = resolve(x, id, args.actionId); if (typeof r === 'string') return { ok: false, why: r, ap: 0, lines: [] };
   const { h, d } = r, e = entryOf(h, d, scope);
   if (!e) return { ok: false, why: d.scope.includes(scope) ? 'Not now.' : 'Not here.', ap: 0, lines: [] };
-  const base: ActionPreview = { ok: !e.why, why: e.why || undefined, ap: e.ap, lines: [] };
+  const base: ActionPreview = { ok: !e.why, why: e.why || undefined, ap: args.targetId ? costOf(h, d, args).ap : e.ap, lines: [] }; // rules 1.70 P3: aimed, it is priced with its target (rules 1.75 item 6212)
   if (base.ok) { const why = aimWhy(h, d, e, args); if (why) { base.ok = false; base.why = why; } }
   const p = d.preview ? d.preview(h, args) || {} : {};
   const out: ActionPreview = { ...base, ...p, lines: [...(p.lines || [])] };

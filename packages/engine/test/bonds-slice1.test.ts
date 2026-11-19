@@ -5,13 +5,17 @@
 import { describe, it, expect } from 'vitest';
 import { storyWith, withGame } from './helpers/perkfight';
 import { beginTurn, actionsFor, bondView, condOn, active } from '../src';
+import { PERK } from '../src';
 import { tiesOf } from '../src/kit';
 import { ledgerCap } from '../src/character';
 import tendingJ from '../../../data/tending.json';
 
 const T: any = tendingJ;
 const item = (id: string) => T.items.find((x: any) => x.id === id);
-const grant = (id: string) => item(id).effects.find((e: any) => e.op === 'grant_action');
+// rules 1.75 item 6213: Tug, Guide, Settle, Soothe and Raise are Camaraderie perks' actions now (their grant_action rows)
+const MOVED: Record<string, [string, number]> = { 'tend.tug': ['pull_together', 0], 'tend.guide': ['pull_together', 1], 'tend.settle': ['steady_hands', 0], 'tend.soothe': ['steady_hands', 1], 'tend.raise': ['nobody_left_behind', 2] };
+const movedGrant = (id: string) => (PERK as any)[MOVED[id][0]].tiers.II.effects[MOVED[id][1]];
+const grant = (id: string) => (MOVED[id] ? movedGrant(id) : item(id).effects.find((e: any) => e.op === 'grant_action'));
 const nested = (id: string, i: number) => grant(id).effects[i];
 const dist = (a: string, b: string) => { const [ax, ay] = a.split(',').map(Number), [bx, by] = b.split(',').map(Number); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
 
@@ -19,7 +23,7 @@ const dist = (a: string, b: string) => { const [ax, ay] = a.split(',').map(Numbe
  * Every Bond is made by the tend.bond action (0.29 wave-2 review MF4), never tied by hand. */
 function rig(o: { mender?: boolean; empathy?: number; level?: number; foeTier?: string; seed?: string } = {}) {
   const level = o.level ?? 5;
-  const s: any = storyWith([{ name: 'Medic', level, classId: o.mender ? 'bard' : null, skills: { empathy: o.empathy ?? 5 }, attrs: { insight: 5 }, weapon: 'service_pistol' }, { name: 'Gun', level }], o.seed);
+  const s: any = storyWith([{ name: 'Medic', level, classId: o.mender ? 'bard' : null, skills: { empathy: o.empathy ?? 5, camaraderie: 5 }, perks: { pull_together: 'II', nobody_left_behind: 'II' }, attrs: { insight: 5 }, weapon: 'service_pistol' }, { name: 'Gun', level }], o.seed);
   s.g.characters[s.chars[0].id].offHand = { id: 'attuner' };
   s.act({ type: 'narrator/turn', turn: { narration: 'Fight', combat: { name: 'Bonds', map: 'yard16', difficulty: 'standard', level,
     enemies: [{ name: 'Soldier 1', tier: o.foeTier || 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level }, { name: 'Soldier 2', tier: 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level }] } } });
@@ -43,7 +47,7 @@ function rig(o: { mender?: boolean; empathy?: number; level?: number; foeTier?: 
     expect(held(), 'Bonded to ' + x.name).toBe(true);
     U(me.id).ap = ap; if (sv === undefined) delete U(t.id).sv; else U(t.id).sv = sv;
   };
-  const row = (name: string) => actionsFor(s.g, me.id, null).find((d: any) => d.group === 'tend' && d.name === name);
+  const row = (name: string) => actionsFor(s.g, me.id, null).find((d: any) => d.name === name); // rules 1.75: Tug is Pull Together's (the Perks tab), Snap the door's (the Tend tab)
   return { s, cb, U, me, al, f1, f2, act, bond, turn, row };
 }
 
@@ -51,7 +55,7 @@ describe('Bonds 2.0 slice 1: Tug', () => {
   it('an enemy that fails its Body save is pulled toward you by the data\'s tiles; Reeled is gone after', () => {
     const r = rig({ seed: 'S2' }); r.bond(r.f1); r.U(r.f1.id).sv = { body: -99 }; // (seed S2: no natural 20 on this save)
     const before = dist(r.U(r.me.id).pos, r.U(r.f1.id).pos), mp = r.U(r.me.id).mg.mp;
-    const x = r.act('verb:tend.tug', r.f1);
+    const x = r.act('pull_together', r.f1, 'tend_tug');
     expect(x.err).toBeNull();
     expect(before - dist(r.U(r.me.id).pos, r.U(r.f1.id).pos)).toBe(nested('tend.tug', 1).tiles);
     expect(condOn(r.U(r.f1.id), 'reeled')).toBeFalsy();
@@ -63,26 +67,26 @@ describe('Bonds 2.0 slice 1: Tug', () => {
   it('a Boss that fails its save is pulled the row\'s Boss tiles: Tug is the one exception to the Boss rule', () => {
     const r = rig({ seed: 'S2', foeTier: 'boss' }); r.bond(r.f1); r.U(r.f1.id).sv = { body: -99 };
     const before = dist(r.U(r.me.id).pos, r.U(r.f1.id).pos);
-    expect(r.act('verb:tend.tug', r.f1).err).toBeNull();
+    expect(r.act('pull_together', r.f1, 'tend_tug').err).toBeNull();
     expect(before - dist(r.U(r.me.id).pos, r.U(r.f1.id).pos)).toBe(nested('tend.tug', 2).tiles);
   });
   it('an enemy that makes its save stays where it is', () => {
     const r = rig(); r.bond(r.f1); r.U(r.f1.id).sv = { body: 99 };
     const at = r.U(r.f1.id).pos;
-    expect(r.act('verb:tend.tug', r.f1).err).toBeNull();
+    expect(r.act('pull_together', r.f1, 'tend_tug').err).toBeNull();
     expect(r.U(r.f1.id).pos).toBe(at);
   });
   it('an ally comes willing, further (no save)', () => {
     const r = rig(); r.bond(r.al);
     const before = dist(r.U(r.me.id).pos, r.U(r.al.id).pos);
-    expect(r.act('verb:tend.tug', r.al).err).toBeNull();
+    expect(r.act('pull_together', r.al, 'tend_tug').err).toBeNull();
     expect(before - dist(r.U(r.me.id).pos, r.U(r.al.id).pos)).toBe(nested('tend.tug', 4).tiles);
   });
   it('refusals in plain words: no Bond, no Attuner', () => {
     const r = rig();
-    expect(r.act('verb:tend.tug', r.f1).err).toMatch(/isn't tied to you/);
+    expect(r.act('pull_together', r.f1, 'tend_tug').err).toMatch(/isn't tied to you/);
     const q = rig(); q.bond(q.f1); q.s.g.characters[q.me.charId].offHand = null; // Bonded, then the Attuner is out of hand
-    expect(q.act('verb:tend.tug', q.f1).err).toMatch(/Needs an Attuner in hand/);
+    expect(q.act('pull_together', q.f1, 'tend_tug').err).toMatch(/Needs an Attuner in hand/);
     expect(q.row('Tug').available).toBe(false);
   });
 });
@@ -151,7 +155,7 @@ describe('Bonds 2.0 slice 1: Last Thread', () => {
     expect(r.row('Raise')?.cost?.ap ?? r.row('Raise')?.cost).not.toBe(0);
     downedByFoes(r);
     const ap = r.U(r.me.id).ap;
-    expect(r.act('verb:tend.raise', r.U(r.al.id)).err).toBeNull();
+    expect(r.act('nobody_left_behind', r.U(r.al.id), 'tend_raise').err).toBeNull();
     expect(r.U(r.me.id).ap).toBe(ap);
     expect(r.U(r.al.id).downed).toBeFalsy();
   });
@@ -159,7 +163,7 @@ describe('Bonds 2.0 slice 1: Last Thread', () => {
     const r = rig({ empathy: 5 });
     downedByFoes(r); r.U(r.al.id).pos = '4,5'; // beside the Medic: Raise reaches it without a Bond
     const ap = r.U(r.me.id).ap;
-    expect(r.act('verb:tend.raise', r.U(r.al.id)).err).toBeNull();
+    expect(r.act('nobody_left_behind', r.U(r.al.id), 'tend_raise').err).toBeNull();
     expect(ap - r.U(r.me.id).ap).toBe(grant('tend.raise').ap);
   });
 });
@@ -194,7 +198,7 @@ describe('Bonds 2.0 slice 1: the enemies\' AI is unaffected', () => {
     const r = rig(); r.bond(r.f1);
     for (const f of [r.f1, r.f2]) expect(actionsFor(r.s.g, f.id, null).some((d: any) => d.group === 'tend')).toBe(false);
     r.U(r.f2.id).sv = { body: -99 };
-    r.bond(r.f2); r.act('verb:tend.tug', r.f2);
+    r.bond(r.f2); r.act('pull_together', r.f2, 'tend_tug');
     r.s.act({ type: 'combat/end-turn', unitId: r.me.id });
     expect(r.cb().units.filter((u: any) => u.side === 'foe').every((u: any) => !u.dead)).toBe(true);
     expect(r.cb().round).toBeGreaterThanOrEqual(1);

@@ -138,14 +138,7 @@ describe('Talks Broke Down: the Narrator says whether the fight came from the ta
 });
 
 describe('story damage goes through the engine (Soulmate out of a fight)', () => {
-  it('the Narrator\'s harm on a bondmate is shared by the Soulmate; a trap too', () => {
-    const s = storyWith([{ perks: { soulmate: 'I' }, skills: { camaraderie: 9 } }, {}]); const [a, b] = s.chars;
-    s.act({ type: 'story/perk', charId: a.id, id: 'soulmate', actionId: 'bond', choice: b.id } as any);
-    const hpA = s.g.characters[a.id].hp, hpB = s.g.characters[b.id].hp;
-    s.act({ type: 'narrator/turn', turn: { narration: 'The floor gives.', harm: [{ charId: b.id, amount: 50, why: 'a fall' }] } } as any);
-    expect(hpB - s.g.characters[b.id].hp).toBe(40); expect(hpA - s.g.characters[a.id].hp).toBe(10);
-    expect(storyHas(s.g, /Soulmate/)).toBe(true);
-  });
+  // Soulmate is removed (rules 1.75 item 6213).
   it('without an item, harm is plain HP loss and can Down a character', () => {
     const s = storyWith([{}]); const c = s.chars[0];
     s.act({ type: 'narrator/turn', turn: { narration: 'Fire.', harm: [{ charId: c.id, amount: 9999, type: 'fire', why: 'the blaze' }] } } as any);

@@ -113,6 +113,13 @@ is the one to match). Until drawn, each shows the fallback the UI already uses f
 | `pure_heart` | Composure perk (from Will Power): the Strain that would short you is refused | Wick's chest glow held steady inside a ring, a crack refusing to spread (the move icon `move-pure-heart` exists and may be adapted) |
 | `lore_ward` | Lore Master perk "Warding Word": a spoken word guards a friend's next save | Wick speaking one word that hangs as a small sigil over a friend's head |
 | `recitation` | Lore Master perk: a Call calms your Strain | Wick reciting from memory, eyes closed, a heart glow cooling |
+| `threads_that_hold` | Empathy's Mastered: Tending through a Bond is stronger; Bonds hold while you are Downed | Wick on one knee, threads from his chest still taut to two friends |
+| `hand_off` | Camaraderie perk: a friend under attack uses your Defense | Wick stepping half in front of a friend, an arm raised as a guard for both |
+| `nobody_left_behind` | Camaraderie perk: a Downed friend beside you is spared; II raises them | Wick crouched over a fallen friend, one hand on their shoulder, shielding them |
+| `steady_hands` | Camaraderie perk: Settle and Soothe a friend | Wick's two hands calm on a friend's shoulders, the friend breathing out |
+| `pull_together` | Camaraderie perk: Tug and Guide along a Bond | Wick pulling a thread hand over hand, a friend drawn toward him |
+| `veiled_insult` | Insinuation perk: a quiet jab that Taunts | Wick with a sly half-smile, a hand at his mouth as if sharing a secret |
+| `quiet_thread` | Insinuation perk: you (II and your Bonded friends) are never Traced | A thread from Wick's chest fading out where it leaves him: no trail |
 
 ### 2. Outburst feelings and modules
 
@@ -289,7 +296,7 @@ The level-up card, the sheet and the fight tab show them beside the option's rul
 | K9 | **Keep the Thread** (Bonds's fork at 4, `fork.tend.keep_the_thread`) | Placeholder in place (built) | A taut thread snapping at one end and holding at the other | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-keep_the_thread`) |
 | K10 | **Short Thread** (Bonds's fork at 4, `fork.tend.short_thread`) | Placeholder in place (built) | Wick's hand on an ally's shoulder in the thick of it, a short bright thread between them | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-short_thread`) |
 | K11 | **Shared Pulse** (Bonds's fork at 6, `fork.tend.shared_pulse`) | Placeholder in place (built) | One pulse running down three threads at once | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-shared_pulse`) |
-| K12 | **Long Thread** (Bonds's fork at 6, `fork.tend.long_thread`) | Placeholder in place (option not built yet) | A thread reaching far across a field to a distant ally | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-long_thread`) |
+| K12 | **Long Thread** (Bonds's fork at 8, `fork.tend.long_thread`) | Placeholder in place (option built in 0.32, rules 1.75 item 6212) | A thread reaching far across a field to a distant ally | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-long_thread`) |
 | K13 | **Round of Blessings** (Prayer's fork at 4, `fork.prayer.round_of_blessings`) | Placeholder in place (option not built yet) | Three small blessings passing hand to hand around a ring | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-prayer-round_of_blessings`) |
 | K14 | **Steadfast** (Prayer's fork at 4, `fork.prayer.steadfast`) | Placeholder in place (option not built yet) | Wick's open hand raised as a blade falls on an ally, a blessing landing first | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-prayer-steadfast`) |
 | K15 | **Benediction** (Prayer's fork at 6, `fork.prayer.benediction`) | Placeholder in place (option not built yet) | A blessing spreading wide over a huddle of allies | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-prayer-benediction`) |

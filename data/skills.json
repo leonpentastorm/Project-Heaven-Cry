@@ -4076,7 +4076,7 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
-      "door_line": "Your door is Bonds: a thread from you to a friend. A Bond does not heal by itself: Tend a Bonded friend to heal them, with Mend or Shield at any range you can see, or Touch from beside them.",
+      "door_line": "Your door is Bonds: tie yourself to a friend or a foe. Tend a Bonded friend; hurt a Bonded foe. A foe makes a Heart save to resist (an Elite at +{=door_numbers.save_elite}, a Boss at +{=door_numbers.save_boss}). While you hold it you have +{=door_numbers.hit} to hit it, and {=door_numbers.share|pct}% of the damage you take goes to it. It takes {=door_numbers.echo|pct}% of every heal you give. Your damage is +{=door_numbers.per_bond|pct}% for each Bond you hold. Snap breaks a Bond: a foe takes Soul damage and is Dazed. While you hold any Bond you are Traced.",
       "forks": [
         {
           "id": "a",
@@ -4098,37 +4098,63 @@
       "door_tab": "tend",
       "door_title": "TEND · BONDS AND CARE",
       "per_point": {
+        "numbers": {
+          "heal": 0.06,
+          "bonds": 1,
+          "reach": 3,
+          "mp": 6
+        },
         "rows": [
           {
             "at": "each",
-            "text": "More healing given"
+            "text": "+{=per_point.numbers.heal|pct}% Healing given"
           },
           {
-            "at": "from 1",
-            "text": "Opens Bonds and Tending (needs an Attuner): a Bond can be put on a friend or an enemy"
+            "at": "at 1, 5, 8",
+            "text": "+{=per_point.numbers.bonds} Bond held"
           },
           {
-            "at": "each",
-            "text": "More Bonds held · more Tending moves"
+            "at": "at 6",
+            "text": "+{=per_point.numbers.reach} Bond reach"
+          },
+          {
+            "at": "at 9",
+            "text": "Mend and Shield cost {=per_point.numbers.mp} MP less"
           }
-        ]
+        ],
+        "note": "Rules 1.75 item 6210: the heal is rules.json output.profiles.tend.skill; the Bonds held tending.json tend.threads, bonds_5, bonds_8; the reach and the MP the steps of tend.bond, tend.mend and tend.shield."
       },
       "gates": [
         "focus:attuner"
       ],
       "unlocks": {
+        "1": {
+          "name": "Bond and Mend",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "The door: Bond (a friend or a foe; Let Go is free) and Mend (a friend, or yourself once a turn); one Bond held (data/tending.json).",
+          "player": "Bond a friend or a foe · Mend a friend or yourself",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6210"
+        },
+        "2": {
+          "name": "Snap",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "Snap, once a turn: break a Bond; a foe takes Soul damage and is Dazed, a friend heals (data/tending.json tend.snap).",
+          "player": "Snap a Bond: a foe is hurt and Dazed, a friend heals",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6210"
+        },
         "3": {
-          "name": "Feel Their Pain",
-          "category": "Combat Interaction",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "You see the HP state and morale of every creature in your Vision range.",
-          "player": "See the health and morale of everyone in sight",
+          "text": "A perk step in this skill: one of its two perks at Tier I.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "see_hp_state_in_vision",
-              "value": 1
-            },
             {
               "op": "perk_choice",
               "skill": "empathy",
@@ -4148,20 +4174,15 @@
           "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "5": {
-          "name": "Mercy",
+          "name": "Shield",
           "category": "Active Skill",
           "mastery": 0,
-          "text": "{=unlocks.5.effects.0.ap} AP: a humanoid enemy below 50% HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
-          "player": "{=.effects.0.ap} AP: a humanoid foe below half HP saves (Heart) or yields",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "mercy",
-              "ap": 2,
-              "uses": "at_will"
-            }
-          ],
-          "adjudication": "engine"
+          "text": "Shield: a Bonded friend anywhere you see takes a shield (data/tending.json tend.shield).",
+          "player": "Shield a Bonded friend anywhere you see",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6210"
         },
         "7": {
           "name": "Mastery 3",
@@ -4180,7 +4201,7 @@
           "name": "Fork: Shared Pulse or Long Thread",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Shared Pulse or Long Thread: not offered yet (Long Thread is still to be built; data/forks.json).",
+          "text": "The door's second fork: choose Shared Pulse or Long Thread, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -4263,6 +4284,15 @@
         "bad_for": "chaotic alignments, serial killers, non-humanoids.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "door_numbers": {
+        "save_elite": 2,
+        "save_boss": 5,
+        "hit": 3,
+        "share": 0.2,
+        "echo": 0.2,
+        "per_bond": 0.05,
+        "about": "tending.json tend.threads numbers, copied for the door line's placeholders (rules 1.75 item 6210); tools/validate.py holds them equal."
       }
     },
     {
@@ -4285,7 +4315,8 @@
         "numbers": {
           "feed": 0.01,
           "feed_at_double": 0.3,
-          "heal": 0.1
+          "heal": 0.1,
+          "share": 0.05
         },
         "rows": [
           {
@@ -4295,6 +4326,10 @@
           {
             "at": "each",
             "text": "+{=per_point.numbers.heal|pct}% healing received"
+          },
+          {
+            "at": "at 1, 2, 3, 4, 5",
+            "text": "+{=per_point.numbers.share|pct}% of a shared hit"
           },
           {
             "at": "at 5",
@@ -4375,46 +4410,27 @@
           "item": true
         },
         "3": {
-          "name": "Hand-Off",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Once per round, when an ally next to you is attacked, they use your Defense in place of their own if yours is higher.",
-          "player": "Once a round: a friend beside you uses your Defense if higher",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "defense",
-              "basis": "your Defense",
-              "target": "an adjacent ally",
-              "limit": "once per round",
-              "when": "an attack against them, if your Defense is higher"
-            },
             {
               "op": "perk_choice",
               "skill": "camaraderie",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine",
-          "provisional": true,
-          "item": true
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Nobody Left Behind",
-          "category": "Passive",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Carry a Downed ally at full Movement, and stabilise them for {=unlocks.5.effects.0.value|abs} AP.",
-          "player": "Carry a Downed friend at full Movement · stabilise for {=.effects.0.value|abs} AP",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap_cost:stabilise",
-              "value": -1
-            },
-            {
-              "op": "stat_mod",
-              "stat": "carry_ally_full_move",
-              "value": 1
+              "op": "perk_choice",
+              "skill": "camaraderie",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -4505,6 +4521,18 @@
         "bad_for": "lone wolves, edgelords, murder hobos.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "soulmate": "pull_together",
+          "rally_cry": "steady_hands"
+        },
+        "passives": {
+          "3": "hand_off",
+          "5": "nobody_left_behind"
+        },
+        "note": "Rules 1.75 item 6213: Hand-Off and Nobody Left Behind became perks; Soulmate and Rally Cry are removed."
       }
     },
     {
@@ -4532,42 +4560,30 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Between the Lines",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "When an NPC speaks in code or hides their meaning, the Narrator tells you what they really mean.",
-          "player": "Hear what coded talk really means",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator reveals the hidden meaning"
-            },
             {
               "op": "perk_choice",
               "skill": "implication",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Veiled Insult",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Before a fight, taunt one enemy in metaphor. It makes a Heart save or must target you first, at {=unlocks.5.numbers.hit} to hit.",
-          "player": "Before a fight: a foe saves (Heart) or must attack you first, {=.numbers.hit} to hit",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "veiled_insult",
-              "ap": 0,
-              "uses": "per_combat"
+              "op": "perk_choice",
+              "skill": "implication",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "engine",
-          "numbers": {
-            "hit": -2
-          }
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -4657,6 +4673,18 @@
         "bad_for": "the antisocial, blunt people, paladins.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "sweet_talker": "veiled_insult",
+          "double_meaning": "between_the_lines"
+        },
+        "passives": {
+          "3": "between_the_lines",
+          "5": "veiled_insult"
+        },
+        "note": "Rules 1.75 items 6215, 6216: Between the Lines and Veiled Insult became perks; Sweet Talker and Double Meaning are removed."
       }
     },
     {

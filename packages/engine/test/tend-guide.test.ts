@@ -6,10 +6,10 @@
 // pick, the engine refuses in words until the tile is a legal one, and the step happens and is said.
 // Through the reducer, in a Survival fight at level 1 with the Empath archetype on the camp's Recommended loadout.
 import { describe, it, expect } from 'vitest';
-import { apply, newGame, ARCHETYPES, beginTurn, withGame, reachable, actionsFor, previewDescriptor, sendDescriptor } from '../src';
+import { PERK, apply, newGame, ARCHETYPES, beginTurn, withGame, reachable, actionsFor, previewDescriptor, sendDescriptor } from '../src';
 import tendingJ from '../../../data/tending.json';
 
-const GUIDE: any = (tendingJ as any).items.find((x: any) => x.id === 'tend.guide').effects[0];
+const GUIDE: any = (PERK as any).pull_together.tiers.II.effects[1]; // rules 1.75 item 6213: Guide is Pull Together II's
 const STEP = GUIDE.effects.find((e: any) => e.op === 'displace').tiles.base, MP = GUIDE.res.mp;
 const sheet = (name: string, arch: string) => { const a: any = ARCHETYPES.find((x) => x.id === arch); return { name, portrait: '', origin: 'Thousand-Planet frontier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
 function survivalFight() {
@@ -19,6 +19,7 @@ function survivalFight() {
   g = apply(g, { type: 'run/start', seed: 'PHC-0001' }, 'host');
   g = apply(g, { type: 'run/ready', close: true }, 'host');
   const med: any = Object.values(g.characters).find((c: any) => c.name === 'Medic');
+  med.skills.camaraderie = Math.max(med.skills.camaraderie || 0, 5); med.perks = [...(med.perks || []), { id: 'pull_together', tier: 'II' }]; // rules 1.75: Guide is a Camaraderie perk's
   const node = reachable(g.run).find((n: any) => n.kind === 'fight') || reachable(g.run)[0];
   for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by);
   const cb = g.combat, mu = cb.units.find((u: any) => u.charId === med.id), al = cb.units.find((u: any) => u.side === 'pc' && u.id !== mu.id);
@@ -30,27 +31,27 @@ function survivalFight() {
 }
 const U = (g: any, id: string) => g.combat.units.find((u: any) => u.id === id);
 const free = (g: any, from: string, n: number, mu: any) => { // a free tile exactly n steps from `from` (the engine's own preview says which are legal)
-  const pv = previewDescriptor(g, mu.id, 'pk:verb:tend.guide#tend_guide', { targetId: U(g, from).id }, 'host');
+  const pv = previewDescriptor(g, mu.id, 'pk:perk:pull_together#tend_guide', { targetId: U(g, from).id }, 'host');
   return pv.marks.tiles.map((t: any) => t.tile).find((k: string) => { const [a, b] = k.split(',').map(Number), [c, d] = U(g, from).pos.split(',').map(Number); return Math.max(Math.abs(a - c), Math.abs(b - d)) === n; });
 };
 
 describe('0.28.3: Guide moves the ally to the tile you pick', () => {
   it('the descriptor asks for the ally, then the tile; without the tile the engine refuses in words and takes nothing', () => {
     const s = survivalFight();
-    const d: any = actionsFor(s.g, s.mu.id, 'host').find((x: any) => x.id === 'pk:verb:tend.guide#tend_guide');
+    const d: any = actionsFor(s.g, s.mu.id, 'host').find((x: any) => x.id === 'pk:perk:pull_together#tend_guide');
     expect(d.picks.map((p: any) => p.key)).toEqual(['targetId', 'tile']);
     const pv = previewDescriptor(s.g, s.mu.id, d.id, { targetId: s.al.id }, 'host');
     expect(pv.ok).toBe(false);
     expect(pv.why).toMatch(/tile Gun steps to/);
     expect(pv.marks.tiles.length).toBeGreaterThan(0); // the tiles it may step to are shown
     const mp0 = U(s.g, s.mu.id).mg.mp, ap0 = U(s.g, s.mu.id).ap;
-    expect(() => apply(s.g, { type: 'combat/perk', unitId: s.mu.id, id: 'verb:tend.guide', actionId: 'tend_guide', targetId: s.al.id }, 'host')).toThrow(/tile Gun steps to/);
+    expect(() => apply(s.g, { type: 'combat/perk', unitId: s.mu.id, id: 'pull_together', actionId: 'tend_guide', targetId: s.al.id }, 'host')).toThrow(/tile Gun steps to/);
     expect(U(s.g, s.mu.id).mg.mp).toBe(mp0); expect(U(s.g, s.mu.id).ap).toBe(ap0);
   });
   it('with a tile in reach: the ally steps there, the MP and 1 AP are paid, and the log says so', () => {
     const s = survivalFight();
     const to = free(s.g, s.al.id, STEP, s.mu); expect(to).toBeTruthy();
-    const a = sendDescriptor(s.g, s.mu.id, 'pk:verb:tend.guide#tend_guide', { targetId: s.al.id, tile: to }, 'host');
+    const a = sendDescriptor(s.g, s.mu.id, 'pk:perk:pull_together#tend_guide', { targetId: s.al.id, tile: to }, 'host');
     expect(a.tile).toBe(to);
     const mp0 = U(s.g, s.mu.id).mg.mp, ap0 = U(s.g, s.mu.id).ap, n = s.g.combat.log.length;
     const g2 = apply(s.g, a, 'host');
@@ -62,7 +63,7 @@ describe('0.28.3: Guide moves the ally to the tile you pick', () => {
   it('a tile too far from the ally is refused with why, before anything is paid', () => {
     const s = survivalFight();
     const [c, d] = s.al.pos.split(',').map(Number), far = (c + STEP + 3) + ',' + d;
-    const pv = previewDescriptor(s.g, s.mu.id, 'pk:verb:tend.guide#tend_guide', { targetId: s.al.id, tile: far }, 'host');
+    const pv = previewDescriptor(s.g, s.mu.id, 'pk:perk:pull_together#tend_guide', { targetId: s.al.id, tile: far }, 'host');
     expect(pv.ok).toBe(false);
     expect(pv.why).toMatch(/Too far for Gun/);
   });

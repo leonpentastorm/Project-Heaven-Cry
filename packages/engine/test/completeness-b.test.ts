@@ -148,13 +148,7 @@ describe('triggers from an enemy, through the reducer', () => {
     const st = (f.pc.ps as any)['perk:scar_tissue']; void ir;
     expect(n).toBeGreaterThan(0); expect(f.pc.injResist).toBe(st.base + 5 * n);
   });
-  it('Rally Cry: an enemy Downs an ally on its turn; the others bank AP', () => {
-    const f = fightWith([{ perks: { rally_cry: 'I' } }, {}], [{ at: 'C6', weapon: 'fists' }]);
-    const [a, b] = f.pcs, foe = f.foe; a.pos = '2,2'; b.pos = '5,5'; foe.pos = '6,5'; foe.attack = 60; b.hp = 1;
-    f.cb.order = [b.id, foe.id, a.id, ...f.cb.order.filter((id) => ![a.id, b.id, foe.id].includes(id))];
-    f.turn(b); f.act({ type: 'combat/end-turn', unitId: b.id });
-    expect(logHas(f.cb, /Rally Cry/)).toBe(true);
-  });
+  // Rally Cry is removed (rules 1.75 item 6213).
   it('Walking Wounded: a stim through combat/stim on a hurt holder; below half HP it has no extra AP (rules 1.13) and takes 20% less', () => {
     const f = fightWith([{ perks: { walking_wounded: 'mastered' } }, {}], [{ at: 'O10' }]);
     const [w, medic] = f.pcs; w.pos = '5,5'; medic.pos = '5,6'; f.g.characters[medic.charId!].stims = 3; w.hp = Math.floor(w.maxHp / 3);

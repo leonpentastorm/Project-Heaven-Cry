@@ -263,7 +263,6 @@ const COMBAT: Record<string, Maker> = {
   'perk:bone_talk#bone_talk': (e) => ({ head: 'Bone Talk', hint: e.text, fields: [prose('The physical detail', 'One specific detail')] }),
   'trait:trench_poet#verse': (e) => ({ head: 'Verse', hint: e.text, fields: [prose('Your metaphor', 'Answer in metaphor')] }),
   'perk:footnote#cite_fight': (e) => ({ head: 'Footnote', hint: e.text, fields: [prose('The fact you cite (optional)', 'A fact about it', true)] }),
-  'perk:double_meaning#hint_fight': (e) => ({ head: 'Double Meaning', hint: e.text, fields: [prose('Your sentence (optional)', 'One sentence, two meanings', true)] }),
   'perk:old_tales#speak_fight': (e) => ({ head: 'Speak the old tongue', hint: e.text, fields: [prose('What you say (optional)', 'In its own tongue', true)] }),
   'perk:fire_sermon#preach': (e) => ({ head: 'Preach', hint: e.text, fields: [prose('What you preach (optional)', 'Your sermon', true)] }),
   'trait:holo_drama_addict#drama': (e) => ({ head: 'Play it as a holo-drama', hint: e.text, fields: [prose('The scene (optional)', 'Cue the music…', true)] }),

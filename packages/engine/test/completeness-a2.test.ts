@@ -88,12 +88,5 @@ describe('Breaching Strike II on the area map; Talks Broke Down II; Soulmate II 
     const cb = s.g.combat!;
     expect(logHas(cb, /Talks broke down .*lost/)).toBe(true); expect(logHas(cb, /hesitates \(Talks Broke Down\)/)).toBe(true);
   });
-  it('Soulmate II: two bonds; the story harm on either is shared', () => {
-    const s = storyWith([{ perks: { soulmate: 'II' }, skills: { camaraderie: 9 } }, {}, {}]); const [a, b, d] = s.chars;
-    s.act({ type: 'story/perk', charId: a.id, id: 'soulmate', actionId: 'bond', choice: b.id } as any);
-    s.act({ type: 'story/perk', charId: a.id, id: 'soulmate', actionId: 'bond', choice: d.id } as any);
-    const hpA = s.g.characters[a.id].hp;
-    s.act({ type: 'narrator/turn', turn: { narration: 'Shrapnel.', harm: [{ charId: b.id, amount: 50, why: 'a blast' }, { charId: d.id, amount: 50, why: 'a blast' }] } } as any);
-    expect(hpA - s.g.characters[a.id].hp).toBe(20);
-  });
+  // Soulmate is removed (rules 1.75 item 6213).
 });

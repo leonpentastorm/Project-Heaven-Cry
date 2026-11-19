@@ -12615,3 +12615,48 @@ tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each shee
 6208. **The Channeler.** Shape, Iron Heart (once a fight, on Mana Shock: -2 Strain; already data on the `mana_shock`
     trigger), Storm Front, Heart Surge and Eye of the Storm are kept. **Occult Library**: its "+1 design ready" (now
     Lore Master's ladder) is replaced by **once a turn, Syphon costs 0 AP**; the extra tone is kept.
+
+**Insight (Empathy, Camaraderie, Insinuation; the Mender)**
+
+6210. **Empathy's ladder.** 1 the door: Bond (ally or foe; Let Go free) and Mend (a friend, or yourself once a turn),
+    one Bond held · 2 **Snap** (moved from 1) · 3 perk step · 4 fork one · 5 **Shield** (moved from 2) and a second
+    Bond held · 6 perk step and +3 Bond reach · 7 perk step · 8 fork two and a third Bond held · 9 perk step and Mend
+    and Shield cost less MP · 10 Mastered **Threads That Hold**. Every point: +6% Healing given (`rules.json
+    output.profiles.tend.skill`). The door's help says what an enemy Bond does (its numbers are `tending.json
+    tend.threads`). Leaving Empathy (ruling layer section 3 item 1): **Touch is cut** (Triage is the beside-you heal);
+    Settle, Soothe, Raise with Last Thread, Tug and Guide become Camaraderie's perks (item 6213); Field Surgery is the
+    Mender's (item 6217); Feel Their Pain is cut (nothing read it); Mercy goes to Insinuation's Open Hand (item 6216).
+6211. **Empathy's perks.** **Taut Thread** (`shared_breath`): I +6% damage on a Bonded foe (kept); II +12%, and your
+    attacks on a Bonded foe roll with Empathy when it is higher (`roll_with`, if_higher). **Bitter Balm**
+    (`lay_down_arms`): the echo on Bonded foes is 10% of your heal at I, 20% at II (it was 4% and 8%). **Mastered:
+    Threads That Hold** (`threads_that_hold`, new; Open Hand leaves Empathy): your Tending through a Bond is +50% (not
+    +20%), and your Bonds to allies hold while you are Downed (`tend.hold_down` folded in). PROVISIONAL: 10%, 20%, +50%.
+6212. **Empathy's forks.** Keep the Thread and Shared Pulse as built; **Short Thread**'s second half is Triage reaching
+    2 tiles (Touch is gone: a `pick:` step on Triage's reach); **Long Thread** is built (rules 1.70 P3, the
+    target-aware price): +3 Bond reach, and the first Mend or Shield on each Bonded friend each round costs 1 AP less
+    (never under 1; a use counted per target, `limit.each: target`).
+6213. **Camaraderie's four perks** (every point: +10% healing received, +5% of a shared hit to 50% at 5, the Bond
+    heal-back; Share a Hit at 1, and at 5 it covers a Bonded friend in sight). **Hand-Off** (`hand_off`, from the
+    unlock at 3): I once a round a friend beside you who is attacked uses your Defense if higher; II reaches 3 tiles.
+    **Nobody Left Behind** (`nobody_left_behind`, from the unlock at 5): I Stabilise costs 1 AP less and a Downed
+    friend beside you takes 50% less damage; II adds **Raise** (1 AP, 36 MP, once a turn) and **Last Thread** (after a
+    Bonded friend falls, your next Raise costs 0 AP); its carry half is cut. **Steady Hands** (`steady_hands`): I
+    **Settle**; II adds **Soothe**. **Pull Together** (`pull_together`): I **Tug**; II adds **Guide**. Each verb keeps
+    its numbers and its Attuner requirement; on a perk it is that perk's own action. Soulmate is removed (maps to Pull
+    Together), Rally Cry is removed (maps to Steady Hands). **Mastered: Many Hands** (changed): Share a Hit reaches any
+    friend within 3 tiles, and a friend in sight who has used its reaction may use yours. PROVISIONAL: 50%.
+6214. **Insinuation's ladder.** Every point: +1 Taunt reach, Taunt harder to shake off, +1 on its checks. Taunt's steps
+    and price are rules 1.70's. Perk steps 3 / 5 / 7 / 9; Mastered Their Own Idea.
+6215. **Insinuation's perks (1 of 2).** **Between the Lines** (`between_the_lines`, from the unlock at 3): I the
+    Narrator tells you what coded speech really means; II your Bond on a foe is at +2 TN. **Veiled Insult**
+    (`veiled_insult`, from the unlock at 5; rebuilt, it never ran): I 0 AP, once a fight, a foe you see makes a Heart
+    save against your Insinuation or is Taunted for 2 rounds; II twice a fight. Its old "-2 to hit you" is cut. Sweet
+    Talker is removed (maps to Veiled Insult), Double Meaning is removed (maps to Between the Lines). PROVISIONAL: +2,
+    2 rounds.
+6216. **Insinuation's perks (2 of 2).** **Quiet Thread** (`quiet_thread`, new; it removes the door's tax): I you are
+    never Traced; II nor are your Bonded friends, and a Bonded friend going Down costs you no MP. **Open Hand**
+    (`open_hand`, moved from Empathy's Mastered, Mercy folded in): I 2 AP, a humanoid foe you see below half its HP
+    makes a Heart save against your Insinuation or surrenders (never a Boss or a machine); II 0 AP, once a foe, and it
+    may be offered the moment the foe drops (the old setting always / ask / never). PROVISIONAL: half HP, 2 AP.
+6217. **The Mender.** All six moves kept. Triage is the only beside-you heal (its text loses "less than a Touch"; Short
+    Thread lets it reach 2 tiles). **Field Surgery** joins the Mender's extras (it needs the Mender, rank I).

@@ -52,7 +52,7 @@ describe('data/perk_cards.json', () => {
     }
   });
   it('core_wired items sit on ALWAYS ON by declaration', () => {
-    expect(PERK_CARDS.core_wired.length).toBeGreaterThan(0);
+    expect(Array.isArray(PERK_CARDS.core_wired)).toBe(true); // rules 1.75 item 6213: Many Hands has a data row of its own now (its Share a Hit), so nothing is core-wired today; each one listed must still be
     for (const id of PERK_CARDS.core_wired) expect(coreWired(id)).toBe(true);
     expect(coreWired('bulwark')).toBe(false);
   });

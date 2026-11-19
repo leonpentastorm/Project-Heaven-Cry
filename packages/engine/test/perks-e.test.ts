@@ -135,89 +135,13 @@ describe('Talks Broke Down', () => {
 });
 
 // ======================================================================================================== Rally Cry
-describe('Rally Cry', () => {
-  // rules 1.13: no AP. The others take less damage until their own next turn.
-  for (const [tier, n] of [['I', 15], ['II', 25]] as const) it(tier + ': an ally Downed by an enemy makes every other ally take ' + n + '% less damage until their next turn', () => {
-    const f = fightWith([{ perks: { rally_cry: tier } }, {}, {}], [{ at: 'P6' }]);
-    const [a, b, c] = f.pcs, foe = f.foes[0];
-    const hit = (u: Unit) => withGame(f.g, () => { const was = f.unit(u.id).hp; applyDamage(f.cb, f.unit(u.id), 100, { type: 'weapon', by: f.unit(foe.id) }); const d = was - f.unit(u.id).hp; f.unit(u.id).hp = was; return d; });
-    f.unit(a.id).hp = f.unit(a.id).maxHp = 500; f.unit(b.id).hp = f.unit(b.id).maxHp = 500;
-    expect(hit(a)).toBe(100);
-    withGame(f.g, () => applyDamage(f.cb, f.unit(c.id), 9999, { type: 'weapon', by: f.unit(foe.id) }));
-    expect(f.unit(c.id).downed).toBe(true); expect(logHas(f.cb, /Rally Cry/)).toBe(true);
-    expect(hit(a)).toBe(100 - n); expect(hit(b)).toBe(100 - n);
-    expect(f.unit(a.id).apNext || 0).toBe(0); expect(f.turn(f.unit(a.id)).ap).toBe(6); // no AP
-    expect(hit(a)).toBe(100); expect(hit(b)).toBe(100 - n); // it ends at each one's own next turn
-  });
-  it('friendly fire doesn\'t rally anyone', () => {
-    const f = fightWith([{ perks: { rally_cry: 'II' } }, {}, {}]);
-    const [a, b, c] = f.pcs;
-    withGame(f.g, () => applyDamage(f.cb, f.unit(c.id), 9999, { type: 'weapon', by: f.unit(b.id) }));
-    expect(logHas(f.cb, /Rally Cry/)).toBe(false); expect((f.unit(a.id).ps?.['perk:rally_cry'] as any)?.less || 0).toBe(0);
-  });
-});
+// Rally Cry is removed (rules 1.75 item 6213: mapped to Steady Hands).
 
 // ======================================================================================================== Soulmate
-describe('Soulmate', () => {
-  const bonded = (tier: string, cam: number, n = 2) => {
-    const specs: any[] = [{ perks: { soulmate: tier }, skills: { camaraderie: cam } }, ...Array.from({ length: n - 1 }, () => ({}))];
-    return fightAfter(specs, [{ at: 'P6' }], (s) => { for (const c of s.chars.slice(1)) s.act({ type: 'story/perk', charId: s.chars[0].id, id: 'soulmate', choice: c.name }); });
-  };
-  for (const [cam, pct] of [[3, 5], [5, 10], [7, 15], [9, 20], [10, 20]] as const) it('I at Camaraderie ' + cam + ': takes ' + pct + '% of the bondmate\'s damage, after their shield', () => {
-    const f = bonded('I', cam), [me, mate] = f.pcs, foe = f.foes[0];
-    f.unit(me.id).hp = f.unit(me.id).maxHp = 500; f.unit(mate.id).hp = f.unit(mate.id).maxHp = 500; f.unit(mate.id).shield = 20;
-    withGame(f.g, () => applyDamage(f.cb, f.unit(mate.id), 120, { type: 'weapon', by: f.unit(foe.id) }));
-    const share = Math.floor(100 * pct / 100);
-    expect(500 - f.unit(me.id).hp).toBe(share); expect(500 - f.unit(mate.id).hp).toBe(100 - share);
-  });
-  it('the share never Downs the holder; mutual Soulmates don\'t ping-pong', () => {
-    const s0 = storyWith([{ perks: { soulmate: 'I' }, skills: { camaraderie: 9 } }, { perks: { soulmate: 'I' }, skills: { camaraderie: 9 } }]);
-    const [c1, c2] = s0.chars; s0.act({ type: 'story/perk', charId: c1.id, id: 'soulmate', choice: c2.name }); s0.act({ type: 'story/perk', charId: c2.id, id: 'soulmate', choice: c1.name });
-    s0.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'P6' }] } } } as any);
-    const cb = s0.g.combat!, [a, b] = cb.units.filter((u) => u.side === 'pc'); a.hp = a.maxHp = 200; b.hp = b.maxHp = 200;
-    withGame(s0.g, () => applyDamage(cb, b, 100, { type: 'weapon', by: cb.units.find((u) => u.side === 'foe') }));
-    expect(a.hp).toBe(180); expect(b.hp).toBe(120);
-    a.hp = 3; withGame(s0.g, () => applyDamage(cb, b, 100, { type: 'weapon', by: null }));
-    expect(a.hp).toBe(1); expect(a.downed).toBeFalsy();
-  });
-  it('II: two bonds; I keeps only the latest', () => {
-    const f = bonded('II', 9, 3), [me, m1, m2] = f.pcs; f.unit(me.id).hp = f.unit(me.id).maxHp;
-    for (const m of [m1, m2]) { f.unit(m.id).hp = f.unit(m.id).maxHp = 300; withGame(f.g, () => applyDamage(f.cb, f.unit(m.id), 100, { type: 'hazard', by: null, shield: false })); expect(f.unit(m.id).hp).toBe(220); }
-    expect(f.unit(me.id).hp).toBe(f.unit(me.id).maxHp - 40);
-    const g = bonded('I', 9, 3), [me2, n1, n2] = g.pcs; g.unit(me2.id).hp = g.unit(me2.id).maxHp; g.unit(n1.id).hp = g.unit(n2.id).hp = g.unit(n1.id).maxHp = g.unit(n2.id).maxHp = 300;
-    withGame(g.g, () => applyDamage(g.cb, g.unit(n1.id), 100, { type: 'hazard', by: null, shield: false }));
-    withGame(g.g, () => applyDamage(g.cb, g.unit(n2.id), 100, { type: 'hazard', by: null, shield: false }));
-    expect(g.unit(me2.id).hp).toBe(g.unit(me2.id).maxHp - 20);
-  });
-});
+// Soulmate is removed (rules 1.75 item 6213: mapped to Pull Together).
 
 // ======================================================================================================== Sweet Talker
-describe('Sweet Talker', () => {
-  const charmed = (tier: string) => fightAfter([{ perks: { sweet_talker: tier } }], [{ name: 'Vel', at: 'F6' }], (s) => storyCheck(s, s.chars[0].id, ['implication'], { auto: 'success', target: 'Vel' }));
-  for (const [tier, n] of [['I', 2], ['II', 3]] as const) it(tier + ': debuffing someone you charmed this scene gives +' + n + ' AP, once a turn', () => {
-    const f = charmed(tier); open(f.cb); const u = f.turn(f.pc), foe = f.foes[0];
-    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(u.id), f.unit(foe.id), 'shaken', 2, undefined, { skipSave: true }));
-    expect(f.unit(u.id).ap).toBe(6 + n);
-    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(u.id), f.unit(foe.id), 'ldebuff', 2, undefined, { skipSave: true }));
-    expect(f.unit(u.id).ap).toBe(6 + n);
-  });
-  it('I: a charmed NPC who debuffs you stings (−2 AP next turn); II: no sting', () => {
-    for (const [tier, want] of [['I', 4], ['II', 6]] as const) {
-      const f = charmed(tier); f.turn(f.pc); const foe = f.foes[0];
-      // The fight may have opened with Vel's own shot, and a critical's Bleeding is a debuff that lands like any other
-      // (engine foundations 2: it goes through applyCond), so the sting may already be spent: start from a clean slate.
-      f.unit(f.pc.id).ps = {}; delete f.unit(f.pc.id).uses; // (the sting's own cooldown is a uses() cell, engine foundations 2 costs: both are the slate)
-      withGame(f.g, () => applyCond(f.cb, rng(), f.unit(foe.id), f.unit(f.pc.id), 'shaken', 2, undefined, { skipSave: true }));
-      expect(f.turn(f.pc).ap).toBe(want);
-    }
-  });
-  it('no charm (a failed check, or another NPC): nothing', () => {
-    const f = fightAfter([{ perks: { sweet_talker: 'I' } }], [{ name: 'Vel', at: 'F6' }], (s) => storyCheck(s, s.chars[0].id, ['implication'], { auto: 'fail', target: 'Vel' }));
-    const u = f.turn(f.pc);
-    withGame(f.g, () => applyCond(f.cb, rng(), f.unit(u.id), f.foes[0], 'shaken', 2, undefined, { skipSave: true }));
-    expect(f.unit(u.id).ap).toBe(6);
-  });
-});
+// Sweet Talker is removed (rules 1.75 item 6215: mapped to Veiled Insult).
 
 // ======================================================================================================== Outclassed
 describe('Outclassed', () => {

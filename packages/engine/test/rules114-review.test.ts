@@ -160,7 +160,7 @@ describe('the cards say what the game does', () => {
     expect(perkOf('true_name').adjudication).toBe('hybrid');
   });
   it('no card of this step uses a word a player does not know', () => {
-    for (const id of ['grim_reaper', 'got_you_in_my_sight', 'overruled', 'talks_broke_down', 'sweet_talker', 'war_footing', 'crowd_pleaser', 'old_tales', 'the_name_they_whisper', 'true_name', 'verse_of_war'])
+    for (const id of ['grim_reaper', 'got_you_in_my_sight', 'overruled', 'talks_broke_down', 'war_footing', 'crowd_pleaser', 'old_tales', 'the_name_they_whisper', 'true_name', 'verse_of_war'])
       expect(perkOf(id).text, id).not.toMatch(/provisional|engine|revision|cooldown|item \d|\.json|\.ts\b|label|traitState/i);
   });
 });

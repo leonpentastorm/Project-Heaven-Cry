@@ -1298,6 +1298,9 @@ export const FOCUS_REV = 1;
 export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', origami_hands: 'both_hands' };
 /** A save from before a perk or trait was renamed or removed: the renamed ones follow their new id (tier kept), and an
  * id the data no longer has is taken off the sheet, so no screen meets an item it can't look up. */
+/** Rules 1.75 (the attribute rework's removed perks): the id a skill's perk_remap table maps an old perk to (null: removed
+ * with no replacement), else undefined. */
+const remapTo = (id: string): string | undefined => { for (const s of SKILLS as any[]) { const m = s?.perk_remap?.perks; if (m && id in m) return m[id] ?? undefined; } return undefined; };
 export function migrateCharacterItems(c: Character): string[] {
   const notes: string[] = [];
   // a perk or trait added at run time (effects/hooks.ts addItems: a mode's own items) is as known as the data's
@@ -1305,7 +1308,7 @@ export function migrateCharacterItems(c: Character): string[] {
   if ((c.perks || []).some((x) => !known(x.id))) {
     const out: Character['perks'] = [];
     for (const x of c.perks) {
-      const to = known(x.id) ? x.id : PERK_RENAMED[x.id];
+      const to = known(x.id) ? x.id : PERK_RENAMED[x.id] ?? remapTo(x.id); // rules 1.75: a perk a skill's perk_remap removes follows its table (migrateCharacterPerks then counts it on that skill's steps)
       if (!to || !known(to)) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
       if (to !== x.id) notes.push(c.name + ': ' + (PERK[to] || rawItem('perk:' + to)).name + ' replaces an older perk.');
       if (!out.some((y) => y.id === to)) out.push({ ...x, id: to });

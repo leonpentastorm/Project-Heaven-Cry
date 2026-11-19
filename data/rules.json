@@ -2426,9 +2426,9 @@
   },
   "forced_movement": {
     "boss_holds": {
-      "about": "A Boss (rules.json bosses) is never moved by an opponent's forced move (a push, a pull, a throw, a teleport, a swap: any item, weapon or technique); the knockback immunity and Nailed already hold any unit the data marks so. The one exception: the items named in `except` (their own rows say how far a Boss goes: Tug's Bond moves it 1 tile on a failed save).",
+      "about": "A Boss (rules.json bosses) is never moved by an opponent's forced move (a push, a pull, a throw, a teleport, a swap: any item, weapon or technique); the knockback immunity and Nailed already hold any unit the data marks so. The one exception: the items named in `except` (their own rows say how far a Boss goes: Tug's Bond, Pull Together's since rules 1.75 item 6213, moves it 1 tile on a failed save).",
       "except": [
-        "tend.tug"
+        "pull_together"
       ],
       "why": "too big to be moved"
     },

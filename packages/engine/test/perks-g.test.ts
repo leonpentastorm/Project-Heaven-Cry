@@ -136,30 +136,7 @@ describe('Crowd Pleaser', () => {
   });
 });
 
-describe('Double Meaning', () => {
-  it('I story: after the sentence, a squad check tagged hinted gets +2 (any squad member); none without it', () => {
-    const s = storyWith([{ perks: { double_meaning: 'I' } }, {}]); const [a, b] = s.chars;
-    expect(storyCheck(s, b.id, ['dexterity'], { tags: ['hinted'] }).roll(10)).not.toMatch(/Double Meaning/);
-    perk(s, a, 'double_meaning', { text: 'Lovely weather for a picnic by the generator.' });
-    expect(rulings(s.g, 'perk:double_meaning')[0].text).toMatch(/hidden instruction/);
-    expect(storyCheck(s, b.id, ['dexterity'], { tags: ['hinted'] }).roll(10)).toMatch(/\+2 Double Meaning/);
-  });
-  it('I combat: once a round, each squad member\'s next attack on the named enemy gets +2', () => {
-    const f = fight([{ perks: { double_meaning: 'I' } }]); f.pc.attack = 60;
-    pcAct(f, { type: 'combat/perk', id: 'double_meaning', actionId: 'hint_fight', targetId: f.foe.id });
-    expect(withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'shot')).terms!.some((t) => t.label === 'Double Meaning' && t.v === 2)).toBe(true);
-    pcAct(f, { type: 'combat/attack', targetId: f.foe.id, mode: 'shot' });
-    expect(withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'shot')).terms!.some((t) => t.label === 'Double Meaning')).toBe(false);
-    expect(() => pcAct(f, { type: 'combat/perk', id: 'double_meaning', actionId: 'hint_fight', targetId: f.foe.id })).toThrow();
-  });
-  it('II combat: another enemy who heard it acts on the false meaning and loses its first action', () => {
-    const f = fight([{ perks: { double_meaning: 'II' } }], [{}, {}]);
-    pcAct(f, { type: 'combat/perk', id: 'double_meaning', actionId: 'hint_fight', targetId: f.foes[0].id });
-    const other = f.foes[1]; f.cb.turn = f.cb.order.indexOf(other.id); other.ap = 6;
-    withGame(f.g, () => enemyTurn(f.cb, f.g.rng));
-    expect(logHas(f.cb, new RegExp(other.name + ' acts on the false meaning'))).toBe(true);
-  });
-});
+// Double Meaning is removed (rules 1.75 item 6215: mapped to Between the Lines).
 
 describe('Old Tales (Old Tongue folded into tier II, rules 1.75 item 6206)', () => {
   it('I: no script reading and no speaking yet; II: an ancient-script check is an automatic success', () => {

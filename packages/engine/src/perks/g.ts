@@ -225,60 +225,7 @@ function crowdHit(cb: Combat, rng: { state: number }, u: Unit, t: Unit, kind: st
   if (r) say(cb, t.name + ' hears it too' + r + '.');
 }
 
-// ---------- Double Meaning (Implication 3/5): one sentence, two meanings; the squad gets +2 on the hinted action ----------
-// Story: the sentence is a story action; the Narrator tags the hinted check 'hinted' (or applies double_meaning): +2 to
-// any squad member's roll this scene. II: the Narrator plays the enemy acting on the false meaning.
-// Combat (PROVISIONAL, a new combat form; once per round, not at will: plan 6): 0 AP, name the enemy the hint is
-// about: each squad member's next attack on it gets +2 until the holder's next turn. II: the nearest other enemy who
-// heard it (8 tiles) acts on the false meaning and loses its first action next turn (2 AP).
-const hintOn = (h: Holder) => { const r = sro(h).hint; return !!r && r.scene === sceneN(h); };
-register({
-  id: 'double_meaning',
-  claims: ['skill_mod_tag'], narrator: ['narrator'],
-  actions: [
-    {
-      id: 'hint', label: 'Double Meaning', scope: ['story'], target: 'text', ap: 0,
-      text: 'Say one sentence that means one thing to them and another to your squad. The squad gets +2 on the action you hinted at.',
-      run: (h, a) => {
-        sst(h).hint = { scene: sceneN(h), text: textArg(a) };
-        const eid = postStory(h, 'says: "' + textArg(a) + '"');
-        ruling(h, 'Double Meaning: does "' + clip(a.text, 160) + '" carry a hidden instruction to the squad? If so, tag the hinted check hinted (+2 for any squad member)' + (tierII(h) ? '; the enemy acts on the false meaning' : '') + '. Refuse if it carries none.', eid);
-      },
-    },
-    {
-      id: 'hint_fight', label: 'Double Meaning', scope: ['combat'], target: 'enemy', ap: 0, uses: { per: 'per_round', n: 1 }, range: HEARING,
-      text: 'Once a round: hint at an attack on one enemy in earshot. Each squad member\'s next attack on it gets +2 to hit, until your next turn. II: the nearest other enemy who heard it loses its first action.',
-      preview: (h) => ({ lines: ['+2 to each squad member\'s next attack on it, until your next turn.' + (tierII(h) ? ' The nearest other enemy within 8 tiles loses its first action.' : '')] }),
-      run: (h, a) => {
-        const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!, st = stateOf(h);
-        st.hint = { target: t.id, used: [] as string[] };
-        let fooled = '';
-        if (tierII(h)) {
-          const o = cb.units.filter((x) => x.side !== u.side && x !== t && alive(x) && !x.surrendered && dist(u.pos, x.pos) <= HEARING).sort((x, y) => dist(u.pos, x.pos) - dist(u.pos, y.pos) || (x.id < y.id ? -1 : 1))[0];
-          if (o) { st.fooled = o.id; fooled = '; ' + o.name + ' takes the false meaning'; }
-        }
-        say(cb, u.name + ' says one thing and means another (Double Meaning): the squad +2 on its next attack on ' + t.name + fooled + '.');
-        if (a.text) note(h, 'the sentence: "' + clip(a.text, 160) + '"');
-      },
-    },
-  ],
-  on: {
-    ruling_answered: (ctx, h) => { if (refused(ctx, h)) delete sst(h).hint; },
-    check_mod: (ctx, h) => { if (ctx.c && !ctx.c.dead && hintOn(h) && (tagsOf(ctx).includes('hinted') || appliesTo(ctx.ck, 'double_meaning'))) addOnce(ctx, 2, 'Double Meaning'); },
-    attack_preview: (ctx, h) => {
-      const st = (h.u?.ps?.[h.key] as any)?.hint; if (!st || !h.u) return;
-      if (ctx.att.side === h.u.side && ctx.tgt?.id === st.target && !st.used.includes(ctx.att.id)) ctx.terms.push({ v: 2, label: 'Double Meaning' });
-    },
-    attack_roll: (ctx, h) => { const st = (h.u?.ps?.[h.key] as any)?.hint; if (st && h.u && ctx.att.side === h.u.side && ctx.tgt?.id === st.target && !st.used.includes(ctx.att.id)) st.used.push(ctx.att.id); },
-    turn_start: (ctx, h) => { if (ctx.u === h.u && h.u?.ps?.[h.key]) delete (h.u.ps[h.key] as any).hint; },
-    enemy_action_start: (ctx, h) => {
-      const st = h.u?.ps?.[h.key] as any; if (!st?.fooled || ctx.u.id !== st.fooled) return;
-      delete st.fooled; ctx.skip = true; loseAp(ctx.u, 2);
-      say(h.cb, ctx.u.name + ' acts on the false meaning and loses its first action (Double Meaning).');
-    },
-  },
-  brief: (h) => 'tag the check the sentence hinted at: hinted' + (tierII(h) ? '; the enemy acts on the false meaning' : ''),
-});
+// Double Meaning is removed (rules 1.75 item 6215: mapped to Between the Lines at the same tier).
 
 // ---------- Old Tales II (Old Tongue folded in, rules 1.75 item 6206): read and speak any ancient or upper-realm script, one parley per being ----------
 // Story: at tier II a check tagged ancient_script (or applies old_tales) is an automatic success for the holder: they read it.

@@ -3606,7 +3606,8 @@ if _FK is not None:
     _tend = {x.get("id"): x for x in (data.get("tending") or {}).get("items") or []}
     for _need in ("fork.tend.keep_the_thread", "fork.tend.short_thread", "fork.tend.shared_pulse", "fork.shadow.spotter", "fork.guard.cover_them"):
         if _need not in _rows: errors.append(f"forks: the held-equal check names '{_need}', no forks.json row (rename the check with the row)")
-    _tug = ((((_tend.get("tend.tug") or {}).get("effects") or [{}])[0]).get("res") or {}).get("mp")
+    _pt = next((x for x in (data.get("perks") or {}).get("items") or [] if x.get("id") == "pull_together"), {})  # rules 1.75 item 6213: Tug is Pull Together's
+    _tug = (((((_pt.get("tiers") or {}).get("I") or {}).get("effects") or [{}])[0]).get("res") or {}).get("mp")
     if "fork.tend.keep_the_thread" in _rows and not _rows["fork.tend.keep_the_thread"].get("shelved") and _fe("fork.tend.keep_the_thread").get("value") != _tug: errors.append(f"forks:fork.tend.keep_the_thread: the kept Snap's MP is Tug's price ({_tug}), one number")
     _st = _rows.get("fork.tend.short_thread") or {}
     if _st and not _st.get("shelved"):

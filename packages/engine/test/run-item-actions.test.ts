@@ -98,7 +98,7 @@ describe('a Survival run takes an item\'s own out-of-fight action (story/perk)',
   });
   it('Field Surgery treats an arm or leg injury in a run, with the field kit, on yourself or a squadmate', () => {
     const g0 = inShop(started()), c = Object.values(g0.characters)[0];
-    c.skills.empathy = 3; c.weapon = 'attuner'; c.offHand = null as any; c.mp = 999;
+    c.skills.empathy = 3; c.classId = 'bard'; c.weapon = 'attuner'; c.offHand = null as any; c.mp = 999; // rules 1.75 item 6217: Field Surgery is the Mender's
     c.pack = [...packOf(c), { id: 'field_kit', item: 'field_kit', name: 'Field kit', qty: 1, kind: 'tool' } as any];
     c.injuries = [{ loc: 'leg', side: 'left' }];
     const g = apply(g0, { type: 'story/perk', charId: c.id, id: 'verb:tend.field_surgery', actionId: 'injury' } as any, 'host');
@@ -152,7 +152,7 @@ describe('the field kit treats a limb in a run (rules 1.61 addendum)', () => {
     const g0 = walkTo(duo(), 'shop'); hurt(g0, 'c1', 1, 'toolbox');
     expect(giveView(g0, 'host', 'c1').rows.find((r) => r.id === 'toolbox')?.use).toBeUndefined();
     expect(refused(g0, USE('c1', 'c1'))).toMatch(/has no Field kit/i);
-    const s: GameState = JSON.parse(JSON.stringify(g0)), c = s.characters.c1; c.skills.empathy = 3; c.weapon = 'attuner'; c.offHand = null as any; c.mp = 999;
+    const s: GameState = JSON.parse(JSON.stringify(g0)), c = s.characters.c1; c.skills.empathy = 3; c.classId = 'bard'; c.weapon = 'attuner'; c.offHand = null as any; c.mp = 999;
     const t = apply(s, { type: 'story/perk', charId: 'c1', id: 'verb:tend.field_surgery', actionId: 'injury' } as any, 'host');
     expect(t.characters.c1.injuries).toEqual([]); expect(kitCount(t, 'c1', 'toolbox')).toBe(1);
   });

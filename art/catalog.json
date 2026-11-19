@@ -8285,7 +8285,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "double_meaning",
+      "data_id": "between_the_lines",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "E",
@@ -38519,7 +38519,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-tug/tug.svg",
       "data_ids": [
-        "verb:tend.tug"
+        "perk:pull_together#tend_tug"
       ]
     },
     "tend-mend": {
@@ -38629,9 +38629,7 @@
         "24": "art/icons/tending/exports/24/touch.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-touch/touch.svg",
-      "data_ids": [
-        "verb:tend.touch"
-      ]
+      "data_ids": []
     },
     "tend-settle": {
       "label": "Settle",
@@ -38667,7 +38665,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-settle/settle.svg",
       "data_ids": [
-        "verb:tend.settle"
+        "perk:steady_hands#tend_settle"
       ]
     },
     "tend-soothe": {
@@ -38704,7 +38702,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-soothe/soothe.svg",
       "data_ids": [
-        "verb:tend.soothe"
+        "perk:steady_hands#tend_soothe"
       ]
     },
     "tend-shield": {
@@ -38778,7 +38776,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-raise/raise.svg",
       "data_ids": [
-        "verb:tend.raise"
+        "perk:nobody_left_behind#tend_raise"
       ]
     },
     "tend-guide": {
@@ -38815,7 +38813,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-guide/guide.svg",
       "data_ids": [
-        "verb:tend.guide"
+        "perk:pull_together#tend_guide"
       ]
     },
     "tend-field-surgery": {
@@ -38889,7 +38887,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-last-thread/last-thread.svg",
       "data_ids": [
-        "verb:tend.last_thread"
+        "perk:nobody_left_behind"
       ]
     },
     "tend-syphon": {

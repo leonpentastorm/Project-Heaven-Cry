@@ -3774,7 +3774,16 @@
               }
             },
             "reach": {
-              "tiles": 1,
+              "tiles": {
+                "base": 1,
+                "steps": [
+                  {
+                    "of": "pick:fork.tend.short_thread",
+                    "at": 1,
+                    "value": 1
+                  }
+                ]
+              },
               "sight": true,
               "side": "ally",
               "beyond": "bond",
@@ -3830,7 +3839,8 @@
           "heal",
           "support"
         ],
-        "surface": "combat"
+        "surface": "combat",
+        "source": "rules 1.75 (Soul lane, 0.32) items 6212, 6217"
       },
       {
         "id": "mark",

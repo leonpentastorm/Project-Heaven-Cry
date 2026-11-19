@@ -416,11 +416,11 @@
           "door_pick": "fork.tend.short_thread"
         }
       ],
-      "text": "Tending a Bonded ally within {=effects.0.if.target_within} tiles: +{=numbers.near|more}% healing, not +{=numbers.through|more}% · Touch reach {=numbers.touch} tiles",
+      "text": "Tending a Bonded ally within {=effects.0.if.target_within} tiles: +{=numbers.near|more}% healing, not +{=numbers.through|more}% · Triage reaches {=numbers.triage} tiles",
       "numbers": {
         "near": 1.4,
         "through": 1.2,
-        "touch": 2
+        "triage": 2
       },
       "effects": [
         {
@@ -456,7 +456,7 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6212"
     },
     {
       "id": "fork.tend.shared_pulse",
@@ -519,21 +519,55 @@
           "door_pick": "fork.tend.long_thread"
         }
       ],
-      "text": "Bond reach +{=numbers.reach} tiles · first Mend or Shield on each Bonded ally each round costs {=numbers.ap|abs} AP less (min {=numbers.min})",
+      "text": "Bond reach +{=numbers.reach} tiles · the first Mend or Shield on each Bonded ally each round costs {=effects.0.value|abs} AP less (min {=effects.0.min})",
       "numbers": {
-        "reach": 3,
-        "ap": -1,
-        "min": 1
+        "reach": 3
       },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N20"
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:tend.mend#tend_mend",
+              "verb:tend.shield#tend_shield"
+            ],
+            "target": "ally",
+            "target_tied": "bond"
+          },
+          "value": -1,
+          "min": 1,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "each": "target",
+            "key": "first",
+            "peek": true
+          },
+          "label": "Long Thread"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "tend_mend",
+              "tend_shield"
+            ],
+            "target": "ally",
+            "target_tied": "bond"
+          },
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "each": "target",
+            "key": "first"
+          }
+        }
       ],
-      "why": "A price cannot see its target (the cost trigger resolves no target: N20, not approved), so once per Bonded ally per round cannot be counted; the spec's cheaper wording (uncapped) is the one it rejects.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6212"
     },
     {
       "id": "fork.prayer.round_of_blessings",

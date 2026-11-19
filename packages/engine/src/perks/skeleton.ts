@@ -122,18 +122,17 @@ register({
   brief: () => null,
 });
 
-// ---------- Camaraderie · Hand-Off (Mastery 1) ----------
+// ---------- Camaraderie · Hand-Off (a Camaraderie perk since rules 1.75 item 6213) ----------
 // Once per round, when an ally next to you is attacked by an enemy, they use your Defense in place of their own if
-// yours is higher (within 3 tiles with Many Hands). It is spent by the attack's roll, never by a preview. With several
-// holders, the first in unit order lends.
-const handOffReach = (u: Unit) => (has(u, 'many_hands') ? 3 : 1);
+// yours is higher (its tier's reach: perks.json hand_off numbers.reach, 1 at I and 3 at II). It is spent by the attack's
+// roll, never by a preview. With several holders, the first in unit order lends.
 function lends(h: Holder, ctx: any): number {
   const u = h.u, t: Unit = ctx.tgt, cb = h.cb; if (!u || !cb || !t || overworld(cb) || t === u || t.side !== u.side || ctx.att?.side === u.side) return 0;
-  if (!alive(u) || dist(u.pos, t.pos) > handOffReach(u) || peek(h).round === cb.round) return 0;
+  if (!alive(u) || dist(u.pos, t.pos) > num(h, 'reach') || peek(h).round === cb.round) return 0;
   return Math.max(0, u.def - t.def);
 }
 register({
-  id: 'camaraderie.3', kind: 'skill', claims: 'all',
+  id: 'hand_off', claims: 'all',
   on: {
     attack_preview: (ctx, h) => { if (ctx.volleyCost || ctx._handOff) return; const n = lends(h, ctx); if (n > 0) { ctx._handOff = true; ctx.terms.push({ v: -n, label: 'Hand-Off (' + h.u!.name + '\'s Defense)' }); } },
     attack_roll: (ctx, h) => { if (ctx._handOff) return; if (lends(h, ctx) > 0) { ctx._handOff = true; stateOf(h).round = h.cb!.round; say(h.cb, ctx.tgt.name + ' is covered by ' + h.u!.name + ' (Hand-Off): ' + h.u!.name + '\'s Defense against this attack.'); } },
