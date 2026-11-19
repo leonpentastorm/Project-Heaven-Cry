@@ -1218,10 +1218,11 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-65a74b924cc3030f945de2a129edc40a6c1c494de67568bcc846950be16fefca  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+e3030f82a1110a8db6383f1acbee9adc14a1f6e0c8fbcb2335ee5effe34f71da  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 f543633b644933de9238894deb5f27044fb7fcc1cc0a24e37b284385a1ce1c98  art/_archive/gear/2026-11-19-kept-blade-grades/claim.json
-3bb87e75434bcfd4bd2ec5a2936c27a2d7214ec5dd49c307b6ef0cc0cb8d8e7d  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
-f116885b6110ab6dcfe15aad336447a99d1d56cdde54d914965badcb0ba8d845  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+2d22b8b728e545a6235c972fc3af87330a3ce17fd75c1d3444dee47bdddef86d  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+bbb67959be8d00478841617bb9dc376964a50d2c7654ed311918601c362e0830  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-combat_knife--fine.png
+8105d6fafef3f02ef41992b79e65ea96f88282dc08cacd02338306a4c4c1f4c3  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 94945aad0e68ad8b22c52bed7d69da47d3c8ce6bbadae80767d8ff7013cdfd12  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-adamantile_greatsword--celestial.txt
 fd9fa0e8d5363befadedb2dfc3abac9b5701f076e705023b5b6b4ee0f57c8d50  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-adamantile_greatsword--fine.txt
 82e73c497d79d130d20886e47f31c84909157a81e6f652cf1baed3bc0f8ecd33  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-adamantile_greatsword--masterwork.txt
@@ -1246,8 +1247,11 @@ aac6d6d1c2f52c5dca900a476a43bbe75a56159ffb163bfca51bd055f6a348a5  art/_archive/g
 368a3301431a3ee8b21da00bea76fd332c5148349f8e73515f7b6bad6442b214  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-sabre--fine.txt
 37a78e1956d29f2d0ec38eb0c26ff5f74107bc9e74cc915846f9f77b69419d04  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-sabre--masterwork.txt
 5682a561669ee5fbaa75ad7870de8fc0dc55fd7e9c47448a55b0f26c54b25694  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-sabre--relic.txt
-90d1c9edab0511eb5e9a7c1b3afacf4ffae051d183940a529f4d8670211519c7  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+765543b1f37313648a65b81eee0cedc13bec549d80b7d269e5b20a27cf78cb8e  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+e60acd10879508f0f7ca3d94526f95f4ea38cf413e0b62129a6681490f81e52e  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-combat_knife-32px.png
+10bd191ec3b6b22ef8513066c663dc60ee43bfe3f74748dd82c8b5b7f83415a4  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-combat_knife-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-19-kept-blade-grades/source-brief.md
+9f1f05e285349047398d3b3f21b9ab0b4dea2df2c0f6d6bd5d6adf1bb364c169  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-combat_knife--fine.png
 0ed4456fdb4c3eacb205a819eaadde137b48bb300c92fcc96496f93354b8993f  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
 b5bb66bcdca6a9d4dee1993a5453e25a7a2ac36d6ffb627058362728227cb278  art/_archive/gear/2026-11-19-melee-armour/VALIDATION.md
 ae45631caca92edfa24e281ed068ccc6cfa50a2212227ef623c950a394079fae  art/_archive/gear/2026-11-19-melee-armour/attempts/armour-tactical_gloves/v1/prompt.txt
@@ -4900,7 +4904,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-37a7edb4ed7fec72ff603d696251b14bc7c496e249b65ddc5186433f015764df  art/catalog.json
+6862386166cf3d3fb81821f055385de7b64e67157c0ca128c543c2e19db46491  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6642,6 +6646,7 @@ d085e06a11ae4413f5d433bf645c3b9d5844c174745d18a1e0df6a0c014367ba  art/icons/gear
 970c0498a4aee6f04b6bad6c8462d814802ee2975f24bf29d57cd7d8c6fde1e0  art/icons/gear/exports/128/weapon-broadback_sabre.png
 34866e14ccd7657851525feedf3393e800ca081908f2aeaca41041758c06463a  art/icons/gear/exports/128/weapon-ccec_marksman_rifle.png
 e85a591573128ae362e625b4ab71c3c44d0b78aad41866288ef9f7b4292ef9f4  art/icons/gear/exports/128/weapon-coach_gun.png
+5aabc37164fc4f0f78fa0be91aa29f4d2175e110b2ce885c1ce814c800a82981  art/icons/gear/exports/128/weapon-combat_knife--fine.png
 d4413730af60b700c0af8aeff385908dfb371fc15adbe87225d2c9ff48b2ddea  art/icons/gear/exports/128/weapon-combat_knife.png
 bc7973f1ce71e94150a74ef64486925ee2cc571cf3c1fdcf5ebee6fa10c2320e  art/icons/gear/exports/128/weapon-core_rifle.png
 10097fa66a1db9007bdb7ebf216137812c58daf49346e2c762abf980fed684c6  art/icons/gear/exports/128/weapon-crossbow.png
@@ -6859,6 +6864,7 @@ e70f9e223446710bd320af22499556740e8f33daaac2750a92afaf2b5fd88898  art/icons/gear
 b68fbb7c2b81d6edb1672803c773730837afdc0288db0013d960154ae8c9ae6b  art/icons/gear/exports/256/weapon-broadback_sabre.png
 713e3888f7aef27dd8e056b8ece7e5bb6c352ea2184ef2e00d058415390f266e  art/icons/gear/exports/256/weapon-ccec_marksman_rifle.png
 25cbe91e58a0d507c07ef0ec0dfdfd87f23194bd3822cf17cee53fa1a24cc9ab  art/icons/gear/exports/256/weapon-coach_gun.png
+fc8219cba666ab2e1afe83f4b2ac6c98fe1e0ef9faaabbbaec152e7b5edba1a7  art/icons/gear/exports/256/weapon-combat_knife--fine.png
 03f00a26ea4114aa888a827d057c132e375c9741cbdc3387359ddc9a9b0cc2bf  art/icons/gear/exports/256/weapon-combat_knife.png
 35552a95ae875a5f5bcf5e257e59d975f55093e4d237fd6655d69b6767116b7e  art/icons/gear/exports/256/weapon-core_rifle.png
 addf9a8b0c6f0431a82a85ef459b749a46759482b09d3fc2f93cd0eec94676fe  art/icons/gear/exports/256/weapon-crossbow.png
@@ -7076,6 +7082,7 @@ cfc1aa2ec250b91181f140c4ac38c3d8765de2f3bb9d7ee338ed233d72ff8930  art/icons/gear
 e3e1b3bca132bf02b4cde30e7988955a100a145d35d2c22608e15229e307f134  art/icons/gear/exports/32/weapon-broadback_sabre.png
 1bf85acc806ff7914e0353a973e696724b3a96ca16d08f17cc1512704ec334c8  art/icons/gear/exports/32/weapon-ccec_marksman_rifle.png
 900ea5a9c16a605cfa65a9b7700a8f5cbb7f9db963949f06e1bd7283f201df3e  art/icons/gear/exports/32/weapon-coach_gun.png
+0bf8d6564af59f6fa5ce8a938ac6a4bd6669882a0d9a1ed89457a4165909e274  art/icons/gear/exports/32/weapon-combat_knife--fine.png
 97311216d3e4ae3cc30d0105db7a3bfcfbb484f392c2dfc7f5412ea6ec4a6593  art/icons/gear/exports/32/weapon-combat_knife.png
 8e367db293eb1f2ea9ec1967b7e5a5771c29207a7fd85938c6555d36e3d03cac  art/icons/gear/exports/32/weapon-core_rifle.png
 91c7330f314e01b38cc7030eac3504943d6bd3ae0ce5e05051a73d6f95cff3d1  art/icons/gear/exports/32/weapon-crossbow.png
@@ -7293,6 +7300,7 @@ c76770b7050bd32c42accd8741bfc93e87d8b8d7ed8320606692afc2cb24fdd5  art/icons/gear
 9d9b392bb85c355b7f5c3b8012e9119fdcdea0dd235d57a0fc73112aab0e1552  art/icons/gear/exports/64/weapon-broadback_sabre.png
 d08ff0e89e9e3727a7b906a52b3ac576ce95a35cd04dd32fe8a30b9d5acd124d  art/icons/gear/exports/64/weapon-ccec_marksman_rifle.png
 7e7855b75a91e3eb4654fd471b2361f867bce8c005092c01a0433c3e43bce8b6  art/icons/gear/exports/64/weapon-coach_gun.png
+301306a86a6cbcaf01a811d65948682d859c013f0507dce802a38b108fae1bc4  art/icons/gear/exports/64/weapon-combat_knife--fine.png
 91269a70f363d659d7829d8af876c54ea05a4bcfb86d41b0307c96d276876ea9  art/icons/gear/exports/64/weapon-combat_knife.png
 69a3cce76464f6e5be41f4f59c6abbc9b865ff5e3502cd6cc18324b7d42a0b61  art/icons/gear/exports/64/weapon-core_rifle.png
 714ba7e108eca05882be93aa07a7f5b8fd4371a76f9c9f16eee5207dd079762d  art/icons/gear/exports/64/weapon-crossbow.png
@@ -7460,6 +7468,7 @@ d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574  art/icons/gear
 1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7  art/icons/gear/weapon-broadback_sabre.png
 b7b78f5e26d3dd0b6b4af59a29183ceefc1674c3f3cf0c7a1826f08f8fe9b357  art/icons/gear/weapon-ccec_marksman_rifle.png
 e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5  art/icons/gear/weapon-coach_gun.png
+bbb67959be8d00478841617bb9dc376964a50d2c7654ed311918601c362e0830  art/icons/gear/weapon-combat_knife--fine.png
 75fea68403b5a2a96e294f937d027422f74fba9de5253bddadc3a7d5297267e1  art/icons/gear/weapon-combat_knife.png
 af6729737210a873c2c8002ef2d672cb9f2b0257ce3fb9b51f6317265ea1ea10  art/icons/gear/weapon-core_rifle.png
 213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b  art/icons/gear/weapon-crossbow.png
@@ -12272,6 +12281,7 @@ db27e0309aa0d98503c8a461c09ea1ecf1bfae303dd4f5f039c82fb5fb28b217  art/ui/title-s
 6de65e53e188ecbce5e1f2c19aabc745f5f6e06ee73f4bcbe82249108a8bdd0e  tools/art/export_m813_campaign.py
 1e6a2d66f1055ad808b4c3b4c48fb11d72a1ab605be5045bafd3e9cfec1d236f  tools/art/export_nov12_icons.py
 915192f411cd1b2a3238a67cd2cc4f1699184f6779e2e2c78d667b2eec54a6c8  tools/art/export_nov19_gear.py
+5f85203cdfde8a3cd59dbb7289b573a23ba33b86f784c34da931c9cab8e16e64  tools/art/export_nov19_grades.py
 d4a2f51c1061537c16e22479b0c751224d0a1acc49c856bb10dc902037e24843  tools/art/export_nov19_uniques.py
 d11fb5d194cac8e8fd09dc4bb4bc90bea07012599d2f5942081bf57923720ea5  tools/art/export_wick_animation.py
 757052865c1c16df6afaf6daf9f98e27144717590c6c3b6ab633524d9fb3376d  tools/art/export_wick_icon.py
@@ -12279,6 +12289,7 @@ a2654251dbea3b4a3d871e1e764c6bace9aa1d283d293e8b341a47e38d336330  tools/art/revi
 3130b4e5a2f8a4823e3b42e4ee106cee7b5aa18a562a63b8d6cf58a10513fc16  tools/validate_art.py
 be3c13261817510eb5083542b6e57a38ad76b7d47e285acf6bf7f71cd88c3e5d  tools/validate_gear_art.py
 41f66fed9aca0dbefc3678fe9e158d943fa62b74cc24fdfe18b0980c7db09d31  tools/validate_nov19_gear.py
+8b8e67a3099d14bb8d4a3f13499ebd54036351505401d81983346ab0cb4a735d  tools/validate_nov19_grades.py
 7d28e2d47d5445a31d7db5ec4b71f73ab5b3dac87de5035ccbaa595b65c2c32e  tools/validate_nov19_uniques.py
 8968c2fed8a28bf4df57e8f856dcb73049b62b7e05f59e28c508334728c79445  tools/validate_patrons.py
 2ac8f6982774592409f2f2c9bd109290ec1b773378b89ab897d1baaa2a8a7a17  tools/validate_wick_animation.py
