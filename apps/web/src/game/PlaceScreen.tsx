@@ -10,6 +10,8 @@
 import React from 'react';
 import { act, getState } from './store';
 import { placeView, type PlaceCardV, type PlaceViewV } from '@engine';
+import SURVIVAL from '../../../../data/survival.json';
+import { VowAtRest } from './VowPopup';
 import { gearIconUri } from './gearIcons';
 import { placeIconOf } from './doorArt';
 import { tipProps, openTipOn } from './actionTip';
@@ -119,7 +121,7 @@ export function PlaceScreen(_p: { onLeave: () => void }) {
   return (
     <div data-phc-place={v.kind}>
       <FullScreenFrame backdrop={backdrop} portrait={portrait} name={v.face.name} role={v.face.role + ' · ' + v.word + ' · ' + v.setting} line={say.text} lineKey={v.node + say.key}
-        tabs={tabs} tab={on} onTab={setTab} purse={v.me?.credits ?? 0} actions={<MoveOn />}>
+        tabs={tabs} tab={on} onTab={setTab} purse={v.me?.credits ?? 0} actions={(SURVIVAL as any)[v.kind]?.vow_change ? <><VowAtRest /><MoveOn /></> : <MoveOn />}>
         {on === 'give' ? <GiveTab /> : <TabBody v={v} tab={on} />}
       </FullScreenFrame>
     </div>
