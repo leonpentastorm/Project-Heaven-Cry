@@ -132,7 +132,15 @@
             {
               "op": "resource",
               "resource": "guard",
-              "value": -1
+              "value": {
+                "base": 0,
+                "per": [
+                  {
+                    "of": "tech_rule:guard.interpose_cost",
+                    "value": -1
+                  }
+                ]
+              }
             },
             {
               "op": "use",

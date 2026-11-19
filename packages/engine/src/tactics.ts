@@ -141,16 +141,26 @@ const ANSWERED = new WeakMap<Combat, Set<string>>();
  * (or an item cancels the window); else spends, runs fn as a reaction, and returns true. */
 export function react(cb: Combat, u: Unit, o: ReactOpts, fn?: () => void): boolean {
   const spend = o.spend ?? 1, seen = ANSWERED.get(cb), ek = o.event ? o.event + '|' + u.id : null;
-  if (ek && seen?.has(ek)) return false;
-  if (!canReact(cb, u, o.kind, o.payer && o.payer !== u ? 0 : spend)) return false;
-  if (o.payer && o.payer !== u && (spend > 0 && !ownReact(cb, o.payer, spend))) return false;
-  if (keptForHeld(cb, u, o, spend)) return false; // rules 1.30: the last reaction is the held shot's
-  if (o.window) { const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: o.window.mover ?? null, kind: o.window.kind, ...(o.window.id ? { id: o.window.id } : {}), spend, cancel: false, at: o.window.at ?? u.pos, cb, rng: o.window.rng }); if (rw.cancel) return false; }
+  if (reactRefusal(cb, u, o)) return false;
   if (spend > 0) payReaction(cb, o.payer || u, spend);
   if (ek) { const s = seen || new Set<string>(); if (s.size > 512) s.clear(); s.add(ek); ANSWERED.set(cb, s); }
   const was = cb.reacting; cb.reacting = { unit: u.id, kind: o.kind };
   try { emit(cb, 'reaction', { u, kind: o.kind, event: o.event || null, payer: o.payer || u, cb }); fn?.(); } finally { if (was) cb.reacting = was; else delete cb.reacting; }
   return true;
+}
+/** Why react() would refuse this reaction now, changing nothing (rules 1.70 item 5546, P5): 'answered' (this unit has
+ * answered this event already), 'none' (it can't react: none left, a kind its state forbids, a reaction under way),
+ * 'payer' (the payer has none), 'held' (its last reaction is kept for its held shot, rules 1.30), 'cancelled' (an item
+ * cancels the window: the `reaction_window` hook, whose listeners only set `cancel`); null: it would go ahead. THE one
+ * reading of these refusals: react() calls it, and a reaction that rolls before it spends (Parry) asks it first. */
+export function reactRefusal(cb: Combat, u: Unit, o: ReactOpts): 'answered' | 'none' | 'payer' | 'held' | 'cancelled' | null {
+  const spend = o.spend ?? 1, ek = o.event ? o.event + '|' + u.id : null;
+  if (ek && ANSWERED.get(cb)?.has(ek)) return 'answered';
+  if (!canReact(cb, u, o.kind, o.payer && o.payer !== u ? 0 : spend)) return 'none';
+  if (o.payer && o.payer !== u && (spend > 0 && !ownReact(cb, o.payer, spend))) return 'payer';
+  if (keptForHeld(cb, u, o, spend)) return 'held'; // rules 1.30: the last reaction is the held shot's
+  if (o.window) { const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: o.window.mover ?? null, kind: o.window.kind, ...(o.window.id ? { id: o.window.id } : {}), spend, cancel: false, at: o.window.at ?? u.pos, cb, rng: o.window.rng }); if (rw.cancel) return 'cancelled'; }
+  return null;
 }
 /** Spend n reactions of a unit: its own first, then a Cue's, then (one) a Many Hands donor's. */
 function payReaction(cb: Combat, u: Unit, n: number): void {
@@ -194,7 +204,7 @@ export const SIGHT_WORDS: SightWord[] = ['seen', 'unseen', 'in_view', 'out_of_vi
 export function sightOf(cb: Combat, u: Unit, by?: Unit | null): [SightWord, SightWord] {
   const always = statQuery({ u, cb }, 'always_seen').add > 0;
   let inView: boolean, seen: boolean;
-  if (by) { inView = always || unitSees(cb, by, u.pos); seen = always || (inView && !u.hidden); }
+  if (by) { inView = always || unitSees(cb, by, u.pos, undefined, u); seen = always || (inView && !u.hidden); }
   else { inView = always || seenByFoes(cb, u); seen = always || sideSeesUnit(cb, u.side === 'pc' ? 'foe' : 'pc', u, false, undefined, false); } // rules 1.61 item 4970: by eyes, not the shot that shows
   return [seen ? 'seen' : 'unseen', inView ? 'in_view' : 'out_of_view'];
 }
@@ -203,7 +213,7 @@ export function sightOf(cb: Combat, u: Unit, by?: Unit | null): [SightWord, Sigh
 export const TIER_NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
 /** THE one test of an enemy's eyes on a unit: v, of the other side, up and not itself Hidden, sees the tile (range,
  * light, line of sight). at: a tile the unit would stand on (the Hide spots, rules 1.56 Shadow 2.0 item 11). */
-const eyeOn = (cb: Combat, u: Unit, v: Unit, at: string) => v.side !== u.side && alive(v) && !v.hidden && unitSees(cb, v, at);
+const eyeOn = (cb: Combat, u: Unit, v: Unit, at: string) => v.side !== u.side && alive(v) && !v.hidden && unitSees(cb, v, at, undefined, u);
 /** Does any unit of the other side see this tile (range, light, line of sight)? at: another tile (default its own). */
 export const seenByFoes = (cb: Combat, u: Unit, at: string = u.pos) => cb.units.some((v) => eyeOn(cb, u, v, at));
 /** The units of the other side whose eyes reach the unit's tile (or `at`): seenByFoes's own test, listed. */

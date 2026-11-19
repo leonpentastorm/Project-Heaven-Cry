@@ -1084,12 +1084,17 @@ export function litAt(cb: Combat, k: string): boolean {
   return objectsOf(cb).some((o) => lightOf(o) > 0 && dist(o.pos, k) <= lightOf(o)) || cb.units.some((u) => !u.dead && (u.light || 0) > 0 && dist(u.pos, k) <= (u.light || 0));
 }
 /** Can this unit see that tile (range, darkness, line of sight)? */
-/** walls: sightBlockers(cb), from a caller that asks about many eyes or many tiles at once (building it is four times the cost of walking one line). */
-export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>): boolean {
+/** walls: sightBlockers(cb), from a caller that asks about many eyes or many tiles at once (building it is four times the cost of walking one line).
+ * t: the unit looked at, when the question is "does u see t" (rules 1.70 item 5545, P4: its stat `seen_range` widens or
+ * narrows the range at which it is seen; asked only when something in the fight answers it). */
+export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>, t?: Unit | null): boolean {
   if (u.dead || u.downed || u.eyes === false) return false; // Classes 3.0 P7: a unit with no eyes of its own sees nothing
-  const range = litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2);
+  const range = Math.max(0, (litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2)) + seenRangeOf(cb, t));
   return dist(u.pos, k) <= range && (k === u.pos || lineOfSight(cb, u.pos, k, false, walls));
 }
+/** Rules 1.70 item 5545 (P4): the tiles a unit's stat `seen_range` adds to the range at which others' eyes see it (0 when
+ * nothing in the fight answers the stat: the sight test stays as fast as it was). */
+export const seenRangeOf = (cb: Combat, t: Unit | null | undefined): number => (t && statHeard(cb, 'seen_range') ? statQuery({ u: t, cb }, 'seen_range').add : 0);
 /** What one side sees, shared by the squad: tiles in sight, units seen, units only sensed (Sensory). */
 export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
   const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), tiles = new Set<string>(), walls = sightBlockers(cb);
@@ -1097,7 +1102,8 @@ export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
   const seen = new Set<string>(), sensed = new Set<string>();
   for (const t of cb.units) if (t.side !== side && !t.dead) {
     // A Hidden unit isn't seen (spec: Helpful states): at most sensed, by Sensory range.
-    let isSeen = (tiles.has(t.pos) || t.shownTo === side) && !t.hidden, isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3));
+    // rules 1.70 P4: a unit with a seen_range of its own is looked at by each eye (the tile set holds plain sight)
+    let isSeen = (t.shownTo === side || (seenRangeOf(cb, t) ? eyes.some((u) => unitSees(cb, u, t.pos, walls, t)) : tiles.has(t.pos))) && !t.hidden, isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3));
     if (sightHooked(cb)) { const r = seesHook(cb, side, t, null, isSeen, isSensed); isSeen = r.seen; isSensed = !isSeen && r.sensed; }
     if (isSeen) seen.add(t.id); else if (isSensed) sensed.add(t.id);
   }
@@ -1128,7 +1134,7 @@ export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly 
   if (t.side === side) return true;
   if (t.dead) return false;
   const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !inBounds(cb, t.pos), walls = t.hidden || off ? undefined : walls0 || sightBlockers(cb);
-  let isSeen = !t.hidden && !off && ((readShown && t.shownTo === side) || eyes.some((u) => unitSees(cb, u, t.pos, walls)));
+  let isSeen = !t.hidden && !off && ((readShown && t.shownTo === side) || eyes.some((u) => unitSees(cb, u, t.pos, walls, t)));
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
@@ -1232,7 +1238,7 @@ function noteSeen(cb: Combat, side: string, id: string, at: string) {
 /** Does anyone on the attacker's side see the target? */
 export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | null): boolean {
   // rules 1.61 item 4963: a unit whose attack showed it to this side is seen wherever it stands (unless Hidden)
-  const hid = tgt.hidden && tgt.side !== side, walls = hid || tgt.shownTo === side ? undefined : sightBlockers(cb), base = !hid && (tgt.shownTo === side || cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos, walls)));
+  const hid = tgt.hidden && tgt.side !== side, walls = hid || tgt.shownTo === side ? undefined : sightBlockers(cb), base = !hid && (tgt.shownTo === side || cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos, walls, tgt)));
   return sightHooked(cb) ? seesHook(cb, side, tgt, by || null, base, false).seen : base;
 }
 

@@ -4481,7 +4481,7 @@
       "cost": {
         "hook": "cost",
         "self": "actor",
-        "about": "an action is priced (every priced action)"
+        "about": "an action is priced (every priced action); its target (rules 1.70 P3): the attack's or the action's target, else the owned unit an order is given to (a Figment's order), else the target id it was priced with"
       },
       "reload": {
         "hook": "reload",
@@ -4990,7 +4990,7 @@
       },
       "self_res": {
         "arg": "res",
-        "about": "self has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most)",
+        "about": "self has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\" | \"limit\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)",
         "values": [
           "mp",
           "charge",
@@ -5007,12 +5007,13 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux"
         ]
       },
       "actor_res": {
         "arg": "res",
-        "about": "actor has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most)",
+        "about": "actor has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\" | \"limit\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)",
         "values": [
           "mp",
           "charge",
@@ -5029,12 +5030,13 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux"
         ]
       },
       "target_res": {
         "arg": "res",
-        "about": "target has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most)",
+        "about": "target has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\" | \"limit\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)",
         "values": [
           "mp",
           "charge",
@@ -5051,7 +5053,8 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux"
         ]
       },
       "self_has_res": {
@@ -5073,7 +5076,8 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux"
         ]
       },
       "self_lacks_res": {
@@ -5095,7 +5099,8 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux"
         ]
       },
       "patron": {

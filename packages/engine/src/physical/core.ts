@@ -873,11 +873,15 @@ export function fireWatch(t: Tech, ctx: any, target: Unit, fn: () => void, kind:
   });
 }
 /** An Answer's trigger has happened: spend the reaction and run fn. False when this unit can't answer now. */
+/** The reaction an Answer makes (react()'s options): its kind, the attack it answers, its window. answer() spends it; a
+ * reaction that rolls before it spends (Parry) reads its refusals first with these (tactics.ts reactRefusal; rules 1.70
+ * item 5546, P5). */
+export const answerOpts = (t: Tech, against: Unit | null) => ({ kind: answerKind(t.def.id), event: attackEvent(), window: { kind: 'answer' as const, mover: against, id: t.def.id, at: t.u.pos, rng: t.rng } });
 export function answer(t: Tech, against: Unit | null, fn: () => void): boolean {
   const u = t.u, cb = t.cb;
   const kind = answerKind(t.def.id);
   if (t.preview || !canAnswer(cb, u, t.def.id, against || undefined) || !canReact(cb, u, kind)) return false;
-  return react(cb, u, { kind, event: attackEvent(), window: { kind: 'answer', mover: against, id: t.def.id, at: u.pos, rng: t.rng } }, () => {
+  return react(cb, u, { ...answerOpts(t, against) }, () => {
     emitFx(cb, 'technique', { unit: u.id, id: t.def.id, group: 'answer', system: t.def.system, target: against?.id || null, hand: t.hand, at: u.pos, reaction: true });
     say(cb, u.name + ' answers with ' + t.def.name + '.');
     fn(); checkOver(cb);

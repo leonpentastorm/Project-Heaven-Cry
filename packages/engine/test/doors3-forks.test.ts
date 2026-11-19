@@ -15,6 +15,7 @@ import { tiesOf } from '../src/kit';
 import { pressureOf, pressureCap } from '../src/physical/pressure';
 import forksJ from '../../../data/forks.json';
 import tendingJ from '../../../data/tending.json';
+import techniquesJ from '../../../data/techniques.json';
 
 const FK: Record<string, any> = Object.fromEntries((forksJ as any).items.map((x: any) => [x.id, x]));
 const T: any = tendingJ;
@@ -160,6 +161,14 @@ describe('Guard, the first fork: Provoke and Cover Them', () => {
     expect(r.f.cb.log.some((l: any) => /Cover Them/.test(String(l)))).toBe(true);
     blow(r.f, r.foe, r.ally); // the second ranged hit of the round lands on the ally
     expect(r.f.unit(r.ally.id).hp).toBeLessThan(hp);
+  });
+  it('rules 1.70 item 5547 (P6): Cover Them\'s Guard cost reads techniques.json rules.guard.interpose_cost (one copy)', () => {
+    const G: any = (techniquesJ as any).rules.guard, was = G.interpose_cost;
+    const spent = () => { const r = cover(['fork.guard.cover_them'], { guard: 6 }), g0 = r.f.unit(r.me.id).res.guard; blow(r.f, r.foe, r.ally); return g0 - r.f.unit(r.me.id).res.guard; };
+    try {
+      const one = spent(); G.interpose_cost = was + 1; const two = spent();
+      expect(two - one).toBe(1);
+    } finally { G.interpose_cost = was; }
   });
   it('Cover Them takes no melee hit, nothing with no Guard, and Provoke\'s holder covers nobody', () => {
     for (const [picks, o] of [[['fork.guard.cover_them'], { melee: true }], [['fork.guard.cover_them'], { guard: 0 }], [['fork.guard.provoke'], {}]] as const) {

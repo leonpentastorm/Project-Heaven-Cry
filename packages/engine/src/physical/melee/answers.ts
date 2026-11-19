@@ -7,8 +7,8 @@ import type { StrikeOpts } from '../types';
 import { say, alive, active, dist, rollWithPick, weaponVia, type Unit } from '../../combat';
 import { emit, boundGame } from '../../effects/hooks';
 import { uses } from '../../effects/uses';
-import { canReact } from '../../tactics';
-import { answerKind } from '../core';
+import { canReact, reactRefusal } from '../../tactics';
+import { answerKind, answerOpts } from '../core';
 import { mod, holdsShield } from '../../character';
 import { rollVs } from '../../rolls';
 import { weaponPhys } from '../data';
@@ -79,6 +79,9 @@ technique({
       // first, under the same gate an Answer has (answer(): canAnswer, canReact); a failed Parry is said and spends
       // nothing, so the blow stays unanswered and Retort may still answer it.
       if (t.preview || !canAnswer(t.cb, t.u, 'parry', att) || !canReact(t.cb, t.u, answerKind('parry'))) return;
+      // Rules 1.70 item 5546 (P5): what react() would refuse after the roll (the blow already answered, the last
+      // reaction kept for a held shot, a window an item cancels) is read first: such a Parry is not rolled, said or tried.
+      if (reactRefusal(t.cb, t.u, answerOpts(t, att))) return;
       // The lead's ruling of 19 Nov 2026 (amends item 5530): one Parry try a round per unit (techniques.json parry
       // numbers.tries_a_round), won or lost: a lost Parry still spends no reaction, but the unit does not roll another
       // Parry that round. One cell of the counters primitive (effects/uses.ts, scope per_round), taken before the roll.

@@ -14,6 +14,7 @@
 // counter is the one a handler kept with uses(h)), runs the op and writes `say`. A preview (ctx.preview) changes no
 // state: the amount ops still speak (a preview shows the number), the limit is read and not taken, nothing is logged.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
+import { dataRef } from '../datatext';
 import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
 import { uses } from './uses';
@@ -55,6 +56,13 @@ import { dmgIs, DAMAGE_WORDS } from './dmgwords';
  * is by default (`self`): unless `if` names that role (`if.target` for a trigger whose `self` is 'target'), the holder
  * must be it. So `taking` with `if: { actor: 'foe' }` is still damage the HOLDER takes, from an enemy. */
 export interface Trigger { hook: HookName; phase?: string; actor?: (ctx: any) => Unit | null | undefined; target?: (ctx: any) => Unit | null | undefined; self: 'actor' | 'target' | null; about: string }
+/** Rules 1.70 item 5544 (P3, the target-aware price): the unit a priced action is aimed at: ctx.tgt (an attack) or
+ * ctx.target, else the owned unit an order is given to (owned.ts verbPrice: ctx.owned, its id), else ctx.targetId. */
+const priceTarget = (c: any): Unit | null => {
+  const u = c.tgt ?? c.target; if (u && typeof u === 'object') return u;
+  const id = c.owned ?? c.targetId ?? (typeof u === 'string' ? u : null);
+  return id ? (c.cb?.units || []).find((x: Unit) => x.id === id) || null : null;
+};
 const att = (c: any) => c.att, tgt = (c: any) => c.tgt, u_ = (c: any) => c.u, by = (c: any) => c.by, t_ = (c: any) => c.t, srcBy = (c: any) => c.src?.by, victim = (c: any) => c.victim;
 /** The closed list. Derived from the hooks the 310 lane handlers use, by count (the hand-off has the table). */
 export const TRIGGERS: Record<string, Trigger> = {
@@ -83,7 +91,7 @@ export const TRIGGERS: Record<string, Trigger> = {
   heal: { hook: 'heal_in', actor: by, target: t_, self: 'target', about: 'a unit is about to be healed' },
   heal_given: { hook: 'heal_given', actor: by, target: t_, self: 'actor', about: 'a heal landed' },
   shield: { hook: 'shield_grant', actor: by, target: t_, self: 'target', about: 'a shield is about to be given' },
-  cost: { hook: 'cost', actor: u_, self: 'actor', about: 'an action is priced (every priced action)' },
+  cost: { hook: 'cost', actor: u_, target: priceTarget, self: 'actor', about: 'an action is priced (every priced action); its target (rules 1.70 P3): the attack\'s or the action\'s target, else the owned unit an order is given to (a Figment\'s order), else the target id it was priced with' },
   reload: { hook: 'reload', actor: u_, self: 'actor', about: 'a reload is made' },
   swap: { hook: 'swap', actor: u_, self: 'actor', about: 'a weapon swap is priced' },
   injury: { hook: 'injury', actor: by, target: t_, self: 'target', about: 'an injury is about to be rolled on a unit' },
@@ -331,10 +339,11 @@ export function sourceOf(ev: Ev, of: string): number {
   if (ns === 'skill') return skillPts(ev, f); // rules 1.33: the holder's points in a skill (Share a Hit's 5% a point of Camaraderie)
   if (ns === 'feed') return doorFeed(ev.self, f); // rules 1.60 (N3): the holder's beta feed of a door, 1 + per_product x alpha x beta (effects/feed.ts)
   if (ns === 'pick') return pickedBy(ev, f) ? 1 : 0; // rules 1.60 (N2): 1 when the holder picked this fork option, else 0
+  if (ns === 'tech_rule') return dataRef(of); // rules 1.70 item 5547 (P6): a value of techniques.json rules (datatext.ts dataRef)
   return 0;
 }
 /** The namespaces a number block's `of` may name in an item op. */
-export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed', 'pick'];
+export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed', 'pick', 'tech_rule'];
 /** The numeric fields of an item op that may be number blocks. */
 const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders', 'share', 'count'];
 /** Rules 1.33: `{choice}` in a word field (a condition's id, a limit's key) is the action's pick (a felt feeling). */

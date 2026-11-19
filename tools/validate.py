@@ -2160,7 +2160,13 @@ if _swell is not None:
         for k, v in _swell["unless"].items(): check_pred(k, v, "soul_modules:cycle.swell.unless")
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
-SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed", "pick"]  # feed: rules 1.60 (N3), a door's beta feed; pick: rules 1.60 (N2), 1 when the holder picked that fork option
+def _tech_rule(path):
+    """Rules 1.70 item 5547 (P6): a value of techniques.json rules by its dotted path (datatext.ts dataRef), or None."""
+    node = (data.get("techniques") or {}).get("rules")
+    for part in path.split("."):
+        node = node.get(part) if isinstance(node, dict) else None
+    return node if isinstance(node, (int, float)) and not isinstance(node, bool) else None
+SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed", "pick", "tech_rule"]  # feed: rules 1.60 (N3), a door's beta feed; pick: rules 1.60 (N2), 1 when the holder picked that fork option; tech_rule: rules 1.70 item 5547 (P6), a value of techniques.json rules (datatext.ts dataRef)
 # Rules 1.60 (Doors 3.0, N3): a beta's `feed` names the carrier of its alpha door's number (effects/feed.ts); its step is
 # per_point.numbers.feed (> 0), each carrier is fed by one beta only, and a `feed:<door>` source names an alpha skill fed so.
 FEED_DOORS = set()
@@ -2196,6 +2202,8 @@ def check_number_block(b, w, item_op=True):
             errors.append(f"{w}: an item op's number block counts '{pp['of']}': name a source ({', '.join(s + ':' for s in SOURCE_SPACES)})")
         elif item_op and pp["of"].startswith("feed:") and pp["of"].split(":", 1)[1] not in FEED_DOORS:
             errors.append(f"{w}: '{pp['of']}' names no door a beta feeds (skills.json <beta>.feed)")
+        elif pp["of"].startswith("tech_rule:") and not isinstance(_tech_rule(pp["of"].split(":", 1)[1]), (int, float)):
+            errors.append(f"{w}: '{pp['of']}' names no number of techniques.json rules (rules 1.70 item 5547)")
 # Classes 3.0 P5: `targets` on any op (the unit set it runs on): its fields and words are item_ops.targets.fields.
 def check_targets(t, w):
     fields = (IOPS.get("targets") or {}).get("fields") or {}
@@ -3572,7 +3580,8 @@ if _FK is not None:
     _ct = _rows.get("fork.guard.cover_them") or {}
     if _ct and not _ct.get("shelved"):
         _ic = (((data.get("techniques") or {}).get("rules") or {}).get("guard") or {}).get("interpose_cost")
-        if ((_fe("fork.guard.cover_them").get("and") or [{}])[0]).get("value") != -(_ic or 0): errors.append(f"forks:fork.guard.cover_them: its Guard is techniques.json rules.guard.interpose_cost ({_ic})")
+        # rules 1.70 item 5547 (P6): it READS the interpose cost (one copy), never a number held equal to it
+        if ((_fe("fork.guard.cover_them").get("and") or [{}])[0]).get("value") != {"base": 0, "per": [{"of": "tech_rule:guard.interpose_cost", "value": -1}]}: errors.append(f"forks:fork.guard.cover_them: its Guard reads techniques.json rules.guard.interpose_cost ({_ic}): value {{base: 0, per: [{{of: tech_rule:guard.interpose_cost, value: -1}}]}}")
 
 
 # No rule references or dev words in player text (rules 1.68 item 5406; CLAUDE.md "Player text never explains a formula").

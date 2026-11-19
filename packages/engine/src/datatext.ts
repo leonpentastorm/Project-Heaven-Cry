@@ -30,6 +30,37 @@ import weaponsJ from '../../../data/weapons.json';
 import worldJ from '../../../data/world_play.json';
 import survivalJ from '../../../data/survival.json';
 
+// ---------------------------------------------------------------------------------------------- number blocks
+// (the type and its one evaluation, moved here from effects/amounts.ts by rules 1.70 item 5547 so a text that binds a
+// block fills from the same function; amounts.ts re-exports them; the head comment there says what a block is)
+export interface NumberBlock { base: number; per?: { of: string; value: number }[]; min?: number; max?: number;
+  /** Rules 1.33 (a door's ladder): each step adds its value once its source reaches `at` ({of: "skill:empathy", at: 6,
+   * value: 3}: Bond's reach 6, 9 from Empathy 6). */ steps?: { of: string; at: number; value: number }[] }
+/** Is this a number block (and not an amount block, which has a `kind`)? */
+export const isNumberBlock = (x: any): x is NumberBlock => !!x && typeof x === 'object' && !Array.isArray(x) && typeof x.base === 'number' && !('kind' in x);
+/** A number block's value (a plain number is itself): base + Σ value × source(of), between min and max. `src` answers
+ * each `of` (a handler: its counts; the item-op runner: sourceOf). Anything else (null, a word) is NaN: the caller's bug. */
+export function numberOf(x: number | NumberBlock, src: (of: string) => number = () => 0): number {
+  if (typeof x === 'number') return x;
+  if (!isNumberBlock(x)) return NaN;
+  let v = (x.per || []).reduce((t, p) => t + p.value * (src(p.of) || 0), x.base);
+  for (const st of x.steps || []) if ((src(st.of) || 0) >= st.at) v += st.value;
+  if (typeof x.min === 'number') v = Math.max(x.min, v);
+  if (typeof x.max === 'number') v = Math.min(x.max, v);
+  return v;
+}
+/** Rules 1.70 item 5547 (P6): THE resolver of a data reference a number block may name, a value that belongs to no item:
+ * `tech_rule:<path>`, a number of techniques.json `rules` (Cover Them's Guard cost reads tech_rule:guard.interpose_cost).
+ * NaN for anything else (the validator refuses a reference that does not resolve). effects/triggers.ts sourceOf and the
+ * texts below read it. */
+export function dataRef(of: string): number {
+  const i = of.indexOf(':'), ns = of.slice(0, i), path = of.slice(i + 1);
+  if (ns === 'tech_rule') { const v = lookup((techniquesJ as any).rules, path); return typeof v === 'number' ? v : NaN; }
+  return NaN;
+}
+/** A number block that reads only data references (dataRef), worked out; null for any other block (it waits on a fight). */
+const blockOfRefs = (v: any): number | null => (isNumberBlock(v) && !(v.steps || []).length && (v.per || []).every((p) => /^tech_rule:/.test(p.of)) ? numberOf(v, dataRef) : null);
+
 const PH = /\{=(\.?[A-Za-z0-9_$]+(?:\.[A-Za-z0-9_$]+)*)(?:\|([a-z]+))?\}/g;
 const FORMATS = ['', 'abs', 'signed', 'pct', 'more', 'less'];
 
@@ -50,7 +81,7 @@ function lookup(root: any, path: string): any {
 export function renderText(text: string, item: any, holder: any): string {
   return text.replace(PH, (all, path: string, how = '') => {
     if (!FORMATS.includes(how)) return all;
-    const v = path.startsWith('.') ? lookup(holder, path.slice(1)) : lookup(item, path);
+    const raw = path.startsWith('.') ? lookup(holder, path.slice(1)) : lookup(item, path), v = typeof raw === 'number' ? raw : blockOfRefs(raw); // rules 1.70 item 5547: a block of data references
     return typeof v === 'number' && Number.isFinite(v) ? fmtNumber(v, how) : all;
   });
 }
