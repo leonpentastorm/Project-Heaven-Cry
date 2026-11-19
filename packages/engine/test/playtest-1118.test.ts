@@ -245,3 +245,14 @@ describe('row 16: Sigil Savant works in a Survival run (its Muscle Memory and Pr
     expect(g.characters[c.id].state.sigil_savant.practised).toEqual(['seek']);
   });
 });
+
+import { fluxMaxOf } from '../src';
+describe('row 13: the Flux limit is one number (Rumination\'s feed), on the Vent row too', () => {
+  it('a Brain Power 7, Rumination 3 caster: the Vent row reads the limit the reducer keeps', () => {
+    const f = fightWith([{ archetype: 'sigilist', kit: 'sigil', skills: { brain_power: 7, rumination: 3 } } as any], [{ at: 'O10' }]); const u = f.turn(f.pc);
+    const max = withGame(f.g, () => fluxMaxOf(f.unit(u.id), f.cb));
+    expect(max).toBeGreaterThan(fluxMaxOf(f.unit(u.id), f.cb)); // the feed counts for this build (unbound it is lost)
+    const vent = actionsFor(f.g, u.id, 'host').find((d) => d.id === 'vent')!;
+    expect(vent.name).toBe('Vent Flux · 0/' + max);
+  });
+});

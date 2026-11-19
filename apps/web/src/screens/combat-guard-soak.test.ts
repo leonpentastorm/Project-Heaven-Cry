@@ -36,3 +36,21 @@ describe('row 13: the Guard soak the screen shows is the one the blow spends', (
     expect(active(G.combat!)).toBeTruthy();
   });
 });
+
+describe('row 13: the Flux meter reads the limit the reducer keeps', () => {
+  it('a Brain Power 7, Rumination 3 caster: the Flux row\'s max is the engine\'s fluxMaxOf with the game bound', async () => {
+    const { resourcesOf } = await import('../game/resources');
+    const { fluxMaxOf, magicOf } = await import('@engine');
+    snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'flux-limit');
+    const a = ARCHETYPES[0];
+    const sheet: Sheet = { name: 'Quill', portrait: '', origin: 'Thousand-Planet frontier', kit: 'medic', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } as any;
+    doAct({ type: 'char/add', sheet }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
+    const c: any = Object.values(G.characters)[0]; c.skills.brain_power = 7; c.skills.rumination = 3;
+    doAct({ type: 'narrator/turn', turn: { narration: 'Guns.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Keel', tier: 'soldier', weapon: 'drifter_revolver' }] } } } as any);
+    const u: any = G.combat!.units.find((x) => x.charId === c.id); u.mg = { ...magicOf(c), evoker: true, flux: 0 };
+    const want = withGame(G, () => fluxMaxOf(u, G.combat!));
+    expect(want).toBeGreaterThan(fluxMaxOf(u, G.combat!));
+    const row = resourcesOf(u, c, G).find((r) => r.key === 'flux')!;
+    expect(row.max).toBe(want); expect(row.value).toBe('0 / ' + want);
+  });
+});

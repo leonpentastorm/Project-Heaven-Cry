@@ -1044,6 +1044,11 @@ const SYS_OF = new WeakMap<ActionDescriptor, ActionSystem>();
  * order within a group. A unit with a fixed action list (the drone) gets only those. viewer: the player asking (its
  * side's fog rules the choices; the reducer's `by`). */
 export function actionsFor(g: GameState, unitId: string, viewer?: string | null): ActionDescriptor[] {
+  // the game bound for every system's list (row 13 of the outside playtest: a door's feed reads the unit's character, so
+  // Vent read "0/6" unbound while the Flux limit the reducer keeps was 7)
+  return withGame(g, () => actionsForBound(g, unitId, viewer));
+}
+function actionsForBound(g: GameState, unitId: string, viewer?: string | null): ActionDescriptor[] {
   const x = ctxOf(g, unitId, viewer); if (!x) return [];
   const all: ActionDescriptor[] = [];
   for (const s of systems()) for (const d of safe(() => s.list(x), [] as ActionDescriptor[])) { SYS_OF.set(d, s); all.push(d); }

@@ -300,10 +300,13 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     else if (charge <= 3) Object.assign(row, cores > 0 ? { warn: 'LOW', level: 'caution', hint: 'Only ' + charge + ' charge left: swap core (2 AP) when it runs out (most words cost 1–3).' } : { warn: 'LOW', level: 'caution', hint: 'Only ' + charge + ' charge left and no spare cores.' });
     rows.push(row);
     const flux = mg ? mg.flux : sm.flux || 0;
-    const fr: ResRow = { key: 'flux', label: 'Flux', value: flux + ' / ' + FLUX_MAX, now: flux, max: FLUX_MAX, kind: 'pips', colour: RES_INK.mind,
-      hint: 'Each glyph adds 1 Flux. Past ' + FLUX_MAX + ' the Evoker overloads (10 damage per Flux over, locked a round). Vent (1 AP) clears it.' };
-    if (flux >= FLUX_MAX) Object.assign(fr, { warn: 'OVERLOAD NEXT', level: 'alert', hint: 'At ' + FLUX_MAX + ': the next glyph overloads the Evoker. Vent (1 AP) first.' });
-    else if (flux >= FLUX_MAX - 1) Object.assign(fr, { warn: 'OVERLOAD SOON', level: 'caution', hint: 'Flux ' + flux + ' of ' + FLUX_MAX + ': two more glyphs overload the Evoker. Vent (1 AP) dumps it into the air.' });
+    // the limit the reducer keeps (the engine's fluxMaxOf, the game bound: Rumination's feed reads the character; row 13
+    // of the outside playtest: the meter said 6 while the header and the rule said 7)
+    const FMAX: number = mg && u ? (g ? E.withGame(g, () => E.fluxMaxOf(u, cb)) : E.fluxMaxOf(u, cb)) : FLUX_MAX;
+    const fr: ResRow = { key: 'flux', label: 'Flux', value: flux + ' / ' + FMAX, now: flux, max: FMAX, kind: 'pips', colour: RES_INK.mind,
+      hint: 'Each glyph adds 1 Flux. Past ' + FMAX + ' the Evoker overloads (10 damage per Flux over, locked a round). Vent (1 AP) clears it.' };
+    if (flux >= FMAX) Object.assign(fr, { warn: 'OVERLOAD NEXT', level: 'alert', hint: 'At ' + FMAX + ': the next glyph overloads the Evoker. Vent (1 AP) first.' });
+    else if (flux >= FMAX - 1) Object.assign(fr, { warn: 'OVERLOAD SOON', level: 'caution', hint: 'Flux ' + flux + ' of ' + FMAX + ': two more glyphs overload the Evoker. Vent (1 AP) dumps it into the air.' });
     rows.push(fr);
   }
   // ---- Soul magic: MP (MP blue), Strain and the held Outburst (Soul violet) ----

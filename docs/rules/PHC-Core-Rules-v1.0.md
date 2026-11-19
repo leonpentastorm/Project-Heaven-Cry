@@ -12328,3 +12328,9 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     not in a run", while a run's rest node, a long rest, still set Rigid's practised words). Muscle Memory and Practise
     words carry the `run` scope (`perks/d.ts`), so the path map, the camp and a shop take them as a story does. Proof:
     `test/playtest-1118.test.ts` (both through the reducer's `story/perk` on the path map).
+5511. **A door's feed is read with the game bound, on every screen** (row 13: Guard's plate read 7 on the SHIELDS block
+    and 9 in the blow; the Flux limit read 6 on the meter and the Vent row and 7 in the rule). A feed (Pain Threshold's on
+    Guard's soak, Rumination's on the Flux limit) reads the unit's character, which only a bound game gives; unbound it
+    fell to nothing. `actionsFor` now runs with its game bound, and the fight screen's shield views and Flux meter ask the
+    engine's own numbers (`shieldsView`, `fluxMaxOf`) bound; the meter no longer reads the base `FLUX_MAX`. No rule
+    changed. Proof: `test/playtest-1118.test.ts` (the Vent row), `apps/web/src/screens/combat-guard-soak.test.ts`.
