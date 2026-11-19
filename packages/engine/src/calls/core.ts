@@ -69,8 +69,10 @@ function gate(cb: Combat, u: Unit, def: CallDef, args: CallArgs): string | null 
   if (level < 1) return 'Needs a point of ' + callSkillName(def) + '.';
   if (condOn(u, 'silenced')) return 'You are Silenced and can\'t Call.';
   const own = ownTurn(cb, u);
-  // rules 1.70 item 5535: each Call once a turn (twice at the table's top row), on the speaker's own turn
-  if (own && spoken(cb, u).left('per_turn', callsPerTurn(level), idKey(def.id)) <= 0) return def.name + (callsPerTurn(level) > 1 ? ' is made at most ' + callsPerTurn(level) + ' times a turn.' : ' is made once a turn.');
+  // rules 1.70 item 5535: each Call once a turn (twice at the table's top row), for every Call paid in AP (on the speaker's
+  // own turn, and in an ally's window: On My Mark, Supreme Command; the review of the 0.32 shared step, m1); a Call paid
+  // with the reaction off the speaker's turn has its own once-a-round count below
+  if ((own || !args.react) && spoken(cb, u).left('per_turn', callsPerTurn(level), idKey(def.id)) <= 0) return def.name + (callsPerTurn(level) > 1 ? ' is made at most ' + callsPerTurn(level) + ' times a turn.' : ' is made once a turn.');
   if (args.react) {
     if (level < CALL_REACT_AT) return 'Paying for a Call with your reaction needs ' + CALL_REACT_AT + ' points of ' + callSkillName(def) + '.';
     if (!own) { // off your turn: a helping Call only, once a round, where it works today

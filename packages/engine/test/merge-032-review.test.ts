@@ -38,3 +38,19 @@ describe('M2: the looked-at unit is named wherever eyes are asked (seen_range, r
     }
   });
 });
+
+describe("m1: each Call once a turn for every Call paid in AP, an ally's windows included (rules 1.70 item 5535)", () => {
+  it("a Rally made in an ally's On My Mark window is refused again in the same turn's Supreme Command window, under 10 points", () => {
+    const f = fightWith([{ name: 'Officer', perks: { on_my_mark: 'mastered', supreme_command: 'mastered' } }, { name: 'Speaker', skills: { charisma: 5 } }, { name: 'Third' }], [{ at: '14,9' }]);
+    const [off, sp, third] = f.pcs; f.unit(off.id).pos = '2,7'; f.unit(sp.id).pos = '2,5'; f.unit(third.id).pos = '3,5';
+    f.turn(f.unit(off.id));
+    f.act({ type: 'combat/perk', unitId: off.id, id: 'on_my_mark', targetId: sp.id } as any);
+    expect(f.cb.window?.kind).toBe('On My Mark');
+    f.act({ type: 'combat/call', unitId: sp.id, id: 'call.rally', targetId: third.id } as any);
+    expect(f.cb.window).toBeUndefined();
+    f.act({ type: 'combat/perk', unitId: off.id, id: 'supreme_command' } as any);
+    while (f.cb.window && f.cb.window.queue[0]?.unitId !== sp.id) { const id = f.cb.window.queue[0].unitId, ch = f.unit(id).charId; f.act({ type: 'combat/decline', unitId: id } as any, ch ? f.g.characters[ch].owner : 'host'); }
+    expect(f.cb.window?.queue[0]?.unitId).toBe(sp.id);
+    expect(() => f.act({ type: 'combat/call', unitId: sp.id, id: 'call.rally', targetId: off.id } as any)).toThrow(/once a turn/);
+  });
+});
