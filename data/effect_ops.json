@@ -4349,11 +4349,10 @@
     {
       "id": "last_turn",
       "tier": "core",
-      "summary": "Item op (rules 1.77 item 6508): on would_drop, the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own), with ap AP if given, then falls Downed unless healed first; hits: death_save, every hit meanwhile is a failed death save instead of damage. Bite the Bullet's handler made general.",
+      "summary": "Item op (rules 1.77 item 6508): on would_drop, the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own), with turn_ap AP if given, then falls Downed unless healed first; hits: death_save, every hit meanwhile is a failed death save instead of damage. Bite the Bullet's handler made general.",
       "count": 0,
       "params": [
         "and",
-        "ap",
         "hits",
         "if",
         "label",
@@ -4361,13 +4360,14 @@
         "priority",
         "say",
         "target",
+        "turn_ap",
         "when"
       ],
       "used_by": [],
       "example": {
         "op": "last_turn",
         "when": "would_drop",
-        "ap": 3,
+        "turn_ap": 3,
         "limit": {
           "per": "per_combat",
           "n": 1
@@ -5073,7 +5073,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "actor_not_res": {
@@ -5096,7 +5097,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "target_not_res": {
@@ -5119,7 +5121,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "self_res": {
@@ -5142,7 +5145,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "actor_res": {
@@ -5165,7 +5169,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "target_res": {
@@ -5188,7 +5193,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "self_has_res": {
@@ -5211,7 +5217,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "self_lacks_res": {
@@ -5234,7 +5241,8 @@
           "ledger",
           "devotion_xp",
           "strain",
-          "flux"
+          "flux",
+          "mana"
         ]
       },
       "patron": {
@@ -6277,11 +6285,11 @@
           "would_drop"
         ],
         "fields": [
-          "ap",
+          "turn_ap",
           "hits"
         ],
         "changes_state": true,
-        "about": "the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage"
+        "about": "the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with turn_ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage"
       }
     },
     "limit_scopes": [

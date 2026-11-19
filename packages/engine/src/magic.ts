@@ -351,11 +351,11 @@ function askImmune(ca: any, t: Unit, id: string, fam?: Fam) {
   const im = immune({ u: t }, id, fam) || (id === 'bleeding' ? immune({ u: t }, 'bleed') : null);
   if (im) { ca.cancel = true; if (!ca.why && im !== 'perk') ca.why = im; }
 }
+/** The action and its aimed unit on 'cond_apply' (rules 1.77 item 6503), when the opts carry them. */
+const aimOf = (o: CondOpts) => ({ ...(o.action ? { action: o.action } : {}), ...(o.aim ? { aim: o.aim } : {}) });
 /** Apply a condition: the target saves (d20 + its save) against 12 + the source's strength with the skill that delivered it (opts.via, or the call it runs inside: withVia; rules 1.13) (spec: Conditions
  * and saves). Boons (Guarded, Inspired…) and states need no save. No stacking: a second dose resets to the longer
  * duration. The source is kept (u.condBy) for Fear, Taunted, Grappled, Marked and kill credit. */
-/** The action and its aimed unit on 'cond_apply' (rules 1.77 item 6503), when the opts carry them. */
-const aimOf = (o: CondOpts) => ({ ...(o.action ? { action: o.action } : {}), ...(o.aim ? { aim: o.aim } : {}) });
 export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: string, rounds?: number, fam?: Fam, opts: CondOpts = {}): string {
   const id = condId(id0), def = CONDS[id];
   if (!def || def.engine === 'state' || t.dead) return ''; // a unit state (Braced, Downed) has its own setter: unitstate.ts

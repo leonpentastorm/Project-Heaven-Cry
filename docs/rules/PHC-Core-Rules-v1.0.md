@@ -13212,7 +13212,7 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       you roll twice and keep the worse; II, in Light armour or none (`self_holds body.armour_at_most`). Engine now.
 6508. **One more turn at 0 HP** (item op `last_turn` on `would_drop`, Bite the Bullet's handler made general and
       retired; `Unit.lastTurn`, the condition row `last_turn` its marker): the blow leaves the holder on 1 HP; it acts
-      to the end of its next turn (the rest of this one if it dropped on its own turn), with `ap` AP when the item gives
+      to the end of its next turn (the rest of this one if it dropped on its own turn), with `turn_ap` AP when the item gives
       a number, then falls Downed unless a heal reached it first; `hits: death_save`, each hit meanwhile is a failed death
       save instead of damage (two on a critical; three and it dies on its feet). Bite the Bullet keeps its rule exactly
       (its golden rows did not move). Still Standing (rules 1.73 item 5828 completed): once a fight, I: that turn has 3

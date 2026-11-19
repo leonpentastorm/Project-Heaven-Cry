@@ -15,7 +15,7 @@
 // state: the amount ops still speak (a preview shows the number), the limit is read and not taken, nothing is logged.
 import '../datatext'; // fills the texts' {=placeholders} before any data is read
 import { dataRef } from '../datatext';
-import { rollD20 } from '../rolls';
+import { keepOfTwo } from '../rolls';
 import { setDowned, setBraced } from '../unitstate';
 import type { Combat, Unit } from '../combat';
 import type { Holder, HookName } from './types';
@@ -40,7 +40,7 @@ import patronsJ from '../../../../data/patrons.json';
 import { TECHNIQUES, PHYS_RULES as TECH_RULES, techGroupOf, techSystemOf } from '../physical/data';
 import { RESOURCES, resGive } from './cost';
 import { grantPerkAp, bankAp } from './ap';
-import { loseAp, setAp, weaponOwnSite, resMaxOf, resLimitOf } from './cost';
+import { loseAp, apFor, weaponOwnSite, resMaxOf, resLimitOf } from './cost';
 import { dropHeldShot, resGain, react, canReact, REACT_KINDS, sightOf, SIGHT_WORDS } from '../tactics';
 import { gainEcho } from './echo';
 import { doorFeed } from './feed';
@@ -596,21 +596,21 @@ O('close_roll', ['spot'], false, ['value'], 'an enemy next to the holder rolls t
 // on you roll twice and keep the worse). One second die however many items ask: the first item's keep decides.
 O('two_dice', ['attack_roll'], true, ['keep'], 'the attack rolls a second d20 and keeps the worse (keep: worse) or the better (keep: better) of the two (once an attack: the first item that asks)', (ev, e) => {
   const rc = ev.ctx; if (rc.twoDice) return false;
-  const b = rollD20(rngOf(ev.h, rc)).die, a = rc.die, worse = e.keep !== 'better';
-  rc.twoDice = [a, b]; rc.die = worse ? Math.min(a, b) : Math.max(a, b); delete rc.hit;
+  const a = rc.die, worse = e.keep !== 'better', b = keepOfTwo(rc, rngOf(ev.h, rc), worse ? 'worse' : 'better');
+  rc.twoDice = [a, b];
   return ' (d20 ' + a + ' and ' + b + ', ' + (worse ? 'the worse' : 'the better') + ' stands)';
 });
 
 // Rules 1.77 item 6508 (the lead's ruling 7): one more turn at 0 HP, Bite the Bullet's handler made general. The blow
 // that would drop the holder leaves it on 1 HP and on borrowed time (Unit.lastTurn, the condition row last_turn as its
-// marker): it acts to the end of its next turn (the rest of this one when it dropped on its own turn), with `ap` AP if
+// marker): it acts to the end of its next turn (the rest of this one when it dropped on its own turn), with `turn_ap` AP if
 // given (never more than it has); then it falls Downed unless a heal reached it first. hits: "death_save", every hit
 // on it meanwhile is a failed death save instead of damage (two on a critical), three and it dies on its feet.
-O('last_turn', ['would_drop'], true, ['ap', 'hits'], 'the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage', (ev, e, label) => {
+O('last_turn', ['would_drop'], true, ['turn_ap', 'hits'], 'the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with turn_ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage', (ev, e, label) => {
   const u = ev.self, cb = ev.cb; if (ev.ctx.floor != null || u.hp <= 0 || u.lastTurn) return false;
   const own = cb.order[cb.turn] === u.id && !cb.window;
-  ev.ctx.floor = 1; u.lastTurn = { began: own, ...(typeof e.ap === 'number' ? { ap: e.ap } : {}), ...(e.hits === 'death_save' ? { hits: 'death_save' } : {}), label };
-  if (own && typeof e.ap === 'number' && (u.ap || 0) > e.ap) setAp(u, e.ap);
+  ev.ctx.floor = 1; u.lastTurn = { began: own, ...(typeof e.turn_ap === 'number' ? { turnAp: e.turn_ap } : {}), ...(e.hits === 'death_save' ? { hits: 'death_save' } : {}), label };
+  if (own && typeof e.turn_ap === 'number') { const over = apFor(cb, u) - e.turn_ap; if (over > 0) loseAp(u, over); } // its AP cut to the number, never raised
   restoreConds(u, { last_turn: 99 }); // its marker: nobody is asked
   return own ? ' for the rest of this turn' : ' for one more turn';
 });
@@ -623,7 +623,7 @@ onHook('damage_in', (ctx: any, cb: Combat) => {
   say(cb, u.name + ' takes the hit on borrowed time: death-save failure ' + Math.min(3, u.saves.fail) + '/3 (' + u.lastTurn.label + ').');
   if (u.saves.fail >= 3) { u.hp = 0; u.dead = true; lastTurnEnd(cb, u, u.name + ' dies on their feet.'); fxFell(cb, u); checkOver(cb); }
 });
-onHook('turn_start', (ctx: any) => { const u: Unit = ctx.u; if (!u?.lastTurn) return; u.lastTurn.began = true; if (typeof u.lastTurn.ap === 'number' && (u.ap || 0) > u.lastTurn.ap) setAp(u, u.lastTurn.ap); });
+onHook('turn_start', (ctx: any, cb: Combat) => { const u: Unit = ctx.u; if (!u?.lastTurn) return; u.lastTurn.began = true; if (typeof u.lastTurn.turnAp === 'number') { const over = apFor(cb, u) - u.lastTurn.turnAp; if (over > 0) loseAp(u, over); } });
 onHook('turn_end', (ctx: any, cb: Combat) => {
   const u: Unit = ctx.u; if (!u?.lastTurn || !u.lastTurn.began) return;
   u.hp = 0; setDowned(u, true); setBraced(u, false); dropHeldShot(cb, u, 'down');

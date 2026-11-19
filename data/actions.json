@@ -414,6 +414,7 @@
       "verb:shadow.rig#rig": "allowed",
       "verb:shadow.stalk#stalk": "allowed",
       "verb:shadow.tag#tag": "allowed",
+      "verb:shadow.case#case": "allowed",
       "verb:shadow.timing#timing": "allowed",
       "verb:tend.bond#tend_bond": "allowed",
       "verb:tend.bond_free#tend_bond_free": "allowed",

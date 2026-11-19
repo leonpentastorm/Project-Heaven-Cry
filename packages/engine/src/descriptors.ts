@@ -1064,9 +1064,6 @@ const systems = () => [...BUILT_IN, ...SYSTEMS];
 const SYS_OF = new WeakMap<ActionDescriptor, ActionSystem>();
 
 // ---------- the three functions ----------
-/** Every action this unit could take now, in list order: grouped by tab (GROUP_ORDER), each system's rows in its own
- * order within a group. A unit with a fixed action list (the drone) gets only those. viewer: the player asking (its
- * side's fog rules the choices; the reducer's `by`). */
 /** Rules 1.77 item 6514: a unit's kit as a side sees it (combat.ts kitOf: Shadow's Case), with the game bound. */
 export function kitSeenFor(g: GameState, unitId: string, side: string): KitView | null {
   const u = g.combat?.units.find((x) => x.id === unitId); if (!u || !g.combat) return null;
@@ -1077,6 +1074,9 @@ export function standingModsFor(g: GameState, unitId: string): { v: number; labe
   const u = g.combat?.units.find((x) => x.id === unitId); if (!u) return [];
   return withGame(g, () => standingTerms(g.combat, u));
 }
+/** Every action this unit could take now, in list order: grouped by tab (GROUP_ORDER), each system's rows in its own
+ * order within a group. A unit with a fixed action list (the drone) gets only those. viewer: the player asking (its
+ * side's fog rules the choices; the reducer's `by`). */
 export function actionsFor(g: GameState, unitId: string, viewer?: string | null): ActionDescriptor[] {
   // the game bound for every system's list (row 13 of the outside playtest: a door's feed reads the unit's character, so
   // Vent read "0/6" unbound while the Flux limit the reducer keeps was 7)

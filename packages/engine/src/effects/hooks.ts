@@ -223,6 +223,7 @@ export const setRankRule = (f: (c: Character) => number) => { rankHook = f; };
  * (character.ts strainLimit, readyDesigns). effects/triggers.ts registers it as it loads (character.ts can't import
  * that file: a load cycle). */
 let SHEET_SOURCE: ((c: Character, of: string) => number) | null = null;
+/** Register THE resolver of a number block's `of` for a sheet (effects/triggers.ts does, as it loads). */
 export const setSheetSource = (f: (c: Character, of: string) => number): void => { SHEET_SOURCE = f; };
 /** A number block's reader for this sheet (datatext.ts numberOf's `of`), through the one resolver. */
 export const sheetSource = (c: Character) => (of: string): number => { if (!SHEET_SOURCE) throw new Error('the sheet resolver is not registered (effects/triggers.ts)'); return SHEET_SOURCE(c, of); };

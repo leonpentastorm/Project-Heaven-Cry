@@ -152,7 +152,7 @@ describe('one more turn at 0 HP (item 6508): Still Standing, and Bite the Bullet
     throw new Error('no hit landed');
   };
   it('Still Standing II: the blow leaves you on 1 HP; your next turn has its AP; at its end you fall Downed', () => {
-    const ap = (PERK as any).still_standing.tiers.II.effects[0].ap;
+    const ap = (PERK as any).still_standing.tiers.II.effects[0].turn_ap;
     const f = dropped({ still_standing: 'II' }); const u = f.unit(f.pc.id);
     expect(u.downed).toBeFalsy(); expect(u.hp).toBe(1); expect(condOn(u, 'last_turn')).toBe(true);
     expect(f.turn(u).ap).toBe(ap);

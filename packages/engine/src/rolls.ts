@@ -225,6 +225,13 @@ export const passFaces = (mod: number, tn: number): number => { let n = 0; for (
 /** Does this attack roll hit, by the attack's own rule (a natural 1 misses, the critical range hits, else the total
  * against the Defense)? For an item inside the 'attack_roll' hook, before resolveAttack settles it. */
 export const attackHits = (rc: { die: number; hit?: boolean; critMin: number; toHit: number; need: number }): boolean => rc.hit ?? (rc.die !== 1 && (rc.die >= rc.critMin || rc.die + rc.toHit >= rc.need));
+/** Rules 1.77 item 6507: a second die for an attack's roll inside the 'attack_roll' hook, the worse (or the better) of
+ * the two standing (the item op two_dice: Untouchable); the hit is settled by resolveAttack from the die that stands.
+ * Returns the second die. */
+export function keepOfTwo(rc: { die: number; hit?: boolean }, rng: Rng, keep: 'worse' | 'better'): number {
+  const b = rollD20(rng).die; rc.die = keep === 'worse' ? Math.min(rc.die, b) : Math.max(rc.die, b); delete rc.hit;
+  return b;
+}
 /** Reroll an attack's die inside the 'attack_roll' hook (Lucky Break, Lucky Foot): the new die replaces the old one.
  * With a `bonus` the hit is settled here, by the attack's own rule with the bonus added (a natural 1 misses, the
  * critical range hits); without one resolveAttack settles it from the new die. Returns the new die. */

@@ -34,7 +34,7 @@ describe('Athletics and Reaction Speed: the perks and their homes (rules 1.73 it
     const own = (sk: string) => Object.values(P).filter((p: any) => p.tier === 'acquired' && p.skills[0] === sk).map((p: any) => p.id).sort();
     expect(own('athletics')).toEqual(['catch', 'roll_with_it', 'untouchable', 'wall_run']);
     expect(own('reaction_speed')).toEqual(['cut_in', 'rounding_up', 'shoot_first', 'speed_load']);
-    for (const id of ['untouchable', 'shoot_first', 'cut_in']) for (const t of ['I', 'II']) expect(P[id].tiers[t].effects.every((e: any) => e.op === 'narrator'), id).toBe(true);
+    for (const id of ['shoot_first', 'cut_in']) /* rules 1.77 item 6507: Untouchable is the engine's */ for (const t of ['I', 'II']) expect(P[id].tiers[t].effects.every((e: any) => e.op === 'narrator'), id).toBe(true);
   });
   it('Catch on an Athletics sheet takes an Athletics step and none of Reaction Speed’s', () => {
     const s = storyWith([{ skills: { athletics: 3, reaction_speed: 3 }, perks: { catch: 'I' } }]); const c = s.g.characters[s.chars[0].id];

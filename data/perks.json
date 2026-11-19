@@ -476,12 +476,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When your HP runs out, take one more turn with {=tiers.I.effects.0.ap} AP before you fall Downed (once a fight). II: When your HP runs out, take one more turn with {=tiers.II.effects.0.ap} AP before you fall Downed (once a fight).",
+      "text": "I: When your HP runs out, take one more turn with {=tiers.I.effects.0.turn_ap} AP before you fall Downed (once a fight). II: When your HP runs out, take one more turn with {=tiers.II.effects.0.turn_ap} AP before you fall Downed (once a fight).",
       "effects": [
         {
           "op": "last_turn",
           "when": "would_drop",
-          "ap": 3,
           "if": {
             "open": true,
             "self_harm": false
@@ -491,7 +490,8 @@
             "n": 1
           },
           "label": "Still Standing",
-          "say": "{self} is still standing{then}."
+          "say": "{self} is still standing{then}.",
+          "turn_ap": 3
         }
       ],
       "tiers": {
@@ -503,13 +503,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "When your HP runs out, take one more turn with {=tiers.I.effects.0.ap} AP before you fall Downed (once a fight).",
-          "short": "HP out: one more turn with {=tiers.I.effects.0.ap} AP, once a fight",
+          "text": "When your HP runs out, take one more turn with {=tiers.I.effects.0.turn_ap} AP before you fall Downed (once a fight).",
+          "short": "HP out: one more turn with {=tiers.I.effects.0.turn_ap} AP, once a fight",
           "effects": [
             {
               "op": "last_turn",
               "when": "would_drop",
-              "ap": 3,
               "if": {
                 "open": true,
                 "self_harm": false
@@ -519,7 +518,8 @@
                 "n": 1
               },
               "label": "Still Standing",
-              "say": "{self} is still standing{then}."
+              "say": "{self} is still standing{then}.",
+              "turn_ap": 3
             }
           ]
         },
@@ -531,13 +531,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "When your HP runs out, take one more turn with {=tiers.II.effects.0.ap} AP before you fall Downed (once a fight).",
-          "short": "That turn has {=tiers.II.effects.0.ap} AP",
+          "text": "When your HP runs out, take one more turn with {=tiers.II.effects.0.turn_ap} AP before you fall Downed (once a fight).",
+          "short": "That turn has {=tiers.II.effects.0.turn_ap} AP",
           "effects": [
             {
               "op": "last_turn",
               "when": "would_drop",
-              "ap": 5,
               "if": {
                 "open": true,
                 "self_harm": false
@@ -547,7 +546,8 @@
                 "n": 1
               },
               "label": "Still Standing",
-              "say": "{self} is still standing{then}."
+              "say": "{self} is still standing{then}.",
+              "turn_ap": 5
             }
           ],
           "replaces_tier_I": true,
