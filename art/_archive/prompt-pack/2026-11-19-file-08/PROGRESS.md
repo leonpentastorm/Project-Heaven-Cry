@@ -1,5 +1,5 @@
 # Grade proof progress
 
-22 archived PNG attempts, including earlier Fine trials. The composite shows the current candidate for each finish.
+23 archived PNG attempts, including earlier Fine trials. The composite shows the current candidate for each finish.
 
 [Proof progress](review/complete-proof-progress.jpg)
