@@ -1,0 +1,1 @@
+This source contains an isolated unfinished white three-stroke glyph. Preserve it as an optional layer. It is the small addition from the brief and needs the untouched original art to become a complete deliverable.

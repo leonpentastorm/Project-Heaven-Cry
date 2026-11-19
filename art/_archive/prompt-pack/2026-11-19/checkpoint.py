@@ -53,8 +53,9 @@ lines += ["", "## Pickup", "",
           "data/classes.json and has its own November 19 depiction. Wind-up and Read the Swing have new exact paths. "
           "Preserve the separate November 16 delivery and the fully remade Breaker.", "",
           "Use image generation one image per prompt. Set functions.store keys phc19root to the checkout, "
-          "phc19jobs to the queue and latest-<filename> to each source document. Evaluate generate-ink.js "
-          "as a function and pass the next ink job IDs. Review 16/32/44/64 px sheets against #10151F. "
+          "phc19jobs to the queue, phc19arc to this archive's repository-relative path and "
+          "latest-<filename> to each source document. Evaluate generate-ink.js or generate-painted.js "
+          "as a function and pass the corresponding job IDs. Review 16/32/44/64 px sheets against #10151F. "
           "Review paint materials, map joins, firearm silhouettes and grip or part attachment visually. "
           "The generated source path is in scratch result-N.json. Preserve sources before a workspace restart.", "",
           "Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py deliver on the accepted IDs. "
@@ -65,6 +66,16 @@ lines += ["", "## Pickup", "",
 for n in pending:
     j = queue[n]
     lines += [f"- {n:03} | File {j['file']} | {j['title']} | `{j['path']}`"]
+    if n == 13:
+        lines += ["  - Preserve the old corner until the replacement passes both joins. At 256 px, "
+                  "the left opening must be y64–191 and the bottom opening x64–191. Match the original "
+                  "straight wall's steel texture, value, cap and centered cyan strip. The third draft in "
+                  "[rejected/013-join-v3](rejected/013-join-v3) was closest in finish but missed both openings."]
+    if n == 66:
+        lines += ["  - Preserve all the current pose and glyph pixels. Add only one small unfinished "
+                  "white three-stroke glyph beside the existing one, pointing toward Wick's stylus. "
+                  "Full redraws modified the pose and old glyph. The isolated generated motif is under "
+                  "[rejected/066-glyph-only](rejected/066-glyph-only)."]
 if available_drafts:
     lines += ["", "Unreviewed scratch renders currently on disk: " + ", ".join(map(str, available_drafts)) + "."]
 (D / "HANDOFF.md").write_text("\n".join(lines) + "\n")
