@@ -35,9 +35,10 @@ describe('Parry', () => {
     expect(swing(f)).toBe(d); // the reaction is spent: the second hit lands whole
     expect(f.momentum(f.pc)).toBe(0); // and that one costs 1
   });
-  it('a lost parry still spends the reaction and the hit lands whole', () => {
+  // item 5530 (the lead's ruling on row 5, 19 Nov 2026): a lost parry spends no reaction (it was spent before)
+  it('a lost parry spends no reaction and the hit lands whole', () => {
     const d = full('bot_thread_banner'), f = fight('bot_thread_banner', ['parry'], 100);
-    expect(swing(f)).toBe(d); expect(answered(f, 'Parry')).toBe(1); expect(parries(f)[0]).toMatch(/gets through/);
+    expect(swing(f)).toBe(d); expect(answered(f, 'Parry')).toBe(0); expect(reactionsUsed(f.cb, f.pc)).toBe(0); expect(parries(f)[0]).toMatch(/gets through/);
   });
   it('fires only on a melee hit: not on a miss, and not on a shot', () => {
     const f = fight('bot_thread_banner'); rig({ hit: false, die: 5 }); swing(f); expect(answered(f, 'Parry')).toBe(0);

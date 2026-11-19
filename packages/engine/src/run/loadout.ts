@@ -12,7 +12,7 @@
 import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME, COUNTED } from '../data';
-import { type Character, type PackItem, packOf, packKindOf, twoHands, equip, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM, roundsIdOf, specialRoundName, isShieldId } from '../character';
+import { type Character, type PackItem, packOf, packKindOf, twoHands, equip, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM, roundsIdOf, specialRoundName, isShieldId, levelUpDue } from '../character';
 import { grantGoods, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
@@ -335,6 +335,8 @@ export interface LoadoutViewV {
   readyWhy: string | null;
   /** one player in the room: Ready starts the run */
   solo: boolean;
+  /** outside playtest 0.31.10 row 2: this character has a level-up due (levelUpDue: points, a perk step, a fork) */
+  levelUp: boolean;
   /** rules 1.55 item 49: the free picks, the checklist's first two steps (the focus offered only to a character with a door) */
   freePicks: { weapon: FreePickV; focus: FreePickV };
   /** what the Recommended loadout gives this character, a line a thing in words (free picks marked), and what it leaves */
@@ -419,7 +421,7 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
     weaponPick: p.weapon, focusPick: p.focus, shelves, carrying,
     party: g.players.map((pl: any) => ({ id: pl.id, charName: owner(pl.id)?.name || pl.name, initials: pl.initials || '?', color: pl.color || '#A3AEC2', ready: !!r.ready[pl.id], online: pl.online, mine: pl.id === me })),
     ready: !!r.ready[me], isHost: me === g.hostId, waiting: campWaiting(g), seed: r.seed,
-    readyWhy: r.ready[me] ? null : boonFirst(g, me), solo: g.players.length <= 1,
+    readyWhy: r.ready[me] ? null : boonFirst(g, me), solo: g.players.length <= 1, levelUp: levelUpDue(c),
     freePicks: {
       weapon: { offered: true, id: p.weapon, name: p.weapon ? nameOf(p.weapon) : null, open: !p.weapon },
       focus: { offered: !!p.focus || !!doorFocus(c), id: p.focus, name: p.focus ? nameOf(p.focus) : null, open: !p.focus && !!doorFocus(c) },

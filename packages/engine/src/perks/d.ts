@@ -521,7 +521,8 @@ const blessingAgain = (cb: Combat, rng: Rng, by: Unit, t: Unit, bl: any, power: 
 // Sigil Savant (trait). Muscle Memory: one chosen word (c.state.sigil_savant.word, set once with the Perks action)
 // draws for 0 charge and 1 AP less (floor 0.5); it still adds 1 Flux and Evoke's charge is still paid (plan 6a-19).
 // Rigid: you only draw words you practised at your last long rest, at most Max Sigil words (plan 6a-19: teeth), plus
-// the Muscle Memory word. Until the first long rest every known word counts as practised.
+// the Muscle Memory word. Until the first long rest every known word counts as practised. Both actions work in a Survival
+// run too (row 16 of the outside playtest: a run's rest node is a long rest, so Rigid bit there while both were refused).
 // =====================================================================================================================
 const knownWords = (c: Character) => [...new Set([...(c.sigils || [])])];
 const savant = (c: Character | null | undefined): any => (c ? ((c.state ||= {}).sigil_savant ||= {}) : {});
@@ -529,7 +530,7 @@ register({
   id: 'sigil_savant', claims: [0],
   actions: [
     {
-      id: 'muscle', label: 'Muscle Memory', pick: 'words', pickLabel: 'The word', scope: ['story', 'world'], ap: 0, target: 'none',
+      id: 'muscle', label: 'Muscle Memory', pick: 'words', pickLabel: 'The word', scope: ['story', 'world', 'run'], ap: 0, target: 'none',
       text: 'Choose the one word you can draw in your sleep (once): 0 charge, 1 AP less.',
       available: (h) => (savant(charOf(h)).word ? false : true),
       run: (h, args) => {
@@ -539,7 +540,7 @@ register({
       },
     },
     {
-      id: 'practise', label: 'Practise words', pick: 'words', pickMulti: 9, pickLabel: 'The words you practise', scope: ['story', 'world'], ap: 0, target: 'none', uses: { per: 'per_rest', n: 1 },
+      id: 'practise', label: 'Practise words', pick: 'words', pickMulti: 9, pickLabel: 'The words you practise', scope: ['story', 'world', 'run'], ap: 0, target: 'none', uses: { per: 'per_rest', n: 1 },
       text: 'At a rest: choose the words you practise (at most your Max Sigil words). Mid-mission you draw only those.',
       run: (h, args) => {
         const c = charOf(h); if (!c) return 'No character.';

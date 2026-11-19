@@ -29,6 +29,7 @@ import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, type Priced } fr
 import { isNumberBlock, numberOf } from './amounts';
 import { doorFeed } from './feed';
 import { pickedFork } from '../doorpicks';
+import { techSystemOf, PHYS_RULES } from '../physical/data';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
 export function apFromData(ap: any, u?: Unit | null): number {
@@ -318,6 +319,9 @@ function entryOf(h: Holder, d: ActionDef, scope: ActionScope): PerkActionEntry |
   if (!why && left <= 0) why = USED_WHY[per] || 'Used (' + usesLabel(per, n, 0) + ').';
   if (!why && per === 'out_of_combat' && h.cb && !overworld(h.cb)) why = 'Out of combat only.';
   if (!why && h.u && (h.u.downed || h.u.dead)) why = 'Downed.';
+  // item 5531: an action the technique data places in a melee group (a technique's id, rules.group_actions) is locked
+  // after a Finisher, until the unit's next turn begins (physical/core.ts clears the chain then)
+  if (!why && h.u && h.cb && scope === 'combat' && techSystemOf(d.id) === 'melee' && (h.u as any).chain?.ended) why = PHYS_RULES.chain_ended;
   // The AP and every resource the action declares, with the credit a repeat carries (Encore, items 729 and 737; a Brief).
   if (!why && scope !== 'story' && h.u) why = whyNot(h.cb, h.u, cost, { as: { type: 'combat/perk', id: h.key }, c: h.c });
   else if (!why) why = resWhyNot(cost.res, null, h.c); // no unit pays here (a story action): what the character holds (stims, Echo) is still asked for
@@ -441,7 +445,8 @@ export function togglesFor(x: Who, actionType: string, actx: any = {}, mods: str
     if (!t.on.includes(actionType)) continue;
     const av = t.available ? t.available(h, actx) : true; if (av === false) continue;
     const id = h.key + '#' + t.id;
-    out.push({ id, itemKey: h.key, label: t.label, why: typeof av === 'string' ? av : null, on: toggleState(t, id, mods), preview: t.preview ? t.preview(h, actx) : null, defaultOn: !!t.defaultOn });
+    // a greyed toggle is never shown on (outside playtest 0.31.10 row 7: Break stayed pressed at 0 Shadow); the action never carries it
+    out.push({ id, itemKey: h.key, label: t.label, why: typeof av === 'string' ? av : null, on: typeof av !== 'string' && toggleState(t, id, mods), preview: t.preview ? t.preview(h, actx) : null, defaultOn: !!t.defaultOn });
   }
   return out;
 }

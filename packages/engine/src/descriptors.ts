@@ -264,7 +264,8 @@ export function parseTechId(a: string | null | undefined): { hand: 'main' | 'off
   return { hand: hand as any, id, ...(itemS != null ? { item: /^\d+$/.test(itemS) ? Number(itemS) : itemS } : {}) };
 }
 /** What a technique's text lets you choose beyond its property line (args.opt). The first with '' is sent when nothing
- * is picked. */
+ * is picked. An option a technique's data names in `opt_needs` (option id: property) is offered only with a weapon that
+ * has that property line for the technique (row 15 of the outside playtest: Leave it in on a Maul). */
 export const TECH_OPTIONS: Record<string, [string, string, string][]> = {
   called_shot: [['leg', 'LEG', 'Slowed on a hit.'], ['arm', 'ARM', 'Its weapon is lowered on a hit.'], ['head', 'HEAD', 'Dazed on a hit.']],
   run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Only with a Reach weapon: you leave the weapon in the target and are unarmed. The target stays Pinned until the weapon is pulled out.']],
@@ -306,13 +307,17 @@ export function techHelp(e: { id: string; text: string; line?: string | null }):
   return (t.needs ? t.needs + ' ' : '') + t.text + (t.line ? ' With this weapon: ' + t.line : '') + (why1 ? ' (' + why1 + ')' : '');
 }
 /** A technique's pick steps by what it aims at, then its line and its options. */
-function techPicks(x: DescCtx, e: { id: string; choices?: { prop: string; text: string }[] }): PickStep[] {
+/** The property lines a technique has with this weapon (the pad entry's choices, else its default line's props). */
+const linePropsOf = (e: { id: string; line?: string | null; choices?: { prop: string; text: string }[] }): string[] =>
+  e.choices?.length ? e.choices.map((c) => c.prop) : (((TECHNIQUE as any)[e.id]?.lines || []) as any[]).filter((l) => l.text === e.line).flatMap((l) => l.props || []);
+function techPicks(x: DescCtx, e: { id: string; line?: string | null; choices?: { prop: string; text: string }[] }): PickStep[] {
   const aim = aimOf(e.id), out: PickStep[] = [];
   if (aim === 'enemy' || aim.startsWith('enemy')) out.push({ key: 'targetId', kind: 'enemy', prompt: 'Click an enemy on the map.', choices: others(x) });
   if (aim === 'ally') out.push({ key: 'allyId', kind: 'ally', prompt: 'Click an ally on the map.', choices: allyIds(x) });
   if (aim === 'tile' || aim.endsWith('+tile')) out.push({ key: 'tile', kind: 'tile', prompt: aim === 'enemy+tile' ? 'Now click the tile.' : 'Click a tile on the map.' });
   if (e.choices && e.choices.length > 1) out.push({ key: 'line', kind: 'option', prompt: 'Which line applies.', optional: true, options: e.choices.map((c) => ({ id: c.prop, label: c.prop.toUpperCase(), text: c.text })) });
-  const o = TECH_OPTIONS[e.id]; if (o) out.push({ key: 'opt', kind: 'option', prompt: 'Choose how.', optional: true, options: o.map(([id, label, text]) => ({ id, label, text })) });
+  const props = linePropsOf(e), needs: Record<string, string> = (TECHNIQUE as any)[e.id]?.opt_needs || {}, o = (TECH_OPTIONS[e.id] || []).filter(([id]) => !needs[id] || props.includes(needs[id]));
+  if (o.length > 1) out.push({ key: 'opt', kind: 'option', prompt: 'Choose how.', optional: true, options: o.map(([id, label, text]) => ({ id, label, text })) });
   return out;
 }
 
@@ -426,8 +431,8 @@ function basicPicks(x: DescCtx, id: string): PickStep[] {
     case 'cover': case 'cover-off': return [{ key: 'tile', kind: 'tile', prompt: 'Click an object with HP.', choices: objectsOf(x.seen).filter((o: any) => o.hp != null && o.hp > 0 && !(o.rig && o.side && o.side !== x.side)).map((o: any) => o.pos) }];
     case 'door': return [{ key: 'tile', kind: 'tile', prompt: 'Click an adjacent door.', choices: objectsOf(x.seen).filter((o: any) => kindOf(o).door && dist(x.u.pos, o.pos) <= 1).map((o: any) => o.pos) }];
     case 'pickup': return [{ key: 'tile', kind: 'tile', prompt: 'Click a pile next to you.', optional: true, choices: pileTiles(x) }, { key: 'take', kind: 'custom', renderer: 'pile', prompt: 'Untick what to leave on the ground.', optional: true }];
-    case 'stim': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an adjacent ally.', choices: allyIds(x, true) }];
-    case 'stim_throw': return [{ key: 'targetId', kind: 'ally', prompt: 'Click an ally you can see, within ' + stimThrowRange() + ' tiles.', choices: allyIds(x, true) }]; // (the range: the reducer's, through PHYSICAL.choices)
+    case 'stim': return [{ key: 'targetId', kind: 'ally', prompt: 'Click yourself or an adjacent ally.', choices: allyIds(x, true) }];
+    case 'stim_throw': return [{ key: 'targetId', kind: 'ally', prompt: 'Click yourself or an ally you can see, within ' + stimThrowRange() + ' tiles.', choices: allyIds(x, true) }]; // (the range: the reducer's, through PHYSICAL.choices)
     case 'pullfree': return [{ key: 'targetId', kind: 'unit', prompt: 'Click whom to pull free.', optional: true, choices: pullFreeTargets(x.cb, x.u).map((v) => v.id) }];
     case 'analyze': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile, or a glyph or trace to read (dashed).', choices: foeIds(x) }];
     case 'paired': case 'shot': case 'aimed': case 'melee': case 'burst': case 'auto': return [{ key: 'targetId', kind: 'enemy', prompt: 'Click a hostile to target it.', choices: others(x) }];
@@ -587,7 +592,7 @@ function basicPreview(x: DescCtx, d: ActionDescriptor, p: Picks, action: Action 
   {
     if (d.preview === 'attack' && p.targetId) {
       const tg = x.cb.units.find((v) => v.id === p.targetId); if (!tg || d.id === 'paired') return null;
-      const pv: any = safe(() => withGame(x.g, () => previewAttack(x.cb, x.u, tg, (d.id === 'skill' ? 'shot' : d.id) as AttackMode)), null);
+      const pv: any = safe(() => withGame(x.g, () => previewAttack(fightWith(x.cb, (action as any)?.mods?.length ? (action as any).mods : null), x.u, tg, (d.id === 'skill' ? 'shot' : d.id) as AttackMode)), null); // with the switches the action carries (as the reducer)
       if (!pv) return null;
       const say = basicSay(x, d, p);
       return { lines: pv.ok ? [{ k: 'odds', text: tg.name + ': ' + pv.pct + '% to hit' }, ...(say ? [{ k: 'note' as const, text: say }] : [])] : [], ...(pv.ok ? { ap: pv.ap } : {}), ...(pv.ok ? {} : { ok: false, why: pv.why }), marks: { units: [{ id: tg.id, tag: pv.ok ? pv.pct + '%' : '', tone: 'target' }] } };
@@ -931,7 +936,7 @@ const MAGIC: ActionSystem = {
         const ap0 = designAp(mg, designs[0]);
         out.push(D('outburst', 'outbursts', 'Outburst', ap0, designs.length === 1 ? 'Begin ' + ap0 + ' AP' : designs.length + ' designs',
           'Begin a design and hold it at stage 0 (2 AP, or 1 AP with the Swift module). Pump it up a stage at a time, to stage 4 (1 AP each), then Release it (1 AP). Or Snap it: Begin and Release in one go for 3 AP, at ×' + stageMult(0) + '.' + (mg.emanator ? '' : ' With no Emanator in hand it draws on the air: no MP cost, but +' + SOUL_RULES.cycle.no_emanator_strain + ' Strain.'), null,
-          { picks: [{ key: 'design', kind: 'option', renderer: 'design-cards', prompt: 'Pick a design.', optional: true, options: designs.map((d) => ({ id: d.id, label: d.name })) }, { key: 'mode', kind: 'option', prompt: 'Begin (hold it) or Snap (Begin and Release now).', optional: true, options: [{ id: 'begin', label: 'Begin' }, { id: 'snap', label: 'Snap' }] }, { key: 'aim', kind: 'tile', prompt: 'Snap: hover to preview, click a tile to aim.', when: { key: 'mode', is: 'snap' }, optional: true }], toggleOn: 'combat/outburst', preview: 'outburst' }));
+          { picks: [{ key: 'design', kind: 'option', renderer: 'design-cards', prompt: 'Pick a design.', optional: true, options: designs.map((d) => ({ id: d.id, label: d.name })) }, { key: 'mode', kind: 'option', renderer: 'begin-snap', prompt: 'Begin (hold it) or Snap (Begin and Release now).', optional: true, options: [{ id: 'begin', label: 'Begin' }, { id: 'snap', label: 'Snap' }] }, { key: 'aim', kind: 'tile', prompt: 'Snap: hover to preview, click a tile to aim.', when: { key: 'mode', is: 'snap' }, optional: true }], toggleOn: 'combat/outburst', preview: 'outburst' }));
       }
       if (held) {
         const pp: any = safe(() => previewPump(cb, u), { ok: false, why: 'Not now.', ap: SPELL_AP.pump } as any);
@@ -1039,6 +1044,11 @@ const SYS_OF = new WeakMap<ActionDescriptor, ActionSystem>();
  * order within a group. A unit with a fixed action list (the drone) gets only those. viewer: the player asking (its
  * side's fog rules the choices; the reducer's `by`). */
 export function actionsFor(g: GameState, unitId: string, viewer?: string | null): ActionDescriptor[] {
+  // the game bound for every system's list (row 13 of the outside playtest: a door's feed reads the unit's character, so
+  // Vent read "0/6" unbound while the Flux limit the reducer keeps was 7)
+  return withGame(g, () => actionsForBound(g, unitId, viewer));
+}
+function actionsForBound(g: GameState, unitId: string, viewer?: string | null): ActionDescriptor[] {
   const x = ctxOf(g, unitId, viewer); if (!x) return [];
   const all: ActionDescriptor[] = [];
   for (const s of systems()) for (const d of safe(() => s.list(x), [] as ActionDescriptor[])) { SYS_OF.set(d, s); all.push(d); }
@@ -1079,7 +1089,7 @@ export function nextStep(d: ActionDescriptor, p: Picks, o: { required?: boolean 
 function withMods(x: DescCtx, d: ActionDescriptor, picks: Picks): { toggles: ToggleEntry[]; picks: Picks } {
   if (!d.toggleOn) { const { mods: _m, ...rest } = picks; void _m; return { toggles: [], picks: rest }; }
   const tg = safe(() => withGame(x.g, () => togglesFor({ u: x.u, c: x.c, cb: x.cb, g: x.g }, d.toggleOn!, { action: d.id, target: picks.targetId ? x.cb.units.find((v) => v.id === picks.targetId) : null }, picks.mods || [])), [] as ToggleEntry[]);
-  const mods = tg.filter((t) => t.on && !t.why).map((t) => t.id).concat(tg.filter((t) => t.defaultOn && !t.on).map((t) => '!' + t.id));
+  const mods = tg.filter((t) => t.on && !t.why).map((t) => t.id).concat(tg.filter((t) => t.defaultOn && !t.on && !t.why).map((t) => '!' + t.id)); // (a greyed toggle shows off: it is not turned off by hand)
   return { toggles: tg, picks: { ...picks, mods } };
 }
 /** The reducer action Confirm sends for these picks (null: a required pick is missing, or no such action). */

@@ -8,7 +8,7 @@
 // under reduced motion (shown, not moved); a reload in the middle of it shows no FIGHT again; DEFEAT once the
 // squad falls, after the fight's last effect has played. Each card once, read from its data-phc-card attribute.
 import { readFileSync } from 'fs';
-import { chromium, player, click, hostAs, lockIn, until, settle, pause, OUT, campStart } from './lib.mjs';
+import { chromium, player, click, hostAs, lockIn, until, settle, pause, OUT, campStart, campConfirmGo } from './lib.mjs';
 const SHOTS = process.env.SHOTS || OUT;
 const SVD = JSON.parse(readFileSync(new URL('../../../data/survival.json', import.meta.url), 'utf8'));
 const CARDS = JSON.parse(readFileSync(new URL('../../../data/rules.json', import.meta.url), 'utf8')).combat.cards;
@@ -54,7 +54,7 @@ await p.locator('button', { hasText: /^Use .* ›$/ }).first().click();
 await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›');
 await click(p, 'Next ›'); await lockIn(p);
 await p.waitForSelector('text=✓ LOCKED IN');
-await click(p, 'Start the run');
+await click(p, 'Start the run'); await campConfirmGo(p); // item E: a level-up due asks first; go on without it
 await campStart(p);
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 ok('no fight card outside a fight (the lobby, the camp, the path map)', (await cards()).filter((c) => c.kind !== 'turn' && c.kind !== 'round').length === 0);
@@ -68,6 +68,10 @@ await p.locator('[data-phc-node="' + n1 + '"]').click();
 await p.waitForFunction(() => window.__phc?.getState().screen === 'combat', null, { timeout: 90000 });
 let turnSkip = 0; // the approach's own turn banners come before the join: the first turn of the joined fight is the one after them
 if ((await G()).combat?.approach) {
+  // 0.31.12 lane 2 item 3: an unseen fight opens on its own banner, APPROACH, with the sub-line 'Unseen · moving is free'
+  ok('the approach opens on its own banner: APPROACH, then its sub-line (' + CARDS.approach.sub + ')', await waitCard('approach', 1, 15000));
+  { const ap = (await cards('approach'))[0]; ok('the APPROACH banner says APPROACH and "' + CARDS.approach.sub + '"', !!ap && /APPROACH/i.test(ap.text) && ap.text.includes(CARDS.approach.sub) && ap.big); }
+  await pause(p, 300); await p.screenshot({ path: SHOTS + '/card-approach.png' });
   await pause(p, 1200);
   ok('the approach: no BATTLE START before contact', (await cards('fight')).length === 0);
   for (let i = 0; i < 12 && (await G()).combat?.approach; i++) { const cb = (await G()).combat; turnSkip = await p.evaluate(() => window.__turnT.length); await act({ type: 'combat/end-turn', unitId: cb.order[cb.turn] }); await pause(p, 250); }

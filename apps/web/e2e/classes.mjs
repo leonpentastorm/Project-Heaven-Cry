@@ -94,7 +94,7 @@ ok('a second pick is refused: ' + (again || t), /set/i.test(again || t) && (awai
 const states = async () => (await p.locator('.phc-lu-rank-state').allTextContents()).map((s) => s.trim());
 ok('rank I unlocked, II and III locked: ' + (await states()).join(' | '), JSON.stringify(await states()) === JSON.stringify(['✓ UNLOCKED', 'LOCKED', 'LOCKED']));
 ok('the class panel reads the attribute: ' + (await p.locator('.phc-lu-attr').textContent()), (await p.locator('.phc-lu-attr').textContent()).trim() === 'PERCEPTION ' + top);
-ok('the quiet advanced line', (await p.locator('.phc-lu-adv-note').textContent()) === 'Advanced classes are being rebuilt.');
+ok('the quiet advanced line', (await p.locator('.phc-lu-adv-note').textContent()) === 'Advanced classes: sealed, not yet issued.');
 
 // ---------- 4. Perception to 5 and level 6: rank II (rules 1.11: a rank needs its level too) ----------
 const per = SKILLS.find((k) => (k.attribute || k.attr) === 'perception');

@@ -89,6 +89,12 @@ await click(p, 'Next ›'); await lockIn(p);
 await p.waitForSelector('text=✓ LOCKED IN');
 ok('a test room (settings.test, from the test hook)', (await G()).settings.test === true);
 await click(p, 'Start the run');
+// item E (0.31.12): a level-up due (unclaimed steps) asks first, from the lobby's Start the run as from the camp's Ready; going on starts the run
+{ await settle(p, 400); const dlg = p.locator('[data-phc-dialog]'); const asked = (await dlg.count()) > 0 && /Level up first\?/.test(await dlg.first().innerText());
+  if (asked) await p.screenshot({ path: OUT + 'survival-levelup-first-lobby.png' });
+  ok('Start the run with a level-up due asks "Level up first?" and offers to open Level up or start without it', !asked || ((await dlg.first().innerText()).includes('Open Level up') && (await dlg.first().innerText()).includes('Start without')));
+  console.log('note the lobby prompt was ' + (asked ? 'asked' : 'not asked')); }
+await campConfirmGo(p);
 // ---------- rules 1.51, 1.52: the camp, one flow: the loadout (a free weapon from the rack, a free focus, a budget at the
 // shop's prices), then the starting boon, then Ready ----------
 await p.waitForSelector('[data-phc-camp]', { timeout: 60000 });
@@ -183,7 +189,7 @@ for (const [w, hh] of [[1280, 720], [1920, 1080]]) { // the boon step: the cards
 }
 await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
 ok('a starting boon chosen (' + pickId + '): marked, given when the camp closes', (await pick0()).boon === pickId && !((await me0()).relics || []).includes(pickId) && await p.locator('[data-phc-camp-ready]').count() === 1);
-await p.locator('[data-phc-camp-ready]').click();
+await p.locator('[data-phc-camp-ready]').click(); await campConfirmGo(p); // item E: Ready asks "Level up first?" when a level-up is due
 await p.waitForSelector('[data-phc-run-screen]', { timeout: 60000 });
 let r = await run();
 ok('Start the run leaves the camp for the path map, seed ' + r.seed + ', stage 1; the unspent budget kept (' + kept + ')', r.seed === SEED && r.stage === 1 && r.state === 'map' && await screen() === 'main' && (await me0()).credits === kept);
@@ -945,7 +951,7 @@ const code = (await h.locator('text=/ROOM [A-Z0-9]{6}/').first().textContent()).
 await gu.goto(BASE + '/?room=' + code); await gu.getByPlaceholder('Leon').fill('Mai'); await click(gu, 'Join ›'); await gu.waitForSelector('text=The squad');
 await create(h, 'Kade'); await create(gu, 'Ha');
 await h.waitForFunction(() => Object.keys(window.__phc.getState().game?.characters || {}).length === 2, null, { timeout: 60000 }).catch(() => {}); // both locked in, on the host's side, before Start
-await h.locator('button[data-phc-start]').click();
+await h.locator('button[data-phc-start]').click(); await campConfirmGo(h); // item E
 await campStart(gu, { weapon: GUN }); // rules 1.51, 1.52: the guest's loadout, its starting boon, Ready
 await until(h, () => [...document.querySelectorAll('[data-phc-member]')].some((e) => e.getAttribute('data-phc-ready') === '1'), null, 15000).catch(() => false);
 ok('two browsers at the camp: the guest\'s Ready shows on the host\'s squad panel live, the map still waits for the host', (await h.locator('[data-phc-member][data-phc-ready="1"]').count()) === 1 && (await h.evaluate(() => window.__phc.getState().game.run.state)) === 'loadout');
@@ -1082,7 +1088,7 @@ await d.context().addInitScript((seed) => { try { localStorage.setItem('phc.test
 await d.setViewportSize({ width: 1280, height: 720 });
 const DG = () => d.evaluate(() => window.__phc.getState().game), dAct = (a) => actOn(d, a);
 await hostAs(d, 'Leon'); await create(d, 'Ash');
-await d.locator('button[data-phc-start]').click();
+await d.locator('button[data-phc-start]').click(); await campConfirmGo(d); // item E
 // rules 1.51, 1.52: the camp's one flow. Ash is a tank (Durability on top): Recommended gives the Hand wraps and a Buckler
 // (rules 1.55 item 51, 1.59), and a two-handed gun beside the shield is refused (item 50), so the free gun here is the
 // revolver (one-handed, a magazine gun): the Hand wraps take no Relic property (power.ts FITS: unarmed is not melee),

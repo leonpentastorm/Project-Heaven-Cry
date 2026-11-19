@@ -35,7 +35,7 @@
 // Sounds go through cue() (exported: App.tsx uses it for the combat transition). It plays the wished file names below
 // when sfx.ts has a file for them, else stand-ins from the existing set plus a small synthesised hit.
 import React from 'react';
-import { type GameState, WEAPON, CLASS, FLUX_MAX, isUnseenId, SETTING, runSetting, survivalRun, RULES } from '@engine';
+import { type GameState, WEAPON, CLASS, isUnseenId, SETTING, runSetting, survivalRun, RULES } from '@engine';
 import { roundLabel } from './fieldView';
 import { ART, ART_BIG, IMG } from '../screens/shared';
 import { castFight } from './cast';
@@ -93,22 +93,24 @@ export function cue(name: Cue) {
 
 // ---------- what a banner and a cut-in show ----------
 /** What a banner is: a unit's turn, the area map's round, or one of the fight's banners (rules 1.62 item 4900). */
-type CardKind = 'turn' | 'round' | 'fight' | 'victory' | 'defeat' | 'field';
-/** The fight's big banners (BATTLE START, VICTORY, DEFEAT, FREE ROAM): drawn in the middle of the screen. */
-const BIG: CardKind[] = ['fight', 'victory', 'defeat', 'field'];
+type CardKind = 'turn' | 'round' | 'approach' | 'fight' | 'victory' | 'defeat' | 'field' | 'level_up';
+/** The fight's big banners (APPROACH, BATTLE START, VICTORY, DEFEAT, FREE ROAM): drawn in the middle of the screen. */
+const BIG: CardKind[] = ['approach', 'fight', 'victory', 'defeat', 'field', 'level_up'];
 /** Rules 1.62 item 4900: the fight's banners' words and the least time each is fully on screen (data). */
-const CARDS: { hold_ms: number; joined: { name: string; fog?: string }; won: { name: string }; lost: { name: string };
+const CARDS: { hold_ms: number; approach: { name: string; sub: string }; level_up: { name: string; sub: string; sounds: string[] }; joined: { name: string; fog?: string }; won: { name: string }; lost: { name: string };
   end: { hold_ms: number; sound_gap_ms: number; won: { sounds: string[] }; lost: { sounds: string[] }; felled: string; rounds: string; close: string } } = (RULES as any).combat.cards;
 /** 0.31.1: the end panel (VICTORY or DEFEAT) holds the screen; while it is pending or up, a run's field (its bar, its leave
  *  vote) and the fight-over dialog are hidden (html[data-phc-end-card], the CSS below), so nothing comes before it. */
 const END_FLAG = 'data-phc-end-card';
 const setEndFlag = (on: boolean) => { if (typeof document === 'undefined') return; ensureCss(); if (on) document.documentElement.setAttribute(END_FLAG, ''); else document.documentElement.removeAttribute(END_FLAG); };
-/** A turn's round in words: on a run fight's field its round of its rounds (rules 1.62 item 4906), else ROUND n. */
+/** A turn's round in words: before contact the approach's line (rules item 5522: no round passes yet); on a run fight's
+ * field its round of its rounds (rules 1.62 item 4906), else ROUND n. */
 const roundWords = (cb: any, round: number): string => { const f = cb && cb.field && typeof cb.field === 'object' ? cb.field : null;
+  if (cb && cb.approach) return String((RULES as any).combat.approach.line).toUpperCase();
   return f && round >= f.from ? roundLabel({ round: round - f.from + 1, of: f.of }).toUpperCase() : 'ROUND ' + round; };
 interface Banner { id: string; kind: CardKind; kicker: string; kickerColor: string; name: string; sub: string; stripe: string; img: string; mine: boolean; foe: boolean; hold: number; k?: number;
   /** the slab behind (default: red for a hostile, else white), the mark before the kicker, the sign drawn with no picture */
-  slab?: string; mark?: string; glyph?: string; /** the end panel's lines (what the engine holds: foes felled, rounds) */ stats?: { label: string; value: string }[]; /** the artist's white-ink sign for the glyph (banner-fight-*, catalog interface_icons), drawn in the stripe colour; '' keeps the glyph */ glyphArt?: string; /** an end card's line of what follows (data) */ after?: string }
+  slab?: string; mark?: string; glyph?: string; /** its own sounds (sfx names, data), played in place of the banner cue */ sounds?: string[]; /** the end panel's lines (what the engine holds: foes felled, rounds) */ stats?: { label: string; value: string }[]; /** the artist's white-ink sign for the glyph (banner-fight-*, catalog interface_icons), drawn in the stripe colour; '' keeps the glyph */ glyphArt?: string; /** an end card's line of what follows (data) */ after?: string }
 interface Cut { k?: number; id: string; unitId: string; charId: string; name: string; line: string; clsIcon?: string; img: string; color: string; kicker: string;
   hp: [number, number]; ap: number; weapon: string; /** What this unit spends, below HP (game/resources.ts): every row, in the You card's order. */ res: ResRow[]; cmds: Command[]; at?: string; right?: boolean }
 
@@ -150,6 +152,20 @@ function fightCard(g: GameState, cb: any, meId: string): Banner {
   const fog = (cb.order as string[]).some((id) => isUnseenId(id));
   return { id: 'f' + Date.now(), kind: 'fight', kicker: cb.name, kickerColor: '#FFFFFF', name: CARDS.joined.name, sub: [setting, who, fog ? CARDS.joined.fog || '' : ''].filter(Boolean).join(' · '),
     stripe: '#F65157', slab: '#F65157', mark: '', glyph: '!', glyphArt: ART('banner-fight-start'), img: b && !b.unseen ? b.img : '', mine: false, foe: false, hold: CARDS.hold_ms };
+}
+/** APPROACH (rules item 5522): a fight that opens with no foe seeing the squad (Combat.approach) shows this first; BATTLE
+ * START follows at contact. Its words are the data's (rules.json combat.cards.approach). */
+function approachCard(cb: any): Banner {
+  return { id: 'a' + Date.now(), kind: 'approach', kicker: cb.name, kickerColor: '#FFFFFF', name: CARDS.approach.name, sub: CARDS.approach.sub,
+    stripe: '#FFFFFF', slab: '#A3AEC2', mark: '', glyph: '◌', glyphArt: ART('banner-fight-approach'), img: '', mine: false, foe: false, hold: CARDS.hold_ms };
+}
+/** LEVEL UP (rules item 5524): a character of the room has gained a level; every player sees it, on any screen. Words
+ * and sounds are the data's (rules.json combat.cards.level_up); the level is the character's own. */
+function levelUpCard(g: GameState, charId: string): Banner {
+  const c: any = g.characters[charId], owner = c ? g.players.find((p) => p.id === c.owner) : null;
+  return { id: 'l' + charId + ':' + (c?.level || 0) + ':' + Date.now(), kind: 'level_up', kicker: c?.name || '', kickerColor: owner?.color || '#FFFFFF', name: CARDS.level_up.name,
+    sub: CARDS.level_up.sub.replace('{level}', String(c?.level || '')), stripe: '#FFFFFF', slab: '#6FEA77', mark: '', glyph: '▲', glyphArt: ART('banner-level-up'), img: '', mine: false, foe: false,
+    hold: CARDS.hold_ms, sounds: CARDS.level_up.sounds };
 }
 /** VICTORY or DEFEAT: the fight's name and, in a Survival run, the line of what follows (data/survival.json run.after_fight);
  *  its lines read what the engine holds now: a run's fight record (rules 1.44 kills, rounds), else the fight's own units
@@ -282,6 +298,9 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const slotUntil = React.useRef(0);
   /** A fight's end is known and its cards are not yet queued: the turn banners and their cut-ins hold. */
   const endPending = React.useRef(false);
+  /** Cards that wait for the fight's end panel (LEVEL UP): shown when it closes, or when no panel comes. */
+  const afterEnd = React.useRef<Banner[]>([]);
+  const flushAfterEnd = () => { const q = afterEnd.current; afterEnd.current = []; for (const b of q) showCard(b); };
   const showCard = (b0: Banner, reserved = false) => {
     if (document.hidden) return;
     const k = fightPace(), b = { ...b0, k }, total = BIG.includes(b.kind) ? bigTotal(b, reducedMotion()) : ((reducedMotion() ? 300 : 520) + b.hold) * k;
@@ -289,7 +308,8 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     const busy = slotUntil.current - Date.now();
     if (!reserved && busy > 0) { slotUntil.current += total + 30; later(() => showCard(b0, true), busy + 30); return; }
     setBanner(b); slotUntil.current = Math.max(slotUntil.current, Date.now() + total);
-    if (b.kind !== 'fight') cue(b.kind === 'defeat' ? 'banner_foe' : 'banner_mine'); // BATTLE START: the combat-in's own sting plays
+    if (b.sounds && b.sounds.length) b.sounds.forEach((n, i) => later(() => { try { sfx(n as Sfx); } catch { /* sound never breaks the game */ } }, i * (CARDS.end.sound_gap_ms || 0))); // its own (LEVEL UP)
+    else if (b.kind !== 'fight') cue(b.kind === 'defeat' ? 'banner_foe' : 'banner_mine'); // BATTLE START: the combat-in's own sting plays
     later(() => setBanner((x) => (x && x.id === b.id ? null : x)), total);
   };
   /** The end panel's close (null when none is up): at its time, or on a click; then a run's field opens (FREE ROAM). */
@@ -306,6 +326,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
       const g2 = live.current.game, cb2 = g2?.combat;
       if (cb2 && cb2.field && !cb2.over && live.current.screen === 'combat' && !document.hidden) showCard(fieldCard(cb2)); // a run's field: FREE ROAM, after the panel
       endPending.current = false; // the field's first turn banner follows
+      flushAfterEnd(); // a LEVEL UP waiting on the panel, after FREE ROAM in the slot
     };
     endClose.current = close;
     if (document.hidden) { close(); setEndFlag(false); return; }
@@ -343,7 +364,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const liveFights = React.useRef(new Set<string>());
   React.useEffect(() => {
     if (!cb || screen !== 'combat') {
-      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); endPending.current = false; if (endClose.current) { endClose.current = null; setEndFlag(false); } }
+      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); endPending.current = false; if (endClose.current) { endClose.current = null; setEndFlag(false); } flushAfterEnd(); }
       // Away on another screen (level up, the sheet): what happened meanwhile isn't announced late.
       else if (seen.current && seen.current.fight === fightId) seen.current = { fight: fightId, n: lastN, key: turnKey };
       return;
@@ -355,7 +376,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     if (stream && !cb.over) liveFights.current.add(stream);
     // FIGHT: at once (it plays over the combat-in), before the first turn's banner, which waits for it.
     if (newFight && stream && begun.current === stream && cb.round === 1 && carded(game!, cb)) {
-      begun.current = null; if (!cb.approach) showCard(fightCard(game!, cb, meId)); else unjoined.current = stream; // rules 1.64 item 5008: not yet joined: BATTLE START waits for contact
+      begun.current = null; if (!cb.approach) showCard(fightCard(game!, cb, meId)); else { unjoined.current = stream; showCard(approachCard(cb)); } // rules 1.64 item 5008: not yet joined: APPROACH now (rules item 5522), BATTLE START waits for contact
     }
     // Rules 1.64 item 5008: contact joins the fight: BATTLE START now
     if (stream && unjoined.current === stream && !cb.approach && carded(game!, cb)) { unjoined.current = null; showCard(fightCard(game!, cb, meId)); }
@@ -433,7 +454,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     const until = Date.now() + 20000 * fightPace(); // a safety net only: the card waits for the fight's last effect
     const still = () => { const { game: g2, screen: sc } = live.current; return !!endOf(g2?.combat) && sc === 'combat' && combatStreamKey(g2) === stream; };
     const tryShow = () => {
-      if (!still()) { endPending.current = false; setEndFlag(false); return; }
+      if (!still()) { endPending.current = false; setEndFlag(false); flushAfterEnd(); return; }
       const waitFx = (clock.on || hasLayer()) && clock.at < lastFx;
       // Its last effect has started: the card waits for it (and anything queued with it) to finish, and for a cut-in.
       const rest = waitFx ? 100 : cutInActive() ? 120 : fxBusyUntil() - performance.now();
@@ -442,6 +463,20 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     };
     tryShow();
   }, [overKey]);
+
+  // ----- LEVEL UP (rules item 5524): a character's level rose in the room's state; every player sees it, on any screen -----
+  // (Not the Proving Ground's level tool. A reload or a late join sees the levels as they are: nothing is announced late.)
+  const levels = React.useRef<{ code: string; at: Record<string, number> } | null>(null);
+  const levelSig = game ? Object.values(game.characters).map((c: any) => c.id + ':' + (c.level || 0)).join(',') : '';
+  React.useEffect(() => {
+    if (!game) { levels.current = null; return; }
+    const now: Record<string, number> = {}; for (const c of Object.values(game.characters) as any[]) now[c.id] = c.level || 0;
+    const was = levels.current; levels.current = { code: game.code, at: now };
+    if (!was || was.code !== game.code || game.sandbox) return;
+    // after a fight's end panel (VICTORY or DEFEAT) when one is up or pending: it comes first
+    const show = (b: Banner) => { if (endPending.current || endClose.current) afterEnd.current.push(b); else showCard(b); }; // the end panel first: it flushes these when it closes
+    for (const id of Object.keys(now)) if (was.at[id] != null && now[id] > was.at[id]) show(levelUpCard(game, id));
+  }, [game?.code, levelSig]);
 
   // ----- the cut-in: auto-dismiss, any click or key dismisses, 1–4 picks a command -----
   const hovering = React.useRef(false);
@@ -673,4 +708,4 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
 }
 
 /** For tests: what a banner and a cut-in would show for a unit. */
-export const _test = { bannerFor, cutFor, estMs, fightCard, endCard, fieldCard, bigTotal, CARDS };
+export const _test = { bannerFor, cutFor, estMs, approachCard, levelUpCard, fightCard, endCard, fieldCard, bigTotal, roundWords, CARDS };

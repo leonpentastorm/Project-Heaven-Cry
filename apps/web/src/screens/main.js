@@ -27,7 +27,7 @@ import { doorEmblemOf, classPortraitOf, moveIconOf } from '../game/doorArt';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
 import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, hasMpFocus, carriesEvoker, carriesEmanator, focusHand, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
-  magicOf, designCost, designAp, designRange, manaBand, MANA_START, FLUX_MAX, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
+  magicOf, designCost, designAp, designRange, manaBand, MANA_START, fluxMaxOf, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, SYPHON_DRAW, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, joinUri, starUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
 import { gearIconUri, GEAR_INK, packGearId, torsoGearId } from '../game/gearIcons';
@@ -199,7 +199,7 @@ function magicVals(self, g, c) {
     why: studyWhy, hasWhy: !!studyWhy, picking: !!picking, pickHead: picking === 'free' ? 'A FREE WORD (MASTERY): IT IGNORES THE CAP' : 'LEARN A WORD · ' + GV.known + ' / ' + GV.cap + ' KNOWN', pick: pickWs,
     hasToStudy: GV.toStudy.length > 0, toStudy: GV.toStudy.filter((x) => SIGIL[x]).map((id) => ({ key: id, word: SIGIL[id].word, img: glyphUri(id, SIGIL_INK), title: SIGIL[id].text })) };
   const sigStats = [['Max Sigil words (longest Line; glyphs on the ground at once)', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (for old words that were retired)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', handWord(evoAt)], ['Evoker charge', evoC ? N.charge + ' / ' + CORE_CHARGE : '—'],
-    ['Spare cores', String(N.cores)], ['Flux', N.flux + ' / ' + FLUX_MAX + (N.flux >= FLUX_MAX - 1 ? ' · vent soon' : '')], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
+    ['Spare cores', String(N.cores)], ['Flux', ((fmax) => N.flux + ' / ' + fmax + (N.flux >= fmax - 1 ? ' · vent soon' : ''))(fluxMaxOf(N.cu || c, N.cu ? g.combat : null, g))], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
   // Outbursts: MP, Strain, the designs ready, and the heart workshop.
   const mpMax = maxMp(c), mpPct = Math.round(N.mp / Math.max(1, mpMax) * 100);
   const designCards = designs.map((d) => { const cost = designCost(m, d, mana), held = !!(N.held && N.held.design === d.id), di = designInfo(m, d, mana);
@@ -941,9 +941,9 @@ export class MainLogic extends DCLogic {
             + ' The Evoker holds ' + MN.charge + ' charge. A spell is a straight Line of 2–4 glyphs: step to the next tile and draw again.' + (dw.overload ? ' WARNING: this glyph overloads your Evoker.' : '');
       } else if (W === 'evoke') {
         // Rules 1.4: the Line, where to stand (arrows), the tinted area, the hovered delivery and who it affects.
-        if (!S.wTile || !glAt[S.wTile]) { const hp = S.hoverTile && glAt[S.hoverTile] ? patternPanel(cbx, S.hoverTile, u, knowsW) : null; mHint = 'Click a glyph of a Line.' + (hp ? ' ' + hp.text : ''); }
+        if (!S.wTile || !glAt[S.wTile]) { const hp = S.hoverTile && glAt[S.hoverTile] ? patternPanel(cbx, S.hoverTile, u, knowsW, null, g) : null; mHint = 'Click a glyph of a Line.' + (hp ? ' ' + hp.text : ''); }
         else {
-          evW = evokeView(cbx, u, S.wTile, S.wEvc || {}, S.hoverTile, knowsW);
+          evW = evokeView(cbx, u, S.wTile, S.wEvc || {}, S.hoverTile, knowsW, g);
           const foe = evW.affected.map((a) => cbx.units.find((x) => x.id === a.unit)).find((x) => x && x.side === 'foe' && !/SPARED|SKIPPED/.test((evW.affected.find((a) => a.unit === x.id) || {}).tag || ''));
           mReady = evW.ok; mLabel = evW.ok ? 'Evoke · ' + evW.ap + ' AP · ' + evW.charge + ' charge' : 'Confirm';
           mHint = (evW.pattern ? evW.pattern.text + ' ' : '') + (evW.facing && evW.stage !== 'stand' ? 'Fires ' + evW.facing + '. ' : '') + evW.hint + (evW.fizzle ? ' ' + evW.fizzleText : '')
@@ -1023,7 +1023,7 @@ export class MainLogic extends DCLogic {
       if (W === 'draw') { if (!wordSel) return toast('You know no words.'); act({ type: 'world/act', charId: mover.id, act: 'draw', word: wordSel, tile: k, ...(drawStroke ? { stroke: drawStroke } : {}) }); if (S.wStroke) this.setState({ wStroke: null }); return; }
       if (W === 'evoke') {
         const cbx = scb(), u = sU(cbx);
-        const v = S.wTile && cbx && u && glAt[S.wTile] ? evokeView(cbx, u, S.wTile, S.wEvc || {}, null, knowsW) : null;
+        const v = S.wTile && cbx && u && glAt[S.wTile] ? evokeView(cbx, u, S.wTile, S.wEvc || {}, null, knowsW, g) : null;
         const r = evokeClick(v, cbx || { glyphs: GLY }, u, k, S.wEvc || {});
         if (r.pattern !== undefined) return this.setState({ wTile: r.pattern, wEvc: {} });
         if (r.choice) return this.setState({ wEvc: r.choice });
@@ -1038,7 +1038,7 @@ export class MainLogic extends DCLogic {
     };
     const magicConfirm = () => {
       const base = { type: 'world/act', charId: c.id, act: W };
-      if (W === 'evoke') { const cbx = scb(), u = sU(cbx), v = cbx && u && S.wTile ? evokeView(cbx, u, S.wTile, S.wEvc || {}, null, knowsW) : null; if (v && v.payload) act({ ...base, ...v.payload }); }
+      if (W === 'evoke') { const cbx = scb(), u = sU(cbx), v = cbx && u && S.wTile ? evokeView(cbx, u, S.wTile, S.wEvc || {}, null, knowsW, g) : null; if (v && v.payload) act({ ...base, ...v.payload }); }
       else if (W === 'outburst') act(S.wObMode === 'snap' ? { ...base, design: designSel.id, hold: false, aim: S.wAim || myAt } : { ...base, design: designSel.id, hold: true });
       else if (W === 'release') act({ ...base, ...(S.wAim ? { aim: S.wAim } : {}) });
       else if (W === 'heartwatch') act({ ...base, on: !(MN.held && MN.held.watch) });
@@ -1158,7 +1158,7 @@ export class MainLogic extends DCLogic {
             costStyle: 'position: absolute; left: 50%; top: -12px; transform: translateX(-50%); z-index: 6; padding: 2px 6px; border-radius: 6px; font-size: 13px; font-weight: 700; white-space: nowrap; pointer-events: none; '
               + (plan.isAtk ? 'background: ' + RANGE_RED + '; color: #0A0D13' : 'background: #FFFFFF; color: #0A0D13'), isLabel: false, isTile: true, has: !!u, glyph, hasGlyph: !!glyph, hasSprite: !!spr, sprite: spr, spriteStyle: o ? spriteStyle(o) : '', glyphStyle: 'position: absolute; inset: 0; display: grid; place-items: center; font-size: ' + (labels ? 18 : 9) + 'px; line-height: 1; color: ' + (o && (o.approaches.some((a) => !a.tries.length) || o.kind === 'poi') && !o.resolved ? '#FFFFFF' : o && (kindOf(o).hazard || o.kind === 'trap') ? '#F65157' : '#C9D3E3'),
             click: labels && pdOn ? onClick(k) : u && u.npc && labels && W === 'move' ? () => openTalk(u.id) : interesting(o) && labels && W === 'move' ? () => openObj(o) : onClick(k), hover: () => { if (this.state.hoverTile !== k) this.setState({ hoverTile: k }); },
-            t: u ? tokenVals(u, { ref, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : u.npc ? u.npc.side.toUpperCase() + ' · ' + u.npc.tier.toUpperCase() : '', color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : '#F65157', inFight, right: vx(x) >= vW / 2, up: vy(y) >= vH / 2 }) : null,
+            t: u ? tokenVals(u, { ref, g, ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : u.npc ? u.npc.side.toUpperCase() + ' · ' + u.npc.tier.toUpperCase() : '', color: p ? p.color : u.npc && u.npc.side === 'neutral' ? '#A3AEC2' : '#F65157', inFight, right: vx(x) >= vW / 2, up: vy(y) >= vH / 2 }) : null,
             hasTrail: !!trailAt[k] && !u, trailStyle: trailAt[k] ? 'position: absolute; left: 50%; top: 50%; width: ' + (labels ? 10 : 5) + 'px; height: ' + (labels ? 10 : 5) + 'px; margin: -' + (labels ? 5 : 2.5) + 'px 0 0 -' + (labels ? 5 : 2.5) + 'px; border-radius: 50%; z-index: 2; pointer-events: none; background: ' + trailAt[k] + '; box-shadow: 0 0 0 2px rgba(5, 7, 11, 0.6)' : '',
             picked: S.wTarget && u && u.id === S.wTarget,
             hasJoin: labels && !!(SLw.tiles[k] && SLw.tiles[k].length), join: labels && SLw.tiles[k] ? joinUri(SLw.tiles[k], { size: 100, pad: 60, anchor: [25, 25], pitch: 104 }) : '',
@@ -1326,7 +1326,7 @@ export class MainLogic extends DCLogic {
       const MN = magicNow(g, c);
       for (const [id, n] of Object.entries(MN.conds)) if (n > 0) add(condName(id).toUpperCase(), n + (n === 1 ? ' round' : ' rounds') + ' left.', !['guarded', 'inspired'].includes(id));
       // 0.30.0: in a fight, every shield and the Guard (the engine's shieldsView, its words); on the story map, the one shield kept there
-      if (MN.cu) { const sv = shieldsView(g.combat, MN.cu, null, fmtNum); if (sv.chip || sv.guard) add(sv.chip || sv.head, [sv.words, sv.absorb, sv.absorbDrop].filter(Boolean).join('. ') + '.', false); }
+      if (MN.cu) { const sv = shieldsView(g.combat, MN.cu, null, fmtNum, g); if (sv.chip || sv.guard) add(sv.chip || sv.head, [sv.words, sv.absorb, sv.absorbDrop].filter(Boolean).join('. ') + '.', false); }
       else if (MN.shield > 0) add('SHIELD ' + fmtNum(MN.shield), 'Soaks up the next ' + fmtNum(MN.shield) + ' damage.', false);
       if (MN.held) add('HOLDING AN OUTBURST', 'Stage ' + MN.held.stage + ': it grows each round (and adds Strain) until you release it.', false);
       if (MN.strain > 0) add('STRAIN ' + MN.strain + ' / ' + strainLimit(c), 'Past the limit, the heart shorts out. It eases by 1 after a round without casting and resets after a fight.', MN.strain >= strainLimit(c));
@@ -1356,7 +1356,7 @@ export class MainLogic extends DCLogic {
       ['MOVEMENT', [['move', 'Move', '1 AP / ' + mv + (mv === 1 ? ' tile' : ' tiles')], ['sprint', 'Sprint', '2 AP · ' + Math.floor(3 * mv) + ' tiles'], ['sneak', 'Sneak', '+1 AP a tile'],
         ...(myDrone() ? [['drone', 'Move the drone', myDrone().ap + ' AP left']] : []), ...(myBeast() ? [['beast', 'Move the beast', myBeast().ap + ' AP left']] : []), ...(myTwin() ? [['twin', 'Move the twin', myTwin().ap + ' AP left']] : [])]],
       ['ATTACK & DEFEND', [...(wW && !wMelee ? [['shot', 'Shot', attackApCost(wW, 'shot') + ' AP'], ['aimed', 'Aimed shot', attackApCost(wW, 'aimed') + ' AP']] : []), ['melee', wMelee ? 'Strike' : wW && wW.id !== 'fists' ? 'Strike (weapon\'s butt)' : 'Strike (bare hand)', (wW && wMelee ? attackApCost(wW, 'melee') : 2) + ' AP'], ['analyze', 'Analyze', (wu ? analyzeCost(wu) : 2) + ' AP']]],
-      ['UTILITY', [...W_UTIL, ['pickup', 'Pick up', PICKUP_AP + ' AP'], ['stim', 'Stim an ally', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
+      ['UTILITY', [...W_UTIL, ['pickup', 'Pick up', PICKUP_AP + ' AP'], ['stim', 'Stim', '1–2 AP'], ['prone', 'Drop prone / stand', '1 AP']]],
       ...(wPk.some((e) => e.tab === 'perks') ? [['PERKS & TRAITS', wPk.filter((e) => e.tab === 'perks').map((e) => [pkId(e), e.label, pkCost(e)])]] : []),
       ...(wPk.some((e) => e.tab === 'class') ? [['CLASS · ' + (wKlass ? wKlass.name.toUpperCase() : 'MOVES'), wPk.filter((e) => e.tab === 'class').map((e) => [pkId(e), e.label, pkCost(e)]), wKlass ? wKlass.ink : null]] : []),
       // Magic, only for those who have it: Sigils in cyan, Outbursts in violet (never mixed).
@@ -1512,7 +1512,7 @@ export class MainLogic extends DCLogic {
       thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
       echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
-      fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : c && c.unspent && c.unspent.skill + c.unspent.attr + c.unspent.core === 0 && pendingPerkSteps(c).length ? 'Level up · pick a perk' : 'Level up · spend points', // what is due (levelUpDue): points, or only a perk step (a skill at Mastery 1 from creation)
+      fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : c && c.unspent && c.unspent.skill + c.unspent.attr + c.unspent.core === 0 ? (pendingPerkSteps(c).length ? 'Level up · pick a perk' : 'Level up · pick a fork') : 'Level up · spend points', // what is due (levelUpDue): points, or only a perk step (a skill at Mastery 1 from creation)
       status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, fromSkills, hasFromSkills: fromSkills.length > 0, noFromSkills: !fromSkills.length, pkFold, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, mk, gs, packBig, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: 13px; color: ' + (over ? '#F65157' : '#A3AEC2'), bio,

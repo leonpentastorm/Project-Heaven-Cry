@@ -1390,7 +1390,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   const toHit = terms.reduce((t, x) => t + x.v, 0);
   const pct = Math.max(5, Math.min(95, (21 - (tgt.def - toHit)) * 5));
   const who = charFor(att);
-  return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, via: rolled, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: !!opts.ambush && tgt.side !== att.side, via: rolled }) };
+  return { ok: true, ap, toHit, need: tgt.def, pct, cover, coverTile, rangePenalty, terms, via: rolled, dmg: attackDamage(cb, att, tgt, mode, who, { preview: true, ambush: (ambushReady(att) || !!opts.ambush) && tgt.side !== att.side, via: rolled }) }; // an ambush as resolveAttack decides it (from Hidden too: outside playtest 0.31.10 row 7)
 }
 /** The live character behind a PC unit, when a game is bound (multipliers come from it). */
 const charFor = (u: Unit): Character | null => { const G = boundGameRef(); return (u.charId && G?.characters?.[u.charId]) || null; };
@@ -1798,7 +1798,7 @@ export function checkOver(cb: Combat) {
 }
 
 /** Rules 1.64 item 5008 (rules.json combat.approach): the words and numbers of the time before contact. */
-export const APPROACH: { free: string[]; quiet: string[]; acts_log: string; passes_max: number; line: string; joined_log: string } = (RULES as any).combat.approach;
+export const APPROACH: { free: string[]; quiet: string[]; acts_log: string; passes_max: number; line: string; joined_log: string; alarm_log: string } = (RULES as any).combat.approach;
 /** Rules 1.64 item 5008: open the time before contact on a fight that has just started, when no foe sees any character
  * (a run's fight: game.ts runFight). True when it opened. */
 export function openApproach(cb: Combat): boolean {
@@ -1823,11 +1823,25 @@ export function contactCheck(cb: Combat, rng: Rng, o: { acting?: boolean } = {})
 function joinFight(cb: Combat, rng: Rng) {
   delete cb.approach; cb.round = 1;
   say(cb, APPROACH.joined_log + ' Initiative: ' + cb.order.map((id) => { const u = cb.units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · '));
+  raiseAlarm(cb);
   for (let i = 0; i < cb.order.length; i++) {
     cb.turn = i; const u = active(cb)!;
     if (u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
     beginTurn(cb, rng); return;
   }
+}
+/** Rules item 5521, the alarm (0.31.12; Leon: no walking the fog to find the last foes): when the fight is joined every
+ * foe group on the map learns where each character not Hidden stands now (the foe side's seenAt, read by knownTile), so
+ * a group that never saw the squad comes for it (enemySearchTile) instead of searching where the squad started. A Hidden
+ * character stays unknown; the foes' own Hidden (ambushers) keep their rule. The log says it once (rules.json
+ * combat.approach.alarm_log), when it told the foes anything. */
+function raiseAlarm(cb: Combat) {
+  let told = false;
+  for (const p of cb.units) {
+    if (p.side !== 'pc' || !alive(p) || p.hidden) continue;
+    if (cb.seenAt?.foe?.[p.id] !== p.pos) { noteSeen(cb, 'foe', p.id, p.pos); told = true; }
+  }
+  if (told && APPROACH.alarm_log) say(cb, APPROACH.alarm_log);
 }
 /** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). o.newRound: the round ends with
  * this turn (rules 1.62 item 4906: a field opens on a new round). On a field (rules 1.62 item 4906) the round that would

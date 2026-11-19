@@ -5,7 +5,7 @@
 // Look: Sigil magic is Mind cyan (#4FC8DF, ink #8BDEEE), square and snapping; element hues tint effects only and always
 // come with the element's word.
 import { feelingInk, feelingName, residueTileStyle, residueTitle } from './feelingsView';
-import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, strokeRuns, strokesOfGlyph, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, FLUX_MAX, holderOf, sigilGrowthView } from '@engine';
+import { SIGIL, SIGIL_ELEMENTS, previewDraw, patternAt, findPattern, strokeRuns, strokesOfGlyph, evokeOrigins, planEvoke, placedMagic, secretFrom, refOf, dist, condName, compileSpell, fluxMaxOf, holderOf, sigilGrowthView } from '@engine';
 import { glyphUri, scratchUri, starUri, SIGIL_INK, SIGIL_GLOW, type JoinSeg } from './glyphs';
 import { uiMarkOf } from './doorArt';
 import { grandLook, grandTint } from './fx/grand';
@@ -188,7 +188,7 @@ export interface PatternPanel {
 }
 /** The Line under a glyph, as the screen shows it while building (spec 9.2): words in order, valid or why not, glyphs
  * left before your cap, charge/AP/Flux now and after Evoke, the overload warning. Words you can't read stay marks. */
-export function patternPanel(cb: any, tile: string | null, u: any, knows: (w: string) => boolean, stroke?: string | null): PatternPanel | null {
+export function patternPanel(cb: any, tile: string | null, u: any, knows: (w: string) => boolean, stroke?: string | null, g?: any): PatternPanel | null {
   if (!tile || !(cb.glyphs || []).some((g: any) => g.pos === tile)) return null;
   const c = view(cb), pa: any = patternAt(c as any, tile, u, stroke || undefined), start = (cb.glyphs || []).find((g: any) => g.pos === tile);
   const ours = !!u && start && start.side === u.side;
@@ -200,7 +200,7 @@ export function patternPanel(cb: any, tile: string | null, u: any, knows: (w: st
   const stats = !ours || !m ? [] : [
     { k: 'Charge', now: String(now.charge), after: String(after.charge) + (after.evokeCharge != null ? ' (−' + after.evokeCharge + ')' : '') },
     { k: 'AP', now: num(now.ap), after: num(after.ap) }, // AP can be fractional (Glyph AP 0.8): no float noise
-    { k: 'Flux', now: now.flux + '/' + FLUX_MAX, after: after.flux + '/' + FLUX_MAX },
+    { k: 'Flux', now: now.flux + '/' + fluxMaxOf(u, cb, g), after: after.flux + '/' + fluxMaxOf(u, cb, g) }, // the limit the reducer keeps (g: the game the feed reads)
   ];
   const text = shape + ': ' + words.map((w: any) => w.word).join(' · ') + '. ' + verdict + (ours ? ' ' + pa.capLeft + (pa.capLeft === 1 ? ' glyph' : ' glyphs') + ' left before your cap; room for ' + pa.lineLeft + ' more in this Line.' : '');
   return { has: true, tile, tiles: pa.tiles || [], shape, words, readable: allRead, ours: !!ours, valid: !!pa.valid && allRead, verdict, capLeft: pa.capLeft, lineLeft: pa.lineLeft, stats, overload: ours ? pa.overloadWarning : null, text };
@@ -259,13 +259,13 @@ function lineTiles(a: string, b: string): string[] {
 const ORDERS_DEFAULT = ['halt', 'kneel', 'drop', 'move'];
 /** Plan an Evoke for the screen (spec 9.3–9.8). tile: a glyph of the pattern; choice: the aims picked so far (TWICE: up
  * to its missiles), STEP's landing tile, COMMAND's order; hover: the tile under the cursor, previewed as the next pick. */
-export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {}, hover?: string | null, knows: (w: string) => boolean = () => false): EvokeView {
+export function evokeView(cb: any, u: any, tile: string, choice: EvokeChoice = {}, hover?: string | null, knows: (w: string) => boolean = () => false, g?: any): EvokeView {
   const c = view(cb), aims = [...(choice.aims || [])];
   // A junction's tile (rules 1.10) reads the stroke picked, else the engine's choice; both are offered on the pad.
   const pa0: any = patternAt(view(cb) as any, tile, u), jx: any[] = (pa0 && pa0.junction) || [];
   const strokeSel = choice.stroke && jx.some((x: any) => x.id === choice.stroke) ? choice.stroke : undefined;
   const pat: any = findPattern(c as any, tile, u?.pos, strokeSel);
-  const panel = patternPanel(cb, tile, u, knows, strokeSel);
+  const panel = patternPanel(cb, tile, u, knows, strokeSel, g);
   const out: EvokeView = { tile, stage: 'none', ok: false, why: '', hint: '', pattern: panel, origins: [], hereOk: false, area: new Set(), pickable: new Set(), stepTo: new Set(), missilesNeeded: 1, aims, orderTo: new Set(), leech: null, nulls: [],
     facing: '', range: null, ap: 0, charge: 0, junction: [], fizzle: false, fizzleText: '', affected: [], tiles: {}, orders: null, order: choice.order || 'halt', payload: null, plan: null, paints: [], paint: null, orderPath: [] };
   const T = (k: string) => (out.tiles[k] ||= { layer: '', marks: [], note: '' });
@@ -426,7 +426,13 @@ function turretMarks(mark: (k: string, m: SgMark, note?: string) => void, cb: an
 }
 const nameOf = (cb: any, id: string) => cb.units.find((x: any) => x.id === id)?.name || 'them';
 /** What a click on a tile does while Evoking: the next choice, a new pattern, or a message for the player. */
-export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choice: EvokeChoice): { pattern?: string; choice?: EvokeChoice; toast?: string } {
+/** A click the planner can't take (row 3 of the 0.31.10 playtest): the toast, and the aims picked so far dropped, so
+ * Confirm never stays lit on an earlier aim after a refused click. Your own tile says the engine's own refusal. */
+const refuse = (v: EvokeView, cb: any, u: any, k: string, choice: EvokeChoice, toast: string) => {
+  const why = u && k === u.pos ? (() => { try { return planEvoke(view(cb), u, v.tile, k).why || ''; } catch { return ''; } })() : '';
+  return { toast: why || toast, choice: { ...choice, aims: [], dest: null }, refused: true };
+};
+export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choice: EvokeChoice): { pattern?: string; choice?: EvokeChoice; toast?: string; refused?: boolean } {
   const ownGlyph = (cb.glyphs || []).some((g: any) => g.pos === k && g.side === (u ? u.side : 'pc'));
   const inPattern = !!v && !!v.pattern && v.tiles[k]?.marks.some((m) => m.key === 'pat');
   if (!v || v.stage === 'none') return (cb.glyphs || []).some((g: any) => g.pos === k) ? { pattern: k, choice: {} } : { toast: 'Click a glyph of a Line.' };
@@ -443,7 +449,7 @@ export function evokeClick(v: EvokeView | null, cb: any, u: any, k: string, choi
     if (aims.length >= v.missilesNeeded) aims[aims.length - 1] = k; else aims.push(k);
     return { choice: { ...choice, aims, dest: null } };
   }
-  return { toast: 'Out of the area: pick a tinted tile, or yourself.' };
+  return refuse(v, cb, u, k, choice, 'Out of the area: pick a tinted tile, or yourself.');
 }
 
 // ---------- 9. placed magic ----------

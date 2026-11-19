@@ -29,6 +29,8 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   await myTurnPanel(p); await settle(p, 800); await dismiss(p);
   await p.locator('#phc-tab-perks').click(); await settle(p, 300);
   const panel = p.locator('[role="tabpanel"]');
+  // (0.31: the shelves are folds, closed by default: open every closed one, as a player does, before reading them)
+  for (let i = 0; i < 4 && await p.locator('[data-shelf] .phc-fold-h[aria-expanded="false"]').count(); i++) { await p.locator('[data-shelf] .phc-fold-h[aria-expanded="false"]').first().click(); await settle(p, 100); }
   const text = (await panel.innerText()).replace(/\s+/g, ' ');
   const shelves = await p.locator('[data-shelf]').evaluateAll((els) => els.map((e) => e.getAttribute('data-shelf')));
   ok('the Perks tab shows its three shelves in order (' + shelves.join(', ') + ')', shelves.join(',') === 'use,rides,always');

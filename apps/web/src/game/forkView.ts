@@ -79,9 +79,10 @@ export function forkSheetCard(c: any, skill: string, o: { inFight?: boolean; rer
 }
 
 /** The level-up skill card's fork block: the steps of this skill's door at these points (a step just reached, to choose
- *  now) and the next one (opening at N), or none. */
+ *  now; or reached and sealed, which says so: row 16 of the outside playtest, Ingenuity's level-up showed no fork
+ *  section at all) and the next one (opening at N), or none. */
 export function forkLevelUp(c: any, skill: string, p: number, inFight = false, rerender?: () => void): ForkCardView | null {
   const v = c ? doorForkView(c, skill) : null; if (!v) return null;
-  const at = v.steps.filter((s) => s.at <= p && (s.pending || s.picked)).map((s) => s.at), next = v.steps.find((s) => s.at > p);
+  const at = v.steps.filter((s) => s.at <= p && (s.pending || s.picked || !s.offered)).map((s) => s.at), next = v.steps.find((s) => s.at > p);
   return forkCard(c, skill, { inFight, rerender, only: [...at, ...(next ? [next.at] : [])] });
 }

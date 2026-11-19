@@ -1,7 +1,7 @@
 // Rules 1.65 (the picking contract, 0.31.5), in the Proving Ground: every aimed action shows its picking through the one
 // overlay (game/pickOverlay.ts), from the engine's own marks. For Vault, Decoy, Douse (Shadow), a Whisper (Health), a
-// Hymn with an area (Thunderclap), the Miracle The Sky Answers, Picture and a Figment's Move, a technique and a thrown
-// stim:
+// Hymn with an area (Thunderclap), the Miracle The Sky Answers, Picture and a Figment's Move, a technique, a thrown
+// stim and the Throw row (a frag grenade, on the Attack tab):
 //   · selected: its reach is shaded (tiles whose hover card says "in reach" or "you can pick this tile"), or its legal
 //     units ringed ("you can pick them");
 //   · the pointer on a legal tile or unit: the area it covers ("it covers this tile"), whom it touches, or the hover line;
@@ -128,6 +128,26 @@ await check('Decoy', /^Decoy/, { shot: 'decoy', need: ['reach', 'choice'], bad: 
 await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'combat_knife', at: ref('11,7'), name: 'Target' }); await settle(p, 400);
 await check('a technique (Shot)', /^Shot/, { shot: 'technique', hoverUnit: true, need: ['reach', 'units'], bad: async () => (await me()).pos });
 await check('a thrown stim', /^Throw a stim/, { shot: 'stim', hoverUnit: true, need: ['reach', 'units'], chip: /no gain|→|stands again/, bad: emptyNear });
+// the Throw row (0.31.6, the outside playtest's "throwables cannot be thrown"): a grenade in the pack is a Throw row on the
+// Attack tab; selected, its reach is shaded; on a tile in reach, the blast it covers; a tile past its range is refused
+await act({ type: 'sandbox/give', charId, item: 'frag_grenade', qty: 2 }); await settle(p, 300);
+await check('the Throw row (a frag grenade)', /^Throw Frag grenade/, { shot: 'throw', tab: 'attack', need: ['reach'], bad: '25,25' });
+// 0.31.12 row 1: a stim on yourself, from your own token and from the Backpack's stims row (Use)
+{ const stims = async () => (await G()).characters[charId].stims || 0, s0 = await stims();
+  await dismissCut(); await p.keyboard.press('Escape').catch(() => {}); await settle(p, 100);
+  await p.evaluate(() => { const cb = window.__phc.getState().game.combat, u = cb.units.find((x) => x.charId); u.hp = Math.max(1, Math.floor(u.maxHp / 2)); }); await settle(p, 200); // hurt, so a stim has something to heal
+  await p.locator('#phc-tab-utility').click(); await settle(p, 200);
+  await p.locator('[role="tabpanel"]').getByRole('button', { name: /^\d*\s*Stim\b/ }).first().click({ timeout: 15000 }).catch((e) => ok('self-stim: its button (' + String(e.message || e).slice(0, 60) + ')', false)); await settle(p, 400);
+  await tok((await me()).pos).click(); await settle(p, 400); await snap('stim-self-1-token');
+  await p.getByRole('button', { name: 'Confirm', exact: true }).click(); await settle(p, 600);
+  ok('a stim on yourself from your own token: one stim used (' + s0 + ' -> ' + (await stims()) + ')', s0 > 0 && (await stims()) === s0 - 1);
+  const s1 = await stims(); await dismissCut(); await p.keyboard.press('Escape').catch(() => {}); await settle(p, 100);
+  await p.getByRole('button', { name: /Backpack/ }).first().click(); await p.waitForSelector('[data-bp-panel]', { timeout: 10000 }); await settle(p, 300);
+  const use = p.locator('[data-bp-row="stims"] button', { hasText: /^Use/ }).first(); await snap('stim-self-2-backpack');
+  ok('the Backpack stims row has Use', (await use.count()) > 0 && await use.isEnabled());
+  await use.click(); await settle(p, 600); await snap('stim-self-3-backpack-used');
+  ok('Backpack Use on the stims row: one stim used (' + s1 + ' -> ' + (await stims()) + ')', s1 > 0 && (await stims()) === s1 - 1);
+  await p.keyboard.press('Escape').catch(() => {}); await settle(p, 200); if (await p.locator('[data-bp-panel]').count()) await p.locator('[data-bp-panel] button', { hasText: /Close|✕|×/ }).first().click().catch(() => {}); }
 // the FAITH tab: a Whisper, a Hymn with an area, the Miracle
 await check('a Whisper (Health)', /^Health/, { shot: 'whisper', hoverUnit: true, need: ['reach', 'units'], chip: /^[^·]*(no gain|→|stands again)/, short: true, bad: emptyNear });
 await check('a Hymn with an area (Thunderclap, radius 2)', /^Thunderclap/, { shot: 'hymn', area: 25, fit: 2, need: ['reach', 'choice'], bad: async ({ reach, choice }) => { const out = await p.evaluate(() => [...document.querySelectorAll('button.phc-tok')].map((b) => b.getAttribute('aria-label') || '').filter((l) => l.includes('out of sight')).map((l) => l.split(' · ')[0])); return out[0] ? keyOf(out[0]) : null; } });

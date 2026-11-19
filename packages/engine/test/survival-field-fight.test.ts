@@ -169,7 +169,7 @@ describe('rules 1.55 item 64: nothing harms a friend, nothing grows', () => {
   const SIGIL = [{ build: 'sigil', level: 1 }, { build: 'plain_gun', level: 1 }];
   function sigilField() {
     let g: any = clone(startRun(survivalRoom('PHC-GROW3', SIGIL, { test: true }), 'PHC-GROW3'));
-    const c = g.characters.c1; c.sigils = [...new Set([...(c.sigils || []), 'fire', 'seek'])];
+    const c = g.characters.c1; c.sigils = [...new Set([...(c.sigils || []), 'fire', 'seek', 'spread'])];
     const n = reachable(g.run).find((x: any) => x.kind === 'fight');
     for (let i = 0; i < 2 && g.run.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
     g = toField(g); g = upTurn(g, g.combat.units.find((x: any) => x.charId === 'c1').id);
@@ -177,12 +177,12 @@ describe('rules 1.55 item 64: nothing harms a friend, nothing grows', () => {
     return g;
   }
   /** FIRE one tile on and SEEK on the caster's tile, drawn with the fight's own actions; Evoked from FIRE's end along dir. */
-  function line(g0: any) {
+  function line(g0: any, second = 'seek') {
     for (const dir of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
       try {
         let g = clone(g0); const u = g.combat.units.find((x: any) => x.charId === 'c1'), at = u.pos, [x, y] = at.split(',').map(Number), next = (x + dir[0]) + ',' + (y + dir[1]);
         g = apply(g, { type: 'combat/move', unitId: u.id, to: next }, 'host'); g = apply(g, { type: 'combat/draw', unitId: u.id, word: 'fire', tile: next }, 'host');
-        g = apply(g, { type: 'combat/move', unitId: u.id, to: at }, 'host'); g = apply(g, { type: 'combat/draw', unitId: u.id, word: 'seek', tile: at }, 'host');
+        g = apply(g, { type: 'combat/move', unitId: u.id, to: at }, 'host'); g = apply(g, { type: 'combat/draw', unitId: u.id, word: second, tile: at }, 'host');
         return { g, uid: u.id, at, fire: next, dir };
       } catch { /* a wall that way */ }
     }
@@ -190,10 +190,14 @@ describe('rules 1.55 item 64: nothing harms a friend, nothing grows', () => {
   }
   it('an Evoke on yourself goes off and adds no study or word use; one at a friend never hurts them (refused in words, or a miss)', () => {
     const { g, uid, at, fire, dir } = line(sigilField());
-    const sg0 = JSON.stringify(g.characters.c1.sigilGrowth || null);
-    const done = apply(g, { type: 'combat/evoke', unitId: uid, tile: fire, aim: at }, 'host');
-    expect(done.combat.log.slice(g.combat.log.length).some((l: string) => /evokes FIRE · SEEK/.test(l))).toBe(true);
-    expect(JSON.stringify(done.characters.c1.sigilGrowth || null)).toBe(sg0);
+    // item 5501 (0.31.12): a Line that would only hit you is no aim on your own tile; a Burst centred on you is
+    { const s = line(sigilField(), 'spread'), sg0 = JSON.stringify(s.g.characters.c1.sigilGrowth || null), cb = s.g.combat, [ax, ay] = s.at.split(',').map(Number);
+      const far = Array.from({ length: cb.map.w * cb.map.h }, (_, i) => (i % cb.map.w) + ',' + Math.floor(i / cb.map.w)).find((k) => { const [x, y] = k.split(',').map(Number); return Math.max(Math.abs(x - ax), Math.abs(y - ay)) > 4 && !(cb.map.solid || []).includes(k) && !cb.units.some((u: any) => u.pos === k); })!;
+      cb.units.find((x: any) => x.charId === 'c2').pos = far; // the friend out of the Burst
+      const done = apply(s.g, { type: 'combat/evoke', unitId: s.uid, tile: s.fire, aim: s.at }, 'host');
+      expect(done.combat.log.slice(s.g.combat.log.length).some((l: string) => /evokes FIRE · SPREAD/.test(l))).toBe(true);
+      expect(JSON.stringify(done.characters.c1.sigilGrowth || null)).toBe(sg0); }
+    expect(() => apply(g, { type: 'combat/evoke', unitId: uid, tile: fire, aim: at }, 'host')).toThrow(/Not on yourself/);
     const fr = g.combat.units.find((x: any) => x.charId === 'c2'); let toFriend = 0;
     for (const n of [1, 2, 3]) for (let k = 0; k < 6; k++) {
       const x = clone(g), t = x.combat.units.find((y: any) => y.id === fr.id), [fx, fy] = fire.split(',').map(Number); t.pos = (fx + dir[0] * n) + ',' + (fy + dir[1] * n); x.rng.state = (x.rng.state + k * 7919) >>> 0;

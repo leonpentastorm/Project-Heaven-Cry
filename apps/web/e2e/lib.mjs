@@ -298,6 +298,7 @@ export async function titleHoverDuringHello(page) {
  *  free weapon when given (a rack's free one), goes to the starting boon, chooses card `o.boon` (default the first), and
  *  marks Ready (solo: "Start the run"); a confirm about a free pick left open (rules 1.55 item 49) is passed. */
 export async function campStart(page, o = {}) {
+  await campConfirmGo(page); // item E: Start the run from the lobby asks "Level up first?" when one is due; go on without it
   await page.waitForSelector('[data-phc-camp]', { timeout: 60000 });
   await page.locator('[data-phc-camp-step="1"]').click(); await settle(page, 150);
   await page.locator('[data-phc-camp-recommended]').click(); await settle(page, 250);

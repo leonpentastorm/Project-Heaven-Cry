@@ -10,7 +10,8 @@ import { act, getState, go, retryNarrator, setNarrator, toast, homeScreen } from
 import { shellVals } from './shell';
 import { openReport } from '../game/report';
 import { importCharacter } from '../game/charfile';
-import { validateSheet, CLASS } from '@engine';
+import { validateSheet, CLASS, levelUpDue } from '@engine';
+import { askLevelUp, levelUpAsk } from '../game/campView';
 import { openProvingGround } from '../game/sandbox';
 import { classOf } from '../game/commands';
 import { modeCards, radioKey, narratorOptional, startsRun, testSeed } from '../game/modes';
@@ -180,7 +181,9 @@ export class RoomLogic extends DCLogic {
       ...this.narratorVals(),
       // In session the big button is the way back (UI pass 2.1), never a greyed "In session".
       notReady, startLabel: why || (g.phase !== 'lobby' ? 'Return to the session ›' : runsMode ? 'Start the run' : g.players.length > 1 && offline.length ? 'Start session · ' + offline.map((p) => p.name).join(', ') + ' has no character yet' : 'Start session'),
-      startSession: () => (g.phase !== 'lobby' ? this.backToSession(g) : act(runsMode ? { type: 'run/start', ...(testSeed() ? { seed: testSeed() } : {}) } : { type: 'session/start' })),
+      // a run's start asks first when one of my characters has a level-up due (unclaimed perk steps, a fork, points: the
+      // engine's levelUpDue), the same prompt as the camp's Ready (outside playtest 0.31.10 row 2)
+      startSession: () => (g.phase !== 'lobby' ? this.backToSession(g) : runsMode ? ((due) => askLevelUp(levelUpAsk(!!due), due ? 'lobby:' + due.id : '', () => act({ type: 'run/start', ...(testSeed() ? { seed: testSeed() } : {}) }), () => go('levelup', { levelupChar: due.id })))(Object.values(g.characters).find((c) => c.owner === me && levelUpDue(c))) : act({ type: 'session/start' })),
       startNote: g.phase !== 'lobby' && !(g.story && g.story.complete) ? (isHost ? 'Changes here apply from the Narrator\'s next turn.' : 'The session is on: this only takes you back.') : '',
       returnStory: !!(g.story && g.story.complete), toStory: () => this.backToSession(g),
       // The Proving Ground (practice mode): endless waves, no Narrator, no key needed; the squad as locked in, or a test character.

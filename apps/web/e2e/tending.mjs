@@ -97,7 +97,7 @@ await snap('01-start');
 await host.locator('#phc-tab-perks').click().catch(() => {}); await settle(host, 200);
 const names = await host.evaluate(() => [...document.querySelectorAll('button')].map((b) => b.textContent || ''));
 await snap('00-perks-tab');
-ok('the panel offers Bond', names.some((t) => /Bond/.test(t)));
+{ const tr = await tendRows(); ok('the panel offers Bond (0.31: the Tend verbs sit on the TEND tab)', tr.some((t) => /Bond/.test(t))); await host.locator('#phc-tab-perks').click().catch(() => {}); await settle(host, 200); }
 
 // ---------- the free Bond on the Soldier (the Mender's: 0 AP); its save forced to fail ----------
 const ap0 = u.ap;

@@ -496,20 +496,36 @@
           "name": "Second Wind",
           "category": "Active Skill",
           "mastery": 2,
-          "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover {=unlocks.5.numbers.heal_share|pct}% of your max HP.",
-          "player": "{=.effects.0.ap} AP, once a fight: heal {=.numbers.heal_share|pct}% of your max HP.",
+          "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover {=unlocks.5.amounts.heal.per.0.value|pct}% of your max HP.",
+          "player": "{=.effects.0.ap} AP, once a fight: heal {=.amounts.heal.per.0.value|pct}% of your max HP.",
           "effects": [
             {
               "op": "grant_action",
               "action": "second_wind",
+              "label": "Second Wind",
               "ap": 2,
-              "uses": "per_combat"
+              "uses": "per_combat",
+              "scope": ["combat"],
+              "effects": [
+                {
+                  "op": "mend",
+                  "when": "acted",
+                  "amount": "heal",
+                  "say": "Second Wind{then}."
+                }
+              ]
             }
           ],
+          "amounts": {
+            "heal": {
+              "kind": "heal",
+              "base": 0,
+              "per": [{ "of": "self:max_hp", "value": 0.25 }],
+              "heal_kind": "perk"
+            }
+          },
           "adjudication": "engine",
-          "numbers": {
-            "heal_share": 0.25
-          }
+          "item": true
         },
         "6": {
           "name": "Fork: Stand Fast or Drive",
@@ -2425,6 +2441,16 @@
             },
             {
               "op": "mark",
+              "flag": "ghost_eyes",
+              "when": "attack_roll",
+              "if": {
+                "self_sight": [
+                  "in_view"
+                ]
+              }
+            },
+            {
+              "op": "mark",
               "flag": "ghost",
               "when": "hit",
               "if": {
@@ -2438,6 +2464,7 @@
               "when": "acted",
               "if": {
                 "flag": "ghost",
+                "no_flag": "ghost_eyes",
                 "self_sight": [
                   "out_of_view"
                 ],
@@ -2470,7 +2497,20 @@
             },
             {
               "op": "mark",
+              "flag": "ghost_eyes",
+              "clear": true,
+              "when": "acted",
+              "priority": 120
+            },
+            {
+              "op": "mark",
               "flag": "ghost",
+              "clear": true,
+              "when": "turn_start"
+            },
+            {
+              "op": "mark",
+              "flag": "ghost_eyes",
               "clear": true,
               "when": "turn_start"
             }

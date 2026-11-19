@@ -208,6 +208,8 @@ await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null,
 await myTurn(); await calm();
 let u = await myU();
 ok('not Witnessed yet: it comes with your patron\'s first Hymn', !(u.conds && u.conds.witnessed));
+// (0.31.12 row 16: Mercy is offered only where a foe can yield, and the drills are machines: a Soldier is put in reach first)
+{ const [mx, my] = (await myU()).pos.split(',').map(Number); for (const [dx, dy] of [[3, 0], [-3, 0], [0, 3], [0, -3], [4, 1], [-4, 1], [2, 2]]) { const x = mx + dx, y = my + dy; if (x < 0 || y < 0) continue; if (!(await act({ type: 'sandbox/spawn', tier: 'soldier', weapon: 'service_pistol', at: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1) }))) break; } }
 { const vf = p.locator('[data-phc-vow-prompt] [data-fold="fight:vow"]'); if ((await vf.getAttribute('aria-expanded').catch(() => null)) === 'false') { await vf.click(); await pause(p, 200); } } // (0.31.0: the vow line opens its choices)
 await p.locator('[data-phc-vow-prompt] [data-vow="mercy"]').click(); await pause(p, 300);
 ok('Mercy sworn from the prompt', (await myU()).vow?.id === 'mercy');

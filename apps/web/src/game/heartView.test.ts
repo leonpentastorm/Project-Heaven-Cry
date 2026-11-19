@@ -196,6 +196,17 @@ describe('rules 1.14: Overdraw, Heart Overload and Resonance on the HEART panel 
     u.mg.emanator = false; u.mg.mp = 0; // no Emanator in hand: the heart draws on the air, and a Pump takes no MP
     expect(heartPanel(cb, u)!.pump).toMatchObject({ ok: true, cost: '1 AP', mp: 0 });
   });
+  it('outside playtest 0.31.10 row 6: a feeling button prices its Pump with the switches the action carries (Overdraw), as the reducer charges it; the free-Pump badge follows the engine', () => {
+    const { cb, u } = withPerks({}, 6); u.mg.feelings = ['rage']; beginOutburst(cb, rng, u, 'sb', undefined, true);
+    u.mg.freePumps = 1; u.mg.freePumpsMax = 1; // a free Pump this turn
+    const p = heartPanel(cb, u, [OD])!, rage = p.feelings.find((f) => f.id === 'rage')!;
+    expect(rage.cost).toBe(p.pump.cost); // the plain Pump with the same switch: one price
+    const ap0 = u.ap, mp0 = u.mg.mp; cb.mods = [OD]; expect(pumpOutburst(cb, rng, u, 'rage')).toBeNull(); delete cb.mods;
+    expect((ap0 - u.ap) + ' AP · ' + (mp0 - u.mg.mp) + ' MP').toBe(rage.cost);
+    // the free stage of this turn is gone: the badge says none, as the next Pump's price does
+    const q = heartPanel(cb, u)!;
+    expect(q.pump.free).toBe(false); expect(q.freePumps).toBe(0);
+  });
   it('a character without Overdraw has no Overdraw line', () => {
     const { cb, u } = withPerks({}, 2); beginOutburst(cb, rng, u, 'sb', undefined, true);
     expect(heartPanel(cb, u)!.overdraw).toBe(''); expect(heartPanel(cb, u)!.pump.title).not.toMatch(/Overdraw/);

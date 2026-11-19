@@ -271,7 +271,7 @@
     { "id": "boon.primed", "kind": "relic", "name": "Primed", "pools": ["war", "streets"], "worth": 8, "adjudication": "engine", "provisional": true,
       "doors": ["durability", "raw_power", "ingenuity"],
       "effects": [ { "op": "resource", "when": "combat_start", "if": { "self_skill": { "durability": 1 } }, "resource": "guard", "value": 2 },
-                   { "op": "resource", "when": "combat_start", "if": { "self_skill": { "raw_power": 1 } }, "resource": "momentum", "value": 1 },
+                   { "op": "resource", "when": "turn_start", "limit": { "per": "per_combat", "n": 1 }, "if": { "self_skill": { "raw_power": 1 } }, "resource": "momentum", "value": 1 },
                    { "op": "resource", "when": "combat_start", "if": { "self_skill": { "ingenuity": 1 } }, "resource": "shadow", "value": 1 } ],
       "text": "Your door's meter starts each fight a step up: Guard {=effects.0.value|signed}, Momentum {=effects.1.value|signed}, Shadow {=effects.2.value|signed}." },
     { "id": "boon.reflexes", "kind": "relic", "name": "Quick Hands", "pools": ["streets"], "worth": 5, "adjudication": "engine", "provisional": true,
@@ -805,10 +805,11 @@
     "provisional": true
   },
   "music": {
-    "about": "Rules 1.54 (survival-spec section 14): what plays in a run, by situation, read by musicFor. camp: the loadout camp; map: the path map, one track per setting id, else `default`; place: a node's own track by its kind (shop, forge, rest); a place with none (training, shrine, Crossroads, cache, the vault's chest) plays the setting's map track; boon: the boon pick. A fight keeps the fight music. A new track is one line here (and its id in the engine's OstId list).",
+    "about": "Rules 1.54 (survival-spec section 14): what plays in a run, by situation, read by musicFor. camp: the loadout camp; map: the path map, one track per setting id, else `default`; place: a node's own track by its kind (shop, forge, rest); a place with none (training, shrine, Crossroads, cache, the vault's chest) plays the setting's map track; boon: the boon pick. A fight keeps the fight music, but for its quiet phases (rules item 5523): `quiet`, the one calm track of a run fight's approach before contact and its field after a win (FREE ROAM); PROVISIONAL. A new track is one line here (and its id in the engine's OstId list).",
     "camp": "surv_camp",
     "map": { "default": "surv_map", "ahoc": "surv_map_ahoc", "city": "surv_map_city", "field": "surv_map_field", "works": "surv_map_works", "shrine": "surv_map_shrine", "rim": "surv_map_rim" },
     "place": { "shop": "surv_shop", "forge": "surv_forge", "rest": "surv_rest" },
-    "boon": "surv_boon"
+    "boon": "surv_boon",
+    "quiet": "surv_map"
   }
 }

@@ -8,7 +8,7 @@ import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVal
 import { reducedMotion, sfx } from '../game/sfx';
 import { fightPace } from '../game/combatSpeed';
 import { MANA_SHOCK, WEAPON, musicTraitOf, songOf, active, paths, previewAttack, isMelee, analyzeCost, coverOf, difficultOf, dist, ROUNDS_PER_AP, refOf, notesAt, objectsOf, kindOf, fightSight, isUnseenId, litAt, tileCover, sightBlockers, COVER,
-  SIGIL, SCHOOL, MODULE, MANA_START, FLUX_MAX, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, condDef, CONDITION_ROWS, condId, condIsBoon, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
+  SIGIL, SCHOOL, MODULE, MANA_START, fluxMaxOf, CORE_CHARGE, SPELL_AP, manaBand, condName, condText, condDef, CONDITION_ROWS, condId, condIsBoon, stageMult, glyphApOf, glyphsAt, findPattern, previewEvoke, previewOutburst,
   designCost, designAp, designRange, spellTargets, drawGlyph, releaseOutburst,
   togglesFor, routeHazards, STAGE_MULT, encoreCredit, FAITH_PATRON,
   moveOptions, reachTiles, weaponSystem, dryRun as engineDryRun, withGame, fightSeenBy, previewSeenBy,
@@ -60,7 +60,7 @@ import { fadeStyle, SHADE_POOL, shadowHeld, wispsUri, wispStyle, SHADOW_INK } fr
 import { tieLayerVals, eyeLines } from '../game/tieLayer';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
-import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode } from '../game/techView';
+import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode, targetAttackPreview } from '../game/techView';
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
@@ -495,7 +495,7 @@ export const condChips = (u, g) => [...Object.entries(u.conds || {}).filter(([id
   // Mana Shock is the heart shorting out (rules 1.5): no conditions.json row, always a harm
   ...(u.mg && u.mg.shock ? [{ key: 'c-mana_shock', id: null, sign: 'mana_shock', side: 'hurts', word: shortWord(MANA_SHOCK.name), n: null, k: SIDE_GLYPH.hurts + ' ' + MANA_SHOCK.name.toUpperCase(), t: MANA_SHOCK.name + ': ' + MANA_SHOCK.text, style: COND_CHIP + 'border: 1px solid #F65157; color: #F65157' }] : []),
   // 0.30.0: every shield it holds (the layers and the base), from the engine's shieldsView, never u.shield alone
-  ...((sv) => (sv.chip ? [{ key: 'shield', id: null, side: 'state', word: sv.chip, n: null, k: sv.chip, t: sv.words + (sv.absorb ? '. ' + sv.absorb + '.' : ''), style: 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : []))(shieldsView((g && g.combat) || null, u, null, fmtNum))];
+  ...((sv) => (sv.chip ? [{ key: 'shield', id: null, side: 'state', word: sv.chip, n: null, k: sv.chip, t: sv.words + (sv.absorb ? '. ' + sv.absorb + '.' : ''), style: 'padding: 2px 8px; border-radius: 999px; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; border: 1px solid #E7EBF3; color: #E7EBF3' }] : []))(shieldsView(g?.combat || null, u, null, fmtNum, g || null))];
 
 /** 0.31.0 (U4): a unit's status for the strip (game/statusStrip.ts): its effects, its conditions and its Physical lines,
  *  each with its side read from its conditions.json row (an effect with no row is a harm: Heat, a jam, overweight). Its
@@ -952,7 +952,7 @@ export class CombatLogic extends DCLogic {
     const coverWord = (k) => { const c = tileCover(cb, k, 'pc', coverFoe, coverSeen, coverWalls); return !c ? '' : ' · ' + (c.grade === 'full' ? 'Full cover' : c.grade === 'half' ? 'Half cover' : c.grade === 'blocked' ? 'Out of the line of fire' : 'No cover') + ' from ' + c.foe + (c.mod ? ' (−' + c.mod + ' to its shots)' : ''); };
     const ATTACKS = ATTACK_MODES; // the old attack rows (a companion, a puppet or the drone keeps them: game/techView.ts)
     const attackMode = ATTACKS.includes(S.action) ? S.action : 'shot';
-    const pv = mineTurn && tgtUnit && ATTACKS.includes(S.action) ? previewAttack(cb, cur, tgtUnit, attackMode) : null;
+    const pv = mineTurn && tgtUnit && ATTACKS.includes(S.action) ? targetAttackPreview(g, cb, cur, tgtUnit, attackMode, S.mods, getState().me.id) : null; // with the switches the attack carries (a Break)
     // ---------- Physical 2.0 (rules 1.12; game/techView.ts): the weapon blocks, the open pad, the picked technique ----------
     // Everything below is the engine's (techniquePad, previewTechnique, physView): the screen works out no number.
     const blocks = mineTurn && !isLegacyUnit(cur) ? weaponBlocks(g, cb, cur) : [];
@@ -1004,8 +1004,8 @@ export class CombatLogic extends DCLogic {
     const readable = new Set(cb.units.filter((u) => u.side === 'pc' && owner(u) === me && u.mg).flatMap((u) => u.mg.words)), knows = (w) => readable.has(w);
     const seenGlyph = (k) => !!k && glyphsAt(pcb, k).length > 0; // the view holds only the glyphs this side sees
     const evTile = S.action === 'evoke' && S.glyphTile && seenGlyph(S.glyphTile) ? S.glyphTile : null;
-    const evV = mineTurn && mg && evTile ? evokeView(fogged(pcb), cur, evTile, S.evc || {}, S.hover, knows) : null; // (fog: who is affected, as this side sees the fight)
-    const hoverPanel = S.action === 'evoke' && !evTile && mineTurn && seenGlyph(S.hover) ? patternPanel(pcb, S.hover, cur, knows) : null;
+    const evV = mineTurn && mg && evTile ? evokeView(fogged(pcb), cur, evTile, S.evc || {}, S.hover, knows, g) : null; // (fog: who is affected, as this side sees the fight)
+    const hoverPanel = S.action === 'evoke' && !evTile && mineTurn && seenGlyph(S.hover) ? patternPanel(pcb, S.hover, cur, knows, null, g) : null;
     // Outburst (rules 1.5, game/heartView.ts): not holding, a design and Begin (hold at stage 0) or Snap (Begin and
     // Release at once, aimed); holding, the HEART panel (Pump, Release, Steady, Let go, Feed, Heart Overwatch). Every cost,
     // refusal, tile and number is the engine's preview.
@@ -1021,6 +1021,8 @@ export class CombatLogic extends DCLogic {
       : S.action === 'draw' && word ? { word, ...(strip.stroke ? { stroke: strip.stroke } : {}) } : S.action === 'evoke' && evV && evV.payload ? { evoke: evV.payload }
       : S.action === 'outburst' && dsel ? { design: dsel.id, mode: obMode, ...(S.aim ? { aim: S.aim } : {}) } : S.action === 'release' && S.aim ? { aim: S.aim } : {};
     const flow = mineTurn && !(S.action === 'analyze' && S.readTile) ? flowView(g, me, cur, S, flowExtra) : null;
+    // a pick step this screen renders itself: the Outburst's Begin / Snap (the flow leaves a step with a renderer to its panel)
+    const bsStep = flow ? flow.d.picks.find((st) => st.renderer === 'begin-snap') || null : null, bsOpt = (id) => ((bsStep && (bsStep.options || []).find((o) => o.id === id)) || { label: id }).label;
     this._flow = flow;
     this._pk = pkE ? { e: pkE, P: pkP, V: pkV, target: flow && flow.picks.targetId } : null;
     /** The row a picked action belongs to: its own, or its parent's (a technique's pad row, Hold a shot). */
@@ -1082,7 +1084,7 @@ export class CombatLogic extends DCLogic {
     const encoreWaiting = mineTurn && cur.faith && cur.faith.encore ? cur.faith.encore : null;
     const VT0 = CAM.live() && !this._overview ? CAM.tiles() : { x0: 0, y0: 0, x1: cb.map.w - 1, y1: cb.map.h - 1 };
     // 0.30.0: each unit's shields worked out once a render (the engine's shieldsView), read by its tile, strip and cards
-    const SV = new Map(), svOf = (u) => { let v = SV.get(u.id); if (!v) SV.set(u.id, v = shieldsView(cb, u, null, fmtNum)); return v; };
+    const SV = new Map(), svOf = (u) => { let v = SV.get(u.id); if (!v) SV.set(u.id, v = shieldsView(cb, u, null, fmtNum, g)); return v; }; // the game passed: Pain Threshold's feed reads the unit's character (row 13: the SHIELDS block said 7 a plate, the blow spent 9)
     const tokOpt = (u, x, y) => { const p = u.side === 'pc' ? playerOf(owner(u)) : null; return { cb, sv: svOf(u), ref: refOf(x + ',' + y), ally: u.side === 'pc', player: p ? p.initials + ' · ' + p.name.toUpperCase() : '', color: p ? p.color : '#F65157', inFight: true, right: x - VT0.x0 >= (VT0.x1 - VT0.x0 + 1) / 2, up: y - VT0.y0 >= (VT0.y1 - VT0.y0 + 1) / 2 }; };
     const condWord = (u) => healthView(u).word; // the engine's view (rules 1.55 item 29): the look's word
 
@@ -1442,7 +1444,8 @@ export class CombatLogic extends DCLogic {
     if (pkE && mineTurn) {
       // The panel's words are the flow's; the form says what it still needs, and the class move's standing state.
       if (pkMissing && flow && flow.d.available) sel.text = pkMissing;
-      sel.extra = dotJoin(pkE.engine || !narratedRoom(g) ? '' : ADJ_MARKS.narrator + '.', pkState(pkE).why); // rules 1.66 item 5212: a Narrator's call only where there is a Narrator
+      // (the refusal is the engine's verdict, said once in the text by the flow; the extra line says only a standing state: row 14)
+      sel.extra = dotJoin(pkE.engine || !narratedRoom(g) ? '' : ADJ_MARKS.narrator + '.', pkState(pkE).tag ? pkState(pkE).why : ''); // rules 1.66 item 5212: a Narrator's call only where there is a Narrator
       // each single choice previewed as the engine would take it (the descriptor's form pick, once the target is picked)
       const whyOpt = flow && pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!flow.picks.targetId)) ? (id) => { const r = flow.peekWith({ form: { choice: id } }); return r && !r.ok ? r.why || 'Not now.' : ''; } : null;
       Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
@@ -1486,7 +1489,7 @@ export class CombatLogic extends DCLogic {
     const curOwner = cur ? playerOf(owner(cur)) : null;
     /** A unit's magic in a line: Evoker, heart, shield, conditions. */
     const magicLine = (u) => { const m = u.mg, cs = condChips(u, g); let t = '';
-      if (m && m.evoker) t += ' · Flux ' + m.flux + '/' + FLUX_MAX + ' · Charge ' + m.charge;
+      if (m && m.evoker) t += ' · Flux ' + m.flux + '/' + fluxMaxOf(u, cb, g) + ' · Charge ' + m.charge; // the limit the reducer keeps (row 13)
       if (m && m.emanator) t += ' · MP ' + Math.round(m.mp) + '/' + m.mpMax;
       const hh = m ? heldOutburstOf(m) : null;
       if (hh && (hh.strain || hh.held)) t += ' · Strain ' + hh.strain + '/' + hh.limit;
@@ -1588,7 +1591,8 @@ export class CombatLogic extends DCLogic {
             + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
       begin: () => { if (card && card.canBegin) { const a = sendDescriptor(g, cur.id, 'outburst', { design: card.id, mode: 'begin', ...(S.mods && S.mods.length ? { mods: S.mods } : {}) }, me); if (a) act(a); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
       snap: () => this.setState({ obMode: 'snap', aim: null }),
-      beginLabel: 'Begin' + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×' + STAGE_MULT[0],
+      // the renderer of the Outburst's `mode` step (descriptors.ts renderer 'begin-snap'): its two options, named by the engine
+      beginLabel: bsOpt('begin') + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: bsOpt('snap') + ' · ' + (card ? card.snapAp : 3) + ' AP ×' + STAGE_MULT[0],
       beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×' + STAGE_MULT[0] + ': hover to preview, click a tile to aim, then Confirm.',
       beginOff: !card || !card.canBegin, beginStyle: padBtn(obMode === 'begin', SOUL_INK), snapStyle: padBtn(obMode === 'snap', SOUL_INK), snapPressed: obMode === 'snap' ? 'true' : 'false',
       repick: isMagic && mineTurn && S.action === 'evoke' && !!evTile, repickFn: () => this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }),
@@ -1629,7 +1633,7 @@ export class CombatLogic extends DCLogic {
       if (no) { target.odds = no; target.breakdown = ''; target.line = 'A friend · ' + no; }
     }
     const tp = this.pres('tgt', hasTarget ? { ...target, id: tgtUnit.id } : null);
-    const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs ? pad : null);
+    const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs && bsStep ? pad : null); // the Begin / Snap pad is the 'begin-snap' step's renderer: shown when the action asks for that step
     // The technique pad (a weapon's Techniques, or Hold a shot): opens inside its row, as the glyph keyboard does; one at
     // a time. A chip picks the technique and closes the pad to the selected card; a greyed chip still says why.
     const padTV = padView(blocks, tpadOpen, null), CHIP = (c) => 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 6px; align-items: baseline; min-height: 44px; padding: 5px 8px; border-radius: 8px; text-align: left; font-family: inherit; cursor: ' + (c.ok && !c.reaction ? 'pointer' : 'default') + '; '
@@ -1827,7 +1831,7 @@ export class CombatLogic extends DCLogic {
     // The backpack (rules 1.9, World Play: Gear in a fight): hands, light armour, the pack and the unit's ammo, each row
     // with its action and the engine's cost (game/backpack.ts); greyed with the engine's reason off-turn or AP short.
     const canPack = !!myU && !!myU.charId && !myU.companion && !cb.over;
-    const bpV = canPack && S.bp ? backpackView(g, cb, myU, !!(mineTurn && cur && myU.id === cur.id), holding ? lockMsg : '') : null;
+    const bpV = canPack && S.bp ? backpackView(g, cb, myU, !!(mineTurn && cur && myU.id === cur.id), holding ? lockMsg : '', getState().me.id) : null;
     // The Backpack button sits in your unit card beside your name (Leon, 9 Nov 2026: one labelled button there, none by
     // the AP bar); on short windows, where the card folds into the one-line bar, the bar carries it. Lit while open.
     const bpBtn = (h) => 'display: inline-flex; align-items: center; gap: 6px; flex: none; min-height: ' + h + 'px; padding: 0 10px 0 8px; border-radius: 7px; border: 1px solid ' + (S.bp ? '#FFFFFF' : '#3A4760') + '; background: ' + (S.bp ? '#1C2536' : 'transparent') + '; color: #FFFFFF; font-family: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; cursor: pointer';
@@ -1992,7 +1996,7 @@ export class CombatLogic extends DCLogic {
     if (S.action === 'evoke') {
       const r = evokeClick(m.evTile ? m.evV || null : null, cb, cur, k, S.evc || {});
       if (r.pattern !== undefined) return (m.seenGlyph && m.seenGlyph(r.pattern)) ? this.setState({ glyphTile: r.pattern, evc: {}, sgToast: '' }) : undefined; // only a glyph you can see picks a pattern
-      if (r.choice) return this.setState({ evc: r.choice, sgToast: '' });
+      if (r.choice) return this.setState({ evc: r.choice, sgToast: r.refused ? r.toast || '' : '' }); // a refused click drops the aims (Confirm goes dark) and says why
       return this.setState({ sgToast: r.toast || '' });
     }
     if (S.action === 'outburst') return this.setState({ aim: k, obMode: 'snap' }); // a tile click means a snap at it

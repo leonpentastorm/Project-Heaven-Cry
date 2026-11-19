@@ -16,7 +16,7 @@ import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
 import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult, toHitAdd } from './rolls';
-import { emit, boundGame, statQuery, onHook, charOfUnit, growthHeld, harmHeld, ifFails } from './effects/hooks';
+import { emit, boundGame, bindGame, statQuery, onHook, charOfUnit, growthHeld, harmHeld, ifFails } from './effects/hooks';
 import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
 import { canSurrender, surrender, deathMana } from './tactics';
@@ -115,7 +115,17 @@ export const FLUX_MAX: number = Number((RULES as any).mana?.sigil?.flux?.safe_ma
 if (!(FLUX_MAX > 0)) throw new Error('data/rules.json mana.sigil.flux.safe_max is missing');
 /** This unit's Flux limit: FLUX_MAX (fed by Rumination) plus what its items add (stat `flux_max`: a variant's Holds more Flux, rules 1.56 L4). */
 /** Rules 1.60 item 4608 (the beta feeds: Rumination): FLUX_MAX x the Flux limit's feed, rounded, then what items add. */
-export const fluxMaxOf = (u: Unit, cb?: Combat | null): number => Math.round(FLUX_MAX * feedOf(u, 'flux_limit')) + statQuery({ u, cb: cb || null }, 'flux_max').add;
+/** Bound to `g` while `fn` reads (preview.ts withGame does the same; it can't be imported here: preview imports this file's importers). */
+const inGame = <T>(g: any, fn: () => T): T => { const was = bindGame(g || null); try { return fn(); } finally { bindGame(was); } };
+/** A stat query's who for a unit, or for a character sheet out of a fight (no tile: its own points and items). */
+const whoOf = (u: Unit | Character, cb?: Combat | null) => ((u as any).pos === undefined ? { c: u as Character } : { u: u as Unit, cb: cb || null });
+/** `u`: a unit, or a character sheet (the sheet out of a fight: its own points and items). `g`: the game to read the
+ *  character through (a screen's call passes it; inside an action the game is already bound). */
+export function fluxMaxOf(u: Unit | Character, cb?: Combat | null, g?: any): number {
+  if (g !== undefined) return inGame(g, () => fluxMaxOf(u, cb));
+  const who = whoOf(u, cb);
+  return Math.round(FLUX_MAX * feedOf(u, 'flux_limit')) + statQuery(who, 'flux_max').add;
+}
 showFeedNumber('flux_limit', (x) => Math.round(FLUX_MAX * feedOf(x, 'flux_limit')));
 export { CORE_CHARGE, coreChargeOf };
 /** The standard mana core's item id (a resource's neutral item: every core line is lootToPack of it). */

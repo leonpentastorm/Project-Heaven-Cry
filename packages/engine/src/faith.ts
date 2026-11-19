@@ -385,7 +385,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
     hymns,
     miracle: p?.miracle ? { id: p.miracle.id, name: p.miracle.name, text: p.miracle.text, usedThisSession: c.miracleSession === sessionN(g), preview: previewPrayer(g, who, 'miracle', p.miracle.id) } : null,
     pieces: { ...(c.faithPieces || {}) },
-    vow: u?.vow || null, vows: VOWS.map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, fulfilledWhen: v.fulfilled_when || '', needsAlly: !!v.needs_ally })),
+    vow: u?.vow || null, vows: VOWS.filter((v) => !(cb && vowNoFoe(cb, u, v))).map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, fulfilledWhen: v.fulfilled_when || '', needsAlly: !!v.needs_ally })),
     rites: (p?.rites || []).map((r: any) => ({ id: r.id, name: r.name, text: r.text, engine: !!r.engine, keptThisSession: c.ritesKept?.[p.id + '.' + r.id] === sessionN(g), ...riteState(g, c, r) })),
     rule: p?.rule || null,
     cooldowns: { hymnRoundsLeft: hymnLeft, whisperUsed: lim.left(cb && u ? 'per_turn' : 'per_round', 1, WHISPER_KEY) <= 0, miracleUsed: c.miracleSession === sessionN(g), hymnWait: cd, hymnCooldown: prayerCooldown(c), vowCut: !!(cb && u && u.faith?.hymnCut), vowBanked: !!(cb && u && u.faith?.vowBank) },
@@ -591,6 +591,9 @@ function breakVow(cb: Combat, u: Unit, why: string) {
   const p = patronOf(c); if (p) speak(G(), cb, rngOf(), c, p, 'vow_broken');
 }
 const vowOn = (u: Unit | null | undefined, id: string) => !!u?.vow && u.vow.state === 'sworn' && u.vow.id === id;
+/** A vow that needs a foe who can yield (patrons.json `needs_yielding_foe`: Mercy) has none in this fight (canYield, the
+ * one answer): it is not offered and can't be sworn (row 16 of the outside playtest: Mercy in a fight of machines). */
+const vowNoFoe = (cb: Combat, u: Unit | null | undefined, v: any): boolean => !!v?.needs_yielding_foe && !cb.units.some((x) => x.side !== (u?.side || 'pc') && !x.dead && canYield(x));
 /** Rules 1.22 (items 1283-1284): a vow's moment came in the fight. The Hymn this fighter is waiting for comes 1 round
  * sooner (each wait is shortened once, never under 2 rounds); with no Hymn waiting, the fulfilment is kept for the next
  * one (one kept at most). At most one a round; a moment that could change nothing is not spent and says nothing. The
@@ -1437,6 +1440,7 @@ function swearVow(g: GameState, a: Extract<FaithAction, { type: 'faith/vow' }>, 
   if (u.vow) return 'One vow a fight.';
   if (cb.round !== 1 || fs(u).acted) return 'Swear a vow at the start of the fight, before you act.';
   if (u.dead || u.downed) return 'You can\'t swear anything right now.';
+  if (vowNoFoe(cb, u, v)) return 'No enemy here can yield.';
   let allyId: string | undefined;
   if (v.needs_ally) {
     const al = cb.units.find((x) => (x.id === a.allyId || (x.charId && x.charId === a.allyId)) && x !== u && x.side === u.side && !x.dead);

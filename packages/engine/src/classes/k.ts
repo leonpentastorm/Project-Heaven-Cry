@@ -24,7 +24,7 @@ import { mod, devotionXpOf, moduleSlots, packOf, packKindOf, maxHp, migrateDesig
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
-  flux as engineFlux, FLUX_MAX, CORE_CHARGE, isBoon, groundCap, glyphsPerTile, newestCondition, destroyPlaced, SIGIL_REV, MAX_GLYPHS,
+  flux as engineFlux, CORE_CHARGE, isBoon, groundCap, glyphsPerTile, newestCondition, destroyPlaced, SIGIL_REV, MAX_GLYPHS,
   pumpOutburst, formOf, MAX_STAGE, SOUL_AP, unitSave, unitStrength, strengthFor, withVia, saveAgainst,
   type Glyph, type Pattern, type MagicUnit, type Zone, type Affected, type EvokeOpts,
 } from '../magic';

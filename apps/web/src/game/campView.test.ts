@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { apply, relicRow, worthOf, BOON_CAP, START_BOON, loadoutView, RACK, type GameState } from '@engine';
 import { survivalRoom, ownerOf } from '../../../../packages/engine/test/helpers/survival';
-import { boonCards, lineWord, campChecklist, campHelp, campConfirm, freeAction, campGuard } from './campView';
+import { boonCards, lineWord, campChecklist, campHelp, campConfirm, freeAction, campGuard, levelUpGuard, campLevelUpAsk } from './campView';
 import { currentDialog, answerDialog } from './dialog';
 import { runView } from './runView';
 import { ATTR_INK } from './classView';
@@ -85,4 +85,20 @@ describe('the camp as a checklist (rules 1.55 item 49)', () => {
     const done = loadoutView(apply(fresh(), { type: 'run/loadout', charId: 'c1', op: 'recommended' } as any, 'host') as any, 'host')!;
     campGuard(done, false, () => ran++); expect(currentDialog()).toBeNull(); expect(ran).toBe(3);
 });
+});
+
+describe('outside playtest 0.31.10 row 2: Start the run with a level-up due', () => {
+  it('asks first; the safe answer opens Level up; going on without runs Ready once', async () => {
+    const g = camp(); (g.characters.c1 as any).unspent = { ...(g.characters.c1 as any).unspent, skill: 2 };
+    const v = loadoutView(g as any, 'host')!;
+    expect(v.levelUp).toBe(true);
+    let ran = 0, opened = 0;
+    levelUpGuard(v, () => ran++, () => opened++);
+    expect(currentDialog()?.title).toBe('Level up first?'); answerDialog(false); await Promise.resolve(); await Promise.resolve();
+    expect([ran, opened]).toEqual([0, 1]);
+    levelUpGuard(v, () => ran++, () => opened++); answerDialog(true); await Promise.resolve(); await Promise.resolve();
+    expect([ran, opened]).toEqual([1, 1]);
+    const plain = loadoutView(camp() as any, 'p2')!;
+    expect(plain.levelUp).toBe(false); expect(campLevelUpAsk(plain)).toBeNull();
+  });
 });

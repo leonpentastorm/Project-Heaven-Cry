@@ -2,7 +2,7 @@
 // its step and effect; collapsed into "Feelings ▸" with a search past six), the colour and glyph of each feeling, the
 // residue tiles' tint, the unlock card, and the practice bar. The engine is the one source of numbers (previewPump,
 // previewOutburstPlan, practiceOf); this file only words and styles them.
-import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, moduleShelved, MODULE, SKILL } from '@engine';
+import { FEELINGS, FEELING, PLAIN_STEP, previewPump, revertPump, practiceOf, picksAt, nextPickAt, soulPicksLeft, gatedBy, moduleGateError, moduleClass, moduleShelved, MODULE, SKILL, fightWith } from '@engine';
 import { feelingIcon, moduleIcon, heartMark, paintedStyle } from './heartIcons';
 import { tipAttrs } from './actionTip';
 
@@ -79,11 +79,14 @@ export function feelingTip(f: any, extra: { why?: string | null } = {}) {
 export const FEELINGS_OPEN_MAX = 6;
 export interface FeelingBtn { id: string; name: string; ink: string; icon: string; iconStyle: string; ok: boolean; why: string; step: number; mult: number; stepText: string; effect: string; cost: string; free: boolean; does: string }
 /** One button per feeling the unit knows: its step and multiplier after, its effect, and why it can't be poured now. */
-export function feelingButtons(cb: any, u: any): FeelingBtn[] {
+export function feelingButtons(cb: any, u: any, mods?: string[] | null): FeelingBtn[] {
   const m = u?.mg; if (!m || !m.held) return [];
   const known: string[] = (m.feelings || []).filter((f: string) => (FEELING as any)[f]);
+  // the switches the Pump action carries (Overdraw: 2 stages), on the fight as the reducer puts them (engine fightWith):
+  // the price shown is the one charged (outside playtest 0.31.10 row 6)
+  const pcb = fightWith(cb, mods);
   return FEELINGS.filter((f: any) => known.includes(f.id)).map((f: any) => {
-    const p = previewPump(cb, u, f.id), ink = feelingInk(f.id);
+    const p = previewPump(pcb, u, f.id), ink = feelingInk(f.id);
     const step = p.step ?? (f.step?.base ?? PLAIN_STEP);
     return { id: f.id, name: f.name, ink, icon: feelingIconSrc(f.id, ink), iconStyle: iconStyle(feelingIconSrc(f.id, ink), ink), ok: !!p.ok, why: p.ok ? '' : p.why || '', step: r2(step), mult: r2(p.mult), stepText: (step >= 0 ? '+' : '−') + Math.abs(r2(step)).toFixed(1), // rules 1.19: Calm and Relief take the multiplier down
       effect: feelingText(f), cost: p.ok ? (p.mp ? (p.free ? '0 AP' : p.ap + ' AP') + ' · ' + p.mp + ' MP' : p.free ? 'FREE' : p.ap + ' AP') : '', free: !!(p.ok && p.free), does: '' }; // rules 1.24: a Pump's MP
