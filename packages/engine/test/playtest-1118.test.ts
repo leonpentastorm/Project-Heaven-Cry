@@ -71,3 +71,20 @@ describe('row 3: Evoke never arms yourself with a Line that would only hit you',
     expect(withGame(g.g, () => previewEvoke(g.cb, v, v.pos, v.pos)).pickable).toContain(v.pos);
   });
 });
+
+import { actionsFor } from '../src';
+describe('row 4: Second Wind (Durability 5) is on the combat bar and heals', () => {
+  it('a Durability 5 tank has Second Wind; it heals a quarter of max HP through the reducer, once a fight; the boon of the same name is apart', () => {
+    const f = fightWith([{ skills: { durability: 5 } } as any], [{ at: 'O10' }]); const u = f.turn(f.pc);
+    const ds = withGame(f.g, () => actionsFor(f.g, u.id, 'host'));
+    const d = ds.find((x) => x.name === 'Second Wind')!;
+    expect(d).toBeTruthy(); expect(d.available).toBe(true); expect(d.id).not.toMatch(/boon/);
+    f.unit(u.id).hp = 20; const ap0 = f.unit(u.id).ap;
+    const pv = withGame(f.g, () => previewDescriptor(f.g, u.id, d.id, {}, 'host'))!;
+    expect(pv.ok).toBe(true); f.act(pv.action!);
+    expect(f.g.combat!.log.at(-1)).toMatch(/Second Wind · Tester 1 heals \d+/); expect(f.unit(u.id).hp).toBe(20 + Math.floor(u.maxHp / 4));
+    expect(ap0 - f.unit(u.id).ap).toBe(2);
+    const again = withGame(f.g, () => actionsFor(f.g, u.id, 'host')).find((x) => x.id === d.id)!;
+    expect(again.available).toBe(false);
+  });
+});
