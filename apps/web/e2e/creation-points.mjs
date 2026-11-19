@@ -34,6 +34,17 @@ for (const [W, H] of [[1440, 900], [1280, 720], [1024, 768]]) {
   await p.locator('[data-arch-preview] button', { hasText: /^Use / }).click(); await settle(p, 300);
   ok(at + 'the Holdfast preset (id bulwark) lands on the points step with every point placed (' + await budgets() + ')', (await budgets()) === '✓ ALL 10 PLACED | ✓ ALL 10 PLACED' && /^✓ Every point is placed/.test(await text('[data-points-todo]')));
   ok(at + 'no sideways page scroll (' + await sideways() + ' px over)', (await sideways()) <= 1);
+  // the sticky Back / Next bar never covers a card: at the foot of the page the last card ends above the bar and its
+  // fade, and a card brought into view by the keyboard stops above them; a skill's line is never cut
+  const foot = await p.evaluate(async () => { const f = document.querySelector('footer.phc-cc-foot'), cards = [...document.querySelectorAll('[data-points] .phc-sk')];
+    window.scrollTo(0, document.documentElement.scrollHeight); await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const top = f.getBoundingClientRect().top - 28, last = Math.max(...cards.map((c) => c.getBoundingClientRect().bottom));
+    window.scrollTo(0, 0); await new Promise((r) => requestAnimationFrame(r));
+    const mid = cards[Math.floor(cards.length / 2)]; mid.scrollIntoView({ block: 'end' }); await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+    const midOk = mid.getBoundingClientRect().bottom <= f.getBoundingClientRect().top - 27;
+    const cut = [...document.querySelectorAll('[data-points] .phc-pt-line')].filter((l) => l.scrollHeight > l.clientHeight + 1 || getComputedStyle(l).webkitLineClamp !== 'none').length;
+    window.scrollTo(0, 0); return { last: Math.round(last), top: Math.round(top), midOk, cut }; });
+  ok(at + 'the Back / Next bar covers no card (last card ends at ' + foot.last + ', the fade of the bar starts at ' + foot.top + '; a card scrolled to stops above it: ' + foot.midOk + '); no skill line cut (' + foot.cut + ')', foot.last <= foot.top && foot.midOk && foot.cut === 0);
   // The gate is the layout: three families, nine attributes, each skill inside its attribute's block and under its header.
   const lay = await p.evaluate(() => {
     const fams = [...document.querySelectorAll('[data-family]')].map((f) => f.querySelector('h2').textContent);

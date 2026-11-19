@@ -1,7 +1,7 @@
 // Character creation (EPCCG), ported from design/canvas-build/create.logic.js. Same rules code as the prototype;
 // Lock in now validates through the engine, saves the sheet to the player's library and brings it into the room.
 import { DCLogic } from '../dc/runtime';
-import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod, ATTR_GIVES as ATTR_NEXT, SLOT_WORD, SLOT_ORDER, headLine, nextLine } from './shared';
+import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod, ATTR_GIVES as ATTR_NEXT, SLOT_WORD, SLOT_ORDER, nextLine } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
 import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS, deriveCreation, BUDGET as ENGINE_BUDGET, FOG_CORE, SKILL as ENGINE_SKILL } from '@engine';
 import { feelingInk, feelingIconSrc, iconStyle, feelingTip } from '../game/feelingsView';
@@ -29,6 +29,9 @@ const CC_CSS = '.phc-cc-grid{display:grid;gap:var(--gap,12px);grid-auto-rows:var
   // they were thousands of pixels down the Archetype step); a fade above them says the page goes on behind.
   + '.phc-cc-foot{position:sticky;bottom:0;z-index:6;background:#0A0D13;box-shadow:0 -8px 18px -8px rgba(0,0,0,.7)}'
   + '.phc-cc-foot::before{content:"";position:absolute;left:0;right:0;top:-29px;height:28px;background:linear-gradient(to bottom,rgba(10,13,19,0),#0A0D13);pointer-events:none}'
+  // ...and never covers a card: the page keeps room under the last card for the bar and its fade, and a card scrolled
+  // into view (by keyboard or a jump) stops above them
+  + 'html:has(.phc-cc-foot){scroll-padding-bottom:120px}[data-points]{padding-bottom:48px!important}'
   + '.phc-cc-clamp2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}'
   + '.phc-cc-art{position:relative;display:block;flex:none;height:100%;padding:0;border:0;border-radius:10px;overflow:hidden;background:#05070B;cursor:zoom-in}'
   + '.phc-cc-art img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 20%;transition:transform .25s ease}'
@@ -51,7 +54,8 @@ const CC_CSS = '.phc-cc-grid{display:grid;gap:var(--gap,12px);grid-auto-rows:var
   + '.phc-pt-val{width:26px;text-align:center;font-size:19px;font-weight:700;line-height:1}'
   + '.phc-pt-side{flex:none;width:26px;height:26px}'
   + '.phc-pt-step:focus-visible,.phc-pt-btn:focus-visible,.phc-pt-side:focus-visible{outline:2px solid #FFFFFF;outline-offset:2px}'
-  + '.phc-pt-line{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;height:36px;font-size:13px;line-height:18px;color:#C9D3E3}'
+  // the skill's one line (what its next point gives, the ladder's own row): never cut, it wraps
+  + '.phc-pt-line{font-size:var(--fs-body);line-height:1.35;color:#C9D3E3;overflow-wrap:anywhere}'
   + '.phc-sk{display:flex;gap:10px;align-items:flex-start;padding:7px 8px;border-radius:10px;background:#0C1018;border:1px solid #232D3F}'
   + '.phc-sk-face{flex:none;width:48px;height:60px;padding:0;border:1px solid #2E3A50;border-radius:7px;overflow:hidden;background:#000;cursor:pointer}'
   + '.phc-sk-face img{display:block;width:100%;height:100%;object-fit:cover}'
@@ -61,7 +65,7 @@ const CC_CSS = '.phc-cc-grid{display:grid;gap:var(--gap,12px);grid-auto-rows:var
   + '.phc-sk-tags{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden;white-space:nowrap}'
   + '.phc-pt-bar{position:sticky;top:0;z-index:5}'
   + '@media (max-width:1180px){.phc-pt-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.phc-pt-fam:nth-child(3){grid-column:1/-1}.phc-pt-fam:nth-child(3) .phc-pt-attrs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}}'
-  + '@media (max-width:700px){.phc-pt-grid{grid-template-columns:minmax(0,1fr)}.phc-pt-fam:nth-child(3) .phc-pt-attrs{display:flex}.phc-pt-pips{display:none}.phc-pt-bar{position:static}.phc-pt-line{height:auto;-webkit-line-clamp:4}}'
+  + '@media (max-width:700px){.phc-pt-grid{grid-template-columns:minmax(0,1fr)}.phc-pt-fam:nth-child(3) .phc-pt-attrs{display:flex}.phc-pt-pips{display:none}.phc-pt-bar{position:static}}'
   // A phone: a patron's art stacks above their text (side by side, both would be a sliver).
   + '@media (max-width:640px){[data-patron-grid]{--h:640px!important}[data-patron]{flex-direction:column}[data-patron] .phc-cc-art{width:100%!important;height:240px!important}}';
 function ensureCcLayout() {
@@ -377,7 +381,7 @@ export class CreateLogic extends DCLogic {
     const arrows = (up, down) => (e) => { const k = e.key; if (k === 'ArrowRight' || k === 'ArrowUp') { e.preventDefault(); up(); } else if (k === 'ArrowLeft' || k === 'ArrowDown') { e.preventDefault(); down(); } };
     const hoverOn = (id) => () => { if (this.state.hover !== id) this.setState({ hover: id }); };
     const families = CORES.map((c) => ({
-      key: c, name: c.toUpperCase(), about: D.coreText[c][0],
+      key: c, name: c.toUpperCase(),
       headStyle: 'display: flex; align-items: baseline; gap: 10px; padding: 0 2px 6px; border-bottom: 2px solid ' + D.core[c],
       nameStyle: 'font-size: 18px; font-weight: 700; letter-spacing: 0.14em; color: ' + D.core[c],
       attrs: D.attrs.filter((a) => a.core === c).map((a) => {
@@ -398,12 +402,12 @@ export class CreateLogic extends DCLogic {
           railStyle: 'display: flex; flex-direction: column; gap: 5px; margin-left: 4px; padding-left: 9px; border-left: 2px solid ' + a.ink,
           cards: skillsUnder(a.id).map((s) => {
             const p = S.skills[s.id] || 0, m = checkMod(s.id, p), m1 = checkMod(s.id, p + 1), up2 = _setSkill(now, s.id, p + 1, extra), dn2 = _setSkill(now, s.id, p - 1, extra);
-            const give = nextLine(s.id, p), [tag, slot] = SLOT_WORD[s.slot], lifts = up2.ok && p + 1 > v;
+            const give = nextLine(s.id, p), [tag] = SLOT_WORD[s.slot], lifts = up2.ok && p + 1 > v;
             const inc = () => this.pointsDo((st, x) => _setSkill(st, s.id, (st.skills[s.id] || 0) + 1, x), s.id), dec = () => this.pointsDo((st, x) => _setSkill(st, s.id, (st.skills[s.id] || 0) - 1, x), s.id);
             return { ...s, key: s.id, pts: p, tag, need: lifts ? 'Needs ' + a.name + ' ' + (p + 1) : '', hasNeed: lifts,
               // One line: what the next point gives (the road map's step at points + 1; rules 1.54 item 4119).
               line: p < ATTR_CAP ? give : 'Top at creation (' + ATTR_CAP + ')', nextAt: p < ATTR_CAP ? p + 1 : 0,
-              lineTitle: s.name + ': ' + s.summary + ' ' + slot + '. ' + headLine(s.id),
+              lineTitle: s.summary,
               modChip: fmt(m), modTitle: 'Roll ' + fmt(m) + (p < ATTR_CAP ? ' now, ' + fmt(m1) + ' with the next point' : ''), face: s.img, open: () => this.setState({ epccg: s.id, hover: s.id }), openLabel: s.name + ': what each point gives (its EPCCG entry)',
               inc, dec, keys: arrows(inc, dec), incOff: up2.ok ? 'false' : 'true', decOff: dn2.ok ? 'false' : 'true',
               incAria: up2.ok ? 'Raise ' + s.name + ' from ' + p + ' to ' + (p + 1) + ' for 1 Skill point' + (lifts ? ' and 1 Attribute point: ' + a.name + ' rises from ' + v + ' to ' + (p + 1) : '') + '. Roll ' + fmt(m1) + '. ' + give : 'Raise ' + s.name + ', now ' + p + '. Not possible: ' + up2.text,

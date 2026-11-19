@@ -183,6 +183,21 @@ describe('the points step: undo and reset', () => {
   });
 });
 
+describe('the points step: the same rows as level up', () => {
+  it('the line of a skill is never cut and has no hover box repeating it; the family headings carry no blurb', async () => {
+    const { readFileSync } = await import('node:fs');
+    const TPL = readFileSync(new URL('../templates/create.template.html', import.meta.url), 'utf-8'), JS = readFileSync(new URL('./create.js', import.meta.url), 'utf-8');
+    const line = /<span class="phc-pt-line"[^>]*>/.exec(TPL)![0];
+    expect(line).not.toMatch(/tip=/);
+    expect(JS).not.toMatch(/\.phc-pt-line\{[^}]*line-clamp/);
+    expect(TPL).not.toMatch(/tip="\{\{c\.about\}\}"/);
+    expect(JS).toMatch(/scroll-padding-bottom/);
+    const v = screen().renderVals();
+    for (const f of v.families) expect((f as any).about).toBeUndefined();
+    for (const k of v.families.flatMap((f: any) => f.attrs).flatMap((a: any) => a.cards)) { expect(k.lineTitle).not.toBe(k.line); expect(k.lineTitle).not.toContain(k.name + ':'); }
+  });
+});
+
 describe('the points step: what the next point gives', () => {
   it('an attribute shows its per-point line in the game\'s numbers', () => {
     const v = screen().renderVals();
