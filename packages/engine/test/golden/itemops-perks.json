@@ -44,6 +44,8 @@
 "perk/make_way@achieved/move": "P1 ap:9>7 bank:0>2 pos:3,6>3,9 res:{\"momentum\":3,\"guard\":0,\"shadow\":0}>{\"momentum\":0,\"guard\":0,\"shadow\":0}",
 "perk/make_way@achieved/move-charge": "P1 ap:9>7 bank:0>2 pos:3,6>6,6 res:{\"momentum\":3,\"guard\":0,\"shadow\":0}>{\"momentum\":0,\"guard\":0,\"shadow\":0}",
 "perk/make_way@achieved/move-far": "P1 ap:9>5 bank:0>2 pos:3,6>11,6 res:{\"momentum\":3,\"guard\":0,\"shadow\":0}>{\"momentum\":0,\"guard\":0,\"shadow\":0}, F2 pos:7,6>12,6",
+"perk/many_hands@mastered/ally-lethal": "turn:1>3, P1 hp:189/315>182/315, P2 hp:126/315>1/315, F2 ap:0>7",
+"perk/many_hands@mastered/ally-taken": "turn:1>3, P1 hp:189/315>182/315, P2 hp:126/315>118/315, F2 ap:0>7",
 "perk/never_there@mastered/move": "P1 ap:9>7 bank:0>2 pos:3,6>3,9 res:{\"momentum\":3,\"guard\":0,\"shadow\":0}>{\"momentum\":0,\"guard\":0,\"shadow\":0}",
 "perk/never_there@mastered/move-charge": "P1 ap:9>7 bank:0>2 pos:3,6>6,6 res:{\"momentum\":3,\"guard\":0,\"shadow\":0}>{\"momentum\":0,\"guard\":0,\"shadow\":0}",
 "perk/never_there@mastered/move-far": "P1 ap:9>5 bank:0>2 pos:3,6>11,6 res:{\"momentum\":3,\"guard\":0,\"shadow\":0}>{\"momentum\":0,\"guard\":0,\"shadow\":0}, F2 pos:7,6>12,6",

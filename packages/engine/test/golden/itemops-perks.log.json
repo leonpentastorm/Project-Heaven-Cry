@@ -44,6 +44,8 @@
 "perk/make_way@achieved/move": "Tester 1 moves to D10 (3 tiles, 2 AP).",
 "perk/make_way@achieved/move-charge": "Tester 1 moves to G7 (3 tiles, 2 AP).",
 "perk/make_way@achieved/move-far": "Tester 1 moves to L7 (8 tiles, 4 AP).",
+"perk/many_hands@mastered/ally-lethal": "Tester 1 has felt Spite (hurt by Far soldier): it can be poured in now. / Tester 1 shares the hit on Squadmate. / Squadmate holds on the last plate: 1 HP, every plate broken (Last Plate). / Squadmate has felt Spite (hurt by Far soldier): it can be poured in now. / Far soldier fires at Squadmate: d20 10 +4 = 14 vs 14 · hit, 2 damage",
+"perk/many_hands@mastered/ally-taken": "Tester 1 has felt Spite (hurt by Far soldier): it can be poured in now. / Tester 1 shares the hit on Squadmate. / Squadmate has felt Spite (hurt by Far soldier): it can be poured in now. / Far soldier fires at Squadmate: d20 10 +4 = 14 vs 14 · hit, 8 damage",
 "perk/never_there@mastered/move": "Tester 1 moves to D10 (3 tiles, 2 AP).",
 "perk/never_there@mastered/move-charge": "Tester 1 moves to G7 (3 tiles, 2 AP).",
 "perk/never_there@mastered/move-far": "Tester 1 moves to L7 (8 tiles, 4 AP).",
