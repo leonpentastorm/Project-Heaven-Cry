@@ -4,6 +4,7 @@ from PIL import Image,ImageDraw
 A=Path(__file__).resolve().parent.relative_to(Path.cwd().resolve())
 def stem(ident):return ident if ident.startswith(('shield-','armour-','focus-','quiver-')) else 'weapon-'+ident
 m=json.loads(Path('/workspace/work/prompt-pack-08/current-grade.json').read_text())
+m['refs']=[Path(p).resolve().relative_to(Path.cwd().resolve()).as_posix() for p in m['refs']]
 dest=A/'drafts'/f"{stem(m['id'])}--{m['tier']}.png"
 assert not dest.exists(),dest
 shutil.copy2(m['src'],dest)
