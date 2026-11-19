@@ -1,5 +1,5 @@
 {
-  "status": "drawing",
+  "status": "standard-complete-review-pending",
   "branch": "art/2026-11-19-melee-armour",
   "base_commit": "2020b5c2",
   "claimed_files": [
@@ -57,5 +57,12 @@
   "remaining": [],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T04:35:47.009373+00:00"
+  "updated_utc": "2026-11-19T04:35:47.009373+00:00",
+  "completed_utc": "2026-11-19T04:38:20.918597+00:00",
+  "validation": {
+    "targeted_complete": "passed for all39 new masters and156 PNG exports",
+    "web_build": "passed targeted actual-builder check:78 RGBA WebPs; full npm run assets deferred to full checkout",
+    "whole_library": "blocked in sparse checkout: missing omitted art/portraits/world/new-faces/ivara-drenn.png",
+    "remaining_drawings_in_claimed_standard_scope": 0
+  }
 }

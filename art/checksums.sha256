@@ -1,7 +1,7 @@
 14553529ae5b164f1ca84ddff48437047b13f8439397cfaeb0abaed9a92940f3  .gitignore
 612f236c4a72694552d9ea098d213206d8cb57d8a85a84b0ece8dd6d9963bdf9  README.md
 e80b981479a3b2fe1ba4314569d7b91c6fb33dd6a4df64fdf869b9d098b13ae5  art/AGENTS.md
-15007de6087443d312171554c4c2a58943bfc265c6aabc16c5ebe688562e34dc  art/README.md
+ce9c1dfb8b371d81bfbde45b48494d6d71af469cf1978a6d2439ab7a7853a0ae  art/README.md
 f8b1628c6b0e64e1a05407e1628d236ccc5ed73b2528a6a73d2d82b4a73c73b8  art/_archive/after-0.30/2026-11-17/CONTINUE.md
 63b26a18787ffe2902207ef3aa54e006ccc943d323cfefaab562373220383a38  art/_archive/after-0.30/2026-11-17/README.md
 2f7e9637920ca27b74b5da84957056b673768786a9ee1e32b2d621d6880b7907  art/_archive/after-0.30/2026-11-17/asset-build-check.txt
@@ -1218,7 +1218,8 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-28174379fe3d98308d3a58591ae15903346ffd670d609afb81550d07ed9b7116  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
+0ed4456fdb4c3eacb205a819eaadde137b48bb300c92fcc96496f93354b8993f  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
+b5bb66bcdca6a9d4dee1993a5453e25a7a2ac36d6ffb627058362728227cb278  art/_archive/gear/2026-11-19-melee-armour/VALIDATION.md
 ae45631caca92edfa24e281ed068ccc6cfa50a2212227ef623c950a394079fae  art/_archive/gear/2026-11-19-melee-armour/attempts/armour-tactical_gloves/v1/prompt.txt
 7bfe23e7e05f711a8d12a73b30f08129471213ac378dfc0eb32c7c4082b44b4d  art/_archive/gear/2026-11-19-melee-armour/attempts/armour-tactical_gloves/v1/source.png
 07471adad875c9c2111822059651471b6f98fbc2b2d5a7e00b9e729c8378f340  art/_archive/gear/2026-11-19-melee-armour/attempts/shield-barrier_wall/v1/prompt.txt
@@ -1267,7 +1268,7 @@ fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4  art/_archive/g
 c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_hammer.png
 bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_pick.png
 a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-weighted_gloves.png
-3a89574d5bcc617f1f8df3d4391e85bd5f6d3df35998a1809ead8f451d945bba  art/_archive/gear/2026-11-19-melee-armour/progress.json
+0a03ec53b2b067975b90ebce70b3d84907f23a5175831f84a80ab58145520798  art/_archive/gear/2026-11-19-melee-armour/progress.json
 54760a740ba4b1ecec9bbe8ea567331a0e05792c98655e6927219559fb9c7162  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-assault_helm.txt
 84c98f75ca902406ed731b932a357031c90a45a13860786d04019ed78d13cd88  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-blackout_hood.txt
 7932a392b9ee47b9cb01a32677283c6c34a97179dc14ab802af6bc6e17902feb  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-breacher_plate.txt
@@ -1353,6 +1354,8 @@ c92a0b80d50e59b155a9d5dd3dda994dcbb1d366cc68d14ba59df959db737c2a  art/_archive/g
 e6499915fb4c152d29a9bbadb859888234c60e53656832d585c591b2f84cf034  art/_archive/gear/2026-11-19-melee-armour/reviews/07-undershirts-64px.png
 adb60d83a5da84479de2af2775ca31e3f8b699fe93c6aea2b376fef1b26d52ac  art/_archive/gear/2026-11-19-melee-armour/reviews/07-worn-gloves-32px.png
 a3f3b88f21bd0c931e3d694a0193b293469d099893a47060faff1a0026a72109  art/_archive/gear/2026-11-19-melee-armour/reviews/07-worn-gloves-64px.png
+a1f139d17cdd17a60cac2d7229df671da2cfdc169dd0e121865f9ca630259692  art/_archive/gear/2026-11-19-melee-armour/reviews/all-families-32px.png
+02aa3f708512f66a84497e11f300a55865c469d92a3ef20fdbe8f49b5285fbd2  art/_archive/gear/2026-11-19-melee-armour/reviews/all-families-64px.png
 f98429e5d1e6db3c7e7589c1e89b707f70f73e427384407532eac9e9a8f6cba0  art/_archive/gear/2026-11-19-melee-armour/short-draw-generation-error.json
 d7e99abd9f31709a2a5a20f29506169f81fbb8a7bfd48d9f50789b90896b91e5  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-assault_helm.png
 31be0cab9ee0c770dea414d692a4cf5a9b258d48b26ba7745b86cef542a4ae99  art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-blackout_hood.png
@@ -1397,6 +1400,7 @@ c4911c66a238d11eca0128f58602af33ad68c4c85f1815a3cb2189ce1a88763a  art/_archive/g
 7f2396c86d6ccfc45a06f349c1dd68ad7d3967db7b734b2f1a9f418d4c43a79d  art/_archive/gear/2026-11-19-melee-armour/technical-exports/v1-before-border-guard/256/shield-spiked_buckler.png
 35325e3b8ab67c20d2b0af8ec3c0e3be0c72191f04a052eb688de2ecde87ac88  art/_archive/gear/2026-11-19-melee-armour/technical-exports/v1-before-border-guard/32/shield-spiked_buckler.png
 367d8d952fb9b987b1df1e166e168c9bf94258aef3f3fd8d50379626598e0283  art/_archive/gear/2026-11-19-melee-armour/technical-exports/v1-before-border-guard/64/shield-spiked_buckler.png
+9d8273cba84b696fb07affd2ce7b08a17fcc53105ca9c89610396333a3f13a17  art/_archive/gear/2026-11-19-melee-armour/web-build-check.json
 e19ebda9d64c0b3aabf38ada8c4bb1ed549d084efd6e077e159e7b3e266f94e9  art/_archive/gear/2026-11-19-melee-armour/weighted-gloves-reference-error.json
 8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/_archive/icons/perks/2026-11-12/both-hands.png
 bee60137688c6ac3615d3935ce9aadbb1937bc223cbcb791fa92572044cf2380  art/_archive/icons/perks/2026-11-12/exports/128/both-hands.png
