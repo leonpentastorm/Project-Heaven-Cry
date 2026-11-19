@@ -2,7 +2,9 @@
 
 > **Taking over? Read `docs/design/handoffs/TAKEOVER-2026-11-18.md`, then `ATTACK-PLAN-2026-11-19.md` beside it.**
 >
-> **18 Nov 2026 (newest): 0.31.10 IS LIVE.** Everything decided on 16 to 18 Nov, with the scouting documents, is in
+> **19 Nov 2026 (newest): 0.31.11 IS LIVE** (`backup/live-0.31.11`, `backup/live-0.31.10`). The work owed before Items 2.0 is `docs/design/handoffs/BEFORE-ITEMS-2.0.md` (with Leon's rulings of 19 Nov, evening).
+>
+> **18 Nov 2026 (older): 0.31.10 WAS LIVE.** Everything decided on 16 to 18 Nov, with the scouting documents, is in
 > `docs/design/handoffs/SESSION-TODO-2026-11-16.md` (read its sections Q to V first). The order Leon agreed:
 >
 > 1. **The whole-game wording pass** (to-do section U): a cheap agent screenshots every screen
