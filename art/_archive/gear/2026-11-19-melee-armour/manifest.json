@@ -1222,6 +1222,59 @@
       "status": "review-candidate",
       "production_approved": false,
       "technical_note": "UI exports have a one-pixel transparent guard, matching existing gear pipeline. Pre-guard derivatives retained; native source/master unchanged."
+    },
+    {
+      "id": "shield-boss_shield",
+      "path": "art/icons/gear/shield-boss_shield.png",
+      "sha256": "3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8",
+      "label": "Boss shield",
+      "family": "07-shields",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png",
+        "sha256": "e4594f2311e982ae2a4603db4c8c28e53d889d36fb7114e1625d49fccdcb113a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-boss_shield.png",
+        "sha256": "3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/shield-boss_shield.txt",
+        "sha256": "c88fa81a7f58ec2de5364c74ba4a013ed1f7fa3f417194ad4f2f841d2a1cdc72"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/shield-riot_shield.png",
+          "sha256": "be50f5e0eae8c794f4ba47ebc2e9d8d19f7a8a8cde211262e39c655d9195e8f0"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-boss_shield.png",
+        "128": "art/icons/gear/exports/128/shield-boss_shield.png",
+        "64": "art/icons/gear/exports/64/shield-boss_shield.png",
+        "32": "art/icons/gear/exports/32/shield-boss_shield.png"
+      },
+      "export_hashes": {
+        "256": "9de24182069e0066d5a21a68959573620d7f7b7a5a843eaf79f91ff430606ad7",
+        "128": "2ea711901c5206da656acc4f679ddc8576f0e401d68f087ea1611ad2b87e7c1a",
+        "64": "60c7b023ba06cceee074fe1b53040711648dd9d5727ec6243461085f6f7a8167",
+        "32": "c1d113784ce519186f398dddf788b1966f4e24760c93c80569e48db1f2408389"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

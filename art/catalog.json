@@ -19152,6 +19152,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "shield-boss_shield": {
+      "label": "Boss shield",
+      "path": "art/icons/gear/shield-boss_shield.png",
+      "sha256": "3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-boss_shield.png",
+        "128": "art/icons/gear/exports/128/shield-boss_shield.png",
+        "64": "art/icons/gear/exports/64/shield-boss_shield.png",
+        "32": "art/icons/gear/exports/32/shield-boss_shield.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 2,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
