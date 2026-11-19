@@ -2871,5 +2871,195 @@
     "status": "delivered",
     "production_approved": false,
     "depends_on": "armour-heavy_boots--relic"
+  },
+  {
+    "id": "armour-night_goggles--fine",
+    "standard_id": "armour-night_goggles",
+    "grade": "fine",
+    "label": "Night-sight Goggles — Fine",
+    "path": "art/icons/gear/armour-night_goggles--fine.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-night_goggles.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-night_goggles",
+    "family_references": [
+      "art/icons/gear/armour-night_goggles.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same paired round teal-glass night-sight goggles, three-quarter view with two thick segmented dark metal lens housings joined by a small two-rivet bridge, a hinged tall central bracket with three cyan diagonal stripes, rectangular top mount opening and a broad brown woven strap looping behind with one rectangular brass buckle. Preserve both circular lenses and their teal tint, every segment, hinge, rivet, bracket opening, strap loop and exact cyan stripe position. No new lenses or tubes; no wearer.\n\nGrade: Fine. The same piece, cleaned and repaired: stains gone, cloth evenly dyed, seams neat, plates refinished evenly, buckles bright. Add one thin line along the focal part named below: engraved on metal or ceramic, stitched on cloth or leather. Nothing else is added. The focal part: the rings around the lenses; the ornament at the strap mount (the lens glass keeps its colour).\n\nThe FIRST image is the Standard shape and registration master. Preserve all openings, pose, exact scale and margins. The portrait supplies brushwork only; no figure or scene. Preserve both lenses and every opening. No wearer or body inside. Fully transparent background. At 64 px Fine is a step cleaner/lighter, Masterwork has one clear accent line, Relic is darkest/warmer with old-gold inlay plus one small fitting ornament and repair, Celestial is palest with the ornament retained and no external glow.",
+    "keep_line": "the same paired round teal-glass night-sight goggles, three-quarter view with two thick segmented dark metal lens housings joined by a small two-rivet bridge, a hinged tall central bracket with three cyan diagonal stripes, rectangular top mount opening and a broad brown woven strap looping behind with one rectangular brass buckle. Preserve both circular lenses and their teal tint, every segment, hinge, rivet, bracket opening, strap loop and exact cyan stripe position. No new lenses or tubes; no wearer.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "armour-night_goggles--masterwork",
+    "standard_id": "armour-night_goggles",
+    "grade": "masterwork",
+    "label": "Night-sight Goggles — Masterwork",
+    "path": "art/icons/gear/armour-night_goggles--masterwork.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-night_goggles.png",
+      "art/icons/gear/armour-night_goggles--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-night_goggles",
+    "family_references": [
+      "art/icons/gear/armour-night_goggles.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same paired round teal-glass night-sight goggles, three-quarter view with two thick segmented dark metal lens housings joined by a small two-rivet bridge, a hinged tall central bracket with three cyan diagonal stripes, rectangular top mount opening and a broad brown woven strap looping behind with one rectangular brass buckle. Preserve both circular lenses and their teal tint, every segment, hinge, rivet, bracket opening, strap loop and exact cyan stripe position. No new lenses or tubes; no wearer.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes an inlay or a cord in the item's accent colour (bright brass if it has no accent), a clear coloured stripe along the focal part. Finer materials in exactly the same shapes: a tighter weave, a supple dark leather, polished plate with crisp edges, brass buckles. No wear. The focal part: the rings around the lenses; the ornament at the strap mount (the lens glass keeps its colour).\n\nThe FIRST image is the Standard shape and registration master. Preserve all openings, pose, exact scale and margins. The SECOND image is the preceding grade candidate; retain its earlier additions except the grade-specific material change. The portrait supplies brushwork only; no figure or scene. Preserve both lenses and every opening. No wearer or body inside. Fully transparent background. At 64 px Fine is a step cleaner/lighter, Masterwork has one clear accent line, Relic is darkest/warmer with old-gold inlay plus one small fitting ornament and repair, Celestial is palest with the ornament retained and no external glow. The newly added focal inlay line is cyan matching its original bracket stripes. Do not spread that accent across the whole object.",
+    "keep_line": "the same paired round teal-glass night-sight goggles, three-quarter view with two thick segmented dark metal lens housings joined by a small two-rivet bridge, a hinged tall central bracket with three cyan diagonal stripes, rectangular top mount opening and a broad brown woven strap looping behind with one rectangular brass buckle. Preserve both circular lenses and their teal tint, every segment, hinge, rivet, bracket opening, strap loop and exact cyan stripe position. No new lenses or tubes; no wearer.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "armour-night_goggles--fine"
+  },
+  {
+    "id": "armour-night_goggles--relic",
+    "standard_id": "armour-night_goggles",
+    "grade": "relic",
+    "label": "Night-sight Goggles — Relic",
+    "path": "art/icons/gear/armour-night_goggles--relic.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-night_goggles.png",
+      "art/icons/gear/armour-night_goggles--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-night_goggles",
+    "family_references": [
+      "art/icons/gear/armour-night_goggles.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same paired round teal-glass night-sight goggles, three-quarter view with two thick segmented dark metal lens housings joined by a small two-rivet bridge, a hinged tall central bracket with three cyan diagonal stripes, rectangular top mount opening and a broad brown woven strap looping behind with one rectangular brass buckle. Preserve both circular lenses and their teal tint, every segment, hinge, rivet, bracket opening, strap loop and exact cyan stripe position. No new lenses or tubes; no wearer.\n\nGrade: Relic. Keep the shape and the stripe. The piece takes an heirloom's warm deep patina (darker, warmer cloth and leather, plate in an oiled bronze-dark), the stripe becomes dull old gold, and one small flush gilt ornament sits at the place named below. Add one old repair that tells a story: a patch sewn on in an older cloth, or a plate held by replaced rivets. The focal part and the ornament's place: the rings around the lenses; the ornament at the strap mount (the lens glass keeps its colour).\n\nThe FIRST image is the Standard shape and registration master. Preserve all openings, pose, exact scale and margins. The SECOND image is the preceding grade candidate; retain its earlier additions except the grade-specific material change. The portrait supplies brushwork only; no figure or scene. Preserve both lenses and every opening. No wearer or body inside. Fully transparent background. At 64 px Fine is a step cleaner/lighter, Masterwork has one clear accent line, Relic is darkest/warmer with old-gold inlay plus one small fitting ornament and repair, Celestial is palest with the ornament retained and no external glow. Put the ornament only on the existing strap mount/buckle. Repair one existing rivet in a different metal or mend the existing strap inside its outline; no extra plate or fabric patch on lens glass.",
+    "keep_line": "the same paired round teal-glass night-sight goggles, three-quarter view with two thick segmented dark metal lens housings joined by a small two-rivet bridge, a hinged tall central bracket with three cyan diagonal stripes, rectangular top mount opening and a broad brown woven strap looping behind with one rectangular brass buckle. Preserve both circular lenses and their teal tint, every segment, hinge, rivet, bracket opening, strap loop and exact cyan stripe position. No new lenses or tubes; no wearer.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "armour-night_goggles--masterwork"
+  },
+  {
+    "id": "armour-night_goggles--celestial",
+    "standard_id": "armour-night_goggles",
+    "grade": "celestial",
+    "label": "Night-sight Goggles — Celestial",
+    "path": "art/icons/gear/armour-night_goggles--celestial.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-night_goggles.png",
+      "art/icons/gear/armour-night_goggles--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-night_goggles",
+    "family_references": [
+      "art/icons/gear/armour-night_goggles.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same paired round teal-glass night-sight goggles, three-quarter view with two thick segmented dark metal lens housings joined by a small two-rivet bridge, a hinged tall central bracket with three cyan diagonal stripes, rectangular top mount opening and a broad brown woven strap looping behind with one rectangular brass buckle. Preserve both circular lenses and their teal tint, every segment, hinge, rivet, bracket opening, strap loop and exact cyan stripe position. No new lenses or tubes; no wearer.\n\nGrade: Celestial. Keep the shape, the stripe and the ornament's place. The piece becomes pale and unmarked: ivory cloth, pale hide, pearl-ivory plate. The stripe gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Lenses and filters keep their own colour. The focal part: the rings around the lenses; the ornament at the strap mount (the lens glass keeps its colour).\n\nThe FIRST image is the Standard shape and registration master. Preserve all openings, pose, exact scale and margins. The SECOND image is the preceding grade candidate; retain its earlier additions except the grade-specific material change. The portrait supplies brushwork only; no figure or scene. Preserve both lenses and every opening. No wearer or body inside. Fully transparent background. At 64 px Fine is a step cleaner/lighter, Masterwork has one clear accent line, Relic is darkest/warmer with old-gold inlay plus one small fitting ornament and repair, Celestial is palest with the ornament retained and no external glow. All non-glass/non-filter body materials, straps, lining and fittings become pale ivory, preserving the lens/filter colours and original cyan paint on the goggles. Keep the contained light narrow, with completely transparent empty background.",
+    "keep_line": "the same paired round teal-glass night-sight goggles, three-quarter view with two thick segmented dark metal lens housings joined by a small two-rivet bridge, a hinged tall central bracket with three cyan diagonal stripes, rectangular top mount opening and a broad brown woven strap looping behind with one rectangular brass buckle. Preserve both circular lenses and their teal tint, every segment, hinge, rivet, bracket opening, strap loop and exact cyan stripe position. No new lenses or tubes; no wearer.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "armour-night_goggles--relic"
+  },
+  {
+    "id": "armour-gas_mask--fine",
+    "standard_id": "armour-gas_mask",
+    "grade": "fine",
+    "label": "Gas Mask — Fine",
+    "path": "art/icons/gear/armour-gas_mask--fine.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-gas_mask.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-gas_mask",
+    "family_references": [
+      "art/icons/gear/armour-gas_mask.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same tall dark rubber gas mask in three-quarter front view, two large squared amber-grey goggle lenses in thick bevelled frames, broad central nose ridge and protruding lower snout with two horizontal vent slots, two large olive round cheek filter drums with radial spokes and central caps, crossed brown crown straps and rectangular brass buckles. Preserve lens tint, olive filter colour, both canister shapes and spokes, all vents, harness routes, buckles, seams and precise upright silhouette. No face or wearer; no new tubes.\n\nGrade: Fine. The same piece, cleaned and repaired: stains gone, cloth evenly dyed, seams neat, plates refinished evenly, buckles bright. Add one thin line along the focal part named below: engraved on metal or ceramic, stitched on cloth or leather. Nothing else is added. The focal part: the cheek plates around the filters; the ornament at the strap buckle (the lenses keep their colour).\n\nThe FIRST image is the Standard shape and registration master. Preserve all openings, pose, exact scale and margins. The portrait supplies brushwork only; no figure or scene. Preserve both lenses and every opening. No wearer or body inside. Fully transparent background. At 64 px Fine is a step cleaner/lighter, Masterwork has one clear accent line, Relic is darkest/warmer with old-gold inlay plus one small fitting ornament and repair, Celestial is palest with the ornament retained and no external glow.",
+    "keep_line": "the same tall dark rubber gas mask in three-quarter front view, two large squared amber-grey goggle lenses in thick bevelled frames, broad central nose ridge and protruding lower snout with two horizontal vent slots, two large olive round cheek filter drums with radial spokes and central caps, crossed brown crown straps and rectangular brass buckles. Preserve lens tint, olive filter colour, both canister shapes and spokes, all vents, harness routes, buckles, seams and precise upright silhouette. No face or wearer; no new tubes.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null
+  },
+  {
+    "id": "armour-gas_mask--masterwork",
+    "standard_id": "armour-gas_mask",
+    "grade": "masterwork",
+    "label": "Gas Mask — Masterwork",
+    "path": "art/icons/gear/armour-gas_mask--masterwork.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-gas_mask.png",
+      "art/icons/gear/armour-gas_mask--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-gas_mask",
+    "family_references": [
+      "art/icons/gear/armour-gas_mask.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same tall dark rubber gas mask in three-quarter front view, two large squared amber-grey goggle lenses in thick bevelled frames, broad central nose ridge and protruding lower snout with two horizontal vent slots, two large olive round cheek filter drums with radial spokes and central caps, crossed brown crown straps and rectangular brass buckles. Preserve lens tint, olive filter colour, both canister shapes and spokes, all vents, harness routes, buckles, seams and precise upright silhouette. No face or wearer; no new tubes.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes an inlay or a cord in the item's accent colour (bright brass if it has no accent), a clear coloured stripe along the focal part. Finer materials in exactly the same shapes: a tighter weave, a supple dark leather, polished plate with crisp edges, brass buckles. No wear. The focal part: the cheek plates around the filters; the ornament at the strap buckle (the lenses keep their colour).\n\nThe FIRST image is the Standard shape and registration master. Preserve all openings, pose, exact scale and margins. The SECOND image is the preceding grade candidate; retain its earlier additions except the grade-specific material change. The portrait supplies brushwork only; no figure or scene. Preserve both lenses and every opening. No wearer or body inside. Fully transparent background. At 64 px Fine is a step cleaner/lighter, Masterwork has one clear accent line, Relic is darkest/warmer with old-gold inlay plus one small fitting ornament and repair, Celestial is palest with the ornament retained and no external glow. The newly added focal inlay line is bright brass. Do not spread that accent across the whole object.",
+    "keep_line": "the same tall dark rubber gas mask in three-quarter front view, two large squared amber-grey goggle lenses in thick bevelled frames, broad central nose ridge and protruding lower snout with two horizontal vent slots, two large olive round cheek filter drums with radial spokes and central caps, crossed brown crown straps and rectangular brass buckles. Preserve lens tint, olive filter colour, both canister shapes and spokes, all vents, harness routes, buckles, seams and precise upright silhouette. No face or wearer; no new tubes.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "armour-gas_mask--fine"
+  },
+  {
+    "id": "armour-gas_mask--relic",
+    "standard_id": "armour-gas_mask",
+    "grade": "relic",
+    "label": "Gas Mask — Relic",
+    "path": "art/icons/gear/armour-gas_mask--relic.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-gas_mask.png",
+      "art/icons/gear/armour-gas_mask--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-gas_mask",
+    "family_references": [
+      "art/icons/gear/armour-gas_mask.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same tall dark rubber gas mask in three-quarter front view, two large squared amber-grey goggle lenses in thick bevelled frames, broad central nose ridge and protruding lower snout with two horizontal vent slots, two large olive round cheek filter drums with radial spokes and central caps, crossed brown crown straps and rectangular brass buckles. Preserve lens tint, olive filter colour, both canister shapes and spokes, all vents, harness routes, buckles, seams and precise upright silhouette. No face or wearer; no new tubes.\n\nGrade: Relic. Keep the shape and the stripe. The piece takes an heirloom's warm deep patina (darker, warmer cloth and leather, plate in an oiled bronze-dark), the stripe becomes dull old gold, and one small flush gilt ornament sits at the place named below. Add one old repair that tells a story: a patch sewn on in an older cloth, or a plate held by replaced rivets. The focal part and the ornament's place: the cheek plates around the filters; the ornament at the strap buckle (the lenses keep their colour).\n\nThe FIRST image is the Standard shape and registration master. Preserve all openings, pose, exact scale and margins. The SECOND image is the preceding grade candidate; retain its earlier additions except the grade-specific material change. The portrait supplies brushwork only; no figure or scene. Preserve both lenses and every opening. No wearer or body inside. Fully transparent background. At 64 px Fine is a step cleaner/lighter, Masterwork has one clear accent line, Relic is darkest/warmer with old-gold inlay plus one small fitting ornament and repair, Celestial is palest with the ornament retained and no external glow. Put the ornament only on the existing strap mount/buckle. Repair one existing rivet in a different metal or mend the existing strap inside its outline; no extra plate or fabric patch on lens glass.",
+    "keep_line": "the same tall dark rubber gas mask in three-quarter front view, two large squared amber-grey goggle lenses in thick bevelled frames, broad central nose ridge and protruding lower snout with two horizontal vent slots, two large olive round cheek filter drums with radial spokes and central caps, crossed brown crown straps and rectangular brass buckles. Preserve lens tint, olive filter colour, both canister shapes and spokes, all vents, harness routes, buckles, seams and precise upright silhouette. No face or wearer; no new tubes.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "armour-gas_mask--masterwork"
+  },
+  {
+    "id": "armour-gas_mask--celestial",
+    "standard_id": "armour-gas_mask",
+    "grade": "celestial",
+    "label": "Gas Mask — Celestial",
+    "path": "art/icons/gear/armour-gas_mask--celestial.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-gas_mask.png",
+      "art/icons/gear/armour-gas_mask--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-gas_mask",
+    "family_references": [
+      "art/icons/gear/armour-gas_mask.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same tall dark rubber gas mask in three-quarter front view, two large squared amber-grey goggle lenses in thick bevelled frames, broad central nose ridge and protruding lower snout with two horizontal vent slots, two large olive round cheek filter drums with radial spokes and central caps, crossed brown crown straps and rectangular brass buckles. Preserve lens tint, olive filter colour, both canister shapes and spokes, all vents, harness routes, buckles, seams and precise upright silhouette. No face or wearer; no new tubes.\n\nGrade: Celestial. Keep the shape, the stripe and the ornament's place. The piece becomes pale and unmarked: ivory cloth, pale hide, pearl-ivory plate. The stripe gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Lenses and filters keep their own colour. The focal part: the cheek plates around the filters; the ornament at the strap buckle (the lenses keep their colour).\n\nThe FIRST image is the Standard shape and registration master. Preserve all openings, pose, exact scale and margins. The SECOND image is the preceding grade candidate; retain its earlier additions except the grade-specific material change. The portrait supplies brushwork only; no figure or scene. Preserve both lenses and every opening. No wearer or body inside. Fully transparent background. At 64 px Fine is a step cleaner/lighter, Masterwork has one clear accent line, Relic is darkest/warmer with old-gold inlay plus one small fitting ornament and repair, Celestial is palest with the ornament retained and no external glow. All non-glass/non-filter body materials, straps, lining and fittings become pale ivory, preserving the lens/filter colours and original cyan paint on the goggles. Keep the contained light narrow, with completely transparent empty background.",
+    "keep_line": "the same tall dark rubber gas mask in three-quarter front view, two large squared amber-grey goggle lenses in thick bevelled frames, broad central nose ridge and protruding lower snout with two horizontal vent slots, two large olive round cheek filter drums with radial spokes and central caps, crossed brown crown straps and rectangular brass buckles. Preserve lens tint, olive filter colour, both canister shapes and spokes, all vents, harness routes, buckles, seams and precise upright silhouette. No face or wearer; no new tubes.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "armour-gas_mask--relic"
   }
 ]

@@ -1,3 +1,12 @@
+# Live head-accessory claim — 19 November 2026
+
+Shared channel: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7011687307 . This worker owns128 exact IDs in art/_archive/gear/2026-11-19-kept-blade-grades/queue.json,113 delivered plus7 earlier blocked/dependent plus8 newly claimed head-accessory grades: armour-night_goggles and armour-gas_mask, all four grades each. Branch art/2026-11-19-kept-blade-grades. All52 earlier armour grades delivered.
+
+Peer58 grades preserved/imported at56d367683 with technical alpha cleanup and originals retained; do not redraw them. Free: Ballistic Helmet Relic/Celestial2; kept guns24/heavy8/powered8/thrown4=44; other new-Standard grades require checking claims/prerequisites. Current session has no usage-limit response. No artistic approval asserted.
+
+---
+Historical snapshots below; latest channel/queue takes precedence.
+
 # Live armour claim — 19 November 2026
 
 Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Latest claim comment7006801866.

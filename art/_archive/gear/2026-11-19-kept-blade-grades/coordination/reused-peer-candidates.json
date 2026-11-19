@@ -32,7 +32,9 @@
         "sha256": "7c0e200935f2841623fbf6d824999bf1802fb3376975f1c13c70d62020ecbb66"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-combat_knife--masterwork",
@@ -67,7 +69,9 @@
         "sha256": "1449732f7095242de84996be62b7ad7becf6057fa180238852db932614a3125b"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-combat_knife--relic",
@@ -102,7 +106,9 @@
         "sha256": "67f64483761fefddabf8b92739b7663dd0e963189421e4cf6f1e095c95b49ad2"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-combat_knife--celestial",
@@ -137,7 +143,9 @@
         "sha256": "3d1268723eed6f9b126b7e6f9057e29c1032113284c3e75c822fb8066b3e26c4"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-sabre--fine",
@@ -172,7 +180,9 @@
         "sha256": "e58dbfff9c0b71c9b00f2c68b89991b420c65a15435d46b9f993366afe505964"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-sabre--masterwork",
@@ -207,7 +217,9 @@
         "sha256": "eb8b141554761006b8581f7a57662acabd1761f25f9c2ed1d4cccefb1c5d81f8"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-sabre--relic",
@@ -242,7 +254,9 @@
         "sha256": "853e2ea35a034566cfb1e05e4873e7d0b4eb01f7079955551e0957ec491a91cc"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-sabre--celestial",
@@ -277,7 +291,9 @@
         "sha256": "8a2691a61b5b0cbef184c1e380887c8c978371c2130859fbb430e28801a1b231"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-legion_gladius--fine",
@@ -312,7 +328,9 @@
         "sha256": "8f5cd87c8a6ed39cb129536e727d695fa7ed9f1ad88600efcfeb335b72e661d5"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-legion_gladius--masterwork",
@@ -347,7 +365,9 @@
         "sha256": "01191242c1ef4312f7f16146e13d95a17eb722ec1259e335366676dc86d9cf5f"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-legion_gladius--relic",
@@ -382,7 +402,9 @@
         "sha256": "d504c45899231e14fec5b0984c04a7da411dbdce7f17f4901566233bb4a086eb"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   },
   {
     "id": "weapon-legion_gladius--celestial",
@@ -417,6 +439,8 @@
         "sha256": "033315c4fec348e2f998ce7df31abc564103a8422759e1b46998945022e1ad04"
       }
     ],
-    "source_path_normalized": true
+    "source_path_normalized": true,
+    "technical_revision_manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json",
+    "hash_scope": "Original pre-cleanup import hashes; selected production now uses preserved alpha<8 v2 cleanup."
   }
 ]

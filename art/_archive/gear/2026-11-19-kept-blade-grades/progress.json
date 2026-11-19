@@ -1,5 +1,5 @@
 {
-  "target": 120,
+  "target": 128,
   "status": "drawing",
   "delivered": [
     "weapon-kemizuchi_duelling_blade--fine",
@@ -123,11 +123,19 @@
     "weapon-war_axe--fine",
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
-    "weapon-war_axe--celestial"
+    "weapon-war_axe--celestial",
+    "armour-night_goggles--fine",
+    "armour-night_goggles--masterwork",
+    "armour-night_goggles--relic",
+    "armour-night_goggles--celestial",
+    "armour-gas_mask--fine",
+    "armour-gas_mask--masterwork",
+    "armour-gas_mask--relic",
+    "armour-gas_mask--celestial"
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T14:15:08.834554+00:00",
+  "updated_utc": "2026-11-19T14:17:24.948832+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }

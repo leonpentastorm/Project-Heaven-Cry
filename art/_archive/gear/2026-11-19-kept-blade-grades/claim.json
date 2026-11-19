@@ -1,6 +1,6 @@
 {
   "branch": "art/2026-11-19-kept-blade-grades",
-  "updated_utc": "2026-11-19T10:44:52.875215+00:00",
+  "updated_utc": "2026-11-19T14:17:24.948744+00:00",
   "ids": [
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
@@ -121,7 +121,15 @@
     "armour-heavy_boots--fine",
     "armour-heavy_boots--masterwork",
     "armour-heavy_boots--relic",
-    "armour-heavy_boots--celestial"
+    "armour-heavy_boots--celestial",
+    "armour-night_goggles--fine",
+    "armour-night_goggles--masterwork",
+    "armour-night_goggles--relic",
+    "armour-night_goggles--celestial",
+    "armour-gas_mask--fine",
+    "armour-gas_mask--masterwork",
+    "armour-gas_mask--relic",
+    "armour-gas_mask--celestial"
   ],
   "standards": [
     "weapon-kemizuchi_duelling_blade",
@@ -153,7 +161,9 @@
     "armour-work_gloves",
     "armour-combat_gloves",
     "armour-field_boots",
-    "armour-heavy_boots"
+    "armour-heavy_boots",
+    "armour-night_goggles",
+    "armour-gas_mask"
   ],
   "other_agent_proof_standards": [
     "weapon-katana",
@@ -168,7 +178,7 @@
     "weapon-legion_gladius"
   ],
   "peer_canonical_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
-  "target": 120,
-  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7006801866",
+  "target": 128,
+  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7011687307",
   "latest_implementer_commit": "c22cc8f7bd27fb73fb99cebea7b3ef2b57748454"
 }
