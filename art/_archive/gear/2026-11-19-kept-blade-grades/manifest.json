@@ -502,6 +502,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_machete--fine",
+      "path": "art/icons/gear/weapon-ork_machete--fine.png",
+      "sha256": "7fddba750ddf6906539e9b007e84ee436e8dc91da5a7ef22a469f96652bc80d0",
+      "label": "Ork Machete — Fine",
+      "family": "weapon-ork_machete",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_machete--fine.png",
+        "sha256": "e5aca654d25a8baedf932b765c48782ca273e8108eb8314368548e52e70645e3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_machete--fine.png",
+        "sha256": "7fddba750ddf6906539e9b007e84ee436e8dc91da5a7ef22a469f96652bc80d0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_machete--fine.txt",
+        "sha256": "680a39045534674869c68faa149a79f54bebc3f45c76dea3e29b0364499d05bb"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_machete.png",
+          "sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_machete--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_machete--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_machete--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_machete--fine.png"
+      },
+      "export_hashes": {
+        "256": "e82118dd157f796cfa82eaf49018ecba135e4f1fc6c48cc6b5a896236c699f87",
+        "128": "c72f7f4a5f0699482b6deea7898e87d309b9944e1327c8b6286b102265aca94d",
+        "64": "5126bd15c83edff39baddbbc832db4cdf4bfcd9137a271a891d7bfc336c3456b",
+        "32": "d2a730307fb36c01d0ec95de696b1f2b5c2af8b4211577ede3ffd82560ce4412"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-ork_machete",
+      "outline": {
+        "solid_alpha_iou": 0.9777527560677647,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 11
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
