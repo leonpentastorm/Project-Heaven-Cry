@@ -318,5 +318,37 @@
     "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--celestial.png",
     "size64_mask_differing_pixels": 69,
     "sha256": "464183d32b6f9d0fa32e75ac92c6823e02a7cf2b7ee419c953656e4f5ea3e785"
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--fine.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "4d7046e472e407c72f5215f2577b46361404ee362d264b49af1e4fa8c4261829"
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--masterwork.png",
+    "size64_mask_differing_pixels": 54,
+    "sha256": "732033d222aa75af6d2184ce215e442518795154b023303d4a54b41be4beaad1"
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--relic.png",
+    "size64_mask_differing_pixels": 40,
+    "sha256": "e9176bc24c9390cfd15e10211dbec981e805acb69f4a4f8f6a5b749e65c70313"
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--celestial.png",
+    "size64_mask_differing_pixels": 29,
+    "sha256": "47fa630328ae1bdcdeb3874bef25ef610807d765c0a597fe5bd8583a21e482df"
   }
 ]

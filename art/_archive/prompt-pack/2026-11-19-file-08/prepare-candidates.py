@@ -4,7 +4,7 @@ from PIL import Image,ImageDraw
 import numpy as np
 A=Path(__file__).resolve().parent.relative_to(Path.cwd().resolve())
 def stem(ident):return ident if ident.startswith(('shield-','armour-','focus-','quiver-')) else 'weapon-'+ident
-ids=('katana','combat_knife','sabre','legion_gladius','recurve_bow','longbow','drifter_revolver','crossbow','repeating_crossbow','shield-buckler','shield-riot_shield','shield-pavise')
+ids=('katana','combat_knife','sabre','legion_gladius','recurve_bow','longbow','drifter_revolver','crossbow','repeating_crossbow','shield-buckler','shield-riot_shield','shield-pavise','quiver-quiver','armour-utility_belt','armour-armoured_belt')
 tiers=('fine','masterwork','relic','celestial')
 manifest=[]
 out=Image.new('RGB',(840,150*len(ids)),'#10151F')

@@ -19672,6 +19672,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "quiver-quiver--fine": {
+      "label": "Quiver-Quiver Fine",
+      "path": "art/icons/gear/quiver-quiver--fine.png",
+      "sha256": "4d7046e472e407c72f5215f2577b46361404ee362d264b49af1e4fa8c4261829",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/quiver-quiver.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/quiver-quiver--fine.png",
+        "128": "art/icons/gear/exports/128/quiver-quiver--fine.png",
+        "64": "art/icons/gear/exports/64/quiver-quiver--fine.png",
+        "32": "art/icons/gear/exports/32/quiver-quiver--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
