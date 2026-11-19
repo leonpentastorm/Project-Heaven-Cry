@@ -106,7 +106,7 @@ const pop = await q.waitForSelector('[data-phc-vow-popup="enter"]', { timeout: 3
 await pause(q, 500); await q.screenshot({ path: OUT + 'effects-vow-popup.png' });
 ok('entering Survival\'s camp, the vow pop-up asks the Faithful character', pop);
 if (pop) {
-  await q.locator('[data-phc-vow]').first().click(); await pause(q, 200);
+  await q.locator('[data-phc-vow]').nth(1).click(); await pause(q, 200); // (the first, Shield, asks for its ally first)
   const cur = await q.locator('[data-phc-vow-current]').first().textContent();
   ok('a vow chosen is the standing vow (' + cur + ')', /^Vow: /.test(cur || ''));
   await q.locator('[data-phc-vow-done]').click(); await pause(q, 300);
