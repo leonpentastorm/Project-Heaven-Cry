@@ -3157,6 +3157,11 @@ if _sv is not None:
             if _v != "allowed" and _v not in _fa["texts"]: errors.append(f"actions:field.actions.{_k}: {_v!r} is allowed or one of texts {sorted(_fa['texts'])}")
         for _t, _w in _fa["texts"].items():
             if "{label}" not in _w: errors.append(f"actions:field.texts.{_t}: names the action ({{label}})")
+        # spec item 5610: the healing brake names real item actions (every one has its field row)
+        _bk = (((data.get("rules") or {}).get("mending") or {}).get("brake") or {})
+        for _k in _bk.get("actions") or []:
+            if _k not in _fa["actions"]: errors.append(f"rules:mending.brake.actions: {_k!r} is no item action (actions.json field.actions)")
+        if _bk and not (isinstance(_bk.get("mult"), (int, float)) and _bk["mult"] > 1): errors.append("rules:mending.brake.mult: a number over 1")
         if _fd.get("provisional") is not True: errors.append("survival:field: provisional: true")
 
 # Rules 1.54 (survival-spec 14.2, 14.3): items' pack_kind and plural, the recipes (one converter, recipes.ts) and the

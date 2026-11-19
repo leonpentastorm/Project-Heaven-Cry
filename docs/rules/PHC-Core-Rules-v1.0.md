@@ -12544,3 +12544,12 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     action's limit, its cost and its ops (`survival.json field.lasting_ops`) is gone. The rows were seeded from the
     guess's answers (198 actions: 103 allowed, 94 "free", 1 "lasting"; nothing changed for a player): the lead rules
     each "free" one by changing its row. A new item action needs its row (`test/gaps-032.test.ts` fails on one without).
+5610. **The healing brake per giver, written down for building** (item 4640, Leon's ruling ii; the lead's list: no lane
+    built it): each Mend, Touch or Shield, and the Mender's Triage, a giver gives the same target in the same round
+    costs its MP × 1.5 for every one that giver already gave that target this round (the second ×1.5, the third ×2.25).
+    Data: `rules.json mending.brake` (`mult`, `per`, and the four actions by `<item key>#<action id>`, checked by the
+    validator), marked `built: false`, PROVISIONAL. Not built here: the cost site's context (`effects/cost.ts price`,
+    the `cost` hook) carries no target, so no data row can count a giver's gives on one target; it needs the
+    target-aware price (N20, on the shared lane's branch). With it, the build is one general reader at the cost site:
+    the action's key in `brake.actions`, the count from `uses(h).on(target)` in `brake.per`, the MP price × `mult` to
+    that count. Touch is to be cut by the attribute lanes (Camaraderie takes the healing verbs): its row goes with it.
