@@ -6790,6 +6790,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-heavy_boots--masterwork",
+      "path": "art/icons/gear/armour-heavy_boots--masterwork.png",
+      "sha256": "ca9b7c5a495350690fdda4a4c8ef4de5cf7a07f1c2390deebe3e56d1426707c7",
+      "label": "Heavy Boots — Masterwork",
+      "family": "armour-heavy_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-heavy_boots--masterwork.png",
+        "sha256": "dad4cae65b8b4107ffe9868f2aa56fa6e9aaf281f573012a4902fbf5d4230829"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-heavy_boots--masterwork.png",
+        "sha256": "ca9b7c5a495350690fdda4a4c8ef4de5cf7a07f1c2390deebe3e56d1426707c7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-heavy_boots--masterwork.txt",
+        "sha256": "e63cade8fda4b8063bffa8ba3e10c756095841afcea31040f2285a2fa1b68188"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-heavy_boots.png",
+          "sha256": "bf6aa28766f45a090f5289c830c5638b78a1b54fc8034dda83eca4e4d839bf96"
+        },
+        {
+          "path": "art/icons/gear/armour-heavy_boots--fine.png",
+          "sha256": "dc0c7191f3a0d20810dd127f7db6ce0c7c24e4782a728159fa07d033d6838d72"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-heavy_boots--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-heavy_boots--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-heavy_boots--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-heavy_boots--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "be6efb7833fcc790e9f30fde615784d13299240e7e0f4c24881ae3ade08d8749",
+        "128": "2c6378a883871c57241f054f4f1709565ad54c918ced1c316b6386243c05b0c6",
+        "64": "d60d2708c6f23075bc679be3fc0f931780a539ec9279b7a94de830ac20513c7b",
+        "32": "416996a8ab572520d317464bdcee4a5e68de59855d6e24aab85e727abccc15d8"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-heavy_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9853815266348783,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 16
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
