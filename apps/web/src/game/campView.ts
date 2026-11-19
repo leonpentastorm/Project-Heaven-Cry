@@ -66,7 +66,7 @@ export function campConfirm(v: LoadoutViewV, next = false): { open: ('weapon' | 
 export function campLevelUpAsk(v: LoadoutViewV | null): LevelUpAsk | null {
   return !v || v.ready ? null : levelUpAsk(!!v.levelUp);
 }
-/** The one level-up prompt (the camp's Ready and the lobby's Start the run ask the same): null when nothing is due. */
+/** The one level-up question, asked by the camp's Ready and the lobby's Start the run alike; null when nothing is due. */
 export interface LevelUpAsk { title: string; text: string; back: string; go: string }
 export const levelUpAsk = (due: boolean): LevelUpAsk | null => (due ? { title: 'Level up first?', text: 'Perks or points are waiting.', back: 'Open Level up', go: 'Start without' } : null);
 let waivedLevel = '';
