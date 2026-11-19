@@ -12324,3 +12324,7 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     marked `needs_yielding_foe` (patrons.json: Mercy) is not offered, and is refused ("No enemy here can yield."), in a
     fight where no living enemy can yield (`yielding.ts canYield`, the one answer). `faith.ts faithView`, `swearVow`.
     Proof: `test/playtest-1118.test.ts`.
+5510. **Sigil Savant works in a Survival run** (row 16: both of its actions were refused in a run, "works in a story,
+    not in a run", while a run's rest node, a long rest, still set Rigid's practised words). Muscle Memory and Practise
+    words carry the `run` scope (`perks/d.ts`), so the path map, the camp and a shop take them as a story does. Proof:
+    `test/playtest-1118.test.ts` (both through the reducer's `story/perk` on the path map).

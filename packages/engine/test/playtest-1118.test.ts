@@ -230,3 +230,18 @@ describe('row 16: the Mercy vow is offered only when a foe can yield (canYield)'
     p.f.act({ type: 'faith/vow', unitId: p.u.id, id: 'mercy' } as any); expect(p.f.unit(p.u.id).vow?.id).toBe('mercy');
   });
 });
+
+import { runItemWhy } from '../src';
+import { startRun } from './helpers/survival';
+describe('row 16: Sigil Savant works in a Survival run (its Muscle Memory and Practise, through the reducer)', () => {
+  it('on the path map the Savant picks its Muscle Memory word and practises its words', () => {
+    const g0: any = JSON.parse(JSON.stringify(startRun(survivalRoom('PHC-0001', [{ build: 'plain_gun', level: 1 }], { test: true }), 'PHC-0001')));
+    expect(g0.run.state).toBe('map');
+    const c: any = Object.values(g0.characters)[0]; c.traits = [...(c.traits || []), 'sigil_savant']; c.sigils = ['spark', 'seek'];
+    expect(runItemWhy(g0, c, 'trait:sigil_savant', 'muscle')).toBeNull();
+    let g = apply(g0, { type: 'story/perk', charId: c.id, id: 'trait:sigil_savant', actionId: 'muscle', choice: 'spark' } as any, 'host');
+    expect(g.characters[c.id].state.sigil_savant.word).toBe('spark');
+    g = apply(g, { type: 'story/perk', charId: c.id, id: 'trait:sigil_savant', actionId: 'practise', choice: 'seek' } as any, 'host');
+    expect(g.characters[c.id].state.sigil_savant.practised).toEqual(['seek']);
+  });
+});
