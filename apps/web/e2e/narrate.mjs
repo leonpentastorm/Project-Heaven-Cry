@@ -72,6 +72,7 @@ try {
   await desk.locator('[data-gm-add="npcs"]').click();
   const np = desk.locator('[data-gm-entry="npcs.0"]');
   await np.getByLabel('Name', { exact: true }).fill('Knife in the Rafters');
+  await np.getByLabel('Side', { exact: true }).selectOption('hostile');
   await np.getByLabel('Tier', { exact: true }).selectOption('minion');
   await np.getByLabel('Weapon', { exact: true }).fill('service_pistol');
   await np.getByLabel('Tile', { exact: true }).fill('C2');

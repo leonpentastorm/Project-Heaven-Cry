@@ -94,9 +94,10 @@ export function deskTurn(g: GameState): Partial<NarratorTurn> {
   return out as Partial<NarratorTurn>;
 }
 
-/** A new entry of a list: each fixed choice at its first value (an entry is whole from the start), the rest empty. */
+/** A new entry of a list: each fixed choice the tool requires at its first value (an entry is whole from the start),
+ * the rest empty (an optional choice, a sigil mark's age on a trap, is sent only when picked). */
 function blank(s: Schema): any {
-  if (s.type === 'object' && s.properties) return Object.fromEntries(Object.entries(s.properties).filter(([, p]) => p.enum && p.type !== 'array').map(([k, p]) => [k, p.enum!.find((x) => x !== '') ?? p.enum![0]]));
+  if (s.type === 'object' && s.properties) return Object.fromEntries(Object.entries(s.properties).filter(([k, p]) => p.enum && p.type !== 'array' && (s.required || []).includes(k)).map(([k, p]) => [k, p.enum!.find((x) => x !== '') ?? p.enum![0]]));
   if (s.enum) return s.enum[0];
   return '';
 }
