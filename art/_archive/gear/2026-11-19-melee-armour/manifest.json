@@ -2050,6 +2050,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-rig_belt",
+      "path": "art/icons/gear/armour-rig_belt.png",
+      "sha256": "44bd233e33a7f498cb19cd94101e71a0e5e1cbbdb12c4a1e9a60d4b656a63269",
+      "label": "Rig belt",
+      "family": "07-belts",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-rig_belt.png",
+        "sha256": "3fe202c537c5cb932e2a56c643e0428b8f5fe415dc5772b7858b90447054151c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-rig_belt.png",
+        "sha256": "44bd233e33a7f498cb19cd94101e71a0e5e1cbbdb12c4a1e9a60d4b656a63269"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-rig_belt.txt",
+        "sha256": "a01b492cab880bef8b0c00eb839d1455dc7f3445a588335ef092ab146f0a4729"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-utility_belt.png",
+          "sha256": "4bb4cedeb68f51fde7c8749b6b0f34e1f4af6522504e5e1c38bd580a9d79f498"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-rig_belt.png",
+        "128": "art/icons/gear/exports/128/armour-rig_belt.png",
+        "64": "art/icons/gear/exports/64/armour-rig_belt.png",
+        "32": "art/icons/gear/exports/32/armour-rig_belt.png"
+      },
+      "export_hashes": {
+        "256": "e5339821f4a9da76dcaf6519e9ce822d9cf89d592ca1dcd4c67250e874a05b22",
+        "128": "f5ccf02ad8d9e6359281fa122dfc133863af8350bd6034b399314bafc58f590a",
+        "64": "fb7f774ecd92fcbd421a279ccc7b309b47397f4547ae5c9856b40cffebe89f36",
+        "32": "6fcdd897fc029a232b1ec79b68f97c7cf0541af69e885d7022aa5c10dfb345a3"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

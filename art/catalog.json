@@ -19542,6 +19542,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "armour-rig_belt": {
+      "label": "Rig belt",
+      "path": "art/icons/gear/armour-rig_belt.png",
+      "sha256": "44bd233e33a7f498cb19cd94101e71a0e5e1cbbdb12c4a1e9a60d4b656a63269",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-rig_belt.png",
+        "128": "art/icons/gear/exports/128/armour-rig_belt.png",
+        "64": "art/icons/gear/exports/64/armour-rig_belt.png",
+        "32": "art/icons/gear/exports/32/armour-rig_belt.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-rig_belt.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 17,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
