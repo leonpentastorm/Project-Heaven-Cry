@@ -6112,6 +6112,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-work_gloves--relic",
+      "path": "art/icons/gear/armour-work_gloves--relic.png",
+      "sha256": "243031298ffb4a2dbbe93fec6bfb166c0288fb9621c698adc718d2e411535d96",
+      "label": "Work Gloves — Relic",
+      "family": "armour-work_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-work_gloves--relic.png",
+        "sha256": "c10ed633f282f1e7655e250c646665f2db065e6f6f65a73884084a13be377462"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-work_gloves--relic.png",
+        "sha256": "243031298ffb4a2dbbe93fec6bfb166c0288fb9621c698adc718d2e411535d96"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-work_gloves--relic.txt",
+        "sha256": "1c8e48e128f72ce5f2758c70da227b1f93989298673e554b75e6ff91d0d6d544"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-work_gloves.png",
+          "sha256": "4ad6c1706c2db4051f02d71ec41d3e878c23c5be12661864a81d80888f6b12c6"
+        },
+        {
+          "path": "art/icons/gear/armour-work_gloves--masterwork.png",
+          "sha256": "1380af440ce28758d3ebb14fd5ae99214ac61821e48798872ff58ffa9bd1fe0c"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-work_gloves--relic.png",
+        "128": "art/icons/gear/exports/128/armour-work_gloves--relic.png",
+        "64": "art/icons/gear/exports/64/armour-work_gloves--relic.png",
+        "32": "art/icons/gear/exports/32/armour-work_gloves--relic.png"
+      },
+      "export_hashes": {
+        "256": "5c599f195b0aff427448b3507b34b78d2d4c9a57cd726b880d38884416a878a9",
+        "128": "3756c530ecd2e4a5be821ff449155f3f3bfa407bb85594271e670adbfd17e320",
+        "64": "e4b6922740ee3c57acfdfc6abaedb62bcbe83e86bdcda1a0827b71d926e25c0d",
+        "32": "7f1bfae350d2a3a54d3562d67f87d13d27daea3f4a97dc3e785321f356529a24"
+      },
+      "grade": "relic",
+      "standard_id": "armour-work_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9835095444757731,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 18
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
