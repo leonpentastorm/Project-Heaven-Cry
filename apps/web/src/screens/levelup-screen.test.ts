@@ -304,4 +304,13 @@ describe('rules 1.70: the TO CHOOSE strip carries an old save\'s re-pick (item 5
     expect((G.characters[c.id] as any).doorPicks.figment_forms).toEqual([form]);
     await React.act(async () => { root.unmount(); });
   });
+  it('Step 3b (the 0.32 merge): a point of Visualization raised on this screen above 1 puts its one more form in TO CHOOSE, not only on the MAGIC tab', async () => {
+    const c = setup((x) => { x.skills.visualization = 2; x.attrs.expression = Math.max(x.attrs.expression || 1, 4); x.doorPicks = { ...(x.doorPicks || {}), figment_forms: ['double', 'snare', 'hand'] }; x.unspent = { ...(x.unspent || {}), skill: 1 }; });
+    const { el, root } = await mount();
+    expect(el.querySelector('.phc-lu-tc[data-kind="door"]')).toBeNull(); // 3 known at 2, 3 held: nothing to choose
+    await React.act(async () => { doAct({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: 'visualization' }); });
+    expect(G.characters[c.id].skills.visualization).toBe(3);
+    const chip = el.querySelector('.phc-lu-tc[data-kind="door"]') as HTMLButtonElement; expect(chip, 'the one more form is a TO CHOOSE chip').toBeTruthy();
+    await React.act(async () => { root.unmount(); });
+  });
 });
