@@ -592,7 +592,7 @@ function basicPreview(x: DescCtx, d: ActionDescriptor, p: Picks, action: Action 
   {
     if (d.preview === 'attack' && p.targetId) {
       const tg = x.cb.units.find((v) => v.id === p.targetId); if (!tg || d.id === 'paired') return null;
-      const pv: any = safe(() => withGame(x.g, () => previewAttack(x.cb, x.u, tg, (d.id === 'skill' ? 'shot' : d.id) as AttackMode)), null);
+      const pv: any = safe(() => withGame(x.g, () => previewAttack(fightWith(x.cb, (action as any)?.mods?.length ? (action as any).mods : null), x.u, tg, (d.id === 'skill' ? 'shot' : d.id) as AttackMode)), null); // with the switches the action carries (as the reducer)
       if (!pv) return null;
       const say = basicSay(x, d, p);
       return { lines: pv.ok ? [{ k: 'odds', text: tg.name + ': ' + pv.pct + '% to hit' }, ...(say ? [{ k: 'note' as const, text: say }] : [])] : [], ...(pv.ok ? { ap: pv.ap } : {}), ...(pv.ok ? {} : { ok: false, why: pv.why }), marks: { units: [{ id: tg.id, tag: pv.ok ? pv.pct + '%' : '', tone: 'target' }] } };

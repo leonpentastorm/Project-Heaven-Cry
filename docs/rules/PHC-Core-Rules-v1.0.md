@@ -12266,8 +12266,8 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
 5501. **Your own tile is no aim for a Line that would only harm you** (row 3: a click on your own end glyph armed a
     SPARK · SEEK at yourself, 64 damage). The self-target rule (Sigil magic, "You can always target yourself") is for
     healing, shielding, blinking or hiding yourself and for centring a Burst on yourself. A Line whose Subjects harm
-    (an Element or an Affliction) with no Boon, no Working, no Burst (SPREAD), no KIN and nothing placed (STAY, WAIT,
-    WATCH) is refused on your own tile before anything is spent, and your tile is not offered as a pick. `sigil.ts
+    (an Element or an Affliction) with no Boon, no Working, no Burst (SPREAD), no CHAIN (it jumps on from you to the
+    creatures round you), no KIN and nothing placed (STAY, WAIT, WATCH) is refused on your own tile before anything is spent, and your tile is not offered as a pick. `sigil.ts
     planEvoke`. Proof: `test/playtest-1118.test.ts` (the reducer's `combat/evoke`).
 5502. **Parry rolls with what the Guard door gives** (row 5: a Durability 7 tank holding Guard parried with d20 +2, not
     +9). A parry is a melee roll: an item's `roll_with` (Durability's door: Durability in place of the weapon's skill

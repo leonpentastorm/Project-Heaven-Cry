@@ -298,6 +298,9 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const slotUntil = React.useRef(0);
   /** A fight's end is known and its cards are not yet queued: the turn banners and their cut-ins hold. */
   const endPending = React.useRef(false);
+  /** Cards that wait for the fight's end panel (LEVEL UP): shown when it closes, or when no panel comes. */
+  const afterEnd = React.useRef<Banner[]>([]);
+  const flushAfterEnd = () => { const q = afterEnd.current; afterEnd.current = []; for (const b of q) showCard(b); };
   const showCard = (b0: Banner, reserved = false) => {
     if (document.hidden) return;
     const k = fightPace(), b = { ...b0, k }, total = BIG.includes(b.kind) ? bigTotal(b, reducedMotion()) : ((reducedMotion() ? 300 : 520) + b.hold) * k;
@@ -323,6 +326,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
       const g2 = live.current.game, cb2 = g2?.combat;
       if (cb2 && cb2.field && !cb2.over && live.current.screen === 'combat' && !document.hidden) showCard(fieldCard(cb2)); // a run's field: FREE ROAM, after the panel
       endPending.current = false; // the field's first turn banner follows
+      flushAfterEnd(); // a LEVEL UP waiting on the panel, after FREE ROAM in the slot
     };
     endClose.current = close;
     if (document.hidden) { close(); setEndFlag(false); return; }
@@ -360,7 +364,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
   const liveFights = React.useRef(new Set<string>());
   React.useEffect(() => {
     if (!cb || screen !== 'combat') {
-      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); endPending.current = false; if (endClose.current) { endClose.current = null; setEndFlag(false); } }
+      if (!cb) { seen.current = null; clearAll(); setBanner(null); setCut(null); endPending.current = false; if (endClose.current) { endClose.current = null; setEndFlag(false); } flushAfterEnd(); }
       // Away on another screen (level up, the sheet): what happened meanwhile isn't announced late.
       else if (seen.current && seen.current.fight === fightId) seen.current = { fight: fightId, n: lastN, key: turnKey };
       return;
@@ -450,7 +454,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     const until = Date.now() + 20000 * fightPace(); // a safety net only: the card waits for the fight's last effect
     const still = () => { const { game: g2, screen: sc } = live.current; return !!endOf(g2?.combat) && sc === 'combat' && combatStreamKey(g2) === stream; };
     const tryShow = () => {
-      if (!still()) { endPending.current = false; setEndFlag(false); return; }
+      if (!still()) { endPending.current = false; setEndFlag(false); flushAfterEnd(); return; }
       const waitFx = (clock.on || hasLayer()) && clock.at < lastFx;
       // Its last effect has started: the card waits for it (and anything queued with it) to finish, and for a cut-in.
       const rest = waitFx ? 100 : cutInActive() ? 120 : fxBusyUntil() - performance.now();
@@ -470,7 +474,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     const was = levels.current; levels.current = { code: game.code, at: now };
     if (!was || was.code !== game.code || game.sandbox) return;
     // after a fight's end panel (VICTORY or DEFEAT) when one is up or pending: it comes first
-    const show = (b: Banner) => { if (endPending.current || endClose.current) { later(() => show(b), 300); return; } showCard(b); };
+    const show = (b: Banner) => { if (endPending.current || endClose.current) afterEnd.current.push(b); else showCard(b); }; // the end panel first: it flushes these when it closes
     for (const id of Object.keys(now)) if (was.at[id] != null && now[id] > was.at[id]) show(levelUpCard(game, id));
   }, [game?.code, levelSig]);
 

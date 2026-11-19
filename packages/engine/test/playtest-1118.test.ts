@@ -69,6 +69,9 @@ describe('row 3: Evoke never arms yourself with a Line that would only hit you',
     expect(withGame(f.g, () => previewEvoke(f.cb, u, u.pos, u.pos)).ok).toBe(true);
     const g = line(['spark', 'spread']), v = g.unit(g.pc.id);
     expect(withGame(g.g, () => previewEvoke(g.cb, v, v.pos, v.pos)).pickable).toContain(v.pos);
+    // a CHAIN from your own tile jumps on to the creatures round you: your tile stays a pick
+    const h = line(['spark', 'chain']), w = h.unit(h.pc.id);
+    expect(withGame(h.g, () => previewEvoke(h.cb, w, w.pos, w.pos)).pickable).toContain(w.pos);
   });
 });
 

@@ -310,6 +310,6 @@ export { TECH_OPTIONS as TECH_OPTS, techOpt as techOptOf } from '@engine';
  * switches the attack will carry (a Break: Shadow's damage), the mods sendDescriptor puts on the action Confirm sends
  * (only those that are on and allowed), so the card's damage is the one the reducer deals. */
 export function targetAttackPreview(g: any, cb: any, cur: any, tgt: any, mode: string, mods: string[] | null | undefined, me: string | null): any {
-  const sent: any = mods && mods.length ? sendDescriptor(g, cur.id, mode, { targetId: tgt.id, mods }, me) : null;
+  const sent: any = sendDescriptor(g, cur.id, mode, { targetId: tgt.id, ...(mods && mods.length ? { mods } : {}) }, me); // (none picked: the switches on by default)
   return previewAttack(fightWith(cb, sent && sent.mods && sent.mods.length ? sent.mods : null), cur, tgt, mode as any);
 }
