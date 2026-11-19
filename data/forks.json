@@ -167,7 +167,7 @@
       "name": "Stand Fast",
       "kind": "verb",
       "door": "durability",
-      "step": 6,
+      "step": 8,
       "icon": "fork.guard.stand_fast",
       "requires": [
         {
@@ -189,7 +189,7 @@
       "name": "Drive",
       "kind": "verb",
       "door": "durability",
-      "step": 6,
+      "step": 8,
       "icon": "fork.guard.drive",
       "requires": [
         {
@@ -296,7 +296,7 @@
       "name": "Lightkiller",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 6,
+      "step": 8,
       "icon": "fork.shadow.lightkiller",
       "requires": [
         {
@@ -324,7 +324,7 @@
       "name": "Spotter",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 6,
+      "step": 8,
       "icon": "fork.shadow.spotter",
       "requires": [
         {
@@ -463,7 +463,7 @@
       "name": "Shared Pulse",
       "kind": "verb",
       "door": "empathy",
-      "step": 6,
+      "step": 8,
       "icon": "fork.tend.shared_pulse",
       "requires": [
         {
@@ -512,7 +512,7 @@
       "name": "Long Thread",
       "kind": "verb",
       "door": "empathy",
-      "step": 6,
+      "step": 8,
       "icon": "fork.tend.long_thread",
       "requires": [
         {
@@ -590,7 +590,7 @@
       "name": "Benediction",
       "kind": "verb",
       "door": "faith",
-      "step": 6,
+      "step": 8,
       "icon": "fork.prayer.benediction",
       "requires": [
         {
@@ -620,7 +620,7 @@
       "name": "Held Breath",
       "kind": "verb",
       "door": "faith",
-      "step": 6,
+      "step": 8,
       "icon": "fork.prayer.held_breath",
       "requires": [
         {
@@ -737,7 +737,7 @@
       "name": "Spill",
       "kind": "verb",
       "door": "raw_power",
-      "step": 6,
+      "step": 8,
       "icon": "fork.momentum.spill",
       "requires": [
         {
@@ -760,7 +760,7 @@
       "name": "Headlong",
       "kind": "verb",
       "door": "raw_power",
-      "step": 6,
+      "step": 8,
       "icon": "fork.momentum.headlong",
       "requires": [
         {
@@ -880,7 +880,7 @@
       "name": "Through the Gap",
       "kind": "verb",
       "door": "dexterity",
-      "step": 6,
+      "step": 8,
       "icon": "fork.pressure.through_the_gap",
       "requires": [
         {
@@ -971,7 +971,7 @@
       "name": "Lockdown",
       "kind": "verb",
       "door": "dexterity",
-      "step": 6,
+      "step": 8,
       "icon": "fork.pressure.lockdown",
       "requires": [
         {
@@ -1081,7 +1081,7 @@
       "name": "Written in Advance",
       "kind": "verb",
       "door": "brain_power",
-      "step": 6,
+      "step": 8,
       "icon": "fork.sigil.written_in_advance",
       "requires": [
         {
@@ -1107,7 +1107,7 @@
       "name": "Running Script",
       "kind": "verb",
       "door": "brain_power",
-      "step": 6,
+      "step": 8,
       "icon": "fork.sigil.running_script",
       "requires": [
         {
@@ -1180,7 +1180,7 @@
       "name": "Blood Price",
       "kind": "verb",
       "door": "will_power",
-      "step": 6,
+      "step": 8,
       "icon": "fork.soul.blood_price",
       "requires": [
         {
@@ -1206,7 +1206,7 @@
       "name": "Clean Break",
       "kind": "verb",
       "door": "will_power",
-      "step": 6,
+      "step": 8,
       "icon": "fork.soul.clean_break",
       "requires": [
         {

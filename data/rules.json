@@ -321,7 +321,7 @@
       "counter_bonus": "max(0, mod(raw_power))",
       "injury_resist_pct": "10*(endurance-1)",
       "crit_damage_taken_pct": "-10*(perception-1) - 5*analysis (the skill named Acuity)",
-      "elemental_damage_taken_pct": "-10*pain_threshold",
+      "elemental_damage_taken_pct": "-6*pain_threshold (skills.json pain_threshold per_point.numbers.elemental_taken), every source together at most combat.elemental_taken_cap (rules 1.70 item 5540)",
       "ambush_damage_taken_pct": "-10*proficiency (the skill named Improvisation)",
       "healing_received_pct": "10*camaraderie",
       "saves": {
@@ -376,7 +376,7 @@
       "soul_cost_pct": "-5*(insight-1)",
       "soul_range_bonus_tiles": "0.5*will_power",
       "syphon_bonus_pct": "10*(determination-1) + 10*will_power",
-      "strain_limit": "3 + floor(will_power/2)",
+      "strain_limit": "3, +1 at Composure 1, 2, 4, 6 and 8 (rules 1.70 item 5539; soul_modules.json strain.limit)",
       "prayer_cooldown_turns": "max(3, ceil(9 - 0.75*faith - 0.25*virtue)) rounds (rules 1.22; patrons.json prayer.hymn.cooldown_rule)",
       "ready_designs": "2 + floor(will_power/2), at least 3"
     },
@@ -891,6 +891,8 @@
       "expire": "end of combat unless stated"
     },
     "healing_cap": "max HP",
+    "elemental_taken_cap": 0.8,
+    "elemental_taken_cap_note": "PROVISIONAL. Rules 1.70 item 5540 (Leon, 19 Nov 2026): the most elemental damage taken off, from every source together (Pain Threshold's +6% a point, at most 60%, and the rest from gear and traits); one number, read by character.ts elementalCap wherever the cap applies.",
     "downed": {
       "at_hp": 0,
       "can_act": false,

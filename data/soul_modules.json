@@ -58,7 +58,7 @@
     }
   },
   "strain": {
-    "limit": "3 + floor(will_power/2)",
+    "limit": { "base": 3, "steps": [{ "of": "skill:composure", "at": 1, "value": 1 }, { "of": "skill:composure", "at": 2, "value": 1 }, { "of": "skill:composure", "at": 4, "value": 1 }, { "of": "skill:composure", "at": 6, "value": 1 }, { "of": "skill:composure", "at": 8, "value": 1 }], "provisional": true, "note": "Rules 1.70 item 5539 (Leon's ruling; ruling layer section 3 item 10): 3, +1 at Composure 1, 2, 4, 6 and 8; Will Power gives none. A number block read by character.ts strainLimit (items add through the stat strain_limit)." },
     "decay_per_turn": 1,
     "burn_per_point": 8,
     "short_at_over": 3,

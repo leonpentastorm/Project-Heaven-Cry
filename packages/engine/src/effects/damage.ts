@@ -17,6 +17,7 @@ import { emit, harmHeld } from './hooks';
 import { noteTended } from './mending';
 import { rawHidden, setDowned } from '../unitstate';
 import { canYield, YIELD } from '../yielding';
+import { ELEMENTAL_CAP } from '../character';
 
 /** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
 export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };
@@ -80,7 +81,7 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
   if (soft) {
     // Derived reductions (spec: Derived stats): Elemental damage taken (−10% × Pain Threshold) and Ambush damage taken
     // (−10% × Reaction Speed), each capped at 60%, before items.
-    if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.elemTaken));
+    if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(ELEMENTAL_CAP, t.elemTaken)); // rules 1.70 item 5540: the one cap
     if (src.ambush && t.ambushTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.ambushTaken));
     // Read Them (Acuity 5, rules 1.13; was Weak Point): an enemy the squad has analysed deals 15% less damage to it. The
     // mark is Unit.weakPoint (Analyze at 5 points, Case Closed, Detective's Eye), whichever side holds it.

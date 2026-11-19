@@ -1,7 +1,7 @@
 // The skill road map (rules 1.54 item 4119; ui-screens "Skill texts on the three skill screens"): every skill's rows
 // placed on points 1 to 10 by the one helper the three screens share. Reads the data, not sentences.
 import { describe, expect, it, vi } from 'vitest';
-import { SKILL, ladderCaps } from '@engine';
+import { SKILL, ladderCaps, ladderStepAt, ladderSchedule } from '@engine';
 vi.stubGlobal('location', { search: '', hash: '' });
 const { D, roadMap, rowPoints, nextLine, headLine, rowText } = await import('./shared');
 
@@ -43,7 +43,10 @@ describe('the road map of every skill', () => {
         const texts = t.lines.map((l: any) => l.text);
         expect(new Set(texts).size, s.id + ' step ' + t.n + ' repeats a line').toBe(texts.length);
         for (const x of texts) expect(x, s.id).not.toMatch(/\{=|undefined|NaN/);
-        const u = k.unlocks[t.n], m = u ? Number(u.mastery) || 0 : 0;
+        // rules 1.70 item 5537: the perk steps and the Mastered perk sit where the ladder's schedule puts them (by slot)
+        const L = ladderSchedule(s.id), ls = ladderStepAt(s.id, t.n);
+        const m = L.perk_steps.indexOf(t.n) + 1 || (t.n === L.mastered ? 5 : 0);
+        expect(ls === 'fork' ? '' : ls, s.id + ' the schedule at ' + t.n).toBe(m >= 1 && m <= 4 ? 'M' + m : m === 5 ? 'mastered' : '');
         expect(t.step, s.id + ' step ' + t.n).toBe(m >= 1 && m <= 4 ? 'M' + m : m === 5 ? 'mastered' : '');
         if (m >= 1 && m <= 4) expect(t.perks.map((p: any) => p.name)).toEqual(s.ep.perks.map((p: any) => p.name));
         if (m === 5) expect(t.perks.map((p: any) => p.name)).toEqual([s.ep.mastered.name]);
@@ -65,12 +68,15 @@ describe('the road map of every skill', () => {
     expect(at(10)).toEqual([...per, 'row:every 2', 'row:every 2', 'mastered:at 10']);
     // the perk step names the two perks once (level 3); later steps say "Perk", the names in the hover
     expect(r.steps[2].lines.find((l: any) => l.kind === "perk")!.text).toMatch(/^Perk: .+ or .+$/);
-    for (const n of [5, 7, 9]) { const l = r.steps[n - 1].lines.find((x: any) => x.kind === 'perk')!; expect(l.text).toBe('Perk'); expect(l.tip).toMatch(/^Perk: .+ or .+, or a Tier II · /); }
+    for (const n of ladderSchedule('will_power').perk_steps.slice(1)) { const l = r.steps[n - 1].lines.find((x: any) => x.kind === 'perk')!; expect(l.text).toBe('Perk'); expect(l.tip).toMatch(/^Perk: .+ or .+, or a Tier II · /); }
   });
-  it('capped rows (0.31.11): Pain Threshold elemental resistance to 6, Durability plates held to the pool cap, Faith Hymn wait to its floor', () => {
+  it('capped rows (0.31.11; rules 1.70 item 5540): Pain Threshold elemental resistance to its cap (10 at +6% a point), Durability plates held to the pool cap, Faith Hymn wait to its floor', () => {
     const shown = (id: string, re: RegExp) => roadMap(id).steps.filter((t: any) => t.lines.some((l: any) => re.test(l.text))).map((t: any) => t.n);
-    expect(shown('pain_threshold', /elemental resistance/)).toEqual([1, 2, 3, 4, 5, 6]);
-    expect(roadMap('pain_threshold').steps[5].lines.some((l: any) => /elemental resistance \(max\)$/.test(l.text))).toBe(true);
+    const pt = ladderCaps('pain_threshold', null), pj = Number(Object.keys(pt)[0]);
+    expect(pt[pj]).toBe(10);
+    expect(shown('pain_threshold', /elemental resistance/)).toEqual(Array.from({ length: pt[pj] }, (_, i) => i + 1));
+    expect(roadMap('pain_threshold').steps[pt[pj] - 1].lines.some((l: any) => /elemental resistance \(max\)$/.test(l.text))).toBe(true);
+    expect(roadMap('pain_threshold').steps.slice(0, pt[pj] - 1).every((t: any) => !t.lines.some((l: any) => /\(max\)$/.test(l.text)))).toBe(true);
     const pool = ladderCaps('durability', null), j = Number(Object.keys(pool)[0]);
     expect(shown('durability', /Guard plate held/)).toEqual(Array.from({ length: pool[j] }, (_, i) => i + 1));
     const hw = ladderCaps('faith', null), h = Number(Object.keys(hw)[0]);

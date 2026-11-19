@@ -15,6 +15,13 @@
     "9": 8,
     "10": 9
   },
+  "ladder": {
+    "alpha": { "perk_steps": [3, 6, 7, 9], "forks": [4, 8], "mastered": 10 },
+    "beta": { "perk_steps": [3, 5, 7, 9], "forks": [], "mastered": 10 },
+    "gamma": { "perk_steps": [3, 5, 7, 9], "forks": [], "mastered": 10 },
+    "provisional": true,
+    "note": "Rules 1.70 item 5537 (ruling layer section 1): THE schedule of a skill's ladder by its slot: the points of its perk steps (one perk at Tier I, or a Tier I raised to II, from the skill's own acquired perks: two or four), of its fork steps (an alpha's skills.json forks, in order), and of its Mastered perk. Read by character.ts stepsEarned and doorpicks.ts; the level-up screen and the ? page read the engine's answer. Mastery levels (mastery_at) are a different thing (Overreach, the named unlocks) and stay."
+  },
   "mastery_at": {
     "1": 3,
     "2": 5,
@@ -48,7 +55,6 @@
       "forks": [
         {
           "id": "a",
-          "at": 4,
           "of": [
             "fork.guard.provoke",
             "fork.guard.cover_them"
@@ -56,7 +62,6 @@
         },
         {
           "id": "b",
-          "at": 6,
           "of": [
             "fork.guard.stand_fast",
             "fork.guard.drive"
@@ -496,7 +501,7 @@
         "5": {
           "name": "Second Wind",
           "category": "Active Skill",
-          "mastery": 2,
+          "mastery": 0,
           "text": "{=unlocks.5.effects.0.ap} AP, once per combat: recover {=unlocks.5.amounts.heal.per.0.value|pct}% of your max HP.",
           "player": "{=.effects.0.ap} AP, once a fight: heal {=.amounts.heal.per.0.value|pct}% max HP",
           "effects": [
@@ -506,7 +511,9 @@
               "label": "Second Wind",
               "ap": 2,
               "uses": "per_combat",
-              "scope": ["combat"],
+              "scope": [
+                "combat"
+              ],
               "effects": [
                 {
                   "op": "mend",
@@ -521,22 +528,17 @@
             "heal": {
               "kind": "heal",
               "base": 0,
-              "per": [{ "of": "self:max_hp", "value": 0.25 }],
+              "per": [
+                {
+                  "of": "self:max_hp",
+                  "value": 0.25
+                }
+              ],
               "heal_kind": "perk"
             }
           },
           "adjudication": "engine",
           "item": true
-        },
-        "6": {
-          "name": "Fork: Stand Fast or Drive",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's second fork: choose Stand Fast or Drive, once, out of a fight, kept for good (data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -550,6 +552,16 @@
             }
           ],
           "adjudication": "engine"
+        },
+        "8": {
+          "name": "Fork: Stand Fast or Drive",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork: choose Stand Fast or Drive, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "9": {
           "name": "Mastery 4",
@@ -644,7 +656,7 @@
       "per_point": {
         "numbers": {
           "feed": 0.01,
-          "elemental_taken": 0.1,
+          "elemental_taken": 0.06,
           "hp_per_level": 2
         },
         "rows": [
@@ -954,7 +966,6 @@
       "forks": [
         {
           "id": "a",
-          "at": 4,
           "of": [
             "fork.momentum.rolling_start",
             "fork.momentum.grindstone"
@@ -962,7 +973,6 @@
         },
         {
           "id": "b",
-          "at": 6,
           "of": [
             "fork.momentum.spill",
             "fork.momentum.headlong"
@@ -1035,7 +1045,7 @@
         "5": {
           "name": "Follow Through",
           "category": "Combat Interaction",
-          "mastery": 2,
+          "mastery": 0,
           "text": "When a Finisher of yours takes its target out, you are left with {=unlocks.5.effects.0.set} Momentum.",
           "player": "A Finisher kill keeps {=.effects.0.set} Momentum",
           "effects": [
@@ -1050,16 +1060,6 @@
           "provisional": true,
           "item": true
         },
-        "6": {
-          "name": "Fork: Spill or Headlong",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's second fork, Spill or Headlong: not offered yet (Spill and Headlong are still to be built; data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
-        },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
@@ -1072,6 +1072,16 @@
             }
           ],
           "adjudication": "engine"
+        },
+        "8": {
+          "name": "Fork: Spill or Headlong",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Spill or Headlong: not offered yet (Spill and Headlong are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "9": {
           "name": "Mastery 4",
@@ -1514,7 +1524,6 @@
       "forks": [
         {
           "id": "a",
-          "at": 4,
           "of": [
             "fork.pressure.converging_fire",
             "fork.pressure.walk_it_in"
@@ -1522,7 +1531,6 @@
         },
         {
           "id": "b",
-          "at": 6,
           "of": [
             "fork.pressure.through_the_gap",
             "fork.pressure.lockdown"
@@ -1697,7 +1705,7 @@
         "5": {
           "name": "Quick Draw",
           "category": "AP Mod",
-          "mastery": 2,
+          "mastery": 0,
           "text": "Once per combat, your first attack with a weapon you draw for it (Draw Cut, Snap Shot) costs 0 AP.",
           "player": "Once a fight: your first attack with a weapon you draw costs no AP",
           "effects": [
@@ -1713,16 +1721,6 @@
           "provisional": true,
           "item": true
         },
-        "6": {
-          "name": "Fork: Through the Gap or Lockdown",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's second fork: choose Through the Gap or Lockdown, once, out of a fight, kept for good (data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
-        },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
@@ -1735,6 +1733,16 @@
             }
           ],
           "adjudication": "engine"
+        },
+        "8": {
+          "name": "Fork: Through the Gap or Lockdown",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork: choose Through the Gap or Lockdown, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "9": {
           "name": "Mastery 4",
@@ -2131,7 +2139,6 @@
       "forks": [
         {
           "id": "a",
-          "at": 4,
           "of": [
             "fork.shadow.light_fingers",
             "fork.shadow.lend_the_dark"
@@ -2139,7 +2146,6 @@
         },
         {
           "id": "b",
-          "at": 6,
           "of": [
             "fork.shadow.lightkiller",
             "fork.shadow.spotter"
@@ -2534,7 +2540,7 @@
         "5": {
           "name": "Mastery 2",
           "category": "Active Skill",
-          "mastery": 2,
+          "mastery": 0,
           "text": "Still Breath: spot rolls against you are {=unlocks.5.effects.0.value} while you stand next to cover. Your Shadow holds one more, and the Shadow verbs of this rung open: Fade, Vault, Open Seam, Foul the Action, Pick and Douse.",
           "player": "Still Breath: {=.effects.0.value} to foes' spot rolls while you stand beside cover · Shadow holds more · New moves: Fade (slip back into Hidden), Vault (hop a barrier), Open Seam (lower Defense), Foul the Action (spoil a weapon), Pick (open or lock), Douse (put out a lamp)",
           "effects": [
@@ -2552,16 +2558,6 @@
           ],
           "adjudication": "engine",
           "item": true
-        },
-        "6": {
-          "name": "Fork: Lightkiller or Spotter",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's second fork, Lightkiller or Spotter: not offered yet (Lightkiller is still to be built; data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -2602,6 +2598,16 @@
           "adjudication": "engine",
           "item": true,
           "provisional": true
+        },
+        "8": {
+          "name": "Fork: Lightkiller or Spotter",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Lightkiller or Spotter: not offered yet (Lightkiller is still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "9": {
           "name": "Mastery 4",
@@ -3025,7 +3031,6 @@
       "forks": [
         {
           "id": "a",
-          "at": 4,
           "of": [
             "fork.sigil.overflux",
             "fork.sigil.clean_vent"
@@ -3033,7 +3038,6 @@
         },
         {
           "id": "b",
-          "at": 6,
           "of": [
             "fork.sigil.written_in_advance",
             "fork.sigil.running_script"
@@ -3127,7 +3131,7 @@
         "5": {
           "name": "Twin Draw",
           "category": "Combat Interaction",
-          "mastery": 2,
+          "mastery": 0,
           "text": "Once per combat, draw the glyphs of two Sigil spells and pay the Glyph AP of the longer spell only.",
           "player": "Once a fight: draw two Sigil spells for the longer one's glyph AP",
           "effects": [
@@ -3141,16 +3145,6 @@
           "adjudication": "engine",
           "item": true
         },
-        "6": {
-          "name": "Fork: Written in Advance or Running Script",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's second fork, Written in Advance or Running Script: not offered yet (Written in Advance and Running Script are still to be built; data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
-        },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
@@ -3163,6 +3157,16 @@
             }
           ],
           "adjudication": "engine"
+        },
+        "8": {
+          "name": "Fork: Written in Advance or Running Script",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Written in Advance or Running Script: not offered yet (Written in Advance and Running Script are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "9": {
           "name": "Mastery 4",
@@ -3572,7 +3576,7 @@
       "core": "mind",
       "slot": "alpha",
       "summary": "Shapes thought into images; pictures the Figments built of mana.",
-      "door_line": "Your door is Figments: shapes you build out of mana. With the Visualizer in hand, Picture one: your ready designs are offered first, then every plain shape you have opened.",
+      "door_line": "Your door is Figments: shapes you build out of mana. With the Visualizer in hand, Picture one: your ready designs are offered first, then every form you know.",
       "fork_runs_on": "Visualizer charge (the held count)",
       "door_focus_line": "Your Visualizer is in your pack, not in a hand: open the Backpack and draw it to Picture.",
       "door_tab": "figments",
@@ -3592,16 +3596,17 @@
             "text": "More accurate Figments"
           },
           {
-            "at": "at 2",
-            "text": "Picture the Hand"
+            "at": "each from 2",
+            "grows": "forms_known",
+            "text": "One more Figment form known"
           },
           {
             "at": "at 8",
-            "text": "Four ready designs · one more shape from your second fork"
+            "text": "Four ready designs"
           },
           {
             "at": "at 10",
-            "text": "Every shape · five ready designs"
+            "text": "Five ready designs"
           }
         ]
       },
@@ -3614,8 +3619,8 @@
           "name": "Figments",
           "category": "Active Skill",
           "mastery": 0,
-          "text": "The door, its whole loop, smaller: Picture (a Figment built of mana), the Double, one held; projection range four tiles plus your Visualization. Needs the Visualizer (figments.json).",
-          "player": "With the Visualizer: Picture the Double or the Snare · one held · Glimmer · Redraw · Cash in",
+          "text": "The door, its whole loop, smaller: Picture (a Figment built of mana) in the forms you know, chosen from all ten, one held; projection range four tiles plus your Visualization. Needs the Visualizer (figments.json).",
+          "player": "With the Visualizer: Picture a form you know (two of your choice) · one held · Glimmer · Redraw · Cash in",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -3637,21 +3642,10 @@
           "adjudication": "engine",
           "provisional": true
         },
-        "4": {
-          "name": "Fork: the Eye, the Wall or the Ward",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's first fork: choose one of the Eye, the Wall or the Ward, out of a fight, kept for good (figments.json ladder).",
-          "player": "Choose one, kept for good",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
-        },
         "5": {
           "name": "Two held",
           "category": "Active Skill",
-          "mastery": 2,
+          "mastery": 0,
           "text": "Two Figments held; three ready designs (figments.json ladder).",
           "player": "Two held · three ready designs",
           "effects": [],
@@ -3659,22 +3653,11 @@
           "provisional": true,
           "source": "rules 1.34: replaces Paint the Field (nine doors 15.5: replace when Figments are built)"
         },
-        "6": {
-          "name": "Fork: the Beast, the Blade, the Husk or the Sentinel",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's second fork: choose one of the Beast, the Blade, the Husk or the Sentinel, out of a fight, kept for good (figments.json ladder).",
-          "player": "Choose one, kept for good",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
-        },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
           "text": "Three Figments held; two traits a design. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "player": "Three held · two traits a design · one more shape from your first fork",
+          "player": "Three held · two traits a design",
           "effects": [
             {
               "op": "perk_choice",
@@ -3688,7 +3671,7 @@
           "name": "Mastery 4",
           "mastery": 4,
           "text": "A destroyed Figment no longer Snaps. A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II.",
-          "player": "A destroyed Figment no longer Snaps · one more shape from either fork",
+          "player": "A destroyed Figment no longer Snaps",
           "effects": [],
           "adjudication": "engine"
         },
@@ -4097,7 +4080,6 @@
       "forks": [
         {
           "id": "a",
-          "at": 4,
           "of": [
             "fork.tend.keep_the_thread",
             "fork.tend.short_thread"
@@ -4105,7 +4087,6 @@
         },
         {
           "id": "b",
-          "at": 6,
           "of": [
             "fork.tend.shared_pulse",
             "fork.tend.long_thread"
@@ -4169,7 +4150,7 @@
         "5": {
           "name": "Mercy",
           "category": "Active Skill",
-          "mastery": 2,
+          "mastery": 0,
           "text": "{=unlocks.5.effects.0.ap} AP: a humanoid enemy below 50% HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
           "player": "{=.effects.0.ap} AP: a humanoid foe below half HP saves (Heart) or yields",
           "effects": [
@@ -4181,16 +4162,6 @@
             }
           ],
           "adjudication": "engine"
-        },
-        "6": {
-          "name": "Fork: Shared Pulse or Long Thread",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's second fork, Shared Pulse or Long Thread: not offered yet (Long Thread is still to be built; data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "7": {
           "name": "Mastery 3",
@@ -4204,6 +4175,16 @@
             }
           ],
           "adjudication": "engine"
+        },
+        "8": {
+          "name": "Fork: Shared Pulse or Long Thread",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Shared Pulse or Long Thread: not offered yet (Long Thread is still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "9": {
           "name": "Mastery 4",
@@ -4689,7 +4670,6 @@
       "forks": [
         {
           "id": "a",
-          "at": 4,
           "of": [
             "fork.soul.ride_the_edge",
             "fork.soul.slow_burn"
@@ -4697,7 +4677,6 @@
         },
         {
           "id": "b",
-          "at": 6,
           "of": [
             "fork.soul.blood_price",
             "fork.soul.clean_break"
@@ -4719,7 +4698,6 @@
         "numbers": {
           "soul": 0.1,
           "syphon": 0.1,
-          "strain": 1,
           "reach": 1,
           "designs": 1,
           "slots": 1,
@@ -4736,7 +4714,7 @@
           },
           {
             "at": "every 2",
-            "text": "+{=per_point.numbers.strain} Strain limit · +{=per_point.numbers.reach} tile Outburst reach"
+            "text": "+{=per_point.numbers.reach} tile Outburst reach"
           },
           {
             "at": "every 2",
@@ -4796,7 +4774,7 @@
         "5": {
           "name": "Pure Heart",
           "category": "Combat Interaction",
-          "mastery": 2,
+          "mastery": 0,
           "text": "Once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release.",
           "player": "Once a fight: the Strain that would Mana Short you is refused",
           "effects": [
@@ -4811,16 +4789,6 @@
           "provisional": true,
           "item": true
         },
-        "6": {
-          "name": "Fork: Blood Price or Clean Break",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's second fork, Blood Price or Clean Break: not offered yet (Blood Price and Clean Break are still to be built; data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
-        },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
@@ -4833,6 +4801,16 @@
             }
           ],
           "adjudication": "engine"
+        },
+        "8": {
+          "name": "Fork: Blood Price or Clean Break",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Blood Price or Clean Break: not offered yet (Blood Price and Clean Break are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "9": {
           "name": "Mastery 4",
@@ -4925,22 +4903,16 @@
       "core": "soul",
       "slot": "beta",
       "summary": "A face that never moves.",
-      "feed": {
-        "carrier": "strain_limit",
-        "line": "{beta} {points}: your Strain limit is {now}",
-        "next": " (next point: {next})",
-        "provisional": true,
-        "note": "rules 1.60 item 4603 (Doors 3.0, N3): this beta feeds its attribute's alpha door: the carrier's number x (1 + per_point.numbers.feed x alpha points x beta points), worked out once (effects/feed.ts doorFeed). line / next: the door tab's beta line ({beta} {points} {now} {next} {pct} are filled by the engine's doorFeedView)."
-      },
       "per_point": {
         "numbers": {
-          "feed": 0.01,
+          "strain_step": 1,
           "save": 1
         },
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% Strain limit"
+            "grows": "strain_limit",
+            "text": "+{=per_point.numbers.strain_step} Strain limit"
           },
           {
             "at": "each",
@@ -5247,7 +5219,6 @@
       "forks": [
         {
           "id": "a",
-          "at": 4,
           "of": [
             "fork.prayer.round_of_blessings",
             "fork.prayer.steadfast"
@@ -5255,7 +5226,6 @@
         },
         {
           "id": "b",
-          "at": 6,
           "of": [
             "fork.prayer.benediction",
             "fork.prayer.held_breath"
@@ -5324,7 +5294,7 @@
         "5": {
           "name": "Deliver the Sinner",
           "category": "Combat Interaction",
-          "mastery": 2,
+          "mastery": 0,
           "text": "Your patron's blows (Smite, Amen, Rebuke, a Hymn's or an intervention's harm) deal {=unlocks.5.effects.0.value|pct}% more to a foe your squad has Marked (Marking is Shadow's).",
           "player": "+{=.effects.0.value|pct}% damage from your patron's blows on a Marked foe",
           "effects": [
@@ -5349,16 +5319,6 @@
           "item": true,
           "adjudication": "engine"
         },
-        "6": {
-          "name": "Fork: Benediction or Held Breath",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's second fork, Benediction or Held Breath: not offered yet (Benediction and Held Breath are still to be built; data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
-        },
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
@@ -5371,6 +5331,16 @@
             }
           ],
           "adjudication": "engine"
+        },
+        "8": {
+          "name": "Fork: Benediction or Held Breath",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's second fork, Benediction or Held Breath: not offered yet (Benediction and Held Breath are still to be built; data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "9": {
           "name": "Mastery 4",

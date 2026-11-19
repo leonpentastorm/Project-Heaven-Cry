@@ -43,13 +43,13 @@ describe('the ladder view (the moment something opens)', () => {
       const reached = F.ladder.filter((r: any) => p >= r.points);
       expect(v.latest?.points ?? null).toBe(reached.length ? reached[reached.length - 1].points : null);
       expect(v.next?.points ?? null).toBe(F.ladder.find((r: any) => p < r.points)?.points ?? null);
-      expect(v.steps.filter((s) => s.open).flatMap((s) => s.forms.map((x) => x.id))).toEqual(ladderAt(p).forms);
+      expect(v.known.n).toBe(p >= F.forms_known.from ? Math.min(F.forms_known.count.max, F.forms_known.count.base + p) : 0); // rules 1.70 item 5541
     }
   });
-  it('a step names its forms with their icons (what "New: Eye, Wall" draws)', () => {
-    const at = F.ladder.find((r: any) => (r.forms || []).length > 1);
-    const st = figmentLadderView(at.points).latest!;
-    expect(st.forms.map((x) => x.id)).toEqual(at.forms); for (const x of st.forms) expect(x.icon).toBe(FORM[x.id].icon);
+  it('the view names the forms a character learned, with their icons (rules 1.70 item 5541)', () => {
+    const s = storyWith([{ skills: { visualization: 2 }, forms: ['eye'] }]); const c = s.g.characters[s.chars[0].id];
+    const v = figmentLadderView(2, c);
+    expect(v.known.chosen.map((x) => x.id)).toEqual(formsOf(c)); for (const x of v.known.chosen) expect(x.icon).toBe(FORM[x.id].icon);
   });
   it('raising Visualization through the reducer (a level-up point) moves the latest step', () => {
     const s = storyWith([{ skills: { visualization: firstDesigns() - 1 }, attrs: { expression: 7 } }]); const id = s.chars[0].id;
@@ -81,7 +81,7 @@ describe('the design workshop view, against the reducer (figments/design)', () =
     const s = storyWith([{ skills: { visualization: 3 } }]); const id = s.chars[0].id;
     const v = figmentDesignView(s.g.characters[id]);
     const locked = { id: '', name: 'Hound', form: 'beast', traits: [] }, two = { id: '', name: 'Two', form: 'eye', traits: ['keen', 'swift'] };
-    expect(v.draftWhy(locked)).toMatch(/Visualization/); expect(() => s.act({ type: 'figments/design', charId: id, design: locked } as any)).toThrow(v.draftWhy(locked)!);
+    expect(v.draftWhy(locked)).toMatch(/forms you know/); // rules 1.70 item 5541: a form not learned expect(() => s.act({ type: 'figments/design', charId: id, design: locked } as any)).toThrow(v.draftWhy(locked)!);
     expect(v.draftWhy(two)).toMatch(/trait/); expect(() => s.act({ type: 'figments/design', charId: id, design: two } as any)).toThrow(v.draftWhy(two)!);
     const ok = { id: '', name: 'Lookout', form: 'eye', traits: ['keen'] }; expect(v.draftWhy(ok)).toBeNull();
     for (let i = 0; i < v.designsMax; i++) s.act({ type: 'figments/design', charId: id, design: { ...ok, name: 'Lookout ' + i } } as any);

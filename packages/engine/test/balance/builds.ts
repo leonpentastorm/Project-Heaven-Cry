@@ -275,7 +275,7 @@ export function buildCharacter(id: string, variant: Variant, level: number): Bui
   } finally { bindGame(was); }
   g = apply(g, { type: 'story/pass', charId: cid }, 'host'); // one more pass through the reducer: its migrations and checks see the finished character
   const out = g.characters[cid];
-  const perkStepsLeft = SKILLS.reduce((n, s) => n + Math.max(0, stepsEarned(out.skills[s.id] || 0) - stepsTaken(out, s.id)), 0);
+  const perkStepsLeft = SKILLS.reduce((n, s) => n + Math.max(0, stepsEarned(out.skills[s.id] || 0, s.id) - stepsTaken(out, s.id)), 0);
   const built = { variant, level, c: out, notes, classWanted, unspent: { skill: out.unspent.skill, attr: out.unspent.attr }, perkStepsLeft };
   CACHE.set(k, JSON.stringify(built));
   return { ...JSON.parse(JSON.stringify(built)), def };
@@ -320,7 +320,7 @@ export function legalityProblems(b: Built): string[] {
   if (c.classId) { const top = Math.max(...ATTRS.map((a) => c.attrs[a.id] || 1)); if ((c.attrs[CLASS[c.classId].attribute] || 1) < top && c.level === 3) out.push('class ' + c.classId + ' is not of the highest attribute'); }
   if (c.classId && classRank(c) > (c.level >= 12 ? 3 : c.level >= 6 ? 2 : 1)) out.push('rank ' + classRank(c) + ' too early');
   // 4. perks: no more steps than Mastery has earned; a Mastered perk only at 10
-  for (const s of SKILLS) if (stepsTaken(c, s.id) > stepsEarned(c.skills[s.id] || 0)) out.push('more perk steps in ' + s.id + ' than earned');
+  for (const s of SKILLS) if (stepsTaken(c, s.id) > stepsEarned(c.skills[s.id] || 0, s.id)) out.push('more perk steps in ' + s.id + ' than earned');
   for (const p of c.perks) { const d = PERK[p.id]; if (!d) out.push('unknown perk ' + p.id); else if (d.tier === 'mastered' && (c.skills[d.skills[0]] || 0) < 10) out.push(p.id + ' without 10 points'); else if (!['acquired', 'mastered'].includes(d.tier)) out.push(p.id + ' is a ' + d.tier + ' perk (not from levels)'); }
   // 5. gear the rules gate
   { const rq = requiresWhy(c, (WEAPON[c.weapon] as any)?.requires); if (rq) out.push('weapon ' + c.weapon + ': ' + rq); }

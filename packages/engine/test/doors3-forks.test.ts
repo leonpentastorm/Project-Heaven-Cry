@@ -105,20 +105,20 @@ describe('Figments\' forks move to 4 and 6 (spec 2.9): old saves', () => {
     expect(formsOf(c)).toEqual(expect.arrayContaining(['wall', 'beast']));
     for (const p of [4, 5, 6]) { c.skills.visualization = p; expect(pendingDoorPicks(c, 'visualization'), 'at ' + p).toEqual([]); }
   });
-  it('a 0.29.0 character at Visualization 5 that picked only at 3: the second fork waits for 6 (it was open at 5)', () => {
-    const s = storyWith([{ skills: { visualization: 5 }, forms: ['eye'] }]), id = s.chars[0].id;
-    const g = migrateLoaded(JSON.parse(JSON.stringify(s.g))); const c = g.characters[id];
+  it('a 0.29.0 character at Visualization 5 that picked at the old fork: its pick is learned at figment_forms (rules 1.70 item 5541); Visualization has no fork step until Expression\'s', () => {
+    const s = storyWith([{ skills: { visualization: 5 } }]), id = s.chars[0].id;
+    const old = JSON.parse(JSON.stringify(s.g)); old.characters[id].figRev = 1; old.characters[id].doorPicks = { visualization: ['eye'] };
+    const c = migrateLoaded(old).characters[id];
+    expect(formsOf(c)).toContain('eye');
     expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
-    c.skills.visualization = 6;
-    expect(pendingDoorPicks(c, 'visualization').flatMap((p) => p.options.map((o) => o.id))).toEqual(['beast', 'blade', 'husk', 'sentinel']);
-    expect(doorForkView(c, 'visualization')!.steps.map((x) => [x.at, x.picked])).toEqual([[4, 'eye'], [6, null]]);
+    expect(doorForkView(c, 'visualization')).toBeNull();
   });
   it('the 0.28.2 Rigger save (no fork stamp, Visualization 5) loads, holds the Eye, the Wall, the Beast and the Blade, and plays on', () => {
     const g0 = migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/save-0.28.2-rigger-mid-fight.json', import.meta.url)), 'utf8')));
     let g = apply(g0, { type: 'player/online', id: 'host', online: true } as any, 'host');
     const c = g.characters.c1;
     for (const f of ['eye', 'wall', 'beast', 'blade']) expect(formsOf(c)).toContain(f);
-    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
+    expect(pendingDoorPicks(c, 'figment_forms')).toEqual([]); // rules 1.70 item 5541: the count is full
     const pc = g.combat.units.find((u: any) => u.charId === 'c1'), wall = g.combat.units.find((u: any) => u.owned?.kind === 'figment' && u.name === 'Wall');
     g = apply(g, { type: 'combat/owned', unitId: pc.id, owned: wall.id, verb: 'figment_cash_in' } as any, 'host');
     expect(g.combat.units.some((u: any) => u.id === wall.id)).toBe(false);

@@ -1,8 +1,9 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
 import './datatext'; // fills the texts' {=placeholders} before any data is read
+import { numberOf } from './datatext';
 import patronsJ from '../../../data/patrons.json';
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, ladderSchedule } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
 import { statQuery, setRankRule, setHandsRule, type HandInstance } from './effects/hooks';
 import type { StatId } from './effects/stats';
@@ -814,9 +815,9 @@ export const swellFree = (c: Character) => P(c, 'will_power') >= ((SOUL_RULES as
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
 export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
-/** The Strain limit: 3 + half Will Power, x the Strain limit's beta feed (rules 1.60 item 4611: Composure), rounded; then
- * what items add (stat strain_limit). */
-export const strainLimit = (c: Character) => fx(c, 'strain_limit', Math.round((3 + Math.floor(P(c, 'will_power') / 2)) * feedOf(c, 'strain_limit')));
+/** The Strain limit (rules 1.70 item 5539, Leon's ruling): the number block soul_modules.json strain.limit (3, +1 at
+ * Composure 1, 2, 4, 6 and 8; Will Power gives none), then what items add (stat strain_limit). */
+export const strainLimit = (c: Character) => fx(c, 'strain_limit', numberOf((SOUL_RULES as any).strain.limit, (of) => (of.startsWith('skill:') ? P(c, of.slice(6)) : 0)));
 showFeedNumber('strain_limit', (x) => strainLimit(x));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
 export const readyDesigns = (c: Character) => fx(c, 'ready_designs', Math.max(((SOUL_RULES as any).start?.min_ready_designs ?? 3), 2 + Math.floor(P(c, 'will_power') / 2))); // rules 1.13: ready designs are Will Power's (they were Empathy's)
@@ -1129,7 +1130,13 @@ const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
 export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'analysis'))); // rules 1.13: Acuity's (the skill with the id 'analysis'); it was Durability's
 /** Elemental damage taken: −10% × Pain Threshold. Below 0 it is damage taken extra (Paper, Oil in My Mind: +10% at
  * Pain Threshold 0), so only the 60% cap applies, not the floor. */
-export const elementalTakenPct = (c: Character) => Math.max(-1, Math.min(0.6, fx(c, 'elemental_taken', 0.1 * P(c, 'pain_threshold'))));
+/** Rules 1.70 item 5540 (Leon, 19 Nov 2026): the most elemental damage taken off, every source together (rules.json
+ * combat.elemental_taken_cap): the one copy, read by the sheet, the blow (effects/damage.ts) and Scar Tissue. */
+export const ELEMENTAL_CAP: number = Number((RULES as any).combat?.elemental_taken_cap);
+if (!(ELEMENTAL_CAP > 0 && ELEMENTAL_CAP <= 1)) throw new Error('data/rules.json combat.elemental_taken_cap is missing');
+/** Pain Threshold's elemental resistance a point (skills.json per_point.numbers.elemental_taken), then what items add,
+ * held under the cap. */
+export const elementalTakenPct = (c: Character) => Math.max(-1, Math.min(ELEMENTAL_CAP, fx(c, 'elemental_taken', (SKILL as any).pain_threshold.per_point.numbers.elemental_taken * P(c, 'pain_threshold'))));
 /** Ambush damage taken: −10% × Improvisation (rules 1.13; the skill with the id 'proficiency'; it was Reaction Speed). */
 export const ambushTakenPct = (c: Character) => cap60(fx(c, 'ambush_taken', 0.1 * P(c, 'proficiency')));
 /** Healing received: +10% × Camaraderie (rules 1.13; it was Sensory, and covered shields too). */
@@ -1331,8 +1338,9 @@ export function migrateCharacterClass(c: Character): string[] {
 setRankRule((c) => classRank(c));
 
 // ---------- perk steps (spec: Perks) ----------
-/** Perk steps earned in a skill: one per Mastery level 1–4 (3/5/7/9 points). */
-export const stepsEarned = (p: number) => [3, 5, 7, 9].filter((t) => p >= t).length;
+/** Perk steps earned in a skill at these points: one per step of its ladder schedule (rules 1.70 item 5537,
+ * skills.json ladder: an alpha's at 3, 6, 7, 9; a beta's and a gamma's at 3, 5, 7, 9). */
+export const stepsEarned = (p: number, skill: string) => ladderSchedule(skill).perk_steps.filter((t) => p >= t).length;
 export function stepsTaken(c: Character, skill: string) {
   return c.perks.filter((x) => PERK[x.id]?.tier === 'acquired' && PERK[x.id].skills.includes(skill)).reduce((n, x) => n + (x.tier === 'II' ? 2 : 1), 0);
 }
@@ -1344,7 +1352,7 @@ export const levelUpDue = (c: Character | null | undefined): boolean =>
 export function pendingPerkSteps(c: Character) {
   const out: { skill: string; choices: { id: string; tier: 'I' | 'II' }[]; /** Steps owed in this skill (2+ after a jump). */ free: number }[] = [];
   for (const s of SKILLS) {
-    const free = stepsEarned(P(c, s.id)) - stepsTaken(c, s.id);
+    const free = stepsEarned(P(c, s.id), s.id) - stepsTaken(c, s.id);
     if (free <= 0) continue;
     const own = PERKS.filter((p) => p.tier === 'acquired' && p.skills.includes(s.id));
     const choices = own.flatMap((p): { id: string; tier: 'I' | 'II' }[] => {
@@ -1361,7 +1369,7 @@ export function grantAutomaticPerks(c: Character): string[] {
   const granted: string[] = [];
   for (const p of PERKS) {
     if (c.perks.some((x) => x.id === p.id)) continue;
-    if (p.tier === 'mastered' && P(c, p.skills[0]) >= 10) { c.perks.push({ id: p.id, tier: 'mastered' }); granted.push(p.id); }
+    if (p.tier === 'mastered' && P(c, p.skills[0]) >= ladderSchedule(p.skills[0]).mastered) { c.perks.push({ id: p.id, tier: 'mastered' }); granted.push(p.id); }
     if (p.tier === 'ultimate') {
       const need = p.requires.filter((r: any) => r.perk).map((r: any) => r.perk);
       if (need.length && need.every((id: string) => c.perks.some((x) => x.id === id))) { c.perks.push({ id: p.id, tier: 'ultimate' }); granted.push(p.id); }

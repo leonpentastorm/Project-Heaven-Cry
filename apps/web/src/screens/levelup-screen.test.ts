@@ -3,7 +3,7 @@
 // panel on the right (emblem, name, rank, attribute progress, moves by rank with who runs them, advanced classes
 // shelved in Class Roster Revision 3); the class choice at level 3 with emblems.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, CLASS, SKILL, canRaise, pendingPerkSteps, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, CLASS, SKILL, canRaise, pendingPerkSteps, ladderSchedule, type GameState, type Sheet } from '@engine';
 
 let G: GameState; const ME = 'host';
 const listeners = new Set<() => void>();
@@ -120,7 +120,10 @@ describe('level-up screen', () => {
     root.unmount();
   });
   it('spend first (the redesign): three family tabs, the family with a step waiting opens, one row a skill, the TO CHOOSE strip opens one chooser panel', async () => {
-    const c0 = setup((c) => { c.level = 4; c.classId = 'marksman'; c.attrs.agility = Math.max(c.attrs.agility, 5); c.cores.body = Math.max(c.cores.body, 5); c.skills.dexterity = 5; c.perks = []; c.unspent = { skill: 1, attr: 1, core: 1 } as any; });
+    // Dexterity at its ladder's second perk step (rules 1.70 item 5537: an alpha's 6), short of its second fork
+    const dx = ladderSchedule('dexterity').perk_steps[1];
+    expect(dx).toBeLessThan(ladderSchedule('dexterity').forks[1]); expect(dx).toBeGreaterThanOrEqual(ladderSchedule('dexterity').forks[0]);
+    const c0 = setup((c) => { c.level = 4; c.classId = 'marksman'; c.attrs.agility = Math.max(c.attrs.agility, dx); c.cores.body = Math.max(c.cores.body, dx); c.skills.dexterity = dx; c.perks = []; c.unspent = { skill: 1, attr: 1, core: 1 } as any; });
     const { el, root } = await mount();
     // three tabs; one family on screen: the one with something waiting (Dexterity, under Agility, is Body)
     expect([...el.querySelectorAll('[role="tablist"][aria-label="Families"] [role="tab"]')].map((x) => x.textContent!.replace(/◆.*/, ''))).toEqual(['BODY', 'MIND', 'SOUL']);
@@ -138,7 +141,7 @@ describe('level-up screen', () => {
       else expect(r.querySelector('.phc-lu-next')!.textContent).toBe(nextLine(id, p, G.characters[c0.id]));
       expect((r.querySelector('button[data-raise="skill"]') as HTMLElement).style.minHeight).toBe('40px');
     }
-    // Dexterity 5 with no perks: a white chip, two steps waiting; nothing to choose until it is opened
+    // Dexterity at its second perk step with no perks: a white chip, two steps waiting; nothing to choose until it is opened
     const dex = () => el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!;
     expect(dex().classList.contains('phc-lu-step')).toBe(true);
     expect(dex().querySelector('.phc-lu-chip')!.textContent).toBe('◆ 2 perk steps · Fork');

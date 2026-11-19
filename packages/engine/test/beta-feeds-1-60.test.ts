@@ -31,7 +31,8 @@ const feedAt = (beta: string, b: number) => 1 + STEP(beta) * ALPHA * b;
 
 describe('the feed is data: nine betas, one door each, one carrier each', () => {
   it('every beta feeds its attribute\'s alpha skill, its step is per_point.numbers.feed, and the numbers are provisional', () => {
-    expect(FEEDS.map((x) => x.beta).sort()).toEqual(['analysis', 'athletics', 'camaraderie', 'composure', 'conscience', 'guts', 'pain_threshold', 'proficiency', 'rumination']);
+    // (rules 1.70 item 5539, Leon's ruling: Composure no longer feeds Will Power's door; it gives the Strain limit by steps)
+    expect(FEEDS.map((x) => x.beta).sort()).toEqual(['analysis', 'athletics', 'camaraderie', 'conscience', 'guts', 'pain_threshold', 'proficiency', 'rumination']);
     for (const x of FEEDS) { expect((SKILL as any)[x.door].slot).toBe('alpha'); expect((SKILL as any)[x.door].attribute).toBe((SKILL as any)[x.beta].attribute); expect(x.per).toBe(STEP(x.beta)); expect(x.row.provisional).toBe(true); }
     expect(new Set(FEEDS.map((x) => x.carrier)).size).toBe(FEEDS.length);
   });
@@ -104,12 +105,14 @@ describe('Acuity feeds the spot TN against you (item 4607)', () => {
   });
 });
 
-describe('Rumination feeds the Flux limit (item 4608); Composure the Strain limit (item 4611); Improvisation the Figment body (item 4609)', () => {
+describe('Rumination feeds the Flux limit (item 4608); Composure gives the Strain limit by steps (rules 1.70 item 5539, was item 4611); Improvisation the Figment body (item 4609)', () => {
   for (const b of [1, 10]) it('alpha 10, beta ' + b, () => {
     const f = fight({ brain_power: ALPHA, rumination: b, will_power: ALPHA, composure: b, visualization: ALPHA, proficiency: b });
     const u = f.unit(f.pc.id), c = f.char(f.pc);
     expect(f.bound(() => fluxMaxOf(u, f.cb))).toBe(Math.round(FLUX_MAX * feedAt('rumination', b)));
-    expect(strainLimit(c)).toBe(Math.round((3 + Math.floor(ALPHA / 2)) * feedAt('composure', b)));
+    // Leon's ruling: 3, +1 at Composure 1, 2, 4, 6, 8; Will Power gives none (Will Power 10 here): 4 at 1, 8 at 10, as the fight holds it
+    expect(strainLimit(c)).toBe(b === 1 ? 4 : 8);
+    expect(strainLimit({ ...c, skills: { ...c.skills, composure: 0 } } as any)).toBe(3);
     const z = fight({ visualization: ALPHA, proficiency: 0 }), base = z.bound(() => figmentBlock(z.unit(z.pc.id), 'wall', [])).hp, fed = f.bound(() => figmentBlock(u, 'wall', [])).hp;
     expect(fed / base).toBeCloseTo(feedAt('proficiency', b), 6);
   });

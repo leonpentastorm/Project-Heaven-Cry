@@ -12,7 +12,7 @@ import { ELEMENTAL_TYPES } from '../effects/damage';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { key, xy, dist, alive, unitSees, litAt, moveBlockers, objectsOf, damageObject, resolveAttack, attackDamage, isMelee, refOf, keyOf as refKey, emitFx, fxFell, checkOver, previewAttack } from '../combat';
-import { ARMOUR, mod, packOf, maxHp as maxHpOf } from '../character';
+import { ARMOUR, mod, packOf, maxHp as maxHpOf, ELEMENTAL_CAP } from '../character';
 import { WEAPON, SKILL } from '../data';
 import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily, unitStrength } from '../magic';
 import { die, d20, type Rng } from '../rng';
@@ -71,7 +71,7 @@ register({
       if (ctx.phase !== 'reduce' || ctx.t !== h.u || !ELEMENTAL_TYPES.has(ctx.src?.dmgType || '')) return;
       const n = stateOf(h).n || 0; if (!n) return;
       const { value, max } = scarStack(h);
-      const e = Math.min(0.6, h.u!.elemTaken || 0), room = Math.max(0, 1 - 0.4 / (1 - e)), s = Math.min(n * value, max, room); // 0.6 and 0.4: the 60% cap of the spec's Derived stats
+      const e = Math.min(ELEMENTAL_CAP, h.u!.elemTaken || 0), room = Math.max(0, 1 - (1 - ELEMENTAL_CAP) / (1 - e)), s = Math.min(n * value, max, room); // the one cap (rules 1.70 item 5540)
       ctx.dmg = ctx.dmg * (1 - s);
     },
   },

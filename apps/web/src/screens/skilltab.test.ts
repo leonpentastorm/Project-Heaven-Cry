@@ -3,7 +3,7 @@
 // "In the gamma tab, highlight the call action and how it grows in that menu too"). docs/design/ui-screens.md.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, SKILL, CALL_RULES, callOfSkill, ENGINE_DEEDS, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, SKILL, CALL_RULES, callOfSkill, calls, ENGINE_DEEDS, ladderSchedule, type GameState, type Sheet } from '@engine';
 
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => true, location: { search: '', hash: '' }, innerWidth: 1400, innerHeight: 900 });
 vi.stubGlobal('location', { search: '', hash: '' });
@@ -87,8 +87,11 @@ describe('S2: the lore is the face; the three folds are closed by default and ea
       expect(v.quote.map((q: any) => q.text), s.id).toEqual(s.ep.quote.map((q: string) => (/^\*.*\*$/.test(q) ? q.slice(1, -1) : q.replace(/\*/g, ''))));
       // the lore reads in Spectral at the page's largest reading size
       expect(v.loreStyle).toMatch(/Spectral.*font-size: 17px/);
-      // the two explainers every page repeated are said once, at the top of the perk fold
-      expect(JSON.stringify(v).match(/A perk step at 3, 5, 7 and 9 points/g) || [], s.id).toHaveLength(1);
+      // the two explainers every page repeated are said once, at the top of the perk fold (the points the skill's own
+      // ladder schedule puts its perk steps at, rules 1.70 item 5537: an alpha's 3, 6, 7 and 9, a beta's or gamma's 3, 5, 7 and 9)
+      const ps = ladderSchedule(s.id).perk_steps;
+      expect(ps).toEqual(s.slot === 'alpha' ? [3, 6, 7, 9] : [3, 5, 7, 9]);
+      expect(JSON.stringify(v).split('A perk step at ' + ps.slice(0, -1).join(', ') + ' and ' + ps[ps.length - 1] + ' points').length - 1, s.id).toBe(1);
     }
   });
 });
@@ -113,9 +116,9 @@ describe('S3: every skill\'s page has the same layout parts', () => {
       expect(v.line.length).toBeGreaterThan(0); expect(v.line).not.toMatch(/\{=/);
       if (s.slot === 'alpha') expect(v.line).toMatch(/^Your door is /);
       for (const t of v.steps) for (const p of t.pieces) if (p.tip) { expect(p.tip).not.toBe(p.text); expect(t.text.includes(p.tip), s.id + ' ' + t.n).toBe(false); }
-      if (s.slot === 'beta') { expect(v.feed.has).toBe(true); expect(v.feed.text).toMatch(/^Feeds [A-Z][\w ]+ · \S/); expect(v.feed.text).not.toMatch(/You now|Needs /); }
+      if (s.slot === 'beta' && (SKILL as any)[s.id].feed) { expect(v.feed.has).toBe(true); expect(v.feed.text).toMatch(/^Feeds [A-Z][\w ]+ · \S/); expect(v.feed.text).not.toMatch(/You now|Needs /); }
       else expect(v.feed.has).toBe(false);
-      if (s.slot === 'alpha' && (SKILL as any)[s.id].forks?.length) { expect(at(4)).toContain('fork'); expect(at(6)).toContain('fork'); }
+      if (s.slot === 'alpha' && (SKILL as any)[s.id].forks?.length) for (const n of ladderSchedule(s.id).forks) expect(at(n), s.id + ' fork at ' + n).toContain('fork');
       if (s.slot === 'gamma') expect(v.call.has).toBe(true); else expect(v.call.has).toBe(false);
     });
   }
@@ -146,7 +149,7 @@ describe('S3: every skill\'s page has the same layout parts', () => {
   });
   it('an alpha with forks has the Forks fold, one row an option with its one line; a beta or gamma has none', () => {
     const v = epccgVals(holder({ epccg: 'durability' })).ep;
-    expect(v.hasForks).toBe(true); expect(v.forks.map((f: any) => f.at)).toEqual([4, 6]);
+    expect(v.hasForks).toBe(true); expect(v.forks.map((f: any) => f.at)).toEqual(ladderSchedule('durability').forks); expect(ladderSchedule('durability').forks).toEqual([4, 8]);
     for (const f of v.forks) for (const o of f.opts) { expect(o.text).toMatch(/\S/); expect(o.icon).toMatch(/\S/); }
     expect(epccgVals(holder({ epccg: 'pain_threshold' })).ep.hasForks).toBe(false);
     expect(epccgVals(holder({ epccg: 'sensory' })).ep.hasForks).toBe(false);
@@ -169,11 +172,13 @@ describe('S4: a gamma skill\'s page has its Call in one row; how it grows is on 
       const def = callOfSkill(s.id)!;
       const v = epccgVals(holder({ epccg: s.id }), () => 5).ep;
       expect(v.call.name).toBe(def.name); expect(v.call.tip).toBe(def.text);
-      expect(v.call.now).toMatch(new RegExp('^' + CALL_RULES.cheap_ap + ' AP · reach '));
+      expect(v.call.now).toMatch(new RegExp('^' + calls.callBaseAp(5) + ' AP · reach '));
       const lv = (n: number) => v.steps[n - 1].pieces.filter((p: any) => p.kind === 'call').map((p: any) => p.text);
       for (const st of def.steps) expect(lv(st.at).length, s.id + ' call step at ' + st.at).toBe(1);
-      expect(lv(CALL_RULES.cheap_at)[0]).toMatch(new RegExp(CALL_RULES.cheap_ap + ' AP'));
-      expect(lv(CALL_RULES.free_at).length).toBe(1);
+      // rules 1.70 item 5535: each row of the price table where the AP drops says the new AP on its level
+      for (const r of CALL_RULES.price.slice(1)) if (r.ap !== calls.callBaseAp(r.from - 1)) expect(lv(r.from)[0], s.id + ' price at ' + r.from).toMatch(new RegExp(r.ap + ' AP'));
+      // and the top row: twice a turn, paid with the reaction
+      expect(lv(calls.CALL_REACT_AT).length).toBe(1); expect(lv(calls.CALL_REACT_AT)[0]).toMatch(/twice/); expect(lv(calls.CALL_REACT_AT)[0]).toMatch(/reaction/);
       for (const t of v.steps) for (const p of t.pieces.filter((x: any) => x.kind === 'call')) expect(p.text.startsWith(def.name + ': ')).toBe(true);
       expect(callBlock(s.id, 2)!.ladder.filter((x: any) => x.now).map((x: any) => x.n)).toEqual([1]);
     });

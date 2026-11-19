@@ -3,19 +3,37 @@
   "kind": "calls",
   "source": "PHC Core Rules v1.0, Calls (rules 1.13, Skeleton 2.0): the nine gamma skills' speech actions in a fight. Every number is provisional (spec section 14).",
   "rules": {
-    "ap": 2,
-    "cheap_at": 5,
-    "cheap_ap": 1,
-    "free_at": 10,
-    "free_per_turn": 1,
+    "price": [
+      {
+        "from": 1,
+        "ap": 3,
+        "per_turn": 1
+      },
+      {
+        "from": 5,
+        "ap": 2,
+        "per_turn": 1
+      },
+      {
+        "from": 9,
+        "ap": 1,
+        "per_turn": 1
+      },
+      {
+        "from": 10,
+        "ap": 1,
+        "per_turn": 2,
+        "reaction": true
+      }
+    ],
+    "price_note": "Rules 1.70 item 5535 (ruling layer section 2 items 2 and 3), PROVISIONAL: one table by the speaker's points in the Call's skill: its AP, how many times a turn each Call may be made, and from which row the reaction may pay (on your own turn, any Call, the reaction spent in place of the AP; off your turn, a helping Call only, once a round, for reaction_ap). The old free first Call at 10 and the reaction at 9 are gone.",
     "range_base": 4,
     "range_per_point": 1,
     "steps_at": [
       1,
-      3,
-      7
+      4,
+      8
     ],
-    "reaction_at": 9,
     "reactions_per_round": 1,
     "reaction_ap": 0,
     "save_tn": 12,
@@ -26,7 +44,7 @@
       "per_turn": 1,
       "beats": 5
     },
-    "text": "A Call is something you say to one unit that can hear you. It costs 2 AP, reaches 4 tiles + 1 per point of its skill, and never deals damage. More points make it better: step 2 of its effect at 3 points, 1 AP instead of 2 at 5 points, step 3 at 7 points, a helping Call usable as a reaction for 0 AP once a round at 9 points (a hindering one only on your own turn), and the first Call of each turn free at 10 points. Each round a unit can be the target of one helping Call and one hindering Call. An enemy saves against 12 + your strength with the Call's skill (its points − 1). A Silenced unit can't Call. AP from a Call arrives this turn if the ally has not acted yet this round, and on their next turn if they have; nobody gains more than 3 AP in a turn or goes above 9 AP."
+    "text": "A Call is something you say to one unit that can hear you. It reaches farther with each point of its skill and never deals damage. Each Call is made once a turn, and costs less as its skill grows; at the top it may be made twice a turn and paid with your reaction. More points make it better: its effect grows in two steps. Each round a unit can be the target of one helping Call and one hindering Call. An enemy saves against 12 + your strength with the Call's skill (its points − 1). A Silenced unit can't Call. AP from a Call arrives this turn if the ally has not acted yet this round, and on their next turn if they have; nobody gains more than 3 AP in a turn or goes above 9 AP."
   },
   "items": [
     {
@@ -47,7 +65,7 @@
           }
         },
         {
-          "at": 3,
+          "at": 4,
           "text": "An ally reloads, stands up, picks up a pile or moves right now. The move goes as far as 1 AP walks them, to a tile you pick. It uses their reaction and costs them no AP.",
           "short": "Or moves as far as {=.numbers.move} AP walks them",
           "numbers": {
@@ -56,7 +74,7 @@
           }
         },
         {
-          "at": 7,
+          "at": 8,
           "text": "An ally does two different things right now: reload, stand up, pick up a pile, or move as far as 1 AP walks them. Both use the one reaction and cost them no AP.",
           "short": "{=.numbers.things} of those things at once",
           "numbers": {
@@ -86,7 +104,7 @@
           }
         },
         {
-          "at": 3,
+          "at": 4,
           "text": "An ally gains {=steps.1.numbers.ap} AP and loses {=steps.1.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "short": "+{=.numbers.ap} AP and {=.numbers.pressure} Pressure less",
           "numbers": {
@@ -95,7 +113,7 @@
           }
         },
         {
-          "at": 7,
+          "at": 8,
           "text": "An ally gains {=steps.2.numbers.ap} AP and loses {=steps.2.numbers.pressure} Pressure. The AP comes this turn if they have not acted yet this round, on their next turn if they have.",
           "short": "+{=.numbers.ap} AP and {=.numbers.pressure} Pressure less",
           "numbers": {
@@ -125,7 +143,7 @@
           }
         },
         {
-          "at": 3,
+          "at": 4,
           "text": "An ally's next two actions cost 1 AP less each. This lasts until the end of their next turn.",
           "short": "Their next two actions cost {=.numbers.first} AP less each",
           "numbers": {
@@ -134,7 +152,7 @@
           }
         },
         {
-          "at": 7,
+          "at": 8,
           "text": "An ally's next action costs 2 AP less, and the one after it 1 AP less. This lasts until the end of their next turn.",
           "short": "Next action {=.numbers.first} AP less, the one after {=.numbers.second} less",
           "numbers": {
@@ -165,7 +183,7 @@
           }
         },
         {
-          "at": 3,
+          "at": 4,
           "text": "You or an ally gets +{=steps.1.numbers.saves} on all saves until the start of your next turn, and rolls a new save right now against one condition they have.",
           "short": "+{=.numbers.saves} on all saves and a new save against one condition",
           "numbers": {
@@ -175,7 +193,7 @@
           }
         },
         {
-          "at": 7,
+          "at": 8,
           "text": "You or an ally gets +{=steps.2.numbers.saves} on all saves until the start of your next turn, rolls a new save right now against one condition they have, and stops being Shaken and Afraid.",
           "short": "+{=.numbers.saves} on all saves, a new save, and Shaken and Afraid end",
           "numbers": {
@@ -207,7 +225,7 @@
           }
         },
         {
-          "at": 3,
+          "at": 4,
           "text": "An ally gets one more reaction, to use before the start of your next turn. Or name a free tile next to them: they step there at once instead, for no AP and without provoking an opportunity attack.",
           "short": "Or they step at once to a tile you name",
           "numbers": {
@@ -217,7 +235,7 @@
           }
         },
         {
-          "at": 7,
+          "at": 8,
           "text": "An ally gets one more reaction, to use before the start of your next turn, or steps at once to a free tile you name next to them (no AP, no opportunity attack). If you Call on your own turn and they have not acted yet this round, they also take their turn straight after yours.",
           "short": "And if they have not acted yet, they go straight after you",
           "numbers": {
@@ -249,7 +267,7 @@
           }
         },
         {
-          "at": 3,
+          "at": 4,
           "text": "The next ally to attack this enemy ignores its cover and can target it even if it is Hidden. You can Spot a Hidden enemy if you can see its tile. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
           "short": "And can attack it even while it is Hidden",
           "numbers": {
@@ -259,7 +277,7 @@
           }
         },
         {
-          "at": 7,
+          "at": 8,
           "text": "The next two allies to attack this enemy ignore its cover, get +{=steps.2.numbers.hit} to hit and can target it even if it is Hidden. You can Spot a Hidden enemy if you can see its tile. There is no save, and you can't use the mark yourself. It lasts until the start of your next turn.",
           "short": "The next {=.numbers.allies} allies, with +{=.numbers.hit} to hit",
           "numbers": {
@@ -290,7 +308,7 @@
           }
         },
         {
-          "at": 3,
+          "at": 4,
           "text": "Just before the next weapon attack on an ally is rolled, they step up to {=steps.1.numbers.tiles} tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. It lasts until the start of your next turn.",
           "short": "Up to {=.numbers.tiles} tiles out of the way",
           "numbers": {
@@ -299,7 +317,7 @@
           }
         },
         {
-          "at": 7,
+          "at": 8,
           "text": "Just before the next weapon attack on an ally is rolled, they step up to {=steps.2.numbers.tiles} tiles out of the way for no AP: to a tile you named, or else to the nearest tile that gets them clear. That attack is at {=steps.2.numbers.hit} to hit, and it is wasted if it can no longer reach them. It lasts until the start of your next turn.",
           "short": "Up to {=.numbers.tiles} tiles, and the attack is at {=.numbers.hit} to hit",
           "numbers": {
@@ -330,7 +348,7 @@
           }
         },
         {
-          "at": 3,
+          "at": 4,
           "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses {=steps.1.numbers.ap_loss} AP on its next turn and can't move toward you on that turn.",
           "short": "And it can't move toward you on its turn",
           "numbers": {
@@ -339,7 +357,7 @@
           }
         },
         {
-          "at": 7,
+          "at": 8,
           "text": "The enemy makes a Heart save. If it fails, it is Shaken for 3 rounds, loses {=steps.2.numbers.ap_loss} AP on its next turn and can't move toward you on that turn.",
           "short": "{=.numbers.ap_loss} AP less, and it can't move toward you",
           "numbers": {
@@ -369,7 +387,7 @@
           }
         },
         {
-          "at": 3,
+          "at": 4,
           "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it {=steps.1.numbers.attack_ap} AP more.",
           "short": "And that attack costs it {=.numbers.attack_ap} AP more",
           "numbers": {
@@ -377,7 +395,7 @@
           }
         },
         {
-          "at": 7,
+          "at": 8,
           "text": "The enemy makes a Heart save. If it fails, it is Taunted for 1 round: its next attack must be aimed at you, if it can see you, and that attack costs it {=steps.2.numbers.attack_ap} AP more.",
           "short": "That attack costs it {=.numbers.attack_ap} AP more",
           "numbers": {

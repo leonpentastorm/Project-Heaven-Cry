@@ -8,7 +8,7 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
-import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, doorForkView, doorFeedView, ENGINE_DEEDS, PERKS as ENGINE_PERKS, ladderCaps } from '@engine';
+import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, ladderStepAt, ladderSchedule, doorForkView, doorFeedView, ENGINE_DEEDS, PERKS as ENGINE_PERKS, ladderCaps } from '@engine';
 import { forkIconOf } from '../game/forkIcon';
 import { foldVals } from '../game/fold';
 import { shieldBlock } from '../game/shieldLook';
@@ -76,7 +76,7 @@ export function roadMap(id, who) {
     rows.forEach((r, j) => { if (j !== fi && !isEach(r) && rowPoints(r.at, top).includes(n)) lines.push({ key: 'r' + j, kind: 'row', at: r.at, text: r.text, tip: '' }); });
     const cs = cb ? cb.ladder.find((x) => x.n === n) : null;
     if (cs) lines.push({ key: 'c', kind: 'call', at: 'at ' + n, text: cb.name + ': ' + cs.what.charAt(0).toLowerCase() + cs.what.slice(1), tip: '' });
-    const u = un[n], m = u ? Number(u.mastery) || 0 : 0;
+    const u = un[n], ls = ladderStepAt(id, n); // rules 1.70 item 5537: the perk steps and the Mastered perk are the schedule's
     const fs = u && u.category === 'Fork' && forks ? forks.steps.find((x) => x.at === n) : null;
     if (fs) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + fs.options.map((o) => o.name).join(' or ') + (fs.offered ? '' : ' · sealed'),
       tip: fs.options.filter((o) => o.text).map((o) => o.name + ': ' + o.text).join(' / ') });
@@ -88,7 +88,7 @@ export function roadMap(id, who) {
       if (u.player && bare) lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player, tip: '' });
       else lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player ? u.name : 'Unlocks ' + u.name, tip: u.player ? u.name + ': ' + u.player : '' });
     }
-    const step = m >= 1 && m <= 4 ? 'M' + m : m === 5 ? 'mastered' : '';
+    const step = ls === 'fork' ? '' : ls;
     const perks = step === 'mastered' ? (ep.mastered ? [ep.mastered] : []) : step ? ep.perks || [] : [];
     // the first perk step names the two perks; a later one says "Perk" (the names and what they do in its hover)
     if (step === 'mastered') lines.push({ key: 'm', kind: 'mastered', at: 'at ' + n, text: 'Mastered: ' + (ep.mastered ? ep.mastered.name : 'its Mastered perk'), tip: ep.mastered && ep.mastered.text ? ep.mastered.name + ': ' + ep.mastered.text : '' });
@@ -105,17 +105,20 @@ export const rowText = (step) => (step ? step.lines.map((l) => l.text).join(' ·
 export function callBlock(id, pts) {
   const def = callOfSkill(id); if (!def) return null;
   const R = CALL_RULES, has = typeof pts === 'number', p = has ? pts : 0, C = CALLS_NS;
-  const marks = [
-    ...def.steps.map((st) => ({ n: st.at, what: st.short || st.text })),
-    { n: R.cheap_at, what: 'costs ' + C.callBaseAp(R.cheap_at) + ' AP instead of ' + R.ap },
-    ...(C.callReactWhy(def) ? [] : [{ n: R.reaction_at, what: 'also as a reaction, for ' + R.reaction_ap + ' AP, once a round' }]),
-    { n: R.free_at, what: 'your first Call each turn costs no AP' },
-  ].sort((a, b) => a.n - b.n);
+  // rules 1.70 item 5535: how it grows is the one price table (calls.json rules.price), read row by row
+  const priceMarks = R.price.slice(1).flatMap((r, i) => {
+    const was = R.price[i], out = [];
+    if (r.ap !== was.ap) out.push('costs ' + r.ap + ' AP instead of ' + was.ap);
+    if (r.per_turn !== was.per_turn) out.push(r.per_turn === 2 ? 'twice a turn' : r.per_turn + ' times a turn');
+    if (r.reaction && !was.reaction) out.push('on your turn your reaction may pay for it' + (C.callReactWhy(def) ? '' : '; off your turn as a reaction, for ' + R.reaction_ap + ' AP, once a round'));
+    return out.length ? [{ n: r.from, what: out.join('; ') }] : [];
+  });
+  const marks = [...def.steps.map((st) => ({ n: st.at, what: st.short || st.text })), ...priceMarks].sort((a, b) => a.n - b.n);
   const merged = []; for (const x of marks) { const last = merged[merged.length - 1]; if (last && last.n === x.n) last.what += '; ' + x.what; else merged.push({ ...x }); }
   const cur = has ? merged.filter((x) => x.n <= p).map((x) => x.n).pop() : undefined;
   const cm = has ? checkModOf(id, p) : 0;
   return { name: def.name, text: def.text, kind: def.kind,
-    now: has && p > 0 ? C.callBaseAp(p) + ' AP · reach ' + callRangeAt(p) : R.ap + ' AP · reach ' + callRangeAt(1) + ', +1 each point',
+    now: has && p > 0 ? C.callBaseAp(p) + ' AP · reach ' + callRangeAt(p) : C.callBaseAp(1) + ' AP · reach ' + callRangeAt(1) + ', +1 each point',
     checks: has && p > 0 ? (cm >= 0 ? '+' : '') + cm + ' on checks and Asks' : 'Checks and Asks: +1 each point',
     ladder: merged.map((x) => ({ key: x.n, n: x.n, what: x.what.charAt(0).toUpperCase() + x.what.slice(1), now: x.n === cur, owned: has && x.n <= p })) };
 }
@@ -406,7 +409,7 @@ export function epccgVals(self, ptsOf, who, opt) {
     loreHeadStyle: "font-family: 'Chakra Petch', sans-serif; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: " + ink,
     perks: e.perks.map((p) => perkRow(p.id, { held: heldOf(p.id), ink })),
     // the two rules every page shared, said once at the top of the perk fold
-    perkHelp: 'A perk step at 3, 5, 7 and 9 points: a perk at I, or I raised to II. At 10: the Mastered perk.'
+    perkHelp: ((L) => 'A perk step at ' + L.perk_steps.slice(0, -1).join(', ') + ' and ' + L.perk_steps[L.perk_steps.length - 1] + ' points: a perk at I, or I raised to II. At ' + L.mastered + ': the Mastered perk.')(ladderSchedule(s.id))
       + (combos.length ? ' A combo perk: 5 points in every skill on its card, then its deed.' : ''),
     m: masteredVals(self, e.mastered, ink, s.name),
     hasCombos: combos.length > 0,

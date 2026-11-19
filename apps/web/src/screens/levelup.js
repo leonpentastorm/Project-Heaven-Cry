@@ -36,8 +36,9 @@ export function figLevelUp(skillId, p) {
   const just = L.latest && L.latest.points === p ? L.latest : null, nx = L.next;
   const look = (st, ink) => st.forms.map((f) => ({ key: f.id, name: f.name, icon: figmentIconUri(f.icon, ink), title: f.name + ': ' + f.text }));
   if (!just && !nx) return { has: false, forms: [] };
-  const st = just || nx, shown = [...st.forms, ...(st.choose ? st.choose.of : [])]; // rules 1.56: a fork's forms too
-  return { has: true, state: just ? 'new' : 'next', head: just ? 'NEW · FIGMENTS AT VISUALIZATION ' + p + (st.forms.length ? ': ' + st.forms.map((f) => f.name).join(', ') : '') : 'LOCKED · FIGMENTS AT VISUALIZATION ' + nx.points,
+  // rules 1.70 item 5541: a ladder step opens no form (forms are learned: the door figment_forms' choice, in TO CHOOSE)
+  const st = just || nx, shown = [];
+  return { has: true, state: just ? 'new' : 'next', head: just ? 'NEW · FIGMENTS AT VISUALIZATION ' + p : 'LOCKED · FIGMENTS AT VISUALIZATION ' + nx.points,
     headInk: just ? '#FFFFFF' : '#A3AEC2', forms: look({ forms: shown }, just ? FIG_LINE : '#7F8BA1'), hasForms: shown.length > 0, text: st.text,
     hasNext: !!(just && nx), next: just && nx ? 'Next, at Visualization ' + nx.points + ': ' + nx.text : '',
     style: 'display: flex; flex-direction: column; gap: 4px; padding: 6px 8px; border-radius: 8px; ' + (just ? 'border: 1px solid ' + FIG_LINE + '; background: rgba(83, 148, 172, 0.18)' : 'border: 1px dashed #2E3A50') };
@@ -256,7 +257,7 @@ export class LevelUpLogic extends DCLogic {
       tcHasMore: more > 0, tcMoreText: '+' + more + ' more', tcMoreAria: more + ' more to choose: open the next', tcMoreOpen: () => (queue[shown] ? openCh(queue[shown].key) : null),
       tcMoreStyle: 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px dashed #FFFFFF; background: transparent; color: #FFFFFF',
       ceil: 'Attributes: ' + ceil + (cap < 10 ? ' (' + [8, 9, 10].filter((n) => n > cap).map((n) => n + ' from level ' + attrCapLevel(n)).join(', ') + ')' : '') + (cap < 10 && legendRoom(c) > 0 ? ' · your Legendary Deed lets one Attribute go 1 above it' : ''),
-      rules: "A skill can't be higher than the attribute above it, and an attribute can't pass the ceiling for your level; 10 is the top. At 3, 5, 7 and 9 points in a skill: one perk step. Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Unspent points keep.",
+      rules: "A skill can't be higher than the attribute above it, and an attribute can't pass the ceiling for your level; 10 is the top. At each perk step of a skill (its ladder shows where): one perk step. Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Unspent points keep.",
       // Take back what this visit spent (points and perk steps), until a fight or a class settles it.
       canRevert: !canRevertLevelUp(g, c), revert: () => act({ type: 'levelup/revert', charId: c.id }),
       revertStyle: 'min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #A3AEC2; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer',

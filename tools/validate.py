@@ -119,8 +119,10 @@ _SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where i
     ("faith", "hymn_cut"): (_hymn_r.get("per_faith"), "patrons.json prayer.hymn.cooldown_rule.per_faith"),
     ("faith", "hymn_floor"): (_hymn_r.get("floor"), "patrons.json prayer.hymn.cooldown_rule.floor"),
     ("will_power", "pumps"): (((_cyc_r.get("free_pumps") or [{}])[0]).get("pumps"), "soul_modules.json cycle.free_pumps.0.pumps"),
+    # rules 1.70 item 5539: each Strain-limit step's size, as Composure's row says it
+    ("composure", "strain_step"): ((((_ld("soul_modules").get("strain") or {}).get("limit") or {}).get("steps") or [{}])[0].get("value"), "soul_modules.json strain.limit.steps.0.value"),
 }
-_LADDER_GROWS = {"elemental_taken", "guard_pool", "hymn_wait"}  # packages/engine/src/ladder.ts LADDER_GROWS
+_LADDER_GROWS = {"elemental_taken", "guard_pool", "hymn_wait", "strain_limit", "forms_known"}  # packages/engine/src/ladder.ts LADDER_GROWS (strain_limit, forms_known: rules 1.70 items 5539, 5541)
 for s in items("skills"):
     if not isinstance(s, dict):
         continue
@@ -137,8 +139,8 @@ for s in items("skills"):
             errors.append(f"{w}: a row is {{at, text}} with a text (and a capped row's grows)"); continue
         # 0.31.11: a capped per-point row names the engine value it grows (packages/engine/src/ladder.ts LADDER_GROWS), so
         # the ladder shows it only on the levels where it still adds
-        if "grows" in r and (r["grows"] not in _LADDER_GROWS or r["at"] != "each"):
-            errors.append(f"{w}: grows {r['grows']!r} is not one of {sorted(_LADDER_GROWS)} on an each row")
+        if "grows" in r and (r["grows"] not in _LADDER_GROWS or not (r["at"] == "each" or str(r["at"]).startswith("each from "))):
+            errors.append(f"{w}: grows {r['grows']!r} is not one of {sorted(_LADDER_GROWS)} on an each (or each from n) row")
         m = _AT.match(str(r["at"]))
         if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10):
             errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n or at n (n 1 to 10)")
@@ -1560,9 +1562,14 @@ if isinstance(cq, dict):
     cdefs = {c.get("id"): c for c in items("calls") if isinstance(c, dict)}
     if len(cdefs) != len(items("calls")):
         errors.append("calls: ids must be present and unique")
-    for k in ("ap", "cheap_at", "cheap_ap", "free_at", "free_per_turn", "range_base", "range_per_point", "reaction_at", "reactions_per_round", "reaction_ap", "save_tn", "helping_per_round", "hindering_per_round", "mark_rounds"):
+    for k in ("range_base", "range_per_point", "reactions_per_round", "reaction_ap", "save_tn", "helping_per_round", "hindering_per_round", "mark_rounds"):
         if not isinstance(crules.get(k), int) or isinstance(crules.get(k), bool):
             errors.append(f"calls: rules.{k} must be a whole number")
+    # rules 1.70 item 5535: the one price table, rising rows {from, ap, per_turn, reaction?}, the first from 1
+    _pr = crules.get("price")
+    if not (isinstance(_pr, list) and _pr and all(isinstance(x, dict) and set(x) <= {"from", "ap", "per_turn", "reaction"} and all(isinstance(x.get(k), int) and not isinstance(x.get(k), bool) for k in ("from", "ap", "per_turn")) for x in _pr)
+            and [x["from"] for x in _pr] == sorted({x["from"] for x in _pr}) and _pr[0]["from"] == 1 and all(x["ap"] >= 0 and x["per_turn"] >= 1 for x in _pr)):
+        errors.append("calls: rules.price is rising rows {from, ap, per_turn, reaction?}, the first from 1 (rules 1.70 item 5535)")
     steps_at = crules.get("steps_at")
     if not (isinstance(steps_at, list) and len(steps_at) == 3 and steps_at == sorted(steps_at) and steps_at[0] == 1):
         errors.append("calls: rules.steps_at must be three rising point values, the first 1")
@@ -3494,6 +3501,18 @@ def _pressure_steps_check():
             if ats and ats != want: errors.append(f"perks:both_hands{('@' + tier) if tier else ''}: Pressure Point steps at {ats}, but techniques.json rules.pressure's pressed / suppressed are {want}")
 _pressure_steps_check()
 
+# ---------- rules 1.70 item 5537: the ladder schedule (skills.json ladder) ----------
+_LSCH = _ld("skills").get("ladder") or {}
+for _slot in ("alpha", "beta", "gamma"):
+    _l = _LSCH.get(_slot) or {}
+    if not (isinstance(_l.get("perk_steps"), list) and len(_l["perk_steps"]) == 4 and _l["perk_steps"] == sorted(set(_l["perk_steps"])) and isinstance(_l.get("forks"), list) and isinstance(_l.get("mastered"), int) and all(1 <= x < _l["mastered"] for x in _l["perk_steps"] + _l["forks"]) and not set(_l["perk_steps"]) & set(_l["forks"])):
+        errors.append(f"skills: ladder.{_slot} is {{perk_steps: four rising points, forks: [points], mastered: n}}, no point both a perk step and a fork (rules 1.70 item 5537)")
+for _s in items("skills"):
+    _l = _LSCH.get(_s.get("slot")) or {}
+    for _pts, _u in (_s.get("unlocks") or {}).items():
+        _m = _u.get("mastery") if isinstance(_u, dict) else None
+        if isinstance(_m, int) and 1 <= _m <= 4 and (_l.get("perk_steps") or [None] * 4)[_m - 1] != int(_pts): errors.append(f"skills:{_s.get('id')}.unlocks.{_pts}: mastery {_m} says a perk step, and the {_s.get('slot')} schedule has its step {_m} at {(_l.get('perk_steps') or [None] * 4)[_m - 1]} (set mastery 0: rules 1.70 item 5537)")
+        if _m == 5 and _l.get("mastered") != int(_pts): errors.append(f"skills:{_s.get('id')}.unlocks.{_pts}: the Mastered row is at the schedule's mastered ({_l.get('mastered')})")
 # ---------- rules 1.60 slice C (Doors 3.0, the forks: N1, N2) ----------
 # data/forks.json: one row per fork option, a door verb held only by a sheet that picked it (`requires: [{door_pick:
 # <its own id>}]`). Each alpha skill names its two steps in skills.json `forks` ([{id, at, of: [two option ids]}]) at 4
@@ -3509,7 +3528,10 @@ if _FK is not None:
         _fs = _s.get("forks")
         if _fs is None: continue
         _w = f"skills:{_sid}.forks"
-        if not (isinstance(_fs, list) and [f.get("at") for f in _fs if isinstance(f, dict)] == [4, 6]): errors.append(f"{_w}: two steps, at 4 and 6 ({{id, at, of}}: rules 1.60)"); continue
+        # rules 1.70 item 5537: a fork step's points are the ladder schedule's (skills.json ladder.alpha.forks), never its own
+        _fat = ((_ld("skills").get("ladder") or {}).get("alpha") or {}).get("forks") or []
+        if not (isinstance(_fs, list) and len(_fs) == len(_fat) and all(isinstance(f, dict) and "at" not in f for f in _fs)): errors.append(f"{_w}: one step for each of the schedule's fork points {_fat} ({{id, of}}; its points are skills.json ladder.alpha.forks: rules 1.70 item 5537)"); continue
+        _fs = [dict(f, at=_fat[i]) for i, f in enumerate(_fs)]
         if not isinstance(_s.get("fork_runs_on"), str) or not _s["fork_runs_on"]: errors.append(f"skills:{_sid}: fork_runs_on names the door's own resource (words)")
         for _f in _fs:
             if not (isinstance(_f.get("of"), list) and len(_f["of"]) == 2): errors.append(f"{_w}.{_f.get('id')}: two options"); continue

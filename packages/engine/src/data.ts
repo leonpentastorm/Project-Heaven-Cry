@@ -59,6 +59,21 @@ export const ENEMY_AI: { figments_last: string[]; shelter: Record<string, number
 export const ARCHETYPES: any[] = (archetypesJ as any).items;
 
 export const SKILL: Record<string, SkillDef> = Object.fromEntries(SKILLS.map((s) => [s.id, s]));
+/** Rules 1.70 item 5537: THE ladder schedule by a skill's slot (skills.json `ladder`): its perk steps, its fork steps, its
+ * Mastered perk, in points. Every reader of "where is a perk step / a fork" asks these. */
+export interface LadderSchedule { perk_steps: number[]; forks: number[]; mastered: number }
+const LADDER_SCHED: Record<string, LadderSchedule> = (skillsJ as any).ladder;
+for (const slot of ['alpha', 'beta', 'gamma']) if (!LADDER_SCHED?.[slot]?.perk_steps) throw new Error('data/skills.json ladder.' + slot + ' is missing');
+/** The schedule of this skill's ladder (its slot's). */
+export const ladderSchedule = (skillId: string): LadderSchedule => LADDER_SCHED[(SKILL[skillId] as any)?.slot] || LADDER_SCHED.beta;
+/** What a skill's level gives on its ladder's schedule: 'M1'..'M4' (its first to fourth perk step), 'mastered', 'fork'
+ * (an alpha's fork step) or '' (none of them). */
+export function ladderStepAt(skillId: string, points: number): 'M1' | 'M2' | 'M3' | 'M4' | 'mastered' | 'fork' | '' {
+  const L = ladderSchedule(skillId), i = L.perk_steps.indexOf(points);
+  if (points === L.mastered) return 'mastered';
+  if (i >= 0) return ('M' + (i + 1)) as 'M1';
+  return L.forks.includes(points) ? 'fork' : '';
+}
 export const ATTR: Record<string, AttrDef> = Object.fromEntries(ATTRS.map((a) => [a.id, a]));
 export const WEAPON: Record<string, WeaponDef> = Object.fromEntries(WEAPONS.map((w) => [w.id, w]));
 export const CLASS: Record<string, ClassDef> = Object.fromEntries(CLASSES.map((c) => [c.id, c]));

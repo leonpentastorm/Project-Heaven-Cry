@@ -2191,8 +2191,8 @@
       "tagline": "An iron will and a storm in the heart.",
       "resource": {
         "id": "strain",
-        "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Each Begin or cast adds 1 Strain (2 where the ambient mana is Flooded), and each turn you keep holding an Outburst adds 1 more. Strain falls by 1 at the start of each of your turns, and again when you calm your heart: a turn spent still, your first weapon attack of the turn, the first heal, stim, shield or cleanse you give someone each turn, letting a held Outburst go, or Steady the heart. Your Strain limit is 3, +1 for every 2 points of Will Power. At the end of your turn each point over the limit burns you for 8 damage that ignores armour. At 3 over the limit you suffer a Mana Short with no roll: you are Stunned and a held Outburst goes off wild. Strain is cleared when the fight ends. Crystallise (3 AP, needs ambient mana of 10 or more) lowers the ambient mana by 10 and makes one standard mana core.",
+        "max": "strain_limit (soul_modules.json strain.limit: 3, +1 at Composure 1, 2, 4, 6 and 8; rules 1.70 item 5539)",
+        "shared_rule": "Each Begin or cast adds 1 Strain (2 where the ambient mana is Flooded), and each turn you keep holding an Outburst adds 1 more. Strain falls by 1 at the start of each of your turns, and again when you calm your heart: a turn spent still, your first weapon attack of the turn, the first heal, stim, shield or cleanse you give someone each turn, letting a held Outburst go, or Steady the heart. Your Strain limit is 3, and grows with Composure. At the end of your turn each point over the limit burns you for 8 damage that ignores armour. At 3 over the limit you suffer a Mana Short with no roll: you are Stunned and a held Outburst goes off wild. Strain is cleared when the fight ends. Crystallise (3 AP, needs ambient mana of 10 or more) lowers the ambient mana by 10 and makes one standard mana core.",
         "also_uses": [
           "mp"
         ]

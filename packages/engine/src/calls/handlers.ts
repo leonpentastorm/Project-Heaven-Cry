@@ -12,7 +12,7 @@ import { lowerPressureOf, pressureOf, isSuppressed, isPressed } from '../physica
 import type { Combat } from '../combat';
 import type { Rng } from '../rng';
 import type { Call } from './types';
-import { CALL } from './data';
+import { CALL, callSkillName } from './data';
 import { call, callMarks, callLevel, giveAp, hinder } from './core';
 import { grantAp, setAp } from '../effects/cost';
 import { asStanding } from '../unitstate';
@@ -44,7 +44,7 @@ function thingWhy(t: Call, th: Thing, stood: boolean): string | null {
   }
   if (th === 'stand') return a.prone ? null : a.name + ' isn\'t prone.';
   if (th === 'pickup') return !a.charId ? 'Only a character picks things up.' : pileNear(cb, a) ? null : 'Nothing for ' + a.name + ' to pick up there.';
-  if (!t.num('move')) return 'Ordering a move needs 3 points of Authority.';
+  if (!t.num('move')) return 'Ordering a move needs ' + t.def.steps[1].at + ' points of ' + callSkillName(t.def) + '.'; // (the step's points: data)
   if (!t.args.tile) return 'Pick the tile ' + a.name + ' moves to.';
   const blk = stood ? asStanding(a, () => moveBlock(a)) : moveBlock(a); // read as if the stand-up before it had happened
   if (blk) return a.name + ': ' + blk;
@@ -70,7 +70,7 @@ call({
     if (!th.length) return 'Pick what to order: ' + THINGS.filter((x) => x !== 'move' || t.num('move')).map((x) => THING_WORDS[x]).join(', ') + '.';
     if (th.some((x) => !(THINGS as readonly string[]).includes(x))) return 'An Order is to reload, stand up, pick up or move. Never to attack.';
     if (new Set(th).size !== th.length) return 'Order two different things.';
-    if (th.length > max) return max > 1 ? 'An Order is two things at most.' : 'One thing an Order (two from 7 points of Authority).';
+    if (th.length > max) return max > 1 ? 'An Order is two things at most.' : 'One thing an Order (two from ' + t.def.steps[2].at + ' points of ' + callSkillName(t.def) + ').';
     if (condOn(a, 'stunned')) return a.name + ' is Stunned and can\'t follow an order.';
     if (condOn(a, 'suppressed') || isSuppressed(a)) return a.name + ' is Suppressed and has no reaction to act on.';
     if (!canReact(t.cb, a, 'move')) return a.name + ' has no reaction left to act on.';
@@ -158,7 +158,7 @@ call({
     if (condOn(a, 'suppressed') || isSuppressed(a)) return a.name + ' is Suppressed: there is no reaction to add to.';
     if (maxReactions(a, t.cb) <= 0) return a.name + ' has no reaction this round to add to.';
     if (t.args.tile) {
-      if (!t.num('step')) return 'A cued step needs 3 points of Reaction Speed.';
+      if (!t.num('step')) return 'A cued step needs ' + t.def.steps[1].at + ' points of ' + callSkillName(t.def) + '.';
       const blk = moveBlock(a); if (blk) return a.name + ': ' + blk;
       if (paths(t.cb, a.pos, a.id).dist[t.args.tile] !== 1) return 'The cued step is 1 tile, to a free tile next to ' + a.name + '.';
     }

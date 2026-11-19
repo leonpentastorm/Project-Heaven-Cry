@@ -7,7 +7,7 @@
 //   act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'shot' });
 //   withGame(g, () => …)                           // call engine functions directly with the game bound (h.c, h.g)
 import {
-  ARCHETYPES, PERK, FIGHT_TOOLS, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register, setGrade, forkRow,
+  ARCHETYPES, PERK, FIGHT_TOOLS, FIG, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register, setGrade, forkRow,
   type Action, type Character, type Combat, type GameState, type ItemHandler, type Sheet, type Unit,
 } from '../../src';
 import './yard16';
@@ -20,8 +20,9 @@ export interface CharSpec {
   /** Perks by id: tier ('I' | 'II' | 'mastered' | 'achieved' | 'ultimate'); a list of ids means Tier I (or the perk's own tier). */
   perks?: Record<string, string> | string[];
   traits?: string[];
-  /** Rules 1.56 (Figments 2.0): the Figment forms chosen at the forks (door/pick's record). Not given, a character with
-   * Visualization set here is a pre-forks one (no figRev stamp): the save migration gives it the old ladder's forms. */
+  /** Rules 1.70 item 5541: the Figment forms learned beyond the old ladder's fixed ones at its points (door/pick's record
+   * at figment_forms). Not given, a character with Visualization set here is a pre-forks one (no figRev stamp): the save
+   * migration gives it the old ladder's forms. */
   forms?: string[];
   /** Rules 1.60 (the forks, N1): fork options to pick (data/forks.json ids), each sent as a real door/pick through the
    * reducer before the session starts (the skills must already reach the step). */
@@ -53,7 +54,10 @@ export function equipSpec(c: Character, spec: CharSpec) {
   if (spec.traits) c.traits = [...spec.traits];
   if (spec.relics) c.relics = [...spec.relics];
   if (spec.skills) Object.assign(c.skills, spec.skills);
-  if (spec.forms) c.doorPicks = { ...(c.doorPicks || {}), visualization: [...spec.forms] }; else if (spec.skills?.visualization) delete c.figRev;
+  // rules 1.70 item 5541: forms are learned at the door figment_forms. `forms` are the forms a test chose beyond the
+  // ones the old ladder gave every holder at its points (figments.json migration.fixed_before), as a migrated save holds them
+  if (spec.forms) { const v = spec.skills?.visualization ?? c.skills.visualization ?? 0, fixed = ((FIG as any).migration.fixed_before as any[]).filter((r) => v >= r.points).flatMap((r) => r.forms as string[]); c.doorPicks = { ...(c.doorPicks || {}), figment_forms: [...new Set([...fixed, ...spec.forms])] }; }
+  else if (spec.skills?.visualization) delete c.figRev;
   if (spec.doorPicks) c.doorPicks = { ...(c.doorPicks || {}), ...spec.doorPicks };
   if (spec.attrs) Object.assign(c.attrs, spec.attrs);
   if (spec.classId !== undefined) c.classId = spec.classId;

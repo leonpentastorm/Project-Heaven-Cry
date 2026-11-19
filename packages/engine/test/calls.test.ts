@@ -47,13 +47,16 @@ describe('the data', () => {
 });
 
 describe('the ladder', () => {
-  it('cost, range and step follow the points: 2 AP and 5 tiles at 1; step 2 at 3; 1 AP at 5; step 3 at 7; free first at 10', () => {
-    const want: Record<number, [number, number, number]> = { 1: [2, 5, 1], 2: [2, 6, 1], 3: [2, 7, 2], 5: [1, 9, 2], 7: [1, 11, 3], 9: [1, 13, 3], 10: [0, 14, 3] };
+  it('cost, range and step follow the points: 3 AP and 5 tiles at 1; step 2 at 4; 2 AP at 5; step 3 at 8; 1 AP at 9; twice a turn and the reaction at 10', () => {
+    expect(CALL_RULES.price.map((r) => [r.from, r.ap, r.per_turn, !!r.reaction])).toEqual([[1, 3, 1, false], [5, 2, 1, false], [9, 1, 1, false], [10, 1, 2, true]]);
+    expect(CALL_RULES.steps_at).toEqual([1, 4, 8]); expect(calls.CALL_REACT_AT).toBe(10);
+    const want: Record<number, [number, number, number]> = { 1: [3, 5, 1], 2: [3, 6, 1], 3: [3, 7, 1], 4: [3, 8, 2], 5: [2, 9, 2], 7: [2, 11, 2], 8: [2, 12, 3], 9: [1, 13, 3], 10: [1, 14, 3] };
     for (const [pts, [ap, range, step]] of Object.entries(want)) {
       const f = fight([speaker('charisma', +pts), {}]), e = f.cpad().find((x) => x.id === 'call.rally')!;
       expect([e.ap, e.range, e.step], 'points ' + pts).toEqual([ap, range, step]);
+      expect(e.ap, 'points ' + pts).toBe(calls.callBaseAp(+pts)); expect(calls.callsPerTurn(+pts), 'points ' + pts).toBe(+pts === 10 ? 2 : 1);
       expect(e.text).toBe(CALL['call.rally'].steps[step - 1].text); expect(e.ok).toBe(true); expect(e.skillName).toBe('Charisma');
-      expect(e.reaction).toBe(+pts >= 9); expect(e.free).toBe(+pts === 10);
+      expect(e.reaction).toBe(+pts >= 10); expect(!!e.payReaction, 'points ' + pts).toBe(+pts >= 10); expect(e.free).toBe(false);
     }
   });
   it('the pad lists only the Calls the unit has a point for, and a Call with no point is refused', () => {
@@ -66,17 +69,37 @@ describe('the ladder', () => {
     const f = fight([speaker('charisma', 1), {}]); f.put(f.pcs[1], '8,2'); // 6 tiles away, the voice carries 5
     expect(f.call('call.rally', { targetId: f.pcs[1].id })).toMatch(/Too far to be heard \(5 tiles\)/);
     f.put(f.pcs[1], '7,2');
-    expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pc.ap).toBe(4);
+    expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pc.ap).toBe(6 - calls.callBaseAp(1));
   });
-  it('as many Calls a turn as the AP pays for; at 10 points only the first is free', () => {
-    const f = fight([speaker('charisma', 10), {}, {}]);
-    expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pc.ap).toBe(6);
-    expect(f.cpad()[0].ap).toBe(1);
-    expect(f.call('call.rally', { targetId: f.pcs[2].id })).toBeNull(); expect(f.pc.ap).toBe(5);
-    f.cb.round++; f.turn(f.pc); expect(f.cpad()[0].ap).toBe(0); // a new turn: free again
+  it('each Call once a turn (another Call is fine), twice at 10 points; at 10 the reaction may pay for any Call on your own turn', () => {
+    const f = fight([{ skills: { charisma: 5, eloquence: 5 } }, {}, {}]), price = calls.callBaseAp(5);
+    expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pc.ap).toBe(6 - price);
+    expect(f.call('call.rally', { targetId: f.pcs[2].id })).toBe('Rally is made once a turn.'); expect(f.pc.ap).toBe(6 - price);
+    expect(f.cpad().find((x) => x.id === 'call.rally')).toMatchObject({ ok: false, why: 'Rally is made once a turn.' });
+    expect(f.call('call.brief', { targetId: f.pcs[2].id })).toBeNull(); expect(f.pc.ap).toBe(6 - 2 * price);
+    expect(f.call('call.rally', { targetId: f.pcs[2].id, react: true })).toBe('Rally is made once a turn.');
+    f.cb.round++; f.turn(f.pc);
+    expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pc.ap).toBe(6 - price); // a new turn: once again
+    // below 10 points the reaction can't pay, on your own turn either
+    const n = fight([speaker('charisma', 9), {}]);
+    expect(n.call('call.rally', { targetId: n.pcs[1].id, react: true })).toBe('Paying for a Call with your reaction needs 10 points of Charisma.');
+    expect(n.pc.ap).toBe(6); expect(reactionsUsed(n.cb, n.pc)).toBe(0);
+    // at 10: twice a turn, the second paid with the reaction (0 AP, the reaction spent, still counted in the turn's two)
+    const g = fight([speaker('charisma', 10), {}, {}, {}]), top = calls.callBaseAp(10);
+    expect(g.call('call.rally', { targetId: g.pcs[1].id })).toBeNull(); expect(g.pc.ap).toBe(6 - top);
+    expect(g.cpv('call.rally', { targetId: g.pcs[2].id, react: true }).ap).toBe(0);
+    expect(g.call('call.rally', { targetId: g.pcs[2].id, react: true })).toBeNull();
+    expect(g.pc.ap).toBe(6 - top); expect(reactionsUsed(g.cb, g.pc)).toBe(1);
+    expect(g.fx('call').pop()).toMatchObject({ unit: g.pc.id, id: 'call.rally', target: g.pcs[2].id, reaction: true });
+    expect(g.call('call.rally', { targetId: g.pcs[3].id })).toBe('Rally is made at most 2 times a turn.'); expect(g.pc.ap).toBe(6 - top);
+    // at 10 a hindering Call may be paid with the reaction too, on your own turn
+    const h = fight([speaker('intimidation', 10), {}]); h.saves(h.foe, 99);
+    expect(h.call('call.threaten', { targetId: h.foe.id, react: true })).toBeNull();
+    expect(h.pc.ap).toBe(6); expect(reactionsUsed(h.cb, h.pc)).toBe(1);
+    expect(h.fx('call').pop()).toMatchObject({ unit: h.pc.id, id: 'call.threaten', kind: 'hindering', reaction: true });
   });
-  it('from 9 points a Call may be made as a reaction, once a round, for the reaction and no AP', () => {
-    const f = fight([speaker('charisma', 9), {}, {}]); f.next(); // the second PC's turn
+  it('from 10 points a helping Call may be made as a reaction off your turn, once a round, for the reaction and no AP', () => {
+    const f = fight([speaker('charisma', calls.CALL_REACT_AT), {}, {}]); f.next(); // the second PC's turn
     const ap = f.pc.ap;
     expect(f.cpv('call.rally', { targetId: f.pcs[1].id, react: true }).ap).toBe(0);
     expect(f.call('call.rally', { targetId: f.pcs[1].id, react: true }, f.pc)).toBeNull();
@@ -84,20 +107,21 @@ describe('the ladder', () => {
     expect(f.fx('call').pop()).toMatchObject({ unit: f.pc.id, reaction: true });
     expect(f.call('call.rally', { targetId: f.pcs[2].id, react: true }, f.pc)).toMatch(/One Call as a reaction a round/);
     expect(f.call('call.rally', { targetId: f.pcs[2].id }, f.pc)).toMatch(/turn/); // not its turn: only as a reaction
-    const g = fight([speaker('charisma', 8), {}]); g.next();
-    expect(g.call('call.rally', { targetId: g.pcs[1].id, react: true }, g.pc)).toMatch(/needs 9 points of Charisma/);
-    const h = fight([speaker('charisma', 9), {}]);
-    expect(h.call('call.rally', { targetId: h.pcs[1].id, react: true })).toMatch(/your turn/); // on your own turn it is an action
+    const g = fight([speaker('charisma', calls.CALL_REACT_AT - 1), {}]); g.next();
+    expect(g.call('call.rally', { targetId: g.pcs[1].id, react: true }, g.pc)).toMatch(/needs 10 points of Charisma/);
+    const h = fight([speaker('charisma', calls.CALL_REACT_AT), {}]);
+    expect(h.call('call.rally', { targetId: h.pcs[1].id, react: true })).toBeNull(); // on your own turn the reaction pays in place of the AP
+    expect(h.pc.ap).toBe(6); expect(reactionsUsed(h.cb, h.pc)).toBe(1);
   });
-  it('a Call that hinders an enemy is never a reaction (the lead\'s ruling, rules 1.28 item 1764): only on your own turn', () => {
-    const f = fight([speaker('intimidation', 9), {}]); f.next(); // the second PC's turn
+  it('a Call that hinders an enemy is never a reaction off your turn (the lead\'s ruling, rules 1.28 item 1764): only on your own turn', () => {
+    const f = fight([speaker('intimidation', calls.CALL_REACT_AT), {}]); f.next(); // the second PC's turn
     const ap = f.pc.ap;
     expect(f.cpv('call.threaten', { targetId: f.foe.id, react: true }).ok).toBe(false);
     expect(f.call('call.threaten', { targetId: f.foe.id, react: true }, f.pc)).toMatch(/hinders an enemy.*own turn/);
     expect(f.pc.ap).toBe(ap); expect(reactionsUsed(f.cb, f.pc)).toBe(0);
   });
   it('emits one call event, and a refusal spends nothing and emits none', () => {
-    const f = fight([speaker('charisma', 3), {}]);
+    const f = fight([speaker('charisma', CALL_RULES.steps_at[1]), {}]);
     expect(f.call('call.rally', { targetId: f.foe.id })).toMatch(/Call to an ally/);
     expect(f.call('call.rally', { targetId: f.pc.id })).toMatch(/someone else/);
     expect(f.fx('call').length).toBe(0); expect(f.pc.ap).toBe(6);
@@ -110,13 +134,13 @@ describe('the ladder', () => {
 
 describe('the limits', () => {
   it('one helping Call and one hindering Call on a unit each round', () => {
-    const f = fight([{ skills: { charisma: 5, eloquence: 5, vigilant: 5, intimidation: 5 } }, {}, {}]); f.saves(f.foe, 99);
+    const f = fight([{ skills: { charisma: 9, eloquence: 9, vigilant: 9, intimidation: 9 } }, {}, {}]); f.saves(f.foe, 99);
     expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull();
     expect(f.call('call.brief', { targetId: f.pcs[1].id })).toMatch(/already been helped by a Call this round/);
     expect(f.call('call.brief', { targetId: f.pcs[2].id })).toBeNull(); // another ally is fine
     expect(f.call('call.spot', { targetId: f.foe.id })).toBeNull();
     expect(f.call('call.threaten', { targetId: f.foe.id })).toMatch(/already been hindered by a Call this round/);
-    expect(f.pc.ap).toBe(3); // three Calls at 1 AP; the refusals cost nothing
+    expect(f.pc.ap).toBe(6 - 3 * calls.callBaseAp(9)); // three Calls at 1 AP; the refusals cost nothing
     f.cb.round++; // a new round
     expect(f.cpv('call.brief', { targetId: f.pcs[1].id }).ok).toBe(true); expect(f.cpv('call.threaten', { targetId: f.foe.id }).ok).toBe(true);
   });
@@ -135,18 +159,18 @@ describe('the limits', () => {
 
 describe('AP a Call gives', () => {
   it('lands this turn for an ally still to act, on the next turn for one who has acted, and at once on their own turn', () => {
-    const f = fight([speaker('charisma', 1), {}, {}]); f.next(); // PC 2's turn: PC 1 has acted, PC 3 has not
-    const [, b, c] = f.pcs;
+    const f = fight([speaker('charisma', 10), {}, {}]); f.next(); // PC 2's turn: PC 1 has acted, PC 3 has not (10 points: Rally twice a turn)
+    const [, b, c] = f.pcs, n = CALL['call.rally'].steps[2].numbers!.ap as number;
     f.cb.order = [f.pcs[1].id, f.pcs[0].id, f.pcs[2].id, f.foe.id]; f.turn(f.pcs[0]); // order: b, a (speaking), c
-    expect(f.cpv('call.rally', { targetId: c.id }).gives).toEqual({ unit: c.id, ap: 1, when: 'this turn' });
-    expect(f.cpv('call.rally', { targetId: b.id }).gives).toEqual({ unit: b.id, ap: 1, when: 'next turn' });
-    expect(f.call('call.rally', { targetId: c.id })).toBeNull(); expect(f.unit(c.id).apNext).toBe(1); expect(f.unit(c.id).ap).not.toBe(7);
-    expect(f.call('call.rally', { targetId: b.id })).toBeNull(); expect(f.unit(b.id).apNext).toBe(1);
-    f.next(); expect(f.unit(c.id).ap).toBe(7); expect(f.cb.round).toBe(1); // c's turn, this round
-    f.next(); f.next(); expect(f.cb.round).toBe(2); expect(f.unit(b.id).ap).toBe(7); // b's next turn
+    expect(f.cpv('call.rally', { targetId: c.id }).gives).toEqual({ unit: c.id, ap: n, when: 'this turn' });
+    expect(f.cpv('call.rally', { targetId: b.id }).gives).toEqual({ unit: b.id, ap: n, when: 'next turn' });
+    expect(f.call('call.rally', { targetId: c.id })).toBeNull(); expect(f.unit(c.id).apNext).toBe(n); expect(f.unit(c.id).ap).not.toBe(6 + n);
+    expect(f.call('call.rally', { targetId: b.id })).toBeNull(); expect(f.unit(b.id).apNext).toBe(n);
+    f.next(); expect(f.unit(c.id).ap).toBe(6 + n); expect(f.cb.round).toBe(1); // c's turn, this round
+    f.next(); f.next(); expect(f.cb.round).toBe(2); expect(f.unit(b.id).ap).toBe(6 + n); // b's next turn
   });
   it('goes through the +3 cap and the turn\'s 9', () => {
-    const f = fight([speaker('charisma', 7), {}]); f.unit(f.pcs[1].id).apNext = 2; // banked from a perk
+    const f = fight([speaker('charisma', CALL_RULES.steps_at[2]), {}]); f.unit(f.pcs[1].id).apNext = 2; // banked from a perk
     expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull(); expect(f.pcs[1].apNext).toBe(4); // 2 + Rally's 2
     f.next(); expect(f.pcs[1].ap).toBe(9); expect(f.cb.log.some((l) => /1 lost to the \+3 cap/.test(l))).toBe(true);
   });
@@ -158,24 +182,25 @@ describe('Order (Authority)', () => {
     f.unit(a.id).prone = true; const ap = a.ap;
     expect(f.call('call.order', { targetId: a.id })).toMatch(/Pick what to order: reload, stand up, pick up\./);
     expect(f.call('call.order', { targetId: a.id, opt: 'attack' })).toMatch(/Never to attack/);
-    expect(f.call('call.order', { targetId: a.id, opt: 'move', tile: '3,3' })).toMatch(/needs 3 points of Authority/);
+    expect(f.call('call.order', { targetId: a.id, opt: 'move', tile: '3,3' })).toBe('Ordering a move needs 4 points of Authority.');
     expect(f.call('call.order', { targetId: a.id, opt: 'stand' })).toBeNull();
-    expect(f.unit(a.id).prone).toBe(false); expect(f.unit(a.id).ap).toBe(ap); expect(reactionsUsed(f.cb, f.unit(a.id))).toBe(1); expect(f.pc.ap).toBe(4);
-    f.cb.round++;
+    expect(f.unit(a.id).prone).toBe(false); expect(f.unit(a.id).ap).toBe(ap); expect(reactionsUsed(f.cb, f.unit(a.id))).toBe(1); expect(f.pc.ap).toBe(6 - calls.callBaseAp(1));
+    f.cb.round++; f.turn(f.pc);
     expect(f.call('call.order', { targetId: a.id, opt: 'stand' })).toMatch(/isn't prone/);
     f.unit(a.id).ammo = 0; f.unit(a.id).mags = [];
-    expect(f.call('call.order', { targetId: a.id, opt: 'reload' })).toMatch(/spare magazines/); expect(f.pc.ap).toBe(4); expect(reactionsUsed(f.cb, f.unit(a.id))).toBe(0); // the engine's own refusal: nothing spent (a new round: the count is the round's)
+    expect(f.call('call.order', { targetId: a.id, opt: 'reload' })).toMatch(/spare magazines/); expect(f.pc.ap).toBe(6); expect(reactionsUsed(f.cb, f.unit(a.id))).toBe(0); // the engine's own refusal: nothing spent (a new round: the count is the round's)
     f.unit(a.id).mags = [WEAPON[a.weapon].magazine!];
     expect(f.call('call.order', { targetId: a.id, opt: 'reload' })).toBeNull(); expect(f.unit(a.id).ammo).toBeGreaterThan(0); expect(f.unit(a.id).ap).toBe(ap);
   });
   it('pick up: everything in the pile under or next to the ally, for none of their AP', () => {
-    const f = fight([speaker('authority', 1), {}]), a = f.pcs[1];
+    const f = fight([speaker('authority', 1), { owner: 'p1' }, speaker('authority', 1, { owner: 'host' })]), a = f.pcs[1];
     expect(f.call('call.order', { targetId: a.id, opt: 'pickup' })).toMatch(/Nothing for .* to pick up/);
     withGame(f.g, () => dropToPile(f.cb, '3,3', [{ id: 'medkit', qty: 1 } as any]));
     const before = JSON.stringify(f.g); expect(f.cpv('call.order', { targetId: a.id, opt: 'pickup' }).ok).toBe(true); expect(JSON.stringify(f.g)).toBe(before);
     const ap = a.ap;
     expect(f.call('call.order', { targetId: a.id, opt: 'pickup' })).toBeNull();
     expect(f.cb.log.some((l) => l.startsWith(a.name + ' picks up '))).toBe(true); expect(f.unit(a.id).ap).toBe(ap);
+    f.next(); f.next(); // the third PC's turn, the same round: a second speaker
     expect(f.call('call.order', { targetId: a.id, opt: 'pickup' })).toMatch(/helped by a Call this round/);
   });
   it('an ally with no reaction left, or Stunned, can\'t be Ordered', () => {
@@ -187,24 +212,24 @@ describe('Order (Authority)', () => {
     expect(f.pc.ap).toBe(6);
   });
   it('step 2: or they move their Movement; step 3: two different things', () => {
-    const f = fight([speaker('authority', 3), {}]), a = f.pcs[1], reach = calls.orderMoveTiles(a);
+    const f = fight([speaker('authority', CALL_RULES.steps_at[1]), {}]), a = f.pcs[1], reach = calls.orderMoveTiles(a);
     expect(f.call('call.order', { targetId: a.id, opt: 'move', tile: 3 + reach + 1 + ',2' })).toMatch(/Too far/);
     const pv = f.cpv('call.order', { targetId: a.id, opt: 'move', tile: '3,3' }); expect(pv.ok).toBe(true); expect(pv.moves).toEqual([{ unit: a.id, to: '3,3' }]);
     expect(f.unit(a.id).pos).toBe('3,2'); // a preview moves nobody
     const ap = a.ap;
     expect(f.call('call.order', { targetId: a.id, opt: 'move', tile: '3,3' })).toBeNull(); expect(f.unit(a.id).pos).toBe('3,3'); expect(f.unit(a.id).ap).toBe(ap);
-    f.cb.round++; f.unit(a.id).prone = true;
-    expect(f.call('call.order', { targetId: a.id, opt: 'stand+move', tile: '3,2' })).toMatch(/two from 7 points/);
-    const g = fight([speaker('authority', 7), {}]), b = g.pcs[1]; g.unit(b.id).prone = true;
+    f.cb.round++; f.turn(f.pc); f.unit(a.id).prone = true;
+    expect(f.call('call.order', { targetId: a.id, opt: 'stand+move', tile: '3,2' })).toBe('One thing an Order (two from 8 points of Authority).');
+    const g = fight([speaker('authority', CALL_RULES.steps_at[2]), {}]), b = g.pcs[1]; g.unit(b.id).prone = true;
     expect(g.call('call.order', { targetId: b.id, opt: 'stand+stand' })).toMatch(/two different things/);
     expect(g.call('call.order', { targetId: b.id, opt: 'stand+move', tile: '3,3' })).toBeNull();
-    expect(g.unit(b.id).prone).toBe(false); expect(g.unit(b.id).pos).toBe('3,3'); expect(reactionsUsed(g.cb, g.unit(b.id))).toBe(1); expect(g.pc.ap).toBe(5);
+    expect(g.unit(b.id).prone).toBe(false); expect(g.unit(b.id).pos).toBe('3,3'); expect(reactionsUsed(g.cb, g.unit(b.id))).toBe(1); expect(g.pc.ap).toBe(6 - calls.callBaseAp(CALL_RULES.steps_at[2]));
   });
 });
 
 describe('Rally (Charisma)', () => {
   it('step 1: 1 AP; step 2: and 1 Pressure shed; step 3: 2 AP and 1 Pressure shed', () => {
-    for (const [pts, ap, shed] of [[1, 1, 0], [3, 1, 1], [7, 2, 1]] as const) {
+    for (const [pts, ap, shed] of [[1, 1, 0], [4, 1, 1], [8, 2, 1]] as const) {
       const f = fight([speaker('charisma', pts), {}]); f.press(f.pcs[1], 2);
       expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull();
       expect(f.pcs[1].apNext, 'points ' + pts).toBe(ap); expect(f.pressure(f.pcs[1]), 'points ' + pts).toBe(2 - shed);
@@ -223,10 +248,10 @@ describe('Brief (Eloquence)', () => {
     prone(f); expect(f.pcs[1].ap).toBe(5);
   });
   it('step 2: the next two actions; step 3: 2 AP off the next and 1 off the one after', () => {
-    const f = fight([speaker('eloquence', 3), { weapon: 'service_pistol' }]);
+    const f = fight([speaker('eloquence', 4), { weapon: 'service_pistol' }]);
     f.call('call.brief', { targetId: f.pcs[1].id }); f.next();
     prone(f); prone(f); expect(f.pcs[1].ap).toBe(6); prone(f); expect(f.pcs[1].ap).toBe(5);
-    const g = fight([speaker('eloquence', 7), { weapon: 'service_pistol' }]); rig({ hit: false, die: 5 });
+    const g = fight([speaker('eloquence', 8), { weapon: 'service_pistol' }]); rig({ hit: false, die: 5 });
     g.call('call.brief', { targetId: g.pcs[1].id }); expect(g.pcs[1].call?.brief?.cuts).toEqual([2, 1]); g.next();
     const cost = withGame(g.g, () => previewAttack(g.cb, g.pcs[1], g.foe, 'shot')).ap; expect(cost).toBeGreaterThanOrEqual(2);
     shoot(g); expect(g.pcs[1].ap).toBe(6 - cost + 2);
@@ -243,13 +268,13 @@ describe('Brief (Eloquence)', () => {
 
 describe('Name It (Lore Master)', () => {
   it('+2, +3, +4 on every save until the speaker\'s next turn; step 3 ends Shaken and Afraid', () => {
-    for (const [pts, n] of [[1, 2], [3, 3], [7, 4]] as const) {
+    for (const [pts, n] of [[1, 2], [4, 3], [8, 4]] as const) {
       const f = fight([speaker('lore_master', pts), {}]), a = f.pcs[1], before = unitSave(f.unit(a.id), 'body');
       expect(f.call('call.name_it', { targetId: a.id })).toBeNull();
       expect(unitSave(f.unit(a.id), 'body') - before, 'points ' + pts).toBe(n);
       expect(unitSave(f.unit(a.id), 'heart') - unitSave({ ...f.unit(a.id), call: {} } as any, 'heart')).toBe(n);
     }
-    const f = fight([speaker('lore_master', 7), {}]), a = f.pcs[1];
+    const f = fight([speaker('lore_master', 8), {}]), a = f.pcs[1];
     Object.assign(f.unit(a.id), { conds: { shaken: 2, fear: 2 } });
     expect(f.cpv('call.name_it', { targetId: a.id }).notes.join(' ')).toMatch(/Ends Shaken and Afraid/);
     expect(f.call('call.name_it', { targetId: a.id })).toBeNull();
@@ -264,7 +289,7 @@ describe('Name It (Lore Master)', () => {
 describe('Cue (Reaction Speed)', () => {
   it('step 1: a second reaction, until the start of the speaker\'s next turn', () => {
     const f = fight([speaker('reaction_speed', 1), {}]), a = f.pcs[1];
-    expect(f.call('call.cue', { targetId: a.id, tile: '3,3' })).toMatch(/needs 3 points of Reaction Speed/);
+    expect(f.call('call.cue', { targetId: a.id, tile: '3,3' })).toBe('A cued step needs 4 points of Reaction Speed.');
     expect(f.call('call.cue', { targetId: a.id })).toBeNull();
     const doReact = () => withGame(f.g, () => react(f.cb, f.unit(a.id), { kind: 'attack' })), can = () => withGame(f.g, () => canReact(f.cb, f.unit(a.id)));
     expect(doReact()).toBe(true); expect(can()).toBe(true); expect(doReact()).toBe(true); expect(can()).toBe(false); expect(doReact()).toBe(false);
@@ -279,10 +304,10 @@ describe('Cue (Reaction Speed)', () => {
     expect(f.pc.ap).toBe(6);
   });
   it('step 2: the reaction may be a step of 1 tile, now; step 3: the ally acts straight after the speaker', () => {
-    const f = fight([speaker('reaction_speed', 3), {}]), a = f.pcs[1];
+    const f = fight([speaker('reaction_speed', 4), {}]), a = f.pcs[1];
     expect(f.call('call.cue', { targetId: a.id, tile: '3,4' })).toMatch(/1 tile/);
     expect(f.call('call.cue', { targetId: a.id, tile: '3,3' })).toBeNull(); expect(f.unit(a.id).pos).toBe('3,3'); expect(f.unit(a.id).call?.cue).toBeUndefined();
-    const g = fight([speaker('reaction_speed', 7), {}, {}]), [s, b, c] = g.pcs, was = [...g.cb.order];
+    const g = fight([speaker('reaction_speed', 8), {}, {}]), [s, b, c] = g.pcs, was = [...g.cb.order];
     expect(g.cpv('call.cue', { targetId: c.id }).notes.join(' ')).toMatch(/acts straight after you/);
     expect(g.call('call.cue', { targetId: c.id })).toBeNull(); expect(g.cb.order.slice(0, 3)).toEqual([s.id, c.id, b.id]);
     g.next(); expect(g.cb.order[g.cb.turn]).toBe(c.id);
@@ -304,7 +329,7 @@ describe('Spot (Vigilance)', () => {
     expect(f.foe.call?.spot).toBeUndefined(); expect(shot(f, b).cover).toBeGreaterThan(0); // one ally: used up by the real attack
   });
   it('step 2: it isn\'t Hidden to the ally who attacks next, and a Hidden enemy in the speaker\'s sight can be Spotted', () => {
-    const f = behindCover(3), [s, a] = f.pcs; f.unit(f.foe.id).hidden = true;
+    const f = behindCover(4), [s, a] = f.pcs; f.unit(f.foe.id).hidden = true;
     expect(shot(f, a).why).toMatch(/can't see/);
     expect(f.cpv('call.spot', { targetId: f.foe.id }).ok).toBe(true);
     const low = behindCover(1); low.unit(low.foe.id).hidden = true;
@@ -313,7 +338,7 @@ describe('Spot (Vigilance)', () => {
     expect(shot(f, a).ok).toBe(true); expect(shot(f, s).why).toMatch(/can't see/); expect(f.foe.hidden).toBe(true);
   });
   it('step 3: the next two allies, at +1 to hit', () => {
-    const f = behindCover(7), [, a, b] = f.pcs;
+    const f = behindCover(8), [, a, b] = f.pcs;
     expect(f.call('call.spot', { targetId: f.foe.id })).toBeNull();
     expect(shot(f, a).terms!.find((t) => t.label === 'Spotted')?.v).toBe(1);
     rig({ hit: false, die: 5 });
@@ -342,13 +367,13 @@ describe('Warn (Senses)', () => {
     expect(f.unit(a.id).call?.warn).toBeUndefined();
   });
   it('step 2: up to 2 tiles, to the tile the speaker named', () => {
-    const f = melee(3, () => ({ tile: '4,2' })), a = f.pcs[1];
+    const f = melee(4, () => ({ tile: '4,2' })), a = f.pcs[1];
     swing(f); expect(f.unit(a.id).pos).toBe('4,2');
     const g = fight([speaker('sensory', 1), {}]); g.put(g.pcs[1], '6,2');
     expect(g.call('call.warn', { targetId: g.pcs[1].id, tile: '4,2' })).toMatch(/within 1 step/);
   });
   it('step 3: and that attack is at −2 to hit (a shot they can\'t step out of still comes)', () => {
-    const f = fight([speaker('sensory', 7), {}], [{ weapon: 'service_pistol' }]), a = f.pcs[1];
+    const f = fight([speaker('sensory', 8), {}], [{ weapon: 'service_pistol' }]), a = f.pcs[1];
     const base = withGame(f.g, () => previewAttack(f.cb, f.foe, f.unit(a.id), 'shot', { free: true }));
     expect(f.call('call.warn', { targetId: a.id })).toBeNull();
     const pv = withGame(f.g, () => previewAttack(f.cb, f.foe, f.unit(a.id), 'shot', { free: true }));
@@ -370,10 +395,10 @@ describe('Threaten (Intimidation)', () => {
     expect(f.call('call.threaten', { targetId: f.foe.id })).toBeNull(); expect(condOn(f.foe, 'shaken')).toBe(true);
     const g = fight([speaker('intimidation', 7), {}]); g.saves(g.foe, -99); g.unit(g.foe.id).sv!.heart = 99;
     expect(g.call('call.threaten', { targetId: g.foe.id })).toBeNull(); expect(condOn(g.foe, 'shaken')).toBe(false); expect(g.foe.call?.apLoss).toBeUndefined();
-    expect(g.pc.ap).toBe(5); // a save that holds still costs the Call
+    expect(g.pc.ap).toBe(6 - calls.callBaseAp(7)); // a save that holds still costs the Call
   });
   it('step 1: Shaken and −1 AP next turn; step 2: and it can\'t move toward the speaker that turn; step 3: −2 AP', () => {
-    for (const [pts, loss, cowed] of [[1, 1, false], [3, 1, true], [7, 2, true]] as const) {
+    for (const [pts, loss, cowed] of [[1, 1, false], [4, 1, true], [8, 2, true]] as const) {
       const f = fight([speaker('intimidation', pts), {}]); f.saves(f.foe, -99); f.put(f.foe, '6,2');
       expect(f.call('call.threaten', { targetId: f.foe.id })).toBeNull();
       expect(condOn(f.foe, 'shaken'), 'points ' + pts).toBe(true); expect(condSource(f.foe, 'shaken')).toBe(f.pc.id);
@@ -393,7 +418,7 @@ describe('Threaten (Intimidation)', () => {
 
 describe('Taunt (Insinuation)', () => {
   it('step 1: a Heart save or Taunted; steps 2 and 3: its attack on the speaker costs 1 and 2 AP more', () => {
-    for (const [pts, more] of [[1, 0], [3, 1], [7, 2]] as const) {
+    for (const [pts, more] of [[1, 0], [4, 1], [8, 2]] as const) {
       const f = fight([speaker('implication', pts), {}], [{ weapon: 'service_pistol' }]); f.put(f.foe, '6,2'); f.saves(f.foe, 99); f.unit(f.foe.id).sv!.heart = -99;
       const cost = (t: Unit) => withGame(f.g, () => previewAttack(f.cb, f.unit(f.foe.id), f.unit(t.id), 'shot')), base = cost(f.pc).ap;
       expect(f.cpv('call.taunt', { targetId: f.foe.id }).save).toMatchObject({ family: 'heart', tn: 12 + pts - 1 });
@@ -411,7 +436,7 @@ describe('Taunt (Insinuation)', () => {
 
 describe('a preview changes nothing', () => {
   it('previewCall and callPad leave the fight exactly as it was, for all nine, with marks standing', () => {
-    const all = Object.fromEntries(Object.values(NINE).map((s) => [s, 7]));
+    const all = Object.fromEntries(Object.values(NINE).map((s) => [s, 8]));
     const f = fight([{ skills: all }, { weapon: 'service_pistol' }, {}], [{ weapon: 'sabre' }, {}]); f.unit(f.pcs[1].id).prone = true;
     const args: Record<string, CallArgs> = { 'call.order': { targetId: f.pcs[1].id, opt: 'stand+reload' }, 'call.rally': { targetId: f.pcs[1].id }, 'call.brief': { targetId: f.pcs[1].id },
       'call.name_it': { targetId: f.pcs[2].id }, 'call.cue': { targetId: f.pcs[2].id, tile: '4,3' }, 'call.spot': { targetId: f.foe.id }, 'call.warn': { targetId: f.pcs[2].id, tile: '4,3' },
@@ -437,7 +462,11 @@ describe('combat/parley kind threaten', () => {
     expect(f.call('call.threaten', { targetId: f.foe.id })).toMatch(/Too far/);
     f.act({ type: 'combat/parley', unitId: f.pc.id, targetId: f.foe.id, kind: 'threaten', text: 'Walk away.' } as any);
     expect(f.pc.ap).toBe(4); expect(condOn(f.foe, 'shaken')).toBe(true);
-    expect(f.foe.call?.apLoss?.n).toBe(1); expect(f.foe.call?.cowed).toBeTruthy(); expect(f.foe.call?.hindered).toMatchObject({ r: 1, id: 'call.threaten' });
+    expect(f.foe.call?.apLoss?.n).toBe(1); expect(f.foe.call?.cowed).toBeUndefined(); expect(f.foe.call?.hindered).toMatchObject({ r: 1, id: 'call.threaten' }); // 3 points: step 1
+    // from step 2 (4 points) the parley's threat cows, as the Call does
+    const s2 = fight([speaker('intimidation', CALL_RULES.steps_at[1]), {}]); s2.saves(s2.foe, -99); s2.put(s2.foe, '10,2');
+    s2.act({ type: 'combat/parley', unitId: s2.pc.id, targetId: s2.foe.id, kind: 'threaten' } as any);
+    expect(s2.foe.call?.apLoss?.n).toBe(1); expect(s2.foe.call?.cowed).toBeTruthy();
     expect(f.cb.log.some((l) => /threatens .*"Walk away\.".*is Shaken.*−1 AP on its next turn/.test(l))).toBe(true);
     expect(() => f.act({ type: 'combat/parley', unitId: f.pc.id, targetId: f.foe.id, kind: 'threaten' } as any)).toThrow(/already been hindered/);
     // Persuade is not a Call: it is neither limited nor changed
@@ -453,7 +482,7 @@ describe('enemies', () => {
     const f = fight([{}], [{ tier: 'minion' }, { tier: 'soldier' }, { tier: 'elite' }, { tier: 'boss' }]);
     expect(f.foes.map((x) => [x.calls, x.callLevel])).toEqual([[undefined, undefined], [undefined, undefined], [['call.threaten', 'call.rally'], 3], [['call.threaten', 'call.taunt', 'call.rally'], 5]]);
     expect(calls.callLevel(f.foes[2], CALL['call.threaten'])).toBe(3); expect(calls.callLevel(f.foes[2], CALL['call.taunt'])).toBe(0);
-    expect(withGame(f.g, () => calls.callAp(f.cb, f.foes[3], CALL['call.threaten']))).toBe(1);
+    expect(withGame(f.g, () => calls.callAp(f.cb, f.foes[3], CALL['call.threaten']))).toBe(calls.callBaseAp(5));
   });
   it('an officer with someone to lead Threatens once a turn, says so when read, and plans without changing anything', () => {
     const f = fight([{}, {}], [{ tier: 'elite' }, { tier: 'soldier' }]); f.put(f.foe, '8,2'); f.saves(f.pc, -99); f.saves(f.pcs[1], -99);
@@ -462,7 +491,7 @@ describe('enemies', () => {
     expect(it0.text).toMatch(/^call Threaten at /); expect(JSON.stringify(f.g)).toBe(before);
     withGame(f.g, () => enemyTurn(f.cb, f.g.rng));
     expect(f.cb.log.filter((l) => l.startsWith(f.foe.name + ' calls ')).length).toBe(1);
-    const ev = f.fx('call'); expect(ev.length).toBe(1); expect(ev[0]).toMatchObject({ unit: f.foe.id, id: 'call.threaten', step: 2, kind: 'hindering', target: it0.targetId });
+    const ev = f.fx('call'); expect(ev.length).toBe(1); expect(ev[0]).toMatchObject({ unit: f.foe.id, id: 'call.threaten', step: calls.callStepAt(CALL['call.threaten'], 3), kind: 'hindering', target: it0.targetId });
     const t = f.unit(it0.targetId!); expect(condOn(t, 'shaken')).toBe(true); expect(t.call?.apLoss?.n).toBe(1);
     f.turn(t); expect(t.ap).toBe(5); // the player's turn is 1 AP short
   });
@@ -476,7 +505,7 @@ describe('enemies', () => {
     const f = fight([{}], [{ tier: 'boss' }, { tier: 'soldier' }]); f.unit(f.pc.id).conds = { shaken: 3 }; f.press(f.foes[1], 2); f.turn(f.foe);
     const p = withGame(f.g, () => calls.aiCall(f.cb, f.foe)); expect(p).toMatchObject({ id: 'call.rally', args: { targetId: f.foes[1].id } });
     expect(withGame(f.g, () => calls.useCall(f.cb, f.foe, p!.id, p!.args, f.g.rng))).toBeNull();
-    expect(f.foes[1].apNext).toBe(1); expect(f.pressure(f.foes[1])).toBe(1); expect(f.foe.ap).toBe(5); // level 5: 1 AP, step 2
+    expect(f.foes[1].apNext).toBe(1); expect(f.pressure(f.foes[1])).toBe(1); expect(f.foe.ap).toBe(6 - calls.callBaseAp(5)); // level 5: 2 AP, step 2
   });
 });
 

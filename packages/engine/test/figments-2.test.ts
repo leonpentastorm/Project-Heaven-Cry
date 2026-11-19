@@ -12,6 +12,7 @@ import PERKSJ from '../../../data/perks.json';
 import CONDJ from '../../../data/conditions.json';
 import { onHook } from '../src/effects/hooks';
 import { previewAttack } from '../src';
+import { formsKnown } from '../src/figments';
 import { FORM, COST_SITE_IDS, condOn, perceivedFoes, isGhost, formsOf, pendingDoorPicks, pictureOptions, actionsFor, previewDescriptor, sendDescriptor, migrateLoaded, active, FIG_REV, ladderAt } from '../src';
 
 const F: any = FIGJ, ACT: any = ACTIONSJ;
@@ -178,23 +179,20 @@ describe('the new forms (slice 3)', () => {
 });
 
 describe('the forks (door/pick) and the save migration', () => {
-  it('a new character at Visualization 4 has a fork open (rules 1.60: at 4, not 3), chooses one form out of a fight, and the rest stay locked', () => {
-    const s = storyWith([{ skills: { visualization: 3 }, attrs: { expression: 4 }, forms: [] }]); const id = s.chars[0].id;
-    let c = s.g.characters[id];
-    expect(pendingDoorPicks(c, F.visualizer.door)).toEqual([]); // rules 1.60: nothing opens at 3 any more
-    c.skills.visualization = 4;
-    expect(formsOf(c)).toEqual(ladderAt(4).forms);
-    const open = pendingDoorPicks(c, F.visualizer.door); expect(open.length).toBe(1);
-    expect(open[0].options.map((o) => o.id)).toEqual(F.ladder.find((r: any) => r.points === 4).fork.of);
-    expect(() => s.act({ type: 'door/pick', charId: id, door: F.visualizer.door, option: 'beast' } as any)).toThrow(/Not one of the open choices/);
-    s.act({ type: 'door/pick', charId: id, door: F.visualizer.door, option: 'ward' } as any); c = s.g.characters[id];
-    expect(formsOf(c)).toContain('ward'); expect(formsOf(c)).not.toContain('eye');
-    expect(pictureOptions(c).map((o) => o.id)).toContain('ward');
-    expect(() => s.act({ type: 'door/pick', charId: id, door: F.visualizer.door, option: 'eye' } as any)).toThrow(/No Figment choice is open/);
-    expect(() => s.act({ type: 'figments/design', charId: id, design: { name: 'X', form: 'eye', traits: [] } } as any)).toThrow(/not one of your chosen forms/);
-    // Visualization 7: one more from the first fork
-    c.skills.visualization = 7; c.attrs.expression = 7;
-    expect(pendingDoorPicks(c, F.visualizer.door).some((p) => p.options.some((o) => o.id === 'eye'))).toBe(true);
+  it('rules 1.70 item 5541: forms are learned at figment_forms: 2 of all ten at Visualization 1, +1 a point; chosen out of a fight, kept for good', () => {
+    const s = storyWith([{ attrs: { expression: 4 } }]); const id = s.chars[0].id, D = F.forms_known.door;
+    let c = s.g.characters[id]; c.skills.visualization = 1; // a character made now (stamped), its first point
+    expect(formsOf(c)).toEqual([]); // a new character (stamped) has learned nothing yet
+    const open = pendingDoorPicks(c, D); expect(open.length).toBe(1); expect(open[0].left).toBe(formsKnown(c));
+    expect(open[0].options.map((o) => o.id)).toEqual(F.forms.map((f: any) => f.id)); // every form, the strong ones too
+    s.act({ type: 'door/pick', charId: id, door: D, option: 'beast' } as any); s.act({ type: 'door/pick', charId: id, door: D, option: 'ward' } as any); c = s.g.characters[id];
+    expect(formsOf(c)).toEqual(F.forms.map((f: any) => f.id).filter((x: string) => ['beast', 'ward'].includes(x)));
+    expect(pictureOptions(c).map((o) => o.id)).toContain('beast');
+    expect(() => s.act({ type: 'door/pick', charId: id, door: D, option: 'eye' } as any)).toThrow(/No Figment form choice is open/);
+    expect(() => s.act({ type: 'figments/design', charId: id, design: { name: 'X', form: 'eye', traits: [] } } as any)).toThrow(/not one of the forms you know/);
+    // each point to 9 one more: at 9 all ten
+    c.skills.visualization = 2; expect(pendingDoorPicks(c, D)[0].left).toBe(1);
+    c.skills.visualization = 9; expect(formsKnown(c)).toBe(F.forms.length);
   });
   it('a pick is refused in a fight, and for another door', () => {
     const f = figFight([{ skills: { visualization: 4 }, weapon: 'service_pistol', forms: [] }]); const id = f.pc.charId!;
@@ -202,21 +200,30 @@ describe('the forks (door/pick) and the save migration', () => {
     const s = storyWith([{ skills: { visualization: 4 }, forms: [] }]);
     expect(() => s.act({ type: 'door/pick', charId: s.chars[0].id, door: 'no_such_door', option: 'eye' } as any)).toThrow(/Nothing to choose/);
   });
-  it('the migration: a character made before the forks keeps every form the old ladder gave it; each fork it passed counts as taken', () => {
-    // a sheet with no fork stamp (as a save from before the forks holds it), saved and loaded through the load door
-    const s = storyWith([{ skills: { visualization: 5 }, classId: 'trickster' }]), id = s.chars[0].id;
+  it('the migration (rules 1.70 item 5541): a save keeps every form it had open, learned at figment_forms against its count; one over it is kept, never lost', () => {
+    // a sheet with no stamp (as a save from before the forks holds it), saved and loaded through the load door
+    const s = storyWith([{ skills: { visualization: 5 }, classId: 'trickster' }]), id = s.chars[0].id, D = F.forms_known.door;
     const old = JSON.parse(JSON.stringify(s.g)); delete old.characters[id].figRev; delete old.characters[id].doorPicks; delete old.characters[id].doorKept;
     const g = migrateLoaded(old), c = g.characters[id];
     expect(c.figRev).toBe(FIG_REV); // migrated at the load
-    for (const r of F.migration.legacy) for (const fm of r.forms) expect(formsOf(c)).toContain(fm);
-    expect(pendingDoorPicks(c, F.visualizer.door)).toEqual([]);
-    // rules 1.60 (spec 2.9): fork b moved to 6, so at 6 it offers the Husk or the Sentinel (a gift to an unstamped save);
-    // the "one more" of fork A at 7 offers the Ward
-    c.skills.visualization = 6;
-    expect(pendingDoorPicks(c, F.visualizer.door).flatMap((p) => p.options.map((o) => o.id))).toEqual(['husk', 'sentinel']);
-    c.skills.visualization = 7;
-    expect(pendingDoorPicks(c, F.visualizer.door).flatMap((p) => p.options.map((o) => o.id))).toEqual(['husk', 'sentinel', 'ward']);
+    const had = [...F.migration.fixed_before, ...F.migration.legacy].filter((r: any) => r.points <= 5).flatMap((r: any) => r.forms);
+    for (const fm of had) expect(formsOf(c)).toContain(fm); // nothing lost
+    expect((c as any).doorPicks[D].length).toBe(formsKnown(c)); // the count is full ...
+    expect((c as any).doorKept[D].length).toBe(had.length - formsKnown(c)); // ... and the one over it kept outside it
+    expect((c as any).doorPicks.visualization).toBeUndefined(); // the old door is gone
+    expect(pendingDoorPicks(c, D)).toEqual([]);
+    c.skills.visualization = 7; // two more known: chosen from the forms it does not hold
+    expect(pendingDoorPicks(c, D)[0].left).toBe(2);
+    expect(pendingDoorPicks(c, D).flatMap((p) => p.options.map((o) => o.id)).sort()).toEqual(F.forms.map((f: any) => f.id).filter((x: string) => !had.includes(x)).sort());
     c.skills.visualization = 5; const once = JSON.stringify(g); expect(JSON.stringify(migrateLoaded(JSON.parse(once)))).toBe(once); // once: a second load changes nothing
+  });
+  it('the migration of a rev-1 save (it picked at the old forks): its fork picks and kept forms move to figment_forms', () => {
+    const s = storyWith([{ skills: { visualization: 4 } }]), id = s.chars[0].id, D = F.forms_known.door;
+    const old = JSON.parse(JSON.stringify(s.g)); old.characters[id].figRev = 1; old.characters[id].doorPicks = { visualization: ['ward'] }; delete old.characters[id].doorKept;
+    const c = migrateLoaded(old).characters[id];
+    expect(formsOf(c)).toEqual(F.forms.map((f: any) => f.id).filter((x: string) => ['double', 'snare', 'hand', 'ward'].includes(x)));
+    expect((c as any).doorPicks.visualization).toBeUndefined();
+    expect(pendingDoorPicks(c, D)[0].left).toBe(formsKnown(c) - 4);
   });
 });
 

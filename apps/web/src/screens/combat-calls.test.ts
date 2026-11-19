@@ -2,7 +2,7 @@
 // The fight panel after Skeleton 2.0, rendered for real: the Calls tab (shown only to a speaker), a Call picked, aimed
 // and confirmed (combat/call); the shield's block on the Attack tab (its Guard in the unit panel); the tab row's nine tabs.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, active, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, active, CALL_RULES, calls, type GameState, type Sheet } from '@engine';
 
 let G: GameState; const ME = 'host';
 const listeners = new Set<() => void>();
@@ -49,7 +49,9 @@ describe('the Calls tab', () => {
     root.unmount();
   });
   it('a speaker: the tab is last; a chip shows AP, reach, the step text and the save; pick, aim, confirm sends combat/call', async () => {
-    const { u, foe } = fight('calls-a', (c) => { c.skills.intimidation = 3; c.skills.charisma = 3; c.skills.lore_master = 1; });
+    const { u, foe } = fight('calls-a', (c) => { c.skills.intimidation = CALL_RULES.steps_at[1]; c.skills.charisma = 3; c.skills.lore_master = 1; });
+    // three Calls this turn at rules 1.70's prices (3 AP each below 5 points): the AP ceiling pays them all
+    G.combat!.units.find((x) => x.id === u.id)!.ap = 9; snap = view();
     const { el, root } = await mount();
     expect(active(G.combat!)!.id).toBe(u.id);
     const ids = tabIds(el); expect(ids[ids.length - 1]).toBe('calls');
@@ -63,7 +65,7 @@ describe('the Calls tab', () => {
     expect(ic.getAttribute('data-icon-src')).toMatch(/\/assets\/call-threaten\.webp/);
     expect(ic.getAttribute('aria-hidden')).toBe('true'); expect(ic.style.backgroundColor).toMatch(/currentcolor/i);
     expect(el.querySelector('button[data-call="call.name_it"] [data-call-icon]')!.getAttribute('data-icon-src')).toMatch(/call-name-it\.webp/);
-    expect(th.querySelector('[data-call-meta]')!.textContent).toMatch(/^2 AP · \d+ tiles$/);
+    expect(th.querySelector('[data-call-meta]')!.textContent).toMatch(new RegExp('^' + calls.callBaseAp(CALL_RULES.steps_at[1]) + ' AP · \\d+ tiles$'));
     expect(th.querySelector('[data-call-text]')!.textContent!.length).toBeGreaterThan(10);
     expect(th.querySelector('[data-call-save]')!.textContent).toMatch(/^Heart save, TN \d+$/);
     expect(th.textContent).toMatch(/TO AN ENEMY · INTIMIDATION · STEP 2/);
@@ -73,13 +75,13 @@ describe('the Calls tab', () => {
     const foeTile = Array.from(el.querySelectorAll('button.phc-tok')).find((b) => (b.getAttribute('aria-label') || '').includes(foe.name));
     await click(foeTile);
     const foot = el.querySelector('.phc-cb-foot')!;
-    expect(foot.textContent).toMatch(/Threaten · 2 AP · within \d+ tiles/);
+    expect(foot.textContent).toMatch(new RegExp('Threaten · ' + calls.callBaseAp(CALL_RULES.steps_at[1]) + ' AP · within \\d+ tiles'));
     expect(foot.textContent).toContain('To ' + foe.name + '.');
     expect(foot.textContent).toMatch(new RegExp(foe.name + ' rolls a Heart save against TN \\d+'));
     const ap0 = G.combat!.units.find((x) => x.id === u.id)!.ap;
     await click(Array.from(el.querySelectorAll('button')).find((b) => /^Confirm/.test((b.textContent || '').trim())));
     expect(sent.filter((a) => a.type === 'combat/call')).toEqual([{ type: 'combat/call', unitId: u.id, id: 'call.threaten', targetId: foe.id }]);
-    expect(G.combat!.units.find((x) => x.id === u.id)!.ap).toBe(ap0 - 2);
+    expect(G.combat!.units.find((x) => x.id === u.id)!.ap).toBe(ap0 - calls.callBaseAp(CALL_RULES.steps_at[1]));
     expect(G.combat!.log.some((l) => /calls Threaten at/.test(l))).toBe(true);
     // a Call to yourself needs no click: Name It is ready to confirm at once
     await click(el.querySelector('button[data-call="call.name_it"]'));
@@ -94,7 +96,7 @@ describe('the Calls tab', () => {
     expect(sent.length).toBe(n);
     root.unmount();
   });
-  it('Order: its things are toggles on the card (move from 3 points, greyed below)', async () => {
+  it('Order: its things are toggles on the card (move from its second step, greyed below)', async () => {
     fight('calls-order', (c) => { c.skills.authority = 1; });
     const { el, root } = await mount();
     await click(el.querySelector('[role="tab"][data-tab="calls"]'));

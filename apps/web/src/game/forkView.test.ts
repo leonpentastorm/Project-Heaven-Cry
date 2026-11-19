@@ -2,10 +2,12 @@
 // pick is white and offers its two options side by side with their rules; the first press arms a pick and the second
 // sends door/pick (confirmed once); a picked option shows as a chip; a step not offered yet says what is missing.
 import { describe, expect, it, vi } from 'vitest';
+import { ladderSchedule } from '@engine';
 const sent: any[] = [];
 vi.mock('./store', () => ({ act: (a: any) => sent.push(a), toast: () => {}, getState: () => ({}), subscribe: () => () => {} }));
 import { forkCard, forkCards, forkChipsLine, forkLevelUp, forkIconOf } from './forkView';
 
+const F = ladderSchedule('durability').forks;
 const ch = (skills: Record<string, number>, doorPicks: Record<string, string[]> = {}) => ({ id: 'c1', skills, doorPicks });
 
 describe('the fork card (game/forkView.ts)', () => {
@@ -21,14 +23,15 @@ describe('the fork card (game/forkView.ts)', () => {
     forkCard(c, 'durability')!.steps[0].opts[1].pick();
     expect(sent).toEqual([{ type: 'door/pick', charId: 'c1', door: 'durability', option: 'fork.guard.cover_them' }]);
   });
-  it('a pick made is a chip ("kept for good"), the next step opens at 6; in a fight a pick waits', () => {
-    const c = ch({ durability: 5 }, { durability: ['fork.guard.provoke'] });
+  it('a pick made is a chip ("kept for good"), the next step opens at its second fork (8 since rules 1.70); in a fight a pick waits', () => {
+    expect(F).toEqual([4, 8]);
+    const c = ch({ durability: F[1] - 1 }, { durability: ['fork.guard.provoke'] });
     expect(forkChipsLine(c, 'durability')).toBe('Forks: Provoke');
     const card = forkCard(c, 'durability', { inFight: true })!;
-    expect(card.steps[0].head).toBe('Fork at 4: chosen'); expect(card.steps[1].head).toBe('Fork at 6');
-    expect(forkChipsLine(ch({ durability: 6 }, { durability: ['fork.guard.provoke'] }), 'durability')).toBe('Forks: Provoke · 1 fork still to do (out of a fight)');
-    const lu = forkLevelUp(ch({ durability: 6 }), 'durability', 6, true)!;
-    expect(lu.steps.map((s) => s.head)).toEqual(['Fork at 4: choose one', 'Fork at 6: choose one']);
+    expect(card.steps[0].head).toBe('Fork at ' + F[0] + ': chosen'); expect(card.steps[1].head).toBe('Fork at ' + F[1]);
+    expect(forkChipsLine(ch({ durability: F[1] }, { durability: ['fork.guard.provoke'] }), 'durability')).toBe('Forks: Provoke · 1 fork still to do (out of a fight)');
+    const lu = forkLevelUp(ch({ durability: F[1] }), 'durability', F[1], true)!;
+    expect(lu.steps.map((s) => s.head)).toEqual(['Fork at ' + F[0] + ': choose one', 'Fork at ' + F[1] + ': choose one']);
     expect(lu.steps[0].opts[0].label).toBe('After the fight');
   });
   it('a step not offered yet says it is sealed (a player line, rules 1.66 item 5212), and offers no button', () => {
@@ -51,8 +54,9 @@ describe('the fork card (game/forkView.ts)', () => {
     for (const o of unbuilt) { expect(o.text.length).toBeGreaterThan(20); expect(o.text).not.toMatch(/[a-z]_[a-z]|rules \d|\bN\d+\b|\{=|`/); }
   });
   it('the sheet lists the doors reached, the ones with a pick to make first; an option\'s icon falls back to its door\'s skill', () => {
-    const cards = forkCards(ch({ durability: 6, dexterity: 4, visualization: 4 }, { durability: ['fork.guard.provoke', 'fork.guard.drive'] }));
-    expect(cards.map((x) => x.door)).toEqual(['dexterity', 'visualization', 'durability']);
+    const cards = forkCards(ch({ durability: F[1], dexterity: F[0], empathy: F[0], visualization: F[0] }, { durability: ['fork.guard.provoke', 'fork.guard.drive'] }));
+    // Visualization has no forks since rules 1.70 (its forms are a door of their own): no card for it
+    expect(cards.map((x) => x.door)).toEqual(['dexterity', 'empathy', 'durability']);
     expect(forkIconOf('fork.none.such', 'durability')).toBeTruthy();
   });
 });

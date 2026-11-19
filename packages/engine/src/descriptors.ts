@@ -797,12 +797,14 @@ const CALLS: ActionSystem = {
       const why = e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.';
       const save = e.save ? SAVE_NAME[e.save.family] + ' save, TN ' + e.save.tn : '', reach = e.range + (e.range === 1 ? ' tile' : ' tiles');
       const picks: PickStep[] = [];
-      if (e.id === 'call.order') picks.push({ key: 'opt', kind: 'option', prompt: 'Pick what to order below.', max: orderMax(e.step), options: ORDER_THINGS.map(([id, label, text, at]) => ({ id, label, text, why: e.step < at ? 'From 3 points of ' + e.skillName + '.' : null })) });
+      if (e.id === 'call.order') picks.push({ key: 'opt', kind: 'option', prompt: 'Pick what to order below.', max: orderMax(e.step), options: ORDER_THINGS.map(([id, label, text, at]) => ({ id, label, text, why: e.step < at ? 'From ' + (e.steps[at - 1]?.at ?? at) + ' points of ' + e.skillName + '.' : null })) });
       const aimW = e.aim === 'enemy' ? 'an enemy' : 'an ally';
       picks.push({ key: 'targetId', kind: e.aim === 'enemy' ? 'enemy' : 'ally', prompt: 'Click ' + aimW + ' within ' + reach + '.', optional: e.aim === 'self-or-ally',
         choices: e.aim === 'enemy' ? foeIds(x) : allyIds(x, e.aim === 'self-or-ally') });
       if (e.id === 'call.order') picks.push({ key: 'tile', kind: 'tile', prompt: 'Now click the tile they move to.', when: { key: 'opt', has: 'move' } });
       else if (e.id === 'call.warn' || (e.id === 'call.cue' && e.step >= 2)) picks.push({ key: 'tile', kind: 'tile', prompt: e.id === 'call.cue' ? 'You may also click a free tile next to them: they step there.' : 'You may also click the tile they step to.', optional: true });
+      // rules 1.70 item 5535: on your own turn, from the price table's reaction row, the reaction may pay in place of the AP
+      if (e.payReaction) picks.push({ key: 'pay', kind: 'option', prompt: 'Pay with your AP, or choose REACTION to spend your reaction instead.', optional: true, max: 1, options: [{ id: 'reaction', label: 'REACTION', text: 'Spend your reaction this round in place of the AP.', why: null }] });
       const apText = e.free ? 'free' : priceOf(e) + ' AP';
       return D('cl:' + e.id, 'calls', e.name, priceOf(e), apText + ' · ' + reach, e.text + (save ? ' ' + save + '.' : ''), why, { picks, preview: 'call' });
     });
@@ -811,7 +813,8 @@ const CALLS: ActionSystem = {
     const id = d.id.slice(3), tgt = p.targetId || (d.picks.find((s) => s.key === 'targetId')?.optional ? x.u.id : null);
     if (!tgt) return null;
     const opt = Array.isArray(p.opt) ? p.opt.join('+') : p.opt || '';
-    return { type: 'combat/call', unitId: x.u.id, id, targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}) } as any;
+    const pay = Array.isArray(p.pay) ? p.pay.includes('reaction') : p.pay === 'reaction';
+    return { type: 'combat/call', unitId: x.u.id, id, targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}), ...(pay ? { react: true } : {}) } as any;
   },
   choices(x, d, step, p) {
     // rules 1.65: each candidate through previewCall (useCall's own gate)
@@ -822,7 +825,8 @@ const CALLS: ActionSystem = {
   },
   preview(x, d, p) {
     const id = d.id.slice(3), opt = Array.isArray(p.opt) ? p.opt.join('+') : p.opt || '', tgt = p.targetId || x.u.id;
-    const pv: any = safe(() => previewCall(x.cb, x.u, id, { targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}) }, x.g), null);
+    const payR = Array.isArray(p.pay) ? p.pay.includes('reaction') : p.pay === 'reaction'; // rules 1.70 item 5535
+    const pv: any = safe(() => previewCall(x.cb, x.u, id, { targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}), ...(payR ? { react: true } : {}) }, x.g), null);
     if (!pv) return null;
     const name = (uid: string) => x.cb.units.find((v) => v.id === uid)?.name || uid;
     const lines: PreviewLine[] = (pv.notes || []).map((t: string) => ({ k: 'note' as const, text: t }));
