@@ -1606,6 +1606,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-striking_gloves--masterwork",
+      "path": "art/icons/gear/weapon-striking_gloves--masterwork.png",
+      "sha256": "ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e",
+      "label": "Striking Gloves — Masterwork",
+      "family": "weapon-striking_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-striking_gloves--masterwork.png",
+        "sha256": "724f2613913b547b27aea7dc04f6fcb65c9bda686aacbf427f2686d86cf5425e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--masterwork.png",
+        "sha256": "ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-striking_gloves--masterwork.txt",
+        "sha256": "ac03a1544653c9f10419c3b67424d4883dd55fd5cbf228e53abf1a4f7d3c1dac"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-striking_gloves.png",
+          "sha256": "4e54720c6116953f5aa708040f4f083708ebaff75d8ee5ec794ffcb04c400576"
+        },
+        {
+          "path": "art/icons/gear/weapon-striking_gloves--fine.png",
+          "sha256": "876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-striking_gloves--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-striking_gloves--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-striking_gloves--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-striking_gloves--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "f82e5f001b2a9ef0ca82c5c9aa6d508a26355bdee4a9ab9dcad7d0d798ad1486",
+        "128": "6db6f9dcc7e1fbb0b093560fc75e7f6760d3671773d13d89168d212666814a19",
+        "64": "59ec21fbddb3233902019dd69e609e501f39dab2a9504391e2099dc2d5db15db",
+        "32": "edf26545319070d33bc3910198c68ce7f5c85aacfaeb72a78ac4735c524be0e3"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-striking_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9877627169597779,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 8
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
