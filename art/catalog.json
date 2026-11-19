@@ -17686,7 +17686,7 @@
     "weapon-magistrate_pistol": {
       "label": "Magistrate heavy pistol",
       "path": "art/icons/gear/weapon-magistrate_pistol.png",
-      "sha256": "2f2480add3d3b09b9546464aea65ccd153b8b843cc1df8a7969632286ba035cd",
+      "sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -17698,13 +17698,28 @@
         "64": "art/icons/gear/exports/64/weapon-magistrate_pistol.png",
         "32": "art/icons/gear/exports/32/weapon-magistrate_pistol.png"
       },
-      "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-magistrate_pistol.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/03-weapon-magistrate_pistol.png",
       "native_dimensions": [
         1254,
         1254
       ],
       "brief_number": 27,
-      "origin": "brief"
+      "origin": "brief",
+      "implementation_ready": false,
+      "collection": "prompt-pack-2026-11-19-file-10",
+      "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-magistrate_pistol.png",
+      "previous_sha256": "2f2480add3d3b09b9546464aea65ccd153b8b843cc1df8a7969632286ba035cd",
+      "previous_exports": {
+        "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-magistrate_pistol.png",
+        "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-magistrate_pistol.png",
+        "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-magistrate_pistol.png",
+        "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-magistrate_pistol.png"
+      },
+      "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-magistrate_pistol.png",
+      "previous_native_dimensions": [
+        1254,
+        1254
+      ]
     },
     "weapon-mandestra_drum_gun": {
       "label": "Mandestra drum-gun",

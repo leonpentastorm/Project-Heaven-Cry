@@ -1,7 +1,7 @@
 # November 19 File 10 gear art
 
 Branch `art/2026-11-19-reference-repaints` starts from develop `2020b5c2a`.
-**2 of 32** Standard candidates delivered. Numbers 01–17 are repaints of existing gear.
+**3 of 32** Standard candidates delivered. Numbers 01–17 are repaints of existing gear.
 The prompts describe fictional inventory props for Project Heaven Cry.
 Each accepted repaint keeps its original master and exports under superseded.
 
@@ -9,7 +9,7 @@ Each accepted repaint keeps its original master and exports under superseded.
 | --- | --- | --- |
 | 01 | Hellraiser service rifle | repaint declined during File 09 |
 | 02 | Service pistol | delivered as a review candidate |
-| 03 | Magistrate heavy pistol | pending |
+| 03 | Magistrate heavy pistol | delivered as a review candidate |
 | 04 | Decrkm auto-pistol | delivered as a review candidate |
 | 05 | Decrkm SMG | image service declined this render |
 | 06 | Legion PDW | image service declined this render |
@@ -27,7 +27,7 @@ Each accepted repaint keeps its original master and exports under superseded.
 | 18 | ADCorp line rifle (the line's base) | image service declined this render |
 | 19 | ADCorp short carbine | awaits entry 18 |
 | 20 | ADCorp designated rifle | awaits entry 18 |
-| 21 | Chezknov battle rifle (the line's base) | pending |
+| 21 | Chezknov battle rifle (the line's base) | draft awaiting review |
 | 22 | Chezknov machine carbine | awaits entry 21 |
 | 23 | Chezknov precision rifle | awaits entry 21 |
 | 24 | Arsenal piston rifle (the line's base) | pending |
