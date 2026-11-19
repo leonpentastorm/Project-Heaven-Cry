@@ -1,78 +1,57 @@
-# GPT prompts, 19 Nov 2026, file 05: Items 2.0, the 19 new melee base forms (PROPOSED)
+# Melee weapons: 19 new painted icons
 
-For the artist, and for GPT. Source list: `art/briefs/ART-REQUESTS-2026-11-19.md`, section 4.3, the melee table (12 families, 36 forms: 17 exist and are painted, 19 new). **Every form, name and id here is PROPOSED: Leon has ruled the shape (families of three forms) but not the tables** (ART-REQUESTS 4.8 question 3). Items 2.0 comes after 0.32: 0.33 builds the system on today's art, 0.34.x adds the content as the art lands, so these are paint-ahead pictures with no data row yet. What each form does in a fight is not designed beyond its role (below); the prompts describe the object only.
-
-**20 pictures: 19 painted gear icons, plus 1 alternate** (entry 12b, the spear, painted only if Leon takes the recommendation of question 3 and drops the poleaxe). Masters only, at Standard finish: the five grade pictures of each form (scheme S1, ruled 19 Nov) are made later, image-to-image from the **approved** master, with the tier lines of `GPT-PROMPTS-2026-11-13-gear.md` section 4.
+19 new melee weapon pictures, one per prompt, in 12 families of three forms. Every picture here is a master at the Standard finish, a transparent 1024 x 1024 PNG. Each is painted at all five grades: the Standard master below, then its four grade pictures (fine, masterwork, relic, celestial), made image to image from the approved master by the method in `08-grades-and-uniques.md` and saved as `weapon-<id>--<tier>.png` in the same folder.
 
 ## How to use
 
-One image a prompt. Paste **the base prompt (below)**, then the entry's prompt, and attach the base references plus the entry's family reference painting. Save under the file name given, do not rename. Every delivery is a review candidate until Leon approves it; deliver one contact sheet per family (the new forms beside the existing one, each checked at 64 and 32 px on `#10151F`); Claude adds the catalog entries (`gear` map) on intake. In-world only: invented shapes, no real-world makes, models, maker marks or emblems; no text, letters or numbers in any image.
+One image a prompt. Paste the base prompt below first, then the entry's prompt, and attach the base references plus the entry's family reference painting. Save under the file name given, do not rename. Deliver one contact sheet per family (the new forms beside the existing one, each checked at 64 and 32 px on `#10151F`). In-world only: invented shapes, no real-world makes, models, maker marks or emblems; no text, letters or numbers in any image.
 
 ## Base prompt: Heavenprint gear icon (painted weapon)
 
 **Attach:** `art/sprites/objects/fuel-drum.png`, `art/sprites/objects/tool-rack.png` and `art/sprites/objects/field-lamp.png` (material treatment and edge hierarchy only; their top-down camera does not apply), `art/portraits/world/new-faces/orren-vask.png` (the brushwork), and **the family reference painting named in the entry** (`art/icons/gear/weapon-<id>.png`: the style, the pose and the scale the new form must match). Rules: `art/style-guide/gear-icons.md`, `art/style-guide/weapon-icons.md`.
 
-**Size / background:** 1024 x 1024 PNG with alpha, fully transparent, the weapon inside the central 80 to 85% (about 100 px clear margin on every side).
+**Size / background:** 1024 x 1024 PNG with alpha, fully transparent, the object inside the central 90% of the canvas (at least 50 px of clear margin on every side); each entry gives the object's own width.
 
 ```
-Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single melee weapon, three-quarter view, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene, no sheath, no stand. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the weapon fills about 80% of the canvas (keep it inside the central 80 to 85%). No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures, no blood. Nothing floats: every part touches the weapon. Everything is invented: never a recognisable real-world make, model or emblem. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges and make the shape unmistakable when shrunk. Metal is painted in charcoal, steel grey and warm ivory highlights; the maker's colour is the single accent, a muted local paint, never a glow. Standard finish with honest wear (no rarity border, no engraving beyond what is asked). Match the attached reference painting of the same family exactly in brushwork, pose and scale: blades and hafted weapons lie on the 45 degree diagonal, grip bottom-left, head or point top-right; gloves stand upright. The weapon is:
+Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single melee weapon, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene, no sheath, no stand. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the weapon fills about 80% of the canvas (inside the central 90%). No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures, no blood. Nothing floats: every part touches the weapon. Everything is invented: never a recognisable real-world make, model or emblem. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges and make the shape unmistakable when shrunk. Metal is painted in charcoal, steel grey and warm ivory highlights; the maker's colour is the single accent, a muted local paint, never a glow. Standard finish with honest wear (no rarity border, no engraving beyond what is asked). Match the attached reference painting of the same family exactly in brushwork, pose and scale: blades and hafted weapons lie on the 45 degree diagonal, grip bottom-left, head or point top-right; gloves stand upright. The weapon is:
 ```
 
 **Avoid in every entry:** a real-world named sword, knife or axe pattern copied whole; a scabbard, belt or display stand; sparks, glints drawn as stars, motion lines; a second object; any lettering on the blade.
 
 ---
 
-## The family sheet (read before painting)
+## The families (read before painting)
 
-**Forms.** Every melee family has three forms: a **Dexterity form** (quick, light, hits with Dexterity and grows with Agility), a **hybrid form** (between the two; the family's balanced middle, usually the piece that exists today), and a **Strength form** (heavy, hits with Raw Power and grows with Strength; rules 1.56). The art shows this as **reach, mass and guard**:
+Each family has three forms. Reach, mass and guard tell them apart at 32 px: **reach** reads from the grip-to-head ratio (every form fills the frame by the same rule, so a short weapon shows a long grip against its blade and a long one a small grip); **mass** from the width of the blade or head and the thickness of the haft (light form narrow, heavy form visibly heavy with its weight forward); **guard** from the hilt (no two forms of one family share a hilt silhouette).
 
-- **Reach** reads from the **grip-to-head ratio**, not from size: every form fills the frame by the same rule (gear-icons.md "Scale in a family"), so a short weapon shows a grip that is long against its blade, a long one a grip that is small against it.
-- **Mass** reads from the **width of the blade or head** and the thickness of the haft: the Dexterity form is narrow, the Strength form visibly heavy, its weight forward.
-- **Guard** reads from the **hilt**: each form has its own guard shape, so two forms of one family never share a hilt silhouette.
-
-| # | Family (PROPOSED in-world name) | Dexterity / hybrid / Strength | Maker and signature (one accent) | At a glance |
+| # | Family | Light / middle / heavy form | Already painted (attach) | New in this file |
 | --- | --- | --- | --- | --- |
-| 1 | Service knives | `combat_knife` / *trench knife* / *lowland chopper* | Issue and frontier steel: black blades, black wraps, no accent; the trench knife is Hellraiser issue (oxide red `#CC2435`, trench spikes); the chopper is Black Scavenger work (riveted scales, a rag) | open grip / closed spiked knuckle loop / a forward-heavy belly |
-| 2 | Cavalry blades | `sabre` / *dock cutter* / *broadback sabre* | The officer's line: curved single edges, gilt knuckle bows | open bow, slim curve / solid cup guard, short broad blade / thick bow, blade widening to a clipped end |
-| 3 | Legion blades | *leaf-dagger* / `legion_gladius` / *rank sword* | Thousand World Legion: plain mass-made steel, olive-grey grips, no accent, block guards | short leaf, disc pommel / broad leaf, stout guard / long straight blade, same guard |
-| 4 | Draw blades (working name "Eastern blades") | *short draw* / `katana` / *long draw* | The Kemizuchi schools' sheath line: one continuous curve, a round aged-brass collar, a diamond-lattice cord grip; no crimson (that is the Academy duelling line) | short curve, long grip / the middle curve / long two-hand crescent |
-| 5 | Kemizuchi duelling | `kemizuchi_duelling_blade` / *side-sword* / *sword-breaker* | Kemizuchi Military Academy: straight blades, swept dish guards, lacquer black with crimson cord `#86234E` | needle-slim / wider blade, dish plus a ring / short broad blade with a slotted spine |
-| 6 | Axes | *pitch axe* / `hatchet` / `war_axe` | Frontier, unbranded: walnut and ash, leather wraps, bare steel | slim bit and back spike on a long stick / broad short bit / huge bearded head |
-| 7 | Polearms | `lance` / `glaive` / *poleaxe* | Mixed: the lance and poleaxe are Adamantile Brigade (pale steel, gilt, brass-orange `#F68A38`, plate rondels), the glaive frontier | cone and vamplate / one curved blade / a three-part head |
-| 8 | Hammers | *war pick* / *war hammer* / `maul` | Frontier and dockside: dark iron heads, banded ash hafts, no accent | thin beak / squared head with a back spike / a block of iron |
-| 9 | Great blades | *plate needle* / *Brigade longsword* / `adamantile_greatsword` | Adamantile Brigade: pale steel, oversized plate guards, crests, a brass-orange line in the fuller | long needle / mid-width cross / wide slab |
-| 10 | Ork cutters | *skinner* / `ork_machete` / *cleaver-glaive* | Orks: jagged, nailed, uneven; rust and dirty ochre daubs | short hook / wide jagged cleaver / a cleaver slab on a pole |
-| 11 | Hand-to-hand (gloves) | `striking_gloves` / `hand_wraps` / `knuckledusters` | (nothing new) | |
-| 12 | Heavy fists (gloves) | `kemizuchi_strikers` / *weighted gloves* / `iron_mitts` | Mixed makers, one glove scale: the strikers Kemizuchi, the weighted gloves Smetanita Conjunction (lacquer black leather, brass), the mitts foundry iron | slim armoured knuckle / padded swollen knuckle / riveted iron block |
+| 1 | Service knives | `combat_knife` / trench knife / lowland chopper | `combat_knife` | trench knife, lowland chopper |
+| 2 | Cavalry blades | `sabre` / dock cutter / broadback sabre | `sabre` | dock cutter, broadback sabre |
+| 3 | Legion blades | legion leaf-dagger / `legion_gladius` / legion rank sword | `legion_gladius` | leaf-dagger, rank sword |
+| 4 | Draw blades | short draw / `katana` / long draw | `katana` | short draw, long draw |
+| 5 | Kemizuchi duelling | `kemizuchi_duelling_blade` / side-sword / sword-breaker | `kemizuchi_duelling_blade` | side-sword, sword-breaker |
+| 6 | Axes | pitch axe / `hatchet` / `war_axe` | `hatchet` | pitch axe |
+| 7 | Polearms | legion spear / `glaive` / `lance` | `glaive`, `lance` | legion spear |
+| 8 | Hammers | war pick / war hammer / `maul` | `maul` | war pick, war hammer |
+| 9 | Great blades | plate needle / Brigade longsword / `adamantile_greatsword` | `adamantile_greatsword` | plate needle, longsword |
+| 10 | Ork cutters | ork skinner / `ork_machete` / ork cleaver-glaive | `ork_machete` | skinner, cleaver-glaive |
+| 11 | Hand-to-hand gloves | `striking_gloves` / `hand_wraps` / `knuckledusters` | (all exist) | none |
+| 12 | Heavy fists (gloves) | `kemizuchi_strikers` / weighted gloves / `iron_mitts` | `kemizuchi_strikers`, `iron_mitts` | weighted gloves |
 
-**Names (the Unspoken Name).** The working names in ART-REQUESTS borrow real-Earth weapon words. Each gets an in-world name and id, **PROPOSED** for Leon; the prompts use only the in-world name. Existing ids are not renamed (`katana` and `legion_gladius` keep theirs; Leon may want an in-world display name for the katana too).
-
-| Working name | PROPOSED in-world name | PROPOSED id | Why |
-| --- | --- | --- | --- |
-| bolo | Lowland chopper | `lowland_chopper` | the Black Scavengers' brush blade, from the ruined lowlands |
-| cutlass | Dock cutter | `dock_cutter` | the short boarding blade of the frontier docks and ship crews |
-| falchion | Broadback sabre | `broadback_sabre` | the cavalry line's heavy cut, named for its widening back |
-| pugio | Legion leaf-dagger | `legion_leaf_dagger` | the gladius's leaf shape at dagger size |
-| spatha | Legion rank sword | `legion_rank_sword` | the long blade of the Legion's front rank |
-| "Eastern blades" (family) | Draw blades | (family, no id) | the schools' rule that a blade is drawn once (the katana's own lore) |
-| wakizashi | Short draw | `short_draw` | |
-| odachi | Long draw | `long_draw` | |
-| estoc | Plate needle | `adamantile_plate_needle` | the Brigade's answer to plate: a blade with no edge |
-| tomahawk | Pitch axe | `pitch_axe` | the frontier throwing axe ("pitched", not swung) |
-| trench knife, side-sword, sword-breaker, poleaxe, war pick, war hammer, longsword, skinner, cleaver-glaive, weighted gloves | kept (plain descriptive words) | `trench_knife`, `kemizuchi_side_sword`, `kemizuchi_sword_breaker`, `adamantile_poleaxe`, `war_pick`, `war_hammer`, `adamantile_longsword`, `ork_skinner`, `ork_cleaver_glaive`, `weighted_gloves` | |
-
-**Where all of these show:** the shop grid (64 px), the backpack and inventory rows (32 px), loot and reward cards, the Forge, the gear card; from 0.33 the family's form row (three forms side by side, so the three must read apart at 32 px).
+Where these pictures show: the shop grid (64 px), backpack and inventory rows (32 px), loot and reward cards, the gear card, and a row of the family's three forms side by side, so the three must read apart at 32 px.
 
 ---
 
 # 1. Service knives
 
-## 1. `trench_knife`: Trench knife (hybrid form)
+## 1. `trench_knife`: Trench knife
 
-- **Save as:** `art/icons/gear/weapon-trench_knife.png` (catalog `gear`, id `weapon-trench_knife`)
+- **Save as:** `art/icons/gear/weapon-trench_knife.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-combat_knife.png`
-- **Is:** the service-knife family's middle form, Hellraiser issue: a fighting knife for close trench work, light enough for a knife fighter, heavy enough to punch through a padded coat. One-handed, about 0.8 kg.
+- **Is:** the service-knife family's middle form, Hellraiser issue: a fighting knife for close trench work, light enough for a knife fighter, heavy enough to punch through a padded coat. One-handed.
 - **At icon size it must read as:** a knife whose grip is closed by a spiked knuckle loop.
 
 ```
@@ -80,12 +59,13 @@ The Hellraiser Divisions' trench knife. On the 45 degree diagonal like the attac
 Avoid: finger holes like a knuckle-duster (it is one solid loop), a serrated back, a bayonet lug, a long crossguard.
 ```
 
-## 2. `lowland_chopper`: Lowland chopper (Strength form; working name "bolo")
+## 2. `lowland_chopper`: Lowland chopper
 
-- **Save as:** `art/icons/gear/weapon-lowland_chopper.png` (catalog `gear`, id `weapon-lowland_chopper`)
+- **Save as:** `art/icons/gear/weapon-lowland_chopper.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-combat_knife.png`
-- **Is:** the family's Strength form: the Black Scavengers' short brush blade from the ruined lowlands past the desert, for wire, scrub and whoever is in the scrub. One-handed, about 1.2 kg, its weight in the tip.
+- **Is:** the family's heavy form: the Black Scavengers' short brush blade from the ruined lowlands past the desert, for wire, scrub and whoever is in the scrub. One-handed, its weight in the tip.
 - **At icon size it must read as:** a teardrop of steel on a short handle, fat at the far end.
 
 ```
@@ -95,12 +75,13 @@ Avoid: a curved sword shape, a hook at the tip, a crossguard, a knuckle loop, a 
 
 # 2. Cavalry blades
 
-## 3. `dock_cutter`: Dock cutter (hybrid form; working name "cutlass")
+## 3. `dock_cutter`: Dock cutter
 
-- **Save as:** `art/icons/gear/weapon-dock_cutter.png` (catalog `gear`, id `weapon-dock_cutter`)
+- **Save as:** `art/icons/gear/weapon-dock_cutter.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-sabre.png`
-- **Is:** the cavalry line's middle form: a short, broad curved blade for close work on ship decks and loading docks, where a long sabre catches on everything. One-handed, about 1.6 kg.
+- **Is:** the cavalry line's middle form: a short, broad curved blade for close work on ship decks and loading docks, where a long sabre catches on everything. One-handed.
 - **At icon size it must read as:** a short broad curve with a round solid cup over the grip.
 
 ```
@@ -108,12 +89,13 @@ A short boarding blade of the frontier docks. On the 45 degree diagonal like the
 Avoid: an open knuckle bow (that is the sabre), a pierced or basket-work guard, a pirate look, skulls.
 ```
 
-## 4. `broadback_sabre`: Broadback sabre (Strength form; working name "falchion")
+## 4. `broadback_sabre`: Broadback sabre
 
-- **Save as:** `art/icons/gear/weapon-broadback_sabre.png` (catalog `gear`, id `weapon-broadback_sabre`)
+- **Save as:** `art/icons/gear/weapon-broadback_sabre.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-sabre.png`
-- **Is:** the cavalry line's Strength form: a sabre hilt carrying a blade that widens toward its end, so the cut lands with the weight of a cleaver. One-handed, about 2 kg.
+- **Is:** the cavalry line's heavy form: a sabre hilt carrying a blade that widens toward its end, so the cut lands with the weight of a cleaver. One-handed.
 - **At icon size it must read as:** a sabre hilt with a blade that flares wide at the end.
 
 ```
@@ -123,12 +105,13 @@ Avoid: a cleaver's square end, a cup or shell guard (that is the dock cutter), a
 
 # 3. Legion blades
 
-## 5. `legion_leaf_dagger`: Legion leaf-dagger (Dexterity form; working name "pugio")
+## 5. `legion_leaf_dagger`: Legion leaf-dagger
 
-- **Save as:** `art/icons/gear/weapon-legion_leaf_dagger.png` (catalog `gear`, id `weapon-legion_leaf_dagger`)
+- **Save as:** `art/icons/gear/weapon-legion_leaf_dagger.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-legion_gladius.png`
-- **Is:** the Legion family's Dexterity form: the issue dagger every Thousand World Legion trooper carries at the belt, the line blade's leaf shape cut down to a hand. One-handed, about 0.5 kg.
+- **Is:** the Legion family's light form: the issue dagger every Thousand World Legion trooper carries at the belt, the line blade's leaf shape cut down to a hand. One-handed.
 - **At icon size it must read as:** a small leaf blade with a round disc pommel.
 
 ```
@@ -136,12 +119,13 @@ The Thousand World Legion's issue dagger. On the 45 degree diagonal like the att
 Avoid: a crossguard with curled tips, ornament or inlay, any marking, a long thin stiletto blade.
 ```
 
-## 6. `legion_rank_sword`: Legion rank sword (Strength form; working name "spatha")
+## 6. `legion_rank_sword`: Legion rank sword
 
-- **Save as:** `art/icons/gear/weapon-legion_rank_sword.png` (catalog `gear`, id `weapon-legion_rank_sword`)
+- **Save as:** `art/icons/gear/weapon-legion_rank_sword.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-legion_gladius.png`
-- **Is:** the Legion family's Strength form: the long straight blade of the front rank, cutting down over the shield wall. One-handed, about 2 kg.
+- **Is:** the Legion family's heavy form: the long straight blade of the front rank, cutting down over the shield wall. One-handed.
 - **At icon size it must read as:** a long plain straight blade on the Legion's block guard.
 
 ```
@@ -149,14 +133,15 @@ The Thousand World Legion's front-rank sword. On the 45 degree diagonal like the
 Avoid: a leaf-shaped blade, a long two-hand grip, a knightly cross with plate wings (that is the Brigade), crests.
 ```
 
-# 4. Draw blades (working name "Eastern blades")
+# 4. Draw blades
 
-## 7. `short_draw`: Short draw (Dexterity form; working name "wakizashi")
+## 7. `short_draw`: Short draw
 
-- **Save as:** `art/icons/gear/weapon-short_draw.png` (catalog `gear`, id `weapon-short_draw`)
+- **Save as:** `art/icons/gear/weapon-short_draw.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-katana.png`
-- **Is:** the draw family's Dexterity form: the schools' companion blade, drawn and cut in one motion at arm's length or closer. One-handed, about 0.7 kg.
+- **Is:** the draw family's light form: the schools' companion blade, drawn and cut in one motion at arm's length or closer. One-handed.
 - **At icon size it must read as:** the family's curve, short, with a grip long against its blade.
 
 ```
@@ -164,12 +149,13 @@ The short companion blade of the Kemizuchi schools' sheath line. On the 45 degre
 Avoid: crimson cord (that is the Academy duelling line), a sheath, a straight blade, a guard with arms.
 ```
 
-## 8. `long_draw`: Long draw (Strength form; working name "odachi")
+## 8. `long_draw`: Long draw
 
-- **Save as:** `art/icons/gear/weapon-long_draw.png` (catalog `gear`, id `weapon-long_draw`)
+- **Save as:** `art/icons/gear/weapon-long_draw.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-katana.png`
-- **Is:** the draw family's Strength form: the schools' great two-handed curved blade, carried across the back and drawn by stepping out from under it. Two-handed, about 2.5 kg.
+- **Is:** the draw family's heavy form: the schools' great two-handed curved blade, carried across the back and drawn by stepping out from under it. Two-handed.
 - **At icon size it must read as:** a long crescent with a two-hand grip; longer and heavier than the middle form.
 
 ```
@@ -179,12 +165,13 @@ Avoid: a polearm shaft, a straight blade, crimson cord, a sheath or strap.
 
 # 5. Kemizuchi duelling
 
-## 9. `kemizuchi_side_sword`: Kemizuchi side-sword (hybrid form)
+## 9. `kemizuchi_side_sword`: Kemizuchi side-sword
 
-- **Save as:** `art/icons/gear/weapon-kemizuchi_side_sword.png` (catalog `gear`, id `weapon-kemizuchi_side_sword`)
+- **Save as:** `art/icons/gear/weapon-kemizuchi_side_sword.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-kemizuchi_duelling_blade.png`
-- **Is:** the Academy duelling family's middle form: the officer's everyday sword, cut and thrust, with more blade than the duelling needle and more guard for the hand. One-handed, about 1.4 kg.
+- **Is:** the Academy duelling family's middle form: the officer's everyday sword, cut and thrust, with more blade than the duelling needle and more guard for the hand. One-handed.
 - **At icon size it must read as:** a straight blade with the family's dish guard plus a looping bar.
 
 ```
@@ -192,12 +179,13 @@ The Kemizuchi Military Academy's officer sword. On the 45 degree diagonal like t
 Avoid: a full basket of bars, a curved blade, a needle-thin blade (that is the duelling blade), gilt.
 ```
 
-## 10. `kemizuchi_sword_breaker`: Kemizuchi sword-breaker (Strength form)
+## 10. `kemizuchi_sword_breaker`: Kemizuchi sword-breaker
 
-- **Save as:** `art/icons/gear/weapon-kemizuchi_sword_breaker.png` (catalog `gear`, id `weapon-kemizuchi_sword_breaker`)
+- **Save as:** `art/icons/gear/weapon-kemizuchi_sword_breaker.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-kemizuchi_duelling_blade.png`
-- **Is:** the Academy duelling family's Strength form: a short, heavy blade whose back is cut into deep slots that catch an opponent's blade and twist it out of the hand. One-handed, about 1.6 kg.
+- **Is:** the Academy duelling family's heavy form: a short, heavy blade whose back is cut into deep slots that catch an opponent's blade and twist it out of the hand. One-handed.
 - **At icon size it must read as:** a short broad blade with a comb of slots along its back.
 
 ```
@@ -207,12 +195,13 @@ Avoid: a saw with many small teeth, a serrated edge, a dish guard (the family's 
 
 # 6. Axes
 
-## 11. `pitch_axe`: Pitch axe (Dexterity form; working name "tomahawk")
+## 11. `pitch_axe`: Pitch axe
 
-- **Save as:** `art/icons/gear/weapon-pitch_axe.png` (catalog `gear`, id `weapon-pitch_axe`)
+- **Save as:** `art/icons/gear/weapon-pitch_axe.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-hatchet.png`
-- **Is:** the axe family's Dexterity form: a light frontier throwing axe, balanced to be pitched end over end and to hook in close. One-handed, about 0.7 kg.
+- **Is:** the axe family's light form: a light frontier throwing axe, balanced to be pitched end over end and to hook in close. One-handed.
 - **At icon size it must read as:** a slim head with a back spike on a long thin haft.
 
 ```
@@ -220,27 +209,15 @@ A light frontier throwing axe. On the 45 degree diagonal like the attached hatch
 Avoid: feathers, beads, painted tribal patterns, a pipe bowl in the head, a broad bit (that is the hatchet).
 ```
 
-# 7. Polearms
+# 7. Polearms (spear / glaive / lance)
 
-## 12. `adamantile_poleaxe`: Adamantile poleaxe (Strength form)
+## 12. `legion_spear`: Legion spear
 
-- **Save as:** `art/icons/gear/weapon-adamantile_poleaxe.png` (catalog `gear`, id `weapon-adamantile_poleaxe`)
-- **Mode:** Heavenprint gear icon (base prompt)
-- **Family reference:** `art/icons/gear/weapon-lance.png` (and `art/icons/gear/weapon-glaive.png` for the haft)
-- **Is:** the polearm family's Strength form, as tabled: the Adamantile Brigade knight's foot weapon, one head that cuts, crushes and stabs. Two-handed, about 3 kg. (ART-REQUESTS question 3 recommends dropping it for a spear: see 12b.)
-- **At icon size it must read as:** a three-part head (blade, hammer, spike) on a long pole.
-
-```
-The Adamantile Brigade knight's poleaxe. On the 45 degree diagonal, nearly corner to corner like the attached lance, the head top-right as the focal point. A three-part head: a broad axe blade on one side, a squared hammer face with a fluted grip pattern on the other, and a long four-sided spike on top. Two steel straps run down the haft from the head, and a round plate guard sits on the haft just below the head. Pale steel head with ivory highlights, dark wood haft, a short iron spike at the butt. Accent: Brigade gilt on the round plate and one muted brass-orange #F68A38 band on the haft below it.
-Avoid: a crescent moon blade, a broad axe with a rear hook and a beak, a plume, a cone guard (that is the lance).
-```
-
-## 12b. `legion_spear`: Legion spear (Dexterity form; ALTERNATE, only if Leon takes question 3)
-
-- **Save as:** `art/icons/gear/weapon-legion_spear.png` (catalog `gear`, id `weapon-legion_spear`, PROPOSED)
+- **Save as:** `art/icons/gear/weapon-legion_spear.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-glaive.png`
-- **Is:** the recommended Dexterity form if the polearms become spear / glaive / lance: the plain thrusting spear of the Legion guard, quick to recover. Two-handed, about 2 kg.
+- **Is:** the light end of the polearm family: the plain thrusting spear of the Legion guard, quick to recover. Two-handed.
 - **At icon size it must read as:** a thin pole with a small leaf head and a crossbar under it.
 
 ```
@@ -250,12 +227,13 @@ Avoid: a curved blade (that is the glaive), a cone or vamplate (that is the lanc
 
 # 8. Hammers
 
-## 13. `war_pick`: War pick (Dexterity form)
+## 13. `war_pick`: War pick
 
-- **Save as:** `art/icons/gear/weapon-war_pick.png` (catalog `gear`, id `weapon-war_pick`)
+- **Save as:** `art/icons/gear/weapon-war_pick.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-maul.png`
-- **Is:** the hammer family's Dexterity form: one narrow beak that finds the gap in plate, swung fast from one hand. One-handed, about 1.5 kg.
+- **Is:** the hammer family's light form: one narrow beak that finds the gap in plate, swung fast from one hand. One-handed.
 - **At icon size it must read as:** a thin downward beak on a hammer's haft; a pick, not an axe.
 
 ```
@@ -263,12 +241,13 @@ A dockside war pick. On the 45 degree diagonal like the attached maul, the same 
 Avoid: a mining pickaxe with two long arms, an axe blade, a thick block head (that is the maul).
 ```
 
-## 14. `war_hammer`: War hammer (hybrid form)
+## 14. `war_hammer`: War hammer
 
-- **Save as:** `art/icons/gear/weapon-war_hammer.png` (catalog `gear`, id `weapon-war_hammer`)
+- **Save as:** `art/icons/gear/weapon-war_hammer.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-maul.png`
-- **Is:** the hammer family's middle form: a hand-and-a-half hammer, a squared face for crushing and a spike behind it for the follow-up. One or two hands, about 3 kg.
+- **Is:** the hammer family's middle form: a hand-and-a-half hammer, a squared face for crushing and a spike behind it for the follow-up. One or two hands.
 - **At icon size it must read as:** a squared head with a curved spike behind it, about half the maul's head.
 
 ```
@@ -278,12 +257,13 @@ Avoid: a carpenter's claw hammer, a blacksmith's hammer, a block with no spike (
 
 # 9. Great blades
 
-## 15. `adamantile_plate_needle`: Plate needle (Dexterity form; working name "estoc")
+## 15. `adamantile_plate_needle`: Plate needle
 
-- **Save as:** `art/icons/gear/weapon-adamantile_plate_needle.png` (catalog `gear`, id `weapon-adamantile_plate_needle`)
+- **Save as:** `art/icons/gear/weapon-adamantile_plate_needle.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-adamantile_greatsword.png`
-- **Is:** the great-blade family's Dexterity form: the Adamantile Brigade's answer to plate, a long two-handed blade with no edge at all, driven into the gaps. Two-handed, about 2 kg.
+- **Is:** the great-blade family's light form: the Adamantile Brigade's answer to plate, a long two-handed blade with no edge at all, driven into the gaps. Two-handed.
 - **At icon size it must read as:** a long needle on the Brigade's big plate guard.
 
 ```
@@ -291,12 +271,13 @@ The Adamantile Brigade's plate needle. On the 45 degree diagonal, nearly corner 
 Avoid: a fencing foil or bell guard, a wide blade, a flexible-looking blade, gems.
 ```
 
-## 16. `adamantile_longsword`: Brigade longsword (hybrid form)
+## 16. `adamantile_longsword`: Brigade longsword
 
-- **Save as:** `art/icons/gear/weapon-adamantile_longsword.png` (catalog `gear`, id `weapon-adamantile_longsword`)
+- **Save as:** `art/icons/gear/weapon-adamantile_longsword.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-adamantile_greatsword.png`
-- **Is:** the great-blade family's middle form: the Adamantile knight's hand-and-a-half sword, one hand with a shield, two without. About 2.5 kg.
+- **Is:** the great-blade family's middle form: the Adamantile knight's hand-and-a-half sword, one hand with a shield, two without.
 - **At icon size it must read as:** a classic cross shape, mid-width: between the needle and the slab.
 
 ```
@@ -306,12 +287,13 @@ Avoid: a wide slab blade (that is the greatsword), a curved blade, a cross with 
 
 # 10. Ork cutters
 
-## 17. `ork_skinner`: Ork skinner (Dexterity form)
+## 17. `ork_skinner`: Ork skinner
 
-- **Save as:** `art/icons/gear/weapon-ork_skinner.png` (catalog `gear`, id `weapon-ork_skinner`)
+- **Save as:** `art/icons/gear/weapon-ork_skinner.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-ork_machete.png`
-- **Is:** the Ork family's Dexterity form: a short hooked blade for quick work at the throat and the hamstring. One-handed, about 0.8 kg.
+- **Is:** the Ork family's light form: a short hooked blade for quick work at the throat and the hamstring. One-handed.
 - **At icon size it must read as:** a short hook-shaped blade with a notched back.
 
 ```
@@ -319,12 +301,13 @@ An Ork skinning hook. On the 45 degree diagonal like the attached Ork machete, t
 Avoid: a neat curved knife, a sickle on a long handle, a bone handle, gore.
 ```
 
-## 18. `ork_cleaver_glaive`: Ork cleaver-glaive (Strength form)
+## 18. `ork_cleaver_glaive`: Ork cleaver-glaive
 
-- **Save as:** `art/icons/gear/weapon-ork_cleaver_glaive.png` (catalog `gear`, id `weapon-ork_cleaver_glaive`)
+- **Save as:** `art/icons/gear/weapon-ork_cleaver_glaive.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-ork_machete.png`
-- **Is:** the Ork family's Strength form: an Ork machete grown too big for a hand and welded onto a pole. Two-handed, about 5 kg.
+- **Is:** the Ork family's heavy form: an Ork machete grown too big for a hand and welded onto a pole. Two-handed.
 - **At icon size it must read as:** a big square slab of blade on a short thick pole.
 
 ```
@@ -334,12 +317,13 @@ Avoid: a neat polearm, a chain or engine (that is the rip-saw), skulls, gore.
 
 # 12. Heavy fists (gloves)
 
-## 19. `weighted_gloves`: Weighted gloves (hybrid form)
+## 19. `weighted_gloves`: Weighted gloves
 
-- **Save as:** `art/icons/gear/weapon-weighted_gloves.png` (catalog `gear`, id `weapon-weighted_gloves`)
+- **Save as:** `art/icons/gear/weapon-weighted_gloves.png`
+- **Shows in:** shop grid (64 px), backpack rows (32 px), loot cards, the gear card, the family form row.
 - **Mode:** Heavenprint gear icon (base prompt)
 - **Family reference:** `art/icons/gear/weapon-iron_mitts.png` (and `art/icons/gear/weapon-kemizuchi_strikers.png`)
-- **Is:** the heavy-fist family's middle form: Smetanita Conjunction collector's gloves, soft black leather with a pad of lead shot sewn across the knuckles, so a punch lands like a cosh. Light, one-handed, about 0.7 kg.
+- **Is:** the heavy-fist family's middle form: Smetanita Conjunction collector's gloves, soft black leather with a pad of lead shot sewn across the knuckles, so a punch lands like a cosh. Light, one-handed.
 - **At icon size it must read as:** a glove with a fat padded knuckle ridge: softer than the iron mitt, heavier than the strikers.
 
 ```

@@ -1,5 +1,14 @@
 # Art requests, 19 November 2026: everything for 0.31.x, 0.32.x and the Items 2.0 plan
 
+> **FINAL as of 19 Nov 2026.** The prompt pack, [`prompts-2026-11-19/`](prompts-2026-11-19/README.md) (start at its
+> README), is the artist's source of truth: its files, file names and counts (217 pictures to make now and 656 grade
+> pictures, 873 in all) win over anything below. Leon's rulings:
+>
+> - **R1:** everything proposed is approved: the melee table and names, the 12 gun lines and 2 bow families, the shields and armour, the uniques, the five new maker lines and the faithful gun repaints (19 after the final pass).
+> - **R2:** grades scheme S1: all five grades are painted for every graded item, armour and foci included.
+> - **R3:** a gun's art reads as its real-world pattern; its name, maker and markings are ours: no real brand, model, logo or text anywhere.
+> - **R4:** eight heavy and strange families; the core rifle and the censer gun are advanced-class weapons, out of this pack.
+
 This is the current full list. It sits on top of [`ART-REQUESTS.md`](ART-REQUESTS.md), the standing file, which is kept as
 history and for its direction notes. Start at the top and work down. Every row names its **art mode**.
 
@@ -52,7 +61,7 @@ redraw anything in a REUSE row.
 | Gaps in the live game, firm | 3 | 0 | 2 | 1 | 28 | **34** |
 | Gaps, check before drawing | 3 | 0 | 0 | 0 | 0 | **3** |
 | **Firm work before Items 2.0** | **52** | **5** | **2** | **1** | **28** | **88** (1 sign conditional; +3 checks, +1 optional) |
-| P2, Items 2.0 (PLAN, PROPOSED) | 0 | 0 | 56 new base forms + 23 uniques; grade pictures 56 to 572 by scheme (recommended 215) | 0 | 0 | recommended **294** for 0.34; see 4.3 |
+| P2, Items 2.0 (PLAN, PROPOSED) (superseded: see the box at the top) | 0 | 0 | 56 new base forms + 23 uniques; grade pictures 56 to 572 by scheme (recommended 215) | 0 | 0 | recommended **294** for 0.34 (superseded: see the box at the top); see 4.3 |
 | P2 later: advanced-class weapons (PROPOSED) | | | 46 | | | after Items 2.0 |
 | P2 later: Weapon Arts (PROPOSED) | 12 | | | | | if Arts get icons |
 
@@ -66,8 +75,8 @@ No art file changed on either 0.31.x branch; the game falls back to text where t
 
 | id | Name | Mode | Size / format | Where it shows | Direction (what it must read as at icon size) | Saved as | Reuse note |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `banner-approach` (PROPOSED id) | APPROACH banner mark | Sign | 1024 x 1024 PNG, transparent | The fight's first big banner while no foe has seen the squad (sub-line "Unseen · moving is free"); drawn as a mask in the stripe colour | Stealth before contact: a single footprint, or a squad shape edging into fog. Must stay distinct from the start, won, lost and FREE ROAM marks at banner size | `art/icons/banners/fight-approach.png`; catalog `interface_icons` | NEW. Same family as `banner-fight-start / -won / -lost / -field`: match their weight |
-| `banner-level-up` (PROPOSED id) | LEVEL UP banner mark | Sign | 1024 x 1024 PNG, transparent | A new banner shown to the whole room when a character levels (today only a log line and the words LEVEL UP) | Rising: an upward chevron or a figure stepping up a stair, a burst above. Reads as "growth", not "victory" | `art/icons/banners/level-up.png`; catalog `interface_icons` | NEW. Same family as the fight banners |
+| `banner-approach` (PROPOSED id) (superseded: see the box at the top) | APPROACH banner mark | Sign | 1024 x 1024 PNG, transparent | The fight's first big banner while no foe has seen the squad (sub-line "Unseen · moving is free"); drawn as a mask in the stripe colour | Stealth before contact: a single footprint, or a squad shape edging into fog. Must stay distinct from the start, won, lost and FREE ROAM marks at banner size | `art/icons/banners/fight-approach.png`; catalog `interface_icons` | NEW. Same family as `banner-fight-start / -won / -lost / -field`: match their weight |
+| `banner-level-up` (PROPOSED id) (superseded: see the box at the top) | LEVEL UP banner mark | Sign | 1024 x 1024 PNG, transparent | A new banner shown to the whole room when a character levels (today only a log line and the words LEVEL UP) | Rising: an upward chevron or a figure stepping up a stair, a burst above. Reads as "growth", not "victory" | `art/icons/banners/level-up.png`; catalog `interface_icons` | NEW. Same family as the fight banners |
 | `second_wind` (perk, NEW in 0.32) and the Second Wind combat action | Second Wind | Wick | 1024 PNG + perk exports | The combat bar's Second Wind action now (0.31.12), then the 0.32 perk card (Pain Threshold) | Wick catching his breath, one hand to his ribs, back straightening. Not a gust of wind | `art/icons/perks/second-wind.png` (one picture; the action points to it) | NEW. Do **not** reuse `boons/second_wind.png` (a different item, sign style) or the retired Used to the Pain (grimacing Wick with a brick) |
 
 ---
@@ -176,10 +185,10 @@ Wind on the Skin, Skin Map; Call Warn; moves Brace, Retort (`moves/retort.png`),
 
 | id | Name | Mode | Size | Where it shows | Direction | Saved as | Reuse note |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| Hard Light (fork, PROPOSED id) | Hard Light | Wick | 1024 | Fork card, level-up | Figments made of dense, solid light: tougher, they do not snap | `forks/figment-hard-light.png` | NEW |
-| Sharp Light (fork, PROPOSED id) | Sharp Light | Wick | 1024 | Fork card | Figments of cutting light; a kill gives another action | `forks/figment-sharp-light.png` | NEW |
-| Many Hands (fork, PROPOSED id; must differ from the perk `many_hands`) | Many Hands | Wick | 1024 | Fork card | Wick holding several Figments at once | `forks/figment-many-hands.png` | NEW; not the Camaraderie perk's picture |
-| Masterwork (fork, PROPOSED id) | Masterwork | Wick | 1024 | Fork card | One Figment named and finer than the rest | `forks/figment-masterwork.png` | NEW. A small mark on that Figment's token may also be wanted: unknown whether the token is drawn in code |
+| Hard Light (fork, PROPOSED id) (superseded: see the box at the top) | Hard Light | Wick | 1024 | Fork card, level-up | Figments made of dense, solid light: tougher, they do not snap | `forks/figment-hard-light.png` | NEW |
+| Sharp Light (fork, PROPOSED id) (superseded: see the box at the top) | Sharp Light | Wick | 1024 | Fork card | Figments of cutting light; a kill gives another action | `forks/figment-sharp-light.png` | NEW |
+| Many Hands (fork, PROPOSED id; (superseded: see the box at the top) must differ from the perk `many_hands`) | Many Hands | Wick | 1024 | Fork card | Wick holding several Figments at once | `forks/figment-many-hands.png` | NEW; not the Camaraderie perk's picture |
+| Masterwork (fork, PROPOSED id) (superseded: see the box at the top) | Masterwork | Wick | 1024 | Fork card | One Figment named and finer than the rest | `forks/figment-masterwork.png` | NEW. A small mark on that Figment's token may also be wanted: unknown whether the token is drawn in code |
 | `field_repair` | Field Repair (Improvisation) | Wick | 1024 | Perk card; the action keeps its id | Wick with a spanner on a jammed weapon | `perks/field-repair.png` | NEW |
 | `tuned` | Tuned (Improvisation) | Wick | 1024 | Perk card | Wick tuning his weapon by ear | `perks/tuned.png` | NEW |
 | `jury_rig` | Jury-Rig | Wick | 1024 | Perk card | A destroyed Figment's pieces banked as spare effort for Wick (+1 AP) | `perks/jury-rig.png` | NEW picture for a kept id: the old one (a jammed gun firing once more) now lies. Old file archived |
@@ -328,7 +337,7 @@ Eye, Blessed Arms, Verdict, At Your Side, Canticle, Amen, Holy Dread, Last Rites
 ## 4. P2: Items 2.0, a PLAN, not an order
 
 **Timing.** Items 2.0 comes after 0.32 is live: 0.33 the system on today's art, 0.34.x the content as art lands, 0.35 Weapon
-Arts. Every new form name below is **PROPOSED** and every count that rests on one is PROPOSED. Leon has ruled the shape
+Arts. Every new form name below is **PROPOSED** (superseded: see the box at the top) and every count that rests on one is PROPOSED. Leon has ruled the shape
 (families of three forms, five grades, uniques, advanced-class weapons, shield and armour families), not the tables.
 
 ### 4.1 What exists today (the equipment audit)
@@ -364,10 +373,10 @@ families are honest within one silhouette (short straight blades, curved blades,
 staves, flat pistols, revolvers, SMGs, drum guns, service rifles, marksman rifles, shotguns, belt-fed guns, launchers, bows,
 crossbows, grenades, gloves, shields), and never across them.
 
-### 4.3 Family tables (PROPOSED forms; Leon has not ruled them)
+### 4.3 Family tables (PROPOSED forms; Leon has not ruled them) (superseded: see the box at the top)
 
 Forms: melee Dexterity / hybrid / Strength; guns and bows close / standard / long; shields and armour light / standard /
-heavy. `id` = exists and painted; *italic* = PROPOSED new form.
+heavy. `id` = exists and painted; *italic* = PROPOSED new form. (superseded: see the box at the top)
 
 **Melee (12 families, 36 forms: 17 exist, 19 new)**
 
@@ -391,7 +400,7 @@ If every weapon stays its own family (Leon's "do not squeeze" reading), new form
 > **RULED by Leon, 19 Nov 2026 (guns):** every maker line has a **base form that scales on Dexterity only**; its
 > other two variants take a **second skill where it applies** (the second skill feeds the line's signature; Dexterity
 > always rolls the shot). Which skill each variant takes is the lead's proposal in the prompt pack
-> (`art/briefs/prompts-2026-11-19/`), PROPOSED until Leon rules it.
+> (`art/briefs/prompts-2026-11-19/`), PROPOSED until Leon rules it. (superseded: see the box at the top)
 
 > **RULED by Leon, 19 Nov 2026 (gun analogues):** most modern rifles have a counterpart in ours, and its ART is
 > recognisable at a glance as that pattern ("I don't need the word AK in game, but I want to stumble on a gun with the
@@ -424,7 +433,7 @@ If every weapon stays its own family (Leon's "do not squeeze" reading), new form
 `riot_shield` / `pavise`; Strike *spiked buckler* / *boss shield* / *ram plate*; Ward *deflector* / *bulwark screen* /
 *barrier wall*.
 
-**Armour (11 families, 33 forms, 14 new; Leon ruled the pattern, the slot table is PROPOSED)**
+**Armour (11 families, 33 forms, 14 new; Leon ruled the pattern, the slot table is PROPOSED) (superseded: see the box at the top)**
 
 | Slot | Family | Forms | New |
 | --- | --- | --- | --- |
@@ -443,9 +452,9 @@ If every weapon stays its own family (Leon's "do not squeeze" reading), new form
 **All together:** 120 forms, 64 painted, **56 new base paintings**; with the 9 graded one-offs, **129 graded items, 73
 painted today**.
 
-> **RULED by Leon, 19 Nov 2026: scheme S1.** All five grades are painted for every graded item: 572 new pictures
+> **RULED by Leon, 19 Nov 2026: scheme S1.** (superseded: see the box at the top) All five grades are painted for every graded item: 572 new pictures
 > over the 129 graded items as tabled (the count moves with the family tables, which are not ruled yet). Wherever
-> this file recommends S3 or counts 294, read S1 and 572 plus the 23 uniques.
+> this file recommends S3 or counts 294, read S1 and 572 plus the 23 uniques. (superseded: see the box at the top)
 
 ### 4.4 Grade schemes (counts over the 129 graded items; "new" reuses the 73 existing paintings as Standard)
 
@@ -457,7 +466,7 @@ painted today**.
 | S4 Standard + one Relic repaint; Fine, Masterwork, Celestial by frame, tint and glow | 2 | 258 | **185** |
 | S5 Today: one picture, grade by words and ◆ only | 1 | 129 | **56** |
 
-**Recommended (PROPOSED):** weapons and shields on S3 for 0.34 (168 new grade pictures), growing to S1 later only if the image
+**Recommended (PROPOSED):** (superseded: see the box at the top) weapons and shields on S3 for 0.34 (168 new grade pictures), growing to S1 later only if the image
 generator holds the silhouette across a set; armour on S4 (47 new), because worn pieces show at 36 to 88 px where five grades
 would not read. **0.34 total: 56 bases + 215 grade pictures = 271 new**, plus the uniques below. Grade sets are made
 image-to-image from an **approved** base, using the tier lines already in `GPT-PROMPTS-2026-11-13-gear.md` section 4; a base
@@ -466,7 +475,7 @@ repo.
 
 ### 4.5 Uniques, advanced-class weapons, Weapon Arts
 
-- **Uniques** (one picture each, about Relic stats, own passive, own frame). PROPOSED first batch **24**: 8 melee (Afterword is
+- **Uniques** (one picture each, about Relic stats, own passive, own frame). PROPOSED first batch **24** (superseded: see the box at the top): 8 melee (Afterword is
   the first, already painted), 8 guns and bows, 3 shields (Leon's three: throws back part of a spell; plants as lasting cover;
   stores soaked damage for a Slam), 5 armour. **23 new gear paintings**; the line icons (23) are Claude's; the Unique frame is
   recommended as a UI frame drawn by Claude.
@@ -482,7 +491,7 @@ Only pictures that survive every answer Leon can give:
 1. **None of the 56 new melee, gun, bow and armour forms**: a renamed or merged form wastes its picture and its grade set.
 2. **The 6 new shield forms**: Leon has ruled the three shield families (Guard, Strike, Ward); only the names may change, and a
    new name does not waste a painting of "a spiked buckler". Safe at low risk; paint the base (Standard) only.
-3. **A grade proof sheet** (PROPOSED, 8 pictures): `katana` and `service_pistol` (both approved re-paints) at Fine,
+3. **A grade proof sheet** (PROPOSED, 8 pictures) (superseded: see the box at the top): `katana` and `service_pistol` (both approved re-paints) at Fine,
    Masterwork, Relic and Celestial, made image-to-image from the base. This is what decides S1 against S3, so it is useful under
    every scheme. Save as `gear/weapon-katana--fine.png` etc.
 4. **Approve the existing 73 bases first.** Every gear painting is still a review candidate; any one Leon wants repainted
@@ -496,9 +505,9 @@ Must wait for Leon: every new melee, gun, bow and armour form (questions 3 to 6)
 One per item id, none per grade: 19 melee forms, 15 gun forms, 2 bow forms, 6 shield forms, 14 armour forms, 5 body-armour
 classes (painted, no line icon today), 23 uniques: **84**; later +10 for advanced-class weapons. The 92 existing carry over.
 
-### 4.8 Questions for Leon (with recommendations)
+### 4.8 Questions for Leon (with recommendations) (superseded: see the box at the top)
 
-1. **Five painted grades or three?** Recommended: three now (Standard, Masterwork, Relic); Fine and Celestial drawn by the UI.
+1. **Five painted grades or three?** Recommended: three now (superseded: see the box at the top) (Standard, Masterwork, Relic); Fine and Celestial drawn by the UI.
    314 new instead of 572; fill to five later if the generator holds the silhouette.
 2. **Do armour pieces get grade pictures?** Recommended: two (Standard, Relic): 47 new instead of 146.
 3. **Approve the 12-family melee draft?** Recommended: yes, with Polearms as *spear* (Dexterity) / `glaive` (hybrid) /
@@ -510,7 +519,7 @@ classes (painted, no line icon today), 23 uniques: **84**; later +10 for advance
 6. **Armour shape?** Recommended: the 11 families as tabled; the outer torso becomes items; remove the empty veil slot.
 7. **How many uniques in 0.34, and who makes the frame?** Recommended: 24 (8 / 8 / 3 / 5), Afterword first; the frame drawn
    by Claude as UI.
-8. **Do the 4 foci and the quiver get grade pictures?** Recommended: yes, same scheme as weapons (10 new under S3).
+8. **Do the 4 foci and the quiver get grade pictures?** Recommended: yes, same scheme as weapons (10 new under S3). (superseded: see the box at the top)
 9. **Advanced-class weapons: one signature weapon per class, 3 tiers, the 8 mana paintings as tier 1?** Recommended: yes, and
    commission nothing until the advanced classes return.
 10. **Order of work for the artist?** Recommended: the 56 bases and 23 uniques first, each approved as a sheet; then grade
@@ -547,7 +556,7 @@ classes (painted, no line icon today), 23 uniques: **84**; later +10 for advance
 
 - Every **monoline line icon** (weapons, armour, shields, foci, Figment forms, Glimmer): Claude, by `weapon-icons.md`.
 - The 40 **Sigil glyphs**, fallback boon glyphs, status-strip and hazard fallbacks.
-- **Grade frames, marks and tints**; the Unique frame (recommended); Fine's inlay mark and Celestial's light under S3.
+- **Grade frames, marks and tints**; the Unique frame (recommended); Fine's inlay mark and Celestial's light under S3 (superseded: see the box at the top).
 - Level-up screen parts: ladder dots, chips, tabs, the +1 flash, sealed-fork card, PERMANENT tag, the menu type scale.
 - **Effects:** prayer (Whisper line and ring, Hymn fan, Smite, Ward hex, Rebuke crack, Canticle, Amen, Last Rites, Witnessed
   eye, Atheist die), Shadow (Shade Step, Fade, Vault smear, hook lines, Decoy ring, hide-spot shading, sight lines), Figment

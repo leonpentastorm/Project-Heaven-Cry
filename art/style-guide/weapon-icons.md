@@ -67,8 +67,10 @@ keep their own icons.
    - **Rigaz Trade Company:** sleek lines and a tag.
    - **Orks:** jagged, nailed, uneven outlines.
    - **Central City:** clean civilian lines.
-8. **Invented, never real.** Real guns are loose reference for how mechanisms work, never a recognisable real model,
-   maker mark or name (the Unspoken Name).
+8. **Melee and strange weapons are invented; a gun may follow a real pattern** (Leon, 19 Nov 2026). Melee and strange
+   weapons are invented, never a recognisable real model. A **gun's** silhouette may follow a real-world pattern
+   faithfully, so a fan knows it at a glance; its name, maker, markings and text are always ours: never a real brand,
+   model or maker name, logo, rollmark or text (the Unspoken Name).
 9. **Not Wick's mode.** Weapon icons are their own mode: Wick's white flat-ink figures are for traits, perks and
    prayers only.
 

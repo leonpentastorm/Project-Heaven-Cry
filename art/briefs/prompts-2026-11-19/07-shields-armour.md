@@ -1,40 +1,20 @@
 # GPT prompts, 19 Nov 2026, file 07: shields and armour (the Items 2.0 families, gear paintings)
 
-For the artist, and for GPT. Source list: `art/briefs/ART-REQUESTS-2026-11-19.md`, section 4.3 (family tables), 4.4 (grades) and 4.6 (the shield batch is the one safe to start). Every form below is **PROPOSED**: the shield family shape is ruled by Leon (Guard, Strike, Ward), the names are the lead's; the armour slot table is not ruled. Paint the **Standard** master of each only; the grade pictures (Worn to Celestial) come later from the approved master (`<stem>--<tier>.png`, see `art/style-guide/gear-icons.md`). Everything is invented: change any detail freely, as long as each piece stays distinct at 32 px from its family neighbours.
+For the artist, and for GPT.
 
-**20 pictures: 6 shields and 14 armour pieces, all gear paintings (Heavenprint).** Line icons (`art/icons/{armour}/<id>.svg`) are Claude's, not the artist's.
-
-## The families (what exists, what is new)
-
-| Slot | Family | Forms (light / standard / heavy) | Painted today | New here |
-| --- | --- | --- | --- | --- |
-| off hand | Guard shields | `buckler` / `riot_shield` / `pavise` | all 3 | 0 |
-| off hand | Strike shields | spiked buckler / boss shield / ram plate | none | 3 |
-| off hand | Ward shields | deflector / bulwark screen / barrier wall | none | 3 |
-| head | Helmets | `field_helmet` / `ballistic_helmet` / assault helm | 2 | 1 |
-| head | Hoods (Shadow line) | cowl / hood / blackout hood | none | 3 |
-| head accessory | Optics | spotter's monocle / `night_goggles` / sight visor | 1 | 2 |
-| head accessory | Respirators | breather / `gas_mask` / sealed visor | 1 | 2 |
-| outer torso | Plate | breacher plate / Assault (`armour:4`) / Juggernaut (`armour:5`) | 2 | 1 |
-| inner torso | Undershirts | `padded_undershirt` / mesh undersuit / `trauma_plate` | 2 | 1 |
-| lower torso | Belts | `utility_belt` / rig belt / `armoured_belt` | 2 | 1 |
-| legs | Legwear | `runner_trousers` / field trousers / `armoured_greaves` | 2 | 1 |
-| hands | Worn gloves | `work_gloves` / tactical gloves / `combat_gloves` | 2 | 1 |
-| footwear | Boots | `field_boots` / jump boots / `heavy_boots` | 2 | 1 |
-
-(Vests, Light / Medium / Heavy, exist and are painted: no new picture.)
+**20 pictures: 6 shields and 14 armour pieces, all gear paintings (Heavenprint).** Each is painted at all five grades: the Standard master from the prompt here, then Fine, Masterwork, Relic and Celestial image-to-image from the approved master by the method of file 08 (`08-grades-and-uniques.md`, section A3.6 shields and A3.7 armour). Grade files: `<save name stem>--<fine|masterwork|relic|celestial>.png`.
 
 ## How to use
 
-One image a prompt. Paste **the style block (below)**, then the entry's prompt, and attach the references named in the entry (every one is in the repo). Save under the file name given in the folder given, do not rename. Every delivery is a review candidate until Leon approves it; Claude adds the catalog entries on intake. In-world only: invented shapes, no real-world brands, insignia, religions or characters; no text, letters or numbers in any image.
+One image a prompt. Paste **the style block (below)**, then the entry's prompt, and attach the references named in the entry (every one is in the repo). Save under the file name given in the folder given, do not rename. In-world only: invented shapes, no real-world brands, insignia, religions or characters; no text, letters or numbers in any image.
 
-## Style block 1: gear painting, shields and armour (paste first)
+## Style block: gear painting, shields and armour (paste first)
 
-**Attach, once per session:** the nearest existing painting named in the entry; and for brushwork `art/sprites/objects/tool-rack.png` and `art/sprites/objects/field-lamp.png` (material treatment and edge hierarchy only; their top-down camera does not apply). Rule: `art/style-guide/gear-icons.md`; palette: `art/style-guide/palette.json`; the wording follows `art/briefs/GPT-PROMPTS-2026-11-13-gear.md`.
+**Attach, once per session:** the nearest existing painting named in the entry; and for brushwork `art/sprites/objects/tool-rack.png` and `art/sprites/objects/field-lamp.png` (material treatment and edge hierarchy only; their top-down camera does not apply). Palette: `art/style-guide/palette.json`; naming: `art/style-guide/gear-icons.md`.
 
-**Size / background:** 1024 x 1024 PNG with alpha, fully transparent; the object fills about 80 to 85% of the canvas (about 100 px of clear margin every side).
+**Size / background:** 1024 x 1024 PNG with alpha, fully transparent; the object inside the central 90% of the canvas (at least 50 px of clear margin on every side); each entry gives the object's own width.
 
-> Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands, no wearer, no figures. Everything is invented: never a recognisable real-world make, model or emblem. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges and make the shape unmistakable when shrunk. Colour: metal in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the faction's accent, where given, is the single accent, a muted local paint, not a glow. Standard finish only, with honest wear; rarity is shown by the UI, never by a coloured border. Shields are shown front view, upright, about 85% of the canvas height. Worn armour is shown on its own, floating, front or three-quarter view as if laid out for sale (pairs side by side as one object), no wearer; weight shows in the thickness. The object:
+> Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands, no wearer, no figures. Everything is invented: never a recognisable real-world make, model or emblem. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges and make the shape unmistakable when shrunk. Colour: metal in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the faction's accent, where given, is the single accent, a muted local paint, not a glow. Standard finish, with honest wear; no coloured border or frame. Shields are shown front view, upright, about 85% of the canvas height. Worn armour is shown on its own, floating, front or three-quarter view as if laid out for sale (pairs side by side as one object), no wearer; weight shows in the thickness. The object:
 
 **Avoid in every picture:** a wearer, a hand or arm inside the piece, heraldry or a crest that reads as lettering, a glow, a coloured frame, a cast shadow, a second object.
 
@@ -42,14 +22,13 @@ One image a prompt. Paste **the style block (below)**, then the entry's prompt, 
 
 ---
 
-# Shields (all one-handed; Guard family exists; Heavy forms must look heavy)
+# Shields (all carried in one hand; the heavy forms must look heavy)
 
-## 1. `spiked_buckler`: Spiked buckler (Strike family, light)
+## 1. `spiked_buckler`: Spiked buckler (shield, light)
 
 - **Save as:** `art/icons/gear/shield-spiked_buckler.png`
 - **Attach:** `art/icons/gear/shield-buckler.png` (same shape family, add the spike)
 - **Shows in:** backpack, shop, Forge, off-hand slot
-- **Does:** the light shield of the Strike family: a small shield that hits back, the bash as its main use.
 - **At icon size it must read as:** the buckler's round, with one long spike thrusting out of its middle.
 
 ```
@@ -57,12 +36,11 @@ A small round steel buckler, front view, upright, a little darker and more batte
 Avoid: a spear head, a flail, a sun face, a skull, more than one big spike.
 ```
 
-## 2. `boss_shield`: Boss shield (Strike family, standard)
+## 2. `boss_shield`: Boss shield (shield, standard)
 
 - **Save as:** `art/icons/gear/shield-boss_shield.png`
 - **Attach:** `art/icons/gear/shield-riot_shield.png` (the standard-weight reference)
 - **Shows in:** backpack, shop, Forge, off-hand slot
-- **Does:** the standard Strike shield: a heavy domed metal boss made to punch with, wider than a buckler, lighter than a ram plate.
 - **At icon size it must read as:** a mid-size round-cornered shield with one big domed lump in the middle.
 
 ```
@@ -70,25 +48,23 @@ A medium round-cornered shield of iron-banded dark planks, front view, upright, 
 Avoid: a spike, a tower shield, a window slit, heraldry, a face.
 ```
 
-## 3. `ram_plate`: Ram plate (Strike family, heavy: carries the Heavy property)
+## 3. `ram_plate`: Ram plate (shield, heavy)
 
 - **Save as:** `art/icons/gear/shield-ram_plate.png`
 - **Attach:** `art/icons/gear/shield-pavise.png` (heaviest existing shield) and `art/icons/gear/shield-riot_shield.png`
 - **Shows in:** backpack, shop, Forge, off-hand slot
-- **Does:** the heavy Strike shield: a slab to charge behind and drive into things; slow, built to be thrown forward.
 - **At icon size it must read as:** a huge thick slab with a blunt wedge prow, plainly the heaviest thing in the row.
 
 ```
-A massive thick slab of a shield, front view, upright, taller and heavier than a riot shield: a broad rectangular steel plate faced with a wedge-shaped blunt prow ridge down its centre, like the bow of a ship, with great bolted corner plates and dents hammered into the face from impacts. Visibly very thick at the edge (show the slab's depth), a short heavy arm brace behind. Dark steel with bright worn-metal scars on the ridge. It must look too heavy to hold up at arm's length. Accent: Brigade pale steel with a narrow brass-orange #F68A38 stripe along the ridge.
+A massive thick slab of a shield, front view, upright, taller and heavier than a riot shield: a broad rectangular steel plate faced with a wedge-shaped blunt prow ridge down its centre, like the bow of a ship, with great bolted corner plates and dents hammered into the face from impacts. Visibly very thick at the edge (show the slab's depth), a heavy arm strap and a single grip behind. Dark steel with bright worn-metal scars on the ridge. It must look like the heaviest slab a person carries on one arm. Accent: Brigade pale steel with a narrow brass-orange #F68A38 stripe along the ridge.
 Avoid: a gun port, a viewport slit like the riot shield, a round shape, a spike, a wearer.
 ```
 
-## 4. `deflector`: Deflector (Ward family, light)
+## 4. `deflector`: Deflector (shield, light)
 
 - **Save as:** `art/icons/gear/shield-deflector.png`
 - **Attach:** `art/icons/gear/shield-buckler.png`
 - **Shows in:** backpack, shop, Forge, off-hand slot
-- **Does:** the light Ward shield: a small plate that turns spells and light, not blows.
 - **At icon size it must read as:** a small kite-shaped shield with a cyan-lined window in its middle.
 
 ```
@@ -96,12 +72,11 @@ A small light shield shaped like a rounded diamond or kite, front view, upright,
 Avoid: a glow, rays, a mirror shine, a round buckler shape, spikes, any text or rune lettering.
 ```
 
-## 5. `bulwark_screen`: Bulwark screen (Ward family, standard)
+## 5. `bulwark_screen`: Bulwark screen (shield, standard)
 
 - **Save as:** `art/icons/gear/shield-bulwark_screen.png`
 - **Attach:** `art/icons/gear/shield-riot_shield.png`
 - **Shows in:** backpack, shop, Forge, off-hand slot
-- **Does:** the standard Ward shield: a tall screen that guards against magic and shrapnel across a wider arc.
 - **At icon size it must read as:** a tall pale-steel panel with a row of cyan-lined cells, like a fence panel.
 
 ```
@@ -109,16 +84,15 @@ A tall rectangular panel shield with softly clipped top corners, front view, upr
 Avoid: a viewport slit, a glow, rays, a wedge prow, planks, heraldry.
 ```
 
-## 6. `barrier_wall`: Barrier wall (Ward family, heavy: carries the Heavy property)
+## 6. `barrier_wall`: Barrier wall (shield, heavy)
 
 - **Save as:** `art/icons/gear/shield-barrier_wall.png`
 - **Attach:** `art/icons/gear/shield-pavise.png` (the standing heavy shield) and `art/icons/gear/shield-riot_shield.png`
 - **Shows in:** backpack, shop, Forge, off-hand slot
-- **Does:** the heavy Ward shield: a standing wall of plate and cores, slow to carry, a fortress to crouch behind.
 - **At icon size it must read as:** the largest shape in the row: a wide wall-panel on a ground edge with a cyan-lined cell grid.
 
 ```
-A very large, wide wall-of-a-shield, front view, upright, standing on its flat ground edge like a gate leaf: a thick pale steel slab framed by heavy bolted plates, its face set with a two-by-three grid of hexagonal core windows with fine cyan lines, a folded steel prop foot visible at the bottom corners, thick depth at the edge. Rivets the size of coins, a patched dent, a heavy shoulder-brace handle. Heavier and broader than anything else a person carries. Accent: Mind cyan #4FC8DF only in the windows; Brigade brass-orange #F68A38 trim on the frame.
+A very large, wide wall-of-a-shield, front view, upright, standing on its flat ground edge like a gate leaf: a thick pale steel slab framed by heavy bolted plates, its face set with a two-by-three grid of hexagonal core windows with fine cyan lines, a folded steel prop foot visible at the bottom corners, thick depth at the edge. Rivets the size of coins, a patched dent, a single arm strap and grip behind. Heavier and broader than anything else a person carries. Accent: Mind cyan #4FC8DF only in the windows; Brigade brass-orange #F68A38 trim on the frame.
 Avoid: planks (that is the pavise), a wedge prow (that is the ram plate), a viewport slit, glow or beams, a wearer.
 ```
 
@@ -131,7 +105,6 @@ Avoid: planks (that is the pavise), a wedge prow (that is the ram plate), a view
 - **Save as:** `art/icons/gear/armour-assault_helm.png`
 - **Attach:** `art/icons/gear/armour-ballistic_helmet.png`
 - **Shows in:** backpack, shop, Forge, head slot, character sheet
-- **Does:** the heavy helmet of the family, above the ballistic helmet: full-coverage head plate.
 - **At icon size it must read as:** a closed, crested, full-face helm, clearly heavier than the ballistic helmet.
 
 ```
@@ -139,12 +112,11 @@ A heavy closed assault helm in three-quarter view, upright: a deep domed pale st
 Avoid: an open face (that is the field helmet), a visor cut-out like the ballistic helmet, feathers, horns, a face.
 ```
 
-## 8. `cowl`: Cowl (Hoods, Shadow line, light)
+## 8. `cowl`: Cowl (hood, light)
 
 - **Save as:** `art/icons/gear/armour-cowl.png`
 - **Attach:** `art/icons/gear/armour-torso_class1_light.png` (the waxed-cloth treatment)
 - **Shows in:** backpack, shop, Forge, head slot
-- **Does:** the light hood of the Shadow line: it softens a silhouette and nothing more.
 - **At icon size it must read as:** a soft draped hood shape that tapers down over the shoulders.
 
 ```
@@ -152,12 +124,11 @@ A soft draped cowl laid out in three-quarter view, standing open as if on an uns
 Avoid: a face, eyes in the hollow, a pointed wizard hood, a hard shell, glow, armour plates.
 ```
 
-## 9. `hood`: Hood (Hoods, Shadow line, standard)
+## 9. `hood`: Hood (hood, standard)
 
 - **Save as:** `art/icons/gear/armour-hood.png`
 - **Attach:** `art/icons/gear/armour-torso_class1_light.png`
 - **Shows in:** backpack, shop, Forge, head slot
-- **Does:** the standard Shadow hood: fitted, sound-dampened, made for staying unseen.
 - **At icon size it must read as:** a close-fitting hood with a stitched mask panel across the lower face.
 
 ```
@@ -165,12 +136,11 @@ A close-fitting fitted hood in three-quarter view, upright, of matte charcoal qu
 Avoid: a loose cloak hood (that is the cowl), a full black cover (that is the blackout hood), eye holes cut out, a face, glow.
 ```
 
-## 10. `blackout_hood`: Blackout hood (Hoods, Shadow line, heavy)
+## 10. `blackout_hood`: Blackout hood (hood, heavy)
 
 - **Save as:** `art/icons/gear/armour-blackout_hood.png`
 - **Attach:** `art/icons/gear/armour-gas_mask.png` (sealed head cover reference) and `art/icons/gear/armour-torso_class1_light.png`
 - **Shows in:** backpack, shop, Forge, head slot
-- **Does:** the heavy Shadow hood: a sealed, lightless head cover for the deepest hiding.
 - **At icon size it must read as:** a seamless black head-bag shape with a bare slot of lens-darkness, no features.
 
 ```
@@ -183,7 +153,6 @@ Avoid: a cloth hood with a visible opening (that is the hood), glowing eyes, a b
 - **Save as:** `art/icons/gear/armour-spotters_monocle.png`
 - **Attach:** `art/icons/gear/armour-prescription_glasses.png`
 - **Shows in:** backpack, shop, Forge, head-accessory slot
-- **Does:** the light optic: a single lens for a marksman's eye; helps see farther.
 - **At icon size it must read as:** one round lens ring on a short chain with a small side arm.
 
 ```
@@ -196,7 +165,6 @@ Avoid: a pair of glasses (that is the prescription pair), two lenses, a strap go
 - **Save as:** `art/icons/gear/armour-sight_visor.png`
 - **Attach:** `art/icons/gear/armour-night_goggles.png`
 - **Shows in:** backpack, shop, Forge, head-accessory slot
-- **Does:** the heavy optic: a full visor with ranging lenses and a strap.
 - **At icon size it must read as:** a wide curved band with one big lens and a small side lens.
 
 ```
@@ -209,7 +177,6 @@ Avoid: two equal round goggle eyes (that is the night goggles), a face, a glowin
 - **Save as:** `art/icons/gear/armour-breather.png`
 - **Attach:** `art/icons/gear/armour-gas_mask.png`
 - **Shows in:** backpack, shop, Forge, head-accessory slot
-- **Does:** the light respirator: a cloth-and-filter half mask for dust and smoke.
 - **At icon size it must read as:** a soft half mask with one round filter on the side.
 
 ```
@@ -222,7 +189,6 @@ Avoid: a full face with lenses (that is the gas mask), a hose, two canisters, a 
 - **Save as:** `art/icons/gear/armour-sealed_visor.png`
 - **Attach:** `art/icons/gear/armour-gas_mask.png`
 - **Shows in:** backpack, shop, Forge, head-accessory slot
-- **Does:** the heavy respirator: a full sealed face unit for bad air and worse.
 - **At icon size it must read as:** a smooth hard faceplate with a long lens and a bulky filter pod.
 
 ```
@@ -235,11 +201,10 @@ Avoid: a hose and dual canisters (that is the gas mask), an open mouth, a face, 
 - **Save as:** `art/icons/gear/armour-breacher_plate.png`
 - **Attach:** `art/icons/gear/armour-torso_class4_assault.png` (the next one up)
 - **Shows in:** backpack, shop, Forge, outer-torso slot
-- **Does:** the light Plate form, under Assault: chest and back plates for a door-kicker.
 - **At icon size it must read as:** a plain two-plate chest piece, thinner than the Assault cuirass.
 
 ```
-A light breacher plate, front view, upright, no wearer: a flat front chest plate and a matching back plate joined at the shoulders by two webbing straps and side buckles, worn grey steel, a bold stencil-style scuff band across the chest with no letters, a small padded collar. No pauldrons, no crest, no gorget: it must read as clearly lighter than the Assault cuirass. Accent: none, Legion olive-grey.
+A light breacher plate, front view, upright, no wearer: a flat front chest plate and a matching back plate joined at the shoulders by two webbing straps and side buckles, worn grey steel, a pale scuffed band worn across the chest, a small padded collar. No pauldrons, no crest, no gorget: it must read as clearly lighter than the Assault cuirass. Accent: none, Legion olive-grey.
 Avoid: pauldrons, gilt, a crest, a high collar, layered plates, a torso shape with arms.
 ```
 
@@ -248,7 +213,6 @@ Avoid: pauldrons, gilt, a crest, a high collar, layered plates, a torso shape wi
 - **Save as:** `art/icons/gear/armour-mesh_undersuit.png`
 - **Attach:** `art/icons/gear/armour-padded_undershirt.png`
 - **Shows in:** backpack, shop, Forge, inner-torso slot
-- **Does:** the standard undershirt: a fine metal-mesh under-layer that stops cuts and spall.
 - **At icon size it must read as:** a long-sleeved shirt shape with a fine diamond mesh and a line down the middle.
 
 ```
@@ -261,7 +225,6 @@ Avoid: quilted diamond seams (that is the padded undershirt), a plate insert, a 
 - **Save as:** `art/icons/gear/armour-rig_belt.png`
 - **Attach:** `art/icons/gear/armour-utility_belt.png`
 - **Shows in:** backpack, shop, Forge, lower-torso slot
-- **Does:** the standard belt: a load-carrying rig with a harness strap, between the plain belt and the armoured one.
 - **At icon size it must read as:** a belt with a cross strap and a row of squared pouches.
 
 ```
@@ -274,7 +237,6 @@ Avoid: overlapping steel segments (that is the armoured belt), a holster with a 
 - **Save as:** `art/icons/gear/armour-field_trousers.png`
 - **Attach:** `art/icons/gear/armour-runner_trousers.png`
 - **Shows in:** backpack, shop, Forge, legs slot
-- **Does:** the standard legwear: hard-wearing trousers with knee pads.
 - **At icon size it must read as:** a pair of sturdy trousers with two bold knee patches.
 
 ```
@@ -287,7 +249,6 @@ Avoid: shin plates and knee cups of steel (that is the greaves), a wearer, shoes
 - **Save as:** `art/icons/gear/armour-tactical_gloves.png`
 - **Attach:** `art/icons/gear/armour-combat_gloves.png`
 - **Shows in:** backpack, shop, Forge, hands slot
-- **Does:** the standard worn glove: a trigger-finger glove with a reinforced palm.
 - **At icon size it must read as:** a pair of fingered gloves, with one finger tip cut away.
 
 ```
@@ -300,7 +261,6 @@ Avoid: large steel knuckle plates (that is the combat glove), a hand inside, a f
 - **Save as:** `art/icons/gear/armour-jump_boots.png`
 - **Attach:** `art/icons/gear/armour-field_boots.png`
 - **Shows in:** backpack, shop, Forge, footwear slot
-- **Does:** the standard boot: springy-soled, for a runner who has to clear things.
 - **At icon size it must read as:** a pair of boots with a thick curved spring sole.
 
 ```

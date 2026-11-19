@@ -1,14 +1,12 @@
-# GPT prompts, 19 Nov 2026, file 02: the 0.32 skill system, Body (Strength, Agility, Endurance)
+# GPT prompts, file 02: skill icons, Body (Strength, Agility, Endurance)
 
-For the artist, and for GPT. Source list: `art/briefs/ART-REQUESTS-2026-11-19.md`, section 2 (P1, 0.32), the Strength, Agility and Endurance groups. What each thing does comes from `docs/design/proposals/2026-11-19-attribute-drafts/` (`strength.md`, `agility.md`, `endurance.md`). Every picture below is invented here: change any freely, as long as each stays distinct at 32 px from its neighbours.
-
-**12 pictures: 11 Wick icons and 1 white-ink sign (conditional).** No CHANGE rows exist in these three attributes. Wick's Second Wind (`art/icons/perks/second-wind.png`) is a P0 picture, written in the P0 file, not here.
+For the artist, and for GPT. **11 pictures, all Wick icons**: 4 Strength, 3 Agility, 4 Endurance (including one Bulwark class-move icon). Every picture is invented here: change any freely, as long as each stays distinct at 32 px from its neighbours.
 
 ## How to use
 
-One image a prompt. Paste **the base prompt of its mode (below)**, then the entry's prompt, and attach the references the mode names. Save under the file name given, do not rename. Every delivery is a review candidate until Leon approves it; Claude adds the catalog entries on intake. In-world only: invented shapes, no real-world brands, insignia, religions or characters (a medical mark is a plain plus, never a red cross); no text, letters or numbers in any image.
+One image a prompt. Paste **the base prompt (below)**, then the entry's prompt, and attach the references it names. Save under the file name given, do not rename. In-world only: invented shapes, no real-world brands, insignia, religions or characters (a medical mark is a plain plus, never a red cross); no text, letters or numbers in any image.
 
-## Base prompt 1: Wick icon (perks, class moves)
+## Base prompt: Wick icon
 
 **Attach:** `art/icons/traits/mind-without-fog.png` (the master; leave out its floating cup), and three finished perks from `art/icons/perks/` for line weight (for example `art/icons/perks/bulwark.png`, `art/icons/perks/before-the-blink.png`, `art/icons/perks/bedside-manner.png`; never the perk being drawn). Rule: `art/icons/STYLE-LOCK.md`.
 
@@ -18,24 +16,15 @@ One image a prompt. Paste **the base prompt of its mode (below)**, then the entr
 
 **Avoid in every Wick icon:** the cup of Mind Without Fog, any colour, any lettering, a second full figure, a red cross.
 
-## Base prompt 2: white-ink sign (conditions)
-
-**Attach:** `art/icons/traits/mind-without-fog.png` for the ink weight only, and three of `art/icons/conditions/*.png` (for example `art/icons/conditions/witnessed.png`, `art/icons/conditions/braced.png` and `art/icons/conditions/marked.png`).
-
-**Size / background:** 1024 x 1024 PNG, transparent.
-
-> Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a scene: Wick does not appear. One subject, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 16 px beside a word and at 48 px on a card: silhouette first, two interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:
-
 ---
 
 # Strength (ink `#F68A38`)
 
-## 1. `point_man`: Point Man (Guts perk)
+## 1. `point_man`: Point Man
 
-- **Save as:** `art/icons/perks/point-man.png` (catalog `perks`, id `point_man`)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/point-man.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card, level-up, skill page
-- **Does:** allies within 3 tiles roll their Fear saves with your Guts; the nerve of the one in front is lent to those behind.
 - **At icon size it must read as:** one figure out front, small shapes close behind him.
 
 ```
@@ -43,38 +32,35 @@ Wick striding forward at the very front, chest out, one arm swept back and open 
 Avoid: a crowd, a flag or banner, a pointing finger, a leader's crown, a shield wall.
 ```
 
-## 2. `unflinching`: Unflinching (Guts perk)
+## 2. `unflinching`: Unflinching
 
-- **Save as:** `art/icons/perks/unflinching.png` (catalog `perks`, id `unflinching`)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/unflinching.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card
-- **Does:** at x3 Momentum or more, melee blows against you are harder to land (-1 to hit): a defence you hold by keeping on.
 - **At icon size it must read as:** a planted upright figure with short strokes sliding off him.
 
 ```
 Wick standing square and planted, feet wide, chin up, his screen face level and steady, arms loose at his sides, not guarding. Three short slanted strokes arrive from the left and each skids off along his shoulder and ribs, bending away into the air beyond him; none of them dents his outline. A small forward chevron sits at his chest, pressing on.
-Avoid: a shield, crossed forearms (that is Brace), cracks in his body (that is Unbroken), a wall behind him, impact stars.
+Avoid: a shield, crossed forearms, cracks in his body, a wall behind him, impact stars.
 ```
 
-## 3. `marrow_talk`: Marrow Talk (Intimidation perk)
+## 3. `marrow_talk`: Marrow Talk
 
-- **Save as:** `art/icons/perks/marrow-talk.png` (catalog `perks`, id `marrow_talk`)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/marrow-talk.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card
-- **Does:** a threat that fails in talk still leaves the listener Shaken (-2 on their next roll against you); in a fight too, a Threaten they save against still shakes them for a round.
 - **At icon size it must read as:** a quiet word leaving the speaker and landing as a shiver in someone else.
 
 ```
 Wick leaning in close with his head tilted, one hand cupped beside his mouth as if speaking low; from the cup a thin straight line runs across the frame into the chest of a partial figure (a shoulder and half a head, cut by the right edge), whose outline is drawn with three small tremor ticks shivering at its edge. The line ends in a tiny sharp barb inside the listener's chest, like a splinter of bone.
-Avoid: a speech bubble, letters, a skull, a shouting open mouth, a pointing finger (that is Taunt), a bone pile.
+Avoid: a speech bubble, letters, a skull, a shouting open mouth, a pointing finger, a bone pile.
 ```
 
-## 4. `stare_down`: Stare Down (Intimidation perk, also the action's icon)
+## 4. `stare_down`: Stare Down
 
-- **Save as:** `art/icons/perks/stare-down.png` (catalog `perks`, id `stare_down`; the action `stare_down` points to it too)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/stare-down.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card and the combat bar's Stare Down action
-- **Does:** before the first turn, one enemy that sees you saves or loses its first turn, and is Shaken for 3 rounds.
 - **At icon size it must read as:** two eyes locked and a foe stopped mid-stride.
 
 ```
@@ -82,29 +68,15 @@ Wick on the left with his pixel-screen face turned straight toward a partial foe
 Avoid: a literal eyeball, a laser beam with glow, a staring-contest face with eyebrows, a snake or hypnosis spiral, text.
 ```
 
-## 5. `headlong_paid`: Headlong paid (condition sign, CONDITIONAL)
-
-- **Save as:** `art/icons/conditions/headlong-paid.png` (catalog `condition_icons`)
-- **Mode:** white-ink sign (base prompt 2)
-- **Shows in:** the status strip, only if its row is shown (decided when built; hold this one until Claude says it is shown)
-- **Does:** marks that this turn's Charge was paid for with 2 Momentum instead of AP, so Rolling Start and The Charge Carries build nothing from it.
-- **At icon size it must read as:** a forward arrow with a bite out of it.
-
-```
-A single bold arrow pointing right, solid, with one clean rectangular notch cut out of its shaft just behind the head, as if a piece of it has been spent; two short ticks trail off behind the notch, falling away. No figure.
-Avoid: a coin or a price tag, a curved arrow, a speed-line blur, a circular "no" slash over the arrow, any text or numeral.
-```
-
 ---
 
 # Agility (ink `#E3BF51`)
 
-## 6. `untouchable`: Untouchable (Athletics perk)
+## 5. `untouchable`: Untouchable
 
-- **Save as:** `art/icons/perks/untouchable.png` (catalog `perks`, id `untouchable`)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/untouchable.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card
-- **Does:** with no torso armour, attacks on you roll twice and take the worse.
 - **At icon size it must read as:** a blow going through empty air where Wick was.
 
 ```
@@ -112,12 +84,11 @@ Wick sidestepped to the right edge of the frame in a light leaning crouch, capel
 Avoid: a ghost or transparent double figure, a shield or armour piece, motion-blur smears, a trail of footprints, cartoon dust clouds.
 ```
 
-## 7. `shoot_first`: Shoot First (Reaction Speed perk)
+## 6. `shoot_first`: Shoot First
 
-- **Save as:** `art/icons/perks/shoot-first.png` (catalog `perks`, id `shoot_first`)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/shoot-first.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card
-- **Does:** you act in the surprise round even when surprised.
 - **At icon size it must read as:** one figure already firing while the others have not started.
 
 ```
@@ -125,12 +96,11 @@ Wick at full extension with an invented compact pistol (a plain angular silhouet
 Avoid: a real gun make, a gunslinger hat or duel stance, smoke clouds, a clock or stopwatch, a bullet in flight drawn as a long streak.
 ```
 
-## 8. `cut_in`: Cut In (Reaction Speed perk)
+## 7. `cut_in`: Cut In
 
-- **Save as:** `art/icons/perks/cut-in.png` (catalog `perks`, id `cut_in`)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/cut-in.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card
-- **Does:** once or twice a scene, cut in on someone mid-sentence or mid-action and act first.
 - **At icon size it must read as:** Wick's body stepping between two things that were about to meet.
 
 ```
@@ -142,14 +112,11 @@ Avoid: a speech bubble or text, a referee's whistle or hand signal, a full secon
 
 # Endurance (ink `#F65157`)
 
-`second_wind` (Pain Threshold) is a P0 picture: see the P0 file.
+## 8. `still_standing`: Still Standing
 
-## 9. `still_standing`: Still Standing (Pain Threshold perk, also the action's icon)
-
-- **Save as:** `art/icons/perks/still-standing.png` (catalog `perks`, id `still_standing`; the action `still_standing` keeps its id and uses this picture)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/still-standing.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card and the combat bar's action
-- **Does:** when your HP runs out, one more turn with 3 AP before you fall Downed, once a fight.
 - **At icon size it must read as:** a figure on one knee pushing himself up, not lying down and not yet standing.
 
 ```
@@ -157,12 +124,11 @@ Wick caught halfway between kneeling and standing: one knee still on the ground 
 Avoid: a heart or HP bar, a skull, a halo or wings, lying flat on the ground, blood, a medical plus.
 ```
 
-## 10. `read_the_air`: Read the Air (Senses perk)
+## 9. `read_the_air`: Read the Air
 
-- **Save as:** `art/icons/perks/read-the-air.png` (catalog `perks`, id `read_the_air`)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/read-the-air.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card
-- **Does:** read one tell of someone close: a bonus on your next social roll against them.
 - **At icon size it must read as:** Wick noticing one small thing on another person.
 
 ```
@@ -170,12 +136,11 @@ Wick tilted forward, his screen face turned toward a partial stranger on the rig
 Avoid: a magnifying glass, a detective hat, a lie-detector graph, a cartoon eyeball, a question mark, a speech bubble.
 ```
 
-## 11. `tremor`: Tremor (Senses perk)
+## 10. `tremor`: Tremor
 
-- **Save as:** `art/icons/perks/tremor.png` (catalog `perks`, id `tremor`)
-- **Mode:** Wick icon (base prompt 1)
+- **Save as:** `art/icons/perks/tremor.png`
+- **Mode:** Wick icon
 - **Shows in:** perk card
-- **Does:** nothing moving on the ground in your Vision surprises you, so you act in the surprise round; tier II also starts the fight with Guard.
 - **At icon size it must read as:** a hand on the ground and rings spreading from it.
 
 ```
@@ -183,12 +148,11 @@ Wick crouched low, one palm pressed flat on a short ground line, his head turned
 Avoid: a crater, an earthquake crack across the whole frame, a stethoscope, an ear drawn large, debris and dust, a sonar screen.
 ```
 
-## 12. `reforge`: Reforge (Bulwark rank III class move)
+## 11. `reforge`: Reforge
 
-- **Save as:** `art/icons/moves/reforge.png` (catalog `move_icons`, id `move-reforge`)
-- **Mode:** Wick icon (base prompt 1)
-- **Shows in:** class move card (replaces Reactive Plate)
-- **Does:** at the start of your turn, when you hold 1 plate or none, you gain 2 Guard: the plates are mended and set back.
+- **Save as:** `art/icons/moves/reforge.png`
+- **Mode:** Wick icon
+- **Shows in:** class move card
 - **At icon size it must read as:** an armour plate with a seam being joined.
 
 ```
@@ -200,11 +164,10 @@ Avoid: a forge fire or anvil scene, a full suit of armour, a wrench or cog, a sh
 
 # Do not redraw
 
-**Strength, REUSE:** door emblem `doors/momentum`; techniques Charge, Grapple, Throw Down, Coup, Cleave, Break; perks Iron Grip (`perks/grapple.png`), Keep Swinging (`breaching-strike`), Earthbreaker, Into the Dark, Nothing Left to Fear, Bone Talk, Grim Reaper, The Name They Whisper; forks Rolling Start, Grindstone, Spill, Headlong; Call Threaten; moves Barrel In (`lunge`), Riposte, Measured Blow (`finisher`), Unstoppable, The Charge Carries, Four Ways to Finish, Launch, Wrecker, Breach. Hand-on: `perks/iron-stomach.png` becomes Steady (`steady`) (Claude moves it).
-**Strength, RETIRE:** `moves/heavy-hands.png`, `moves/follow-through.png`.
+These pictures already exist and stand as they are; nothing to draw for them.
 
-**Agility, REUSE:** door emblem `doors/pressure`; Slide, Flush Out (`moves/flush-out`); forks Converging Fire, Walk It In, Through the Gap, Lockdown; perks Pressure Point (`both-hands`), Keep Their Heads Down (`running-reload`), Trick Shot, Wall Run, Roll With It, Catch, Never There, Dance of Iron, Charge, Rounding Up, Before the Blink, Between Heartbeats; Vault (`shadow/vault`); Call Cue; moves Fire Discipline, Hold the Lane (`speed-loader`), Special Ammo, Duck and Roll, Killzone, Run and Gun, Reflex, Fire and Move, Relocated, Break Them. Re-file: `moves/speed-load.png` becomes the Speed Load perk (Claude moves it).
-**Agility, RETIRE:** `moves/near-miss.png`, `moves/shaken-nerves.png`, `moves/quick-draw.png`.
+**Strength:** the door emblem; the techniques Charge, Grapple, Throw Down, Coup, Cleave and Break; the perks Iron Grip, Keep Swinging, Earthbreaker, Into the Dark, Nothing Left to Fear, Bone Talk, Grim Reaper and The Name They Whisper; the forks Rolling Start, Grindstone, Spill and Headlong; the moves Barrel In, Riposte, Measured Blow, Unstoppable, The Charge Carries, Four Ways to Finish, Launch, Wrecker and Breach.
 
-**Endurance, REUSE:** door emblem `doors/guard`; techniques Guard and Brace; Challenge, Slam; forks Provoke, Cover Them, Stand Fast, Drive; perks Weight of the Wall (`bulwark`), Answer in Kind (`shrug-it-off`), Last Wall, Walking Wounded, Bedside Manner, Wind on the Skin, Skin Map; Call Warn; moves Brace, Retort, Shrug It Off (move), Anchor. Re-file: `moves/close-guard.png` becomes the Close Guard perk. Hand-on: `perks/scar-tissue.png` becomes Numb (`numb`) (Claude moves them).
-**Endurance, RETIRE:** `moves/last-plate.png`, `moves/set-against-the-blow.png`, `perks/used-to-the-pain.png`, `moves/unbroken.png`, `moves/reactive-plate.png`.
+**Agility:** the door emblem; Slide and Flush Out; the forks Converging Fire, Walk It In, Through the Gap and Lockdown; the perks Pressure Point, Keep Their Heads Down, Trick Shot, Wall Run, Roll With It, Catch, Never There, Dance of Iron, Charge, Rounding Up, Before the Blink, Between Heartbeats and Vault; the moves Fire Discipline, Hold the Lane, Special Ammo, Duck and Roll, Killzone, Run and Gun, Reflex, Fire and Move, Relocated and Break Them.
+
+**Endurance:** the door emblem; the techniques Guard and Brace; Challenge and Slam; the forks Provoke, Cover Them, Stand Fast and Drive; the perks Weight of the Wall, Answer in Kind, Last Wall, Walking Wounded, Bedside Manner, Wind on the Skin and Skin Map; the moves Brace, Retort, Shrug It Off and Anchor.
