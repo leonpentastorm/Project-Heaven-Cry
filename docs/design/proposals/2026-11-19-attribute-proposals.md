@@ -134,3 +134,19 @@ No new piece is approved for Visualization; each option takes its buildable form
 - **Forms known get their own door id** (`figment_forms`), apart from the forks' picks, with a save migration.
 - The level-1 Beast reads 90% of the rifle per AP on arithmetic (108% with Sharp Light): under the door line. The
   measure is re-run in lane 4 before anything is turned.
+
+## 6. Leon's ruling, 19 Nov: elemental resistance
+
+"Change the cap to 80%, each level of Pain Threshold is 6%, the other 20% from armour and gear."
+- **Pain Threshold: +6% elemental resistance a point** (60% at 10; it was 10% a point stopping at level 6), so every
+  level of the ladder gives it and the row is true on all ten.
+- **The cap on elemental damage taken is 80%** (it was 60%), in data (one number, one read: `elementalTakenPct`).
+  Pain Threshold alone never passes 60%; the last 20% comes only from armour and gear (and whatever else already
+  feeds `elemental_taken`: Scar Tissue is removed in 0.32, so the builder lists every remaining source and its sum).
+- Built in lane 4 (0.32): spec first, data, the Endurance sheet's per-point line ("+6% elemental resistance"), the
+  recorded tables re-recorded on purpose, a reducer test at Pain Threshold 10 with and without resisting gear.
+  If no armour or gear gives elemental resistance today, the builder says so: giving it to them is Items 2.0's
+  armour work, and until then nobody passes 60%.
+- Until 0.32 ships, lane 1 makes the live page honest: a capped per-point gain is shown only on the levels where it
+  still applies (Pain Threshold 7 to 10, Guard plates past 4, the Hymn wait past Faith 5, Share a Hit past
+  Camaraderie 5).
