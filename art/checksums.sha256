@@ -3171,6 +3171,7 @@ e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/p
 307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png
 549cebe53d0b8eda2c71df6eb46782d41a23aa876986ea159f993f3398aedcef  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--fine.json
 2543d38554d583b5692c2421e92698965d74606f29137b7a3c770d9c36a478fc  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--masterwork.json
+16fbab1a88dce46966d1e2783c45c3551e20366ead7edc75c208b2b418766200  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-katana--relic.json
 6e43ed920243bd44d35a758eaa36a197ec46e5d9ad61e99b9465921fccc4e047  art/_archive/prompt-pack/2026-11-19-file-08/drafts/drifter-masterwork-service-response.json
 3d1268723eed6f9b126b7e6f9057e29c1032113284c3e75c822fb8066b3e26c4  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.json
 981dd851ac71828d106fc6e5cd0b9c268b69a58962830aa08522bda3265274da  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png
@@ -4547,7 +4548,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-845808b8e256ce662de889384da3bd017163450fd8d246adcf13b3b081a07ef4  art/catalog.json
+0ab4b266bc82a7a922361d3b92a7a75d58a18c1e9b2971c6a13b42fe746bbf54  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6276,6 +6277,7 @@ b11732d331ec7788914fd75d444ba9be453ca3ff4d332b91d4f4c8b5696f092f  art/icons/gear
 228bb3d71774b3219866c41706aa32e61a6012d2544418abab81a7fc5c9c0a15  art/icons/gear/exports/128/weapon-iron_mitts.png
 0f4ed06d29c3d2d48cd1f001276f29fccc9901435c0241466c689b4ca542792e  art/icons/gear/exports/128/weapon-katana--fine.png
 1cc0fa15cf53ffc791bcf5666f9bb7de9ff92f56cb079564f1ec36d64201dbfa  art/icons/gear/exports/128/weapon-katana--masterwork.png
+52d34c8eb790661c110563fe8e3bcc169e1744ba6e6bd24b87a4fccc3551da9f  art/icons/gear/exports/128/weapon-katana--relic.png
 e291bf6e01fc33fa976bbb1509d63accaeac9d07d0ce514c73dd111f218b60bf  art/icons/gear/exports/128/weapon-katana.png
 2cf99a820e6180063d0da89fbc10f34de7b5c8bcf63bcf2a7328218139e89d23  art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade.png
 b51e2121eb98a2202ea5405729aba2cbe9c0d441fce3748e120ee001eaff6f54  art/icons/gear/exports/128/weapon-kemizuchi_strikers.png
@@ -6451,6 +6453,7 @@ aff848a26137b23eeb53c7e60e1f5f1dd0601ee651d02a5ce3ebcb2d010bfe29  art/icons/gear
 4f727e7341ffa78f24bf7d6445d72327391c406f95fedd5ae7c18b534150f99d  art/icons/gear/exports/256/weapon-iron_mitts.png
 aef4251fad4e2969ad6e9f01f56b59490ab1d996e3de622bb79cb66101b22080  art/icons/gear/exports/256/weapon-katana--fine.png
 10f955ed2ea40f6fa022ed5a06e9a71ec3580296d1f708183a39919a7c3a0e44  art/icons/gear/exports/256/weapon-katana--masterwork.png
+a8a368f95c442bb6a5e619f4107bc1ca828ba0cbb8ecca1646003890dcc574d4  art/icons/gear/exports/256/weapon-katana--relic.png
 28d035b478131d2378fb9ef32e8f0f2f42b2fdea8915b2fddd3af94b1c94573a  art/icons/gear/exports/256/weapon-katana.png
 5bfaf88d4b091b74dea730a1a22d028bcada2c9952618555a7db6c37f3ee74c9  art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade.png
 b264e48f15abf671bf568a5f59939c12962fcdc237203cf538568323e2b7fd01  art/icons/gear/exports/256/weapon-kemizuchi_strikers.png
@@ -6626,6 +6629,7 @@ e37b4e9dced028f483a36c748444ac92ea7264003a50244e966b30ef4970d1a7  art/icons/gear
 b076cc9500e17ba641dca02261038f6254a2866ae599a504686e0ba72cd48431  art/icons/gear/exports/32/weapon-iron_mitts.png
 b24b00ae8d8f847d7d89f751be9d06ea3e6eccae21682bc797b756279d7c8a98  art/icons/gear/exports/32/weapon-katana--fine.png
 7eb20a812a78ff10ac62d6e8beb170bf0af03fc83cbe7c60cf8965ff717cf225  art/icons/gear/exports/32/weapon-katana--masterwork.png
+364ee8e7c6f98f899dde5924145502f20901952f5b79f952d15ef01270d51c1e  art/icons/gear/exports/32/weapon-katana--relic.png
 fa574ecb10a082c4b19a525987527b0d637ef7c5089171811235c06c9193755d  art/icons/gear/exports/32/weapon-katana.png
 0513d6fb89fa1e1933557d5c52e18181812d8ddd3785c04cdc85207aa44a7b90  art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade.png
 bea319921f95cdb976f8892f5a46ee6bcc6aebbdad3944f4b41558834c2d499b  art/icons/gear/exports/32/weapon-kemizuchi_strikers.png
@@ -6801,6 +6805,7 @@ ea4f07a5a9402f753d093dc19322caf185eb9255b83be09d5c8ab56f8efa9d39  art/icons/gear
 df56e4124d26720ebd38d6939a8a2b2450b629093a83c8144b61e80b028e112b  art/icons/gear/exports/64/weapon-iron_mitts.png
 5d06e2aebfd8360ac1e01b1587894976c753820f36438920555bb4c0c6dfe14c  art/icons/gear/exports/64/weapon-katana--fine.png
 fa660bf0adc6f0f0b9018fe9681830b6266377580f49347450769d44b400a4be  art/icons/gear/exports/64/weapon-katana--masterwork.png
+8ee8ec2cd14d4bf25eb5d9574b6d50e05c5d7f02a5159f5f9c1ac5cf74f6050b  art/icons/gear/exports/64/weapon-katana--relic.png
 c161ec288096dea1401ea4258a97dfaca42080c0edaeb0f07e67b5e32e5a6fcf  art/icons/gear/exports/64/weapon-katana.png
 608c5898d5d88e30c40094730ffb21c8fce482f61024ccff5c33470ad2f0e64d  art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade.png
 6b92efb865785b9eab12b643d1547d80114a2f5e5709dce3cb7cde1e0b164d38  art/icons/gear/exports/64/weapon-kemizuchi_strikers.png
@@ -6940,6 +6945,7 @@ a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac  art/icons/gear
 026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a  art/icons/gear/weapon-iron_mitts.png
 81e1607c196cf5e1b8f686913e1b75e1cb235669c8c54dff4f3e1c9e2dfeacbd  art/icons/gear/weapon-katana--fine.png
 63be464d4cc977c8fbc1beebaad6b59e29fb30c3de01f8292aa8c49f9f1d4be7  art/icons/gear/weapon-katana--masterwork.png
+ffc538dbf8d885757ea58b8cc8fa9e80b7fc02dfec5231959907cad03fba62ff  art/icons/gear/weapon-katana--relic.png
 59588dba217985563b09c144f62b048cf3b0bc3465873e692ad8df403144fe58  art/icons/gear/weapon-katana.png
 f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d  art/icons/gear/weapon-kemizuchi_duelling_blade.png
 d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512  art/icons/gear/weapon-kemizuchi_strikers.png
