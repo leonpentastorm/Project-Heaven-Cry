@@ -26,18 +26,17 @@ const bigCard = (on: boolean): React.CSSProperties => ({ display: 'flex', flexDi
 const takeBtn: React.CSSProperties = { marginTop: 'auto', alignSelf: 'stretch', minHeight: 40, display: 'grid', placeItems: 'center', borderRadius: 10, background: ink.text, color: ink.ground, fontWeight: 700, fontSize: 15 };
 
 /** `minH`: the cards' least height (the reward panel's are shorter, so the pick fits a 720 px window). */
-export function Offer({ o, minH }: { o: OfferV; minH?: number }) {
+export function Offer({ o, minH, inPanel }: { o: OfferV; minH?: number; inPanel?: boolean }) {
   const m = o.materials, cols = m ? 1 + o.cards.length : o.cards.length;
   return (
     <div data-phc-offer={o.charId} style={{ display: 'flex', flexDirection: 'column', gap: 8, padding: 12, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
-      <span style={kick}>{o.mine ? 'PICK ONE' : o.name.toUpperCase() + (o.canPick ? ' · YOU MAY PICK FOR THEM' : ' IS PICKING')}</span>
+      {o.mine && inPanel ? null : <span style={kick}>{o.mine ? 'PICK ONE' : o.name.toUpperCase() + (o.canPick ? ' · YOU MAY PICK FOR THEM' : ' IS PICKING')}</span>}
       {o.canPick ? <>
         <div data-tip-avoid="[data-phc-pick-materials], [data-phc-pick]" style={{ display: 'grid', gridTemplateColumns: 'repeat(' + cols + ', minmax(0, 1fr))', gap: 10 }}>
           {m ? (
             <button type="button" data-phc-pick-materials="" {...tipProps(m.tip)}
               onClick={() => act(m.action as any)} style={{ ...bigCard(false), ...(minH ? { minHeight: minH } : {}) }}>
-              <span style={kick}>MATERIALS</span>
-              <span style={{ fontFamily: "'Spectral', serif", fontSize: 20, fontWeight: 600, lineHeight: 1.2 }}>For making</span>
+              <span style={{ fontFamily: "'Spectral', serif", fontSize: 20, fontWeight: 600, lineHeight: 1.2 }}>Materials</span>
               {m.lines.map((l) => (
                 <span key={l.item} data-phc-material={l.item} data-phc-material-n={l.n} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                   <MaterialIcon item={l.item} name={l.name} />
