@@ -20,7 +20,8 @@
     "weapon-glaive--relic",
     "weapon-glaive--celestial",
     "weapon-lance--fine",
-    "weapon-lance--masterwork"
+    "weapon-lance--masterwork",
+    "weapon-lance--relic"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -30,7 +31,6 @@
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
-    "weapon-lance--relic",
     "weapon-lance--celestial",
     "weapon-maul--fine",
     "weapon-maul--masterwork",
@@ -39,7 +39,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T09:26:53.663297+00:00",
+  "updated_utc": "2026-11-19T09:28:19.100969+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }

@@ -1176,6 +1176,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lance--relic",
+      "path": "art/icons/gear/weapon-lance--relic.png",
+      "sha256": "e05eec12c0fcff034c3e28928a45621a2f7e9ca2b840c7ddef60f4f2072a4e2d",
+      "label": "Lance — Relic",
+      "family": "weapon-lance",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lance--relic.png",
+        "sha256": "c3a6cf74791a150a85c15d5c508d288b2bbbd363c19a812a44921eb08ea6c37a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lance--relic.png",
+        "sha256": "e05eec12c0fcff034c3e28928a45621a2f7e9ca2b840c7ddef60f4f2072a4e2d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lance--relic.txt",
+        "sha256": "1b380e2d0f7c0c51aa9ffa222f355aa454da72007d1eda6f519338213e32a8aa"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lance.png",
+          "sha256": "20bff5d57a4df6bee81a29c9ab1e01390b6f232bf3073a275d99a105825a04a3"
+        },
+        {
+          "path": "art/icons/gear/weapon-lance--masterwork.png",
+          "sha256": "8a2c1ff9dc4bdc32f661a0c4e6ee71765445059f9c1fc96c26c4b49d9f3580b9"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lance--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-lance--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-lance--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-lance--relic.png"
+      },
+      "export_hashes": {
+        "256": "355debeb1de796000c2909f8dbed5bea46a23e25d843f2b38bc70c14f4796da9",
+        "128": "cdfe5a737c4f268bd1336297d4782db0a8f276a2418357aabc7abf678887030f",
+        "64": "225eece6b5114b0869d18e3f314839f7ea188a7d143230e6ce9346872db10c63",
+        "32": "3a98e9a56cba093003f391c0e3115b1226e6c4b641a402d84b98b26f1e6deb5d"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-lance",
+      "outline": {
+        "solid_alpha_iou": 0.9313006040896108,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 29
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
