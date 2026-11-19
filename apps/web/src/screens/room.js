@@ -159,7 +159,7 @@ export class RoomLogic extends DCLogic {
     const notReady = !!why;
     const lib = st.library.filter((c) => !c.draft && !validateSheet(c));
     return {
-      ...lightboxVals(this), code: g.code, connText: st.conn === 'online' ? '● ONLINE' : st.conn === 'host-away' ? '● HOST AWAY' : '● RECONNECTING',
+      ...lightboxVals(this), code: g.code, connText: st.conn === 'online' ? '● ONLINE' : st.conn === 'host-away' ? '● HOST AWAY' : st.conn === 'replaced' ? '● IN ANOTHER TAB' : '● RECONNECTING',
       connStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + (st.conn === 'online' ? '#6FEA77' : '#FFFFFF'),
       copyLabel: this.state.copied ? 'Copied ✓' : 'Copy invite link',
       copyInvite: () => { const url = location.origin + '/?room=' + g.code; navigator.clipboard?.writeText(url).then(() => { this.setState({ copied: true }); setTimeout(() => this.setState({ copied: false }), 2000); }, () => toast('Invite link: ' + url, true)); },

@@ -7,7 +7,7 @@
   "playtest-tools", "reconnect", "shell-guest", "ui-shell", "voice", "vote", "shadow", "tending", "reactions", "room", "survival", "kit-map", "fight-panel", "picking"
  ],
  "anim": [
-  "two-players", "turn-order", "camera", "fx-room", "fx-sweep", "effects-shots", "melee-fx", "reload", "brass", "clarity",
+  "two-players", "coop-loop", "turn-order", "camera", "fx-room", "fx-sweep", "effects-shots", "melee-fx", "reload", "brass", "clarity",
   "cutins", "combat-speed", "faith-pg", "combat-portraits", "heart", "feelings40", "magic", "sigil14", "sigil15",
   "sigil15-strokes", "sigil15-growth", "sandbox-mp", "slate", "slate-music", "slate-stamp", "slate-title", "title", "resources", "fight-cards",
   "turn-card-side", "capture-skills"
