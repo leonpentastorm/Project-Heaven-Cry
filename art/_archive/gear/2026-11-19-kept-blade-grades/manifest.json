@@ -7224,6 +7224,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-gas_mask--fine",
+      "path": "art/icons/gear/armour-gas_mask--fine.png",
+      "sha256": "4664ec483ef8c24344c5765d5ff106ceb849dc1382707fe0bf21c569dd0248f7",
+      "label": "Gas Mask — Fine",
+      "family": "armour-gas_mask",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-gas_mask--fine.png",
+        "sha256": "367d6905fcdf5b8cba067b1d8e18552fb900c1a247b4066b471888c2d70f6e6f"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-gas_mask--fine.png",
+        "sha256": "4664ec483ef8c24344c5765d5ff106ceb849dc1382707fe0bf21c569dd0248f7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-gas_mask--fine.txt",
+        "sha256": "c3c3e37f5b31f331dba4a7bb073344e5d342e43fe1233c079e31f087a16a84b5"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-gas_mask.png",
+          "sha256": "a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-gas_mask--fine.png",
+        "128": "art/icons/gear/exports/128/armour-gas_mask--fine.png",
+        "64": "art/icons/gear/exports/64/armour-gas_mask--fine.png",
+        "32": "art/icons/gear/exports/32/armour-gas_mask--fine.png"
+      },
+      "export_hashes": {
+        "256": "540b420c0d9e2a39bad271f709e3afeb3b7587d09c81cf794d7be48bacc972ab",
+        "128": "0a7c65d46ee396ac665795e9a2e428e8c47658fd83f6447d86c8b97314750677",
+        "64": "f933ff4d7109dfe88c558f0dbd783d8bd4aced933946c2a541e9764124f63b11",
+        "32": "aaac8a2ece5e5c3740271bdaea9c586685e0717aecdbeaccc09175efea1f415d"
+      },
+      "grade": "fine",
+      "standard_id": "armour-gas_mask",
+      "outline": {
+        "solid_alpha_iou": 0.9882523993501617,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 12
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
