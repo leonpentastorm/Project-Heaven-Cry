@@ -436,6 +436,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-adamantile_greatsword--celestial",
+      "path": "art/icons/gear/weapon-adamantile_greatsword--celestial.png",
+      "sha256": "a24e91ff934ff8736e4c7ad06c1269ad72f6b2d2489fed0562ae191445b27994",
+      "label": "Adamantile Greatsword — Celestial",
+      "family": "weapon-adamantile_greatsword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-adamantile_greatsword--celestial.png",
+        "sha256": "e0f1ba385788b0771987d34dfca8189af82a2f15b3c68759882b5977b09f27cf"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-adamantile_greatsword--celestial.png",
+        "sha256": "a24e91ff934ff8736e4c7ad06c1269ad72f6b2d2489fed0562ae191445b27994"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-adamantile_greatsword--celestial.txt",
+        "sha256": "be445df46a90b138754cc955e1d27d71547a8144241859a177aad58413ff9a43"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-adamantile_greatsword--celestial/v1/source.png",
+          "sha256": "64bf1707c8c64ae246dd44100a1a10f45c95aad399c447fd5eb4186d1eeb4ad5"
+        },
+        {
+          "path": "art/icons/gear/weapon-adamantile_greatsword.png",
+          "sha256": "74764eb60ffb2b26b581206171e9d7f9a44453f23c061fb636fef61e2efe7f12"
+        },
+        {
+          "path": "art/icons/gear/weapon-adamantile_greatsword--relic.png",
+          "sha256": "7b06b2191c3fdc1e6d2e3e9b13fb740b4e060badf38acf7d068f61e6f6ad47e2"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_greatsword--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_greatsword--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_greatsword--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_greatsword--celestial.png"
+      },
+      "export_hashes": {
+        "256": "099cf010ff8715dde8953ee0b160edad8ac6e759912cf8910ede1deb85c644aa",
+        "128": "15ee0a17af77a27a17a092a6f79832db0381a3388cfbc480a06959e23e85ec53",
+        "64": "82c806d59b3756778c9a3ce4974802ec3e6249b24d2546e6f229a6aad69c3e7f",
+        "32": "ec6bf04bdfd08e1b1b4d5d56160053eae5657165d0989947addd0ea7a1dc4558"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-adamantile_greatsword",
+      "outline": {
+        "solid_alpha_iou": 0.9546682642608777,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 38
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
