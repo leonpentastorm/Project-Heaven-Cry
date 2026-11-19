@@ -87,8 +87,20 @@ ok('the art click doesn\'t swear you to the patron', (await p.locator('[data-swe
 await step('Archetype'); await p.locator('[data-arch="bulwark"]').click(); await p.locator('[data-arch-preview] button', { hasText: /^Use / }).click(); await settle(p, 300);
 for (const W of [1100, 1440]) {
   await p.setViewportSize({ width: W, height: 1000 }); await settle(p, 250);
-  const hs = await p.evaluate(() => [...document.querySelectorAll('.phc-card')].map((c) => Math.round(c.getBoundingClientRect().height)));
-  ok(W + ' px, Skills: all ' + hs.length + ' skill cards one height, mastered or not (' + Math.min(...hs) + '–' + Math.max(...hs) + ')', hs.length === 27 && Math.max(...hs) - Math.min(...hs) <= 1);
+  // 0.31.11 (the lead's ruling: a skill's line wraps, never clamped): what matters is that no text is cut, no card
+  // overlaps another or the Back/Next bar, and each attribute's cards stack in order in its column (the columns are a masonry: their tops differ by design)
+  const look = await p.evaluate(() => {
+    const R = (e) => e.getBoundingClientRect(), cards = [...document.querySelectorAll('.phc-card')], bad = [];
+    for (const c of cards) for (const t of c.querySelectorAll('*')) { const cs = getComputedStyle(t); if ((cs.overflow === 'hidden' || cs.webkitLineClamp !== 'none' && cs.webkitLineClamp) && t.scrollHeight > t.clientHeight + 1 && t.textContent.trim()) { bad.push('cut: ' + t.textContent.trim().slice(0, 24)); break; } }
+    for (let i = 0; i < cards.length; i++) for (let j = i + 1; j < cards.length; j++) { const a = R(cards[i]), b = R(cards[j]); if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) bad.push('overlap: ' + cards[i].dataset.skill + '/' + cards[j].dataset.skill); }
+    // within an attribute's column its three cards stack in order, each starting below the one before (none pushed sideways)
+    for (const b of document.querySelectorAll('[data-attr]')) { const cs = [...b.querySelectorAll('.phc-card')].map(R); for (let i = 1; i < cs.length; i++) if (cs[i].top < cs[i - 1].bottom - 1 || Math.abs(cs[i].left - cs[0].left) > 1) bad.push('column order in ' + b.dataset.attr); }
+    window.scrollTo(0, document.documentElement.scrollHeight);
+    return { n: cards.length, bad };
+  });
+  await settle(p, 250);
+  const foot = await p.evaluate(() => { const f = document.querySelector('.phc-cc-foot'), cards = [...document.querySelectorAll('.phc-card')]; if (!f) return 'no Back/Next bar'; const ft = f.getBoundingClientRect().top; const under = cards.filter((c) => { const r = c.getBoundingClientRect(); return r.bottom > ft + 1 && r.top < ft + f.getBoundingClientRect().height; }); window.scrollTo(0, 0); return under.length ? 'under the bar: ' + under.map((c) => c.dataset.skill).join(', ') : ''; });
+  ok(W + ' px, Skills: all ' + look.n + ' skill cards whole (no text cut, no overlap, each column in order, none under the Back/Next bar)' + (look.bad.length || foot ? ' (' + [...look.bad, foot].filter(Boolean).slice(0, 4).join('; ') + ')' : ''), look.n === 27 && !look.bad.length && !foot);
 }
 // Phone width: one card a row, nothing wider than the screen.
 await p.setViewportSize({ width: 390, height: 844 });

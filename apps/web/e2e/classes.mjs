@@ -72,6 +72,7 @@ await snap('01-picker-1440-full', true);
 // A narrow screen: one column, no overflow, the confirm bar at the bottom.
 await p.setViewportSize({ width: 420, height: 900 });
 await settle(p, 400);
+console.log('INFO past the right edge at 420: ' + await p.evaluate(() => [...document.querySelectorAll('body *')].filter((e) => e.getBoundingClientRect().right > innerWidth + 1 && e.getBoundingClientRect().width > 0).filter((e) => !e.closest('.phc-lu-tc-scroll') && (!e.parentElement || e.parentElement.getBoundingClientRect().right <= innerWidth + 1)).slice(0, 8).map((e) => e.tagName + '.' + (e.className || '') + '[' + Math.round(e.getBoundingClientRect().right) + '] ' + (e.textContent || '').trim().slice(0, 30)).join(' | ')));
 const nrects = await cards.evaluateAll((bs) => bs.map((b) => Math.round(b.getBoundingClientRect().left)));
 ok('420 wide: one column (' + new Set(nrects).size + '), no overflow (' + (await over()) + ')', new Set(nrects).size === 1 && (await over()) <= 0);
 await snap('02-picker-narrow');
@@ -82,7 +83,7 @@ await settle(p, 300);
 ok('nothing selected yet: no confirm button', (await p.locator('button.phc-lu-confirm-btn').count()) === 0);
 await card.click();
 await settle(p, 250);
-ok('the selected card previews the class: ' + (await p.locator('.phc-lu-class-kicker').textContent()), /PREVIEW/.test(await p.locator('.phc-lu-class-kicker').textContent()) && (await p.locator('.phc-lu-class-name').textContent()).includes(NAME.infiltrator));
+ok('the selected card is named on the confirm bar; the side panel stays one line until a class is held (0.31.11 item C): ' + (await p.locator('button.phc-lu-confirm-btn').textContent()), (await p.locator('button.phc-lu-confirm-btn').textContent()).includes(NAME.infiltrator) && (await p.locator('.phc-lu-class-line').textContent()) === 'Class: choose it from TO CHOOSE');
 ok('a card only selects (no class yet)', !(await G()).characters[cid].classId);
 await snap('03-picker-selected');
 await p.locator('button.phc-lu-confirm-btn').click();
@@ -116,7 +117,7 @@ await snap('04-rank-two');
 await snap('04-rank-two-full', true);
 
 // ---------- 5. The fight: the CLASS tab's emblem and moves ----------
-await p.locator('button.phc-lu-done').click();
+await p.locator('button.phc-lu-later').click(); // (Done lights only when nothing is left to choose; Finish later leaves)
 await settle(p, 400);
 await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/auto', on: false });
