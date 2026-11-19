@@ -211,7 +211,11 @@ describe('row 12: the Primed boon starts the door\'s meter a step up (Momentum t
       const a = plain.turn(plain.pc), b = primed.turn(primed.pc);
       expect(((primed.unit(b.id) as any).res?.[res] ?? 0) - ((plain.unit(a.id) as any).res?.[res] ?? 0), res).toBe(step(res));
       // once a fight: a second turn adds nothing more
-      if (res === 'momentum') { const m = (primed.unit(b.id) as any).res.momentum; primed.act({ type: 'combat/end-turn', unitId: b.id } as any); primed.turn(primed.pc); expect((primed.unit(b.id) as any).res.momentum).toBeLessThanOrEqual(m); }
+      // once a fight: on the second turn the primed fighter is still exactly the step ahead of the plain one (not two)
+      if (res === 'momentum') {
+        for (const [f, u] of [[plain, a], [primed, b]] as const) { f.act({ type: 'combat/end-turn', unitId: u.id } as any); f.turn(f.pc); }
+        expect((primed.unit(b.id) as any).res.momentum - (plain.unit(a.id) as any).res.momentum).toBe(step(res));
+      }
     }
   });
 });
