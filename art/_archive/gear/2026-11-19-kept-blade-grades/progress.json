@@ -84,7 +84,8 @@
     "armour-torso_class5_juggernaut--relic",
     "armour-torso_class5_juggernaut--celestial",
     "armour-padded_undershirt--fine",
-    "armour-padded_undershirt--masterwork"
+    "armour-padded_undershirt--masterwork",
+    "armour-padded_undershirt--relic"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -94,7 +95,6 @@
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
-    "armour-padded_undershirt--relic",
     "armour-padded_undershirt--celestial",
     "armour-trauma_plate--fine",
     "armour-trauma_plate--masterwork",
@@ -127,7 +127,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T11:25:21.731980+00:00",
+  "updated_utc": "2026-11-19T11:26:50.555028+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }

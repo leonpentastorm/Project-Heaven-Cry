@@ -5120,6 +5120,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-padded_undershirt--relic",
+      "path": "art/icons/gear/armour-padded_undershirt--relic.png",
+      "sha256": "656d796ca6275f8dcab80dbd0083424f4c735eebe85fcf1d1f302fbbea220347",
+      "label": "Padded Undershirt — Relic",
+      "family": "armour-padded_undershirt",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-padded_undershirt--relic.png",
+        "sha256": "adc48a1c4ac40718bd85e91f4fdd832745f93cb77e1d8bf883c83a9207d62d40"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-padded_undershirt--relic.png",
+        "sha256": "656d796ca6275f8dcab80dbd0083424f4c735eebe85fcf1d1f302fbbea220347"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-padded_undershirt--relic.txt",
+        "sha256": "c26f55feddb6397b7f7bbe0471e49e3dd3e55f67311569bdc8c836169be02e87"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-padded_undershirt.png",
+          "sha256": "da04bbb067c16ca0c133c96426d79b1cb0ca8c46ab3eb533b34a12017e7af6ed"
+        },
+        {
+          "path": "art/icons/gear/armour-padded_undershirt--masterwork.png",
+          "sha256": "32f891b7b470a4707b9277d5f42c328b0ff7cf4de7e1b833535fcb07a643ac5e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-padded_undershirt--relic.png",
+        "128": "art/icons/gear/exports/128/armour-padded_undershirt--relic.png",
+        "64": "art/icons/gear/exports/64/armour-padded_undershirt--relic.png",
+        "32": "art/icons/gear/exports/32/armour-padded_undershirt--relic.png"
+      },
+      "export_hashes": {
+        "256": "946650025e000c7eb96237abec3f0a5333c2d705b9b9481ab16b6971e9deeae0",
+        "128": "c16883250511688509c088013f915689fbdc78131b2198dc585f1c6b96aa058f",
+        "64": "da1a8ffd24ba9f0131889de077cf74821ec3ebbfffdf828024aa510b6d3d9dd8",
+        "32": "da131a491b88eb8d37658afe3f6b5932213c501b4386c43341c3eb28ba5ea86e"
+      },
+      "grade": "relic",
+      "standard_id": "armour-padded_undershirt",
+      "outline": {
+        "solid_alpha_iou": 0.9452640216584011,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 16,
+        "different_pixels_64": 69
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
