@@ -40,11 +40,23 @@ describe('the fork card (game/forkView.ts)', () => {
     const offs = ['ingenuity', 'raw_power', 'hand_eye_coordination', 'volition', 'lore_master', 'empathy', 'faith'].flatMap((d) => forkCard(ch({ [d]: 10 }), d)?.steps.flatMap((s) => s.opts) || []);
     const unbuilt = offs.filter((o) => o.style.includes('opacity: 0.6'));
     expect(unbuilt.length).toBeGreaterThan(0);
-    for (const o of unbuilt) { expect(o.text.length).toBeGreaterThan(20); expect(o.text + ' ' + o.title).not.toMatch(/[a-z]_[a-z]|rules \d|\bN\d+\b|\{=|`/); }
+    for (const o of unbuilt) { expect(o.text.length).toBeGreaterThan(20); expect(o.text).not.toMatch(/[a-z]_[a-z]|rules \d|\bN\d+\b|\{=|`/); }
   });
   it('the sheet lists the doors reached, the ones with a pick to make first; an option\'s icon falls back to its door\'s skill', () => {
     const cards = forkCards(ch({ durability: 6, dexterity: 4, visualization: 4 }, { durability: ['fork.guard.provoke', 'fork.guard.drive'] }));
     expect(cards.map((x) => x.door)).toEqual(['dexterity', 'visualization', 'durability']);
     expect(forkIconOf('fork.none.such', 'durability')).toBeTruthy();
+  });
+});
+
+describe('a hover box never repeats what its card shows (ATTACK-PLAN 19 Nov: the level-up fork cards printed their own text again)', () => {
+  it('no fork option carries a hover text, and neither fork card template puts a tip on an option or its parts', async () => {
+    const { readFileSync } = await import('node:fs');
+    const c = ch({ durability: 10, raw_power: 10, dexterity: 10, ingenuity: 10, brain_power: 10, visualization: 10, empathy: 10, will_power: 10, faith: 10 });
+    for (const card of forkCards(c)) for (const st of card.steps) for (const o of st.opts) expect(Object.keys(o), card.door + ' ' + o.key).not.toContain('title');
+    for (const t of ['../templates/main.template.html', '../templates/levelup.template.html']) {
+      const tpl = readFileSync(new URL(t, import.meta.url), 'utf-8'), i = tpl.indexOf('data-fork-opt'), opt = tpl.slice(i, tpl.indexOf('</sc-for>', i));
+      expect(i, t).toBeGreaterThan(0); expect(opt, t).not.toMatch(/\btip="/);
+    }
   });
 });

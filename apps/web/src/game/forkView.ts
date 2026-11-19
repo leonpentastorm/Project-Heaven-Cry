@@ -19,7 +19,7 @@ const MUTED = '#7F8BA1', TEXT = '#E7EBF3', WHITE = '#FFFFFF';
 export const forkIconOf = (id: string, skill: string): string => A['wick-fork-' + id.replace(/\./g, '-')] || A['skill-' + skill] || '';
 const inkOf = (skill: string): string => ATTR_INK[(SKILL as any)[skill]?.attribute] || TEXT;
 
-export interface ForkOptView { key: string; name: string; text: string; icon: string; picked: boolean; canPick: boolean; label: string; style: string; nameStyle: string; btnStyle: string; pick: () => void; title: string }
+export interface ForkOptView { key: string; name: string; text: string; icon: string; picked: boolean; canPick: boolean; label: string; style: string; nameStyle: string; btnStyle: string; pick: () => void }
 export interface ForkStepView { key: string; head: string; headStyle: string; why: string; hasWhy: boolean; opts: ForkOptView[]; pending: boolean; style: string }
 export interface ForkCardView { key: string; door: string; head: string; headStyle: string; runsOn: string; steps: ForkStepView[]; pending: boolean; chips: string;
   /** The folded card's one line (the SKILLS tab): "Forks · 1 chosen · 1 to pick"; a pick still to make makes it white. */
@@ -40,7 +40,7 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
     const opts = s.options.map((op) => {
       const can = s.pending && op.built, armKey = c.id + '|' + op.id, armed = ARMED === armKey;
       return { key: op.id, name: op.name + (op.picked ? ' ✓' : ''), text: op.text, icon: forkIconOf(op.id, v.skill), picked: op.picked, canPick: can,
-        label: o.inFight ? 'After the fight' : armed ? 'Confirm: keep ' + op.name + ' for good' : 'Choose ' + op.name, title: op.name + ': ' + op.text + (can ? ' · Runs on ' + v.runsOn + '. Kept for good.' : ''),
+        label: o.inFight ? 'After the fight' : armed ? 'Confirm: keep ' + op.name + ' for good' : 'Choose ' + op.name,
         pick: () => {
           if (!can) return; if (o.inFight) { toast('Choose after the fight.'); return; }
           if (!armed) { ARMED = armKey; o.rerender?.(); return; }

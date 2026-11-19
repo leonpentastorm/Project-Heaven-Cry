@@ -340,8 +340,8 @@ export function epccgVals(self, ptsOf, who, opt) {
     title: s.name + ': EPCCG entry', name: s.name, slot: (SLOT_WORD[s.slot] || [''])[0], attrName: a.name,
     openAttr: () => self.setState({ epccg: null, attrPage: a.id }), attrLabel: a.name + ': what the attribute gives',
     attrStyle: 'padding: 0; border: 0; background: none; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; color: ' + ink,
-    // one line under the name: the door's first sentence (the whole door line in its hover), else the skill's own line
-    line: first || s.summary, lineTip: first && doorLine.length > first.length ? doorLine : '',
+    // one line under the name: the door's first sentence (the rest of the door line in its hover), else the skill's own line
+    line: first || s.summary, lineTip: first ? doorLine.slice(first.length).trim() : '',
     feed: { has: !!feedNow, text: fb ? 'Feeds ' + fb.doorName + ' · ' + feedNow : '', style: 'flex: none; padding: 3px 10px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink },
     // a gamma skill's Call: one row (its name, AP and reach now); what it does in the name's hover, how it grows on the levels
     call: cb ? { has: true, name: cb.name, tip: cb.text, now: cb.now, inkStyle: 'color: ' + ink } : CALL_BLANK,

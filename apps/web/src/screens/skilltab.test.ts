@@ -100,6 +100,9 @@ describe('S3: every skill\'s page has the same layout parts', () => {
       expect(v.slot).toBe(({ alpha: 'FIGHT', beta: 'SURVIVE', gamma: 'TALK · NOTICE' } as any)[s.slot]);
       expect(v.line.length).toBeGreaterThan(0); expect(v.line).not.toMatch(/\{=/);
       if (s.slot === 'alpha') expect(v.line).toMatch(/^Your door is /);
+      // a hover box never repeats its anchor: the line's hover holds the rest of the door line, not the line again
+      if (v.lineTip) expect(v.lineTip.includes(v.line)).toBe(false);
+      for (const t of v.steps) for (const p of t.pieces) if (p.tip) { expect(p.tip).not.toBe(p.text); expect(t.text.includes(p.tip), s.id + ' ' + t.n).toBe(false); }
       if (s.slot === 'beta') { expect(v.feed.has).toBe(true); expect(v.feed.text).toMatch(/^Feeds [A-Z][\w ]+ · \S/); expect(v.feed.text).not.toMatch(/You now|Needs /); }
       else expect(v.feed.has).toBe(false);
       if (s.slot === 'alpha' && (SKILL as any)[s.id].forks?.length) { expect(at(4)).toContain('fork'); expect(at(6)).toContain('fork'); }
