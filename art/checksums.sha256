@@ -3206,6 +3206,7 @@ a51ad4a6e04ecf8a9ae5d27a775933bcae317c6953755dbe3e0bc8007d364cc0  art/_archive/p
 e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png
 307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a  art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png
 64414e5f7eba7e890a2fcd95ce21cb2e6c5cfee7de06a4cae04adf05ff90d00d  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-armoured_belt--fine.json
+38a2a00beec2120e8d0d8d96b52b665180f5ded8768c8d8af409eac641349a97  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-armoured_belt--masterwork.json
 8e78250bbb559a5ba87331cba2f7c40885c6c69d65af6e5832eb10851e52fc8c  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--celestial.json
 a7dcf66a9748fd80a7dfea39c1e708e986ae23798a192c904eecb81aac58dcd3  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--fine.json
 0feef76328b7604059e30833c683a11ffdf06757f56fb961c0f0790f93bc8140  art/_archive/prompt-pack/2026-11-19-file-08/delivered/armour-utility_belt--masterwork.json
@@ -4702,7 +4703,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-d9c4925a25bf09d88d2eb8e68f7ac7656b64a03b829a519afda4662844627104  art/catalog.json
+e7bba506d2ad6574c828d6dafb3183a0c730902e49fbf61af6b894e31d2996d5  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6258,6 +6259,7 @@ ec39099941b1c047e4f5d5c2d053a376b14b765430c4e64c835b64e858eac653  art/icons/gear
 d4dbc9cdc68dd0f4b96118a46597f956f138a212631d839954af9b3a9996d3e8  art/icons/gear/ammo-hollow_point.png
 60b44ed64f99e6cbd7a548784829fd203449f3d79eacb22fe442a0d13a498d58  art/icons/gear/ammo-incendiary.png
 853ba3fee0801aa74f332194db02f612edd816ec4b7c88ee4b1c9956124416ca  art/icons/gear/armour-armoured_belt--fine.png
+0af186f98e2e52927462ac03ff6bc43ed2115770077f99b3652c9b05425fe462  art/icons/gear/armour-armoured_belt--masterwork.png
 62aca06a1b568ececfb41659464c314668671b49259e0aa537da112f75318bfd  art/icons/gear/armour-armoured_belt.png
 fb960809ab40e72d1ceb6c00a35824825eb38dadfb660993bd789e6b459d7056  art/icons/gear/armour-armoured_greaves.png
 7358ee39e955f8f5362faee1f96608313272f0cc164d0c7ca6b22c5755460d2f  art/icons/gear/armour-ballistic_helmet.png
@@ -6299,6 +6301,7 @@ a7af62bf5949ba227e300cd254f785c6f847f2123f4f1cf2465a69249059f230  art/icons/gear
 a9b54134aca5cab2d6bca00f29e50cbe4100c2273b94b8f6119ece762ec22d8a  art/icons/gear/exports/128/ammo-hollow_point.png
 b14b4523cd9e5f0bac38cc3dca5c82f78cc08b410bf9b305872ac49c201258c9  art/icons/gear/exports/128/ammo-incendiary.png
 14c356e3cc57262e087b5a3b7734270999270ebeea43b31d5ceefde472028c14  art/icons/gear/exports/128/armour-armoured_belt--fine.png
+fd7a8cd26e102eba4ba17ff574effbc7c593a6daaaee9684580d94b41b90aaf1  art/icons/gear/exports/128/armour-armoured_belt--masterwork.png
 ef9e24676611074d1faf3a53f50fa440b8b995fa2fba1b1a67d9a2f9ef6308d9  art/icons/gear/exports/128/armour-armoured_belt.png
 1ffed7d92ce544c3b1db16d066c1f575d580a4d07b945ed904f6528f6e320b49  art/icons/gear/exports/128/armour-armoured_greaves.png
 bf8db6cf89acae7215cc2deb5eaa959cead7cf954537bcf4bd5692ba03fd5b6d  art/icons/gear/exports/128/armour-ballistic_helmet.png
@@ -6521,6 +6524,7 @@ c03500cccfedbcbc1e09252b67a76eb1b7e056c5f6cfcd5c3510b613f023d735  art/icons/gear
 f5b62004b605942171b5647ae84a58d73194940a44250257f6bb3ae8bc2c9eea  art/icons/gear/exports/256/ammo-hollow_point.png
 4991b8832d331a8558f7c65cbdba5902deeada4df5a72c8a5ce35f1024a59ab7  art/icons/gear/exports/256/ammo-incendiary.png
 763aef44d2a4d42b83cb977b47291f09264d5af2666266a96a3fdf5cab416951  art/icons/gear/exports/256/armour-armoured_belt--fine.png
+121d7c0d2f56fbdfb2c803f20fbd3dc6ee303d11a5627aae929b23ebe553c7d9  art/icons/gear/exports/256/armour-armoured_belt--masterwork.png
 a609e2111a4e37f928c2aaa6d8484a5d9c1d7dfaccb4c235261b63b1758d7754  art/icons/gear/exports/256/armour-armoured_belt.png
 51a80c2689f4cdd28ceea6ff14897aa82d324c87e11f81afa27a29ee86cff0ec  art/icons/gear/exports/256/armour-armoured_greaves.png
 d00ccb5b8261ae1a55cb22d1b875b86bf9da75664a8df70db966371f00a78c6b  art/icons/gear/exports/256/armour-ballistic_helmet.png
@@ -6743,6 +6747,7 @@ a16cc34e80508dae3c5303558be8812c1975a7f6509442aba005c66db9c39ec2  art/icons/gear
 6f4f0cce36d7ad63bc6c16f59f127619fa13a8d22ca489dec8c597fab9175dc2  art/icons/gear/exports/32/ammo-hollow_point.png
 65367890aac0e343a56272bca6c063dd54a7937e1bdc6c3c174a97009df00957  art/icons/gear/exports/32/ammo-incendiary.png
 5f26a847e5425d96aa9309dcd35e884510b5b38ea9b7638f1a80231e146b3c2f  art/icons/gear/exports/32/armour-armoured_belt--fine.png
+77ce973a4a3e70795f3961b1d19f3fa0701541a706a07a8c217ff3cc7532f49b  art/icons/gear/exports/32/armour-armoured_belt--masterwork.png
 e3f119e068c679ddbbfdacfb99f04ccf31f160ad0130f2c21f57b6514a4044ac  art/icons/gear/exports/32/armour-armoured_belt.png
 8d27d20659df0ff6f8c4568b59e50b05fe88c51c710906bfa746fc654bb51b35  art/icons/gear/exports/32/armour-armoured_greaves.png
 ac7b68c7387030334a8c0a6d56808934cce9d7279cbd34639af63da69cad732f  art/icons/gear/exports/32/armour-ballistic_helmet.png
@@ -6965,6 +6970,7 @@ c06ede8d6e6e652b29a9fae8294b5ee07e6d1cd4332f8d57458307ea058e90b4  art/icons/gear
 5db299ac0767b250d979760046a6bd5184ea812dd1a99a9be719e9fa9df73eb1  art/icons/gear/exports/64/ammo-hollow_point.png
 9221bf7a14fcdb9c5f646dd3543c7c695ebc5cd247d989cc943fc5718f70879c  art/icons/gear/exports/64/ammo-incendiary.png
 3b9528868941ed1f89a506e6f96ce09f40b9d9d3becbc79a0f7614c8ab7d8e39  art/icons/gear/exports/64/armour-armoured_belt--fine.png
+89f315401dad69b277d3cca3785d3b675c86f577d02d49049de75773d7f10712  art/icons/gear/exports/64/armour-armoured_belt--masterwork.png
 c26ff0b5b227232c1b4aab88a892c62567562cc94de167aa2225924b6434c16a  art/icons/gear/exports/64/armour-armoured_belt.png
 ebd97980a230a37090fa84e7a760292d568cb68bd87d8e3d4bcd55d840efecf3  art/icons/gear/exports/64/armour-armoured_greaves.png
 c26d6c05f894b2949e94eb4abd60af0d2f1e7c0b6a712fdbcb5a72ff123cd7b7  art/icons/gear/exports/64/armour-ballistic_helmet.png
