@@ -18655,6 +18655,29 @@
         1254
       ],
       "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/20-armour-hearth_coat.png"
+    },
+    "armour-lucky_dent": {
+      "label": "Lucky Dent (helmet)",
+      "path": "art/icons/gear/armour-lucky_dent.png",
+      "sha256": "4d89009caea8f0bff4645bfcd5391e9c792d333c289e536c4cde4810ecee64e5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-lucky_dent.png",
+        "128": "art/icons/gear/exports/128/armour-lucky_dent.png",
+        "64": "art/icons/gear/exports/64/armour-lucky_dent.png",
+        "32": "art/icons/gear/exports/32/armour-lucky_dent.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-08-uniques",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/21-armour-lucky_dent.png"
     }
   },
   "survival_art": {
