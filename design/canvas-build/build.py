@@ -118,7 +118,8 @@ def skill_perks(sid):
             continue
         t = p["tiers"]
         out.append({"id": p["id"], "name": p["name"], "icon": BLOBS.get("wick-perk-" + p["id"].replace("_", "-"), ""),
-                    "meta": perk_meta(p), "t1": cap(t["I"]["text"]), "t2": cap(t["II"]["text"])})
+                    "meta": perk_meta(p), "t1": cap(t["I"]["text"]), "t2": cap(t["II"]["text"]),
+                    "s1": t["I"].get("short", ""), "s2": t["II"].get("short", "")})  # the perk row's card lines (0.31.11)
     return out
 
 EP_TPL = (BUILD / "epccg.template.html").read_text()

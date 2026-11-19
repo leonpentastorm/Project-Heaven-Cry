@@ -56,27 +56,36 @@ describe('S1: each door\'s forks sit under its own skill and fold', () => {
   });
 });
 
-describe('S2: the ladder shows; "About this voice" folds closed; both remembered per skill', () => {
-  it('the ladder is open by default (the redesign: ladder first), the quote and lore closed; a click on either is kept for that skill only', () => {
+describe('S2: the lore is the face; the three folds are closed by default and each remembered per skill (Leon, 19 Nov)', () => {
+  it('"What each level gives", "Perks" and "Forks" start closed; a click on one is kept for that skill and that fold only', () => {
     expect(EP_TPL).toMatch(/class="phc-fold-h phc-ep-fold" data-fold="\{\{ep\.ladderFold\.id\}\}"/);
-    expect(EP_TPL).toMatch(/class="phc-fold-h phc-ep-about-fold" data-fold="\{\{ep\.aboutFold\.id\}\}"/);
-    const h = holder({ epccg: 'guts' });
-    expect(epccgVals(h).ep.ladderFold.open).toBe(true); expect(epccgVals(h).ep.aboutFold.open).toBe(false);
-    epccgVals(h).ep.ladderFold.toggle(); epccgVals(h).ep.aboutFold.toggle();
-    expect(epccgVals(h).ep.ladderFold.open).toBe(false); expect(epccgVals(h).ep.aboutFold.open).toBe(true);
-    expect(epccgVals(holder({ epccg: 'durability' })).ep.ladderFold.open).toBe(true);
-    expect(epccgVals(holder({ epccg: 'durability' })).ep.aboutFold.open).toBe(false);
-    epccgVals(h).ep.ladderFold.toggle(); epccgVals(h).ep.aboutFold.toggle();
+    expect(EP_TPL).toMatch(/class="phc-fold-h phc-ep-perks-fold" data-fold="\{\{ep\.perksFold\.id\}\}"/);
+    expect(EP_TPL).toMatch(/class="phc-fold-h phc-ep-forks-fold" data-fold="\{\{ep\.forksFold\.id\}\}"/);
+    expect(EP_TPL).not.toMatch(/aboutFold|ABOUT THIS VOICE/);
+    const h = holder({ epccg: 'guts' }), v = () => epccgVals(h).ep;
+    expect([v().ladderFold.open, v().perksFold.open, v().forksFold.open]).toEqual([false, false, false]);
+    v().ladderFold.toggle();
+    expect([v().ladderFold.open, v().perksFold.open, v().forksFold.open]).toEqual([true, false, false]);
+    expect(epccgVals(holder({ epccg: 'durability' })).ep.ladderFold.open).toBe(false);
+    v().perksFold.toggle(); expect(v().perksFold.open).toBe(true);
+    v().ladderFold.toggle(); v().perksFold.toggle();
+    expect([v().ladderFold.open, v().perksFold.open]).toEqual([false, false]);
   });
-  it('the face holds no EVERY POINT block, no "AT 3 / 5 / 7" header, no dash rows, no Good for / Bad for', () => {
-    expect(EP_TPL).not.toMatch(/EVERY POINT|atLabel|ep\.head\b|phc-ep-every|YOUR DOOR|GOOD FOR|BAD FOR|ep\.rows|>—</);
+  it('the lore is on the face, every line exactly as written in data: the quote, the lore paragraph, At high levels, Good for, Bad for', () => {
+    // the lore sits above the one line and the folds, outside every fold
+    expect(EP_TPL.indexOf('phc-ep-lore')).toBeGreaterThan(0);
+    expect(EP_TPL.indexOf('phc-ep-lore')).toBeLessThan(EP_TPL.indexOf('class="phc-ep-line"'));
+    expect(EP_TPL.indexOf('class="phc-ep-line"')).toBeLessThan(EP_TPL.indexOf('{{ep.ladderFold.open}}'));
+    expect(EP_TPL).not.toMatch(/EVERY POINT|atLabel|ep\.head\b|phc-ep-every|YOUR DOOR|ep\.rows|>—</);
     for (const s of D.skills as any[]) {
-      const v = epccgVals(holder({ epccg: s.id }), () => 3).ep, all = JSON.stringify(v);
-      if (s.ep.good) expect(all, s.id).not.toContain(s.ep.good.slice(1, 30));
-      if (s.ep.bad) expect(all, s.id).not.toContain(s.ep.bad.slice(1, 30));
-      // the two explainers every page repeated are said once, behind the perk section's "?"
-      expect(all.match(/At 3, 5, 7 and 9 points/g) || [], s.id).toHaveLength(1);
-      expect(v.perkHelp).toMatch(/^At 3, 5, 7 and 9 points/);
+      const v = epccgVals(holder({ epccg: s.id }), () => 3).ep;
+      expect(v.intro, s.id).toBe(s.ep.intro);
+      expect(v.loreRows.map((r: any) => [r.head, r.text]), s.id).toEqual([['At high levels:', s.ep.high], ['Good for:', s.ep.good], ['Bad for:', s.ep.bad]].filter((x) => x[1]));
+      expect(v.quote.map((q: any) => q.text), s.id).toEqual(s.ep.quote.map((q: string) => (/^\*.*\*$/.test(q) ? q.slice(1, -1) : q.replace(/\*/g, ''))));
+      // the lore reads in Spectral at the page's largest reading size
+      expect(v.loreStyle).toMatch(/Spectral.*font-size: 17px/);
+      // the two explainers every page repeated are said once, at the top of the perk fold
+      expect(JSON.stringify(v).match(/A perk step at 3, 5, 7 and 9 points/g) || [], s.id).toHaveLength(1);
     }
   });
 });
@@ -100,8 +109,6 @@ describe('S3: every skill\'s page has the same layout parts', () => {
       expect(v.slot).toBe(({ alpha: 'FIGHT', beta: 'SURVIVE', gamma: 'TALK · NOTICE' } as any)[s.slot]);
       expect(v.line.length).toBeGreaterThan(0); expect(v.line).not.toMatch(/\{=/);
       if (s.slot === 'alpha') expect(v.line).toMatch(/^Your door is /);
-      // a hover box never repeats its anchor: the line's hover holds the rest of the door line, not the line again
-      if (v.lineTip) expect(v.lineTip.includes(v.line)).toBe(false);
       for (const t of v.steps) for (const p of t.pieces) if (p.tip) { expect(p.tip).not.toBe(p.text); expect(t.text.includes(p.tip), s.id + ' ' + t.n).toBe(false); }
       if (s.slot === 'beta') { expect(v.feed.has).toBe(true); expect(v.feed.text).toMatch(/^Feeds [A-Z][\w ]+ · \S/); expect(v.feed.text).not.toMatch(/You now|Needs /); }
       else expect(v.feed.has).toBe(false);
@@ -119,11 +126,27 @@ describe('S3: every skill\'s page has the same layout parts', () => {
     expect(v.steps.filter((t: any) => t.hasNeeds).map((t: any) => [t.n, t.needs])).toEqual([[4, 'Needs Endurance 4']]);
     expect(epccgVals(holder({ epccg: 'durability' }), () => 3, { skills: { durability: 3 }, attrs: { endurance: 5 } }).ep.steps.some((t: any) => t.hasNeeds)).toBe(false);
   });
-  it('a perk card shows tier I, then only what tier II changes', () => {
+  it('a perk is a row: its name, I: its card line from data, II: only what changes, the state pips; no paragraph, no tag', () => {
     const v = epccgVals(holder({ epccg: 'durability' })).ep, p = v.perks.find((x: any) => x.name === 'Weight of the Wall');
-    expect(p.t1).toBe("While you hold Guard, your weapon attacks deal 2% more damage for each Guard you hold (up to 10%).");
-    expect(p.t2).toBe('2% → 3% · 10% → 15%');
-    for (const s of D.skills as any[]) for (const q of epccgVals(holder({ epccg: s.id })).ep.perks) expect(q.t2, s.id + ' ' + q.name).not.toBe(q.t1);
+    expect(p.s1).toBe('+2% weapon damage per Guard held, up to +10%');
+    expect(p.s2).toBe('+3% per Guard, up to +15%');
+    expect(p.pips).toHaveLength(2); expect(p.held).toBe('none');
+    expect(EP_TPL).not.toMatch(/phc-ep-t1|p\.meta|Passive/);
+    for (const s of D.skills as any[]) for (const q of epccgVals(holder({ epccg: s.id })).ep.perks) {
+      expect(q.s1, s.id + ' ' + q.name).toMatch(/\S/); expect(q.s2, s.id + ' ' + q.name).toMatch(/\S/);
+      expect(q.s1, s.id + ' ' + q.name).not.toMatch(/\{=|undefined|NaN|\.\s+[A-Z]/); // one line: never two sentences
+      expect(q.s2).not.toBe(q.s1);
+    }
+    // the character's own tier fills the pips
+    const held = epccgVals(holder({ epccg: 'durability' }), () => 5, { skills: { durability: 5 }, attrs: { endurance: 5 }, perks: [{ id: 'bulwark', tier: 'II' }] }).ep.perks.find((x: any) => x.key === 'bulwark');
+    expect(held.held).toBe('II'); expect(held.pips.every((x: any) => x.style.includes('background:'))).toBe(true);
+  });
+  it('an alpha with forks has the Forks fold, one row an option with its one line; a beta or gamma has none', () => {
+    const v = epccgVals(holder({ epccg: 'durability' })).ep;
+    expect(v.hasForks).toBe(true); expect(v.forks.map((f: any) => f.at)).toEqual([4, 6]);
+    for (const f of v.forks) for (const o of f.opts) { expect(o.text).toMatch(/\S/); expect(o.icon).toMatch(/\S/); }
+    expect(epccgVals(holder({ epccg: 'pain_threshold' })).ep.hasForks).toBe(false);
+    expect(epccgVals(holder({ epccg: 'sensory' })).ep.hasForks).toBe(false);
   });
   it('a combo perk whose deed only the Narrator can see is hidden in a run with no Narrator (Survival); the engine\'s deeds stay', () => {
     let hid = 0;

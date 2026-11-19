@@ -73,6 +73,7 @@
           ],
           "ap_cost": null,
           "text": "While you hold Guard, your weapon attacks deal {=tiers.I.effects.0.value.per.0.value|pct}% more damage for each Guard you hold (up to {=tiers.I.effects.0.value.max|more}%).",
+          "short": "+{=tiers.I.effects.0.value.per.0.value|pct}% weapon damage per Guard held, up to +{=tiers.I.effects.0.value.max|more}%",
           "effects": [
             {
               "op": "damage_mult",
@@ -108,6 +109,7 @@
           ],
           "ap_cost": null,
           "text": "While you hold Guard, your weapon attacks deal {=tiers.II.effects.0.value.per.0.value|pct}% more damage for each Guard you hold (up to {=tiers.II.effects.0.value.max|more}%).",
+          "short": "+{=tiers.II.effects.0.value.per.0.value|pct}% per Guard, up to +{=tiers.II.effects.0.value.max|more}%",
           "effects": [
             {
               "op": "damage_mult",
@@ -207,6 +209,7 @@
           ],
           "ap_cost": null,
           "text": "When an enemy's blow hurts you, your weapon attacks deal {=tiers.I.effects.1.value|more}% more damage until the end of your next turn.",
+          "short": "Hurt by a blow: +{=tiers.I.effects.1.value|more}% weapon damage until your next turn ends",
           "effects": [
             {
               "op": "mark",
@@ -250,6 +253,7 @@
           ],
           "ap_cost": null,
           "text": "When an enemy's blow hurts you, your weapon attacks deal {=tiers.II.effects.1.value|more}% more damage until the end of your next turn, and the blow gives you {=tiers.II.effects.3.value} Guard (once a round).",
+          "short": "+{=tiers.II.effects.1.value|more}% · +{=tiers.II.effects.3.value} Guard, once a round",
           "effects": [
             {
               "op": "mark",
@@ -344,6 +348,7 @@
           ],
           "ap_cost": null,
           "text": "The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit against you deals {=tiers.I.effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing.",
+          "short": "First hit under {=tiers.I.effects.1.if.amount_share_below|pct}% max HP: next hit −{=tiers.I.effects.0.value_pct|abs}%",
           "effects": [
             {"op": "damage_mod", "value_pct": -25, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
             {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.2}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=tiers.I.effects.0.value_pct|abs}% less."},
@@ -359,6 +364,7 @@
           ],
           "ap_cost": null,
           "text": "The first time you are hit in each fight: if that hit took less than 30% of your max HP, the next hit against you deals {=tiers.II.effects.0.value_pct|abs}% less damage. A heavier first hit gives you nothing.",
+          "short": "Under {=tiers.II.effects.1.if.amount_share_below|pct}% · next hit −{=tiers.II.effects.0.value_pct|abs}%",
           "effects": [
             {"op": "damage_mod", "value_pct": -40, "when": "taking", "if": {"flag": "hard", "by_hit": true, "actor": "foe", "amount_above": 0}, "and": [{"op": "mark", "flag": "hard", "clear": true}], "say": "{self} was ready for that one (Used to the Pain): {=.value_pct|abs}% less."},
             {"op": "mark", "flag": "hard", "when": "damaged", "if": {"by_hit": true, "actor": "foe", "no_flag": "seen", "amount_share_below": 0.3}, "say": "{self} takes it in stride (Used to the Pain): the next hit deals {=tiers.II.effects.0.value_pct|abs}% less."},
@@ -415,6 +421,7 @@
           ],
           "ap_cost": null,
           "text": "Each hit that wounds you in a fight gives you {=tiers.I.effects.0.value|pct}% less Elemental damage taken for the rest of that fight, up to 25%.",
+          "short": "Each wounding hit: −{=tiers.I.effects.0.value|pct}% elemental damage taken, up to {=tiers.I.effects.0.max|pct}%",
           "effects": [
             {
               "op": "damage_reduction",
@@ -435,6 +442,7 @@
           ],
           "ap_cost": null,
           "text": "Each hit that wounds you in a fight gives you {=tiers.II.effects.0.value|pct}% less Elemental damage taken and +{=tiers.II.effects.0.value|pct}% Injury resistance for the rest of that fight, up to 40% each.",
+          "short": "+{=tiers.II.effects.1.value|pct}% injury resistance too · up to {=tiers.II.effects.0.max|pct}% each",
           "effects": [
             {
               "op": "damage_reduction",
@@ -503,6 +511,7 @@
           ],
           "ap_cost": null,
           "text": "When a fight starts, your squad learns where the nearest enemy it can't see within your Vision range is. You know its tile, but you still can't target it.",
+          "short": "Fight start: you learn the tile of the nearest unseen foe in Vision",
           "effects": [
             {
               "op": "reveal",
@@ -522,6 +531,7 @@
           ],
           "ap_cost": null,
           "text": "When a fight starts, your squad learns where every enemy it can't see within your Vision range is. You know their tiles, but you still can't target them.",
+          "short": "Every unseen foe in Vision",
           "effects": [
             {
               "op": "reveal",
@@ -577,6 +587,7 @@
           ],
           "ap_cost": null,
           "text": "In a conversation, touch someone (a handshake, a hand on the shoulder). The Narrator tells you privately whether the next thing they say is a lie.",
+          "short": "Touch someone: the Narrator says if their next words are a lie",
           "effects": [
             {
               "op": "narrator",
@@ -593,6 +604,7 @@
           ],
           "ap_cost": null,
           "text": "In a conversation, touch someone (a handshake, a hand on the shoulder). The Narrator tells you privately whether the next thing they say is a lie, whether they are afraid, and of whom.",
+          "short": "Also if they are afraid, and of whom",
           "effects": [
             {
               "op": "narrator",
@@ -672,6 +684,7 @@
           ],
           "ap_cost": null,
           "text": "When one of your Finishers drops an enemy, your next Strike or Opener before the end of your next turn costs no Momentum (a Finisher ends this turn's chain).",
+          "short": "A Finisher kill: your next Strike or Opener costs no Momentum",
           "effects": [
             {
               "op": "mark",
@@ -715,6 +728,7 @@
           ],
           "ap_cost": null,
           "text": "When one of your Finishers drops an enemy, your next Strike or Opener before the end of your next turn costs no Momentum; and a Finisher that hits an Elite or a Boss gives you {=tiers.II.effects.3.value} Momentum.",
+          "short": "Finisher on an Elite or Boss: +{=tiers.II.effects.3.value} Momentum",
           "effects": [
             {
               "op": "mark",
@@ -845,6 +859,7 @@
           ],
           "ap_cost": null,
           "text": "You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.I.effects.1.value_pct}% more damage to a Grappled or Prone enemy.",
+          "short": "Grapple · held foes can't Answer or react · +{=tiers.I.effects.1.value_pct}% melee on Grappled, Prone",
           "effects": [
             {
               "op": "forbid",
@@ -876,6 +891,7 @@
           ],
           "ap_cost": null,
           "text": "You gain the technique Grapple (an enemy next to you makes a Body save or is Grappled). A target you have Grappled or Bound can't use Answers or reactions. Your melee hits deal {=tiers.II.effects.1.value_pct}% more damage to a Grappled, Prone, Shaken or Afraid enemy.",
+          "short": "+{=tiers.II.effects.1.value_pct}% · also on Shaken or Afraid",
           "effects": [
             {
               "op": "forbid",
@@ -948,6 +964,7 @@
           ],
           "ap_cost": null,
           "text": "The first time in a fight you move onto ground your squad hasn't seen, you can't be ambushed: until your next turn starts, attacks from hiding get no Ambush bonus against you.",
+          "short": "First move onto unseen ground: no Ambush bonus against you",
           "effects": [
             {
               "op": "immunity",
@@ -965,6 +982,7 @@
           ],
           "ap_cost": null,
           "text": "The first time in a fight you move onto ground your squad hasn't seen, you can't be ambushed: until your next turn starts, attacks from hiding get no Ambush bonus against you. You also can't be made Afraid during the first round of a fight in a place that causes Fear.",
+          "short": "Not Afraid in round one of a Fear place",
           "effects": [
             {
               "op": "immunity",
@@ -1023,6 +1041,7 @@
           ],
           "ap_cost": null,
           "text": "Nausea and Fear last at most {=tiers.I.effects.0.max} round on you.",
+          "short": "Nausea and Fear last {=tiers.I.effects.0.max} round at most",
           "effects": [
             {"op": "cond_rounds", "max": 1, "when": "cond_incoming", "if": {"cond": ["nausea", "fear"]}}
           ]
@@ -1036,6 +1055,7 @@
           ],
           "ap_cost": null,
           "text": "You are immune to Nausea and Fear.",
+          "short": "Immune to Nausea and Fear",
           "effects": [
             {
               "op": "immunity",
@@ -1101,6 +1121,7 @@
           ],
           "ap_cost": null,
           "text": "You have {=tiers.I.effects.0.value|abs} AP less on your first turn of each fight. When you kill or knock out an enemy on your own turn, you gain {=tiers.I.effects.1.value} AP. Once every 3 turns.",
+          "short": "{=tiers.I.effects.0.value} AP on your first turn · a kill on your turn: +{=tiers.I.effects.1.value} AP, every 3 turns",
           "effects": [
             {
               "op": "stat_mod",
@@ -1127,6 +1148,7 @@
           ],
           "ap_cost": null,
           "text": "When you kill or knock out an enemy on your own turn, you gain {=tiers.II.effects.0.value} AP. Once every 3 turns. Each time you do, every enemy who sees it makes a Heart save or is Afraid of you.",
+          "short": "No first-turn cost · kills frighten (Heart save)",
           "effects": [
             {
               "op": "stat_mod",
@@ -1197,6 +1219,7 @@
           ],
           "ap_cost": 2,
           "text": "Threaten someone with one specific, physical detail. Outside a fight they answer one question truthfully, or refuse and are Shaken; the Narrator plays the answer. In a fight it costs {=tiers.I.ap_cost} AP: one enemy within 8 tiles who can see you makes a Heart save or is Shaken.",
+          "short": "Threaten: one true answer or Shaken · in a fight {=tiers.I.ap_cost} AP, one foe",
           "effects": [
             {
               "op": "narrator",
@@ -1219,6 +1242,7 @@
           ],
           "ap_cost": 2,
           "text": "Threaten a whole group with one specific, physical detail. Outside a fight their leader answers one question truthfully for all of them, or they refuse and are all Shaken; the Narrator plays the answer. In a fight it costs {=tiers.II.ap_cost} AP: every enemy within 8 tiles who can see you makes a Heart save or is Shaken.",
+          "short": "A whole group · in a fight, every foe in range",
           "effects": [
             {
               "op": "narrator",
@@ -1279,6 +1303,7 @@
           ],
           "ap_cost": null,
           "text": "During a move you can run along walls, over low obstacles and across gaps, up to 2 such tiles in a row. The move must end on open floor.",
+          "short": "Run along walls, low cover and gaps, {=tiers.I.effects.0.max_tiles} tiles in a row",
           "effects": [
             {
               "op": "movement_mode",
@@ -1296,6 +1321,7 @@
           ],
           "ap_cost": null,
           "text": "During a move you can run along walls, over low obstacles and across gaps, up to 4 such tiles in a row. With Wall Run strike you can attack once from the middle of the run; the move and the attack cost their usual AP. The move must end on open floor.",
+          "short": "{=tiers.II.effects.0.max_tiles} tiles · one attack mid-run",
           "effects": [
             {
               "op": "movement_mode",
@@ -1351,6 +1377,7 @@
           ],
           "ap_cost": null,
           "text": "Once per round, when an attack against you misses, move {=tiers.I.effects.0.tiles} tile for free. The move draws no opportunity attacks. If the miss comes on an enemy's turn, you take the free move on your next turn.",
+          "short": "A miss on you: a free {=tiers.I.effects.0.tiles}-tile move, once a round",
           "effects": [
             {
               "op": "free_move",
@@ -1368,6 +1395,7 @@
           ],
           "ap_cost": null,
           "text": "Once per round, when an attack against you misses, move up to {=tiers.II.effects.0.tiles} tiles for free. The move draws no opportunity attacks. If the miss comes on an enemy's turn, you take the free move on your next turn.",
+          "short": "Up to {=tiers.II.effects.0.tiles} tiles",
           "effects": [
             {
               "op": "free_move",
@@ -1463,6 +1491,7 @@
           ],
           "ap_cost": null,
           "text": "Your hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a Dexterity glove) on an enemy already Pressed (Pressure {=tiers.I.effects.0.value.steps.0.at} or more) lays {=tiers.I.effects.0.value.steps.0.value} more Pressure on it, once a turn for each enemy, and your attacks rolled with Dexterity deal {=tiers.I.effects.1.value.steps.0.value|pct}% more to a Pressed enemy.",
+          "short": "Dexterity hit on a Pressed foe: +{=tiers.I.effects.0.value.steps.0.value} Pressure · +{=tiers.I.effects.1.value.steps.0.value|pct}% damage",
           "effects": [
             {
               "op": "resource",
@@ -1520,6 +1549,7 @@
           ],
           "ap_cost": null,
           "text": "Your hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a Dexterity glove) on an enemy already Pressed (Pressure {=tiers.II.effects.0.value.steps.0.at} or more) lays {=tiers.II.effects.0.value.steps.0.value} more Pressure on it, and {=tiers.II.effects.0.value.steps.1.value} more again on one already Suppressed (Pressure {=tiers.II.effects.0.value.steps.1.at} or more), once a turn for each enemy; your attacks rolled with Dexterity deal {=tiers.II.effects.1.value.steps.0.value|pct}% more to a Pressed enemy and {=tiers.II.effects.1.value.steps.1.value|pct}% more again to a Suppressed one.",
+          "short": "On Suppressed: +{=tiers.II.effects.0.value.steps.1.value} more and +{=tiers.II.effects.1.value.steps.1.value|pct}%",
           "effects": [
             {
               "op": "resource",
@@ -1643,6 +1673,7 @@
           ],
           "ap_cost": null,
           "text": "Once a turn, your hit rolled with Dexterity (a gun, a bow, a throw, a light blade, a Dexterity glove) on an enemy already Pressed (Pressure {=tiers.I.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance (a Body save): it loses AP on its next turn.",
+          "short": "Once a turn: a Dexterity hit puts a Pressed foe Off Balance (save)",
           "effects": [
             {
               "op": "condition",
@@ -1677,6 +1708,7 @@
           ],
           "ap_cost": null,
           "text": "Once a turn for each enemy, your hit rolled with Dexterity on one already Pressed (Pressure {=tiers.II.effects.0.if.target_res.pressure.at_least} or more) puts it Off Balance, with no save: it loses AP on its next turn.",
+          "short": "No save · once a turn per foe",
           "effects": [
             {
               "op": "condition",
@@ -1752,6 +1784,7 @@
           ],
           "ap_cost": null,
           "text": "Once per turn, when a cost leaves you with a fraction of an AP (drawing a glyph, for example), your AP rounds up to the next whole point.",
+          "short": "Once a turn, a fraction of an AP rounds up",
           "effects": [
             {
               "op": "rounding",
@@ -1769,6 +1802,7 @@
           ],
           "ap_cost": null,
           "text": "Once per turn, when a cost leaves you with a fraction of an AP (drawing a glyph, for example), your AP rounds up to the next whole point. Once per fight, 1 AP you didn't spend carries over into your next turn.",
+          "short": "Once a fight, {=tiers.II.effects.1.value} unspent AP carries over",
           "effects": [
             {
               "op": "rounding",
@@ -1835,6 +1869,7 @@
           ],
           "ap_cost": null,
           "text": "When a grenade or a thrown weapon is thrown at you or at an ally next to you, you catch it and it doesn't go off. This uses your reaction. On your turn you can throw it back for {=tiers.I.effects.1.ap} AP; if you still hold it at the end of your next turn, it goes off in your hands.",
+          "short": "Reaction: catch a throw at you or a neighbour · back for {=tiers.I.effects.1.ap} AP",
           "effects": [
             {
               "op": "reaction",
@@ -1859,6 +1894,7 @@
           ],
           "ap_cost": null,
           "text": "When a grenade or a thrown weapon is thrown at you or at an ally next to you, you catch it and it doesn't go off. This uses your reaction. On your turn you can throw it back for {=tiers.II.effects.1.ap} AP; if you still hold it at the end of your next turn, it goes off in your hands.",
+          "short": "Throw it back for {=tiers.II.effects.1.ap} AP",
           "effects": [
             {
               "op": "reaction",
@@ -1927,6 +1963,7 @@
           ],
           "ap_cost": null,
           "text": "Your attacks made while Hidden deal {=tiers.I.effects.0.value|more}% more damage.",
+          "short": "+{=tiers.I.effects.0.value|more}% damage while Hidden",
           "effects": [
             {
               "op": "damage_mult",
@@ -1950,6 +1987,7 @@
           ],
           "ap_cost": null,
           "text": "Your attacks made while Hidden deal {=tiers.II.effects.0.value|more}% more damage.",
+          "short": "+{=tiers.II.effects.0.value|more}% damage",
           "effects": [
             {
               "op": "damage_mult",
@@ -2045,6 +2083,7 @@
           ],
           "ap_cost": null,
           "text": "Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.I.effects.0.value|abs} AP less (never under {=tiers.I.effects.0.min}).",
+          "short": "Once a turn: a Hidden attack holding Shadow costs {=tiers.I.effects.0.value|abs} AP less (min {=tiers.I.effects.0.min})",
           "effects": [
             {
               "op": "cost_mod",
@@ -2096,6 +2135,7 @@
           ],
           "ap_cost": null,
           "text": "{=tiers.II.effects.0.limit.n} times a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}).",
+          "short": "{=tiers.II.effects.0.limit.n} times a turn",
           "effects": [
             {
               "op": "cost_mod",
@@ -2185,6 +2225,7 @@
           ],
           "ap_cost": null,
           "text": "A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired.",
+          "short": "A broken weapon fires or strikes one more time",
           "effects": [
             {
               "op": "extra_use",
@@ -2202,6 +2243,7 @@
           ],
           "ap_cost": null,
           "text": "A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired. Your Field Repair also restores twice as much on drones.",
+          "short": "Field Repair restores twice as much on drones",
           "effects": [
             {
               "op": "extra_use",
@@ -2259,6 +2301,7 @@
           ],
           "ap_cost": null,
           "text": "Once per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't.",
+          "short": "Once a turn: draw, stow, swap or fit a mod for {=tiers.I.effects.0.set} AP",
           "effects": [
             {"op": "cost_mod", "set": 0, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 1}, "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."}
           ]
@@ -2272,6 +2315,7 @@
           ],
           "ap_cost": null,
           "text": "Twice per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't.",
+          "short": "{=tiers.II.effects.0.limit.n} times a turn",
           "effects": [
             {"op": "cost_mod", "set": 0, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 2}, "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."}
           ],
@@ -2331,6 +2375,7 @@
           ],
           "ap_cost": null,
           "text": "When an enemy you can see hides or leaves your sight, you gain 2 AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. Once every 3 turns. When an Ambush hits you, you have 2 AP less on your next turn; that too happens at most once every 3 turns.",
+          "short": "A foe you see hides: +{=tiers.I.effects.0.value} AP · Ambushed: {=tiers.I.effects.1.value} AP · every 3 turns",
           "effects": [
             {
               "op": "stat_mod",
@@ -2356,6 +2401,7 @@
           ],
           "ap_cost": null,
           "text": "When an enemy you can see hides or leaves your sight, you gain {=tiers.II.effects.0.value} AP: at once on your own turn, or on your coming turn if you have not acted yet this round. If your turn this round is already over, you gain nothing. Once every 3 turns. Your squad always knows where that enemy was last seen.",
+          "short": "No Ambush cost · squad sees its last tile",
           "effects": [
             {
               "op": "stat_mod",
@@ -2419,6 +2465,7 @@
           ],
           "ap_cost": null,
           "text": "You can't be flanked. Half cover next to you, and a shield you carry, protect you against ranged attacks from every direction.",
+          "short": "Can't be flanked · half cover and shields guard every side",
           "effects": [
             {
               "op": "no_flank",
@@ -2436,6 +2483,7 @@
           ],
           "ap_cost": null,
           "text": "You and the allies next to you can't be flanked. Half cover next to any of you, and a carried shield, protect its owner against ranged attacks from every direction.",
+          "short": "Allies next to you too",
           "effects": [
             {
               "op": "no_flank",
@@ -2505,6 +2553,7 @@
           ],
           "ap_cost": null,
           "text": "Your Sigil spells deal {=tiers.I.effects.0.value|more}% more damage to an enemy that is Burning, Slowed, Corroded, Pinned, Blinded, Shaken or Silenced.",
+          "short": "+{=tiers.I.effects.0.value|more}% Sigil damage vs Burning, Slowed, Corroded, Pinned, Blinded, Shaken, Silenced",
           "effects": [
             {
               "op": "damage_mult",
@@ -2537,6 +2586,7 @@
           ],
           "ap_cost": null,
           "text": "Your Sigil spells deal {=tiers.II.effects.0.value|more}% more damage to an enemy that is Burning, Slowed, Corroded, Pinned, Blinded, Shaken or Silenced.",
+          "short": "+{=tiers.II.effects.0.value|more}%",
           "effects": [
             {
               "op": "damage_mult",
@@ -2628,6 +2678,7 @@
           ],
           "ap_cost": null,
           "text": "The first glyph you draw each turn: {=tiers.I.effects.0.value|signed} AP to its cost.",
+          "short": "First glyph each turn costs {=tiers.I.effects.0.value|abs} AP less",
           "effects": [
             {
               "op": "cost_mod",
@@ -2666,6 +2717,7 @@
           ],
           "ap_cost": null,
           "text": "The first glyph you draw each turn: {=tiers.II.effects.0.value|signed} AP to its cost, and it adds no Flux.",
+          "short": "It adds no Flux",
           "effects": [
             {
               "op": "cost_mod",
@@ -2761,6 +2813,7 @@
           ],
           "ap_cost": null,
           "text": "Once per scene, cite a fact: allies who act on it get +{=tiers.I.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +1 to hit it for the rest of the round.",
+          "short": "Cite a fact: allies +{=tiers.I.effects.1.value} on rolls that use it · in a fight, to hit one foe",
           "effects": [
             {
               "op": "narrator",
@@ -2785,6 +2838,7 @@
           ],
           "ap_cost": null,
           "text": "Once per scene, cite a fact: allies who act on it get +{=tiers.II.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +2 to hit it for the rest of the round.",
+          "short": "+{=tiers.II.effects.1.value}",
           "effects": [
             {
               "op": "narrator",
@@ -2848,6 +2902,7 @@
           ],
           "ap_cost": null,
           "text": "You have +{=tiers.I.effects.0.value} on saves against chemicals, gases and drugs you have identified.",
+          "short": "+{=tiers.I.effects.0.value} on saves against chemicals, gases and drugs you've identified",
           "effects": [
             {
               "op": "save_mod",
@@ -2866,6 +2921,7 @@
           ],
           "ap_cost": 2,
           "text": "You have +{=tiers.II.effects.0.value} on saves against chemicals, gases and drugs you have identified. Spend 2 AP (free outside a fight) to neutralise one of them for allies within 2 tiles: it ends on them, and they are immune to it for the rest of the fight.",
+          "short": "{=tiers.II.effects.1.ap} AP: neutralise one for allies nearby",
           "effects": [
             {
               "op": "save_mod",
@@ -2935,6 +2991,7 @@
           ],
           "ap_cost": null,
           "text": "While an enemy carries a Left Brain Debuff you inflicted, you start your turn with 2 more AP. Once every 3 turns. While you carry one yourself, you start your turn with 2 AP less; that too happens at most once every 3 turns.",
+          "short": "Your Left Brain Debuff on a foe: +{=tiers.I.effects.0.value} AP · on you: {=tiers.I.effects.1.value} AP · every 3 turns",
           "effects": [
             {
               "op": "stat_mod",
@@ -2959,6 +3016,7 @@
           ],
           "ap_cost": null,
           "text": "While an enemy carries a Left or Right Brain Debuff you inflicted, you start your turn with 2 more AP. Once every 3 turns. While you carry one yourself, you start your turn with {=tiers.II.effects.1.value|abs} AP less; that too happens at most once every 3 turns.",
+          "short": "Left or Right · on you: {=tiers.II.effects.1.value} AP",
           "effects": [
             {
               "op": "stat_mod",
@@ -3020,6 +3078,7 @@
           ],
           "ap_cost": null,
           "text": "When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright. The Narrator decides whether they have any.",
+          "short": "Accused: demand the evidence; none, and they lose the argument",
           "effects": [
             {
               "op": "narrator",
@@ -3036,6 +3095,7 @@
           ],
           "ap_cost": null,
           "text": "When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright and everyone watching shifts one step towards your side. The Narrator decides whether they have any.",
+          "short": "Onlookers shift a step your way",
           "effects": [
             {
               "op": "narrator",
@@ -3108,6 +3168,7 @@
           ],
           "ap_cost": null,
           "text": "Your Figments' blows deal {=tiers.I.effects.0.value.per.0.value|pct}% more damage for each Figment you keep (up to {=tiers.I.effects.0.value.max|more}%).",
+          "short": "+{=tiers.I.effects.0.value.per.0.value|pct}% Figment damage per Figment kept, up to +{=tiers.I.effects.0.value.max|more}%",
           "effects": [
             {
               "op": "damage_mult",
@@ -3145,6 +3206,7 @@
           ],
           "ap_cost": null,
           "text": "Your Figments' blows deal {=tiers.II.effects.0.value.per.0.value|pct}% more damage for each Figment you keep (up to {=tiers.II.effects.0.value.max|more}%).",
+          "short": "+{=tiers.II.effects.0.value.per.0.value|pct}% each, up to +{=tiers.II.effects.0.value.max|more}%",
           "effects": [
             {
               "op": "damage_mult",
@@ -3235,6 +3297,7 @@
           ],
           "ap_cost": null,
           "text": "Once a turn, on your turn, when one of your Figments kills an enemy, you gain {=tiers.I.effects.0.value} AP.",
+          "short": "Once a turn, on your turn: a Figment kill gives +{=tiers.I.effects.0.value} AP",
           "effects": [
             {
               "op": "grant_ap",
@@ -3267,6 +3330,7 @@
           ],
           "ap_cost": null,
           "text": "Once a turn, when one of your Figments puts an enemy down, you gain {=tiers.II.effects.0.value} AP (at the start of your next turn when it is not yours) and {=tiers.II.effects.0.and.0.value} Visualizer charge.",
+          "short": "Any turn · +{=tiers.II.effects.0.and.0.value} Visualizer charge",
           "effects": [
             {
               "op": "grant_ap",
@@ -3375,6 +3439,7 @@
           ],
           "ap_cost": null,
           "text": "In every scene, the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free.",
+          "short": "Each scene: one detail out of place · fight start: one trap or weak point",
           "effects": [
             {
               "op": "narrator",
@@ -3391,6 +3456,7 @@
           ],
           "ap_cost": null,
           "text": "In every scene, the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
+          "short": "Two of each, and whether they connect",
           "effects": [
             {
               "op": "narrator",
@@ -3445,6 +3511,7 @@
           ],
           "ap_cost": null,
           "text": "You have +2 Defense against any kind of attack you have already seen in this fight: the same weapon used the same way.",
+          "short": "+{=tiers.I.effects.0.value} Defense vs an attack you've seen this fight",
           "effects": [
             {
               "op": "stat_mod",
@@ -3463,6 +3530,7 @@
           ],
           "ap_cost": null,
           "text": "You have +4 Defense against any kind of attack you have already seen in this fight: the same weapon used the same way. While you are standing, your allies have +2 Defense against those attacks too.",
+          "short": "+{=tiers.II.effects.0.value} · allies +{=tiers.II.effects.1.value} while you stand",
           "effects": [
             {
               "op": "stat_mod",
@@ -3533,6 +3601,7 @@
           ],
           "ap_cost": null,
           "text": "When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. When it breaks out of a talk your squad lost, you have 2 AP less on those turns instead. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
+          "short": "Fight after a talk won: +{=tiers.I.effects.0.value} AP, every 3 turns · lost: {=tiers.I.effects.1.value} AP",
           "effects": [
             {
               "op": "stat_mod",
@@ -3559,6 +3628,7 @@
           ],
           "ap_cost": null,
           "text": "When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. Whenever a fight breaks out of a talk, won or lost, the first enemy to act hesitates: it has {=tiers.II.effects.1.value|abs} AP less in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
+          "short": "No loss cost · first foe to act {=tiers.II.effects.1.value} AP in round one",
           "effects": [
             {
               "op": "stat_mod",
@@ -3624,6 +3694,7 @@
           ],
           "ap_cost": null,
           "text": "When you talk to a crowd, you make one roll for the whole crowd, at +{=tiers.I.effects.0.value}. A crowd is 3 or more listeners within 8 tiles of you. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder.",
+          "short": "A crowd: one roll for all, at +{=tiers.I.effects.0.value} · in a fight too, saves harder",
           "effects": [
             {
               "op": "skill_mod",
@@ -3642,6 +3713,7 @@
           ],
           "ap_cost": null,
           "text": "When you talk to a crowd, you make one roll for the whole crowd, at +{=tiers.II.effects.0.value}, and you can turn the crowd against one person you name; the Narrator plays what the crowd does. A crowd is 3 or more listeners within 8 tiles of you. In a fight, a Persuade or Threaten heard by 3 or more enemies is one roll against all of them, and their save is 2 harder.",
+          "short": "Turn the crowd on one person",
           "effects": [
             {
               "op": "skill_mod",
@@ -3711,6 +3783,7 @@
           ],
           "ap_cost": null,
           "text": "With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.I.effects.0.value|more}% more damage.",
+          "short": "Attuner in hand: +{=tiers.I.effects.0.value|more}% damage to foes Bonded to you",
           "effects": [
             {
               "op": "damage_mult",
@@ -3737,6 +3810,7 @@
           ],
           "ap_cost": null,
           "text": "With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.II.effects.0.value|more}% more damage.",
+          "short": "+{=tiers.II.effects.0.value|more}%",
           "effects": [
             {
               "op": "damage_mult",
@@ -3865,6 +3939,7 @@
           ],
           "ap_cost": null,
           "text": "With an Attuner in hand, when you heal yourself or an ally Bonded to you, each enemy Bonded to you takes {=amounts.balm.per.0.value|pct}% of the HP restored as Soul damage at the start of its next turn.",
+          "short": "Heal you or a Bonded ally: Bonded foes take {=amounts.balm.per.0.value|pct}% of it as Soul damage",
           "effects": [
             {
               "op": "deal",
@@ -3916,6 +3991,7 @@
           ],
           "ap_cost": null,
           "text": "With an Attuner in hand, when you heal yourself or an ally Bonded to you, each enemy Bonded to you takes {=amounts.balm_ii.per.0.value|pct}% of the HP restored as Soul damage at the start of its next turn.",
+          "short": "{=amounts.balm_ii.per.0.value|pct}% of it",
           "effects": [
             {
               "op": "deal",
@@ -4011,6 +4087,7 @@
           ],
           "ap_cost": null,
           "text": "Outside a fight, bond with one teammate. You take part of the damage they take, in their place: {=tiers.I.effects.0.value_by_mastery.1|pct}% at Camaraderie Mastery 1, {=tiers.I.effects.0.value_by_mastery.2|pct}% at Mastery 2, {=tiers.I.effects.0.value_by_mastery.3|pct}% at Mastery 3 and {=tiers.I.effects.0.value_by_mastery.4|pct}% at Mastery 4. It never takes your last HP, and if they hold Soulmate too you do it for each other.",
+          "short": "Bond a teammate: take {=tiers.I.effects.0.value_by_mastery.1|pct}% to {=tiers.I.effects.0.value_by_mastery.4|pct}% of their damage, never your last HP",
           "effects": [
             {
               "op": "damage_share",
@@ -4034,6 +4111,7 @@
           ],
           "ap_cost": null,
           "text": "Outside a fight, bond with up to two teammates. You take part of the damage they take, in their place: {=tiers.II.effects.0.value_by_mastery.1|pct}% at Camaraderie Mastery 1, {=tiers.II.effects.0.value_by_mastery.2|pct}% at Mastery 2, {=tiers.II.effects.0.value_by_mastery.3|pct}% at Mastery 3 and {=tiers.II.effects.0.value_by_mastery.4|pct}% at Mastery 4. It never takes your last HP, and if they hold Soulmate too you do it for each other.",
+          "short": "Up to {=tiers.II.effects.0.bonds} teammates",
           "effects": [
             {
               "op": "damage_share",
@@ -4097,6 +4175,7 @@
           ],
           "ap_cost": null,
           "text": "When an enemy or a hazard drops an ally to 0 HP, every other ally, you included, takes {=tiers.I.effects.0.value_pct}% less damage until their next turn starts.",
+          "short": "An ally goes down: the rest take {=tiers.I.effects.0.value_pct}% less damage until their turn",
           "effects": [
             {
               "op": "damage_reduction",
@@ -4116,6 +4195,7 @@
           ],
           "ap_cost": null,
           "text": "When an enemy or a hazard drops an ally to 0 HP, every other ally, you included, takes {=tiers.II.effects.0.value_pct}% less damage until their next turn starts.",
+          "short": "{=tiers.II.effects.0.value_pct}% less",
           "effects": [
             {
               "op": "damage_reduction",
@@ -4180,6 +4260,7 @@
           ],
           "ap_cost": null,
           "text": "Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you 2 AP. Once every 3 turns. If someone you charmed puts a debuff on you, you have 2 AP less on your next turn: betrayal stings. That too happens at most once every 3 turns.",
+          "short": "Buff or debuff someone you charmed: +{=tiers.I.effects.0.value} AP · betrayed: {=tiers.I.effects.1.value} AP · every 3 turns",
           "effects": [
             {
               "op": "stat_mod",
@@ -4204,6 +4285,7 @@
           ],
           "ap_cost": null,
           "text": "Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you {=tiers.II.effects.0.value} AP. Once every 3 turns.",
+          "short": "+{=tiers.II.effects.0.value} AP · no betrayal cost",
           "effects": [
             {
               "op": "stat_mod",
@@ -4266,6 +4348,7 @@
           ],
           "ap_cost": null,
           "text": "Say one sentence that means one thing to the enemy and another to your squad. The squad gets +{=tiers.I.effects.1.value} on the action you hinted at; the Narrator decides which roll that is. In a fight, once per round and for 0 AP, name an enemy within 8 tiles: each squad member's next attack on it gets +2 until your next turn.",
+          "short": "A coded sentence: squad +{=tiers.I.effects.1.value} on the hinted action · in a fight, on one foe",
           "effects": [
             {
               "op": "narrator",
@@ -4289,6 +4372,7 @@
           ],
           "ap_cost": null,
           "text": "Say one sentence that means one thing to the enemy and another to your squad. The squad gets +{=tiers.II.effects.1.value} on the action you hinted at, and the enemy acts on the false meaning; the Narrator plays both. In a fight, once per round and for 0 AP, name an enemy within 8 tiles: each squad member's next attack on it gets +2 until your next turn, and the nearest other enemy that heard you loses 2 AP on its next turn.",
+          "short": "The enemy acts on the false meaning",
           "effects": [
             {
               "op": "narrator",
@@ -4369,6 +4453,7 @@
           ],
           "ap_cost": null,
           "text": "With an Emanator in hand, your Outbursts Released at stage {=tiers.I.effects.0.value.steps.0.at} or higher deal {=tiers.I.effects.0.value.steps.0.value|pct}% more damage.",
+          "short": "Emanator in hand: +{=tiers.I.effects.0.value.steps.0.value|pct}% damage on Releases at stage {=tiers.I.effects.0.value.steps.0.at} or higher",
           "effects": [
             {
               "op": "damage_mult",
@@ -4405,6 +4490,7 @@
           ],
           "ap_cost": null,
           "text": "With an Emanator in hand, your Outbursts Released at stage {=tiers.II.effects.0.value.steps.0.at} deal {=tiers.II.effects.0.value.steps.0.value|pct}% more damage, and at stage {=tiers.II.effects.0.value.steps.1.at} or higher {=tiers.II.effects.0.value.steps.1.value|pct}% more again.",
+          "short": "From stage {=tiers.II.effects.0.value.steps.0.at} · +{=tiers.II.effects.0.value.steps.1.value|pct}% more at {=tiers.II.effects.0.value.steps.1.at} or higher",
           "effects": [
             {
               "op": "damage_mult",
@@ -4486,6 +4572,7 @@
           ],
           "ap_cost": null,
           "text": "Each Outburst you Release gives your next Release in this fight +{=tiers.I.effects.0.value}% to its effect, building up to +{=tiers.I.effects.0.limit}%. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
+          "short": "Each Release: your next one +{=tiers.I.effects.0.value}%, building to +{=tiers.I.effects.0.limit}%",
           "effects": [
             {
               "op": "stat_mod",
@@ -4505,6 +4592,7 @@
           ],
           "ap_cost": null,
           "text": "Each Outburst you Release gives your next Release in this fight +{=tiers.II.effects.0.value}% to its effect, building up to +{=tiers.II.effects.0.limit}%. An ally's Release that you can see adds a step too. You lose what you have built when you end a turn in which you neither held nor Released an Outburst. This adds to the bonus you get when allies Release in the same round.",
+          "short": "Up to +{=tiers.II.effects.0.limit}% · allies' Releases add a step",
           "effects": [
             {
               "op": "stat_mod",
@@ -4561,6 +4649,7 @@
           ],
           "ap_cost": null,
           "text": "You can read any ancient or upper-realm script. The Narrator tells you what it says.",
+          "short": "Read any ancient or upper-realm script",
           "effects": [
             {
               "op": "narrator",
@@ -4577,6 +4666,7 @@
           ],
           "ap_cost": null,
           "text": "You can read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
+          "short": "Speak it · an upper-realm being parleys once",
           "effects": [
             {
               "op": "narrator",
@@ -4647,6 +4737,7 @@
           ],
           "ap_cost": null,
           "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP, and your Call Name It {=tiers.I.effects.1.value|abs} AP less, never below {=tiers.I.effects.1.min}.",
+          "short": "Crystallise {=tiers.I.effects.0.value} AP (min {=tiers.I.effects.0.min}) · Name It {=tiers.I.effects.1.value} AP (min {=tiers.I.effects.1.min})",
           "effects": [
             {
               "op": "cost_mod",
@@ -4680,6 +4771,7 @@
           ],
           "ap_cost": null,
           "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP, and your Call Name It {=tiers.II.effects.1.value|abs} AP less, never below {=tiers.II.effects.1.min}.",
+          "short": "Crystallise {=tiers.II.effects.0.value} AP · Name It {=tiers.II.effects.1.value} AP",
           "effects": [
             {
               "op": "cost_mod",
@@ -4753,6 +4845,7 @@
           ],
           "ap_cost": null,
           "text": "The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +{=tiers.I.effects.0.value}: you have seen worse.",
+          "short": "An ally near you takes a Brain or Heart condition: your next save +{=tiers.I.effects.0.value}",
           "effects": [
             {
               "op": "save_mod",
@@ -4772,6 +4865,7 @@
           ],
           "ap_cost": null,
           "text": "The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +{=tiers.II.effects.0.value}: you have seen worse. You may give that bonus to the ally instead, for their next save this round; it costs you nothing.",
+          "short": "+{=tiers.II.effects.0.value} · or give it to that ally",
           "effects": [
             {
               "op": "save_mod",
@@ -4837,6 +4931,7 @@
           ],
           "ap_cost": null,
           "text": "When a fight starts, your calm unnerves the most dangerous enemy: it has {=tiers.I.effects.0.value} to its attacks while it can see you and you are standing. Until the end of your first turn you may move this to another enemy for 0 AP.",
+          "short": "Fight start: the deadliest foe {=tiers.I.effects.0.value} to hit while it sees you standing",
           "effects": [
             {
               "op": "attack_mod",
@@ -4856,6 +4951,7 @@
           ],
           "ap_cost": null,
           "text": "When a fight starts, your calm unnerves the most dangerous enemy: it has {=tiers.II.effects.0.value} to its attacks while it can see you and you are standing. Until the end of your first turn you may move this to another enemy for 0 AP.",
+          "short": "{=tiers.II.effects.0.value} to hit",
           "effects": [
             {
               "op": "attack_mod",
@@ -4938,6 +5034,7 @@
           ],
           "ap_cost": null,
           "text": "Your first Hymn or Miracle each fight costs {=tiers.I.effects.0.value|abs} AP less.",
+          "short": "First Hymn or Miracle each fight costs {=tiers.I.effects.0.value|abs} AP less",
           "effects": [
             {
               "op": "cost_mod",
@@ -4981,6 +5078,7 @@
           ],
           "ap_cost": null,
           "text": "Your first Hymn or Miracle each fight costs {=tiers.II.effects.0.value|abs} AP less, and the wait between your Hymns is {=tiers.II.effects.2.value|abs} round shorter (never under its floor).",
+          "short": "Hymn wait {=tiers.II.effects.2.value} round, never under its floor",
           "effects": [
             {
               "op": "cost_mod",
@@ -5074,6 +5172,7 @@
           ],
           "ap_cost": null,
           "text": "Your prayers deal {=tiers.I.effects.0.value|more}% more damage to an enemy at half its HP or less.",
+          "short": "+{=tiers.I.effects.0.value|more}% prayer damage to a foe at {=tiers.I.effects.0.if.target_hp_at_most|pct}% HP or less",
           "effects": [
             {
               "op": "damage_mult",
@@ -5098,6 +5197,7 @@
           ],
           "ap_cost": null,
           "text": "Your prayers deal {=tiers.II.effects.0.value|more}% more damage to an enemy at half its HP or less, or to a Marked or Judged enemy above half.",
+          "short": "+{=tiers.II.effects.0.value|more}% · also Marked or Judged foes above",
           "effects": [
             {
               "op": "damage_mult",
@@ -5181,6 +5281,7 @@
           ],
           "ap_cost": null,
           "text": "Outside a fight, name one line you won't cross. While you hold to it, you have +{=tiers.I.effects.0.value} on every Heart save. The Narrator decides when you cross it; after that you can't name a new line until the next session.",
+          "short": "Name a line you won't cross: +{=tiers.I.effects.0.value} on Heart saves while you hold it",
           "effects": [
             {
               "op": "save_mod",
@@ -5203,6 +5304,7 @@
           ],
           "ap_cost": null,
           "text": "Outside a fight, name one line you won't cross. While you hold to it, you have +{=tiers.II.effects.0.value} on every Heart save and allies within 3 tiles have +{=tiers.II.effects.1.value}. The Narrator decides when you cross it; after that you can't name a new line until the next session.",
+          "short": "+{=tiers.II.effects.0.value} · allies near you +{=tiers.II.effects.1.value}",
           "effects": [
             {
               "op": "save_mod",
@@ -5274,6 +5376,7 @@
           ],
           "ap_cost": null,
           "text": "Up to {=tiers.I.effects.0.per_fight} times a fight, when you spare an enemy or protect an innocent, you gain a shield worth 15% of your max HP; a new one does not add to a shield you hold (the larger stands). To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts.",
+          "short": "Spare a foe or shield an innocent: a shield of {=amounts.shield.mults.pct_of_max_hp_I}% max HP, up to {=tiers.I.effects.0.per_fight} a fight",
           "effects": [
             {
               "op": "shield",
@@ -5294,6 +5397,7 @@
           ],
           "ap_cost": null,
           "text": "Up to {=tiers.II.effects.0.per_fight} times a fight, when you spare an enemy or protect an innocent, you gain a shield worth 25% of your max HP; a new one does not add to a shield you hold (the larger stands). To spare an enemy, attack with Spare on: a blow that would take its last HP subdues it instead. Outside a fight, the Narrator decides what counts.",
+          "short": "{=amounts.shield.mults.pct_of_max_hp_II}% max HP",
           "effects": [
             {
               "op": "shield",
@@ -5361,6 +5465,7 @@
           ],
           "ap_cost": null,
           "text": "If your squad makes the first kill of a fight and you had damaged that enemy, you have 3 more AP on your next turn. If your squad takes the fight's first casualty, you have {=tiers.I.effects.1.value|abs} AP less on your next turn.",
+          "short": "Squad's first kill, on a foe you hurt: +{=tiers.I.effects.0.value} AP · first casualty: {=tiers.I.effects.1.value} AP",
           "effects": [
             {
               "op": "stat_mod",
@@ -5387,6 +5492,7 @@
           ],
           "ap_cost": null,
           "text": "If your squad makes the first kill of a fight and you had damaged that enemy, you have 3 more AP on your next turn, and whoever made the kill has 1 more AP on theirs.",
+          "short": "No casualty cost · the killer +{=tiers.II.effects.1.value} AP",
           "effects": [
             {
               "op": "stat_mod",
@@ -5450,6 +5556,7 @@
           ],
           "ap_cost": null,
           "text": "Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you.",
+          "short": "Once per organisation: the Narrator names who really holds power",
           "effects": [
             {
               "op": "narrator",
@@ -5466,6 +5573,7 @@
           ],
           "ap_cost": null,
           "text": "Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you, and that person agrees to see you; what they agree to after that is up to them.",
+          "short": "That person agrees to see you",
           "effects": [
             {
               "op": "narrator",

@@ -6,17 +6,14 @@
 // (screens/combat.js, game/resources.ts). Colour (docs/design/colour-system.md): a pick still to make is white with
 // "still to do"; a pick made is the door's attribute ink with "kept for good"; a step not offered yet is muted.
 import { doorForkView, doorForkViews, SKILL } from '@engine';
-import ASSETS from './assets.json';
 import { act, toast } from './store';
 import { ATTR_INK } from './classView';
 import { forkChipsLine } from './forkLine';
 export { forkChipsLine };
 
-const A = ASSETS as Record<string, string>;
 const MUTED = '#7F8BA1', TEXT = '#E7EBF3', WHITE = '#FFFFFF';
-/** An option's icon: its placeholder or art (art/catalog.json fork_icons, built as wick-fork-<id>), else its door's
- *  skill portrait (the spec: until drawn, the option shows its door's skill icon). */
-export const forkIconOf = (id: string, skill: string): string => A['wick-fork-' + id.replace(/\./g, '-')] || A['skill-' + skill] || '';
+import { forkIconOf } from './forkIcon';
+export { forkIconOf };
 const inkOf = (skill: string): string => ATTR_INK[(SKILL as any)[skill]?.attribute] || TEXT;
 
 export interface ForkOptView { key: string; name: string; text: string; icon: string; picked: boolean; canPick: boolean; label: string; style: string; nameStyle: string; btnStyle: string; pick: () => void }

@@ -13,7 +13,12 @@
   "actions:shove:text:10": "the contest base 10: rules.json rolls.contest_base (the engine's rollSave); a placeholder reads only its own item",
   "actions:sprint:text:3": "3 x Movement: rules.json actions sprint; the {sprint_tiles} token beside it is the number the engine fills per unit",
   "actions:stim:text:1": "stabilised at 1 HP: rules.json downed stabilise_hp, which the engine reads; a placeholder reads only its own item",
-  "feelings:shame:trigger.text:1": "a die face: a natural 1 is the trigger, not a number any field holds"
+  "feelings:shame:trigger.text:1": "a die face: a natural 1 is the trigger, not a number any field holds",
+  "perks:got_you_in_my_sight:tiers.I.short:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field",
+  "perks:grim_reaper:tiers.I.short:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field",
+  "perks:overruled:tiers.I.short:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field",
+  "perks:sweet_talker:tiers.I.short:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field",
+  "perks:talks_broke_down:tiers.I.short:3": "the AP cooldown's 3 turns: perks.json rules.ap_cooldown.turns (perks/cooldown.ts AP_COOLDOWN_TURNS), the file's rule block, not this item's field"
  },
  "baseline": {
   "calls:call.brief:steps.0.text:1": 1,

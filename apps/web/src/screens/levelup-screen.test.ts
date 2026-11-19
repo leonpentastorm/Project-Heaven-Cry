@@ -209,7 +209,11 @@ describe('level-up screen', () => {
     // a skill on the page opens that skill's own page
     await React.act(async () => { (page.querySelector('button.phc-attr-skill') as HTMLButtonElement).click(); });
     expect(el.querySelector('.phc-attr-page')).toBeNull();
-    // ...with its ladder: ten rows, open by default, the character's owned levels and the next one marked
+    // ...the lore on its face, its ladder folded (Leon, 19 Nov); opened: ten rows, the character's owned levels and the next one marked
+    expect(el.querySelector('.phc-ep-lore')).toBeTruthy();
+    expect(el.querySelector('.phc-ep-fold')!.getAttribute('aria-expanded')).toBe('false');
+    expect(el.querySelectorAll('.phc-ep-road .phc-ep-step').length).toBe(0);
+    await React.act(async () => { (el.querySelector('.phc-ep-fold') as HTMLButtonElement).click(); });
     expect(el.querySelector('.phc-ep-fold')!.getAttribute('aria-expanded')).toBe('true');
     const steps = [...el.querySelectorAll('.phc-ep-road .phc-ep-step')], first = page.querySelector('button.phc-attr-skill')!.getAttribute('data-skill')!;
     expect(steps.map((x) => x.getAttribute('data-step'))).toEqual(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']);
