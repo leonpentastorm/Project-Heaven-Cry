@@ -121,6 +121,7 @@ await snap('fight-drawer');
 // ---------- 3. The Perks tab: read-only rows (here, in the fight) ----------
 await act({ type: 'sandbox/kit', charId: cid, kind: 'soul' });
 await act({ type: 'sandbox/skill', charId: cid, skill: 'will_power', points: 10 });
+await act({ type: 'sandbox/skill', charId: cid, skill: 'composure', points: 3 }); await act({ type: 'sandbox/perk', charId: cid, perk: 'pure_heart', tier: 'I' }); // rules 1.75 item 6203: Pure Heart is a Composure perk
 await settle(p, 500);
 if (await tools.count()) await tools.getByRole('button', { name: 'Close the tools' }).click().catch(() => {});
 await settle(p, 300);
@@ -132,7 +133,7 @@ for (let i = 0; i < 3; i++) { const h = p.locator('[data-shelf] .phc-fold-h[aria
 const rows = await p.locator('[role="tabpanel"] button').allTextContents();
 const has = (re) => rows.some((t) => re.test(t.replace(/\s+/g, ' ')));
 // Rules 1.14, the perk card in a fight: a switch on another action says where it is; a passive shows a live line.
-ok('Overdraw, Pure Heart and The Twin Pays are listed to read (their count · a live line · their count)', has(/Overdraw ?Once a turn/) && has(/Pure Heart.*(Ready|Waiting: |Used |Last: |Active all fight|Its button appears)/) && has(/The Twin Pays ?Once a fight/));
+ok('Overdraw, Pure Heart and The Twin Pays are listed to read (their count · a live line · their count)', has(/Overdraw ?Once a turn/) && has(/Pure Heart.*(Ready|Waiting: |Used |Last: |Active all fight|Its button appears|Once a fight)/) && has(/The Twin Pays ?Once a fight/));
 ok('the shelves are labelled, in order', (await p.locator('[role="tabpanel"] [data-shelf]').evaluateAll((els) => els.map((e) => e.getAttribute('data-shelf')).join(','))).replace(/^use,/, '') === 'rides,always');
 { const lab = await perkTab.getAttribute('aria-label'), m = /, (\d+) actions?, (\d+) to read/.exec(lab || ''), badge = (await perkTab.locator('span').last().textContent()).trim();
   ok('the Perks tab counts actions apart from rows to read (' + lab + '; badge ' + badge + ')', !!m && +m[2] >= 3 && badge === m[1]); }

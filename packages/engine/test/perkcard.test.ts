@@ -24,7 +24,7 @@ describe('perkCards', () => {
     expect(card(f, 'perk:into_the_dark').state).not.toBe('used');
     stateOf(h).used = true;
     expect(card(f, 'perk:into_the_dark')).toMatchObject({ state: 'used', spent: 'per_combat' });
-    expect(PERK_CARDS.private_count).toContain('skill:composure.5');
+    expect(PERK_CARDS.private_count).toContain('perk:stand_still'); // rules 1.75 item 6203: Stand Still is a Composure perk
   });
   it('an item whose button is up is left to USE NOW; an enemy\'s items are not the squad\'s to read; class moves have their own tab', () => {
     const f = fightWith([{ perks: { roll_with_it: 'I' }, classId: 'bard' }], [{ at: 'F6' }]); f.turn(f.pc);
@@ -52,7 +52,7 @@ describe('data/perk_cards.json', () => {
     }
   });
   it('core_wired items sit on ALWAYS ON by declaration', () => {
-    expect(PERK_CARDS.core_wired.length).toBeGreaterThan(0);
+    expect(Array.isArray(PERK_CARDS.core_wired)).toBe(true); // rules 1.75 item 6213: Many Hands has a data row of its own now (its Share a Hit), so nothing is core-wired today; each one listed must still be
     for (const id of PERK_CARDS.core_wired) expect(coreWired(id)).toBe(true);
     expect(coreWired('bulwark')).toBe(false);
   });

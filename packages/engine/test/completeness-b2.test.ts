@@ -127,23 +127,7 @@ describe('triggers from a reducer action or an enemy\'s turn (item 20)', () => {
     f.turn(ally); f.act({ type: 'combat/end-turn', unitId: ally.id });
     expect(f.unit(ally.id).downed).toBe(true); expect(logHas(f.cb, /First casualty \(Outclassed\)/)).toBe(true);
   });
-  it('Sweet Talker: charm in the story, then a debuff through the reducer (the Taunt call, combat/call) that lands on the charmed NPC gives +2 AP (II +3) (rules 1.56: Lay Down Arms, the plea this used, is gone)', () => {
-    for (const [tier, n] of [['I', 2], ['II', 3]] as const) {
-      const s = storyWith([{ perks: { sweet_talker: tier }, skills: { implication: 3 } }]); const c = s.chars[0];
-      s.act({ type: 'narrator/turn', turn: { narration: 'Talk.', checks: [{ charId: c.id, skills: ['implication'], tn: 12, stakes: 'Charm Vel', target: 'Vel', auto: 'success' }] } } as any);
-      const ck = s.g.checks.find((k: any) => !k.done); if (ck) s.act({ type: 'check/roll', checkId: ck.id } as any);
-      s.act({ type: 'narrator/turn', turn: { narration: 'Vel turns.', combat: { name: 'Fight', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Vel', tier: 'soldier', weapon: 'service_pistol', at: 'F6' }] } } } as any);
-      const box: any = s, cb: Combat = box.g.combat; open(cb);
-      const me = cb.units.find((u) => u.side === 'pc')!, vel = cb.units.find((u) => u.name === 'Vel')!;
-      me.pos = '2,5'; vel.pos = '4,5'; vel.sv = { body: -50, brain: -50, heart: -50 } as any;
-      cb.turn = cb.order.indexOf(me.id); me.ap = 6; delete (cb as any).window;
-      const cost = withGame(box.g, () => previewCall(cb, me, 'call.taunt', { targetId: vel.id } as any)).ap;
-      s.act({ type: 'combat/call', unitId: me.id, id: 'call.taunt', targetId: vel.id } as any);
-      const after = box.g.combat.units.find((u: Unit) => u.id === me.id), v2 = box.g.combat.units.find((u: Unit) => u.id === vel.id);
-      expect(condOn(v2, 'taunted')).toBe(true);
-      expect(after.ap).toBe(6 - cost + n); expect(logHas(box.g.combat, /Sweet Talker/)).toBe(true);
-    }
-  });
+  // Sweet Talker is removed (rules 1.75 item 6215).
 });
 
 describe('Sixth Sense through the reducer (item 21)', () => {

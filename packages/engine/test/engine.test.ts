@@ -78,7 +78,7 @@ describe('classes and perk steps', () => {
   it('one perk step per Mastery level', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
     c.skills = { camaraderie: 5 };
-    expect(pendingPerkSteps(c)[0].choices.length).toBe(2);
+    expect(pendingPerkSteps(c)[0].choices.length).toBe(4); // rules 1.75 item 6213: Camaraderie has four perks
   });
 });
 

@@ -494,11 +494,11 @@
           "door_pick": "fork.tend.short_thread"
         }
       ],
-      "text": "Tending a Bonded ally within {=effects.0.if.target_within} tiles: +{=numbers.near|more}% healing, not +{=numbers.through|more}% · Touch reach {=numbers.touch} tiles",
+      "text": "Tending a Bonded ally within {=effects.0.if.target_within} tiles: +{=numbers.near|more}% healing, not +{=numbers.through|more}% · Triage reaches {=numbers.triage} tiles",
       "numbers": {
         "near": 1.4,
         "through": 1.2,
-        "touch": 2
+        "triage": 2
       },
       "effects": [
         {
@@ -534,7 +534,7 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6212"
     },
     {
       "id": "fork.tend.shared_pulse",
@@ -597,21 +597,55 @@
           "door_pick": "fork.tend.long_thread"
         }
       ],
-      "text": "Bond reach +{=numbers.reach} tiles · first Mend or Shield on each Bonded ally each round costs {=numbers.ap|abs} AP less (min {=numbers.min})",
+      "text": "Bond reach +{=numbers.reach} tiles · the first Mend or Shield on each Bonded ally each round costs {=effects.0.value|abs} AP less (min {=effects.0.min})",
       "numbers": {
-        "reach": 3,
-        "ap": -1,
-        "min": 1
+        "reach": 3
       },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N20"
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:tend.mend#tend_mend",
+              "verb:tend.shield#tend_shield"
+            ],
+            "target": "ally",
+            "target_tied": "bond"
+          },
+          "value": -1,
+          "min": 1,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "each": "target",
+            "key": "first",
+            "peek": true
+          },
+          "label": "Long Thread"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "tend_mend",
+              "tend_shield"
+            ],
+            "target": "ally",
+            "target_tied": "bond"
+          },
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "each": "target",
+            "key": "first"
+          }
+        }
       ],
-      "why": "A price cannot see its target (the cost trigger resolves no target: N20, not approved), so once per Bonded ally per round cannot be counted; the spec's cheaper wording (uncapped) is the one it rejects.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6212"
     },
     {
       "id": "fork.prayer.round_of_blessings",
@@ -625,20 +659,65 @@
           "door_pick": "fork.prayer.round_of_blessings"
         }
       ],
-      "text": "Whisper an ally unblessed last round: Hymn wait {=numbers.cut} round shorter, or next prayer roll {=numbers.roll|signed}",
-      "numbers": {
-        "cut": 1,
-        "roll": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N7"
+      "text": "Your first prayer each turn: its heal or shield +{=effects.0.value|more}%",
+      "effects": [
+        {
+          "op": "mend_mult",
+          "when": "heal",
+          "if": {
+            "actor": "self",
+            "target": "any",
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.25,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "first",
+            "peek": true
+          },
+          "label": "Round of Blessings"
+        },
+        {
+          "op": "mend_mult",
+          "when": "shield",
+          "if": {
+            "actor": "self",
+            "target": "any",
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.25,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "first",
+            "peek": true
+          },
+          "label": "Round of Blessings"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "whisper",
+              "pray"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "first"
+          }
+        }
       ],
-      "why": "The Hymn's wait is not a count an op can move and the prayer roll is on no hook (N7, not approved). The cheaper wording (the next Hymn's heal or shield ×1.25) needs a predicate that tells a Hymn's heal from a Whisper's: both reach heal_in as kind blessing.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.prayer.steadfast",
@@ -652,16 +731,27 @@
           "door_pick": "fork.prayer.steadfast"
         }
       ],
-      "text": "Once a round, off your turn: say a Whisper as a reaction when a foe attacks an ally you see",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N6"
+      "text": "A Whisper or Ward on an ally at half HP or less: {=effects.0.value|abs} AP less",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "whisper",
+              "ward"
+            ],
+            "target": "ally",
+            "target_hp_at_most": 0.5
+          },
+          "value": -1,
+          "min": 0,
+          "label": "Steadfast"
+        }
       ],
-      "why": "A prayer as a reaction needs N6 (not approved). The cheaper wording (Health or Protection held on an ally, landing at its first hit) needs the Whisper's amount on a condition row, and a Whisper's heal and shield are faith.ts code (prayerAmount), not an amount block a row can deal.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.prayer.benediction",
@@ -675,27 +765,38 @@
           "door_pick": "fork.prayer.benediction"
         }
       ],
-      "text": "A Whisper on an ally may go wide: +{=numbers.ap} AP · allies within {=numbers.within} tile get {=numbers.share|pct}% · +{=numbers.wait} round Hymn wait",
+      "text": "An answered Hymn: you and allies within {=effects.0.targets.within} tiles {=numbers.hit|signed} to hit for {=numbers.rounds} rounds",
       "numbers": {
-        "ap": 1,
-        "within": 1,
-        "share": 0.7,
-        "wait": 1
+        "hit": 1,
+        "rounds": 2
       },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N5",
-        "N7"
+      "effects": [
+        {
+          "op": "condition",
+          "when": "acted",
+          "if": {
+            "action": [
+              "pray"
+            ]
+          },
+          "condition": "blessed_aim",
+          "skip_save": true,
+          "targets": {
+            "of": "self",
+            "within": 2,
+            "side": "side"
+          },
+          "label": "Benediction",
+          "say": "{self}'s Hymn steadies every hand near it (Benediction)."
+        }
       ],
-      "why": "The blessing runner reads no targets and the Hymn's wait is no count (N5, N7, not approved); the spec's cheaper wording (Intercession) is the one it rejects.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.prayer.held_breath",
-      "name": "Held Breath",
+      "name": "Swift Psalm",
       "kind": "verb",
       "door": "faith",
       "step": 8,
@@ -705,19 +806,17 @@
           "door_pick": "fork.prayer.held_breath"
         }
       ],
-      "text": "A turn with no Whisper is held (max {=numbers.held}): say it later as well as that turn's Whisper",
-      "numbers": {
-        "held": 1
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N7"
+      "text": "Hymn wait {=effects.0.value} round (never under its floor)",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "hymn_wait",
+          "value": -1
+        }
       ],
-      "why": "Whispers a turn are a literal, not a stat (N7, not approved); the spec's cheaper wording is to drop it.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.momentum.rolling_start",
@@ -1447,17 +1546,29 @@
           "door_pick": "fork.soul.ride_the_edge"
         }
       ],
-      "text": "A Release at exactly your Strain limit: +{=numbers.mult|more}% damage",
-      "numbers": {
-        "mult": 1.15
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Slow Burn waits on N22), so it is not built in this slice; it needs N3b and N10's `at: limit` (approved), built with Slow Burn.",
+      "text": "Release at or over your Strain limit: {=effects.0.value|more}% damage",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "outburst"
+            ],
+            "self_res": {
+              "strain": {
+                "at": "limit"
+              }
+            }
+          },
+          "value": 1.15,
+          "label": "Ride the Edge"
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.soul.slow_burn",
@@ -1471,19 +1582,61 @@
           "door_pick": "fork.soul.slow_burn"
         }
       ],
-      "text": "Each turn you start holding an Outburst, Strain falls {=numbers.calm} more",
-      "numbers": {
-        "calm": 1
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N22"
+      "text": "Once a turn: Steady costs {=effects.0.set} AP and calms {=effects.2.value|abs} more Strain",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "steady"
+            ]
+          },
+          "set": 0,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "free",
+            "peek": true
+          },
+          "label": "Slow Burn"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "steady"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "free"
+          }
+        },
+        {
+          "op": "resource",
+          "when": "acted",
+          "if": {
+            "action": [
+              "steady"
+            ]
+          },
+          "resource": "strain",
+          "value": -1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "calm"
+          },
+          "label": "Slow Burn",
+          "say": "Slow Burn: {self}'s heart cools further ({gain} Strain)."
+        }
       ],
-      "why": "The held turn's start is a hook, not a trigger (N22, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.soul.blood_price",
@@ -1497,19 +1650,46 @@
           "door_pick": "fork.soul.blood_price"
         }
       ],
-      "text": "A Pump may be paid in HP: {=numbers.hp_per_mp} HP per MP · never down to Downed",
-      "numbers": {
-        "hp_per_mp": 0.5
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N18"
+      "text": "Your heart burns you: your next Release {=effects.1.value|more}% damage",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "damaged",
+          "if": {
+            "target": "self",
+            "self_harm": true
+          },
+          "flag": "burned",
+          "label": "Blood Price"
+        },
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "outburst"
+            ],
+            "flag": "burned"
+          },
+          "value": 1.25,
+          "label": "Blood Price"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "release"
+            ]
+          },
+          "flag": "burned",
+          "clear": true
+        }
       ],
-      "why": "The Pump is not on the cost hook and a price cannot be paid in HP (N18, not approved); the spec's cheaper wording still needs the Pump on a hook.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.soul.clean_break",
@@ -1523,18 +1703,30 @@
           "door_pick": "fork.soul.clean_break"
         }
       ],
-      "text": "A Release at stage {=numbers.stage} lowers Strain by {=numbers.calm}",
-      "numbers": {
-        "stage": 4,
-        "calm": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Blood Price waits on N18), so it is not built in this slice; it needs N3b (approved), built with Blood Price.",
+      "text": "An Outburst drops a foe: {=effects.0.value} Strain, once a turn",
+      "effects": [
+        {
+          "op": "resource",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "damage": [
+              "outburst"
+            ]
+          },
+          "resource": "strain",
+          "value": -2,
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "label": "Clean Break",
+          "say": "Clean Break: {self}'s heart eases ({gain} Strain)."
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.figment.hard_light",

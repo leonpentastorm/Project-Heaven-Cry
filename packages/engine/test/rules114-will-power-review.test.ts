@@ -9,7 +9,7 @@ type F = ReturnType<typeof fightWith>;
 const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 const fxOf = (cb: Combat, k: string) => (cb.fx || []).filter((e: any) => e.k === k) as any[];
-const OD = 'skill:will_power.3#overdraw', AGAIN = 'perk:heart_overload#again', BLOOD = 'perk:heart_overload#pay_hp';
+const OD = 'skill:will_power.2#overdraw', AGAIN = 'perk:heart_overload#again', BLOOD = 'perk:heart_overload#pay_hp';
 function clean(f: F) {
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   for (const x of cb.units) { x.hp = x.maxHp = 999; x.armour = 0; x.def = -40; x.sv = { body: -40, brain: -40, heart: -40 } as any; x.hidden = false; }
@@ -38,7 +38,7 @@ describe('Overdraw: the review', () => {
   it('a refused Overdraw Pump (no AP) changes nothing: the turn\'s use and the fight\'s free one are kept', () => {
     const f = start(); f.unit(f.pc.id).ap = 0; const g0 = f.g;
     expect(() => A(f, f.pc, { type: 'combat/pump', mods: [OD] })).toThrow(/Needs 1 AP/);
-    expect(f.g).toBe(g0); expect(f.pc.mg!.held!.stage).toBe(0); expect(f.pc.uses?.['skill:will_power.3|per_turn']).toBeUndefined();
+    expect(f.g).toBe(g0); expect(f.pc.mg!.held!.stage).toBe(0); expect(f.pc.uses?.['skill:will_power.2|per_turn']).toBeUndefined();
     f.unit(f.pc.id).ap = 1; A(f, f.pc, { type: 'combat/pump', mods: [OD] }); expect(f.pc.mg!.held!.stage).toBe(2); expect(f.pc.mg!.strain).toBe(1); // the Begin's 1 only
   });
   it('the Strain-free one is the first of the fight only: the third Overdraw costs 1 Strain like the second', () => {
@@ -51,7 +51,7 @@ describe('Overdraw: the review', () => {
     expect(f.pc.mg!.held!.stage).toBe(0);
   });
   it('without the skill the switch does nothing', () => {
-    const f = soul([{ skills: { will_power: 2 } }]); const d = give(f.pc); A(f, f.pc, { type: 'combat/outburst', design: d, hold: true });
+    const f = soul([{ skills: { will_power: 1 } }]); const d = give(f.pc); A(f, f.pc, { type: 'combat/outburst', design: d, hold: true }); // rules 1.75 item 6200: Overdraw at 2
     A(f, f.pc, { type: 'combat/pump', mods: [OD, 'overdraw'] }); expect(f.pc.mg!.held!.stage).toBe(1);
   });
 });

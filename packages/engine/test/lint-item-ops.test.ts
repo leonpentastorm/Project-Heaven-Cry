@@ -87,7 +87,7 @@ describe('item ops: the ratchet on lane handlers', () => {
   it('every num(h, key) a handler asks for is in its item\'s data', () => {
     const bad: string[] = [];
     for (const f of FILES) for (const b of blocks(f)) for (const m of b.text.matchAll(/\bnum\(\s*\w+\s*,\s*'([a-z_0-9]+)'/g)) {
-      const kind = b.id.includes('.') ? 'class' : undefined, key = (kind ? 'class:' : '') + b.id, it0 = rawItem(key.includes(':') ? key : (splitKey(key)[0] + ':' + b.id));
+      const kind = !b.id.includes(':') && b.id.includes('.') ? 'class' : undefined, key = (kind ? 'class:' : '') + b.id, it0 = rawItem(key.includes(':') ? key : (splitKey(key)[0] + ':' + b.id));
       const has = it0 && (typeof it0.numbers?.[m[1]] === 'number' || Object.values(it0.tiers || {}).some((t: any) => typeof t?.numbers?.[m[1]] === 'number'));
       if (!has) bad.push(f + ': ' + b.id + ' asks num(h, \'' + m[1] + '\'), which is not in its data');
     }

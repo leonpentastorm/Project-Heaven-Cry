@@ -34,7 +34,7 @@ describe('step 10: the TEND tab and its groups (bonds-spec.md section 9)', () =>
     const mend = rows.find((d) => d.id.includes('verb:tend.mend#') || d.id.endsWith('verb:tend.mend'));
     expect(mend?.sub).toBe(subOf(TJ, 'tend.mend'));
     expect(rows.find((d) => d.id.includes('tend.bond'))?.sub).toBe(subOf(TJ, 'tend.bond'));
-    expect(rows.find((d) => d.id.includes('tend.settle'))?.sub).toBe(subOf(TJ, 'tend.settle'));
+    expect(rows.find((d) => d.id.includes('tend.shield'))?.sub).toBe(subOf(TJ, 'tend.shield')); // rules 1.75: Settle is Steady Hands's (a perk), Shield the door's from Empathy 5
     expect(rows.some((d) => d.id.includes('tend.threads'))).toBe(false);
   });
   it('without an Attuner in hand, a verb is refused in its data\'s words', () => {

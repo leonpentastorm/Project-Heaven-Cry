@@ -1129,8 +1129,8 @@
           "if": {
             "actor": "self",
             "tech_group": [
-                  "finisher"
-                ]
+              "finisher"
+            ]
           },
           "flag": "swing"
         },
@@ -1140,8 +1140,8 @@
           "if": {
             "flag": "swing",
             "tech_group": [
-                  "finisher"
-                ]
+              "finisher"
+            ]
           },
           "priority": 150,
           "condition": "swinging",
@@ -2599,7 +2599,9 @@
           "if": {
             "actor": "self",
             "hostile": true,
-            "rolled_with": ["dexterity"],
+            "rolled_with": [
+              "dexterity"
+            ],
             "target_alive": true
           },
           "resource": "pressure",
@@ -2625,7 +2627,9 @@
           "when": "dealing",
           "if": {
             "hostile": true,
-            "rolled_with": ["dexterity"]
+            "rolled_with": [
+              "dexterity"
+            ]
           },
           "value": {
             "base": 1,
@@ -2657,7 +2661,9 @@
               "if": {
                 "actor": "self",
                 "hostile": true,
-                "rolled_with": ["dexterity"],
+                "rolled_with": [
+                  "dexterity"
+                ],
                 "target_alive": true
               },
               "resource": "pressure",
@@ -2683,7 +2689,9 @@
               "when": "dealing",
               "if": {
                 "hostile": true,
-                "rolled_with": ["dexterity"]
+                "rolled_with": [
+                  "dexterity"
+                ]
               },
               "value": {
                 "base": 1,
@@ -2715,7 +2723,9 @@
               "if": {
                 "actor": "self",
                 "hostile": true,
-                "rolled_with": ["dexterity"],
+                "rolled_with": [
+                  "dexterity"
+                ],
                 "target_alive": true
               },
               "resource": "pressure",
@@ -2746,7 +2756,9 @@
               "when": "dealing",
               "if": {
                 "hostile": true,
-                "rolled_with": ["dexterity"]
+                "rolled_with": [
+                  "dexterity"
+                ]
               },
               "value": {
                 "base": 1,
@@ -2804,7 +2816,9 @@
           "if": {
             "actor": "self",
             "hostile": true,
-            "rolled_with": ["dexterity"],
+            "rolled_with": [
+              "dexterity"
+            ],
             "target_alive": true,
             "target_res": {
               "pressure": {
@@ -2839,7 +2853,9 @@
               "if": {
                 "actor": "self",
                 "hostile": true,
-                "rolled_with": ["dexterity"],
+                "rolled_with": [
+                  "dexterity"
+                ],
                 "target_alive": true,
                 "target_res": {
                   "pressure": {
@@ -2874,7 +2890,9 @@
               "if": {
                 "actor": "self",
                 "hostile": true,
-                "rolled_with": ["dexterity"],
+                "rolled_with": [
+                  "dexterity"
+                ],
                 "target_alive": true,
                 "target_res": {
                   "pressure": {
@@ -3815,7 +3833,19 @@
       "uses": "at_will",
       "text": "I: Once per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't. II: Twice per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't.",
       "effects": [
-        {"op": "cost_mod", "set": 0, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 1}, "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."}
+        {
+          "op": "cost_mod",
+          "set": 0,
+          "when": "swap",
+          "if": {
+            "ap_above": 0
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."
+        }
       ],
       "tiers": {
         "I": {
@@ -3829,7 +3859,19 @@
           "text": "Once per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't.",
           "short": "Once a turn: draw, stow, swap or fit a mod for {=tiers.I.effects.0.set} AP",
           "effects": [
-            {"op": "cost_mod", "set": 0, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 1}, "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."}
+            {
+              "op": "cost_mod",
+              "set": 0,
+              "when": "swap",
+              "if": {
+                "ap_above": 0
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1
+              },
+              "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."
+            }
           ]
         },
         "II": {
@@ -3843,7 +3885,19 @@
           "text": "Twice per turn in a fight, drawing, putting away or swapping what your hands hold, or fitting a mod, costs 0 AP. A two-handed draw counts; armour doesn't.",
           "short": "{=tiers.II.effects.0.limit.n} times a turn",
           "effects": [
-            {"op": "cost_mod", "set": 0, "when": "swap", "if": {"ap_above": 0}, "limit": {"per": "per_turn", "n": 2}, "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."}
+            {
+              "op": "cost_mod",
+              "set": 0,
+              "when": "swap",
+              "if": {
+                "ap_above": 0
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 2
+              },
+              "say": "{self} swaps without missing a beat (Hot-Swap: {=.set} AP)."
+            }
           ],
           "replaces_tier_I": true,
           "after": "I"
@@ -6671,7 +6725,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.I.effects.0.value|more}% more damage. II: With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.II.effects.0.value|more}% more damage.",
+      "text": "I: With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.I.effects.0.value|more}% more damage. II: With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.II.effects.0.value|more}% more damage. Your attacks on a foe Bonded to you roll with Empathy when it is higher.",
       "effects": [
         {
           "op": "damage_mult",
@@ -6724,8 +6778,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.II.effects.0.value|more}% more damage.",
-          "short": "+{=tiers.II.effects.0.value|more}%",
+          "text": "With an Attuner in hand, your hits on an enemy Bonded to you deal {=tiers.II.effects.0.value|more}% more damage. Your attacks on a foe Bonded to you roll with Empathy when it is higher.",
+          "short": "+{=tiers.II.effects.0.value|more}% · roll with Empathy on a Bonded foe",
           "effects": [
             {
               "op": "damage_mult",
@@ -6740,6 +6794,21 @@
                 }
               },
               "value": 1.12
+            },
+            {
+              "op": "roll_with",
+              "when": "attack",
+              "if": {
+                "target": "foe",
+                "target_tied": "bond",
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "skill": "empathy",
+              "if_higher": true,
+              "label": "Taut Thread"
             }
           ],
           "replaces_tier_I": true,
@@ -6752,7 +6821,8 @@
         "bonds",
         "damage"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6211"
     },
     {
       "id": "lay_down_arms",
@@ -6763,7 +6833,7 @@
           "per": [
             {
               "of": "event:amount",
-              "value": 0.04
+              "value": 0.1
             }
           ],
           "type": "soul",
@@ -6777,7 +6847,7 @@
           "per": [
             {
               "of": "event:amount",
-              "value": 0.08
+              "value": 0.2
             }
           ],
           "type": "soul",
@@ -6958,11 +7028,12 @@
         "bonds",
         "damage"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6211"
     },
     {
-      "id": "soulmate",
-      "name": "Soulmate",
+      "id": "hand_off",
+      "name": "Hand-Off",
       "tier": "acquired",
       "perk_type": "passive",
       "skills": [
@@ -6978,18 +7049,89 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Outside a fight, bond with one teammate. You take part of the damage they take, in their place: {=effects.0.value_by_mastery.1|pct}% at Camaraderie Mastery 1, {=effects.0.value_by_mastery.2|pct}% at Mastery 2, {=effects.0.value_by_mastery.3|pct}% at Mastery 3 and {=effects.0.value_by_mastery.4|pct}% at Mastery 4. It never takes your last HP, and if they hold Soulmate too you do it for each other. II: Outside a fight, bond with up to two teammates. You take part of the damage they take, in their place: {=effects.0.value_by_mastery.1|pct}% at Camaraderie Mastery 1, {=effects.0.value_by_mastery.2|pct}% at Mastery 2, {=effects.0.value_by_mastery.3|pct}% at Mastery 3 and {=effects.0.value_by_mastery.4|pct}% at Mastery 4. It never takes your last HP, and if they hold Soulmate too you do it for each other.",
+      "text": "I: Once a round, a friend within {=tiers.I.numbers.reach} tile of you who is attacked uses your Defense if it is higher. II: As Tier I, for a friend within {=tiers.II.numbers.reach} tiles.",
+      "effects": [],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "camaraderie",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a round, a friend within {=tiers.I.numbers.reach} tile of you who is attacked uses your Defense if it is higher.",
+          "short": "Once a round: a friend beside you uses your Defense if higher",
+          "effects": [],
+          "numbers": {
+            "reach": 1
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "camaraderie",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, for a friend within {=tiers.II.numbers.reach} tiles.",
+          "short": "Reaches {=tiers.II.numbers.reach} tiles",
+          "effects": [],
+          "numbers": {
+            "reach": 3
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense",
+        "support"
+      ],
+      "provisional": true,
+      "numbers": {
+        "reach": 1
+      },
+      "source": "rules 1.75 (Soul lane, 0.32) item 6213"
+    },
+    {
+      "id": "nobody_left_behind",
+      "name": "Nobody Left Behind",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "camaraderie"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "camaraderie",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Stabilise costs you {=tiers.I.effects.0.value|abs} AP less, and a Downed friend beside you takes {=tiers.I.effects.1.value|less}% less damage. II: As Tier I, and Raise: {=tiers.II.effects.2.ap} AP and {=tiers.II.effects.2.res.mp} MP, once a turn, a Downed friend beside you or a Bonded one you see stands (needs an Attuner in hand). After a friend Bonded to you goes Down, your next Raise before the end of your next turn costs {=tiers.II.effects.4.set} AP (Last Thread).",
       "effects": [
         {
-          "op": "damage_share",
-          "bonds": 1,
-          "value_by_mastery": {
-            "1": 0.05,
-            "2": 0.1,
-            "3": 0.15,
-            "4": 0.2
+          "op": "stat_mod",
+          "stat": "ap_cost:stabilise",
+          "value": -1
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_alive": false,
+            "target_within": 1
           },
-          "mutual_if_both_hold": "soulmate"
+          "value": 0.5,
+          "label": "Nobody Left Behind"
         }
       ],
       "tiers": {
@@ -7001,19 +7143,24 @@
             }
           ],
           "ap_cost": null,
-          "text": "Outside a fight, bond with one teammate. You take part of the damage they take, in their place: {=tiers.I.effects.0.value_by_mastery.1|pct}% at Camaraderie Mastery 1, {=tiers.I.effects.0.value_by_mastery.2|pct}% at Mastery 2, {=tiers.I.effects.0.value_by_mastery.3|pct}% at Mastery 3 and {=tiers.I.effects.0.value_by_mastery.4|pct}% at Mastery 4. It never takes your last HP, and if they hold Soulmate too you do it for each other.",
-          "short": "Bond a teammate: take {=tiers.I.effects.0.value_by_mastery.1|pct}% to {=tiers.I.effects.0.value_by_mastery.4|pct}% of their damage, never your last HP",
+          "text": "Stabilise costs you {=tiers.I.effects.0.value|abs} AP less, and a Downed friend beside you takes {=tiers.I.effects.1.value|less}% less damage.",
+          "short": "Stabilise {=tiers.I.effects.0.value} AP · a Downed friend beside you takes {=tiers.I.effects.1.value|less}% less",
           "effects": [
             {
-              "op": "damage_share",
-              "bonds": 1,
-              "value_by_mastery": {
-                "1": 0.05,
-                "2": 0.1,
-                "3": 0.15,
-                "4": 0.2
+              "op": "stat_mod",
+              "stat": "ap_cost:stabilise",
+              "value": -1
+            },
+            {
+              "op": "damage_mult",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_alive": false,
+                "target_within": 1
               },
-              "mutual_if_both_hold": "soulmate"
+              "value": 0.5,
+              "label": "Nobody Left Behind"
             }
           ]
         },
@@ -7025,19 +7172,121 @@
             }
           ],
           "ap_cost": null,
-          "text": "Outside a fight, bond with up to two teammates. You take part of the damage they take, in their place: {=tiers.II.effects.0.value_by_mastery.1|pct}% at Camaraderie Mastery 1, {=tiers.II.effects.0.value_by_mastery.2|pct}% at Mastery 2, {=tiers.II.effects.0.value_by_mastery.3|pct}% at Mastery 3 and {=tiers.II.effects.0.value_by_mastery.4|pct}% at Mastery 4. It never takes your last HP, and if they hold Soulmate too you do it for each other.",
-          "short": "Up to {=tiers.II.effects.0.bonds} teammates",
+          "text": "As Tier I, and Raise: {=tiers.II.effects.2.ap} AP and {=tiers.II.effects.2.res.mp} MP, once a turn, a Downed friend beside you or a Bonded one you see stands (needs an Attuner in hand). After a friend Bonded to you goes Down, your next Raise before the end of your next turn costs {=tiers.II.effects.4.set} AP (Last Thread).",
+          "short": "Raise ({=tiers.II.effects.2.ap} AP) · after a Bonded friend falls, the next Raise is free",
           "effects": [
             {
-              "op": "damage_share",
-              "bonds": 2,
-              "value_by_mastery": {
-                "1": 0.05,
-                "2": 0.1,
-                "3": 0.15,
-                "4": 0.2
+              "op": "stat_mod",
+              "stat": "ap_cost:stabilise",
+              "value": -1
+            },
+            {
+              "op": "damage_mult",
+              "when": "taking",
+              "if": {
+                "target": "ally",
+                "target_alive": false,
+                "target_within": 1
               },
-              "mutual_if_both_hold": "soulmate"
+              "value": 0.5,
+              "label": "Nobody Left Behind"
+            },
+            {
+              "op": "grant_action",
+              "action": "tend_raise",
+              "ap": 1,
+              "uses": "at_will",
+              "res": {
+                "mp": 36
+              },
+              "if": {
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "reach": {
+                "tiles": 1,
+                "sight": true,
+                "side": "ally",
+                "beyond": "bond",
+                "if": {
+                  "target_alive": false
+                },
+                "why": {
+                  "target_alive": "{target} is not Downed."
+                }
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1
+              },
+              "effects": [
+                {
+                  "op": "mend",
+                  "amount": "heal",
+                  "target": "target",
+                  "say": "{self} raises {target}{then}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "condition",
+                  "condition": "traced",
+                  "skip_save": true,
+                  "rounds": 2,
+                  "if": {
+                    "target": "ally",
+                    "target_tied": "bond"
+                  },
+                  "when": "acted"
+                }
+              ],
+              "why": {
+                "self_holds": "Needs an Attuner in hand."
+              },
+              "label": "Raise"
+            },
+            {
+              "op": "mark",
+              "when": "downed",
+              "if": {
+                "target": "ally",
+                "target_tied": "bond"
+              },
+              "flag": "last_thread",
+              "say": "{self} feels the last thread to {target} pull taut."
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "perk:nobody_left_behind#tend_raise"
+                ],
+                "flag": "last_thread"
+              },
+              "set": 0
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "tend_raise"
+                ],
+                "flag": "last_thread"
+              },
+              "flag": "last_thread",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "flag": "last_thread",
+              "clear": true,
+              "if": {
+                "flag": "last_thread"
+              }
             }
           ],
           "replaces_tier_I": true,
@@ -7045,18 +7294,28 @@
         }
       },
       "adjudication": "engine",
-      "recovered": "recovered",
+      "recovered": null,
       "tags": [
-        "tank",
-        "bond"
+        "support"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6213",
+      "amounts": {
+        "heal": {
+          "kind": "heal",
+          "base": 1.9,
+          "profile": "tend",
+          "heal_kind": "tending",
+          "provisional": true,
+          "min_pct": 0.1333
+        }
+      }
     },
     {
-      "id": "rally_cry",
-      "name": "Rally Cry",
+      "id": "steady_hands",
+      "name": "Steady Hands",
       "tier": "acquired",
-      "perk_type": "passive",
+      "perk_type": "combat_interaction",
       "skills": [
         "camaraderie"
       ],
@@ -7070,14 +7329,61 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When an enemy or a hazard drops an ally to 0 HP, every other ally, you included, takes {=effects.0.value_pct}% less damage until their next turn starts. II: When an enemy or a hazard drops an ally to 0 HP, every other ally, you included, takes 25% less damage until their next turn starts.",
+      "text": "I: Settle: {=tiers.I.effects.0.ap} AP and {=tiers.I.effects.0.res.mp} MP, you, a friend within {=tiers.I.effects.0.reach.tiles} tiles or a Bonded friend you see has a bonus on every save until the end of its next turn (needs an Attuner in hand). II: As Tier I, and Soothe: {=tiers.II.effects.1.ap} AP and {=tiers.II.effects.1.res.mp} MP, the newest harmful Body or Heart condition comes off a friend (needs an Attuner in hand).",
       "effects": [
         {
-          "op": "damage_reduction",
-          "value_pct": 15,
-          "target": "other_allies",
-          "when": "an ally drops to 0 HP",
-          "source": "until each ally's next turn"
+          "op": "grant_action",
+          "action": "tend_settle",
+          "ap": 1,
+          "uses": "at_will",
+          "res": {
+            "mp": 15
+          },
+          "if": {
+            "self_holds": {
+              "slot": "hand",
+              "door": "empathy"
+            }
+          },
+          "reach": {
+            "tiles": 3,
+            "sight": true,
+            "side": "side",
+            "self": true,
+            "beyond": "bond",
+            "if": {
+              "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "settled",
+              "target": "target",
+              "skip_save": true,
+              "rounds": 1,
+              "say": "{self} settles {target}.",
+              "when": "acted"
+            },
+            {
+              "op": "condition",
+              "condition": "traced",
+              "skip_save": true,
+              "rounds": 2,
+              "if": {
+                "target": "ally",
+                "target_tied": "bond"
+              },
+              "when": "acted"
+            }
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          },
+          "label": "Settle"
         }
       ],
       "tiers": {
@@ -7089,15 +7395,62 @@
             }
           ],
           "ap_cost": null,
-          "text": "When an enemy or a hazard drops an ally to 0 HP, every other ally, you included, takes {=tiers.I.effects.0.value_pct}% less damage until their next turn starts.",
-          "short": "An ally goes down: the rest take {=tiers.I.effects.0.value_pct}% less damage until their turn",
+          "text": "Settle: {=tiers.I.effects.0.ap} AP and {=tiers.I.effects.0.res.mp} MP, you, a friend within {=tiers.I.effects.0.reach.tiles} tiles or a Bonded friend you see has a bonus on every save until the end of its next turn (needs an Attuner in hand).",
+          "short": "Settle: {=tiers.I.effects.0.ap} AP · a friend's saves get a bonus",
           "effects": [
             {
-              "op": "damage_reduction",
-              "value_pct": 15,
-              "target": "other_allies",
-              "when": "an ally drops to 0 HP",
-              "source": "until each ally's next turn"
+              "op": "grant_action",
+              "action": "tend_settle",
+              "ap": 1,
+              "uses": "at_will",
+              "res": {
+                "mp": 15
+              },
+              "if": {
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "reach": {
+                "tiles": 3,
+                "sight": true,
+                "side": "side",
+                "self": true,
+                "beyond": "bond",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed: Raise them first."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "settled",
+                  "target": "target",
+                  "skip_save": true,
+                  "rounds": 1,
+                  "say": "{self} settles {target}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "condition",
+                  "condition": "traced",
+                  "skip_save": true,
+                  "rounds": 2,
+                  "if": {
+                    "target": "ally",
+                    "target_tied": "bond"
+                  },
+                  "when": "acted"
+                }
+              ],
+              "why": {
+                "self_holds": "Needs an Attuner in hand."
+              },
+              "label": "Settle"
             }
           ]
         },
@@ -7109,15 +7462,628 @@
             }
           ],
           "ap_cost": null,
-          "text": "When an enemy or a hazard drops an ally to 0 HP, every other ally, you included, takes {=tiers.II.effects.0.value_pct}% less damage until their next turn starts.",
-          "short": "{=tiers.II.effects.0.value_pct}% less",
+          "text": "As Tier I, and Soothe: {=tiers.II.effects.1.ap} AP and {=tiers.II.effects.1.res.mp} MP, the newest harmful Body or Heart condition comes off a friend (needs an Attuner in hand).",
+          "short": "Soothe: {=tiers.II.effects.1.ap} AP · the newest Body or Heart harm comes off",
           "effects": [
             {
-              "op": "damage_reduction",
-              "value_pct": 25,
-              "target": "other_allies",
-              "when": "an ally drops to 0 HP",
-              "source": "until each ally's next turn"
+              "op": "grant_action",
+              "action": "tend_settle",
+              "ap": 1,
+              "uses": "at_will",
+              "res": {
+                "mp": 15
+              },
+              "if": {
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "reach": {
+                "tiles": 3,
+                "sight": true,
+                "side": "side",
+                "self": true,
+                "beyond": "bond",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed: Raise them first."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "settled",
+                  "target": "target",
+                  "skip_save": true,
+                  "rounds": 1,
+                  "say": "{self} settles {target}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "condition",
+                  "condition": "traced",
+                  "skip_save": true,
+                  "rounds": 2,
+                  "if": {
+                    "target": "ally",
+                    "target_tied": "bond"
+                  },
+                  "when": "acted"
+                }
+              ],
+              "why": {
+                "self_holds": "Needs an Attuner in hand."
+              },
+              "label": "Settle"
+            },
+            {
+              "op": "grant_action",
+              "action": "tend_soothe",
+              "ap": 1,
+              "uses": "at_will",
+              "res": {
+                "mp": 18
+              },
+              "if": {
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "reach": {
+                "tiles": 3,
+                "sight": true,
+                "side": "side",
+                "self": true,
+                "beyond": "bond",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed: Raise them first."
+                }
+              },
+              "effects": [
+                {
+                  "op": "cleanse",
+                  "target": "target",
+                  "condition": [
+                    "bleeding",
+                    "burning",
+                    "weakened",
+                    "slowed",
+                    "nausea",
+                    "pinned",
+                    "dazed",
+                    "blinded",
+                    "suppressed",
+                    "corroded"
+                  ],
+                  "newest": true,
+                  "count": {
+                    "base": 1,
+                    "steps": [
+                      {
+                        "of": "skill:empathy",
+                        "at": 7,
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "if": {
+                    "self_skill_below": {
+                      "empathy": 5
+                    }
+                  },
+                  "when": "acted"
+                },
+                {
+                  "op": "cleanse",
+                  "target": "target",
+                  "condition": [
+                    "bleeding",
+                    "burning",
+                    "weakened",
+                    "slowed",
+                    "nausea",
+                    "pinned",
+                    "dazed",
+                    "blinded",
+                    "suppressed",
+                    "corroded",
+                    "fear",
+                    "shaken",
+                    "smitten",
+                    "scorned"
+                  ],
+                  "newest": true,
+                  "count": {
+                    "base": 1,
+                    "steps": [
+                      {
+                        "of": "skill:empathy",
+                        "at": 7,
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "if": {
+                    "self_skill": {
+                      "empathy": 5
+                    }
+                  },
+                  "when": "acted"
+                },
+                {
+                  "op": "condition",
+                  "condition": "traced",
+                  "skip_save": true,
+                  "rounds": 2,
+                  "if": {
+                    "target": "ally",
+                    "target_tied": "bond"
+                  },
+                  "when": "acted"
+                }
+              ],
+              "why": {
+                "self_holds": "Needs an Attuner in hand."
+              },
+              "label": "Soothe"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "support"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6213"
+    },
+    {
+      "id": "pull_together",
+      "name": "Pull Together",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "camaraderie"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "camaraderie",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Tug: {=tiers.I.effects.0.ap} AP and {=tiers.I.effects.0.res.mp} MP, a unit Bonded to you that you see comes toward you: a friend {=tiers.I.effects.0.effects.4.tiles} tiles, willing; a foe makes a Body save or comes {=tiers.I.effects.0.effects.1.tiles} (a Boss {=tiers.I.effects.0.effects.2.tiles}) (needs an Attuner in hand). II: As Tier I, and Guide: {=tiers.II.effects.1.ap} AP and {=tiers.II.effects.1.res.mp} MP, a friend near you or Bonded in sight steps to a tile you pick, provoking nothing (needs an Attuner in hand).",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "tend_tug",
+          "ap": 1,
+          "uses": "at_will",
+          "res": {
+            "mp": 12
+          },
+          "if": {
+            "self_holds": {
+              "slot": "hand",
+              "door": "empathy"
+            }
+          },
+          "reach": {
+            "sight": true,
+            "side": "any",
+            "tied": "bond",
+            "if": {
+              "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed: Raise them first."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "reeled",
+              "target": "target",
+              "via": "empathy",
+              "if": {
+                "target": "foe"
+              },
+              "say": "{self} tugs at the Bond with {target}{then}.",
+              "when": "acted"
+            },
+            {
+              "op": "displace",
+              "how": "pull",
+              "tiles": 2,
+              "target": "target",
+              "if": {
+                "target_has": [
+                  "reeled"
+                ],
+                "target_not_tier": [
+                  "boss"
+                ]
+              },
+              "say": "{self} reels {target} in along the Bond{then}.",
+              "when": "acted"
+            },
+            {
+              "op": "displace",
+              "how": "pull",
+              "tiles": 1,
+              "target": "target",
+              "if": {
+                "target_has": [
+                  "reeled"
+                ],
+                "target_tier": [
+                  "boss"
+                ]
+              },
+              "say": "{self} reels {target} in along the Bond{then}.",
+              "when": "acted"
+            },
+            {
+              "op": "cleanse",
+              "condition": [
+                "reeled"
+              ],
+              "target": "target",
+              "if": {
+                "target_has": [
+                  "reeled"
+                ]
+              },
+              "when": "acted"
+            },
+            {
+              "op": "displace",
+              "how": "pull",
+              "tiles": 3,
+              "willing": true,
+              "target": "target",
+              "if": {
+                "target": "ally"
+              },
+              "say": "{self} draws {target} in along the Bond{then}.",
+              "when": "acted"
+            },
+            {
+              "op": "use",
+              "target": "target",
+              "if": {
+                "target": "ally",
+                "target_within": 1
+              },
+              "say": "{self} draws on the Bond; {target} is already at their side.",
+              "when": "acted"
+            }
+          ],
+          "why": {
+            "self_holds": "Needs an Attuner in hand."
+          },
+          "label": "Tug"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "camaraderie",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Tug: {=tiers.I.effects.0.ap} AP and {=tiers.I.effects.0.res.mp} MP, a unit Bonded to you that you see comes toward you: a friend {=tiers.I.effects.0.effects.4.tiles} tiles, willing; a foe makes a Body save or comes {=tiers.I.effects.0.effects.1.tiles} (a Boss {=tiers.I.effects.0.effects.2.tiles}) (needs an Attuner in hand).",
+          "short": "Tug: {=tiers.I.effects.0.ap} AP · a Bonded unit comes toward you",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "tend_tug",
+              "ap": 1,
+              "uses": "at_will",
+              "res": {
+                "mp": 12
+              },
+              "if": {
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "reach": {
+                "sight": true,
+                "side": "any",
+                "tied": "bond",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed: Raise them first."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "reeled",
+                  "target": "target",
+                  "via": "empathy",
+                  "if": {
+                    "target": "foe"
+                  },
+                  "say": "{self} tugs at the Bond with {target}{then}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "displace",
+                  "how": "pull",
+                  "tiles": 2,
+                  "target": "target",
+                  "if": {
+                    "target_has": [
+                      "reeled"
+                    ],
+                    "target_not_tier": [
+                      "boss"
+                    ]
+                  },
+                  "say": "{self} reels {target} in along the Bond{then}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "displace",
+                  "how": "pull",
+                  "tiles": 1,
+                  "target": "target",
+                  "if": {
+                    "target_has": [
+                      "reeled"
+                    ],
+                    "target_tier": [
+                      "boss"
+                    ]
+                  },
+                  "say": "{self} reels {target} in along the Bond{then}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "cleanse",
+                  "condition": [
+                    "reeled"
+                  ],
+                  "target": "target",
+                  "if": {
+                    "target_has": [
+                      "reeled"
+                    ]
+                  },
+                  "when": "acted"
+                },
+                {
+                  "op": "displace",
+                  "how": "pull",
+                  "tiles": 3,
+                  "willing": true,
+                  "target": "target",
+                  "if": {
+                    "target": "ally"
+                  },
+                  "say": "{self} draws {target} in along the Bond{then}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "use",
+                  "target": "target",
+                  "if": {
+                    "target": "ally",
+                    "target_within": 1
+                  },
+                  "say": "{self} draws on the Bond; {target} is already at their side.",
+                  "when": "acted"
+                }
+              ],
+              "why": {
+                "self_holds": "Needs an Attuner in hand."
+              },
+              "label": "Tug"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "camaraderie",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and Guide: {=tiers.II.effects.1.ap} AP and {=tiers.II.effects.1.res.mp} MP, a friend near you or Bonded in sight steps to a tile you pick, provoking nothing (needs an Attuner in hand).",
+          "short": "Guide: {=tiers.II.effects.1.ap} AP · move a friend, provoking nothing",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "tend_tug",
+              "ap": 1,
+              "uses": "at_will",
+              "res": {
+                "mp": 12
+              },
+              "if": {
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "reach": {
+                "sight": true,
+                "side": "any",
+                "tied": "bond",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed: Raise them first."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "reeled",
+                  "target": "target",
+                  "via": "empathy",
+                  "if": {
+                    "target": "foe"
+                  },
+                  "say": "{self} tugs at the Bond with {target}{then}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "displace",
+                  "how": "pull",
+                  "tiles": 2,
+                  "target": "target",
+                  "if": {
+                    "target_has": [
+                      "reeled"
+                    ],
+                    "target_not_tier": [
+                      "boss"
+                    ]
+                  },
+                  "say": "{self} reels {target} in along the Bond{then}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "displace",
+                  "how": "pull",
+                  "tiles": 1,
+                  "target": "target",
+                  "if": {
+                    "target_has": [
+                      "reeled"
+                    ],
+                    "target_tier": [
+                      "boss"
+                    ]
+                  },
+                  "say": "{self} reels {target} in along the Bond{then}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "cleanse",
+                  "condition": [
+                    "reeled"
+                  ],
+                  "target": "target",
+                  "if": {
+                    "target_has": [
+                      "reeled"
+                    ]
+                  },
+                  "when": "acted"
+                },
+                {
+                  "op": "displace",
+                  "how": "pull",
+                  "tiles": 3,
+                  "willing": true,
+                  "target": "target",
+                  "if": {
+                    "target": "ally"
+                  },
+                  "say": "{self} draws {target} in along the Bond{then}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "use",
+                  "target": "target",
+                  "if": {
+                    "target": "ally",
+                    "target_within": 1
+                  },
+                  "say": "{self} draws on the Bond; {target} is already at their side.",
+                  "when": "acted"
+                }
+              ],
+              "why": {
+                "self_holds": "Needs an Attuner in hand."
+              },
+              "label": "Tug"
+            },
+            {
+              "op": "grant_action",
+              "action": "tend_guide",
+              "ap": 1,
+              "uses": "at_will",
+              "res": {
+                "mp": 15
+              },
+              "if": {
+                "self_holds": {
+                  "slot": "hand",
+                  "door": "empathy"
+                }
+              },
+              "reach": {
+                "tiles": 3,
+                "sight": true,
+                "side": "ally",
+                "beyond": "bond",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed: Raise them first."
+                }
+              },
+              "effects": [
+                {
+                  "op": "displace",
+                  "to": "tile",
+                  "how": "guide",
+                  "target": "target",
+                  "tiles": {
+                    "base": 2,
+                    "steps": [
+                      {
+                        "of": "skill:empathy",
+                        "at": 7,
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "say": "{self} guides {target}.",
+                  "when": "acted"
+                },
+                {
+                  "op": "condition",
+                  "condition": "traced",
+                  "skip_save": true,
+                  "rounds": 2,
+                  "if": {
+                    "target": "ally",
+                    "target_tied": "bond"
+                  },
+                  "when": "acted"
+                }
+              ],
+              "why": {
+                "self_holds": "Needs an Attuner in hand."
+              },
+              "label": "Guide"
             }
           ],
           "replaces_tier_I": true,
@@ -7128,102 +8094,14 @@
       "recovered": null,
       "tags": [
         "support",
-        "defense"
+        "movement"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6213"
     },
     {
-      "id": "sweet_talker",
-      "name": "Sweet Talker",
-      "tier": "acquired",
-      "perk_type": "ap_mod",
-      "skills": [
-        "implication"
-      ],
-      "skill_greek": "gamma",
-      "requires": [
-        {
-          "skill": "implication",
-          "min": 3
-        }
-      ],
-      "excludes": [],
-      "ap_cost": null,
-      "uses": "at_will",
-      "text": "I: Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you 2 AP. Once every 3 turns. If someone you charmed puts a debuff on you, you have 2 AP less on your next turn: betrayal stings. That too happens at most once every 3 turns. II: Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you 3 AP. Once every 3 turns.",
-      "effects": [
-        {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": 2,
-          "when": "you buff or debuff someone you charmed this scene"
-        },
-        {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": -2,
-          "when": "someone you charmed this scene debuffs you"
-        }
-      ],
-      "tiers": {
-        "I": {
-          "requires": [
-            {
-              "skill": "implication",
-              "min": 3
-            }
-          ],
-          "ap_cost": null,
-          "text": "Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you 2 AP. Once every 3 turns. If someone you charmed puts a debuff on you, you have 2 AP less on your next turn: betrayal stings. That too happens at most once every 3 turns.",
-          "short": "Buff or debuff someone you charmed: +{=tiers.I.effects.0.value} AP · betrayed: {=tiers.I.effects.1.value} AP · every 3 turns",
-          "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 2,
-              "when": "you buff or debuff someone you charmed this scene"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": -2,
-              "when": "someone you charmed this scene debuffs you"
-            }
-          ]
-        },
-        "II": {
-          "requires": [
-            {
-              "skill": "implication",
-              "min": 5
-            }
-          ],
-          "ap_cost": null,
-          "text": "Charm or flatter someone with a successful Charisma or Insinuation check. For the rest of that scene, putting a buff or a debuff on them gives you {=tiers.II.effects.0.value} AP. Once every 3 turns.",
-          "short": "+{=tiers.II.effects.0.value} AP · no betrayal cost",
-          "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 3,
-              "when": "you buff or debuff someone you charmed this scene"
-            }
-          ],
-          "replaces_tier_I": true,
-          "after": "I"
-        }
-      },
-      "adjudication": "engine",
-      "recovered": "recovered_reworked",
-      "tags": [
-        "ap",
-        "social"
-      ],
-      "provisional": true
-    },
-    {
-      "id": "double_meaning",
-      "name": "Double Meaning",
+      "id": "between_the_lines",
+      "name": "Between the Lines",
       "tier": "acquired",
       "perk_type": "conversation_quirk",
       "skills": [
@@ -7239,18 +8117,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Say one sentence that means one thing to the enemy and another to your squad. The squad gets +{=effects.1.value} on the action you hinted at; the Narrator decides which roll that is. In a fight, once per round and for 0 AP, name an enemy within 8 tiles: each squad member's next attack on it gets +2 until your next turn. II: Say one sentence that means one thing to the enemy and another to your squad. The squad gets +{=effects.1.value} on the action you hinted at, and the enemy acts on the false meaning; the Narrator plays both. In a fight, once per round and for 0 AP, name an enemy within 8 tiles: each squad member's next attack on it gets +2 until your next turn, and the nearest other enemy that heard you loses 2 AP on its next turn.",
+      "text": "I: When someone speaks in code, the Narrator tells you what they really mean. II: As Tier I, and your Bond on a foe is at {=tiers.II.effects.1.value|signed} TN.",
       "effects": [
         {
           "op": "narrator",
-          "note": "Judge whether the sentence carries a hidden instruction; the hinted action gets +2 for the squad."
-        },
-        {
-          "op": "skill_mod_tag",
-          "tag": "any",
-          "value": 2,
-          "target": "squad",
-          "when": "the hinted action"
+          "note": "Narrator reveals the hidden meaning"
         }
       ],
       "tiers": {
@@ -7262,19 +8133,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "Say one sentence that means one thing to the enemy and another to your squad. The squad gets +{=tiers.I.effects.1.value} on the action you hinted at; the Narrator decides which roll that is. In a fight, once per round and for 0 AP, name an enemy within 8 tiles: each squad member's next attack on it gets +2 until your next turn.",
-          "short": "Coded sentence: squad +{=tiers.I.effects.1.value} on the hinted action · fight: one foe",
+          "text": "When someone speaks in code, the Narrator tells you what they really mean.",
+          "short": "The Narrator tells you what coded speech really means",
           "effects": [
             {
               "op": "narrator",
-              "note": "Judge whether the sentence carries a hidden instruction; the hinted action gets +2 for the squad."
-            },
-            {
-              "op": "skill_mod_tag",
-              "tag": "any",
-              "value": 2,
-              "target": "squad",
-              "when": "the hinted action"
+              "note": "Narrator reveals the hidden meaning"
             }
           ]
         },
@@ -7286,19 +8150,26 @@
             }
           ],
           "ap_cost": null,
-          "text": "Say one sentence that means one thing to the enemy and another to your squad. The squad gets +{=tiers.II.effects.1.value} on the action you hinted at, and the enemy acts on the false meaning; the Narrator plays both. In a fight, once per round and for 0 AP, name an enemy within 8 tiles: each squad member's next attack on it gets +2 until your next turn, and the nearest other enemy that heard you loses 2 AP on its next turn.",
-          "short": "The enemy acts on the false meaning",
+          "text": "As Tier I, and your Bond on a foe is at {=tiers.II.effects.1.value|signed} TN.",
+          "short": "Your Bond on a foe: {=tiers.II.effects.1.value|signed} TN",
           "effects": [
             {
               "op": "narrator",
-              "note": "As Tier I, and the enemy acts on the false meaning."
+              "note": "Narrator reveals the hidden meaning"
             },
             {
-              "op": "skill_mod_tag",
-              "tag": "any",
+              "op": "roll_mod",
+              "when": "cond_incoming",
+              "if": {
+                "actor": "self",
+                "target": "foe",
+                "cond": [
+                  "bonded"
+                ]
+              },
+              "roll": "tn",
               "value": 2,
-              "target": "squad",
-              "when": "the hinted action"
+              "label": "Between the Lines"
             }
           ],
           "replaces_tier_I": true,
@@ -7309,9 +8180,377 @@
       "recovered": null,
       "tags": [
         "social",
-        "coordination"
+        "bond"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6215"
+    },
+    {
+      "id": "veiled_insult",
+      "name": "Veiled Insult",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "implication"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "implication",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "text": "I: {=tiers.I.effects.0.ap} AP, once a fight: a foe you see makes a Heart save against your Insinuation or is Taunted for {=tiers.I.effects.0.effects.0.rounds} rounds. II: As Tier I, {=tiers.II.effects.0.limit.n} times a fight.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "veiled_insult",
+          "label": "Veiled Insult",
+          "ap": 0,
+          "uses": "at_will",
+          "scope": [
+            "combat"
+          ],
+          "limit": {
+            "per": "per_combat",
+            "n": 1
+          },
+          "reach": {
+            "sight": true,
+            "side": "foe",
+            "if": {
+              "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is already down."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "taunted",
+              "target": "target",
+              "via": "implication",
+              "rounds": 2,
+              "say": "{self} lets slip a veiled insult at {target}{then}.",
+              "when": "acted"
+            }
+          ]
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "{=tiers.I.effects.0.ap} AP, once a fight: a foe you see makes a Heart save against your Insinuation or is Taunted for {=tiers.I.effects.0.effects.0.rounds} rounds.",
+          "short": "{=tiers.I.effects.0.ap} AP, once a fight: a foe saves or is Taunted",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "veiled_insult",
+              "label": "Veiled Insult",
+              "ap": 0,
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "limit": {
+                "per": "per_combat",
+                "n": 1
+              },
+              "reach": {
+                "sight": true,
+                "side": "foe",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is already down."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "taunted",
+                  "target": "target",
+                  "via": "implication",
+                  "rounds": 2,
+                  "say": "{self} lets slip a veiled insult at {target}{then}.",
+                  "when": "acted"
+                }
+              ]
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, {=tiers.II.effects.0.limit.n} times a fight.",
+          "short": "{=tiers.II.effects.0.limit.n} times a fight",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "veiled_insult",
+              "label": "Veiled Insult",
+              "ap": 0,
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "limit": {
+                "per": "per_combat",
+                "n": 2
+              },
+              "reach": {
+                "sight": true,
+                "side": "foe",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is already down."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "taunted",
+                  "target": "target",
+                  "via": "implication",
+                  "rounds": 2,
+                  "say": "{self} lets slip a veiled insult at {target}{then}.",
+                  "when": "acted"
+                }
+              ]
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "debuff",
+        "social"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6215"
+    },
+    {
+      "id": "quiet_thread",
+      "name": "Quiet Thread",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "implication"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "implication",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: You are never Traced. II: You are never Traced, nor are friends Bonded to you, and a Bonded friend going Down costs you no MP.",
+      "effects": [
+        {
+          "op": "cancel",
+          "when": "cond_incoming",
+          "if": {
+            "cond": [
+              "traced"
+            ]
+          },
+          "why": "Quiet Thread",
+          "label": "Quiet Thread"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "You are never Traced.",
+          "short": "You are never Traced",
+          "effects": [
+            {
+              "op": "cancel",
+              "when": "cond_incoming",
+              "if": {
+                "cond": [
+                  "traced"
+                ]
+              },
+              "why": "Quiet Thread",
+              "label": "Quiet Thread"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "You are never Traced, nor are friends Bonded to you, and a Bonded friend going Down costs you no MP.",
+          "short": "Nor your Bonded friends · a Bonded friend's fall costs no MP",
+          "effects": [
+            {
+              "op": "cancel",
+              "when": "cond_incoming",
+              "if": {
+                "cond": [
+                  "traced"
+                ]
+              },
+              "why": "Quiet Thread",
+              "label": "Quiet Thread"
+            },
+            {
+              "op": "cancel",
+              "when": "cond_incoming",
+              "if": {
+                "target": "ally",
+                "target_tied": "bond",
+                "cond": [
+                  "traced"
+                ]
+              },
+              "why": "Quiet Thread",
+              "label": "Quiet Thread"
+            },
+            {
+              "op": "resource",
+              "when": "downed",
+              "if": {
+                "target": "ally",
+                "target_tied": "bond"
+              },
+              "resource": "mp",
+              "value": 10,
+              "label": "Quiet Thread"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "bond",
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6216"
+    },
+    {
+      "id": "open_hand",
+      "name": "Open Hand",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "implication"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "implication",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: {=tiers.I.numbers.ap} AP: a humanoid foe you see below {=tiers.I.numbers.below|pct}% of its HP makes a Heart save against your Insinuation or surrenders (never a Boss or a machine). Once a foe. II: As Tier I for {=tiers.II.numbers.ap} AP, and it can be offered the moment the foe drops (your setting: always, ask or never).",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Open Hand: an offered mercy; the engine runs it (perks/f.ts open_hand). How prisoners are treated is the Narrator's."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "{=tiers.I.numbers.ap} AP: a humanoid foe you see below {=tiers.I.numbers.below|pct}% of its HP makes a Heart save against your Insinuation or surrenders (never a Boss or a machine). Once a foe.",
+          "short": "{=tiers.I.numbers.ap} AP: a foe under {=tiers.I.numbers.below|pct}% HP surrenders or saves",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Open Hand: an offered mercy; the engine runs it (perks/f.ts open_hand). How prisoners are treated is the Narrator's."
+            }
+          ],
+          "numbers": {
+            "ap": 2,
+            "below": 0.5
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "implication",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I for {=tiers.II.numbers.ap} AP, and it can be offered the moment the foe drops (your setting: always, ask or never).",
+          "short": "{=tiers.II.numbers.ap} AP · offered the moment it drops",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Open Hand: an offered mercy; the engine runs it (perks/f.ts open_hand). How prisoners are treated is the Narrator's."
+            }
+          ],
+          "numbers": {
+            "ap": 0,
+            "below": 0.5
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "mercy",
+        "social"
+      ],
+      "provisional": true,
+      "numbers": {
+        "ap": 2,
+        "below": 0.5
+      },
+      "source": "rules 1.75 (Soul lane, 0.32) item 6216",
+      "flavour": "You saw the moment they stopped wanting this. So did they."
     },
     {
       "id": "heart_overload",
@@ -7530,77 +8769,6 @@
       "provisional": true
     },
     {
-      "id": "old_tongue",
-      "name": "Old Tongue",
-      "tier": "acquired",
-      "perk_type": "passive",
-      "skills": [
-        "lore_master"
-      ],
-      "skill_greek": "gamma",
-      "requires": [
-        {
-          "skill": "lore_master",
-          "min": 3
-        }
-      ],
-      "excludes": [],
-      "ap_cost": null,
-      "uses": "at_will",
-      "text": "I: You can read any ancient or upper-realm script. The Narrator tells you what it says. II: You can read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
-      "effects": [
-        {
-          "op": "narrator",
-          "note": "The player can read any ancient or upper-realm script."
-        }
-      ],
-      "tiers": {
-        "I": {
-          "requires": [
-            {
-              "skill": "lore_master",
-              "min": 3
-            }
-          ],
-          "ap_cost": null,
-          "text": "You can read any ancient or upper-realm script. The Narrator tells you what it says.",
-          "short": "Read any ancient or upper-realm script",
-          "effects": [
-            {
-              "op": "narrator",
-              "note": "The player can read any ancient or upper-realm script."
-            }
-          ]
-        },
-        "II": {
-          "requires": [
-            {
-              "skill": "lore_master",
-              "min": 5
-            }
-          ],
-          "ap_cost": null,
-          "text": "You can read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
-          "short": "Speak it · an upper-realm being parleys once",
-          "effects": [
-            {
-              "op": "narrator",
-              "note": "The player can read and speak upper-realm scripts; any upper-realm being will parley with them once."
-            }
-          ],
-          "replaces_tier_I": true,
-          "after": "I"
-        }
-      },
-      "adjudication": "hybrid",
-      "recovered": null,
-      "tags": [
-        "lore",
-        "language"
-      ],
-      "provisional": true
-    },
-    {
       "id": "rite_in_the_field",
       "name": "Rite in the Field",
       "tier": "acquired",
@@ -7618,28 +8786,116 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP, and your Call Name It {=tiers.I.effects.1.value|abs} AP less, never below {=tiers.I.effects.1.min}. II: In a fight, Crystallise costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP, and Name It {=tiers.II.effects.1.value|abs} AP less, never below {=tiers.II.effects.1.min}.",
+      "text": "I: Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP: the kill is the rite. II: Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP.",
       "effects": [
         {
-          "op": "cost_mod",
-          "when": "cost",
+          "op": "mark",
+          "when": "kill",
           "if": {
-            "action": ["crystallise"]
+            "actor": "self",
+            "flag": "fresh"
           },
-          "value": -1,
-          "min": 1,
-          "label": "Rite in the Field"
+          "flag": "fresh",
+          "clear": true
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "flag": "f4"
+          },
+          "flag": "rite",
+          "label": "Rite in the Field",
+          "say": "Rite in the Field: {self}'s next Crystallise is free.",
+          "and": [
+            {
+              "op": "mark",
+              "flag": "f1",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "flag": "f2",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "flag": "f3",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "flag": "f4",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "flag": "fresh"
+            }
+          ]
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "flag": "f3",
+            "no_flag": "f4"
+          },
+          "flag": "f4"
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "flag": "f2",
+            "no_flag": "f3"
+          },
+          "flag": "f3"
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "flag": "f1",
+            "no_flag": "f2"
+          },
+          "flag": "f2"
+        },
+        {
+          "op": "mark",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "no_flag": "fresh"
+          },
+          "flag": "f1"
         },
         {
           "op": "cost_mod",
           "when": "cost",
           "if": {
-            "action": ["call"],
-            "action_id": ["call.name_it"]
+            "action": [
+              "crystallise"
+            ],
+            "flag": "rite"
           },
-          "value": -1,
-          "min": 0,
+          "set": 0,
           "label": "Rite in the Field"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "crystallise"
+            ]
+          },
+          "flag": "rite",
+          "clear": true
         }
       ],
       "tiers": {
@@ -7651,29 +8907,117 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.I.effects.0.value|abs} AP less, never below {=tiers.I.effects.0.min} AP, and your Call Name It {=tiers.I.effects.1.value|abs} AP less, never below {=tiers.I.effects.1.min}.",
-          "short": "Crystallise {=tiers.I.effects.0.value} AP (min {=tiers.I.effects.0.min}) · Name It {=tiers.I.effects.1.value} AP (min {=tiers.I.effects.1.min})",
+          "text": "Every fifth foe you drop yourself in a fight makes your next Crystallise cost {=tiers.I.effects.6.set} AP: the kill is the rite.",
+          "short": "Every fifth foe you drop: your next Crystallise costs {=tiers.I.effects.6.set} AP",
           "effects": [
             {
-              "op": "cost_mod",
-              "when": "cost",
+              "op": "mark",
+              "when": "kill",
               "if": {
-                "action": ["crystallise"]
+                "actor": "self",
+                "flag": "fresh"
               },
-              "value": -1,
-              "min": 1,
-              "label": "Rite in the Field"
+              "flag": "fresh",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f4"
+              },
+              "flag": "rite",
+              "label": "Rite in the Field",
+              "say": "Rite in the Field: {self}'s next Crystallise is free.",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "f1",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "f2",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "f3",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "f4",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "fresh"
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f3",
+                "no_flag": "f4"
+              },
+              "flag": "f4"
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f2",
+                "no_flag": "f3"
+              },
+              "flag": "f3"
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f1",
+                "no_flag": "f2"
+              },
+              "flag": "f2"
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "no_flag": "fresh"
+              },
+              "flag": "f1"
             },
             {
               "op": "cost_mod",
               "when": "cost",
               "if": {
-                "action": ["call"],
-                "action_id": ["call.name_it"]
+                "action": [
+                  "crystallise"
+                ],
+                "flag": "rite"
               },
-              "value": -1,
-              "min": 0,
+              "set": 0,
               "label": "Rite in the Field"
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "crystallise"
+                ]
+              },
+              "flag": "rite",
+              "clear": true
             }
           ]
         },
@@ -7685,29 +9029,87 @@
             }
           ],
           "ap_cost": null,
-          "text": "In a fight, Crystallise (the heart's ritual: a mana core from the air) costs you {=tiers.II.effects.0.value|abs} AP less, never below {=tiers.II.effects.0.min} AP, and your Call Name It {=tiers.II.effects.1.value|abs} AP less, never below {=tiers.II.effects.1.min}.",
-          "short": "Crystallise {=tiers.II.effects.0.value} AP · Name It {=tiers.II.effects.1.value} AP",
+          "text": "Every third foe you drop yourself in a fight makes your next Crystallise cost {=tiers.II.effects.4.set} AP.",
+          "short": "Every third foe you drop",
           "effects": [
             {
-              "op": "cost_mod",
-              "when": "cost",
+              "op": "mark",
+              "when": "kill",
               "if": {
-                "action": ["crystallise"]
+                "actor": "self",
+                "flag": "fresh"
               },
-              "value": -2,
-              "min": 1,
-              "label": "Rite in the Field"
+              "flag": "fresh",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f2"
+              },
+              "flag": "rite",
+              "label": "Rite in the Field",
+              "say": "Rite in the Field: {self}'s next Crystallise is free.",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "f1",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "f2",
+                  "clear": true
+                },
+                {
+                  "op": "mark",
+                  "flag": "fresh"
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "flag": "f1",
+                "no_flag": "f2"
+              },
+              "flag": "f2"
+            },
+            {
+              "op": "mark",
+              "when": "kill",
+              "if": {
+                "actor": "self",
+                "no_flag": "fresh"
+              },
+              "flag": "f1"
             },
             {
               "op": "cost_mod",
               "when": "cost",
               "if": {
-                "action": ["call"],
-                "action_id": ["call.name_it"]
+                "action": [
+                  "crystallise"
+                ],
+                "flag": "rite"
               },
-              "value": -2,
-              "min": 0,
+              "set": 0,
               "label": "Rite in the Field"
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "crystallise"
+                ]
+              },
+              "flag": "rite",
+              "clear": true
             }
           ],
           "replaces_tier_I": true,
@@ -7720,80 +9122,195 @@
         "ap",
         "ritual"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) items 6206, 6207"
     },
     {
-      "id": "you_get_used_to_it",
-      "name": "You Get Used to It",
+      "id": "old_tales",
+      "name": "Old Tales",
       "tier": "acquired",
       "perk_type": "passive",
       "skills": [
-        "composure"
+        "lore_master"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "gamma",
       "requires": [
         {
-          "skill": "composure",
+          "skill": "lore_master",
           "min": 3
         }
       ],
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +{=effects.0.value}: you have seen worse. II: The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +4: you have seen worse. You may give that bonus to the ally instead, for their next save this round; it costs you nothing.",
+      "text": "I: Once a scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true. II: As Tier I, and you read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
       "effects": [
         {
-          "op": "save_mod",
-          "value": 2,
-          "target": "self",
-          "when": "the first time each round an ally within 5 tiles takes a Brain or Heart condition",
-          "duration": "your next save this round"
+          "op": "grant_action",
+          "action": "old_tales_question",
+          "ap": 0,
+          "uses": "per_scene"
+        },
+        {
+          "op": "narrator",
+          "note": "Narrator answers truthfully"
         }
       ],
       "tiers": {
         "I": {
           "requires": [
             {
-              "skill": "composure",
+              "skill": "lore_master",
               "min": 3
             }
           ],
           "ap_cost": null,
-          "text": "The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +{=tiers.I.effects.0.value}: you have seen worse.",
-          "short": "An ally near you takes a Brain or Heart condition: your next save +{=tiers.I.effects.0.value}",
+          "text": "Once a scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true.",
+          "short": "Once a scene: one true fact about the supernatural",
           "effects": [
             {
-              "op": "save_mod",
-              "value": 2,
-              "target": "self",
-              "when": "the first time each round an ally within 5 tiles takes a Brain or Heart condition",
-              "duration": "your next save this round"
+              "op": "grant_action",
+              "action": "old_tales_question",
+              "ap": 0,
+              "uses": "per_scene"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator answers truthfully"
             }
           ]
         },
         "II": {
           "requires": [
             {
-              "skill": "composure",
+              "skill": "lore_master",
               "min": 5
             }
           ],
           "ap_cost": null,
-          "text": "The first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is at +{=tiers.II.effects.0.value}: you have seen worse. You may give that bonus to the ally instead, for their next save this round; it costs you nothing.",
-          "short": "+{=tiers.II.effects.0.value} · or give it to that ally",
+          "text": "As Tier I, and you read and speak any ancient or upper-realm script. Once per being, an upper-realm being you speak to will parley with you; in a fight it holds its attacks on its next turn while it listens, though it may still move. The Narrator plays the parley.",
+          "short": "Old scripts · a parley",
           "effects": [
             {
-              "op": "save_mod",
-              "value": 4,
-              "target": "self",
-              "when": "the first time each round an ally within 5 tiles takes a Brain or Heart condition",
-              "duration": "your next save this round"
+              "op": "grant_action",
+              "action": "old_tales_question",
+              "ap": 0,
+              "uses": "per_scene"
             },
             {
-              "op": "grant_action",
-              "action": "seen_worse",
-              "ap": 0,
-              "uses": "per_round"
+              "op": "narrator",
+              "note": "Narrator answers truthfully; the player reads and speaks upper-realm scripts; an upper-realm being parleys with them once."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "lore",
+        "language"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6206"
+    },
+    {
+      "id": "recitation",
+      "name": "Recitation",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "lore_master"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "lore_master",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Once a turn, a Call you make calms {=tiers.I.effects.0.value|abs} Strain. II: Once a turn, a Call you make calms {=tiers.II.effects.0.value|abs} Strain.",
+      "effects": [
+        {
+          "op": "resource",
+          "when": "acted",
+          "if": {
+            "action": [
+              "call"
+            ]
+          },
+          "resource": "strain",
+          "value": -1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "label": "Recitation",
+          "say": "Recitation: {self}'s heart eases ({gain} Strain)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a turn, a Call you make calms {=tiers.I.effects.0.value|abs} Strain.",
+          "short": "Once a turn: a Call you make calms {=tiers.I.effects.0.value|abs} Strain",
+          "effects": [
+            {
+              "op": "resource",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "resource": "strain",
+              "value": -1,
+              "limit": {
+                "per": "per_turn",
+                "n": 1
+              },
+              "label": "Recitation",
+              "say": "Recitation: {self}'s heart eases ({gain} Strain)."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a turn, a Call you make calms {=tiers.II.effects.0.value|abs} Strain.",
+          "short": "{=tiers.II.effects.0.value|abs} Strain",
+          "effects": [
+            {
+              "op": "resource",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "resource": "strain",
+              "value": -2,
+              "limit": {
+                "per": "per_turn",
+                "n": 1
+              },
+              "label": "Recitation",
+              "say": "Recitation: {self}'s heart eases ({gain} Strain)."
             }
           ],
           "replaces_tier_I": true,
@@ -7801,12 +9318,209 @@
         }
       },
       "adjudication": "engine",
-      "recovered": "recovered",
+      "recovered": null,
+      "tags": [
+        "soul_magic",
+        "support"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6206"
+    },
+    {
+      "id": "lore_ward",
+      "name": "Warding Word",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "lore_master"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "lore_master",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: {=tiers.I.effects.0.ap} AP: you or an ally you see within {=tiers.I.effects.0.reach.tiles} tiles has a bonus on its next Brain or Heart save (Warding Word). II: As Tier I, and the first Warding Word each turn costs {=tiers.II.effects.1.set} AP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "warding_word",
+          "label": "Warding Word",
+          "ap": 1,
+          "uses": "at_will",
+          "scope": [
+            "combat"
+          ],
+          "reach": {
+            "tiles": 5,
+            "sight": true,
+            "side": "side",
+            "self": true,
+            "if": {
+              "target_alive": true
+            },
+            "why": {
+              "target_alive": "{target} is Downed."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "warding_word",
+              "target": "target",
+              "skip_save": true,
+              "say": "{self} speaks a warding word over {target}.",
+              "fx": {
+                "k": "ward_seal"
+              },
+              "when": "acted"
+            }
+          ]
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "{=tiers.I.effects.0.ap} AP: you or an ally you see within {=tiers.I.effects.0.reach.tiles} tiles has a bonus on its next Brain or Heart save (Warding Word).",
+          "short": "{=tiers.I.effects.0.ap} AP: a friend's next Brain or Heart save gets a bonus",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "warding_word",
+              "label": "Warding Word",
+              "ap": 1,
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "reach": {
+                "tiles": 5,
+                "sight": true,
+                "side": "side",
+                "self": true,
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "warding_word",
+                  "target": "target",
+                  "skip_save": true,
+                  "say": "{self} speaks a warding word over {target}.",
+                  "fx": {
+                    "k": "ward_seal"
+                  },
+                  "when": "acted"
+                }
+              ]
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "lore_master",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and the first Warding Word each turn costs {=tiers.II.effects.1.set} AP.",
+          "short": "The first each turn costs {=tiers.II.effects.1.set} AP",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "warding_word",
+              "label": "Warding Word",
+              "ap": 1,
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "reach": {
+                "tiles": 5,
+                "sight": true,
+                "side": "side",
+                "self": true,
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is Downed."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "warding_word",
+                  "target": "target",
+                  "skip_save": true,
+                  "say": "{self} speaks a warding word over {target}.",
+                  "fx": {
+                    "k": "ward_seal"
+                  },
+                  "when": "acted"
+                }
+              ]
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "perk:lore_ward#warding_word"
+                ]
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "free",
+                "peek": true
+              },
+              "label": "Warding Word"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "warding_word"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "free"
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
       "tags": [
         "support",
         "defense"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6206"
     },
     {
       "id": "flat_line",
@@ -7888,6 +9602,278 @@
       "provisional": true
     },
     {
+      "id": "poker_face",
+      "name": "Poker Face",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "composure"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Interrogators and lie-readers take {=tiers.I.numbers.read|signed} against you (the Narrator's). II: Interrogators and lie-readers take {=tiers.II.numbers.read|signed} against you, and you have {=tiers.II.effects.1.value|signed} on Brain saves.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Interrogators and lie-readers take -3 against this character (rules 1.75 item 6203; the Narrator applies it to the reading roll)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Interrogators and lie-readers take {=tiers.I.numbers.read|signed} against you (the Narrator's).",
+          "short": "Anyone questioning you or reading your lies: {=tiers.I.numbers.read|signed}",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Interrogators and lie-readers take -3 against this character (rules 1.75 item 6203; the Narrator applies it to the reading roll)."
+            }
+          ],
+          "numbers": {
+            "read": -3
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Interrogators and lie-readers take {=tiers.II.numbers.read|signed} against you, and you have {=tiers.II.effects.1.value|signed} on Brain saves.",
+          "short": "{=tiers.II.effects.1.value|signed} on Brain saves",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Interrogators and lie-readers take -3 against this character (rules 1.75 item 6203; the Narrator applies it to the reading roll)."
+            },
+            {
+              "op": "stat_mod",
+              "stat": "save_brain",
+              "value": 2
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I",
+          "numbers": {
+            "read": -3
+          }
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "social",
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6203",
+      "numbers": {
+        "read": -3
+      }
+    },
+    {
+      "id": "stand_still",
+      "name": "Stand Still",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "composure"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "text": "I: Until you first act in a fight, foes attacking you are at {=tiers.I.numbers.to_hit|signed} to hit, and the first one to miss gives you a free attack on it (once a fight, if your weapon reaches). A Call is not acting. II: As Tier I, and Begin, Pump and Steady do not count as acting either.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "stand_still_counter",
+          "ap": 0,
+          "uses": "per_combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Until you first act in a fight, foes attacking you are at {=tiers.I.numbers.to_hit|signed} to hit, and the first one to miss gives you a free attack on it (once a fight, if your weapon reaches). A Call is not acting.",
+          "short": "Until you first act: foes {=tiers.I.numbers.to_hit|signed} to hit you · the first miss gives you a free attack",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "stand_still_counter",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "numbers": {
+            "to_hit": -2
+          },
+          "not_acting": [
+            "combat/call",
+            "combat/end-turn",
+            "combat/decline"
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and Begin, Pump and Steady do not count as acting either.",
+          "short": "Begin, Pump and Steady don't count as acting",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "stand_still_counter",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "numbers": {
+            "to_hit": -2
+          },
+          "not_acting": [
+            "combat/call",
+            "combat/end-turn",
+            "combat/decline",
+            "combat/outburst",
+            "combat/pump",
+            "combat/steady"
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense"
+      ],
+      "provisional": true,
+      "numbers": {
+        "to_hit": -2
+      },
+      "source": "rules 1.75 (Soul lane, 0.32) item 6203"
+    },
+    {
+      "id": "pure_heart",
+      "name": "Pure Heart",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "composure"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "composure",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "text": "I: Once a fight, the Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release. II: Up to {=tiers.II.numbers.uses} times a fight, the Strain that would Mana Short you is refused: your Strain falls to your limit instead.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "pure_heart",
+          "ap": 0,
+          "uses": "per_combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a fight, the Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release.",
+          "short": "Once a fight: the Strain that would Mana Short you is refused",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "pure_heart",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "numbers": {
+            "uses": 1
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "composure",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Up to {=tiers.II.numbers.uses} times a fight, the Strain that would Mana Short you is refused: your Strain falls to your limit instead.",
+          "short": "{=tiers.II.numbers.uses} times a fight",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "pure_heart",
+              "ap": 0,
+              "uses": "per_combat"
+            }
+          ],
+          "numbers": {
+            "uses": 2
+          },
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "soul_magic",
+        "defense"
+      ],
+      "provisional": true,
+      "numbers": {
+        "uses": 1
+      },
+      "source": "rules 1.75 (Soul lane, 0.32) item 6203"
+    },
+    {
       "id": "litany",
       "name": "Unbroken Litany",
       "tier": "acquired",
@@ -7905,7 +9891,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Your first Hymn or Miracle each fight costs {=tiers.I.effects.0.value|abs} AP less. II: Your first Hymn or Miracle each fight costs {=tiers.II.effects.0.value|abs} AP less, and the wait between your Hymns is {=tiers.II.effects.2.value|abs} round shorter (never under its floor).",
+      "text": "I: Your first Hymn or Miracle each fight costs {=tiers.I.effects.0.value|abs} AP less. II: Your first {=tiers.II.effects.0.limit.n} Hymns or Miracles each fight cost {=tiers.II.effects.0.value|abs} AP less.",
       "effects": [
         {
           "op": "cost_mod",
@@ -7992,8 +9978,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "Your first Hymn or Miracle each fight costs {=tiers.II.effects.0.value|abs} AP less, and the wait between your Hymns is {=tiers.II.effects.2.value|abs} round shorter (never under its floor).",
-          "short": "Hymn wait {=tiers.II.effects.2.value} round, never under its floor",
+          "text": "Your first {=tiers.II.effects.0.limit.n} Hymns or Miracles each fight cost {=tiers.II.effects.0.value|abs} AP less.",
+          "short": "The first {=tiers.II.effects.0.limit.n} each fight",
           "effects": [
             {
               "op": "cost_mod",
@@ -8007,7 +9993,7 @@
               "min": 1,
               "limit": {
                 "per": "per_combat",
-                "n": 1,
+                "n": 2,
                 "key": "first",
                 "peek": true
               }
@@ -8022,14 +10008,9 @@
               },
               "limit": {
                 "per": "per_combat",
-                "n": 1,
+                "n": 2,
                 "key": "first"
               }
-            },
-            {
-              "op": "stat_mod",
-              "stat": "hymn_wait",
-              "value": -1
             }
           ],
           "replaces_tier_I": true,
@@ -8042,7 +10023,8 @@
         "faith",
         "ap"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6221"
     },
     {
       "id": "holy_ordnance",
@@ -8253,7 +10235,17 @@
     },
     {
       "id": "clean_hands",
-      "amounts": {"shield": {"kind": "shield", "base": 0, "mults": {"pct_of_max_hp_I": 15, "pct_of_max_hp_II": 25}, "provisional": true}},
+      "amounts": {
+        "shield": {
+          "kind": "shield",
+          "base": 0,
+          "mults": {
+            "pct_of_max_hp_I": 15,
+            "pct_of_max_hp_II": 25
+          },
+          "provisional": true
+        }
+      },
       "name": "Clean Hands",
       "tier": "acquired",
       "perk_type": "passive",
@@ -8298,8 +10290,8 @@
               "value": "15% of max HP",
               "target": "self",
               "when": "you spare an enemy or protect an innocent",
-          "per_fight": 2,
-          "provisional": true
+              "per_fight": 2,
+              "provisional": true
             }
           ]
         },
@@ -8319,8 +10311,8 @@
               "value": "25% of max HP",
               "target": "self",
               "when": "you spare an enemy or protect an innocent",
-          "per_fight": 2,
-          "provisional": true
+              "per_fight": 2,
+              "provisional": true
             }
           ],
           "replaces_tier_I": true,
@@ -8334,6 +10326,238 @@
         "defense"
       ],
       "provisional": true
+    },
+    {
+      "id": "righteous",
+      "name": "Righteous",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "conscience"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "conscience",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Your prayer heals and shields on an ally at half HP or less are {=tiers.I.effects.0.value|more}% stronger. II: Your prayer heals and shields on an ally at half HP or less are {=tiers.II.effects.0.value|more}% stronger.",
+      "effects": [
+        {
+          "op": "mend_mult",
+          "when": "heal",
+          "if": {
+            "actor": "self",
+            "target": "ally",
+            "target_hp_at_most": 0.5,
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.2,
+          "label": "Righteous"
+        },
+        {
+          "op": "mend_mult",
+          "when": "shield",
+          "if": {
+            "actor": "self",
+            "target": "ally",
+            "target_hp_at_most": 0.5,
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.2,
+          "label": "Righteous"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Your prayer heals and shields on an ally at half HP or less are {=tiers.I.effects.0.value|more}% stronger.",
+          "short": "Prayer heals and shields on a friend at half HP: +{=tiers.I.effects.0.value|more}%",
+          "effects": [
+            {
+              "op": "mend_mult",
+              "when": "heal",
+              "if": {
+                "actor": "self",
+                "target": "ally",
+                "target_hp_at_most": 0.5,
+                "how": [
+                  "blessing"
+                ]
+              },
+              "value": 1.2,
+              "label": "Righteous"
+            },
+            {
+              "op": "mend_mult",
+              "when": "shield",
+              "if": {
+                "actor": "self",
+                "target": "ally",
+                "target_hp_at_most": 0.5,
+                "how": [
+                  "blessing"
+                ]
+              },
+              "value": 1.2,
+              "label": "Righteous"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Your prayer heals and shields on an ally at half HP or less are {=tiers.II.effects.0.value|more}% stronger.",
+          "short": "+{=tiers.II.effects.0.value|more}%",
+          "effects": [
+            {
+              "op": "mend_mult",
+              "when": "heal",
+              "if": {
+                "actor": "self",
+                "target": "ally",
+                "target_hp_at_most": 0.5,
+                "how": [
+                  "blessing"
+                ]
+              },
+              "value": 1.4,
+              "label": "Righteous"
+            },
+            {
+              "op": "mend_mult",
+              "when": "shield",
+              "if": {
+                "actor": "self",
+                "target": "ally",
+                "target_hp_at_most": 0.5,
+                "how": [
+                  "blessing"
+                ]
+              },
+              "value": 1.4,
+              "label": "Righteous"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "support",
+        "faith"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6223"
+    },
+    {
+      "id": "foresight",
+      "name": "Foresight",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "conscience"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "conscience",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "text": "I: Before a big decision, the Narrator tells you its worst likely result, honestly. II: As Tier I, and once a fight the first blow that would drop an ally within {=tiers.II.effects.1.if.target_within} tiles leaves them on {=tiers.II.effects.1.value} HP.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Narrator states the worst likely consequence honestly"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Before a big decision, the Narrator tells you its worst likely result, honestly.",
+          "short": "Before a big decision: its worst likely result, honestly",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator states the worst likely consequence honestly"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and once a fight the first blow that would drop an ally within {=tiers.II.effects.1.if.target_within} tiles leaves them on {=tiers.II.effects.1.value} HP.",
+          "short": "Once a fight: a friend within {=tiers.II.effects.1.if.target_within} tiles stays on {=tiers.II.effects.1.value} HP",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator states the worst likely consequence honestly"
+            },
+            {
+              "op": "floor",
+              "when": "would_drop",
+              "if": {
+                "target": "ally",
+                "target_within": 4,
+                "open": true
+              },
+              "value": 1,
+              "limit": {
+                "per": "per_combat",
+                "n": 1
+              },
+              "label": "Foresight",
+              "say": "{self} saw it coming: {target} stays on 1 HP (Foresight)."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "support",
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6223"
     },
     {
       "id": "outclassed",
@@ -8437,8 +10661,8 @@
       ]
     },
     {
-      "id": "real_power",
-      "name": "Real Power",
+      "id": "rank_has_privileges",
+      "name": "Rank Has Privileges",
       "tier": "acquired",
       "perk_type": "conversation_quirk",
       "skills": [
@@ -8454,11 +10678,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you. II: Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you, and that person agrees to see you; what they agree to after that is up to them.",
+      "text": "I: Lower-ranked people follow your reasonable orders without a roll. II: As Tier I, and once per organisation the Narrator names who really holds its power, and they agree to see you.",
       "effects": [
         {
           "op": "narrator",
-          "note": "Tell the player who actually holds power in any organisation they're dealing with."
+          "note": "Narrator judges which orders are reasonable"
         }
       ],
       "tiers": {
@@ -8470,12 +10694,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you.",
-          "short": "Once per organisation: the Narrator names who really holds power",
+          "text": "Lower-ranked people follow your reasonable orders without a roll.",
+          "short": "Your reasonable orders obeyed, no roll",
           "effects": [
             {
               "op": "narrator",
-              "note": "Tell the player who actually holds power in any organisation they're dealing with."
+              "note": "Narrator judges which orders are reasonable"
             }
           ]
         },
@@ -8487,9 +10711,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you, and that person agrees to see you; what they agree to after that is up to them.",
-          "short": "That person agrees to see you",
+          "text": "As Tier I, and once per organisation the Narrator names who really holds its power, and they agree to see you.",
+          "short": "Meet who really holds power",
           "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator judges which orders are reasonable"
+            },
             {
               "op": "narrator",
               "note": "As Tier I, and that person agrees to meet the player."
@@ -8503,9 +10731,221 @@
       "recovered": null,
       "tags": [
         "social",
-        "politics"
+        "authority"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6224"
+    },
+    {
+      "id": "five_stars",
+      "name": "Five Stars",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "authority"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "authority",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: When the fight starts, every friend banks {=tiers.I.effects.0.value|signed} AP for its first turn. II: As Tier I, and each foe makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
+      "effects": [
+        {
+          "op": "grant_ap",
+          "when": "combat_start",
+          "value": 1,
+          "bank": true,
+          "targets": {
+            "of": "self",
+            "side": "side"
+          },
+          "label": "Five Stars",
+          "say": "{self}'s squad moves first (Five Stars)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "When the fight starts, every friend banks {=tiers.I.effects.0.value|signed} AP for its first turn.",
+          "short": "Fight start: every friend +{=tiers.I.effects.0.value} AP on its first turn",
+          "effects": [
+            {
+              "op": "grant_ap",
+              "when": "combat_start",
+              "value": 1,
+              "bank": true,
+              "targets": {
+                "of": "self",
+                "side": "side"
+              },
+              "label": "Five Stars",
+              "say": "{self}'s squad moves first (Five Stars)."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and each foe makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
+          "short": "And foes save or are Shaken",
+          "effects": [
+            {
+              "op": "grant_ap",
+              "when": "combat_start",
+              "value": 1,
+              "bank": true,
+              "targets": {
+                "of": "self",
+                "side": "side"
+              },
+              "label": "Five Stars",
+              "say": "{self}'s squad moves first (Five Stars)."
+            },
+            {
+              "op": "condition",
+              "when": "combat_start",
+              "condition": "shaken",
+              "via": "authority",
+              "rounds": 1,
+              "targets": {
+                "of": "self",
+                "side": "foe"
+              },
+              "label": "Five Stars"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "command",
+        "ap"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6224"
+    },
+    {
+      "id": "commanding_voice",
+      "name": "Commanding Voice",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "authority"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "authority",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: You have {=tiers.I.effects.0.value|signed} on saves against Silenced, Shaken and Fear. II: As Tier I, and you are immune to Silenced.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "cond_incoming",
+          "if": {
+            "cond": [
+              "silenced",
+              "shaken",
+              "fear"
+            ]
+          },
+          "value": 3,
+          "label": "Commanding Voice"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "You have {=tiers.I.effects.0.value|signed} on saves against Silenced, Shaken and Fear.",
+          "short": "{=tiers.I.effects.0.value|signed} on saves against Silenced, Shaken and Fear",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "cond_incoming",
+              "if": {
+                "cond": [
+                  "silenced",
+                  "shaken",
+                  "fear"
+                ]
+              },
+              "value": 3,
+              "label": "Commanding Voice"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and you are immune to Silenced.",
+          "short": "Immune to Silenced",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "cond_incoming",
+              "if": {
+                "cond": [
+                  "silenced",
+                  "shaken",
+                  "fear"
+                ]
+              },
+              "value": 3,
+              "label": "Commanding Voice"
+            },
+            {
+              "op": "immunity",
+              "to": "silenced"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense",
+        "command"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6224"
     },
     {
       "id": "last_wall",
@@ -8529,10 +10969,59 @@
       "flavour": "The wall doesn't fall. The wall decides when it's done.",
       "text": "Once per fight, a hit that would drop you to 0 HP leaves you at 1 HP instead, and you take no damage at all until your next turn starts. Damage you do to yourself doesn't trigger it.",
       "effects": [
-        {"op": "floor", "value": 1, "when": "would_drop", "if": {"open": true, "self_harm": false, "self_hp_above": 0}, "limit": {"per": "per_combat", "n": 1}, "priority": 10, "and": [{"op": "mark", "flag": "guard"}], "fx": {"k": "shield", "amount": 0}, "say": "{self} refuses to fall (Last Wall): {=.value} HP, and nothing gets through until their next turn."},
-        {"op": "damage_mult", "value": 0, "when": "taking", "if": {"flag": "guard", "amount_above": 0}, "priority": 10, "say": "Last Wall: nothing gets through to {self}."},
-        {"op": "mark", "flag": "guard", "clear": true, "when": "turn_ap", "priority": 10},
-        {"op": "cancel", "when": "injury", "if": {"flag": "guard"}, "priority": 10, "say": "Last Wall: no injury gets through."}
+        {
+          "op": "floor",
+          "value": 1,
+          "when": "would_drop",
+          "if": {
+            "open": true,
+            "self_harm": false,
+            "self_hp_above": 0
+          },
+          "limit": {
+            "per": "per_combat",
+            "n": 1
+          },
+          "priority": 10,
+          "and": [
+            {
+              "op": "mark",
+              "flag": "guard"
+            }
+          ],
+          "fx": {
+            "k": "shield",
+            "amount": 0
+          },
+          "say": "{self} refuses to fall (Last Wall): {=.value} HP, and nothing gets through until their next turn."
+        },
+        {
+          "op": "damage_mult",
+          "value": 0,
+          "when": "taking",
+          "if": {
+            "flag": "guard",
+            "amount_above": 0
+          },
+          "priority": 10,
+          "say": "Last Wall: nothing gets through to {self}."
+        },
+        {
+          "op": "mark",
+          "flag": "guard",
+          "clear": true,
+          "when": "turn_ap",
+          "priority": 10
+        },
+        {
+          "op": "cancel",
+          "when": "injury",
+          "if": {
+            "flag": "guard"
+          },
+          "priority": 10,
+          "say": "Last Wall: no injury gets through."
+        }
       ],
       "adjudication": "engine",
       "recovered": null,
@@ -8563,8 +11052,20 @@
       "flavour": "Hurt is information. You've read it all before.",
       "text": "Injuries never cost you AP or Movement: a head injury doesn't Daze you and a leg injury doesn't slow you. While you are below half your max HP, you take {=effects.1.value_pct|abs}% less damage.",
       "effects": [
-        {"op": "immunity", "to": "injury_ap_and_move_penalties"},
-        {"op": "damage_mod", "value_pct": -20, "when": "taking", "if": {"self_hp_below": 0.5, "self_alive": true, "amount_above": 0}}
+        {
+          "op": "immunity",
+          "to": "injury_ap_and_move_penalties"
+        },
+        {
+          "op": "damage_mod",
+          "value_pct": -20,
+          "when": "taking",
+          "if": {
+            "self_hp_below": 0.5,
+            "self_alive": true,
+            "amount_above": 0
+          }
+        }
       ],
       "adjudication": "engine",
       "recovered": null,
@@ -8690,9 +11191,42 @@
       "flavour": "You've already met the worst thing. It blinked first.",
       "text": "You are immune to Fear. Allies within {=effects.1.if.target_within} tiles who can see you can't be made Afraid, and an ally who starts a turn there stops being Afraid.",
       "effects": [
-        {"op": "immunity", "to": "condition:fear"},
-        {"op": "cancel", "when": "cond_incoming", "if": {"cond": ["fear"], "target": "ally", "target_within": 3, "self_alive": true, "target_sees_self": true}, "why": "{self} is there (Nothing Left to Fear)"},
-        {"op": "cleanse", "condition": ["fear"], "target": "actor", "when": "turn_start", "if": {"actor": "ally", "actor_has": ["fear"], "actor_within": 3, "self_alive": true, "actor_sees_self": true}, "say": "{actor} steadies beside {self}: no longer Afraid (Nothing Left to Fear)."}
+        {
+          "op": "immunity",
+          "to": "condition:fear"
+        },
+        {
+          "op": "cancel",
+          "when": "cond_incoming",
+          "if": {
+            "cond": [
+              "fear"
+            ],
+            "target": "ally",
+            "target_within": 3,
+            "self_alive": true,
+            "target_sees_self": true
+          },
+          "why": "{self} is there (Nothing Left to Fear)"
+        },
+        {
+          "op": "cleanse",
+          "condition": [
+            "fear"
+          ],
+          "target": "actor",
+          "when": "turn_start",
+          "if": {
+            "actor": "ally",
+            "actor_has": [
+              "fear"
+            ],
+            "actor_within": 3,
+            "self_alive": true,
+            "actor_sees_self": true
+          },
+          "say": "{actor} steadies beside {self}: no longer Afraid (Nothing Left to Fear)."
+        }
       ],
       "adjudication": "engine",
       "recovered": null,
@@ -8785,7 +11319,18 @@
     },
     {
       "id": "trick_shot",
-      "amounts": {"ricochet": {"kind": "damage", "base": 0, "profile": "flat", "mults": {"share": 0.5}, "text": "a share of the hit", "provisional": true}},
+      "amounts": {
+        "ricochet": {
+          "kind": "damage",
+          "base": 0,
+          "profile": "flat",
+          "mults": {
+            "share": 0.5
+          },
+          "text": "a share of the hit",
+          "provisional": true
+        }
+      },
       "name": "Trick Shot",
       "tier": "mastered",
       "perk_type": "combat_interaction",
@@ -9178,7 +11723,9 @@
     },
     {
       "id": "case_closed",
-      "damage_kinds": ["blast"],
+      "damage_kinds": [
+        "blast"
+      ],
       "name": "Case Closed",
       "tier": "mastered",
       "perk_type": "combat_interaction",
@@ -9270,10 +11817,10 @@
       ]
     },
     {
-      "id": "open_hand",
-      "name": "Open Hand",
+      "id": "threads_that_hold",
+      "name": "Threads That Hold",
       "tier": "mastered",
-      "perk_type": "combat_interaction",
+      "perk_type": "passive",
       "skills": [
         "empathy"
       ],
@@ -9287,30 +11834,56 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "flavour": "You saw the moment they stopped wanting this. So did they.",
-      "text": "When an enemy you can see drops to a quarter of its HP or less, you can offer it mercy for 0 AP, once per enemy. It makes a Heart save or surrenders for the rest of the fight. Bosses and machines never accept.",
+      "flavour": "Even on the floor, you are still holding on.",
+      "text": "Tending you give a friend Bonded to you is {=numbers.through|more}% more, not {=numbers.was|more}%, and your Bonds to friends hold while you are Downed.",
+      "short": "Tending through a Bond {=numbers.through|more}% · Bonds hold while you are Downed",
+      "numbers": {
+        "through": 1.5,
+        "was": 1.2
+      },
       "effects": [
         {
-          "op": "free_action",
-          "action": "offer_mercy",
-          "when": "enemy in sight drops to 25% HP or less",
-          "effect": {
-            "op": "state",
-            "state": "surrendered",
-            "save": "heart",
-            "duration": {
-              "until": "combat_end"
-            }
-          }
+          "op": "mend_mult",
+          "when": "heal",
+          "if": {
+            "actor": "self",
+            "target": "ally",
+            "target_tied": "bond",
+            "how": [
+              "tending"
+            ]
+          },
+          "value": 1.25,
+          "label": "Threads That Hold"
+        },
+        {
+          "op": "mend_mult",
+          "when": "shield",
+          "if": {
+            "actor": "self",
+            "target": "ally",
+            "target_tied": "bond",
+            "how": [
+              "tending"
+            ]
+          },
+          "value": 1.25,
+          "label": "Threads That Hold"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ties_keep:bond",
+          "value": 1
         }
       ],
       "adjudication": "engine",
       "recovered": null,
-      "provisional": true,
       "tags": [
-        "mercy",
-        "control"
-      ]
+        "support",
+        "bond"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6211"
     },
     {
       "id": "many_hands",
@@ -9331,13 +11904,33 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "Nobody on this squad fights alone. Not even you.",
-      "text": "Your Hand-Off reaches any ally within {=effects.0.value} tiles, not only one next to you. An ally you can see who has already used their reaction may use yours instead.",
+      "text": "Share a Hit reaches any friend within {=effects.0.if.target_within} tiles, not only one beside you. A friend you can see who has already used its reaction may use yours instead.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "hand_off_range",
-          "value": 3,
-          "context": "Hand-Off (Camaraderie 3): an ally within 3 tiles uses your Defense"
+          "op": "redirect",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_within": 3,
+            "by_hit": true,
+            "actor": "foe",
+            "answer_on": "share_a_hit"
+          },
+          "share": {
+            "base": 0.25,
+            "per": [
+              {
+                "of": "skill:camaraderie",
+                "value": 0.05
+              }
+            ],
+            "max": 0.5
+          },
+          "limit": {
+            "reaction": 1,
+            "kind": "protect"
+          },
+          "say": "{self} shares the hit on {target}."
         },
         {
           "op": "reaction",
@@ -9350,7 +11943,8 @@
       "tags": [
         "squad",
         "defense"
-      ]
+      ],
+      "source": "rules 1.75 (Soul lane, 0.32) item 6213"
     },
     {
       "id": "their_own_idea",
@@ -9429,7 +12023,9 @@
     },
     {
       "id": "true_name",
-      "damage_kinds": ["blast"],
+      "damage_kinds": [
+        "blast"
+      ],
       "name": "True Name",
       "tier": "mastered",
       "perk_type": "active_skill",
@@ -9874,7 +12470,20 @@
     },
     {
       "id": "field_surgeon",
-      "amounts": {"patch": {"kind": "heal", "base": 0, "per": [{"of": "max_hp", "value": 0.5}], "text": "out of a fight", "provisional": true}},
+      "amounts": {
+        "patch": {
+          "kind": "heal",
+          "base": 0,
+          "per": [
+            {
+              "of": "max_hp",
+              "value": 0.5
+            }
+          ],
+          "text": "out of a fight",
+          "provisional": true
+        }
+      },
       "name": "Field Surgeon",
       "tier": "achieved",
       "perk_type": null,
@@ -10219,11 +12828,38 @@
       "deed": "break through a wall to win a fight.",
       "text": "Shove and the Break Finisher cost you 1 AP less, never below 1 AP. A Shove that moves its target gives you 1 Guard. Nothing can push you or knock you back.",
       "effects": [
-        {"op": "action_cost", "action": "shove", "value": -1, "min": 1},
-        {"op": "action_cost", "action": "break", "value": -1, "min": 1},
-        {"op": "immunity", "conditions": ["knockback"], "target": "self"},
-        {"op": "stat_mod", "stat": "shove_guard", "value": 1},
-        {"op": "cancel", "when": "forced_move", "if": {"open": true}, "say": "{self} doesn't move an inch (Siege Engine)."}
+        {
+          "op": "action_cost",
+          "action": "shove",
+          "value": -1,
+          "min": 1
+        },
+        {
+          "op": "action_cost",
+          "action": "break",
+          "value": -1,
+          "min": 1
+        },
+        {
+          "op": "immunity",
+          "conditions": [
+            "knockback"
+          ],
+          "target": "self"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "shove_guard",
+          "value": 1
+        },
+        {
+          "op": "cancel",
+          "when": "forced_move",
+          "if": {
+            "open": true
+          },
+          "say": "{self} doesn't move an inch (Siege Engine)."
+        }
       ],
       "adjudication": "engine",
       "recovered": null,
@@ -10550,7 +13186,27 @@
     },
     {
       "id": "last_charge",
-      "amounts": {"shield": {"kind": "shield", "base": 15, "profile": "flat", "text": "at least this", "provisional": true}, "shield_by_armour": {"kind": "shield", "base": 0, "per": [{"of": "armour_class", "value": 15}], "profile": "flat", "provisional": true}},
+      "amounts": {
+        "shield": {
+          "kind": "shield",
+          "base": 15,
+          "profile": "flat",
+          "text": "at least this",
+          "provisional": true
+        },
+        "shield_by_armour": {
+          "kind": "shield",
+          "base": 0,
+          "per": [
+            {
+              "of": "armour_class",
+              "value": 15
+            }
+          ],
+          "profile": "flat",
+          "provisional": true
+        }
+      },
       "name": "Last Charge",
       "tier": "ultimate",
       "perk_type": null,

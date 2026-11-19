@@ -52,10 +52,10 @@ describe('the 19 relabels (item 1101)', () => {
     for (const id of A_PERKS) expect(perkOf(id).adjudication, id).toBe('engine');
     for (const id of A_TRAITS) expect(traitOf(id).adjudication, id).toBe('engine');
   });
-  it('the labels of the 180: 128 engine, 45 hybrid, 7 narrator (rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine; rules 1.74 added Quick Read, Read Them, Still Breath, Read Intent, Proven Formula and Thinking Aloud (engine), Index and Opening Argument (hybrid), Objection! (narrator), removed Burden of Proof (narrator), gave Established Fact its engine half (narrator to hybrid), and added Tuned and Showman (engine) and Smooth (narrator))', () => {
+  it('the labels of the 192: 138 engine, 46 hybrid, 8 narrator (rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine; rules 1.75 Determination: +Poker Face (hybrid), Stand Still, Pure Heart, Warding Word, Recitation (engine), Old Tales (narrator); -Old Tongue (hybrid), -You Get Used to It (engine))', () => {
     const all = [...PERKS, ...TRAITS], n = (l: string) => all.filter((x) => x.adjudication === l).length;
-    expect(all.length).toBe(203); // rules 1.73 (Body): +12 (engine +2, hybrid +4, narrator +6); rules 1.74 (Mind): +11
-    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([138, 52, 13]);
+    expect(all.length).toBe(215); // rules 1.73 (Body): +12; rules 1.74 (Mind): +11; rules 1.75 (Soul): +12. Rules 1.75 Virtue: +Righteous, Five Stars, Commanding Voice (engine), Foresight (hybrid), Rank Has Privileges (narrator), -Real Power (narrator) // rules 1.75 Insight: +8 new, -4 removed (Soulmate, Rally Cry, Sweet Talker, Double Meaning)
+    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([148, 53, 14]); // Body +2 / +4 / +6, Mind +8 / +3 / 0, Soul +10 / +1 / +1
   });
   it('no relabelled card still hands a rule to the Narrator: Talks Broke Down gives its timing rule, Verse of War has no audit', () => {
     for (const t of ['I', 'II']) expect(perkOf('talks_broke_down').tiers[t].text).not.toMatch(/Narrator/);
@@ -142,9 +142,9 @@ describe('Crowd Pleaser: a crowd is 3 or more listeners within 8 tiles, out of a
 
 describe('Old Tongue II: the being holds its attacks, not its whole turn (item 1109)', () => {
   function parley(speak: boolean) {
-    const f = fightWith([{ perks: { old_tongue: 'II' } }], [{ at: 'E6' }]); open(f.cb);
+    const f = fightWith([{ perks: { old_tales: 'II' } }], [{ at: 'E6' }]); open(f.cb);
     f.pc.pos = '2,5'; f.foe.pos = '7,5'; f.foe.kind = 'upper_realm'; f.foe.weapon = 'combat_knife'; f.foe.attack = 60; f.turn(f.pc);
-    if (speak) f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'old_tongue', actionId: 'speak_fight', targetId: f.foe.id, text: 'We come by cause.' } as any);
+    if (speak) f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'old_tales', actionId: 'speak_fight', targetId: f.foe.id, text: 'We come by cause.' } as any);
     const hp = f.pc.hp, from = f.foe.pos;
     f.cb.turn = f.cb.order.indexOf(f.foe.id); withGame(f.g, () => { beginTurn(f.cb, f.g.rng); enemyTurn(f.cb, f.g.rng); });
     return { f, hurt: hp - f.pc.hp, moved: f.foe.pos !== from };
@@ -171,10 +171,10 @@ describe('the AP perks\' cooldown: once every 3 of the holder\'s turns (items 11
   it('every card it covers says so in plain words', () => {
     expect(perkOf('talks_broke_down').tiers.II.text).toMatch(/Once every 3 turns\./); // rules 1.74 item 6043: Parley's AP is tier II's
     for (const t of ['I', 'II']) expect(perkOf('grim_reaper').tiers[t].text).not.toMatch(/AP|Once every 3 turns/); // rules 1.73 item 5817: its AP rows are cut
-    for (const id of ['got_you_in_my_sight', 'overruled', 'sweet_talker']) for (const t of ['I', 'II']) expect(perkOf(id).tiers[t].text, id + ' ' + t).toMatch(/Once every 3 turns\./);
+    for (const id of ['got_you_in_my_sight', 'overruled']) for (const t of ['I', 'II']) expect(perkOf(id).tiers[t].text, id + ' ' + t).toMatch(/Once every 3 turns\./);
     expect(perkOf('war_footing').text).toMatch(/Once every 3 turns\./);
     expect(traitOf('forlorn_hope').text).toMatch(/Once every 3 turns\./); expect(traitOf('rabbits_foot').text).toMatch(/Vengeful: .*Once every 3 turns\./);
-    for (const x of [...['grim_reaper', 'got_you_in_my_sight', 'overruled', 'talks_broke_down', 'sweet_talker', 'war_footing'].map(perkOf), traitOf('forlorn_hope'), traitOf('rabbits_foot')]) expect(x.text).not.toMatch(/provisional|engine|revision|cooldown/i);
+    for (const x of [...['grim_reaper', 'got_you_in_my_sight', 'overruled', 'talks_broke_down', 'war_footing'].map(perkOf), traitOf('forlorn_hope'), traitOf('rabbits_foot')]) expect(x.text).not.toMatch(/provisional|engine|revision|cooldown/i);
   });
 
   it('Grim Reaper left the AP cooldown (rules 1.73 item 5817): kills on turns 1 to 4 give no AP and nothing cools down', () => {
@@ -211,19 +211,8 @@ describe('the AP perks\' cooldown: once every 3 of the holder\'s turns (items 11
     expect([5, 6, 7, 8].map((r) => turnIn(f, f.pc, r).ap)).toEqual([4, 6, 8, 4]);
   });
 
-  for (const [tier, n] of [['I', 2], ['II', 3]] as const) it('Sweet Talker ' + tier + ': +' + n + ' AP for a debuff on someone you charmed, on turns 1 and 4 only', () => {
-    const f = fightAfter([{ perks: { sweet_talker: tier } }], [{ name: 'Vel', at: 'F6' }], (s) => storyCheck(s, s.chars[0].id, ['implication'], { auto: 'success', target: 'Vel' }));
-    open(f.cb); const foe = f.foes[0], gains: number[] = [];
-    for (let r = 1; r <= 4; r++) { const u = turnIn(f, f.pc, r, 'perk:sweet_talker'), before = u.ap; foe.conds = {}; withGame(f.g, () => applyCond(f.cb, rng(), f.unit(u.id), foe, 'shaken', 2, undefined, { skipSave: true })); gains.push(f.unit(u.id).ap - before); }
-    expect(gains).toEqual([n, 0, 0, n]);
-  });
-  it('Sweet Talker I: the betrayal stings once every 3 turns', () => {
-    const f = fightAfter([{ perks: { sweet_talker: 'I' } }], [{ name: 'Vel', at: 'F6' }], (s) => storyCheck(s, s.chars[0].id, ['implication'], { auto: 'success', target: 'Vel' }));
-    const foe = f.foes[0], sting = () => { f.pc.conds = {}; withGame(f.g, () => applyCond(f.cb, rng(), foe, f.pc, 'shaken', 1, undefined, { skipSave: true })); };
-    turnIn(f, f.pc, 1, 'perk:sweet_talker'); sting(); expect(turnIn(f, f.pc, 2).ap).toBe(4);
-    sting(); expect(turnIn(f, f.pc, 3).ap).toBe(6); sting(); expect(turnIn(f, f.pc, 4).ap).toBe(6);
-    sting(); expect(turnIn(f, f.pc, 5).ap).toBe(4);
-  });
+  // Sweet Talker is removed (rules 1.75 item 6215).
+  // Sweet Talker is removed (rules 1.75 item 6215).
 
   it('War Footing: one enemy loses 2 AP, then no enemy does for the holder\'s next 2 turns', () => {
     const f = fightWith([{ perks: { war_footing: 'ultimate' } }], [{ at: 'F6' }, { at: 'F8' }]); open(f.cb);

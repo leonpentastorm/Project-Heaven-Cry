@@ -185,7 +185,7 @@ const SPECIAL: Record<string, Maker> = {
   'class:gunslinger.called_shot#called_shot_story': (e, x) => ({ head: 'Called Shot', hint: e.text.replace(/^Say where you put the round \(head, arm or leg\)\.\s*/, ''), fields: [chipsF('loc', 'Where the round goes', ['head', 'arm', 'leg'].map((s) => ({ id: s, label: human(s) }))), npcF(x, 'At whom (optional)', true)],
     build: (v, xx) => { const n = npcArgs(v, xx).npc; return { text: (n ? n + ': ' : '') + 'the ' + one(v, 'loc'), ...(n ? { npc: n } : {}) }; } }),
   'perk:bedside_manner#touch': (e, x) => ({ head: 'Who you touch', hint: e.text, fields: [npcF(x)] }),
-  'perk:old_tongue#speak': (e, x) => ({ head: 'Who you speak to', hint: e.text, fields: [npcF(x, 'The being'), prose('What you say (optional)', 'In its own tongue', true)] }),
+  'perk:old_tales#speak': (e, x) => ({ head: 'Who you speak to', hint: e.text, fields: [npcF(x, 'The being'), prose('What you say (optional)', 'In its own tongue', true)] }),
   'perk:their_own_idea#suggest': (e, x) => ({ head: 'Their Own Idea', hint: e.text.replace(/\s*Type it; name the listener\./, ''), fields: [npcF(x, 'The listener'), prose('The suggestion', 'Hidden inside a sentence')] }),
   // ---- the room's Narrator turns ----
   'perk:foreseen#foresee': (e, x) => ({ head: 'Which decision went wrong', hint: 'The room votes to go back to before that Narrator turn.', fields: [chipsF('choice', 'The Narrator turn', turnOpts(x.g), 1, false, 'No Narrator turn to go back to.'), prose('What went wrong (optional)', 'In a few words', true)] }),
@@ -263,8 +263,7 @@ const COMBAT: Record<string, Maker> = {
   'perk:bone_talk#bone_talk': (e) => ({ head: 'Bone Talk', hint: e.text, fields: [prose('The physical detail', 'One specific detail')] }),
   'trait:trench_poet#verse': (e) => ({ head: 'Verse', hint: e.text, fields: [prose('Your metaphor', 'Answer in metaphor')] }),
   'perk:footnote#cite_fight': (e) => ({ head: 'Footnote', hint: e.text, fields: [prose('The fact you cite (optional)', 'A fact about it', true)] }),
-  'perk:double_meaning#hint_fight': (e) => ({ head: 'Double Meaning', hint: e.text, fields: [prose('Your sentence (optional)', 'One sentence, two meanings', true)] }),
-  'perk:old_tongue#speak_fight': (e) => ({ head: 'Speak the Old Tongue', hint: e.text, fields: [prose('What you say (optional)', 'In its own tongue', true)] }),
+  'perk:old_tales#speak_fight': (e) => ({ head: 'Speak the old tongue', hint: e.text, fields: [prose('What you say (optional)', 'In its own tongue', true)] }),
   'perk:fire_sermon#preach': (e) => ({ head: 'Preach', hint: e.text, fields: [prose('What you preach (optional)', 'Your sermon', true)] }),
   'trait:holo_drama_addict#drama': (e) => ({ head: 'Play it as a holo-drama', hint: e.text, fields: [prose('The scene (optional)', 'Cue the music…', true)] }),
   'perk:their_own_idea#suggest': (e) => ({ head: 'Their Own Idea', hint: 'Click the listener; hide the suggestion inside a sentence.', fields: [prose('The suggestion', 'Hidden inside a sentence')] }),

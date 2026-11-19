@@ -143,6 +143,31 @@ Files go to `art/icons/perks/<id with dashes>.png` (catalog id `perk-<id>`). Ste
 | `speed_load` | Reaction Speed | Wick slapping a fresh magazine home, the empty one still falling | motion lines, one clean click |
 | verb `pressure.flush_out` (Dexterity 5) | Dexterity | a shot cracking past a crouched figure that bolts from cover | the Pressure door's verb set (`art/icons/moves/`, catalog `move-<id>`, as Slide) |
 | class moves `retort`, `reforge` (the Bulwark) | Durability | Retort: plates throwing a blow back; Reforge: a hammer on a plate | the move-icon set of the nine doors (`art/icons/moves/`, catalog `move-<id>`) |
+### 0f. The Soul lane of 0.32: new perks, verbs and Mastered perks (rules 1.75; requested 19 Nov 2026)
+
+Wick perk icons (white flat ink, 1024 × 1024, transparent; the STYLE-LOCK applies; the perk set in `art/icons/perks/`
+is the one to match). Until drawn, each shows the fallback the UI already uses for a perk with no icon.
+
+| id | what it is | direction |
+| --- | --- | --- |
+| `poker_face` | Composure perk: lie-readers take a penalty against you; II a Brain save bonus | Wick with a perfectly blank face while a questioning hand points at him |
+| `stand_still` | Composure perk: until you act, foes are worse at hitting you; the first miss is answered | Wick standing dead still as a shot goes wide past him |
+| `pure_heart` | Composure perk (from Will Power): the Strain that would short you is refused | Wick's chest glow held steady inside a ring, a crack refusing to spread (the move icon `move-pure-heart` exists and may be adapted) |
+| `lore_ward` | Lore Master perk "Warding Word": a spoken word guards a friend's next save | Wick speaking one word that hangs as a small sigil over a friend's head |
+| `recitation` | Lore Master perk: a Call calms your Strain | Wick reciting from memory, eyes closed, a heart glow cooling |
+| `threads_that_hold` | Empathy's Mastered: Tending through a Bond is stronger; Bonds hold while you are Downed | Wick on one knee, threads from his chest still taut to two friends |
+| `hand_off` | Camaraderie perk: a friend under attack uses your Defense | Wick stepping half in front of a friend, an arm raised as a guard for both |
+| `nobody_left_behind` | Camaraderie perk: a Downed friend beside you is spared; II raises them | Wick crouched over a fallen friend, one hand on their shoulder, shielding them |
+| `steady_hands` | Camaraderie perk: Settle and Soothe a friend | Wick's two hands calm on a friend's shoulders, the friend breathing out |
+| `pull_together` | Camaraderie perk: Tug and Guide along a Bond | Wick pulling a thread hand over hand, a friend drawn toward him |
+| `veiled_insult` | Insinuation perk: a quiet jab that Taunts | Wick with a sly half-smile, a hand at his mouth as if sharing a secret |
+| `quiet_thread` | Insinuation perk: you (II and your Bonded friends) are never Traced | A thread from Wick's chest fading out where it leaves him: no trail |
+| `righteous` | Conscience perk: prayer heals and shields are stronger on a friend at half HP | Wick's raised hand over a wounded friend, the light from it brighter than usual |
+| `foresight` | Conscience perk: the Narrator warns of the worst; II a friend's killing blow leaves them on 1 HP | Wick with eyes closed seeing a shadow of the blow before it lands |
+| `five_stars` | Authority perk: the squad moves first; II foes are Shaken | Wick at attention with a command gesture, the squad already moving behind him |
+| `commanding_voice` | Authority perk: saves against Silenced, Shaken and Fear; II never Silenced | Wick speaking through a hand clamped over his mouth, the words still getting out |
+
+The Faith forks (`fork.prayer.steadfast`, `fork.prayer.round_of_blessings`, `fork.prayer.held_breath` now named **Swift Psalm**, `fork.prayer.benediction`) are built in 0.32 (rules 1.75 item 6222); their placeholders stand. Swift Psalm's icon should read as a quicker hymn (Wick singing on the move), no longer a held breath.
 
 ### 2. Outburst feelings and modules
 
@@ -319,7 +344,7 @@ The level-up card, the sheet and the fight tab show them beside the option's rul
 | K9 | **Keep the Thread** (Bonds's fork at 4, `fork.tend.keep_the_thread`) | Placeholder in place (built) | A taut thread snapping at one end and holding at the other | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-keep_the_thread`) |
 | K10 | **Short Thread** (Bonds's fork at 4, `fork.tend.short_thread`) | Placeholder in place (built) | Wick's hand on an ally's shoulder in the thick of it, a short bright thread between them | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-short_thread`) |
 | K11 | **Shared Pulse** (Bonds's fork at 6, `fork.tend.shared_pulse`) | Placeholder in place (built) | One pulse running down three threads at once | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-shared_pulse`) |
-| K12 | **Long Thread** (Bonds's fork at 6, `fork.tend.long_thread`) | Placeholder in place (option not built yet) | A thread reaching far across a field to a distant ally | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-long_thread`) |
+| K12 | **Long Thread** (Bonds's fork at 8, `fork.tend.long_thread`) | Placeholder in place (option built in 0.32, rules 1.75 item 6212) | A thread reaching far across a field to a distant ally | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-tend-long_thread`) |
 | K13 | **Round of Blessings** (Prayer's fork at 4, `fork.prayer.round_of_blessings`) | Placeholder in place (option not built yet) | Three small blessings passing hand to hand around a ring | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-prayer-round_of_blessings`) |
 | K14 | **Steadfast** (Prayer's fork at 4, `fork.prayer.steadfast`) | Placeholder in place (option not built yet) | Wick's open hand raised as a blade falls on an ally, a blessing landing first | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-prayer-steadfast`) |
 | K15 | **Benediction** (Prayer's fork at 6, `fork.prayer.benediction`) | Placeholder in place (option not built yet) | A blessing spreading wide over a huddle of allies | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-prayer-benediction`) |
@@ -336,10 +361,10 @@ The level-up card, the sheet and the fight tab show them beside the option's rul
 | K26 | **Clean Vent** (Sigils's fork at 4, `fork.sigil.clean_vent`) | Placeholder in place (option not built yet) | A vent of Flux blasting outward from Wick, foes thrown back | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-sigil-clean_vent`) |
 | K27 | **Written in Advance** (Sigils's fork at 6, `fork.sigil.written_in_advance`) | Placeholder in place (option not built yet) | A line of glyphs waiting on the ground before a doorway | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-sigil-written_in_advance`) |
 | K28 | **Running Script** (Sigils's fork at 6, `fork.sigil.running_script`) | Placeholder in place (option not built yet) | One glyph staying lit after the spell fires | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-sigil-running_script`) |
-| K29 | **Ride the Edge** (Outbursts's fork at 4, `fork.soul.ride_the_edge`) | Placeholder in place (option not built yet) | Wick balanced on a knife-edge, the heart full to the brim | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-ride_the_edge`) |
-| K30 | **Slow Burn** (Outbursts's fork at 4, `fork.soul.slow_burn`) | Placeholder in place (option not built yet) | A held flame burning low and steady in Wick's chest | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-slow_burn`) |
-| K31 | **Blood Price** (Outbursts's fork at 6, `fork.soul.blood_price`) | Placeholder in place (option not built yet) | Wick paying a pump of power with a drop of blood | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-blood_price`) |
-| K32 | **Clean Break** (Outbursts's fork at 6, `fork.soul.clean_break`) | Placeholder in place (option not built yet) | A great release and the heart easing after it | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-clean_break`) |
+| K29 | **Ride the Edge** (Outbursts's fork at 4, `fork.soul.ride_the_edge`) | Placeholder in place (option built in 0.32, rules 1.75) | Wick balanced on a knife-edge, the heart full to the brim | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-ride_the_edge`) |
+| K30 | **Slow Burn** (Outbursts's fork at 4, `fork.soul.slow_burn`) | Placeholder in place (option built in 0.32, rules 1.75: once a turn Steady is free and calms more) | A held flame burning low and steady in Wick's chest | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-slow_burn`) |
+| K31 | **Blood Price** (Outbursts's fork at 8, `fork.soul.blood_price`) | Placeholder in place (option built in 0.32, rules 1.75: when the heart burns you, the next Release hits harder) | Wick's heart burning him, the burn feeding the next blast | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-blood_price`) |
+| K32 | **Clean Break** (Outbursts's fork at 8, `fork.soul.clean_break`) | Placeholder in place (option built in 0.32, rules 1.75: an Outburst kill calms the heart) | A great release and the heart easing after it | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-clean_break`) |
 
 ### 5d. 0.32, the Mind lane (rules 1.74; requested 19 Nov 2026)
 

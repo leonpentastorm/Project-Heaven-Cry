@@ -13020,3 +13020,148 @@ place of the Expression sheet's sections 2 and 3)
     1 AP less, never under 1; Field Fix goes back to the move pool, its key kept). Rank II: **Salvage** trimmed to the
     wreck (+2 Visualizer charge beside a wreck, once a wreck; Cash in and Field Repair do the rest); Redline (kept).
     Rank III: Sleight and Scrap Sentinel (kept). The Rigger's Hands kept. PROVISIONAL.
+### Rules 1.75 (Soul), the Soul lane of the attribute rework: Determination, Insight, Virtue (0.32, 19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md`; the sheets are
+`docs/design/proposals/2026-11-19-attribute-drafts/` determination.md, insight.md and virtue.md. Each skill takes the
+shape of rules 1.70 item 5537 (alpha: 1 the door, 2 a small verb, 3 perk step, 4 fork one, 5 a big verb, 6 and 7 perk
+steps, 8 fork two, 9 perk step, 10 Mastered; beta and gamma: the per-point gain on every level, four perks of two
+tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each sheet's MIGRATION says
+(`skills.json perk_remap`, rules 1.70 item 5538). **Every new number here is PROVISIONAL.**
+
+**Determination (Will Power, Composure, Lore Master; the Channeler)**
+
+6200. **Will Power's ladder.** 1 the door (Outbursts) · 2 **Overdraw** (moved from 3; once a turn a Pump adds two
+    stages, the first of a fight costs no Strain, each after it 1) · 3 perk step · 4 fork one · 5 **Two Schools** (a
+    design may carry a second school at half strength for more MP: `soul_modules.json second_school`, now shown on
+    the ladder) · 6, 7 perk steps · 8 fork two · 9 perk step · 10 Mastered (The Twin Pays). Per point it keeps
+    Soul power, mana syphoned, the save strength, reach every 2 and a module slot every 3, and one free Pump a round
+    from 3; it shows the modules it opens at 2 (Size, Quiet) and 4 (Bloom, Volley). **It gives no Strain limit**
+    (rules 1.70 item 5539). Its "+1 design ready every 2 points" moves to Lore Master (item 6205), Pure Heart to
+    Composure (item 6203), the Strain-free swell to Composure 6 (item 6202).
+6201. **Will Power's forks** (all four offered; ids kept). Fork one, at 4: **Ride the Edge** (a Release while your
+    Strain is at or over your limit deals +15% damage) or **Slow Burn** (REPLACED: once a turn, Steady costs 0 AP and
+    calms 1 more Strain). Fork two, at 8: **Blood Price** (REPLACED: each time your own heart burns you, your next
+    Release deals +25% damage) or **Clean Break** (REPLACED: an Outburst that drops a foe calms 2 Strain, once a
+    turn). Ride the Edge reads the resource predicate's `at: "limit"` (rules 1.70 P2), which is "at or over", so the
+    card says "at or over your limit". PROVISIONAL: 1.15, 1, 1.25, 2.
+6202. **Composure's ladder.** Every point: +1 on Heart saves. **+1 Strain limit at 1, 2, 4, 6 and 8 only** (the levels
+    where the limit moves: rules 1.70 item 5539; the page no longer shows it on 3, 5, 7). 2: learns the modules Homing,
+    Swift, Left, Right and Silent (the existing gate). 6: **a held Outburst swells with no Strain** (moved from Will
+    Power 7: `soul_modules.json cycle.swell_no_strain {composure: 6}`; PROVISIONAL level). Perk steps 3 / 5 / 7 / 9;
+    Mastered Still Water.
+6203. **Composure's four perks.** **Poker Face** (`poker_face`, from the old free unlock at 3): I anyone questioning
+    you or reading your lies takes -3 (the Narrator's); II adds +2 on Brain saves. **Stand Still** (`stand_still`,
+    from the unlock at 5): I until you first act in a fight, foes are -2 to hit you and the first to miss gives you a
+    free attack (once a fight); II Begin, Pump and Steady do not count as acting either (the not-acting list is the
+    tier's data). **Pure Heart** (`pure_heart`, from Will Power 5): I once a fight the Strain that would Mana Short you
+    is refused and your Strain falls to your limit; II twice a fight. **Flat Line** (kept). You Get Used to It is
+    removed (maps to Poker Face at the same tier). PROVISIONAL: Poker Face II's +2, Pure Heart II's two.
+6204. **Lore Master's ladder.** Every point: +1 tile Name It reach. 1: Name It (the Call) and the first Outburst tone ·
+    2: learns the forms Wave, Burst, Aura and Lance and the modules Time, Ether and Phantom · 4: learns Ricochet, Fuse
+    and Return · **+1 design ready at 4, 6, 8 and 10** (item 6205) · perk steps 3 / 5 / 7 / 9 · Mastered True Name.
+    The Call's steps and price are rules 1.70's (steps 1 / 4 / 8, 3 / 2 / 1 AP from 1 / 5 / 9).
+6205. **Ready designs are Lore Master's**: 3, and +1 at Lore Master 4, 6, 8 and 10 (a number block,
+    `soul_modules.json limits.ready_designs`, read by the one `character.ts readyDesigns`; the same numbers the old
+    `2 + floor(Will Power / 2), at least 3` gave, now on Lore Master). Readied designs over the new count are kept on
+    the sheet; a new one cannot be readied until there is room.
+6206. **Lore Master's four perks.** **Old Tales** (`old_tales`, from the unlock at 3): I once a scene one true answer
+    about a supernatural creature, curse or relic; II adds: you read and speak any ancient or upper-realm script, and
+    an upper-realm being parleys with you once (Old Tongue folded in; Narrator). **Warding Word** (`lore_ward`, from
+    the unlock at 5; named so beside the Chaplain's Ward): I 1 AP, you or an ally you see within 5 tiles gets +3 on its
+    next Brain or Heart save (the condition `warding_word`, until the end of the fight or that save); II the first
+    each turn costs 0 AP. **Rite in the Field** (changed, Leon's wording): every fifth foe you drop yourself in a fight
+    (every third at tier II), your next Crystallise costs 0 AP. **Recitation** (new): once a turn, a Call you make calms
+    1 Strain (2 at tier II). Old Tongue is removed (maps to Old Tales). PROVISIONAL: Warding Word's 5 tiles, +3 and its
+    Brain-or-Heart reading of "a supernatural effect"; Recitation's 1 and 2.
+6207. **Rite in the Field's other half is handed back.** "Takes nothing from the air" is not built: Crystallise's draw on
+    the air (`magic.ts crystallise`: the meter at 10 or more, then -10) is not on the price, so no `cost_mod` reaches
+    it (ruling layer section 2 item 6). The 0 AP half is built; the air half waits for the lead's ruling.
+6208. **The Channeler.** Shape, Iron Heart (once a fight, on Mana Shock: -2 Strain; already data on the `mana_shock`
+    trigger), Storm Front, Heart Surge and Eye of the Storm are kept. **Occult Library**: its "+1 design ready" (now
+    Lore Master's ladder) is replaced by **once a turn, Syphon costs 0 AP**; the extra tone is kept.
+
+**Insight (Empathy, Camaraderie, Insinuation; the Mender)**
+
+6210. **Empathy's ladder.** 1 the door: Bond (ally or foe; Let Go free) and Mend (a friend, or yourself once a turn),
+    one Bond held · 2 **Snap** (moved from 1) · 3 perk step · 4 fork one · 5 **Shield** (moved from 2) and a second
+    Bond held · 6 perk step and +3 Bond reach · 7 perk step · 8 fork two and a third Bond held · 9 perk step and Mend
+    and Shield cost less MP · 10 Mastered **Threads That Hold**. Every point: +6% Healing given (`rules.json
+    output.profiles.tend.skill`). The door's help says what an enemy Bond does (its numbers are `tending.json
+    tend.threads`). Leaving Empathy (ruling layer section 3 item 1): **Touch is cut** (Triage is the beside-you heal);
+    Settle, Soothe, Raise with Last Thread, Tug and Guide become Camaraderie's perks (item 6213); Field Surgery is the
+    Mender's (item 6217); Feel Their Pain is cut (nothing read it); Mercy goes to Insinuation's Open Hand (item 6216).
+6211. **Empathy's perks.** **Taut Thread** (`shared_breath`): I +6% damage on a Bonded foe (kept); II +12%, and your
+    attacks on a Bonded foe roll with Empathy when it is higher (`roll_with`, if_higher). **Bitter Balm**
+    (`lay_down_arms`): the echo on Bonded foes is 10% of your heal at I, 20% at II (it was 4% and 8%). **Mastered:
+    Threads That Hold** (`threads_that_hold`, new; Open Hand leaves Empathy): your Tending through a Bond is +50% (not
+    +20%), and your Bonds to allies hold while you are Downed (`tend.hold_down` folded in). PROVISIONAL: 10%, 20%, +50%.
+6212. **Empathy's forks.** Keep the Thread and Shared Pulse as built; **Short Thread**'s second half is Triage reaching
+    2 tiles (Touch is gone: a `pick:` step on Triage's reach); **Long Thread** is built (rules 1.70 P3, the
+    target-aware price): +3 Bond reach, and the first Mend or Shield on each Bonded friend each round costs 1 AP less
+    (never under 1; a use counted per target, `limit.each: target`).
+6213. **Camaraderie's four perks** (every point: +10% healing received, +5% of a shared hit to 50% at 5, the Bond
+    heal-back; Share a Hit at 1, and at 5 it covers a Bonded friend in sight). **Hand-Off** (`hand_off`, from the
+    unlock at 3): I once a round a friend beside you who is attacked uses your Defense if higher; II reaches 3 tiles.
+    **Nobody Left Behind** (`nobody_left_behind`, from the unlock at 5): I Stabilise costs 1 AP less and a Downed
+    friend beside you takes 50% less damage; II adds **Raise** (1 AP, 36 MP, once a turn) and **Last Thread** (after a
+    Bonded friend falls, your next Raise costs 0 AP); its carry half is cut. **Steady Hands** (`steady_hands`): I
+    **Settle**; II adds **Soothe**. **Pull Together** (`pull_together`): I **Tug**; II adds **Guide**. Each verb keeps
+    its numbers and its Attuner requirement; on a perk it is that perk's own action. Soulmate is removed (maps to Pull
+    Together), Rally Cry is removed (maps to Steady Hands). **Mastered: Many Hands** (changed): Share a Hit reaches any
+    friend within 3 tiles, and a friend in sight who has used its reaction may use yours. PROVISIONAL: 50%.
+6214. **Insinuation's ladder.** Every point: +1 Taunt reach, Taunt harder to shake off, +1 on its checks. Taunt's steps
+    and price are rules 1.70's. Perk steps 3 / 5 / 7 / 9; Mastered Their Own Idea.
+6215. **Insinuation's perks (1 of 2).** **Between the Lines** (`between_the_lines`, from the unlock at 3): I the
+    Narrator tells you what coded speech really means; II your Bond on a foe is at +2 TN. **Veiled Insult**
+    (`veiled_insult`, from the unlock at 5; rebuilt, it never ran): I 0 AP, once a fight, a foe you see makes a Heart
+    save against your Insinuation or is Taunted for 2 rounds; II twice a fight. Its old "-2 to hit you" is cut. Sweet
+    Talker is removed (maps to Veiled Insult), Double Meaning is removed (maps to Between the Lines). PROVISIONAL: +2,
+    2 rounds.
+6216. **Insinuation's perks (2 of 2).** **Quiet Thread** (`quiet_thread`, new; it removes the door's tax): I you are
+    never Traced; II nor are your Bonded friends, and a Bonded friend going Down costs you no MP. **Open Hand**
+    (`open_hand`, moved from Empathy's Mastered, Mercy folded in): I 2 AP, a humanoid foe you see below half its HP
+    makes a Heart save against your Insinuation or surrenders (never a Boss or a machine); II 0 AP, once a foe, and it
+    may be offered the moment the foe drops (the old setting always / ask / never). PROVISIONAL: half HP, 2 AP.
+6217. **The Mender.** All six moves kept. Triage is the only beside-you heal (its text loses "less than a Touch"; Short
+    Thread lets it reach 2 tiles). **Field Surgery** joins the Mender's extras (it needs the Mender, rank I).
+
+**Virtue (Faith, Conscience, Authority; the Chaplain)**
+
+6220. **Faith's ladder.** 1 the door (Whisper, once a turn; Devotion) · 2 **Name the Sinner** (a Whisper: a foe you see is
+    Judged for 2 rounds, no save; your patron's blows, your prayers' damage, are +20% on a Judged or Marked foe: Deliver
+    the Sinner moved from 5 and given a verb) · 3 perk step, Hymns open (kept at 3: the sheet's open item 1, recommended
+    no) · 4 fork one · 5 Witnessed · 6, 7 perk steps (the Miracle at 7 with Devotion 10) · 8 fork two · 9 perk step · 10
+    Mastered Judgement Day. Every point: +10% Blessing power, saves against your prayers harder; the Hymn-wait row only on
+    the levels where it still moves (rules 1.70 item 5540). **Answered Prayer is cut** (it never ran). PROVISIONAL: 2
+    rounds.
+6221. **Faith's perks.** Unbroken Litany: I the first Hymn or Miracle each fight 1 AP less; **II the first two** (its old
+    -1 Hymn wait moves to Swift Psalm). Sinner's Due unchanged.
+6222. **Faith's forks.** Fork one, at 4: **Steadfast** (a Whisper or Ward on an ally at half HP or less costs 1 AP less;
+    the target-aware price, rules 1.70 P3: a prayer is priced with its target) or **Round of Blessings** (your first
+    prayer heal or shield each turn is +25%). Fork two, at 8: **Swift Psalm** (`fork.prayer.held_breath`, id kept: -1
+    round Hymn wait, never under its floor; `faith.ts hymnWait` now asks the stat of any sheet with a pick) or
+    **Benediction** (an answered Hymn gives you and allies within 2 tiles +1 to hit for 2 rounds: the condition
+    `blessed_aim`, Rising's numbers, apart from the song). PROVISIONAL: -1 AP, +25%, -1 round, +1 and 2 rounds.
+6223. **Conscience's four perks** (every point: shields on you, your prayer shields by Faith; Prayer shields at 1).
+    **Clean Hands** and **Red Line** kept. **Righteous** (`righteous`, rebuilt: the old AP cut never ran): I your prayer
+    heals and shields on an ally at half HP or less are +20%; II +40%. **Foresight** (`foresight`, from the unlock at 3): I
+    before a big decision the Narrator tells you its worst likely result, honestly; II once a fight, the first blow that
+    would drop an ally within 4 tiles leaves them on 1 HP. PROVISIONAL: 20%, 40%, 4 tiles.
+6224. **Authority's four perks** (every point: +1 tile Order reach, Karma; Order's steps and price are rules 1.70's).
+    **Outclassed** kept. **Rank Has Privileges** (`rank_has_privileges`, from the unlock at 3): I lower-ranked people
+    follow reasonable orders without a roll; II once per organisation the Narrator names who really holds power and they
+    agree to see you (Real Power folded in: removed, mapped to Rank Has Privileges II). **Five Stars** (`five_stars`, from
+    the unlock at 5, rebuilt: it never ran): I when the fight starts, every friend banks +1 AP for its first turn; II and
+    each rank-and-file foe makes a Heart save against your Authority or is Shaken for 1 round. **Commanding Voice**
+    (`commanding_voice`, new: it removes the door's tax, Silenced): I +3 on saves against Silenced, Shaken and Fear; II
+    immune to Silenced. PROVISIONAL: +1 AP, +3.
+6225. **The Chaplain.** All six moves kept (Ward, Smite, Under the Eye, Blessed Arms, Sanctuary, Verdict) and its five
+    gains. Smite's Judged is what Name the Sinner reads.
+6226. **The biggest all-in Release rose; its band is widened to what is measured** (the 0.32 merge, 19 Nov 2026; Leon's
+    ruling of 19 Nov: ceilings are a relative measure of effort against fun, not a hard line). The Soul lane's feelings,
+    forks and Strain limit move the biggest all-in Release to 137 / 152 / 215 / 206 / 226 / 191% of the plain rifle at
+    levels 1 / 3 / 6 / 9 / 12 / 20 (the Soul branch's measure). The balance contract's own measure after the whole 0.32
+    merge reads obPeak 123 / 213 / 178 / 183% at levels 1 / 5 / 10 / 20, outside the old band (124 to 212%) at levels 1
+    and 5. No class is refitted: the contract's `outburst_peak` row is set to what is measured (`level_lo` 0.74,
+    `level_hi` 1.295: 122 to 214%). PROVISIONAL: the fun-and-balance pass judges it.

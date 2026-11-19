@@ -23,7 +23,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   if (await nm.count()) { await nm.fill('Leon'); await click(p, 'Solo ›'); }
   await p.waitForFunction(() => window.__phc.getState().game?.sandbox?.state === 'ready', null, { timeout: 30000 });
   const cid = Object.keys((await G(p)).characters)[0];
-  for (const [perk, tier] of [['fire_sermon', 'I'], ['shrug_it_off', 'I'], ['trick_shot', 'mastered'], ['last_wall', 'mastered'], ['used_to_the_pain', 'I'], ['real_power', 'I']]) await act(p, { type: 'sandbox/perk', charId: cid, perk, tier });
+  for (const [perk, tier] of [['fire_sermon', 'I'], ['shrug_it_off', 'I'], ['trick_shot', 'mastered'], ['last_wall', 'mastered'], ['used_to_the_pain', 'I'], ['rank_has_privileges', 'II']]) await act(p, { type: 'sandbox/perk', charId: cid, perk, tier });
   await act(p, { type: 'sandbox/ai', on: false }); await act(p, { type: 'sandbox/fight' });
   await p.waitForFunction(() => window.__phc.getState().game?.phase === 'combat', null, { timeout: 30000 });
   await myTurnPanel(p); await settle(p, 800); await dismiss(p);
@@ -39,7 +39,7 @@ const myTurnPanel = (p) => p.waitForFunction(() => { const d = document.querySel
   ok('Always on lists the passive ' + PERK.shrug_it_off.name + ' (shrug_it_off)', (await p.locator('[data-shelf="always"]').innerText().catch(() => '')).includes(PERK.shrug_it_off.name));
   ok('Rides an action lists Trick Shot with where its switch is: ' + ((text.match(/Trick Shot[^.]{0,60}/) || [''])[0]), /Trick Shot/.test(text) && /on your attacks/i.test(text));
   ok('Always on lists Last Wall with a live line: ' + ((text.match(/Last Wall.{0,40}/) || [''])[0]), /Last Wall/.test(text) && /Ready/.test(text));
-  ok('a story-only perk (Real Power) is not on the fight\'s card', !/Real Power/.test(text));
+  ok('a story-only perk (Rank Has Privileges) is not on the fight\'s card', !/Who really runs this/.test(text));
   const badge = (await p.locator('#phc-tab-perks').innerText()).replace(/\s+/g, ' ');
   // (the Use now rows: the panel's enabled action buttons that are not on the Rides or Always on shelves)
   const usable = await panel.evaluate((el) => [...el.querySelectorAll('button.phc-cb-act:not([disabled])')].filter((b) => !b.closest('div[data-shelf]')).length);

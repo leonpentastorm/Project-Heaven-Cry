@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import './helpers/yard16';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { physFight, rig } from './helpers/physfight';
-import { SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, ladderSchedule, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, type Unit, type Action } from '../src';
+import { PERK, SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, ladderSchedule, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, type Unit, type Action } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { tiesOf } from '../src/kit';
 import { pressureOf, pressureCap } from '../src/physical/pressure';
@@ -19,7 +19,10 @@ import techniquesJ from '../../../data/techniques.json';
 
 const FK: Record<string, any> = Object.fromEntries((forksJ as any).items.map((x: any) => [x.id, x]));
 const T: any = tendingJ;
-const grant = (id: string) => T.items.find((x: any) => x.id === id).effects.find((e: any) => e.op === 'grant_action');
+// rules 1.75 item 6213: Tug, Guide, Settle, Soothe and Raise are Camaraderie perks' actions now (their grant_action rows)
+const MOVED: Record<string, [string, number]> = { 'tend.tug': ['pull_together', 0], 'tend.guide': ['pull_together', 1], 'tend.settle': ['steady_hands', 0], 'tend.soothe': ['steady_hands', 1], 'tend.raise': ['nobody_left_behind', 2] };
+const movedGrant = (id: string) => (PERK as any)[MOVED[id][0]].tiers.II.effects[MOVED[id][1]];
+const grant = (id: string) => (MOVED[id] ? movedGrant(id) : T.items.find((x: any) => x.id === id).effects.find((e: any) => e.op === 'grant_action'));
 const ALPHAS = (SKILLS as any[]).filter((s) => Array.isArray(s.forks));
 /** The second fork's point of an alpha skill (rules 1.70 item 5536: skills.json ladder, the forks at 4 and 8). */
 const FORK2 = (skill: string): number => ladderSchedule(skill).forks[1];
@@ -343,8 +346,8 @@ describe('Pressure\'s forks: Converging Fire, Walk It In, Through the Gap, Lockd
 });
 
 // ============================================================================================ Bonds (Empathy)
-function bondRig(picks: string[], o: { empathy?: number; doorPicks?: Record<string, string[]> } = {}) {
-  const s: any = storyWith([{ name: 'Medic', level: 6, skills: { empathy: o.empathy ?? 4 }, attrs: { insight: 4 }, weapon: 'service_pistol', picks, ...(o.doorPicks ? { doorPicks: o.doorPicks } : {}) }, { name: 'Gun', level: 6 }]);
+function bondRig(picks: string[], o: { empathy?: number; doorPicks?: Record<string, string[]>; mender?: boolean } = {}) {
+  const s: any = storyWith([{ name: 'Medic', level: 6, skills: { empathy: o.empathy ?? 4 }, attrs: { insight: 4 }, weapon: 'service_pistol', picks, ...(o.mender ? { classId: 'bard' } : {}), ...(o.doorPicks ? { doorPicks: o.doorPicks } : {}) }, { name: 'Gun', level: 6 }]);
   s.g.characters[s.chars[0].id].offHand = { id: 'attuner' };
   s.act({ type: 'narrator/turn', turn: { narration: 'Fight', combat: { name: 'Bonds', map: 'yard16', difficulty: 'standard', level: 6,
     enemies: [{ name: 'Soldier 1', tier: 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level: 6 }] } } });
@@ -373,11 +376,11 @@ describe('Bonds, the first fork: Keep the Thread and Short Thread', () => {
     expect(r.U(r.al.id).hp).toBeGreaterThan(1);
     expect(tiesOf(r.cb(), r.U(r.me.id), 'bond', 'from').some((k: any) => k.to === r.al.id)).toBe(false);
   });
-  it('Short Thread: Touch reaches a Bonded ally 2 tiles away, and the Tending is ×near/through; Keep the Thread\'s holder is refused', () => {
+  it('Short Thread: the Mender\'s Triage reaches a friend 2 tiles away (rules 1.75 item 6212: Touch is cut); Keep the Thread\'s holder is refused', () => {
     const healed: number[] = [];
     for (const picks of [['fork.tend.short_thread'], ['fork.tend.keep_the_thread']]) {
-      const r = bondRig(picks); r.bond(r.al);
-      const hp = r.U(r.al.id).hp, err = r.act('verb:tend.touch', r.U(r.al.id));
+      const r = bondRig(picks, { mender: true });
+      const hp = r.U(r.al.id).hp, err = r.act('class:medic.triage', r.U(r.al.id), 'triage');
       if (picks[0] === 'fork.tend.short_thread') { expect(err).toBeNull(); healed.push(r.U(r.al.id).hp - hp); }
       else expect(err).toMatch(/range|reach|next to/i);
     }

@@ -64,6 +64,12 @@ describe('G3: the field reads each action\'s flag from data/actions.json field',
       for (const d of defs) if ((d.scope || []).includes('combat') && !F.actions[info.key + '#' + d.id]) missing.push(info.key + '#' + d.id); }
     expect(missing).toEqual([]);
   });
+  it('no row names an action no item has any more (a row leaves with its action)', () => {
+    const F: any = (ACTIONSJ as any).field, have = new Set<string>();
+    for (const info of allItems()) { let defs: any[] = []; try { defs = actionDefs(info); } catch { continue; }
+      for (const d of defs) have.add(info.key + '#' + d.id); }
+    expect(Object.keys(F.actions).filter((k) => !have.has(k))).toEqual([]);
+  });
 });
 
 // Item 15 (ROADMAP "Magic"): a focus taken out of the off hand goes to the pack as a focus (packKindOf), never a tool

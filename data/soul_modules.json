@@ -29,11 +29,11 @@
       }
     ],
     "provisional": true,
-    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP, and a tenth of the Begin's MP for each stage it reaches) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1.0, ×1.2, ×1.4 or ×1.6 for stages 0 to 4: every plain Pump adds +0.2, and a feeling adds its own step instead. If you are still holding it at the start of your next turn it swells: +1 stage for no AP and no MP, and +1 Strain (+2 in Flooded air); from Will Power 7 a swell adds no Strain. With a shield in either hand there is no swell: the stage holds, the Strain still comes. One Pump a turn can be free of AP (its MP is still owed), never more: your first Pump of a fight, or from Will Power 3 one every round. Revert Pump (0 AP) undoes the last Pump you made this turn.",
+    "text": "Begin (2 AP, or 1 AP with Swift) starts a ready design at stage 0 and adds 1 Strain. Pump (1 AP, and a tenth of the Begin's MP for each stage it reaches) raises it 1 stage, up to stage 4, plain or with a feeling. Release (1 AP) fires it at ×0.8, ×1.0, ×1.2, ×1.4 or ×1.6 for stages 0 to 4: every plain Pump adds +0.2, and a feeling adds its own step instead. If you are still holding it at the start of your next turn it swells: +1 stage for no AP and no MP, and +1 Strain (+2 in Flooded air); from Composure 6 a swell adds no Strain. With a shield in either hand there is no swell: the stage holds, the Strain still comes. One Pump a turn can be free of AP (its MP is still owed), never more: your first Pump of a fight, or from Will Power 3 one every round. Revert Pump (0 AP) undoes the last Pump you made this turn.",
     "first_pump_free": true,
     "free_pumps_per_turn": 1,
     "swell_no_strain": {
-      "will_power": 7
+      "composure": 6
     },
     "swell": {
       "unless": {
@@ -172,7 +172,7 @@
     "module_slots": "1 + floor(will_power/3)",
     "forms_per_design": 1,
     "two_schools_from_will_power": 5,
-    "ready_designs": "max(3, 2 + floor(will_power/2)): at least 3",
+    "ready_designs": {"base": 3, "steps": [{"of": "skill:lore_master", "at": 4, "value": 1}, {"of": "skill:lore_master", "at": 6, "value": 1}, {"of": "skill:lore_master", "at": 8, "value": 1}, {"of": "skill:lore_master", "at": 10, "value": 1}], "provisional": true, "note": "Rules 1.75 item 6205: 3, +1 at Lore Master 4, 6, 8 and 10 (a number block read by character.ts readyDesigns)."},
     "tones": "one at Lore Master 1; more from tutors or plates"
   },
   "notes": "Every number from rules 1.5 on is provisional. Rules 1.19 (the Outburst rework, round 2): the stage table is ×0.8 +0.2 a stage; the Damage base is 40 for characters (36 when the revision was first fitted) and 24 for enemy casters; one free Pump a turn at most; Empathy 7 makes swells cost no Strain; every school reads the stage, the Damage school has four ways to strike, Control can Swap and Status can Silence; a design's own school a second time is defined and shelved. Forms are modules (family 'form', one per design, they take a slot); tones take no slot. Retired modules are listed in 'retired' with what an old design gets instead. Rules 1.20 (the heal and shield pass): the Buff school's heal is 7 (an enemy caster's stays 30) and grows with the caster's level; Inverse and Shell have shield bases of their own (10 and 4, × the Soul multiplier × the stage multiplier) and no longer read the Damage base; in a shape a heal or a flipped shield gives each ally ×0.4; Love heals a share of the Buff school's heal.",
@@ -1449,7 +1449,6 @@
       "rage",
       "love"
     ],
-    "min_ready_designs": 3,
     "text": "A new Soul caster starts with 3 designs (a design you pick at creation replaces Heart Bolt), the Damage, Buff and Control schools, the Wave shape and the Move module (Bolt is always available), 2 feelings, and one tone if they have Lore Master 1.",
     "provisional": true
   },

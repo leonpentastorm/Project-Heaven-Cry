@@ -8,6 +8,7 @@ import {
   emit, applyCond, applyDamage, healUnit, previewAttack, statQuery, endTurn, enemyTurn, condOn, d20, storyConds, perkActionsFor,
   type Unit, type Combat, type GameState,
 } from '../src';
+import { PERK } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 type F = ReturnType<typeof fightWith>;
@@ -80,15 +81,18 @@ describe('The Name They Whisper', () => {
 });
 
 describe('Open Hand', () => {
-  it('an enemy you see crossing a quarter HP is offered mercy at once: it saves or surrenders; one offer each', () => {
-    const f = fight([{ perks: { open_hand: 'mastered' } }]); const t = f.foe; weak(t); t.hp = Math.floor(t.maxHp / 2); f.g.rng = rngFor(5);
+  it('II (rules 1.75 item 6216: Insinuation\'s, below its share of HP): an enemy you see crossing it is offered mercy at once: it saves or surrenders; one offer each', () => {
+    const f = fight([{ perks: { open_hand: 'II' } }]); const t = f.foe; weak(t); t.hp = Math.floor(t.maxHp * 0.75); f.g.rng = rngFor(5);
     withGame(f.g, () => applyDamage(f.cb, t, t.hp - 5, { by: f.pc, type: 'weapon' }));
     expect(t.surrendered).toBe(true); expect(logHas(f.cb, /open hand/)).toBe(true);
   });
-  it('set to "ask": no automatic offer; the free Offer mercy action does it on your turn', () => {
-    const f = fight([{ perks: { open_hand: 'mastered' } }]);
+  it('I: never offered at once; Offer mercy costs its AP. II set to "ask": no automatic offer; the free Offer mercy action does it on your turn', () => {
+    const g1 = fight([{ perks: { open_hand: 'I' } }]); const t1 = g1.foe; weak(t1); t1.hp = Math.floor(t1.maxHp * 0.75); g1.g.rng = rngFor(5);
+    withGame(g1.g, () => applyDamage(g1.cb, t1, t1.hp - 5, { by: g1.pc, type: 'weapon' })); expect(g1.foe.surrendered).toBeFalsy();
+    const ap1 = g1.pc.ap; pcAct(g1, { type: 'combat/perk', id: 'open_hand', actionId: 'offer_mercy', targetId: g1.foe.id }); expect(ap1 - g1.pc.ap).toBe((PERK as any).open_hand.tiers.I.numbers.ap);
+    const f = fight([{ perks: { open_hand: 'II' } }]);
     pcAct(f, { type: 'combat/perk', id: 'open_hand', actionId: 'mercy_setting', choice: 'ask' });
-    const t = f.foe; weak(t); t.hp = Math.floor(t.maxHp / 2); f.g.rng = rngFor(5);
+    const t = f.foe; weak(t); t.hp = Math.floor(t.maxHp * 0.75); f.g.rng = rngFor(5);
     withGame(f.g, () => applyDamage(f.cb, t, t.hp - 5, { by: f.pc, type: 'weapon' }));
     expect(f.foe.surrendered).toBeFalsy();
     const ap = f.pc.ap; pcAct(f, { type: 'combat/perk', id: 'open_hand', actionId: 'offer_mercy', targetId: f.foe.id });

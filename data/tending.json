@@ -346,28 +346,6 @@
       "provisional": true
     },
     {
-      "id": "tend.hold_down",
-      "name": "Threads That Hold",
-      "kind": "verb",
-      "door": "empathy",
-      "requires": [
-        {
-          "skill": "empathy",
-          "min": 10
-        }
-      ],
-      "text": "Your Bonds to allies hold while you are Downed.",
-      "effects": [
-        {
-          "op": "stat_mod",
-          "stat": "ties_keep:bond",
-          "value": 1
-        }
-      ],
-      "adjudication": "engine",
-      "provisional": true
-    },
-    {
       "id": "tend.bond",
       "name": "Bond",
       "kind": "verb",
@@ -379,7 +357,7 @@
           "min": 1
         }
       ],
-      "text": "{=effects.0.ap} AP, with an Attuner in hand: tie yourself to a unit you see within {=effects.0.reach.tiles.base} tiles ({=effects.0.reach.tiles.steps.0.value} more from Empathy {=effects.0.reach.tiles.steps.0.at}): an ally, or an enemy that is not a machine (it makes a Heart save against your Empathy; an Elite at +{=numbers.save_elite}, a Boss at +{=numbers.save_boss}). Allies and enemies share your Bonds held. A Bond does not heal by itself: Tend a Bonded ally to heal it (Mend or Shield at any range you see, Touch beside you; ×{=numbers.through} through the Bond). An enemy Bond works alone too: {=numbers.share|pct}% of the damage you take goes to it, you have +{=numbers.hit} to hit it, and when you heal yourself (Mend Yourself) or a Bonded ally it takes {=numbers.echo|pct}% of the HP restored.",
+      "text": "{=effects.0.ap} AP, with an Attuner in hand: tie yourself to a unit you see within {=effects.0.reach.tiles.base} tiles ({=effects.0.reach.tiles.steps.0.value} more from Empathy {=effects.0.reach.tiles.steps.0.at}): an ally, or an enemy that is not a machine (it makes a Heart save against your Empathy; an Elite at +{=numbers.save_elite}, a Boss at +{=numbers.save_boss}). Allies and enemies share your Bonds held. A Bond does not heal by itself: Tend a Bonded ally to heal it (Mend or Shield at any range you see; ×{=numbers.through} through the Bond). An enemy Bond works alone too: {=numbers.share|pct}% of the damage you take goes to it, you have +{=numbers.hit} to hit it, and when you heal yourself (Mend Yourself) or a Bonded ally it takes {=numbers.echo|pct}% of the HP restored.",
       "effects": [
         {
           "op": "grant_action",
@@ -400,6 +378,11 @@
                 {
                   "of": "skill:empathy",
                   "at": 6,
+                  "value": 3
+                },
+                {
+                  "of": "pick:fork.tend.long_thread",
+                  "at": 1,
                   "value": 3
                 }
               ]
@@ -539,7 +522,7 @@
       "requires": [
         {
           "skill": "empathy",
-          "min": 1
+          "min": 2
         }
       ],
       "text": "{=effects.0.ap} AP, once a turn, with an Attuner in hand: break one of your Bonds on purpose, anywhere you see. A Bonded enemy takes {=amounts.snap.base} × your Healing given as Soul damage, more as you level, and is Dazed (it saves); a Bonded ally heals {=amounts.snap_heal.base} × your Healing given. The Mender's Ledger empties into it first, as its own blow by the Ledger's rule into an enemy, as a heal of {=amounts.snap_ledger.per.0.value|pct}% of it into an ally. The Bond ends.",
@@ -705,128 +688,8 @@
         }
       },
       "adjudication": "engine",
-      "provisional": true
-    },
-    {
-      "id": "tend.tug",
-      "name": "Tug",
-      "kind": "verb",
-      "group": "bond",
-      "door": "empathy",
-      "requires": [
-        {
-          "skill": "empathy",
-          "min": 1
-        }
-      ],
-      "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP, with an Attuner in hand: pull a unit Bonded to you, anywhere you see, toward you. An enemy makes a Body save against your Empathy and, failing, is pulled {=effects.0.effects.1.tiles} tiles (a Boss {=effects.0.effects.2.tiles}); an ally comes willing, {=effects.0.effects.4.tiles} tiles. It is a pull like any other: a burning tile on the way burns.",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "tend_tug",
-          "ap": 1,
-          "uses": "at_will",
-          "res": {
-            "mp": 12
-          },
-          "if": {
-            "self_holds": {
-              "slot": "hand",
-              "door": "empathy"
-            }
-          },
-          "reach": {
-            "sight": true,
-            "side": "any",
-            "tied": "bond",
-            "if": {
-              "target_alive": true
-            },
-            "why": {
-              "target_alive": "{target} is Downed: Raise them first."
-            }
-          },
-          "effects": [
-            {
-              "op": "condition",
-              "condition": "reeled",
-              "target": "target",
-              "via": "empathy",
-              "if": {
-                "target": "foe"
-              },
-              "say": "{self} tugs at the Bond with {target}{then}."
-            },
-            {
-              "op": "displace",
-              "how": "pull",
-              "tiles": 2,
-              "target": "target",
-              "if": {
-                "target_has": [
-                  "reeled"
-                ],
-                "target_not_tier": [
-                  "boss"
-                ]
-              },
-              "say": "{self} reels {target} in along the Bond{then}."
-            },
-            {
-              "op": "displace",
-              "how": "pull",
-              "tiles": 1,
-              "target": "target",
-              "if": {
-                "target_has": [
-                  "reeled"
-                ],
-                "target_tier": [
-                  "boss"
-                ]
-              },
-              "say": "{self} reels {target} in along the Bond{then}."
-            },
-            {
-              "op": "cleanse",
-              "condition": [
-                "reeled"
-              ],
-              "target": "target",
-              "if": {
-                "target_has": [
-                  "reeled"
-                ]
-              }
-            },
-            {
-              "op": "displace",
-              "how": "pull",
-              "tiles": 3,
-              "willing": true,
-              "target": "target",
-              "if": {
-                "target": "ally"
-              },
-              "say": "{self} draws {target} in along the Bond{then}."
-            },
-            {
-              "op": "use",
-              "target": "target",
-              "if": {
-                "target": "ally",
-                "target_within": 1
-              },
-              "say": "{self} draws on the Bond; {target} is already at their side."
-            }
-          ],
-          "why": {
-            "self_holds": "Needs an Attuner in hand."
-          }
-        }
-      ],
-      "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6210"
     },
     {
       "id": "tend.mend",
@@ -978,296 +841,6 @@
       "provisional": true
     },
     {
-      "id": "tend.touch",
-      "name": "Touch",
-      "kind": "verb",
-      "group": "heal",
-      "door": "empathy",
-      "requires": [
-        {
-          "skill": "empathy",
-          "min": 1
-        }
-      ],
-      "text": "{=effects.0.ap} AP and {=effects.0.res.mp.base} MP ({=effects.0.res.mp.steps.0.value|abs} less from Empathy {=effects.0.res.mp.steps.0.at}): an ally next to you ({=effects.0.reach.tiles.base} tile; {=effects.0.reach.tiles.steps.0.value} more with the fork Short Thread) heals {=amounts.heal.base} × your Healing given, more as you level.",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "tend_touch",
-          "ap": 2,
-          "uses": "at_will",
-          "res": {
-            "mp": {
-              "base": 24,
-              "steps": [
-                {
-                  "of": "skill:empathy",
-                  "at": 9,
-                  "value": -6
-                }
-              ]
-            }
-          },
-          "if": {
-            "self_holds": {
-              "slot": "hand",
-              "door": "empathy"
-            }
-          },
-          "reach": {
-            "tiles": {
-              "base": 1,
-              "steps": [
-                {
-                  "of": "pick:fork.tend.short_thread",
-                  "at": 1,
-                  "value": 1
-                }
-              ]
-            },
-            "sight": true,
-            "side": "ally",
-            "if": {
-              "target_alive": true
-            },
-            "why": {
-              "target_alive": "{target} is Downed: Raise them first."
-            }
-          },
-          "effects": [
-            {
-              "op": "mend",
-              "amount": "heal",
-              "target": "target",
-              "say": "{self} lays a hand on {target}{then}."
-            },
-            {
-              "op": "condition",
-              "condition": "traced",
-              "skip_save": true,
-              "rounds": 2,
-              "if": {
-                "target": "ally",
-                "target_tied": "bond"
-              }
-            }
-          ],
-          "why": {
-            "self_holds": "Needs an Attuner in hand."
-          }
-        }
-      ],
-      "amounts": {
-        "heal": {
-          "kind": "heal",
-          "base": 4.3,
-          "profile": "tend",
-          "heal_kind": "tending",
-          "provisional": true
-        }
-      },
-      "adjudication": "engine",
-      "provisional": true
-    },
-    {
-      "id": "tend.settle",
-      "name": "Settle",
-      "kind": "verb",
-      "group": "help",
-      "door": "empathy",
-      "requires": [
-        {
-          "skill": "empathy",
-          "min": 1
-        }
-      ],
-      "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP: you, an ally within {=effects.0.reach.tiles} tiles you see or a Bonded ally anywhere you see is Settled (a bonus on every save) until the end of its next turn.",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "tend_settle",
-          "ap": 1,
-          "uses": "at_will",
-          "res": {
-            "mp": 15
-          },
-          "if": {
-            "self_holds": {
-              "slot": "hand",
-              "door": "empathy"
-            }
-          },
-          "reach": {
-            "tiles": 3,
-            "sight": true,
-            "side": "side",
-            "self": true,
-            "beyond": "bond",
-            "if": {
-              "target_alive": true
-            },
-            "why": {
-              "target_alive": "{target} is Downed: Raise them first."
-            }
-          },
-          "effects": [
-            {
-              "op": "condition",
-              "condition": "settled",
-              "target": "target",
-              "skip_save": true,
-              "rounds": 1,
-              "say": "{self} settles {target}."
-            },
-            {
-              "op": "condition",
-              "condition": "traced",
-              "skip_save": true,
-              "rounds": 2,
-              "if": {
-                "target": "ally",
-                "target_tied": "bond"
-              }
-            }
-          ],
-          "why": {
-            "self_holds": "Needs an Attuner in hand."
-          }
-        }
-      ],
-      "adjudication": "engine",
-      "provisional": true
-    },
-    {
-      "id": "tend.soothe",
-      "name": "Soothe",
-      "kind": "verb",
-      "group": "help",
-      "door": "empathy",
-      "requires": [
-        {
-          "skill": "empathy",
-          "min": 1
-        }
-      ],
-      "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP: you or an ally in reach loses its newest harmful Body condition (Heart ones too from Empathy {=effects.0.effects.1.if.self_skill.empathy}; {=effects.0.effects.0.count.steps.0.value} more from Empathy {=effects.0.effects.0.count.steps.0.at}). Never a Brain condition, Stunned, Injured, Prone, Grappled, Taunted or Commanded.",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "tend_soothe",
-          "ap": 1,
-          "uses": "at_will",
-          "res": {
-            "mp": 18
-          },
-          "if": {
-            "self_holds": {
-              "slot": "hand",
-              "door": "empathy"
-            }
-          },
-          "reach": {
-            "tiles": 3,
-            "sight": true,
-            "side": "side",
-            "self": true,
-            "beyond": "bond",
-            "if": {
-              "target_alive": true
-            },
-            "why": {
-              "target_alive": "{target} is Downed: Raise them first."
-            }
-          },
-          "effects": [
-            {
-              "op": "cleanse",
-              "target": "target",
-              "condition": [
-                "bleeding",
-                "burning",
-                "weakened",
-                "slowed",
-                "nausea",
-                "pinned",
-                "dazed",
-                "blinded",
-                "suppressed",
-                "corroded"
-              ],
-              "newest": true,
-              "count": {
-                "base": 1,
-                "steps": [
-                  {
-                    "of": "skill:empathy",
-                    "at": 7,
-                    "value": 1
-                  }
-                ]
-              },
-              "if": {
-                "self_skill_below": {
-                  "empathy": 5
-                }
-              }
-            },
-            {
-              "op": "cleanse",
-              "target": "target",
-              "condition": [
-                "bleeding",
-                "burning",
-                "weakened",
-                "slowed",
-                "nausea",
-                "pinned",
-                "dazed",
-                "blinded",
-                "suppressed",
-                "corroded",
-                "fear",
-                "shaken",
-                "smitten",
-                "scorned"
-              ],
-              "newest": true,
-              "count": {
-                "base": 1,
-                "steps": [
-                  {
-                    "of": "skill:empathy",
-                    "at": 7,
-                    "value": 1
-                  }
-                ]
-              },
-              "if": {
-                "self_skill": {
-                  "empathy": 5
-                }
-              }
-            },
-            {
-              "op": "condition",
-              "condition": "traced",
-              "skip_save": true,
-              "rounds": 2,
-              "if": {
-                "target": "ally",
-                "target_tied": "bond"
-              }
-            }
-          ],
-          "why": {
-            "self_holds": "Needs an Attuner in hand."
-          }
-        }
-      ],
-      "adjudication": "engine",
-      "provisional": true
-    },
-    {
       "id": "tend.shield",
       "name": "Shield",
       "kind": "verb",
@@ -1276,7 +849,7 @@
       "requires": [
         {
           "skill": "empathy",
-          "min": 2
+          "min": 5
         }
       ],
       "text": "{=effects.0.ap} AP and {=effects.0.res.mp.base} MP ({=effects.0.res.mp.steps.0.value|abs} less from Empathy {=effects.0.res.mp.steps.0.at}): an ally Bonded to you, anywhere you see, gains a shield of {=amounts.shield.base} × your Healing given, more as you level (the larger shield stands). Only a Bonded ally: the Bond is what carries it.",
@@ -1349,164 +922,8 @@
         }
       },
       "adjudication": "engine",
-      "provisional": true
-    },
-    {
-      "id": "tend.raise",
-      "name": "Raise",
-      "kind": "verb",
-      "group": "heal",
-      "door": "empathy",
-      "requires": [
-        {
-          "skill": "empathy",
-          "min": 3
-        }
-      ],
-      "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP, once a turn: a Downed ally next to you, or a Bonded one you see, stands with {=amounts.heal.base} × your Healing given in HP (never less than one).",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "tend_raise",
-          "ap": 1,
-          "uses": "at_will",
-          "res": {
-            "mp": 36
-          },
-          "if": {
-            "self_holds": {
-              "slot": "hand",
-              "door": "empathy"
-            }
-          },
-          "reach": {
-            "tiles": 1,
-            "sight": true,
-            "side": "ally",
-            "beyond": "bond",
-            "if": {
-              "target_alive": false
-            },
-            "why": {
-              "target_alive": "{target} is not Downed."
-            }
-          },
-          "limit": {
-            "per": "per_turn",
-            "n": 1
-          },
-          "effects": [
-            {
-              "op": "mend",
-              "amount": "heal",
-              "target": "target",
-              "say": "{self} raises {target}{then}."
-            },
-            {
-              "op": "condition",
-              "condition": "traced",
-              "skip_save": true,
-              "rounds": 2,
-              "if": {
-                "target": "ally",
-                "target_tied": "bond"
-              }
-            }
-          ],
-          "why": {
-            "self_holds": "Needs an Attuner in hand."
-          }
-        }
-      ],
-      "amounts": {
-        "heal": {
-          "kind": "heal",
-          "base": 1.9,
-          "profile": "tend",
-          "heal_kind": "tending",
-          "provisional": true,
-          "min_pct": 0.1333
-        }
-      },
-      "adjudication": "engine",
-      "provisional": true
-    },
-    {
-      "id": "tend.guide",
-      "name": "Guide",
-      "kind": "verb",
-      "group": "help",
-      "door": "empathy",
-      "requires": [
-        {
-          "skill": "empathy",
-          "min": 4
-        }
-      ],
-      "text": "{=effects.0.ap} AP and {=effects.0.res.mp} MP: an ally in reach steps up to {=effects.0.effects.0.tiles.base} tiles ({=effects.0.effects.0.tiles.steps.0.value} more from Empathy {=effects.0.effects.0.tiles.steps.0.at}) to a tile you pick. It is willing, and it provokes nothing.",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "tend_guide",
-          "ap": 1,
-          "uses": "at_will",
-          "res": {
-            "mp": 15
-          },
-          "if": {
-            "self_holds": {
-              "slot": "hand",
-              "door": "empathy"
-            }
-          },
-          "reach": {
-            "tiles": 3,
-            "sight": true,
-            "side": "ally",
-            "beyond": "bond",
-            "if": {
-              "target_alive": true
-            },
-            "why": {
-              "target_alive": "{target} is Downed: Raise them first."
-            }
-          },
-          "effects": [
-            {
-              "op": "displace",
-              "to": "tile",
-              "how": "guide",
-              "target": "target",
-              "tiles": {
-                "base": 2,
-                "steps": [
-                  {
-                    "of": "skill:empathy",
-                    "at": 7,
-                    "value": 1
-                  }
-                ]
-              },
-              "say": "{self} guides {target}."
-            },
-            {
-              "op": "condition",
-              "condition": "traced",
-              "skip_save": true,
-              "rounds": 2,
-              "if": {
-                "target": "ally",
-                "target_tied": "bond"
-              }
-            }
-          ],
-          "why": {
-            "self_holds": "Needs an Attuner in hand."
-          }
-        }
-      ],
-      "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6210"
     },
     {
       "id": "tend.bond_free",
@@ -1654,8 +1071,12 @@
       "door": "empathy",
       "requires": [
         {
+          "class": "bard",
+          "rank": 1
+        },
+        {
           "skill": "empathy",
-          "min": 3
+          "min": 1
         }
       ],
       "text": "Out of a fight, with an Attuner in hand and a field kit, for {=effects.0.res.mp} MP: treat one arm or leg injury, or clear every Body condition, on an ally or yourself; once an ally a scene.",
@@ -1672,66 +1093,8 @@
         }
       ],
       "adjudication": "engine",
-      "provisional": true
-    },
-    {
-      "id": "tend.last_thread",
-      "name": "Last Thread",
-      "kind": "verb",
-      "door": "empathy",
-      "requires": [
-        {
-          "skill": "empathy",
-          "min": 1
-        }
-      ],
-      "text": "When an ally Bonded to you goes Down, your next Raise before the end of your next turn costs {=effects.1.set} AP.",
-      "effects": [
-        {
-          "op": "mark",
-          "when": "downed",
-          "if": {
-            "target": "ally",
-            "target_tied": "bond"
-          },
-          "flag": "last_thread",
-          "say": "{self} feels the last thread to {target} pull taut."
-        },
-        {
-          "op": "cost_mod",
-          "when": "cost",
-          "if": {
-            "action": [
-              "verb:tend.raise#tend_raise"
-            ],
-            "flag": "last_thread"
-          },
-          "set": 0
-        },
-        {
-          "op": "mark",
-          "when": "acted",
-          "if": {
-            "action": [
-              "tend_raise"
-            ],
-            "flag": "last_thread"
-          },
-          "flag": "last_thread",
-          "clear": true
-        },
-        {
-          "op": "mark",
-          "when": "turn_end",
-          "flag": "last_thread",
-          "clear": true,
-          "if": {
-            "flag": "last_thread"
-          }
-        }
-      ],
-      "adjudication": "engine",
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6217"
     }
   ]
 }

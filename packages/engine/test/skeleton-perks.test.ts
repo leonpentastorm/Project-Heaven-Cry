@@ -37,8 +37,7 @@ describe('the data of the pass', () => {
     for (const p of PERKS as any[]) if (p.tier === 'acquired' || p.tier === 'mastered') expect(p.skill_greek, p.id).toBe((SKILL as any)[p.skills[0]].slot);
   });
   it('no alpha or beta perk gives or takes AP in the turn any more (15.7); the own-cost discounts stay', () => {
-    const gone = ['into_the_dark', // rules 1.73: Used to the Pain is removed
-       'rally_cry', 'clean_hands', 'many_hands', 'walking_wounded', 'you_get_used_to_it']; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
+    const gone = ['into_the_dark', 'clean_hands', 'many_hands', 'walking_wounded']; // rules 1.73: Used to the Pain is removed; rules 1.75: Rally Cry and You Get Used to It are removed; // rules 1.56: blueprint is Wake of the Kill (1 AP on a Figment's kill: the doc's ruling, spec item 4215)
     for (const id of gone) {
       const p = P[id], fx = [...(p.effects || []), ...(p.tiers?.I?.effects || []), ...(p.tiers?.II?.effects || [])];
       expect(fx.some((e: any) => e.op === 'stat_mod' && e.stat === 'ap'), id).toBe(false);
@@ -50,7 +49,7 @@ describe('the data of the pass', () => {
     expect(P.dead_signal.skills).toEqual(['analysis', 'ingenuity']); expect(P.dead_signal.requires[0]).toEqual({ skill: 'analysis', min: 5 });
     const name = (s: string, n: string) => (SKILL as any)[s].unlocks[n].name;
     // rules 1.73 items 5802-5804: Raw Power 2 is Grapple, 5 Throw Down; Heavy Hands is Iron Grip II's, Follow Through the Breaker's
-    expect([name('raw_power', '2'), name('raw_power', '5'), name('camaraderie', '3'), name('composure', '5')]).toEqual(['Grapple', 'Throw Down', 'Hand-Off', 'Stand Still']);
+    expect([name('raw_power', '2'), name('raw_power', '5'), P.hand_off.name, P.stand_still.name]).toEqual(['Grapple', 'Throw Down', 'Hand-Off', 'Stand Still']); // rules 1.75: Hand-Off and Stand Still are perks
     expect(P.read_them.skills).toEqual(['analysis']); expect(P.read_them.tiers.I.text).toMatch(/less damage to your side/); // rules 1.74 item 6004: Read Them is an Acuity perk
     expect(P.tuned.tiers.I.text).toMatch(/never jams and never breaks/); // rules 1.74 item 6042: Tuned is an Improvisation perk
   });
@@ -131,8 +130,8 @@ describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
     expect(logHas(tuned, /the gun jams/)).toBe(false); expect(tuned.pc.stunnedNext || 0).toBe(0); // the attack's own line never says it jammed
     const plain = run(4); expect(plain.pc.jammed).toBe(true); expect(plain.pc.dur).toBe(0); expect(logHas(plain, /the gun jams/)).toBe(true);
   });
-  it('Hand-Off: once a round an ally next to you uses your Defense against one attack; 3 tiles with Many Hands; no AP moves', () => {
-    const fight = (pts: number, perks: any = {}) => {
+  it('Hand-Off: once a round an ally next to you uses your Defense against one attack; 3 tiles at tier II; no AP moves', () => {
+    const fight = (pts: number, perks: any = pts >= 3 ? { hand_off: 'I' } : {}) => { // rules 1.75 item 6213: Hand-Off is a Camaraderie perk (II: 3 tiles)
       const f = physFight([{ weapon: 'sabre', skills: { camaraderie: pts }, perks }, { name: 'Ally' }], [{ at: 'H7' }]); const [a, b] = f.pcs;
       f.put(a, 'C7'); f.put(b, 'C8'); f.put(f.foe, 'H8'); f.unit(a.id).def = 18; f.unit(b.id).def = 10; f.unit(f.foe.id).ap = 30; return f;
     };
@@ -147,12 +146,12 @@ describe('Quick Draw, Tuned, Hand-Off, Stand Still (unlocks)', () => {
     f.cb.round += 1; expect(term(f)).toBe(-8);
     f.put(f.pcs[1], 'C10'); expect(term(f)).toBe(0); // 3 tiles away: too far
     expect(term(fight(2))).toBe(0);
-    const many = fight(10, { many_hands: 'mastered' }); many.put(many.pcs[1], 'C10'); expect(term(many)).toBe(-8);
+    const many = fight(10, { hand_off: 'II' }); many.put(many.pcs[1], 'C10'); expect(term(many)).toBe(-8);
     many.put(many.pcs[1], 'C11'); expect(term(many)).toBe(0);
     const low = fight(3); low.unit(low.pcs[0].id).def = 9; expect(term(low)).toBe(0); // only if yours is higher
   });
-  it('Stand Still (the original, restored): until you first act, enemies are at −2 to hit you; a Call is not acting, a move is', () => {
-    const fight = (pts: number) => { const f = physFight([{ weapon: 'sabre', skills: { composure: pts, charisma: 1 } }, { name: 'Ally' }], [{ at: 'F7', weapon: 'service_pistol' }]); f.put(f.pcs[0], 'C7'); f.put(f.pcs[1], 'C8'); f.put(f.foe, 'F7'); f.turn(f.pc); return f; };
+  it('Stand Still (the original, restored; a Composure perk since rules 1.75 item 6203): until you first act, enemies are at −2 to hit you; a Call is not acting, a move is', () => {
+    const fight = (pts: number) => { const f = physFight([{ weapon: 'sabre', skills: { composure: pts, charisma: 1 }, ...(pts >= 5 ? { perks: { stand_still: 'I' } } : {}) }, { name: 'Ally' }], [{ at: 'F7', weapon: 'service_pistol' }]); f.put(f.pcs[0], 'C7'); f.put(f.pcs[1], 'C8'); f.put(f.foe, 'F7'); f.turn(f.pc); return f; };
     const term = (f: F) => { const pv = withGame(f.g, () => previewAttack(f.cb, f.unit(f.foe.id), f.unit(f.pc.id), 'shot', { free: true })); if (!pv.terms) throw new Error('preview: ' + pv.why); return pv.terms.filter((t: any) => t.label === 'Stand Still').reduce((n: number, t: any) => n + t.v, 0); };
     const f = fight(5); expect(term(f)).toBe(-2); expect(term(fight(4))).toBe(0);
     f.act({ type: 'combat/call', unitId: f.pc.id, id: 'call.rally', targetId: f.pcs[1].id } as any); expect(term(f)).toBe(-2);

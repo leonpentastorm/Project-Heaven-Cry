@@ -13,6 +13,7 @@ function fight() {
   g = apply(g, { type: 'player/join', id: 'p2', name: 'M' }, 'host'); g = apply(g, { type: 'char/add', sheet: sheet('Gun', 'sharpshooter') }, 'p2');
   g = apply(g, { type: 'run/start', seed: 'PHC-0001' }, 'host'); g = apply(g, { type: 'run/ready', close: true }, 'host');
   const med: any = Object.values(g.characters).find((c: any) => c.name === 'Medic');
+  med.skills.camaraderie = Math.max(med.skills.camaraderie || 0, 5); med.perks = [...(med.perks || []), { id: 'pull_together', tier: 'II' }]; // rules 1.75 item 6213: Guide is Pull Together II's
   const node = reachable(g.run).find((n: any) => n.kind === 'fight');
   for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by);
   const cb = g.combat, mu = cb.units.find((u: any) => u.charId === med.id), al = cb.units.find((u: any) => u.side === 'pc' && u.id !== mu.id);
@@ -20,7 +21,7 @@ function fight() {
   cb.turn = cb.order.indexOf(mu.id); delete cb.window; delete cb.approach; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5011: the fight set up by hand as joined
   return { g, mu, al };
 }
-const ID = 'pk:verb:tend.guide#tend_guide';
+const ID = 'pk:perk:pull_together#tend_guide';
 
 describe('0.28.3: Guide on the fight screen', () => {
   it('click the ally, then a shaded tile: Confirm sends both, and the ally steps there', () => {

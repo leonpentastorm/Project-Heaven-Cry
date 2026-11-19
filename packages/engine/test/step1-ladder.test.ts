@@ -34,20 +34,17 @@ describe('the ladder schedule is one table (rules 1.70 item 5537)', () => {
     c.skills.durability = 6; expect(pendingPerkSteps(c).find((x) => x.skill === 'durability')).toBeUndefined();
     c.skills.durability = 7; expect(pendingPerkSteps(c).find((x) => x.skill === 'durability')?.free).toBe(1);
   });
-  describe('a fixture skill with four perks (the code works for two or four without change)', () => {
-    const FOUR = ['test_perk_a', 'test_perk_b'].map((id) => ({ id, name: 'Test ' + id.slice(-1).toUpperCase(), tier: 'acquired', skills: ['composure'], text: 'A test perk.', requires: [], effects: [], adjudication: 'engine', tiers: { I: { text: 'I' }, II: { text: 'II' } } }));
-    afterEach(() => { for (const p of FOUR) { const i = (PERKS as any[]).indexOf(p); if (i >= 0) (PERKS as any[]).splice(i, 1); delete (PERK as any)[p.id]; } });
+  describe('a skill with four perks (the code works for two or four without change; Composure has four since rules 1.75 item 6203)', () => {
     it('composure at 9: four steps among four perks, taken through the reducer, each perk at most II, no step twice', () => {
-      for (const p of FOUR) { (PERKS as any[]).push(p); (PERK as any)[p.id] = p; }
       const s = storyWith([{ skills: { composure: 9 }, attrs: { determination: 9 } }]), id = s.chars[0].id;
       const pend = () => pendingPerkSteps(s.g.characters[id]).find((x) => x.skill === 'composure');
       expect(pend()?.free).toBe(4);
       expect(pend()!.choices.map((x) => x.id).sort()).toEqual((PERKS as any[]).filter((p) => p.tier === 'acquired' && p.skills.includes('composure')).map((p) => p.id).sort());
       expect(pend()!.choices.length).toBe(4);
-      for (const id2 of ['test_perk_a', 'test_perk_b', 'test_perk_a', 'flat_line']) s.act({ type: 'levelup/perk', charId: id, perkId: id2 } as any);
+      for (const id2 of ['poker_face', 'stand_still', 'poker_face', 'flat_line']) s.act({ type: 'levelup/perk', charId: id, perkId: id2 } as any);
       const c = s.g.characters[id];
       expect(pend()).toBeUndefined(); expect(stepsTaken(c, 'composure')).toBe(4);
-      expect(c.perks.filter((x) => x.id === 'test_perk_a')).toEqual([{ id: 'test_perk_a', tier: 'II' }]);
+      expect(c.perks.filter((x) => x.id === 'poker_face')).toEqual([{ id: 'poker_face', tier: 'II' }]);
     });
   });
 });

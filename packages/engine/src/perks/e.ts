@@ -181,101 +181,8 @@ register({
   brief: () => 'a fight within one story round of a talk counts as breaking out of it; set combat.fromTalk only to overrule that',
 });
 
-// ---------- Rally Cry (Camaraderie β) ----------
-// Rules 1.13 (a beta gives no AP). I: when an ally drops to 0 HP (Downed or killed) by an enemy, a hazard or an enemy's
-// effect (not friendly fire or your own side's magic), every other ally, the holder included, takes 15% less damage
-// until their own next turn starts; II: 25%. Several drops or holders don't stack (the best counts). PROVISIONAL.
-// The share is its data's (engine foundations 3): the held tier's effects[0].value_pct.
-const rallyLess = (h: Holder) => h.info.effects[0].value_pct / 100;
-register({
-  id: 'rally_cry', claims: 'all',
-  on: {
-    on_downed: (ctx, h) => {
-      const v = ctx.victim as Unit, u = h.u, cb = h.cb; if (!u || !cb || v.side !== u.side || v.companion) return;
-      if (ctx.by && ctx.by.side === v.side) return; // friendly fire, or your own Mana Short
-      if (ctx.dead && v.downed) return; // finished off while already Downed: they dropped to 0 once, not twice
-      const n = rallyLess(h), got: string[] = [];
-      for (const a of cb.units) {
-        if (a === v || a.side !== u.side || a.dead || a.downed || a.companion) continue;
-        const as = unitState(h, a); if ((as.less || 0) >= n) continue;
-        as.less = n; got.push(a.name);
-      }
-      if (got.length) say(cb, v.name + ' is down: ' + got.join(', ') + ' take ' + Math.round(n * 100) + '% less damage until their next turn (Rally Cry).');
-    },
-    turn_start: (ctx, h) => { const as = (ctx.u as Unit)?.ps?.[h.key] as any; if (as?.less) as.less = 0; },
-    damage_in: (ctx, h) => {
-      if (ctx.phase !== 'reduce' || ctx.dmg <= 0) return; const t = ctx.t as Unit, less = (t.ps?.[h.key] as any)?.less || 0; if (!less) return;
-      const prev = ctx._rally || 0; if (less <= prev) return; // two holders: the best one counts
-      ctx.dmg = (ctx.dmg / (1 - prev)) * (1 - less); ctx._rally = less;
-    },
-  },
-  brief: () => null,
-});
-
-// ---------- Soulmate (Camaraderie β) ----------
-// I: bond with one teammate (out of a fight: "Bond"); II: two. Damage a bondmate takes, after armour and their shield,
-// is shared: you take 5% at Camaraderie Mastery 1, 10% at M2, 15% at M3, 20% at M4 and Mastered (rounded down), as
-// true damage that is never shared again (no ping-pong between mutual Soulmates). PROVISIONAL (plan 6): the share
-// stops at your last HP (you can't Down yourself for a bondmate), and you must be up to take it.
-const soulPct = (c: Character | null | undefined) => { const p = c?.skills?.camaraderie || 0; return p >= 9 ? 0.2 : p >= 7 ? 0.15 : p >= 5 ? 0.1 : p >= 3 ? 0.05 : 0; };
-function soulShare(ctx: any, h: Holder) {
-  const t = ctx.t as Unit, u = h.u, cb = h.cb; if (!u || !cb || t === u || ctx.src?.shared || !alive(u) || t.downed) return;
-  if (!t.charId || !bondsOf(h, false).includes(t.charId)) return;
-  const shieldTake = ctx.phase === 'shield' ? Math.min(t.shield || 0, ctx.dmg) : 0, rest = ctx.dmg - shieldTake;
-  let share = Math.floor(rest * soulPct(h.c)); share = Math.min(share, Math.max(0, u.hp - 1)); if (share <= 0) return;
-  ctx.dmg -= share;
-  applyDamage(cb, u, share, { type: 'true', by: ctx.src?.by || null, shared: true, shield: false, credit: 'none' });
-  say(cb, u.name + ' takes ' + share + ' of the blow meant for ' + t.name + ' (Soulmate).');
-}
-register({
-  id: 'soulmate', claims: 'all', priority: 900,
-  actions: [bondAction((h) => (tierII(h) ? 2 : 1), false, 'Bond (Soulmate)')],
-  on: {
-    damage_in: (ctx, h) => {
-      if (ctx.phase === 'shield') soulShare(ctx, h);
-      else if (ctx.phase === 'reduce' && ctx.src?.shield === false) soulShare(ctx, h); // hazards and bleeding: no shield phase
-    },
-  },
-  brief: (h) => { const n = bondNames(h, false); return n ? 'bonded to ' + n : null; },
-});
-
-// ---------- Sweet Talker (Implication γ) ----------
-// The charm: a successful Charisma or Implication check aimed at an NPC (the check's target) marks that NPC charmed
-// for the scene. In a fight (and on the area map) buffing or debuffing that NPC's unit gives +2 AP at once (II +3),
-// once every 3 of your turns in a fight (the AP perks' cooldown, ./cooldown.ts; once a turn on the area map). I: a
-// charmed NPC who debuffs you costs you 2 AP on your next turn, also at most once every 3 turns. The fight is usually
-// the same scene, so the charm carries in.
-const charmedKey = (s: string) => String(s || '').trim().toLowerCase();
-function charmedBy(h: Holder, t: Unit): boolean {
-  const g = gameOf(h), ch = cs(h.c).charmed; if (!ch || !g || ch.scene !== (g.story?.scene?.n ?? 0)) return false;
-  return (ch.npcs || []).some((n: string) => n === charmedKey(t.npcId || '') || n === charmedKey(t.id) || n === charmedKey(t.name));
-}
-register({
-  id: 'sweet_talker', claims: 'all',
-  on: {
-    check_result: (ctx, h) => {
-      const g = gameOf(h); if (ctx.c !== h.c || !g || !ctx.roll?.ok || !ctx.ck?.target) return;
-      if (!(ctx.ck.skills || []).some((s: string) => s === 'charisma' || s === 'implication')) return;
-      const st = charState(h.c), sc = g.story.scene?.n ?? 0;
-      if (!st.charmed || st.charmed.scene !== sc) st.charmed = { scene: sc, npcs: [] };
-      const k = charmedKey(ctx.ck.target); if (!st.charmed.npcs.includes(k)) st.charmed.npcs.push(k);
-      const n = (g.story.npcs || []).find((x: any) => charmedKey(x.name) === k || charmedKey(x.id) === k); if (n && !st.charmed.npcs.includes(charmedKey(n.id))) st.charmed.npcs.push(charmedKey(n.id));
-    },
-    cond_landed: (ctx, h) => {
-      const u = h.u, cb = h.cb; if (!u || !cb) return;
-      if (ctx.by === u && ctx.t !== u && charmedBy(h, ctx.t)) {
-        if (overworld(cb) ? !uses(h).take('per_turn', 1, h.key + '#ap') : !cdFire(h, 'gain', landsNow(cb, u))) return;
-        const n = tierII(h) ? 3 : 2;
-        if (overworld(cb)) { grantAp(cb, u, n, { max: Infinity }); say(cb, u.name + ' +' + n + ' AP (Sweet Talker).'); } else { uses(h).take('per_turn', 1, h.key + '#ap'); grantPerkAp(cb, u, n, 'Sweet Talker'); }
-      } else if (ctx.t === u && ctx.by && ctx.by !== u && !tierII(h) && !isBoon(ctx.id) && charmedBy(h, ctx.by)) {
-        if (stateOf(h).sting || !cdFire(h, 'pen', landsNext(cb, u))) return;
-        stateOf(h).sting = true; say(cb, ctx.by.name + '\'s betrayal stings (Sweet Talker): −2 AP next turn.');
-      }
-    },
-    turn_start_pre: (ctx, h) => { if (ctx.u !== h.u) return; cdTick(h); if (stateOf(h).sting) { delete stateOf(h).sting; pushAp(ctx, -2, 'Sweet Talker: betrayal'); } },
-  },
-  brief: (h) => { const ch = cs(h.c).charmed; return ch?.npcs?.length ? 'charmed this scene: ' + ch.npcs.slice(0, 3).join(', ') + ' (name the target on social checks)' : 'name the target NPC on Charisma/Insinuation checks'; },
-});
+// Rally Cry, Soulmate and Sweet Talker are removed (rules 1.75 items 6213, 6215: mapped to Steady Hands, Pull Together
+// and Veiled Insult at the same tier).
 
 // ---------- Outclassed (Authority γ) ----------
 // I: the fight's first enemy death: if your side made it and you had damaged that enemy, +3 AP on your next turn; the
@@ -307,7 +214,7 @@ register({
 // Rules 1.13 (the AP gift went to the Calls). Your Hand-Off (Camaraderie 3: an ally uses your Defense against one
 // attack a round) reaches any ally within 3 tiles: perks/skeleton.ts reads this perk for its reach. An ally you can see
 // whose reaction is spent may use yours: tactics.ts canReact/react() spend the holder's (reactionDonor).
-register({ id: 'many_hands', claims: 'all', brief: () => null });
+register({ id: 'many_hands', claims: [1], brief: () => null }); // rules 1.75 item 6213: its Share a Hit row (effects 0) is data the runner owns; the reaction donor (effects 1) is tactics.ts reactionDonor's
 
 // ---------- On My Mark (Authority Mastered) ----------
 // 1 AP, once per round, on your turn: order an ally who can hear you (any conscious ally: a shout or the radio,

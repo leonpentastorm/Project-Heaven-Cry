@@ -3910,7 +3910,7 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
-      "door_line": "Your door is Bonds: a thread from you to a friend. A Bond does not heal by itself: Tend a Bonded friend to heal them, with Mend or Shield at any range you can see, or Touch from beside them.",
+      "door_line": "Your door is Bonds: tie yourself to a friend or a foe. Tend a Bonded friend; hurt a Bonded foe. A foe makes a Heart save to resist (an Elite at +{=door_numbers.save_elite}, a Boss at +{=door_numbers.save_boss}). While you hold it you have +{=door_numbers.hit} to hit it, and {=door_numbers.share|pct}% of the damage you take goes to it. It takes {=door_numbers.echo|pct}% of every heal you give. Your damage is +{=door_numbers.per_bond|pct}% for each Bond you hold. Snap breaks a Bond: a foe takes Soul damage and is Dazed. While you hold any Bond you are Traced.",
       "forks": [
         {
           "id": "a",
@@ -3932,37 +3932,63 @@
       "door_tab": "tend",
       "door_title": "TEND · BONDS AND CARE",
       "per_point": {
+        "numbers": {
+          "heal": 0.06,
+          "bonds": 1,
+          "reach": 3,
+          "mp": 6
+        },
         "rows": [
           {
             "at": "each",
-            "text": "More healing given"
+            "text": "+{=per_point.numbers.heal|pct}% Healing given"
           },
           {
-            "at": "from 1",
-            "text": "Opens Bonds and Tending (needs an Attuner): a Bond can be put on a friend or an enemy"
+            "at": "at 1, 5, 8",
+            "text": "+{=per_point.numbers.bonds} Bond held"
           },
           {
-            "at": "each",
-            "text": "More Bonds held · more Tending moves"
+            "at": "at 6",
+            "text": "+{=per_point.numbers.reach} Bond reach"
+          },
+          {
+            "at": "at 9",
+            "text": "Mend and Shield cost {=per_point.numbers.mp} MP less"
           }
-        ]
+        ],
+        "note": "Rules 1.75 item 6210: the heal is rules.json output.profiles.tend.skill; the Bonds held tending.json tend.threads, bonds_5, bonds_8; the reach and the MP the steps of tend.bond, tend.mend and tend.shield."
       },
       "gates": [
         "focus:attuner"
       ],
       "unlocks": {
+        "1": {
+          "name": "Bond and Mend",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "The door: Bond (a friend or a foe; Let Go is free) and Mend (a friend, or yourself once a turn); one Bond held (data/tending.json).",
+          "player": "Bond a friend or a foe · Mend a friend or yourself",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6210"
+        },
+        "2": {
+          "name": "Snap",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "Snap, once a turn: break a Bond; a foe takes Soul damage and is Dazed, a friend heals (data/tending.json tend.snap).",
+          "player": "Snap a Bond: a foe is hurt and Dazed, a friend heals",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6210"
+        },
         "3": {
-          "name": "Feel Their Pain",
-          "category": "Combat Interaction",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "You see the HP state and morale of every creature in your Vision range.",
-          "player": "See the health and morale of everyone in sight",
+          "text": "A perk step in this skill: one of its two perks at Tier I.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "see_hp_state_in_vision",
-              "value": 1
-            },
             {
               "op": "perk_choice",
               "skill": "empathy",
@@ -3982,20 +4008,15 @@
           "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
         },
         "5": {
-          "name": "Mercy",
+          "name": "Shield",
           "category": "Active Skill",
           "mastery": 0,
-          "text": "{=unlocks.5.effects.0.ap} AP: a humanoid enemy below 50% HP makes a Heart save, harder the more Empathy you have, or surrenders or flees.",
-          "player": "{=.effects.0.ap} AP: a humanoid foe below half HP saves (Heart) or yields",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "mercy",
-              "ap": 2,
-              "uses": "at_will"
-            }
-          ],
-          "adjudication": "engine"
+          "text": "Shield: a Bonded friend anywhere you see takes a shield (data/tending.json tend.shield).",
+          "player": "Shield a Bonded friend anywhere you see",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6210"
         },
         "7": {
           "name": "Mastery 3",
@@ -4014,7 +4035,7 @@
           "name": "Fork: Shared Pulse or Long Thread",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Shared Pulse or Long Thread: not offered yet (Long Thread is still to be built; data/forks.json).",
+          "text": "The door's second fork: choose Shared Pulse or Long Thread, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -4097,6 +4118,15 @@
         "bad_for": "chaotic alignments, serial killers, non-humanoids.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "door_numbers": {
+        "save_elite": 2,
+        "save_boss": 5,
+        "hit": 3,
+        "share": 0.2,
+        "echo": 0.2,
+        "per_bond": 0.05,
+        "about": "tending.json tend.threads numbers, copied for the door line's placeholders (rules 1.75 item 6210); tools/validate.py holds them equal."
       }
     },
     {
@@ -4119,7 +4149,8 @@
         "numbers": {
           "feed": 0.01,
           "feed_at_double": 0.3,
-          "heal": 0.1
+          "heal": 0.1,
+          "share": 0.05
         },
         "rows": [
           {
@@ -4129,6 +4160,10 @@
           {
             "at": "each",
             "text": "+{=per_point.numbers.heal|pct}% healing received"
+          },
+          {
+            "at": "at 1, 2, 3, 4, 5",
+            "text": "+{=per_point.numbers.share|pct}% of a shared hit"
           },
           {
             "at": "at 5",
@@ -4209,46 +4244,27 @@
           "item": true
         },
         "3": {
-          "name": "Hand-Off",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Once per round, when an ally next to you is attacked, they use your Defense in place of their own if yours is higher.",
-          "player": "Once a round: a friend beside you uses your Defense if higher",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "stat_mod",
-              "stat": "defense",
-              "basis": "your Defense",
-              "target": "an adjacent ally",
-              "limit": "once per round",
-              "when": "an attack against them, if your Defense is higher"
-            },
             {
               "op": "perk_choice",
               "skill": "camaraderie",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine",
-          "provisional": true,
-          "item": true
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Nobody Left Behind",
-          "category": "Passive",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Carry a Downed ally at full Movement, and stabilise them for {=unlocks.5.effects.0.value|abs} AP.",
-          "player": "Carry a Downed friend at full Movement · stabilise for {=.effects.0.value|abs} AP",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap_cost:stabilise",
-              "value": -1
-            },
-            {
-              "op": "stat_mod",
-              "stat": "carry_ally_full_move",
-              "value": 1
+              "op": "perk_choice",
+              "skill": "camaraderie",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -4339,6 +4355,18 @@
         "bad_for": "lone wolves, edgelords, murder hobos.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "soulmate": "pull_together",
+          "rally_cry": "steady_hands"
+        },
+        "passives": {
+          "3": "hand_off",
+          "5": "nobody_left_behind"
+        },
+        "note": "Rules 1.75 item 6213: Hand-Off and Nobody Left Behind became perks; Soulmate and Rally Cry are removed."
       }
     },
     {
@@ -4366,42 +4394,30 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Between the Lines",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "When an NPC speaks in code or hides their meaning, the Narrator tells you what they really mean.",
-          "player": "Hear what coded talk really means",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator reveals the hidden meaning"
-            },
             {
               "op": "perk_choice",
               "skill": "implication",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Veiled Insult",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Before a fight, taunt one enemy in metaphor. It makes a Heart save or must target you first, at {=unlocks.5.numbers.hit} to hit.",
-          "player": "Before a fight: a foe saves (Heart) or must attack you first, {=.numbers.hit} to hit",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "veiled_insult",
-              "ap": 0,
-              "uses": "per_combat"
+              "op": "perk_choice",
+              "skill": "implication",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "engine",
-          "numbers": {
-            "hit": -2
-          }
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -4491,6 +4507,18 @@
         "bad_for": "the antisocial, blunt people, paladins.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "sweet_talker": "veiled_insult",
+          "double_meaning": "between_the_lines"
+        },
+        "passives": {
+          "3": "between_the_lines",
+          "5": "veiled_insult"
+        },
+        "note": "Rules 1.75 items 6215, 6216: Between the Lines and Veiled Insult became perks; Sweet Talker and Double Meaning are removed."
       }
     },
     {
@@ -4533,7 +4561,6 @@
           "soul": 0.1,
           "syphon": 0.1,
           "reach": 1,
-          "designs": 1,
           "slots": 1,
           "pumps": 1
         },
@@ -4551,10 +4578,6 @@
             "text": "+{=per_point.numbers.reach} tile Outburst reach"
           },
           {
-            "at": "every 2",
-            "text": "+{=per_point.numbers.designs} design ready"
-          },
-          {
             "at": "every 3",
             "text": "+{=per_point.numbers.slots} module slot"
           },
@@ -4563,8 +4586,12 @@
             "text": "{=per_point.numbers.pumps} free Pump a round"
           },
           {
-            "at": "from 7",
-            "text": "A held Outburst swells with no Strain"
+            "at": "at 2",
+            "text": "Learn the modules Size and Quiet"
+          },
+          {
+            "at": "at 4",
+            "text": "Learn the modules Bloom and Volley"
           }
         ]
       },
@@ -4572,11 +4599,11 @@
         "focus:emanator"
       ],
       "unlocks": {
-        "3": {
+        "2": {
           "name": "Overdraw",
           "category": "Active Skill",
-          "mastery": 1,
-          "text": "Once a turn: a Pump adds 2 stages · +1 Strain after the first",
+          "mastery": 0,
+          "text": "Once a turn: a Pump adds {=unlocks.2.numbers.stages} stages · +{=unlocks.2.numbers.strain} Strain after the first",
           "player": "Overdraw, once a turn: a Pump adds two stages · the first of a fight costs no Strain, then one Strain",
           "effects": [
             {
@@ -4584,44 +4611,50 @@
               "action": "overdraw",
               "ap": 0,
               "uses": "per_turn"
-            },
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "item": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6200",
+          "numbers": {
+            "stages": 2,
+            "strain": 1
+          }
+        },
+        "3": {
+          "name": "Mastery 1",
+          "mastery": 1,
+          "text": "A perk step in this skill: one of its two perks at Tier I.",
+          "effects": [
             {
               "op": "perk_choice",
               "skill": "will_power",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "engine",
-          "provisional": true,
-          "item": true
+          "adjudication": "engine"
         },
         "4": {
           "name": "Fork: Ride the Edge or Slow Burn",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's first fork, Ride the Edge or Slow Burn: not offered yet (Ride the Edge and Slow Burn are still to be built; data/forks.json).",
+          "text": "The door's first fork: choose Ride the Edge or Slow Burn, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.75 (Soul lane, 0.32) item 6201"
         },
         "5": {
-          "name": "Pure Heart",
-          "category": "Combat Interaction",
+          "name": "Two Schools",
+          "category": "Active Skill",
           "mastery": 0,
-          "text": "Once per combat, the first Strain that would Mana Short you is refused: your Strain falls to your limit instead, with no Stun and no wild release.",
-          "player": "Once a fight: the Strain that would Mana Short you is refused",
-          "effects": [
-            {
-              "op": "grant_action",
-              "action": "pure_heart",
-              "ap": 0,
-              "uses": "per_combat"
-            }
-          ],
+          "text": "A design may carry a second school: it rides after the first at half strength and costs more MP (soul_modules.json second_school).",
+          "player": "A design may carry a second school, at half strength",
+          "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "item": true
+          "source": "rules 1.75 (Soul lane, 0.32) item 6200"
         },
         "7": {
           "name": "Mastery 3",
@@ -4640,11 +4673,11 @@
           "name": "Fork: Blood Price or Clean Break",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Blood Price or Clean Break: not offered yet (Blood Price and Clean Break are still to be built; data/forks.json).",
+          "text": "The door's second fork: choose Blood Price or Clean Break, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.75 (Soul lane, 0.32) item 6201"
         },
         "9": {
           "name": "Mastery 4",
@@ -4745,29 +4778,30 @@
         "rows": [
           {
             "at": "each",
-            "grows": "strain_limit",
+            "text": "+{=per_point.numbers.save} on Heart saves"
+          },
+          {
+            "at": "at 1, 2, 4, 6, 8",
             "text": "+{=per_point.numbers.strain_step} Strain limit"
           },
           {
-            "at": "each",
-            "text": "+{=per_point.numbers.save} on Heart saves"
+            "at": "at 2",
+            "text": "Learn the modules Homing, Swift, Left, Right and Silent"
+          },
+          {
+            "at": "at 6",
+            "text": "A held Outburst swells with no Strain"
           }
-        ]
+        ],
+        "note": "Rules 1.75 item 6202: the Strain limit moves at 1, 2, 4, 6 and 8 only (soul_modules.json strain.limit; tools/validate.py holds the row's points equal to its steps)."
       },
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Poker Face",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Interrogators and lie-readers take −{=unlocks.3.effects.0.value} against you.",
-          "player": "Anyone questioning you or reading your lies takes −{=.effects.0.value}",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "tn_mod",
-              "context": "insight_checks_against_self",
-              "value": 3
-            },
             {
               "op": "perk_choice",
               "skill": "composure",
@@ -4777,27 +4811,17 @@
           "adjudication": "engine"
         },
         "5": {
-          "name": "Stand Still",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Until you first act in a combat, enemies attacking you are at −2 to hit, and the first one to miss gives you a free attack on it (once a combat, if your weapon reaches). A Call doesn't count as acting.",
-          "player": "Until you first act: foes −{=.effects.0.value} to hit you · the first miss gives you a free attack",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "defense_until_first_act",
-              "value": 2
-            },
-            {
-              "op": "grant_action",
-              "action": "stand_still_counter",
-              "ap": 0,
-              "uses": "per_combat"
+              "op": "perk_choice",
+              "skill": "composure",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "engine",
-          "provisional": true,
-          "item": true
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -4851,7 +4875,7 @@
         "once_per_scene": true
       },
       "tags": [
-        "gamma",
+        "beta",
         "core:soul",
         "attr:determination",
         "defense",
@@ -4886,6 +4910,17 @@
         "bad_for": "small bois, shy bois, studs and sluts.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "you_get_used_to_it": "poker_face"
+        },
+        "passives": {
+          "3": "poker_face",
+          "5": "stand_still"
+        },
+        "note": "Rules 1.75 item 6203: Poker Face and Stand Still became perks; You Get Used to It is removed (Poker Face at its tier)."
       }
     },
     {
@@ -4897,60 +4932,60 @@
       "summary": "The occultist's library: old scripts, curses, relics and the names of things.",
       "per_point": {
         "numbers": {
-          "call_range": 1
+          "call_range": 1,
+          "designs": 1
         },
         "rows": [
           {
             "at": "each",
             "text": "+{=per_point.numbers.call_range} tile Name It reach"
+          },
+          {
+            "at": "at 1",
+            "text": "Your first Outburst tone"
+          },
+          {
+            "at": "at 2",
+            "text": "Learn the forms Wave, Burst, Aura and Lance, and the modules Time, Ether and Phantom"
+          },
+          {
+            "at": "at 4",
+            "text": "Learn the modules Ricochet, Fuse and Return"
+          },
+          {
+            "at": "at 4, 6, 8, 10",
+            "text": "+{=per_point.numbers.designs} design ready"
           }
-        ]
+        ],
+        "note": "Rules 1.75 item 6205: ready designs are Lore Master's (soul_modules.json limits.ready_designs; tools/validate.py holds the design rows' points equal to its steps)."
       },
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Old Tales",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Once per scene, ask the Narrator one question about a supernatural creature, curse or relic. The answer is true.",
-          "player": "Once a scene: one true fact about a creature, curse or relic",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "grant_action",
-              "action": "old_tales_question",
-              "ap": 0,
-              "uses": "per_scene"
-            },
-            {
-              "op": "narrator",
-              "note": "Narrator answers truthfully"
-            },
             {
               "op": "perk_choice",
               "skill": "lore_master",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Ward",
-          "category": "AP Mod",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "{=unlocks.5.effects.0.ap} AP: an ally gets +{=unlocks.5.numbers.save} on their next save against a supernatural effect.",
-          "player": "{=.effects.0.ap} AP: a friend +{=.numbers.save} on their next save against the supernatural",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "grant_action",
-              "action": "ward",
-              "ap": 1,
-              "uses": "at_will"
+              "op": "perk_choice",
+              "skill": "lore_master",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "engine",
-          "numbers": {
-            "save": 3
-          }
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -5004,7 +5039,7 @@
         "once_per_scene": true
       },
       "tags": [
-        "beta",
+        "gamma",
         "core:soul",
         "attr:determination",
         "knowledge",
@@ -5040,6 +5075,17 @@
         "bad_for": "scientists, hackers, barbarians.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "old_tongue": "old_tales"
+        },
+        "passives": {
+          "3": "old_tales",
+          "5": "lore_ward"
+        },
+        "note": "Rules 1.75 item 6206: Old Tales and Warding Word became perks; Old Tongue is removed (folded into Old Tales II)."
       }
     },
     {
@@ -5087,6 +5133,10 @@
           {
             "at": "each",
             "text": "Blessings: harder to save against"
+          },
+          {
+            "at": "at 3",
+            "text": "Hymns open"
           }
         ]
       },
@@ -5094,44 +5144,47 @@
         "gear:holy_relic"
       ],
       "unlocks": {
-        "3": {
-          "name": "Answered Prayer",
+        "2": {
+          "name": "Name the Sinner",
           "category": "Active Skill",
-          "mastery": 1,
-          "text": "Once per combat, reset your prayer cooldown.",
-          "player": "Once a fight: reset your prayers' wait",
+          "mastery": 0,
+          "text": "A Whisper: a foe you see is Judged for {=unlocks.2.effects.0.effects.0.rounds} rounds. Your prayers deal {=unlocks.2.effects.1.value|pct}% more to a Judged or Marked foe.",
+          "player": "Whisper: a foe is Judged · your prayers +{=.effects.1.value|pct}% on it",
           "effects": [
             {
               "op": "grant_action",
-              "action": "answered_prayer",
-              "ap": 0,
-              "uses": "per_combat"
+              "action": "name_the_sinner",
+              "label": "Name the Sinner",
+              "prayer": "whisper",
+              "ap": 1,
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "reach": {
+                "sight": true,
+                "side": "foe",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is already down."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "judged",
+                  "target": "target",
+                  "skip_save": true,
+                  "rounds": 2,
+                  "say": "{self} names {target} before the patron.",
+                  "fx": {
+                    "k": "smite"
+                  }
+                }
+              ]
             },
-            {
-              "op": "perk_choice",
-              "skill": "faith",
-              "choice": "tier_1"
-            }
-          ],
-          "adjudication": "engine"
-        },
-        "4": {
-          "name": "Fork: Round of Blessings or Steadfast",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's first fork, Round of Blessings or Steadfast: not offered yet (Round of Blessings and Steadfast are still to be built; data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
-        },
-        "5": {
-          "name": "Deliver the Sinner",
-          "category": "Combat Interaction",
-          "mastery": 0,
-          "text": "Your patron's blows (Smite, Amen, Rebuke, a Hymn's or an intervention's harm) deal {=unlocks.5.effects.0.value|pct}% more to a foe your squad has Marked (Marking is Shadow's).",
-          "player": "+{=.effects.0.value|pct}% damage from your patron's blows on a Marked foe",
-          "effects": [
             {
               "op": "damage_vs",
               "when": "dealing",
@@ -5143,15 +5196,51 @@
                 ],
                 "target": "foe",
                 "target_has": [
+                  "judged",
                   "marked"
                 ]
               },
               "label": "Deliver the Sinner"
             }
           ],
+          "adjudication": "engine",
           "provisional": true,
           "item": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6220"
+        },
+        "3": {
+          "name": "Mastery 1",
+          "mastery": 1,
+          "text": "A perk step in this skill: one of its two perks at Tier I.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "faith",
+              "choice": "tier_1"
+            }
+          ],
           "adjudication": "engine"
+        },
+        "4": {
+          "name": "Fork: Steadfast or Round of Blessings",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork: choose Steadfast or Round of Blessings, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6222"
+        },
+        "5": {
+          "name": "Witnessed",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "An answered Hymn brings your patron's eye on you (Witnessed): more Devotion for what it likes, and its intervention once a fight (data/patrons.json prayer.witnessed).",
+          "player": "An answered Hymn: your patron watches (Witnessed)",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6220"
         },
         "7": {
           "name": "Mastery 3",
@@ -5167,14 +5256,14 @@
           "adjudication": "engine"
         },
         "8": {
-          "name": "Fork: Benediction or Held Breath",
+          "name": "Fork: Swift Psalm or Benediction",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Benediction or Held Breath: not offered yet (Benediction and Held Breath are still to be built; data/forks.json).",
+          "text": "The door's second fork: choose Swift Psalm or Benediction, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.75 (Soul lane, 0.32) item 6222"
         },
         "9": {
           "name": "Mastery 4",
@@ -5317,42 +5406,30 @@
           "item": true
         },
         "3": {
-          "name": "Foresight",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Before a major decision, ask the Narrator for its worst likely consequence. The answer is honest.",
-          "player": "Before a big decision: its worst likely result",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator states the worst likely consequence honestly"
-            },
             {
               "op": "perk_choice",
               "skill": "conscience",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Righteous",
-          "category": "AP Mod",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "While protecting innocents, your first action each turn costs {=unlocks.5.effects.0.value|abs} AP less.",
-          "player": "While you protect innocents, your first action each turn costs {=.effects.0.value|abs} AP less",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap_cost:first_action_when_protecting",
-              "value": -1
-            },
-            {
-              "op": "narrator",
-              "note": "Narrator confirms innocents are being protected"
+              "op": "perk_choice",
+              "skill": "conscience",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -5440,6 +5517,15 @@
         "bad_for": "neutral alignments, emotionless robots, weathervanes.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "foresight",
+          "5": "righteous"
+        },
+        "note": "Rules 1.75 item 6223: Foresight and Righteous became perks."
       }
     },
     {
@@ -5468,35 +5554,27 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Rank Has Privileges",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Lower-ranked NPCs (soldiers, guards, clerks) follow reasonable orders without a roll.",
-          "player": "Lower ranks follow reasonable orders, no roll",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator judges which orders are reasonable"
-            },
             {
               "op": "perk_choice",
               "skill": "authority",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Five Stars",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Your squad has +{=unlocks.5.effects.0.value} AP in round 1, and enemy rank-and-file make a Heart save or hesitate (−{=unlocks.5.effects.0.value} AP).",
-          "player": "Squad +{=.effects.0.value} AP in round one · foes save (Heart) or lose {=.effects.0.value} AP",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "squad_ap_round1",
-              "value": 1
+              "op": "perk_choice",
+              "skill": "authority",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -5588,6 +5666,17 @@
         "bad_for": "sugar babies, fuckboys (you risk ending up married instead of a one-night stand).",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "real_power": "rank_has_privileges"
+        },
+        "passives": {
+          "3": "rank_has_privileges",
+          "5": "five_stars"
+        },
+        "note": "Rules 1.75 item 6224: Rank Has Privileges and Five Stars became perks; Real Power is folded into Rank Has Privileges II."
       }
     }
   ],

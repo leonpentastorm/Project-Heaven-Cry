@@ -378,7 +378,7 @@
       "syphon_bonus_pct": "10*(determination-1) + 10*will_power",
       "strain_limit": "3, +1 at Composure 1, 2, 4, 6 and 8 (rules 1.70 item 5539; soul_modules.json strain.limit)",
       "prayer_cooldown_turns": "max(3, ceil(9 - 0.75*faith - 0.25*virtue)) rounds (rules 1.22; patrons.json prayer.hymn.cooldown_rule)",
-      "ready_designs": "2 + floor(will_power/2), at least 3"
+      "ready_designs": "3, +1 at Lore Master 4, 6, 8 and 10 (soul_modules.json limits.ready_designs; rules 1.75 item 6205)"
     },
     "social": {
       "leadership": {
@@ -1500,7 +1500,7 @@
         "two_schools_from_will_power": 5,
         "second_school_extra_cost": 10,
         "module_slots": "1 + floor(will_power/3)",
-        "ready_designs": "2 + floor(will_power/2), at least 3",
+        "ready_designs": "3, +1 at Lore Master 4, 6, 8 and 10 (soul_modules.json limits.ready_designs; rules 1.75 item 6205)",
         "second_school": "a rider at half strength with its own option",
         "forms_per_design": 1
       },
@@ -1580,11 +1580,11 @@
       "withdrawn": "rules 1.23 (Leon, 12 Nov 2026): there is no round limit. Rules 1.20 held spells and prayers to half of a creature's max HP a round; healing is priced in AP now, and the enemies go for whoever mends the most."
     },
     "brake": {
-      "about": "Rules 1.60 item 4640 (Leon's ruling ii, 16 Nov 2026), restated in spec item 5610: each Mend, Touch or Shield, and the Mender's Triage, a giver gives the same target in the same round costs its MP x `mult` for every one that giver already gave that target this round (the second x1.5, the third x2.25). Data for it is here; it is NOT BUILT: the price must see its target (the target-aware price, N20, on the shared lane's branch). `actions` are the actions it brakes, `<item key>#<action id>`; `per` the window the gives are counted in.",
+      "about": "Rules 1.60 item 4640 (Leon's ruling ii, 16 Nov 2026), restated in spec item 5610: each Mend or Shield (Touch is cut, rules 1.75), and the Mender's Triage, a giver gives the same target in the same round costs its MP x `mult` for every one that giver already gave that target this round (the second x1.5, the third x2.25). Data for it is here; it is NOT BUILT: the price must see its target (the target-aware price, N20, on the shared lane's branch). `actions` are the actions it brakes, `<item key>#<action id>`; `per` the window the gives are counted in.",
       "built": false,
       "mult": 1.5,
       "per": "per_round",
-      "actions": ["verb:tend.mend#tend_mend", "verb:tend.touch#tend_touch", "verb:tend.shield#tend_shield", "class:medic.triage#triage"],
+      "actions": ["verb:tend.mend#tend_mend", "verb:tend.shield#tend_shield", "class:medic.triage#triage"],
       "provisional": true
     },
     "medic": {
@@ -1726,8 +1726,11 @@
       },
       "outburst_peak": {
         "allin": 165,
-        "level_hi": 1.285,
-        "level_hi_note": "lead's ruling of 16 Nov 2026, PROVISIONAL (rules 1.56): the band's top is 212, not 165 x 1.25 = 206, because the Outburst's level-5 peak sits about 2 percent over its band: one base dial (damage.base 37) cannot put both the steady turn and the peak on their lines; to be refitted with the feelings' steps in the Balance 2.0 number pass",
+        "level_lo": 0.74,
+        "level_lo_note": "rules 1.75 item 6226 (the 0.32 merge, 19 Nov 2026), PROVISIONAL: the biggest all-in Release measured 123% at level 1 after the merge (the old floor 165 x 0.75 = 124); set to what is measured, for the fun-and-balance pass to judge (Leon's ruling of 19 Nov: ceilings are relative)",
+        "level_hi": 1.295,
+        "provisional": true,
+        "level_hi_note": "lead's ruling of 16 Nov 2026, PROVISIONAL (rules 1.56): the band's top is 212, not 165 x 1.25 = 206, because the Outburst's level-5 peak sits about 2 percent over its band: one base dial (damage.base 37) cannot put both the steady turn and the peak on their lines; to be refitted with the feelings' steps in the Balance 2.0 number pass. Rules 1.75 item 6226 (the 0.32 merge, 19 Nov 2026), PROVISIONAL: 1.295 (214), the level-5 peak measured 213% after the merge; set to what is measured",
         "what": "the biggest Release, one turn",
         "dial": "soul_modules.json damage.base, then cycle.stage_mult"
       },
@@ -2431,9 +2434,9 @@
   },
   "forced_movement": {
     "boss_holds": {
-      "about": "A Boss (rules.json bosses) is never moved by an opponent's forced move (a push, a pull, a throw, a teleport, a swap: any item, weapon or technique); the knockback immunity and Nailed already hold any unit the data marks so. The one exception: the items named in `except` (their own rows say how far a Boss goes: Tug's Bond moves it 1 tile on a failed save).",
+      "about": "A Boss (rules.json bosses) is never moved by an opponent's forced move (a push, a pull, a throw, a teleport, a swap: any item, weapon or technique); the knockback immunity and Nailed already hold any unit the data marks so. The one exception: the items named in `except` (their own rows say how far a Boss goes: Tug's Bond, Pull Together's since rules 1.75 item 6213, moves it 1 tile on a failed save).",
       "except": [
-        "tend.tug"
+        "pull_together"
       ],
       "why": "too big to be moved"
     },

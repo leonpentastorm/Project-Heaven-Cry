@@ -183,8 +183,7 @@
    "twin_discipline",
    "twin_souls",
    "upper_touched",
-   "verse_of_war",
-   "you_get_used_to_it"
+   "verse_of_war"
   ],
   "perks/e.ts": [
    "angel_of_the_trenches",
@@ -198,12 +197,9 @@
    "outclassed",
    "overruled",
    "pattern_lock",
-   "rally_cry",
    "rival",
-   "soulmate",
    "spoon_feed",
    "supreme_command",
-   "sweet_talker",
    "sworn_sibling",
    "talks_broke_down",
    "the_voice"
@@ -242,7 +238,6 @@
    "crowded_head",
    "cultured",
    "detectives_eye",
-   "double_meaning",
    "established_fact",
    "every_lie_is_a_door",
    "everyones_friend",
@@ -251,8 +246,8 @@
    "gambler",
    "holo_drama_addict",
    "interrogator",
-   "old_tongue",
-   "real_power",
+   "old_tales",
+   "rank_has_privileges",
    "their_own_idea",
    "what_could_be"
   ],
@@ -275,17 +270,17 @@
    "worldline_fracture"
   ],
   "perks/skeleton.ts": [
-   "camaraderie.3",
-   "composure.5",
+   "hand_off",
    "iron_grip",
+   "stand_still",
    "tuned"
   ],
   "perks/skills.ts": [
    "proven_formula",
+   "pure_heart",
    "skill:brain_power.2",
    "skill:brain_power.5",
-   "skill:will_power.3",
-   "skill:will_power.5"
+   "skill:will_power.2"
   ]
  },
  "literals": {
@@ -296,12 +291,12 @@
   "perks/a.ts": 41,
   "perks/b.ts": 45,
   "perks/c.ts": 45,
-  "perks/d.ts": 49,
-  "perks/e.ts": 47,
-  "perks/f.ts": 101,
-  "perks/g.ts": 50,
+  "perks/d.ts": 47,
+  "perks/e.ts": 40,
+  "perks/f.ts": 99,
+  "perks/g.ts": 45,
   "perks/h.ts": 22,
-  "perks/skeleton.ts": 2,
+  "perks/skeleton.ts": 1,
   "perks/skills.ts": 2
  }
 }

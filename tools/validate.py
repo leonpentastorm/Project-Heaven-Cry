@@ -103,7 +103,7 @@ for s in items("skills"):
 # rules 1.54 item 4119 (the road map): what a point gives is per_point.rows, the one copy: each {at, text}, `at` one of
 # each, each from n, every 2, every 3, from n, at n (n 1 to 10); no row twice; no prose per_point.text, no epccg.effect.
 # Numbers are placeholders into per_point.numbers; where the engine reads the same number from data, it must be equal.
-_AT = re.compile(r"^(each|every 2|every 3|(each from|from|at) (\d+))$")
+_AT = re.compile(r"^(each|every 2|every 3|(each from|from|at) (\d+)|at (\d+(?:, \d+)+))$")  # rules 1.75 item 6202: "at n, m, ..." lands on each point listed
 _ld = lambda stem: data.get(stem) if isinstance(data.get(stem), dict) else {}
 _calls_r, _tech_r, _fig_r = (_ld("calls").get("rules") or {}), ((_ld("techniques").get("rules") or {}).get("guard") or {}), ((_ld("figments").get("visualizer") or {}).get("range") or {})
 _hymn_r, _cyc_r = (((_ld("patrons").get("prayer") or {}).get("hymn") or {}).get("cooldown_rule") or {}), (_ld("soul_modules").get("cycle") or {})
@@ -121,6 +121,10 @@ _SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where i
     ("will_power", "pumps"): (((_cyc_r.get("free_pumps") or [{}])[0]).get("pumps"), "soul_modules.json cycle.free_pumps.0.pumps"),
     # rules 1.70 item 5539: each Strain-limit step's size, as Composure's row says it
     ("composure", "strain_step"): ((((_ld("soul_modules").get("strain") or {}).get("limit") or {}).get("steps") or [{}])[0].get("value"), "soul_modules.json strain.limit.steps.0.value"),
+}
+_SOUL_ROWS = {  # rules 1.75: (skill, a row's words): (the number block whose steps the row's points are, where)
+    ("composure", "Strain limit"): ((_ld("soul_modules").get("strain") or {}).get("limit"), "soul_modules.json strain.limit"),
+    ("lore_master", "design ready"): ((_ld("soul_modules").get("limits") or {}).get("ready_designs"), "soul_modules.json limits.ready_designs"),
 }
 _LADDER_GROWS = {"elemental_taken", "guard_pool", "hymn_wait", "strain_limit", "forms_known"}  # packages/engine/src/ladder.ts LADDER_GROWS (strain_limit, forms_known: rules 1.70 items 5539, 5541)
 for s in items("skills"):
@@ -142,8 +146,8 @@ for s in items("skills"):
         if "grows" in r and (r["grows"] not in _LADDER_GROWS or not (r["at"] == "each" or str(r["at"]).startswith("each from "))):
             errors.append(f"{w}: grows {r['grows']!r} is not one of {sorted(_LADDER_GROWS)} on an each (or each from n) row")
         m = _AT.match(str(r["at"]))
-        if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10):
-            errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n or at n (n 1 to 10)")
+        if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10) or (m.group(4) and not all(1 <= int(x) <= 10 for x in m.group(4).split(", "))):
+            errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n, at n or at n, m, ... (n 1 to 10)")
         if r["text"] in seen: errors.append(f"{w}: the row {r['text'][:40]!r} is there twice")
         seen.add(r["text"])
         for ref in re.findall(r"\{=([^}|]+)", r["text"]):
@@ -157,9 +161,17 @@ for s in items("skills"):
     for (k_sid, k), (want, where) in _SAME.items():
         if k_sid == sid and nums.get(k) != want: errors.append(f"skills:{sid}: per_point.numbers.{k} {nums.get(k)} is not {where} {want}")
     if sid == "will_power":
-        _fp, _sw = ((_cyc_r.get("free_pumps") or [{}])[0]).get("will_power"), (_cyc_r.get("swell_no_strain") or {}).get("will_power")
+        _fp = ((_cyc_r.get("free_pumps") or [{}])[0]).get("will_power")
         if not any("{=per_point.numbers.pumps}" in r.get("text", "") and r.get("at") == f"from {_fp}" for r in rows): errors.append(f"skills:will_power: the free Pump's row is at 'from {_fp}' (soul_modules.json cycle.free_pumps.0.will_power)")
-        if not any(r.get("at") == f"from {_sw}" for r in rows): errors.append(f"skills:will_power: a row at 'from {_sw}' says the held Outburst swells without Strain (soul_modules.json cycle.swell_no_strain.will_power)")
+    # rules 1.75 items 6202, 6205: a row that names where a number block of soul_modules.json moves lands on its steps
+    for _sk, _at, (_blk, _where) in [(k[0], k[1], v) for k, v in _SOUL_ROWS.items()]:
+        if _sk != sid: continue
+        _want = "at " + ", ".join(str(x.get("at")) for x in (_blk or {}).get("steps", []) if x.get("of") == "skill:" + sid)
+        if not any(_at in r.get("text", "") and r.get("at") == _want for r in rows): errors.append(f"skills:{sid}: the row with {_at!r} is at {_want!r} ({_where})")
+    _sw = (_cyc_r.get("swell_no_strain") or {})
+    for _sk, _n in _sw.items():
+        if _sk == sid and not any("swells" in r.get("text", "") and r.get("at") in (f"from {_n}", f"at {_n}") for r in rows):
+            errors.append(f"skills:{sid}: a row at 'at {_n}' says the held Outburst swells without Strain (soul_modules.json cycle.swell_no_strain)")
 
 new_ops = collections.Counter()
 
@@ -3619,7 +3631,8 @@ if _FK is not None:
     _tend = {x.get("id"): x for x in (data.get("tending") or {}).get("items") or []}
     for _need in ("fork.tend.keep_the_thread", "fork.tend.short_thread", "fork.tend.shared_pulse", "fork.shadow.spotter", "fork.guard.cover_them"):
         if _need not in _rows: errors.append(f"forks: the held-equal check names '{_need}', no forks.json row (rename the check with the row)")
-    _tug = ((((_tend.get("tend.tug") or {}).get("effects") or [{}])[0]).get("res") or {}).get("mp")
+    _pt = next((x for x in (data.get("perks") or {}).get("items") or [] if x.get("id") == "pull_together"), {})  # rules 1.75 item 6213: Tug is Pull Together's
+    _tug = (((((_pt.get("tiers") or {}).get("I") or {}).get("effects") or [{}])[0]).get("res") or {}).get("mp")
     if "fork.tend.keep_the_thread" in _rows and not _rows["fork.tend.keep_the_thread"].get("shelved") and _fe("fork.tend.keep_the_thread").get("value") != _tug: errors.append(f"forks:fork.tend.keep_the_thread: the kept Snap's MP is Tug's price ({_tug}), one number")
     _st = _rows.get("fork.tend.short_thread") or {}
     if _st and not _st.get("shelved"):

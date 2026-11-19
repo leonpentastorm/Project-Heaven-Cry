@@ -1,5 +1,5 @@
 {
-"perk/angel_of_the_trenches@ultimate/ally-lethal": "Tester 1 is there before Squadmate hits the ground and holds them up at 1 HP (Angel of the Trenches). / Squadmate has felt Spite (hurt by Far soldier): it can be poured in now. / Far soldier fires at Squadmate: d20 10 +2 = 12 vs 14 · hit, 2 damage",
+"perk/angel_of_the_trenches@ultimate/ally-lethal": "Tester 1 is there before Squadmate hits the ground and holds them up at 1 HP (Angel of the Trenches). / Squadmate has felt Spite (hurt by Far soldier): it can be poured in now. / Far soldier fires at Squadmate: d20 10 +4 = 14 vs 14 · hit, 2 damage",
 "perk/before_the_blink@mastered/ally-afraid-turn": "",
 "perk/before_the_blink@mastered/ally-kills": "Squadmate fires at Far soldier: d20 10 +4 = 14 vs 13 · hit, 63 damage · down for good",
 "perk/before_the_blink@mastered/ally-lethal": "Tester 1 has felt Grief (Squadmate went Down): it can be poured in now. / Tester 1 has felt Loneliness (the last of your side standing): it can be poured in now. / Squadmate has felt Spite (hurt by Far soldier): it can be poured in now. / Far soldier fires at Squadmate: d20 10 +2 = 12 vs 14 · hit, 15 damage · Downed",
@@ -41,6 +41,8 @@
 "perk/make_way@achieved/move": "Tester 1 moves to D10 (3 tiles, 2 AP).",
 "perk/make_way@achieved/move-charge": "Tester 1 moves to G7 (3 tiles, 2 AP).",
 "perk/make_way@achieved/move-far": "Tester 1 moves to L7 (8 tiles, 4 AP).",
+"perk/many_hands@mastered/ally-lethal": "Tester 1 has felt Spite (hurt by Far soldier): it can be poured in now. / Tester 1 shares the hit on Squadmate. / Squadmate holds on the last plate: 1 HP, every plate broken (Last Plate). / Squadmate has felt Spite (hurt by Far soldier): it can be poured in now. / Far soldier fires at Squadmate: d20 10 +4 = 14 vs 14 · hit, 2 damage",
+"perk/many_hands@mastered/ally-taken": "Tester 1 has felt Spite (hurt by Far soldier): it can be poured in now. / Tester 1 shares the hit on Squadmate. / Squadmate has felt Spite (hurt by Far soldier): it can be poured in now. / Far soldier fires at Squadmate: d20 10 +4 = 14 vs 14 · hit, 8 damage",
 "perk/never_there@mastered/move": "Tester 1 moves to D10 (3 tiles, 2 AP).",
 "perk/never_there@mastered/move-charge": "Tester 1 moves to G7 (3 tiles, 2 AP).",
 "perk/never_there@mastered/move-far": "Tester 1 moves to L7 (8 tiles, 4 AP).",

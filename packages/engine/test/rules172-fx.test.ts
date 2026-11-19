@@ -26,8 +26,8 @@ function holy(patron: string) {
   f.turn(pr);
   return { f, pr, al, foe: f0, pray: (kind: string, id: string, x: any = {}) => f.act({ type: 'faith/pray', unitId: pr.id, kind, id, ...x } as Action) };
 }
-function tend() {
-  const s = storyWith([{ name: 'Mender', skills: { empathy: 5, camaraderie: 0 }, level: 5, weapon: 'service_pistol' } as any, { name: 'Ally', level: 5, weapon: 'service_pistol' } as any]);
+function tend() { // rules 1.75: Soothe is Steady Hands II's, Tug Pull Together's
+  const s = storyWith([{ name: 'Mender', skills: { empathy: 5, camaraderie: 5 }, perks: { steady_hands: 'II', pull_together: 'I' }, level: 5, weapon: 'service_pistol' } as any, { name: 'Ally', level: 5, weapon: 'service_pistol' } as any]);
   s.g.characters[s.chars[0].id].offHand = { id: 'attuner' };
   s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Tend', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '12,9', no_surrender: true }] } } } as any);
   const cb = () => s.g.combat, pcs = () => cb().units.filter((u) => u.side === 'pc');
@@ -44,7 +44,7 @@ describe('rules 1.72: the effects lane\'s engine events', () => {
     t.act('verb:tend.bond', { targetId: al().id });
     const a = al(); a.conds = { ...(a.conds || {}), weakened: 2, slowed: 2 }; a.condAt = { weakened: 1, slowed: 2 };
     const n = lastN(t.cb());
-    t.act('verb:tend.soothe', { targetId: al().id });
+    t.act('perk:steady_hands', { actionId: 'tend_soothe', targetId: al().id });
     expect(condOn(al(), 'slowed')).toBe(false);
     const ev = since(t.cb(), n).filter((e) => e.k === 'boon' && e.word === 'cleanse');
     expect(ev.map((e) => [e.target, e.cond])).toEqual([[al().id, 'slowed']]);
@@ -60,9 +60,9 @@ describe('rules 1.72: the effects lane\'s engine events', () => {
   it('5706: Tug on an ally already beside the Mender says so (tending.json, the ally branch say); a far ally is drawn in', () => {
     const t = tend(), al = () => t.pcs()[1];
     t.act('verb:tend.bond', { targetId: al().id });
-    let n = t.cb().log.length; t.act('verb:tend.tug', { targetId: al().id });
+    let n = t.cb().log.length; t.act('perk:pull_together', { actionId: 'tend_tug', targetId: al().id });
     expect(t.cb().log.slice(n).join(' ')).toMatch(/already at their side/);
-    al().pos = '7,3'; n = t.cb().log.length; t.act('verb:tend.tug', { targetId: al().id });
+    al().pos = '7,3'; n = t.cb().log.length; t.act('perk:pull_together', { actionId: 'tend_tug', targetId: al().id });
     expect(t.cb().log.slice(n).join(' ')).toMatch(/draws Ally in along the Bond/); expect(t.cb().log.slice(n).join(' ')).not.toMatch(/already/);
   });
   it('5702: a storm prayer\'s hurt carries its element', () => {

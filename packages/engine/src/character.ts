@@ -822,7 +822,7 @@ export const soulCastAp = (c: Character) => { void c; return 2; };
  * (magic.ts FREE_PER_TURN). */
 export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', ((SOUL_RULES as any).cycle?.free_pumps as { will_power: number; pumps: number }[] || [{ will_power: 3, pumps: 1 }]).reduce((n, r) => (P(c, 'will_power') >= r.will_power ? Math.max(n, r.pumps) : n), 0)))); // rules 1.33: Will Power's (it was Empathy's)
 /** Rules 1.19: from Empathy 7 a held Outburst swells without Strain. */
-export const swellFree = (c: Character) => P(c, 'will_power') >= ((SOUL_RULES as any).cycle?.swell_no_strain?.will_power ?? 99); // rules 1.33: Will Power's (it was Empathy's)
+export const swellFree = (c: Character) => Object.entries(((SOUL_RULES as any).cycle?.swell_no_strain || {}) as Record<string, number>).some(([s, n]) => P(c, s) >= n); // rules 1.75 item 6202: Composure 6's (the skill and points are the data's)
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
 export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
@@ -831,7 +831,7 @@ export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1
 export const strainLimit = (c: Character) => fx(c, 'strain_limit', numberOf((SOUL_RULES as any).strain.limit, (of) => (of.startsWith('skill:') ? P(c, of.slice(6)) : 0)));
 showFeedNumber('strain_limit', (x) => strainLimit(x));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
-export const readyDesigns = (c: Character) => fx(c, 'ready_designs', Math.max(((SOUL_RULES as any).start?.min_ready_designs ?? 3), 2 + Math.floor(P(c, 'will_power') / 2))); // rules 1.13: ready designs are Will Power's (they were Empathy's)
+export const readyDesigns = (c: Character) => fx(c, 'ready_designs', numberOf((SOUL_RULES as any).limits.ready_designs, (of) => (of.startsWith('skill:') ? P(c, of.slice(6)) : 0))); // rules 1.75 item 6205: Lore Master's (a number block)
 // ---------- rules 1.8: practice, module gates and picks (spec: Soul magic 12, sections 4 and 5) ----------
 const PR = (): any => (SOUL_RULES as any).practice || {};
 const GATES = (): any => (SOUL_RULES as any).gates || {};

@@ -1,10 +1,10 @@
 {
-"item/perk/angel_of_the_trenches@ultimate/action/hold": "P1 faith.acted0>true faith.apMark6>9 ps.skill:composure.5.acted0>true",
-"item/perk/between_heartbeats@achieved/action/ready": "P1 faith.acted0>true faith.apMark6>9 ps.skill:composure.5.acted0>true",
+"item/perk/angel_of_the_trenches@ultimate/action/hold": "P1 faith.acted0>true faith.apMark6>9",
+"item/perk/between_heartbeats@achieved/action/ready": "P1 faith.acted0>true faith.apMark6>9",
 "item/perk/bite_the_bullet@achieved/taken-low": "P1 uses.perk:bite_the_bullet|per_combat.n0>1 uses.perk:bite_the_bullet|per_combat.s0>c; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
-"item/perk/bone_talk@I/action/bone_talk": "P1 faith.acted0>true faith.apMark6>7 ps.skill:composure.5.acted0>true",
+"item/perk/bone_talk@I/action/bone_talk": "P1 faith.acted0>true faith.apMark6>7",
 "item/perk/bone_talk@I/action/bone_talk/then-blow": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true ps.class:fighter.lunge.closed0>true ps.skill:ingenuity.1.flags.struck0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true uses.class:fighter.lunge|per_turn.n0>1 uses.class:fighter.lunge|per_turn.s0>t1.1",
-"item/perk/bone_talk@II/action/bone_talk": "P1 faith.acted0>true faith.apMark6>7 ps.skill:composure.5.acted0>true",
+"item/perk/bone_talk@II/action/bone_talk": "P1 faith.acted0>true faith.apMark6>7",
 "item/perk/bone_talk@II/action/bone_talk/then-blow": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true ps.class:fighter.lunge.closed0>true ps.skill:ingenuity.1.flags.struck0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true uses.class:fighter.lunge|per_turn.n0>1 uses.class:fighter.lunge|per_turn.s0>t1.1",
 "item/perk/bone_talk@II/action/bone_talk/then-shot": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true ps.skill:ingenuity.1.flags.struck0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true shotsThisTurn0>1 uses.class:fighter.lunge|per_turn.n0>1 uses.class:fighter.lunge|per_turn.s0>t1.1",
 "item/perk/both_hands@I/shot": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true ps.skill:ingenuity.1.flags.struck0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true shotsThisTurn0>1 uses.perk:both_hands>foe-1|per_turn.n0>1 uses.perk:both_hands>foe-1|per_turn.s0>t1.1",
@@ -60,7 +60,9 @@
 "item/perk/vanishing_act@mastered/action/vanishing_act": "P1 faith.acted0>true faith.apMark6>7 hideEntry0>1 ps.perk:vanishing_act.entry0>1 ps.skill:composure.5.acted0>true uses.perk:vanishing_act#vanishing_act|per_combat.n0>1 uses.perk:vanishing_act#vanishing_act|per_combat.s0>c",
 "item/perk/vanishing_act@mastered/action/vanishing_act/then-blow": "P1 ambushUsed0>1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true mg.calmFight0>true ps.skill:ingenuity.1.flags.struck0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true",
 "item/perk/vanishing_act@mastered/action/vanishing_act/then-shot": "P1 ambushUsed0>1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true mg.calmFight0>true ps.skill:ingenuity.1.flags.struck0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true shotsThisTurn0>1",
-"item/perk/wall_run@II/action/wall_strike": "P1 attackedTurn0>true faith.acted0>true firstShotDone0>true firstShotTurn0>true moved0>true ps.skill:composure.5.acted0>true ps.skill:ingenuity.1.flags.struck0>true shotsThisTurn0>1 tech.charge.run.at0>3,7 tech.charge.run.dy0>1 tech.charge.run.n0>1 tech.charge.run.t0>1.1",
+"item/perk/veiled_insult@I/action/veiled_insult": "P1 faith.acted0>true faith.apMark6>9 uses.perk:veiled_insult#veiled_insult|per_combat.n0>1 uses.perk:veiled_insult#veiled_insult|per_combat.s0>c",
+"item/perk/veiled_insult@II/action/veiled_insult": "P1 faith.acted0>true faith.apMark6>9 uses.perk:veiled_insult#veiled_insult|per_combat.n0>1 uses.perk:veiled_insult#veiled_insult|per_combat.s0>c",
+"item/perk/wall_run@II/action/wall_strike": "P1 attackedTurn0>true faith.acted0>true firstShotDone0>true firstShotTurn0>true moved0>true ps.skill:ingenuity.1.flags.struck0>true shotsThisTurn0>1 tech.charge.run.at0>3,7 tech.charge.run.dy0>1 tech.charge.run.n0>1 tech.charge.run.t0>1.1",
 "item/perk/wall_run@II/action/wall_strike/then-blow": "P1 ps.class:fighter.lunge.closed0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true",
 "item/perk/wall_run@II/action/wall_strike/then-shot": "P1 ps.skill:ingenuity.3.flags.ghost_eyes0>true shotsThisTurn1>2"
 }

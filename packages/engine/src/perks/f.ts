@@ -6,7 +6,7 @@
 // Every item runs its tiers in combat and its story part (checks, story conditions, rest, session start) where it has
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags F…) and docs/design/perk-runtime.md.
-import { effNum } from '../effects/num';
+import { effNum, num } from '../effects/num';
 import { register, stateOf, uses, note, pendRuling, postStory, bankAp, pushAp, has, armedOf, disarm, modOn, charOfUnit, bindGame, restN, grantShield, type Holder } from '../effects';
 import { itemAmount, amountMult } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
@@ -152,17 +152,20 @@ function mercyOk(t: Unit) { const was = t.surrenderTried; t.surrenderTried = fal
 const offered = (h: Holder): string[] => (stateOf(h).offered ||= []);
 function offerMercy(h: Holder, t: Unit, rng: Rng): string {
   offered(h).push(t.id);
-  const sv = saveAgainst(h.cb!, rng, h.u!, t, 'heart', 'surrender', { via: 'empathy' }), held = sv.ok;
+  const sv = saveAgainst(h.cb!, rng, h.u!, t, 'heart', 'surrender', { via: 'implication' }), held = sv.ok; // rules 1.75 item 6216: Insinuation's
   const roll = ' (' + sv.text + ')';
   return held ? ' · ' + t.name + ' won\'t take it' + roll : surrender(h.cb!, t, h.u!, 'mercy accepted' + roll);
 }
 const mercyMode = (h: Holder) => ro(h.c).open_hand || 'always';
+// Rules 1.75 item 6216 (Open Hand moved to Insinuation, Mercy folded in): below its tier's share of HP (numbers.below), for
+// its tier's AP (numbers.ap: 2 at I, 0 at II); offered the moment the foe drops only when it costs nothing (tier II).
+const beaten = (h: Holder, t: Unit) => t.hp <= num(h, 'below') * t.maxHp;
 register({
   id: 'open_hand', claims: 'all',
   on: {
     on_damaged: (ctx, h) => {
       const t: Unit = ctx.t, u = h.u, cb = h.cb!;
-      if (!up(u) || !t || t.side === u.side || !up(t) || ctx.prevHp * 4 <= t.maxHp || t.hp * 4 > t.maxHp || !mercyOk(t) || offered(h).includes(t.id) || !unitSees(cb, u, t.pos, undefined, t)) return;
+      if (!up(u) || !t || t.side === u.side || !up(t) || num(h, 'ap') > 0 || ctx.prevHp <= num(h, 'below') * t.maxHp || !beaten(h, t) || !mercyOk(t) || offered(h).includes(t.id) || !unitSees(cb, u, t.pos, undefined, t)) return;
       const rng = rngOf(h); if (!rng) return;
       if (mercyMode(h) !== 'always') { if (mercyMode(h) === 'ask') say(cb, u.name + ' could offer ' + t.name + ' mercy (Open Hand: free on your turn).'); return; }
       say(cb, u.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.');
@@ -170,15 +173,15 @@ register({
   },
   actions: [
     {
-      id: 'offer_mercy', label: 'Offer mercy', scope: ['combat'], target: 'enemy', ap: 0,
-      text: 'Offer mercy to an enemy you can see that is at a quarter of its HP or less. It makes a Heart save. If it fails, it surrenders. Once per enemy.',
+      id: 'offer_mercy', label: 'Offer mercy', scope: ['combat'], target: 'enemy', ap: (h) => num(h, 'ap'),
+      text: 'Offer mercy to an enemy you can see that is beaten (below its share of HP). It makes a Heart save. If it fails, it surrenders. Once per enemy.',
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
-        if (t.hp * 4 > t.maxHp) return { ok: false, why: t.name + ' isn\'t beaten enough yet. It must be at a quarter of its HP or less.' };
+        if (!beaten(h, t)) return { ok: false, why: t.name + ' isn\'t beaten enough yet. It must be below ' + Math.round(num(h, 'below') * 100) + '% of its HP.' };
         if (offered(h).includes(t.id)) return { ok: false, why: 'Mercy was offered to ' + t.name + ' already.' };
         if (!mercyOk(t)) return { ok: false, why: t.name + ' won\'t surrender.' };
         if (!unitSees(h.cb!, h.u, t.pos, undefined, t)) return { ok: false, why: 'You can\'t see them.' };
-        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (saveTn(h.u, 'empathy')) + ' or it surrenders.'] };
+        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (saveTn(h.u, 'implication')) + ' or it surrenders.'] };
       },
       run: (h, a, rng) => { const t = h.cb!.units.find((x) => x.id === a.targetId)!; say(h.cb, h.u!.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.'); },
     },

@@ -763,37 +763,7 @@ for (const id of ['the_soundscape_of_the_soul', 'headbanger', 'underground_sound
   });
 }
 
-// =====================================================================================================================
-// You Get Used to It (Composure, a beta since rules 1.13: it no longer moves AP). I: the first time each round an ally
-// within 5 tiles takes a Brain or Heart condition, your next save this round is at +2 (you have seen worse). II: +4, and
-// you may give the bonus to that ally instead (the "Seen worse" action, 0 AP): their next save this round. Engine
-// reading: "a save" is the save against a condition. PROVISIONAL (spec 14).
-// =====================================================================================================================
-const YGU_RANGE = 5;
-const yguState = (h: Holder): Record<string, any> => (h.u?.ps?.[h.key] as any) || {};
-register({
-  id: 'you_get_used_to_it', claims: 'all',
-  on: {
-    cond_landed: (ctx, h) => {
-      const u = h.u, t: Unit = ctx.t, cb: Combat = ctx.cb; if (!u || !t || !cb || ow(cb) || me(h, t) || t.side !== u.side || !alive(u) || isBoon(ctx.id)) return;
-      const fam = condFamily(ctx.id); if ((fam !== 'brain' && fam !== 'heart') || dist(u.pos, t.pos) > YGU_RANGE) return;
-      const s = stateOf(h); if (s.r === cb.round) return;
-      s.r = cb.round; s.n = h.tier === 'II' ? 4 : 2; s.to = u.id; s.ally = t.id;
-      log(cb, u.name + ' has seen worse than what took ' + t.name + ' (You Get Used to It): +' + s.n + ' on their next save this round.');
-    },
-    cond_apply: (ctx, h) => {
-      const s = yguState(h), cb: Combat = ctx.cb; if (!s.n || !cb || s.r !== cb.round || ctx.t?.id !== s.to || ctx.skipSave || isBoon(ctx.id)) return;
-      ctx.saveAdd = (ctx.saveAdd || 0) + s.n; log(cb, '(You Get Used to It: +' + s.n + ' on ' + ctx.t.name + '\'s save.)'); stateOf(h).n = 0;
-    },
-  },
-  actions: [{
-    id: 'seen_worse', label: 'Seen worse: give it', scope: ['combat'], ap: 0, target: 'none', uses: { per: 'per_round', n: 1 },
-    text: 'Give this round\'s save bonus to the ally whose condition woke it: their next save this round, not yours.',
-    available: (h) => { if (h.tier !== 'II' || !h.u || !h.cb) return false; const s = yguState(h); return s.n && s.r === h.cb.round && s.to === h.u.id && h.cb.units.some((x) => x.id === s.ally && alive(x)) ? true : 'Nothing to give this round.'; },
-    run: (h) => { const s = stateOf(h), t = h.cb!.units.find((x) => x.id === s.ally); if (!t || !s.n) return 'Nothing to give this round.'; s.to = t.id; log(h.cb, h.u!.name + ' talks ' + t.name + ' through it (You Get Used to It): +' + s.n + ' on ' + t.name + '\'s next save this round.'); return null; },
-  }],
-  brief: () => null,
-});
+// You Get Used to It (Composure) is removed (rules 1.75 item 6203: it maps to Poker Face at the same tier).
 
 // Taut Thread (Empathy α; `shared_breath`): data only since rules 1.56 (Shared Breath: move-pool.md).
 
