@@ -117,12 +117,12 @@ const MAXES: Record<string, (u: Unit) => number> = {};
 /** Register a resource's most for a unit (rules 1.60, N10): the system that owns the meter says it (Pressure: pressureCap). */
 export function setResMax(id: string, fn: (u: Unit) => number): void { MAXES[id] = fn; }
 /** A resource's most for this unit (rules 1.60, N10): the registered reader, a meter's resMax, the row's max path; Infinity with none. */
-export function resMaxOf(u: Unit | null | undefined, id: string, c?: Character | null): number {
+export function resMaxOf(u: Unit | null | undefined, id: string, c?: Character | null, cb?: Combat | null): number {
   if (!u) return Infinity;
   if (MAXES[id]) return MAXES[id](u);
   if (u.resMax?.[id] != null) return u.resMax[id];
   const d = RESOURCES[id]; if (!d?.max) return Infinity;
-  const x = cell({ ...d, path: d.max }, holderOfRes(d, u, c)); return x && x.o[x.k] != null ? Number(x.o[x.k]) : Infinity;
+  const x = cell({ ...d, path: d.max }, holderOfRes(d, u, c, cb)); return x && x.o[x.k] != null ? Number(x.o[x.k]) : Infinity;
 }
 /** Rules 1.70 item 5543 (P2, `at: "limit"`): a resource's limit for a unit, where it differs from its most (Strain may
  * stand over its limit; Flux overloads past it). Registered by the system that owns the meter (magic.ts: Strain's
@@ -131,9 +131,9 @@ const LIMITS: Record<string, (u: Unit) => number> = {};
 /** Register a resource's limit for a unit (rules 1.70, P2): the meter's owner says it. */
 export function setResLimit(id: string, fn: (u: Unit) => number): void { LIMITS[id] = fn; }
 /** A resource's limit for this unit (rules 1.70, P2): the registered reader, else its most (resMaxOf). */
-export function resLimitOf(u: Unit | null | undefined, id: string, c?: Character | null): number {
+export function resLimitOf(u: Unit | null | undefined, id: string, c?: Character | null, cb?: Combat | null): number {
   if (!u) return Infinity;
-  return LIMITS[id] ? LIMITS[id](u) : resMaxOf(u, id, c);
+  return LIMITS[id] ? LIMITS[id](u) : resMaxOf(u, id, c, cb);
 }
 /** Is a row's `needs` met on its holder (one path set, or one of a list; a row with no `needs`: always)? */
 const needsMet = (d: ResDef, root: any): boolean => !d.needs || (Array.isArray(d.needs) ? d.needs : [d.needs]).some((p) => { const x = cell({ ...d, path: p }, root); return !!x && !!x.o[x.k]; });
@@ -324,7 +324,7 @@ export function refund(cb: Combat | null | undefined, u: Unit, p: Priced | numbe
     cr.paid = r10(cr.paid - e - b - ap); // paid counts what the action cost in all (settleCredit)
   }
   if (ap) { (u as any).ap = r10(u.ap + ap); paidNote(cb, u, -ap); }
-  if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n) resAdd(u, id, n, o.c);
+  if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n) resAdd(u, id, n, o.c, cb);
 }
 /** A meter for what an action takes IN ALL: `const taken = apMeter(cb, u)` before it, `taken()` after it is the AP it
  * drew from the unit and from its credit together (less what it gave back). THE way to measure a cost: `ap0 - u.ap`
@@ -337,9 +337,9 @@ export function apMeter(cb: Combat | null | undefined, u: Unit): () => number {
 
 /** Take n of a resource NOW, outside an action's declared cost (a reaction's Guard, a rider's MP in a hook). false, and
  * nothing taken, when the unit has less. An action's own cost is declared instead (`res`), never spent in its run(). */
-export function spend(u: Unit | null | undefined, id: string, n: number, c?: Character | null): boolean {
-  if (n <= 0) return true; if (!u || resLeft(u, id, c) < n) return false;
-  resAdd(u, id, -n, c); return true;
+export function spend(u: Unit | null | undefined, id: string, n: number, c?: Character | null, cb?: Combat | null): boolean {
+  if (n <= 0) return true; if (!u || resLeft(u, id, c, cb) < n) return false;
+  resAdd(u, id, -n, c, cb); return true;
 }
 
 // ---------------------------------------------------------------------------------------------- AP given and set

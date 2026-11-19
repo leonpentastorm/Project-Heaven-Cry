@@ -297,13 +297,13 @@ P('path_tiles_at_most', 'number', 'the move (its priced walk: ctx.tiles) is at m
 // at: "max"}} on the holder, the event's actor or its target; every resource named must meet every bound given. `max`
 // is the resource's own most for that unit (effects/cost.ts resMaxOf: Pressure's cap by tier, a class meter's resMax, a
 // row's max path). Rules 1.70 item 5543 (P2): `at: "limit"`, the resource at or over its limit (cost.ts resLimitOf).
-const resAmt = (ev: Ev, u: Unit | null, id: string): number => (!u ? 0 : u.resMax?.[id] != null || !RESOURCES[id] ? resOf(u, id) : resLeft(u, id, u === ev.self ? ev.h.c : charOfUnit(u)));
+const resAmt = (ev: Ev, u: Unit | null, id: string): number => (!u ? 0 : u.resMax?.[id] != null || !RESOURCES[id] ? resOf(u, id) : resLeft(u, id, u === ev.self ? ev.h.c : charOfUnit(u), ev.cb));
 const resMeets = (ev: Ev, u: Unit | null, v: any): boolean => !!u && !!v && typeof v === 'object' && Object.entries(v).every(([id, b]: [string, any]) => {
   const n = resAmt(ev, u, id);
   if (typeof b?.at_least === 'number' && n < b.at_least) return false;
   if (typeof b?.at_most === 'number' && n > b.at_most) return false;
-  if (b?.at === 'max' && n < resMaxOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u))) return false;
-  if (b?.at === 'limit' && n < resLimitOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u))) return false; // rules 1.70 item 5543 (P2)
+  if (b?.at === 'max' && n < resMaxOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u), ev.cb)) return false;
+  if (b?.at === 'limit' && n < resLimitOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u), ev.cb)) return false; // rules 1.70 item 5543 (P2)
   return true;
 });
 for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_not_res', 'res', who + ' does not have resources within these bounds (the negation of ' + who + '_res, rules 1.77 item 6504: {shadow: {at: "limit"}} is a meter not yet full)', (ev, v) => !!unitOf(ev, who) && !resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
@@ -334,7 +334,7 @@ function unitField(u: Unit | null, f: string): number {
   return condOn(u, f) ? 1 : 0;
 }
 /** What a holder has of a resource now: a class resource (guard, momentum…), else a data/actions.json row (MP, Pressure…). */
-const resNow = (ev: Ev, id: string): number => (ev.self.resMax?.[id] != null || !RESOURCES[id] ? resOf(ev.self, id) : resLeft(ev.self, id, ev.h.c));
+const resNow = (ev: Ev, id: string): number => (ev.self.resMax?.[id] != null || !RESOURCES[id] ? resOf(ev.self, id) : resLeft(ev.self, id, ev.h.c, ev.cb));
 /** THE source reader of a number block's `of` (and an amount block's per-point parts) in an item op: res:<id>,
  * event:<field> (amount: the damage or heal, on `dealing` its base before the multipliers; over: a heal's part that didn't fit; any other field of the payload, else of its damage source ctx.src: ambush, crit; true as 1), self:/actor:/target:<field>.
  * A plain name is 0 here (a handler counts its own). */
@@ -426,7 +426,7 @@ O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource
   if (e.resource === 'echo') { if (ev.h.c) gainEcho(ev.h.c, e.value, label); return; }
   const own = u.resMax?.[e.resource] != null || !RESOURCES[e.resource];
   // P3: "all" (spend all of it) and "zero" (lose all of it): take what the unit has now
-  const n = e.value === 'all' || e.value === 'zero' ? -(own ? resOf(u, e.resource) : resLeft(u, e.resource, ev.h.c)) : e.value;
+  const n = e.value === 'all' || e.value === 'zero' ? -(own ? resOf(u, e.resource) : resLeft(u, e.resource, ev.h.c, ev.cb)) : e.value;
   (ev as any).gain = own ? resGain(u, e.resource, n) : resGive(ev.cb, u, e.resource, n, { by: ev.self, c: ev.h.c, why: label });
 });
 /** The value of op `condition` that names the condition being put on (on cond_incoming: Take the Weight's "you take it

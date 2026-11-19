@@ -73,7 +73,7 @@ export function holderNumber(h: Holder, x: unknown): number | null {
   if (typeof x === 'number') return x;
   if (!isNumberBlock(x)) return null;
   const c = h.c || charOfUnit(h.u);
-  return numberOf(x, (of) => { const i = of.indexOf(':'), ns = of.slice(0, i), f = of.slice(i + 1); return ns === 'skill' ? Number((c as any)?.skills?.[f] || 0) : ns === 'res' && h.u ? resLeft(h.u, f, c) : ns === 'feed' ? doorFeed(h.u || c, f) : ns === 'pick' ? (pickedFork(c, f) ? 1 : 0) : 0; }); // feed: rules 1.60 (N3), the holder's beta feed of a door; pick: rules 1.60 (N2), 1 when the holder picked that fork option
+  return numberOf(x, (of) => { const i = of.indexOf(':'), ns = of.slice(0, i), f = of.slice(i + 1); return ns === 'skill' ? Number((c as any)?.skills?.[f] || 0) : ns === 'res' && h.u ? resLeft(h.u, f, c, h.cb) : ns === 'feed' ? doorFeed(h.u || c, f) : ns === 'pick' ? (pickedFork(c, f) ? 1 : 0) : 0; }); // feed: rules 1.60 (N3), the holder's beta feed of a door; pick: rules 1.60 (N2), 1 when the holder picked that fork option
 }
 /** Why this holder can't aim its action at this unit by its `reach` (null: it can). */
 export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): string | null {
