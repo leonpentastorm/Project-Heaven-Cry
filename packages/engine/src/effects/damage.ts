@@ -77,8 +77,8 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
     /** the Guard points the unit had as the hit arrived, before any soak spends them (physical/rules.ts: a guard keeps Momentum) */ guard0: t.res?.guard || 0 };
   const soft = !UNSOFTENED.has(src.type); // the one gate (UNSOFTENED): below it, nothing lowers or raises the heart's own harm
   if (soft) {
-    // Derived reductions (spec: Derived stats): Elemental damage taken (−10% × Pain Threshold) and Ambush damage taken
-    // (−10% × Reaction Speed), each capped at 60%, before items.
+    // Derived reductions (spec: Derived stats), before items: Elemental damage taken (the sheet's elementalTakenPct, at most
+    // rules.json combat.elemental_taken_cap: ELEMENTAL_CAP) and Ambush damage taken (the sheet's ambushTakenPct, at most 60%).
     if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(ELEMENTAL_CAP, t.elemTaken)); // rules 1.70 item 5540: the one cap
     if (src.ambush && t.ambushTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.ambushTaken));
     if (cb) emit(cb, 'damage_in', ctx);

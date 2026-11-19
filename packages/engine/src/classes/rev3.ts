@@ -18,7 +18,7 @@ import { levelFactor } from '../effects/output';
 import { withAp, resGive } from '../effects/cost';
 import { RULES } from '../data';
 import { visFocusWhy, pictureTileWhy, projectionRange, figmentsOf, unravel, makeFigment, isFigment, FIG, setUpTurret } from '../figments';
-import { ownerOf as ownerOfUnit, ownedBy, unmakeOwned, spawnOwned, attackNow, OWNED_DATA_VERBS } from '../owned';
+import { ownerOf as ownerOfUnit, ownedBy, spawnOwned, attackNow, OWNED_DATA_VERBS } from '../owned';
 import { tendHook } from '../effects/damage';
 import { RALLY_HEAL, mendFactorOf, kitHeal } from '../effects/mending';
 import type { Combat, Unit } from '../combat';
@@ -373,36 +373,30 @@ register({
 });
 
 // ---------- Salvage (rank II, 1 AP) ----------
-// Next to you, one of: a wreck (a destroyed robot, drone, turret or machine of either side) gives `charge` to your
-// Visualizer core, each wreck once a fight; one of your Figments is let go with all its charge back; or repair a machine
-// or Figment of your side (the move's repair amount). The unit is the first next to you that fits (a wreck not yet
-// salvaged; your newest Figment; the most hurt machine or Figment).
+// Next to you, a wreck (a destroyed robot, drone, turret or machine of either side) gives `charge` to your Visualizer
+// core, each wreck once a fight (rules 1.74 item 6045: trimmed to the wreck; Cash in does Reclaim, Field Repair the
+// repair). The wreck is the first next to you not yet salvaged.
 const wreckOf = (t: Unit) => t.dead && (repairable(t) || machineLike(t));
-function salvageTarget(h: Holder, way: string): Unit | null {
+function salvageTarget(h: Holder): Unit | null {
   const cb = h.cb!, u = h.u!, r = num(h, 'reach'), near = [...alliesOf(cb, u, { within: r, dead: true, downed: true }), ...foesOf(cb, u, { within: r, dead: true, downed: true })];
-  if (way === 'wreck') return near.find((t) => wreckOf(t) && !uses(h).on(t).used('per_combat')) || null;
-  if (way === 'reclaim') return [...figmentsOf(cb, u)].reverse().find((t) => near.includes(t)) || null;
-  return near.filter((t) => !t.dead && t.side === u.side && repairable(t) && (t.hp < t.maxHp || t.downed)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0] || null;
+  return near.find((t) => wreckOf(t) && !uses(h).on(t).used('per_combat')) || null;
 }
-/** Salvage's ways: its data's pick (rules 1.74 item 6045: the wreck alone). */
+/** Salvage's ways: its data's pick (rules 1.74 item 6045: the wreck alone, the one way the move runs). */
 const SALVAGE_WAYS: string[] = ((rawItem('class:trickster.salvage')?.effects || [])[0]?.pick as string[]) || ['wreck'];
 register({
   id: 'trickster.salvage', claims: 'all',
   actions: [{
     id: 'salvage', label: 'Salvage', scope: ['combat'], target: 'none', ap: 'data', pick: SALVAGE_WAYS, // rules 1.74 item 6045: the ways are the data's (the wreck alone) pickLabel: 'What to salvage',
-    text: 'Next to you: charge from a wreck, one of your Figments let go with all its charge back, or a repair.',
+    text: 'Next to you: charge from a wreck.',
     preview: (h, args) => {
-      const way = args.choice || 'wreck'; if (!SALVAGE_WAYS.includes(way)) return { ok: false, why: 'Salvage takes a wreck.' }; const t = salvageTarget(h, way);
-      if (!t) return { ok: false, why: way === 'wreck' ? 'No wreck next to you (or salvaged already).' : way === 'reclaim' ? 'No Figment of yours next to you.' : 'Nothing of your side next to you needs a repair.' };
-      if (way === 'wreck' && !h.u!.mg?.vcarry) return { ok: false, why: 'No Visualizer to charge.' };
+      const way = args.choice || 'wreck'; if (way !== 'wreck' || !SALVAGE_WAYS.includes(way)) return { ok: false, why: 'Salvage takes a wreck.' }; const t = salvageTarget(h);
+      if (!t) return { ok: false, why: 'No wreck next to you (or salvaged already).' };
+      if (!h.u!.mg?.vcarry) return { ok: false, why: 'No Visualizer to charge.' };
       return { targets: [t.id], lines: ['Salvage: ' + way + ' (' + t.name + ').'] };
     },
-    run: (h, args) => {
-      const cb = h.cb!, u = h.u!, way = args.choice || 'wreck', t = salvageTarget(h, way)!;
-      if (way === 'wreck') { uses(h).on(t).take('per_combat', 1); const got = resGive(cb, u, 'vcharge', num(h, 'charge'), { c: h.c, why: 'salvage' }); emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos }); say(cb, u.name + ' strips the wreck of ' + t.name + ': +' + got + ' Visualizer charge.'); return null; }
-      if (way === 'reclaim') { unmakeOwned(cb, t, { refund: true, quiet: true }); say(cb, u.name + ' takes ' + t.name + ' back apart: its charge goes home.'); return null; }
-      // the repair: the one Field Repair (combat.ts fieldRepair), with no part, no gate, the move's own amount
-      return withAp(u, Number.POSITIVE_INFINITY, () => fieldRepair(cb, u, { target: t, way: 'repair', parts: 0, gate: false, reach: num(h, 'reach'), item: 'class:trickster.salvage', label: 'Salvage' }));
+    run: (h) => {
+      const cb = h.cb!, u = h.u!, t = salvageTarget(h)!;
+      uses(h).on(t).take('per_combat', 1); const got = resGive(cb, u, 'vcharge', num(h, 'charge'), { c: h.c, why: 'salvage' }); emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos }); say(cb, u.name + ' strips the wreck of ' + t.name + ': +' + got + ' Visualizer charge.'); return null;
     },
   }],
   brief: () => null,

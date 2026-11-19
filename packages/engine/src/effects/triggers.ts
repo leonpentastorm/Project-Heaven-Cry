@@ -306,7 +306,7 @@ const resMeets = (ev: Ev, u: Unit | null, v: any): boolean => !!u && !!v && type
   if (b?.at === 'limit' && n < resLimitOf(u, id, u === ev.self ? ev.h.c : charOfUnit(u), ev.cb)) return false; // rules 1.70 item 5543 (P2)
   return true;
 });
-for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_not_res', 'res', who + ' does not have resources within these bounds (the negation of ' + who + '_res, rules 1.77 item 6504: {shadow: {at: "limit"}} is a meter not yet full)', (ev, v) => !!unitOf(ev, who) && !resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
+P('self_not_res', 'res', 'self does not have resources within these bounds (the negation of self_res, rules 1.77 item 6504: {shadow: {at: "limit"}} is a meter not yet full)', (ev, v) => !!ev.self && !resMeets(ev, ev.self, v), () => Object.keys(RESOURCES)); // (the holder's own only: actor_not_res and target_not_res had no data user, 0.32 consolidation)
 for (const who of ['self', 'actor', 'target'] as Who[]) P(who + '_res', 'res', who + ' has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: "max" | "limit"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter\'s most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)', (ev, v) => resMeets(ev, unitOf(ev, who), v), () => Object.keys(RESOURCES));
 P('self_has_res', 'words', 'the holder has at least 1 of each of these resources (data/actions.json resources: momentum, guard, MP…)', (ev, v) => list(v).every((id) => resNow(ev, id) >= 1), () => Object.keys(RESOURCES));
 P('self_lacks_res', 'words', 'the holder has none of one of these resources (as self_has_res)', (ev, v) => list(v).some((id) => resNow(ev, id) < 1), () => Object.keys(RESOURCES));

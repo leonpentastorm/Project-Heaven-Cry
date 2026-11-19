@@ -255,7 +255,7 @@ register({
     reaction_window: (ctx, h) => {
       const kz = kzOf(h); if (!kz || ctx.reactor !== h.u || ctx.kind !== 'overwatch') return;
       if (kz.hit.includes(ctx.mover.id) || kz.left <= 0) { ctx.cancel = true; return; }
-      if (ctx.probe) return; // asked before a roll (tactics.ts reactRefusal): nothing is marked
+      if (ctx.preview) return; // asked before a roll (tactics.ts reactRefusal): nothing is marked
       kz.hit.push(ctx.mover.id); kz.left--; kz.firing = ctx.mover.id; kz.both = (ctx.spend || 1) >= num(h, 'spend'); h.u!.owShots = 1;
     },
     attack_preview: (ctx, h) => { const kz = kzOf(h); if (kz?.firing && ctx.att === h.u && ctx.tgt?.id === kz.firing) ctx.terms.push({ v: num(h, 'hit'), label: 'Killzone' }); },

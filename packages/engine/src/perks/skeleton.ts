@@ -42,7 +42,7 @@ register({
   on: {
     reaction_window: (ctx, h) => {
       const r: Unit | undefined = ctx.reactor; if (!h.u || !r || ctx.cancel || !alive(h.u) || !holds(h.u, r)) return;
-      ctx.cancel = true; if (!ctx.probe) say(h.cb, r.name + ' can\'t react in ' + h.u.name + '\'s grip (Iron Grip).');
+      ctx.cancel = true; if (!ctx.preview) say(h.cb, r.name + ' can\'t react in ' + h.u.name + '\'s grip (Iron Grip).');
     },
   },
   brief: () => null,

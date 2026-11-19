@@ -1,4 +1,4 @@
-// Lane A: Body, melee, damage taken. Perks: Stonewall, Shrug It Off, Used to the Pain, Scar Tissue, Iron Stomach,
+// Lane A: Body, melee, damage taken. Perks: Stonewall, Shrug It Off, Used to the Pain, Iron Stomach,
 // Grapple, Breaching Strike, Earthbreaker, Last Wall, Walking Wounded, Nothing Left to Fear, Bite the Bullet, Siege
 // Engine. Traits: Pain Eater, Factory Made, Glass Runner, Right of Way, Heavyworlder, Crawler-Blooded, Old Timer, The
 // Brightest Light, Squad Anchor, Augmented, Southern Fist, Raised by Orks.

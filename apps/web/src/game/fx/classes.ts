@@ -1,7 +1,7 @@
 // Class Roster Revision 3's twenty moves as effects and sound (engine classes/rev3.ts and illusion.ts send the events;
 // docs/design/perk-runtime.md lists them). Each move speaks its class's attribute ink, always with a word: the
 // Defender's Shrug It Off and Anchor (Endurance red), the Fighter's Unstoppable (Strength orange), the Marksman's Duck
-// and Roll (Agility gold), the Infiltrator's rig and Sabotage (Perception teal, a sabotaged machine sparking), the
+// and Roll (Agility gold), the Infiltrator's rig (Perception teal), the
 // Trickster's Read (a white reticle and the planned move), False Image (Sigil cyan: the decoy forms out of squares and
 // scatters when struck or gone), Silver Tongue and Sleight (Expression blue), the Bard's Rally (white, the heals follow
 // as their own events), the Channeler's Eye of the Storm (Soul violet, a calm inward ring) and the Guardian's Command
@@ -16,7 +16,7 @@ import { ELEMENTS, shards, snapFrame } from './elements';
 import { type Pt, after, anim, burst, centre, floatText, lunge, particle, put, ring, shake, slideFrom, svg } from './dom';
 
 export const CLASS_INK = { endurance: '#F65157', strength: '#F68A38', agility: '#E3BF51', perception: '#40BAA0', expression: '#5394AC', virtue: '#D36A90' };
-const WHITE = '#FFFFFF', MUTED = '#A3AEC2', HP = '#F65157', OK = '#6FEA77', SPARK = '#FFD27A';
+const WHITE = '#FFFFFF', MUTED = '#A3AEC2', HP = '#F65157', OK = '#6FEA77';
 
 /** What play.ts lends these handlers (the same pieces the Soul handlers get, plus a few of its particles). */
 export interface ClassKit {
@@ -39,8 +39,6 @@ export function classWord(e: Partial<FxEvent> & { k: string }): string {
     case 'unstoppable': return 'UNSTOPPABLE';
     case 'duck': return e.out ? 'OUT OF SIGHT' : 'DUCK & ROLL';
     case 'rig': return 'RIGGED';
-    case 'sabotage': return 'SABOTAGED · ' + (e.rounds || 2) + ' ROUNDS';
-    case 'sabotage_end': return e.what === 'barricade' ? 'BLOCKS AGAIN' : 'BACK ONLINE';
     case 'intent': return 'INTENT: ' + String(e.kind || 'move').toUpperCase();
     case 'image': return 'FALSE IMAGE';
     case 'image_gone': return e.why === 'struck' ? 'SCATTERED' : e.why === 'replaced' ? 'RECAST' : 'FADES';
@@ -59,8 +57,6 @@ export function classBeat(e: FxEvent): number | undefined {
     case 'shrug': case 'anchor': case 'rig': return 320;
     case 'unstoppable': return 620;
     case 'duck': return 260;
-    case 'sabotage': return 440;
-    case 'sabotage_end': return 140;
     case 'intent': return 560;
     case 'image': return 560;
     case 'image_gone': return 320;
@@ -90,7 +86,7 @@ function frame(p: Pt, color: string, ms: number, round: boolean, from = 1.5, to 
 }
 
 export function classHandlers(K: ClassKit): Record<string, (e: FxEvent) => void> {
-  const { at, tokOf, play, squares, dust, corners, glitch, condWord } = K;
+  const { at, tokOf, play, squares, dust, corners, condWord } = K;
   return {
     // ---------- Defender ----------
     shrug(e) {
@@ -138,16 +134,6 @@ export function classHandlers(K: ClassKit): Record<string, (e: FxEvent) => void>
       squares(p, CLASS_INK.perception, 5, 0.4, 520, 100);
       floatText(classWord(e), p, CLASS_INK.perception, { small: true, delay: 160 });
     },
-    sabotage(e) {
-      const p = at(e.at); play('el_spark', p, { gain: 0.8 }); play('hit_metal', p, { rate: 1.3, delay: 160, gain: 0.6 });
-      if (!p) return;
-      corners(p, CLASS_INK.perception, 520);
-      for (let i = 0; i < 3; i++) burst('spark_burst', { x: p.x + (Math.random() - 0.5) * p.s * 0.6, y: p.y + (Math.random() - 0.5) * p.s * 0.6 }, p.s * 0.5, 240, { color: SPARK, delay: 120 + i * 110 });
-      if (e.what === 'machine' || e.what === 'turret') glitch(p, 300);
-      shake(tokOf(e.target, e.at), 0.6);
-      floatText(classWord(e), { x: p.x, y: p.y - p.s * 0.55, s: p.s }, '#E3BF51', { small: true, delay: 220 }); // above the condition's own word
-    },
-    sabotage_end(e) { const p = at(e.at); play('jam_clear', p, { gain: 0.5 }); if (p) floatText(classWord(e), p, MUTED, { small: true }); },
     // ---------- Trickster ----------
     intent(e) {
       const p = at(e.at); play('sigil_draw', p || centre(e.at), { rate: 1.7, gain: 0.45 });

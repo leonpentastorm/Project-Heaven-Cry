@@ -153,15 +153,16 @@ export function react(cb: Combat, u: Unit, o: ReactOpts, fn?: () => void): boole
  * 'payer' (the payer has none), 'held' (its last reaction is kept for its held shot, rules 1.30), 'cancelled' (an item
  * cancels the window: the `reaction_window` hook); null: it would go ahead. THE one reading of these refusals: react()
  * calls it, and a reaction that rolls before it spends (Parry) asks it first with `probe` true. The hook's context then
- * carries `probe: true`: a listener that keeps state or says a line (Killzone, Iron Grip) only answers `cancel` on a
- * probe and changes nothing (the review of the 0.32 shared step, m2). */
+ * carries `preview: true` (the bus's one word for a question asked before anything happens): a listener that keeps
+ * state or says a line (Killzone, Iron Grip) only answers `cancel` then and changes nothing (the review of the 0.32
+ * shared step, m2). */
 export function reactRefusal(cb: Combat, u: Unit, o: ReactOpts, probe = false): 'answered' | 'none' | 'payer' | 'held' | 'cancelled' | null {
   const spend = o.spend ?? 1, ek = o.event ? o.event + '|' + u.id : null;
   if (ek && ANSWERED.get(cb)?.has(ek)) return 'answered';
   if (!canReact(cb, u, o.kind, o.payer && o.payer !== u ? 0 : spend)) return 'none';
   if (o.payer && o.payer !== u && (spend > 0 && !ownReact(cb, o.payer, spend))) return 'payer';
   if (keptForHeld(cb, u, o, spend)) return 'held'; // rules 1.30: the last reaction is the held shot's
-  if (o.window) { const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: o.window.mover ?? null, kind: o.window.kind, ...(o.window.id ? { id: o.window.id } : {}), spend, cancel: false, at: o.window.at ?? u.pos, cb, rng: o.window.rng, ...(probe ? { probe: true } : {}) }); if (rw.cancel) return 'cancelled'; }
+  if (o.window) { const rw: any = emit(cb, 'reaction_window', { reactor: u, mover: o.window.mover ?? null, kind: o.window.kind, ...(o.window.id ? { id: o.window.id } : {}), spend, cancel: false, at: o.window.at ?? u.pos, cb, rng: o.window.rng, ...(probe ? { preview: true } : {}) }); if (rw.cancel) return 'cancelled'; }
   return null;
 }
 /** Spend n reactions of a unit: its own first, then a Cue's, then (one) a Many Hands donor's. */

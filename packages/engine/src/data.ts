@@ -66,7 +66,7 @@ export const ARCHETYPES: any[] = (archetypesJ as any).items;
 export const SKILL: Record<string, SkillDef> = Object.fromEntries(SKILLS.map((s) => [s.id, s]));
 /** Rules 1.70 item 5540 (Leon, 19 Nov 2026): the most elemental damage taken off, every source together (rules.json
  * combat.elemental_taken_cap): the one copy, read by the sheet (character.ts elementalTakenPct), the blow
- * (effects/damage.ts) and Scar Tissue. */
+ * (effects/damage.ts). */
 export const ELEMENTAL_CAP: number = Number((RULES as any).combat?.elemental_taken_cap);
 if (!(ELEMENTAL_CAP > 0 && ELEMENTAL_CAP <= 1)) throw new Error('data/rules.json combat.elemental_taken_cap is missing');
 /** Rules 1.70 item 5537: THE ladder schedule by a skill's slot (skills.json `ladder`): its perk steps, its fork steps, its

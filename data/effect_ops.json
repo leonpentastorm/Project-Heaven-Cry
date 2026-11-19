@@ -5085,54 +5085,6 @@
           "mana"
         ]
       },
-      "actor_not_res": {
-        "arg": "res",
-        "about": "actor does not have resources within these bounds (the negation of actor_res, rules 1.77 item 6504: {shadow: {at: \"limit\"}} is a meter not yet full)",
-        "values": [
-          "mp",
-          "charge",
-          "cores",
-          "momentum",
-          "guard",
-          "supplies",
-          "toxins",
-          "parts",
-          "stims",
-          "echo",
-          "pressure",
-          "vcharge",
-          "shadow",
-          "ledger",
-          "devotion_xp",
-          "strain",
-          "flux",
-          "mana"
-        ]
-      },
-      "target_not_res": {
-        "arg": "res",
-        "about": "target does not have resources within these bounds (the negation of target_res, rules 1.77 item 6504: {shadow: {at: \"limit\"}} is a meter not yet full)",
-        "values": [
-          "mp",
-          "charge",
-          "cores",
-          "momentum",
-          "guard",
-          "supplies",
-          "toxins",
-          "parts",
-          "stims",
-          "echo",
-          "pressure",
-          "vcharge",
-          "shadow",
-          "ledger",
-          "devotion_xp",
-          "strain",
-          "flux",
-          "mana"
-        ]
-      },
       "self_res": {
         "arg": "res",
         "about": "self has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\" | \"limit\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)",

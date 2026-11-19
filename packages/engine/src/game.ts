@@ -315,7 +315,7 @@ export type NarratorTurn = {
   /** Arm and leg injuries the story treated (a long rest with a Medic, surgery, a field hospital). */
   treat?: { charId: string; loc: 'arm' | 'leg' | 'all' }[];
   /** HP the story takes out of a fight (a fall, a beating, fire): the engine applies it through damage taken, so items
-   * that change damage (Soulmate, Scar Tissue) count. type: physical, fire, elemental, true. */
+   * that change damage (Soulmate, Last Wall) count. type: physical, fire, elemental, true. */
   harm?: { charId: string; amount: number; type?: string; why?: string }[];
   // ---------- OOC and missions (missions.ts; all optional) ----------
   /** A plain out-of-character answer to the players' OOC questions ("" when there is none). */
@@ -2244,7 +2244,7 @@ export function combatReport(cb: Combat): string {
 
 // ---------- damage out of a fight (perk-runtime H6) ----------
 /** HP lost in the story (a trap, the Narrator's harm[]) goes through the engine's damage chokepoint on the area map's
- * throwaway fight, so items that change damage taken (Soulmate's share, Scar Tissue, Last Wall) work out of a fight too.
+ * throwaway fight, so items that change damage taken (Soulmate's share, Last Wall) work out of a fight too.
  * floor: never below 1 HP (a story trap); else a character can be Downed (an ally's stim, or the Narrator, gets them up).
  * Returns the HP the character lost. 'story_harm' {g, c, dmg, type} lets a story-only item change it first. */
 export function storyHarm(g: GameState, c: Character, dmg: number, o: { type?: string; dmgType?: string; why?: string; floor?: boolean } = {}): number {
@@ -2478,8 +2478,6 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
 
 // ---------- overworld rounds (spec: Overworld rounds) ----------
 /** How hard an enemy is to slip past: its notice bonus (Vigilant) and the TN of the Ingenuity check to stay hidden. */
-/** An NPC's notice by tier: the tier rows' (tactics.ts TIER_NOTICE, from enemies.json; rules 1.76, one copy). */
-export const NOTICE: Record<string, number> = TIER_NOTICE;
 export const ROUND_AP = 6;
 export const apLeft = (g: GameState, c: Character) => g.story.ap?.[c.id] ?? ROUND_AP;
 function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.id] = Math.max(0, Math.round((apLeft(g, c) - n) * 10) / 10); } // Glyph AP comes in tenths
@@ -2758,7 +2756,7 @@ function noticeFor(g: GameState, c: Character, cb?: Combat) {
   for (const n of npcsOf(g)) {
     if (n.side !== 'hostile') continue;
     const d = dist(n.pos, at), dark = !!cb.map.dark && !litAt(cb, at);
-    let range = Math.max(1, 4 + (NOTICE[n.tier] ?? 0) - mod(c.skills.dexterity || 0)); if (dark) range = Math.max(1, Math.floor(range / 2));
+    let range = Math.max(1, 4 + (TIER_NOTICE[n.tier] ?? 0) - mod(c.skills.dexterity || 0)); if (dark) range = Math.max(1, Math.floor(range / 2));
     // 'notice' {c, npc, range, dark, ignore}: ignore = this NPC doesn't treat them as an intruder, even next to them (hooks gap G2).
     const nc: any = emitStory(g, 'notice', { c, npc: n, range, dark, ignore: false, g }); range = Math.max(0, nc.range);
     if (nc.ignore) continue;
@@ -2771,7 +2769,7 @@ function noticeFor(g: GameState, c: Character, cb?: Combat) {
 }
 /** The Ingenuity check to stay hidden (spec: Overworld rounds): d20 + Ingenuity vs 10 + the enemy's notice. */
 function stayHidden(g: GameState, c: Character, n: Npc, why: string): boolean {
-  const sh: any = emitStory(g, 'stay_hidden', { c, npc: n, mod: mod(c.skills.ingenuity || 0) + songMod(g, c, 'ingenuity') + skillRollMod({ c }, 'ingenuity', { roll: 'stealth', tags: zoneTags(g) }).add, tn: 10 + (NOTICE[n.tier] ?? 0), g });
+  const sh: any = emitStory(g, 'stay_hidden', { c, npc: n, mod: mod(c.skills.ingenuity || 0) + songMod(g, c, 'ingenuity') + skillRollMod({ c }, 'ingenuity', { roll: 'stealth', tags: zoneTags(g) }).add, tn: 10 + (TIER_NOTICE[n.tier] ?? 0), g });
   // sh.auto 'success' | 'fail' settles it with no roll; 'stay_hidden_result' {c, npc, ok, die} may then change ok
   // (Every Lie Is a Door, Just the Repairman, Silent Partner: hooks gap B5/B6/G2).
   const auto = sh.auto as 'success' | 'fail' | undefined;

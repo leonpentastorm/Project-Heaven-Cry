@@ -160,8 +160,8 @@ function grid(w = 14, h = 10) {
 const NEW_FX: any[] = [
   { k: 'shrug', unit: 'u', at: '2,2', cond: 'slowed' }, { k: 'anchor', unit: 'u', at: '2,2', what: 'prone' }, { k: 'anchor', unit: 'u', at: '2,2', what: 'oa', target: 't' },
   { k: 'unstoppable', unit: 'u', at: '2,2', ignored: ['fear', 'pinned'] }, { k: 'duck', unit: 'u', from: '2,2', to: '3,2', by: 't', out: false, cover: true },
-  { k: 'rig', unit: 'u', at: '2,2', id: 'rig1', only: 'pc' }, { k: 'sabotage', unit: 'u', target: 't', at: '5,5', rounds: 2, what: 'machine' }, { k: 'sabotage', unit: 'u', at: '6,5', rounds: 2, what: 'barricade' },
-  { k: 'sabotage_end', at: '6,5', what: 'barricade' }, { k: 'intent', unit: 'u', target: 't', at: '5,5', kind: 'attack', text: 'shoot X', targetUnit: 'u' },
+  { k: 'rig', unit: 'u', at: '2,2', id: 'rig1', only: 'pc' },
+  { k: 'intent', unit: 'u', target: 't', at: '5,5', kind: 'attack', text: 'shoot X', targetUnit: 'u' },
   { k: 'image', id: 'img1', owner: 'u', at: '4,4', side: 'pc', fooled: ['t'] }, { k: 'shot', unit: 't', target: 'img1', from: '5,5', to: '4,4', weapon: 'service_pistol', cat: 'pistol', hit: false, image: true },
   { k: 'image_gone', id: 'img1', owner: 'u', at: '4,4', why: 'struck' }, { k: 'silver_tongue', unit: 'u', target: 't', from: '2,2', to: '5,5', ok: true, ap: 2 },
   { k: 'swap', unit: 'u', target: 'a', from: '2,2', to: '3,3' }, { k: 'swap', unit: 'u', target: 'img2', from: '2,2', to: '4,4', image: true },
