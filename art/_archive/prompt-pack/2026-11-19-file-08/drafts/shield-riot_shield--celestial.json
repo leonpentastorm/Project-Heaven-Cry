@@ -1,11 +1,11 @@
 {
   "id": "shield-riot_shield",
   "tier": "celestial",
-  "src": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--celestial.png",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--celestial.png",
   "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its celestial finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. Preserve image one's exact upright clipped-corner tall shield, rounded lower point, rim, narrow dark viewport, viewport frame and middle flat reinforcement strip. Retain image two's flush ring on lower face and flat repair patch in the same locations. Celestial: smooth unmarked pale pearl-ivory face, rim, rivets and patch, same quiet gouache brushwork, dark viewport stays dark. The thin perimeter inlay gives faint contained ivory-gold light, never beyond outline. Ring remains a narrow flush warm line, no emblem, halo, rays, extra parts or outside glow. Fictional RPG inventory art. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
   "refs": [
-    "/workspace/work/phc-prompt-pack-08/art/icons/gear/shield-riot_shield.png",
-    "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png"
+    "art/icons/gear/shield-riot_shield.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png"
   ],
   "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png",
   "sha256": "a8b7fb36ace1706e91e0f86c8d161731fbd4ba7e378407cf1162065c32a58334"

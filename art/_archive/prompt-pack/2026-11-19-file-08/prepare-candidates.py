@@ -2,7 +2,7 @@ import hashlib,json
 from pathlib import Path
 from PIL import Image,ImageDraw
 import numpy as np
-A=Path(__file__).parent
+A=Path(__file__).resolve().parent.relative_to(Path.cwd().resolve())
 def stem(ident):return ident if ident.startswith(('shield-','armour-','focus-','quiver-')) else 'weapon-'+ident
 ids=('katana','combat_knife','sabre','legion_gladius','recurve_bow','longbow','drifter_revolver','crossbow','repeating_crossbow','shield-buckler','shield-riot_shield','shield-pavise')
 tiers=('fine','masterwork','relic','celestial')

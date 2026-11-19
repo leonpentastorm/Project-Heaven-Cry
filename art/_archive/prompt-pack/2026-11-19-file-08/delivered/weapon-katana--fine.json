@@ -1,8 +1,8 @@
 {
   "id": "katana",
   "tier": "fine",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--fine-retry.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--fine.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--fine-retry.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--fine.png",
   "size64_mask_differing_pixels": 3,
   "sha256": "81e1607c196cf5e1b8f686913e1b75e1cb235669c8c54dff4f3e1c9e2dfeacbd",
   "path": "art/icons/gear/weapon-katana--fine.png",

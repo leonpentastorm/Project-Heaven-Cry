@@ -1,8 +1,8 @@
 {
   "id": "combat_knife",
   "tier": "relic",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--relic.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--relic.png",
   "size64_mask_differing_pixels": 14,
   "sha256": "307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b",
   "path": "art/icons/gear/weapon-combat_knife--relic.png",

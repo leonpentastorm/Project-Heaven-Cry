@@ -1,8 +1,8 @@
 {
   "id": "shield-buckler",
   "tier": "fine",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--fine.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--fine.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--fine.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--fine.png",
   "size64_mask_differing_pixels": 9,
   "sha256": "73ba1fb71ea7e9db5574cadefe61d231f2d117e341b8e727511ec4bcbcf7ed3e",
   "path": "art/icons/gear/shield-buckler--fine.png",

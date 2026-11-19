@@ -1,8 +1,8 @@
 {
   "id": "sabre",
   "tier": "celestial",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--celestial.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--celestial.png",
   "size64_mask_differing_pixels": 52,
   "sha256": "9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b",
   "path": "art/icons/gear/weapon-sabre--celestial.png",

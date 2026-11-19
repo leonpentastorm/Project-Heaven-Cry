@@ -1,7 +1,7 @@
 import hashlib,json,sys,shutil
 from pathlib import Path
 from PIL import Image
-A=Path(__file__).parent
+A=Path(__file__).resolve().parent.relative_to(Path.cwd().resolve())
 def sha(p):return hashlib.sha256(p.read_bytes()).hexdigest()
 rows=json.loads((A/'candidate-manifest.json').read_text())
 ident,tier=sys.argv[1:]

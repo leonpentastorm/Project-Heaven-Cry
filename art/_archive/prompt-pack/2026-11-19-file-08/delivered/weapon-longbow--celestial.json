@@ -1,8 +1,8 @@
 {
   "id": "longbow",
   "tier": "celestial",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--celestial.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--celestial.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--celestial.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--celestial.png",
   "size64_mask_differing_pixels": 178,
   "sha256": "e9ed6bcb93b7cfee61b13d5ae5fb591443798fd0927c494a710095ab9b6a3424",
   "path": "art/icons/gear/weapon-longbow--celestial.png",

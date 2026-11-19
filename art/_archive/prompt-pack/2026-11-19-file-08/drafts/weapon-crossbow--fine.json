@@ -1,11 +1,11 @@
 {
   "id": "crossbow",
   "tier": "fine",
-  "src": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-crossbow--fine.png",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-crossbow--fine.png",
   "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its fine finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. The maker's signature parts are the exact brass-and-wood stock, squared shoulder butt, upper-left winding crank, geared central winch, long rail and same visible loaded-bolt detail, dark hanging rectangular box, existing curved vertical prod and taut strings at the right, and open angular fore-loop. This is a fictional game inventory prop. Do not modify its mechanism or geometry. Fine: clean and polish the existing prod, freshly condition stock and wraps, taut new string; one thin carved line along the stock side. No new arrows, bolts or fittings, preserve the existing visible ammunition only. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
   "refs": [
-    "/workspace/work/phc-prompt-pack-08/art/icons/gear/weapon-crossbow.png",
-    "/workspace/work/phc-prompt-pack-08/art/icons/gear/weapon-crossbow.png"
+    "art/icons/gear/weapon-crossbow.png",
+    "art/icons/gear/weapon-crossbow.png"
   ],
   "previous": "art/icons/gear/weapon-crossbow.png",
   "sha256": "f2a1459e546259c8a7cf7383a84e376c9b6271e1cd084b1f3215f07350242600"

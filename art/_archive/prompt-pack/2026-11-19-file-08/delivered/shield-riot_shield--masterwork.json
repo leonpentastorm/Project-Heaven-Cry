@@ -1,8 +1,8 @@
 {
   "id": "shield-riot_shield",
   "tier": "masterwork",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--masterwork.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--masterwork.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--masterwork.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--masterwork.png",
   "size64_mask_differing_pixels": 16,
   "sha256": "70f6ff656269bf2cbc207c71cc046f57f93bfa725671f46c0c2aea7a0e9ae71e",
   "path": "art/icons/gear/shield-riot_shield--masterwork.png",

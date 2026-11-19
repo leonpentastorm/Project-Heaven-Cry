@@ -1,7 +1,7 @@
 import json,shutil,hashlib
 from pathlib import Path
 from PIL import Image,ImageDraw
-A=Path(__file__).parent
+A=Path(__file__).resolve().parent.relative_to(Path.cwd().resolve())
 def stem(ident):return ident if ident.startswith(('shield-','armour-','focus-','quiver-')) else 'weapon-'+ident
 m=json.loads(Path('/workspace/work/prompt-pack-08/current-grade.json').read_text())
 dest=A/'drafts'/f"{stem(m['id'])}--{m['tier']}.png"

@@ -1,8 +1,8 @@
 {
   "id": "shield-pavise",
   "tier": "masterwork",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--masterwork.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--masterwork.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--masterwork.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--masterwork.png",
   "size64_mask_differing_pixels": 32,
   "sha256": "14d30548905ce9568b501b31669ae73bb8f651cff0e99be98d80993dee3d844c",
   "path": "art/icons/gear/shield-pavise--masterwork.png",

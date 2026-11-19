@@ -1,8 +1,8 @@
 {
   "id": "longbow",
   "tier": "relic",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--relic.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--relic.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--relic.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--relic.png",
   "size64_mask_differing_pixels": 162,
   "sha256": "c3c085cf310247d0658e4cc1ef449fb21f7941219ebe62868fd542cb627b20a2",
   "path": "art/icons/gear/weapon-longbow--relic.png",

@@ -1,8 +1,8 @@
 {
   "id": "sabre",
   "tier": "fine",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--fine.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--fine.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png",
   "size64_mask_differing_pixels": 12,
   "sha256": "3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6",
   "path": "art/icons/gear/weapon-sabre--fine.png",

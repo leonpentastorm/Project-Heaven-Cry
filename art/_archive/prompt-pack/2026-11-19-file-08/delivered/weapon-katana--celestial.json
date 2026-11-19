@@ -1,8 +1,8 @@
 {
   "id": "katana",
   "tier": "celestial",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--celestial.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--celestial.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--celestial.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--celestial.png",
   "size64_mask_differing_pixels": 7,
   "sha256": "d8e2f577764ef58474fb59ebe68d50c577047e4576c104ceb97272478a3209ad",
   "path": "art/icons/gear/weapon-katana--celestial.png",

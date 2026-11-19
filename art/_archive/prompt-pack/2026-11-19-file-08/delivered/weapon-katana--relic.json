@@ -1,8 +1,8 @@
 {
   "id": "katana",
   "tier": "relic",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--relic.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--relic.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--relic.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--relic.png",
   "size64_mask_differing_pixels": 9,
   "sha256": "ffc538dbf8d885757ea58b8cc8fa9e80b7fc02dfec5231959907cad03fba62ff",
   "path": "art/icons/gear/weapon-katana--relic.png",

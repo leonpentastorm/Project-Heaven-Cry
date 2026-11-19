@@ -1,8 +1,8 @@
 {
   "id": "legion_gladius",
   "tier": "masterwork",
-  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--masterwork.png",
-  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--masterwork.png",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--masterwork.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--masterwork.png",
   "size64_mask_differing_pixels": 12,
   "sha256": "f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff",
   "path": "art/icons/gear/weapon-legion_gladius--masterwork.png",

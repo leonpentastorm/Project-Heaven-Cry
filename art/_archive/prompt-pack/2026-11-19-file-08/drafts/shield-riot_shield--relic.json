@@ -1,11 +1,11 @@
 {
   "id": "shield-riot_shield",
   "tier": "relic",
-  "src": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png",
   "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its relic finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. Keep image one's exact upright clipped-corner riot shield, rounded lower point, viewport, flat middle reinforcement strip and all rivets. Fictional RPG inventory icon. Relic: warm deep battle-old olive-steel patina, narrow perimeter inlay dull old gold; one restrained flush gilt ring at the centre of the lower flat face, an engraved circular band rather than emblem or raised boss. One small flat riveted repair patch at the lower-right face, inside all existing outlines. Keep viewport dark, no heraldry, no letters, no exterior effects. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
   "refs": [
-    "/workspace/work/phc-prompt-pack-08/art/icons/gear/shield-riot_shield.png",
-    "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--masterwork.png"
+    "art/icons/gear/shield-riot_shield.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--masterwork.png"
   ],
   "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--masterwork.png",
   "sha256": "6378756e7da1f453e1749ce4595060e9e5a8db8b0e91d1cd52bbfb1a7bf32888"
