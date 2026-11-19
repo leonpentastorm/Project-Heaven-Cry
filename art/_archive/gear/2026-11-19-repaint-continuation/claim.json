@@ -1,5 +1,5 @@
 {
-  "updated_utc": "2026-11-19T06:21:23.048408+00:00",
+  "updated_utc": "2026-11-19T06:38:41.031535+00:00",
   "branch": "art/2026-11-19-repaint-continuation",
   "scope": "File10 section1 unfinished Standard reference repaints ONLY",
   "ids": [
@@ -61,5 +61,7 @@
     "origin/art/2026-11-19-reference-repaints": "95ea51f3e2d1e2a5ff8f966c37ed35ae4f77645a",
     "origin/art/2026-11-19-melee-armour": "fb99282187819f5fedf48705ac2f8d4512d52337"
   },
-  "status": "claimed-before-drawing"
+  "status": "blocked",
+  "active_rendering": false,
+  "handoff_available": true
 }

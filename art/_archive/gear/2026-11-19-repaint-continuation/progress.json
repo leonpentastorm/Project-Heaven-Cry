@@ -1,5 +1,5 @@
 {
-  "status": "drawing",
+  "status": "blocked",
   "target": 14,
   "delivered": [],
   "remaining": [
@@ -24,10 +24,23 @@
     "weapon-decrkm_smg",
     "weapon-legion_pdw",
     "weapon-mandestra_drum_gun",
-    "weapon-long_rifle"
+    "weapon-long_rifle",
+    "weapon-blackpoint_700",
+    "weapon-ccec_marksman_rifle",
+    "weapon-adamantile_battle_rifle",
+    "weapon-lumeri_scattergun",
+    "weapon-smetanita_thumper",
+    "weapon-breacher_tube",
+    "weapon-frontier_hand_cannon"
   ],
   "waiting_dependency": [
     "weapon-hellraiser_lmg",
     "weapon-brigade_auto_shotgun"
-  ]
+  ],
+  "updated_utc": "2026-11-19T06:38:41.031535+00:00",
+  "image_generation_quota": null,
+  "reset_timestamp": null,
+  "blocker": "image_gen moderation_blocked on all12 independent briefs; no new image returned",
+  "attempted": 12,
+  "new_images": 0
 }

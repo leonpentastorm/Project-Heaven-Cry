@@ -1,23 +1,15 @@
-# November 19 work claims — continuation
+# File10 section1 repaint continuation — blocked handoff
 
-Checked the live remote branches and the other instance’s FILE-STATUS at commit550f80c7 before claiming. This branch claims **only file10 section1’s14 unfinished Standard reference repaints**. It preserves the three already delivered candidates and will reuse them rather than redraw them. No new drawing has started at this claim checkpoint.
+**0/14 new repaints generated or delivered in this continuation.** All12 independent requests returned `moderation_blocked`. Two dependent jobs, Hellraiser LMG and Brigade auto-shotgun, wait for the missing service-rifle repaint and were not attempted. This is a service rejection, not a reported usage quota: no reset timestamp was supplied. Full exact errors and request ids are preserved in `generation-failures/` and `failure-summary.json`.
 
-Claim branch: `art/2026-11-19-repaint-continuation`. Exact paths and checked branch SHAs: `art/_archive/gear/2026-11-19-repaint-continuation/claim.json`.
+Branch: `art/2026-11-19-repaint-continuation`. This branch includes the completed39-image files05/07 delivery and normally merges the existing3 File10 candidates from `art/2026-11-19-reference-repaints` (95ea51f3). Those3 candidates were preserved and revalidated, not redrawn. Their native sources, archived predecessors and12 UI exports remain intact. The14 requested old production paintings and their exports were not changed.
 
-## Claimed here
+`queue.json` is parsed from the actual current source brief, with exact prompts and per-entry scale. `source-brief.md` preserves that source. `references/before/` and `references/previous-exports/` retain the starting masters and exports for all14 requested repaints. `progress.json` records zero delivered and exact remaining status. `claim.json` has active_rendering:false; this is available as an explicit takeover after checking/updating the claim. Files01–04 and all of08 remain reserved for the other instance.
 
-Hellraiser service rifle; Decrkm SMG; Legion PDW; Mandestra drum-gun; Long rifle; .700 Blackpoint; CCEC marksman rifle; Adamantile battle rifle; Hellraiser LMG; Lumeri scattergun; Brigade auto-shotgun; Smetanita thumper; Breacher tube; Frontier hand cannon. Work in the source order, with service rifle before LMG/auto-shotgun. Existing historical paintings are not evidence that the requested repaint has been delivered.
+The new technical helper is `tools/art/continue_nov19_repaints.py --id weapon-ID --source /absolute/native.png`. It calls the existing File10 exporter, preserves the previous catalog/master/exports, records references and hashes, creates versioned masters and64/32px comparisons, and updates progress/checksums. It has not exported a new image in this run because no generation succeeded. Review any actual native drawing first, then export, run the per-asset validator (`--validate --id weapon-ID`), `git diff --check`, commit and push immediately before drawing next. The generator accepts at most5 reference paths; the two dependent jobs name6. When those become eligible, preserve and attach all originals using a technical reference montage, document its provenance, and inspect it before generation.
 
-Service pistol, Magistrate heavy pistol and Decrkm auto-pistol are already delivered on `art/2026-11-19-reference-repaints`; preserve those three and their archived predecessors. Each new selected image is shown, exported, validated, committed and pushed before the next. No force pushes; develop stays untouched.
+Validation completed: existing File10 deliver.py verified the3 inherited candidates and their provenance/exports; the files05/07 validator still passes all39 earlier candidates; every starting repaint master/export matches the preserved copy; current catalog equals the post-merge catalog with no later art edits. Sparse checksum preservation remains enabled. Required whole-library validate_art.py was attempted and stops at an omitted historical portrait (`art/portraits/world/new-faces/ivara-drenn.png`); no whole-library pass is claimed. Re-run on a full checkout before integration. No new WebP build is needed for nonexistent renders.
 
-## Free for another agent
+All branch commits are pushed normally; develop stays at2020b5c2 and the other instance's branches are untouched. Catalog/checksum merge resolutions must preserve every worker’s entries. No force push, new approval, grade production, title-screen or pet work was performed.
 
-| Work | Remaining | Dependencies |
-| --- | ---: | --- |
-| File06 Gun Forms | 14 of17 | 12 await file10 repaints; Arbalest and Fowling Gun remain generation/correction jobs. Preserve the3 delivered candidates. |
-| File09 Heavy and Strange | 8 of16 | 7 await file10 repaints; Twin Rotary remains a generation job. Preserve the8 delivered candidates. |
-| File10 section2 new maker lines | 15 of15 | Each line’s base first, then its two variants. No overlap with this section1 repaint claim. |
-
-Files01–04 and all of file08 belong to the other instance. File08 includes uniques as well as the grade proof: leave it alone. Files05/07 are complete:39 Standard candidates on `art/2026-11-19-melee-armour`, with handoff. No grade approval is implied.
-
-Before claiming free work, refresh remote branches and check whether a new reservation or delivery has appeared. Announce exact ids/paths and push the reservation before drawing. Catalog and checksum integration must preserve all workers’ entries. User approval gates still apply to higher-grade production.
+Free-work list and explicit reservation history: `art/briefs/prompts-2026-11-19/WORK-CLAIMS.md`.

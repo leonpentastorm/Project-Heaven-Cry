@@ -1,0 +1,86 @@
+[
+  {
+    "id": "weapon-hellraiser_service_rifle",
+    "request_id": "7329f7de-9f38-4a90-adc1-defe9606287d",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-hellraiser_service_rifle.json"
+  },
+  {
+    "id": "weapon-decrkm_smg",
+    "request_id": "ca9a3391-bd29-47d3-a915-a9300ee48de4",
+    "stage": "input",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-decrkm_smg.json"
+  },
+  {
+    "id": "weapon-legion_pdw",
+    "request_id": "c041c158-ac09-4fd4-8541-ec1f20cfeec2",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-legion_pdw.json"
+  },
+  {
+    "id": "weapon-mandestra_drum_gun",
+    "request_id": "40e475e1-9a97-4919-b909-d4bc52af6ba9",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-mandestra_drum_gun.json"
+  },
+  {
+    "id": "weapon-long_rifle",
+    "request_id": "11eee5d3-2aaf-4a26-b96e-4b39ac973235",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-long_rifle.json"
+  },
+  {
+    "id": "weapon-blackpoint_700",
+    "request_id": "ba465ba0-2626-4bb0-82b8-378ce94d085b",
+    "stage": "input",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-blackpoint_700.json"
+  },
+  {
+    "id": "weapon-ccec_marksman_rifle",
+    "request_id": "afef9b23-e641-42ee-a7fe-15be066d9ac7",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-ccec_marksman_rifle.json"
+  },
+  {
+    "id": "weapon-adamantile_battle_rifle",
+    "request_id": "3cdb5acc-70fc-4b0a-a18a-b8af32b58355",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-adamantile_battle_rifle.json"
+  },
+  {
+    "id": "weapon-lumeri_scattergun",
+    "request_id": "6b86980f-ac4e-4dd8-9f93-5b2010159bcf",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-lumeri_scattergun.json"
+  },
+  {
+    "id": "weapon-smetanita_thumper",
+    "request_id": "0cbc5a48-548a-470e-bc01-723aad206267",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-smetanita_thumper.json"
+  },
+  {
+    "id": "weapon-breacher_tube",
+    "request_id": "d2c9d00e-2fc3-40cd-b88a-62615d9e5778",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-breacher_tube.json"
+  },
+  {
+    "id": "weapon-frontier_hand_cannon",
+    "request_id": "78d969e1-796a-46cc-af1c-8fdfc67a4012",
+    "stage": "output",
+    "code": "moderation_blocked",
+    "record": "art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/weapon-frontier_hand_cannon.json"
+  }
+]

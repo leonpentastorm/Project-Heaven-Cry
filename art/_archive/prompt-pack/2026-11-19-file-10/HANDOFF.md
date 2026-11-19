@@ -42,3 +42,6 @@ Each accepted repaint keeps its original master and exports under superseded.
 
 Published drafts are review candidates. See records, review and generation-failures for exact results.
 File 06 and 09 each have an independent delivery branch and track the forms that await these references.
+
+
+Continuation checkpoint: the14 unfinished section1 repaints were reserved and attempted on `art/2026-11-19-repaint-continuation`. All12 independent image requests were rejected by the service;2 wait on their reference. No new repaint was delivered. See `art/_archive/gear/2026-11-19-repaint-continuation/HANDOFF.md` and the shared WORK-CLAIMS.md. The15 section2 maker-line forms remain outside that reservation.
