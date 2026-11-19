@@ -2103,6 +2103,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-field_trousers",
+      "path": "art/icons/gear/armour-field_trousers.png",
+      "sha256": "644b0fbc3da4c8259b5e88aceb8f7b140573ab63a3679b6cf1439c0f0ed573ab",
+      "label": "Field trousers",
+      "family": "07-legwear",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-field_trousers.png",
+        "sha256": "494e9a40b4c1640139ee31ebca75d5a57d590b5d07ba2f0bfffec188b7f6f9f8"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-field_trousers.png",
+        "sha256": "644b0fbc3da4c8259b5e88aceb8f7b140573ab63a3679b6cf1439c0f0ed573ab"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-field_trousers.txt",
+        "sha256": "29e2e4aa47fd65ce73ee75054608a032e8af1a085feca71e70b57bd2451a5976"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-runner_trousers.png",
+          "sha256": "2e2fe38e84e0e8da30560a478bc6af62db8c4de93fdf8a690e7ec84747e2f977"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_trousers.png",
+        "128": "art/icons/gear/exports/128/armour-field_trousers.png",
+        "64": "art/icons/gear/exports/64/armour-field_trousers.png",
+        "32": "art/icons/gear/exports/32/armour-field_trousers.png"
+      },
+      "export_hashes": {
+        "256": "d874bff15eeaee9a3c4eb5de15be2ac214a5b6ae64e0f84426ffb46cd2cc508e",
+        "128": "f3b8c5bc017cba5639dfb3245ad6c55126a0ea9237ecb3f80daba85a61667b25",
+        "64": "6373503ccc75ee67e0595f87e4f3bdb3834ca3cbc3546fd0c2cfeaf338b1dea9",
+        "32": "7ffcd0fca712caa471cc6593e99a702cb892647acdb92563a5a5098156c26ad0"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

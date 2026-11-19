@@ -19568,6 +19568,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "armour-field_trousers": {
+      "label": "Field trousers",
+      "path": "art/icons/gear/armour-field_trousers.png",
+      "sha256": "644b0fbc3da4c8259b5e88aceb8f7b140573ab63a3679b6cf1439c0f0ed573ab",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_trousers.png",
+        "128": "art/icons/gear/exports/128/armour-field_trousers.png",
+        "64": "art/icons/gear/exports/64/armour-field_trousers.png",
+        "32": "art/icons/gear/exports/32/armour-field_trousers.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-field_trousers.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 18,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

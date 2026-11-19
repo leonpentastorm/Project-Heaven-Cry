@@ -49,14 +49,14 @@
     "armour-sealed_visor",
     "armour-breacher_plate",
     "armour-mesh_undersuit",
-    "armour-rig_belt"
+    "armour-rig_belt",
+    "armour-field_trousers"
   ],
   "remaining": [
-    "armour-field_trousers",
     "armour-tactical_gloves",
     "armour-jump_boots"
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T04:29:58.271950+00:00"
+  "updated_utc": "2026-11-19T04:31:44.751106+00:00"
 }
