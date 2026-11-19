@@ -12305,3 +12305,10 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     dead, so a lone victim's eyes never counted. Data only (`skills.json ingenuity.unlocks.3`: a mark on `attack_roll`,
     the condition's `no_flag`, both marks cleared after the action and at the turn's start). Proof:
     `test/playtest-1118.test.ts` (melee and shots through the reducer's `combat/attack`).
+5506. **The Primed boon's Momentum lands** (row 12: Primed's +1 Momentum at the fight's start did nothing). The
+    Momentum meter is made by the engine's own start of the fight, after every item's `combat_start` op has run, so an
+    item's Momentum then had no meter to go into (Guard and Shadow, made with the unit, were given). Primed's Momentum
+    step is now given at the holder's first turn start of each fight (`turn_start`, once a fight), when the meter
+    stands: data only (`survival.json boon.primed`). The fight's other Momentum start (the door's 1 and the stat
+    `momentum_start`) is unchanged. Proof: `test/playtest-1118.test.ts` (each door's meter at the first turn, with and
+    without Primed).

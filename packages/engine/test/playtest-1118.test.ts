@@ -182,3 +182,21 @@ describe('row 11: Ghost Kill only when no enemy\'s eyes reach you as the attack 
     expect(dark.f.unit(dark.t.id).hp).toBeLessThanOrEqual(0); expect(dark.f.unit(dark.u.id).hidden).toBe(true);
   });
 });
+
+import survivalJ from '../../../data/survival.json';
+describe('row 12: the Primed boon starts the door\'s meter a step up (Momentum too)', () => {
+  const PRIMED: any = (survivalJ as any).boons.find((b: any) => b.id === 'boon.primed');
+  const step = (res: string) => PRIMED.effects.find((e: any) => e.resource === res).value;
+  it('a Raw Power character starts the fight with the door\'s Momentum plus Primed\'s step; Guard and Shadow likewise', () => {
+    for (const [skill, res] of [['raw_power', 'momentum'], ['durability', 'guard'], ['ingenuity', 'shadow']] as const) {
+      const sk = { durability: 0, raw_power: 0, ingenuity: 0, [skill]: 3 };
+      // a melee weapon: Momentum is a meter of a unit that holds one
+      const plain = fightWith([{ kit: 'soldier', weapon: 'maul', skills: sk } as any], [{ tier: 'soldier', at: 'O10' }]);
+      const primed = fightWith([{ kit: 'soldier', weapon: 'maul', relics: ['boon.primed'], skills: sk } as any], [{ tier: 'soldier', at: 'O10' }]);
+      const a = plain.turn(plain.pc), b = primed.turn(primed.pc);
+      expect(((primed.unit(b.id) as any).res?.[res] ?? 0) - ((plain.unit(a.id) as any).res?.[res] ?? 0), res).toBe(step(res));
+      // once a fight: a second turn adds nothing more
+      if (res === 'momentum') { const m = (primed.unit(b.id) as any).res.momentum; primed.act({ type: 'combat/end-turn', unitId: b.id } as any); primed.turn(primed.pc); expect((primed.unit(b.id) as any).res.momentum).toBeLessThanOrEqual(m); }
+    }
+  });
+});
