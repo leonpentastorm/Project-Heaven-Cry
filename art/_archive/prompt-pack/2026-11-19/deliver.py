@@ -36,6 +36,13 @@ def rel(path):
     return path.relative_to(ROOT).as_posix()
 
 
+def repository_tool(relative, name):
+    spec = importlib.util.spec_from_file_location(name, ROOT / relative)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def save(image, path):
     path.parent.mkdir(parents=True, exist_ok=True)
     image.save(path, optimize=True)
@@ -89,7 +96,8 @@ def draft(job):
         shutil.copy2(source, dest)
     image = Image.open(dest)
     size = 256 if job["kind"] == "kit" else 1024
-    save(export(image, size, job["kind"], Path(job["path"]).stem), STAGE / f"draft-{n}.png")
+    out = STAGE / f"draft-{n}.png"
+    save(export(image, size, job["kind"], Path(job["path"]).stem), out)
     return image.size, dest
 
 
@@ -118,6 +126,8 @@ def review(jobs):
 
 def binding(job, catalog):
     path = Path(job["path"])
+    if path.parent.parent.name == "kit":
+        return "kit", f"kit-{path.parent.name}-{path.stem}"
     candidates = [(family, k) for family, rows in catalog.items() if isinstance(rows, dict)
                   for k, value in rows.items() if isinstance(value, dict)
                   and (value.get("path") == job["path"] or value.get("wanted") == job["path"])]
@@ -152,8 +162,16 @@ def deliver(jobs):
         assert not record_path.exists(), f"Already delivered {n}"
         dimensions, source = draft(job)
         target = ROOT / job["path"]
-        image = Image.open(STAGE / f"draft-{n}.png")
+        drafted = STAGE / f"draft-{n}.png"
+        image = Image.open(drafted)
         family, key = binding(job, catalog)
+        extra = {}
+        if kind == "ground":
+            seams = repository_tool("tools/art/kit_seams.py", "kit_seams")
+            metrics = seams.measure(drafted)
+            join = max(metrics["ratio_x"], metrics["ratio_y"], metrics["band_x"], metrics["band_y"])
+            assert join <= seams.SEAM_MAX, f"Ground seam exceeds threshold: {join:.2f}"
+            extra["seam_metrics"] = {k: float(v) for k, v in metrics.items()}
         entry = catalog.setdefault(family, {}).get(key, {}).copy()
         old = ROOT / entry.get("path", job["path"])
         if old.is_file():
@@ -185,17 +203,22 @@ def deliver(jobs):
         if kind in INK:
             entry["ink"] = "#FFFFFF"
         if family == "kit":
-            # The delivery is a candidate. Existing map behavior remains in place until visual intake.
             piece = target.stem
-            piece_kind = {"poi": "prop", "sigil_wall": "wall", "sigil_mark": "decal",
-                          "pile": "dressing"}.get(piece, "floor" if kind == "ground" else
-                                                    "wall" if piece.startswith("wall-") else "dressing")
-            entry.update(setting=target.parent.name, piece=piece, kind=entry.get("kind", piece_kind),
-                         use=False, why="Review candidate from the 19 November prompt pack")
+            kit_catalog = repository_tool("tools/art/kit_catalog.py", "kit_catalog")
+            piece_kind, object_id = kit_catalog.kind_of(piece)
+            entry.update(setting=target.parent.name, piece=piece, kind=piece_kind)
+            if object_id:
+                entry["object"] = object_id
+            entry.setdefault("use", True)
+            if not entry["use"]:
+                entry["why"] = "Replacement candidate awaiting in-game join review"
+            for source_row in catalog.get("survival_art", {}).values():
+                if source_row.get("path") == job["path"] and entry.get("previous_path"):
+                    source_row["path"] = entry["previous_path"]
         catalog[family][key] = entry
         result = read(STAGE / f"result-{n}.json")
         result.pop("src")
-        write(record_path, {**job, **entry, **result, "family": family, "id": key,
+        write(record_path, {**job, **entry, **result, **extra, "family": family, "id": key,
                             "source_sha256": sha(source), "export_sha256":
                                 {s: sha(ROOT / p) for s, p in exports.items()}})
     write(catalog_path, catalog)
@@ -205,9 +228,7 @@ def verify():
     catalog = read(ROOT / "art/catalog.json")
     files = sorted((ARCHIVE / "records").glob("*.json"))
     rows = [read(p) for p in files]
-    spec = importlib.util.spec_from_file_location("art_validator", ROOT / "tools/validate_art.py")
-    validator = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(validator)
+    validator = repository_tool("tools/validate_art.py", "art_validator")
     for row in rows:
         image = ROOT / row["path"]
         assert sha(image) == row["sha256"] == catalog[row["family"]][row["id"]]["sha256"]

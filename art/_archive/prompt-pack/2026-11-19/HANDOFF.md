@@ -1,12 +1,12 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 10:11 UTC+7. The 88 entries in files 01–04 have **21 delivered**, **66 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 10:21 UTC+7. The 88 entries in files 01–04 have **29 delivered**, **58 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
 | 01 | 3 | 37 |
 | 02 | 11 | 11 |
-| 03 | 7 | 21 |
+| 03 | 15 | 21 |
 | 04 | 0 | 19 |
 
 ## Pickup
@@ -21,14 +21,6 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 
 ## Remaining entries
 
-- 053 | File 03 | Field Repair | `art/icons/perks/field-repair.png`
-- 055 | File 03 | Jury-Rig | `art/icons/perks/jury-rig.png`
-- 057 | File 03 | Parley (id `talks_broke_down`) | `art/icons/perks/talks-broke-down.png`
-- 059 | File 03 | Quick Sketch | `art/icons/moves/quick-sketch.png`
-- 060 | File 03 | Index | `art/icons/perks/index.png`
-- 061 | File 03 | Proven Formula | `art/icons/perks/proven-formula.png`
-- 062 | File 03 | Objection! | `art/icons/perks/objection.png`
-- 063 | File 03 | Opening Argument | `art/icons/perks/opening-argument.png`
 - 064 | File 03 | Thinking Aloud | `art/icons/perks/thinking-aloud.png`
 - 065 | File 03 | Backdraft | `art/icons/moves/backdraft.png`
 - 066 | File 03 | Running Script (fork): replaces the existing picture | `art/icons/forks/sigil-running-script.png`
@@ -88,4 +80,4 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 - 036 | File 01 | `kit-shrine-pile`: Ground pile, shrine | `art/sprites/kit/shrine/pile.png`
 - 037 | File 01 | `kit-rim-pile`: Ground pile, rim | `art/sprites/kit/rim/pile.png`
 
-Unreviewed scratch renders currently on disk: 57.
+Unreviewed scratch renders currently on disk: 65.

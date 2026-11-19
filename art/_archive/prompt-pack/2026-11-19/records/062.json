@@ -1,0 +1,58 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 119,
+  "title": "Objection!",
+  "path": "art/icons/perks/objection.png",
+  "notes": "- **Id:** `objection`. **Save as:** `art/icons/perks/objection.png`. **Mode:** Wick icon. **Shows:** the perk card. Do not echo the old Burden of Proof picture (Wick hauling a weight).",
+  "paint": "The icon shows: Wick on his feet behind a plain low rail, slapping one flat open palm down hard on the rail, his other hand raised high with the palm out to halt the room; across from him a plain railed box (a low witness stand drawn as a railed pen on a raised floor) where only a speaker's shoulder and a hand are visible, the hand pulled back mid-gesture; two short sharp impact strokes jump off the rail under Wick's palm. The palm slammed on the rail and the raised halting hand is what to read at 32 px. Avoid: a pointing finger or an arm thrust out at the stand, a gavel, scales of justice, a wig, a judge's bench with text, an exclamation mark.",
+  "status": "review-candidate",
+  "n": 62,
+  "kind": "wick",
+  "label": "Objection!",
+  "sha256": "4f816489e13a3633bbb5be1d77a96e7874d85e1a0e90512603e62cfd5c55ac47",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/062-objection.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/objection.png",
+    "128": "art/icons/perks/exports/128/objection.png",
+    "64": "art/icons/perks/exports/64/objection.png",
+    "56": "art/icons/perks/exports/56/objection.png",
+    "48": "art/icons/perks/exports/48/objection.png",
+    "44": "art/icons/perks/exports/44/objection.png",
+    "40": "art/icons/perks/exports/40/objection.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:119",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick on his feet behind a plain low rail, slapping one flat open palm down hard on the rail, his other hand raised high with the palm out to halt the room; across from him a plain railed box (a low witness stand drawn as a railed pen on a raised floor) where only a speaker's shoulder and a hand are visible, the hand pulled back mid-gesture; two short sharp impact strokes jump off the rail under Wick's palm. The palm slammed on the rail and the raised halting hand is what to read at 32 px. Avoid: a pointing finger or an arm thrust out at the stand, a gavel, scales of justice, a wig, a judge's bench with text, an exclamation mark.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perks",
+  "id": "objection",
+  "source_sha256": "541b5afa39a718c466226423c29e2f58a1ab61f208408868d4f046e27f9f12ed",
+  "export_sha256": {
+    "256": "47f759a550f4596d6c925ba1681a24699acdf09d3b9562fa73ead29eabaacaf3",
+    "128": "1d626e35ba64790811b707dc223f94baa5bcd702f8d96a0bdb42ee7ae2a4c0f6",
+    "64": "6638e5d793b534bdbcaf7b2c9a894fce73f8361c276745301874533a7e391877",
+    "56": "b78e2d15e06c29418e9ede74158341f04369e937b9e2e8ae4358ce7cb6d06002",
+    "48": "af2c7f07502e2fc7ae28fa734aec916b51414762b7aa3aec27f6258fcbbc63a5",
+    "44": "72d086c05d0e0384cfb3937c3de86850118b46fe7aba0b17db48f150e08f7286",
+    "40": "857ce452b6e849b061214676c8a68672b0badf0f76f649585ae578197a46fdf8"
+  }
+}
