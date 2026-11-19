@@ -866,6 +866,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-glaive--masterwork",
+      "path": "art/icons/gear/weapon-glaive--masterwork.png",
+      "sha256": "9e566b53dffddd142c5ee26885b305806d2fb945f39e8acadbf944cd65a56a21",
+      "label": "Glaive — Masterwork",
+      "family": "weapon-glaive",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-glaive--masterwork.png",
+        "sha256": "c63953c150adf0e15c2a0ef6e6c619f98f5c06ea6c60ef93fbc248caa1326974"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-glaive--masterwork.png",
+        "sha256": "9e566b53dffddd142c5ee26885b305806d2fb945f39e8acadbf944cd65a56a21"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-glaive--masterwork.txt",
+        "sha256": "f110b879ab61a7f160defa60cdc7068423df619d682c19ebf4515f4c42588eea"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-glaive.png",
+          "sha256": "c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e"
+        },
+        {
+          "path": "art/icons/gear/weapon-glaive--fine.png",
+          "sha256": "a00449f33163357e868072d28487d2151531686a9bc7fa54f0e64d1a34edbbfe"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-glaive--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-glaive--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-glaive--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-glaive--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "5f6f8bef88efb4f278247201fcb99286c4d2e4851b4f834e4436ab78ca1cc2f3",
+        "128": "bbee170b0339ccdffb487efba14ab13de7c9ea75c4df9f490b5a095a540a7f3d",
+        "64": "367d8503a434a4cdc0d8d3e21ff5fc9ce0bfbc77fa328608ae4ef4f4d64ef70a",
+        "32": "c3ae4bd28d6971a7061289c2fe61d86d902a50ec7e5d67ff01432ca69c666863"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-glaive",
+      "outline": {
+        "solid_alpha_iou": 0.9478948298941732,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 24
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
