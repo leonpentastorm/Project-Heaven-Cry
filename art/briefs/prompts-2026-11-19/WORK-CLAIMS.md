@@ -1,3 +1,14 @@
+# Live armour claim — 19 November 2026
+
+Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Latest claim comment7006801866.
+
+This worker owns120 candidates on `art/2026-11-19-kept-blade-grades`: prior68 (61 delivered,7 blocked/dependent) plus52 kept-armour grades, four each for `armour-torso_class1_light`, `armour-torso_class2_medium`, `armour-torso_class3_heavy`, `armour-torso_class4_assault`, `armour-torso_class5_juggernaut`, `armour-padded_undershirt`, `armour-trauma_plate`, `armour-runner_trousers`, `armour-armoured_greaves`, `armour-work_gloves`, `armour-combat_gloves`, `armour-field_boots`, `armour-heavy_boots`. Exact current status: `art/_archive/gear/2026-11-19-kept-blade-grades/queue.json`.
+
+Free at this snapshot: released10 headgear jobs from grade-proof, kept guns24/heavy8/powered8/thrown4 (44 further pictures); new-Standard grades require checking their prerequisites and branch. Peer58 grades stay delivered. Never redraw them or count shared12 imports/archived3 overlaps twice. All candidates remain unapproved.
+
+---
+Historical snapshots below; latest mailbox and this section take precedence.
+
 # Live claim expansion — 19 November 2026
 
 Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Check comments before taking IDs.
