@@ -1,10 +1,10 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 11:16 UTC+7. The 88 entries in files 01–04 have **72 delivered**, **15 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 11:21 UTC+7. The 88 entries in files 01–04 have **76 delivered**, **11 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
-| 01 | 22 | 37 |
+| 01 | 26 | 37 |
 | 02 | 11 | 11 |
 | 03 | 20 | 21 |
 | 04 | 19 | 19 |
@@ -24,12 +24,8 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 - 066 | File 03 | Running Script (fork): replaces the existing picture | `art/icons/forks/sigil-running-script.png`
 - 013 | File 01 | `kit-rim-wall-corner`: Rim wall corner | `art/sprites/kit/rim/wall-corner.png`
 - 024 | File 01 | `kit-shrine-sigil_wall`: Sigil wall, shrine | `art/sprites/kit/shrine/sigil_wall.png`
-- 026 | File 01 | `kit-ahoc-sigil_mark`: Sigil mark, ahoc | `art/sprites/kit/ahoc/sigil_mark.png`
 - 027 | File 01 | `kit-city-sigil_mark`: Sigil mark, city | `art/sprites/kit/city/sigil_mark.png`
-- 028 | File 01 | `kit-field-sigil_mark`: Sigil mark, field | `art/sprites/kit/field/sigil_mark.png`
-- 029 | File 01 | `kit-works-sigil_mark`: Sigil mark, works | `art/sprites/kit/works/sigil_mark.png`
 - 030 | File 01 | `kit-shrine-sigil_mark`: Sigil mark, shrine | `art/sprites/kit/shrine/sigil_mark.png`
-- 031 | File 01 | `kit-rim-sigil_mark`: Sigil mark, rim | `art/sprites/kit/rim/sigil_mark.png`
 - 032 | File 01 | `kit-ahoc-pile`: Ground pile, ahoc | `art/sprites/kit/ahoc/pile.png`
 - 033 | File 01 | `kit-city-pile`: Ground pile, city | `art/sprites/kit/city/pile.png`
 - 034 | File 01 | `kit-field-pile`: Ground pile, field | `art/sprites/kit/field/pile.png`

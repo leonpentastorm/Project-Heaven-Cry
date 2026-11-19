@@ -3148,7 +3148,7 @@ e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4  art/_archive/p
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/perks/wick/replaced/2026-11-16/shrug-it-off.png
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
-a8f758328722c3bffe56be92f7f5f35346981f90a40fd3a67aaaef18512587af  art/_archive/prompt-pack/2026-11-19/HANDOFF.md
+fe3247889980a6a93f907e96556859a17571d5d7f8f8802550b865a44762110a  art/_archive/prompt-pack/2026-11-19/HANDOFF.md
 68259168b9a0bdae8a3725b16edcad094e0e80af839d777b654c3bf731e5ad24  art/_archive/prompt-pack/2026-11-19/SPEC-UPDATE.md
 b5f96710e4519a4a4da2a7f8e47632fac97ff50d28cbb6ed38aa51c3853fcc76  art/_archive/prompt-pack/2026-11-19/asset-build-check.txt
 53a796e2821165185750f766accc3da9c9ecf119e0d266871323fbac659f13e9  art/_archive/prompt-pack/2026-11-19/checkpoint.py
@@ -3157,7 +3157,7 @@ ba25f7da2445b248a4efaf13548568d050b5498880abacba727a07bb9da5d6a9  art/_archive/p
 acb44d47bf43d913c4569bd3cbd0cecd60fb2d8d35551c36a1e7208264f09cd4  art/_archive/prompt-pack/2026-11-19/generate-ink.js
 9db4e9db8ae2e42ef9b0b82236a9a2152ab9a2a8b868bd00e229e57fd32f86ac  art/_archive/prompt-pack/2026-11-19/generate-painted.js
 6aff4dfe18ef2c3233f77511408659cdd60a0fa38229c7aa4ec4a2d915c7c9db  art/_archive/prompt-pack/2026-11-19/generation-failures/failure-53-1795057558567.json
-f28b83d1fe21d98f95de8dd73b8fbe6491df9e526fdb2198d1206a8f346e92d0  art/_archive/prompt-pack/2026-11-19/manifest.json
+4e4c1538fd779ba0668136fbf1b2aafbfd1043a42ab74afb8b225c61b6c998ab  art/_archive/prompt-pack/2026-11-19/manifest.json
 8b1b2c5d3cc564cfaadb5eb38bbfe4935f8f2c9ad71a78c138973727db01790c  art/_archive/prompt-pack/2026-11-19/native/001-fight-approach.png
 589b79858daac86a32585c03e930ccf1d30728c968c98a7a56311867f170c8a4  art/_archive/prompt-pack/2026-11-19/native/002-level-up.png
 4cd5ea974fe4ac72f747c0081a8756f24f51bce043542753aad14678758a75b3  art/_archive/prompt-pack/2026-11-19/native/003-second-wind.png
@@ -3180,6 +3180,10 @@ b3d0022d2a27f657775e973364a07d70d8b5988b98d5ba4139b404d38f1890e6  art/_archive/p
 a32b03214b760b5929fd9250c92a2495c8eee7375271299fab039a3c1e64b3e9  art/_archive/prompt-pack/2026-11-19/native/022-sigil_wall.png
 e2fdde955a954e53c3f2fa3e36a268326efa90fdf76dd31645fc0f881662f9a8  art/_archive/prompt-pack/2026-11-19/native/023-sigil_wall.png
 4c434d79c6b0c653d2b0a0bf52dde68b5fbbd5a50482853479927b1ddd5c356f  art/_archive/prompt-pack/2026-11-19/native/025-sigil_wall.png
+291481c09e747ba71c1e8fae2376bd2ac92e8c9255461e26aa17a0b2dfb5ccb7  art/_archive/prompt-pack/2026-11-19/native/026-sigil_mark.png
+5037f3b1c6b44e7c40d69f7fabf470148846c87e2d322462e5cfb6963278dbbc  art/_archive/prompt-pack/2026-11-19/native/028-sigil_mark.png
+88ad25aaded976d8c9548071cf68ceb00c0a2c93f2f7f8ef8970f9e455190d41  art/_archive/prompt-pack/2026-11-19/native/029-sigil_mark.png
+2c8e185c8e5711a3d1ed94ee973caf7c565128c20a75af6f9c77c92d8c6997a6  art/_archive/prompt-pack/2026-11-19/native/031-sigil_mark.png
 f9504fba998b445338883fb1d7d08a4d7409a2e4620a1cdb640fabc717660195  art/_archive/prompt-pack/2026-11-19/native/038-point-man.png
 766ed2d0d40fe0863ec0e4f7ed9a383166654c2649494e86c3c145427947205e  art/_archive/prompt-pack/2026-11-19/native/039-unflinching.png
 7a82f5efbc7ed049163134ace2eb4eab383e065031f34882668f863025cf35f7  art/_archive/prompt-pack/2026-11-19/native/040-marrow-talk.png
@@ -3232,7 +3236,7 @@ f200a875c854e656f6c6a022d535e31bda4a0c81d63d86524818156c6f9097b6  art/_archive/p
 099943fdce5c9527e1c92dcd9aab246ad4eade62f02957061eff86886b22a051  art/_archive/prompt-pack/2026-11-19/native/088-blessed-aim.png
 80afc58a078d43d61ce90b8ed199c3e62501073ac7632d973e2176c2a4a1763a  art/_archive/prompt-pack/2026-11-19/order.json
 042a050d1148a07bda28957bbae5844a2ae068e840b6d07ebc819c2ded384859  art/_archive/prompt-pack/2026-11-19/package.py
-67b558627aaba219364fe2677c8ab937a961ad6addcd47b3321119dfaf0789ba  art/_archive/prompt-pack/2026-11-19/progress.json
+fee1be8a96b676070a2722c010c8d32155e94808881baa22017bf1efa403dd0e  art/_archive/prompt-pack/2026-11-19/progress.json
 31a73322b641b78991418d7f49e61bc23cda82aa3aa07ef88f092ebaf30daab0  art/_archive/prompt-pack/2026-11-19/queue.json
 632b19c6566cf0e63e8381e3daed8d495bcbe99c0dfc5b4eae038bb2d603a5ac  art/_archive/prompt-pack/2026-11-19/records/001.json
 c29e9c09a0e12d8b03754eebcafe9c6510800e83da06caca6b7e734223229e21  art/_archive/prompt-pack/2026-11-19/records/002.json
@@ -3256,6 +3260,10 @@ fc7fe308d020c5b1ee41f22d8e48e8239c1ca523b58157d2e85d1ada7e579dc8  art/_archive/p
 8674c2c36c90d19eec196a6c381d9b1cad6fa72464ef27ac514cfb4268147bfd  art/_archive/prompt-pack/2026-11-19/records/022.json
 db78c1d822025097d0d62a4dd1086b7861490f257ef5ca19464df4b11aaca78c  art/_archive/prompt-pack/2026-11-19/records/023.json
 8d0966776261cd972b251378b7d8111ca1df8810db95d4c7839935f26be7673d  art/_archive/prompt-pack/2026-11-19/records/025.json
+3bb942aee8bd4874905774e26b1b5debca4afc93b8d13d46c419c34319f05f45  art/_archive/prompt-pack/2026-11-19/records/026.json
+f810408f3fab7619af7680efd4cb0fa024a7a0dffeb10555b65919eded9147e7  art/_archive/prompt-pack/2026-11-19/records/028.json
+5a96c73c0b66ca34a2ed45895f72ebd1485280750e9d78d8c042974b51fe9d26  art/_archive/prompt-pack/2026-11-19/records/029.json
+abd8123b4126887f21a93aee9c8d52d3b134644dd76c2d6537aa9e29851b7430  art/_archive/prompt-pack/2026-11-19/records/031.json
 1ebc6bd0b1b3e8da2708a14d4933e86f05a9ea2eb42c98bed3b2699eb79477e7  art/_archive/prompt-pack/2026-11-19/records/038.json
 edbda739989c4ee573b291d935d2537da3fb1d7bc67354b48ca3b31a3e07e2d7  art/_archive/prompt-pack/2026-11-19/records/039.json
 7bf0d26895aabf3c45802676a5a2bedfb1dbce2309b8a15f21b565e4c09c5105  art/_archive/prompt-pack/2026-11-19/records/040.json
@@ -3323,12 +3331,21 @@ cbe7f93884ae69add743deaef8a75ab5ea15166cc19479b88376cd5ba8f8e675  art/_archive/p
 c6c0e453cb723c3aa7bfaad22b7a4682fc58c2ec94e728b1f4e22d23ba80c563  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v2/REVIEW.md
 39b25a7fcc3c28e6cf18d2eab42bf3c4d4d51d22bc2abb9d0008b7b257faa4bf  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v2/native.png
 8e19f1662c32a4f8d020ecd50e24008c7d16a1f9c7497460eb9300d19c551e8c  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v2/result.json
+22d2a7e59b94572183b72aee49f186c3b8da8fa8ed3695b8d0d7ae5dac42702b  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v3/REVIEW.md
+712463f49efe4c7e27c98e065c20c6bc1efa890eca45c5942b757f2873250483  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v3/native.png
+83a7ae4b9db4fe672c5dc08748214e1b3306b8ddb4981afc45f8203cc0f50e47  art/_archive/prompt-pack/2026-11-19/rejected/013-join-v3/result.json
 929666a9939e89d81feb981e3653127a82e288b21c1650e6234cf5e2bbdf16ef  art/_archive/prompt-pack/2026-11-19/rejected/014-opaque-v1/REVIEW.md
 cce241ae243c0a1e800e6f4b52d07f5825de644c2130d7b75b0f51f733b180a3  art/_archive/prompt-pack/2026-11-19/rejected/014-opaque-v1/native.png
 561a9df91a08667b64e1010b92274bdbdfa81b53459600cd3de71de189cad091  art/_archive/prompt-pack/2026-11-19/rejected/014-opaque-v1/result.json
 988d0ff9d871b094366296787697b3160b76938d308422d516abc19b32493131  art/_archive/prompt-pack/2026-11-19/rejected/024-extra-glyph/REVIEW.md
 56eb75f0f9179b3c0e830fa7dea86e77cd379112e1f4bba5640d3fa98a291a05  art/_archive/prompt-pack/2026-11-19/rejected/024-extra-glyph/native.png
 cc1dd39501378548cceeac559566aea5228e75fac08068e6a4351dd9cf196d7c  art/_archive/prompt-pack/2026-11-19/rejected/024-extra-glyph/result.json
+42c31d4473aca0fdf34dac7db8ccf540783b1f51b387c14f617dda4c56e25e15  art/_archive/prompt-pack/2026-11-19/rejected/027-stacked-chevrons/REVIEW.md
+d4bddca79ca82635331c18f74eea8b3439047ed6aa1370f7a16d77fa94f24442  art/_archive/prompt-pack/2026-11-19/rejected/027-stacked-chevrons/native.png
+f7e368d45e60bb2be0f663169431123b8ab79d908f930afb21f0cba0d8bbd745  art/_archive/prompt-pack/2026-11-19/rejected/027-stacked-chevrons/result.json
+9c500a8c1aab7603248ee996632b02dfa9bede90ed602489365266c005f2ec57  art/_archive/prompt-pack/2026-11-19/rejected/030-dot-inside-arcs/REVIEW.md
+0ff48aeada89a5287f81b8fd91ef23f74bf6cf02793f5eea48449044e9a2e728  art/_archive/prompt-pack/2026-11-19/rejected/030-dot-inside-arcs/native.png
+5bd1b94ecf126502f4c48d0bd3203346de7f48a31e9fdd82a53b2150d3ad4844  art/_archive/prompt-pack/2026-11-19/rejected/030-dot-inside-arcs/result.json
 ab4f2a286ae8f63f8f8bbc403ad88238c368064af404ffd52fdff49ef2ee0bc3  art/_archive/prompt-pack/2026-11-19/rejected/066-redesigned/native.png
 09181a6b1c5ca95e13ed1003f0e2a0d626e20fb7fcbf92ea630421ff6e6db25d  art/_archive/prompt-pack/2026-11-19/rejected/066-redesigned/result.json
 b63c09b53dfe6def63f970ad5d0d5b1ebfba885f029ebc9e88fd00f770438bff  art/_archive/prompt-pack/2026-11-19/rejected/066-second-redesign/comparison.jpg
@@ -3344,8 +3361,10 @@ d6e314ffb47f21c47e080117936089821956b802f1e9cd64d6aba6b3dc61fbd9  art/_archive/p
 53f526ddc073421142ae9e4d4bec4cbd30231a3120514ba08a1dff5a5ae70013  art/_archive/prompt-pack/2026-11-19/review/batch-10-12.jpg
 02de0dc30dd7ce49c2ca8af8d0b3f09bb4872fa910dcbd90ed612f67d8e2ad55  art/_archive/prompt-pack/2026-11-19/review/batch-10-15-16-17-19.jpg
 ef0306148eccc85ef4e1e2b305042b6fe5ad05e7271caa7d743eb6cb35bbb27d  art/_archive/prompt-pack/2026-11-19/review/batch-10.jpg
+9c49b7fe5c18a1ee5f5a535c845c4b1733b9eac29f4a90a9d3e5f2e6016c59cf  art/_archive/prompt-pack/2026-11-19/review/batch-13.jpg
 080520bb8c93893ab08dd1727668ab91570a5bc04da0ecfc290aa7d817a3d88b  art/_archive/prompt-pack/2026-11-19/review/batch-14-20-21-22-23-24-25.jpg
 cb5d1010984d85873a5346abaabab24d8252836b3d16edbf503c2d47ebe9ddb6  art/_archive/prompt-pack/2026-11-19/review/batch-15-16-17-18-19.jpg
+31fc7d8981b74dae7608fad8b18121fc2a2c5d14452067e53ea3e5c90fc38de6  art/_archive/prompt-pack/2026-11-19/review/batch-26-27-28-29-30-31.jpg
 aaf63d4e8173266efc4d011aa728248dff9546e957fac4e59429149e5ad89b87  art/_archive/prompt-pack/2026-11-19/review/batch-3-42.jpg
 d1a306bf219d05b86356bbc7acde32454d911ebd8296596faf28d28878b275a4  art/_archive/prompt-pack/2026-11-19/review/batch-38-39-40-41.jpg
 9aef2595fc0c44fbd0bde4e3cc2e2adfd5157db9241077c65b5eabf68537e933  art/_archive/prompt-pack/2026-11-19/review/batch-4-5-6.jpg
@@ -4725,7 +4744,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-af83a1a105af3b389a1ca032511177944c31a1dc4081ef61c30622a15bbfa942  art/catalog.json
+1f99c7105bfe3eb86cc0a44ad2b50a0ae30624522e3937c8cbfa051f283f3af7  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -12095,6 +12114,7 @@ b1d5a29ab76fdf9d168bbee9987d942db634c2017a0a50afb2bac292dc563d78  art/sprites/ki
 98881cb992ceb57c3f35956a2801499fcf5372ed1aa0f4bed24d42e766e95345  art/sprites/kit/ahoc/pillar-broken.png
 65de18a1d394576b0911a022d6c200b2b393e4c03cffa6c78ad4f81fe4b57cc0  art/sprites/kit/ahoc/pillar.png
 80d79f8267c32226dec7ab3b9f1c358fa32b484ee74baaf0cdf92096610ec556  art/sprites/kit/ahoc/poi.png
+6ef3367ba38e747fb497b1da19aa3bf2df07f8a7a54719281a36a9ac2ab6b656  art/sprites/kit/ahoc/sigil_mark.png
 838922789ec578a5c5838d607983f3c2d95412ad089f6282012e677d2526177a  art/sprites/kit/ahoc/sigil_wall.png
 afafad563dba46db1faf7fd037a99091ecffe178c95febe6d9fa5af911bd098c  art/sprites/kit/ahoc/terminal.png
 5c04d4d40663f0ce1237323ccd91ecb522c35c136ee5c1be55216ef136d75577  art/sprites/kit/ahoc/trap.png
@@ -12171,6 +12191,7 @@ c3fe17411e6d11c9731906e75f98c3364e0add91e0e030e927e52f17db6b545e  art/sprites/ki
 482f2f50573eb69cece0fa14a5cb3837fd27aaad3fde82ebf8fc184ef8b6a8ff  art/sprites/kit/field/pillar-broken.png
 688fd8e61e7216e1baa2f76b741c7b4f4bb7e1695dfc1773027bd8387f41a319  art/sprites/kit/field/pillar.png
 bd6f7e22e45d09439bef65fab86f6c09dd110467489c5c01f1b6a81fa42ce904  art/sprites/kit/field/poi.png
+b7fb5f754a5c2403aeb57ce1276c9ac5b6bf3f4b365cf2a8102777e4386352cc  art/sprites/kit/field/sigil_mark.png
 cbeebc6c210987c238ea4563972b1b9d3720fc437229f910259e7c3762f20197  art/sprites/kit/field/sigil_wall.png
 6e11dea4d4e2c5cf04405e2263053fde2a5e019fe9d0075772ca779453bf326a  art/sprites/kit/field/terminal.png
 d755d70e9a177e500b4655640dbdf4b34d5d824cbe11bae74b228d264a2eb189  art/sprites/kit/field/trap.png
@@ -12209,6 +12230,7 @@ d13f883bd26174cc90a5b0065bb3e63599de340efa963af98c72b28a2b577e3a  art/sprites/ki
 ae25d423dde0af9eae40d452ed103d7c008e8ebcdeded98ee5e0d4f0444b238c  art/sprites/kit/rim/pillar-broken.png
 28ff6a43ed99d285e05a8d5592c69d7427251ded08a21c0536b0e96486813f08  art/sprites/kit/rim/pillar.png
 2a613013aa5df102e84607f202715aa72b36e7ffa281e38176de5e3bc4db3cf7  art/sprites/kit/rim/poi.png
+a80ce5452433f566adb05743a150823c61e5fe9ca8ae3b7a830958bd2a481fdd  art/sprites/kit/rim/sigil_mark.png
 78754c46eb4fcde318b9ce4d5930b2f2702f6ccd19145f70b8462093d0e4947a  art/sprites/kit/rim/sigil_wall.png
 b4dd1ba843f5b99b2ec6da924e9d18aba291378abdf5999cbe95ff98bd0f5d1f  art/sprites/kit/rim/terminal.png
 5810c9556d74a8b927229f16b5ff3e9241dbcc07945be771f740d62c223e7fd3  art/sprites/kit/rim/trap.png
@@ -12284,6 +12306,7 @@ ef56bf70decbc969219c68e0960b01469ab9be36cbbe5701123547a7ae0db23c  art/sprites/ki
 c939526014d0020008ac86252cca2218edacd6c11fe90182090d9630977ae0cc  art/sprites/kit/works/pillar-broken.png
 6466fc18e5cfcac8c77b317ad2d7ce3c363d70aa01d8282d23874664bfb1ac9d  art/sprites/kit/works/pillar.png
 49d7f000c19cbd49fc94e9d5567e9990b9aefd48a8d2f3fd492c00565181aac9  art/sprites/kit/works/poi.png
+b3569b547d1b3a0afed3c6014e59955cba2a3b81697da6594e4ca4f4d3d7d623  art/sprites/kit/works/sigil_mark.png
 1a50e640a47837ff536f8d283925858f31d543c7bd1859879df80befc1a7ea71  art/sprites/kit/works/sigil_wall.png
 0d730828044e8f8a683df573fbf3ea56fc16e53bd5aecf8b635089b79d39fd9c  art/sprites/kit/works/terminal.png
 b9ccd67093d2515d8ffdd6491aa8c05d413be26423d0e349a8faf50b78c6e9ee  art/sprites/kit/works/trap.png
