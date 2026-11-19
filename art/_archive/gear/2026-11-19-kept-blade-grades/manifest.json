@@ -7162,6 +7162,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-night_goggles--celestial",
+      "path": "art/icons/gear/armour-night_goggles--celestial.png",
+      "sha256": "4f42ec66d8476b464cff7aa105a5c27c53006f35d27b4808cb1d3b15ccb7eaab",
+      "label": "Night-sight Goggles — Celestial",
+      "family": "armour-night_goggles",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-night_goggles--celestial.png",
+        "sha256": "a2e2e5c10d4a08fa22acb6f00cf7b23fda5839b636445be2b5f1faf1031d44d3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-night_goggles--celestial.png",
+        "sha256": "4f42ec66d8476b464cff7aa105a5c27c53006f35d27b4808cb1d3b15ccb7eaab"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-night_goggles--celestial.txt",
+        "sha256": "7aaf41996833306c4edb8db362e14fcc691d0d8fe41ca77a64aabfbe613b7c54"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-night_goggles.png",
+          "sha256": "87b18113df301af7e4ac7d5e21afef5e251aafc32624c3a5a9b29370a41af813"
+        },
+        {
+          "path": "art/icons/gear/armour-night_goggles--relic.png",
+          "sha256": "b0ce30614981844ad7a947e2bec7b849f1cf30857373ae0eaca83f8a90501ca7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-night_goggles--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-night_goggles--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-night_goggles--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-night_goggles--celestial.png"
+      },
+      "export_hashes": {
+        "256": "9bfba19662013c6aa06071ecbf807932dec3ca10e0118b6d987819d5654e7007",
+        "128": "fb8c0f7ba7b159e3e40baac8a0b89ad982ddc68bf4385d5a31af5a825d0835f0",
+        "64": "6dc84272259702e3abd2d0339f6ed264abb536420fe26d2e55e8c927978a3f53",
+        "32": "3baed524d9950b5666f429794fd9dc3aabc7cd9ea60760c48cfffe7a7b847898"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-night_goggles",
+      "outline": {
+        "solid_alpha_iou": 0.9609944562244338,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 43
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

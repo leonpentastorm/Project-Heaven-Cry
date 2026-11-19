@@ -25961,6 +25961,42 @@
         "different_pixels_32": 9,
         "different_pixels_64": 45
       }
+    },
+    "armour-night_goggles--celestial": {
+      "label": "Night-sight Goggles — Celestial",
+      "path": "art/icons/gear/armour-night_goggles--celestial.png",
+      "sha256": "4f42ec66d8476b464cff7aa105a5c27c53006f35d27b4808cb1d3b15ccb7eaab",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-night_goggles--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-night_goggles--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-night_goggles--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-night_goggles--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-night_goggles--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-night_goggles",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9609944562244338,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 43
+      }
     }
   },
   "survival_art": {
