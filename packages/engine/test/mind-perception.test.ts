@@ -7,7 +7,7 @@ import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { PERK, SKILL, condOn, migrateLoaded, pendingRepicks, type Unit } from '../src';
 import { resOf, spotHidden } from '../src/tactics';
 import { applyCond } from '../src/magic';
-import { seenRangeOf } from '../src/combat';
+import { unitSees } from '../src/combat';
 import { allVerbs } from '../src/effects/collect';
 import { perkActionsFor } from '../src/effects/actions';
 import forksJ from '../../../data/forks.json';
@@ -67,10 +67,13 @@ describe('Ingenuity: the forks (rules 1.74 item 6003)', () => {
     const g = FORK('fork.shadow.lightkiller').effects[0], dim = (condJ as any).items.find((x: any) => x.id === 'dimmed');
     const f = fightWith([door(8, { picks: ['fork.shadow.lend_the_dark', 'fork.shadow.lightkiller'] })], [{}]);
     const u = f.turn(f.pc); setShadow(f, u, 3); const ap0 = f.unit(u.id).ap;
-    expect(seenRangeOf(f.cb, f.unit(u.id))).toBe(0);
+    // the foe's eyes, asked as the game asks them (unitSees with the looked-at unit): at the edge of 12 less Dimmed's
+    f.cb.objects = []; at(f, u, '1,4'); const foe = f.unit(f.foe.id); foe.vision = 12; at(f, foe, (1 + 12 + dim.effects[0].value + 1) + ',4');
+    const seen = () => unitSees(f.cb, f.unit(foe.id), f.unit(u.id).pos, undefined, f.unit(u.id));
+    expect(seen()).toBe(true);
     use(f, u, 'verb:fork.shadow.lightkiller');
     expect(condOn(f.unit(u.id), 'dimmed')).toBe(true); expect(f.unit(u.id).conds!.dimmed).toBe(g.effects[0].rounds);
-    expect(seenRangeOf(f.cb, f.unit(u.id))).toBe(dim.effects[0].value);
+    expect(dim.effects[0].value).toBeLessThan(0); expect(seen()).toBe(false);
     expect(f.unit(u.id).ap).toBe(ap0 - g.ap); expect(shadow(f, u)).toBe(3 - g.res.shadow);
     expect(() => use(f, f.unit(u.id), 'verb:fork.shadow.lightkiller')).toThrow(); // once a fight
   });

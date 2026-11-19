@@ -1096,13 +1096,14 @@ export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>, t?
 }
 /** THE one sight range (rules 1.76 item 6403): how far u's eyes reach to tile k: its vision, halved off a lit tile on a
  * dark map without dark sight, plus the looked-at unit's `seen_range` (Prone's, rules 1.76 item 6402); never below 0.
- * unitSees and the enemy's own aim (enemyHuntTile, the firing-position score) read it; no second copy. */
-function eyeReach(cb: Combat, u: Unit, k: string, t?: Unit | null): number {
+ * unitSees and the enemy's own aim (enemyHuntTile, the firing-position score) read it, and the items that stretch or
+ * shrink a sight (Chain Smoker, Wind on the Skin, Lowland Born: the 0.32 merge, M2); no second copy. */
+export function eyeReach(cb: Combat, u: Unit, k: string, t?: Unit | null): number {
   return Math.max(0, (litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2)) + seenRangeOf(cb, t));
 }
 /** Rules 1.70 item 5545 (P4): the tiles a unit's stat `seen_range` adds to the range at which others' eyes see it (0 when
  * nothing in the fight answers the stat: the sight test stays as fast as it was). */
-export const seenRangeOf = (cb: Combat, t: Unit | null | undefined): number => (t && statHeard(cb, 'seen_range') ? statQuery({ u: t, cb }, 'seen_range').add : 0);
+const seenRangeOf = (cb: Combat, t: Unit | null | undefined): number => (t && statHeard(cb, 'seen_range') ? statQuery({ u: t, cb }, 'seen_range').add : 0);
 /** What one side sees, shared by the squad: tiles in sight, units seen, units only sensed (Sensory). */
 export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
   const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), tiles = new Set<string>(), walls = sightBlockers(cb);

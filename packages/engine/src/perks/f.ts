@@ -12,7 +12,7 @@ import { itemAmount, amountMult } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
-import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, tauntedBy, type AttackMode } from '../combat';
+import { dist, alive, unitSees, eyeReach, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, tauntedBy, type AttackMode } from '../combat';
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength, saveAgainst , saveTn } from '../magic';
 import { tendHook } from '../effects/damage';
 import { WEAPON, PERK } from '../data';
@@ -607,7 +607,7 @@ register({
     // In the fog: enemies see you 2 tiles farther than their Vision (the sight hook), line of sight still needed.
     sees: (ctx, h) => {
       const u = h.u, cb: Combat = ctx.cb; if (!u || ctx.t !== u || ctx.side === u.side || ctx.seen) return;
-      if (cb.units.some((v) => v.side === ctx.side && alive(v) && (!ctx.by || ctx.by === v) && dist(v.pos, u.pos) <= (litAt(cb, u.pos) || v.darkSight ? (v.vision || 12) : Math.floor((v.vision || 12) / 2)) + 2 && lineOfSight(cb, v.pos, u.pos))) ctx.seen = !u.hidden;
+      if (cb.units.some((v) => v.side === ctx.side && alive(v) && (!ctx.by || ctx.by === v) && dist(v.pos, u.pos) <= eyeReach(cb, v, u.pos, u) + 2 && lineOfSight(cb, v.pos, u.pos))) ctx.seen = !u.hidden;
     },
   },
   brief: () => null,
