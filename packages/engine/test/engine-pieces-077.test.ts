@@ -3,7 +3,7 @@
 // rules each unlocked. Every rule goes through the reducer (the helpers' fight, a real action) or a real blow; every
 // number is read from data.
 import { describe, it, expect } from 'vitest';
-import { PERK, condOn, actionsFor, previewAttack, saveAgainst, resolveAttack } from '../src';
+import { PERK, condOn, actionsFor, previewAttack, saveAgainst, resolveAttack, rollInjury } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 import { applyCond } from '../src/magic';
 import { resOf } from '../src/tactics';
@@ -221,5 +221,22 @@ describe('a resource held by the fight (item 6512): Crystallise draws on the air
     expect(crystal(null, 0, n - 1).err).toBe('The air is too thin (mana ' + (n - 1) + ', needs ' + n + ').');
     expect(crystal('II', 3)).toEqual({ took: 0, made: 1, err: '' });
     expect(crystal('II', 3, 0)).toEqual({ took: 0, made: 1, err: '' });
+  });
+});
+
+describe('Numb I reads the limb injuries the engine carries (item 6513)', () => {
+  const hurt = (perk: boolean) => {
+    const f = fightWith([{ skills: { pain_threshold: 5 }, ...(perk ? { perks: { numb: 'I' } } : {}) }], [{ at: 'H6' }]);
+    const u = f.unit(f.pc.id), mv = u.movement;
+    withGame(f.g, () => { rollInjury(f.g.rng, u, f.cb, f.foe, { loc: 'arm' }); });
+    f.turn(f.pc); f.unit(f.pc.id).ap = 9;
+    const pv = withGame(f.g, () => previewAttack(f.cb, f.unit(f.pc.id), f.unit(f.foe.id), 'shot'));
+    const arm = (pv.terms || []).find((t: any) => t.label === 'injured arm');
+    withGame(f.g, () => { rollInjury(f.g.rng, f.unit(f.pc.id), f.cb, f.foe, { loc: 'leg' }); });
+    return { arm: arm ? arm.v : 0, halved: f.unit(f.pc.id).movement < mv };
+  };
+  it('without Numb an injured arm is -2 to hit and a leg halves Movement; with Numb I the first limb (the arm) holds nothing back, the second (the leg) does', () => {
+    expect(hurt(false)).toEqual({ arm: -2, halved: true });
+    expect(hurt(true)).toEqual({ arm: 0, halved: true });
   });
 });

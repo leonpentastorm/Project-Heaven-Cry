@@ -335,8 +335,10 @@
       "text": "I: One injured limb no longer holds you back. II: One injured limb no longer holds you back. While you hold Guard, a critical hit on you lands as an ordinary hit and leaves no injury.",
       "effects": [
         {
-          "op": "narrator",
-          "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827, injuries carry no limb penalty the engine reads)."
+          "op": "stat_mod",
+          "stat": "numb_limbs",
+          "value": 1,
+          "label": "Numb"
         }
       ],
       "tiers": {
@@ -352,8 +354,10 @@
           "short": "One injured limb no longer holds you back",
           "effects": [
             {
-              "op": "narrator",
-              "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827, injuries carry no limb penalty the engine reads)."
+              "op": "stat_mod",
+              "stat": "numb_limbs",
+              "value": 1,
+              "label": "Numb"
             }
           ]
         },
@@ -369,8 +373,10 @@
           "short": "Holding Guard: a critical on you is an ordinary hit, no injury",
           "effects": [
             {
-              "op": "narrator",
-              "note": "One limb injury of this character's gives no penalty (no engine half yet: rules 1.73 item 5827)."
+              "op": "stat_mod",
+              "stat": "numb_limbs",
+              "value": 1,
+              "label": "Numb"
             },
             {
               "op": "damage_mult",
@@ -443,7 +449,7 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "injury",

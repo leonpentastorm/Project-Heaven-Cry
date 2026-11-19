@@ -669,6 +669,10 @@ export function servesIndex(c: Character, id: string): number {
   const pack = packOf(c), is = (x: PackItem) => x.qty > 0 && !x.mags && ((x.item || x.id) === id || ((ITEM[x.item || x.id] as any)?.serves_as || []).includes(id));
   const own = pack.findIndex((x) => x.qty > 0 && !x.mags && (x.item || x.id) === id); return own >= 0 ? own : pack.findIndex(is);
 }
+/** Rules 1.77 item 6513 (Numb): the limb injuries that hold a unit back: its arm and leg injuries after the first
+ * `ignored` (the stat `numb_limbs`: one injured limb no longer holds you back). Read by the arm's to-hit penalty
+ * (combat.ts armPenalty), a leg's halved Movement (combat.ts rollInjury) and the sheet's Movement (movement). */
+export const penalLimbs = (injuries: readonly Injury[] | undefined, ignored: number): Injury[] => (injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg').slice(Math.max(0, ignored));
 /** Rules 1.61 addendum item 4747: the one treatment of a limb: the first arm or leg injury comes off `t`. Returns it, or
  * null when `t` has none. Field Surgery, the field kit's use (`treat`) and a run's Rest all treat through this. */
 export function treatLimb(t: Character): Injury | null {
@@ -746,7 +750,7 @@ export const initiativeBonus = (c: Character) => fx(c, 'init', (A(c, 'agility') 
 /** Overburdened (spec: Carry weight): kg over the limit; −1 Movement per started 5 kg over. */
 export const overweightKg = (c: Character) => Math.max(0, Math.round((carriedKg(c).total - carryLimit(c)) * 100) / 100);
 export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5);
-export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
+export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (penalLimbs(c.injuries, statQuery({ c }, 'numb_limbs').add).some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
 export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
   + (c.offHand && isShieldId(c.offHand.id) && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
 // The derived multipliers below are the Stat term of the one formula (effects/output.ts; data/rules.json output.profiles

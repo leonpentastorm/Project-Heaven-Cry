@@ -13239,3 +13239,8 @@ The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
       the Field (rules 1.75 item 6207 completed): the Crystallise its kills make free costs 0 AP and takes nothing from
       the air (`cost_mod res: mana, set: 0`), even when the air is too thin. Thin air still refuses a plain Crystallise
       in its own words.
+6513. **Injuries carry their limb penalties where the engine reads them** (they always did: an injured arm −2 to hit with
+      it, `combat.ts armPenalty`; a leg halves Movement, `rollInjury` and the sheet's `movement`); no injury system was
+      built. The stat `numb_limbs` (how many of a unit's first limb injuries carry no penalty; `character.ts penalLimbs`)
+      is read by all three. Numb I and II (rules 1.73 item 5827 completed): one injured limb, the first, no longer holds
+      you back; a second still does. Numb is `adjudication: engine` (its tier II keeps its critical rule).

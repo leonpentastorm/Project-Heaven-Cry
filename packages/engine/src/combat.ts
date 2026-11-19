@@ -6,7 +6,7 @@ import { setLogMarker, remark, say, type LogMark, type LogSideMark } from './log
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
@@ -715,7 +715,7 @@ onHook('damage_in', (ctx: any) => {
 });
 
 /** −2 to attacks when an injured arm holds the weapon: the main-hand arm, or either arm for a two-handed weapon. */
-export const armPenalty = (u: Unit, w: WeaponDef) => ((u.injuries || []).some((i) => i.loc === 'arm' && (!ONE_HANDED.includes(w.category) || i.side === (u.hand || 'right'))) ? -2 : 0);
+export const armPenalty = (u: Unit, w: WeaponDef) => (penalLimbs(u.injuries, statQuery({ u }, 'numb_limbs').add).some((i) => i.loc === 'arm' && (!ONE_HANDED.includes(w.category) || i.side === (u.hand || 'right'))) ? -2 : 0); // rules 1.77 item 6513: Numb's ignored limb gives none
 
 export const alive = (u: Unit) => !u.dead && !u.downed && !u.surrendered;
 export const active = (cb: Combat) => cb.units.find((u) => u.id === (cb.window?.queue[0]?.unitId ?? cb.order[cb.turn]));
@@ -1665,8 +1665,8 @@ export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | nu
   if (d === 1) { if (!ij.noDaze) { if (cb) applyCond(cb, rng, by || null, t, 'dazed', undefined, undefined, { skipSave: true }); else rawDazed(t, 1); } return lead + 'head' + (ij.noDaze || !t.dazedNext ? '' : ', Dazed'); }
   if (d <= 3) { if (cb) applyCond(cb, rng, by || null, t, 'bleeding', undefined, undefined, { skipSave: true }); else if (!immune({ u: t }, 'bleed')) rawBleed(t, 3); return lead + 'torso, ' + (t.bleed ? 'Bleeding' : 'no bleeding'); }
   if (d === 4) { inj.push({ loc: 'arm', side }); return lead + side + ' arm, −2 to attacks with it'; }
-  if (!ij.noHalve && !inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
-  inj.push({ loc: 'leg', side });
+  // rules 1.77 item 6513: a leg injury Numb ignores (the stat numb_limbs) halves nothing; the first leg that holds it back does
+  { const was = penalLimbs(inj, statQuery({ u: t }, 'numb_limbs').add).some((i) => i.loc === 'leg'); inj.push({ loc: 'leg', side }); const now = penalLimbs(inj, statQuery({ u: t }, 'numb_limbs').add).some((i) => i.loc === 'leg'); if (!ij.noHalve && !was && now) t.movement = Math.max(0.5, t.movement / 2); }
   return lead + side + ' leg, half Movement';
 }
 
