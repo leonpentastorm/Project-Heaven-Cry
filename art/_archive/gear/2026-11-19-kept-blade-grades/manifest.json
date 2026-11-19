@@ -3024,6 +3024,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-emanator--fine",
+      "path": "art/icons/gear/focus-emanator--fine.png",
+      "sha256": "7bc64e11d0f5dfcab0a6dd7f0458dd25602af388070080f88f5d16deba888f66",
+      "label": "Emanator — Fine",
+      "family": "focus-emanator",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-emanator--fine.png",
+        "sha256": "d7f330b623845c9f30105c48c6a92ae045932fdd272a52d59e31d5463d985632"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-emanator--fine.png",
+        "sha256": "7bc64e11d0f5dfcab0a6dd7f0458dd25602af388070080f88f5d16deba888f66"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-emanator--fine.txt",
+        "sha256": "ea660c40b9718d530855050b45382979f643595bf4ef99387fb2bc3e6970efd0"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-emanator.png",
+          "sha256": "4fcd240a5ebe70b3c72cc08a8de1203f83e19382d4fd119b06a4ccd32e728bd5"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-emanator--fine.png",
+        "128": "art/icons/gear/exports/128/focus-emanator--fine.png",
+        "64": "art/icons/gear/exports/64/focus-emanator--fine.png",
+        "32": "art/icons/gear/exports/32/focus-emanator--fine.png"
+      },
+      "export_hashes": {
+        "256": "86a166383f4f6904dfb7fdd1663243a61495adbb75357901731b21959a211598",
+        "128": "a6ca34bbcf8b890c28c97c2b4a723b2d3b377bcaa798c417adc12d7129382f8d",
+        "64": "672b7444be67429e26537693f5e95bc04e1237f994ac94541b95947ca14448fe",
+        "32": "62e11a54132b5258d38259b04ba9d7c2b9dea6ff5f2ce5d70f31eef2c231c24a"
+      },
+      "grade": "fine",
+      "standard_id": "focus-emanator",
+      "outline": {
+        "solid_alpha_iou": 0.9840254340148626,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 18
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
