@@ -52,6 +52,11 @@ describe('level-up screen', () => {
   it('level 3 with every attribute tied: the picker lists all nine classes (Class Roster Revision 3 tie rule)', async () => {
     setup((c) => { c.level = 3; c.xp = 250; for (const k of Object.keys(c.attrs)) c.attrs[k] = 3; Object.assign(c.cores, { body: 3, mind: 3, soul: 3 }); });
     const { el, root } = await mount();
+    // the class waits in the TO CHOOSE strip, first; its chip opens the chooser (one centred panel)
+    expect(el.querySelector('button.phc-lu-class-card')).toBeNull();
+    expect([...el.querySelectorAll('.phc-lu-tochoose .phc-lu-tc')].map((b) => b.getAttribute('data-kind'))[0]).toBe('class');
+    await React.act(async () => { (el.querySelector('.phc-lu-tc[data-kind="class"]') as HTMLButtonElement).click(); });
+    expect(el.querySelector('.phc-lu-chooser[data-chooser="class"]')).toBeTruthy();
     const ids = (Array.from(el.querySelectorAll('button.phc-lu-class-card')) as HTMLElement[]).map((b) => b.getAttribute('data-class')).sort();
     expect(ids).toEqual(Object.keys(CLASS).sort());
     expect(ids.length).toBe(9);
@@ -70,6 +75,7 @@ describe('level-up screen', () => {
   it('level 3: a card selects and previews; the confirm bar commits, for good', async () => {
     setup((c) => { c.level = 3; c.xp = 250; c.attrs.agility = 4; c.attrs.perception = 4; c.attrs.insight = 4; for (const k of ['endurance', 'strength', 'intelligence', 'expression', 'determination', 'virtue']) c.attrs[k] = 2; });
     const { el, root } = await mount();
+    await React.act(async () => { (el.querySelector('.phc-lu-tc[data-kind="class"]') as HTMLButtonElement).click(); });
     const cards = Array.from(el.querySelectorAll('button.phc-lu-class-card')) as HTMLButtonElement[];
     expect(cards.map((b) => b.getAttribute('data-class')).sort()).toEqual(['bard', 'infiltrator', 'marksman']);
     cards.forEach((b) => expect(b.querySelector('img.phc-lu-emblem')).toBeTruthy());
@@ -84,6 +90,9 @@ describe('level-up screen', () => {
     await React.act(async () => { confirm.click(); });
     expect(G.characters[Object.keys(G.characters)[0]].classId).toBe(id);
     expect(el.querySelector('button.phc-lu-class-card')).toBeNull();
+    expect(el.querySelector('.phc-lu-chooser')).toBeNull(); // the class is chosen: its panel is gone and its chip with it
+    expect(el.querySelector('.phc-lu-tc[data-kind="class"]')).toBeNull();
+    expect((el.querySelector('button.phc-lu-done') as HTMLButtonElement).disabled).toBe(el.querySelectorAll('.phc-lu-tc').length > 0);
     // with a class held, the panel folds to one line (its class and rank); a click opens it
     expect(el.querySelector('.phc-lu-class-line')!.textContent).toMatch(new RegExp('^' + CLASS[id].name + ' I · Rank II: '));
     { const f = el.querySelector('.phc-lu-class-fold') as HTMLButtonElement; if (f.getAttribute('aria-expanded') === 'false') await React.act(async () => { f.click(); }); }
@@ -106,7 +115,7 @@ describe('level-up screen', () => {
     expect(el.querySelector('.phc-lu-class-fold img')).toBeTruthy();
     root.unmount();
   });
-  it('spend first (the redesign): three family tabs, the family with a step waiting opens, one row a skill, the chip opens just that choice', async () => {
+  it('spend first (the redesign): three family tabs, the family with a step waiting opens, one row a skill, the TO CHOOSE strip opens one chooser panel', async () => {
     const c0 = setup((c) => { c.level = 4; c.classId = 'marksman'; c.attrs.agility = Math.max(c.attrs.agility, 5); c.cores.body = Math.max(c.cores.body, 5); c.skills.dexterity = 5; c.perks = []; c.unspent = { skill: 1, attr: 1, core: 1 } as any; });
     const { el, root } = await mount();
     // three tabs; one family on screen: the one with something waiting (Dexterity, under Agility, is Body)
@@ -129,15 +138,33 @@ describe('level-up screen', () => {
     const dex = () => el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!;
     expect(dex().classList.contains('phc-lu-step')).toBe(true);
     expect(dex().querySelector('.phc-lu-chip')!.textContent).toBe('◆ 2 perk steps · Fork');
-    expect(dex().querySelectorAll('button.phc-lu-choice').length).toBe(0);
-    await React.act(async () => { (dex().querySelector('.phc-lu-chip') as HTMLButtonElement).click(); });
-    const choices = dex().querySelectorAll('.phc-lu-pair .phc-lu-perk button.phc-lu-choice');
-    expect(choices.length).toBe(2); expect(choices[0].textContent).toBe('Take · Tier I');
-    for (const card of dex().querySelectorAll('.phc-lu-pair .phc-lu-perk')) expect(card.querySelector('[data-perk-text]')!.textContent!.length).toBeGreaterThan(0);
-    // a step taken: one left
-    await React.act(async () => { (choices[0] as HTMLButtonElement).click(); });
+    expect(el.querySelectorAll('button.phc-lu-choice').length).toBe(0);
+    // the strip: forks before perk steps, each named with its skill; Done is not lit while it holds anything
+    const strip = [...el.querySelectorAll('.phc-lu-tochoose .phc-lu-tc')].map((b) => [b.getAttribute('data-kind'), b.textContent]);
+    expect(strip.filter((x) => x[1]!.endsWith('Dexterity')).map((x) => x[1])).toEqual(['◆ Fork · Dexterity', '◆ 2 perk steps · Dexterity']);
+    expect(strip.map((x) => x[0]).join(' ')).toMatch(/^(fork )*(perk ?)*$/); // forks first, then perk steps
+    expect((el.querySelector('button.phc-lu-done') as HTMLButtonElement).disabled).toBe(true);
+    expect(el.querySelector('button.phc-lu-later')!.textContent).toBe('Finish later');
+    await React.act(async () => { (el.querySelector('.phc-lu-tc[data-choose="perk:dexterity"]') as HTMLButtonElement).click(); });
+    // ONE centred panel over the screen, never rows under the skill: the perk rows, a button on each legal row
+    const panel = () => el.querySelector('.phc-lu-chooser[data-chooser="perk"]')!;
+    expect(panel()).toBeTruthy(); expect(dex().querySelector('.phc-perk-row')).toBeNull();
+    const rows = [...panel().querySelectorAll('.phc-perk-row')];
+    expect(rows.length).toBe(2);
+    for (const r of rows) { expect(r.querySelector('.phc-perk-t1')!.textContent).toMatch(/^I \S/); expect(r.querySelector('.phc-perk-t2')!.textContent).toMatch(/^II \S/); expect(r.textContent).not.toMatch(/Passive|TIER/); }
+    expect([...panel().querySelectorAll('button.phc-perk-act')].map((b) => b.textContent)).toEqual(['Take', 'Take']);
+    expect(panel().querySelector('.phc-lu-ch-next')).toBeTruthy(); // the fork waits too: "Next choice"
+    // one click arms it, one confirm line takes it: a step taken, one left
+    await React.act(async () => { (panel().querySelector('button.phc-perk-act') as HTMLButtonElement).click(); });
+    expect(G.characters[c0.id].perks.length).toBe(0);
+    expect(panel().querySelector('.phc-lu-ch-confirm')!.textContent).toMatch(/^Take .+\? Kept for good\.Confirm/);
+    await React.act(async () => { (panel().querySelector('button.phc-lu-ch-ok') as HTMLButtonElement).click(); });
     expect(G.characters[c0.id].perks.length).toBe(1);
     expect(dex().querySelector('.phc-lu-chip')!.textContent).toBe('◆ Perk step · Fork');
+    // the taken perk now offers its Upgrade; the other still its Take
+    expect([...panel().querySelectorAll('button.phc-perk-act')].map((b) => b.textContent).sort()).toEqual(['Take', 'Upgrade']);
+    await React.act(async () => { (panel().querySelector('.phc-lu-ch-close') as HTMLButtonElement).click(); });
+    expect(el.querySelector('.phc-lu-chooser')).toBeNull();
     // points: the +1 spends through the engine; the row then says what was gained
     await React.act(async () => { (el.querySelector('[data-fam="mind"]') as HTMLButtonElement).click(); });
     expect([...el.querySelectorAll('.phc-lu-core')].map((x) => x.getAttribute('data-core'))).toEqual(['mind']);
@@ -149,13 +176,15 @@ describe('level-up screen', () => {
     expect(el.querySelector('.phc-lu-skill[data-skill="vigilant"] .phc-lu-gain')!.textContent).toBe('✓ ' + gain);
     root.unmount();
   });
-  it('a fork waiting: its chip opens the two options inline, one line each, no hover box repeating the card', async () => {
+  it('a fork waiting: its chip opens the chooser panel, two columns, one line each, no hover box repeating the card', async () => {
     const c0 = setup((c) => { c.level = 6; c.classId = 'marksman'; c.attrs.endurance = 6; c.skills.durability = 4; c.perks = []; c.unspent = { skill: 0, attr: 0, core: 0 } as any; });
     const { el, root } = await mount();
     const row = () => el.querySelector('.phc-lu-skill[data-skill="durability"]')!;
     expect(row().querySelector('.phc-lu-chip')!.textContent).toMatch(/Fork$/);
     await React.act(async () => { (row().querySelector('.phc-lu-chip') as HTMLButtonElement).click(); });
-    const opts = [...row().querySelectorAll('[data-fork-opt]')];
+    const panel = () => el.querySelector('.phc-lu-chooser[data-chooser="fork"]')!;
+    expect(panel().querySelector('.phc-lu-ch-title')!.textContent).toBe('Fork at 4 · Durability');
+    const opts = [...panel().querySelectorAll('.phc-lu-forkpair [data-fork-opt]')];
     expect(opts.length).toBe(2);
     for (const o of opts) {
       expect(o.querySelector('[data-fork-text]')!.textContent!.length).toBeGreaterThan(0);
@@ -168,8 +197,9 @@ describe('level-up screen', () => {
     expect(G.characters[c0.id].doorPicks?.durability || []).toEqual([]);
     const pick = opts[0].querySelector('button[data-fork-pick]') as HTMLButtonElement;
     await React.act(async () => { pick.click(); }); // the first press arms it (a fork is kept for good)
-    await React.act(async () => { (row().querySelector('button[data-fork-pick]') as HTMLButtonElement).click(); });
+    await React.act(async () => { (panel().querySelector('button[data-fork-pick]') as HTMLButtonElement).click(); });
     expect((G.characters[c0.id] as any).doorPicks.durability.length).toBe(1);
+    expect(el.querySelector('.phc-lu-chooser')).toBeNull(); // chosen: nothing waits, the panel closes
     root.unmount();
   });
   it('no Core anywhere; the header is the budget; each attribute row says what a point gives; a refused +1 says why on its row, with a way to fix it', async () => {

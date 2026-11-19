@@ -7,7 +7,7 @@ import { panKey, REF_W, REF_H } from '../game/camera';
 import { ZOOM_CSS } from '../game/mapZoom';
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, checkMod, fmt, tabNavIndex, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
-  ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls } from './shared';
+  ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls, perkRow } from './shared';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, levelUpDue, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER , STAGE_MULT , DESIGN_TEMPLATES, soulPicksLeft, gatedBy, FEELINGS } from '@engine';
 import { practiceView, feelingCodex, moduleGroups, markIconSrc, iconStyle } from '../game/feelingsView';
 import { hasPaintedArt, heartMarkKey } from '../game/heartIcons';
@@ -525,7 +525,9 @@ export class MainLogic extends DCLogic {
       const text = p.tiers ? (x.tier === 'II' ? p.tiers.II.text : p.tiers.I.text) : p.text;
       return { key: x.id, zoom: zoomer(this, icon, p.name, 'perk', text.charAt(0).toUpperCase() + text.slice(1)), name: p.name, icon, text: text.charAt(0).toUpperCase() + text.slice(1),
         tier: x.tier === 'I' || x.tier === 'II' ? 'TIER ' + x.tier : x.tier.toUpperCase(), chip: p.skills.map((s) => SKILL[s].name).join(' + ') || 'Ultimate',
-        chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink, ...badgeOf('perk:' + x.id, x.tier), ...usesOf('perk:' + x.id, x.tier) }; }) : [];
+        chipStyle: 'padding: 1px 8px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink, ...badgeOf('perk:' + x.id, x.tier), ...usesOf('perk:' + x.id, x.tier),
+        // a tiered perk is ONE row (its card lines, the pips of the tier held); a Mastered, combo or Ultimate perk keeps its card
+        isRow: !!(p.tiers && p.tiers.I && p.tiers.I.short), isCard: !(p.tiers && p.tiers.I && p.tiers.I.short), row: perkRow(x.id, { held: x.tier, ink }) }; }) : [];
     // 0.31.9: the named unlocks of the character's skill ladders (an ability of its own, not a perk step, a fork or a door
     // verb row), read from the engine's skill data: its name, its one card line, its skill
     const fromSkills = fromSkillsOf(c, SKILL);

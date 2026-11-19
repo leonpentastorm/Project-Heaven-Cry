@@ -13,8 +13,8 @@
 // waiting: one click takes it), locked (until the next step), and the Mastered perk. Every number is the engine's
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, epRgba, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, tierDelta } from './shared';
-import { CLASS, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, markFor, ADVANCED_SHELVED, doorForkView } from '@engine';
+import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, epRgba, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, perkRow } from './shared';
+import { CLASS, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, ADVANCED_SHELVED, doorForkView } from '@engine';
 import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 import { figmentLadderView } from '@engine';
@@ -22,8 +22,6 @@ import { figmentIconUri, FIG_LINE } from '../game/figmentIcons';
 import { forkCard } from '../game/forkView';
 import { foldVals } from '../game/fold';
 
-const PERK_ICON = {};
-D.skills.forEach((s) => { s.ep.perks.forEach((p) => { PERK_ICON[p.id] = p.icon; }); if (s.ep.mastered) PERK_ICON[s.ep.mastered.id] = s.ep.mastered.icon; });
 // A skill's two acquired perks (perks.json), the ones its perk steps offer.
 const ACQUIRED = {};
 for (const p of PERKS) { const sk = p.skills && p.skills[0]; if (sk && p.tier === 'acquired') (ACQUIRED[sk] ||= []).push(p); }
@@ -76,7 +74,7 @@ export class LevelUpLogic extends DCLogic {
   flash(id, text) { if (!text) return; this.setState({ flash: { id, text } }); clearTimeout(this._fl); this._fl = setTimeout(() => this.setState({ flash: null }), 1600); }
   renderVals() {
     const st = getState(), g = st.game, c = g && g.characters[st.levelupChar];
-    if (!c || c.owner !== st.me.id) { queueMicrotask(() => go(g ? homeScreen(g) : 'home')); return { ...lightboxVals(this), ...epccgVals(this), classCards: [], tree: [], steps: [], pick: {}, cls: { sig: [], ranks: [], closest: [] } }; }
+    if (!c || c.owner !== st.me.id) { queueMicrotask(() => go(g ? homeScreen(g) : 'home')); return { ...lightboxVals(this), ...epccgVals(this), classCards: [], tree: [], toChoose: [], ch: {}, pick: {}, cls: { sig: [], ranks: [], closest: [] } }; }
     const choosing = c.level >= 3 && !c.classId;
     // ---------- the class choice at level 3 (Class Roster Revision 3): every class of the highest attribute, ties all
     // offered; a card selects, the confirm bar commits (the class is for good) ----------
@@ -108,23 +106,14 @@ export class LevelUpLogic extends DCLogic {
     const inFight = g.phase === 'combat', redraw = () => this.setState({ foldTick: Date.now() });
     const raiseStyle = (ok, ink, big) => 'flex: none; min-width: ' + (big ? 40 : 34) + 'px; min-height: ' + (big ? 40 : 32) + 'px; padding: 0 8px; border-radius: 10px; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: ' + (ok ? 'pointer' : 'not-allowed') + '; border: 1px solid ' + (ok ? ink : '#2E3A50') + '; background: ' + (ok ? epRgba(ink, 0.12) : 'transparent') + '; color: ' + (ok ? ink : LOCKED);
     const chipStyle = (ink, solid) => 'flex: none; padding: 2px 8px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; border: 1px ' + (solid ? 'solid' : 'dashed') + ' ' + ink + '; color: ' + ink;
-    /** One perk the waiting step offers: a card (icon, name, its tier, one line: tier I's text, or what tier II changes). */
-    const perkCard = (pk, x) => {
-      const ch = x.choices.find((y) => y.id === pk.id), tier = ch.tier, t1 = (pk.tiers.I || {}).text || pk.text || '', t2 = (pk.tiers.II || {}).text || '';
-      const t = tier === 'II' ? tierDelta(t1, t2) || t2 : t1, mk = markFor('perk:' + pk.id, tier, g).mark, label = tier === 'I' ? 'Take · Tier I' : 'Upgrade · Tier II';
-      return { key: pk.id, name: pk.name, tier: 'TIER ' + tier, icon: PERK_ICON[pk.id] || IMG['wick-mind-without-fog'], text: (t.charAt(0).toUpperCase() + t.slice(1)) + (mk ? ' (' + mk + ')' : ''), label,
-        aria: label + ': ' + pk.name + ' (' + ((SKILL[x.skill] && SKILL[x.skill].name) || x.skill) + ')', pick: () => act({ type: 'levelup/perk', charId: c.id, perkId: pk.id }),
-        btnStyle: 'align-self: flex-start; min-height: 34px; padding: 0 14px; border-radius: 999px; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' };
-    };
     const famOf = {}; D.attrs.forEach((a) => { famOf[a.id] = a.core; });
     const forkPend = (id) => { const v = (() => { try { return doorForkView(c, id); } catch { return null; } })(); return v ? v.steps.filter((s) => s.pending) : []; };
     const skillRow = (s) => {
-      const p = c.skills[s.id] || 0, a = ATTR[s.attr], ink = a.ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], fp = forkPend(s.id), open = this.state.choice === s.id;
+      const p = c.skills[s.id] || 0, a = ATTR[s.attr], ink = a.ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], fp = forkPend(s.id);
       const nxt = nextLine(s.id, p), [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
       // a refused +1: its reason on this row only, with a way to fix it when an Attribute point would ("Raise Agility")
       const needAttr = !!why && /^Needs \w+ \d+/.test(why) && !!c.unspent.attr && !canRaise(c, 'attr', a.id);
       const waits = (x ? x.free || 1 : 0) + fp.length, fl = this.state.flash && this.state.flash.id === s.id ? this.state.flash.text : '';
-      const fk = fp.length ? forkCard(c, s.id, { inFight, only: fp.map((f) => f.at), rerender: () => this.setState({ forkArm: Date.now() }) }) : null;
       return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (x ? ' phc-lu-step' : '') + (fp.length ? ' phc-lu-forkwait' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
         canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), hasWhy: !!(why && c.unspent.skill && p < 10), raiseLabel: 'Raise ' + s.name,
@@ -133,12 +122,10 @@ export class LevelUpLogic extends DCLogic {
         fixStyle: 'flex: none; min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; border: 1px solid ' + a.ink + '; background: transparent; color: ' + a.ink,
         // a refused +1 shows its reason in the place of the next line (what the point gives stays on the "?" page)
         hasNext: !!nxt, showNext: !!nxt && !(why && c.unspent.skill && p < 10), next: nxt, nextAt: p + 1,
-        // a waiting perk step or fork: a white chip on the row; it opens that choice inline, under the row
+        // a waiting perk step or fork: a white chip on the row; it opens that choice in the chooser panel (never in the row)
         hasChip: waits > 0, chip: '◆ ' + (x ? (x.free > 1 ? x.free + ' perk steps' : 'Perk step') : '') + (x && fp.length ? ' · ' : '') + (fp.length ? (fp.length > 1 ? fp.length + ' forks' : 'Fork') : ''),
-        chipExpanded: open ? 'true' : 'false', toggleChoice: () => this.setState({ choice: open ? null : s.id }),
-        chipStyle: 'flex: none; min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; background: ' + (open ? '#FFFFFF; color: #0A0D13' : 'transparent; color: #FFFFFF'),
-        choiceOpen: open && waits > 0, hasPerkChoice: open && !!x, perkChoice: x ? (ACQUIRED[s.id] || []).filter((pk) => x.choices.some((y) => y.id === pk.id)).map((pk) => perkCard(pk, x)) : [],
-        hasForkChoice: open && !!fk, forkSteps: fk ? fk.steps : [],
+        chipExpanded: 'false', toggleChoice: () => this.setState({ chooser: fp.length ? 'fork:' + s.id + ':' + fp[0].at : 'perk:' + s.id, armPerk: null }),
+        chipStyle: 'flex: none; min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.04em; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF',
         hasFlash: !!fl, flash: fl, fig: ((f) => (f.has && f.state === 'new' ? f : { has: false, forms: [] }))(figLevelUp(s.id, p)), // the Figments a point just opened, with their icons
         nameStyle: 'font-size: var(--fs-body); font-weight: 700; line-height: 1.15; color: ' + ink, tagStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: ' + ink,
         style: 'display: flex; flex-direction: column; gap: 4px; padding: 1px 8px; border-radius: 10px; background: #0A0D13; border: 1px solid ' + (waits ? '#FFFFFF' : '#232D3F') + '; border-left: 3px solid ' + ink };
@@ -162,11 +149,6 @@ export class LevelUpLogic extends DCLogic {
             valStyle: 'font-size: 22px; font-weight: 700; line-height: 1; min-width: 26px; text-align: center; color: ' + a.ink,
             skills: D.skills.filter((sk) => sk.attr === a.id).sort((x, y) => SLOT_ORDER[x.slot] - SLOT_ORDER[y.slot]).map(skillRow) }; }) };
     });
-    // ---------- the perk steps waiting (the rows' chips hold them; these jump there and open the choice) ----------
-    const steps = pendingPerkSteps(c).map((x) => ({ key: x.skill, name: SKILL[x.skill].name, n: x.free || 1,
-      go: () => { this.setState({ fam: famOf[SK[x.skill].attr], choice: x.skill }); queueMicrotask(() => { const el = typeof document !== 'undefined' && document.querySelector('.phc-lu-skill[data-skill="' + x.skill + '"]'); if (!el) return; if (el.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        const b = el.querySelector('button.phc-lu-choice'); if (b) b.focus({ preventScroll: true }); }); },
-      style: 'padding: 3px 10px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; background: transparent; border: 1px solid ' + ATTR[SK[x.skill].attr].ink + '; color: ' + ATTR[SK[x.skill].attr].ink }));
     // ---------- the class panel (the held class, or while picking a preview of the selected one) ----------
     const id = c.classId || sel, preview = !c.classId && !!sel, k = id ? CLASS[id] : null;
     const pc = preview ? { ...c, classId: sel } : c, rank = id ? classRank(pc) : 0, prog = id ? attributeProgress(c, id) : null, em = emblemOf(id);
@@ -195,10 +177,45 @@ export class LevelUpLogic extends DCLogic {
       fold: foldVals('levelup:class', { byRule: !!c.classId, redraw }),
       line: id ? k.name + ' ' + ROMAN_RANK[rank] + (prog && prog.nextLine ? ' · ' + prog.nextLine : '') : c.level >= 3 ? 'Choose your class' : 'Class at level 3',
     };
+    // ---------- TO CHOOSE (docs/design/handoffs/2026-11-18-skill-screens-redesign.md section 4 item 5): one chip a choice
+    // waiting, in a fixed order (Class, then forks, then perk steps, each named with its skill); a chip opens its chooser
+    // as ONE centred panel over the screen, with "Next choice" when more wait. Every choice is the engine's. ----------
+    const nameOf = (id) => (SKILL[id] && SKILL[id].name) || id;
+    const queue = [
+      ...(choosing ? [{ key: 'class', kind: 'class', text: 'Class' }] : []),
+      ...D.skills.flatMap((s) => forkPend(s.id).map((f) => ({ key: 'fork:' + s.id + ':' + f.at, kind: 'fork', skill: s.id, at: f.at, text: 'Fork · ' + s.name }))),
+      ...pendingPerkSteps(c).map((x) => ({ key: 'perk:' + x.skill, kind: 'perk', skill: x.skill, text: (x.free > 1 ? x.free + ' perk steps' : 'Perk step') + ' · ' + nameOf(x.skill) })),
+    ];
+    const cur = queue.find((q) => q.key === this.state.chooser) || null, openCh = (key) => this.setState({ chooser: key, armPerk: null });
+    const toChoose = queue.map((q) => ({ key: q.key, kind: q.kind, text: q.text, open: () => openCh(q.key), expanded: cur && cur.key === q.key ? 'true' : 'false',
+      style: 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px solid #FFFFFF; '
+        + (cur && cur.key === q.key ? 'background: #FFFFFF; color: #0A0D13' : 'background: transparent; color: #FFFFFF') }));
+    const after = cur ? queue.find((q) => q.key !== cur.key) : null;
+    const chBtn = 'min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer';
+    const ch = { open: !!cur, kind: cur ? cur.kind : '', isPerk: !!cur && cur.kind === 'perk', isFork: !!cur && cur.kind === 'fork', isClass: !!cur && cur.kind === 'class',
+      title: !cur ? '' : cur.kind === 'class' ? 'Your class has found you' : cur.kind === 'fork' ? 'Fork at ' + cur.at + ' · ' + nameOf(cur.skill) : 'Perk step · ' + nameOf(cur.skill),
+      hasNext: !!after, next: () => (after ? openCh(after.key) : null), close: () => this.setState({ chooser: null, armPerk: null }), btnStyle: chBtn,
+      perks: [], armed: false, confirmText: '', confirm: () => {}, back: () => this.setState({ armPerk: null }), forkOpts: [],
+      okStyle: 'min-height: 36px; padding: 0 16px; border-radius: 10px; border: 0; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer' };
+    if (ch.isPerk) {
+      // the skill's perks as rows, one button on each legal row (Take: tier I; Upgrade: tier II), a one-line confirm
+      const x = pend[cur.skill], ink = ATTR[SK[cur.skill].attr].ink, armed = this.state.armPerk;
+      ch.perks = (ACQUIRED[cur.skill] || []).map((pk) => { const h = held(pk.id), legal = x && x.choices.find((y) => y.id === pk.id);
+        return perkRow(pk.id, { held: h ? h.tier : '', ink, on: armed === pk.id, why: legal ? '' : h && h.tier === 'II' ? 'Tier II' : 'Not now',
+          act: legal ? { label: legal.tier === 'I' ? 'Take' : 'Upgrade', aria: (legal.tier === 'I' ? 'Take ' : 'Upgrade ') + pk.name, click: () => this.setState({ armPerk: pk.id }) } : null }); });
+      const a = armed && x && x.choices.find((y) => y.id === armed), pk = a ? PERKS.find((q) => q.id === armed) : null;
+      if (a && pk) { ch.armed = true; ch.confirmText = (a.tier === 'I' ? 'Take ' + pk.name : 'Upgrade ' + pk.name + ' to II') + '? Kept for good.';
+        ch.confirm = () => { act({ type: 'levelup/perk', charId: c.id, perkId: pk.id }); this.setState({ armPerk: null }); }; }
+    }
+    if (ch.isFork) {
+      // two columns: icon, name, the one line, the cost line if any, Choose (the fork view arms, then confirms)
+      const fk = forkCard(c, cur.skill, { inFight, only: [cur.at], rerender: () => this.setState({ forkArm: Date.now() }) });
+      ch.forkOpts = fk && fk.steps[0] ? fk.steps[0].opts.map((o) => ({ ...o, cost: '', hasCost: false })) : [];
+    }
     const left = c.unspent.skill, attrLeft = c.unspent.attr;
     const owed = pendingPerkSteps(c).reduce((n, x) => n + (x.free || 1), 0); // steps owed, not skills (a 2→5 jump owes two)
     const forksOwed = D.skills.reduce((n, s) => n + forkPend(s.id).length, 0);
-    const allDone = !left && !attrLeft && !choosing && !steps.length && !forksOwed;
+    const allDone = queue.length === 0; // Done is lit when the strip is empty (unspent points keep)
     const budgetChip = (n, word, ink) => ({ key: word, text: n + ' ' + word, style: 'padding: 4px 12px; border-radius: 999px; font-size: var(--fs-body); font-weight: 700; white-space: nowrap; border: 1px solid ' + (n ? '#FFFFFF' : '#2E3A50') + '; color: ' + (n ? '#FFFFFF' : ink) });
     return {
       ...epccgVals(this, (id) => c.skills[id] || 0, c, { noNarrator: !!g.run }), ...lightboxVals(this), zoomPc: zoomer(this, c.portrait, c.name, 'portrait'), pc: c.portrait, name: c.name,
@@ -208,14 +225,15 @@ export class LevelUpLogic extends DCLogic {
         ...(forksOwed ? [budgetChip(forksOwed, forksOwed === 1 ? 'Fork' : 'Forks', '#7F8BA1')] : [])],
       spend: [left ? left + ' Skill point' + (left > 1 ? 's' : '') : '', attrLeft ? attrLeft + ' Attribute point' + (attrLeft > 1 ? 's' : '') : ''].filter(Boolean).join(' · ') || 'Nothing to spend',
       choosing, classCards, pick, cls,
-      famTabs, tree, steps, hasSteps: steps.length > 0,
+      famTabs, tree, toChoose, hasToChoose: toChoose.length > 0, ch,
       ceil: 'Attributes: ' + ceil + (cap < 10 ? ' (' + [8, 9, 10].filter((n) => n > cap).map((n) => n + ' from level ' + attrCapLevel(n)).join(', ') + ')' : '') + (cap < 10 && legendRoom(c) > 0 ? ' · your Legendary Deed lets one Attribute go 1 above it' : ''),
       rules: "A skill can't be higher than the attribute above it, and an attribute can't pass the ceiling for your level; 10 is the top. At 3, 5, 7 and 9 points in a skill: one perk step. Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Unspent points keep.",
       // Take back what this visit spent (points and perk steps), until a fight or a class settles it.
       canRevert: !canRevertLevelUp(g, c), revert: () => act({ type: 'levelup/revert', charId: c.id }),
       revertStyle: 'min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #A3AEC2; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer',
-      done: () => go(homeScreen(g), { levelupChar: null }), doneLabel: g.phase === 'combat' ? (allDone ? 'Done · back to the fight' : 'Finish later') : g.run && g.run.state !== 'over' ? (allDone ? 'Done · back to the map' : 'Finish later') : allDone ? 'Done · back to the story' : 'Finish later',
-      doneStyle: 'min-height: 44px; padding: 0 18px; border-radius: 12px; border: 0; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer; ' + (allDone ? 'background: #6FEA77; color: #0A0D13' : 'background: #1C2536; color: #E7EBF3'),
+      done: () => go(homeScreen(g), { levelupChar: null }), doneLabel: 'Done', notDone: !allDone, doneAria: allDone ? 'Done' : 'Done: ' + queue.length + ' still to choose',
+      doneStyle: 'min-height: 44px; padding: 0 18px; border-radius: 12px; border: 0; font-family: inherit; font-size: var(--fs-body); font-weight: 700; ' + (allDone ? 'cursor: pointer; background: #6FEA77; color: #0A0D13' : 'cursor: not-allowed; background: #1C2536; color: #7F8BA1'),
+      laterStyle: 'min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #A3AEC2; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer',
     };
   }
 }
