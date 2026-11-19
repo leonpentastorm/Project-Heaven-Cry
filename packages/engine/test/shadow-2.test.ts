@@ -11,6 +11,7 @@ import { Rec } from './helpers/replay';
 import { previewAttack, RULES, SKILL, condOn, apply, beginTurn, moveOptions, basicActions, DOOR_TABS, doorTabsOf, actionsFor, refOf, type Unit } from '../src';
 import { resOf, seenByFoes, hideBlock, HIDE_WHY } from '../src/tactics';
 import { applyCond } from '../src/magic';
+import { onHook } from '../src/effects/hooks';
 import { price } from '../src/effects/cost';
 import actionsJ from '../../../data/actions.json';
 import shadowJ from '../../../data/shadow.json';
@@ -119,6 +120,38 @@ describe('Tag and Tagged', () => {
     const u = f.turn(f.pc); at(f, u, '1,4');
     expect(() => f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:shadow.tag', targetId: t.id } as any)).toThrow();
     expect(condOn(f.unit(t.id), 'marked')).toBe(false);
+  });
+});
+
+describe('Unseen Hand (rules 1.81 item 6900): an attack from Hidden rolls with Ingenuity when that is higher', () => {
+  const UNSEEN = eff('from Hidden');
+  // the skill the real attack rolled with, as the fight's own hook tells it (attack_roll carries `via`)
+  const SEEN_VIA: { id: string | null; via: string | null } = { id: null, via: null };
+  onHook('attack_roll', (c: any) => { if (c.att?.id === SEEN_VIA.id) SEEN_VIA.via = c.via; });
+  const rolledWith = (f: F, u: Unit, t: Unit, mods: string[] = []) => { SEEN_VIA.id = u.id; SEEN_VIA.via = null;
+    try { f.act({ type: 'combat/attack', unitId: u.id, targetId: t.id, mode: 'shot', mods } as any); } finally { SEEN_VIA.id = null; }
+    return SEEN_VIA.via; };
+  it('the door holds it as data (roll_with, if_higher, on self_has hidden)', () => {
+    expect(UNSEEN).toMatchObject({ op: 'roll_with', when: 'attack', skill: 'ingenuity', if_higher: true, if: { self_has: ['hidden'] } });
+  });
+  it('Hidden, an Ingenuity-5 character with no rifle skill Breaks with Ingenuity; seen, the same shot rolls with the rifle\'s own skill', () => {
+    const f = fightWith([door(5)], [{ tier: 'soldier' }]); const t = foeAt(f, 0, '6,4', true);
+    const u = f.turn(f.pc); at(f, u, '1,4');
+    const open = withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), f.unit(t.id), 'shot'));
+    f.act({ type: 'combat/hide', unitId: u.id } as any);
+    const hid = withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), f.unit(t.id), 'shot'));
+    expect(open.via).not.toBe('ingenuity'); expect(hid.via).toBe('ingenuity');
+    expect(hid.toHit).toBeGreaterThan(open.toHit);
+    expect(rolledWith(f, u, t, BREAK_MODS)).toBe('ingenuity');
+    expect(f.unit(u.id).hidden).toBeFalsy();
+    expect(withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), f.unit(t.id), 'shot')).via).not.toBe('ingenuity');
+  });
+  it('never on top: a weapon skill higher than Ingenuity keeps its own roll from Hidden', () => {
+    const f = fightWith([door(1, { skills: { ingenuity: 1, dexterity: 6 }, attrs: { perception: 3, agility: 6 } })], [{ tier: 'soldier' }]); const t = foeAt(f, 0, '6,4', true);
+    const u = f.turn(f.pc); at(f, u, '1,4');
+    f.act({ type: 'combat/hide', unitId: u.id } as any);
+    expect(f.unit(u.id).hidden).toBe(true);
+    expect(withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), f.unit(t.id), 'shot')).via).not.toBe('ingenuity');
   });
 });
 

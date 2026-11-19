@@ -273,12 +273,12 @@ describe('the camp as a checklist and a shield for a tank (rules 1.55 items 49 t
     const d = lo(campOf('deadeye'), 'Kade', { op: 'recommended' }), dc = Object.values(d.characters)[0];
     expect(dc.weapon).toBe(FREE('rifles')); expect(dc.armourClass).toBe(1); expect(dc.offHand ?? null).toBeNull();
   });
-  it("rules 1.56 (the 0.28.3 merge): an Operative's Recommended kit is the pistol and the shadow buys, no focus, accepted by the reducer", () => {
+  it("rules 1.56 (the 0.28.3 merge): an Operative's Recommended kit is the rifle and the shadow buys (rules 1.81 item 6901), no focus, accepted by the reducer", () => {
     const row = LOADOUT.recommended.weapon.find((w) => w.top === 'ingenuity')!;
-    expect(row.archetype).toBe('pistols'); expect(row.focus).toBe(false); expect(row.profile).toBe('shadow');
+    expect(row.archetype).toBe('rifles'); expect(row.focus).toBe(false); expect(row.profile).toBe('shadow');
     let g = campOf('phantom'); const id = Object.values(g.characters)[0].id;
     g = lo(g, 'Kade', { op: 'recommended' }); const c = g.characters[id], p = g.run!.loadout![id];
-    expect(c.weapon).toBe(FREE('pistols')); expect(p.focus).toBeNull();
+    expect(c.weapon).toBe(FREE('rifles')); expect(p.focus).toBeNull();
     // the profile's buys in order while the budget pays: the first (a smoke grenade) is taken
     const first = LOADOUT.recommended.buys.shadow[0];
     expect(Object.keys(p.take).some((k) => loadoutLines(c).find((l) => l.key === k)?.id === first)).toBe(true);
