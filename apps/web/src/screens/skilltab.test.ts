@@ -56,8 +56,8 @@ describe('S1: each door\'s forks sit under its own skill and fold', () => {
   });
 });
 
-describe('S2: the lore is the face; the three folds are closed by default and each remembered per skill (Leon, 19 Nov)', () => {
-  it('"What each level gives", "Perks" and "Forks" start closed; a click on one is kept for that skill and that fold only', () => {
+describe('S2: the lore is the face; the three folds are closed by default and each kind remembered for all skills (Leon, 19 Nov; 0.31.11 item G)', () => {
+  it('"What each level gives", "Perks" and "Forks" start closed; a click on one is kept for that fold kind on every skill, the other kinds untouched', () => {
     expect(EP_TPL).toMatch(/class="phc-fold-h phc-ep-fold" data-fold="\{\{ep\.ladderFold\.id\}\}"/);
     expect(EP_TPL).toMatch(/class="phc-fold-h phc-ep-perks-fold" data-fold="\{\{ep\.perksFold\.id\}\}"/);
     expect(EP_TPL).toMatch(/class="phc-fold-h phc-ep-forks-fold" data-fold="\{\{ep\.forksFold\.id\}\}"/);
@@ -66,7 +66,10 @@ describe('S2: the lore is the face; the three folds are closed by default and ea
     expect([v().ladderFold.open, v().perksFold.open, v().forksFold.open]).toEqual([false, false, false]);
     v().ladderFold.toggle();
     expect([v().ladderFold.open, v().perksFold.open, v().forksFold.open]).toEqual([true, false, false]);
-    expect(epccgVals(holder({ epccg: 'durability' })).ep.ladderFold.open).toBe(false);
+    // one state a fold kind (skill:levels, skill:perks, skill:forks) for the player across the 27 skills
+    expect([v().ladderFold.id, v().perksFold.id, v().forksFold.id]).toEqual(['skill:levels', 'skill:perks', 'skill:forks']);
+    const other = epccgVals(holder({ epccg: 'durability' })).ep;
+    expect([other.ladderFold.open, other.perksFold.open, other.forksFold.open]).toEqual([true, false, false]);
     v().perksFold.toggle(); expect(v().perksFold.open).toBe(true);
     v().ladderFold.toggle(); v().perksFold.toggle();
     expect([v().ladderFold.open, v().perksFold.open]).toEqual([false, false]);

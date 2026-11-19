@@ -390,9 +390,9 @@ export function epccgVals(self, ptsOf, who, opt) {
     // a gamma skill's Call: one row (its name, AP and reach now; what it does in the name's hover); how it grows is on the levels
     call: cb ? { has: true, name: cb.name, tip: cb.text, now: cb.now, inkStyle: 'color: ' + ink } : CALL_BLANK,
     // the three folds, closed by default, each remembering its state (Leon, 19 Nov: the lore is the face)
-    ladderFold: foldVals('skill:levels:' + s.id, { byRule: true, redraw }),
-    perksFold: foldVals('skill:perks:' + s.id, { byRule: true, redraw }),
-    forksFold: foldVals('skill:forks:' + s.id, { byRule: true, redraw }),
+    ladderFold: foldVals('skill:levels', { byRule: true, redraw }),
+    perksFold: foldVals('skill:perks', { byRule: true, redraw }),
+    forksFold: foldVals('skill:forks', { byRule: true, redraw }),
     foldHeadStyle: 'font-size: var(--fs-body); font-weight: 700; letter-spacing: 0.04em; color: #E7EBF3',
     ptsLine: typeof pts === 'number' ? pts + ' / ' + roadMap(s.id).top : '',
     steps: roadTrack(self, s.id, typeof pts === 'number' ? pts : null, ink, attrVal, who && who.skills ? who : null),
