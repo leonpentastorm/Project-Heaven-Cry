@@ -57,8 +57,10 @@ function button(kind: PrayerKindUI, id: string, name: string, text: string, p: P
   const gate = kind === 'whisper' ? (p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? 12) : 'ANYONE')
     : kind === 'miracle' ? 'FAITH ' + MIRACLE_FAITH + ' · DEVOTION ' + (p.gate ?? GATE.miracle)
     : p.mode === 'dice' ? 'BY DICE · TN ' + (p.roll?.tn ?? '?') : 'HYMN ' + ROMAN[tier] + ' · DEVOTION ' + (p.gate ?? '?');
+  // the card's line: the engine's own number for this character when the prayer has one ("Heal 20", "Shield 20", "27 Soul")
+  const fig = p.amount ? (p.amount.kind === 'heal' ? 'Heal ' : p.amount.kind === 'shield' ? 'Shield ' : '') + p.amount.n + (p.amount.kind === 'soul' ? ' Soul' : '') : '';
   return {
-    key: kind + ':' + id, kind, id, name, text, icon: prayerIconUri(kind, kind === 'hymn' ? id : id, p.patron, tier), ap: p.ap + ' AP', gate,
+    key: kind + ':' + id, kind, id, name, text: fig || text, icon: prayerIconUri(kind, kind === 'hymn' ? id : id, p.patron, tier), ap: p.ap + ' AP', gate,
     odds: oddsText(p), warn: p.mode === 'overreach' && p.overreach ? 'Overreach: roll ' + p.overreach.tn + ' or lose ' + DEVOTION_XP.overreachMiss + ' Devotion'
       : kind === 'miracle' ? 'Lowers your Devotion by ' + MIRACLE_COST_LEVELS + ' levels (' + GATE.miracle + ' → ' + (GATE.miracle - MIRACLE_COST_LEVELS) + '), after it lands' : undefined,
     ok: !!p.ok, why: p.ok ? undefined : p.why || 'Not now.', target: p.target || 'none', patron: p.patron, tier, source,

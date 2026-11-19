@@ -13,6 +13,20 @@ function game(belief: any, faith = 5) {
   return { g, c };
 }
 describe('faith views', () => {
+  it('0.31.11: a card with an amount says the engine own number for this character, and a real prayer lands that number', () => {
+    const { g, c } = game({ kind: 'faithful', patron: 'mother_ember' }, 5); c.level = 4;
+    const b = prayerButtons(faithView(g, c.id)!);
+    const health = b.whispers.find((x) => x.id === 'health')!, prot = b.whispers.find((x) => x.id === 'protection')!, rebuke = b.whispers.find((x) => x.id === 'rebuke')!;
+    expect(health.text).toMatch(/^Heal \d+$/); expect(prot.text).toMatch(/^Shield \d+$/); expect(rebuke.text).toMatch(/^\d+ Soul$/);
+    expect(b.whispers.find((x) => x.id === 'luck')!.text).not.toMatch(/^(Heal|Shield) /); // no amount: the data's line
+    // the Health whisper prayed in the story on a hurt ally heals what its card says (no other bonus on this sheet)
+    let g2 = apply(g, { type: 'char/add', sheet: sheet('Ally', { kind: 'atheist' }) }, 'h');
+    g2 = apply(g2, { type: 'session/start' } as any, 'h');
+    const ally: any = Object.values(g2.characters).find((x: any) => x.name === 'Ally'); g2.characters[ally.id].hp = 1;
+    const was = g2.characters[ally.id].hp, n = Number(health.text.replace('Heal ', ''));
+    g2 = apply(g2, { type: 'faith/pray', charId: c.id, kind: 'whisper', id: 'health', targetId: ally.id } as any, 'h');
+    expect(g2.characters[ally.id].hp - was).toBe(n);
+  });
   it('rules 1.22: the Hymns\' heading says how often a Hymn comes, when the next one does and what the vow did; every vow says what fulfils it', () => {
     const cd = { hymnRoundsLeft: 0, whisperUsed: false, miracleUsed: false, hymnWait: 3, hymnCooldown: 3, vowCut: false, vowBanked: false };
     expect(hymnHeadText(cd)).toBe('HYMNS · ready');

@@ -131,6 +131,17 @@ const effVal = (entry: any, op: 'heal' | 'shield', fallback = 0): number => {
   return find(entry?.effects) ?? fallback;
 };
 const hymnEntry = (id: string): any => { for (const p of FAITH_PATRONS) for (const h of p.hymns || []) if (h.id === id) return h; return null; };
+/** 0.31.11: a prayer's number for the card that shows it: its heal or shield through prayerAmount (the formula the prayer
+ * heals and shields with), its Soul damage through the same terms prayerStrike hands to harm (Blessing power, the Level
+ * term); in a fight the unit's own power and level, else the character's. Before the target's own bonuses. */
+function prayerFigure(entry: any, c: Character, u: Unit | null): PrayerPreview['amount'] | null {
+  const power = u?.blessPower || blessingPower(c), lvl = u ? levelTerm(u) : term(mendFactor(c.level), 'level');
+  const h = effVal(entry, 'heal'); if (h) return { kind: 'heal', n: Math.round(prayerAmount('heal', h, power, lvl)) };
+  const s = effVal(entry, 'shield'); if (s) return { kind: 'shield', n: Math.round(prayerAmount('shield', s, power, lvl)) };
+  const d = prayerDamage(entry); if (!d) return null;
+  const sa = prayerStrike(d, power, u ? dealTerm(u) : term(levelOf('blessing', c.level), 'level'));
+  return { kind: 'soul', n: amountOf({ kind: 'damage', base: sa.base, round: 'round' }, null, { level: null, mults: sa.mults }).amount };
+}
 /** Mother Ember's healing intervention: (base + per × Devotion) × Blessing power × the heal Level term (heal-shield-percent
  * spec: it gains the `mend` column; it never passes the cap). Its own numbers, not the damage interventions'. */
 export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_PATRON.mother_ember?.intervention?.effects || [])[0] || {}; return amountOf({ kind: 'heal', base: e.value ?? 10, per: [{ of: 'devotion', value: e.per_devotion ?? 3 }], profile: 'blessing', round: 'round' }, null, { level: null, counts: { devotion: devotionNow(c) }, mults: [term(power, 'stat: blessing power'), mendDial(), term(mendFactor(c.level), 'level')] }).amount; };
@@ -237,6 +248,9 @@ export interface PrayerPreview {
   targets: string[];
   /** What the target is: self_or_ally, self, ally, enemy, tile, none, two_units, two_allies, downed_ally, dead_ally. */
   target: string;
+  /** 0.31.11: what it heals, shields or deals for this character (the faith card's number), as the prayer lands it
+   *  (prayerFigure: the one prayer formula), before the target's own bonuses; absent for a prayer with no amount. */
+  amount?: { kind: 'heal' | 'shield' | 'soul'; n: number };
 }
 export interface PrayerArgs { targetId?: string; targetId2?: string; tile?: string }
 
@@ -268,7 +282,8 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
   const belief = beliefOf(c), faith = faithOf(c), own = patronOf(c);
   const ap = u ? price({ cb, u, c }, kind === 'whisper' ? 'whisper' : 'pray', AP_COST[kind]).ap : AP_COST[kind];
   const target = pe.entry.target || (kind === 'hymn' ? 'self_or_ally' : 'none'); // an old-shape Blessing goes at you or an ally
-  const info = { ...base, ap, effectText: pe.entry.text || '', name: pe.entry.name || id, patron: pe.patron?.id || null, target, targets: targetsOf(g, c, u, cb, target) };
+  const fig = prayerFigure(pe.entry, c, u);
+  const info = { ...base, ap, effectText: pe.entry.text || '', name: pe.entry.name || id, patron: pe.patron?.id || null, target, targets: targetsOf(g, c, u, cb, target), ...(fig ? { amount: fig } : {}) };
   const m = prayerMod(g, c, u);
   // The mode and the gate.
   let gate: number | null = null, mode: PrayerPreview['mode'] = 'standing', roll: PrayerPreview['roll'], overreach: PrayerPreview['overreach'];
