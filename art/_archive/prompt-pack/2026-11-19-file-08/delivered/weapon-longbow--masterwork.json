@@ -1,0 +1,23 @@
+{
+  "id": "longbow",
+  "tier": "masterwork",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--masterwork.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-longbow--masterwork.png",
+  "size64_mask_differing_pixels": 136,
+  "sha256": "b68135ecd329fb3224c639e5fe4ba53942269a26105d85e31b7f18965a30a1b7",
+  "path": "art/icons/gear/weapon-longbow--masterwork.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-longbow--masterwork.png",
+    "128": "art/icons/gear/exports/128/weapon-longbow--masterwork.png",
+    "64": "art/icons/gear/exports/64/weapon-longbow--masterwork.png",
+    "32": "art/icons/gear/exports/32/weapon-longbow--masterwork.png"
+  },
+  "source_sha256": "2d4498613608e084f0471ebb10a43a21ff3831c6ee33119a40e7f083540c862c",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--masterwork.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-longbow--masterwork.png",
+  "previous_sha256": "1fc682469a6064d6176e5420a52b5139881694615e52f81acb761f21593b2d9c"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "armour-ballistic_helmet",
+  "tier": "fine",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--fine.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-ballistic_helmet--fine.png",
+  "size64_mask_differing_pixels": 17,
+  "sha256": "ba956e786eefe290c100a9f5f7645bdbc306bef2a21f5cb9b1979255c453de84",
+  "path": "art/icons/gear/armour-ballistic_helmet--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/armour-ballistic_helmet--fine.png",
+    "128": "art/icons/gear/exports/128/armour-ballistic_helmet--fine.png",
+    "64": "art/icons/gear/exports/64/armour-ballistic_helmet--fine.png",
+    "32": "art/icons/gear/exports/32/armour-ballistic_helmet--fine.png"
+  },
+  "source_sha256": "6fe2a147df2f7805636b24ab074a73e09d5563d6375af5cb1a80b23db38fb225",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-ballistic_helmet--fine.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-ballistic_helmet--fine.png",
+  "previous_sha256": "ac5c7ce93333712c92840b0081cfd88be26fc5db7b6f146adcbcd9b632b93a91"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "armour-armoured_belt",
+  "tier": "relic",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--relic.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its relic finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. The exact oval belt, rectangular front buckle and tongue, loops and overlapping pointed skirt-plate layout from image one stay unchanged. Every plate edge and opening keeps its position. Fictional RPG inventory gear, no wearer. Relic: leather deep warm aged brown, steel plates oiled bronze-dark patina, thin upper-edge stripe dull old gold; one tiny flush blank gilt inset within the buckle surface. One old repair is indicated by two replaced rivets on an existing side plate, same rivet positions, no patch extending the outline. No emblem, rust holes, added spikes or new plate. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/armour-armoured_belt.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--masterwork.png"
+  ],
+  "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--masterwork.png",
+  "sha256": "cd8057a6a37340b2549d911bbc327c4919d2e1ebdca13bda64540faf773d79c9"
+}

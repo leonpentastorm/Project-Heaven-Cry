@@ -1,0 +1,17 @@
+{
+  "id": "shield-buckler",
+  "tier": "celestial",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--celestial.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--celestial.png",
+  "size64_mask_differing_pixels": 25,
+  "sha256": "32a1c63554bd22dfe9375a204ea29e8c08b894f9d1268a73d97d597937381bb2",
+  "path": "art/icons/gear/shield-buckler--celestial.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/shield-buckler--celestial.png",
+    "128": "art/icons/gear/exports/128/shield-buckler--celestial.png",
+    "64": "art/icons/gear/exports/64/shield-buckler--celestial.png",
+    "32": "art/icons/gear/exports/32/shield-buckler--celestial.png"
+  },
+  "source_sha256": "cc839035ac1ea906a1d4f2afb591189eeaa6bea086d16707d647e9b7344d3c49",
+  "previous_path": "art/_archive/prompt-pack/2026-11-19-file-08/border-revisions/shield-buckler--celestial/shield-buckler--celestial.png"
+}

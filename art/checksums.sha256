@@ -1281,11 +1281,11 @@ bbb67959be8d00478841617bb9dc376964a50d2c7654ed311918601c362e0830  art/_archive/g
 b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/overlap-archive/our-renders/art/icons/gear/weapon-legion_gladius--masterwork.png
 84459919da8667a59d7d1540aeee90951d13c9ae2feae9e660fbffcbdba3c89b  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/overlap-archive/progress.json
 91064e74b2950f8acf34ba059b23f4769e23b95a4a869ff15e37338d981532ab  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/overlap-archive/queue.json
-55582cf8cdafae8bed8da26e113a5c6006bd3ce5dcf5ebfdd6e93dc1b4ef23c3  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-audit-2026-11-19.md
+b1cd3a4729c4e75601ea3384928a147c7df2633f8a1bae72b8b577c0d3deab66  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-audit-2026-11-19.md
 3d2571a1fd4234bf5ee0182f9edf701506cc649c2e658e4c7477bf88805c8acb  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/README.md
-297781ce9e0ce228d8265368f1f1f6c056b33eb0b193384cd563137c74138b16  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/VALIDATION.json
+dfd15f35642cd4ed2cee6a85e2152b4579caa3fd82994e3672f3e77dd6e10f7a  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/VALIDATION.json
 0de3300bc13fff99525dadec5defab0290cd984f4d65a23e5f7c9dbab2e44d4c  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/catalog-updates.json
-e6f2425804d2660ac3c2acadb5815427cf8abfe5265ebc5b6dde9deff6e26edd  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json
+78e1b124f3f708d70a448fc145b0e1b8ee231ff076579d06841b6d34939e635d  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json
 0374f4db753c3becf6e3cddc11e2ade7b47c32c67c240b1332fdc08585261cdd  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-armoured_belt--celestial.png
 ec90b3309076ca66d0babea3296c70e4ee32e1cb5ef4ddf8452f27f6f60f2b06  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-armoured_belt--fine.png
 8e5a74e66a6e899a0d6ca8a8e3aa8bce9d308c37e29390b013bd9f4613e617f4  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-armoured_belt--masterwork.png
@@ -6162,7 +6162,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-6a3f114fd49cf75f85bf7e626bcd7ccd2479c567493aba45ae15f181e57649ec  art/catalog.json
+7f72e18098b0c449e51a0ffb501b01448766b8a818d779a94a79a91efe32f09c  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png

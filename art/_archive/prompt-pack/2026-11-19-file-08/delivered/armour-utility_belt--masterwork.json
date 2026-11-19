@@ -1,0 +1,23 @@
+{
+  "id": "armour-utility_belt",
+  "tier": "masterwork",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--masterwork.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-utility_belt--masterwork.png",
+  "size64_mask_differing_pixels": 37,
+  "sha256": "b9ead55344e0292f3e6cb2e280d4db0b503d4800802bdfbf90babe090da7c375",
+  "path": "art/icons/gear/armour-utility_belt--masterwork.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/armour-utility_belt--masterwork.png",
+    "128": "art/icons/gear/exports/128/armour-utility_belt--masterwork.png",
+    "64": "art/icons/gear/exports/64/armour-utility_belt--masterwork.png",
+    "32": "art/icons/gear/exports/32/armour-utility_belt--masterwork.png"
+  },
+  "source_sha256": "8fe41c336f5c74e91a86fa7f3656b5be3115babb1af53103ca64cb11655b5a39",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--masterwork.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-utility_belt--masterwork.png",
+  "previous_sha256": "ca3eabccd2d49b9ca2a000c6fa56ebd70286b4966954797d10d812e57dc35235"
+}

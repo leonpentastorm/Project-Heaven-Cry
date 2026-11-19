@@ -1,0 +1,12 @@
+{
+  "id": "combat_knife",
+  "tier": "relic",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its relic finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. Dark warm oiled brown-blue steel with a bright edge. Turn the narrow fuller stripe dull old gold. Put one tiny flush abstract curl engraving on existing guard face. Keep all parts same geometry; the diamond wrapped grip becomes faded deep rust-red cord with a visibly old careful repair near collar. No rust or chips. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/weapon-combat_knife.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--masterwork.png"
+  ],
+  "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--masterwork.png",
+  "sha256": "f447ac9178954ac9455ec3b176f72b6f17dca8df2552c875d97260cd0c050fc4"
+}

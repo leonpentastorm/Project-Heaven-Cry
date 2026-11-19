@@ -1,0 +1,16 @@
+{
+  "id": "combat_knife",
+  "tier": "fine",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--fine.png",
+  "size64_mask_differing_pixels": 10,
+  "sha256": "f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2",
+  "path": "art/icons/gear/weapon-combat_knife--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-combat_knife--fine.png",
+    "128": "art/icons/gear/exports/128/weapon-combat_knife--fine.png",
+    "64": "art/icons/gear/exports/64/weapon-combat_knife--fine.png",
+    "32": "art/icons/gear/exports/32/weapon-combat_knife--fine.png"
+  },
+  "source_sha256": "256c920fc297b794fa424cf5427e6b7043bac838dc1a16cb4094bf508a9f7afa"
+}

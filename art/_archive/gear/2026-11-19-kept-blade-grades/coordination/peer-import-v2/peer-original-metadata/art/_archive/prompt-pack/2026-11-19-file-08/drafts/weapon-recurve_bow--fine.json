@@ -1,0 +1,12 @@
+{
+  "id": "recurve_bow",
+  "tier": "fine",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--fine.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its fine finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. The maker's signature parts are the deeply recurved curled wooden tips, horn-coloured sculpted riser, tan spiral-wrapped grip, little side spur and simple diagonal taut string; preserve each exactly as image one shows. Fine: limbs smoothed and freshly oiled, fresh cord wraps, new taut string, add only one thin carved line along the face of each existing limb. No arrow, no new fittings. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/weapon-recurve_bow.png",
+    "art/icons/gear/weapon-recurve_bow.png"
+  ],
+  "previous": "art/icons/gear/weapon-recurve_bow.png",
+  "sha256": "ef0d5a3b085b93c468686c80d1dd2fa340d653a9ab019c18d584618eb7f93808"
+}

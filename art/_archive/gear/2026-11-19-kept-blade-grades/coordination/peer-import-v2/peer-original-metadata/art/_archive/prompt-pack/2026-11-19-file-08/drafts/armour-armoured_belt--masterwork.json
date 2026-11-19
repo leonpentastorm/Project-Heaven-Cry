@@ -1,0 +1,12 @@
+{
+  "id": "armour-armoured_belt",
+  "tier": "masterwork",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--masterwork.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its masterwork finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. The maker's signature parts are image one's same oval heavy belt, squared front buckle and tongue, right strap loop, and overlapping pointed steel skirt plates below, exact plate count, rivets, outline and openings. Fictional RPG costume inventory, no wearer. Masterwork: retain Fine, the thin upper belt-edge line is inlaid bright brass; finer dark supple leather and polished clean steel plates in precisely the same shapes, crisp edges, buckle and existing studs polished brass. Do not gild the whole plate surface. No new plate, emblem or part. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/armour-armoured_belt.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--fine.png"
+  ],
+  "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--fine.png",
+  "sha256": "1ba6bbbe8cd66d6f7b9f10319aeecf41d7459ec057ef9e12fd84977cef6acf14"
+}

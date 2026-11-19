@@ -1,0 +1,12 @@
+{
+  "id": "shield-pavise",
+  "tier": "masterwork",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--masterwork.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its masterwork finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. The maker's signature parts are this exact broad upright wooden pavise, arched top, central vertical band, same rivet positions, pair of long pointed feet and lower cutout, and rear prop to the right. Image one locks all geometry. Masterwork: retain Fine, one narrow brass inlay following the engraved line just inside the entire rim including the feet and lower cutout; existing rivets polished brass, finer close-fitted dark walnut boards, crisp existing fittings. No new emblem, boss, symbol or part. Fictional RPG inventory artwork. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/shield-pavise.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--fine.png"
+  ],
+  "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--fine.png",
+  "sha256": "2c304b99ce5d34315ae470c3b0b2f653a46cce652b6a8ae5b9b538aa6ecde84a"
+}

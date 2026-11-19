@@ -1,0 +1,23 @@
+{
+  "id": "katana",
+  "tier": "fine",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--fine-retry.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-katana--fine.png",
+  "size64_mask_differing_pixels": 4,
+  "sha256": "96096c9317b4377e8361b22c82d353982ff5ebe769911870d9b27482345d40b3",
+  "path": "art/icons/gear/weapon-katana--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-katana--fine.png",
+    "128": "art/icons/gear/exports/128/weapon-katana--fine.png",
+    "64": "art/icons/gear/exports/64/weapon-katana--fine.png",
+    "32": "art/icons/gear/exports/32/weapon-katana--fine.png"
+  },
+  "source_sha256": "17caf091339f1b5c5dcaa615e0103bf14ea1aaea8be5ef2821157b11d7f65c52",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--fine.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-katana--fine.png",
+  "previous_sha256": "81e1607c196cf5e1b8f686913e1b75e1cb235669c8c54dff4f3e1c9e2dfeacbd"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "sabre",
+  "tier": "celestial",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-sabre--celestial.png",
+  "size64_mask_differing_pixels": 52,
+  "sha256": "1e083cac78f6156d849625ea6bee1d247908277b7c67d58fb3882997e23764f9",
+  "path": "art/icons/gear/weapon-sabre--celestial.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-sabre--celestial.png",
+    "128": "art/icons/gear/exports/128/weapon-sabre--celestial.png",
+    "64": "art/icons/gear/exports/64/weapon-sabre--celestial.png",
+    "32": "art/icons/gear/exports/32/weapon-sabre--celestial.png"
+  },
+  "source_sha256": "3c182e574a9bdc5cfa18a77109f3f814d9c341ec9d1674a87b42225f3836d8a1",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--celestial.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-sabre--celestial.png",
+  "previous_sha256": "9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b"
+}

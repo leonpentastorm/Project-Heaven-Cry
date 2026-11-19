@@ -1,0 +1,23 @@
+{
+  "id": "combat_knife",
+  "tier": "masterwork",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--masterwork.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-combat_knife--masterwork.png",
+  "size64_mask_differing_pixels": 13,
+  "sha256": "b93a1cd5c197dcd53e7ec47b430d312791e8ce451bc61860ef29a603c9e74818",
+  "path": "art/icons/gear/weapon-combat_knife--masterwork.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-combat_knife--masterwork.png",
+    "128": "art/icons/gear/exports/128/weapon-combat_knife--masterwork.png",
+    "64": "art/icons/gear/exports/64/weapon-combat_knife--masterwork.png",
+    "32": "art/icons/gear/exports/32/weapon-combat_knife--masterwork.png"
+  },
+  "source_sha256": "11c991658084e1a7f46c11cf8daf5a48cacf2e1c640f2f4176465b9699266840",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--masterwork.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-combat_knife--masterwork.png",
+  "previous_sha256": "4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09"
+}

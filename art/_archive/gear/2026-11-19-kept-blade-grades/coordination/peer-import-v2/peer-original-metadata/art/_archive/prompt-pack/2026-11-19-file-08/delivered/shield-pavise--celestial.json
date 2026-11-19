@@ -1,0 +1,17 @@
+{
+  "id": "shield-pavise",
+  "tier": "celestial",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--celestial.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--celestial.png",
+  "size64_mask_differing_pixels": 71,
+  "sha256": "7f568c48310fe3889e94c51bd33a63990e8d938c8c94a04602eff2c89da5b515",
+  "path": "art/icons/gear/shield-pavise--celestial.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/shield-pavise--celestial.png",
+    "128": "art/icons/gear/exports/128/shield-pavise--celestial.png",
+    "64": "art/icons/gear/exports/64/shield-pavise--celestial.png",
+    "32": "art/icons/gear/exports/32/shield-pavise--celestial.png"
+  },
+  "source_sha256": "489da40a8f5ba72f9c1520d58df3fcb3bf3a874d66d87855a72aa26929b8118a",
+  "previous_path": "art/_archive/prompt-pack/2026-11-19-file-08/border-revisions/shield-pavise--celestial/shield-pavise--celestial.png"
+}

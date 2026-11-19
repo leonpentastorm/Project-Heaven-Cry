@@ -1,0 +1,314 @@
+{
+  "weapon-combat_knife--celestial": {
+    "label": "Combat Knife Celestial",
+    "path": "art/icons/gear/weapon-combat_knife--celestial.png",
+    "sha256": "2ab19d7ce0c09973488c7db7de3e8e600a19f7be0fad6b8c971d4094e161af57",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "celestial",
+    "standard_path": "art/icons/gear/weapon-combat_knife.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-combat_knife--celestial.png",
+      "128": "art/icons/gear/exports/128/weapon-combat_knife--celestial.png",
+      "64": "art/icons/gear/exports/64/weapon-combat_knife--celestial.png",
+      "32": "art/icons/gear/exports/32/weapon-combat_knife--celestial.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-combat_knife--fine": {
+    "label": "Combat Knife Fine",
+    "path": "art/icons/gear/weapon-combat_knife--fine.png",
+    "sha256": "f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "fine",
+    "standard_path": "art/icons/gear/weapon-combat_knife.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-combat_knife--fine.png",
+      "128": "art/icons/gear/exports/128/weapon-combat_knife--fine.png",
+      "64": "art/icons/gear/exports/64/weapon-combat_knife--fine.png",
+      "32": "art/icons/gear/exports/32/weapon-combat_knife--fine.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-combat_knife--masterwork": {
+    "label": "Combat Knife Masterwork",
+    "path": "art/icons/gear/weapon-combat_knife--masterwork.png",
+    "sha256": "4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "masterwork",
+    "standard_path": "art/icons/gear/weapon-combat_knife.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--masterwork.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-combat_knife--masterwork.png",
+      "128": "art/icons/gear/exports/128/weapon-combat_knife--masterwork.png",
+      "64": "art/icons/gear/exports/64/weapon-combat_knife--masterwork.png",
+      "32": "art/icons/gear/exports/32/weapon-combat_knife--masterwork.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-combat_knife--relic": {
+    "label": "Combat Knife Relic",
+    "path": "art/icons/gear/weapon-combat_knife--relic.png",
+    "sha256": "307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "relic",
+    "standard_path": "art/icons/gear/weapon-combat_knife.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-combat_knife--relic.png",
+      "128": "art/icons/gear/exports/128/weapon-combat_knife--relic.png",
+      "64": "art/icons/gear/exports/64/weapon-combat_knife--relic.png",
+      "32": "art/icons/gear/exports/32/weapon-combat_knife--relic.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-legion_gladius--celestial": {
+    "label": "Legion Gladius Celestial",
+    "path": "art/icons/gear/weapon-legion_gladius--celestial.png",
+    "sha256": "f16ae5c5c8c941d50083344a7d0538d2ba8da103998ed8af164dd2bfe875e30b",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "celestial",
+    "standard_path": "art/icons/gear/weapon-legion_gladius.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--celestial.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-legion_gladius--celestial.png",
+      "128": "art/icons/gear/exports/128/weapon-legion_gladius--celestial.png",
+      "64": "art/icons/gear/exports/64/weapon-legion_gladius--celestial.png",
+      "32": "art/icons/gear/exports/32/weapon-legion_gladius--celestial.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-legion_gladius--fine": {
+    "label": "Legion Gladius Fine",
+    "path": "art/icons/gear/weapon-legion_gladius--fine.png",
+    "sha256": "6287af08128f37253c8f97592da21fd70a2c609c024cd534d8b98ba39301b931",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "fine",
+    "standard_path": "art/icons/gear/weapon-legion_gladius.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--fine.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-legion_gladius--fine.png",
+      "128": "art/icons/gear/exports/128/weapon-legion_gladius--fine.png",
+      "64": "art/icons/gear/exports/64/weapon-legion_gladius--fine.png",
+      "32": "art/icons/gear/exports/32/weapon-legion_gladius--fine.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-legion_gladius--masterwork": {
+    "label": "Legion Gladius Masterwork",
+    "path": "art/icons/gear/weapon-legion_gladius--masterwork.png",
+    "sha256": "f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "masterwork",
+    "standard_path": "art/icons/gear/weapon-legion_gladius.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--masterwork.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-legion_gladius--masterwork.png",
+      "128": "art/icons/gear/exports/128/weapon-legion_gladius--masterwork.png",
+      "64": "art/icons/gear/exports/64/weapon-legion_gladius--masterwork.png",
+      "32": "art/icons/gear/exports/32/weapon-legion_gladius--masterwork.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-legion_gladius--relic": {
+    "label": "Legion Gladius Relic",
+    "path": "art/icons/gear/weapon-legion_gladius--relic.png",
+    "sha256": "95368a6d816581162abe7b435ed2566ad94ac53cd2d0ee2bcf01ea7bf5b349a8",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "relic",
+    "standard_path": "art/icons/gear/weapon-legion_gladius.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--relic.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-legion_gladius--relic.png",
+      "128": "art/icons/gear/exports/128/weapon-legion_gladius--relic.png",
+      "64": "art/icons/gear/exports/64/weapon-legion_gladius--relic.png",
+      "32": "art/icons/gear/exports/32/weapon-legion_gladius--relic.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-sabre--celestial": {
+    "label": "Sabre Celestial",
+    "path": "art/icons/gear/weapon-sabre--celestial.png",
+    "sha256": "9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "celestial",
+    "standard_path": "art/icons/gear/weapon-sabre.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-sabre--celestial.png",
+      "128": "art/icons/gear/exports/128/weapon-sabre--celestial.png",
+      "64": "art/icons/gear/exports/64/weapon-sabre--celestial.png",
+      "32": "art/icons/gear/exports/32/weapon-sabre--celestial.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-sabre--fine": {
+    "label": "Sabre Fine",
+    "path": "art/icons/gear/weapon-sabre--fine.png",
+    "sha256": "3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "fine",
+    "standard_path": "art/icons/gear/weapon-sabre.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--fine.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-sabre--fine.png",
+      "128": "art/icons/gear/exports/128/weapon-sabre--fine.png",
+      "64": "art/icons/gear/exports/64/weapon-sabre--fine.png",
+      "32": "art/icons/gear/exports/32/weapon-sabre--fine.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-sabre--masterwork": {
+    "label": "Sabre Masterwork",
+    "path": "art/icons/gear/weapon-sabre--masterwork.png",
+    "sha256": "e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "masterwork",
+    "standard_path": "art/icons/gear/weapon-sabre.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--masterwork.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-sabre--masterwork.png",
+      "128": "art/icons/gear/exports/128/weapon-sabre--masterwork.png",
+      "64": "art/icons/gear/exports/64/weapon-sabre--masterwork.png",
+      "32": "art/icons/gear/exports/32/weapon-sabre--masterwork.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  },
+  "weapon-sabre--relic": {
+    "label": "Sabre Relic",
+    "path": "art/icons/gear/weapon-sabre--relic.png",
+    "sha256": "307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "grade": "relic",
+    "standard_path": "art/icons/gear/weapon-sabre.png",
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-sabre--relic.png",
+      "128": "art/icons/gear/exports/128/weapon-sabre--relic.png",
+      "64": "art/icons/gear/exports/64/weapon-sabre--relic.png",
+      "32": "art/icons/gear/exports/32/weapon-sabre--relic.png"
+    },
+    "collection": "nov19-grade-candidates",
+    "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "quiver-quiver",
+  "tier": "relic",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--relic.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--relic.png",
+  "size64_mask_differing_pixels": 40,
+  "sha256": "e9176bc24c9390cfd15e10211dbec981e805acb69f4a4f8f6a5b749e65c70313",
+  "path": "art/icons/gear/quiver-quiver--relic.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/quiver-quiver--relic.png",
+    "128": "art/icons/gear/exports/128/quiver-quiver--relic.png",
+    "64": "art/icons/gear/exports/64/quiver-quiver--relic.png",
+    "32": "art/icons/gear/exports/32/quiver-quiver--relic.png"
+  },
+  "source_sha256": "3d3bd202e08a8c41e8e8d092c2c3e6146cc3cd3131dd85c8f14f53dec3ffb233"
+}

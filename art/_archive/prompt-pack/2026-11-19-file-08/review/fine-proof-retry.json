@@ -1,0 +1,28 @@
+[
+  {
+    "path": "art/icons/gear/weapon-katana.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "solid_alpha_iou": 0.969,
+    "mask_differing_pixels_at_size": {
+      "32": 0,
+      "64": 3
+    },
+    "same_mask": false
+  },
+  {
+    "path": "art/icons/gear/weapon-drifter_revolver.png",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "solid_alpha_iou": 0.9767,
+    "mask_differing_pixels_at_size": {
+      "32": 3,
+      "64": 8
+    },
+    "same_mask": false
+  }
+]

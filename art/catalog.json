@@ -19817,7 +19817,7 @@
     "weapon-combat_knife--fine": {
       "label": "Combat Knife Fine",
       "path": "art/icons/gear/weapon-combat_knife--fine.png",
-      "sha256": "f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2",
+      "sha256": "7e1b4cfb254b9e04c9aecdd4a7ad7b1275dc5febb6faad4a9ad873a2b57ad588",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19838,12 +19838,20 @@
         "32": "art/icons/gear/exports/32/weapon-combat_knife--fine.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-combat_knife--fine.png",
+      "previous_sha256": "f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-legion_gladius--fine": {
       "label": "Legion Gladius Fine",
       "path": "art/icons/gear/weapon-legion_gladius--fine.png",
-      "sha256": "6287af08128f37253c8f97592da21fd70a2c609c024cd534d8b98ba39301b931",
+      "sha256": "1557133d12ac46e4da601a804415e4998348a95853bfe11bd198b8998d3d61e9",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19864,12 +19872,20 @@
         "32": "art/icons/gear/exports/32/weapon-legion_gladius--fine.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-legion_gladius--fine.png",
+      "previous_sha256": "6287af08128f37253c8f97592da21fd70a2c609c024cd534d8b98ba39301b931",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-legion_gladius--masterwork": {
       "label": "Legion Gladius Masterwork",
       "path": "art/icons/gear/weapon-legion_gladius--masterwork.png",
-      "sha256": "f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff",
+      "sha256": "59335e057089fd705f3d42e4a247e4bc84013d4ac38f5af74314ff6e265449d4",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19890,12 +19906,20 @@
         "32": "art/icons/gear/exports/32/weapon-legion_gladius--masterwork.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-legion_gladius--masterwork.png",
+      "previous_sha256": "f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-combat_knife--masterwork": {
       "label": "Combat Knife Masterwork",
       "path": "art/icons/gear/weapon-combat_knife--masterwork.png",
-      "sha256": "4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09",
+      "sha256": "b93a1cd5c197dcd53e7ec47b430d312791e8ce451bc61860ef29a603c9e74818",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19916,12 +19940,20 @@
         "32": "art/icons/gear/exports/32/weapon-combat_knife--masterwork.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-combat_knife--masterwork.png",
+      "previous_sha256": "4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-combat_knife--relic": {
       "label": "Combat Knife Relic",
       "path": "art/icons/gear/weapon-combat_knife--relic.png",
-      "sha256": "307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b",
+      "sha256": "9790d30a8b736570b00678abc1c244db359211942cab1334a79ff4d48c14bbe0",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19942,12 +19974,20 @@
         "32": "art/icons/gear/exports/32/weapon-combat_knife--relic.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-combat_knife--relic.png",
+      "previous_sha256": "307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-combat_knife--celestial": {
       "label": "Combat Knife Celestial",
       "path": "art/icons/gear/weapon-combat_knife--celestial.png",
-      "sha256": "2ab19d7ce0c09973488c7db7de3e8e600a19f7be0fad6b8c971d4094e161af57",
+      "sha256": "422ce0bb53aa2355fac1a777ff3ad92661b5f83375c30ae4e407478a03188189",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19968,12 +20008,20 @@
         "32": "art/icons/gear/exports/32/weapon-combat_knife--celestial.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-combat_knife--celestial.png",
+      "previous_sha256": "2ab19d7ce0c09973488c7db7de3e8e600a19f7be0fad6b8c971d4094e161af57",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-sabre--fine": {
       "label": "Sabre Fine",
       "path": "art/icons/gear/weapon-sabre--fine.png",
-      "sha256": "3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6",
+      "sha256": "0a241a01d31f4a02aa16393906ab86ebf1e223e2461d0f2bf5ad98278f8c4ef5",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -19994,12 +20042,20 @@
         "32": "art/icons/gear/exports/32/weapon-sabre--fine.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-sabre--fine.png",
+      "previous_sha256": "3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-sabre--masterwork": {
       "label": "Sabre Masterwork",
       "path": "art/icons/gear/weapon-sabre--masterwork.png",
-      "sha256": "e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca",
+      "sha256": "e762de9178c4ab31c9dacdf436456c993587d7966b20be219ba047e3113663cf",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -20020,12 +20076,20 @@
         "32": "art/icons/gear/exports/32/weapon-sabre--masterwork.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-sabre--masterwork.png",
+      "previous_sha256": "e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-sabre--relic": {
       "label": "Sabre Relic",
       "path": "art/icons/gear/weapon-sabre--relic.png",
-      "sha256": "307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a",
+      "sha256": "974ce19d7c63bd16bc14c7ba3f825250da4926c7642371998ecbf18120a0830c",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -20046,12 +20110,20 @@
         "32": "art/icons/gear/exports/32/weapon-sabre--relic.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-sabre--relic.png",
+      "previous_sha256": "307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-sabre--celestial": {
       "label": "Sabre Celestial",
       "path": "art/icons/gear/weapon-sabre--celestial.png",
-      "sha256": "9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b",
+      "sha256": "1e083cac78f6156d849625ea6bee1d247908277b7c67d58fb3882997e23764f9",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -20072,12 +20144,20 @@
         "32": "art/icons/gear/exports/32/weapon-sabre--celestial.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-sabre--celestial.png",
+      "previous_sha256": "9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-legion_gladius--relic": {
       "label": "Legion Gladius Relic",
       "path": "art/icons/gear/weapon-legion_gladius--relic.png",
-      "sha256": "95368a6d816581162abe7b435ed2566ad94ac53cd2d0ee2bcf01ea7bf5b349a8",
+      "sha256": "66570e9f75b5f26491ab2788d85afc55c7a93f9c1069a6a88b23122528e17a8a",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -20098,12 +20178,20 @@
         "32": "art/icons/gear/exports/32/weapon-legion_gladius--relic.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-legion_gladius--relic.png",
+      "previous_sha256": "95368a6d816581162abe7b435ed2566ad94ac53cd2d0ee2bcf01ea7bf5b349a8",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-legion_gladius--celestial": {
       "label": "Legion Gladius Celestial",
       "path": "art/icons/gear/weapon-legion_gladius--celestial.png",
-      "sha256": "f16ae5c5c8c941d50083344a7d0538d2ba8da103998ed8af164dd2bfe875e30b",
+      "sha256": "535134b5caa6c495f950dd8f6edfc4ffa85bee116271c79ec2996e50bd1893cb",
       "width": 1024,
       "height": 1024,
       "background": "transparent",
@@ -20124,7 +20212,15 @@
         "32": "art/icons/gear/exports/32/weapon-legion_gladius--celestial.png"
       },
       "collection": "nov19-grade-candidates",
-      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-legion_gladius--celestial.png",
+      "previous_sha256": "f16ae5c5c8c941d50083344a7d0538d2ba8da103998ed8af164dd2bfe875e30b",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
     },
     "weapon-kemizuchi_duelling_blade--fine": {
       "label": "Kemizuchi Duelling Blade — Fine",
@@ -24192,6 +24288,1570 @@
         "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
         "different_pixels_32": 15,
         "different_pixels_64": 35
+      }
+    },
+    "armour-armoured_belt--celestial": {
+      "label": "Armour-Armoured Belt Celestial",
+      "path": "art/icons/gear/armour-armoured_belt--celestial.png",
+      "sha256": "0374f4db753c3becf6e3cddc11e2ade7b47c32c67c240b1332fdc08585261cdd",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/armour-armoured_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-armoured_belt--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-armoured_belt--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-armoured_belt--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-armoured_belt--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-armoured_belt--celestial.png",
+      "previous_sha256": "2a541fb480af4f997dc3fa56928d9005227fa12a5a280bd02006ca4861680b4a",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-armoured_belt--fine": {
+      "label": "Armour-Armoured Belt Fine",
+      "path": "art/icons/gear/armour-armoured_belt--fine.png",
+      "sha256": "ec90b3309076ca66d0babea3296c70e4ee32e1cb5ef4ddf8452f27f6f60f2b06",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/armour-armoured_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-armoured_belt--fine.png",
+        "128": "art/icons/gear/exports/128/armour-armoured_belt--fine.png",
+        "64": "art/icons/gear/exports/64/armour-armoured_belt--fine.png",
+        "32": "art/icons/gear/exports/32/armour-armoured_belt--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-armoured_belt--fine.png",
+      "previous_sha256": "853ba3fee0801aa74f332194db02f612edd816ec4b7c88ee4b1c9956124416ca",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-armoured_belt--masterwork": {
+      "label": "Armour-Armoured Belt Masterwork",
+      "path": "art/icons/gear/armour-armoured_belt--masterwork.png",
+      "sha256": "8e5a74e66a6e899a0d6ca8a8e3aa8bce9d308c37e29390b013bd9f4613e617f4",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/armour-armoured_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-armoured_belt--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-armoured_belt--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-armoured_belt--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-armoured_belt--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-armoured_belt--masterwork.png",
+      "previous_sha256": "0af186f98e2e52927462ac03ff6bc43ed2115770077f99b3652c9b05425fe462",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-armoured_belt--relic": {
+      "label": "Armour-Armoured Belt Relic",
+      "path": "art/icons/gear/armour-armoured_belt--relic.png",
+      "sha256": "3efe41438112d2256db515ff7bf3906c3176bca52bdc38765d09fec924bdc670",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/armour-armoured_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-armoured_belt--relic.png",
+        "128": "art/icons/gear/exports/128/armour-armoured_belt--relic.png",
+        "64": "art/icons/gear/exports/64/armour-armoured_belt--relic.png",
+        "32": "art/icons/gear/exports/32/armour-armoured_belt--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-armoured_belt--relic.png",
+      "previous_sha256": "26e9a5f8e86ec3b219ee5cd1fcc397196c7775890741e1c151057bc3f3d50087",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-ballistic_helmet--fine": {
+      "label": "Armour-Ballistic Helmet Fine",
+      "path": "art/icons/gear/armour-ballistic_helmet--fine.png",
+      "sha256": "ba956e786eefe290c100a9f5f7645bdbc306bef2a21f5cb9b1979255c453de84",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/armour-ballistic_helmet.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-ballistic_helmet--fine.png",
+        "128": "art/icons/gear/exports/128/armour-ballistic_helmet--fine.png",
+        "64": "art/icons/gear/exports/64/armour-ballistic_helmet--fine.png",
+        "32": "art/icons/gear/exports/32/armour-ballistic_helmet--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-ballistic_helmet--fine.png",
+      "previous_sha256": "ac5c7ce93333712c92840b0081cfd88be26fc5db7b6f146adcbcd9b632b93a91",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-ballistic_helmet--masterwork": {
+      "label": "Armour-Ballistic Helmet Masterwork",
+      "path": "art/icons/gear/armour-ballistic_helmet--masterwork.png",
+      "sha256": "7d0b4e1842a954e689e6a3ebe9c3a50f47f3ec573b5fc0ba7a7bfb8797019a53",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/armour-ballistic_helmet.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-ballistic_helmet--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-ballistic_helmet--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-ballistic_helmet--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-ballistic_helmet--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-ballistic_helmet--masterwork.png",
+      "previous_sha256": "d941ec5615da03fd7246def003d2cb32ce1226fdfd6167c18f70bd0ba17e187a",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-field_helmet--celestial": {
+      "label": "Armour-Field Helmet Celestial",
+      "path": "art/icons/gear/armour-field_helmet--celestial.png",
+      "sha256": "59d6bd5d70783362fb3a29195bb63f75159e21d9e832f47ef2a12aba7b6cffc8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/armour-field_helmet.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_helmet--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-field_helmet--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-field_helmet--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-field_helmet--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-field_helmet--celestial.png",
+      "previous_sha256": "cc99ccf3f4f4df99199110df962ee28d8e0d8c0512db79e004b9a4124a691269",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-field_helmet--fine": {
+      "label": "Armour-Field Helmet Fine",
+      "path": "art/icons/gear/armour-field_helmet--fine.png",
+      "sha256": "b6240cb600e97921e39251527f3a87187915eb38806e34e80157f5fe8ab55b1c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/armour-field_helmet.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_helmet--fine.png",
+        "128": "art/icons/gear/exports/128/armour-field_helmet--fine.png",
+        "64": "art/icons/gear/exports/64/armour-field_helmet--fine.png",
+        "32": "art/icons/gear/exports/32/armour-field_helmet--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-field_helmet--fine.png",
+      "previous_sha256": "c551b2ca49415108740f97fe14f2b7c65708ba645f8c30fa7f6d7524b6d990ab",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-field_helmet--masterwork": {
+      "label": "Armour-Field Helmet Masterwork",
+      "path": "art/icons/gear/armour-field_helmet--masterwork.png",
+      "sha256": "c60f2c438eca488681600adbee283e782ae9c467ff187502ef0bc68b3d487cbc",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/armour-field_helmet.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_helmet--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-field_helmet--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-field_helmet--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-field_helmet--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-field_helmet--masterwork.png",
+      "previous_sha256": "4f934ce70e51f20b44717b4981315404c067bbb666135b223843d2c05b66ea9c",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-field_helmet--relic": {
+      "label": "Armour-Field Helmet Relic",
+      "path": "art/icons/gear/armour-field_helmet--relic.png",
+      "sha256": "9a967e58d882847c7fe52d3c6789bdf82077a231f728750ce9db913875e272ec",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/armour-field_helmet.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_helmet--relic.png",
+        "128": "art/icons/gear/exports/128/armour-field_helmet--relic.png",
+        "64": "art/icons/gear/exports/64/armour-field_helmet--relic.png",
+        "32": "art/icons/gear/exports/32/armour-field_helmet--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-field_helmet--relic.png",
+      "previous_sha256": "893a3310bfb94c4a96664bee341f3e198c7f0d7955d0055dabc23e5b317323f1",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-utility_belt--celestial": {
+      "label": "Armour-Utility Belt Celestial",
+      "path": "art/icons/gear/armour-utility_belt--celestial.png",
+      "sha256": "94ec6e82d0c4188c2b7f87f866f80eb7a52c0d5472cf6ac69b29ffdfb58a1f48",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/armour-utility_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-utility_belt--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-utility_belt--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-utility_belt--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-utility_belt--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-utility_belt--celestial.png",
+      "previous_sha256": "d06f5b32f7c5f5c5cda109892f5bab4228e2a2b61037aae75a63806bcf7049fe",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-utility_belt--fine": {
+      "label": "Armour-Utility Belt Fine",
+      "path": "art/icons/gear/armour-utility_belt--fine.png",
+      "sha256": "ea1be4d931caa8e3b0352278acea6f45e0b55bdfdbca7fe59648275cb5a16cde",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/armour-utility_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-utility_belt--fine.png",
+        "128": "art/icons/gear/exports/128/armour-utility_belt--fine.png",
+        "64": "art/icons/gear/exports/64/armour-utility_belt--fine.png",
+        "32": "art/icons/gear/exports/32/armour-utility_belt--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-utility_belt--fine.png",
+      "previous_sha256": "0e8c6867918be1364e99bf4a1338e7f2b8b2e70a0475ec1557d06c2243eb865d",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-utility_belt--masterwork": {
+      "label": "Armour-Utility Belt Masterwork",
+      "path": "art/icons/gear/armour-utility_belt--masterwork.png",
+      "sha256": "b9ead55344e0292f3e6cb2e280d4db0b503d4800802bdfbf90babe090da7c375",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/armour-utility_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-utility_belt--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-utility_belt--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-utility_belt--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-utility_belt--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-utility_belt--masterwork.png",
+      "previous_sha256": "ca3eabccd2d49b9ca2a000c6fa56ebd70286b4966954797d10d812e57dc35235",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "armour-utility_belt--relic": {
+      "label": "Armour-Utility Belt Relic",
+      "path": "art/icons/gear/armour-utility_belt--relic.png",
+      "sha256": "ed96a4d9665c58b62d411c04837931a0ff5dfa391737bc9a24a327f22c58fb7a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/armour-utility_belt.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-utility_belt--relic.png",
+        "128": "art/icons/gear/exports/128/armour-utility_belt--relic.png",
+        "64": "art/icons/gear/exports/64/armour-utility_belt--relic.png",
+        "32": "art/icons/gear/exports/32/armour-utility_belt--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/armour-utility_belt--relic.png",
+      "previous_sha256": "c55e8306ea8c66f9d90baca18092a176ea91cbfdf281b31aaed1b49f8b934f56",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "quiver-quiver--celestial": {
+      "label": "Quiver-Quiver Celestial",
+      "path": "art/icons/gear/quiver-quiver--celestial.png",
+      "sha256": "dcc555577811c0e3aff4a30e9fe8a05e1e9be37f73330cd875c148c2ff9d0e43",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/quiver-quiver.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/quiver-quiver--celestial.png",
+        "128": "art/icons/gear/exports/128/quiver-quiver--celestial.png",
+        "64": "art/icons/gear/exports/64/quiver-quiver--celestial.png",
+        "32": "art/icons/gear/exports/32/quiver-quiver--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/quiver-quiver--celestial.png",
+      "previous_sha256": "47fa630328ae1bdcdeb3874bef25ef610807d765c0a597fe5bd8583a21e482df",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "quiver-quiver--fine": {
+      "label": "Quiver-Quiver Fine",
+      "path": "art/icons/gear/quiver-quiver--fine.png",
+      "sha256": "51b8937975ca5f0c1b5736ff20b89361a17e2c9ea42d57456e13c2d1a1a9ec0c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/quiver-quiver.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/quiver-quiver--fine.png",
+        "128": "art/icons/gear/exports/128/quiver-quiver--fine.png",
+        "64": "art/icons/gear/exports/64/quiver-quiver--fine.png",
+        "32": "art/icons/gear/exports/32/quiver-quiver--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/quiver-quiver--fine.png",
+      "previous_sha256": "4d7046e472e407c72f5215f2577b46361404ee362d264b49af1e4fa8c4261829",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "quiver-quiver--masterwork": {
+      "label": "Quiver-Quiver Masterwork",
+      "path": "art/icons/gear/quiver-quiver--masterwork.png",
+      "sha256": "39a2f68e81725d28b99671a6a42af59cf9c0dc3c09851b796b425af7ac4e4679",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/quiver-quiver.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/quiver-quiver--masterwork.png",
+        "128": "art/icons/gear/exports/128/quiver-quiver--masterwork.png",
+        "64": "art/icons/gear/exports/64/quiver-quiver--masterwork.png",
+        "32": "art/icons/gear/exports/32/quiver-quiver--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/quiver-quiver--masterwork.png",
+      "previous_sha256": "732033d222aa75af6d2184ce215e442518795154b023303d4a54b41be4beaad1",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "quiver-quiver--relic": {
+      "label": "Quiver-Quiver Relic",
+      "path": "art/icons/gear/quiver-quiver--relic.png",
+      "sha256": "4f14063ac66e67044b77dab202c35932c4a538f30ac08e298206e9cf8b3c5db5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/quiver-quiver.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/quiver-quiver--relic.png",
+        "128": "art/icons/gear/exports/128/quiver-quiver--relic.png",
+        "64": "art/icons/gear/exports/64/quiver-quiver--relic.png",
+        "32": "art/icons/gear/exports/32/quiver-quiver--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/quiver-quiver--relic.png",
+      "previous_sha256": "e9176bc24c9390cfd15e10211dbec981e805acb69f4a4f8f6a5b749e65c70313",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-buckler--celestial": {
+      "label": "Shield-Buckler Celestial",
+      "path": "art/icons/gear/shield-buckler--celestial.png",
+      "sha256": "9b84a561b177851c9f938be0c4546fa1b611a4e200f9d975e288aa750a53b132",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/shield-buckler.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-buckler--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-buckler--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-buckler--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-buckler--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. One-pixel transparent frame guard removes edge contact by alpha-1 residue; prior candidate bytes and exports retained in border-revisions. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-buckler--celestial.png",
+      "previous_sha256": "32a1c63554bd22dfe9375a204ea29e8c08b894f9d1268a73d97d597937381bb2",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-buckler--fine": {
+      "label": "Shield-Buckler Fine",
+      "path": "art/icons/gear/shield-buckler--fine.png",
+      "sha256": "0fea45880943957817fa94e0ead0211ccc424b4b7db14afc8ec38856d71d308b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/shield-buckler.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-buckler--fine.png",
+        "128": "art/icons/gear/exports/128/shield-buckler--fine.png",
+        "64": "art/icons/gear/exports/64/shield-buckler--fine.png",
+        "32": "art/icons/gear/exports/32/shield-buckler--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-buckler--fine.png",
+      "previous_sha256": "73ba1fb71ea7e9db5574cadefe61d231f2d117e341b8e727511ec4bcbcf7ed3e",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-buckler--masterwork": {
+      "label": "Shield-Buckler Masterwork",
+      "path": "art/icons/gear/shield-buckler--masterwork.png",
+      "sha256": "c5a47034d0afabe5ba7f03a8daea1945b2f33454cdde96259e46dd5ed19f78de",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/shield-buckler.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-buckler--masterwork.png",
+        "128": "art/icons/gear/exports/128/shield-buckler--masterwork.png",
+        "64": "art/icons/gear/exports/64/shield-buckler--masterwork.png",
+        "32": "art/icons/gear/exports/32/shield-buckler--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-buckler--masterwork.png",
+      "previous_sha256": "4d84adda28e61a5a11ce28a10fcd54f316cf47b87f61e888a707946b71e0ca35",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-buckler--relic": {
+      "label": "Shield-Buckler Relic",
+      "path": "art/icons/gear/shield-buckler--relic.png",
+      "sha256": "c1ff3dc6a692366965ecc8423869f0f2c5966f2c30075b0a9218dd1a64666ac6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/shield-buckler.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-buckler--relic.png",
+        "128": "art/icons/gear/exports/128/shield-buckler--relic.png",
+        "64": "art/icons/gear/exports/64/shield-buckler--relic.png",
+        "32": "art/icons/gear/exports/32/shield-buckler--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. One-pixel transparent frame guard removes edge contact by alpha-1 residue; prior candidate bytes and exports retained in border-revisions. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-buckler--relic.png",
+      "previous_sha256": "b1260240a5c0c94417f7003dcdd32c6222d9bd284a5ab6ee54b46e7ce034db12",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-pavise--celestial": {
+      "label": "Shield-Pavise Celestial",
+      "path": "art/icons/gear/shield-pavise--celestial.png",
+      "sha256": "3d7b9deae36cf8ba4b7416da8e3a16eeee82e7cbad4fb6c5ce01b35c94d0dd9d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/shield-pavise.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-pavise--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-pavise--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-pavise--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-pavise--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. One-pixel transparent frame guard removes edge contact by alpha-1 residue; prior candidate bytes and exports retained in border-revisions. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-pavise--celestial.png",
+      "previous_sha256": "7f568c48310fe3889e94c51bd33a63990e8d938c8c94a04602eff2c89da5b515",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-pavise--fine": {
+      "label": "Shield-Pavise Fine",
+      "path": "art/icons/gear/shield-pavise--fine.png",
+      "sha256": "f0f38b6f863dcfc75b0c57f8c41b2cbffce0f48c1ccc23d7fd3c59321cb420f2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/shield-pavise.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-pavise--fine.png",
+        "128": "art/icons/gear/exports/128/shield-pavise--fine.png",
+        "64": "art/icons/gear/exports/64/shield-pavise--fine.png",
+        "32": "art/icons/gear/exports/32/shield-pavise--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-pavise--fine.png",
+      "previous_sha256": "0a324cbce1be733637503c5582749d9cb4bca528f3994d0d1c26601ba8eb08f1",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-pavise--masterwork": {
+      "label": "Shield-Pavise Masterwork",
+      "path": "art/icons/gear/shield-pavise--masterwork.png",
+      "sha256": "3fd35b9f2e1bc01dcbae1b6be889a5313084e71ddbfe984a2b8b295ebdee2262",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/shield-pavise.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-pavise--masterwork.png",
+        "128": "art/icons/gear/exports/128/shield-pavise--masterwork.png",
+        "64": "art/icons/gear/exports/64/shield-pavise--masterwork.png",
+        "32": "art/icons/gear/exports/32/shield-pavise--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-pavise--masterwork.png",
+      "previous_sha256": "14d30548905ce9568b501b31669ae73bb8f651cff0e99be98d80993dee3d844c",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-pavise--relic": {
+      "label": "Shield-Pavise Relic",
+      "path": "art/icons/gear/shield-pavise--relic.png",
+      "sha256": "ee97cc8767cf8f3583a3b5acb8eb3345d3762cf4671e6d733330f032698ba9ef",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/shield-pavise.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-pavise--relic.png",
+        "128": "art/icons/gear/exports/128/shield-pavise--relic.png",
+        "64": "art/icons/gear/exports/64/shield-pavise--relic.png",
+        "32": "art/icons/gear/exports/32/shield-pavise--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-pavise--relic.png",
+      "previous_sha256": "6301e0a8f3c62f555cb075a780a9b5416670081c6f9381c59db966b41cb77033",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-riot_shield--celestial": {
+      "label": "Shield-Riot Shield Celestial",
+      "path": "art/icons/gear/shield-riot_shield--celestial.png",
+      "sha256": "c05ed00e73e082696326992658a7112a9e6d458e6f57c264fcfaef026fb622c1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/shield-riot_shield.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-riot_shield--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-riot_shield--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-riot_shield--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-riot_shield--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-riot_shield--celestial.png",
+      "previous_sha256": "e048c79f1561903a03ae2a8795e4f7d160bf5df2343001bfb0e5d5590e311dee",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-riot_shield--fine": {
+      "label": "Shield-Riot Shield Fine",
+      "path": "art/icons/gear/shield-riot_shield--fine.png",
+      "sha256": "2a9c2132efd161ff2f930b6440dcff084c1a17f089ea9d04188a25d197d75e35",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/shield-riot_shield.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-riot_shield--fine.png",
+        "128": "art/icons/gear/exports/128/shield-riot_shield--fine.png",
+        "64": "art/icons/gear/exports/64/shield-riot_shield--fine.png",
+        "32": "art/icons/gear/exports/32/shield-riot_shield--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-riot_shield--fine.png",
+      "previous_sha256": "c764ee318837613db538aca7d9a638064e085117f81d2b9cf045b73631a5b7b1",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-riot_shield--masterwork": {
+      "label": "Shield-Riot Shield Masterwork",
+      "path": "art/icons/gear/shield-riot_shield--masterwork.png",
+      "sha256": "29719fc2d54d3f842fd64ef0629789237a8bb3e4c72c3f754a4cd16cff760886",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/shield-riot_shield.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-riot_shield--masterwork.png",
+        "128": "art/icons/gear/exports/128/shield-riot_shield--masterwork.png",
+        "64": "art/icons/gear/exports/64/shield-riot_shield--masterwork.png",
+        "32": "art/icons/gear/exports/32/shield-riot_shield--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-riot_shield--masterwork.png",
+      "previous_sha256": "70f6ff656269bf2cbc207c71cc046f57f93bfa725671f46c0c2aea7a0e9ae71e",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "shield-riot_shield--relic": {
+      "label": "Shield-Riot Shield Relic",
+      "path": "art/icons/gear/shield-riot_shield--relic.png",
+      "sha256": "d53d6d4a9205bc46ef5fa879274c395a0996834ef3202b3a6d748675e216f9cb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/shield-riot_shield.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-riot_shield--relic.png",
+        "128": "art/icons/gear/exports/128/shield-riot_shield--relic.png",
+        "64": "art/icons/gear/exports/64/shield-riot_shield--relic.png",
+        "32": "art/icons/gear/exports/32/shield-riot_shield--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-riot_shield--relic.png",
+      "previous_sha256": "5da0d0fe4dc1e7fef783464b90b086bdd0a547eddd3ba9dcf3b47a41dfaf645e",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-crossbow--fine": {
+      "label": "Crossbow Fine",
+      "path": "art/icons/gear/weapon-crossbow--fine.png",
+      "sha256": "2e7900745bd87b4acc0b5e163cad6219d5b1cc1d47959a4f2971dca9b06bb766",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/weapon-crossbow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-crossbow--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-crossbow--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-crossbow--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-crossbow--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-crossbow--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-crossbow--fine.png",
+      "previous_sha256": "d3f2925bda407b4c640c0c75e98d9b2bbd1e7f9fcc7bbaab50591de18fa01168",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-drifter_revolver--fine": {
+      "label": "Drifter Revolver Fine",
+      "path": "art/icons/gear/weapon-drifter_revolver--fine.png",
+      "sha256": "a5a69e07abcdb36b75f0b19c09b11544b9e965854cc6e3c51a3b5afdf44e3d2f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/weapon-drifter_revolver.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-drifter_revolver--fine-retry.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-drifter_revolver--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-drifter_revolver--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-drifter_revolver--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-drifter_revolver--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-drifter_revolver--fine.png",
+      "previous_sha256": "6b06c89c770e650af30465f5a2a1bc8aa8f33e8402f79b417f4e06116bfcd969",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-katana--celestial": {
+      "label": "Katana Celestial",
+      "path": "art/icons/gear/weapon-katana--celestial.png",
+      "sha256": "0ef1fd1320cfed26bdacb7702560f9c008a5cae38ead2206b781234019dcfd31",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/weapon-katana.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-katana--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-katana--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-katana--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-katana--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-katana--celestial.png",
+      "previous_sha256": "d8e2f577764ef58474fb59ebe68d50c577047e4576c104ceb97272478a3209ad",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-katana--fine": {
+      "label": "Katana Fine",
+      "path": "art/icons/gear/weapon-katana--fine.png",
+      "sha256": "96096c9317b4377e8361b22c82d353982ff5ebe769911870d9b27482345d40b3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/weapon-katana.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--fine-retry.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-katana--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-katana--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-katana--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-katana--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-katana--fine.png",
+      "previous_sha256": "81e1607c196cf5e1b8f686913e1b75e1cb235669c8c54dff4f3e1c9e2dfeacbd",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-katana--masterwork": {
+      "label": "Katana Masterwork",
+      "path": "art/icons/gear/weapon-katana--masterwork.png",
+      "sha256": "5fc897ca7bd6ec7c71096d3e9a9d20db53fb07bf222d7d9aa3c4e5cec4498622",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/weapon-katana.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-katana--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-katana--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-katana--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-katana--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-katana--masterwork.png",
+      "previous_sha256": "63be464d4cc977c8fbc1beebaad6b59e29fb30c3de01f8292aa8c49f9f1d4be7",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-katana--relic": {
+      "label": "Katana Relic",
+      "path": "art/icons/gear/weapon-katana--relic.png",
+      "sha256": "f7cc203000bc3570fd7e80a4638ca3f7b750fa7983c8f9e0ad3ea97b025a3128",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/weapon-katana.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-katana--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-katana--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-katana--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-katana--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-katana--relic.png",
+      "previous_sha256": "ffc538dbf8d885757ea58b8cc8fa9e80b7fc02dfec5231959907cad03fba62ff",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-longbow--celestial": {
+      "label": "Longbow Celestial",
+      "path": "art/icons/gear/weapon-longbow--celestial.png",
+      "sha256": "8e961cb699a3eaa61467b9d470994f5b43d7f001766d8cd01f8d63328e93467b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/weapon-longbow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-longbow--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-longbow--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-longbow--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-longbow--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-longbow--celestial.png",
+      "previous_sha256": "e9ed6bcb93b7cfee61b13d5ae5fb591443798fd0927c494a710095ab9b6a3424",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-longbow--fine": {
+      "label": "Longbow Fine",
+      "path": "art/icons/gear/weapon-longbow--fine.png",
+      "sha256": "1b5f9ed54ab33bd52c7b48529d4df9e87f752d1112155a4c8be8f29499d1694d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/weapon-longbow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-longbow--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-longbow--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-longbow--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-longbow--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-longbow--fine.png",
+      "previous_sha256": "5b427ba226389bb9ef9ec78f9f370204fdd9bf99155f870ce4361e72c66da373",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-longbow--masterwork": {
+      "label": "Longbow Masterwork",
+      "path": "art/icons/gear/weapon-longbow--masterwork.png",
+      "sha256": "b68135ecd329fb3224c639e5fe4ba53942269a26105d85e31b7f18965a30a1b7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/weapon-longbow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-longbow--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-longbow--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-longbow--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-longbow--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-longbow--masterwork.png",
+      "previous_sha256": "1fc682469a6064d6176e5420a52b5139881694615e52f81acb761f21593b2d9c",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-longbow--relic": {
+      "label": "Longbow Relic",
+      "path": "art/icons/gear/weapon-longbow--relic.png",
+      "sha256": "5c2bbc412e185edaa0e6f30f92f35ccaabe9b8f5a1016b17c56846cd4eafaa2c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/weapon-longbow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-longbow--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-longbow--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-longbow--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-longbow--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-longbow--relic.png",
+      "previous_sha256": "c3c085cf310247d0658e4cc1ef449fb21f7941219ebe62868fd542cb627b20a2",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-recurve_bow--celestial": {
+      "label": "Recurve Bow Celestial",
+      "path": "art/icons/gear/weapon-recurve_bow--celestial.png",
+      "sha256": "3997eb8dd878b7e0839a8298a7a85350a132b2fd21ec498322c2f5c6c16ef811",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/weapon-recurve_bow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-recurve_bow--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-recurve_bow--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-recurve_bow--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-recurve_bow--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-recurve_bow--celestial.png",
+      "previous_sha256": "b7281bcfd74014aee19b50f1240b3872cade0003eff71e12a52bf59e612837d6",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-recurve_bow--fine": {
+      "label": "Recurve Bow Fine",
+      "path": "art/icons/gear/weapon-recurve_bow--fine.png",
+      "sha256": "c0723490812d832c64b100236f22e02d521eeae03c942da4cb6956e93e50086e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/weapon-recurve_bow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-recurve_bow--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-recurve_bow--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-recurve_bow--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-recurve_bow--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-recurve_bow--fine.png",
+      "previous_sha256": "d64f0f4e5ebe724f46ba63326c7a471c984701a761b3316c6192fc2745c988f8",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-recurve_bow--masterwork": {
+      "label": "Recurve Bow Masterwork",
+      "path": "art/icons/gear/weapon-recurve_bow--masterwork.png",
+      "sha256": "1f92191583c4ea749042680bb94a62e7926efaa658c9dce27f3e001f7f9e7a2b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/weapon-recurve_bow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-recurve_bow--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-recurve_bow--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-recurve_bow--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-recurve_bow--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-recurve_bow--masterwork.png",
+      "previous_sha256": "492f339ecf0994159935f454f647ff6e8f81b1b95dbd6a4c4a9503918981d542",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-recurve_bow--relic": {
+      "label": "Recurve Bow Relic",
+      "path": "art/icons/gear/weapon-recurve_bow--relic.png",
+      "sha256": "55ff3b202f88ab5bdf6a28c558e980b55fc9830af29e5f509f0362a2c3cca3f2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "relic",
+      "standard_path": "art/icons/gear/weapon-recurve_bow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-recurve_bow--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-recurve_bow--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-recurve_bow--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-recurve_bow--relic.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Bow fittings and limb contours drift, particularly the Longbow upper fitting; artistic approval and an exact-outline pass remain pending. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-recurve_bow--relic.png",
+      "previous_sha256": "9724bff8e385745dd42df18f7094ea446face0d3c47d23700bda03d1593d67e6",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-repeating_crossbow--fine": {
+      "label": "Repeating Crossbow Fine",
+      "path": "art/icons/gear/weapon-repeating_crossbow--fine.png",
+      "sha256": "b54a9dc2cc5c966c52600d89aeed08d6391c5d8a3e9bbe122bef0c815a1863f7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "fine",
+      "standard_path": "art/icons/gear/weapon-repeating_crossbow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-repeating_crossbow--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-repeating_crossbow--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-repeating_crossbow--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-repeating_crossbow--fine.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-repeating_crossbow--fine.png",
+      "previous_sha256": "a51ad4a6e04ecf8a9ae5d27a775933bcae317c6953755dbe3e0bc8007d364cc0",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
+      }
+    },
+    "weapon-repeating_crossbow--masterwork": {
+      "label": "Repeating Crossbow Masterwork",
+      "path": "art/icons/gear/weapon-repeating_crossbow--masterwork.png",
+      "sha256": "e06c8aea7c5e68b4ec4394caf49472b35cfe52b16b5e3a2521c6b50677c6f6c7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/weapon-repeating_crossbow.png",
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-repeating_crossbow--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-repeating_crossbow--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-repeating_crossbow--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-repeating_crossbow--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet. Technical v2 removes only alpha below 8; RGB and solid alpha silhouette are unchanged. Native/candidate and previous production bytes are preserved in peer-import-v2 provenance.",
+      "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-repeating_crossbow--masterwork.png",
+      "previous_sha256": "6020773de63f70586e913a349ec39b54de6bc6f8d35d5bab57f7d664d7a2c209",
+      "technical_revision": {
+        "type": "alpha-residue-cleanup",
+        "threshold": 8,
+        "peer_commit": "676764cfd29663c386e3b79538eef046153cedd3",
+        "manifest": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/manifest.json"
       }
     }
   },

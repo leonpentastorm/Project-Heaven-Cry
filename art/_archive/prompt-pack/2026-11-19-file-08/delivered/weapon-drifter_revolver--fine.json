@@ -1,0 +1,23 @@
+{
+  "id": "drifter_revolver",
+  "tier": "fine",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-drifter_revolver--fine-retry.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-drifter_revolver--fine.png",
+  "size64_mask_differing_pixels": 9,
+  "sha256": "a5a69e07abcdb36b75f0b19c09b11544b9e965854cc6e3c51a3b5afdf44e3d2f",
+  "path": "art/icons/gear/weapon-drifter_revolver--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-drifter_revolver--fine.png",
+    "128": "art/icons/gear/exports/128/weapon-drifter_revolver--fine.png",
+    "64": "art/icons/gear/exports/64/weapon-drifter_revolver--fine.png",
+    "32": "art/icons/gear/exports/32/weapon-drifter_revolver--fine.png"
+  },
+  "source_sha256": "2022d4f62b1aca4e4214d3c9134e3b8c6dc6028db73c5855963ae441b9cf5968",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-drifter_revolver--fine.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-drifter_revolver--fine.png",
+  "previous_sha256": "6b06c89c770e650af30465f5a2a1bc8aa8f33e8402f79b417f4e06116bfcd969"
+}

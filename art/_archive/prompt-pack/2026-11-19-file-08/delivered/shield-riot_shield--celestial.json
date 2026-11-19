@@ -1,0 +1,23 @@
+{
+  "id": "shield-riot_shield",
+  "tier": "celestial",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--celestial.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-riot_shield--celestial.png",
+  "size64_mask_differing_pixels": 18,
+  "sha256": "c05ed00e73e082696326992658a7112a9e6d458e6f57c264fcfaef026fb622c1",
+  "path": "art/icons/gear/shield-riot_shield--celestial.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/shield-riot_shield--celestial.png",
+    "128": "art/icons/gear/exports/128/shield-riot_shield--celestial.png",
+    "64": "art/icons/gear/exports/64/shield-riot_shield--celestial.png",
+    "32": "art/icons/gear/exports/32/shield-riot_shield--celestial.png"
+  },
+  "source_sha256": "a8b7fb36ace1706e91e0f86c8d161731fbd4ba7e378407cf1162065c32a58334",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--celestial.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-riot_shield--celestial.png",
+  "previous_sha256": "e048c79f1561903a03ae2a8795e4f7d160bf5df2343001bfb0e5d5590e311dee"
+}

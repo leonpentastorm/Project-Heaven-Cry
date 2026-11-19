@@ -1,0 +1,12 @@
+{
+  "id": "armour-armoured_belt",
+  "tier": "celestial",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--celestial.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its celestial finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. Preserve the exact image-one heavy armoured belt: oval leather band, squared front buckle, tongue and holes, loops, same rivets, and overlapping pointed skirt plates. Preserve the tiny flush buckle inset and repair-rivet locations from image two. Celestial: pale hide leather, flawless pearl-ivory steel plates and buckle, same painterly gouache surface. The single narrow upper-edge inlay has faint ivory-gold inner light only inside existing material; small buckle inset stays softly warm gilt. No wearer, new plate, emblem, glow beyond the outline, halo or rays. Fictional RPG inventory illustration. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/armour-armoured_belt.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--relic.png"
+  ],
+  "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--relic.png",
+  "sha256": "c876db4c2fa3d27e004ecedc1e3cf00e487192679da660579a98b28f30b9d7cf"
+}

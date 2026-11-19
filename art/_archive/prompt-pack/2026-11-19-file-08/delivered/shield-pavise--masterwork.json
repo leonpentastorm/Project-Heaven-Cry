@@ -1,0 +1,23 @@
+{
+  "id": "shield-pavise",
+  "tier": "masterwork",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--masterwork.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-pavise--masterwork.png",
+  "size64_mask_differing_pixels": 32,
+  "sha256": "3fd35b9f2e1bc01dcbae1b6be889a5313084e71ddbfe984a2b8b295ebdee2262",
+  "path": "art/icons/gear/shield-pavise--masterwork.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/shield-pavise--masterwork.png",
+    "128": "art/icons/gear/exports/128/shield-pavise--masterwork.png",
+    "64": "art/icons/gear/exports/64/shield-pavise--masterwork.png",
+    "32": "art/icons/gear/exports/32/shield-pavise--masterwork.png"
+  },
+  "source_sha256": "2c304b99ce5d34315ae470c3b0b2f653a46cce652b6a8ae5b9b538aa6ecde84a",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--masterwork.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-pavise--masterwork.png",
+  "previous_sha256": "14d30548905ce9568b501b31669ae73bb8f651cff0e99be98d80993dee3d844c"
+}

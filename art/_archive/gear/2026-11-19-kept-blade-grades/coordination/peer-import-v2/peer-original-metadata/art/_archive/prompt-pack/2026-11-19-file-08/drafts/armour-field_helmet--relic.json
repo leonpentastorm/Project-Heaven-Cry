@@ -1,0 +1,12 @@
+{
+  "id": "armour-field_helmet",
+  "tier": "relic",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--relic.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its relic finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. Preserve image one's helmet shell, small triangular crown ridge, riveted brow band, flared brim, dark padded liner and hanging chin strap geometry exactly. Fictional RPG inventory helmet with no wearer. Relic: deep warm aged olive-steel patina, dark warm canvas strap and lining, brow stripe dull old gold; one tiny flush gilt ornament at an existing chin-strap rivet, no crest or emblem. One old repair is a small older-canvas patch sewn on the existing strap within its outline. Keep the brass buckle and every existing fitting in place, no new holes or damage to the silhouette. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/armour-field_helmet.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--masterwork.png"
+  ],
+  "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--masterwork.png",
+  "sha256": "83d7a6d37c6e341f6fb1f7b04b752809bd79a7a7c98569b5285ba3949fe8221c"
+}

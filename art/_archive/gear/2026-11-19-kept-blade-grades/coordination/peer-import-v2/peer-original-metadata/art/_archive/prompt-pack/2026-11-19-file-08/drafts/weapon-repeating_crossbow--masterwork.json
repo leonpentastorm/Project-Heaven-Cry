@@ -1,0 +1,12 @@
+{
+  "id": "repeating_crossbow",
+  "tier": "masterwork",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--masterwork.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its masterwork finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. The maker's signature parts are the boxy banded top hopper, broad wooden stock, purple side trim, curved prod, cord arrangement, lever and trigger opening, exactly as image one. Fictional RPG inventory prop. Masterwork: retain Fine, turn its thin carved stock line into a plum-purple inlay, in the same accent locations. Rich dark walnut stock, fine dark leather where the grip already sits, polished flush brass nock fittings, crisp bright existing metal bands and prod. Do not introduce brass decoration elsewhere, extra parts, symbols, arrows or bolts. Exact outlines from image one. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/weapon-repeating_crossbow.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--fine.png"
+  ],
+  "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--fine.png",
+  "sha256": "468eb08e97875b3a96a19a6de660adad7fa3fcb45847ac76d8d0575a18cb5c1b"
+}

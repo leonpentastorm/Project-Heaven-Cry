@@ -1,0 +1,12 @@
+{
+  "id": "shield-buckler",
+  "tier": "celestial",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--celestial.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its celestial finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. Keep image one's exact tilted circular buckler silhouette, domed boss and smaller ring, all original rivets and side leather strap. Retain the small flat lower-left repair patch and gilt boss-ring position from image two. Celestial: face, rim and rivets pale unmarked pearl-ivory, strap pale hide. The single thin inlay route just inside the outer rim returns as a faint ivory-gold contained light; one subtle warm line around the boss, no other ornament. All light remains inside the existing shield, no bloom, halo, rays or backdrop. No emblem. Fictional RPG inventory artwork. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/shield-buckler.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.png"
+  ],
+  "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.png",
+  "sha256": "cc839035ac1ea906a1d4f2afb591189eeaa6bea086d16707d647e9b7344d3c49"
+}

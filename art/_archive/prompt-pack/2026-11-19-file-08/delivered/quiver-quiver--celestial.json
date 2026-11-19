@@ -1,0 +1,23 @@
+{
+  "id": "quiver-quiver",
+  "tier": "celestial",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--celestial.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/quiver-quiver--celestial.png",
+  "size64_mask_differing_pixels": 30,
+  "sha256": "dcc555577811c0e3aff4a30e9fe8a05e1e9be37f73330cd875c148c2ff9d0e43",
+  "path": "art/icons/gear/quiver-quiver--celestial.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/quiver-quiver--celestial.png",
+    "128": "art/icons/gear/exports/128/quiver-quiver--celestial.png",
+    "64": "art/icons/gear/exports/64/quiver-quiver--celestial.png",
+    "32": "art/icons/gear/exports/32/quiver-quiver--celestial.png"
+  },
+  "source_sha256": "811203a5934181cf5f79df7f85c1262bcb34e420129bb698a2f2e893ab9e416a",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--celestial.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/quiver-quiver--celestial.png",
+  "previous_sha256": "47fa630328ae1bdcdeb3874bef25ef610807d765c0a597fe5bd8583a21e482df"
+}

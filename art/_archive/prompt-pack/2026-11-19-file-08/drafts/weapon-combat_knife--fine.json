@@ -1,11 +1,11 @@
 {
   "id": "combat_knife",
   "tier": "fine",
-  "src": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.png",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.png",
   "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its fine finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. Keep the short clipped angular blade, recessed narrow fuller, short oval metal guard and the existing dark diamond grip wrap. Clean the steel to a slightly lighter even satin grey, fresh bright honed edge, clean grip and softly polished guard. Add a single fine engraved line along the existing fuller. All silhouette boundaries and the pommel aperture stay fixed. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
   "refs": [
-    "/workspace/work/phc-prompt-pack-08/art/icons/gear/weapon-combat_knife.png",
-    "/workspace/work/phc-prompt-pack-08/art/icons/gear/weapon-combat_knife.png"
+    "art/icons/gear/weapon-combat_knife.png",
+    "art/icons/gear/weapon-combat_knife.png"
   ],
   "previous": "art/icons/gear/weapon-combat_knife.png",
   "sha256": "256c920fc297b794fa424cf5427e6b7043bac838dc1a16cb4094bf508a9f7afa"

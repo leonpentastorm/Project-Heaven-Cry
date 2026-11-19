@@ -1,0 +1,23 @@
+{
+  "id": "repeating_crossbow",
+  "tier": "masterwork",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--masterwork.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-repeating_crossbow--masterwork.png",
+  "size64_mask_differing_pixels": 31,
+  "sha256": "e06c8aea7c5e68b4ec4394caf49472b35cfe52b16b5e3a2521c6b50677c6f6c7",
+  "path": "art/icons/gear/weapon-repeating_crossbow--masterwork.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-repeating_crossbow--masterwork.png",
+    "128": "art/icons/gear/exports/128/weapon-repeating_crossbow--masterwork.png",
+    "64": "art/icons/gear/exports/64/weapon-repeating_crossbow--masterwork.png",
+    "32": "art/icons/gear/exports/32/weapon-repeating_crossbow--masterwork.png"
+  },
+  "source_sha256": "468eb08e97875b3a96a19a6de660adad7fa3fcb45847ac76d8d0575a18cb5c1b",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-repeating_crossbow--masterwork.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-repeating_crossbow--masterwork.png",
+  "previous_sha256": "6020773de63f70586e913a349ec39b54de6bc6f8d35d5bab57f7d664d7a2c209"
+}

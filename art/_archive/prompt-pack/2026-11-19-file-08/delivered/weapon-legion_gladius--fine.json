@@ -1,0 +1,23 @@
+{
+  "id": "legion_gladius",
+  "tier": "fine",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--fine.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-legion_gladius--fine.png",
+  "size64_mask_differing_pixels": 12,
+  "sha256": "1557133d12ac46e4da601a804415e4998348a95853bfe11bd198b8998d3d61e9",
+  "path": "art/icons/gear/weapon-legion_gladius--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-legion_gladius--fine.png",
+    "128": "art/icons/gear/exports/128/weapon-legion_gladius--fine.png",
+    "64": "art/icons/gear/exports/64/weapon-legion_gladius--fine.png",
+    "32": "art/icons/gear/exports/32/weapon-legion_gladius--fine.png"
+  },
+  "source_sha256": "60f5d7e691bbe67c9d0a8366f24365c4d91dc74d522582b4a4a621bd08449bbd",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--fine.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-legion_gladius--fine.png",
+  "previous_sha256": "6287af08128f37253c8f97592da21fd70a2c609c024cd534d8b98ba39301b931"
+}

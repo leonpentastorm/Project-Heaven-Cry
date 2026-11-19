@@ -1,0 +1,26 @@
+{
+  "label": "Shield-Buckler Relic",
+  "path": "art/icons/gear/shield-buckler--relic.png",
+  "sha256": "8303dd322c7b90b7a1430e96d39efc10565f5dfc3782f054896b41286d09ead9",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "grade": "relic",
+  "standard_path": "art/icons/gear/shield-buckler.png",
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "exports": {
+    "256": "art/icons/gear/exports/256/shield-buckler--relic.png",
+    "128": "art/icons/gear/exports/128/shield-buckler--relic.png",
+    "64": "art/icons/gear/exports/64/shield-buckler--relic.png",
+    "32": "art/icons/gear/exports/32/shield-buckler--relic.png"
+  },
+  "collection": "nov19-grade-candidates",
+  "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+}

@@ -1,0 +1,9 @@
+{
+  "n": 1,
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--fine-retry.png",
+  "path": "art/icons/gear/weapon-katana.png",
+  "refs": [
+    "art/icons/gear/weapon-katana.png"
+  ],
+  "prompt": "Make a surface-only restoration edit of this existing game inventory illustration for the Fine grade. The provided transparent square PNG is the entire source and the pixel-aligned alpha silhouette is locked. All dimensions, angle, outline, pose, negative spaces, existing components, and placement stay exactly fixed at their positions on the source artboard. Preserve the actual source artwork and paint texture along all edges. Very subtly clean and lighten the existing steel inside its outline, preserve the wavy temper line, keep the cloth and brass exactly in place and give them a little less wear. Add one fine engraved line INSIDE the blade, parallel to its spine, ending before the tip. Never draw a line along the alpha edge. The existing blade width, exact arc, circular guard and cloth diamonds are locked. Keep opaque gouache with soft ivory highlights and restrained contrast. True transparent alpha, with no halo, pale pixels outside the original object, border, lettering, or shadows outside the silhouette. Return the complete edited fictional RPG inventory icon."
+}

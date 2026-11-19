@@ -1,0 +1,756 @@
+[
+  {
+    "id": "katana",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--fine-retry.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-katana--fine.png",
+    "size64_mask_differing_pixels": 4,
+    "sha256": "96096c9317b4377e8361b22c82d353982ff5ebe769911870d9b27482345d40b3",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "katana",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-katana--masterwork.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "5fc897ca7bd6ec7c71096d3e9a9d20db53fb07bf222d7d9aa3c4e5cec4498622",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "katana",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-katana--relic.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "f7cc203000bc3570fd7e80a4638ca3f7b750fa7983c8f9e0ad3ea97b025a3128",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "katana",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-katana--celestial.png",
+    "size64_mask_differing_pixels": 7,
+    "sha256": "0ef1fd1320cfed26bdacb7702560f9c008a5cae38ead2206b781234019dcfd31",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "combat_knife",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-combat_knife--fine.png",
+    "size64_mask_differing_pixels": 11,
+    "sha256": "7e1b4cfb254b9e04c9aecdd4a7ad7b1275dc5febb6faad4a9ad873a2b57ad588",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "combat_knife",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-combat_knife--masterwork.png",
+    "size64_mask_differing_pixels": 13,
+    "sha256": "b93a1cd5c197dcd53e7ec47b430d312791e8ce451bc61860ef29a603c9e74818",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "combat_knife",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-combat_knife--relic.png",
+    "size64_mask_differing_pixels": 15,
+    "sha256": "9790d30a8b736570b00678abc1c244db359211942cab1334a79ff4d48c14bbe0",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "combat_knife",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-combat_knife--celestial.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "422ce0bb53aa2355fac1a777ff3ad92661b5f83375c30ae4e407478a03188189",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "sabre",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-sabre--fine.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "0a241a01d31f4a02aa16393906ab86ebf1e223e2461d0f2bf5ad98278f8c4ef5",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "sabre",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-sabre--masterwork.png",
+    "size64_mask_differing_pixels": 40,
+    "sha256": "e762de9178c4ab31c9dacdf436456c993587d7966b20be219ba047e3113663cf",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "sabre",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-sabre--relic.png",
+    "size64_mask_differing_pixels": 59,
+    "sha256": "974ce19d7c63bd16bc14c7ba3f825250da4926c7642371998ecbf18120a0830c",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "sabre",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-sabre--celestial.png",
+    "size64_mask_differing_pixels": 52,
+    "sha256": "1e083cac78f6156d849625ea6bee1d247908277b7c67d58fb3882997e23764f9",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-legion_gladius--fine.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "1557133d12ac46e4da601a804415e4998348a95853bfe11bd198b8998d3d61e9",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-legion_gladius--masterwork.png",
+    "size64_mask_differing_pixels": 11,
+    "sha256": "59335e057089fd705f3d42e4a247e4bc84013d4ac38f5af74314ff6e265449d4",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-legion_gladius--relic.png",
+    "size64_mask_differing_pixels": 10,
+    "sha256": "66570e9f75b5f26491ab2788d85afc55c7a93f9c1069a6a88b23122528e17a8a",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-legion_gladius--celestial.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "535134b5caa6c495f950dd8f6edfc4ffa85bee116271c79ec2996e50bd1893cb",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "recurve_bow",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-recurve_bow--fine.png",
+    "size64_mask_differing_pixels": 33,
+    "sha256": "c0723490812d832c64b100236f22e02d521eeae03c942da4cb6956e93e50086e",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "recurve_bow",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-recurve_bow--masterwork.png",
+    "size64_mask_differing_pixels": 49,
+    "sha256": "1f92191583c4ea749042680bb94a62e7926efaa658c9dce27f3e001f7f9e7a2b",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "recurve_bow",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-recurve_bow--relic.png",
+    "size64_mask_differing_pixels": 70,
+    "sha256": "55ff3b202f88ab5bdf6a28c558e980b55fc9830af29e5f509f0362a2c3cca3f2",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "recurve_bow",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-recurve_bow--celestial.png",
+    "size64_mask_differing_pixels": 68,
+    "sha256": "3997eb8dd878b7e0839a8298a7a85350a132b2fd21ec498322c2f5c6c16ef811",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "longbow",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-longbow--fine.png",
+    "size64_mask_differing_pixels": 48,
+    "sha256": "1b5f9ed54ab33bd52c7b48529d4df9e87f752d1112155a4c8be8f29499d1694d",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "longbow",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-longbow--masterwork.png",
+    "size64_mask_differing_pixels": 136,
+    "sha256": "b68135ecd329fb3224c639e5fe4ba53942269a26105d85e31b7f18965a30a1b7",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "longbow",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-longbow--relic.png",
+    "size64_mask_differing_pixels": 169,
+    "sha256": "5c2bbc412e185edaa0e6f30f92f35ccaabe9b8f5a1016b17c56846cd4eafaa2c",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "longbow",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-longbow--celestial.png",
+    "size64_mask_differing_pixels": 183,
+    "sha256": "8e961cb699a3eaa61467b9d470994f5b43d7f001766d8cd01f8d63328e93467b",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "drifter_revolver",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-drifter_revolver--fine-retry.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-drifter_revolver--fine.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "a5a69e07abcdb36b75f0b19c09b11544b9e965854cc6e3c51a3b5afdf44e3d2f",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-drifter_revolver--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "crossbow",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-crossbow--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-crossbow--fine.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "2e7900745bd87b4acc0b5e163cad6219d5b1cc1d47959a4f2971dca9b06bb766",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-crossbow--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "repeating_crossbow",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-repeating_crossbow--fine.png",
+    "size64_mask_differing_pixels": 19,
+    "sha256": "b54a9dc2cc5c966c52600d89aeed08d6391c5d8a3e9bbe122bef0c815a1863f7",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-repeating_crossbow--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "repeating_crossbow",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-repeating_crossbow--masterwork.png",
+    "size64_mask_differing_pixels": 31,
+    "sha256": "e06c8aea7c5e68b4ec4394caf49472b35cfe52b16b5e3a2521c6b50677c6f6c7",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-repeating_crossbow--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-buckler--fine.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "0fea45880943957817fa94e0ead0211ccc424b4b7db14afc8ec38856d71d308b",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-buckler--masterwork.png",
+    "size64_mask_differing_pixels": 25,
+    "sha256": "c5a47034d0afabe5ba7f03a8daea1945b2f33454cdde96259e46dd5ed19f78de",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-buckler--relic.png",
+    "size64_mask_differing_pixels": 26,
+    "sha256": "c1ff3dc6a692366965ecc8423869f0f2c5966f2c30075b0a9218dd1a64666ac6",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-buckler--celestial.png",
+    "size64_mask_differing_pixels": 25,
+    "sha256": "9b84a561b177851c9f938be0c4546fa1b611a4e200f9d975e288aa750a53b132",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-riot_shield",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-riot_shield--fine.png",
+    "size64_mask_differing_pixels": 10,
+    "sha256": "2a9c2132efd161ff2f930b6440dcff084c1a17f089ea9d04188a25d197d75e35",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-riot_shield",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-riot_shield--masterwork.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "29719fc2d54d3f842fd64ef0629789237a8bb3e4c72c3f754a4cd16cff760886",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-riot_shield",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-riot_shield--relic.png",
+    "size64_mask_differing_pixels": 15,
+    "sha256": "d53d6d4a9205bc46ef5fa879274c395a0996834ef3202b3a6d748675e216f9cb",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-riot_shield",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-riot_shield--celestial.png",
+    "size64_mask_differing_pixels": 18,
+    "sha256": "c05ed00e73e082696326992658a7112a9e6d458e6f57c264fcfaef026fb622c1",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-pavise--fine.png",
+    "size64_mask_differing_pixels": 10,
+    "sha256": "f0f38b6f863dcfc75b0c57f8c41b2cbffce0f48c1ccc23d7fd3c59321cb420f2",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-pavise--masterwork.png",
+    "size64_mask_differing_pixels": 32,
+    "sha256": "3fd35b9f2e1bc01dcbae1b6be889a5313084e71ddbfe984a2b8b295ebdee2262",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-pavise--relic.png",
+    "size64_mask_differing_pixels": 53,
+    "sha256": "ee97cc8767cf8f3583a3b5acb8eb3345d3762cf4671e6d733330f032698ba9ef",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-pavise--celestial.png",
+    "size64_mask_differing_pixels": 71,
+    "sha256": "3d7b9deae36cf8ba4b7416da8e3a16eeee82e7cbad4fb6c5ce01b35c94d0dd9d",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/quiver-quiver--fine.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "51b8937975ca5f0c1b5736ff20b89361a17e2c9ea42d57456e13c2d1a1a9ec0c",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/quiver-quiver--masterwork.png",
+    "size64_mask_differing_pixels": 55,
+    "sha256": "39a2f68e81725d28b99671a6a42af59cf9c0dc3c09851b796b425af7ac4e4679",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/quiver-quiver--relic.png",
+    "size64_mask_differing_pixels": 43,
+    "sha256": "4f14063ac66e67044b77dab202c35932c4a538f30ac08e298206e9cf8b3c5db5",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/quiver-quiver--celestial.png",
+    "size64_mask_differing_pixels": 30,
+    "sha256": "dcc555577811c0e3aff4a30e9fe8a05e1e9be37f73330cd875c148c2ff9d0e43",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-utility_belt",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-utility_belt--fine.png",
+    "size64_mask_differing_pixels": 26,
+    "sha256": "ea1be4d931caa8e3b0352278acea6f45e0b55bdfdbca7fe59648275cb5a16cde",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-utility_belt",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-utility_belt--masterwork.png",
+    "size64_mask_differing_pixels": 37,
+    "sha256": "b9ead55344e0292f3e6cb2e280d4db0b503d4800802bdfbf90babe090da7c375",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-utility_belt",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-utility_belt--relic.png",
+    "size64_mask_differing_pixels": 84,
+    "sha256": "ed96a4d9665c58b62d411c04837931a0ff5dfa391737bc9a24a327f22c58fb7a",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-utility_belt",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-utility_belt--celestial.png",
+    "size64_mask_differing_pixels": 87,
+    "sha256": "94ec6e82d0c4188c2b7f87f866f80eb7a52c0d5472cf6ac69b29ffdfb58a1f48",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-armoured_belt--fine.png",
+    "size64_mask_differing_pixels": 15,
+    "sha256": "ec90b3309076ca66d0babea3296c70e4ee32e1cb5ef4ddf8452f27f6f60f2b06",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-armoured_belt--masterwork.png",
+    "size64_mask_differing_pixels": 19,
+    "sha256": "8e5a74e66a6e899a0d6ca8a8e3aa8bce9d308c37e29390b013bd9f4613e617f4",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-armoured_belt--relic.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "3efe41438112d2256db515ff7bf3906c3176bca52bdc38765d09fec924bdc670",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-armoured_belt--celestial.png",
+    "size64_mask_differing_pixels": 18,
+    "sha256": "0374f4db753c3becf6e3cddc11e2ade7b47c32c67c240b1332fdc08585261cdd",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-field_helmet--fine.png",
+    "size64_mask_differing_pixels": 27,
+    "sha256": "b6240cb600e97921e39251527f3a87187915eb38806e34e80157f5fe8ab55b1c",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-field_helmet--masterwork.png",
+    "size64_mask_differing_pixels": 46,
+    "sha256": "c60f2c438eca488681600adbee283e782ae9c467ff187502ef0bc68b3d487cbc",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--relic.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-field_helmet--relic.png",
+    "size64_mask_differing_pixels": 46,
+    "sha256": "9a967e58d882847c7fe52d3c6789bdf82077a231f728750ce9db913875e272ec",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--relic.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--celestial.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-field_helmet--celestial.png",
+    "size64_mask_differing_pixels": 47,
+    "sha256": "59d6bd5d70783362fb3a29195bb63f75159e21d9e832f47ef2a12aba7b6cffc8",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--celestial.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-ballistic_helmet",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--fine.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-ballistic_helmet--fine.png",
+    "size64_mask_differing_pixels": 17,
+    "sha256": "ba956e786eefe290c100a9f5f7645bdbc306bef2a21f5cb9b1979255c453de84",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-ballistic_helmet--fine.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  },
+  {
+    "id": "armour-ballistic_helmet",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--masterwork.png",
+    "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/armour-ballistic_helmet--masterwork.png",
+    "size64_mask_differing_pixels": 18,
+    "sha256": "7d0b4e1842a954e689e6a3ebe9c3a50f47f3ec573b5fc0ba7a7bfb8797019a53",
+    "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-ballistic_helmet--masterwork.png",
+    "technical_cleanup": {
+      "alpha_below": 8,
+      "solid_alpha_unchanged": true
+    }
+  }
+]

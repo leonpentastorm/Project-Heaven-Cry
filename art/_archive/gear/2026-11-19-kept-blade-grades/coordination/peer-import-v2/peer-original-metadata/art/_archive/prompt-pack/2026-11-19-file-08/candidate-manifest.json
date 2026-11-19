@@ -1,0 +1,466 @@
+[
+  {
+    "id": "katana",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--fine-retry.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--fine.png",
+    "size64_mask_differing_pixels": 3,
+    "sha256": "81e1607c196cf5e1b8f686913e1b75e1cb235669c8c54dff4f3e1c9e2dfeacbd"
+  },
+  {
+    "id": "katana",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--masterwork.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "63be464d4cc977c8fbc1beebaad6b59e29fb30c3de01f8292aa8c49f9f1d4be7"
+  },
+  {
+    "id": "katana",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--relic.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "ffc538dbf8d885757ea58b8cc8fa9e80b7fc02dfec5231959907cad03fba62ff"
+  },
+  {
+    "id": "katana",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--celestial.png",
+    "size64_mask_differing_pixels": 7,
+    "sha256": "d8e2f577764ef58474fb59ebe68d50c577047e4576c104ceb97272478a3209ad"
+  },
+  {
+    "id": "combat_knife",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--fine.png",
+    "size64_mask_differing_pixels": 10,
+    "sha256": "f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2"
+  },
+  {
+    "id": "combat_knife",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--masterwork.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09"
+  },
+  {
+    "id": "combat_knife",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--relic.png",
+    "size64_mask_differing_pixels": 14,
+    "sha256": "307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b"
+  },
+  {
+    "id": "combat_knife",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--celestial.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "2ab19d7ce0c09973488c7db7de3e8e600a19f7be0fad6b8c971d4094e161af57"
+  },
+  {
+    "id": "sabre",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6"
+  },
+  {
+    "id": "sabre",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png",
+    "size64_mask_differing_pixels": 41,
+    "sha256": "e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca"
+  },
+  {
+    "id": "sabre",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png",
+    "size64_mask_differing_pixels": 58,
+    "sha256": "307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a"
+  },
+  {
+    "id": "sabre",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--celestial.png",
+    "size64_mask_differing_pixels": 52,
+    "sha256": "9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b"
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--fine.png",
+    "size64_mask_differing_pixels": 13,
+    "sha256": "6287af08128f37253c8f97592da21fd70a2c609c024cd534d8b98ba39301b931"
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--masterwork.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff"
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--relic.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "95368a6d816581162abe7b435ed2566ad94ac53cd2d0ee2bcf01ea7bf5b349a8"
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--celestial.png",
+    "size64_mask_differing_pixels": 15,
+    "sha256": "f16ae5c5c8c941d50083344a7d0538d2ba8da103998ed8af164dd2bfe875e30b"
+  },
+  {
+    "id": "recurve_bow",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--fine.png",
+    "size64_mask_differing_pixels": 35,
+    "sha256": "d64f0f4e5ebe724f46ba63326c7a471c984701a761b3316c6192fc2745c988f8"
+  },
+  {
+    "id": "recurve_bow",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--masterwork.png",
+    "size64_mask_differing_pixels": 53,
+    "sha256": "492f339ecf0994159935f454f647ff6e8f81b1b95dbd6a4c4a9503918981d542"
+  },
+  {
+    "id": "recurve_bow",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--relic.png",
+    "size64_mask_differing_pixels": 70,
+    "sha256": "9724bff8e385745dd42df18f7094ea446face0d3c47d23700bda03d1593d67e6"
+  },
+  {
+    "id": "recurve_bow",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--celestial.png",
+    "size64_mask_differing_pixels": 70,
+    "sha256": "b7281bcfd74014aee19b50f1240b3872cade0003eff71e12a52bf59e612837d6"
+  },
+  {
+    "id": "longbow",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--fine.png",
+    "size64_mask_differing_pixels": 55,
+    "sha256": "5b427ba226389bb9ef9ec78f9f370204fdd9bf99155f870ce4361e72c66da373"
+  },
+  {
+    "id": "longbow",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--masterwork.png",
+    "size64_mask_differing_pixels": 135,
+    "sha256": "1fc682469a6064d6176e5420a52b5139881694615e52f81acb761f21593b2d9c"
+  },
+  {
+    "id": "longbow",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--relic.png",
+    "size64_mask_differing_pixels": 162,
+    "sha256": "c3c085cf310247d0658e4cc1ef449fb21f7941219ebe62868fd542cb627b20a2"
+  },
+  {
+    "id": "longbow",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-longbow--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-longbow--celestial.png",
+    "size64_mask_differing_pixels": 178,
+    "sha256": "e9ed6bcb93b7cfee61b13d5ae5fb591443798fd0927c494a710095ab9b6a3424"
+  },
+  {
+    "id": "drifter_revolver",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-drifter_revolver--fine-retry.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-drifter_revolver--fine.png",
+    "size64_mask_differing_pixels": 7,
+    "sha256": "6b06c89c770e650af30465f5a2a1bc8aa8f33e8402f79b417f4e06116bfcd969"
+  },
+  {
+    "id": "crossbow",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-crossbow--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-crossbow--fine.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "d3f2925bda407b4c640c0c75e98d9b2bbd1e7f9fcc7bbaab50591de18fa01168"
+  },
+  {
+    "id": "repeating_crossbow",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-repeating_crossbow--fine.png",
+    "size64_mask_differing_pixels": 14,
+    "sha256": "a51ad4a6e04ecf8a9ae5d27a775933bcae317c6953755dbe3e0bc8007d364cc0"
+  },
+  {
+    "id": "repeating_crossbow",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-repeating_crossbow--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-repeating_crossbow--masterwork.png",
+    "size64_mask_differing_pixels": 27,
+    "sha256": "6020773de63f70586e913a349ec39b54de6bc6f8d35d5bab57f7d664d7a2c209"
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--fine.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "73ba1fb71ea7e9db5574cadefe61d231f2d117e341b8e727511ec4bcbcf7ed3e"
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--masterwork.png",
+    "size64_mask_differing_pixels": 25,
+    "sha256": "4d84adda28e61a5a11ce28a10fcd54f316cf47b87f61e888a707946b71e0ca35"
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--relic.png",
+    "size64_mask_differing_pixels": 26,
+    "sha256": "b1260240a5c0c94417f7003dcdd32c6222d9bd284a5ab6ee54b46e7ce034db12"
+  },
+  {
+    "id": "shield-buckler",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--celestial.png",
+    "size64_mask_differing_pixels": 25,
+    "sha256": "32a1c63554bd22dfe9375a204ea29e8c08b894f9d1268a73d97d597937381bb2"
+  },
+  {
+    "id": "shield-riot_shield",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--fine.png",
+    "size64_mask_differing_pixels": 11,
+    "sha256": "c764ee318837613db538aca7d9a638064e085117f81d2b9cf045b73631a5b7b1"
+  },
+  {
+    "id": "shield-riot_shield",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--masterwork.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "70f6ff656269bf2cbc207c71cc046f57f93bfa725671f46c0c2aea7a0e9ae71e"
+  },
+  {
+    "id": "shield-riot_shield",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--relic.png",
+    "size64_mask_differing_pixels": 15,
+    "sha256": "5da0d0fe4dc1e7fef783464b90b086bdd0a547eddd3ba9dcf3b47a41dfaf645e"
+  },
+  {
+    "id": "shield-riot_shield",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-riot_shield--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-riot_shield--celestial.png",
+    "size64_mask_differing_pixels": 18,
+    "sha256": "e048c79f1561903a03ae2a8795e4f7d160bf5df2343001bfb0e5d5590e311dee"
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--fine.png",
+    "size64_mask_differing_pixels": 11,
+    "sha256": "0a324cbce1be733637503c5582749d9cb4bca528f3994d0d1c26601ba8eb08f1"
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--masterwork.png",
+    "size64_mask_differing_pixels": 32,
+    "sha256": "14d30548905ce9568b501b31669ae73bb8f651cff0e99be98d80993dee3d844c"
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--relic.png",
+    "size64_mask_differing_pixels": 53,
+    "sha256": "6301e0a8f3c62f555cb075a780a9b5416670081c6f9381c59db966b41cb77033"
+  },
+  {
+    "id": "shield-pavise",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-pavise--celestial.png",
+    "size64_mask_differing_pixels": 71,
+    "sha256": "7f568c48310fe3889e94c51bd33a63990e8d938c8c94a04602eff2c89da5b515"
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--fine.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "4d7046e472e407c72f5215f2577b46361404ee362d264b49af1e4fa8c4261829"
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--masterwork.png",
+    "size64_mask_differing_pixels": 54,
+    "sha256": "732033d222aa75af6d2184ce215e442518795154b023303d4a54b41be4beaad1"
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--relic.png",
+    "size64_mask_differing_pixels": 40,
+    "sha256": "e9176bc24c9390cfd15e10211dbec981e805acb69f4a4f8f6a5b749e65c70313"
+  },
+  {
+    "id": "quiver-quiver",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/quiver-quiver--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/quiver-quiver--celestial.png",
+    "size64_mask_differing_pixels": 29,
+    "sha256": "47fa630328ae1bdcdeb3874bef25ef610807d765c0a597fe5bd8583a21e482df"
+  },
+  {
+    "id": "armour-utility_belt",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--fine.png",
+    "size64_mask_differing_pixels": 30,
+    "sha256": "0e8c6867918be1364e99bf4a1338e7f2b8b2e70a0475ec1557d06c2243eb865d"
+  },
+  {
+    "id": "armour-utility_belt",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--masterwork.png",
+    "size64_mask_differing_pixels": 37,
+    "sha256": "ca3eabccd2d49b9ca2a000c6fa56ebd70286b4966954797d10d812e57dc35235"
+  },
+  {
+    "id": "armour-utility_belt",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--relic.png",
+    "size64_mask_differing_pixels": 82,
+    "sha256": "c55e8306ea8c66f9d90baca18092a176ea91cbfdf281b31aaed1b49f8b934f56"
+  },
+  {
+    "id": "armour-utility_belt",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-utility_belt--celestial.png",
+    "size64_mask_differing_pixels": 87,
+    "sha256": "d06f5b32f7c5f5c5cda109892f5bab4228e2a2b61037aae75a63806bcf7049fe"
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--fine.png",
+    "size64_mask_differing_pixels": 15,
+    "sha256": "853ba3fee0801aa74f332194db02f612edd816ec4b7c88ee4b1c9956124416ca"
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--masterwork.png",
+    "size64_mask_differing_pixels": 18,
+    "sha256": "0af186f98e2e52927462ac03ff6bc43ed2115770077f99b3652c9b05425fe462"
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--relic.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "26e9a5f8e86ec3b219ee5cd1fcc397196c7775890741e1c151057bc3f3d50087"
+  },
+  {
+    "id": "armour-armoured_belt",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-armoured_belt--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-armoured_belt--celestial.png",
+    "size64_mask_differing_pixels": 17,
+    "sha256": "2a541fb480af4f997dc3fa56928d9005227fa12a5a280bd02006ca4861680b4a"
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--fine.png",
+    "size64_mask_differing_pixels": 29,
+    "sha256": "c551b2ca49415108740f97fe14f2b7c65708ba645f8c30fa7f6d7524b6d990ab"
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--masterwork.png",
+    "size64_mask_differing_pixels": 47,
+    "sha256": "4f934ce70e51f20b44717b4981315404c067bbb666135b223843d2c05b66ea9c"
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "relic",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--relic.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--relic.png",
+    "size64_mask_differing_pixels": 47,
+    "sha256": "893a3310bfb94c4a96664bee341f3e198c7f0d7955d0055dabc23e5b317323f1"
+  },
+  {
+    "id": "armour-field_helmet",
+    "tier": "celestial",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-field_helmet--celestial.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--celestial.png",
+    "size64_mask_differing_pixels": 47,
+    "sha256": "cc99ccf3f4f4df99199110df962ee28d8e0d8c0512db79e004b9a4124a691269"
+  },
+  {
+    "id": "armour-ballistic_helmet",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-ballistic_helmet--fine.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "ac5c7ce93333712c92840b0081cfd88be26fc5db7b6f146adcbcd9b632b93a91"
+  },
+  {
+    "id": "armour-ballistic_helmet",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-ballistic_helmet--masterwork.png",
+    "size64_mask_differing_pixels": 18,
+    "sha256": "d941ec5615da03fd7246def003d2cb32ce1226fdfd6167c18f70bd0ba17e187a"
+  }
+]

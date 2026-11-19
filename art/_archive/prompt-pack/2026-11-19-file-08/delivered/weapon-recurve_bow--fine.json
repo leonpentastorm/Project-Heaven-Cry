@@ -1,0 +1,23 @@
+{
+  "id": "recurve_bow",
+  "tier": "fine",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-recurve_bow--fine.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-recurve_bow--fine.png",
+  "size64_mask_differing_pixels": 33,
+  "sha256": "c0723490812d832c64b100236f22e02d521eeae03c942da4cb6956e93e50086e",
+  "path": "art/icons/gear/weapon-recurve_bow--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-recurve_bow--fine.png",
+    "128": "art/icons/gear/exports/128/weapon-recurve_bow--fine.png",
+    "64": "art/icons/gear/exports/64/weapon-recurve_bow--fine.png",
+    "32": "art/icons/gear/exports/32/weapon-recurve_bow--fine.png"
+  },
+  "source_sha256": "ef0d5a3b085b93c468686c80d1dd2fa340d653a9ab019c18d584618eb7f93808",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-recurve_bow--fine.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-recurve_bow--fine.png",
+  "previous_sha256": "d64f0f4e5ebe724f46ba63326c7a471c984701a761b3316c6192fc2745c988f8"
+}

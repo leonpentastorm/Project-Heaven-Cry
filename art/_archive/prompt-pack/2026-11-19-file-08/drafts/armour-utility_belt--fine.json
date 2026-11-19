@@ -1,0 +1,12 @@
+{
+  "id": "armour-utility_belt",
+  "tier": "fine",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-utility_belt--fine.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its fine finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. The maker's signature parts are the same open oval brown leather utility belt, broad square brass buckle and tongue at front, central rear upright flap with one stud, small rectangular canvas pouch and flap at left, and long pointed canvas sheath with flap at right. Keep every attachment and negative space exactly in image-one position. Empty belt, no wearer. Fictional RPG icon. Fine: clean repaired leather and evenly dyed olive canvas, neat seams, bright buckles; add just one thin stitched line along the belt's upper edge as focal detail. No new pouches, symbols or dangling parts. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/armour-utility_belt.png",
+    "art/icons/gear/armour-utility_belt.png"
+  ],
+  "previous": "art/icons/gear/armour-utility_belt.png",
+  "sha256": "c63597d7a93cd39af44996a5a0bdbab5763a2fba35dab646a10a523af63ce95e"
+}

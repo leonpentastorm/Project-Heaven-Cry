@@ -1,0 +1,16 @@
+{
+  "id": "shield-buckler",
+  "tier": "relic",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.png",
+  "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--relic.png",
+  "size64_mask_differing_pixels": 22,
+  "sha256": "8303dd322c7b90b7a1430e96d39efc10565f5dfc3782f054896b41286d09ead9",
+  "path": "art/icons/gear/shield-buckler--relic.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/shield-buckler--relic.png",
+    "128": "art/icons/gear/exports/128/shield-buckler--relic.png",
+    "64": "art/icons/gear/exports/64/shield-buckler--relic.png",
+    "32": "art/icons/gear/exports/32/shield-buckler--relic.png"
+  },
+  "source_sha256": "674159c8818c9ddb98be40636c73affd8a6a57a783862b9280a6da9f77d424bd"
+}

@@ -1,0 +1,23 @@
+{
+  "id": "shield-buckler",
+  "tier": "fine",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--fine.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/shield-buckler--fine.png",
+  "size64_mask_differing_pixels": 9,
+  "sha256": "0fea45880943957817fa94e0ead0211ccc424b4b7db14afc8ec38856d71d308b",
+  "path": "art/icons/gear/shield-buckler--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/shield-buckler--fine.png",
+    "128": "art/icons/gear/exports/128/shield-buckler--fine.png",
+    "64": "art/icons/gear/exports/64/shield-buckler--fine.png",
+    "32": "art/icons/gear/exports/32/shield-buckler--fine.png"
+  },
+  "source_sha256": "fd2ec8a84d2396f8e7055c456fd35838b0484e409b1687b342ac16af0af9a108",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/shield-buckler--fine.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/shield-buckler--fine.png",
+  "previous_sha256": "73ba1fb71ea7e9db5574cadefe61d231f2d117e341b8e727511ec4bcbcf7ed3e"
+}

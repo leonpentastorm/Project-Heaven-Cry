@@ -1,0 +1,9 @@
+{
+  "status": "paused-quota",
+  "usage_limit_reached": true,
+  "resets_at": 1795142739,
+  "reset_utc": "2026-11-20T02:45:39Z",
+  "reset_vietnam": "2026-11-20T09:45:39+07:00",
+  "no_further_image_requests": true,
+  "response_path": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/ballistic-helmet-relic-quota-response.json"
+}

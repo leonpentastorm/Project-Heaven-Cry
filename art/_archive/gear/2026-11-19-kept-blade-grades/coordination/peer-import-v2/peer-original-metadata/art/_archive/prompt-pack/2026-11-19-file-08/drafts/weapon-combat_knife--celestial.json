@@ -1,0 +1,12 @@
+{
+  "id": "combat_knife",
+  "tier": "celestial",
+  "src": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png",
+  "prompt": "Edit the attached Project Heaven Cry fantasy RPG inventory painting to its celestial finish for the grade proof. Image one locks the entire geometry, pose, camera, scale and silhouette. Image two supplies the preceding finish. Keep the complete illustrated prop in exactly the same position, same number of parts and identical negative spaces. Change painted surfaces only. All blade and fitting surfaces become unmarked pearl ivory, grip is ivory cord in the exact existing wrap geometry. Keep the guard's tiny flush curl engraving, the pommel hole and the single narrow inlay. The inlay and collar seam have faint contained ivory-gold light within their thin surfaces only. Preserve every boundary. No halo or rays. Preserve the opaque gouache and ink brushwork, upper-left light, charcoal recesses and warm highlights. Fully transparent square canvas. Keep all additions flush inside existing surfaces. No lettering, extra parts, border, backdrop, aura, or glow outside the object.",
+  "refs": [
+    "art/icons/gear/weapon-combat_knife.png",
+    "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png"
+  ],
+  "previous": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
+  "sha256": "981dd851ac71828d106fc6e5cd0b9c268b69a58962830aa08522bda3265274da"
+}

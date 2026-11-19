@@ -1,0 +1,23 @@
+{
+  "id": "katana",
+  "tier": "celestial",
+  "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--celestial.png",
+  "candidate": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/masters/v2/weapon-katana--celestial.png",
+  "size64_mask_differing_pixels": 7,
+  "sha256": "0ef1fd1320cfed26bdacb7702560f9c008a5cae38ead2206b781234019dcfd31",
+  "path": "art/icons/gear/weapon-katana--celestial.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-katana--celestial.png",
+    "128": "art/icons/gear/exports/128/weapon-katana--celestial.png",
+    "64": "art/icons/gear/exports/64/weapon-katana--celestial.png",
+    "32": "art/icons/gear/exports/32/weapon-katana--celestial.png"
+  },
+  "source_sha256": "9b5a82e81ed380c1a504dbb6bbfbef96f52f34b6333ae0b1162055baa14a8e12",
+  "previous_candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--celestial.png",
+  "technical_cleanup": {
+    "alpha_below": 8,
+    "solid_alpha_unchanged": true
+  },
+  "previous_path": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/peer-original-production/art/icons/gear/weapon-katana--celestial.png",
+  "previous_sha256": "d8e2f577764ef58474fb59ebe68d50c577047e4576c104ceb97272478a3209ad"
+}
