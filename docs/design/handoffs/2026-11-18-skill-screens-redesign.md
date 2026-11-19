@@ -90,3 +90,35 @@ cut: one line, card style (`2026-11-18-wording-replacements.md` section 1 has al
   `skilltext.test.ts`; suites `creation-points`, `skeleton-screens`, `pg-levelup`. Update them to the new layout as
   strictly (ten rows, one line each, the next row marked, no row over 90 characters).
 - The lead looks at all three screens at 1280x720 and 1600x900 before it ships.
+
+## 4. Addendum for 0.32's shapes (the lead, 19 Nov, after looking at lane 1's "?" page at 1280)
+
+Leon: "with gamma and beta getting 4 perks and the forks having loads of text that UI will be a certified nightmare
+if kept as is." Seen on the built page: the ladder table works; below it the perks are still cards of paragraphs
+("The first time you are hit in each fight: if that hit took less than 20% of your max HP, the next hit...").
+Four of those, twice, do not fit any screen. These rules replace the perk cards and the inline fork cards
+everywhere a perk or fork is shown or chosen ("?" page, level-up, the sheet's Perks box).
+
+1. **A perk is a row, not a card.** One table, one row a perk (two rows on an alpha, four on a beta or gamma):
+   icon (click to enlarge) | name | **I**: one line | **II**: only what changes | state. No paragraph, no "Passive"
+   tag, no hover box (the row is the whole text). State column: `—`, `I`, `II` as filled pips.
+2. **The text must be written to fit, in data:** each perk tier has its card line (`short`), each fork option one
+   line plus, only if it has one, a cost line. The page never truncates and never shrinks type: a layout test
+   fails if any perk or fork row wraps at 1280. A line that cannot be said in one row means the perk is doing two
+   things: the lead rewrites or splits it (the 0.32 sheets' card lines are the starting text).
+3. **Choosing a perk step** (level-up): the same table, with one button on each legal row: "Take" (tier I) or
+   "Upgrade" (tier II). Illegal rows are dimmed with their reason in the state column. One click, one confirm
+   line under the table ("Take Numb? Kept for good." [Confirm] [Back]).
+4. **Choosing a fork:** two columns, each: icon, name, the one line, the cost line if any, [Choose]. Nothing else
+   in the panel. The other fork of the skill is not shown while this one is open.
+5. **Many things waiting at once** (a level-3 all-in character: class, second fork, perk steps): the budget header
+   carries a **TO CHOOSE** strip of chips in a fixed order (Class, then forks, then perk steps, each named with its
+   skill). A chip opens its chooser as ONE centred panel over the screen, never as rows that push the page; the
+   panel has "Next choice" when more wait. Done is lit when the strip is empty; "Finish later" stays.
+6. **The ladder's repeated per-point gain** stays on every level (Leon's ruling) but is drawn dim after the first
+   row, so the level's own thing is what the eye lands on.
+7. Sizes: the type scale of lane 1 (15 px body, 13 px secondary). At 1280x720 a beta's whole "?" page (ten ladder
+   rows, four perk rows, Mastered) fits without scrolling inside the panel.
+
+The lead looks at: a beta "?" page, a level-up with a perk step open, a fork open, and three choices waiting, at
+1280x720 and 1600x900, before any of this ships.
