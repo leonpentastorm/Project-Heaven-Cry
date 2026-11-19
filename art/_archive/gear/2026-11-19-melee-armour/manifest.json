@@ -1732,6 +1732,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-spotters_monocle",
+      "path": "art/icons/gear/armour-spotters_monocle.png",
+      "sha256": "819496772c36e8eba62f4b709185feeca90f3d9db192af408d91fc26b77a18f2",
+      "label": "Spotter's monocle",
+      "family": "07-optics",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-spotters_monocle.png",
+        "sha256": "be26eb53497aa12574f565d424f7d7f87afd406ea6b0e81d283b838982aebf6b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-spotters_monocle.png",
+        "sha256": "819496772c36e8eba62f4b709185feeca90f3d9db192af408d91fc26b77a18f2"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-spotters_monocle.txt",
+        "sha256": "e6efb2213a2ea9e6ea0e6e5e0a9ae5e3bde572832de8cb4e7fdb4545208dc5c4"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-prescription_glasses.png",
+          "sha256": "0f44b47bed85ac981c11a1f5d31a6d3f1cffe87e4365576ea2dab0369cc3aef2"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-spotters_monocle.png",
+        "128": "art/icons/gear/exports/128/armour-spotters_monocle.png",
+        "64": "art/icons/gear/exports/64/armour-spotters_monocle.png",
+        "32": "art/icons/gear/exports/32/armour-spotters_monocle.png"
+      },
+      "export_hashes": {
+        "256": "1a34055f8aac8ea5e9ecbd13b093cecb9d3ccc3ffc6966133a01e55da6af578d",
+        "128": "b6e76777c5a72316bd8549160afe9cc97ded0da1bc3bfea11d50415017aaf761",
+        "64": "49f64c0dedc7b1993281729e2fdbcb043fd74efc0d972376a7c5bfdb5523cd06",
+        "32": "0151d8359be9ee1a44cd90dac911b498e956045968a2c1a3f5734713ebb051c0"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -42,10 +42,10 @@
     "armour-assault_helm",
     "armour-cowl",
     "armour-hood",
-    "armour-blackout_hood"
+    "armour-blackout_hood",
+    "armour-spotters_monocle"
   ],
   "remaining": [
-    "armour-spotters_monocle",
     "armour-sight_visor",
     "armour-breather",
     "armour-sealed_visor",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T04:18:15.018153+00:00"
+  "updated_utc": "2026-11-19T04:19:57.862106+00:00"
 }
