@@ -2226,6 +2226,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-jump_boots",
+      "path": "art/icons/gear/armour-jump_boots.png",
+      "sha256": "a7fecba2c9d8dd2c3b03bf96e33358197a3737b6d93bae98b0b32a520213c6cb",
+      "label": "Jump boots",
+      "family": "07-boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-jump_boots.png",
+        "sha256": "5d62958ecaafcc04efcec1dbafaf7774a4b63883c2f6394d0068111681e8a3ec"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-jump_boots.png",
+        "sha256": "a7fecba2c9d8dd2c3b03bf96e33358197a3737b6d93bae98b0b32a520213c6cb"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-jump_boots.txt",
+        "sha256": "996b26229034febd7a855d46b110cce1bbacbc57416bb554c2c954f5a16f1de0"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-field_boots.png",
+          "sha256": "ba426f025a3b38a93adca821a970134edb9ecabb89498f09ee28f6e117d8083e"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-jump_boots.png",
+        "128": "art/icons/gear/exports/128/armour-jump_boots.png",
+        "64": "art/icons/gear/exports/64/armour-jump_boots.png",
+        "32": "art/icons/gear/exports/32/armour-jump_boots.png"
+      },
+      "export_hashes": {
+        "256": "bdd74025c2ab9498c59ea20e1c3c8158d649bfc88f9ad36d6794d37a266a21db",
+        "128": "e5d1fb7ffb4e91f7edb2b2eaa155bd80673b6bf29626f7ec8500e11616b8d464",
+        "64": "577b66aad3a0c8a732abb5ff1ed6a641a96e07c59c6783f72aafecb3288f47af",
+        "32": "7e1fa3b52de5679b9475451ed16582ba42e9cfd4e259ca28530d9fc395eafa36"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

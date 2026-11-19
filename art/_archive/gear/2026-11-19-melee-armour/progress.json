@@ -51,12 +51,11 @@
     "armour-mesh_undersuit",
     "armour-rig_belt",
     "armour-field_trousers",
-    "armour-tactical_gloves"
-  ],
-  "remaining": [
+    "armour-tactical_gloves",
     "armour-jump_boots"
   ],
+  "remaining": [],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T04:34:11.016452+00:00"
+  "updated_utc": "2026-11-19T04:35:47.009373+00:00"
 }
