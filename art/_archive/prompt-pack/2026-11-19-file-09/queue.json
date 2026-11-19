@@ -1,0 +1,307 @@
+[
+  {
+    "n": 1,
+    "id": "smetanita_snub_launcher",
+    "title": "Snub launcher (Pattern)",
+    "path": "art/icons/gear/weapon-smetanita_snub_launcher.png",
+    "refs": [
+      "art/icons/gear/weapon-smetanita_thumper.png",
+      "art/icons/weapons/smetanita_thumper.svg"
+    ],
+    "paint": "The cut-down field version of the single-shot break-open 40 mm grenade launcher: the same launcher as the attached thumper with its barrel sawn short and its shoulder stock sawn off to a wooden pistol grip. Pose: side profile turned slightly toward the viewer, muzzle to the right, level, about 80% of the canvas width like a pistol. Silhouette, kept exactly: a fat smooth barrel cut short, barely longer than the receiver, with a plain flat-cut muzzle; the break-open hinge and the top lever of the thumper's receiver; no leaf sight (it was taken off), only a low blade front sight on top of the barrel; the wooden stock cut away just behind the wrist and rounded off into a stubby wooden pistol grip, the trigger and its guard just ahead of it; a short wooden fore-end under the barrel. No shoulder stock, no rods. Materials: black lacquered steel, rubbed to grey on the edges, dark worn wood with the saw cut rounded and oiled. Maker's touch: a brass hinge pin and a thin brass ring round the muzzle.\nAt 32 px: against the thumper, half its length, no shoulder stock and no tall sight: a fat short barrel on a wooden pistol grip.",
+    "pattern": true,
+    "needs": true,
+    "span": 0.8
+  },
+  {
+    "n": 2,
+    "id": "smetanita_drum_launcher",
+    "title": "Drum launcher (Pattern)",
+    "path": "art/icons/gear/weapon-smetanita_drum_launcher.png",
+    "refs": [
+      "art/icons/gear/weapon-smetanita_thumper.png",
+      "art/icons/weapons/smetanita_thumper.svg"
+    ],
+    "paint": "The revolving six-shot 40 mm grenade launcher. Pose: diagonal, muzzle up and right, about 90% of the canvas width. Silhouette, kept exactly: a large six-chamber revolving cylinder of fat chambers, its round face clearly visible, behind a short rifled barrel; a vertical front grip under the barrel; a pistol grip with the trigger behind the cylinder; a telescoping metal stock of two rods with a flat butt; an open reflex-sight frame on top. Materials: black lacquered steel worn grey on the edges, dark grips. Maker's touch: brass rims on the chamber mouths.\nAt 32 px: one short fat barrel with a round cylinder of chambers behind it; no ring of barrels.",
+    "pattern": true,
+    "needs": true,
+    "span": 0.89
+  },
+  {
+    "n": 3,
+    "id": "legion_throwaway_tube",
+    "title": "Throwaway tube (Pattern)",
+    "path": "art/icons/gear/weapon-legion_throwaway_tube.png",
+    "refs": [
+      "art/icons/gear/weapon-breacher_tube.png",
+      "art/icons/weapons/breacher_tube.svg"
+    ],
+    "paint": "The telescoping disposable rocket tube, extended for firing. Pose: diagonal, muzzle up and right, about 90% of the canvas width. Silhouette, kept exactly: a slim smooth tube in two telescoped sections with the join clearly visible; flexible end covers hanging open on short straps at both ends; a flip-up frame front sight and a small rear peep sight standing on top; a small rectangular firing-mechanism housing on top with a rubber-covered firing bar; a thin carry sling; no shoulder pad, no grip. Materials: cheap olive-drab painted tube, mass-produced, no stencils. Maker's touch: one pale stripe round the tube near the muzzle.\nAt 32 px: thinner than any other tube, two sections, end covers dangling.",
+    "pattern": true,
+    "needs": true,
+    "span": 0.89
+  },
+  {
+    "n": 4,
+    "id": "legion_siege_tube",
+    "title": "Siege tube (Pattern)",
+    "path": "art/icons/gear/weapon-legion_siege_tube.png",
+    "refs": [
+      "art/icons/gear/weapon-breacher_tube.png",
+      "art/icons/weapons/breacher_tube.svg"
+    ],
+    "paint": "The shoulder-fired rocket launcher with the warhead sticking out of the front. Pose: diagonal, muzzle up and right, about 90% of the canvas width. Silhouette, kept exactly: a plain steel tube with a large pointed bulbous warhead seated in the muzzle, its cone nose well out in front and wider than the tube; two wooden heat guards wrapped round the middle of the tube; a pistol grip with a trigger and a second grip in front of it under the tube; a small optical sight mounted on the left side; a cone-shaped flare at the rear end. Materials: olive-grey painted steel scorched dark at the rear flare, plain worn wood guards. Maker's touch: a doubled pale stripe on the tube just behind the warhead.\nAt 32 px: a tube with a big pointed bulb on its front end.",
+    "pattern": true,
+    "needs": true,
+    "span": 0.89
+  },
+  {
+    "n": 5,
+    "id": "hellraiser_spinner",
+    "title": "Spinner (Pattern)",
+    "path": "art/icons/gear/weapon-hellraiser_spinner.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_rotary.png",
+      "art/icons/weapons/hellraiser_rotary.svg",
+      "art/icons/gear/weapon-hellraiser_lmg.png"
+    ],
+    "paint": "The general-purpose belt-fed machine gun, carried and fired from the hip. Pose: diagonal, muzzle up and right, about 90% of the canvas width. Silhouette, kept exactly: a long full-power receiver with a hinged flat top cover; a belt of large linked rifle rounds running in from a squared ammunition box hung on the left side; a quick-change barrel with its own carrying handle on top of the barrel; a slotted cone-shaped flash hider; a folding bipod folded back under the front; a pistol grip and a plain fixed stock with a flat butt. Materials: dark parkerised steel and black furniture, the barrel tip scorched. Maker's touch: one oxide-red painted band round the receiver.\nAt 32 px: one long barrel with a handle on it and a belt box on the side; not a ring of barrels.",
+    "pattern": true,
+    "needs": true,
+    "span": 0.89
+  },
+  {
+    "n": 6,
+    "id": "hellraiser_twin_rotary",
+    "title": "Twin rotary (invented: built from one pattern's parts; paste no pattern clause)",
+    "path": "art/icons/gear/weapon-hellraiser_twin_rotary.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_rotary.png",
+      "art/icons/weapons/hellraiser_rotary.svg"
+    ],
+    "paint": "An invented combined weapon: two six-barrel electrically driven rotary machine guns mounted side by side as one carried weapon, the heaviest gun a person carries. The combination is ours; each of the two guns is drawn from the real six-barrel rotary pattern's own parts. Pose: diagonal, muzzles up and right, about 90% of the canvas width. Silhouette, each gun: a cluster of six long barrels held by a front clamp and a mid clamp, a round drive motor housing behind them, and a feeder on the side of each housing taking a flexible armoured feed chute. The two guns are joined by a twin cradle, with a crossbar carry handle on top and a pair of spade grips with a thumb trigger at the rear; the two chutes curve back to one large squared ammunition box worn as a backpack, drawn as part of the same object. No drum under the guns. Materials: heavy dark steel and black, the barrel tips scorched. Maker's touch: oxide-red paint on the twin cradle.\nAt 32 px: two rings of barrels side by side and two long curving chutes; no drum.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.89
+  },
+  {
+    "n": 7,
+    "id": "blackpoint_carbine",
+    "title": "Blackpoint carbine (Pattern)",
+    "path": "art/icons/gear/weapon-blackpoint_carbine.png",
+    "refs": [
+      "art/icons/gear/weapon-blackpoint_700.png",
+      "art/icons/weapons/blackpoint_700.svg"
+    ],
+    "paint": "The bolt-action bullpup anti-materiel rifle of the same maker as the long Blackpoint. Pose: rifle diagonal, about 16 degrees, muzzle up and right, about 85% of the canvas width. Silhouette, kept exactly: the bullpup layout, with the bolt handle and a short five-round box magazine behind the pistol grip; a long flat-topped receiver with a top rail and a long scope; a thick padded recoil butt with a cheek rest; a heavy barrel ending in the same large arrowhead-shaped double-chamber muzzle brake as the long Blackpoint; a folding bipod hinged under the front of the receiver, its legs folded forward along the barrel. Materials: dark grey steel and black polymer, the brake scorched. Maker's touch: a strip of worn brown leather wrapped round the cheek rest.\nAt 32 px: shorter and thicker than the long Blackpoint, the same arrowhead brake, the bolt and the magazine behind the grip.",
+    "pattern": true,
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 8,
+    "id": "blackpoint_wall_gun",
+    "title": "Wall gun (Pattern)",
+    "path": "art/icons/gear/weapon-blackpoint_wall_gun.png",
+    "refs": [
+      "art/icons/gear/weapon-blackpoint_700.png",
+      "art/icons/weapons/blackpoint_700.svg"
+    ],
+    "paint": "The very long gas-operated semi-automatic wartime anti-tank rifle with the internal five-round magazine. Pose: diagonal, muzzle up and right, about 90% of the canvas width. Silhouette, kept exactly: an extremely long thin barrel, about two-thirds of the whole gun, ending in a multi-baffle muzzle brake slotted on both sides; a gas cylinder along the top of the barrel's rear half; a slim steel receiver with the internal magazine closed by a hinged floorplate flush with its underside, nothing hanging below; a plain steel carrying handle clamped to the barrel at the balance point; a tubular folding bipod clamped to the barrel just ahead of the receiver, legs spread; a long plain wooden stock with a pistol-grip wrist and a padded shoulder plate. Materials: dark steel and dark worn wood, grim and massive. Maker's touch: a worn strip of tape wrapped round the carrying handle.\nAt 32 px: the longest gun in the row, a handle on the barrel, a bipod and no magazine hanging below.",
+    "pattern": true,
+    "needs": true,
+    "span": 0.89
+  },
+  {
+    "n": 9,
+    "id": "lumeri_votive_torch",
+    "title": "Votive torch",
+    "path": "art/icons/gear/weapon-lumeri_votive_torch.png",
+    "refs": [
+      "art/icons/gear/weapon-purifier_flamer.png",
+      "art/icons/weapons/purifier_flamer.svg"
+    ],
+    "paint": "A pistol-sized flamer for one hand: a small lancet-windowed nozzle fed by a flask clipped under the grip. Pose: side profile turned slightly toward the viewer, nozzle to the right, level, about 80% of the canvas width like a pistol. Silhouette: a short brass nozzle shaped like a votive lamp, a round fuel flask under the frame, a coiled feed line, a small contained pilot flame at the tip. Materials: ivory-painted steel, gold bands, brass nozzle. Accent: Lumeri gold #F2C46A; the pilot flame small and contained.\nAt 32 px: a round flask under the grip and a lamp nozzle, no barrel.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.8
+  },
+  {
+    "n": 10,
+    "id": "lumeri_cathedral_burner",
+    "title": "Cathedral burner",
+    "path": "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+    "refs": [
+      "art/icons/gear/weapon-purifier_flamer.png",
+      "art/icons/weapons/purifier_flamer.svg"
+    ],
+    "paint": "The wall of fire made into architecture: a two-tank backpack burner with a long lance nozzle. Pose: the tank pack upright behind, the lance diagonal in front, drawn together as one object, about 90% of the canvas width. Silhouette: two tall tanks shaped like twin spires side by side with lancet arches, heavy hoses to a long straight lance ending in a lancet-arched nozzle with a brass collar, a small pilot flame at the tip. Materials: ivory-painted steel, gold banding, brass head. Accent: Lumeri gold #F2C46A.\nAt 32 px: two spire tanks and a lance much longer than the purifier's.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.89
+  },
+  {
+    "n": 11,
+    "id": "ork_snarl_knife",
+    "title": "Snarl knife",
+    "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+    "refs": [
+      "art/icons/gear/weapon-ork_rip_saw.png",
+      "art/icons/weapons/ork_rip_saw.svg",
+      "art/icons/gear/weapon-combat_knife.png"
+    ],
+    "paint": "The rip-saw's little brother, for one hand: a short chain-toothed knife with a pull-cord engine on the guard. Pose: on the 45 degree diagonal, handle bottom-left, point top-right, filling about 80% of the diagonal. Silhouette: a short bar of chain teeth, a fist-sized welded engine at the guard with a pull-cord ring and a stub exhaust, a nail-studded grip. Materials: rust, scorched steel, welds. Accent: dirty ochre daubs, soot.\nAt 32 px: chain teeth and an engine lump at the guard, not a plain knife.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.8
+  },
+  {
+    "n": 12,
+    "id": "ork_wreck_saw",
+    "title": "Wreck saw",
+    "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+    "refs": [
+      "art/icons/gear/weapon-ork_rip_saw.png",
+      "art/icons/weapons/ork_rip_saw.svg"
+    ],
+    "paint": "For plates, cover and the man inside them: a two-hand circular saw on a long engine body. Pose: on the 45 degree diagonal, the saw head top-right as the focal point, nearly corner to corner. Silhouette: a huge round toothed saw disc at the head with a bent guard over it, a long welded engine body, two exhaust stacks, a crossbar handle. Materials: rust, scorched steel, welded plates, nails. Accent: dirty ochre daubs, soot black. A heavy slow weapon: it must look heavy.\nAt 32 px: a round disc, not the rip-saw's long bar.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.89
+  },
+  {
+    "n": 13,
+    "id": "hellraiser_piston_knuckles",
+    "title": "Piston knuckles",
+    "path": "art/icons/gear/weapon-hellraiser_piston_knuckles.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_servo_fist.png",
+      "art/icons/weapons/hellraiser_servo_fist.svg",
+      "art/icons/gear/weapon-knuckledusters.png"
+    ],
+    "paint": "The servo-fist without the gauntlet: a knuckle bar with a single piston strapped along the wrist. Pose: upright, three-quarter, filling about 75% of the canvas; no hand inside. Silhouette: a slab knuckle bar of four rings, one exposed piston running back to a wrist cuff with a small air bottle, no glove. Materials: dark steel, black rubber hose, scuffs. Accent: oxide red #CC2435 on the cuff.\nAt 32 px: one long piston behind the knuckle bar.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.75
+  },
+  {
+    "n": 14,
+    "id": "hellraiser_door_knocker",
+    "title": "Door-knocker",
+    "path": "art/icons/gear/weapon-hellraiser_door_knocker.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_servo_fist.png",
+      "art/icons/weapons/hellraiser_servo_fist.svg"
+    ],
+    "paint": "A mining ram worn by trench troops: a forearm-length pneumatic ram gauntlet with a flat striking plate. Pose: upright, three-quarter, filling about 75% of the canvas; no hand or arm inside. Silhouette: a massive flat square ram plate over the knuckles, two thick pistons running the length of the forearm, an air tank at the elbow, short trench spikes on the plate's edge. Materials: dark steel, dented plate, black hoses. Accent: oxide red #CC2435.\nAt 32 px: twice as long as the servo-fist, with a flat square plate in front.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.75
+  },
+  {
+    "n": 15,
+    "id": "throwing_darts",
+    "title": "Throwing darts",
+    "path": "art/icons/gear/weapon-throwing_darts.png",
+    "refs": [
+      "art/icons/gear/weapon-throwing_knives.png",
+      "art/icons/weapons/throwing_knives.svg"
+    ],
+    "paint": "Eight quiet needles: a roll of slim weighted darts, two with a dark coated tip. Pose: three-quarter, the roll laid open on the diagonal, filling about 80% of the canvas. Silhouette: a leather roll opened flat with eight needle darts held in loops, short stiff flights, two tips darkened. Materials: blackened steel, worn leather. Accent: none.\nAt 32 px: many thin lines in a row, not four blades in a fan.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.8
+  },
+  {
+    "n": 16,
+    "id": "throwing_javelins",
+    "title": "Throwing javelins",
+    "path": "art/icons/gear/weapon-throwing_javelins.png",
+    "refs": [
+      "art/icons/gear/weapon-throwing_knives.png",
+      "art/icons/weapons/throwing_knives.svg"
+    ],
+    "paint": "Heavy and short: three iron javelins in a back quiver. Pose: on the 45 degree diagonal, the heads top-right, filling about 85% of the diagonal. Silhouette: three short thick shafts with long barbless iron heads, standing in a stiff leather back quiver, the heads fanned. Materials: dark iron heads, ash shafts, worn leather. Accent: none.\nAt 32 px: three short shafts in a quiver, not one long pole.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.85
+  },
+  {
+    "n": 17,
+    "id": "hellraiser_service_rifle",
+    "title": "Hellraiser service rifle",
+    "path": "art/icons/gear/weapon-hellraiser_service_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_service_rifle.png"
+    ],
+    "paint": "A stamped-steel long-stroke assault rifle, the most common rifle pattern in the world. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a stamped steel receiver with a ribbed dust cover on top; a long gas tube above the barrel with a wooden upper handguard; a strongly curved, ribbed 30-round box magazine; a slanted muzzle brake; a tangent rear sight just in front of the dust cover and a front sight post on a triangular base near the muzzle; a large lever safety on the right side of the receiver; a wooden lower handguard, a separate pistol grip and a fixed wooden stock with a slight drop. Materials: dark blued and parkerised steel, warm reddish-brown wood with worn edges, steel rubbed bright at the edges and the magazine lips. Maker's touch: one muted oxide-red band (#CC2435) painted round the lower handguard. No bayonet.\nAt 32 px: the curved magazine, the gas tube over the barrel and the dropped wooden stock.",
+    "pattern": false,
+    "repaint": true,
+    "needs": false,
+    "newRefs": [],
+    "span": 0.85
+  },
+  {
+    "n": 18,
+    "id": "blackpoint_700",
+    "title": ".700 Blackpoint anti-materiel",
+    "path": "art/icons/gear/weapon-blackpoint_700.png",
+    "refs": [
+      "art/icons/gear/weapon-blackpoint_700.png"
+    ],
+    "paint": "A huge semi-automatic anti-materiel rifle, the biggest rifle a person can fire. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 90% of the canvas width, drawn dense and heavy. Silhouette, kept exactly: a very long flat two-part receiver; a long heavy barrel ending in a large arrowhead-shaped double-chamber muzzle brake; a top rail with a big scope; a carry handle; a folding bipod at the front of the receiver; a box magazine; a big recoil pad on the butt. Materials: grim dark grey steel, worn. Maker's touch: none; the muzzle brake scorched dark.\nAt 32 px: a very long flat rifle with an arrowhead muzzle and a bipod.",
+    "pattern": false,
+    "repaint": true,
+    "needs": false,
+    "newRefs": [],
+    "span": 0.89
+  },
+  {
+    "n": 21,
+    "id": "hellraiser_lmg",
+    "title": "Hellraiser LMG",
+    "path": "art/icons/gear/weapon-hellraiser_lmg.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_lmg.png",
+      "art/icons/gear/weapon-hellraiser_service_rifle.png"
+    ],
+    "paint": "The light machine gun of the stamped long-stroke rifle family: the line's service rifle lengthened. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 90% of the canvas width, drawn dense and heavy. Silhouette, kept exactly: the same stamped receiver as the line's service rifle, with the ribbed dust cover and the large lever safety on the right; a long, heavier barrel running far past the handguard, with a plain slotted muzzle device; a folding bipod hinged near the muzzle, its two legs folded back along the barrel; a long gas tube with a wooden upper handguard and a wooden lower handguard; a long, strongly curved ribbed box magazine (longer than the rifle's); a tangent rear sight on the receiver; a fixed wooden stock with a deep club-foot butt. Materials: dark blued and parkerised steel, warm reddish-brown wood with hard scratches. Maker's touch: one muted oxide-red band (#CC2435) round the lower handguard. No trench spikes.\nAt 32 px: the service rifle's shape made long, with a bipod at the muzzle, a long curved magazine and a club-foot stock.",
+    "pattern": false,
+    "repaint": true,
+    "needs": true,
+    "newRefs": [
+      "art/icons/gear/weapon-hellraiser_service_rifle.png"
+    ],
+    "span": 0.89
+  },
+  {
+    "n": 19,
+    "id": "smetanita_thumper",
+    "title": "Smetanita thumper",
+    "path": "art/icons/gear/weapon-smetanita_thumper.png",
+    "refs": [
+      "art/icons/gear/weapon-smetanita_thumper.png"
+    ],
+    "paint": "A single-shot break-action 40 mm grenade launcher, the classic shoulder-fired one. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 90% of the canvas width. Silhouette, kept exactly: a fat, short, wide barrel; a folding leaf sight standing up on top of the barrel; a break-action hinge in front of the trigger and a top lever; a slim wooden fore-end under the barrel; a wooden shoulder stock with a thick rubber pad. Materials: lacquered black metal, dark wood. Maker's touch: brass on the hinge and one small blank brass tag on the stock.\nAt 32 px: a fat stubby barrel on a slim wooden stock, with a leaf sight on top.",
+    "pattern": false,
+    "repaint": true,
+    "needs": false,
+    "newRefs": [],
+    "span": 0.89
+  },
+  {
+    "n": 20,
+    "id": "breacher_tube",
+    "title": "Breacher tube",
+    "path": "art/icons/gear/weapon-breacher_tube.png",
+    "refs": [
+      "art/icons/gear/weapon-breacher_tube.png"
+    ],
+    "paint": "A reusable shoulder-fired recoilless rifle. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 90% of the canvas width, drawn dense and heavy. Silhouette, kept exactly: a long fat tube; a flared venturi cone at the rear; a front grip under the front half; a pistol grip with the trigger under the middle; a padded shoulder rest; a side optic on a bracket on the left. Materials: olive-drab tube, black grips. Maker's touch: one pale stripe painted round the tube near the muzzle.\nAt 32 px: a fat tube with a flared rear, two grips and a side sight.",
+    "pattern": false,
+    "repaint": true,
+    "needs": false,
+    "newRefs": [],
+    "span": 0.89
+  }
+]

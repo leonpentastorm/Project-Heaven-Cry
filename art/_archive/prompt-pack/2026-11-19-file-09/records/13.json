@@ -1,0 +1,43 @@
+{
+  "n": 13,
+  "id": "hellraiser_piston_knuckles",
+  "title": "Piston knuckles",
+  "path": "art/icons/gear/weapon-hellraiser_piston_knuckles.png",
+  "refs": [
+    "art/icons/gear/weapon-hellraiser_servo_fist.png",
+    "art/icons/weapons/hellraiser_servo_fist.svg",
+    "art/icons/gear/weapon-knuckledusters.png"
+  ],
+  "paint": "The servo-fist without the gauntlet: a knuckle bar with a single piston strapped along the wrist. Pose: upright, three-quarter, filling about 75% of the canvas; no hand inside. Silhouette: a slab knuckle bar of four rings, one exposed piston running back to a wrist cuff with a small air bottle, no glove. Materials: dark steel, black rubber hose, scuffs. Accent: oxide red #CC2435 on the cuff.\nAt 32 px: one long piston behind the knuckle bar.",
+  "pattern": false,
+  "needs": false,
+  "span": 0.75,
+  "label": "Piston knuckles",
+  "sha256": "68fbc1095dea7ba6eb74bc586dbcb0f7d01934e67c2fef828d3bd2e0741e0ef1",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles.png",
+    "128": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles.png",
+    "64": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles.png",
+    "32": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles.png"
+  },
+  "collection": "prompt-pack-2026-11-19-file-09",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/13-weapon-hellraiser_piston_knuckles.png",
+  "source_sha256": "bfe3578209bd2d051fa5db5aad230789476c5dcb6d22bb5f9c686050bf6a456d",
+  "export_sha256": {
+    "256": "675c4d43e68c6e5020fc6d875b64d0a10a925dc48686d0e716160a822a9b094d",
+    "128": "dce921428c89f8a840a17fc83f3f4d6914e048521a416e1a64070f917389c93c",
+    "64": "259c97865e4b08c414c56952ba91829f0b66c7d516aba0abfb2c6a722145ec4e",
+    "32": "14971404092beb287ce7a797e16529df693800e3d9e6d36f1479912ad6209212"
+  },
+  "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills the width the description gives, inside the central 90% of the canvas. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The name, maker and markings are invented: never a real brand, model name, logo or text; a shape not marked Pattern is invented too. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail concentrated on one or two focal edges and make the shape unmistakable when shrunk. Colour: metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the faction's signature colour is the single accent (given in each prompt), a muted local paint, not a glow. Rarity is not shown by a coloured border (the UI adds that): standard finish only, with honest wear. Heavy weapons are drawn dense and heavy, and must read heavier than any rifle even at 32 px. The object:\n\nThe servo-fist without the gauntlet: a knuckle bar with a single piston strapped along the wrist. Pose: upright, three-quarter, filling about 75% of the canvas; no hand inside. Silhouette: a slab knuckle bar of four rings, one exposed piston running back to a wrist cuff with a small air bottle, no glove. Materials: dark steel, black rubber hose, scuffs. Accent: oxide red #CC2435 on the cuff.\nAt 32 px: one long piston behind the knuckle bar.\n\nThis is the new Standard-finish form for Project Heaven Cry. Keep the family reference's gouache materials while matching this form's silhouette exactly.\n\nOne isolated inventory object with unbroken mechanical attachment and geometrically consistent perspective. Use the first composite reference for material treatment only; keep the specific pose in the subject brief. Single object view, no exploded schematic, text, logo, label, watermark, floor or glow. Leave genuinely transparent clear canvas edges.\n\nFour apertures in one single proximal knuckle bar, the object open and hollow, connected straight piston over its wrist brace, physically plausible connection. Empty, no hand."
+}
