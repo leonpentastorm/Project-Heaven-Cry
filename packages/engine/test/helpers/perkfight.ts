@@ -7,7 +7,7 @@
 //   act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'shot' });
 //   withGame(g, () => …)                           // call engine functions directly with the game bound (h.c, h.g)
 import {
-  ARCHETYPES, PERK, FIGHT_TOOLS, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register, setGrade, forkRow,
+  ARCHETYPES, PERK, FIGHT_TOOLS, apply, newGame, beginTurn, bindGame, _snapshotRegistry, _restoreRegistry, _unregisterAll, register, setGrade, forkRow, RuleError, migrateLoaded,
   type Action, type Character, type Combat, type GameState, type ItemHandler, type Sheet, type Unit,
 } from '../../src';
 import './yard16';
@@ -53,8 +53,8 @@ export function equipSpec(c: Character, spec: CharSpec) {
   if (spec.traits) c.traits = [...spec.traits];
   if (spec.relics) c.relics = [...spec.relics];
   if (spec.skills) Object.assign(c.skills, spec.skills);
-  if (spec.forms) c.doorPicks = { ...(c.doorPicks || {}), visualization: [...spec.forms] }; else if (spec.skills?.visualization) delete c.figRev;
-  if (spec.doorPicks) c.doorPicks = { ...(c.doorPicks || {}), ...spec.doorPicks };
+  if (!spec.forms && spec.skills?.visualization) delete c.figRev; // no forms named: the save migration gives the old ladder's
+  // (spec.forms and spec.doorPicks are sent as door/pick through the reducer by storyWith: rule 5, the real path)
   if (spec.attrs) Object.assign(c.attrs, spec.attrs);
   if (spec.classId !== undefined) c.classId = spec.classId;
   if (spec.advancedClass !== undefined) c.advancedClass = spec.advancedClass;
@@ -74,6 +74,16 @@ export function storyWith(specs: CharSpec[] = [{}], seed = 'PERKS1'): { g: GameS
   const ids = Object.keys(g.characters);
   ids.forEach((id, i) => equipSpec(g.characters[id], specs[i] || {}));
   ids.forEach((id, i) => { for (const o of specs[i]?.picks || []) g = apply(g, { type: 'door/pick', charId: id, door: forkRow(o)?.door || '', option: o } as Action, g.characters[id].owner); });
+  // the forms a Figment door holds and any door's picks: each a door/pick through the reducer, as a player takes it; a
+  // pick no door/pick can make at these points (an older ladder's, a step not offered yet) is a save's: it is written as
+  // a save carries it and the game comes in through the load door (migrateLoaded), as a loaded save does
+  let saved = false;
+  ids.forEach((id, i) => { const sp = specs[i] || {}, all: [string, string][] = [...(sp.forms || []).map((f) => ['visualization', f] as [string, string]), ...Object.entries(sp.doorPicks || {}).flatMap(([d, os]) => os.map((o) => [d, o] as [string, string]))];
+    for (const [door, option] of all) {
+      try { g = apply(g, { type: 'door/pick', charId: id, door, option } as Action, g.characters[id].owner); }
+      catch (e) { if (!(e instanceof RuleError)) throw e; const c: any = g.characters[id]; c.doorPicks = { ...(c.doorPicks || {}), [door]: [...(c.doorPicks?.[door] || []), option] }; saved = true; }
+    } });
+  if (saved) g = migrateLoaded(JSON.parse(JSON.stringify(g)));
   g = apply(g, { type: 'session/start' }, 'host');
   g = apply(g, { type: 'narrator/turn', turn: { narration: 'The test begins.', sceneTitle: 'Test scene' } }, 'host');
   const box = { g };
