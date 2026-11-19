@@ -2036,6 +2036,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-knuckledusters--fine",
+      "path": "art/icons/gear/weapon-knuckledusters--fine.png",
+      "sha256": "463a052d3c916476751aa76c8bb694418a8cd9fb81fe6e6414707dbfe5196be8",
+      "label": "Knuckledusters — Fine",
+      "family": "weapon-knuckledusters",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-knuckledusters--fine.png",
+        "sha256": "904faeb9698d2d0a63a62f60b69a1ab5dec8b8ab121988bdabd31a1e2d08825b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-knuckledusters--fine.png",
+        "sha256": "463a052d3c916476751aa76c8bb694418a8cd9fb81fe6e6414707dbfe5196be8"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-knuckledusters--fine.txt",
+        "sha256": "95c9ad69171628215d1e8f6f66ee802644d1786da35f4740ab034263e79bc9fe"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-knuckledusters.png",
+          "sha256": "739f0487a4696800a0b0ac3979352df8cc595446a0d6f235cbcb5045d0fb245e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-knuckledusters--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-knuckledusters--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-knuckledusters--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-knuckledusters--fine.png"
+      },
+      "export_hashes": {
+        "256": "f7504bc596e4befbd932aa9f4c7c2856ac380116f66480989cdc12967ed29d57",
+        "128": "ce9304255d15c44e57ae72a97d229bd4a5b11b0db0737b0d530866a7c841785b",
+        "64": "7fb88160e048174cd3afa22cf0bda00b89547f3141cc9b1efa433a5903701d1b",
+        "32": "cde745c52985ae84222ccf89afc35994f4239af62961c0c004285dce671bd16c"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-knuckledusters",
+      "outline": {
+        "solid_alpha_iou": 0.9690409179476077,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 30
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
