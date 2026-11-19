@@ -1217,12 +1217,21 @@ export function legendRoom(c: Character): number {
   const cap = attrCapAt(c.level);
   return (c.legends || 0) - ATTRS.reduce((n, a) => n + Math.max(0, A(c, a.id) - cap), 0);
 }
+/** G2 (0.32, spec item 5606): the structured need behind canRaise's refusal of a skill point, beside its text: the
+ * attribute the skill waits on and the points it needs there (null: it waits on no attribute). The level-up screen
+ * offers "Raise <Attribute>" from it, never from the sentence. */
+export function raiseNeed(c: Character, kind: 'skill' | 'attr' | 'core', id: string): { attr: string; n: number } | null {
+  if (kind !== 'skill') return null;
+  const sk = SKILL[id]; if (!sk) return null;
+  const p = P(c, id); if (p >= 10) return null;
+  return p + 1 > A(c, sk.attribute) ? { attr: sk.attribute, n: p + 1 } : null;
+}
 export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: string): string | null {
   if (kind === 'skill') {
     if (c.unspent.skill < 1) return 'No Skill points to spend.';
     const sk = SKILL[id]; if (!sk) return 'Unknown skill.';
     const p = P(c, id); if (p >= 10) return 'Already at 10.';
-    if (p + 1 > A(c, sk.attribute)) return 'Needs ' + sk.attribute + ' ' + (p + 1) + ': an Attribute point first.';
+    const need = raiseNeed(c, 'skill', id); if (need) return 'Needs ' + (ATTRS.find((x) => x.id === need.attr)?.name || need.attr) + ' ' + need.n + ': an Attribute point first.';
     return null;
   }
   if (kind === 'attr') {

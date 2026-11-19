@@ -4,7 +4,8 @@ import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
 import { figFight } from './helpers/figfight';
 import { physFight, rig } from './helpers/physfight';
-import { actionsFor, previewDescriptor } from '../src';
+import { actionsFor, previewDescriptor, raiseNeed } from '../src';
+import { storyWith } from './helpers/perkfight';
 
 describe('TRIAGE row 10: a resource price of 1 names one ("1 core", never "1 spare cores")', () => {
   it('Load the Visualizer costs 1 core, read off the action row the Figments tab shows', () => {
@@ -36,5 +37,17 @@ describe('G1: a Charge previews the Momentum it really reaches (Rolling Start\'s
     const after = b.f.momentum(b.f.unit(b.u.id)); rig(null);
     expect(after).toBeGreaterThan(1);
     expect(line).toBe('Momentum 1 → ' + after);
+  });
+});
+
+// G2 (spec item 5606): a refusal to raise a skill carries its need as structure beside its text
+describe('G2: "Raise <Attribute>" is offered from the refusal\'s structure, not its sentence', () => {
+  it('the reducer refuses a skill point over its attribute in words; raiseNeed gives the same need as {attr, n}', () => {
+    const s = storyWith([{ name: 'Ash', skills: { durability: 3 }, attrs: { endurance: 3 } }], 'G2');
+    const c: any = Object.values(s.g.characters)[0]; c.unspent = { ...(c.unspent || {}), skill: 1, attr: 0 };
+    const need = raiseNeed(c, 'skill', 'durability');
+    expect(need).toEqual({ attr: 'endurance', n: 4 });
+    expect(() => s.act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: 'durability' } as any)).toThrow('Needs Endurance 4: an Attribute point first.');
+    expect(raiseNeed(c, 'skill', 'pain_threshold')).toBeNull(); // 0 points over Endurance 3: no need
   });
 });

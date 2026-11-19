@@ -12514,3 +12514,13 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     tile to choose "in reach: click to choose it", a unit to choose "<name>: click to choose them", a tile the area
     covers "in the area" (it said nothing), a unit it touches "<name>: <its tag>" (`apps/web/src/game/pickOverlay.ts`
     `PICK_NOTE`). Proof: `pickOverlay.test.ts`; `apps/web/e2e/picking.mjs` reads the unit note.
+5605. **The initiative line is written once for each side** (the lead's review list: `fog.ts` rewrote it with a regular
+    expression on the sentence): where the line is written (`combat.ts sayInitiative`, at the fight's opening and when it
+    is joined), each side that does not see every unit gets its own reading on the line's mark (the seen in order, then
+    "n unseen"; `log.ts LogSideMark.line`), and `fog.ts` sends that reading as it is. The opening line is marked again
+    as the set-up's sight changes, as before. Replays re-recorded on purpose (their log marks only).
+5606. **A skill point refused for its attribute carries the need as structure** (piece G2, approved by the lead):
+    `character.ts raiseNeed(c, kind, id)` gives `{attr, n}` (the attribute the skill waits on and the points it needs);
+    `canRaise`'s sentence is made from it and names the attribute ("Needs Endurance 4: an Attribute point first.").
+    The level-up screen's "Raise <Attribute>" and its one reason are to read `raiseNeed`, not the sentence (the screen is
+    the shared lane's file: a hand-off note). Proof: `packages/engine/test/gaps-032.test.ts` (the reducer's refusal).
