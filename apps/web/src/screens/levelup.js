@@ -46,7 +46,7 @@ export function figLevelUp(skillId, p) {
 const BADGE_INK = { engine: '#E7EBF3', both: '#C9D3E3', narrator: '#A3AEC2' };
 const badgeStyle = (v) => 'flex: none; padding: 1px 8px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; border: 1px ' + (v === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v] + '; color: ' + BADGE_INK[v];
 ensureStyle('phc-levelup', [
-  '.phc-lu-head{position:sticky;top:0;z-index:5;background:#0A0D13}',
+  '.phc-lu-head{position:sticky;top:0;z-index:16;background:#0A0D13}',
   '.phc-lu-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,280px);gap:20px;padding:8px 28px 24px;align-items:start}',
   '.phc-lu-class{position:sticky;top:96px}',
   '.phc-lu-pick{display:flex;flex-direction:column;gap:14px;padding:24px 32px 0}',

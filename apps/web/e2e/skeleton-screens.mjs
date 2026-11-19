@@ -156,7 +156,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
       coreBtn: document.querySelectorAll('button[data-raise="core"]').length, ceil: (document.querySelector('.phc-lu-ceiling') || {}).textContent || '',
       next: [...document.querySelectorAll('.phc-lu-attr-next')].map((x) => x.textContent), gives: [...document.querySelectorAll('.phc-lu-skill')].filter((r) => r.querySelector('.phc-lu-next, .phc-lu-why')).length, slots: [...document.querySelectorAll('.phc-lu-attrcol[data-attr="endurance"] .phc-lu-slot')].map((x) => x.textContent),
       why: (document.querySelector('.phc-lu-attrcol[data-attr="endurance"] .phc-lu-attr-why') || {}).textContent || '', off: (document.querySelector('.phc-lu-attrcol[data-attr="endurance"] button[data-raise="attr"]') || {}).disabled,
-      budget: [...document.querySelectorAll('.phc-lu-budget [data-budget]')].map((x) => x.textContent).join(' · '),
+      budget: [...document.querySelectorAll('.phc-lu-budget [data-budget]')].map((x) => x.textContent).join(' · '), strip: document.querySelectorAll('.phc-lu-tochoose .phc-lu-tc[data-kind="perk"]').length,
       headIn: (() => { const h = document.querySelector('.phc-lu-head'); window.scrollTo(0, 99999); const r = h.getBoundingClientRect(); window.scrollTo(0, 0); return r.top >= -1 && r.bottom <= innerHeight; })(),
       // the family (three attributes, nine skills) fits the window under the sticky header and the tabs, once scrolled to
       rowsIn: (() => { const h = (q) => Math.round((document.querySelector(q) || { getBoundingClientRect: () => ({ height: 0 }) }).getBoundingClientRect().height); return { ok: h('.phc-lu-head') + h('.phc-lu-tabs') + h('.phc-lu-core') <= innerHeight, parts: h('.phc-lu-head') + ' + ' + h('.phc-lu-tabs') + ' + ' + h('.phc-lu-core') + ' of ' + innerHeight + ', rows ' + [...document.querySelectorAll('.phc-lu-core .phc-lu-skill')].map((r) => Math.round(r.getBoundingClientRect().height)).join('/') }; })(),
@@ -169,7 +169,7 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     ok(at + 'every attribute row says what a point gives', L.next.length === 3 && L.next.some((t) => /\+15 max HP/.test(t)) && L.next.some((t) => /\+0\.5 tile of movement an AP/.test(t)));
     ok(at + 'every skill row says what its next point gives (or why its +1 is refused), and its slot in words (' + L.slots.join(', ') + ')', L.gives === 9 && L.slots.join() === 'FIGHT,SURVIVE,TALK · NOTICE');
     ok(at + 'Endurance 8 is at the ceiling: +1 off, with the engine\'s reason on its row: ' + L.why, L.off === true && /^Endurance 9 opens at level 6/.test(L.why));
-    ok(at + 'the header is the budget and stays in view when the page scrolls: ' + L.budget, /\d+ Skill · \d+ Attribute · \d+ Perk steps?/.test(L.budget) && L.headIn);
+    ok(at + 'the header is the budget and the TO CHOOSE strip, and stays in view when the page scrolls: ' + L.budget + ' · ' + L.strip + ' perk chips', /^\d+ Skill · \d+ Attribute$/.test(L.budget) && L.strip > 0 && L.headIn);
     ok(at + 'no sideways page scroll (' + await sideways(p) + ' px over)', (await sideways(p)) <= 1);
     await p.screenshot({ path: SHOTS + '/levelup-' + W + '.png' });
     for (const f of ['mind', 'soul']) { await p.locator('[data-fam="' + f + '"]').click(); await settle(p, 200); await p.screenshot({ path: SHOTS + '/levelup-' + W + '-' + f + '.png' }); }
@@ -268,10 +268,10 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     // marked, and no other.
     const reach = await p.evaluate(() => {
       const pk = window.__phc.pick || { reach: [], choice: [] }, want = new Set([...pk.reach, ...pk.choice]);
-      const marked = [...document.querySelectorAll('button.phc-tok')].filter((b) => [...b.querySelectorAll('span[aria-hidden="true"]')].some((s) => { const cs = getComputedStyle(s); return (cs.outlineStyle === 'dashed' && cs.outlineWidth === '1px') || (cs.outlineStyle === 'solid' && cs.outlineWidth === '2px'); })).map((b) => (b.getAttribute('aria-label') || '').split(' ')[0]);
-      return { n: marked.length, want: want.size };
+      const marked = [...document.querySelectorAll('button.phc-tok')].filter((b) => [...b.querySelectorAll('span[aria-hidden="true"]')].some((s) => /outline[^;]*(dashed|solid)/.test(s.getAttribute('style') || '') || /(dashed|solid)[^;]*outline/.test(s.getAttribute('style') || ''))).map((b) => (b.getAttribute('aria-label') || '').split(' ')[0]);
+      return { n: marked.length, want: want.size, sample: ([...document.querySelectorAll('button.phc-tok span[aria-hidden="true"]')].map((s) => s.getAttribute('style') || '').find((s) => /outline/.test(s)) || 'none').slice(0, 160) };
     });
-    ok(at + 'the grid shows the Call\'s reach (' + reach.n + ' tiles marked, the engine sent ' + reach.want + ')', reach.n > 20 && reach.n === reach.want);
+    ok(at + 'the grid shows the Call\'s reach (' + reach.n + ' tiles marked, the engine sent ' + reach.want + (reach.n === reach.want ? '' : '; a layer: ' + reach.sample) + ')', reach.n > 20 && reach.n === reach.want);
     await p.locator('button.phc-tok[aria-label^="' + ref(rook) + ' ·"]').first().click(); await settle(p, 350);
     const foot = (await p.locator('.phc-cb-foot').first().innerText()).replace(/\s+/g, ' ');
     ok(at + 'the card: the Call, its target and the save with its TN', /Threaten · 1 AP · within \d+ tiles/.test(foot) && /To Rook\./.test(foot) && /Rook rolls a Heart save against TN \d+/.test(foot));

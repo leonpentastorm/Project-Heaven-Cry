@@ -117,7 +117,8 @@ for (const [w, h] of SIZES) {
   await q.locator('.phc-mg-ways').scrollIntoViewIfNeeded();
   ok(w + ': the Outburst workshop\'s ways row (' + await q.locator('.phc-mg-ways [data-way]').count() + ' ways) ' + await shoot(q, 'workshop-ways', w), (await q.locator('.phc-mg-ways [data-way]').count()) >= 2);
   await tab('FAITH');
-  ok(w + ': the Faith tab ' + await shoot(q, 'faith-tab', w), /WHISPERS/.test(await q.locator('[role="tabpanel"]').first().innerText()));
+  const wh = q.getByText('WHISPERS', { exact: true }).first(); await wh.waitFor({ timeout: 30000 }); await wh.scrollIntoViewIfNeeded();
+  ok(w + ': the Faith tab, its Whispers in view ' + await shoot(q, 'faith-tab', w), await wh.isVisible());
 }
 writeFileSync(FINAL + '/index.md', '# Final shots, 0.31.11\n\n' + finals.map((f) => '- ' + f).join('\n') + '\n');
 ok('final shots: ' + finals.length, finals.length >= 22);
