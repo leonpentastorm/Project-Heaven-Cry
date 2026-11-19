@@ -18866,6 +18866,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "weapon-sabre--masterwork": {
+      "label": "Sabre Masterwork",
+      "path": "art/icons/gear/weapon-sabre--masterwork.png",
+      "sha256": "e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "masterwork",
+      "standard_path": "art/icons/gear/weapon-sabre.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-sabre--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-sabre--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-sabre--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-sabre--masterwork.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
