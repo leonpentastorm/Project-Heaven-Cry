@@ -1,9 +1,10 @@
 {
-  "status": "claimed",
+  "status": "drawing",
   "target": 8,
-  "delivered": [],
+  "delivered": [
+    "weapon-last_sentence"
+  ],
   "remaining": [
-    "weapon-last_sentence",
     "weapon-grandmothers_teeth",
     "weapon-last_crossing",
     "weapon-owed_in_full",
@@ -12,5 +13,6 @@
     "weapon-rearguard",
     "weapon-windfall"
   ],
-  "production_approved": false
+  "production_approved": false,
+  "updated_utc": "2026-11-19T07:22:59.973110+00:00"
 }

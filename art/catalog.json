@@ -19683,6 +19683,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-last_sentence": {
+      "label": "Last Sentence (great blade)",
+      "path": "art/icons/gear/weapon-last_sentence.png",
+      "sha256": "3adbfc3da9d765e5580be4c619648ede148e24b5121085ceb417949aadb1c77c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-last_sentence.png",
+        "128": "art/icons/gear/exports/128/weapon-last_sentence.png",
+        "64": "art/icons/gear/exports/64/weapon-last_sentence.png",
+        "32": "art/icons/gear/exports/32/weapon-last_sentence.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-last_sentence.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 1,
+      "collection": "2026-11-19-unique-melee-bow",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

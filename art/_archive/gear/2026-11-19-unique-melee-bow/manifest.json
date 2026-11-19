@@ -1,0 +1,73 @@
+{
+  "collection": "2026-11-19-unique-melee-bow",
+  "status": "review-candidate",
+  "production_approved": false,
+  "assets": [
+    {
+      "id": "weapon-last_sentence",
+      "path": "art/icons/gear/weapon-last_sentence.png",
+      "sha256": "3adbfc3da9d765e5580be4c619648ede148e24b5121085ceb417949aadb1c77c",
+      "label": "Last Sentence (great blade)",
+      "family": "unique-last_sentence",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-last_sentence.png",
+        "sha256": "06576b1f3b25e6d9b92dfb98300bb4726aaf58041e60b8898156a06100324016"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-last_sentence.png",
+        "sha256": "3adbfc3da9d765e5580be4c619648ede148e24b5121085ceb417949aadb1c77c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-last_sentence.txt",
+        "sha256": "9977489c6c0316f49554d3390cf066a05c38a93299505af4dae1f9fa0996deda"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-adamantile_greatsword.png",
+          "sha256": "74764eb60ffb2b26b581206171e9d7f9a44453f23c061fb636fef61e2efe7f12"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/adamantile_greatsword.png",
+          "sha256": "4b161e5511247906d07467797a1cf8b4463429e8d887473d0844b1ca957aee77"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-adamantile_greatsword.png",
+          "sha256": "74764eb60ffb2b26b581206171e9d7f9a44453f23c061fb636fef61e2efe7f12"
+        },
+        {
+          "path": "art/icons/weapons/adamantile_greatsword.svg",
+          "sha256": "7e27144cae1cb3ebd990fe04d33da18c9056aef076846b01dd2139810816bebb"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-last_sentence.png",
+        "128": "art/icons/gear/exports/128/weapon-last_sentence.png",
+        "64": "art/icons/gear/exports/64/weapon-last_sentence.png",
+        "32": "art/icons/gear/exports/32/weapon-last_sentence.png"
+      },
+      "export_hashes": {
+        "256": "0fd2f59fb09f48212cb8d76b71b2dad8e63f1e3ae71c130bbc9312eead879611",
+        "128": "790d3be844053dfd2d0068bead14d16ce06386ccdeb0fb08787a496b8d042436",
+        "64": "45ed588d8876688eafde35a397bee14795f61d079dfc8585654bad6322a17f0b",
+        "32": "2ccfd97bde023d0170c0a5dd5adc8ab3a5ffd6eb37e6cff6a897d38f5b9faef1"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false
+    }
+  ]
+}

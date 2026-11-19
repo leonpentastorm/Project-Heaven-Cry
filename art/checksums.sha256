@@ -1504,9 +1504,11 @@ cdfee57748224e91a01110a08420de365a1088e1cfcf76c7ba482faf4765dec0  art/_archive/g
 c484d6954baf9430e4ec784f796418e8c3a5b0d65b84ecb00bf969835b4728e4  art/_archive/gear/2026-11-19-repaint-continuation/references/previous-exports/64/weapon-mandestra_drum_gun.png
 65d635e4ab99412b2a6b8bd9f5ba5337d0e81be334d408878d48b89f12ddee7f  art/_archive/gear/2026-11-19-repaint-continuation/references/previous-exports/64/weapon-smetanita_thumper.png
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/_archive/gear/2026-11-19-repaint-continuation/source-brief.md
-0cc118eca1f737597d2ebcacc7a1e179e6a444527d2cdf4fbf138b527548dd69  art/_archive/gear/2026-11-19-unique-melee-bow/HANDOFF.md
+967e1c42ff7142973e66773acab66d0effa2708c814365f11f10b14832cb546d  art/_archive/gear/2026-11-19-unique-melee-bow/HANDOFF.md
 eb617c9a7deefbef2470da5e005e1e77831a97c7590f818fcbc3356be8fd9e5a  art/_archive/gear/2026-11-19-unique-melee-bow/claim.json
-6396b9bba900f1df312a2e2dd5774f5d1365686c3f5064a5ca8fd98f754d2c59  art/_archive/gear/2026-11-19-unique-melee-bow/progress.json
+5de1dbbc7f631314c1cd6a9fbeb49209165b93c844c41a1fe6dd6fd537e3fefb  art/_archive/gear/2026-11-19-unique-melee-bow/manifest.json
+3adbfc3da9d765e5580be4c619648ede148e24b5121085ceb417949aadb1c77c  art/_archive/gear/2026-11-19-unique-melee-bow/masters/v1/weapon-last_sentence.png
+b84d5dd194026452549b3bcda3826d4e7a9839df8e8341203f3f58e6799b6ea1  art/_archive/gear/2026-11-19-unique-melee-bow/progress.json
 a6aab1ee6083d9f034206bbbd5043db54de65452e04ea115d7e588b5ee604071  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-breath_of_morning.txt
 c24713c78fe0dd99eddba2771f3b45e96b5d6821bab8ea0e3bbe887ac76710b3  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-grandmothers_teeth.txt
 9fe5b8263778cbc98e87d5be7033f56419004ac5d95ca405f9ebdbccef4a5b48  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-last_crossing.txt
@@ -1515,8 +1517,19 @@ c24713c78fe0dd99eddba2771f3b45e96b5d6821bab8ea0e3bbe887ac76710b3  art/_archive/g
 8ea1d4a534e97abece65a75d83b9c6f9080fe44abc6fce384119ea6c10797afe  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-rearguard.txt
 c26d9102ae14eb798fbaa639fd6ba2bedefbcc418773ffac3b216fce31b8d65f  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-reveille.txt
 eb32503d4294c39ac1842f6c7312e1e8e1d9c94884b93264708f4489f951ad11  art/_archive/gear/2026-11-19-unique-melee-bow/prompts/weapon-windfall.txt
-45e58499bc2bb4b43237efcee3b205e109d482fd177e720ffd2967c5dbb5db69  art/_archive/gear/2026-11-19-unique-melee-bow/queue.json
+b91d6fa43b1ee00a149f62ed10a885f82bdb712c3db4ee2c9eba53bcbc5a2acd  art/_archive/gear/2026-11-19-unique-melee-bow/queue.json
+4b161e5511247906d07467797a1cf8b4463429e8d887473d0844b1ca957aee77  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/adamantile_greatsword.png
+7b8efe72fd8c57c71e44cde023b49775f2f5f014de442caac2bc2a1484d6f040  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/glaive.png
+9bed6d9a7a94150c7c553c86f1a86785dd3392744606da13d7500f627cb0bd3c  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/hand_wraps.png
+affc7baedc7b8b4e595bcb7689eef21f010e66499122d32cda8ef03aa3882517  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/kemizuchi_duelling_blade.png
+df913834c210299f3dabaf933e315906831c6f6c6a0f4e848e967a343cd593bc  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/legion_gladius.png
+59339c94346854c0c3470a448821f7d611df4efa1f188298ad77c0c5c0e0ccd2  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/maul.png
+12e483cf976f777e872a97f7723a4740c2d8d458c90c0368cac04a32cdb1c6d8  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/ork_machete.png
+38450bda81b1155d1241e29ba0be3c92546d92f8efb6f3c4da0c80d362e13932  art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/recurve_bow.png
+2dcd61c3e3d836795e548ffb9fc73eb9566f3817c7b88ffde8c79a1ce93dc85b  art/_archive/gear/2026-11-19-unique-melee-bow/reviews/unique-last_sentence-32px.png
+4ea1433a0aa0de7b290f50ed363a4e568613dc3e2a37691eac2ba46bac91f3bd  art/_archive/gear/2026-11-19-unique-melee-bow/reviews/unique-last_sentence-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-19-unique-melee-bow/source-brief.md
+06576b1f3b25e6d9b92dfb98300bb4726aaf58041e60b8898156a06100324016  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-last_sentence.png
 8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/_archive/icons/perks/2026-11-12/both-hands.png
 bee60137688c6ac3615d3935ce9aadbb1937bc223cbcb791fa92572044cf2380  art/_archive/icons/perks/2026-11-12/exports/128/both-hands.png
 97cd6b0da1b3ba216fd374b114e5c0d403031407319cf465fc28e3ca1b39e4f6  art/_archive/icons/perks/2026-11-12/exports/256/both-hands.png
@@ -4832,7 +4845,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-db35242175ff42dfc7c68f13ea38e4a90d0d9b3b2a111a0bbdedd890fd414a35  art/catalog.json
+68249d9501edb70f832404d5563e57525598bc3669a4f64981a755e9caa96fc1  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6604,6 +6617,7 @@ b51e2121eb98a2202ea5405729aba2cbe9c0d441fce3748e120ee001eaff6f54  art/icons/gear
 91d56e4c5a6b02d7dbbbf9dad3b2c4fa43d01f7c656837088f4d6d55231d410c  art/icons/gear/exports/128/weapon-kemizuchi_sword_breaker.png
 7b85f443e5ea46d2c2b5adc0be59a16d72e24abef082d2d8909d39784bb8ba85  art/icons/gear/exports/128/weapon-knuckledusters.png
 8169973e045659c2f744212d74e307fd9018a189e9dc3a5ef87b28bf66c5378b  art/icons/gear/exports/128/weapon-lance.png
+790d3be844053dfd2d0068bead14d16ce06386ccdeb0fb08787a496b8d042436  art/icons/gear/exports/128/weapon-last_sentence.png
 8ff8ec38ec5b8fa19ad95d7b276417da567fdd2692435aed99520ba7eac6e144  art/icons/gear/exports/128/weapon-legion_bullpup.png
 5919004426304ce3062566f87b6fca079ab28c3726051d1fd5a6ae375674eb45  art/icons/gear/exports/128/weapon-legion_gladius.png
 6b3ea8b46c5effb586a11a05324ac2378d83f51e29c03b31cd3d9a7dcd9cd6d1  art/icons/gear/exports/128/weapon-legion_leaf_dagger.png
@@ -6816,6 +6830,7 @@ b264e48f15abf671bf568a5f59939c12962fcdc237203cf538568323e2b7fd01  art/icons/gear
 bbff32291df83a464eea561d3f5ab549d25a3d6ef06fa0d5b6476c6656c5efaa  art/icons/gear/exports/256/weapon-kemizuchi_sword_breaker.png
 01ea2010c1e32452b0a8372508b0bbaed58b1e3b681c04ee7592c672816488f0  art/icons/gear/exports/256/weapon-knuckledusters.png
 5203a7cfab0370b964c5b6b58ad39b4d5a7b6a61328c8ab654cd298be6e07bbb  art/icons/gear/exports/256/weapon-lance.png
+0fd2f59fb09f48212cb8d76b71b2dad8e63f1e3ae71c130bbc9312eead879611  art/icons/gear/exports/256/weapon-last_sentence.png
 0bb7830b551248d0e6a0e04ede6c1768c222bf6fc9aad3ebc365ee8eced50e2f  art/icons/gear/exports/256/weapon-legion_bullpup.png
 b8d48e40b38b9b547bb51c62875d2762ac02109142e69ab45341a9a012d4368f  art/icons/gear/exports/256/weapon-legion_gladius.png
 c39eead9d11c1abb27f096a33013ea1510e1ae8f6cecc14067a4030060c4878e  art/icons/gear/exports/256/weapon-legion_leaf_dagger.png
@@ -7028,6 +7043,7 @@ bea319921f95cdb976f8892f5a46ee6bcc6aebbdad3944f4b41558834c2d499b  art/icons/gear
 6e3d9de61e55afb28c3d231d53b23863e338568fa2c37ced5d50fdc11b2b49b8  art/icons/gear/exports/32/weapon-kemizuchi_sword_breaker.png
 6950be5c7e93c817a388c70a9ff49af252decb089fa71a5113e72a696bb6e2b7  art/icons/gear/exports/32/weapon-knuckledusters.png
 a7b63c3a2009982e2765ee94817c59835145b6867b08730f23fa23756aa017de  art/icons/gear/exports/32/weapon-lance.png
+2ccfd97bde023d0170c0a5dd5adc8ab3a5ffd6eb37e6cff6a897d38f5b9faef1  art/icons/gear/exports/32/weapon-last_sentence.png
 87af3e8f5a5ffd7f82e296f95cac0fac02bef5af8b5c77ff1eba17f99bb3bdb3  art/icons/gear/exports/32/weapon-legion_bullpup.png
 a36f5cf75f381e5e75459e4d2b2bba2c6d39d5821febf0db99ef66ffd5bd6145  art/icons/gear/exports/32/weapon-legion_gladius.png
 7536ee90bec6a9d36ca5ac8533f7cf85dbf3e0997a38023f7cf101af644f6b52  art/icons/gear/exports/32/weapon-legion_leaf_dagger.png
@@ -7240,6 +7256,7 @@ ecbf7dd94d3465e111c8c9405af934e62a051e5cd77763f9f0bfac1adb9fd07a  art/icons/gear
 af9cc2c224330adae6cb9afff2e596a4b10e4e56c5cac19959f6ceb68b9856d8  art/icons/gear/exports/64/weapon-kemizuchi_sword_breaker.png
 047cba6a70c44df9f8a393e3f0c2fda4c5e5d0ebea39d586e58c3be5c3f072fc  art/icons/gear/exports/64/weapon-knuckledusters.png
 2859f5ebfd9d5544f8b6e997af90b92fa99e48170f9ce7630642fd3987e6565d  art/icons/gear/exports/64/weapon-lance.png
+45ed588d8876688eafde35a397bee14795f61d079dfc8585654bad6322a17f0b  art/icons/gear/exports/64/weapon-last_sentence.png
 455dfdecde221f585c81d8836ee907b5591fb72f17371cade9096a873f60ff69  art/icons/gear/exports/64/weapon-legion_bullpup.png
 1fb9745c80dea64172475a521754b32e8277af679dc9566a189c9aa3101eff36  art/icons/gear/exports/64/weapon-legion_gladius.png
 2dbd00725d2bc784f913a04a20820723ca5b6eb95fe84b84d6c52b56877ebba6  art/icons/gear/exports/64/weapon-legion_leaf_dagger.png
@@ -7402,6 +7419,7 @@ d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512  art/icons/gear
 58521e7d0c861cb4aefa8e85275d67177cf7988d8270c1b1d20af51984080b80  art/icons/gear/weapon-kemizuchi_sword_breaker.png
 739f0487a4696800a0b0ac3979352df8cc595446a0d6f235cbcb5045d0fb245e  art/icons/gear/weapon-knuckledusters.png
 20bff5d57a4df6bee81a29c9ab1e01390b6f232bf3073a275d99a105825a04a3  art/icons/gear/weapon-lance.png
+3adbfc3da9d765e5580be4c619648ede148e24b5121085ceb417949aadb1c77c  art/icons/gear/weapon-last_sentence.png
 3dc7d695c6eb6c2698fa797c62cb8e81159f117c8cbfca317632d8cdc62581a1  art/icons/gear/weapon-legion_bullpup.png
 28e96e7333bce563f97911b40b91750c9a6b578573f85c2438e4e045a5c6cd92  art/icons/gear/weapon-legion_gladius.png
 c074f9aa7dc085ce042244859c3e1e7c004b2070e0fa7c7af2cc22183ba946db  art/icons/gear/weapon-legion_leaf_dagger.png
@@ -12179,11 +12197,13 @@ db27e0309aa0d98503c8a461c09ea1ecf1bfae303dd4f5f039c82fb5fb28b217  art/ui/title-s
 6de65e53e188ecbce5e1f2c19aabc745f5f6e06ee73f4bcbe82249108a8bdd0e  tools/art/export_m813_campaign.py
 1e6a2d66f1055ad808b4c3b4c48fb11d72a1ab605be5045bafd3e9cfec1d236f  tools/art/export_nov12_icons.py
 915192f411cd1b2a3238a67cd2cc4f1699184f6779e2e2c78d667b2eec54a6c8  tools/art/export_nov19_gear.py
+95e28e8f67ad6bb849f0267de1340a7c84291b9f8f3218f760faa10621afd430  tools/art/export_nov19_uniques.py
 d11fb5d194cac8e8fd09dc4bb4bc90bea07012599d2f5942081bf57923720ea5  tools/art/export_wick_animation.py
 757052865c1c16df6afaf6daf9f98e27144717590c6c3b6ab633524d9fb3376d  tools/art/export_wick_icon.py
 a2654251dbea3b4a3d871e1e764c6bace9aa1d283d293e8b341a47e38d336330  tools/art/review_m813_campaign.py
 3130b4e5a2f8a4823e3b42e4ee106cee7b5aa18a562a63b8d6cf58a10513fc16  tools/validate_art.py
 be3c13261817510eb5083542b6e57a38ad76b7d47e285acf6bf7f71cd88c3e5d  tools/validate_gear_art.py
 41f66fed9aca0dbefc3678fe9e158d943fa62b74cc24fdfe18b0980c7db09d31  tools/validate_nov19_gear.py
+7d28e2d47d5445a31d7db5ec4b71f73ab5b3dac87de5035ccbaa595b65c2c32e  tools/validate_nov19_uniques.py
 8968c2fed8a28bf4df57e8f856dcb73049b62b7e05f59e28c508334728c79445  tools/validate_patrons.py
 2ac8f6982774592409f2f2c9bd109290ec1b773378b89ab897d1baaa2a8a7a17  tools/validate_wick_animation.py
