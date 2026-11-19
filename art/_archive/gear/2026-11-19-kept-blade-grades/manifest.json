@@ -6670,6 +6670,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-field_boots--celestial",
+      "path": "art/icons/gear/armour-field_boots--celestial.png",
+      "sha256": "6cb4531a9f22188409ce4c0f4dc620a611ce3692b214545f8f89dacb1ef162ce",
+      "label": "Field Boots — Celestial",
+      "family": "armour-field_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_boots--celestial.png",
+        "sha256": "62bbfb8c024e7ef788302b2b21880a12536567939cb4ce110e85a0d0a799a58a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-field_boots--celestial.png",
+        "sha256": "6cb4531a9f22188409ce4c0f4dc620a611ce3692b214545f8f89dacb1ef162ce"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-field_boots--celestial.txt",
+        "sha256": "ddc4749d189cce4f6abb3cd41aab301579d16d36d80c49273e9c5481df728a9c"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-field_boots.png",
+          "sha256": "ba426f025a3b38a93adca821a970134edb9ecabb89498f09ee28f6e117d8083e"
+        },
+        {
+          "path": "art/icons/gear/armour-field_boots--relic.png",
+          "sha256": "774069ff6bb4b5b24572dba5824d54893b2a257c28def59ecceec0cb3a1a5943"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_boots--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-field_boots--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-field_boots--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-field_boots--celestial.png"
+      },
+      "export_hashes": {
+        "256": "67e2abc30dc220830fe81265012f98008fdab16d29666aa2dddf4ca48934294b",
+        "128": "c99224ca1770120e4d37fa0941a21ad83ce318acb4523ac6400e76d7bc016483",
+        "64": "5f7ad5aaef2632848f50c64308836765bfc0e7398e251ead0f9a7a60b69cb5c8",
+        "32": "bc47a7de15be2d9e8b606e0220ea0d93a6ecfa1fe31d530f59c3902d0a9cb4c3"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-field_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9730583113801543,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 33
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
