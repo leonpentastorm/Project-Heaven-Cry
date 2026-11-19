@@ -1944,6 +1944,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-breacher_plate",
+      "path": "art/icons/gear/armour-breacher_plate.png",
+      "sha256": "b5478d1d99942caa91c505c71a679b6a331f3b5f5c791148ff5641acc87edcb7",
+      "label": "Breacher plate",
+      "family": "07-plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-breacher_plate.png",
+        "sha256": "b0a4eddaf5328f0ec0fb34655b59e83ca5af5eaa21b6572e0408c97a66f7604a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-breacher_plate.png",
+        "sha256": "b5478d1d99942caa91c505c71a679b6a331f3b5f5c791148ff5641acc87edcb7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-breacher_plate.txt",
+        "sha256": "7932a392b9ee47b9cb01a32677283c6c34a97179dc14ab802af6bc6e17902feb"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class4_assault.png",
+          "sha256": "e89e958a8111b23300a6bc1a9cbabcc089e50ed980659f45d39ddebdd726978a"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breacher_plate.png",
+        "128": "art/icons/gear/exports/128/armour-breacher_plate.png",
+        "64": "art/icons/gear/exports/64/armour-breacher_plate.png",
+        "32": "art/icons/gear/exports/32/armour-breacher_plate.png"
+      },
+      "export_hashes": {
+        "256": "5675a9488dad73eddef3ee05ed67c584e8521d6cb1320cdfb3a9ad3c2ea87341",
+        "128": "30a8fc8b4865794060f29136ea6cdfc81a637b7ee84546520f6545678deb6ac0",
+        "64": "837c1f89d3e81306523b51b459efa33b3ac8d6a692d6cbd9490efdd22afd620a",
+        "32": "d0722ff6a0cba518e9691d5e5c72928e954e9c2bd160977d89909e6fb8c43c3c"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

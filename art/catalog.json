@@ -19490,6 +19490,32 @@
       "collection": "2026-11-19-melee-armour",
       "grade": "standard",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "armour-breacher_plate": {
+      "label": "Breacher plate",
+      "path": "art/icons/gear/armour-breacher_plate.png",
+      "sha256": "b5478d1d99942caa91c505c71a679b6a331f3b5f5c791148ff5641acc87edcb7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breacher_plate.png",
+        "128": "art/icons/gear/exports/128/armour-breacher_plate.png",
+        "64": "art/icons/gear/exports/64/armour-breacher_plate.png",
+        "32": "art/icons/gear/exports/32/armour-breacher_plate.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-breacher_plate.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+      "brief_number": 15,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
