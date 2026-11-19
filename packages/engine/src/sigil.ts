@@ -37,6 +37,7 @@ import {
 import { makeObject, OBJ } from './objects';
 import { tilesAround, canStand, inBounds, inArea, work } from './kit';
 import { rawHidden } from './unitstate';
+import { unmakeOwned } from './owned';
 import { condMods } from './condtable';
 import { price, priced, bill, whyNot, canPay, pay, grantAp, withAp } from './effects/cost';
 import { uses } from './effects/uses';
@@ -526,12 +527,15 @@ function walkTo(P: { prev: Record<string, string> }, to: string): string[] {
   for (let i = 0; k && i < 64; i++) { out.unshift(k); k = P.prev[k]; if (k && !P.prev[k]) break; }
   return out;
 }
-function nullCatch(cb: Combat, tiles: string[]): { glyphs: Glyph[]; zones: Zone[]; walls: any[] } {
-  const T = new Set(tiles);
+function nullCatch(cb: Combat, tiles: string[]): { glyphs: Glyph[]; zones: Zone[]; walls: any[]; owned: Unit[] } {
+  const T = new Set(tiles), dispel: string[] = ((W('null') as any)?.dispel || []);
   return {
     glyphs: (cb.glyphs || []).filter((g) => T.has(g.pos) && !(g as any).keystone),
     zones: (cb.zones || []).filter((z) => (PLACED.has(z.kind) || z.kind === 'veil' || z.kind === 'light') && z.tiles.some((k) => T.has(k))),
     walls: objectsOf(cb).filter((o) => o.kind === 'sigil_wall' && T.has(o.pos)),
+    // rules 1.78 item 6602 (figments-spec rule 12): an owned unit whose record kind the word's `dispel` names (a Figment),
+    // anyone's, on the tiles it covers
+    owned: cb.units.filter((u) => !u.dead && T.has(u.pos) && typeof (u as any).owned?.kind === 'string' && dispel.includes((u as any).owned.kind)),
   };
 }
 
@@ -671,7 +675,7 @@ export function planEvoke(cb: Combat, u: Unit, tile: string, aim?: string, opts:
     missiles.push(mp.plan); affected.push(...mp.affected);
     if (mp.plan.why) return { ...base, ok: false, why: mp.plan.why, needsAim, area, pickable, missiles, affected, fizzle: false };
   }
-  const live = affected.filter(counts), world = missiles.some((m) => m.placed || m.raise.length || m.nulls || m.veil.length || m.light.length || m.step.length);
+  const live = affected.filter(counts), world = missiles.some((m) => m.placed || m.raise.length || m.nulls || m.nullHits.length || m.veil.length || m.light.length || m.step.length);
   const fizzle = !live.length && !world;
   const targets = [...new Set(live.map((a) => a.unit))];
   const value = { foe: 0, own: 0, boon: 0, nulls: missiles.reduce((t, m) => t + m.nulls, 0) };
@@ -738,7 +742,8 @@ function missileEffects(cb: Combat, caster: Unit | null, side: 'pc' | 'foe', sp:
   if (sp.workings.includes('null')) {
     const T = sp.burst ? tiles : [c.impact], n = nullCatch(cb, T), S = new Set(T); plan.nulls = n.glyphs.length + n.zones.length + n.walls.length;
     plan.nullHits = [...n.glyphs.map((g) => ({ kind: 'glyph', id: g.id, tiles: [g.pos], side: g.side })), ...n.zones.map((z) => ({ kind: z.kind === 'wall' ? 'field' : z.kind, id: z.id, tiles: z.tiles.filter((k) => S.has(k)), side: z.side })),
-      ...n.walls.map((o: any) => ({ kind: 'raise', id: o.id, tiles: [o.pos], side: (o.side || 'pc') as 'pc' | 'foe' }))];
+      ...n.walls.map((o: any) => ({ kind: 'raise', id: o.id, tiles: [o.pos], side: (o.side || 'pc') as 'pc' | 'foe' })),
+      ...n.owned.map((v) => ({ kind: String((v as any).owned.kind), id: v.id, tiles: [v.pos], side: v.side as 'pc' | 'foe' }))];
   }
   if (sp.uniqueSubjects.includes('command') && c.opts.order === 'move' && main && plan.mainTarget) {
     const P = paths(cb, main.pos, main.id), max = ((W('command') as any)?.move_tiles ?? 3) + iv(sp, 'command', 'move_tiles');
@@ -1209,8 +1214,9 @@ function nullWave(cb: Combat, tiles: string[], at: string): string {
   const gl = new Set(n.glyphs.map((g) => g.id)); cb.glyphs = (cb.glyphs || []).filter((g) => !gl.has(g.id)); tidyStrokes(cb.glyphs);
   for (const z of n.zones) { const keep = z.kind === 'field' || z.kind === 'veil' || z.kind === 'light' || z.kind === 'wall' ? z.tiles.filter((k) => !T.has(k)) : []; if (keep.length) z.tiles = keep; else cb.zones = (cb.zones || []).filter((x) => x !== z); }
   if (n.walls.length) cb.objects = objectsOf(cb).filter((o) => !n.walls.includes(o));
-  emitFx(cb, 'null_wave', { at, tiles, removed: n.glyphs.length + n.zones.length + n.walls.length, glyphs: n.glyphs.map((g) => g.pos), zones: n.zones.map((z) => z.id), walls: n.walls.map((o) => o.pos) });
-  const what = [n.glyphs.length && n.glyphs.length + ' glyph' + (n.glyphs.length === 1 ? '' : 's'), ...n.zones.map((z) => (z.kind === 'wall' ? 'field' : z.kind)), n.walls.length && n.walls.length + ' wall' + (n.walls.length === 1 ? '' : 's')].filter(Boolean);
+  emitFx(cb, 'null_wave', { at, tiles, removed: n.glyphs.length + n.zones.length + n.walls.length + n.owned.length, glyphs: n.glyphs.map((g) => g.pos), zones: n.zones.map((z) => z.id), walls: n.walls.map((o) => o.pos) });
+  for (const v of n.owned) unmakeOwned(cb, v, { quiet: true }); // rules 1.78 item 6602: the one door that unmakes (no refund)
+  const what = [n.glyphs.length && n.glyphs.length + ' glyph' + (n.glyphs.length === 1 ? '' : 's'), ...n.zones.map((z) => (z.kind === 'wall' ? 'field' : z.kind)), n.walls.length && n.walls.length + ' wall' + (n.walls.length === 1 ? '' : 's'), ...n.owned.map((v) => v.name)].filter(Boolean);
   return ' · NULL unmakes ' + (what.length ? what.join(', ') : 'nothing');
 }
 export function destroyPlaced(cb: Combat, z: Zone, why: string) {
@@ -1571,7 +1577,7 @@ export function castAt(cb: Combat, rng: Rng, u: Unit, words: string[], impact: s
     }
   }
   const live = affected.filter(counts);
-  const fizzle = !plans.some((pl) => pl.placed || pl.raise.length || pl.nulls || pl.veil.length || pl.light.length || pl.step.length) && !live.length;
+  const fizzle = !plans.some((pl) => pl.placed || pl.raise.length || pl.nulls || pl.nullHits.length || pl.veil.length || pl.light.length || pl.step.length) && !live.length;
   if (fizzle) return { ok: true, line: ' · it finds nothing it may affect and fizzles', dealt: 0, hit: [], fizzle: true, plan: mp.plan, plans, affected, spell: sp };
   let line = '', dealt = 0, struck = false; const hit: string[] = [];
   magicSpellWords(words.length, () => {

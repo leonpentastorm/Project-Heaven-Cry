@@ -13181,3 +13181,9 @@ Every new number here is PROVISIONAL and a data field.
     pool; a later one acts only on the tiles the first does not cover, and takes over when the first ends. Two sides'
     zones never cancel each other. The rule is the one zone reader's (`magic.ts zonesAt`, owner `self`), for every zone
     kind data lays.
+6602. **NULL unmakes a Figment (figments-spec rule 12; closes rules 1.34 section 7's first leftover):** a NULL Evoke
+    unmakes every Figment standing on the tiles it covers, anyone's (its maker's side too), with no refund, by the one
+    door that unmakes an owned unit (`owned.ts unmakeOwned`). What a word unmakes is its `dispel` list in data
+    (`sigils.json null.dispel` gains `figment`: an owned unit whose record kind is listed); the preview marks each
+    Figment as the rest ("⊘ FIGMENT"), and a NULL that only unmakes a Figment does not fizzle. The enemy caster's weighing
+    of NULL on a Figment (figments-spec section 8: its charge x 4) is not built; the enemy AI's weights are unchanged.

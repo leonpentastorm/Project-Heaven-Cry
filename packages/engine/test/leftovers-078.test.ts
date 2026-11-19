@@ -1,10 +1,13 @@
 // Rules 1.78 (0.32, the leftovers lane): things designed in earlier versions and never built. Each through the reducer
 // (a real action), numbers read from the data.
 //   item 6601  two Sanctuaries on one tile do not stack (spec item 1908): one side's zones of a kind, the first laid acts
+//   item 6602  NULL unmakes a Figment on the tiles it covers (figments-spec rule 12; sigils.json null.dispel)
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { CLASS_MOVE_POOL, applyDamage, setDevotionXp, devotionThreshold, zonesAt, type Unit, type Action } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
+import { figFight } from './helpers/figfight';
+import { previewEvoke } from '../src';
 
 const CHAP: CharSpec = { name: 'Chaplain', skills: { faith: 6 }, attrs: { virtue: 8 }, level: 12, classId: 'guardian' };
 /** Two Chaplains (Faithful, Old Overcast) and a gunner against two soldiers. */
@@ -31,5 +34,27 @@ describe('item 6601: two Sanctuaries on one tile do not stack (spec item 1908)',
     const first = zonesAt(h.f.cb, '3,5', 'sanctuary', 'any').find((z) => z.by === h.me)!, second = zonesAt(h.f.cb, '3,5', 'sanctuary', 'any').find((z) => z.by === h.two)!;
     expect(first.pool).toBeLessThan(second.pool!); // the first laid gave what was prevented; the second gave nothing
     void CLASS_MOVE_POOL; void (null as unknown as Unit);
+  });
+});
+
+describe('item 6602: NULL unmakes a Figment (figments-spec rule 12)', () => {
+  function setup() {
+    const f = figFight([{ skills: { visualization: 1 }, weapon: 'service_pistol', forms: [], level: 5 }, { name: 'Ilse', archetype: 'sigilist', kit: 'sigil', visualizer: null, level: 5 }], [{ at: '14,14' }]);
+    const [owner, sig] = f.pcs; owner.pos = '3,4'; sig.pos = '2,8';
+    let o = f.turn(owner); o.ap = 9; f.picture(o, 'double', '6,8');
+    const fig = f.figments(f.unit(owner.id))[0]; expect(fig).toBeTruthy();
+    const u = f.turn(sig); u.ap = 9; const m = u.mg!; m.evoker = true; m.words = ['null', 'seek']; m.charge = 30; m.glyphAp = 1; m.maxWords = 4; m.flux = 0; m.rangeBonus = 0;
+    f.unit(sig.id).pos = '3,8'; f.act({ type: 'combat/draw', unitId: sig.id, word: 'null', tile: '3,8' } as any);
+    f.unit(sig.id).pos = '2,8'; f.act({ type: 'combat/draw', unitId: sig.id, word: 'seek', tile: '2,8' } as any);
+    return { f, sig: sig.id, fig: fig.id };
+  }
+  it("the preview names the Figment among what NULL unmakes; the Evoke takes it out of the fight (anyone's, the caster's own side too)", () => {
+    const h = setup();
+    const pv = withGame(h.f.g, () => previewEvoke(h.f.cb, h.f.unit(h.sig), '2,8', '6,8'));
+    expect(pv.missiles[0].nullHits.map((x: any) => [x.kind, x.id])).toContainEqual(['figment', h.fig]);
+    expect(pv.fizzle).toBe(false);
+    h.f.act({ type: 'combat/evoke', unitId: h.sig, tile: '2,8', aim: '6,8' } as any);
+    expect(h.f.cb.units.some((v) => v.id === h.fig)).toBe(false);
+    expect(h.f.cb.log.some((l) => /NULL unmakes .*Double/i.test(l))).toBe(true);
   });
 });
