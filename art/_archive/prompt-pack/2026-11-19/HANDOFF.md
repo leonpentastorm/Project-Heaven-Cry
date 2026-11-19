@@ -1,10 +1,10 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 11:08 UTC+7. The 88 entries in files 01–04 have **65 delivered**, **22 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 11:16 UTC+7. The 88 entries in files 01–04 have **72 delivered**, **15 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
-| 01 | 15 | 37 |
+| 01 | 22 | 37 |
 | 02 | 11 | 11 |
 | 03 | 20 | 21 |
 | 04 | 19 | 19 |
@@ -22,15 +22,8 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 ## Remaining entries
 
 - 066 | File 03 | Running Script (fork): replaces the existing picture | `art/icons/forks/sigil-running-script.png`
-- 010 | File 01 | `kit-ahoc-ground-2`: AHOC ground 2 | `art/sprites/kit/ahoc/ground-2.png`
 - 013 | File 01 | `kit-rim-wall-corner`: Rim wall corner | `art/sprites/kit/rim/wall-corner.png`
-- 014 | File 01 | `kit-ahoc-poi`: Point of interest, ahoc | `art/sprites/kit/ahoc/poi.png`
-- 020 | File 01 | `kit-ahoc-sigil_wall`: Sigil wall, ahoc | `art/sprites/kit/ahoc/sigil_wall.png`
-- 021 | File 01 | `kit-city-sigil_wall`: Sigil wall, city | `art/sprites/kit/city/sigil_wall.png`
-- 022 | File 01 | `kit-field-sigil_wall`: Sigil wall, field | `art/sprites/kit/field/sigil_wall.png`
-- 023 | File 01 | `kit-works-sigil_wall`: Sigil wall, works | `art/sprites/kit/works/sigil_wall.png`
 - 024 | File 01 | `kit-shrine-sigil_wall`: Sigil wall, shrine | `art/sprites/kit/shrine/sigil_wall.png`
-- 025 | File 01 | `kit-rim-sigil_wall`: Sigil wall, rim | `art/sprites/kit/rim/sigil_wall.png`
 - 026 | File 01 | `kit-ahoc-sigil_mark`: Sigil mark, ahoc | `art/sprites/kit/ahoc/sigil_mark.png`
 - 027 | File 01 | `kit-city-sigil_mark`: Sigil mark, city | `art/sprites/kit/city/sigil_mark.png`
 - 028 | File 01 | `kit-field-sigil_mark`: Sigil mark, field | `art/sprites/kit/field/sigil_mark.png`
@@ -43,5 +36,3 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 - 035 | File 01 | `kit-works-pile`: Ground pile, works | `art/sprites/kit/works/pile.png`
 - 036 | File 01 | `kit-shrine-pile`: Ground pile, shrine | `art/sprites/kit/shrine/pile.png`
 - 037 | File 01 | `kit-rim-pile`: Ground pile, rim | `art/sprites/kit/rim/pile.png`
-
-Unreviewed scratch renders currently on disk: 10, 20.

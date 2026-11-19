@@ -97,10 +97,14 @@ def draft(job):
     else:
         shutil.copy2(source, dest)
     image = Image.open(dest)
+    native_dimensions = image.size
+    if "export_crop" in job:
+        assert job["kind"] == "ground"
+        image = image.crop(tuple(job["export_crop"]))
     size = 256 if job["kind"] == "kit" else 1024
     out = STAGE / f"draft-{n}.png"
     save(export(image, size, job["kind"], Path(job["path"]).stem), out)
-    return image.size, dest
+    return native_dimensions, dest
 
 
 def review(jobs):

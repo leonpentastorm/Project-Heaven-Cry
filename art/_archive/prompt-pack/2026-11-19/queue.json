@@ -143,7 +143,14 @@
     "paint": "Setting: ahoc, a tired, well-kept containment base. A seamless tileable ground, 1024 x 1024, straight top-down: scuffed ceramic-grey floor plates with bolted seams every half tile (every 128 px) and two faint worn walking lanes of slightly paler wear running top to bottom. To fix the old seam: every lane, seam line and bolt row must be placed so that it meets its own continuation exactly at the left edge and the right edge and at the top edge and the bottom edge, with the overall brightness the same all the way across (no lighter or darker vertical band near either edge, no vignette, no stripe that ends at the border). Calm, even mid-dark grey with low-contrast scuffs and a few dull rust-red paint ghosts no bigger than a bolt. No letters, no stencil text, no objects. Avoid: a single large stain or a landmark that would show as a repeat, a bright seam line, a gradient across the tile.",
     "status": "pending",
     "n": 10,
-    "kind": "ground"
+    "kind": "ground",
+    "paintExtra": "Keep exactly eight panel pitches per direction. Shift the pattern half a panel so every outside edge cuts through calm middle of a plate, with NO grout seam or bolts on the outside edge itself. Horizontal and vertical panel seams run to opposite edges at identical coordinates, no border. Use subtle continuous brush grain across the joins, no large value shifts.",
+    "export_crop": [
+      0,
+      2,
+      1252,
+      1254
+    ]
   },
   {
     "file": "01",
@@ -179,7 +186,12 @@
     "paint": "Setting: rim, a lonely frontier station. A wall piece, corner: an L joining the left edge and the bottom edge of a 256 x 256 cell, outer corner square, painted as the very same wall as the attached rim wall-straight: a blue-grey bulkhead band half a tile thick (128 px), a darker outline on the exposed edges only, an ivory cap band, and a thin cyan #8BDEEE light strip along the top face. Match the straight piece exactly in its blue-grey value, its panel texture (no added panel grid), its cap width and its light strip: the strip and the cap band run through the corner in one unbroken line and meet the straight pieces at the same height and centreline at both cut ends. Both arms end flat-cut exactly at the cell edge with no end outline, so the piece butts cleanly to a straight run. Top light from the upper left, no shadow. Avoid: a different shade, extra panel seams, a lighter cap, a rounded corner, a gap, any text.",
     "status": "pending",
     "n": 13,
-    "kind": "kit"
+    "kind": "kit",
+    "paintRefs": [
+      "art/sprites/kit/rim/wall-corner.png",
+      "art/sprites/kit/rim/wall-straight.png"
+    ],
+    "paintEdit": "Image edit of FIRST PNG, repaint only the steel surface and cap so it matches the SECOND PNG's straight wall. Keep the FIRST PNG's silhouette/mask absolutely unchanged. FROM the left middle edge a horizontal band runs inward to the corner at right of center, turns down at 90 degrees, and continues to the bottom center edge. The top and right edges are transparent. Both physical cut ends touch the edges with no transparent gap and the band is exactly half a canvas thick. Ground view above. No change to turn direction, wall location, width, crop, exact alpha mask, no cast shadow or new panel grid. Use the straight wall's blue-grey body and warm narrow edge profile. The old corner geometry is correct; only its appearance should change."
   },
   {
     "file": "01",
