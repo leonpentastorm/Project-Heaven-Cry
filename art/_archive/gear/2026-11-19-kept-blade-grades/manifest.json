@@ -60,6 +60,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_duelling_blade--masterwork",
+      "path": "art/icons/gear/weapon-kemizuchi_duelling_blade--masterwork.png",
+      "sha256": "64ee9fb6fd4caae71b938cf6e354366d076567aa7d113dcd6449e51c7af0a0c8",
+      "label": "Kemizuchi Duelling Blade — Masterwork",
+      "family": "weapon-kemizuchi_duelling_blade",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_duelling_blade--masterwork.png",
+        "sha256": "b25c702e441f19f7f6fd4a6d335f139fac2eecdd31d3d6d316d8425d66321bf3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-kemizuchi_duelling_blade--masterwork.png",
+        "sha256": "64ee9fb6fd4caae71b938cf6e354366d076567aa7d113dcd6449e51c7af0a0c8"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_duelling_blade--masterwork.txt",
+        "sha256": "088e008dc72b3cffa1f0caf6aed974ccc01293ce170be6338f5415a8f9f2948c"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-kemizuchi_duelling_blade--masterwork/v1/source.png",
+          "sha256": "537aa9f7f3b5acb2c751053eee3a4edc639648f66c3aaa678c0548b324e0fb75"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_duelling_blade.png",
+          "sha256": "f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_duelling_blade--fine.png",
+          "sha256": "ac864ea22d5aadf5e0978cd0369b126f3cbbbc3730d02a5eba3be782a4497808"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "1ad6ba9fa2bd18f6fa2f5c090775caf5b0bd32f98b19e8699f4a0ee20fe3f2d7",
+        "128": "0ac89b787dd4f75267993a543bd23753dcd6f9c25622e53b47d8e815a479c6d1",
+        "64": "27fcdd41d38e160429a7dd799f79eaee0c6d8ec188e06701cab1d233fbcd525a",
+        "32": "767c597eeddce273a7ba6d0ec95c0e799c2a3cd30dad2fe29e7b3d5b6a9fda87"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-kemizuchi_duelling_blade",
+      "outline": {
+        "solid_alpha_iou": 0.8987711310653008,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 23
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

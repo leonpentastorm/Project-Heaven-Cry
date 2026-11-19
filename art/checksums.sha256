@@ -1218,7 +1218,9 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-350ac8cbff3d614c470c80e891f29d9c85e6e2fc55d3c944956ec85eddd8fe24  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+1a0a9e3b870c975e1edb45ecb582e590b01fd61e9ade8a6e645180afe489d459  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+32bc758254d47a6b110fe3c5468c6227f7c60a7d1cda1821a658a33bac846db7  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-kemizuchi_duelling_blade--masterwork/v1/prompt.txt
+537aa9f7f3b5acb2c751053eee3a4edc639648f66c3aaa678c0548b324e0fb75  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-kemizuchi_duelling_blade--masterwork/v1/source.png
 e8d0331a0f916050457ab5ab849ca20e939215bef4ae0fc7b443b2c2dad7a7bf  art/_archive/gear/2026-11-19-kept-blade-grades/claim.json
 f543633b644933de9238894deb5f27044fb7fcc1cc0a24e37b284385a1ce1c98  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/overlap-archive/claim.json
 06baf281d6c79e0c20510a544e5d0cb5fabaf98fd62e833b9b6d45c00ec9a797  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/overlap-archive/manifest.json
@@ -1242,12 +1244,13 @@ b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7  art/_archive/g
 3e95b528c6972077468adc49bb243bb17ff1284395cc828f4e834d368e3107c5  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/reused-peer-candidates.json
 0a5613123a2095b6ac02dd5cb275a51a2fba4b75d66358a319bd9ba240ff5ed9  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-combat_knife--masterwork.json
 f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sabre--fine.json
-383e3fc058c9a858ffae51490d1b7aaf0d7f1a93632e34c08a0f169b22a43d92  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+6578109a31e0ffc47b1d46942deb281989213c1c08e3135ee1f6b9df88209dc3  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
 bbb67959be8d00478841617bb9dc376964a50d2c7654ed311918601c362e0830  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-combat_knife--fine.png
 ac864ea22d5aadf5e0978cd0369b126f3cbbbc3730d02a5eba3be782a4497808  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-kemizuchi_duelling_blade--fine.png
+64ee9fb6fd4caae71b938cf6e354366d076567aa7d113dcd6449e51c7af0a0c8  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-kemizuchi_duelling_blade--masterwork.png
 0526866522450e260e5859dd8569dc1e460f85607075f6568d005c0afb336fa0  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-legion_gladius--fine.png
 b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-legion_gladius--masterwork.png
-e20cec668cfdcb7d04e2bf7a11c1c47a1ff49f8f2c0de6038c944ddcaa0aef18  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+dc7e6198a09367b35c2140781e4b39054957441f732cce071af6cfd352f03bbc  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 94945aad0e68ad8b22c52bed7d69da47d3c8ce6bbadae80767d8ff7013cdfd12  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-adamantile_greatsword--celestial.txt
 fd9fa0e8d5363befadedb2dfc3abac9b5701f076e705023b5b6b4ee0f57c8d50  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-adamantile_greatsword--fine.txt
 82e73c497d79d130d20886e47f31c84909157a81e6f652cf1baed3bc0f8ecd33  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-adamantile_greatsword--masterwork.txt
@@ -1266,7 +1269,7 @@ f110b879ab61a7f160defa60cdc7068423df619d682c19ebf4515f4c42588eea  art/_archive/g
 d45a6560626c2b7ec9e72406ef8f6a74f765e4248c7e9327e77ced05dde82ce1  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hatchet--relic.txt
 8c11c20f990cfab7338fb0cf899cf3ae579cd1191b205bdb883a9ac3519c81b5  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_duelling_blade--celestial.txt
 8e1f867e859bd6d8ffcf6232730166b878ffef7d2faed5cd5eec6184ce073b51  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_duelling_blade--fine.txt
-32bc758254d47a6b110fe3c5468c6227f7c60a7d1cda1821a658a33bac846db7  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_duelling_blade--masterwork.txt
+088e008dc72b3cffa1f0caf6aed974ccc01293ce170be6338f5415a8f9f2948c  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_duelling_blade--masterwork.txt
 562e6cc08e1eaa383613ae54615187bf105ab9f6d7e27957676d4919372fa748  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-kemizuchi_duelling_blade--relic.txt
 e36bdea2b5210ceabdbd2dad4f3edeef2ab9efa2d43ac020824b1318ab51fd10  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lance--celestial.txt
 086a7fe3ac5808058e3945ea4bc334909de24e4b8039b4ad4960485d7e1ab8aa  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lance--fine.txt
@@ -1292,16 +1295,17 @@ f31bd9e8a0540c7383f8310931a78e08efe28e692f5d7d9c470dbc59372d4a69  art/_archive/g
 9f68b7cbbd608181d6cca6fc54e49bf23085deb5286e7827370197db31d33ec8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--fine.txt
 e8081d259555e24814654d1db508a91e3c8ccb6805bca5ca00465c7ef0f6f70f  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--masterwork.txt
 bee7477a9e07b82ad229c32541939deea912fb45b3155a89d95d7db1a2a39834  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-war_axe--relic.txt
-2d355eb1e94e5fb7b62ba93e991dd5849d486b692c6c1b48dfc132f33a964854  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+3f3756fbfc816b6e28c50aa7984523d88c4bb1fa195ec8f7eb6ef978a6897b0e  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 e60acd10879508f0f7ca3d94526f95f4ea38cf413e0b62129a6681490f81e52e  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-combat_knife-32px.png
 10bd191ec3b6b22ef8513066c663dc60ee43bfe3f74748dd82c8b5b7f83415a4  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-combat_knife-64px.png
-0a9367ec3813c32d52d975f8ae6f81cd5dd08f4f84838d212ca006a9cc9cc1b2  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-kemizuchi_duelling_blade-32px.png
-dcc8aa7302a311463d49713c974f37a55d838543c7123a15e544ed772212bf88  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-kemizuchi_duelling_blade-64px.png
+41c8bbb5745430c64c2ee648fbe5bbec3fff17077ff243431f352eb3c36bb304  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-kemizuchi_duelling_blade-32px.png
+c61c2a116e9f63fadaf560770b3af7c656c516b83876fa89e247ac5bbec83dbb  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-kemizuchi_duelling_blade-64px.png
 d149bb2079e6173b3ea4b78de5632bd45da70b3e9859a367a8cb1db19ac10f78  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-legion_gladius-32px.png
 ae82e698e01ceb7bf11435c35862408002bf4d9fbbc6dea54fde151471826912  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-legion_gladius-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-19-kept-blade-grades/source-brief.md
 9f1f05e285349047398d3b3f21b9ab0b4dea2df2c0f6d6bd5d6adf1bb364c169  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-combat_knife--fine.png
 2a201a78d87554accb4a6b1780791c7379ad50e07c12cf2b6e4ece46bdd03c84  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_duelling_blade--fine.png
+b25c702e441f19f7f6fd4a6d335f139fac2eecdd31d3d6d316d8425d66321bf3  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-kemizuchi_duelling_blade--masterwork.png
 311c91c10613e9c5dd271814f606bc2b4dcb2929e6606dd3aa26d9892a3b4c3c  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-legion_gladius--fine.png
 a12c5417e1e948d5ba910582aafc9e3b38d6c8df67654da1c1cf737b4a73e431  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-legion_gladius--masterwork.png
 0ed4456fdb4c3eacb205a819eaadde137b48bb300c92fcc96496f93354b8993f  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
@@ -4980,7 +4984,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-10cdf1dc3f10176d13c4666babf5bb6a254aeb58640d5fd3110306181e223d34  art/catalog.json
+dc7ff5372013500573ad829c82859eb424b1e453847901f2178331558af1add1  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6752,6 +6756,7 @@ b11732d331ec7788914fd75d444ba9be453ca3ff4d332b91d4f4c8b5696f092f  art/icons/gear
 228bb3d71774b3219866c41706aa32e61a6012d2544418abab81a7fc5c9c0a15  art/icons/gear/exports/128/weapon-iron_mitts.png
 e291bf6e01fc33fa976bbb1509d63accaeac9d07d0ce514c73dd111f218b60bf  art/icons/gear/exports/128/weapon-katana.png
 54b7bda18fc1126c13e6c4a2610b6aca28c352e0dc1a582ebb360474155fe2ba  art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade--fine.png
+0ac89b787dd4f75267993a543bd23753dcd6f9c25622e53b47d8e815a479c6d1  art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade--masterwork.png
 2cf99a820e6180063d0da89fbc10f34de7b5c8bcf63bcf2a7328218139e89d23  art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade.png
 4506b78f676fbcdb50d6ccff483fb2b8abb5dcb86bef0ed463210feb83a3a2ed  art/icons/gear/exports/128/weapon-kemizuchi_side_sword.png
 b51e2121eb98a2202ea5405729aba2cbe9c0d441fce3748e120ee001eaff6f54  art/icons/gear/exports/128/weapon-kemizuchi_strikers.png
@@ -6982,6 +6987,7 @@ aff848a26137b23eeb53c7e60e1f5f1dd0601ee651d02a5ce3ebcb2d010bfe29  art/icons/gear
 4f727e7341ffa78f24bf7d6445d72327391c406f95fedd5ae7c18b534150f99d  art/icons/gear/exports/256/weapon-iron_mitts.png
 28d035b478131d2378fb9ef32e8f0f2f42b2fdea8915b2fddd3af94b1c94573a  art/icons/gear/exports/256/weapon-katana.png
 693ee3d4e79f4f0d031ece446c55c7f86820eae1d94006a9a96173e4984fa80c  art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade--fine.png
+1ad6ba9fa2bd18f6fa2f5c090775caf5b0bd32f98b19e8699f4a0ee20fe3f2d7  art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade--masterwork.png
 5bfaf88d4b091b74dea730a1a22d028bcada2c9952618555a7db6c37f3ee74c9  art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade.png
 4ca9332ee08108a1da0ffa28832aa531003ea0bcc2f83f38076cff23a7b8e182  art/icons/gear/exports/256/weapon-kemizuchi_side_sword.png
 b264e48f15abf671bf568a5f59939c12962fcdc237203cf538568323e2b7fd01  art/icons/gear/exports/256/weapon-kemizuchi_strikers.png
@@ -7212,6 +7218,7 @@ e37b4e9dced028f483a36c748444ac92ea7264003a50244e966b30ef4970d1a7  art/icons/gear
 b076cc9500e17ba641dca02261038f6254a2866ae599a504686e0ba72cd48431  art/icons/gear/exports/32/weapon-iron_mitts.png
 fa574ecb10a082c4b19a525987527b0d637ef7c5089171811235c06c9193755d  art/icons/gear/exports/32/weapon-katana.png
 c3c11a2244eb700935bc530787bcaa0df05fc8e8f3af5b4f2c3cd42e0b815e79  art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade--fine.png
+767c597eeddce273a7ba6d0ec95c0e799c2a3cd30dad2fe29e7b3d5b6a9fda87  art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade--masterwork.png
 0513d6fb89fa1e1933557d5c52e18181812d8ddd3785c04cdc85207aa44a7b90  art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade.png
 48c69fac279b129b93ce3158f01bf7a44e9659bfe02daaf92e981ca604e25854  art/icons/gear/exports/32/weapon-kemizuchi_side_sword.png
 bea319921f95cdb976f8892f5a46ee6bcc6aebbdad3944f4b41558834c2d499b  art/icons/gear/exports/32/weapon-kemizuchi_strikers.png
@@ -7442,6 +7449,7 @@ ea4f07a5a9402f753d093dc19322caf185eb9255b83be09d5c8ab56f8efa9d39  art/icons/gear
 df56e4124d26720ebd38d6939a8a2b2450b629093a83c8144b61e80b028e112b  art/icons/gear/exports/64/weapon-iron_mitts.png
 c161ec288096dea1401ea4258a97dfaca42080c0edaeb0f07e67b5e32e5a6fcf  art/icons/gear/exports/64/weapon-katana.png
 6b30671171750d7c637ce44dab91baa4bacacd270dc9d55145ff233ca1d5fdba  art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade--fine.png
+27fcdd41d38e160429a7dd799f79eaee0c6d8ec188e06701cab1d233fbcd525a  art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade--masterwork.png
 608c5898d5d88e30c40094730ffb21c8fce482f61024ccff5c33470ad2f0e64d  art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade.png
 ecbf7dd94d3465e111c8c9405af934e62a051e5cd77763f9f0bfac1adb9fd07a  art/icons/gear/exports/64/weapon-kemizuchi_side_sword.png
 6b92efb865785b9eab12b643d1547d80114a2f5e5709dce3cb7cde1e0b164d38  art/icons/gear/exports/64/weapon-kemizuchi_strikers.png
@@ -7622,6 +7630,7 @@ a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac  art/icons/gear
 026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a  art/icons/gear/weapon-iron_mitts.png
 59588dba217985563b09c144f62b048cf3b0bc3465873e692ad8df403144fe58  art/icons/gear/weapon-katana.png
 ac864ea22d5aadf5e0978cd0369b126f3cbbbc3730d02a5eba3be782a4497808  art/icons/gear/weapon-kemizuchi_duelling_blade--fine.png
+64ee9fb6fd4caae71b938cf6e354366d076567aa7d113dcd6449e51c7af0a0c8  art/icons/gear/weapon-kemizuchi_duelling_blade--masterwork.png
 f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d  art/icons/gear/weapon-kemizuchi_duelling_blade.png
 ab263efaac50ca2d6289353002bcf9226a7f17c9d9dcbebd6faee5346f32f5d6  art/icons/gear/weapon-kemizuchi_side_sword.png
 d4e4963718ef806fee94a92b1ec4f59d5ed9fe34de8aec489caf0ec669c83512  art/icons/gear/weapon-kemizuchi_strikers.png
