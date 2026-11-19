@@ -237,20 +237,26 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 
 ### Fun and balance pass
 
-- **Solo sustain and the tank's camp kit.** The tank kit clears 7 of 20 (Hand wraps, buckler), the mixed squad 8 of 20 in the simulator; gunner, tank and Mender starve solo. Fit it (camp budget stays 300, ruled 19 Nov). [M] [open; from documents only] [SESSION-TODO D, Q2g; TRIAGE]
-- **Simulator bot policy for the Operative and Sigilist.** Rebuilt in the simulator lane (`0.32-MEASURES.md`): Sigilist 0 → 2 solo, 0 → 3 quad; Operative still 0 / 0 (3 solo with the rack's rifle). Owed: the Sigilist's Line from cover and a stand-off under Suppress (bot); the Operative's to-hit at Dexterity 0 is a ruling (Shadow gives no to-hit but Tag's +1). [M] [partly; measured 19 Nov 2026] [0.32-MEASURES.md section 4]
-- **Name the Sinner as played costs the solo Chaplain** (15 → 11 of 40, Elites and Bosses only; 5 when it named every nearest foe): a better rule for when to name. [S] [open; measured 19 Nov 2026] [0.32-MEASURES.md]
-- **Reflex, the follow strike's −2 and the feeds' 0.01 measure nothing** (identical with each at 0): check that the off switch reaches each, or that Reflex fires at all. [S] [open; measured 19 Nov 2026] [0.32-MEASURES.md]
+#### Built in 0.32 (not yet live)
+
+- **The Operative clears.** Unseen Hand (an attack from Hidden rolls with Ingenuity when higher) and the Recommended rifle: solo 0 → 13, four 0 → 22. `bcfa7cf6a`, rules 1.81 items 6900-6901.
+- **The Outburst peak measured as one Release** (the 0.32 rise was a second, Mana Short Release in the window); the contract band set to what is measured; **the map 16 tiles up to 10 units** (four Breakers 6 → 14, four Bulwarks 11 → 17). `cf981b944`, items 6903-6904.
+- **The guard's bar** to the measured share (25 of 40, bar 55%). Item 6905, the fit's last commit.
+
+- **Solo sustain: the Mender.** Every door's Recommended kit now clears stage 1 solo 10 times in 40 or more except the Sigilist (Leon's ruling); the tank kit 25, the gunner 35. Owed: the Mender solo, 10 of 40 with 16 stalled: its revolver runs dry and the Empathy sheet fists at -2; with a 40-round cap the stalls end 3 won, 13 lost (rules 1.81 item 6907). [M] [partly; measured 20 Nov 2026] [0.32-FIT.md]
+- **Simulator bot policy for the Sigilist.** Owed: the Line from cover and a stand-off under Suppress (bot); the Operative is fitted (below). [M] [open; measured 19 Nov 2026] [0.32-MEASURES.md section 4]
+- **Name the Sinner as played costs the solo Chaplain** (16 → 11 of 40, Elites and Bosses only; at +40%, a trial, 13: the price is not the cause): a better rule for when to name (rules 1.81 item 6906). [S] [open; measured 20 Nov 2026] [0.32-FIT.md]
+- **The follow strike's −2 buys nothing** (it runs; a follows item's strike is 1 to 5% of the main hand's): the lead to rule 0 or keep. Reflex and the feeds' 0.01 run (traced; the measures cannot see them: one held shot a round, defensive numbers): no fault (rules 1.81 item 6902). [S] [open; measured 20 Nov 2026] [0.32-FIT.md]
 - **Ceilings with mods fitted.** Guns reach 162-195% against the 145% line. Leon ruled 19 Nov: ceilings are a relative measure of the effort a class puts in and the fun it gives back, not a hard line; fit with that in mind. [M] [open; from documents only] [SESSION-TODO D; 0.29.0 known]
 - **Class lines.** Figments door 119 and Rigger 123 against 130 and 150 (needs a class-only multiplier primitive); Skirmisher 159 against 145; Hymn 138 against 150; the healer stall at level 20. [M] [open; from documents only] [START-HERE Balance 2.0 4]
 - **The Dexterity melee line as a whole.** Sabre and katana are over 165% all-in at level 10. [S-M] [open; from documents only] [spec 5527]
-- **Shape's free Pump** stays at +0.12 until the Outburst peak band is refitted. [S-M] [open; from documents only] [SESSION-TODO V]
+- **Shape's free Pump** stays at +0.12; the Outburst peak band is refitted (rules 1.81 item 6903: one Release, 90): to rule whether it moves. [S-M] [open; 20 Nov 2026] [SESSION-TODO V]
 - **0.30's PROVISIONAL numbers never fitted.** Now measured (`0.32-MEASURES.md`, `measures-032.ts`): two shields at ranks I to III, Drive's −2 and plate-back, the follow strike's −2, Afterword, the feeds' 0.01. Owed: the fit. [M] [measured, not fitted; 19 Nov 2026] [CHANGELOG 0.30.0]
 - **Balance 2.0 leftovers.** The rifle contract holds 4 guns plus greatsword and sabre (guns-measure covers all guns separately); the repair rate of 10% is nearly free; the XP and stage fit is PROVISIONAL because the simulator never makes or sells materials; level 3 before the first Boss on only 42% of routes. [L] [open; checked in code 19 Nov 2026] [START-HERE; SURVIVAL-PICKUP; verification]
 
 ### End of release
 
-- **Measures against the baseline.** Done on `wip/0.32-sim` before the fit (`docs/design/handoffs/0.32-MEASURES.md`); re-run after the fit. [L] [partly; 19 Nov 2026] [proposals 2.10]
+- **Measures against the baseline.** Done on `wip/0.32-sim` before the fit (`docs/design/handoffs/0.32-MEASURES.md`); re-run after the fit: the party fit (nine doors, solo and four) and the Outburst rows re-run (`0.32-FIT.md`); owed: the Survival cells, guns with mods, Figments and the tank table. [L] [partly; 20 Nov 2026] [proposals 2.10]
 - **Consolidation pass** over everything added since 0.29 (rule 4); leftovers still in code from waves 2 and 3 include `COUNTED_ORDER` (containers.ts) and `_OWNER_USE_TYPES` (validate.py); wave 3 SHOULD-FIX items not yet checked one by one. Report in `docs/design/proposals/`. [L] [open; from documents only] [wave2-rulings; wave3]
 - **Whole-game screenshot pass.** `capture-skills` covers only the skill pages; camp, path map, node kinds, rewards, fight tabs, victory, field, summary and settings were never read at 1600x900 (the `capture-all` draft was removed, `13cfaad7e`). Covers what nobody has seen in a browser: the field kit's Treat buttons, plate chips, shop icons, banners in motion, the field's three rounds, the status strip's group marks, the place card with its picture, the approach line in real play, the vault-chest reward, the mana forecast over the map. [M] [open; from documents only] [SESSION-TODO K, O, U, V]
 - **One full browser run.** Includes the Throw row's check, written and never run. [M] [open; from documents only] [spec 5534]

@@ -3,7 +3,7 @@
 // Tending's Guide: click the ally, then the tile it steps to (the legal tiles shaded), and Confirm sends both. Before,
 // the flow had no tile step and Confirm sent the ally alone: 1 AP and the MP went, and nobody moved.
 import { describe, expect, it } from 'vitest';
-import { apply, newGame, ARCHETYPES, beginTurn, withGame, reachable } from '@engine';
+import { apply, newGame, ARCHETYPES, beginTurn, withGame, reachable, standable, dist } from '@engine';
 import { flowView } from './actionFlow';
 
 const sheet = (name: string, arch: string) => { const a: any = ARCHETYPES.find((x: any) => x.id === arch); return { name, portrait: '', origin: 'Thousand-Planet frontier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} }; };
@@ -48,6 +48,11 @@ describe('0.28.3: Guide on the fight screen', () => {
 describe('rules 1.65: an empty tile while a unit pick is open', () => {
   it('Bond selected, a click on an empty tile sets the refusal (pickWhy) in the pick\'s own words', () => {
     const { g, mu } = fight();
+    // no foe within the Bond's reach (the flow picks the first standing foe in reach for a unit pick, as the target card
+    // has it): the fight's map is the encounter's (rules 1.81 item 6904 made it smaller), so the foes are set apart by hand
+    { const cb0 = g.combat, used = new Set(cb0.units.map((u: any) => u.pos)), far: string[] = [];
+      for (let x = cb0.map.w - 1; x >= 0; x--) for (let y = 0; y < cb0.map.h; y++) { const k = x + ',' + y; if (standable(cb0.map, k) && !used.has(k) && dist(k, mu.pos) > 9) far.push(k); }
+      for (const f of cb0.units.filter((u: any) => u.side !== mu.side && dist(u.pos, mu.pos) <= 9)) f.pos = far.shift(); }
     const bond = 'pk:verb:tend.bond#tend_bond';
     const fv = withGame(g, () => flowView(g, 'host', mu, { action: bond }))!;
     expect(fv, 'Bond is on the flow').toBeTruthy();

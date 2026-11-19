@@ -13451,3 +13451,49 @@ aiRouteRisk`); their per-turn marks are `uses()` cells on the unit. **Every numb
     the other optional fields of the Narrator's turn; the Narrator's private view of hidden things in the story
     (traps, hidden NPCs: the host sees what the players see); a fight made up on the spot (only the campaign's
     prepared fights). The AI Narrator's turn has them all; the desk sends only what it shows.
+
+### Rules 1.81 (fit), the fun-and-balance fit of 0.32 (20 Nov 2026)
+
+Every number here is PROVISIONAL, measured with the party fit (`test/balance/party-fit.ts`, 40 seeds a cell, stage 1 of
+Survival) and the range measures; the account is `docs/design/handoffs/0.32-FIT.md`.
+
+6900. **Unseen Hand** (the Shadow door, Ingenuity 1; the lead's ruling, for Leon to reverse). An attack you make from
+    Hidden rolls with Ingenuity when that is higher than the weapon's own skill, never added on top (the existing
+    `roll_with` piece, as Guard rolls a holder's blows with Durability). Cause: an all-in Operative (Ingenuity 7,
+    Dexterity 0) landed its Breaks 52 to 55% and removed 13.6 HP a turn against the Skirmisher's 125. Measured: Breaks
+    land about 90% (the rifle, solo), the Operative removes 51 HP a turn solo.
+6901. **The Operative's Recommended weapon is the rack's free rifle** (was the pistol; `survival.json
+    loadout.recommended.weapon`, the `top: ingenuity` row; the `shadow` buys unchanged). With Unseen Hand, of 40: the
+    pistol 0 solo / 0 in four, the revolver 3 / 11, the knife and pistol 2 solo, the rifle 13 / 26. Stage-1 clears
+    with the fit: solo 0 -> 13, four 0 -> 22 (inside the other doors' band, under the Skirmisher's 35).
+6902. Not changed (measured, no fault): Reflex runs (two reactions from the Skirmisher's class, one without; traced
+    through the reducer) but an Overwatch gunner holds one shot a round, so nothing of its spends the second; the beta
+    feeds' 0.01 run (the switch reaches every feed) but each raises a defensive number (plate soak, Flux limit, Pressure
+    shed, spot TN, Figment HP, heal back, prayer shields), none of which the contract's damage lines read; the follow
+    strike's -2 runs (+9 against the main hand's +11 in the log) but a follows item's strike deals 1 to 5% of the
+    main hand's, so its to-hit moves under 1%. Proposal for the lead: the follow strike's -2 to 0 (it buys nothing).
+6903. **The Outburst's biggest Release is ONE Release over the two turns it takes** (the measures' definition:
+    `magic-measure.ts peakPattern`, one copy read by the Outburst measure and the contract). Cause of the 0.32 rise (191
+    to 226% from level 6, was 96 to 113): no Release grew (the same Release deals the same: level 12 all in 493 against
+    492 in 0.31.11, x3.12 both); since rules 1.70 the Strain limit is Composure's (8 at most, was up to 16), so the
+    measure's policy no longer carried the Outburst and fired a second Release in turn 2 by Overdraw past the limit, a
+    Mana Short whose Stun falls in turn 3, outside the two-turn window. Measured, all in, levels 1/3/6/9/12/20: 69 /
+    76 / 108 / 103 / 113 / 96% of the rifle (0.31.11: 105 at 6, 113 at 12). One big Release is 1.18 (level 6) to 1.25
+    (level 12) times one steady Release. The contract's `outburst_peak` ceiling is set to what is measured: 90, low end
+    x0.62 (level 1 61%), top x1.25.
+6904. **The fight's map:** 16 tiles up to 10 units, 20 beyond (was 16 up to 6, 20 up to 10, 26 beyond;
+    `survival.json map_size`, the 26-tile stamp row dropped). Cause: four melee fighters walked a 20-tile map under the
+    foes' guns (every fight on 16 tiles gave four Breakers 14, four Bulwarks 19; the encounter budget per head was not
+    it: the solo's budget per head gave 1 and 0). Measured, four of a door, stage-1 clears of 40, before -> after:
+    Breaker 6 -> 14, Bulwark 11 -> 17, Chaplain 28 -> 31, Mender 28 -> 30, Rigger 38 -> 39, Skirmisher 39 -> 40,
+    Channeler 21 -> 16, Sigilist 1 -> 0, Operative 26 -> 22 (the last three within the noise of 40 seeds, about 3).
+    Solo fights never reach 11 units: every solo cell is unchanged.
+6905. The simulator's guard (`survival-run.test.ts`): the solo gunner clears stage 1 on 25 of GUARD-1 to 40 (2 clear
+    stage 4); its bar is the measured share less one standard error, 55% (was 37%).
+6906. Not changed: Name the Sinner. Played on Elites and Bosses only it costs the solo Chaplain 16 -> 11 clears (four
+    34 -> 31); at +40% (twice the bonus, a trial) 13 and 33, so the price is not the cause: the AP and the Whisper the
+    bot spends before the Hymn are. A policy question (when to name), not a number.
+6907. Not changed: the Mender solo (10 of 40, 16 stalled). Its revolver runs dry in long fights and the Empathy sheet
+    has no weapon skill (-2 to hit with the fists); with a 40-round cap the stalls end 3 won, 13 lost: not slow wins.
+    Every door's Recommended kit clears stage 1 solo 10 times in 40 or more but the Sigilist's (2; Leon's ruling: the
+    bot's limit).
