@@ -513,3 +513,18 @@ This file is the record of rulings up to 17 Nov night. From 18 Nov the working d
 `TAKEOVER-2026-11-18.md` (state, commands, how Leon works) and `ATTACK-PLAN-2026-11-19.md` (the five lanes and every
 ruling of 18 Nov: the skill system's scope, the outside playtest's triage, the approach banner and music, no
 fog-walk before VICTORY). Live: 0.31.10. Nothing is scheduled until Leon says "schedule it".
+
+## X. 19 Nov: Items 2.0 rulings (art and families)
+
+Full text at the top of each file in `art/briefs/prompts-2026-11-19/` and in `art/briefs/ART-REQUESTS-2026-11-19.md`.
+- **Art scheme S1:** all five grades painted for every graded item (572 pictures before the heavy families and the
+  rifle analogues are added).
+- **Guns:** each maker line has a Dexterity-only base form; its other two variants take a second skill where it
+  applies. **Analogues:** most modern rifles have a counterpart whose ART reads as the real pattern at a glance;
+  name, maker and markings are ours.
+- **Heavy and strange:** eight families (launchers, rocket tubes, flamers, rotary, anti-materiel, powered blades,
+  power gauntlets, thrown); core rifle and censer gun are advanced-class weapons; powered melee rolls Raw Power
+  only; a weapon too weird for a family is a one-off unique; every engine feature they need is added, after one
+  consolidated primitives list is approved.
+- Still open: the melee family table and the in-world names for borrowed weapon words; each gun variant's second
+  skill; the unique concepts; armour grade pictures under S1 (S1 says all five: 146 new for armour).

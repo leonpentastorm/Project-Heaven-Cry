@@ -1,5 +1,20 @@
 # GPT prompts, 19 Nov 2026, file 09: the heavy and strange weapons (PROPOSED families and their new forms)
 
+> **RULED by Leon, 19 Nov 2026 (heavy and strange weapons):**
+> 1. The families stand (no objection): launchers, rocket tubes, flamers, rotary, anti-materiel, powered blades,
+>    power gauntlets, thrown: eight families of three forms.
+> 2. **The core rifle and the censer gun are advanced-class weapons**, not family bases: their "Core" and "Censer"
+>    families below are void; they wait for the advanced classes (three upgrade tiers each, as ruled 17 Nov).
+> 3. **Powered melee bases (rip saw, servo fist) roll Raw Power only.**
+> 4. **Every engine feature these need is added** (burning ground, the line shot, Spin Up, a dart with a dose, a
+>    single-use gun, weapon numbers read from a skill, and the rest of this file's list), in Items 2.0: "add all
+>    engine features and review nothing is wasted, then build all; no need to hold back." Method: one consolidated
+>    primitives list across every Items 2.0 file first (CLAUDE.md "No rebuild": general pieces, one copy), the lead
+>    approves it, then all of it is built.
+> 5. **A weapon too weird to be worth a family is a one-off unique** (the six ideas at the end: each becomes a
+>    unique or is dropped; none gets a family).
+
+
 For the artist, for GPT, and first for Leon. Leon asked where the grenade launchers and rocket launchers are. The Items 2.0
 plan (`art/briefs/ART-REQUESTS-2026-11-19.md` section 4.3) gives melee 12 families and guns 12 maker lines of three forms,
 but leaves the heavy and strange weapons as nine one-offs with no forms (section 4.2: `smetanita_thumper`, `breacher_tube`,
