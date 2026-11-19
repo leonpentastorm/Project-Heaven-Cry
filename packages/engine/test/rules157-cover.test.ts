@@ -34,7 +34,7 @@ const put = (f: F, kind: 'pillar' | 'crate', k: string) => { f.cb.objects = [...
 describe('rules 1.61: cover beside you counts on the side facing the shooter', () => {
   it('reads its numbers from rules.json', () => {
     const c = RULES.combat.attack.cover;
-    expect(COVER).toEqual({ half: -c.half.to_hit, full: -c.full.to_hit, arc: c.facing.arc_deg, diagonal: c.facing.diagonal });
+    expect(COVER).toEqual({ half: -c.half.to_hit, full: -c.full.to_hit, arc: c.facing.arc_deg, diagonal: c.facing.diagonal, outside: c.facing.outside_arc });
   });
   // Ada at 10,12 with a pillar on her right (11,12); the shooter up and to the right at 16,8, inside the 45-degree arc.
   const stage = (f: F) => { const a = pc(f, 'Ada'), b = pc(f, 'Bo'); a.pos = '10,12'; b.pos = '0,0'; f.foe.pos = '16,8'; put(f, 'pillar', '11,12'); return a; };
@@ -66,6 +66,15 @@ describe('rules 1.61: cover beside you counts on the side facing the shooter', (
     G(f, () => { expect(coverFor(f.cb, f.foe.pos, a.pos)).toMatchObject({ tile: '11,11', grade: COVER.diagonal }); expect(previewAttack(f.cb, f.foe, a, 'shot').cover).toBe(COVER[COVER.diagonal]); });
     f.cb.objects = []; put(f, 'pillar', '9,12');
     G(f, () => { expect(coverFor(f.cb, f.foe.pos, a.pos)).toBeNull(); expect(tileCover(f.cb, a.pos, 'pc', f.foe.id)).toMatchObject({ grade: 'none' }); });
+  });
+  it('rules 1.82 item 7001: a pillar beside the target outside the arc counts nothing (the switch ON); half cover with the switch at half', () => {
+    const f = rig([{ tier: 'soldier' }], { plain: true }); const a = pc(f, 'Ada'); a.pos = '10,12'; pc(f, 'Bo').pos = '0,0'; f.foe.pos = '16,16';
+    put(f, 'pillar', '11,11'); // 79 degrees off the shot, nearer the shooter
+    expect(COVER.outside).toBe('none');
+    G(f, () => { expect(coverFor(f.cb, f.foe.pos, a.pos)).toBeNull(); expect(previewAttack(f.cb, f.foe, a, 'shot').cover || 0).toBe(0); });
+    const was = COVER.outside; (COVER as any).outside = 'half';
+    try { G(f, () => { expect(coverFor(f.cb, f.foe.pos, a.pos)).toMatchObject({ tile: '11,11', grade: 'half' }); expect(previewAttack(f.cb, f.foe, a, 'shot').cover).toBe(COVER.half); }); }
+    finally { (COVER as any).outside = was; }
   });
   it('a pillar on the line blocks the shot, and the screen says so', () => {
     const f = rig([{ tier: 'soldier' }], { plain: true }); const a = pc(f, 'Ada'); a.pos = '10,12'; pc(f, 'Bo').pos = '0,0'; f.foe.pos = '16,12'; put(f, 'pillar', '11,12');

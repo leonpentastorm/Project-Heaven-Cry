@@ -13511,3 +13511,11 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       handler takes its state from the perk whose bag holds that handler's mark (`ps[perk].lt`), not the first perk with
       a `last_turn` row: a character holding Still Standing and Bite the Bullet gets Bite the Bullet's rule. With no
       mark anywhere, the first such perk, as before. No number changes.
+7001. **A pillar outside the cover arc counts nothing** (spec 4969 c; **call made for Leon**): a cover object beside the
+      target outside the 45 degree arc of the shot gives no cover, as it already did; the rule is now a switch in data
+      (`rules.json combat.attack.cover.facing.outside_arc`: `none`, ON). Its alternative, `half`, gives half cover from
+      such an object while it is less than 90 degrees off the shot and nearer the shooter. One function, `coverFor`. No
+      number moves.
+7002. **The follow strike's −2 is kept** (rules 1.81 item 6902; **call made for Leon**): the fit proposed 0 because it
+      buys nothing measurable (a follows item deals 1 to 5% of the main hand's damage); the lead keeps −2, so a follow
+      strike stays worse than the main hand's blow as the follow-strike rule (rules 1.58) says. No change in data or code.

@@ -746,6 +746,8 @@
         "facing": {
           "arc_deg": 45,
           "diagonal": "half",
+          "outside_arc": "none",
+          "outside_arc_note": "rules 1.82 item 7001 (call made for Leon): a cover object beside the target outside arc_deg of the shot counts nothing (none, the lead's pick); half: one outside the arc but less than 90 degrees off the shot and nearer the shooter gives half cover. One function: combat.ts coverFor",
           "note": "rules 1.61 (0.30, cover beside you; item 4960): a cover object on one of the eight tiles round the target counts when the direction from the target to it is within arc_deg of the direction to the shooter and it is nearer the shooter; a diagonal tile counts as `diagonal` cover at most. One function: combat.ts coverFor. PROVISIONAL"
         },
         "melee_ignores": true,

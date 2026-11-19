@@ -1033,6 +1033,9 @@ export const COVER = {
   full: Math.abs(Number(COVER_R.full.to_hit) || 0),
   arc: Number(COVER_R.facing?.arc_deg ?? 45),
   diagonal: (COVER_R.facing?.diagonal === 'full' ? 'full' : 'half') as 'half' | 'full',
+  /** rules 1.82 item 7001: what a cover object beside the target outside the arc gives ('none', or 'half' while it is
+   * less than 90 degrees off the shot) */
+  outside: (COVER_R.facing?.outside_arc === 'half' ? 'half' : 'none') as 'half' | 'none',
 };
 export type CoverGrade = 'half' | 'full';
 export interface CoverHit { tile: string; grade: CoverGrade; mod: number }
@@ -1059,8 +1062,9 @@ export function coverFor(cb: Combat, from: string, to: string): CoverHit | null 
   for (const e of near) {
     if (dist(from, e.k) >= far) continue;
     const [cx, cy] = xy(e.k), ox = cx - tx, oy = cy - ty;
-    if ((ox * vx + oy * vy) / (Math.hypot(ox, oy) * vl) < cosArc) continue;
-    const grade: CoverGrade = ox !== 0 && oy !== 0 && e.kind === 'full' ? COVER.diagonal : e.kind;
+    const cos = (ox * vx + oy * vy) / (Math.hypot(ox, oy) * vl), inArc = cos >= cosArc;
+    if (!inArc && !(COVER.outside === 'half' && cos > 1e-9)) continue;
+    const grade: CoverGrade = !inArc ? 'half' : ox !== 0 && oy !== 0 && e.kind === 'full' ? COVER.diagonal : e.kind;
     if (!best || (grade === 'full' && best.grade === 'half')) best = { tile: e.k, grade, mod: COVER[grade] };
   }
   return best;
