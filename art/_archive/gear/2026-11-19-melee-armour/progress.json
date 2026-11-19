@@ -15,10 +15,10 @@
   "target": 39,
   "delivered": [
     "weapon-trench_knife",
-    "weapon-lowland_chopper"
+    "weapon-lowland_chopper",
+    "weapon-dock_cutter"
   ],
   "remaining": [
-    "weapon-dock_cutter",
     "weapon-broadback_sabre",
     "weapon-legion_leaf_dagger",
     "weapon-legion_rank_sword",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T03:25:41.052234+00:00"
+  "updated_utc": "2026-11-19T03:27:18.854127+00:00"
 }

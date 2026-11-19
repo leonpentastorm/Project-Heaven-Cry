@@ -122,6 +122,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-dock_cutter",
+      "path": "art/icons/gear/weapon-dock_cutter.png",
+      "sha256": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb",
+      "label": "Dock cutter",
+      "family": "05-cavalry-blades",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png",
+        "sha256": "b689a9d6b02ce0f67d407b3e27ce4048400afcbb61aebeee1e7417856fc5e44c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-dock_cutter.png",
+        "sha256": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-dock_cutter.txt",
+        "sha256": "7d36f01acc9c92b87ef4971310b3aea084070b93db73c2f7ed635e1ef03cb754"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-sabre.png",
+          "sha256": "cd3bbe4eb898b4d4072305ead7f2d46ae038dc525c85b6965e0043b8ea18bb80"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-dock_cutter.png",
+        "128": "art/icons/gear/exports/128/weapon-dock_cutter.png",
+        "64": "art/icons/gear/exports/64/weapon-dock_cutter.png",
+        "32": "art/icons/gear/exports/32/weapon-dock_cutter.png"
+      },
+      "export_hashes": {
+        "256": "6c2ddae0b13eb5676967d519a0fa106696e79a9744c86b23a0ce43e1cb3f6f77",
+        "128": "7e8c56f85470119a47535de3da3a3c693fe8d965c9c9f19518e83579d0ddf0f7",
+        "64": "9be6bc3f9c068f3cfe199bbd11edab67db0d0a57b7d8ae705bc2f91b74ca4cf8",
+        "32": "0f142833fe03147fe2e9ffbaef1f2f077d3676f62254b5f96fb440ab16570958"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
