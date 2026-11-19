@@ -1,6 +1,6 @@
 # File 08 unique inventory paintings
 
-Updated 19 November 2026 at 14:19 UTC+7. Branch `art/2026-11-19-unique-gear`.
+Updated 19 November 2026 at 14:20 UTC+7. Branch `art/2026-11-19-unique-gear`.
 **5 of 23 uniques delivered. 143 of 215 base pictures and uniques. 143 of 871 across the pack.**
 The baseline was 138 delivered candidates across the live branches. The count is per requested master.
 These independent unique paintings have been brought forward while the grade proof is open.
@@ -8,21 +8,21 @@ The six uniques with missing or unapproved references still depend on those refe
 
 | Entry | Target | Status |
 | --- | --- | --- |
-| 01 · Last Sentence (great blade) | `art/icons/gear/weapon-last_sentence.png` | available |
-| 02 · Grandmother's Teeth (scrap cutter) | `art/icons/gear/weapon-grandmothers_teeth.png` | available |
-| 03 · Last Crossing (polearm) | `art/icons/gear/weapon-last_crossing.png` | available |
-| 04 · Owed in Full (Kemizuchi duelling blade) | `art/icons/gear/weapon-owed_in_full.png` | available |
-| 05 · Reveille (maul) | `art/icons/gear/weapon-reveille.png` | available |
-| 06 · Breath of Morning (hand wraps) | `art/icons/gear/weapon-breath_of_morning.png` | available |
-| 07 · Rearguard (Legion short sword) | `art/icons/gear/weapon-rearguard.png` | available |
-| 08 · In Triplicate (Legion bullpup) | `art/icons/gear/weapon-in_triplicate.png` | available |
+| 01 · Last Sentence (great blade) | `art/icons/gear/weapon-last_sentence.png` | claimed, awaiting render or review |
+| 02 · Grandmother's Teeth (scrap cutter) | `art/icons/gear/weapon-grandmothers_teeth.png` | claimed, awaiting render or review |
+| 03 · Last Crossing (polearm) | `art/icons/gear/weapon-last_crossing.png` | claimed, awaiting render or review |
+| 04 · Owed in Full (Kemizuchi duelling blade) | `art/icons/gear/weapon-owed_in_full.png` | claimed, awaiting render or review |
+| 05 · Reveille (maul) | `art/icons/gear/weapon-reveille.png` | claimed, awaiting render or review |
+| 06 · Breath of Morning (hand wraps) | `art/icons/gear/weapon-breath_of_morning.png` | claimed, awaiting render or review |
+| 07 · Rearguard (Legion short sword) | `art/icons/gear/weapon-rearguard.png` | claimed, awaiting render or review |
+| 08 · In Triplicate (Legion bullpup) | `art/icons/gear/weapon-in_triplicate.png` | claimed, awaiting render or review |
 | 09 · Second Thunder (magnum revolver) | `art/icons/gear/weapon-second_thunder.png` | awaiting reference approval or a missing reference |
-| 10 · Encore (two-shot derringer) | `art/icons/gear/weapon-encore.png` | available |
-| 11 · Homecoming (harpoon gun) | `art/icons/gear/weapon-homecoming.png` | available |
+| 10 · Encore (two-shot derringer) | `art/icons/gear/weapon-encore.png` | claimed, awaiting render or review |
+| 11 · Homecoming (harpoon gun) | `art/icons/gear/weapon-homecoming.png` | claimed, awaiting render or review |
 | 12 · First Light (precision rifle) | `art/icons/gear/weapon-first_light.png` | awaiting reference approval or a missing reference |
 | 13 · Night Watch (pump shotgun) | `art/icons/gear/weapon-night_watch.png` | awaiting reference approval or a missing reference |
 | 14 · Unsaid (suppressed submachine gun) | `art/icons/gear/weapon-unsaid.png` | awaiting reference approval or a missing reference |
-| 15 · Windfall (recurve bow) | `art/icons/gear/weapon-windfall.png` | available |
+| 15 · Windfall (recurve bow) | `art/icons/gear/weapon-windfall.png` | claimed, awaiting render or review |
 | 16 · Return Clause (Ward shield) | `art/icons/gear/shield-return_clause.png` | awaiting reference approval or a missing reference |
 | 17 · Outpost Wall (Guard shield) | `art/icons/gear/shield-outpost_wall.png` | delivered for review |
 | 18 · Grudge Plate (Strike shield) | `art/icons/gear/shield-grudge_plate.png` | awaiting reference approval or a missing reference |
