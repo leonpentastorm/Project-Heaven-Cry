@@ -389,6 +389,13 @@ If every weapon stays its own family (Leon's "do not squeeze" reading), new form
 > always rolls the shot). Which skill each variant takes is the lead's proposal in the prompt pack
 > (`art/briefs/prompts-2026-11-19/`), PROPOSED until Leon rules it.
 
+> **RULED by Leon, 19 Nov 2026 (gun analogues):** most modern rifles have a counterpart in ours, and its ART is
+> recognisable at a glance as that pattern ("I don't need the word AK in game, but I want to stumble on a gun with the
+> art of an AK-pattern rifle and go OH SHIT"). The silhouette and defining features of the pattern are kept faithfully;
+> the name, the maker and the markings are ours (no real name, logo or rollmark in game text, file names, prompts or
+> the picture). This narrows the older rule "weapons are invented, never real" for guns: invented name and maker,
+> real pattern. The coverage table and prompts: `prompts-2026-11-19/10-rifle-analogues.md`.
+
 **Guns (12 maker lines, 36 forms: 21 exist, 15 new); 5 heavies stay one-offs**
 
 | Line | Forms | New |
