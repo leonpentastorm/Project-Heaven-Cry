@@ -5926,6 +5926,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-armoured_greaves--celestial",
+      "path": "art/icons/gear/armour-armoured_greaves--celestial.png",
+      "sha256": "31b9266c8a923ce1e84e1237e45494829d72265679afc370a72675e70d85c156",
+      "label": "Armoured Greaves — Celestial",
+      "family": "armour-armoured_greaves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-armoured_greaves--celestial.png",
+        "sha256": "bf52369a08fc551424cf9f6527d8768f65d7f39d756a6bf14e9dcca3ff359e74"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--celestial.png",
+        "sha256": "31b9266c8a923ce1e84e1237e45494829d72265679afc370a72675e70d85c156"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt",
+        "sha256": "7072283c256a7cd34d750cfe09118d83631509ed58760961580028abc78f6bf8"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-armoured_greaves.png",
+          "sha256": "fb960809ab40e72d1ceb6c00a35824825eb38dadfb660993bd789e6b459d7056"
+        },
+        {
+          "path": "art/icons/gear/armour-armoured_greaves--relic.png",
+          "sha256": "e116897b56e3393681643694064631e8a68b1da14c9795d66387657369b5d270"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-armoured_greaves--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-armoured_greaves--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-armoured_greaves--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-armoured_greaves--celestial.png"
+      },
+      "export_hashes": {
+        "256": "3bd3a911464623bd0eaee446de7e14159df5a60a4cfdf9b492d5c915479ac088",
+        "128": "397000e8ad0d0b214dc1202abdb257994fd9c40ea8e2036642e81b4ee181204d",
+        "64": "5ce5157a932e0aa97d1f475963b27b07b59297f2ae740b0e8b5b5592dcc494b3",
+        "32": "39ada6a47a3b312462b11640e165e7cffccf1a837702d3d5dccc6dfb4a1bb921"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-armoured_greaves",
+      "outline": {
+        "solid_alpha_iou": 0.9530997613991358,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 44
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
