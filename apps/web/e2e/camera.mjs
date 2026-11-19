@@ -119,6 +119,18 @@ await p.locator('.phc-cam-mini-tog').click(); await pause(p, 250);
 ok('its button hides it, and this browser remembers', !(await mini.isVisible()) && await p.evaluate(() => localStorage.getItem('phc.miniMap') === 'hidden'));
 await p.locator('.phc-cam-mini-tog').click(); await pause(p, 250);
 ok('and shows it again', await mini.isVisible() && await p.evaluate(() => localStorage.getItem('phc.miniMap') === null));
+// B5 (0.32): under 1400 px wide the small map starts folded (at 1280 it sat over the board's right third); its button
+// opens it, and that choice is kept; back on a wide window the usual default (shown) comes back with nothing stored
+await p.setViewportSize({ width: 1280, height: 720 }); await pause(p, 700);
+const tog = p.locator('.phc-cam-mini-tog');
+ok('B5: at 1280 x 720 the small map is folded by default, its SMALL MAP button there', !(await mini.isVisible()) && /SMALL MAP/.test(await tog.textContent()));
+await tog.click(); await pause(p, 250);
+ok('B5: its button opens it at 1280, and this browser remembers', await mini.isVisible() && await p.evaluate(() => localStorage.getItem('phc.miniMap') === 'shown'));
+await tog.click(); await pause(p, 250);
+await p.setViewportSize({ width: 1440, height: 900 }); await pause(p, 700);
+await tog.click(); await pause(p, 250);
+ok('B5: back at 1440 it shows again with nothing stored', await mini.isVisible() && await p.evaluate(() => localStorage.getItem('phc.miniMap') === null));
+await p.keyboard.press('Home'); await settle(); // (the view back on your unit, as before the window changed size)
 
 // 5. M: the whole map, and back; in the overview a click on a tile goes there and does not act.
 await p.mouse.click(5, 500); await p.keyboard.press('Home'); await settle();
