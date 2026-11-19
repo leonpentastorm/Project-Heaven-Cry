@@ -2834,6 +2834,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-evoker--masterwork",
+      "path": "art/icons/gear/focus-evoker--masterwork.png",
+      "sha256": "e8c5c67f38e006d7424fb12a300a1bc372de5e39341e52b9ace9e9c5a58c9add",
+      "label": "Evoker — Masterwork",
+      "family": "focus-evoker",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-evoker--masterwork.png",
+        "sha256": "0a6a8c2120436e0bb79261ef7916b732fe624ac771ab48142ddb62c1abba02f9"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-evoker--masterwork.png",
+        "sha256": "e8c5c67f38e006d7424fb12a300a1bc372de5e39341e52b9ace9e9c5a58c9add"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-evoker--masterwork.txt",
+        "sha256": "248daf30893158e0c0e61bf2e2667b29c54f37458d2538d160bb90aee2fa929d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-evoker.png",
+          "sha256": "3947d21607b863bf71949ab13c1a7667ca3cb5a006314d082516daaa1ee076f4"
+        },
+        {
+          "path": "art/icons/gear/focus-evoker--fine.png",
+          "sha256": "54b2dd5032763c3094eb81368d6608f0fd734e43de5856187820842564e10039"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-evoker--masterwork.png",
+        "128": "art/icons/gear/exports/128/focus-evoker--masterwork.png",
+        "64": "art/icons/gear/exports/64/focus-evoker--masterwork.png",
+        "32": "art/icons/gear/exports/32/focus-evoker--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "0cf4b6907d63b2020fe940d45c142f082b9c8feea66368ee90599bddc3b00cc3",
+        "128": "01db1cafd9714024fc89d5dc630c397a3629b998ebdf15671f97f5a02b1eed41",
+        "64": "bc88e03e2378597046fb2488af4d78227cce4966b2871b39c3b37ffc9d85f6fe",
+        "32": "09439e845ec91b7bd3bbb7af12283171d98d957e6e66aee27d763283d042c8fc"
+      },
+      "grade": "masterwork",
+      "standard_id": "focus-evoker",
+      "outline": {
+        "solid_alpha_iou": 0.9846342771426129,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
