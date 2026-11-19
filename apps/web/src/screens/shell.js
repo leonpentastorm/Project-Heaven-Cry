@@ -10,6 +10,7 @@ import { askConfirm, dialogOpen } from '../game/dialog';
 import { leaveProvingGround } from '../game/sandbox';
 import { openMemory } from '../game/memory';
 import { offersAreaMap } from '../game/panels';
+import { narratorOptional } from '../game/modes';
 import { voiceState, voiceChip, voicePrefs } from '../game/voice';
 import { providerInfo } from '../narrator/providers';
 import { MODELS } from '../narrator/anthropic';
@@ -82,9 +83,12 @@ export function narratorVals(self, g, opts) {
   const ink = err ? '#F65157' : live ? '#FFFFFF' : '#E7EBF3';
   const close = () => self.setState({ shNarr: false });
   const inFight = g.phase === 'combat';
+  // B14, 0.32: a mode that needs no Narrator (data/modes.json `narrator: optional`, Survival) shows no Narrator chip
+  // unless the room uses one: a person narrates, or the Narrator has written in this room
+  const noNarr = !SB && narratorOptional(g) && !(g.settings && g.settings.mode === 'human') && !u.calls && !err && !busy;
   return {
     nc: {
-      word, short, dot, sandbox: SB, notSandbox: !SB, open, expanded: open ? 'true' : 'false', headZ: open ? 46 : 'auto', // closed: under the area map and the other dialogs (z 10 and up)
+      word, short, dot, sandbox: SB, notSandbox: !SB && !noNarr, open, expanded: open ? 'true' : 'false', headZ: open ? 46 : 'auto', // closed: under the area map and the other dialogs (z 10 and up)
       toggle: () => (SB ? null : self.setState({ shNarr: !self.state.shNarr })), close,
       style: 'display: inline-flex; align-items: center; gap: 8px; min-height: 34px; max-width: 300px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; white-space: nowrap; ' +
         'border: 1px solid ' + (err ? '#F65157' : open ? '#E7EBF3' : '#2E3A50') + '; background: ' + (err ? 'rgba(246, 81, 87, 0.08)' : '#10151F') + '; color: ' + ink + (SB ? '; cursor: default' : '; cursor: pointer'),

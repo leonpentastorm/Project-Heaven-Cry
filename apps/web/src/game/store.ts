@@ -244,6 +244,8 @@ function followPhase(prev: GameState | null, g: GameState) {
 // ---------- actions ----------
 /** Every click goes here: the host applies it, a guest sends it to the host. */
 export function act(a: Action) {
+  // B14, 0.32: a refusal's toast ("Can't reach that tile.", "Needs 7 AP.") is about the last try: the next action clears it
+  if (S.toast && !S.toast.ok && Date.now() - S.toast.at > 250) set({ toast: null });
   if (S.role === 'host') runHost(a, S.me.id, null);
   else if (S.role === 'guest') { if (!conn) return toast('Not connected.'); conn.send({ t: 'act', action: a, nonce: rid(6) }); }
 }
