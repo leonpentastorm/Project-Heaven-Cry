@@ -1838,6 +1838,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-breather",
+      "path": "art/icons/gear/armour-breather.png",
+      "sha256": "122ce61995e1f39338eafa5d03b36c19766c9fac17fa0eb3a441b2390e9d45ce",
+      "label": "Breather",
+      "family": "07-respirators",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-breather.png",
+        "sha256": "bc094d83f552daa107a168a052e7bb31f06a57a6b5a3542b3ebbcc0e19cacd29"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-breather.png",
+        "sha256": "122ce61995e1f39338eafa5d03b36c19766c9fac17fa0eb3a441b2390e9d45ce"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-breather.txt",
+        "sha256": "7b7ee2105dfd9cde1599475780ad2748b87b990f080503dfda1f463ed93557c8"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-gas_mask.png",
+          "sha256": "a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather.png",
+        "128": "art/icons/gear/exports/128/armour-breather.png",
+        "64": "art/icons/gear/exports/64/armour-breather.png",
+        "32": "art/icons/gear/exports/32/armour-breather.png"
+      },
+      "export_hashes": {
+        "256": "e4ab94672914f0726a3102ae2d15a17ab426ce2beb41bb9cfef0a445ebda6a18",
+        "128": "7626dbda196642e0c3e54a7be576cf47d68aaa03d84285442e19311913301eb1",
+        "64": "9dc51c00148dfb8676cdd97f80f5e42a4d6f21dba8322c702733ca5c558a367a",
+        "32": "d730660bee8a4c9fc63b593f97cb0cbc6fe32c3e1ae68fd4da8ea230a0f8f203"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
