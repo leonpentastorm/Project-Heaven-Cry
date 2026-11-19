@@ -438,14 +438,22 @@ O('mend_mult', ['heal', 'shield'], false, ['value'], 'multiply the heal or shiel
   const v = typeof e.value === 'number' ? e.value : 1; if (typeof ev.ctx.n === 'number') ev.ctx.n = ev.ctx.n * v;
 });
 O('floor', ['would_drop'], false, ['value'], 'the blow leaves the unit at this many HP', (ev, e) => { ev.ctx.floor = e.value; });
-O('deal', ANY, true, ['amount', 'via', 'nonlethal', 'by'], 'deal an amount block (amounts) to the self, actor or target (by: "source", a condition row: dealt as by whoever gave it); via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e) => {
+O('deal', ANY, true, ['amount', 'via', 'nonlethal', 'by'], 'deal an amount block (amounts) to the self, actor or target (by: "source", a condition row: dealt as by whoever gave it); via: the source skill it counts as (a prayer: "faith"), nonlethal: a blow that takes the last HP subdues', (ev, e, label) => {
   const t = pick(ev, e), b = e.fixed ? fixedBlock(e) : blockOf(ev.h, e); if (!t || !b || b.kind !== 'damage') return;
   // a block's `tech` (rules 1.56): a weapon's blow made with that technique (or a technique-like action: Launch), melee or ranged by its group's system
   const sys = b.tech ? techSystemOf(b.tech) : null, type = b.type || (b.tech ? 'weapon' : 'true');
   const src: any = { by: giverOfOp(ev, e), type, dmgType: b.element || (b.tech ? 'physical' : type), shield: type !== 'true', credit: 'hp', item: ev.h.key, ...(b.door ? { door: b.door } : {}), ...(b.tech ? { tech: b.tech, melee: sys === 'melee', ranged: sys === 'ranged' } : {}), ...(e.nonlethal ? { nonlethal: true } : {}) };
-  let sent = 0;
-  const from = giverOfOp(ev, e), go = () => { sent = deal(ev.cb, from, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed && e.by !== 'source' }, { who: from === ev.self ? ev.h.c || null : charOfUnit(from), src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }).sent; };
+  let sent = 0, r: any = null;
+  const from = giverOfOp(ev, e), go = () => { r = deal(ev.cb, from, t, { ...specOf(b), kind: 'damage', round: 'floor', ...(b.armour ? { armour: b.armour } : {}), hook: !e.fixed && e.by !== 'source' }, { who: from === ev.self ? ev.h.c || null : charOfUnit(from), src, hookCtx: { mode: 'item', src }, counts: countsOf(ev, b) }); sent = r.sent; };
   if (typeof e.via === 'string') withVia(ev.self, e.via, go); else go();
+  // 0.31.12 (outside playtest 0.31.10 row 8: a Volatile Figment's burst was silent and nobody's): the blow is seen as
+  // any hurt is (its number over the token, a foe it drops falls) and names its dealer, whom the run's tally credits
+  // (an owned unit's owner); a row with no `say` of its own says the blow in a line
+  if (r && !ev.preview && !r.prevented) {
+    const dmg = r.downedHit ? 0 : r.amount, dropped = r.downedHit ? !!t.dead : t.hp === 0;
+    if (dmg > 0 || r.downedHit) { emitFx(ev.cb, 'hurt', { ...(from ? { unit: from.id } : {}), target: t.id, at: t.pos, dmg, why: 'item', killed: dropped }); if (dropped) emitFx(ev.cb, 'down', { unit: t.id, at: t.pos, dead: !!t.dead }); }
+    if (!e.say && dmg > 0) say(ev.cb, label + ': ' + dmg + ' damage to ' + t.name + (t.hp === 0 ? (t.side === 'foe' ? ', down for good' : ', Downed') : '') + '.');
+  }
   return ': ' + sent; // what reached the target, for a `say` with {then}
 });
 O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amount block (its heal_kind is the heal\'s kind for heal_in: tending, prayer…; default perk); a shield on a layer (P11: layer, holders: at most that many units carry the holder\'s layer)', (ev, e) => {

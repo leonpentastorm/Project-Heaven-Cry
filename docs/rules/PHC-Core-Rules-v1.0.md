@@ -12288,3 +12288,12 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     +1; what items add on a hit (Rolling Start's +1, the Breaker's +2 against the Shaken, Charge's run) are `resource`
     ops on the `hit` trigger, which a preview skips (it changes nothing). Proof: `test/playtest-1118.test.ts`,
     `apps/web/src/game/targetPreview.test.ts` (the card's damage is what the reducer then deals).
+5504. **A data `deal` is seen, said and credited** (row 8: a Volatile Figment's burst was silent and the scoreboard gave
+    a Figment's damage and kills to "No one"). The item op `deal` (`effects/triggers.ts`) now emits the blow as any hurt
+    is (its number over the token, a dropped foe falls), naming its dealer, and a row with no `say` of its own writes
+    "<label>: N damage to <target>". The run's tally (`run/tally.ts fightTally`) credits an item's blow to its dealer,
+    and an owned unit's blows and kills (a Figment, a turret, a drone) to its owner (`owned.ts ownerOf`). Recorded on
+    purpose: `conditions.log` (24 lines: Felt Shame's and Given Shame's blows now said) and 9 replays of 29 (the log and
+    the effects only: the same actions). The core runner's `deal` (`effects/core.ts`, an item's own action) still emits
+    no `hurt`: its text is said by the action's line. Proof: `test/playtest-1118.test.ts` (a foe's blow through
+    `resolveAttack` destroys a Volatile Figment; its burst drops the foe; the tally gives the owner the damage and the kill).

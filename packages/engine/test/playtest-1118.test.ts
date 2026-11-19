@@ -134,3 +134,25 @@ describe('row 7: the Break toggle is never shown on when it can\'t be used', () 
     expect(pv2.toggles.find((t) => t.id === BR)!.on).toBe(true); expect((pv2.action as any)?.mods).toContain(BR);
   });
 });
+
+import { figFight } from './helpers/figfight';
+import { makeFigment } from '../src/figments';
+import { fightTally } from '../src';
+describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s blast is in the log', () => {
+  it('a Volatile Figment destroyed by a foe bursts on the foe beside it: logged, and the tally credits the owner', () => {
+    const f = figFight([{ skills: { visualization: 5 }, level: 5 }], [{ at: '12,8' }]);
+    const owner = f.pcs[0]; owner.pos = '3,5'; f.cb.tape = [];
+    const fig: any = withGame(f.g, () => makeFigment(f.cb, f.g.rng as any, owner, 'beast', ['volatile'], '4,5', { charge: 1 }));
+    expect(typeof fig).not.toBe('string');
+    const foe = f.foe; foe.pos = '5,5'; foe.hp = 5; foe.armour = 0; fig.hp = 1;
+    rig({ hit: true, die: 12 }); f.turn(foe);
+    const log0 = f.cb.log.length;
+    withGame(f.g, () => resolveAttack(f.cb, f.g.rng, foe, fig, 'melee', null, { noAp: true })); rig(null);
+    expect(fig.hp).toBe(0); expect(foe.hp).toBe(0);
+    const lines = f.cb.log.slice(log0).join(' | ');
+    expect(lines).toContain('Volatile: '); expect(lines).toContain('damage to ' + foe.name);
+    const t = fightTally(f.cb.tape as any, f.cb.units, f.cb.round, f.cb);
+    expect(t.chars[owner.charId!].dealt).toBeGreaterThan(0); expect(t.chars[owner.charId!].kills).toBe(1);
+    expect(t.other.dealt).toBe(0);
+  });
+});

@@ -9,11 +9,13 @@
 //   - Shields GIVEN: `grantShield` emits a hook, not an effect (only two classes emit a `shield` event with a size), so
 //     the tally has the damage a character's shield and armour soaked (`absorbed`: a `shield` event's, and since rules
 //     1.66 a weapon hit's `absorbed`, its armour and shield), not what was given. A stim's heal (`stim`) counts.
-//   - A `hurt` or a `heal` carries no source: it is credited to the unit whose `turn` is open (the actor); damage or
-//     healing made while a foe's turn is open (a reaction, a bleed) is the fight's `other`, and a heal that no effect
-//     reports (the perk `mend` op, a Bond) is missing from `healed`.
+//   - A `hurt` or a `heal` mostly carries no source: it is credited to the unit whose `turn` is open (the actor); damage
+//     or healing made while a foe's turn is open (a reaction, a bleed) is the fight's `other`, and a heal that no effect
+//     reports (the perk `mend` op, a Bond) is missing from `healed`. Since 0.31.12 an item's `deal` names its dealer
+//     (`unit`), and an owned unit's blows and kills (a Figment's) are its owner's.
 import { fxTaps } from '../fxtap';
 import type { Combat, Unit } from '../combat';
+import { ownerOf } from '../owned';
 
 /** One event of the tape: the fields the tally reads, copied when the effect was emitted. */
 export interface TapeEv { k: string; unit?: string; target?: string; dmg?: number; hit?: boolean; amount?: number; absorbed?: number; heal?: number; dead?: boolean; surrendered?: boolean; object?: boolean }
@@ -46,10 +48,16 @@ export function settleTape(cb: Combat) { if (cb.tape) cb.tape = cb.tape.map(slim
 
 const blank = (name: string): TallyRow => ({ name, dealt: 0, taken: 0, healed: 0, absorbed: 0, kills: 0, downs: 0, deaths: 0, shots: 0, hits: 0 });
 /** The tally of a fight from its tape and units (pure). A character is a squad unit that has a `charId`. */
-export function fightTally(tape: TapeEv[], units: Pick<Unit, 'id' | 'side' | 'name' | 'charId' | 'companion'>[], rounds: number): FightTally {
+export function fightTally(tape: TapeEv[], units: Pick<Unit, 'id' | 'side' | 'name' | 'charId' | 'companion'>[], rounds: number, cb?: Combat | null): FightTally {
   const squad = new Map<string, TallyRow>(), charOf = new Map<string, string>(), side = new Map<string, string>();
   for (const u of units) { side.set(u.id, u.side); if (u.side === 'pc' && u.charId && !u.companion) { charOf.set(u.id, u.charId); squad.set(u.charId, blank(u.name)); } }
+  // 0.31.12 (outside playtest 0.31.10 row 8): what an owned unit does (a Figment, a turret, a drone) is its owner's:
+  // its blows and kills count on the owner's row (the fight's ties: owned.ts ownerOf), its own hurt stays its own
+  const ownedBy = new Map<string, string>();
+  if (cb) for (const u of cb.units) { if (charOf.has(u.id)) continue; const o = ownerOf(cb, u); const c = o && charOf.get(o.id); if (c) ownedBy.set(u.id, c); }
   const row = (unit?: string): TallyRow | null => { const c = unit && charOf.get(unit); return c ? squad.get(c)! : null; };
+  /** The row a blow or a heal is credited to: the unit's own, else its owner's. */
+  const credit = (unit?: string): TallyRow | null => row(unit) || (unit && ownedBy.has(unit) ? squad.get(ownedBy.get(unit)!)! : null);
   const t: FightTally = { rounds, chars: {}, other: { dealt: 0, healed: 0 } };
   const lastBy = new Map<string, string>(), fell = new Set<string>();
   let actor: string | undefined;
@@ -58,7 +66,7 @@ export function fightTally(tape: TapeEv[], units: Pick<Unit, 'id' | 'side' | 'na
     if (!target || n <= 0) return;
     const victim = row(target); if (victim) victim.taken += n;
     if (side.get(target) !== 'foe') return;
-    const me = row(by); if (me) { me.dealt += n; lastBy.set(target, by!); } else t.other.dealt += n;
+    const me = credit(by); if (me) { me.dealt += n; lastBy.set(target, by!); } else t.other.dealt += n;
   };
   for (const e of tape) {
     if (e.k === 'turn') { actor = e.unit; continue; }
@@ -67,7 +75,7 @@ export function fightTally(tape: TapeEv[], units: Pick<Unit, 'id' | 'side' | 'na
       const me = row(e.unit); if (me) { me.shots++; if (e.hit) me.hits++; }
       damage(e.unit, e.target, e.hit ? e.dmg || 0 : 0);
       if (e.hit && e.absorbed) { const r = row(e.target); if (r) r.absorbed += e.absorbed; } // rules 1.66: armour and shield on a weapon hit
-    } else if (e.k === 'hurt') damage(actor, e.target, e.dmg || 0);
+    } else if (e.k === 'hurt') damage(e.unit || actor, e.target, e.dmg || 0); // an item's blow names its dealer (0.31.12); else the open turn's
     else if (e.k === 'heal' || e.k === 'leech') {
       const n = e.amount || 0, to = e.k === 'heal' ? e.target : e.unit, by = e.k === 'leech' ? e.unit : actor;
       if (side.get(to || '') !== 'pc') continue;
@@ -79,7 +87,7 @@ export function fightTally(tape: TapeEv[], units: Pick<Unit, 'id' | 'side' | 'na
     else if (e.k === 'down' && e.unit) {
       const r = row(e.unit);
       if (r) { if (e.dead) r.deaths++; else r.downs++; }
-      else if (side.get(e.unit) === 'foe' && !fell.has(e.unit)) { fell.add(e.unit); const k = row(lastBy.get(e.unit)); if (k) k.kills++; }
+      else if (side.get(e.unit) === 'foe' && !fell.has(e.unit)) { fell.add(e.unit); const k = credit(lastBy.get(e.unit)); if (k) k.kills++; }
     }
   }
   for (const [id, r] of squad) t.chars[id] = r;
