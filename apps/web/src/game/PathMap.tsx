@@ -69,11 +69,14 @@ export function layoutPathMap(v: Pick<RunViewV, 'nodes' | 'rows' | 'lanes'>): { 
 }
 
 /** Does a marker's word fit inside the map's frame on this side (true: below)? In the map's own pixels (ICON.pathMap
- * wide; the whole layer scales as one): the marker's half, the word's 3 px gap and its line (the label's size x 1.3). */
-export function labelFits(n: RunNodeV, y: number, below: boolean): boolean {
-  const k = ICON.pathMap / W, px = y * k, need = markerSize(n) / 2 + 3 + Math.ceil((n.kind === 'boss' ? ICON.bossLabel : ICON.label) * 1.3) + 1;
+ * wide; the whole layer scales as one): the marker's half, the word's 3 px gap and its line (the label's size x 1.3).
+ * `scale` is the layer's: under 1 the words are drawn larger in the layer so they stay ICON.label on screen. */
+export function labelFits(n: RunNodeV, y: number, below: boolean, scale = 1): boolean {
+  const k = ICON.pathMap / W, px = y * k, need = markerSize(n) / 2 + 3 + Math.ceil(labelPx(n, scale) * 1.3) + 1;
   return below ? px + need <= H * k : px - need >= 0;
 }
+/** A word's size in the layer's pixels: ICON's on screen, whatever the layer's scale under 1. */
+export const labelPx = (n: { kind: string }, scale = 1): number => (n.kind === 'boss' ? ICON.bossLabel : ICON.label) / Math.min(1, scale);
 /** Which side of its marker a node's word goes (true: below), or undefined for the usual alternation. The vault's spur
  * puts its words on the side away from the lanes when they fit inside the frame there, else on the other side (beside the marker they ran into the next column's node and word:
  * 0.28.0 playtest, "…ULT GUARD"); the fork it leaves puts its own word on the other side. */
@@ -88,6 +91,51 @@ export function labelSide(n: RunNodeV, nodes: RunNodeV[], pos: Record<string, { 
   const sp = nodes.find((x) => x.spur === 'guard' && x.from === n.id);
   return sp && pos[sp.id] && pos[n.id] ? pos[sp.id].y < pos[n.id].y : undefined;
 }
+
+/** Where every marker's word goes (B1, 0.32: at 1600 CROSSROADS ran into REST; at 1280 the map is drawn smaller): true
+ * below, false above, null not drawn. In the layer's pixels; the words that matter most are placed first (where the
+ * squad stands, the lit stops, the Boss, the gate, the vault's spur, then nearest first), each on its usual side or
+ * else the other, and a word that would leave the frame or touch a placed word or another marker is left out (the
+ * marker's icon, the legend and its hover card still say what it is). */
+export function placeLabels(nodes: RunNodeV[], pos: Record<string, { x: number; y: number }>, camp: { x: number; y: number }, scale = 1): Record<string, LabelAt> {
+  const out: Record<string, LabelAt> = {}; for (const [id, w] of Object.entries(labelBoxes(nodes, pos, camp, scale))) out[id] = w.at; return out;
+}
+type R = { l: number; r: number; t: number; b: number };
+/** placeLabels with each placed word's box (the layer's pixels; the frame is ICON.pathMap wide): what the suite checks. */
+export function labelBoxes(nodes: RunNodeV[], pos: Record<string, { x: number; y: number }>, camp: { x: number; y: number }, scale = 1): Record<string, { at: LabelAt; r: R | null }> {
+  const k = ICON.pathMap / W, fw = ICON.pathMap, fh = H * k;
+  const hit = (a: R, b: R) => a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
+  // a marker is a disc (or a turned square): its box's corners are empty, so it is checked a little inside its box
+  const box = (x: number, y: number, s: number): R => ({ l: x - s * 0.42, r: x + s * 0.42, t: y - s * 0.42, b: y + s * 0.42 });
+  const marks: { id: string; r: R }[] = nodes.filter((n) => pos[n.id]).map((n) => ({ id: n.id, r: box(pos[n.id].x * k, pos[n.id].y * k, markerSize(n)) }));
+  const cs = ICON.marker.camp, cl = ICON.label / Math.min(1, scale);
+  const placed: R[] = [{ l: camp.x * k - 2.2 * cl, r: camp.x * k + 2.2 * cl, t: camp.y * k + cs / 2 + 3, b: camp.y * k + cs / 2 + 3 + cl * 1.3 }];
+  marks.push({ id: 'camp', r: box(camp.x * k, camp.y * k, cs) });
+  const rank = (n: RunNodeV) => n.state === 'here' ? 0 : n.state === 'reachable' ? 1 : n.kind === 'boss' ? 2 : n.gate ? 3 : n.spur ? 4 : 5;
+  const order = nodes.filter((n) => pos[n.id]).sort((a, b) => rank(a) - rank(b) || a.depth - b.depth || a.col - b.col);
+  const out: Record<string, { at: LabelAt; r: R | null }> = {};
+  for (const n of order) {
+    const p = pos[n.id], x = p.x * k, y = p.y * k, f = labelPx(n, scale), w = n.word.length * f * 0.68 + 4, h = f * 1.3, half = markerSize(n) / 2 + 3;
+    const pref = labelSide(n, nodes, pos) ?? (n.depth % 2 === 1 || n.kind === 'boss' || !!n.gate);
+    const under: R = { l: x - w / 2, r: x + w / 2, t: y + half, b: y + half + h }, over: R = { l: x - w / 2, r: x + w / 2, t: y - half - h, b: y - half };
+    const spots: [LabelAt, R][] = [[pref ? 'below' : 'above', pref ? under : over], [pref ? 'above' : 'below', pref ? over : under],
+      ['right', { l: x + half, r: x + half + w, t: y - h / 2, b: y + h / 2 }], ['left', { l: x - half - w, r: x - half, t: y - h / 2, b: y + h / 2 }]];
+    out[n.id] = { at: null, r: null };
+    // the Boss, the lit stops and where the squad stands are always named: with no clear spot, the first that only
+    // crosses another marker (never a word, never the frame)
+    for (const strict of rank(n) <= 2 ? [true, false] : [true]) {
+      for (const [at, r] of spots) {
+        if (r.l < 0 || r.r > fw || r.t < 0 || r.b > fh) continue;
+        if (placed.some((q) => hit(q, r)) || (strict && marks.some((m) => m.id !== n.id && hit(m.r, r)))) continue;
+        placed.push(r); out[n.id] = { at, r }; break;
+      }
+      if (out[n.id].at) break;
+    }
+  }
+  return out;
+}
+/** Where a marker's word sits (placeLabels), or null: not drawn. */
+export type LabelAt = 'below' | 'above' | 'right' | 'left' | null;
 
 /** A trail between two points: a gentle curve (handles along the line of travel), bent a little by the seed. */
 function trailPath(a: { x: number; y: number }, b: { x: number; y: number }, key: string): string {
@@ -124,13 +172,15 @@ function FieldChart({ setting }: { setting: string }) {
   );
 }
 
-function Marker({ n, p, onPick, labelBelow }: { n: RunNodeV; p: { x: number; y: number }; onPick: (n: RunNodeV, el: HTMLElement) => void; /** the vault's fork: its label on the side away from the spur */ labelBelow?: boolean }) {
+function Marker({ n, p, onPick, at, scale }: { n: RunNodeV; p: { x: number; y: number }; onPick: (n: RunNodeV, el: HTMLElement) => void; /** where its word goes (placeLabels), or not drawn (null) */ at: LabelAt; scale: number }) {
   const lit = n.state === 'reachable', here = n.state === 'here', walked = n.state === 'walked', passed = n.state === 'passed';
   const big = markerSize(n);
   const col = here || lit ? ink.white : walked ? ink.text : passed ? ink.muted : '#D9DCE3';
   const ring = here ? '3px solid ' + ink.white : lit ? '2px solid ' + ink.white : walked ? '2px solid ' + ink.text : n.spur ? '2px dashed rgba(231,235,243,0.55)' : '1.5px solid rgba(214,200,170,0.55)';
   const label = n.word + (here ? ', you are here' : lit ? ', open now' : walked ? ', walked' : '') + (n.junction && !n.gate ? ', a fork' : '') + (n.spur ? ', off the trail' : '') + (n.leans.length ? ', marked by ' + n.leans.map((l) => l.name).join(' and ') : '');
-  const below = labelBelow ?? (n.depth % 2 === 1 || n.kind === 'boss' || !!n.gate); // labels alternate above and below, so neighbours never collide (the vault's spur: outward, labelSide)
+  // placeLabels: under or over the marker, else beside it, or none when it would touch another word or marker
+  const side: React.CSSProperties = at === 'below' ? { left: '50%', top: '100%', transform: 'translateX(-50%)', marginTop: 3 } : at === 'above' ? { left: '50%', bottom: '100%', transform: 'translateX(-50%)', marginBottom: 3 }
+    : at === 'right' ? { left: '100%', top: '50%', transform: 'translateY(-50%)', marginLeft: 3 } : { right: '100%', top: '50%', transform: 'translateY(-50%)', marginRight: 3 };
   return (
     <button type="button" data-phc-node={n.id} data-phc-kind={n.kind} data-phc-state={n.state} data-phc-junction={n.junction ? '' : undefined} data-phc-spur={n.spur || undefined}
       aria-label={label} {...tipProps(n.tip + (n.why ? ' ' + n.why : ''))} onClick={(e) => onPick(n, e.currentTarget)}
@@ -138,7 +188,7 @@ function Marker({ n, p, onPick, labelBelow }: { n: RunNodeV; p: { x: number; y: 
       {here ? <span aria-hidden="true" className="phc-pm-here" style={{ position: 'absolute', inset: -9, borderRadius: '50%', border: '2px solid rgba(255,255,255,0.55)' }} /> : null}
       <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', borderRadius: n.junction ? 10 : '50%', transform: n.junction ? 'rotate(45deg)' : undefined, border: ring, background: walked || here ? ink.discWalked : ink.disc, boxShadow: lit ? '0 0 0 5px rgba(255,255,255,0.14), 0 0 18px rgba(255,255,255,0.25)' : '0 2px 6px rgba(0,0,0,0.6)' }} />
       <span aria-hidden="true" style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center', color: col }}><NodeGlyph kind={n.gate ? 'gate' : n.kind} size={glyphSize(n, big)} /></span>
-      <span style={{ position: 'absolute', left: '50%', [below ? 'top' : 'bottom']: '100%', transform: 'translateX(-50%)', marginTop: below ? 3 : 0, marginBottom: below ? 0 : 3, fontSize: n.kind === 'boss' ? ICON.bossLabel : ICON.label, fontWeight: 700, letterSpacing: '0.04em', color: col, textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 1px 2px #000, 0 0 6px #000' }}>{n.word}</span>
+      {at === null ? null : <span data-phc-node-word={at} style={{ position: 'absolute', ...side, fontSize: labelPx(n, scale), lineHeight: 1.3, fontWeight: 700, letterSpacing: '0.04em', color: col, textTransform: 'uppercase', whiteSpace: 'nowrap', textShadow: '0 1px 2px #000, 0 0 6px #000' }}>{n.word}</span>}
       {n.leans.length ? <span style={{ position: 'absolute', top: -10, right: -14, display: 'flex', gap: 2 }}>{n.leans.map((l) => <span key={l.initials} style={{ display: 'grid', placeItems: 'center', width: 20, height: 20, borderRadius: '50%', fontSize: 'var(--fs-sub)', fontWeight: 700, background: l.color, color: '#0A0D13' }}>{l.initials}</span>)}</span> : null}
     </button>
   );
@@ -172,8 +222,11 @@ function Legend({ v, at }: { v: RunViewV; at?: React.Ref<HTMLDivElement> }) {
  * A wider middle (Leon, 15 Nov: the map filled only the left 800 px at 1810) scales the whole layer up with ONE transform
  * (the backdrop, the trails, the markers and their words together, so nothing drifts off its painted spot) to the
  * middle's width, its height capped so the legend and the hint stay on screen; the frame shrinks to the map, centred. */
+/** The smallest scale before the map scrolls sideways instead (a window narrower than 1280). */
+const MIN_FILL = 0.55;
 /** The scale that fills the middle: its width, capped by the height left under the title for the map, the legend and
- * the hint; never under 1 (a marker never smaller than ICON's). */
+ * the hint; under 1 the markers shrink with the map and their words keep ICON's size (placeLabels leaves out those that
+ * would touch). */
 function useFill(outer: React.RefObject<HTMLDivElement | null>, legend: React.RefObject<HTMLDivElement | null>): number {
   const [s, setS] = React.useState(1);
   React.useLayoutEffect(() => {
@@ -187,7 +240,7 @@ function useFill(outer: React.RefObject<HTMLDivElement | null>, legend: React.Re
         const below = (legend.current?.offsetHeight || 0) + 8 + 18 + 8 + 28; // the legend, the hint, the gaps and the screen's foot
         sc = Math.min(sc, (centre.clientHeight - above - below - 2) / (ICON.pathMap * 9 / 16));
       }
-      const next = Math.max(1, Math.floor(sc * 1000) / 1000);
+      const next = Math.max(MIN_FILL, Math.floor(sc * 1000) / 1000); // B1, 0.32: under 1 the whole map fits the middle (it scrolled at 1280)
       setS((was) => (Math.abs(was - next) > 0.002 ? next : was));
     };
     measure();
@@ -200,6 +253,7 @@ function useFill(outer: React.RefObject<HTMLDivElement | null>, legend: React.Re
 export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: HTMLElement) => void }) {
   const { pos, camp } = React.useMemo(() => layoutPathMap(v), [v.nodes, v.rows, v.lanes]);
   const outer = React.useRef<HTMLDivElement>(null), legend = React.useRef<HTMLDivElement>(null), scale = useFill(outer, legend);
+  const words = React.useMemo(() => placeLabels(v.nodes, pos, camp, scale), [v.nodes, pos, camp, scale]);
   const scroller = React.useRef<HTMLDivElement>(null), standing = v.nodes.find((n) => n.state === 'here')?.id || 'camp';
   React.useLayoutEffect(() => {
     const el = scroller.current; if (!el) return;
@@ -218,9 +272,9 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
   );
   return (
     <div ref={outer} style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
-    <div ref={scroller} data-phc-pathmap-scroll="" data-phc-pathmap-scale={scale} style={{ overflowX: 'auto', overflowY: 'hidden', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F', ...(scale > 1 ? { width: ICON.pathMap * scale + 2, maxWidth: '100%', alignSelf: 'center', boxSizing: 'border-box' } : {}) }}>
+    <div ref={scroller} data-phc-pathmap-scroll="" data-phc-pathmap-scale={scale} style={{ overflowX: 'auto', overflowY: 'hidden', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F', width: ICON.pathMap * scale + 2, maxWidth: '100%', alignSelf: 'center', boxSizing: 'border-box' }}>
     <div style={{ width: ICON.pathMap * scale, height: ICON.pathMap * 9 / 16 * scale }}>
-    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', width: ICON.pathMap, display: 'grid', placeItems: 'center', transform: scale > 1 ? 'scale(' + scale + ')' : undefined, transformOrigin: '0 0' }}>
+    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', width: ICON.pathMap, display: 'grid', placeItems: 'center', transform: scale !== 1 ? 'scale(' + scale + ')' : undefined, transformOrigin: '0 0' }}>
       <style>{'@keyframes phc-pm-dash{to{stroke-dashoffset:-26}}.phc-pm-lit{animation:phc-pm-dash 1.2s linear infinite}@keyframes phc-pm-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:.25}}.phc-pm-here{animation:phc-pm-pulse 2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-pm-lit,.phc-pm-here{animation:none}}'}</style>
       {/* the 16:9 map at its own size (the frame scrolls sideways over it), so nothing on it is ever cut off */}
       <div data-phc-pathmap-box="" style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9' }}>
@@ -234,9 +288,9 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
         <span data-phc-node-camp="" aria-label={v.atStart ? 'The camp, you are here' : 'The camp'} {...tipProps('Camp. Every trail starts here.')}
           style={{ position: 'absolute', left: (camp.x / W) * 100 + '%', top: (camp.y / H) * 100 + '%', width: ICON.marker.camp, height: ICON.marker.camp, transform: 'translate(-50%, -50%)', display: 'grid', placeItems: 'center', borderRadius: '50%', border: v.atStart ? '3px solid #FFFFFF' : '2px solid ' + ink.text, background: ink.discWalked, color: ink.white, zIndex: 3 }}>
           <NodeGlyph kind="start" size={ICON.campGlyph} />
-          <span style={{ position: 'absolute', top: '100%', marginTop: 3, fontSize: ICON.label, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', textShadow: '0 1px 2px #000' }}>Camp</span>
+          <span style={{ position: 'absolute', top: '100%', marginTop: 3, fontSize: ICON.label / Math.min(1, scale), lineHeight: 1.3, fontWeight: 700, letterSpacing: '0.04em', textTransform: 'uppercase', textShadow: '0 1px 2px #000' }}>Camp</span>
         </span>
-        {v.nodes.map((n) => (pos[n.id] ? <Marker key={n.id} n={n} p={pos[n.id]} onPick={onPick} labelBelow={labelSide(n, v.nodes, pos)} /> : null))}
+        {v.nodes.map((n) => (pos[n.id] ? <Marker key={n.id} n={n} p={pos[n.id]} onPick={onPick} at={words[n.id] ?? null} scale={scale} /> : null))}
       </div>
     </div>
     </div>
