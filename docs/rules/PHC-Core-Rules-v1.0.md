@@ -13168,3 +13168,16 @@ tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each shee
     merge reads obPeak 123 / 213 / 178 / 183% at levels 1 / 5 / 10 / 20, outside the old band (124 to 212%) at levels 1
     and 5. No class is refitted: the contract's `outburst_peak` row is set to what is measured (`level_lo` 0.74,
     `level_hi` 1.295: 122 to 214%). PROVISIONAL: the fun-and-balance pass judges it.
+
+### Rules 1.78 (leftovers), things designed before and never built (0.32, 19 Nov 2026)
+
+The leftovers lane of 0.32: items designed in earlier revisions and checked in code on 19 Nov
+(`docs/design/handoffs/2026-11-19-code-verification.md`). A later revision overrides the body and the earlier ones.
+Every new number here is PROVISIONAL and a data field.
+
+6600. **What this revision builds and leaves** (the lane's hand-off: `docs/design/handoffs/0.32-LEFTOVERS.md`).
+6601. **Two zones of one kind on a tile do not stack (closes item 1908):** where one side's zones of the same kind lie on
+    the same tile (two Chaplains' Sanctuaries), only the first laid acts there: its owner's rows read it and spend its
+    pool; a later one acts only on the tiles the first does not cover, and takes over when the first ends. Two sides'
+    zones never cancel each other. The rule is the one zone reader's (`magic.ts zonesAt`, owner `self`), for every zone
+    kind data lays.

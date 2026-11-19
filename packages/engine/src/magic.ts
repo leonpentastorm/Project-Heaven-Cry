@@ -69,7 +69,13 @@ export function makeZone(cb: Combat, by: Unit, o: { kind: Zone['kind']; tiles: s
 }
 /** The zones of a kind a tile lies in, by their owner's relation to a unit (self: its own; side: its side's; any). */
 export function zonesAt(cb: Combat, tile: string, kind: string, owner: 'self' | 'side' | 'any' = 'any', to?: Unit | null): Zone[] {
-  return (cb.zones || []).filter((z) => z.kind === kind && z.tiles.includes(tile) && (owner === 'any' || !to ? true : owner === 'self' ? z.by === to.id : z.side === to.side));
+  const here = (cb.zones || []).filter((z) => z.kind === kind && z.tiles.includes(tile));
+  if (owner === 'any' || !to) return here;
+  if (owner === 'side') return here.filter((z) => z.side === to.side);
+  // self: rules 1.78 item 6601 (spec item 1908): one side's zones of a kind on a tile never stack: the first laid is the
+  // one that acts there (its owner's rows read it); a later one of the same kind acts only where the first does not lie
+  const first = here.find((z) => z.side === to.side);
+  return first && first.by === to.id ? [first] : [];
 }
 /** End zones (a holder's of a kind): returns how many ended. */
 export function endZones(cb: Combat, pick: (z: Zone) => boolean): number { const was = (cb.zones || []).length; cb.zones = (cb.zones || []).filter((z) => !pick(z)); return was - cb.zones.length; }
