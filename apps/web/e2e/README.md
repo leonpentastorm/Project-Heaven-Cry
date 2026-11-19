@@ -123,6 +123,8 @@ suite again when the disk was full under it.
 
 ### `rules`: rules and screens (fights play at the test pace)
 
+- `capture-skills.mjs`: screenshots only: each of the 27 skill "?" pages from creation's Skills step, the ladder open, at 1600×900, into `.check/capture/skills` (for the lead's wording pass); one check per page captured.
+- `capture-all.mjs`: screenshots only (a draft): every screen and state of the game at 1600×900 into `.check/capture/` with an index of where each screen's words are edited, for the wording pass; it fails when a state could not be reached.
 - `old-save.mjs`: a save from before 0.19.0 holding perks that were renamed since (Grapple, Origami Hands) and one that never existed: the game opens it, shows the renamed perks, and does not crash.
 - `creation-points.mjs`: character creation's points step: nine attributes under Body, Mind and Soul, each with its three skills; both budgets always in view; a skill raised past its attribute spends the Attribute points for it and says so; a refusal says what is short and what to do; Undo, one attribute's reset, Reset all; the steppers by keyboard; Mind Without Fog's 2 extra Attribute points. At 1440×900, 1280×720 and 1024×768 with no sideways scroll.
 - `creation-layout.mjs`: character creation's card layout (Leon, 8 Nov): at most two archetypes, three traits and two patrons a row at any width; every card in a grid the same height, long text scrolling inside its card; a god's art opens large; picking another archetype or origin moves nothing; no sideways scroll at phone width.

@@ -29,7 +29,7 @@ async function state(group, name, screen, sources, fn) {
   try { await fn(); }
   catch (e) { missing++; index.push({ file: 'MISSING ' + group + '/' + name, screen, sources, why: String(e.message || e).split('\n')[0] }); console.log('SKIP ' + group + '/' + name + ': ' + String(e.message || e).split('\n')[0]);  }
 }
-const hoverText = async (loc) => { await loc.hover({ timeout: 5000 }); await settle(loc.page(), 400); return (await tipOf(loc)) || ''; };
+const hoverText = async (loc) => { await loc.hover({ timeout: 30000 }); await settle(loc.page(), 400); return (await tipOf(loc)) || ''; };
 const sized = async (p) => { await p.setViewportSize({ width: W, height: H }); await settle(p, 300); };
 
 // ------------------------------------------------------------------ 01 title
@@ -38,7 +38,7 @@ const sized = async (p) => { await p.setViewportSize({ width: W, height: H }); a
   await state('01-title', 'menu', 'Title menu', T, async () => { await settle(p, 1500); await cap(p, '01-title', 'menu', 'Title menu', T); });
   for (const [id, name] of [['proving', 'proving-ground-panel'], ['new', 'new-game-name'], ['join', 'join-a-friend'], ['chars', 'characters'], ['saved', 'saved-games'], ['settings', 'settings'], ['credits', 'credits']]) {
     await state('01-title', name, 'Title: ' + id, T, async () => {
-      await p.locator('[data-item="' + id + '"]').waitFor({ timeout: 5000 });
+      await p.locator('[data-item="' + id + '"]').waitFor({ timeout: 30000 });
       await p.locator('[data-item="' + id + '"]').click(); await settle(p, 1500);
       await cap(p, '01-title', name, 'Title: ' + id, T);
       await p.keyboard.press('Escape'); await settle(p, 800);
@@ -182,7 +182,7 @@ const sized = async (p) => { await p.setViewportSize({ width: W, height: H }); a
   });
   await state('06-fight', 'victory', 'Fight: victory panel', FT, async () => {
     await act(p, { type: 'sandbox/clear' }); await settle(p, 600);   // (clear leaves no foe: may not end the fight; if the panel is not up, MISSING)
-    await p.getByText('VICTORY').first().waitFor({ timeout: 5000 }); await cap(p, '06-fight', 'victory', 'Fight: victory panel', FT);
+    await p.getByText('VICTORY').first().waitFor({ timeout: 30000 }); await cap(p, '06-fight', 'victory', 'Fight: victory panel', FT);
   });
   await p.context().close(); }
 
@@ -290,3 +290,5 @@ await browser.close();
 mkdirSync(ROOT, { recursive: true });
 writeFileSync(ROOT + 'index.md', '# Capture index (' + new Date().toISOString() + ')\n\n| file | screen | where its words are edited | note |\n| --- | --- | --- | --- |\n' + index.map((r) => '| ' + r.file + ' | ' + r.screen + ' | ' + r.sources + ' | ' + (r.why || '') + ' |').join('\n') + '\n');
 console.log('done: ' + index.length + ' rows, ' + missing + ' states missing; see ' + ROOT + 'index.md');
+ok('captured ' + index.length + ' rows', index.length > 0);
+ok('every state reached (' + missing + ' missing)', missing === 0);

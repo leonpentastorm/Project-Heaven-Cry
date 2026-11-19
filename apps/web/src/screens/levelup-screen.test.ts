@@ -172,13 +172,15 @@ describe('level-up screen', () => {
     // a skill on the page opens that skill's own page
     await React.act(async () => { (page.querySelector('button.phc-attr-skill') as HTMLButtonElement).click(); });
     expect(el.querySelector('.phc-attr-page')).toBeNull();
-    // ...with its road map: ten steps, the character's own points lit (rules 1.54 item 4119)
-    // the points block is closed by default (Leon, 17 Nov 2026): open it
-    await React.act(async () => { (el.querySelector('.phc-ep-fold') as HTMLButtonElement).click(); });
+    // ...with its ladder: ten rows, open by default, the character's owned levels and the next one marked
+    expect(el.querySelector('.phc-ep-fold')!.getAttribute('aria-expanded')).toBe('true');
     const steps = [...el.querySelectorAll('.phc-ep-road .phc-ep-step')], first = page.querySelector('button.phc-attr-skill')!.getAttribute('data-skill')!;
     expect(steps.map((x) => x.getAttribute('data-step'))).toEqual(['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']);
     const pts = (G.characters[c0.id].skills as any)[first] || 0;
-    expect(steps.filter((x) => x.getAttribute('data-state') === 'now').map((x) => x.getAttribute('data-step'))).toEqual(pts ? [String(pts)] : []);
+    expect(steps.filter((x) => x.getAttribute('data-state') === 'owned').length).toBe(pts);
+    expect(steps.filter((x) => x.getAttribute('data-state') === 'next').map((x) => x.getAttribute('data-step'))).toEqual([String(pts + 1)]);
+    // one line a row: the row's pieces sit in one text span, no dash rows
+    for (const st of steps) { expect(st.querySelectorAll('.phc-ep-rowtext').length).toBe(1); expect(st.textContent).not.toMatch(/^\s*—\s*$/); }
     root.unmount();
   });
   it('advanced classes are shelved (Class Roster Revision 3): one quiet line, nothing listed, nothing to learn', async () => {

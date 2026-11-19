@@ -1504,7 +1504,7 @@ export class MainLogic extends DCLogic {
     const rpV = this.panelVals(SB ? 4 : SQUAD_SEATS, PL);
 
     return {
-      ...epccgVals(this, c ? (id) => c.skills[id] || 0 : undefined, c || undefined), ...lightboxVals(this), code: g.code, withNarrator: !SB && !RUN, canRest: !SB && !RUN && !HIDES.has('rest'), canAsk: !HIDES.has('ask'), report: openReport,
+      ...epccgVals(this, c ? (id) => c.skills[id] || 0 : undefined, c || undefined, { noNarrator: !!RUN }), ...lightboxVals(this), code: g.code, withNarrator: !SB && !RUN, canRest: !SB && !RUN && !HIDES.has('rest'), canAsk: !HIDES.has('ask'), report: openReport,
       // The header (UI pass): the shell's cluster (room, Save, ⚙, ⚑, Leave), the Narrator chip and its menu, and the
       // Area map / Back to the fight button (screens/shell.js).
       ...shellVals(this, 'main'), ...narratorVals(this, g, { openArea: () => this.toggleArea(true) }),

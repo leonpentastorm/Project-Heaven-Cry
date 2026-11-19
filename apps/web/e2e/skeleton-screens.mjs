@@ -61,11 +61,10 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     // one of its skills opens the skill's own page
     await ap.locator('button.phc-attr-skill').nth(2).click(); await settle(p, 300);
     const ep = p.locator('[role="dialog"][aria-label$="EPCCG entry"]');
-    const line = (await ep.locator('.phc-ep-line').innerText()).replace(/\s+/g, ' ');
-    ok(at + 'the "?" page says the slot in words: ' + line, /^How you talk and notice · \+1 on checks · \w+/.test(line) && !/[αβγ]|Body|Mind|Soul/.test(line));
+    const line = (await ep.locator('.phc-ep-line-tag').innerText()).replace(/\s+/g, ' ');
+    ok(at + 'the "?" page says the attribute and the slot in words: ' + line, /^\w+ · TALK · NOTICE$/.test(line) && !/[αβγ]|Body|Mind|Soul/.test(line));
     // what a point gives: the road map (rules 1.54 item 4119), ten rows, no line twice in a row
-    await ep.evaluate((el) => { const f = el.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); // 0.31.8: closed by default
-    await new Promise((r) => setTimeout(r, 250));
+    await ep.evaluate((el) => { const f = el.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 250); // open by default; a saved fold may have closed it
     const road = await ep.evaluate((el) => { const st = [...el.querySelectorAll('.phc-ep-road .phc-ep-step')]; return { n: st.length, rep: st.filter((s) => { const t = [...s.querySelectorAll('.phc-ep-row')].map((x) => x.textContent); return new Set(t).size !== t.length; }).length }; });
     ok(at + '…and what each point gives, as ten rows (' + road.n + ', ' + road.rep + ' with a line twice)', road.n === 10 && road.rep === 0);
     await p.screenshot({ path: SHOTS + '/skillpage-' + W + '.png' });
@@ -75,8 +74,8 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     await p.locator('[data-attr-page="agility"]').click(); await settle(p, 250);
     ok(at + 'on the points step, AGILITY opens the Agility page', (await p.locator('.phc-attr-page h2').innerText()) === 'Agility');
     await p.locator('.phc-attr-page button.phc-attr-skill').first().click(); await settle(p, 250);
-    const line2 = (await ep.locator('.phc-ep-line').innerText()).replace(/\s+/g, ' ');
-    ok(at + 'its first skill is how you fight: ' + line2, line2 === 'How you fight · Agility');
+    const line2 = (await ep.locator('.phc-ep-line-tag').innerText()).replace(/\s+/g, ' ');
+    ok(at + 'its first skill is how you fight: ' + line2, line2 === 'Agility · FIGHT');
     await ep.locator('.phc-ep-attr').click(); await settle(p, 200);
     ok(at + 'the attribute in the skill page\'s header goes back to the attribute page', (await p.locator('.phc-attr-page').count()) === 1 && (await ep.count()) === 0);
     await p.locator('.phc-attr-close').click(); await settle(p, 150);

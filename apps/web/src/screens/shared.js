@@ -8,7 +8,7 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
-import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, doorForkView, doorFeedView } from '@engine';
+import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, CRIT_PER_PERCEPTION, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, doorForkView, doorFeedView, ENGINE_DEEDS } from '@engine';
 import { foldVals } from '../game/fold';
 import { shieldBlock } from '../game/shieldLook';
 import { kitSprite } from '../game/kitMap';
@@ -53,37 +53,51 @@ const fromOf = (at) => { const m = AT.exec(String(at || '')); return m && m[3] =
 const feedRowIdx = (id) => (ENGINE_SKILL[id] && ENGINE_SKILL[id].feed ? 0 : -1);
 /** The alpha door a beta skill multiplies (its attribute's alpha skill), or null. */
 export const doorOfBeta = (id) => { const k = ENGINE_SKILL[id]; if (!k || !k.feed) return null; const a = Object.values(ENGINE_SKILL).find((x) => x.attribute === k.attribute && x.slot === 'alpha'); return a ? a.id : null; };
-/** The skill's road map: { head: [texts every point gives], feed: the beta's door line or '', top, steps: [{ n, lines:
- *  [{ key, kind, text, at }], step: 'M1'..'M4' | 'mastered' | '', perks: [{ id, name, icon }] }] }. Points, perks and
+/** The skill's road map, the ONE source of the ladder (the "?" page's rows, the level-up row's next line, creation's
+ *  line): { head: [texts every point gives], feed: the beta's door line or '', top, steps: [{ n, lines: [{ key, kind,
+ *  text, at, tip }], step: 'M1'..'M4' | 'mastered' | '', perks: [{ id, name, icon }] }] }. A level's lines are its
+ *  per-point gains first (kind 'each': an `each` row on every level, an `each from n` row from n on), then its own:
+ *  the rows that land on it ('row'), its Call's step ('call', gamma skills), its unlock ('unlock': the name on the face,
+ *  its player line in `tip`), its fork ('fork'), its perk step ('perk') or Mastered perk ('mastered'). Points, perks and
  *  names all come from the data; a fork step's options from the engine's doorForkView (no character: every option). */
 export function roadMap(id) {
   const k = ENGINE_SKILL[id] || {}, un = k.unlocks || {}, ep = (SK[id] && SK[id].ep) || {}, rows = rowsOf(id), fi = feedRowIdx(id);
   const top = Math.max(1, ...Object.keys(un).map(Number).filter((n) => n > 0));
-  const head = rows.filter((r, j) => j !== fi && (r.at === 'each' || fromOf(r.at))).map((r) => (fromOf(r.at) > 1 ? r.text + ' (from ' + fromOf(r.at) + ')' : r.text));
+  const isEach = (r) => r.at === 'each' || fromOf(r.at) > 0;
+  const head = rows.filter((r, j) => j !== fi && isEach(r)).map((r) => (fromOf(r.at) > 1 ? r.text + ' (from ' + fromOf(r.at) + ')' : r.text));
   const forks = (() => { try { return doorForkView(null, id); } catch { return null; } })();
+  const cb = callBlock(id, null), perkNames = (ep.perks || []).map((p) => p.name).join(' or ');
+  const perkTip = (ps) => ps.map((p) => p.name + ': ' + (p.t1 || p.text || '')).join(' / ');
+  let firstPerk = true;
   const steps = Array.from({ length: top }, (_, i) => {
     const n = i + 1, lines = [];
-    rows.forEach((r, j) => { if (j !== fi && rowPoints(r.at, top).includes(n)) lines.push({ key: 'r' + j, kind: 'row', at: r.at, text: r.text }); });
+    rows.forEach((r, j) => { if (j !== fi && isEach(r) && n >= Math.max(1, fromOf(r.at))) lines.push({ key: 'e' + j, kind: 'each', at: r.at, text: r.text, tip: '' }); });
+    rows.forEach((r, j) => { if (j !== fi && !isEach(r) && rowPoints(r.at, top).includes(n)) lines.push({ key: 'r' + j, kind: 'row', at: r.at, text: r.text, tip: '' }); });
+    const cs = cb ? cb.ladder.find((x) => x.n === n) : null;
+    if (cs) lines.push({ key: 'c', kind: 'call', at: 'at ' + n, text: cb.name + ': ' + cs.what.charAt(0).toLowerCase() + cs.what.slice(1), tip: '' });
     const u = un[n], m = u ? Number(u.mastery) || 0 : 0;
     const fs = u && u.category === 'Fork' && forks ? forks.steps.find((x) => x.at === n) : null;
-    if (fs) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + fs.options.map((o) => o.name).join(' or ') + (fs.offered ? '' : ' · sealed') });
-    else if (u && u.category === 'Fork' && u.name) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + u.name });
-    // a named unlock: its name and player line (an unlock named only for its mastery step, or with no name of its own,
-    // shows its player line alone)
-    // (0.31.x: a player line of several sentences is one line a sentence, the first in the unlock's style, the rest
-    // under it as plain lines: one short sentence a line)
+    if (fs) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + fs.options.map((o) => o.name).join(' or ') + (fs.offered ? '' : ' · sealed'),
+      tip: fs.options.filter((o) => o.text).map((o) => o.name + ': ' + o.text).join(' / ') });
+    else if (u && u.category === 'Fork' && u.name) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + u.name, tip: '' });
+    // a named unlock: its name on the face, its player line in the hover (an unlock named only for its mastery step, or
+    // with no name of its own, shows its player line on the face, and has no hover)
     else if (u && (u.category || u.player) && u.name && (u.player || !lines.some((l) => l.text.includes(u.name)))) {
-      const said = u.player ? (/^Mastery \d+$|^Mastered$/.test(u.name) || !u.category ? u.player : u.name + ': ' + u.player) : 'Unlocks ' + u.name;
-      said.split(/(?<=[.!?])\s+(?=[A-Z])/).forEach((x, i) => lines.push({ key: 'u' + (i || ''), kind: i ? 'more' : 'unlock', at: 'at ' + n, text: x }));
+      const bare = /^Mastery \d+$|^Mastered$/.test(u.name) || !u.category;
+      if (u.player && bare) lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player, tip: '' });
+      else lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player ? u.name : 'Unlocks ' + u.name, tip: u.player ? u.name + ': ' + u.player : '' });
     }
     const step = m >= 1 && m <= 4 ? 'M' + m : m === 5 ? 'mastered' : '';
     const perks = step === 'mastered' ? (ep.mastered ? [ep.mastered] : []) : step ? ep.perks || [] : [];
-    if (step) lines.push({ key: 'm', kind: step === 'mastered' ? 'mastered' : 'perk', at: 'at ' + n,
-      text: step === 'mastered' ? 'Mastered: ' + (ep.mastered ? ep.mastered.name : 'its Mastered perk') : 'Perk: ' + perks.map((p) => p.name).join(' or ') + (m > 1 ? ', or Tier II' : '') });
+    // the first perk step names the two perks; a later one says "Perk" (the names and what they do in its hover)
+    if (step === 'mastered') lines.push({ key: 'm', kind: 'mastered', at: 'at ' + n, text: 'Mastered: ' + (ep.mastered ? ep.mastered.name : 'its Mastered perk'), tip: ep.mastered && ep.mastered.text ? ep.mastered.name + ': ' + ep.mastered.text : '' });
+    else if (step) { lines.push({ key: 'm', kind: 'perk', at: 'at ' + n, text: firstPerk ? 'Perk: ' + perkNames : 'Perk', tip: (firstPerk ? '' : 'Perk: ' + perkNames + ', or a Tier II · ') + perkTip(perks) }); firstPerk = false; }
     return { n, lines, step, perks: perks.map((p) => ({ id: p.id, name: p.name, icon: p.icon || '' })) };
   });
   return { head, feed: fi >= 0 && rows[fi] ? rows[fi].text : '', top, steps };
 }
+/** A level's row as one line of text: its lines joined by " · " (what the "?" page's row shows, piece by piece). */
+export const rowText = (step) => (step ? step.lines.map((l) => l.text).join(' · ') : '');
 /** A gamma skill's Call (data/calls.json, read through the engine's own ladder functions): its name, what it does, the
  *  AP and reach at these points, and how it grows: the points where it changes (its three steps, the AP drop, the
  *  reaction for a helping Call, the free first Call), the character's step marked. `pts` null: no character. */
@@ -123,10 +137,12 @@ export const headLine = (id) => { const h = roadMap(id).head; return h.length ? 
 /** What the point after `p` gives, as one line: that step's lines, else what every point gives ('' past the top). */
 export const nextLine = (id, p) => {
   const r = roadMap(id), s = r.steps[(p || 0)]; if (!s) return '';
-  // card style: what the point opens (its named unlock, then its rows), at most two pieces, so the card never cuts
-  const rank = { unlock: 0, more: 1, fork: 0, row: 2 };
-  const own = s.lines.filter((l) => l.kind in rank).sort((x, y) => rank[x.kind] - rank[y.kind]).map((l) => l.text), extra = s.lines.filter((l) => !(l.kind in rank)).map((l) => l.text);
-  return [...(own.length ? own : r.head), ...extra].slice(0, 2).join(' · ');
+  // card style: what the point opens (its named unlock or fork, its Call's step, its rows), else what every point
+  // gives, then its perk step; at most two pieces, so the card never cuts
+  const rank = { unlock: 0, fork: 0, call: 1, row: 2 };
+  const own = s.lines.filter((l) => l.kind in rank).sort((x, y) => rank[x.kind] - rank[y.kind]).map((l) => l.text);
+  const each = s.lines.filter((l) => l.kind === 'each').map((l) => l.text), extra = s.lines.filter((l) => l.kind === 'perk' || l.kind === 'mastered').map((l) => l.text);
+  return [...(own.length ? own : each.length ? each : r.head), ...extra].slice(0, 2).join(' · ');
 };
 /** What each point of a skill gives, in one line (the attribute page's skill cards): the head line's texts. */
 export const perPoint = (id) => roadMap(id).head.join(' · ') || (SK[id] && SK[id].summary) || '';
@@ -241,8 +257,8 @@ export function attrPageVals(self) {
     nameStyle: 'margin: 0; font-family: \'Spectral\', serif; font-size: 32px; font-weight: 600; color: ' + ink,
   } };
 }
-const CALL_BLANK = { has: false, name: '', text: '', now: '', checks: '', ladder: [], boxStyle: '', inkStyle: '' }, FEED_BLANK = { has: false, head: '', top: '', now: '', hasNow: false, boxStyle: '' };
-const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', head: [], hasHead: false, steps: [], atLabel: '', fold: { open: false, expanded: 'false', chev: '▸', toggle: () => {}, headStyle: '', chevStyle: '', id: '' }, call: CALL_BLANK, feed: FEED_BLANK, door: { has: false, text: '' }, ptsLine: '', headStyle: '', inkStyle: '', title: '', kicker: '', name: '', line: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', quote: [], rows: [], perks: [], perkHead: '', perkNote: '', perkNameStyle: '', m: {}, combos: [], hasCombos: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
+const CALL_BLANK = { has: false, name: '', tip: '', now: '', inkStyle: '' }, FOLD_BLANK = { open: false, expanded: 'false', chev: '▸', toggle: () => {}, headStyle: '', chevStyle: '', id: '' };
+const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', slot: '', line: '', lineTip: '', steps: [], ladderFold: FOLD_BLANK, aboutFold: FOLD_BLANK, call: CALL_BLANK, feed: { has: false, text: '', style: '' }, ptsLine: '', inkStyle: '', title: '', name: '', img: '', alt: '', pictured: '', caption: '', speaker: '', intro: '', high: '', hasHigh: false, quote: [], perks: [], perkHelp: '', perkNameStyle: '', m: {}, combos: [], hasCombos: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
 export const epBtnStyle = (ink, extra) => 'display: grid; place-items: center; width: 28px; height: 28px; flex: none; padding: 0; border-radius: 50%; border: 1px solid ' + ink + '; background: rgba(10, 13, 19, 0.85); color: ' + ink + '; font-family: inherit; font-size: 14px; font-weight: 700; line-height: 1; cursor: pointer' + (extra ? '; ' + extra : '');
 export const epRgba = (hex, a) => 'rgba(' + [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ') + ', ' + a + ')';
 export function masteredVals(self, m, ink, skillName, pts) {
@@ -265,75 +281,95 @@ export function masteredVals(self, m, ink, skillName, pts) {
     ruleStyle: 'width: 64px; height: 1px; background: ' + ink,
   };
 }
-/** The road map as the "?" pop-up draws it: ten rows, the character's current points lit, the points it holds bright,
- *  the points ahead quiet; `pts` null when the screen has no character (nothing lit). */
-export function roadTrack(self, id, pts, ink) {
-  const r = roadMap(id), has = typeof pts === 'number';
-  return { head: r.head.map((t, i) => ({ key: i, text: t })), hasHead: r.head.length > 0,
-    // the points where something opens (an unlock, a fork, a perk step, the Mastered perk): the sub-head "AT 1 / 3 / 5 ..."
-    atLabel: 'AT ' + r.steps.filter((s) => s.lines.some((l) => l.kind !== 'row')).map((s) => s.n).join(' / '), steps: r.steps.map((s) => {
-    const state = !has ? 'ahead' : s.n === pts ? 'now' : s.n < pts ? 'owned' : 'ahead';
-    return { key: s.n, n: s.n, state, step: s.step || 'none', hasPerks: s.perks.length > 0, empty: !s.lines.length,
-      lines: s.lines.map((l) => ({ ...l, style: 'font-size: ' + (l.kind === 'row' ? 14 : 13) + 'px; line-height: 1.35; ' + (l.kind === 'mastered' ? 'font-weight: 700; color: ' + (state === 'ahead' ? '#C9A85A' : '#F2C46A') : l.kind === 'perk' || l.kind === 'unlock' || l.kind === 'fork' ? 'font-weight: 700; color: ' + (state === 'ahead' ? '#A3AEC2' : ink) : 'color: ' + (state === 'ahead' ? '#A3AEC2' : '#E7EBF3')) })),
-      perks: s.perks.map((p) => ({ ...p, key: p.id, has: !!p.icon, zoom: p.icon ? zoomer(self, p.icon, p.name, 'perk', p.text || p.t1 || '') : () => {}, alt: p.name + ' perk icon (Wick)',
-        style: 'width: 28px; height: 28px; object-fit: contain; border-radius: 6px; background: #10151F; border: 1px solid ' + (s.step === 'mastered' ? '#F2C46A' : '#2E3A50') + (state === 'ahead' ? '; opacity: 0.6' : '') })),
-      label: s.n + (s.n === 1 ? ' point' : ' points') + (state === 'now' ? ', yours now' : state === 'owned' ? ', yours' : ''),
-      numStyle: 'flex: none; width: 30px; height: 30px; display: grid; place-items: center; border-radius: 50%; font-size: 14px; font-weight: 700; box-sizing: border-box; '
-        + (state === 'now' ? 'background: ' + ink + '; color: #0A0D13' : state === 'owned' ? 'border: 2px solid ' + ink + '; color: ' + ink : 'border: 1px solid #3B475D; color: #7F8BA1'),
-      style: 'display: flex; gap: 12px; align-items: center; min-height: 34px; padding: 4px 10px 4px 6px; border-radius: 10px; '
-        + (state === 'now' ? 'background: ' + epRgba(ink, 0.16) + '; box-shadow: inset 0 0 0 1px ' + ink : state === 'owned' ? 'background: #121826' : 'background: transparent'),
-    }; }) };
+/** What tier II changes, said once (the perk card shows tier I, then only this): when the two texts differ only in
+ *  their numbers, the numbers that change ("2% → 3% · 10% → 15%"); when II only adds to I, what it adds; else II's text. */
+export function tierDelta(t1, t2) {
+  const a = String(t1 || '').trim(), b = String(t2 || '').trim(); if (!b || a === b) return '';
+  const wa = a.split(/\s+/), wb = b.split(/\s+/), num = (w) => /\d/.test(w), bare = (w) => w.replace(/^[^\w+−-]+|[^\w%]+$/g, '');
+  if (wa.length === wb.length) {
+    const diff = wa.map((w, i) => [w, wb[i]]).filter(([x, y]) => x !== y);
+    if (diff.length && diff.every(([x, y]) => num(x) && num(y))) return diff.map(([x, y]) => bare(x) + ' → ' + bare(y)).join(' · ');
+  }
+  if (b.startsWith(a)) { const more = b.slice(a.length).trim(); if (more) return 'Adds: ' + more; }
+  return b;
 }
-/** The "?" pop-up. `ptsOf(id)`: the character's points in a skill when the screen has one (creation, level up);
- *  `who`: that character (the Feeds box reads the engine's view on it). */
-export function epccgVals(self, ptsOf, who) {
+/** The ladder as the "?" page draws it: one row a level (a state dot, the level, its pieces joined by " · "), the
+ *  character's owned levels bright, the next one highlighted, the later ones dim; `pts` null when the screen has no
+ *  character (nothing marked). `attr`: the character's attribute value (the next level past it says "Needs <Attr> n"). */
+export function roadTrack(self, id, pts, ink, attr) {
+  const r = roadMap(id), has = typeof pts === 'number', A = SK[id] && ATTR[SK[id].attr];
+  return r.steps.map((s) => {
+    const state = !has ? 'ahead' : s.n <= pts ? 'owned' : s.n === pts + 1 ? 'next' : 'ahead';
+    const needs = state === 'next' && typeof attr === 'number' && A && s.n > attr ? 'Needs ' + A.name + ' ' + s.n : '';
+    const bright = state === 'next' ? '#FFFFFF' : state === 'owned' ? '#E7EBF3' : '#A3AEC2';
+    return { key: s.n, n: s.n, state, step: s.step || 'none', text: rowText(s), needs, hasNeeds: !!needs,
+      dot: state === 'owned' ? '●' : state === 'next' ? '◐' : '○', hasPerks: s.perks.length > 0,
+      pieces: s.lines.map((l, i) => ({ key: l.key, kind: l.kind, text: l.text, tip: l.tip || '', sep: i > 0,
+        style: (l.tip ? 'text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; ' : '') + (l.kind === 'mastered' ? 'font-weight: 700; color: ' + (state === 'ahead' ? '#C9A85A' : '#F2C46A')
+          : l.kind === 'each' || l.kind === 'row' ? 'color: ' + bright : 'font-weight: 700; color: ' + (state === 'ahead' ? '#A3AEC2' : ink)) })),
+      perks: s.perks.map((p) => ({ ...p, key: p.id, has: !!p.icon, zoom: p.icon ? zoomer(self, p.icon, p.name, 'perk', p.text || p.t1 || '') : () => {}, alt: p.name + ' perk icon (Wick)',
+        style: 'width: 26px; height: 26px; object-fit: contain; border-radius: 6px; background: #10151F; border: 1px solid ' + (s.step === 'mastered' ? '#F2C46A' : '#2E3A50') + (state === 'ahead' ? '; opacity: 0.6' : '') })),
+      label: 'Level ' + s.n + (state === 'owned' ? ', yours' : state === 'next' ? ', next' : ''),
+      dotStyle: 'flex: none; width: 16px; text-align: center; font-size: 15px; line-height: 1; color: ' + (state === 'ahead' ? '#5A6781' : ink),
+      numStyle: 'flex: none; width: 22px; text-align: right; font-size: var(--fs-body); font-weight: 700; font-variant-numeric: tabular-nums; color: ' + (state === 'next' ? ink : state === 'owned' ? '#E7EBF3' : '#7F8BA1'),
+      textStyle: 'flex: 1 1 0; min-width: 0; font-size: var(--fs-body); line-height: 1.35' + (state === 'next' ? '; font-weight: 700' : ''),
+      style: 'display: flex; gap: 10px; align-items: center; min-height: 30px; padding: 2px 10px 2px 6px; border-radius: 8px; '
+        + (state === 'next' ? 'background: ' + epRgba(ink, 0.16) + '; box-shadow: inset 0 0 0 1px ' + ink : state === 'owned' ? 'background: #121826' : 'background: transparent'),
+    };
+  });
+}
+/** The "?" pop-up: one fixed layout for all 27 skills (docs/design/handoffs/2026-11-18-skill-screens-redesign.md): a
+ *  header (name, attribute, slot, one line, the Feeds chip), the Call row (gamma), the ladder (one row a level), the perk
+ *  cards, and "About this voice" folded (the quote and the lore). `ptsOf(id)`: the character's points in a skill when
+ *  the screen has one (creation, level up); `who`: that character (its attributes; the Feeds chip reads the engine's
+ *  view on it); `opt.noNarrator`: a run with no Narrator (Survival), where a combo perk whose deed only the Narrator can
+ *  see is not shown (the engine watches the deeds in ENGINE_DEEDS). */
+export function epccgVals(self, ptsOf, who, opt) {
   const id = self.state.epccg, s = id && D.skills.find((x) => x.id === id);
   const closeEpccg = () => self.setState({ epccg: null });
   if (!s) return { epOpen: false, ep: EP_BLANK, closeEpccg, ...attrPageVals(self) };
-  const e = s.ep, a = ATTR[s.attr], ink = a.ink, pts = typeof ptsOf === 'function' ? ptsOf(s.id) : null;
+  const e = s.ep, a = ATTR[s.attr], ink = a.ink, pts = typeof ptsOf === 'function' ? ptsOf(s.id) : null, redraw = () => self.setState({ foldTick: Date.now() });
   const same = e.speaker.indexOf(e.portrait.split(' ').slice(-1)[0]) >= 0;
-  const track = roadTrack(self, s.id, typeof pts === 'number' ? pts : null, ink);
+  const attrVal = who && who.attrs && typeof who.attrs[s.attr] === 'number' ? who.attrs[s.attr] : null;
+  const doorLine = (ENGINE_SKILL[s.id] && ENGINE_SKILL[s.id].door_line) || '', first = doorLine.split(/(?<=[.!?])\s+(?=[A-Z])/)[0] || '';
+  const fb = feedBlock(s.id, typeof ptsOf === 'function' ? ptsOf : null, who), feedNow = fb && fb.now && !/^Needs /.test(fb.now) ? fb.now : '';
+  const cb = callBlock(s.id, typeof pts === 'number' ? pts : null);
+  const noNarr = !!(opt && opt.noNarrator);
+  const combos = e.combos.filter((c) => !noNarr || (c.id && c.id in ENGINE_DEEDS));
   return { ...attrPageVals(self), epOpen: true, closeEpccg, ep: {
-    title: s.name + ': EPCCG entry', kicker: 'EPCCG · ARTICLE 5 · ENTRY ' + String(e.entry).padStart(2, '0'),
-    name: s.name, line: slotLine(s.slot), attrName: a.name, openAttr: () => self.setState({ epccg: null, attrPage: a.id }), attrLabel: a.name + ': what the attribute gives',
-    attrStyle: 'padding: 0; border: 0; background: none; font-family: inherit; font-size: 13px; font-weight: 700; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; color: ' + ink,
-    head: track.head, hasHead: track.hasHead, steps: track.steps, atLabel: track.atLabel,
-    // 0.31.x (Leon: "make the 'what each point gives' menu collapsable too"): the block folds (the shared fold, kept per
-    // skill); it opens by default, as the page was opened for this skill
-    fold: foldVals('skill:points:' + s.id, { byRule: true, redraw: () => self.setState({ foldTick: Date.now() }) }),
-    // a gamma skill's Call, first and highlighted (rules 1.13; data/calls.json through the engine's ladder functions)
-    call: (() => { const cb = callBlock(s.id, typeof pts === 'number' ? pts : null); if (!cb) return CALL_BLANK;
-      return { has: true, ...cb, inkStyle: 'color: ' + ink, ladder: cb.ladder.map((x) => ({ ...x, label: x.n + (x.n === 1 ? ' point' : ' points') + (x.now ? ', yours now' : ''),
-        numStyle: 'flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; font-size: 13px; font-weight: 700; box-sizing: border-box; ' + (x.now ? 'background: ' + ink + '; color: #0A0D13' : x.owned ? 'border: 2px solid ' + ink + '; color: ' + ink : 'border: 1px solid #3B475D; color: #7F8BA1'),
-        textStyle: 'font-size: 13px; line-height: 1.35; color: ' + (x.now ? '#FFFFFF; font-weight: 700' : x.owned ? '#E7EBF3' : '#A3AEC2'),
-        style: 'display: flex; gap: 10px; align-items: center; padding: 2px 8px 2px 4px; border-radius: 8px; ' + (x.now ? 'background: ' + epRgba(ink, 0.16) + '; box-shadow: inset 0 0 0 1px ' + ink : '') })),
-        boxStyle: 'display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px; background: ' + epRgba(ink, 0.08) + '; border: 1px solid ' + ink }; })(),
-    // an alpha skill's door, how it is used (skills.json door_line, the one line the fight tab's header reads too)
-    door: (() => { const t = ENGINE_SKILL[s.id] && ENGINE_SKILL[s.id].door_line; return t ? { has: true, text: t } : { has: false, text: '' }; })(),
-    // a beta skill's door: what it multiplies on its attribute's alpha door (the engine's doorFeedView)
-    feed: (() => { const fb = feedBlock(s.id, typeof ptsOf === 'function' ? ptsOf : null, who); if (!fb) return FEED_BLANK;
-      return { has: true, head: fb.head, top: fb.top, now: fb.now, hasNow: !!fb.now, boxStyle: 'display: flex; flex-direction: column; gap: 3px; padding: 8px 10px; border-radius: 10px; background: #10151F; border-left: 3px solid ' + ink }; })(),
-    ptsLine: typeof pts === 'number' ? 'You have ' + pts + (pts === 1 ? ' point' : ' points') + ' in ' + s.name : 'Points 1 to ' + track.steps.length,
-    headStyle: 'font-size: 14px; line-height: 1.4; color: #E7EBF3', inkStyle: 'color: ' + ink,
+    title: s.name + ': EPCCG entry', name: s.name, slot: (SLOT_WORD[s.slot] || [''])[0], attrName: a.name,
+    openAttr: () => self.setState({ epccg: null, attrPage: a.id }), attrLabel: a.name + ': what the attribute gives',
+    attrStyle: 'padding: 0; border: 0; background: none; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; color: ' + ink,
+    // one line under the name: the door's first sentence (the whole door line in its hover), else the skill's own line
+    line: first || s.summary, lineTip: first && doorLine.length > first.length ? doorLine : '',
+    feed: { has: !!feedNow, text: fb ? 'Feeds ' + fb.doorName + ' · ' + feedNow : '', style: 'flex: none; padding: 3px 10px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; border: 1px solid ' + ink + '; color: ' + ink },
+    // a gamma skill's Call: one row (its name, AP and reach now); what it does in the name's hover, how it grows on the levels
+    call: cb ? { has: true, name: cb.name, tip: cb.text, now: cb.now, inkStyle: 'color: ' + ink } : CALL_BLANK,
+    ladderFold: foldVals('skill:ladder:' + s.id, { redraw }),
+    ptsLine: typeof pts === 'number' ? pts + ' / ' + roadMap(s.id).top : '',
+    steps: roadTrack(self, s.id, typeof pts === 'number' ? pts : null, ink, attrVal),
+    inkStyle: 'color: ' + ink,
     img: e.img, zoom: zoomer(self, e.img, e.portrait, 'portrait'), alt: e.portrait + ', First-Patch Revival portrait for ' + s.name, pictured: e.portrait,
     caption: same ? 'Speaks for ' + s.name + ' in the EPCCG.' : 'The one these words are about. Words by ' + e.speaker + '.',
+    // "About this voice": the quote, the intro and the lore of high levels, folded, closed by default
+    aboutFold: foldVals('skill:about:' + s.id, { byRule: true, redraw }),
     quote: e.quote.map((t) => { const stage = /^\*.*\*$/.test(t); return { text: stage ? t.slice(1, -1) : t.replace(/\*/g, ''),
-      style: 'margin: 0; font-family: \'Spectral\', serif; line-height: 1.55; ' + (stage ? 'font-size: 14px; color: #A3AEC2; letter-spacing: 0.04em' : 'font-size: 17px; font-style: italic; color: #E7EBF3') }; }),
-    speaker: '— ' + e.speaker, intro: e.intro,
-    perks: e.perks.map((p) => ({ name: p.name, meta: p.meta, t1: p.t1, t2: p.t2, icon: p.icon, has: !!p.icon, none: !p.icon, zoom: p.icon ? zoomer(self, p.icon, p.name, 'perk', p.t1) : () => {}, alt: p.name + ' perk icon (Wick)' })),
-    perkHead: 'PERKS · ONE STEP AT EACH MASTERY LEVEL',
-    perkNote: 'At 3, 5, 7 and 9 points in ' + s.name + ', take one step: one of these perks at Tier I, or a Tier I you hold upgraded to Tier II. By 9 points both are at Tier II. At 10, the Mastered perk is yours.',
+      style: 'margin: 0; font-family: \'Spectral\', serif; line-height: 1.55; ' + (stage ? 'font-size: var(--fs-sub); color: #A3AEC2; letter-spacing: 0.04em' : 'font-size: 17px; font-style: italic; color: #E7EBF3') }; }),
+    speaker: '— ' + e.speaker, intro: e.intro, high: e.high ? e.high.charAt(0).toUpperCase() + e.high.slice(1) : '', hasHigh: !!e.high,
+    perks: e.perks.map((p) => { const d = tierDelta(p.t1, p.t2); return { name: p.name, meta: p.meta, t1: p.t1, t2: d, hasT2: !!d, icon: p.icon, has: !!p.icon, none: !p.icon, zoom: p.icon ? zoomer(self, p.icon, p.name, 'perk', p.t1) : () => {}, alt: p.name + ' perk icon (Wick)' }; }),
+    // the two rules every page shared, said once behind the "?" of the perk section
+    perkHelp: 'At 3, 5, 7 and 9 points: one perk step (one of the two perks at Tier I, or a Tier I raised to Tier II). At 10: the Mastered perk.'
+      + (combos.length ? ' A combo perk: 5 points in every skill on its card, then do its deed in play.' : ''),
     m: masteredVals(self, e.mastered, ink, s.name),
-    hasCombos: e.combos.length > 0,
-    combos: e.combos.map((c) => ({ name: c.name, text: c.text, deed: c.deed, icon: c.icon, has: !!c.icon, none: !c.icon,
+    hasCombos: combos.length > 0,
+    combos: combos.map((c) => ({ name: c.name, text: c.text, deed: c.deed, icon: c.icon, has: !!c.icon, none: !c.icon,
       zoom: c.icon ? zoomer(self, c.icon, c.name, 'perk', c.text) : () => {}, alt: c.name + ' combo perk icon (Wick)',
       segs: c.skills.map((k) => ({ style: 'flex: 1; height: 4px; background: ' + k.ink })),
       chips: c.skills.map((k, i) => ({ plus: i > 0, label: k.name + ' ' + k.min,
-        style: 'padding: 2px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; white-space: nowrap; border: 1px solid ' + k.ink + '; color: ' + k.ink + (k.id === s.id ? '; background: ' + epRgba(k.ink, 0.16) : '') })) })),
-    // (what a point gives is the road map above, read from the engine's skill data: rules 1.54 item 4119)
-    rows: [['AT HIGH LEVELS', e.high], ['GOOD FOR', e.good], ['BAD FOR', e.bad]].filter((r) => r[1]).map(([k, v]) => ({ k, v: v.charAt(0).toUpperCase() + v.slice(1) })),
-    boxStyle: 'width: min(960px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; padding: 22px 24px; border-radius: 16px; background: #10151F; border: 1px solid #232D3F; border-top: 4px solid ' + ink,
-    nameStyle: 'margin: 0; font-family: \'Spectral\', serif; font-size: 32px; font-weight: 600; color: ' + ink,
+        style: 'padding: 2px 10px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; white-space: nowrap; border: 1px solid ' + k.ink + '; color: ' + k.ink + (k.id === s.id ? '; background: ' + epRgba(k.ink, 0.16) : '') })) })),
+    perkNameStyle: 'font-size: var(--fs-body); font-weight: 700; color: ' + ink,
+    boxStyle: 'width: min(960px, 100%); max-height: calc(100vh - 40px); overflow-y: auto; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; padding: 18px 22px; border-radius: 16px; background: #10151F; border: 1px solid #232D3F; border-top: 4px solid ' + ink,
+    nameStyle: 'margin: 0; font-family: \'Spectral\', serif; font-size: 30px; font-weight: 600; line-height: 1.1; color: ' + ink,
     quoteStyle: 'margin: 0; display: flex; flex-direction: column; gap: 8px; padding: 4px 0 4px 16px; border-left: 3px solid ' + ink,
   } };
 }

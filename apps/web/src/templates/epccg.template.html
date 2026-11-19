@@ -1,94 +1,74 @@
 <sc-if value="{{epOpen}}" hint-placeholder-val="{{false}}">
 <div role="dialog" aria-modal="true" aria-label="{{ep.title}}" style="position: fixed; inset: 0; z-index: 20; display: grid; place-items: center; padding: 20px; background: rgba(5, 7, 11, 0.86)">
 <article style="{{ep.boxStyle}}">
-<div style="display: flex; align-items: flex-start; gap: 12px">
-<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
-<span style="font-size: 11px; letter-spacing: 0.18em; color: #A3AEC2">{{ep.kicker}}</span>
-<h2 style="{{ep.nameStyle}}">{{ep.name}}</h2>
-<span class="phc-ep-line" style="font-size: 13px; color: #A3AEC2">{{ep.line}} · <button type="button" class="phc-ep-attr" onClick="{{ep.openAttr}}" aria-label="{{ep.attrLabel}}" tip="{{ep.attrLabel}}" style="{{ep.attrStyle}}">{{ep.attrName}}</button></span>
+<header class="phc-ep-headrow" style="display: flex; align-items: flex-start; gap: 14px">
+<button type="button" onClick="{{ep.zoom}}" aria-label="Enlarge {{ep.pictured}}" style="{{zoomBtn}}"><img src="{{ep.img}}" alt="{{ep.alt}}" style="width: 64px; height: 80px; object-fit: cover; border-radius: 8px; background: #000; border: 1px solid #232D3F"></button>
+<div style="display: flex; flex-direction: column; gap: 4px; min-width: 0; flex: 1 1 0">
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px"><h2 style="{{ep.nameStyle}}">{{ep.name}}</h2><span class="phc-ep-line-tag" style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: #A3AEC2"><button type="button" class="phc-ep-attr" onClick="{{ep.openAttr}}" aria-label="{{ep.attrLabel}}" style="{{ep.attrStyle}}">{{ep.attrName}}</button> · {{ep.slot}}</span><sc-if value="{{ep.feed.has}}" hint-placeholder-val="{{false}}"><span class="phc-ep-feed" style="{{ep.feed.style}}">{{ep.feed.text}}</span></sc-if></span>
+<span class="phc-ep-line" tip="{{ep.lineTip}}" style="font-size: var(--fs-body); line-height: 1.4; color: #E7EBF3">{{ep.line}}</span>
 </div>
-<button type="button" onClick="{{closeEpccg}}" aria-label="Close the EPCCG entry" style="margin-left: auto; flex: none; min-height: 40px; padding: 0 14px; border-radius: 9px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Close ✕</button>
-</div>
-<div style="display: flex; gap: 24px; flex-wrap: wrap">
-<figure style="margin: 0; flex: 0 0 240px; display: flex; flex-direction: column; gap: 8px">
-<button type="button" onClick="{{ep.zoom}}" aria-label="Enlarge {{ep.pictured}}" style="{{zoomBtn}}"><img src="{{ep.img}}" alt="{{ep.alt}}" style="width: 240px; height: 300px; object-fit: cover; border-radius: 10px; background: #000; border: 1px solid #232D3F"></button>
-<figcaption style="display: flex; flex-direction: column; gap: 2px">
-<span style="font-size: 14px; font-weight: 700">{{ep.pictured}}</span>
-<span style="font-size: 12px; line-height: 1.4; color: #A3AEC2">{{ep.caption}}</span>
-</figcaption>
-</figure>
-<div style="flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 14px">
-<blockquote style="{{ep.quoteStyle}}">
-<sc-for list="{{ep.quote}}" as="q" hint-placeholder-count="2"><p style="{{q.style}}">{{q.text}}</p></sc-for>
-<footer style="font-size: 13px; color: #A3AEC2">{{ep.speaker}}</footer>
-</blockquote>
-<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.6; color: #E7EBF3">{{ep.intro}}</p>
-<section class="phc-ep-road" aria-label="What each point gives" style="display: flex; flex-direction: column; gap: 8px; padding: 12px 12px 10px; border-radius: 12px; background: #0C1018; border: 1px solid #232D3F">
-<button type="button" class="phc-fold-h phc-ep-fold" data-fold="{{ep.fold.id}}" onClick="{{ep.fold.toggle}}" aria-expanded="{{ep.fold.expanded}}" tip="Open or close what each point gives (it stays as you leave it)" style="{{ep.fold.headStyle}}"><span aria-hidden="true" style="{{ep.fold.chevStyle}}">{{ep.fold.chev}}</span><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">WHAT EACH POINT GIVES</span><span class="phc-ep-pts" style="margin-left: auto; font-size: 12px; color: #A3AEC2">{{ep.ptsLine}}</span></button>
-<sc-if value="{{ep.fold.open}}" hint-placeholder-val="{{true}}">
-<sc-if value="{{ep.call.has}}" hint-placeholder-val="{{false}}"><div class="phc-ep-call" data-call="{{ep.call.name}}" style="{{ep.call.boxStyle}}">
-<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px"><span style="font-size: 11px; font-weight: 700; letter-spacing: 0.16em; color: #FFFFFF">YOUR CALL</span><span style="font-size: 16px; font-weight: 700; {{ep.call.inkStyle}}">{{ep.call.name}}</span><span class="phc-ep-call-now" style="font-size: 13px; color: #E7EBF3">{{ep.call.now}}</span></span>
-<span class="phc-ep-call-text" style="font-size: 14px; line-height: 1.4; color: #E7EBF3">{{ep.call.text}}</span>
-<span style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">HOW IT GROWS</span>
-<ol class="phc-ep-call-ladder" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px"><sc-for list="{{ep.call.ladder}}" as="cl" hint-placeholder-count="5"><li class="phc-ep-call-step" data-at="{{cl.n}}" data-now="{{cl.now}}" aria-label="{{cl.label}}" style="{{cl.style}}"><span aria-hidden="true" style="{{cl.numStyle}}">{{cl.n}}</span><span style="{{cl.textStyle}}">{{cl.what}}</span></li></sc-for></ol>
-<span class="phc-ep-call-checks" style="font-size: 13px; line-height: 1.4; color: #C9D3E3">{{ep.call.checks}}</span>
-</div></sc-if>
-<sc-if value="{{ep.door.has}}" hint-placeholder-val="{{false}}"><p class="phc-ep-door" style="margin: 0; font-size: 14px; line-height: 1.4; color: #E7EBF3"><b style="font-size: 11px; letter-spacing: 0.14em; {{ep.inkStyle}}">YOUR DOOR</b> {{ep.door.text}}</p></sc-if>
-<sc-if value="{{ep.hasHead}}" hint-placeholder-val="{{true}}"><div class="phc-ep-every" style="display: flex; flex-direction: column; gap: 2px"><span class="phc-ep-sub" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; {{ep.inkStyle}}">EVERY POINT</span><sc-for list="{{ep.head}}" as="h" hint-placeholder-count="2"><p class="phc-ep-head" style="margin: 0; {{ep.headStyle}}">{{h.text}}</p></sc-for></div></sc-if>
-<sc-if value="{{ep.feed.has}}" hint-placeholder-val="{{false}}"><div class="phc-ep-feed" style="{{ep.feed.boxStyle}}"><span style="font-size: 14px; line-height: 1.4; font-weight: 700; color: #E7EBF3">{{ep.feed.head}}</span><span style="font-size: 13px; line-height: 1.4; color: #C9D3E3">{{ep.feed.top}}</span><sc-if value="{{ep.feed.hasNow}}"><span class="phc-ep-feed-now" style="font-size: 13px; line-height: 1.4; color: #FFFFFF">{{ep.feed.now}}</span></sc-if></div></sc-if>
-<span class="phc-ep-sub" style="font-size: 11px; font-weight: 700; letter-spacing: 0.14em; {{ep.inkStyle}}">{{ep.atLabel}}</span>
+<button type="button" onClick="{{closeEpccg}}" aria-label="Close the EPCCG entry" style="flex: none; min-height: 40px; padding: 0 14px; border-radius: 9px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 600; cursor: pointer">Close ✕</button>
+</header>
+<sc-if value="{{ep.call.has}}" hint-placeholder-val="{{false}}"><div class="phc-ep-call" data-call="{{ep.call.name}}" style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 6px 12px; border-radius: 10px; border: 1px solid #FFFFFF; background: rgba(255, 255, 255, 0.04)"><span style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: #FFFFFF">YOUR CALL</span><span tip="{{ep.call.tip}}" style="font-size: var(--fs-body); font-weight: 700; text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; {{ep.call.inkStyle}}">{{ep.call.name}}</span><span class="phc-ep-call-now" style="font-size: var(--fs-body); color: #E7EBF3">{{ep.call.now}}</span></div></sc-if>
+<section class="phc-ep-road" aria-label="Levels" style="display: flex; flex-direction: column; gap: 6px">
+<button type="button" class="phc-fold-h phc-ep-fold" data-fold="{{ep.ladderFold.id}}" onClick="{{ep.ladderFold.toggle}}" aria-expanded="{{ep.ladderFold.expanded}}" style="{{ep.ladderFold.headStyle}}"><span aria-hidden="true" style="{{ep.ladderFold.chevStyle}}">{{ep.ladderFold.chev}}</span><span style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">LEVEL · YOU GET</span><span class="phc-ep-pts" style="margin-left: auto; font-size: var(--fs-sub); font-weight: 700; color: #A3AEC2">{{ep.ptsLine}}</span></button>
+<sc-if value="{{ep.ladderFold.open}}" hint-placeholder-val="{{true}}">
 <ol class="phc-ep-track" style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px">
 <sc-for list="{{ep.steps}}" as="t" hint-placeholder-count="10"><li class="phc-ep-step" data-step="{{t.n}}" data-state="{{t.state}}" data-mastery="{{t.step}}" aria-label="{{t.label}}" style="{{t.style}}">
+<span aria-hidden="true" class="phc-ep-dot" style="{{t.dotStyle}}">{{t.dot}}</span>
 <span aria-hidden="true" style="{{t.numStyle}}">{{t.n}}</span>
-<span style="display: flex; flex-direction: column; gap: 2px; flex: 1 1 0; min-width: 0">
-<sc-for list="{{t.lines}}" as="l" hint-placeholder-count="1"><span class="phc-ep-row" data-line="{{l.kind}}" data-at="{{l.at}}" style="{{l.style}}">{{l.text}}</span></sc-for>
-<sc-if value="{{t.empty}}" hint-placeholder-val="{{false}}"><span class="phc-ep-row" data-line="none" style="font-size: 13px; color: #7F8BA1">—</span></sc-if>
-</span>
-<sc-if value="{{t.hasPerks}}" hint-placeholder-val="{{false}}"><span style="display: flex; gap: 4px; flex: none"><sc-for list="{{t.perks}}" as="pi" hint-placeholder-count="2"><sc-if value="{{pi.has}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{pi.zoom}}" aria-label="Enlarge {{pi.name}}" tip="{{pi.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{pi.icon}}" alt="{{pi.alt}}" style="{{pi.style}}"></button></sc-if></sc-for></span></sc-if>
+<span class="phc-ep-rowtext" style="{{t.textStyle}}"><sc-for list="{{t.pieces}}" as="l" hint-placeholder-count="2"><sc-if value="{{l.sep}}"><span aria-hidden="true" style="color: #5A6781"> · </span></sc-if><span class="phc-ep-row" data-line="{{l.kind}}" tip="{{l.tip}}" style="{{l.style}}">{{l.text}}</span></sc-for></span>
+<sc-if value="{{t.hasNeeds}}" hint-placeholder-val="{{false}}"><span class="phc-ep-needs" style="flex: none; font-size: var(--fs-sub); font-weight: 700; color: #FFFFFF">{{t.needs}}</span></sc-if>
+<sc-if value="{{t.hasPerks}}" hint-placeholder-val="{{false}}"><span style="display: flex; gap: 4px; flex: none"><sc-for list="{{t.perks}}" as="pi" hint-placeholder-count="2"><sc-if value="{{pi.has}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{pi.zoom}}" aria-label="Enlarge {{pi.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{pi.icon}}" alt="{{pi.alt}}" style="{{pi.style}}"></button></sc-if></sc-for></span></sc-if>
 </li></sc-for>
 </ol>
 </sc-if>
 </section>
-<dl style="margin: 0; display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 8px 14px; font-size: 14px; line-height: 1.45">
-<sc-for list="{{ep.rows}}" as="r" hint-placeholder-count="4"><dt style="font-size: 11px; letter-spacing: 0.14em; color: #A3AEC2; padding-top: 3px">{{r.k}}</dt><dd style="margin: 0; color: #DCE2EC">{{r.v}}</dd></sc-for>
-</dl>
-</div>
-</div>
-<section aria-label="Perks" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #232D3F; padding-top: 16px">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">{{ep.perkHead}}</span>
-<p style="margin: 0; font-size: 13px; line-height: 1.5; color: #A3AEC2">{{ep.perkNote}}</p>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px">
-<sc-for list="{{ep.perks}}" as="p" hint-placeholder-count="2"><div style="display: flex; gap: 14px; align-items: flex-start; padding: 14px; border-radius: 12px; background: #0A0D13; border: 1px solid #232D3F">
-<sc-if value="{{p.has}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{p.zoom}}" aria-label="Enlarge {{p.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{p.icon}}" alt="{{p.alt}}" style="width: 64px; height: 64px; flex: none; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"></button></sc-if>
-<sc-if value="{{p.none}}" hint-placeholder-val="{{false}}"><div aria-label="Icon not drawn yet" style="width: 64px; height: 64px; flex: none; box-sizing: border-box; border-radius: 10px; border: 1px dashed #3B475D; display: grid; place-items: center; font-size: 10px; letter-spacing: 0.1em; color: #7F8BA1">ICON<br>SOON</div></sc-if>
+<section aria-label="Perks" class="phc-ep-perks" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #232D3F; padding-top: 12px">
+<span style="display: flex; align-items: center; gap: 8px"><span style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">PERKS</span><span class="phc-ep-perkhelp" tabindex="0" tip="{{ep.perkHelp}}" aria-label="How perks are earned" style="display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; border: 1px solid #A3AEC2; font-size: var(--fs-sub); font-weight: 700; color: #A3AEC2; cursor: help">?</span></span>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px">
+<sc-for list="{{ep.perks}}" as="p" hint-placeholder-count="2"><div class="phc-ep-perk" style="display: flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 12px; background: #0A0D13; border: 1px solid #232D3F">
+<sc-if value="{{p.has}}" hint-placeholder-val="{{true}}"><button type="button" onClick="{{p.zoom}}" aria-label="Enlarge {{p.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{p.icon}}" alt="{{p.alt}}" style="width: 56px; height: 56px; flex: none; border-radius: 10px; background: #10151F; border: 1px solid #232D3F"></button></sc-if>
+<sc-if value="{{p.none}}" hint-placeholder-val="{{false}}"><div aria-label="Icon not drawn yet" style="width: 56px; height: 56px; flex: none; box-sizing: border-box; border-radius: 10px; border: 1px dashed #3B475D; display: grid; place-items: center; font-size: var(--fs-sub); color: #7F8BA1">?</div></sc-if>
 <div style="display: flex; flex-direction: column; gap: 4px; min-width: 0">
-<span style="{{ep.perkNameStyle}}">{{p.name}}</span>
-<span style="font-size: 11px; letter-spacing: 0.12em; color: #A3AEC2">{{p.meta}}</span>
-<p style="margin: 2px 0 0; font-size: 13px; line-height: 1.45; color: #DCE2EC"><b style="color: #E7EBF3">I</b> · {{p.t1}}</p>
-<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #A3AEC2"><b style="color: #E7EBF3">II</b> · {{p.t2}}</p>
+<span style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px"><span style="{{ep.perkNameStyle}}">{{p.name}}</span><span style="font-size: var(--fs-sub); color: #A3AEC2">{{p.meta}}</span></span>
+<p class="phc-ep-t1" style="margin: 0; font-size: var(--fs-body); line-height: 1.4; color: #DCE2EC"><b style="color: #E7EBF3">I</b> · {{p.t1}}</p>
+<sc-if value="{{p.hasT2}}" hint-placeholder-val="{{true}}"><p class="phc-ep-t2" style="margin: 0; font-size: var(--fs-body); line-height: 1.4; color: #C9D3E3"><b style="color: #E7EBF3">II</b> · {{p.t2}}</p></sc-if>
 </div>
 </div></sc-for>
 </div>
-<sc-if value="{{ep.hasCombos}}" hint-placeholder-val="{{true}}"><div style="display: flex; flex-direction: column; gap: 10px; padding: 6px 0 4px">
-<span style="font-size: 11px; letter-spacing: 0.16em; color: #A3AEC2">COMBO PERKS · EARNED, NOT CHOSEN</span>
-<p style="margin: 0; font-size: 13px; line-height: 1.5; color: #A3AEC2">5 points in every skill on the card, then do the deed in play. The Narrator grants it when you do.</p>
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px">
-<sc-for list="{{ep.combos}}" as="c" hint-placeholder-count="2"><div style="display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: #0A0D13; border: 1px solid #2E3A50">
+<!--MASTERED:ep.m-->
+<sc-if value="{{ep.hasCombos}}" hint-placeholder-val="{{true}}"><div class="phc-ep-combos" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px">
+<sc-for list="{{ep.combos}}" as="c" hint-placeholder-count="2"><div class="phc-ep-combo" style="display: flex; flex-direction: column; border-radius: 12px; overflow: hidden; background: #0A0D13; border: 1px solid #2E3A50">
 <div aria-hidden="true" style="display: flex; gap: 2px"><sc-for list="{{c.segs}}" as="g" hint-placeholder-count="2"><span style="{{g.style}}"></span></sc-for></div>
-<div style="display: flex; gap: 14px; align-items: flex-start; padding: 14px">
-<sc-if value="{{c.has}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{c.zoom}}" aria-label="Enlarge {{c.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{c.icon}}" alt="{{c.alt}}" style="display: block; width: 60px; height: 60px; flex: none; border-radius: 10px; background: #10151F; border: 1px solid #2E3A50"></button></sc-if>
-<sc-if value="{{c.none}}" hint-placeholder-val="{{true}}"><div aria-label="Icon not drawn yet" style="width: 60px; height: 60px; flex: none; box-sizing: border-box; border-radius: 10px; border: 1px dashed #3B475D; display: grid; place-items: center; font-size: 10px; letter-spacing: 0.1em; color: #7F8BA1">ICON<br>SOON</div></sc-if>
-<div style="display: flex; flex-direction: column; gap: 8px; min-width: 0">
-<span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span style="padding: 1px 8px; border-radius: 4px; border: 1px solid #E7EBF3; font-size: 10px; font-weight: 700; letter-spacing: 0.16em; color: #E7EBF3">COMBO</span><span style="font-size: 16px; font-weight: 700; color: #E7EBF3">{{c.name}}</span></span>
-<span style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap"><sc-for list="{{c.chips}}" as="k" hint-placeholder-count="2"><sc-if value="{{k.plus}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="font-size: 14px; font-weight: 700; color: #A3AEC2">+</span></sc-if><span style="{{k.style}}">{{k.label}}</span></sc-for></span>
-<p style="margin: 0; font-size: 13px; line-height: 1.45; color: #DCE2EC">{{c.text}}</p>
-<div style="display: flex; flex-direction: column; gap: 2px; padding-left: 10px; border-left: 2px solid #E7EBF3"><span style="font-size: 10px; letter-spacing: 0.16em; color: #A3AEC2">THE DEED</span><span style="font-family: 'Spectral', serif; font-size: 15px; font-style: italic; line-height: 1.4; color: #E7EBF3">{{c.deed}}</span></div>
+<div style="display: flex; gap: 12px; align-items: flex-start; padding: 12px">
+<sc-if value="{{c.has}}" hint-placeholder-val="{{false}}"><button type="button" onClick="{{c.zoom}}" aria-label="Enlarge {{c.name}}" style="{{zoomBtn}}"><img class="phc-icon" src="{{c.icon}}" alt="{{c.alt}}" style="display: block; width: 52px; height: 52px; flex: none; border-radius: 10px; background: #10151F; border: 1px solid #2E3A50"></button></sc-if>
+<div style="display: flex; flex-direction: column; gap: 6px; min-width: 0">
+<span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span style="padding: 1px 8px; border-radius: 4px; border: 1px solid #E7EBF3; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.12em; color: #E7EBF3">COMBO</span><span style="font-size: var(--fs-body); font-weight: 700; color: #E7EBF3">{{c.name}}</span></span>
+<span style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap"><sc-for list="{{c.chips}}" as="k" hint-placeholder-count="2"><sc-if value="{{k.plus}}" hint-placeholder-val="{{false}}"><span aria-hidden="true" style="font-size: var(--fs-sub); font-weight: 700; color: #A3AEC2">+</span></sc-if><span style="{{k.style}}">{{k.label}}</span></sc-for></span>
+<p style="margin: 0; font-size: var(--fs-body); line-height: 1.4; color: #DCE2EC">{{c.text}}</p>
+<span style="font-size: var(--fs-sub); line-height: 1.4; color: #C9D3E3"><b style="letter-spacing: 0.1em; color: #E7EBF3">DEED</b> · {{c.deed}}</span>
 </div>
 </div>
 </div></sc-for>
+</div></sc-if>
+</section>
+<section class="phc-ep-about" aria-label="About this voice" style="display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #232D3F; padding-top: 10px">
+<button type="button" class="phc-fold-h phc-ep-about-fold" data-fold="{{ep.aboutFold.id}}" onClick="{{ep.aboutFold.toggle}}" aria-expanded="{{ep.aboutFold.expanded}}" style="{{ep.aboutFold.headStyle}}"><span aria-hidden="true" style="{{ep.aboutFold.chevStyle}}">{{ep.aboutFold.chev}}</span><span style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: #A3AEC2">ABOUT THIS VOICE</span></button>
+<sc-if value="{{ep.aboutFold.open}}" hint-placeholder-val="{{false}}"><div style="display: flex; gap: 20px; flex-wrap: wrap">
+<figure style="margin: 0; flex: 0 0 200px; display: flex; flex-direction: column; gap: 6px">
+<button type="button" onClick="{{ep.zoom}}" aria-label="Enlarge {{ep.pictured}}" style="{{zoomBtn}}"><img src="{{ep.img}}" alt="{{ep.alt}}" style="width: 200px; height: 250px; object-fit: cover; border-radius: 10px; background: #000; border: 1px solid #232D3F"></button>
+<figcaption style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: var(--fs-body); font-weight: 700">{{ep.pictured}}</span><span style="font-size: var(--fs-sub); line-height: 1.4; color: #A3AEC2">{{ep.caption}}</span></figcaption>
+</figure>
+<div style="flex: 1 1 360px; min-width: 0; display: flex; flex-direction: column; gap: 12px">
+<blockquote style="{{ep.quoteStyle}}">
+<sc-for list="{{ep.quote}}" as="q" hint-placeholder-count="2"><p style="{{q.style}}">{{q.text}}</p></sc-for>
+<footer style="font-size: var(--fs-sub); color: #A3AEC2">{{ep.speaker}}</footer>
+</blockquote>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; line-height: 1.6; color: #E7EBF3">{{ep.intro}}</p>
+<sc-if value="{{ep.hasHigh}}"><p class="phc-ep-high" style="margin: 0; font-size: var(--fs-body); line-height: 1.45; color: #DCE2EC">{{ep.high}}</p></sc-if>
 </div>
 </div></sc-if>
-<!--MASTERED:ep.m-->
 </section>
 </article>
 </div>

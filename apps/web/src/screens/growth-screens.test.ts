@@ -152,9 +152,9 @@ describe('the character sheet\'s skill road map', () => {
     const { c, L } = start();
     c().skills.brain_power = 3; L.setState({ epccg: 'brain_power' });
     const ep = L.renderVals().ep;
-    expect(ep.ptsLine).toMatch(/^You have 3 points in /);
-    expect(ep.steps.find((s: any) => s.n === 3).label).toMatch(/yours now$/);
-    expect(ep.steps.filter((s: any) => /yours$/.test(s.label)).map((s: any) => s.n)).toEqual([1, 2]);
+    expect(ep.ptsLine).toBe('3 / 10');
+    expect(ep.steps.find((s: any) => s.n === 4).label).toBe('Level 4, next');
+    expect(ep.steps.filter((s: any) => /yours$/.test(s.label)).map((s: any) => s.n)).toEqual([1, 2, 3]);
   });
 });
 

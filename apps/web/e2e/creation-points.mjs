@@ -134,22 +134,23 @@ ok('Will Power raised to 2 (' + await val('skill', 'will_power') + ')', (await v
 await p.evaluate(() => window.scrollTo(0, 0)); await p.mouse.move(1276, 716); await settle(p, 150);
 if (process.env.LANE_SHOTS) await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-creation-skills.png' });
 await p.locator('[data-skill="will_power"] [data-skill-face]').click(); await settle(p, 350);
-// 0.31.8: what each point gives is closed by default: open it
+// the ladder is open by default (a fold saved closed is opened)
 await p.evaluate(() => { const f = document.querySelector('.phc-ep-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 200);
 const road = await p.evaluate(() => { const steps = [...document.querySelectorAll('.phc-ep-road .phc-ep-step')];
-  return { n: steps.map((s) => s.getAttribute('data-step')).join(), now: steps.filter((s) => s.getAttribute('data-state') === 'now').map((s) => s.getAttribute('data-step')).join(),
+  return { n: steps.map((s) => s.getAttribute('data-step')).join(), next: steps.filter((s) => s.getAttribute('data-state') === 'next').map((s) => s.getAttribute('data-step')).join(),
     owned: steps.filter((s) => s.getAttribute('data-state') === 'owned').map((s) => s.getAttribute('data-step')).join(),
     repeats: steps.filter((s) => { const t = [...s.querySelectorAll('.phc-ep-row')].map((x) => x.textContent); return new Set(t).size !== t.length; }).length,
+    oneLine: steps.every((s) => s.querySelectorAll('.phc-ep-rowtext').length === 1),
     perkSteps: steps.filter((s) => s.querySelectorAll('img.phc-icon').length > 0).map((s) => s.getAttribute('data-step')).join(),
-    small: [...document.querySelectorAll('.phc-ep-road .phc-ep-row, .phc-ep-head')].filter((x) => parseFloat(getComputedStyle(x).fontSize) < 13).length,
-    head: (document.querySelector('.phc-ep-head') || {}).textContent || '', every: [...document.querySelectorAll('.phc-ep-road .phc-ep-sub')].map((x) => x.textContent).join('|'), old: document.querySelectorAll('.phc-ep-give').length }; });
-ok('Will Power\'s "?" shows ten rows (' + road.n + '), point ' + road.now + ' lit, ' + road.owned + ' owned, no line twice in a row (' + road.repeats + ')',
-  road.n === '1,2,3,4,5,6,7,8,9,10' && road.now === '2' && road.owned === '1' && road.repeats === 0 && road.old === 0);
-ok('…EVERY POINT says what every point gives, one line a row (' + road.every + '), the perk steps show their icons (' + road.perkSteps + '), no rules text under 13 px (' + road.small + ')', /^EVERY POINT\|AT \d/.test(road.every) && /^\S/.test(road.head) && road.small === 0 && /3/.test(road.perkSteps));
+    small: [...document.querySelectorAll('.phc-ep-road .phc-ep-rowtext')].filter((x) => parseFloat(getComputedStyle(x).fontSize) < 15).length,
+    text: (document.querySelector('[role="dialog"] article') || {}).innerText || '' }; });
+ok('Will Power\'s "?" shows ten level rows (' + road.n + '), ' + road.owned + ' owned, ' + road.next + ' next, one line a row, no piece twice in a row (' + road.repeats + ')',
+  road.n === '1,2,3,4,5,6,7,8,9,10' && road.next === '3' && road.owned === '1,2' && road.repeats === 0 && road.oneLine);
+ok('…no EVERY POINT block and no "AT 3 / 5" header; the perk steps show their icons (' + road.perkSteps + '); the rows at 15 px or more (' + road.small + ' under)', !/EVERY POINT|\bAT \d+ \//.test(road.text) && road.small === 0 && /3/.test(road.perkSteps));
 ok('no sideways page scroll with the pop-up open (' + await sideways() + ' px over)', (await sideways()) <= 1);
-// the pop-up scrolls inside itself: the shot shows its road map, as a player scrolling down to it sees it
+// the pop-up scrolls inside itself: the shot shows its ladder, as a player scrolling down to it sees it
 await p.evaluate(() => document.querySelector('.phc-ep-road .phc-ep-track').scrollIntoView({ block: 'start' })); await settle(p, 150);
-ok('the road map ten rows fit the 1280×720 window once scrolled to (all in view; the Call, door and every-point lines sit above them)', await p.evaluate(() => [...document.querySelectorAll('.phc-ep-road .phc-ep-step')].every((s) => { const r = s.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })));
+ok('the ladder\'s ten rows fit the 1280×720 window together', await p.evaluate(() => [...document.querySelectorAll('.phc-ep-road .phc-ep-step')].every((s) => { const r = s.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight; })));
 if (process.env.LANE_SHOTS) await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-popup-willpower.png' });
 await p.getByRole('button', { name: 'Close the EPCCG entry' }).click(); await settle(p, 200);
 for (let i = 0; i < 2; i++) { await p.locator('[data-points-undo]').click(); await settle(p, 60); }
