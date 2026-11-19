@@ -159,7 +159,9 @@ const onTab = async (id) => {
   await p.waitForFunction((id) => document.querySelector('[role="tab"][data-tab="' + id + '"]')?.getAttribute('aria-selected') === 'true', id, { timeout: 30000 });
 };
 await onTab('outbursts');
-ok('Soul: with the HEART panel up, Strain and the held Outburst are said there, not again in the unit panel', !(await youCard().locator('[data-res="strain"], [data-res="held"]').count()) && (await p.locator('.phc-heart-panel').count()) > 0);
+{ const hel = await youCard().locator('[data-res="held"]').count(), str = await youCard().locator('[data-res="strain"]').count();
+  // (0.31.9, Leon: Strain is pinned among the urgent meters while an Outburst is held, once; the held Outburst itself is said only in the HEART panel)
+  ok('Soul: with the HEART panel up, the held Outburst is said there, not again in the unit panel; Strain is pinned once (held ' + hel + ', strain ' + str + ')', hel === 0 && str <= 1 && (await p.locator('.phc-heart-panel').count()) > 0); }
 await onTab('move');
 t = await rowText('strain');
 ok('Soul: Strain vs its limit, NEAR THE LIMIT: ' + t, /STRAIN/.test(t) && /\d+ \/ \d+/.test(t) && /NEAR THE LIMIT/.test(t));

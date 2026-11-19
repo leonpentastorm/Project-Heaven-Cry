@@ -6,7 +6,7 @@
 //    and Campaign can't be picked back (the engine refuses a locked mode).
 import { readFileSync } from 'node:fs';
 import { chromium, player, click, BASE, hostAs, lockIn, until, OUT } from './lib.mjs';
-import { campStart, settle } from './lib.mjs';
+import { campStart, campConfirmGo, settle } from './lib.mjs';
 // a locked card's reason is the data's own words (data/modes.json `coming`), never a sentence typed here
 const COMING = Object.fromEntries(JSON.parse(readFileSync(new URL('../../../data/modes.json', import.meta.url), 'utf8')).items.map((m) => [m.id, m.coming]));
 const browser = await chromium.launch();
@@ -80,7 +80,7 @@ await create(host, 'Kade');
 await create(guest, 'Ha');
 const label = (await host.locator('button[data-phc-start]').textContent()).trim();
 ok('Start reads "Start the run" and needs no key (' + label + ')', label === 'Start the run' && await host.locator('button[data-phc-start]').isEnabled());
-await host.locator('button[data-phc-start]').click();
+await host.locator('button[data-phc-start]').click(); await campConfirmGo(host); // item E
 // rules 1.52: the camp first, on both screens; each builds its own loadout and marks Ready; the run goes on when both are
 const hostCamp = await until(host, () => !!document.querySelector('[data-phc-camp]'), null, 15000).catch(() => false);
 const guestCamp = await until(guest, () => !!document.querySelector('[data-phc-camp]'), null, 15000).catch(() => false);
