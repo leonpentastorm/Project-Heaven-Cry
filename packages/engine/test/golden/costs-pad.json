@@ -858,7 +858,7 @@
 "pad/soul/stim": "P1 ap9>8; C1 stims2>1 | short: Needs 1 AP. | again: P1 ap9>8; C1 stims1>0 | next: P1 ap9>8; C1 stims1>0 | later: P1 ap9>8; C1 stims1>0",
 "pad/soul/stim-downed": "P1 ap9>7; C1 stims2>1 | short: Needs 2 AP. | again: P1 ap9>8; C1 stims1>0 | next: P1 ap9>8; C1 stims1>0 | later: P1 ap9>8; C1 stims1>0",
 "pad/soul/swap": "REFUSED Swap from your off hand, or a weapon in your pack.",
-"pad/soul/syphon": "P1 ap9>8 mg.mp250>421; air mana20>14 | short: Needs 1 AP. | again: P1 ap9>8 mg.mp421>500; air mana14>8 | next: P1 ap9>8 mg.mp421>500; air mana14>8 | later: P1 ap9>8 mg.mp421>500; air mana14>8",
+"pad/soul/syphon": "P1 mg.mp250>421; air mana20>14 | short: free P1 mg.mp250>421; air mana20>14 | again: P1 ap9>8 mg.mp421>500; air mana14>8 | next: P1 mg.mp421>500; air mana14>8 | later: P1 mg.mp421>500; air mana14>8",
 "pad/soul/tech/aimed_shot": "P1 ammo6>5 ap9>6 heat0>1 | short: Needs 3 AP. | again: P1 ammo5>4 ap9>6 heat1>2 | next: P1 ammo5>4 ap9>6 heat0>1 | later: P1 ammo5>4 ap9>6 heat0>1",
 "pad/soul/tech/guard": "P1 ap9>8 | short: Needs 1 AP. | again: NO You are already on Guard. | next: P1 ap9>8 | later: P1 ap9>8",
 "pad/soul/tech/mag_dump": "P1 ammo6>0 ap9>5 heat0>5 | short: Needs 4 AP. | again: NO Empty: reload first. | next: NO Empty: reload first. | later: NO Empty: reload first.",

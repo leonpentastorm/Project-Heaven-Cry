@@ -10,6 +10,8 @@
 "item/perk/iron_grip@II/blow-primed": "n1  || n1  || n1  || n1  || n1 ",
 "item/perk/judgement_day@mastered/action/judgement/then-blow": "n1  || n1  || n1  || n1  || n1 ",
 "item/perk/last_wall@mastered/taken-low": "n1  || n1  || n1  || n1  || n1 ",
+"item/perk/lore_ward@I/action/warding_word": "n0 P2 +warding_word3",
+"item/perk/lore_ward@II/action/warding_word": "n0 P2 +warding_word3",
 "item/perk/scar_tissue@II/taken-crit": "n2  || n2  || n3 P1 bleed0>3 || n2  || n3 P1 bleed0>3",
 "item/perk/still_water@mastered/taken": "n1  || n1  || n1  || n1  || n1 ",
 "item/perk/still_water@mastered/taken-crit": "n2  || n2  || n3 P2 bleed0>3 || n2  || n3 P2 bleed0>3",
