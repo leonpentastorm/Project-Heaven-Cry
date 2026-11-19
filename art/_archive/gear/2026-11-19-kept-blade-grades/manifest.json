@@ -7096,6 +7096,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-night_goggles--relic",
+      "path": "art/icons/gear/armour-night_goggles--relic.png",
+      "sha256": "b0ce30614981844ad7a947e2bec7b849f1cf30857373ae0eaca83f8a90501ca7",
+      "label": "Night-sight Goggles — Relic",
+      "family": "armour-night_goggles",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-night_goggles--relic.png",
+        "sha256": "15ddbe160574e5caef2ed0608bd4739a4d8b5d77d5020e8cf754be6a9e2637b8"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-night_goggles--relic.png",
+        "sha256": "b0ce30614981844ad7a947e2bec7b849f1cf30857373ae0eaca83f8a90501ca7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-night_goggles--relic.txt",
+        "sha256": "0943e88696796665b2cb2fb0528996955852f90d6f45fe4d41869a109c29dfd2"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-night_goggles--relic/v1/source.png",
+          "sha256": "721058cacd8c0293fee7bdadbc1e7d8fe7d423b6c38a7582788213d238f67f05"
+        },
+        {
+          "path": "art/icons/gear/armour-night_goggles.png",
+          "sha256": "87b18113df301af7e4ac7d5e21afef5e251aafc32624c3a5a9b29370a41af813"
+        },
+        {
+          "path": "art/icons/gear/armour-night_goggles--masterwork.png",
+          "sha256": "c960dba6b3e69c4025bfb88b9dad3097a8451f98d78be3bfeabfaabe724c2b44"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-night_goggles--relic.png",
+        "128": "art/icons/gear/exports/128/armour-night_goggles--relic.png",
+        "64": "art/icons/gear/exports/64/armour-night_goggles--relic.png",
+        "32": "art/icons/gear/exports/32/armour-night_goggles--relic.png"
+      },
+      "export_hashes": {
+        "256": "f508525b3acba055f120d957f1874c64a9e80bd71abd5984ae1ae6e5cf84aae8",
+        "128": "7d5e04d73c47bc2e350564f93713ac1c5c044fe96843ee042b4f7f5dc6072841",
+        "64": "f0b75537b850485306d2021e9e390c1e3fe5cb5bcf7c373076ad55db4b457d3d",
+        "32": "3afc792396130e9a06ec1bead72732e7a1a3545a6055f957cee82c01c6ccbc0b"
+      },
+      "grade": "relic",
+      "standard_id": "armour-night_goggles",
+      "outline": {
+        "solid_alpha_iou": 0.9591819529433254,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 45
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
