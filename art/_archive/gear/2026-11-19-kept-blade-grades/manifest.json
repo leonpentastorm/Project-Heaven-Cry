@@ -6732,6 +6732,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-heavy_boots--fine",
+      "path": "art/icons/gear/armour-heavy_boots--fine.png",
+      "sha256": "dc0c7191f3a0d20810dd127f7db6ce0c7c24e4782a728159fa07d033d6838d72",
+      "label": "Heavy Boots — Fine",
+      "family": "armour-heavy_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-heavy_boots--fine.png",
+        "sha256": "fe5bd27190b18593e6fd5a2ceadbbef457e0aa151e51dfa34af1040d87d8b334"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-heavy_boots--fine.png",
+        "sha256": "dc0c7191f3a0d20810dd127f7db6ce0c7c24e4782a728159fa07d033d6838d72"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-heavy_boots--fine.txt",
+        "sha256": "a19d42526f993d77529e29f5bb793fdeaf600e22f59dba272857e2764cabf471"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-heavy_boots.png",
+          "sha256": "bf6aa28766f45a090f5289c830c5638b78a1b54fc8034dda83eca4e4d839bf96"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-heavy_boots--fine.png",
+        "128": "art/icons/gear/exports/128/armour-heavy_boots--fine.png",
+        "64": "art/icons/gear/exports/64/armour-heavy_boots--fine.png",
+        "32": "art/icons/gear/exports/32/armour-heavy_boots--fine.png"
+      },
+      "export_hashes": {
+        "256": "21ee7e82f3cf1f9e97a14cc87d5ca886f90ca4d957a39e0bbd17c2e62eb0996a",
+        "128": "f404ee1ca7eef720a6956ce88badb9fc69a5f2efb77fa20c5169128aea5d54ad",
+        "64": "6620c36e8bcabe5eeae9187c8323e8cb8c4445b54bdce7a104330785f56fa555",
+        "32": "dc557d684a6d0292bee32935b5f4a606b95507e1a93a67a535a4239385609509"
+      },
+      "grade": "fine",
+      "standard_id": "armour-heavy_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9865970794523808,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 16
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
