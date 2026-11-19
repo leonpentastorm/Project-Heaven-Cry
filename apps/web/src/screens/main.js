@@ -129,6 +129,8 @@ const WORD_CLASS = { subject_element: 'SUBJECT · ELEMENT', subject_affliction: 
 /** Sigil words on the MAGIC tab in grammar order (rules 1.4): Subjects, Reach, Delivery, Burst, Filter. */
 const WORD_ORDER = Object.keys(WORD_CLASS);
 // OPT_LABEL and optValue (a school's options) come from game/actionPickers, shared with the twin's design picker.
+/** A way's one line (the school's option_text, its label's "Label: " lead dropped: the button says it). */
+const wayText = (school, o) => { const t = String((SCHOOL[school]?.option_text || {})[o] || ''), l = OPT_LABEL[o] || o; return t.startsWith(l + ': ') ? t.slice(l.length + 2) : t; };
 const optLabel = (school, v) => { const o = (SCHOOL[school]?.options || []).find((x) => optValue(x) === v); return o ? OPT_LABEL[o] || o : v; };
 const signed = (n) => (n > 0 ? '+' + n : n < 0 ? '−' + Math.abs(n) : '0');
 const chipStyle = (ink, on) => 'display: inline-flex; align-items: center; gap: 4px; min-height: 28px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; border: 1px solid ' + ink + '; '
@@ -234,7 +236,10 @@ function magicVals(self, g, c) {
     schools2: [{ id: '', label: 'None' }, ...known.schools.filter((x) => x !== B.school).map((x) => ({ id: x, label: SCHOOL[x]?.name || x }))].map((o) => { const on = (B.school2 || '') === o.id;
       return { key: o.id || 'none', label: o.label, pressed: on ? 'true' : 'false', title: o.id ? SCHOOL[o.id]?.text || '' : 'One school only.', style: chipStyle(SOUL_VIOLET, on),
         pick: () => { const o2 = SCHOOL[o.id]?.options || []; set({ school2: o.id, option2: o2.length ? optValue(o2[0]) : '' }); } }; }),
-    hasOptions2: opts2.length > 0, options2: opts2.map((o) => { const v = optValue(o), on = B.option2 === v; return { key: o, label: OPT_LABEL[o] || o, pressed: on ? 'true' : 'false', pick: () => set({ option2: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
+    // a school's ways (Damage: Strike, Finish, Brand, Drain), one line a way: its label and its line (soul_modules.json
+    // option_text); the first school's row too (0.31.11: it was computed and never drawn)
+    hasOptions: opts.length > 0, options: opts.map((o) => { const v = optValue(o), on = B.option === v; return { key: o, label: OPT_LABEL[o] || o, text: wayText(B.school, o), pressed: on ? 'true' : 'false', pick: () => set({ option: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
+    hasOptions2: opts2.length > 0, options2: opts2.map((o) => { const v = optValue(o), on = B.option2 === v; return { key: o, label: OPT_LABEL[o] || o, text: wayText(B.school2, o), pressed: on ? 'true' : 'false', pick: () => set({ option2: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
     tones: toneChips(kTones, vis).map((t) => { const on = (B.tone || 'raw') === t.id, can = t.known || t.free;
       return { key: t.id, label: t.name + (t.free ? ' · free' : ''), pressed: on ? 'true' : 'false', locked: !can, title: t.text + (can ? '' : ' Not learned yet (a teacher or a plate).') + (t.free ? ' Your first tone is free at Lore Master 1: learned with this design.' : ''),
         pick: () => { if (can) set({ tone: t.id }); }, style: chipStyle(t.ink, on) + (can ? '' : '; opacity: 0.4; cursor: default') }; }),
