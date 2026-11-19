@@ -19646,6 +19646,32 @@
       },
       "collection": "nov19-grade-candidates",
       "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
+    },
+    "shield-pavise--celestial": {
+      "label": "Shield-Pavise Celestial",
+      "path": "art/icons/gear/shield-pavise--celestial.png",
+      "sha256": "464183d32b6f9d0fa32e75ac92c6823e02a7cf2b7ee419c953656e4f5ea3e785",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "grade": "celestial",
+      "standard_path": "art/icons/gear/shield-pavise.png",
+      "source_path": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-pavise--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-pavise--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-pavise--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-pavise--celestial.png"
+      },
+      "collection": "nov19-grade-candidates",
+      "review_notes": "Finish proof retained after visual review at inventory size. Exact alpha differs from Standard. See shape measurements and combined proof sheet."
     }
   },
   "survival_art": {
