@@ -746,6 +746,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hatchet--celestial",
+      "path": "art/icons/gear/weapon-hatchet--celestial.png",
+      "sha256": "91c943a21b0a653afd7db59282df2b24d63b5f47d4e6b63a8b588e5bde6e3aac",
+      "label": "Hatchet — Celestial",
+      "family": "weapon-hatchet",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--celestial.png",
+        "sha256": "4be95f14c57bee7c3d87841c9499be0a95d425df713a19c0badca3b6c2f13ece"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hatchet--celestial.png",
+        "sha256": "91c943a21b0a653afd7db59282df2b24d63b5f47d4e6b63a8b588e5bde6e3aac"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hatchet--celestial.txt",
+        "sha256": "5e525b59f5df46333a2a8c3d73f157ebf801ecefd84cf4a388c3fb9bb4565557"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hatchet.png",
+          "sha256": "a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac"
+        },
+        {
+          "path": "art/icons/gear/weapon-hatchet--relic.png",
+          "sha256": "032d4c14c77fe8900b89eed9f1be78e08aeb2b09ec02e96e07fcbe90fb30b05d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hatchet--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-hatchet--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-hatchet--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-hatchet--celestial.png"
+      },
+      "export_hashes": {
+        "256": "7bd6d2ec6b27533124a586d4b795a52efa77621aa05b5638edb71c57ba541c12",
+        "128": "57d9ad5b2d32aa0edbaa4d704d2f77ae750ad9cef97776fea49503eddfc61e45",
+        "64": "cbb3e9e35151821d125d63235ee996c04370291963ca17006c60a99b7987df88",
+        "32": "daef0f7928dccf5e0708c4952d7a688dfde0dea2d65bd881ccd099b1abad41a9"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-hatchet",
+      "outline": {
+        "solid_alpha_iou": 0.9732876022836763,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 11
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
