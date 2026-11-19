@@ -39046,7 +39046,7 @@
         "16": "art/icons/tending/exports/16/hold-down.png"
       },
       "data_ids": [
-        "verb:tend.hold_down"
+        "perk:threads_that_hold"
       ]
     },
     "tend-bonds-5": {
