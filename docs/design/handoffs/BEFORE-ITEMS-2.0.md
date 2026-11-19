@@ -369,3 +369,26 @@ Checked against the tree `E:/phc-wt/a0312` (live 0.31.11, `c22cc8f7b`), `CHANGEL
 - **(c) The camp budget stays 300** for now.
 - **(d) Ceilings are a relative measure** of the effort a class puts in and the fun it gets back, not a hard line; all-in builds over a ceiling are not a fault by themselves.
 - **(e) Everything goes into this patch.** "Add everything into this patch and work continuously until everything is achieved before we can go into Items 2.0 and art; the game has to be decent fun at 0.32." So every group-B item is 0.32 work.
+
+## The gaps lane's findings on group F (19 Nov 2026, `wip/0.32-gaps`; pictures in the lane's `.check/gaps-shots/`)
+
+1. **TRIAGE row 9 (Figment trait descriptions): fixed.** "+ New design" lists every trait with its line (`r10-new-design.png`).
+2. **The Operative's first tab: not a fault.** A Proving Ground fight opens an Ingenuity 6 pistol user on SHADOW with Hide
+   offered (`f-operative-shadow-1600.png`). `firstTurnTab` falls back to ATTACK only when the door's first row is refused
+   (seen at the start), by design.
+3. **The SHADOW meter row clipped at 1600 x 900: not reproduced** (no meter line is cut, `f-operative-shadow-1600.png`; the
+   Shadow row is folded under "+2" at 0). **A Chaplain's two door tips: not reproduced** in one fight with tips on.
+4. **"Cut 2 AP" against "Cut · 0 AP": not reproduced** (the rows read "Shot 2 AP", "Strike (weapon's butt) 2 AP",
+   `f-empty-gun-attack-rows.png`). **"EMPT / Y": not checked** (the screenshot's empty gun did not take).
+5. **Strain folded at the fight's start: not a fault.** The Strain row is open at the start (`f-chaplain-strain-start.png`).
+   Seen beside it: **"STRAIN 0 / 4 · NEAR THE LIMIT" with the Emanator stowed** is the rule's own warning (a Begin without an
+   Emanator in hand adds the air's Strain and would go over), but the word reads wrong at 0: a wording ruling for the lead
+   ("BEGIN GOES OVER"?), not changed here.
+6. **The mana forecast above the small map: not a fault.** The forecast sits above the grid and the small map inside the
+   grid's corner, neither covering the other (`r10-fight.png`).
+7. **Wave 3 SHOULD-FIX, item by item** (`docs/design/proposals/2026-11-consolidation-0.29-wave3.md`): **gone** 5 (the typed
+   Guard soak and clamp), 6 (`fade ?? 0`), 8's why-texts (now placeholders), 13 (`_OWNER_USE_TYPES` reads `owned.ts`), 15
+   (Called Out is `engine`), 16 (no sort on reason text in `fx/faith.ts`); **still open** 1 (forced moves on a Boss typed per
+   item), 7 (Run and Gun's text and rule numbers), 8's `fx/guard.ts` `within` fallback, 9 (fx keyed on ids: the effects
+   lane), 11 (`open-hand-2` `usable`, `shadow-2` `hideBlock` called directly), 14 (`enemySearchTile`: AI in code), 18
+   (Launch's two copies of its AP); **not checked** 2, 10, 12, 17.
