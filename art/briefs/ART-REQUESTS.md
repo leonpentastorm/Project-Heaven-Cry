@@ -341,6 +341,39 @@ The level-up card, the sheet and the fight tab show them beside the option's rul
 | K31 | **Blood Price** (Outbursts's fork at 6, `fork.soul.blood_price`) | Placeholder in place (option not built yet) | Wick paying a pump of power with a drop of blood | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-blood_price`) |
 | K32 | **Clean Break** (Outbursts's fork at 6, `fork.soul.clean_break`) | Placeholder in place (option not built yet) | A great release and the heart easing after it | One action, no label; reads at 32 px | `art/icons/forks/` (catalog `fork_icons`, id `fork-soul-clean_break`) |
 
+### 5d. 0.32, the Mind lane (rules 1.74; requested 19 Nov 2026)
+
+New perks, fork options and class moves with no icon yet. Each shows the UI's existing fallback until its painting
+lands. All are Wick icons in the trait/perk style (white flat ink, 1024 x 1024, the STYLE-LOCK; master
+`art/icons/traits/mind-without-fog.png`), except the fork options (the 5c placeholders' style).
+
+| # | For | Status | What it must show | Direction | Goes to |
+| --- | --- | --- | --- | --- | --- |
+| MD1 | **Quick Read** (Acuity perk, `quick_read`) | No icon (fallback) | Wick glancing at a foe, a reading of it already pinned beside him | Perk icon, reads at 32 px | `art/icons/perks/` |
+| MD2 | **Read Them** (Acuity perk, `read_them`) | No icon (fallback) | A foe's blow arriving blunted on someone who has read it | Perk icon | `art/icons/perks/` |
+| MD3 | **Still Breath** (Acuity perk, `still_breath`) | No icon (fallback) | Wick pressed to cover, holding his breath, a searcher's gaze passing over | Perk icon | `art/icons/perks/` |
+| MD4 | **Read Intent** (Vigilance perk, `read_intent`) | The Shadow verb's picture `shadow-read-intent` is repointed to the perk (catalog data_ids); a perk-family icon still wanted | Wick pointing at a foe, its next move drawn ahead of it | Perk icon | `art/icons/perks/` |
+| MD5 | **Index** (Rumination perk, `index`) | No icon (fallback) | Wick pulling one card from a deep index drawer, the answer lit | Perk icon | `art/icons/perks/` |
+| MD6 | **Proven Formula** (Rumination perk, `proven_formula`) | No icon (fallback) | A formula chalked twice, the second ring checked off as a blow glances away | Perk icon | `art/icons/perks/` |
+| MD7 | **Objection!** (Eloquence perk, `objection`) | No icon (fallback) | Wick on his feet, one finger raised at a speaker, the room turning | Perk icon (Burden of Proof's icon, if any, retires with it) | `art/icons/perks/` |
+| MD8 | **Opening Argument** (Eloquence perk, `opening_argument`) | No icon (fallback) | Wick at a lectern facing a line of armed foes before the first shot | Perk icon | `art/icons/perks/` |
+| MD9 | **Thinking Aloud** (Eloquence perk, `thinking_aloud`) | No icon (fallback) | Wick calling to an ally while his gloved hand finishes a glyph | Perk icon | `art/icons/perks/` |
+| MD10 | **Backdraft** (Sigilist rank II, `class:mage.backdraft`) | No icon (fallback) | An Evoker bursting in Wick's hand, the blast throwing back the foes beside him | Class move icon, the 5 section's style | `art/icons/classes/` |
+| MD11 | **Tuned** (Improvisation perk, `tuned`) | No icon (fallback) | Wick's hand on a sidearm's slide, a small spanner tucked behind the ear | Perk icon | `art/icons/perks/` |
+| MD12 | **Smooth** (Charisma perk, `smooth`) | No icon (fallback) | Wick mid-lie, one eyebrow up, a listener's frown softening | Perk icon | `art/icons/perks/` |
+| MD13 | **Showman** (Charisma perk, `showman`) | No icon (fallback) | Wick with a flourish of the Visualizer glove, a Figment taking a bow | Perk icon | `art/icons/perks/` |
+| MD14 | **Hard Light** (Visualization fork at 4, `fork.figment.hard_light`) | No placeholder | A Figment's edge solid as glass, a blow cracking on it | The 5c fork style | `art/icons/forks/` (catalog `fork_icons`, id `fork-figment-hard_light`) |
+| MD15 | **Sharp Light** (Visualization fork at 4, `fork.figment.sharp_light`) | No placeholder | A Figment's claws drawn in bright cutting lines | The 5c fork style | `art/icons/forks/` (`fork-figment-sharp_light`) |
+| MD16 | **Many Hands** (Visualization fork at 8, `fork.figment.many_hands`) | No placeholder | Wick with four pictured figures around him, the glove's light thin | The 5c fork style | `art/icons/forks/` (`fork-figment-many_hands`) |
+| MD17 | **Masterwork** (Visualization fork at 8, `fork.figment.masterwork`) | No placeholder | One Figment drawn finer than the rest, a signature at its foot | The 5c fork style | `art/icons/forks/` (`fork-figment-masterwork`) |
+| MD18 | **Quick Sketch** (Rigger rank I, `class:trickster.quick_sketch`) | No icon (fallback) | Wick dashing a Figment out in three quick strokes | Class move icon, the 5 section's style | `art/icons/classes/` |
+Renamed: Talks Broke Down is shown as Parley (its icon stands). Retired with their verbs (rules 1.74 item 6001; the catalog keeps the files, their `data_ids` emptied): `shadow-foul`,
+`shadow-plant`, `shadow-vault`. Renamed perks keep their icons: Eyes in the Back is shown as Cold Spine, Detective's Eye
+as The Tell (Vigilance now). K5 Light Fingers, K6 Lend the Dark and K7 Lightkiller are built (rules 1.74 item 6003);
+Lightkiller's direction stands (Wick in a small ring of darkness). K25 to K28 (the Sigil forks) are built (rules 1.74
+item 6021) with new rules: K28 Running Script's direction becomes "a glyph drawn with no smoke right after a spell fires"
+(it no longer stays lit); K25 to K27 stand.
+
 ## At risk in the balance pass
 
 The balance pass (`docs/design/proposals/2026-11-balance-pass.md`) will rewrite, merge or remove perks, traits and

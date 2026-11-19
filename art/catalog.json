@@ -32948,7 +32948,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-overclock-sigil/overclock-sigil.svg",
       "data_ids": [
-        "skill:brain_power.3"
+        "skill:brain_power.2"
       ]
     },
     "move-twin-draw": {
@@ -37791,7 +37791,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-read-intent/read-intent.svg",
       "data_ids": [
-        "verb:shadow.read_intent"
+        "perk:read_intent"
       ]
     },
     "shadow-open-seam": {
@@ -37938,9 +37938,7 @@
         "24": "art/icons/shadow/exports/24/foul.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-foul/foul.svg",
-      "data_ids": [
-        "verb:shadow.foul"
-      ]
+      "data_ids": []
     },
     "shadow-plant": {
       "label": "Wick \u2014 Plant",
@@ -37975,9 +37973,7 @@
         "24": "art/icons/shadow/exports/24/plant.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-plant/plant.svg",
-      "data_ids": [
-        "verb:shadow.plant"
-      ]
+      "data_ids": []
     },
     "shadow-disable": {
       "label": "Disable",
@@ -38123,9 +38119,7 @@
         "24": "art/icons/shadow/exports/24/vault.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-vault/vault.svg",
-      "data_ids": [
-        "verb:shadow.vault"
-      ]
+      "data_ids": []
     },
     "shadow-pick": {
       "label": "Pick",

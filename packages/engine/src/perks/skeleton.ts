@@ -62,7 +62,7 @@ function tune(h: Holder) {
   if (u.maxDur && (u.dur ?? u.maxDur) < 1) u.dur = 1;
 }
 register({
-  id: 'proficiency.5', kind: 'skill', claims: 'all',
+  id: 'tuned', claims: [0], // rules 1.74 item 6042: an Improvisation perk (it was the free passive at 5); tier II's core-swap cut is the runner's
   stat: (_h, stat) => (stat === 'never_jams' ? 1 : 0),
   on: {
     on_hit: (ctx, h) => { if (ctx.att === h.u) tune(h); },

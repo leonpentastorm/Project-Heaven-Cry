@@ -255,19 +255,48 @@
           "door_pick": "fork.shadow.light_fingers"
         }
       ],
-      "text": "Lift costs {=numbers.shadow} Shadow and takes anything the foe carries, straight to your pack",
-      "numbers": {
-        "shadow": 1
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N12"
+      "text": "Lift costs {=effects.0.value|abs} AP less · a Lift the foe can't see gives +{=effects.1.value} Shadow (once a turn)",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:shadow.lift#lift"
+            ]
+          },
+          "value": -1,
+          "min": 1,
+          "label": "Light Fingers"
+        },
+        {
+          "op": "resource",
+          "when": "acted",
+          "if": {
+            "action": [
+              "lift"
+            ],
+            "target": "foe",
+            "target_sees_self": false
+          },
+          "resource": "shadow",
+          "value": 1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "fingers"
+          },
+          "label": "Light Fingers",
+          "fx": {
+            "k": "stance",
+            "what": "shadow_gain"
+          },
+          "say": "{self} lifts it clean: Shadow {res:shadow}."
+        }
       ],
-      "why": "The take op takes a throwable or a magazine to the pile; taking anything carried into the pack needs its fields what and to (N12, not approved). The spec gives no cheaper wording that keeps the point.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6003 (the Mind lane of 0.32; Perception sheet section 3)"
     },
     {
       "id": "fork.shadow.lend_the_dark",
@@ -281,19 +310,51 @@
           "door_pick": "fork.shadow.lend_the_dark"
         }
       ],
-      "text": "{=numbers.ap} AP · {=numbers.shadow} Shadow · once a turn: an unseen ally within {=numbers.reach} tiles becomes Hidden",
-      "numbers": {
-        "ap": 1,
-        "shadow": 1,
-        "reach": 4
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Light Fingers waits on N12), so it is not built in this slice; it needs only existing pieces (grant_action with reach, condition hidden on the target) once Light Fingers comes.",
+      "text": "{=effects.0.ap} AP · {=effects.0.res.shadow} Shadow · once a turn: an ally within {=effects.0.reach.tiles} tiles that no enemy sees becomes Hidden",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "lend_the_dark",
+          "ap": 1,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "per_turn",
+          "reach": {
+            "tiles": 4,
+            "side": "ally",
+            "if": {
+              "target_sight": [
+                "out_of_view"
+              ],
+              "target_lacks": [
+                "hidden",
+                "marked"
+              ]
+            },
+            "why": {
+              "target_sight": "An enemy can see {target}.",
+              "target_lacks": "{target} is already Hidden, or Marked."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "hidden",
+              "target": "target",
+              "skip_save": true,
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} lends {target} the dark{then}."
+            }
+          ]
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6003 (the Mind lane of 0.32; Perception sheet section 3)"
     },
     {
       "id": "fork.shadow.lightkiller",
@@ -307,21 +368,34 @@
           "door_pick": "fork.shadow.lightkiller"
         }
       ],
-      "text": "Once a fight · {=numbers.ap} AP · {=numbers.shadow} Shadow: you and adjacent tiles go dark for {=numbers.rounds} rounds",
-      "numbers": {
-        "ap": 1,
-        "shadow": 2,
-        "rounds": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N9"
+      "text": "Once a fight · {=effects.0.ap} AP · {=effects.0.res.shadow} Shadow: you are Dimmed for {=effects.0.effects.0.rounds} rounds (foes must stand closer to see you)",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "lightkiller",
+          "ap": 1,
+          "res": {
+            "shadow": 2
+          },
+          "uses": "per_combat",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "dimmed",
+              "rounds": 2,
+              "skip_save": true,
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} kills the light around them{then}."
+            }
+          ]
+        }
       ],
-      "why": "The zone op may not lay the smoke kind (N9, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6003 (the Mind lane of 0.32; Perception sheet section 3); seen_range, rules 1.70 item 5545"
     },
     {
       "id": "fork.shadow.spotter",
@@ -1123,16 +1197,30 @@
           "door_pick": "fork.sigil.overflux"
         }
       ],
-      "text": "Past your Flux limit: no Overload · each glyph over costs the Overload's damage a Flux",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N15"
+      "text": "Your Sigil spells deal +{=effects.0.value|more}% damage while your Flux is at its limit",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "damage": [
+              "sigil_spell"
+            ],
+            "self_res": {
+              "flux": {
+                "at": "limit"
+              }
+            }
+          },
+          "value": 1.25,
+          "label": "Overflux"
+        }
       ],
-      "why": "The Overload's lock is code, not a stat (N15, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
     },
     {
       "id": "fork.sigil.clean_vent",
@@ -1146,21 +1234,67 @@
           "door_pick": "fork.sigil.clean_vent"
         }
       ],
-      "text": "Once a turn: a Vent of {=numbers.min}+ Flux shoves adjacent foes {=numbers.push} tile, {=numbers.base} damage a Flux vented",
-      "numbers": {
-        "min": 2,
-        "push": 1,
-        "base": 4
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N22"
+      "text": "Once a turn your Vent deals every foe next to you {=amounts.scorch.base} Sigil scorch, more as you level, and pushes them {=effects.1.tiles} tile",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "acted",
+          "if": {
+            "action": [
+              "vent"
+            ]
+          },
+          "amount": "scorch",
+          "targets": {
+            "of": "self",
+            "side": "foe",
+            "within": 1,
+            "shape": "aura"
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "vent_burn"
+          },
+          "label": "Clean Vent",
+          "say": "{self}'s Vent scorches {target}{then}."
+        },
+        {
+          "op": "displace",
+          "when": "acted",
+          "if": {
+            "action": [
+              "vent"
+            ]
+          },
+          "how": "push",
+          "tiles": 1,
+          "targets": {
+            "of": "self",
+            "side": "foe",
+            "within": 1,
+            "shape": "aura"
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "vent_push"
+          },
+          "label": "Clean Vent"
+        }
       ],
-      "why": "The Vent is a hook, not a trigger (N22, not approved), so no row hears the Flux vented. Its step is not offered (Overflux waits on N15) either.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)",
+      "amounts": {
+        "scorch": {
+          "kind": "damage",
+          "base": 6,
+          "profile": "flat",
+          "type": "sigil",
+          "provisional": true
+        }
+      }
     },
     {
       "id": "fork.sigil.written_in_advance",
@@ -1174,19 +1308,63 @@
           "door_pick": "fork.sigil.written_in_advance"
         }
       ],
-      "text": "A Line that stood since before your last turn ended Evokes with +{=numbers.mult|more}% damage",
-      "numbers": {
-        "mult": 1.2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N14"
+      "text": "Your first Evoke after a turn you ended with glyphs drawn deals +{=effects.2.value|more}% damage",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "draw"
+            ]
+          },
+          "flag": "inked"
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "if": {
+            "actor": "self",
+            "flag": "inked"
+          },
+          "flag": "aged"
+        },
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "damage": [
+              "sigil_spell"
+            ],
+            "flag": "aged"
+          },
+          "value": 1.2,
+          "label": "Written in Advance"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "evoke"
+            ]
+          },
+          "flag": "aged",
+          "clear": true,
+          "and": [
+            {
+              "op": "mark",
+              "flag": "inked",
+              "clear": true
+            }
+          ]
+        }
       ],
-      "why": "A glyph carries no age (N14, not approved). Its step is not offered (Running Script waits on N14 too).",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
     },
     {
       "id": "fork.sigil.running_script",
@@ -1200,16 +1378,62 @@
           "door_pick": "fork.sigil.running_script"
         }
       ],
-      "text": "The glyph you Evoke from stays drawn: your next Line may start there",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N14"
+      "text": "After an Evoke, your next glyph this turn costs {=effects.1.set} AP and adds no Flux",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "evoke"
+            ]
+          },
+          "flag": "run"
+        },
+        {
+          "op": "cost_mod",
+          "when": "glyph_cost",
+          "if": {
+            "flag": "run"
+          },
+          "set": 0,
+          "label": "Running Script"
+        },
+        {
+          "op": "cost_mod",
+          "when": "glyph_cost",
+          "if": {
+            "flag": "run"
+          },
+          "res": "flux",
+          "set": 0,
+          "label": "Running Script"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "draw"
+            ]
+          },
+          "flag": "run",
+          "clear": true,
+          "priority": 120
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "if": {
+            "actor": "self"
+          },
+          "flag": "run",
+          "clear": true
+        }
       ],
-      "why": "An Evoke clears its glyphs (N14, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
     },
     {
       "id": "fork.soul.ride_the_edge",
@@ -1311,6 +1535,315 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+    },
+    {
+      "id": "fork.figment.hard_light",
+      "name": "Hard Light",
+      "kind": "verb",
+      "door": "visualization",
+      "step": 4,
+      "icon": "fork.figment.hard_light",
+      "requires": [
+        {
+          "door_pick": "fork.figment.hard_light"
+        }
+      ],
+      "text": "Your Figments take {=effects.0.value|less}% less damage · one destroyed gives you +{=effects.1.value} AP next turn (once a round)",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_kind": [
+              "figment"
+            ],
+            "target_tied": {
+              "kind": "owned",
+              "as": "to"
+            }
+          },
+          "value": 0.7,
+          "label": "Hard Light"
+        },
+        {
+          "op": "grant_ap",
+          "when": "downed",
+          "if": {
+            "target": "ally",
+            "target_kind": [
+              "figment"
+            ],
+            "target_tied": {
+              "kind": "owned",
+              "as": "to"
+            }
+          },
+          "value": 1,
+          "bank": true,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "hard"
+          },
+          "label": "Hard Light",
+          "say": "{self}'s light holds its shape as it breaks: +1 AP next turn (Hard Light)."
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
+    },
+    {
+      "id": "fork.figment.sharp_light",
+      "name": "Sharp Light",
+      "kind": "verb",
+      "door": "visualization",
+      "step": 4,
+      "icon": "fork.figment.sharp_light",
+      "requires": [
+        {
+          "door_pick": "fork.figment.sharp_light"
+        }
+      ],
+      "text": "Your Figments' strikes deal +{=effects.0.value|more}% damage · after one drops a foe, your next Figment order costs {=effects.2.set} AP",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "hostile": true
+          },
+          "value": 1.2,
+          "label": "Sharp Light"
+        },
+        {
+          "op": "mark",
+          "when": "downed",
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "target": "foe"
+          },
+          "flag": "encore",
+          "label": "Sharp Light"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "flag": "encore"
+          },
+          "set": 0,
+          "label": "Sharp Light"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "flag": "encore"
+          },
+          "flag": "encore",
+          "clear": true,
+          "priority": 120
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
+    },
+    {
+      "id": "fork.figment.many_hands",
+      "name": "Many Hands",
+      "kind": "verb",
+      "door": "visualization",
+      "step": 8,
+      "icon": "fork.figment.many_hands",
+      "requires": [
+        {
+          "door_pick": "fork.figment.many_hands"
+        }
+      ],
+      "text": "+{=effects.0.value} Figment held · Picture costs {=effects.1.value|abs} charge less (never under {=effects.1.min})",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ties_max:owned",
+          "value": 1
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:picture#picture"
+            ]
+          },
+          "res": "vcharge",
+          "value": -1,
+          "min": 1,
+          "label": "Many Hands"
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
+    },
+    {
+      "id": "fork.figment.masterwork",
+      "name": "Masterwork",
+      "kind": "verb",
+      "door": "visualization",
+      "step": 8,
+      "icon": "fork.figment.masterwork",
+      "requires": [
+        {
+          "door_pick": "fork.figment.masterwork"
+        }
+      ],
+      "text": "Name your Masterwork ({=effects.0.ap} AP): +{=effects.1.value} to hit, {=effects.2.value|less}% less damage, a free order a round",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "masterwork",
+          "ap": 0,
+          "uses": "per_turn",
+          "reach": {
+            "tiles": 99,
+            "side": "ally",
+            "if": {
+              "target_kind": [
+                "figment"
+              ],
+              "target_tied": {
+                "kind": "owned",
+                "as": "to"
+              }
+            },
+            "why": {
+              "target_kind": "Only a Figment of yours.",
+              "target_tied": "Only a Figment of yours."
+            }
+          },
+          "effects": [
+            {
+              "op": "tie",
+              "kind": "masterwork",
+              "clear": "all"
+            },
+            {
+              "op": "tie",
+              "kind": "masterwork",
+              "target": "target",
+              "say": "{self} names {target} the Masterwork."
+            }
+          ]
+        },
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "actor": "ally",
+            "actor_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "value": 2,
+          "label": "Masterwork"
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "value": 0.75,
+          "label": "Masterwork"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "target_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "set": 0,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "master",
+            "peek": true
+          },
+          "label": "Masterwork"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "target_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "master"
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
     }
   ]
 }

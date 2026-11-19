@@ -37,8 +37,8 @@ const blow = (f: F, by: Unit, t: Unit, mode = 'shot') => withGame(f.g, () => res
 
 // ============================================================================================ the framework (N1, N2)
 describe('the forks as data (N1): two steps a door, at 4 and 8 of its alpha skill (rules 1.70 item 5536: the ladder schedule), picked once through door/pick', () => {
-  it('every alpha skill but Visualization names two steps; each option is a forks.json row of its door at its step', () => {
-    expect(ALPHAS.map((s) => s.id).sort()).toEqual(['brain_power', 'dexterity', 'durability', 'empathy', 'faith', 'ingenuity', 'raw_power', 'will_power']);
+  it('every alpha skill names two steps (Visualization too since rules 1.74 item 6041); each option is a forks.json row of its door at its step', () => {
+    expect(ALPHAS.map((s) => s.id).sort()).toEqual(['brain_power', 'dexterity', 'durability', 'empathy', 'faith', 'ingenuity', 'raw_power', 'visualization', 'will_power']);
     for (const s of ALPHAS) {
       const at = ladderSchedule(s.id).forks;
       expect(at, s.id).toEqual([4, 8]);
@@ -71,7 +71,8 @@ describe('the forks as data (N1): two steps a door, at 4 and 8 of its alpha skil
     expect(doorForkView(c, 'durability')!.steps[0]).toMatchObject({ picked: 'fork.guard.provoke', pending: false });
     expect(() => s.act({ type: 'door/pick', charId: id, door: 'durability', option: 'fork.guard.cover_them' } as Action)).toThrow(/No Durability choice is open/);
     c.skills.ingenuity = 10;
-    expect(() => s.act({ type: 'door/pick', charId: id, door: 'ingenuity', option: 'fork.shadow.lend_the_dark' } as Action)).toThrow(/No such choice/);
+    const shelf = (forksJ as any).items.find((x: any) => x.shelved); // rules 1.74: Ingenuity's options are built now; a shelved row, if any is left, is refused
+    if (shelf) { (c.skills as any)[shelf.door] = 10; expect(() => s.act({ type: 'door/pick', charId: id, door: shelf.door, option: shelf.id } as Action)).toThrow(/No such choice/); }
     c.skills.durability = FORK2('durability');
     expect(() => s.act({ type: 'door/pick', charId: id, door: 'durability', option: 'fork.pressure.lockdown' } as Action)).toThrow(/No such choice/);
     const f = fightWith([{ skills: { durability: 4 } }], [{}]);
@@ -103,20 +104,19 @@ describe('the forks as data (N1): two steps a door, at 4 and 8 of its alpha skil
 
 // ============================================================================================ Figments' forks at 4 and 6
 describe('Figments\' forks move to 4 and 6 (spec 2.9): old saves', () => {
-  it('a 0.29.0 character that picked at 3 and 5 keeps both forms; nothing reopens at 4 or 6', () => {
+  it('a 0.29.0 character that picked at 3 and 5 keeps both forms; at 4 the new fork (rules 1.74 item 6041) is what opens, never a form', () => {
     const s = storyWith([{ skills: { visualization: 5 }, forms: ['wall', 'beast'] }]), id = s.chars[0].id;
     const g = migrateLoaded(JSON.parse(JSON.stringify(s.g))); const c = g.characters[id];
     expect(c.figRev).toBe(FIG_REV);
     expect(formsOf(c)).toEqual(expect.arrayContaining(['wall', 'beast']));
-    for (const p of [4, 5, 6]) { c.skills.visualization = p; expect(pendingDoorPicks(c, 'visualization'), 'at ' + p).toEqual([]); }
+    for (const p of [4, 5, 6]) { c.skills.visualization = p; expect(JSON.stringify(pendingDoorPicks(c, 'visualization')).match(/"(wall|beast|eye|blade|husk|ward|sentinel|hand|double|snare)"/), 'at ' + p).toBeNull(); }
   });
-  it('a 0.29.0 character at Visualization 5 that picked at the old fork: its pick is learned at figment_forms (rules 1.70 item 5541); Visualization has no fork step until Expression\'s', () => {
+  it('a 0.29.0 character at Visualization 5 that picked at the old fork: its pick is learned at figment_forms (rules 1.70 item 5541); the fork at 4 is Hard Light or Sharp Light (rules 1.74 item 6041)', () => {
     const s = storyWith([{ skills: { visualization: 5 } }]), id = s.chars[0].id;
     const old = JSON.parse(JSON.stringify(s.g)); old.characters[id].figRev = 1; old.characters[id].doorPicks = { visualization: ['eye'] };
     const c = migrateLoaded(old).characters[id];
     expect(formsOf(c)).toContain('eye');
-    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
-    expect(doorForkView(c, 'visualization')).toBeNull();
+    expect(doorForkView(c, 'visualization')!.steps.map((s: any) => s.at)).toEqual([4, 8]);
   });
   it('the 0.28.2 Rigger save (no fork stamp, Visualization 5) loads, holds the Eye, the Wall, the Beast and the Blade, and plays on', () => {
     const g0 = migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/save-0.28.2-rigger-mid-fight.json', import.meta.url)), 'utf8')));

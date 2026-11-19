@@ -54,10 +54,11 @@ describe('the ladder schedule is one table (rules 1.70 item 5537)', () => {
 
 describe('old saves: the perk re-pick (rules 1.70 item 5538)', () => {
   const PT: any = SKILL.pain_threshold;
-  // each test installs its own table: the data's tables (rules 1.73 and the other attribute steps) are set aside and put back
-  let kept: [any, any][] = [];
-  beforeEach(() => { kept = Object.values(SKILL as any).filter((k: any) => k.perk_remap).map((k: any) => [k, k.perk_remap]); for (const [k] of kept) delete k.perk_remap; });
-  afterEach(() => { delete PT.perk_remap; for (const [k, t] of kept) k.perk_remap = t; });
+  // These tests write their own table on Pain Threshold; the attributes' real tables (rules 1.74 and the other 0.32
+  // lanes) are set aside while they run and put back after, so each test sees one table: its own.
+  const ALL: any[] = Object.values(SKILL as any); let kept: [any, any][] = [];
+  beforeEach(() => { kept = ALL.filter((s) => s.perk_remap).map((s) => [s, s.perk_remap]); for (const [s] of kept) delete s.perk_remap; });
+  afterEach(() => { delete PT.perk_remap; for (const [s, t] of kept) s.perk_remap = t; });
   it('with no table, a real old save loads as it was (nothing written)', () => {
     for (const name of ['save-develop-cb40e92-mid-fight', 'save-develop-cb40e92-after-fight', 'save-live-0.22.0-long-mid-fight']) {
       const once = migrateLoaded(raw(name)), again = JSON.stringify(migrateLoaded(JSON.parse(JSON.stringify(once))));

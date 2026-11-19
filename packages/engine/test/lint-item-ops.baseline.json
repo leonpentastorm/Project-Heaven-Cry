@@ -103,7 +103,6 @@
    "defender.shrug_it_off",
    "fighter.unstoppable",
    "infiltrator.field_fix",
-   "infiltrator.sabotage",
    "mage.bleed_the_flux",
    "marksman.duck_and_roll",
    "trickster.false_image",
@@ -161,7 +160,6 @@
    "demolitionist",
    "grenadiers_arm",
    "gun_nut",
-   "jury_rig",
    "nothing_gets_past",
    "old_school",
    "one_shot",
@@ -236,7 +234,6 @@
   "perks/g.ts": [
    "bedside_manner",
    "born_performer",
-   "burden_of_proof",
    "closing_argument",
    "cold_case",
    "cold_read",
@@ -281,12 +278,12 @@
    "camaraderie.3",
    "composure.5",
    "iron_grip",
-   "proficiency.5"
+   "tuned"
   ],
   "perks/skills.ts": [
-   "skill:brain_power.3",
+   "proven_formula",
+   "skill:brain_power.2",
    "skill:brain_power.5",
-   "skill:rumination.5",
    "skill:will_power.3",
    "skill:will_power.5"
   ]
@@ -298,9 +295,9 @@
   "classes/rev3.ts": 8,
   "perks/a.ts": 41,
   "perks/b.ts": 45,
-  "perks/c.ts": 53,
+  "perks/c.ts": 45,
   "perks/d.ts": 49,
-  "perks/e.ts": 48,
+  "perks/e.ts": 47,
   "perks/f.ts": 101,
   "perks/g.ts": 50,
   "perks/h.ts": 22,

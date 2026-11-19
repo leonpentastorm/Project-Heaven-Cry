@@ -164,16 +164,16 @@ register({
       // counts, however many rounds ago); absent, the engine infers it from a talk this round or the one before.
       const t = storyState(h).talk; if (!t || t.scene !== (g.story.scene?.n ?? 0) || cb.fromTalk === false) return;
       if (cb.fromTalk !== true && (g.story.round ?? 0) - t.round > 1) return;
+      if (!tierII(h)) return; // rules 1.74 item 6043: Parley's tier I is the talk itself (a story action); the fight half is tier II's
       const st = stateOf(h); st.origin = t.ok ? 'won' : 'lost';
       say(cb, 'Talks broke down (' + h.u.name + '): the fight follows a ' + (t.ok ? 'won' : 'lost') + ' argument.');
-      if (tierII(h)) { const f = cb.order.map((id) => unitById(cb, id)!).find((x) => x && x.side !== h.u!.side && alive(x)); if (f) { const fs = unitState(h, f); if (!fs.hesitate) { fs.hesitate = true; say(cb, f.name + ' hesitates (Talks Broke Down): −1 AP in round 1.'); } } }
+      { const f = cb.order.map((id) => unitById(cb, id)!).find((x) => x && x.side !== h.u!.side && alive(x)); if (f) { const fs = unitState(h, f); if (!fs.hesitate) { fs.hesitate = true; say(cb, f.name + ' hesitates (Parley): −1 AP in round 1.'); } } }
     },
     turn_start_pre: (ctx, h) => {
       const cb = h.cb; if (!cb) return;
       if (ctx.u === h.u) {
         const o = stateOf(h).origin; cdTick(h);
-        if (o === 'won') { if (cdFire(h, 'gain', cb.round)) pushAp(ctx, 2, 'Talks Broke Down'); }
-        else if (o === 'lost' && !tierII(h)) { if (cdFire(h, 'pen', cb.round)) pushAp(ctx, -2, 'Talks Broke Down'); }
+        if (o === 'won' && tierII(h)) { if (cdFire(h, 'gain', cb.round)) pushAp(ctx, 2, 'Parley'); } // rules 1.74 item 6043: tier II's; the lost-talk penalty is gone
       }
       const fs = (ctx.u as Unit).ps?.[h.key]; if (fs?.hesitate && cb.round === 1 && !fs.hesitated) { fs.hesitated = true; pushAp(ctx, -1, 'hesitates'); }
     },

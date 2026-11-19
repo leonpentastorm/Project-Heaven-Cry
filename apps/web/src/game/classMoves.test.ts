@@ -6,7 +6,7 @@
 // its own side only, a sabotaged barricade), and every new fx event plays its effect and sound, real ones from the
 // engine included, out of sight drawing nothing.
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { CLASS, refOf, viewFor, ventAp, coreAp, perkActionsFor, bindGame, type Unit } from '@engine';
+import { applyCond, withGame, CLASS, refOf, viewFor, ventAp, coreAp, perkActionsFor, bindGame, type Unit } from '@engine';
 import { fightWith, storyWith, type CharSpec } from '../../../../packages/engine/test/helpers/perkfight';
 import { pickerFor, buildArgs, gridPick } from './actionPickers';
 import { pkState, magicAp, actionGroups } from './commands';
@@ -37,12 +37,12 @@ describe('pickers for the new moves (buttons only)', () => {
   it('Field Fix: three jobs, none meaning the first that applies (the Breaker\'s Shove picker left with the move, rules 1.60 R3)', () => {
     const f = fightWith([cls('fighter', 3)], [{}]);
     const u = f.turn(f.pc); expect(entries(f, u).some((x) => x.actionId === 'class_shove')).toBe(false);
-    const g = fightWith([cls('trickster', 5), {}], [{}]); // rules 1.34: Field Fix is the Rigger's
-    const w = g.turn(g.pcs[0]), ff = entries(g, w).find((x) => x.actionId === 'field_fix')!;
-    const F = pickerFor(ff, ctx(g, w))!;
-    expect((F.fields[0] as any).options.map((o: any) => o.id)).toEqual(['clear_jam', 'restore_durability', 'repair']);
-    expect(buildArgs(F, {}, ctx(g, w))).toEqual({});
-    expect(buildArgs(F, { choice: ['clear_jam'] }, ctx(g, w))).toEqual({ choice: 'clear_jam' });
+    const g = fightWith([cls('trickster', 5), {}], [{}]); // rules 1.74 item 6045: Field Fix left the Rigger (Quick Sketch); Salvage's picker is a wreck alone
+    const w = g.turn(g.pcs[0]);
+    expect(entries(g, w).some((x) => x.actionId === 'field_fix')).toBe(false);
+    const sv = entries(g, w).find((x) => x.actionId === 'salvage')!;
+    const S = pickerFor(sv, ctx(g, w))!;
+    expect(((S.fields[0] as any)?.options || []).map((o: any) => o.id)).not.toContain('reclaim');
   });
   it('Sabotage, False Image, Sleight, Silver Tongue, Rally, Vanish, Unstoppable, Eye of the Storm and the toggles: the grid target or a plain button', () => {
     const plain = ['sabotage', 'sabotage_object', 'rig', 'false_image', 'sleight', 'sleight_image', 'silver_tongue', 'rally', 'vanish', 'unstoppable', 'eye_of_the_storm', 'shrug_on', 'shrug_off', 'duck_on', 'duck_off'];
@@ -114,11 +114,12 @@ describe('the grid marks what stands', () => {
   });
   it('a Proving Ground team fight: team B\'s screen marks team B\'s own rigged tile, never team A\'s', () => {
     const f = fightWith([cls('infiltrator', 8), {}], [{}]);
-    const [a, b] = f.pcs; f.turn(a); f.act({ type: 'combat/perk', unitId: a.id, id: 'class:infiltrator.sabotage', actionId: 'rig' } as any);
+    const [a, b] = f.pcs; f.turn(a); withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(a.id), 'hidden', undefined, undefined, { skipSave: true })); // rules 1.74 item 6011: the Operative's Rig verb, from Hidden
+    f.act({ type: 'combat/perk', unitId: a.id, id: 'verb:shadow.rig', tile: f.unit(a.id).pos } as any);
     const g: any = JSON.parse(JSON.stringify(f.g)); g.sandbox = { mode: 'teams', team: { p2: 'B' }, saved: {} };
     g.combat.units.find((x: any) => x.id === b.id).side = 'foe';
     g.combat.objects.push({ id: 'rigB', kind: 'trap', name: 'Rigged tile', pos: '9,9', rig: 'class:infiltrator.sabotage', side: 'foe', owner: b.id, damage: 30 });
-    const aPos = g.combat.objects.find((o: any) => o.rig && o.side === 'pc').pos;
+    const aPos = g.combat.objects.find((o: any) => (o.rig || o.laidBy) && o.side === 'pc').pos;
     const MB = classMarks(viewFor(g, 'p2').combat, 'pc', {}), MA = classMarks(viewFor(g, 'host').combat, 'pc', {});
     expect(MB['9,9'].marks[0].text).toBe('✱ RIG'); expect(MB[aPos]?.marks.some((x) => x.key.startsWith('rig')) || false).toBe(false);
     expect(MA[aPos].marks[0].text).toBe('✱ RIG'); expect(MA['9,9']).toBeUndefined();

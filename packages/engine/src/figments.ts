@@ -20,10 +20,10 @@ import { ENEMY, enemyLevelRow, RULES, SKILL } from './data';
 import { register, statQuery, charOfUnit, uses } from './effects';
 import { onHook } from './effects/hooks';
 import { registerPickList } from './effects/actions';
-import { rawItem } from './effects/collect';
+import { rawItem, meetsRequires } from './effects/collect';
 import { price, resGive } from './effects/cost';
 import { levelFactor, statTerm } from './effects/output';
-import { spawnOwned, unmakeOwned, ownedBy, ownerOf, addOwnedGate } from './owned';
+import { spawnOwned, unmakeOwned, ownedBy, ownerOf, addOwnedGate, OWNED_DATA_VERBS } from './owned';
 import { condOn, saveAgainst } from './magic';
 import { canStand, tileOf } from './kit';
 import { addImage, dropImage, imagesOf, imageOfOwner, imageTurnStart, type FalseImage } from './illusion';
@@ -398,6 +398,9 @@ register({
 addOwnedGate((cb, owner, u, verb) => {
   if (!(u as any).figment || verb === 'let_go') return null; // a Figment the Visualizer made (rules 1.34)
   const no = visFocusWhy(owner); if (no) return no;
+  // rules 1.74 item 6040: a verb row's `requires` (Cash in from Visualization 2), read on the owner's sheet (meetsRequires)
+  const req = OWNED_DATA_VERBS[verb]?.requires;
+  if (Array.isArray(req) && !meetsRequires(req, { skills: charOfUnit(owner)?.skills ?? { visualization: visPoints(owner) } })) return 'Needs ' + req.filter((x: any) => x?.skill).map((x: any) => (SKILL[x.skill]?.name || x.skill) + ' ' + x.min).join(' and ') + '.';
   const r = projectionRange(owner) + ((u as any).figment?.range || 0);
   return dist(owner.pos, u.pos) > r ? 'Out of projection range (' + r + ').' : null;
 });

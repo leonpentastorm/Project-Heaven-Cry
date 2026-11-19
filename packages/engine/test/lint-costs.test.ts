@@ -30,7 +30,7 @@ const COST = (rel: string) => rel === 'effects/cost.ts';
 // THE RATCHETS' NUMBERS (each test says what is counted and what to call instead). Never raise one to make a test pass.
 const LEFT_AP_READS: Record<string, number> = { 'actions.ts': 1, 'ai-sigil.ts': 2, 'ai-soul.ts': 6, 'calls/rules.ts': 1, 'classes/i.ts': 3, 'classes/j.ts': 2, 'classes/k.ts': 2, 'combat.ts': 4, 'effects/actions.ts': 6, 'faith.ts': 3, 'game.ts': 9,
   'glossary.ts': 5, 'perks/c.ts': 1, 'perks/e.ts': 2, 'perks/h.ts': 1, 'physical/melee/links.ts': 1, 'physical/melee/shield.ts': 1, 'preview.ts': 2, 'sigil.ts': 7, 'world.ts': 2 }; // (glossary.ts: `t` there is a technique's data, counted all the same)
-const LEFT_RES_SPENT: Record<string, number> = { 'classes/i.ts': 5, 'classes/j.ts': 4, 'classes/k.ts': 10, 'combat.ts': 2, 'game.ts': 2, 'magic.ts': 3, 'perks/a.ts': 1, 'perks/c.ts': 2, 'perks/d.ts': 1, 'perks/e.ts': 2, 'perks/f.ts': 1 };
+const LEFT_RES_SPENT: Record<string, number> = { 'classes/i.ts': 5, 'classes/j.ts': 4, 'classes/k.ts': 10, 'combat.ts': 2, 'game.ts': 2, 'magic.ts': 3, 'perks/a.ts': 1, 'perks/c.ts': 1, 'perks/d.ts': 1, 'perks/e.ts': 2, 'perks/f.ts': 1 };
 const LEFT_HAND_COOLDOWNS: Record<string, number> = { 'classes/k.ts': 1, 'faith.ts': 2, 'perks/b.ts': 2 };
 const LEFT_AP_DELTAS: Record<string, number> = { 'faith.ts': 1, 'game.ts': 2, 'preview.ts': 1, 'world.ts': 1 };
 const AP = (rel: string) => rel === 'effects/cost.ts' || rel === 'effects/ap.ts';
@@ -139,7 +139,7 @@ describe('F3: an item action reads its AP from its data', () => {
       const [kind, id] = key.split(':'), tiers = kind === 'perk' && (PERK as any)[id]?.tiers ? Object.keys((PERK as any)[id].tiers) : [undefined];
       for (const tier of tiers) { const info = itemInfo(key, tier as any); if (info) expect(() => dataAp(info, d.id), key + '#' + d.id).not.toThrow(); }
     }
-    expect(n).toBeGreaterThan(80);
+    expect(n).toBeGreaterThan(75); // rules 1.74 item 6011: Sabotage's three actions left (its verbs are data)
   });
   it('RATCHET: the lane actions that still type a number the data also holds (never raise it)', () => {
     // An action whose literal AP equals its item's data AP should say ap: 'data'. What is left here is written by a

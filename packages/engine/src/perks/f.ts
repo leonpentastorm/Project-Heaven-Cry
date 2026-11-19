@@ -342,19 +342,22 @@ register({
 // defence): you and every ally have +2 Defense against an enemy you analyzed (its attacks on your side are at −2); the
 // +2 to hit is gone; the squad's +20% damage on the target is back (Leon, 10 Nov 2026). An enemy an ally analyzed can be re-read with Close the case (the Analyze cost).
 // Story: a successful Acuity check on an NPC owes the motive (a pending ruling).
+/** Read Them's mark (rules 1.74 item 6004: a condition row, data/conditions.json read_them), put on without a save
+ * unless the stronger read_them_ii (Acuity's perk at tier II) is already there. */
+function readThem(h: Holder, t: Unit, rng: any): void { if (h.cb && h.u && !condOn(t, 'read_them') && !condOn(t, 'read_them_ii')) applyCond(h.cb, rng, h.u, t, 'read_them', undefined, undefined, { skipSave: true }); }
 const closed = (h: Holder): string[] => ((h.u?.ps?.[h.key] as any)?.closed || []);
-function closeCase(h: Holder, t: Unit) {
+function closeCase(h: Holder, t: Unit, rng: any) {
   const st = stateOf(h); (st.closed ||= []).includes(t.id) || st.closed.push(t.id);
-  t.weakPoint = true;
+  readThem(h, t, rng);
   const conds = debuffsOf(t);
   say(h.cb, 'Case Closed on ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + ', ' + (t.kind || 'human') + ((t.tags || []).length ? ' (' + t.tags!.join(', ') + ')' : '') +
-    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · read: it deals 15% less to the squad, the squad has +' + Math.abs(CASE_CLOSED[1]?.value ?? -2) + ' Defense against it and deals ' + Math.round(((CASE_CLOSED[2]?.value ?? 1.2) - 1) * 100) + '% more to it · motive: for the Narrator.');
+    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · Read Them; the squad has +' + Math.abs(CASE_CLOSED[1]?.value ?? -2) + ' Defense against it and deals ' + Math.round(((CASE_CLOSED[2]?.value ?? 1.2) - 1) * 100) + '% more to it · motive: for the Narrator.');
   note(h, h.u!.name + ' read ' + t.name + ' completely: say what it wants, in the report.');
 }
 register({
   id: 'case_closed', claims: 'all',
   on: {
-    acted: (ctx, h) => { if (ctx.action === 'analyze' && ctx.u === h.u && ctx.t) closeCase(h, ctx.t); },
+    acted: (ctx, h) => { if (ctx.action === 'analyze' && ctx.u === h.u && ctx.t) closeCase(h, ctx.t, rngOf(h, ctx)); },
     attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: CASE_CLOSED[1]?.value ?? -2, label: 'Case Closed' }); },
     damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: CASE_CLOSED[2]?.value ?? 1.2, label: 'Case Closed' }); },
     check_result: (ctx, h) => {
@@ -373,7 +376,7 @@ register({
       if (dist(h.u.pos, t.pos) > 4 + (h.u.analysis || 0) || !unitSees(h.cb!, h.u, t.pos, undefined, t)) return { ok: false, why: 'Out of Analyze range or sight.' };
       return {};
     },
-    run: (h, a) => { closeCase(h, h.cb!.units.find((x) => x.id === a.targetId)!); },
+    run: (h, a, rng) => { closeCase(h, h.cb!.units.find((x) => x.id === a.targetId)!, rng); },
   }],
   brief: () => 'Narrator: the motive (in the fight report, or after a successful Acuity check)',
 });

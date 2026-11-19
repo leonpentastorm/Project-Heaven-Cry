@@ -46,13 +46,41 @@
     "note": "Rules 1.70 item 5541: forms are learned, never opened by a level or a fork. From the first point of Visualization, the forms you know: one more than your Visualization, at most all ten (2 at 1, all ten at 9), each chosen once (door/pick at the door figment_forms) and kept for good."
   },
   "ladder": [
-    { "points": 1, "held": 1, "designs": 0, "traits": 0, "text": "The door: Picture, with the forms you know; 1 held, range 5; Glimmer, Redraw and Cash in. The Visualizer also works out of a fight." },
-    { "points": 3, "designs": 2, "traits": 1, "text": "2 ready designs, one trait each." },
-    { "points": 5, "held": 2, "designs": 3, "text": "2 held; 3 ready designs." },
-    { "points": 7, "held": 3, "traits": 2, "text": "3 held; two traits a design." },
-    { "points": 8, "designs": 4, "text": "4 ready designs." },
-    { "points": 9, "no_snap": true, "text": "A destroyed Figment no longer Snaps." },
-    { "points": 10, "designs": 5, "text": "5 ready designs; the Mastered perk." }
+    {
+      "points": 1,
+      "held": 1,
+      "designs": 0,
+      "traits": 0,
+      "text": "The door: Picture, with the forms you know; 1 held, range 5; Glimmer, Redraw and Cash in. The Visualizer also works out of a fight."
+    },
+    {
+      "points": 3,
+      "designs": 2,
+      "traits": 1,
+      "text": "2 ready designs, one trait each."
+    },
+    {
+      "points": 5,
+      "held": 2,
+      "designs": 3,
+      "text": "2 held; 3 ready designs."
+    },
+    {
+      "points": 7,
+      "held": 3,
+      "traits": 2,
+      "text": "3 held; two traits a design."
+    },
+    {
+      "points": 8,
+      "designs": 4,
+      "text": "4 ready designs."
+    },
+    {
+      "points": 10,
+      "designs": 5,
+      "text": "5 ready designs; the Mastered perk."
+    }
   ],
   "migration": { "rev": 2, "legacy": [{ "points": 3, "forms": ["eye", "wall"] }, { "points": 5, "forms": ["beast", "blade"] }], "fixed_before": [{ "points": 1, "forms": ["double", "snare"] }, { "points": 2, "forms": ["hand"] }, { "points": 10, "forms": ["eye", "wall", "ward", "beast", "blade", "husk", "sentinel"] }], "old_door": "visualization", "note": "Rev 1 (rules 1.56, Figments 2.0): a character made before the forks keeps every form the old ladder opened at its Visualization (legacy). Rev 2 (rules 1.70 item 5541): forms are learned at the door figment_forms; a save keeps every form it had open (the old ladder's fixed forms by points, fixed_before; its picks and kept forms at the old door; the legacy forms when it had no stamp) and counts them against its forms known; a form over the count is kept outside it, never lost." },
   "lure": {
@@ -233,8 +261,20 @@
       "text": "It comes apart and reforms on a free tile within {=reach.tiles} tiles of it ({=res.vcharge} charge).", "provisional": true
     },
     {
-      "id": "figment_cash_in", "name": "Cash in", "icon": "", "site": "figment_order", "unmake": true, "refund_share": 1,
-      "text": "Unmake it on purpose: all its made charge goes back into the core.", "provisional": true
+      "id": "figment_cash_in",
+      "name": "Cash in",
+      "icon": "",
+      "site": "figment_order",
+      "unmake": true,
+      "refund_share": 1,
+      "text": "Unmake it on purpose: all its made charge goes back into the core.",
+      "provisional": true,
+      "requires": [
+        {
+          "skill": "visualization",
+          "min": 2
+        }
+      ]
     },
     {
       "id": "let_go", "name": "Let go", "site": "let_go", "unmake": true, "refund_share": 0.5,

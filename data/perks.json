@@ -3452,7 +3452,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.I.effects.0.value|abs} AP less (never under {=tiers.I.effects.0.min}). II: {=tiers.II.effects.0.limit.n} times a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}).",
+      "text": "I: Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.I.effects.0.value|abs} AP less (never under {=tiers.I.effects.0.min}). II: Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}). Shadow Run: once a turn, a move you make Hidden from beside cover to beside cover costs {=tiers.II.effects.2.value|abs} AP less (never under {=tiers.II.effects.2.min}).",
       "effects": [
         {
           "op": "cost_mod",
@@ -3555,8 +3555,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "{=tiers.II.effects.0.limit.n} times a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}).",
-          "short": "{=tiers.II.effects.0.limit.n} times a turn",
+          "text": "Once a turn, an attack you make while Hidden and holding Shadow costs {=tiers.II.effects.0.value|abs} AP less (never under {=tiers.II.effects.0.min}). Shadow Run: once a turn, a move you make Hidden from beside cover to beside cover costs {=tiers.II.effects.2.value|abs} AP less (never under {=tiers.II.effects.2.min}).",
+          "short": "And Shadow Run: a Hidden cover move {=tiers.II.effects.2.value} AP",
           "effects": [
             {
               "op": "cost_mod",
@@ -3574,7 +3574,7 @@
               "min": 1,
               "limit": {
                 "per": "per_turn",
-                "n": 2,
+                "n": 1,
                 "key": "step",
                 "peek": true
               }
@@ -3593,9 +3593,33 @@
               },
               "limit": {
                 "per": "per_turn",
-                "n": 2,
+                "n": 1,
                 "key": "step"
               }
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "value": -1,
+              "min": 1,
+              "if": {
+                "action": [
+                  "move"
+                ],
+                "self_has": [
+                  "hidden"
+                ],
+                "by_cover": [
+                  "here",
+                  "to"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "run"
+              },
+              "label": "Shadow Run"
             }
           ],
           "replaces_tier_I": true,
@@ -3608,7 +3632,8 @@
         "shadow",
         "ap"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6002 (tier II: Shadow Run, moved from Ingenuity 7)"
     },
     {
       "id": "jury_rig",
@@ -3628,12 +3653,33 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired. II: A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired. Your Field Repair also restores twice as much on drones.",
+      "text": "I: When a Figment of yours is destroyed, you have {=tiers.I.effects.0.value} more AP on your next turn (once a round; with Hard Light, its own AP stands instead). II: When a Figment of yours is destroyed, you have {=tiers.II.effects.0.value} more AP on your next turn (once a round; with Hard Light, its own AP stands instead), and your Visualizer gets {=tiers.II.effects.1.value} charge back.",
       "effects": [
         {
-          "op": "extra_use",
-          "context": "broken weapon or device",
-          "value": 1
+          "op": "grant_ap",
+          "when": "downed",
+          "if": {
+            "target": "ally",
+            "target_kind": [
+              "figment"
+            ],
+            "target_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "no_door_pick": [
+              "fork.figment.hard_light"
+            ]
+          },
+          "value": 1,
+          "bank": true,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "jury"
+          },
+          "label": "Jury-Rig",
+          "say": "{self} salvages the moment: +1 AP next turn (Jury-Rig)."
         }
       ],
       "tiers": {
@@ -3645,13 +3691,34 @@
             }
           ],
           "ap_cost": null,
-          "text": "A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired.",
-          "short": "A broken weapon fires or strikes one more time",
+          "text": "When a Figment of yours is destroyed, you have {=tiers.I.effects.0.value} more AP on your next turn (once a round; with Hard Light, its own AP stands instead).",
+          "short": "A Figment of yours destroyed: +{=tiers.I.effects.0.value} AP next turn",
           "effects": [
             {
-              "op": "extra_use",
-              "context": "broken weapon or device",
-              "value": 1
+              "op": "grant_ap",
+              "when": "downed",
+              "if": {
+                "target": "ally",
+                "target_kind": [
+                  "figment"
+                ],
+                "target_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                },
+                "no_door_pick": [
+                  "fork.figment.hard_light"
+                ]
+              },
+              "value": 1,
+              "bank": true,
+              "limit": {
+                "per": "per_round",
+                "n": 1,
+                "key": "jury"
+              },
+              "label": "Jury-Rig",
+              "say": "{self} salvages the moment: +1 AP next turn (Jury-Rig)."
             }
           ]
         },
@@ -3663,19 +3730,56 @@
             }
           ],
           "ap_cost": null,
-          "text": "A broken weapon works one more time: use One more time to make a last shot or strike with it, at the weapon's usual AP. After that it stays broken until it is repaired. Your Field Repair also restores twice as much on drones.",
-          "short": "Field Repair restores twice as much on drones",
+          "text": "When a Figment of yours is destroyed, you have {=tiers.II.effects.0.value} more AP on your next turn (once a round; with Hard Light, its own AP stands instead), and your Visualizer gets {=tiers.II.effects.1.value} charge back.",
+          "short": "And +{=tiers.II.effects.1.value} Visualizer charge",
           "effects": [
             {
-              "op": "extra_use",
-              "context": "broken weapon or device",
-              "value": 1
+              "op": "grant_ap",
+              "when": "downed",
+              "if": {
+                "target": "ally",
+                "target_kind": [
+                  "figment"
+                ],
+                "target_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                },
+                "no_door_pick": [
+                  "fork.figment.hard_light"
+                ]
+              },
+              "value": 1,
+              "bank": true,
+              "limit": {
+                "per": "per_round",
+                "n": 1,
+                "key": "jury"
+              },
+              "label": "Jury-Rig",
+              "say": "{self} salvages the moment: +1 AP next turn (Jury-Rig)."
             },
             {
-              "op": "power_mult",
-              "action": "field_repair",
-              "value": 2,
-              "context": "vehicles and drones"
+              "op": "resource",
+              "when": "downed",
+              "if": {
+                "target": "ally",
+                "target_kind": [
+                  "figment"
+                ],
+                "target_tied": {
+                  "kind": "owned",
+                  "as": "to"
+                }
+              },
+              "resource": "vcharge",
+              "value": 1,
+              "limit": {
+                "per": "per_round",
+                "n": 1,
+                "key": "jury_charge"
+              },
+              "label": "Jury-Rig"
             }
           ],
           "replaces_tier_I": true,
@@ -3688,7 +3792,8 @@
         "tech",
         "repair"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6042 (the old broken-weapon use is moot under Tuned; its handler retired)"
     },
     {
       "id": "hot_swap",
@@ -3751,6 +3856,93 @@
         "weapons"
       ],
       "provisional": true
+    },
+    {
+      "id": "tuned",
+      "name": "Tuned",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "proficiency"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "proficiency",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: The weapon in your main hand never jams and never breaks. II: The weapon in your main hand never jams and never breaks, and loading a fresh core costs {=tiers.II.effects.1.value|abs} AP less.",
+      "effects": [
+        {
+          "op": "immunity",
+          "to": "weapon_jam_and_break",
+          "context": "the weapon in your main hand"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "The weapon in your main hand never jams and never breaks.",
+          "short": "Main-hand weapon never jams or breaks",
+          "effects": [
+            {
+              "op": "immunity",
+              "to": "weapon_jam_and_break",
+              "context": "the weapon in your main hand"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "The weapon in your main hand never jams and never breaks, and loading a fresh core costs {=tiers.II.effects.1.value|abs} AP less.",
+          "short": "And a core swap costs {=tiers.II.effects.1.value|abs} AP less",
+          "effects": [
+            {
+              "op": "immunity",
+              "to": "weapon_jam_and_break",
+              "context": "the weapon in your main hand"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "swap_core"
+                ]
+              },
+              "value": -1,
+              "min": 1,
+              "label": "Tuned"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "tech",
+        "gear"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6042 (was the Improvisation 5 passive)"
     },
     {
       "id": "got_you_in_my_sight",
@@ -3852,7 +4044,7 @@
     },
     {
       "id": "eyes_in_the_back",
-      "name": "Eyes in the Back",
+      "name": "Cold Spine",
       "tier": "acquired",
       "perk_type": "combat_starter",
       "skills": [
@@ -3868,7 +4060,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You can't be flanked. Half cover next to you, and a shield you carry, protect you against ranged attacks from every direction. II: You and the allies next to you can't be flanked. Half cover next to any of you, and a carried shield, protect its owner against ranged attacks from every direction.",
+      "text": "I: When a hidden enemy aims at you, you learn which way it is. You can't be flanked: half cover next to you, and a shield you carry, protect you against ranged attacks from every direction. II: You and the allies next to you can't be flanked. Half cover next to any of you, and a carried shield, protect its owner against ranged attacks from every direction.",
       "effects": [
         {
           "op": "no_flank",
@@ -3885,8 +4077,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "You can't be flanked. Half cover next to you, and a shield you carry, protect you against ranged attacks from every direction.",
-          "short": "Can't be flanked · half cover and shields guard every side",
+          "text": "When a hidden enemy aims at you, you learn which way it is. You can't be flanked: half cover next to you, and a shield you carry, protect you against ranged attacks from every direction.",
+          "short": "Know a hidden aimer's direction · can't be flanked",
           "effects": [
             {
               "op": "no_flank",
@@ -3921,7 +4113,206 @@
       "tags": [
         "defense"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6007 (was Eyes in the Back; Vigilance's passive Cold Spine folded in)"
+    },
+    {
+      "id": "read_intent",
+      "name": "Read Intent",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "vigilant"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "vigilant",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Your Spot also Reads its target: your side sees its next action until its turn ends. II: Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.3.value} Shadow (once a turn).",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "cost",
+          "if": {
+            "action": [
+              "call"
+            ]
+          },
+          "flag": "spot",
+          "clear": true,
+          "priority": 10
+        },
+        {
+          "op": "mark",
+          "when": "cost",
+          "if": {
+            "action_id": [
+              "call.spot"
+            ]
+          },
+          "flag": "spot",
+          "priority": 20
+        },
+        {
+          "op": "condition",
+          "when": "acted",
+          "if": {
+            "action": [
+              "call"
+            ],
+            "flag": "spot",
+            "target": "foe"
+          },
+          "condition": "read",
+          "target": "target",
+          "skip_save": true,
+          "label": "Read Intent",
+          "say": "{self} reads {target}'s next move."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "vigilant",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Your Spot also Reads its target: your side sees its next action until its turn ends.",
+          "short": "Your Spot also Reads its target (its next action shown)",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "spot",
+              "clear": true,
+              "priority": 10
+            },
+            {
+              "op": "mark",
+              "when": "cost",
+              "if": {
+                "action_id": [
+                  "call.spot"
+                ]
+              },
+              "flag": "spot",
+              "priority": 20
+            },
+            {
+              "op": "condition",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ],
+                "flag": "spot",
+                "target": "foe"
+              },
+              "condition": "read",
+              "target": "target",
+              "skip_save": true,
+              "label": "Read Intent",
+              "say": "{self} reads {target}'s next move."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "vigilant",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Your Spot also Reads its target, and a Spot on an enemy that can't see you gives {=tiers.II.effects.3.value} Shadow (once a turn).",
+          "short": "And a Spot on a foe that can't see you: +{=tiers.II.effects.3.value} Shadow",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "spot",
+              "clear": true,
+              "priority": 10
+            },
+            {
+              "op": "mark",
+              "when": "cost",
+              "if": {
+                "action_id": [
+                  "call.spot"
+                ]
+              },
+              "flag": "spot",
+              "priority": 20
+            },
+            {
+              "op": "condition",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ],
+                "flag": "spot",
+                "target": "foe"
+              },
+              "condition": "read",
+              "target": "target",
+              "skip_save": true,
+              "label": "Read Intent",
+              "say": "{self} reads {target}'s next move."
+            },
+            {
+              "op": "resource",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ],
+                "flag": "spot",
+                "target": "foe",
+                "target_sees_self": false
+              },
+              "resource": "shadow",
+              "value": 1,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "intent"
+              },
+              "label": "Read Intent",
+              "say": "{self} reads {target} unseen: Shadow {res:shadow}."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "detection",
+        "support"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6009 (was the Shadow verb Read Intent)"
     },
     {
       "id": "hold_the_stroke",
@@ -4209,7 +4600,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "per_scene",
-      "text": "I: Once per scene, cite a fact: allies who act on it get +{=effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +1 to hit it for the rest of the round. II: Once per scene, cite a fact: allies who act on it get +2 on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +2 to hit it for the rest of the round.",
+      "text": "I: Once per scene, cite a fact: allies who act on it get +{=tiers.I.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +1 to hit it for the rest of the round. II: Once per scene, cite a fact: allies who act on it get +{=tiers.II.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +2 to hit it for the rest of the round, and your own Sigils count it too.",
       "effects": [
         {
           "op": "narrator",
@@ -4258,8 +4649,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per scene, cite a fact: allies who act on it get +{=tiers.II.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +2 to hit it for the rest of the round.",
-          "short": "+{=tiers.II.effects.1.value}",
+          "text": "Once per scene, cite a fact: allies who act on it get +{=tiers.II.effects.1.value} on that roll, and the Narrator decides which rolls count. In a fight, once per fight and for 0 AP, cite a fact about one enemy: your allies get +2 to hit it for the rest of the round, and your own Sigils count it too.",
+          "short": "+{=tiers.II.effects.1.value} · your own Sigils count it too",
           "effects": [
             {
               "op": "narrator",
@@ -4284,7 +4675,8 @@
         "support",
         "knowledge"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6022 (tier II: the citer's own Sigils count it)"
     },
     {
       "id": "lab_coat",
@@ -4368,6 +4760,209 @@
         "chemistry"
       ],
       "provisional": true
+    },
+    {
+      "id": "index",
+      "name": "Index",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "rumination"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "rumination",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Once a scene, ask the Narrator one factual question about technology, biology or history. The answer is true. II: Once a scene, ask the Narrator one factual question about technology, biology or history. The answer is true. In a fight, your next Brain save after an Index answer is at +{=tiers.II.effects.3.value}.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "index_question",
+          "ap": 0,
+          "uses": "per_scene"
+        },
+        {
+          "op": "narrator",
+          "note": "Once a scene the player asks one factual question about technology, biology or history; answer truthfully."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a scene, ask the Narrator one factual question about technology, biology or history. The answer is true.",
+          "short": "Once a scene: one true fact about technology, biology or history",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "index_question",
+              "ap": 0,
+              "uses": "per_scene"
+            },
+            {
+              "op": "narrator",
+              "note": "Once a scene the player asks one factual question about technology, biology or history; answer truthfully."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Once a scene, ask the Narrator one factual question about technology, biology or history. The answer is true. In a fight, your next Brain save after an Index answer is at +{=tiers.II.effects.3.value}.",
+          "short": "And your next Brain save after an answer: +{=tiers.II.effects.3.value}",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "index_question",
+              "ap": 0,
+              "uses": "per_scene"
+            },
+            {
+              "op": "narrator",
+              "note": "Once a scene the player asks one factual question about technology, biology or history; answer truthfully."
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "index_question"
+                ]
+              },
+              "flag": "indexed"
+            },
+            {
+              "op": "roll_mod",
+              "when": "save",
+              "if": {
+                "target": "self",
+                "cond_family": [
+                  "brain"
+                ],
+                "flag": "indexed"
+              },
+              "roll": "save",
+              "value": 2,
+              "label": "Index",
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "indexed",
+                  "clear": true
+                }
+              ]
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "knowledge"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6022 (was the Rumination 3 passive; tier II per the ruling layer section 2 item 7)"
+    },
+    {
+      "id": "proven_formula",
+      "name": "Proven Formula",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "rumination"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "rumination",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: +{=tiers.I.numbers.save} on your saves against a spell or condition that has already hit you this fight. II: +{=tiers.II.numbers.save} on your saves against a spell or condition that has already hit you this fight.",
+      "effects": [
+        {
+          "op": "save_mod",
+          "value": 3,
+          "target": "self",
+          "when": "against a spell or condition that has already hit you this combat"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "+{=tiers.I.numbers.save} on your saves against a spell or condition that has already hit you this fight.",
+          "short": "+{=tiers.I.numbers.save} on saves against what already hit you this fight",
+          "effects": [
+            {
+              "op": "save_mod",
+              "value": 3,
+              "target": "self",
+              "when": "against a spell or condition that has already hit you this combat"
+            }
+          ],
+          "numbers": {
+            "save": 3
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "rumination",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "+{=tiers.II.numbers.save} on your saves against a spell or condition that has already hit you this fight.",
+          "short": "+{=tiers.II.numbers.save}",
+          "effects": [
+            {
+              "op": "save_mod",
+              "value": 5,
+              "target": "self",
+              "when": "against a spell or condition that has already hit you this combat"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I",
+          "numbers": {
+            "save": 5
+          }
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6022 (was the Rumination 5 passive, handler skill:rumination.5)"
     },
     {
       "id": "overruled",
@@ -4465,8 +5060,8 @@
       "provisional": true
     },
     {
-      "id": "burden_of_proof",
-      "name": "Burden of Proof",
+      "id": "objection",
+      "name": "Objection!",
       "tier": "acquired",
       "perk_type": "conversation_quirk",
       "skills": [
@@ -4482,11 +5077,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright. The Narrator decides whether they have any. II: When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright and everyone watching shifts one step towards your side. The Narrator decides whether they have any.",
+      "text": "I: When someone makes a claim in front of others, roll Eloquence to expose a contradiction. On a success, everyone listening trusts the speaker less. II: When someone makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, everyone listening trusts the speaker less. When someone accuses you or your squad, demand their evidence: if they have none, they lose outright and everyone watching shifts one step your way.",
       "effects": [
         {
           "op": "narrator",
-          "note": "When an NPC accuses the squad and the player demands evidence: if the NPC has none, they lose the argument outright."
+          "note": "When an NPC makes a claim before others, the player rolls Eloquence to expose a contradiction; set the TN; on a success the listeners trust the speaker less."
         }
       ],
       "tiers": {
@@ -4498,12 +5093,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright. The Narrator decides whether they have any.",
-          "short": "Accused: demand the evidence; none, and they lose the argument",
+          "text": "When someone makes a claim in front of others, roll Eloquence to expose a contradiction. On a success, everyone listening trusts the speaker less.",
+          "short": "Expose a claim: listeners trust the speaker less",
           "effects": [
             {
               "op": "narrator",
-              "note": "When an NPC accuses the squad and the player demands evidence: if the NPC has none, they lose the argument outright."
+              "note": "When an NPC makes a claim before others, the player rolls Eloquence to expose a contradiction; set the TN; on a success the listeners trust the speaker less."
             }
           ]
         },
@@ -4515,12 +5110,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "When someone accuses you or your squad, demand their evidence. If they can't produce it, they lose the argument outright and everyone watching shifts one step towards your side. The Narrator decides whether they have any.",
-          "short": "Onlookers shift a step your way",
+          "text": "When someone makes a claim in front of others, roll Eloquence to expose a contradiction; on a success, everyone listening trusts the speaker less. When someone accuses you or your squad, demand their evidence: if they have none, they lose outright and everyone watching shifts one step your way.",
+          "short": "And demand evidence: none, and they lose outright",
           "effects": [
             {
               "op": "narrator",
-              "note": "As Tier I; on a win, every onlooker shifts one attitude step toward the squad."
+              "note": "As tier I; and when an NPC accuses the squad and the player demands evidence: with none, the NPC loses outright and every onlooker shifts one step toward the squad."
             }
           ],
           "replaces_tier_I": true,
@@ -4530,8 +5125,416 @@
       "adjudication": "narrator",
       "recovered": null,
       "tags": [
-        "social"
-      ]
+        "social",
+        "logic"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6023 (was the Eloquence 3 passive; Burden of Proof folded in)"
+    },
+    {
+      "id": "opening_argument",
+      "name": "Opening Argument",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "eloquence"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "eloquence",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Debate the enemy leader before a fight. On a success, every enemy has {=tiers.I.numbers.ap_loss} AP less in the first round. II: Debate the enemy leader before a fight; on a success, every enemy has {=tiers.II.numbers.ap_loss} AP less in the first round. Your first Persuade, Threaten or Parley each fight costs {=tiers.II.effects.2.set} AP.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "opening_argument",
+          "ap": 0,
+          "uses": "per_combat"
+        },
+        {
+          "op": "narrator",
+          "note": "Narrator sets the TN for the debate; on a success every enemy has 1 AP less in the first round."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Debate the enemy leader before a fight. On a success, every enemy has {=tiers.I.numbers.ap_loss} AP less in the first round.",
+          "short": "Before a fight: out-argue their leader",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "opening_argument",
+              "ap": 0,
+              "uses": "per_combat"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator sets the TN for the debate; on a success every enemy has 1 AP less in the first round."
+            }
+          ],
+          "numbers": {
+            "ap_loss": 1
+          }
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Debate the enemy leader before a fight; on a success, every enemy has {=tiers.II.numbers.ap_loss} AP less in the first round. Your first Persuade, Threaten or Parley each fight costs {=tiers.II.effects.2.set} AP.",
+          "short": "And your first talk each fight costs {=tiers.II.effects.2.set} AP",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "opening_argument",
+              "ap": 0,
+              "uses": "per_combat"
+            },
+            {
+              "op": "narrator",
+              "note": "Narrator sets the TN for the debate; on a success every enemy has 1 AP less in the first round."
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "parley"
+                ]
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "open",
+                "peek": true
+              },
+              "label": "Opening Argument"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "parley"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "open"
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I",
+          "numbers": {
+            "ap_loss": 1
+          }
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "social",
+        "ap"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6023 (was the Eloquence 5 passive)"
+    },
+    {
+      "id": "thinking_aloud",
+      "name": "Thinking Aloud",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "eloquence"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "eloquence",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: After you make a Call, your next Evoke this turn costs {=tiers.I.effects.1.set} AP (once a turn). II: After you make a Call, your next Evoke this turn costs {=tiers.II.effects.1.set} AP (once a turn), and your next glyph this turn adds no Flux.",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "call"
+            ]
+          },
+          "flag": "aloud"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "evoke"
+            ],
+            "flag": "aloud"
+          },
+          "set": 0,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "aloud",
+            "peek": true
+          },
+          "label": "Thinking Aloud"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "evoke"
+            ],
+            "flag": "aloud"
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "aloud"
+          },
+          "and": [
+            {
+              "op": "mark",
+              "flag": "aloud",
+              "clear": true
+            }
+          ]
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "if": {
+            "actor": "self"
+          },
+          "flag": "aloud",
+          "clear": true
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "After you make a Call, your next Evoke this turn costs {=tiers.I.effects.1.set} AP (once a turn).",
+          "short": "After a Call: your next Evoke this turn costs {=tiers.I.effects.1.set} AP",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "aloud"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "evoke"
+                ],
+                "flag": "aloud"
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "aloud",
+                "peek": true
+              },
+              "label": "Thinking Aloud"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "evoke"
+                ],
+                "flag": "aloud"
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "aloud"
+              },
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "aloud",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "if": {
+                "actor": "self"
+              },
+              "flag": "aloud",
+              "clear": true
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "eloquence",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "After you make a Call, your next Evoke this turn costs {=tiers.II.effects.1.set} AP (once a turn), and your next glyph this turn adds no Flux.",
+          "short": "And your next glyph this turn adds no Flux",
+          "effects": [
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "aloud"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "evoke"
+                ],
+                "flag": "aloud"
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "aloud",
+                "peek": true
+              },
+              "label": "Thinking Aloud"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "evoke"
+                ],
+                "flag": "aloud"
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "aloud"
+              },
+              "and": [
+                {
+                  "op": "mark",
+                  "flag": "aloud",
+                  "clear": true
+                }
+              ]
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "if": {
+                "actor": "self"
+              },
+              "flag": "aloud",
+              "clear": true
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "call"
+                ]
+              },
+              "flag": "aloud_ink"
+            },
+            {
+              "op": "cost_mod",
+              "when": "glyph_cost",
+              "if": {
+                "flag": "aloud_ink"
+              },
+              "res": "flux",
+              "set": 0,
+              "label": "Thinking Aloud"
+            },
+            {
+              "op": "mark",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "draw"
+                ]
+              },
+              "flag": "aloud_ink",
+              "clear": true,
+              "priority": 120
+            },
+            {
+              "op": "mark",
+              "when": "turn_end",
+              "if": {
+                "actor": "self"
+              },
+              "flag": "aloud_ink",
+              "clear": true
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "sigil",
+        "ap"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6023"
     },
     {
       "id": "mirage",
@@ -4827,61 +5830,61 @@
     },
     {
       "id": "detectives_eye",
-      "name": "Detective's Eye",
+      "name": "The Tell",
       "tier": "acquired",
       "perk_type": "passive",
       "skills": [
-        "analysis"
+        "vigilant"
       ],
-      "skill_greek": "beta",
+      "skill_greek": "gamma",
       "requires": [
         {
-          "skill": "analysis",
+          "skill": "vigilant",
           "min": 3
         }
       ],
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: In every scene, the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free. II: In every scene, the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
+      "text": "I: In any conversation you notice concealed weapons and hostile intent, and in every scene the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free. II: In any conversation you notice concealed weapons and hostile intent, and in every scene the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
       "effects": [
         {
           "op": "narrator",
-          "note": "In every scene, tell the player one detail that's out of place."
+          "note": "Reveal concealed weapons and hostile intent to this player in conversation; in every scene, tell them one detail that's out of place."
         }
       ],
       "tiers": {
         "I": {
           "requires": [
             {
-              "skill": "analysis",
+              "skill": "vigilant",
               "min": 3
             }
           ],
           "ap_cost": null,
-          "text": "In every scene, the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free.",
-          "short": "Each scene: a detail out of place · fight start: a trap or weak point",
+          "text": "In any conversation you notice concealed weapons and hostile intent, and in every scene the Narrator tells you one detail that is out of place. When a fight starts, you spot one hidden trap or one enemy's weak point for free.",
+          "short": "Hidden weapons and intent · a detail a scene · a find at fight start",
           "effects": [
             {
               "op": "narrator",
-              "note": "In every scene, tell the player one detail that's out of place."
+              "note": "Reveal concealed weapons and hostile intent to this player in conversation; in every scene, tell them one detail that's out of place."
             }
           ]
         },
         "II": {
           "requires": [
             {
-              "skill": "analysis",
+              "skill": "vigilant",
               "min": 5
             }
           ],
           "ap_cost": null,
-          "text": "In every scene, the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
+          "text": "In any conversation you notice concealed weapons and hostile intent, and in every scene the Narrator tells you two details that are out of place, and whether they are connected. When a fight starts, you spot two hidden traps or enemy weak points for free.",
           "short": "Two of each, connected or not",
           "effects": [
             {
               "op": "narrator",
-              "note": "In every scene, tell the player two out-of-place details and whether they're connected."
+              "note": "Reveal concealed weapons and hostile intent in conversation; in every scene, tell the player two out-of-place details and whether they're connected."
             }
           ],
           "replaces_tier_I": true,
@@ -4893,7 +5896,8 @@
       "tags": [
         "investigation"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6008 (was Acuity's Detective's Eye; Vigilance's passive The Tell folded in)"
     },
     {
       "id": "pattern_lock",
@@ -4978,8 +5982,319 @@
       ]
     },
     {
+      "id": "quick_read",
+      "name": "Quick Read",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "analysis"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "analysis",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Analyze costs {=tiers.I.effects.0.value|abs} AP less. II: Analyze costs {=tiers.II.effects.0.value|abs} AP less, and your first Analyze each fight costs {=tiers.II.effects.1.set} AP.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ap_cost:analyze",
+          "value": -1
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Analyze costs {=tiers.I.effects.0.value|abs} AP less.",
+          "short": "Analyze costs {=tiers.I.effects.0.value|abs} AP less",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:analyze",
+              "value": -1
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Analyze costs {=tiers.II.effects.0.value|abs} AP less, and your first Analyze each fight costs {=tiers.II.effects.1.set} AP.",
+          "short": "And your first Analyze each fight costs {=tiers.II.effects.1.set} AP",
+          "effects": [
+            {
+              "op": "stat_mod",
+              "stat": "ap_cost:analyze",
+              "value": -1
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "analyze"
+                ]
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "quick",
+                "peek": true
+              },
+              "label": "Quick Read"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "analyze"
+                ]
+              },
+              "limit": {
+                "per": "per_combat",
+                "n": 1,
+                "key": "quick"
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "analysis",
+        "ap"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6004 (was the Acuity 3 passive; tier II was Rumination's Index II, ruling layer section 2 item 7)"
+    },
+    {
+      "id": "read_them",
+      "name": "Read Them",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "analysis"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "analysis",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: An enemy you Analyze is Read Them: it deals {=numbers.I|less}% less damage to your side for the rest of the fight. II: An enemy you Analyze is Read Them: it deals {=numbers.II|less}% less damage to your side for the rest of the fight.",
+      "effects": [
+        {
+          "op": "condition",
+          "when": "acted",
+          "if": {
+            "action": [
+              "analyze"
+            ],
+            "target": "foe"
+          },
+          "condition": "read_them",
+          "target": "target",
+          "skip_save": true,
+          "label": "Read Them"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "An enemy you Analyze is Read Them: it deals {=numbers.I|less}% less damage to your side for the rest of the fight.",
+          "short": "A foe you Analyze deals {=numbers.I|less}% less damage to your side",
+          "effects": [
+            {
+              "op": "condition",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "analyze"
+                ],
+                "target": "foe"
+              },
+              "condition": "read_them",
+              "target": "target",
+              "skip_save": true,
+              "label": "Read Them"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "An enemy you Analyze is Read Them: it deals {=numbers.II|less}% less damage to your side for the rest of the fight.",
+          "short": "{=numbers.II|less}% less",
+          "effects": [
+            {
+              "op": "condition",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "analyze"
+                ],
+                "target": "foe"
+              },
+              "condition": "read_them_ii",
+              "target": "target",
+              "skip_save": true,
+              "label": "Read Them"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "analysis",
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6004 (was the Acuity 5 passive)",
+      "numbers": {
+        "I": 0.85,
+        "II": 0.75
+      }
+    },
+    {
+      "id": "still_breath",
+      "name": "Still Breath",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "analysis"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "analysis",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Foes' rolls to spot you are {=tiers.I.effects.0.value} while you stand next to cover. II: Foes' rolls to spot you are {=tiers.II.effects.0.value} while you stand next to cover. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=tiers.II.effects.1.value}) instead of finding you outright.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "spot",
+          "value": -2,
+          "if": {
+            "by_cover": [
+              "here"
+            ]
+          },
+          "label": "Still Breath"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Foes' rolls to spot you are {=tiers.I.effects.0.value} while you stand next to cover.",
+          "short": "{=tiers.I.effects.0.value} to foes' spot rolls while you stand by cover",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "spot",
+              "value": -2,
+              "if": {
+                "by_cover": [
+                  "here"
+                ]
+              },
+              "label": "Still Breath"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "analysis",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Foes' rolls to spot you are {=tiers.II.effects.0.value} while you stand next to cover. Close Quarters: an enemy that ends next to you while you are Hidden rolls to spot you (at +{=tiers.II.effects.1.value}) instead of finding you outright.",
+          "short": "And Close Quarters: a foe beside you must roll (+{=tiers.II.effects.1.value})",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "spot",
+              "value": -2,
+              "if": {
+                "by_cover": [
+                  "here"
+                ]
+              },
+              "label": "Still Breath"
+            },
+            {
+              "op": "close_roll",
+              "when": "spot",
+              "value": 4,
+              "label": "Close Quarters"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "stealth",
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6005 (was Ingenuity 5 Still Breath and Ingenuity 3 Close Quarters)"
+    },
+    {
       "id": "talks_broke_down",
-      "name": "Talks Broke Down",
+      "name": "Parley",
       "tier": "acquired",
       "perk_type": "combat_starter",
       "skills": [
@@ -4995,21 +6310,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. When it breaks out of a talk your squad lost, you have 2 AP less on those turns instead. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after. II: When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. Whenever a fight breaks out of a talk, won or lost, the first enemy to act hesitates: it has 1 AP less in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
+      "text": "I: Before a fight, for no AP: one attempt to talk the enemy down. On a success, the leader stands down, or the rank-and-file walk away. (The fight that may follow is tier II's.) II: Before a fight, for no AP: one attempt to talk the enemy down. When a fight breaks out of a talk your squad won, you have {=tiers.II.effects.1.value} more AP on your first turn, and again every third turn after it (Once every 3 turns.); whenever a fight breaks out of a talk, the first enemy to act hesitates in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
       "effects": [
         {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": 2,
-          "when": "combat began after the squad won a dialogue check",
-          "duration": "combat"
-        },
-        {
-          "op": "stat_mod",
-          "stat": "ap",
-          "value": -2,
-          "when": "combat began after a failed dialogue check",
-          "duration": "combat"
+          "op": "narrator",
+          "note": "Narrator sets the TN by disposition."
         }
       ],
       "tiers": {
@@ -5021,22 +6326,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. When it breaks out of a talk your squad lost, you have 2 AP less on those turns instead. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
-          "short": "Fight after a talk won: +{=tiers.I.effects.0.value} AP, every 3 turns · lost: {=tiers.I.effects.1.value} AP",
+          "text": "Before a fight, for no AP: one attempt to talk the enemy down. On a success, the leader stands down, or the rank-and-file walk away. (The fight that may follow is tier II's.)",
+          "short": "Before a fight: talk the enemy down",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": 2,
-              "when": "combat began after the squad won a dialogue check",
-              "duration": "combat"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": -2,
-              "when": "combat began after a failed dialogue check",
-              "duration": "combat"
+              "op": "narrator",
+              "note": "Narrator sets the TN by disposition."
             }
           ]
         },
@@ -5048,22 +6343,19 @@
             }
           ],
           "ap_cost": null,
-          "text": "When a fight breaks out of a talk your squad won, you have 2 more AP on your first turn, and again on every third turn after it. Once every 3 turns. Whenever a fight breaks out of a talk, won or lost, the first enemy to act hesitates: it has {=tiers.II.effects.1.value|abs} AP less in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
-          "short": "No loss cost · first foe to act {=tiers.II.effects.1.value} AP in round one",
+          "text": "Before a fight, for no AP: one attempt to talk the enemy down. When a fight breaks out of a talk your squad won, you have {=tiers.II.effects.1.value} more AP on your first turn, and again every third turn after it (Once every 3 turns.); whenever a fight breaks out of a talk, the first enemy to act hesitates in round 1. A fight breaks out of a talk when it starts in the same story round as your squad's last dialogue check, or the round after.",
+          "short": "And a fight out of a talk won: +{=tiers.II.effects.1.value} AP; the first foe hesitates",
           "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator sets the TN by disposition."
+            },
             {
               "op": "stat_mod",
               "stat": "ap",
               "value": 2,
               "when": "combat began after the squad won a dialogue check",
               "duration": "combat"
-            },
-            {
-              "op": "stat_mod",
-              "stat": "ap",
-              "value": -1,
-              "target": "one_enemy",
-              "when": "round 1"
             }
           ],
           "replaces_tier_I": true,
@@ -5076,7 +6368,8 @@
         "ap",
         "social"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.74 item 6043 (renamed Parley: it absorbs the Charisma 5 passive; the lost-talk penalty is dropped)"
     },
     {
       "id": "crowd_pleaser",
@@ -5158,6 +6451,207 @@
         "crowd"
       ],
       "provisional": true
+    },
+    {
+      "id": "smooth",
+      "name": "Smooth",
+      "tier": "acquired",
+      "perk_type": "conversation_quirk",
+      "skills": [
+        "charisma"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "charisma",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: A failed lie doesn't get you exposed straight away; the listener is only suspicious. II: A failed lie only makes the listener suspicious, and once a scene a lie that is found out can be walked back with a second check.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "A failed lie by this character makes the listener suspicious, not sure."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "A failed lie doesn't get you exposed straight away; the listener is only suspicious.",
+          "short": "A failed lie only raises suspicion",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "A failed lie by this character makes the listener suspicious, not sure."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "A failed lie only makes the listener suspicious, and once a scene a lie that is found out can be walked back with a second check.",
+          "short": "And once a scene, walk a lie back",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "A failed lie makes the listener suspicious, not sure; once a scene, a lie found out can be walked back with a second Charisma check."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "narrator",
+      "recovered": null,
+      "tags": [
+        "social"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6043 (was the Charisma 3 passive)"
+    },
+    {
+      "id": "showman",
+      "name": "Showman",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "charisma"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "charisma",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Picture costs {=tiers.I.effects.0.value|abs} charge less (never under {=tiers.I.effects.0.min}). II: Picture costs {=tiers.II.effects.0.value|abs} charge less (never under {=tiers.II.effects.0.min}), and once a turn one Figment order costs {=tiers.II.effects.1.set} AP.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:picture#picture"
+            ]
+          },
+          "res": "vcharge",
+          "value": -1,
+          "min": 1,
+          "label": "Showman"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Picture costs {=tiers.I.effects.0.value|abs} charge less (never under {=tiers.I.effects.0.min}).",
+          "short": "Picture costs {=tiers.I.effects.0.value|abs} charge less",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "verb:picture#picture"
+                ]
+              },
+              "res": "vcharge",
+              "value": -1,
+              "min": 1,
+              "label": "Showman"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "charisma",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Picture costs {=tiers.II.effects.0.value|abs} charge less (never under {=tiers.II.effects.0.min}), and once a turn one Figment order costs {=tiers.II.effects.1.set} AP.",
+          "short": "And once a turn one Figment order costs {=tiers.II.effects.1.set} AP",
+          "effects": [
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "verb:picture#picture"
+                ]
+              },
+              "res": "vcharge",
+              "value": -1,
+              "min": 1,
+              "label": "Showman"
+            },
+            {
+              "op": "cost_mod",
+              "when": "cost",
+              "if": {
+                "action": [
+                  "figment_order"
+                ]
+              },
+              "set": 0,
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "show",
+                "peek": true
+              },
+              "label": "Showman"
+            },
+            {
+              "op": "use",
+              "when": "acted",
+              "if": {
+                "action": [
+                  "figment_order"
+                ]
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": 1,
+                "key": "show"
+              }
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "figment",
+        "social"
+      ],
+      "provisional": true,
+      "source": "rules 1.74 item 6043"
     },
     {
       "id": "shared_breath",
@@ -7556,20 +9050,40 @@
       "ap_cost": null,
       "uses": "per_session",
       "flavour": "You checked. It's true now.",
-      "text": "Once per session, state a fact about the technology, biology or history in the scene. The Narrator makes it true, unless it contradicts something already shown. If the Narrator refuses the fact, you keep the use.",
+      "text": "Once per session, state a fact about the technology, biology or history in the scene. The Narrator makes it true, unless it contradicts something already shown. If the Narrator refuses the fact, you keep the use. In a fight, once, your own Overload deals you no damage.",
       "effects": [
         {
           "op": "narrator",
           "note": "Once per session the player states a fact about technology, biology or history in the scene. Make it true unless it contradicts something already established on screen."
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "self",
+            "self_harm": true,
+            "not_damage": [
+              "strain",
+              "short"
+            ]
+          },
+          "value": 0,
+          "limit": {
+            "per": "per_combat",
+            "n": 1,
+            "key": "fact"
+          },
+          "label": "Established Fact"
         }
       ],
-      "adjudication": "narrator",
+      "adjudication": "hybrid",
       "recovered": null,
       "provisional": true,
       "tags": [
         "knowledge",
         "narrative"
-      ]
+      ],
+      "source": "rules 1.74 item 6022: the engine half (ruling layer section 2 item 8)"
     },
     {
       "id": "closing_argument",
@@ -7590,11 +9104,29 @@
       "ap_cost": null,
       "uses": "per_scene",
       "flavour": "You didn't win the argument. You ended it.",
-      "text": "Once per scene, make your closing argument. Every listener who isn't ruled by fear or faith accepts its logic, even if they hate where it leads, and an Eloquence check on the same point succeeds automatically. The Narrator decides what they do about it: they can still refuse to act.",
+      "text": "Once per scene, make your closing argument. Every listener who isn't ruled by fear or faith accepts its logic, even if they hate where it leads, and an Eloquence check on the same point succeeds automatically. The Narrator decides what they do about it: they can still refuse to act. In a fight, once, your Persuade gets no save.",
       "effects": [
         {
           "op": "narrator",
           "note": "Once per scene: listening NPCs not driven by fear or faith concede the argument's logic. Acting on it remains their choice."
+        },
+        {
+          "op": "skip_save",
+          "when": "cond_incoming",
+          "if": {
+            "actor": "self",
+            "target": "foe",
+            "cond": [
+              "left_brain_debuff",
+              "right_brain_debuff"
+            ]
+          },
+          "limit": {
+            "per": "per_combat",
+            "n": 1,
+            "key": "close"
+          },
+          "label": "Closing Argument"
         }
       ],
       "adjudication": "hybrid",
@@ -7603,7 +9135,8 @@
       "tags": [
         "social",
         "logic"
-      ]
+      ],
+      "source": "rules 1.74 item 6023: the engine half (ruling layer section 2 item 8)"
     },
     {
       "id": "solid_image",

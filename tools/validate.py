@@ -672,7 +672,7 @@ _OWNED_TS = (pathlib.Path(__file__).resolve().parent.parent / "packages/engine/s
 _OWNER_USES_M = re.search(r"const OWNER_USES\b[^\n]*\{\n(.*?)\n\};", _OWNED_TS, re.S)
 _OWNER_USE_TYPES = tuple(re.findall(r"^\s*'([a-z]+/[a-z_]+)'\s*:", _OWNER_USES_M.group(1), re.M)) if _OWNER_USES_M else ()
 if not _OWNER_USE_TYPES: errors.append("tools/validate.py: owned.ts OWNER_USES not found (the item uses an owned unit runs)")
-_DV_KEYS = {"id", "name", "icon", "site", "text", "provisional", "reach", "effects", "attack", "on_hit", "dash", "unmake", "refund_share", "use", "res", "amounts"}
+_DV_KEYS = {"id", "name", "icon", "site", "text", "provisional", "reach", "effects", "attack", "on_hit", "dash", "unmake", "refund_share", "use", "res", "amounts", "requires"}  # requires: rules 1.74 item 6040 (read by figments.ts on the owner's sheet)
 _DV_REACH = {"tiles", "side", "eyes", "tile", "beside"}
 _DVIDS = set()
 for _v in _FJ.get("verbs") or []:
@@ -2461,8 +2461,12 @@ if TRIG:
         return max([v for k, v in (_SHR.get("cap_by_points") or {}).items() if n >= int(k)] or [0])
     for _x in (data.get("shadow") or {}).get("items") or []:
         _g = next((e for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action"), {})
-        _need = ((_x.get("requires") or [{}])[0] or {}).get("min", 0)
-        if ((_g.get("res") or {}).get("shadow") or 0) > _sh_cap(_need): errors.append(f"shadow:{_x.get('id')}: costs more Shadow than the cap at Ingenuity {_need}")
+        # rules 1.74 item 6011: a verb may be gated by a class (the Operative's: its cap adds operative_cap_add) as well as
+        # by Ingenuity points (the skill entry's min, wherever it stands in the list)
+        _req = [r for r in _x.get("requires") or [] if isinstance(r, dict)]
+        _need = next((r.get("min", 0) for r in _req if r.get("skill") == "ingenuity"), 0)
+        _add = (_SHR.get("operative_cap_add") or 0) if any(r.get("class") == "infiltrator" for r in _req) else 0
+        if ((_g.get("res") or {}).get("shadow") or 0) > _sh_cap(_need) + _add: errors.append(f"shadow:{_x.get('id')}: costs more Shadow than the cap at Ingenuity {_need}")
     def _walk_res(o, w):
         if isinstance(o, dict):
             if isinstance(o.get("of"), str) and o["of"].startswith("res:") and o["of"][4:] not in _RESIDS: errors.append(f"{w}: number block source {o['of']} names no actions.json resource")

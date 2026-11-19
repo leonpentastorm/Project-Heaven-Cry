@@ -130,22 +130,25 @@ describe('2.5 the Break', () => {
 });
 
 describe('the verbs (data/shadow.json)', () => {
+  // rules 1.74 item 6011: Pick, Disable, Rig and Hijack are the Operative's (a class entry in requires): classes-rev3-moves tests them
+  const byPoints = () => allVerbs().filter((x: any) => x.id.startsWith('shadow.') && x.requires.every((r: any) => r.skill === 'ingenuity'));
   it('each opens at its Ingenuity: held by a sheet that meets its requires', () => {
-    for (const v of allVerbs().filter((x: any) => x.id.startsWith('shadow.'))) {
+    expect(byPoints().length).toBeGreaterThan(5);
+    for (const v of byPoints()) {
       const n = v.requires[0].min;
       const has = (pts: number) => { const f = fightWith([door(pts)], [{}]); return withGame(f.g, () => perkActionsFor({ u: f.unit(f.pc.id), cb: f.cb, g: f.g }, 'combat').some((e) => e.id === 'verb:' + v.id)); };
       expect(has(n)).toBe(true); expect(has(n - 1)).toBe(false);
     }
   });
   it('a verb\'s Shadow cost is at most the cap at its Ingenuity', () => {
-    for (const v of allVerbs().filter((x: any) => x.id.startsWith('shadow.'))) {
+    for (const v of byPoints()) {
       const g: any = v.effects.find((e: any) => e.op === 'grant_action'), cap = Object.entries(SH.cap_by_points).reduce((n: number, [p, c]: any) => (v.requires[0].min >= +p ? c : n), 0);
       expect(g.res?.shadow ?? 0).toBeLessThanOrEqual(cap);
     }
   });
   it('Open Seam: an unseen enemy is Exposed (its Defense lower)', () => {
     const v = VERB('shadow.open_seam'), g = v.effects[0];
-    const f = fightWith([door(5)], [{}]); const t = foeAt(f, '6,4');
+    const f = fightWith([door(v.requires[0].min)], [{}]); const t = foeAt(f, '6,4');
     const u = f.turn(f.pc); at(f, u, '1,4'); hideNow(f, u); setShadow(f, u, 1);
     f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:' + v.id, targetId: t.id } as any);
     expect(condOn(f.unit(t.id), 'exposed')).toBe(true);

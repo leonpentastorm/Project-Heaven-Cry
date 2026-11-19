@@ -26,6 +26,8 @@
 "item/perk/flat_line@II/action/pick": "- | short: free | again: - | next: - | later: -",
 "item/perk/footnote@I/action/cite_fight": "- | short: free | again: NO Used this fight. | next: NO Used this fight. | later: NO Used this fight.",
 "item/perk/footnote@II/action/cite_fight": "- | short: free | again: NO Used this fight. | next: NO Used this fight. | later: NO Used this fight.",
+"item/perk/index@I/action/index_question": "- | short: free | again: NO Used until the next scene. | next: NO Used until the next scene. | later: NO Used until the next scene.",
+"item/perk/index@II/action/index_question": "- | short: free | again: NO Used until the next scene. | next: NO Used until the next scene. | later: NO Used until the next scene.",
 "item/perk/judgement_day@mastered/action/judgement": "P1 ap9>6 | short: Needs 3 AP. | again: NO Used this fight. | next: NO Used this fight. | later: NO Used this fight.",
 "item/perk/last_wall@mastered/taken-low": "P1 res.momentum3>2; F2 ammo24>23 ap0>7 heat0>1",
 "item/perk/on_my_mark@mastered/action/order": "P1 ap9>8; P2 ap6>4 | short: Needs 1 AP. | again: NO It's Squadmate's turn. | next: P1 ap9>8; P2 ap6>4 | later: P1 ap9>8; P2 ap6>4",

@@ -16,11 +16,12 @@ const rigger = (o: any = {}) => figFight([{ classId: 'trickster', level: o.level
 const use = (f: any, u: any, key: string, args: any = {}) => f.act({ type: 'combat/perk', unitId: u.id, id: key, ...args } as any);
 
 describe('the Rigger: the class', () => {
-  it('six moves: Double and Field Fix, Salvage and Overclock, Sleight and Scrap Turret; Read, Silver Tongue, Blind and Slow, Rewrite leave (shelved keys)', () => {
+  it('six moves: Double and Quick Sketch (rules 1.74 item 6045: Field Fix back to the pool), Salvage and Overclock, Sleight and Scrap Turret; Read, Silver Tongue, Blind and Slow, Rewrite leave (shelved keys)', () => {
     expect(CLASS.trickster.name).toBe('Rigger');
-    expect(classMoveKeys({ perks: [], traits: [], cls: 'trickster', rank: 3 } as any).map((x) => x.key)).toEqual(expect.arrayContaining(['class:trickster.false_image', 'class:infiltrator.field_fix', 'class:trickster.salvage', 'class:trickster.overclock', 'class:trickster.sleight', 'class:trickster.scrap_turret']));
+    expect(classMoveKeys({ perks: [], traits: [], cls: 'trickster', rank: 3 } as any).map((x) => x.key)).toEqual(expect.arrayContaining(['class:trickster.false_image', 'class:trickster.quick_sketch', 'class:trickster.salvage', 'class:trickster.overclock', 'class:trickster.sleight', 'class:trickster.scrap_turret']));
     const pool = (CLASSESJ as any).move_pool.moves.filter((m: any) => m.origin === 'trickster');
     for (const id of ['silver_tongue', 'blind_and_slow', 'rewrite']) expect(pool.find((m: any) => m.id === id).status).toBe('shelved');
+    expect((CLASSESJ as any).move_pool.moves.find((m: any) => m.id === 'field_fix').status).toBe('shelved');
     expect(T.gain[0].effects.map((e: any) => e.stat)).toEqual(['ties_max:owned', 'figment_designs']);
   });
   it('a bigger meter: one more Figment held (with the door)', () => {
@@ -45,18 +46,17 @@ describe('the Rigger: the moves', () => {
     for (let i = 0; i < move('false_image').numbers.rounds; i++) { f.cb.round++; u = f.turn(u); }
     expect(f.figments(u).length).toBe(0);
   });
-  it('Field Fix: the door\'s repair, no part, no Improvisation, reach 2, on a Figment', () => {
-    const f = rigger({ vis: 5, prof: 0 }); let u = f.turn(f.pc); f.picture(u, 'beast', '3,4'); u = f.unit(u.id);
-    const b = f.figments(u)[0]; b.hp = 1; u.ap = 6; const parts = u.parts || 0;
-    use(f, u, 'class:infiltrator.field_fix', { targetId: b.id, choice: 'repair' }); u = f.unit(u.id);
-    expect(f.unit(b.id).hp).toBeGreaterThan(1); expect(u.parts || 0).toBe(parts); expect(6 - u.ap).toBe(move('field_fix').ap_cost);
+  it('Quick Sketch (rules 1.74 item 6045, in place of Field Fix): once a turn Picture costs less, never under its floor', () => {
+    const qs = move('quick_sketch').effects[0];
+    const f = rigger({ vis: 5 }); let u = f.turn(f.pc); u.ap = 9;
+    f.picture(u, 'double', '3,4'); u = f.unit(u.id); const first = 9 - u.ap; const ap1 = u.ap;
+    f.picture(u, 'double', '3,6'); u = f.unit(u.id); const second = ap1 - u.ap;
+    expect(first).toBe(Math.max(qs.min, second + qs.value)); expect(second).toBeGreaterThan(first);
   });
-  it('Salvage: a wreck gives its charge, once a fight; reclaim lets a Figment go with all its charge', () => {
+  it('Salvage (trimmed, rules 1.74 item 6045): a wreck gives its charge, once a fight; the other ways are refused', () => {
     const f = rigger({ vis: 5, foes: [{ tier: 'soldier', at: '9,4', classic: true }, { tier: 'soldier', at: '12,8', classic: true }] }); let u = f.turn(f.pc); f.picture(u, 'beast', '2,4'); u = f.unit(u.id);
-    const c1 = u.mg!.vcharge!; use(f, u, 'class:trickster.salvage', { choice: 'reclaim' }); u = f.unit(u.id);
-    expect(u.mg!.vcharge).toBe(c1 + FORM.beast.charge); expect(f.figments(u).length).toBe(0);
-    // a wreck: the foe is a drone, destroyed next to you
-    const foe = f.foe; foe.kind = 'drone'; foe.pos = '2,4'; withGame(f.g, () => applyDamage(f.cb, foe, 9999, { by: u, type: 'weapon' } as any));
+    expect(() => use(f, u, 'class:trickster.salvage', { choice: 'reclaim' })).toThrow(/wreck/); u = f.unit(u.id);
+    const foe = f.foe; foe.kind = 'drone'; foe.pos = '2,5'; withGame(f.g, () => applyDamage(f.cb, foe, 9999, { by: u, type: 'weapon' } as any));
     u.ap = 6; u.mg!.vcharge = 0; use(f, u, 'class:trickster.salvage', { choice: 'wreck' }); u = f.unit(u.id);
     expect(u.mg!.vcharge).toBe(move('salvage').numbers.charge);
     u.ap = 6; expect(() => use(f, u, 'class:trickster.salvage', { choice: 'wreck' })).toThrow(/wreck/);

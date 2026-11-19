@@ -16,12 +16,12 @@ import { mod, strengthOf } from '../character';
 import { alive, dist, isMelee, canJam, objectsOf, trapKnown } from '../combat';
 import { isTrap } from '../objects';
 import { HEARING } from '../tactics';
-import { applyCond } from '../magic';
-import { SKILL, WEAPON } from '../data';
+import { applyCond, condOn } from '../magic';
+import { SKILL, WEAPON, PERK } from '../data';
 import { npcsOf, sideRollMod } from '../game';
 import { foreseeVote } from '../game';
 import './briefs';
-import { overworld, say } from '../kit';
+import { overworld, say, rngOf } from '../kit';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 import { loseAp } from '../effects/cost';
 import { stagger } from '../unitstate';
@@ -102,6 +102,8 @@ register({
 // Combat (PROVISIONAL, a new combat form): once per fight, 0 AP, cite a fact about one enemy: allies' attacks on it get
 // +1 (II +2) for the rest of the round; the citation goes into the fight notes.
 const footBonus = (h: Holder) => (tierII(h) ? 2 : 1);
+/** Is this unit the enemy the holder cited this round (the fight's citation)? */
+const citedNow = (h: Holder, t: Unit | null | undefined): boolean => { const st = (h.u?.ps?.[h.key] as any)?.cite; return !!st && !!h.cb && !!t && t.id === st.target && h.cb.round === st.round; };
 register({
   id: 'footnote',
   claims: ['skill_mod_tag'], narrator: ['narrator'],
@@ -133,37 +135,21 @@ register({
       const rec = sro(h).cite; if (!rec || rec.scene !== sceneN(h) || !h.c || ctx.c === h.c || ctx.c?.id === h.c.id) return;
       if (ctx.ck?.footnote === h.c.id || appliesTo(ctx.ck, 'footnote') || tagsOf(ctx).includes('footnote')) addOnce(ctx, footBonus(h), 'Footnote');
     },
-    attack_preview: (ctx, h) => {
-      const st = (h.u?.ps?.[h.key] as any)?.cite; if (!st || !h.u || !h.cb) return;
-      if (ctx.att.side === h.u.side && ctx.att !== h.u && ctx.tgt?.id === st.target && h.cb.round === st.round) ctx.terms.push({ v: footBonus(h), label: 'Footnote' });
-    },
+    // Rules 1.74 item 6022: at tier II the citer's own Sigils count the cited fact too (its roll to hit).
+    to_hit: (ctx, h) => { if (tierII(h) && ctx.type === 'sigil' && ctx.att === h.u && citedNow(h, ctx.tgt)) ctx.terms.push({ v: footBonus(h), label: 'Footnote' }); },
+    attack_preview: (ctx, h) => { if (h.u && ctx.att.side === h.u.side && ctx.att !== h.u && citedNow(h, ctx.tgt)) ctx.terms.push({ v: footBonus(h), label: 'Footnote' }); },
   },
   brief: (h) => 'judge ally checks acting on the cited fact: set footnote "' + (h.c?.id || 'charId') + '"',
 });
 
-// ---------- Burden of Proof (Eloquence 3/5): demand evidence; an accuser with none loses outright ----------
-register({
-  id: 'burden_of_proof',
-  narrator: 'all',
-  actions: [{
-    id: 'demand', label: 'Demand evidence (Burden of Proof)', scope: ['story'], target: 'text', ap: 0,
-    text: 'When someone accuses you or the squad: demand their evidence. Without it, they lose the argument outright. II: the onlookers also shift to your side.',
-    run: (h, a) => {
-      const eid = postStory(h, 'demands evidence: "' + textArg(a) + '"');
-      ruling(h, 'Burden of Proof: if the accuser has no evidence, they lose the argument outright: call no check' + (tierII(h) ? '; every onlooker shifts one attitude step toward the squad' : '') + '. If they have evidence, refuse (the demand fails on its merits).', eid);
-    },
-  }],
-  brief: (h) => 'a demand for evidence: an accuser without any loses outright, no check' + (tierII(h) ? '; onlookers shift' : ''),
-});
-
-// ---------- Detective's Eye (Analysis 3/5): one out-of-place detail every scene (II: two, and whether connected) ----------
+// ---------- The Tell (id detectives_eye; Vigilance 3/5 since rules 1.74 item 6008): one out-of-place detail every scene (II: two, and whether connected) ----------
 // Story: owed every scene through perkLines (key perk:detectives_eye); the brief says when it is still owed.
 // Combat (PROVISIONAL, a new combat form): at the start of a fight the holder sees one hidden trap or one enemy's weak
 // point (as if Analyzed, without the AP); II: two, and the log says whether they're connected (same owner).
 function servedThisScene(h: Holder): number {
   const g = gOf(h); if (!g?.story || !h.c) return 0;
   const es: any[] = g.story.entries || []; let i = es.length - 1; while (i >= 0 && es[i].kind !== 'scene') i--;
-  return es.slice(i + 1).filter((e) => e.kind === 'voice' && e.charId === h.c!.id && /^DETECTIVE.S EYE/i.test(e.head || '')).length;
+  return es.slice(i + 1).filter((e) => e.kind === 'voice' && e.charId === h.c!.id && String(e.head || '').startsWith(String(PERK[h.itemId]?.name || '').toUpperCase() + ' ')).length;
 }
 register({
   id: 'detectives_eye',
@@ -174,10 +160,10 @@ register({
       const n = tierII(h) ? 2 : 1, found: { what: string; owner?: string }[] = [];
       for (const o of objectsOf(cb)) { if (found.length >= n) break; if (isTrap(o) && !trapKnown(o, 'pc')) { const k: any = o; if (k.side) (k.knownBy ||= []).push('pc'); else o.hidden = false; found.push({ what: 'a trap at ' + o.pos, owner: k.owner }); } }
       const foes = cb.units.filter((t) => t.side !== u.side && alive(t) && !t.analyzedBy && !t.companion).sort((a, b) => b.hp - a.hp || (a.id < b.id ? -1 : 1));
-      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; t.weakPoint = true; found.push({ what: 'how ' + t.name + ' fights (read: it deals 15% less to the squad)', owner: t.id }); }
+      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; if (!condOn(t, 'read_them_ii')) applyCond(cb, rngOf(h, ctx), u, t, 'read_them', undefined, undefined, { skipSave: true }); found.push({ what: 'how ' + t.name + ' fights (Read Them)', owner: t.id }); }
       if (!found.length) return;
       const linked = found.length === 2 && !!found[0].owner && found[0].owner === found[1].owner;
-      say(cb, u.name + '\'s eye catches what doesn\'t fit (Detective\'s Eye): ' + found.map((f) => f.what).join('; ') + (found.length === 2 ? (linked ? ' · connected' : ' · not connected') : '') + '.');
+      say(cb, u.name + '\'s eye catches what doesn\'t fit (' + (PERK[h.itemId]?.name || '') + '): ' + found.map((f) => f.what).join('; ') + (found.length === 2 ? (linked ? ' · connected' : ' · not connected') : '') + '.');
     },
   },
   brief: (h) => {
@@ -361,7 +347,7 @@ register({
 const factRule = 'Make it true (pin it in memory) unless it contradicts something already shown, decides a check, creates items, money or allies, or touches the Veil or Celestial truth: then refuse (the use comes back).';
 register({
   id: 'established_fact',
-  narrator: 'all',
+  narrator: ['narrator'], // rules 1.74 item 6022: its engine half (a taking row) is the runner's
   actions: [{
     id: 'fact', label: 'Established Fact', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
     text: 'Once a session: state a fact about the technology, biology or history in the scene. It is true from now on, unless it contradicts what has already been shown. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',
@@ -380,7 +366,7 @@ register({
 // NPCs do about it stays the Narrator's.
 register({
   id: 'closing_argument',
-  narrator: 'all',
+  narrator: ['narrator'], // rules 1.74 item 6023: its engine half (a skip_save row) is the runner's
   actions: [{
     id: 'close', label: 'Closing Argument', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: make your closing argument. Every listener who isn\'t ruled by fear or faith accepts its logic. An Eloquence check waiting on that point succeeds. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',

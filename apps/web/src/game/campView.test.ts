@@ -98,7 +98,7 @@ describe('outside playtest 0.31.10 row 2: Start the run with a level-up due', ()
     expect([ran, opened]).toEqual([0, 1]);
     levelUpGuard(v, () => ran++, () => opened++); answerDialog(true); await Promise.resolve(); await Promise.resolve();
     expect([ran, opened]).toEqual([1, 1]);
-    const plain = loadoutView(camp() as any, 'p2')!;
+    const plain = loadoutView(apply(camp(), { type: 'door/pick', charId: 'c2', door: 'brain_power', option: 'fork.sigil.overflux' } as any, 'p2') as any, 'p2')!; // the Sigilist at Brain Power 4 picks its fork first (offered since rules 1.74 item 6021)
     expect(plain.levelUp).toBe(false); expect(campLevelUpAsk(plain)).toBeNull();
   });
 });

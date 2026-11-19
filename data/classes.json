@@ -1403,21 +1403,41 @@
               "name": "Vanish",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Fade costs no Shadow",
+              "text": "Once a turn your Hide costs {=effects.0.set} AP",
               "effects": [
                 {
                   "op": "cost_mod",
                   "when": "cost",
-                  "res": "shadow",
-                  "value": -2,
                   "if": {
                     "action": [
-                      "verb:shadow.fade#fade"
+                      "hide"
                     ]
+                  },
+                  "set": 0,
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "vanish",
+                    "peek": true
+                  },
+                  "label": "Vanish"
+                },
+                {
+                  "op": "use",
+                  "when": "acted",
+                  "if": {
+                    "action": [
+                      "hide"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "vanish"
                   }
                 }
               ],
-              "source": "rules 1.60 item 4628 (R10): was its own Hide out of view, which repeated Fade; the id is kept so saves load",
+              "source": "rules 1.74 item 6011: once a turn Hide costs 0 AP (it was Fade at no Shadow, which did nothing before Ingenuity 5); the id is kept so saves load",
               "adjudication": "engine",
               "provisional": true,
               "origin": "infiltrator",
@@ -1442,45 +1462,26 @@
             },
             {
               "id": "sabotage",
-              "amounts": {
-                "damage": {
-                  "kind": "damage",
-                  "base": 30,
-                  "profile": "flat",
-                  "type": "physical",
-                  "provisional": true
-                }
-              },
               "name": "Sabotage",
-              "ap_cost": 2,
+              "ap_cost": 0,
               "uses": "at_will",
-              "text": "{=ap_cost} AP: Stun a machine beside you for {=numbers.rounds} round, no save · or break a barricade · or rig your tile ({=effects.2.damage} damage, Pinned on a failed Body save)",
+              "text": "Pick, Disable and Rig are yours (Hijack too at rank III) · Disable and Rig cost you no Shadow",
               "effects": [
                 {
-                  "op": "grant_action",
-                  "action": "sabotage",
-                  "ap": 2,
-                  "uses": "at_will",
-                  "range": 1
-                },
-                {
-                  "op": "disable_machine",
-                  "duration_rounds": 1,
-                  "targets": [
-                    "machine",
-                    "turret",
-                    "drone",
-                    "barricade"
-                  ]
-                },
-                {
-                  "op": "rig_tile",
-                  "damage": 30,
-                  "condition": "pinned",
-                  "save": "body"
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "if": {
+                    "action": [
+                      "verb:shadow.disable#disable",
+                      "verb:shadow.rig#rig"
+                    ]
+                  },
+                  "res": "shadow",
+                  "set": 0,
+                  "label": "Sabotage"
                 }
               ],
-              "adjudication": "hybrid",
+              "adjudication": "engine",
               "provisional": true,
               "origin": "infiltrator",
               "new": true,
@@ -1494,9 +1495,7 @@
               ],
               "status": "active",
               "surface": "combat",
-              "numbers": {
-                "rounds": 1
-              }
+              "source": "rules 1.74 item 6011: Pick, Disable, Rig (rank II) and Hijack (rank III) are the Operative's verbs (shadow.json requires the class); this move makes Disable and Rig cost no Shadow. The old Sabotage actions (stun, break, rig with a Pin) are gone: one copy, the verbs"
             }
           ]
         },
@@ -1520,26 +1519,15 @@
           "uses": "at_will",
           "numbers": {
             "start": 1,
-            "analyze_ap": 1,
             "gain": 1
           },
-          "text": "You start each fight with {=numbers.start} Shadow, and your Shadow holds one more than your Ingenuity gives. Your Analyze costs {=numbers.analyze_ap} AP and Reads its target: your side sees its next action. Once a turn, Analyzing an enemy that can't see you gives {=numbers.gain} Shadow.",
+          "text": "You start each fight with {=numbers.start} Shadow, and your Shadow holds one more than your Ingenuity gives. Your Analyze Reads its target: your side sees its next action. Once a turn, Analyzing an enemy that can't see you gives {=numbers.gain} Shadow.",
           "effects": [
             {
               "op": "resource",
               "resource": "shadow",
               "value": 1,
               "when": "combat_start"
-            },
-            {
-              "op": "cost_mod",
-              "when": "cost",
-              "set": 1,
-              "if": {
-                "action": [
-                  "analyze"
-                ]
-              }
             },
             {
               "op": "condition",
@@ -1584,7 +1572,8 @@
             "perception"
           ],
           "status": "active",
-          "surface": "combat"
+          "surface": "combat",
+          "source": "rules 1.74 item 6011: its Analyze price goes (Acuity's Quick Read owns it)"
         }
       ]
     },
@@ -1661,7 +1650,63 @@
           "threshold": 5,
           "moves": [
             {
-              "ref": "mage.overcharge"
+              "id": "backdraft",
+              "name": "Backdraft",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "When your Evoker overloads, every foe next to you takes its damage too, more as you level",
+              "amounts": {
+                "backdraft": {
+                  "kind": "damage",
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "event:amount",
+                      "value": 1
+                    }
+                  ],
+                  "profile": "flat",
+                  "type": "true",
+                  "provisional": true
+                }
+              },
+              "effects": [
+                {
+                  "op": "deal",
+                  "when": "damaged",
+                  "if": {
+                    "target": "self",
+                    "self_harm": true,
+                    "not_damage": [
+                      "strain",
+                      "short"
+                    ]
+                  },
+                  "amount": "backdraft",
+                  "targets": {
+                    "of": "self",
+                    "side": "foe",
+                    "within": 1,
+                    "shape": "aura"
+                  },
+                  "label": "Backdraft",
+                  "say": "{self}'s overload bursts into {target}{then}."
+                }
+              ],
+              "source": "rules 1.74 item 6025: replaces Overcharge (the ladder gives Overclock at Brain Power 2)",
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "mage",
+              "new": true,
+              "fantasy_tags": [
+                "sigil",
+                "flux"
+              ],
+              "attributes": [
+                "intelligence"
+              ],
+              "status": "active",
+              "surface": "combat"
             },
             {
               "id": "bleed_the_flux",
@@ -1823,7 +1868,59 @@
               "surface": "combat"
             },
             {
-              "ref": "infiltrator.field_fix"
+              "id": "quick_sketch",
+              "name": "Quick Sketch",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Once a turn, Picture costs {=effects.0.value|abs} AP less (never under {=effects.0.min})",
+              "effects": [
+                {
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "if": {
+                    "action": [
+                      "picture"
+                    ]
+                  },
+                  "value": -1,
+                  "min": 1,
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "sketch",
+                    "peek": true
+                  },
+                  "label": "Quick Sketch"
+                },
+                {
+                  "op": "use",
+                  "when": "acted",
+                  "if": {
+                    "action": [
+                      "picture"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "sketch"
+                  }
+                }
+              ],
+              "source": "rules 1.74 item 6045: replaces Field Fix (Improvisation's Field Repair does its work; Field Fix goes back to the move pool, its key kept)",
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "trickster",
+              "new": true,
+              "fantasy_tags": [
+                "figment",
+                "tempo"
+              ],
+              "attributes": [
+                "expression"
+              ],
+              "status": "active",
+              "surface": "combat"
             }
           ]
         },
@@ -1839,16 +1936,7 @@
                 "charge": 2,
                 "reach": 1
               },
-              "amounts": {
-                "repair": {
-                  "kind": "heal",
-                  "base": 15,
-                  "profile": "repair",
-                  "text": "a repair, not a heal",
-                  "provisional": true
-                }
-              },
-              "text": "{=ap_cost} AP, beside a wreck: +{=numbers.charge} Visualizer charge, once a wreck · or release a Figment, charge back · or repair a machine or Figment for {=amounts.repair.base}",
+              "text": "{=ap_cost} AP, beside a wreck: +{=numbers.charge} Visualizer charge, once a wreck",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1856,9 +1944,7 @@
                   "ap": 1,
                   "uses": "at_will",
                   "pick": [
-                    "wreck",
-                    "reclaim",
-                    "repair"
+                    "wreck"
                   ],
                   "pick_label": "What to salvage"
                 }
@@ -1876,7 +1962,8 @@
                 "expression"
               ],
               "status": "active",
-              "surface": "combat"
+              "surface": "combat",
+              "source": "rules 1.74 item 6045: trimmed to the wreck (Cash in does Reclaim, Field Repair the repair)"
             },
             {
               "id": "overclock",
@@ -4174,7 +4261,8 @@
         "attributes": [
           "intelligence"
         ],
-        "status": "active"
+        "status": "shelved",
+        "shelved_by": "rules 1.74 item 6025: the Sigilist rank II move is Backdraft (Brain Power 2 gives Overclock)"
       },
       {
         "id": "payload",
@@ -5248,10 +5336,11 @@
         "attributes": [
           "expression"
         ],
-        "status": "active",
+        "status": "shelved",
         "surface": "combat",
         "origin_rank": "II",
-        "future_home": "Rigger (Classes 3.0 step 8; figments-spec.md 4): it left the Operative in rules 1.32, its key stays"
+        "future_home": "Rigger (Classes 3.0 step 8; figments-spec.md 4): it left the Operative in rules 1.32, its key stays",
+        "shelved_by": "rules 1.74 item 6045: the Rigger rank I move is Quick Sketch (Improvisation 3 gives Field Repair)"
       }
     ],
     "revision_2_classes": [

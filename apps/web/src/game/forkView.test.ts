@@ -1,8 +1,8 @@
 // Rules 1.60 (Doors 3.0, the forks): the screens' fork card reads the engine's one view (doorForkView). A step still to
 // pick is white and offers its two options side by side with their rules; the first press arms a pick and the second
 // sends door/pick (confirmed once); a picked option shows as a chip; a step not offered yet says what is missing.
-import { describe, expect, it, vi } from 'vitest';
-import { ladderSchedule } from '@engine';
+import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
+import { ladderSchedule, forkRow } from '@engine';
 const sent: any[] = [];
 vi.mock('./store', () => ({ act: (a: any) => sent.push(a), toast: () => {}, getState: () => ({}), subscribe: () => () => {} }));
 import { forkCard, forkCards, forkChipsLine, forkLevelUp, forkIconOf } from './forkView';
@@ -34,6 +34,12 @@ describe('the fork card (game/forkView.ts)', () => {
     expect(lu.steps.map((s) => s.head)).toEqual(['Fork at ' + F[0] + ': choose one', 'Fork at ' + F[1] + ': choose one']);
     expect(lu.steps[0].opts[0].label).toBe('After the fight');
   });
+  // A sealed door for the two tests below: Ingenuity's options are built since rules 1.74 (item 6003), so its rows are
+  // marked shelved while they run (the engine's own rows, put back after): the view is what is tested, not which door.
+  const SEAL = ['fork.shadow.light_fingers', 'fork.shadow.lend_the_dark', 'fork.shadow.lightkiller', 'fork.shadow.spotter'];
+  let was: [any, any][] = [];
+  beforeEach(() => { was = SEAL.map((id) => [forkRow(id), (forkRow(id) as any)?.shelved]); for (const [r] of was) if (r) r.shelved = true; });
+  afterEach(() => { for (const [r, s] of was) if (r) { if (s === undefined) delete r.shelved; else r.shelved = s; } });
   it('a step not offered yet says it is sealed (a player line, rules 1.66 item 5212), and offers no button', () => {
     const card = forkCard(ch({ ingenuity: 10 }), 'ingenuity')!;
     expect(card.steps.every((s) => /not offered yet/.test(s.head) && s.opts.every((o) => !o.canPick))).toBe(true);
@@ -55,8 +61,8 @@ describe('the fork card (game/forkView.ts)', () => {
   });
   it('the sheet lists the doors reached, the ones with a pick to make first; an option\'s icon falls back to its door\'s skill', () => {
     const cards = forkCards(ch({ durability: F[1], dexterity: F[0], empathy: F[0], visualization: F[0] }, { durability: ['fork.guard.provoke', 'fork.guard.drive'] }));
-    // Visualization has no forks since rules 1.70 (its forms are a door of their own): no card for it
-    expect(cards.map((x) => x.door)).toEqual(['dexterity', 'empathy', 'durability']);
+    // rules 1.74 item 6041: Visualization's forks (Hard Light or Sharp Light at 4) have a card again; its forms are a door of their own
+    expect(cards.map((x) => x.door)).toEqual(['dexterity', 'visualization', 'empathy', 'durability']);
     expect(forkIconOf('fork.none.such', 'durability')).toBeTruthy();
   });
 });

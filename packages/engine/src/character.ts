@@ -806,7 +806,8 @@ export const elementalMult = (c: Character) => statOf('elemental', c); // 1 + 0.
 export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
 // rules 1.13: a Sigil's reach and its saving on cores are Brain Power's (they were Rumination's and Proficiency's)
-export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'brain_power') / 3);
+/** Rules 1.74 item 6020: the core-charge cut a Sigil, one step a point listed in skills.json brain_power per_point.charge_at (3, 5, 9). */
+export const sigilCoreSaving = (c: Character) => { const pp: any = (SKILL as any).brain_power?.per_point || {}, n: any = pp.numbers || {}; return ((pp.charge_at as number[]) || []).filter((at) => P(c, 'brain_power') >= at).length * (n.charge ?? 1); };
 export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 /** Words known at most: 4 + Brain Power, plus each Mastered free word taken (rules 1.10, item 913: a free word ignores the
@@ -1311,15 +1312,22 @@ export const FOCUS_REV = 1;
 export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', origami_hands: 'both_hands' };
 /** A save from before a perk or trait was renamed or removed: the renamed ones follow their new id (tier kept), and an
  * id the data no longer has is taken off the sheet, so no screen meets an item it can't look up. */
+/** Rules 1.70 item 5538 (the 0.32 lanes' one fix, found by the Body, Mind and Soul lanes alike): a removed perk a skill's
+ * perk_remap table names is never dropped as unknown before the table is read. While the sheet's stamp for that skill is
+ * under the table's rev it stays as it is, for migrateCharacterPerks to map in its order (old perks, then passives, as
+ * far as the steps reach); a sheet already stamped follows the table here (tier kept; null: taken off). */
+const remapRow = (c: Character, id: string): { pending: boolean; to: string | null } | null => {
+  for (const s of SKILLS as any[]) { const t = remapOf(s); if (t?.perks && id in t.perks) return { pending: (c.perkRev?.[s.id] ?? 0) < t.rev, to: t.perks[id] ?? null }; }
+  return null;
+};
 export function migrateCharacterItems(c: Character): string[] {
   const notes: string[] = [];
   // a perk or trait added at run time (effects/hooks.ts addItems: a mode's own items) is as known as the data's
-  // rules 1.73 (the Body lane's finding): an id a skill's perk_remap names is kept here for migrateCharacterPerks to map
-  const known = (id: string) => !!PERK[id] || !!rawItem('perk:' + id) || inRemap(id), knownTrait = (t: string) => TRAITS.some((d) => d.id === t) || !!rawItem('trait:' + t);
+  const known = (id: string) => !!PERK[id] || !!rawItem('perk:' + id) || !!remapRow(c, id)?.pending, knownTrait = (t: string) => TRAITS.some((d) => d.id === t) || !!rawItem('trait:' + t);
   if ((c.perks || []).some((x) => !known(x.id))) {
     const out: Character['perks'] = [];
     for (const x of c.perks) {
-      const to = known(x.id) ? x.id : PERK_RENAMED[x.id];
+      const to = known(x.id) ? x.id : PERK_RENAMED[x.id] ?? remapRow(c, x.id)?.to ?? undefined;
       if (!to || !known(to)) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
       if (to !== x.id) notes.push(c.name + ': ' + (PERK[to] || rawItem('perk:' + to)).name + ' replaces an older perk.');
       if (!out.some((y) => y.id === to)) out.push({ ...x, id: to });
@@ -1370,8 +1378,6 @@ export const levelUpDue = (c: Character | null | undefined): boolean =>
 /** A skill's remap table (skills.json row `perk_remap`: rev, perks old id -> new id or null, passives unlock points ->
  * the perk that replaces it), or null. Each attribute's step fills its skills' tables. */
 const remapOf = (s: any): { rev: number; perks?: Record<string, string | null>; passives?: Record<string, string> } | null => (s?.perk_remap && typeof s.perk_remap.rev === 'number' ? s.perk_remap : null);
-/** Is this old perk id one a skill's remap table maps (kept on the sheet at load until migrateCharacterPerks maps it)? */
-const inRemap = (id: string): boolean => (SKILLS as any[]).some((s) => { const t = remapOf(s); return !!t?.perks && id in t.perks; });
 /** The stamp a sheet made now carries: every skill with a table at its rev (none: no field, a sheet is as it was). */
 export function perkRevNow(): { perkRev?: Record<string, number> } {
   const m: Record<string, number> = {}; for (const s of SKILLS) { const t = remapOf(s); if (t) m[s.id] = t.rev; }

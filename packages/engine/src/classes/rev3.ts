@@ -245,80 +245,8 @@ register({
 // ======================================================================================================== INFILTRATOR
 // ---------- Vanish (rank I, 1 AP, once a turn): data only (classes.json; rules 1.32, its grant_action's nested acted effect) ----------
 
-// ---------- Sabotage (rank II since rules 1.32, 2 AP; its rounds are the data's numbers.rounds, 1) ----------
-// Either: an adjacent enemy machine, turret or drone is disabled for R rounds (Stunned: no actions, no reactions; no
-// save, no Shadow spent), or an adjacent barricade breaks (its hp to 0, rules 1.32), or an adjacent emplaced turret
-// object is disabled for R rounds (the Narrator runs those: a note says so). R is the data's numbers.rounds (1). Or rig your own tile: the next enemy to step onto it
-// takes 30 (armour applies) and its walk stops; it makes a Body save against 12 + your Ingenuity strength or is
-// Pinned. Your side never springs it and its walks avoid it; the other side can't see it. One rigged tile at a time
-// (a new one replaces the old). Combat only.
-/** Sabotage's rounds (the data's numbers.rounds; rules 1.32: 1). */
-const sabRounds = (h: Holder): number => num(h, 'rounds');
-register({
-  id: 'infiltrator.sabotage', claims: 'all',
-  // Three actions, one for each way (each its own grid pick): a machine token, a barricade or turret tile, your tile.
-  actions: [
-    {
-      id: 'sabotage', label: 'Sabotage: disable a machine', scope: ['combat'], target: 'enemy', ap: 'data', range: 1,
-      text: 'Disable an enemy machine, turret or drone next to you. It is Stunned: no turns and no reactions.',
-      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); if (!t) return {}; if (!machineLike(t)) return { ok: false, why: t.name + ' isn\'t a machine, turret or drone.' }; return { targets: [t.id], lines: ['Disable ' + t.name + ' for ' + sabRounds(h) + ' round' + (sabRounds(h) === 1 ? '' : 's') + '.'] }; },
-      run: (h, args, rng) => {
-        const cb = h.cb!, u = h.u!, t = unitById(cb, args.targetId)!, n = sabRounds(h);
-        const line = applyCond(cb, rng as Rng, u, t, 'stunned', n, undefined, { skipSave: true, via: 'ingenuity' });
-        emitFx(cb, 'sabotage', { unit: u.id, target: t.id, at: t.pos, rounds: n, what: 'machine' });
-        say(cb, u.name + ' sabotages ' + t.name + ': disabled for ' + n + ' round' + (n === 1 ? '' : 's') + line + '.');
-      },
-    },
-    {
-      id: 'sabotage_object', label: 'Sabotage: a barricade or turret', scope: ['combat'], target: 'tile', ap: 'data',
-      text: 'Pick a barricade or an emplaced turret next to you. The barricade breaks, or the turret is disabled for a round.',
-      preview: (h, args) => {
-        const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile); if (!k) return {};
-        const o = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret'); if (!o) return { ok: false, why: 'No barricade or turret there.' };
-        if (dist(u.pos, k) > 1) return { ok: false, why: 'Get next to it first.' };
-        return { tiles: [k], lines: [o.kind === 'barricade' ? 'Break the ' + o.name.toLowerCase() + '.' : 'Disable the ' + o.name.toLowerCase() + ' for ' + sabRounds(h) + ' round' + (sabRounds(h) === 1 ? '' : 's') + '.'] };
-      },
-      run: (h, args) => {
-        const cb = h.cb!, u = h.u!, k = tileOf(cb, args.tile)!, o: any = objectsAt(cb, k).find((x) => x.kind === 'barricade' || x.kind === 'turret')!, n = sabRounds(h);
-        emitFx(cb, 'sabotage', { unit: u.id, at: k, rounds: n, what: o.kind });
-        if (o.kind === 'barricade') { say(cb, u.name + ' sabotages the ' + o.name.toLowerCase() + ' at ' + refOf(k) + ': it breaks' + damageObject(cb, k, Math.max(1, o.hp ?? 1), 0, u) + '.'); return; } // rules 1.32: its hp to 0
-        o.disabled = true; o.disabledUntil = cb.round + n; note(h, 'The emplaced turret at ' + refOf(k) + ' is disabled until round ' + (cb.round + n) + ': it takes no action.');
-        (stateOf(h).objs ||= []).push(o.id);
-        say(cb, u.name + ' sabotages the ' + o.name.toLowerCase() + ' at ' + refOf(k) + ': disabled for ' + n + ' round' + (n === 1 ? '' : 's') + '.');
-      },
-    },
-    {
-      id: 'rig', label: 'Sabotage: rig your tile', scope: ['combat'], target: 'none', ap: 'data',
-      text: 'Rig your own tile. The next enemy to step on it takes 30 damage and makes a Body save or is Pinned.',
-      preview: (h) => { const cb = h.cb!, u = h.u!; if (objectsAt(cb, u.pos).some((o) => !!kindOf(o).trap && !o.resolved && !((o as any).rig === h.key && (o as any).owner === u.id))) return { ok: false, why: 'There is already a trap here.' }; return { tiles: [u.pos], lines: ['Rig ' + refOf(u.pos) + '. The next enemy to step on it takes 30 damage and makes a Body save or is Pinned.'] }; },
-      run: (h) => {
-        const cb = h.cb!, u = h.u!;
-        cb.objects = objectsOf(cb).filter((o) => !((o as any).rig === h.key && (o as any).owner === u.id));
-        const id = 'rig' + (cb.glyphSeq = (cb.glyphSeq || 0) + 1);
-        cb.objects.push(makeObject(id, 'trap', u.pos, { name: 'Rigged tile', text: 'Rigged by ' + u.name + '.', damage: itemAmount('class:infiltrator.sabotage', 'damage'), owner: u.id, side: u.side, rig: h.key, hidden: false } as any));
-        emitFx(cb, 'rig', { unit: u.id, at: u.pos, id, only: u.side });
-        say(cb, u.name + ' rigs ' + refOf(u.pos) + ' (Sabotage).');
-      },
-    },
-  ],
-  on: {
-    trap_sprung: (ctx, h) => {
-      const o: any = ctx.obj, cb = h.cb!; if (!o || o.rig !== h.key || o.owner !== h.u?.id || !inFight(h)) return;
-      const v: Unit = ctx.u; if (v.dead) return;
-      say(cb, v.name + ' springs ' + h.u!.name + '\'s rigged tile' + applyCond(cb, rngOf(h, ctx), h.u!, v, 'pinned', undefined, 'body', { via: 'ingenuity' }) + '.');
-    },
-    round_start: (ctx, h) => {
-      const st = stateOf(h), cb = h.cb!; if (!st.objs?.length) return;
-      for (const o of objectsOf(cb) as any[]) if (st.objs.includes(o.id)) {
-        if (o.sabotaged && cb.round >= o.sabotaged) { delete o.sabotaged; say(cb, 'The ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + ' blocks the way again.'); emitFx(cb, 'sabotage_end', { at: o.pos, what: o.kind }); }
-        if (o.disabledUntil && cb.round >= o.disabledUntil) { delete o.disabledUntil; delete o.disabled; say(cb, 'The ' + o.name.toLowerCase() + ' at ' + refOf(o.pos) + ' comes back online.'); emitFx(cb, 'sabotage_end', { at: o.pos, what: o.kind }); }
-      }
-      st.objs = st.objs.filter((id: string) => objectsOf(cb).some((o: any) => o.id === id && (o.sabotaged || o.disabledUntil)));
-      void ctx;
-    },
-  },
-  brief: () => 'An emplaced turret object the Infiltrator disabled takes no action until the round named.',
-});
+// ---------- Sabotage (rank II): data only (classes.json; rules 1.74 item 6011: Pick, Disable, Rig and Hijack are the
+// Operative's Shadow verbs, shadow.json; this move makes Disable and Rig cost no Shadow) ----------
 
 // ======================================================================================================== MAGE
 // ---------- Core Change (rank I, passive): written in data only (data/classes.json; run by effects/triggers.ts, engine foundations 3) ----------
@@ -456,13 +384,15 @@ function salvageTarget(h: Holder, way: string): Unit | null {
   if (way === 'reclaim') return [...figmentsOf(cb, u)].reverse().find((t) => near.includes(t)) || null;
   return near.filter((t) => !t.dead && t.side === u.side && repairable(t) && (t.hp < t.maxHp || t.downed)).sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0] || null;
 }
+/** Salvage's ways: its data's pick (rules 1.74 item 6045: the wreck alone). */
+const SALVAGE_WAYS: string[] = ((rawItem('class:trickster.salvage')?.effects || [])[0]?.pick as string[]) || ['wreck'];
 register({
   id: 'trickster.salvage', claims: 'all',
   actions: [{
-    id: 'salvage', label: 'Salvage', scope: ['combat'], target: 'none', ap: 'data', pick: ['wreck', 'reclaim', 'repair'], pickLabel: 'What to salvage',
+    id: 'salvage', label: 'Salvage', scope: ['combat'], target: 'none', ap: 'data', pick: SALVAGE_WAYS, // rules 1.74 item 6045: the ways are the data's (the wreck alone) pickLabel: 'What to salvage',
     text: 'Next to you: charge from a wreck, one of your Figments let go with all its charge back, or a repair.',
     preview: (h, args) => {
-      const way = args.choice || 'wreck', t = salvageTarget(h, way);
+      const way = args.choice || 'wreck'; if (!SALVAGE_WAYS.includes(way)) return { ok: false, why: 'Salvage takes a wreck.' }; const t = salvageTarget(h, way);
       if (!t) return { ok: false, why: way === 'wreck' ? 'No wreck next to you (or salvaged already).' : way === 'reclaim' ? 'No Figment of yours next to you.' : 'Nothing of your side next to you needs a repair.' };
       if (way === 'wreck' && !h.u!.mg?.vcarry) return { ok: false, why: 'No Visualizer to charge.' };
       return { targets: [t.id], lines: ['Salvage: ' + way + ' (' + t.name + ').'] };

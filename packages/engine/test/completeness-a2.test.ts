@@ -86,7 +86,7 @@ describe('Breaching Strike II on the area map; Talks Broke Down II; Soulmate II 
     s.g.rng.state = rngFor(2).state; const ck = s.g.checks.find((k) => !k.done)!; s.act({ type: 'check/roll', checkId: ck.id }); s.act({ type: 'check/accept', checkId: ck.id } as any);
     s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', fromTalk: true, enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     const cb = s.g.combat!;
-    expect(logHas(cb, /Talks broke down .*lost/)).toBe(true); expect(logHas(cb, /hesitates \(Talks Broke Down\)/)).toBe(true);
+    expect(logHas(cb, /Talks broke down .*lost/)).toBe(true); expect(logHas(cb, /hesitates \(Parley\)/)).toBe(true); // rules 1.74 item 6043: renamed
   });
   it('Soulmate II: two bonds; the story harm on either is shared', () => {
     const s = storyWith([{ perks: { soulmate: 'II' }, skills: { camaraderie: 9 } }, {}, {}]); const [a, b, d] = s.chars;

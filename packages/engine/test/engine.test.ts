@@ -363,7 +363,7 @@ describe('combat', () => {
     const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
     u.ap = 6; u.analysis = 0; u.pos = '1,5'; e.pos = '9,5';
     expect(analyze(cb, u, e)).toMatch(/range/);
-    e.pos = '4,5'; expect(analyze(cb, u, e)).toBeNull(); expect(u.ap).toBe(4); expect(e.analyzedBy).toBe(u.name); expect(e.weakPoint).toBe(false);
+    e.pos = '4,5'; expect(analyze(cb, u, e)).toBeNull(); expect(u.ap).toBe(4); expect(e.analyzedBy).toBe(u.name); expect(Object.keys(e.conds || {}).filter((k) => k.startsWith('read_them'))).toEqual([]);
     expect(analyze(cb, u, e)).toMatch(/already/);
   });
 });

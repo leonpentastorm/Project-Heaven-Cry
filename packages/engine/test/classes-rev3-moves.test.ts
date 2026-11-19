@@ -9,6 +9,10 @@ import {
   mendFactor, levelFactor, resolveAttack, SOUL_RULES, FEELING,
 } from '../src';
 import { makeObject } from '../src/objects';
+import { endCond } from '../src/magic';
+import { classMoveKeys } from '../src/effects/collect';
+import { perkActionsFor } from '../src/effects/actions';
+import actionsJ from '../../../data/actions.json';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 
 type F = ReturnType<typeof fightWith>;
@@ -33,7 +37,7 @@ const order = (f: F, ...us: Unit[]) => { f.cb.order = us.map((u) => u.id); };
 describe('the 20 new moves are handled', () => {
   it('every new move has a handler and every effect is engine-run (no gap, nothing left to the Narrator)', () => {
     const NEW = Object.values(CLASS).flatMap((k: any) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new);
-    expect(NEW.length).toBe(28); // rules 1.73: + Retort and Reforge on the Bulwark (Unbroken and Reactive Plate out); rules 1.60: + Read the Swing; + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command; − Field Fix (to the move pool, rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
+    expect(NEW.length).toBe(29); // rules 1.74: + Backdraft; rules 1.73: + Retort and Reforge on the Bulwark (Unbroken and Reactive Plate out); rules 1.60: + Read the Swing; + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite, − Command; − Field Fix (to the move pool, rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
     for (const m of NEW as any[]) {
       const info = itemInfo(m.key)!; expect(!!handlerOf(info.key) || coverageOf(info).every((r) => r.owner === 'generic' || r.owner === 'action'), m.key).toBe(true); // a handler, or data only (engine foundations 3; a data action: P6, rules 1.32's Vanish; rules 1.33: a data action whose ops run on acted)
       expect(coverageOf(info).filter((r) => r.owner === 'gap' || r.owner === 'narrator'), m.key).toEqual([]);
@@ -183,54 +187,34 @@ describe('Marksman', () => {
 
 // ======================================================================================================== INFILTRATOR
 describe('Infiltrator', () => {
-  // Rules 1.60 item 4628 (R10): Vanish re-pointed: the Operative's Fade (Ingenuity 5's verb) costs no Shadow.
-  it('Vanish: the Operative\'s Fade takes no Shadow; anyone else\'s takes its price', () => {
-    const run = (spec: CharSpec) => { const f = fightWith([spec], [{}]); const u = at(f, f.pc, '3,4'); at(f, f.foe, '8,4'); f.turn(u); (f.unit(u.id).res ||= {}).shadow = 2; f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:shadow.fade' } as any); return { hidden: !!f.unit(u.id).hidden, shadow: f.unit(u.id).res!.shadow }; };
-    const op = run(cls('infiltrator', 8, { level: 12, skills: { ingenuity: 7 } })), other = run({ skills: { ingenuity: 7 }, attrs: { perception: 7 } });
-    expect(op.hidden).toBe(true); expect(other.hidden).toBe(true);
-    expect(op.shadow).toBe(2); expect(other.shadow).toBeLessThan(2);
+  // Rules 1.74 item 6011: Vanish is the Operative's free Hide, once a turn (it was Fade at no Shadow, rules 1.60 R10).
+  it('Vanish: the Operative hides for 0 AP once a turn, then at the Hide price; anyone else pays the price', () => {
+    const run = (spec: CharSpec) => { const f = fightWith([spec], [{}]); const u = at(f, f.pc, '1,4'); const e = at(f, f.foe, '14,9'); e.vision = 1; f.turn(u);
+      const ap0 = f.unit(u.id).ap; act(f, f.unit(u.id), { type: 'combat/hide' }); const first = ap0 - f.unit(u.id).ap;
+      withGame(f.g, () => endCond(f.unit(u.id), 'hidden', f.cb)); const ap1 = f.unit(u.id).ap; act(f, f.unit(u.id), { type: 'combat/hide' });
+      return { first, second: ap1 - f.unit(u.id).ap }; };
+    const op = run(cls('infiltrator', 8, { level: 12 })), other = run({ attrs: { perception: 8 } });
+    expect(op.first).toBe(0); expect(op.second).toBe(other.first); expect(other.first).toBeGreaterThan(0);
   });
-  it('Field Fix (now the Rigger\'s, rules 1.34): clear a squadmate\'s jam, restore their weapon, repair a machine; nothing to fix is refused', () => {
-    const f = fightWith([cls('trickster', 5), { traits: ['factory_made'] }], [{ at: 'P11' }]);
-    const [i, a] = f.pcs; at(f, i, '4,2'); at(f, a, '5,2');
-    let u = f.turn(i); f.unit(a.id).jammed = true;
-    perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'clear_jam' });
-    expect(f.unit(a.id).jammed).toBe(false); expect(f.unit(u.id).ap).toBe(4);
-    const al = f.unit(a.id); al.maxDur = al.maxDur || 100; al.dur = 10;
-    perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'restore_durability' });
-    expect(f.unit(a.id).dur).toBeGreaterThan(10);
-    f.cb.round++; u = f.turn(u); f.unit(a.id).hp = 30;
-    perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id, choice: 'repair' });
-    expect(f.unit(a.id).hp).toBeGreaterThan(30);
-    f.unit(a.id).hp = f.unit(a.id).maxHp; f.unit(a.id).dur = f.unit(a.id).maxDur;
-    expect(() => perk(f, u, 'class:infiltrator.field_fix', { targetId: a.id })).toThrow(/Nothing to fix/);
+  it('Field Fix left the Rigger for the move pool (rules 1.74 item 6045: Quick Sketch takes its place), its key kept and shelved', () => {
+    expect(classMoveKeys({ perks: [], traits: [], cls: 'trickster', rank: 3 } as any).map((x) => x.key)).not.toContain('class:infiltrator.field_fix');
+    expect(itemInfo('class:infiltrator.field_fix')).toBeTruthy();
   });
-  it('Sabotage: a drone is disabled for numbers.rounds (1, rules 1.32; no turns); a human is refused', () => {
-    const f = fightWith([cls('infiltrator', 8)], [{ name: 'Drill drone' }, { name: 'Trooper' }]);
-    const u = at(f, f.pc, '4,2'), drone = at(f, f.foes[0], '5,2'); at(f, f.foes[1], '5,3'); f.turn(u);
-    perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage', targetId: drone.id });
-    expect(condOn(f.unit(drone.id), 'stunned')).toBe(true); expect(f.unit(drone.id).conds!.stunned).toBe((CLASS.infiltrator as any).ranks.II.moves.find((m: any) => m.id === 'sabotage').numbers.rounds);
-    expect(() => perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage', targetId: f.foes[1].id })).toThrow(/isn't a machine/);
+  it('Sabotage: Pick, Disable and Rig belong to the Operative (rank II), Hijack at rank III; Ingenuity alone opens none', () => {
+    const held = (spec: CharSpec) => { const f = fightWith([spec], [{}]); return withGame(f.g, () => perkActionsFor({ u: f.unit(f.pc.id), cb: f.cb, g: f.g }, 'combat')).map((e: any) => e.itemId); };
+    const op2 = held(cls('infiltrator', 5, { level: 6, skills: { ingenuity: 5 } })), op3 = held(cls('infiltrator', 8, { level: 12, skills: { ingenuity: 5 } })), door9 = held({ skills: { ingenuity: 9 }, attrs: { perception: 9 } });
+    for (const v of ['shadow.pick', 'shadow.disable', 'shadow.rig']) { expect(op2, v).toContain(v); expect(door9, v).not.toContain(v); }
+    expect(op2).not.toContain('shadow.hijack'); expect(op3).toContain('shadow.hijack'); expect(door9).not.toContain('shadow.hijack');
+    expect(handlerOf('class:infiltrator.sabotage')).toBeFalsy(); // its old actions went with the handler
   });
-  it('Sabotage: a rigged tile springs on the next enemy (30, Pinned on a failed Body save), never on your side', () => {
-    const f = fightWith([cls('infiltrator', 8), {}], [{}], { classic: true });
-    const [i, p] = f.pcs; at(f, i, '4,2'); at(f, p, '3,3'); f.turn(i);
-    perk(f, f.unit(i.id), 'class:infiltrator.sabotage', { actionId: 'rig' });
-    expect(objectsOf(f.cb).some((o: any) => o.rig && o.pos === '4,2')).toBe(true);
-    act(f, f.unit(i.id), { type: 'combat/move', to: '4,4' });
-    f.turn(p); expect(() => act(f, f.unit(p.id), { type: 'combat/move', to: '4,2' })).toThrow(/Can't reach/); // your side knows it and walks round it
-    const foe = tough(saves(at(f, f.foe, '6,2'), -50)); foe.armour = 0;
-    f.turn(foe); seed(f, 5); withGame(f.g, () => moveUnit(f.cb, f.unit(foe.id), '4,2', f.g.rng));
-    expect(f.unit(foe.id).hp).toBe(999 - Math.floor(30 * levelFactor('deal', f.unit(i.id).level))); expect(condOn(f.unit(foe.id), 'pinned')).toBe(true); // rules 1.26 b7: a trap a character set grows with its level
-    expect(objectsOf(f.cb).some((o: any) => o.rig)).toBe(false);
-  });
-  it('Sabotage: a barricade next to you breaks (rules 1.32: its hp to 0)', () => {
-    const f = fightWith([cls('infiltrator', 8)], [{ at: 'P11' }]);
-    const u = at(f, f.pc, '4,2'); f.cb.objects = [...objectsOf(f.cb), makeObject('bx', 'barricade', '5,2')]; f.turn(u);
-    perk(f, u, 'class:infiltrator.sabotage', { actionId: 'sabotage_object', tile: '5,2' });
-    expect(objectsOf(f.cb).some((o: any) => o.id === 'bx' && (o.hp == null || o.hp > 0))).toBe(false);
-    act(f, f.unit(u.id), { type: 'combat/move', to: '5,2' });
-    expect(f.unit(u.id).pos).toBe('5,2');
+  it('Sabotage: Disable and Rig cost the Operative no Shadow; the rig is laid on its tile', () => {
+    const f = fightWith([cls('infiltrator', 8, { level: 12 }), {}], [{ name: 'Drill drone' }, {}], { classic: true });
+    const [i] = f.pcs; at(f, i, '4,2'); const drone = saves(at(f, f.foes[0], '5,2'), -50); at(f, f.foes[1], '14,9').vision = 1; f.turn(i);
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(i.id), 'hidden', undefined, undefined, { skipSave: true })); (f.unit(i.id).res ||= {}).shadow = 0;
+    seed(f, 5); perk(f, f.unit(i.id), 'verb:shadow.disable', { targetId: drone.id });
+    expect(condOn(f.unit(drone.id), 'stunned'), f.cb.log.slice(-4).join(' | ')).toBe(true); expect(f.unit(i.id).res!.shadow).toBe(0);
+    perk(f, f.unit(i.id), 'verb:shadow.rig', { tile: '4,3' });
+    expect(objectsOf(f.cb).some((o: any) => o.pos === '4,3' && o.side === f.unit(i.id).side)).toBe(true); expect(f.unit(i.id).res!.shadow).toBe(0);
   });
 });
 
@@ -261,8 +245,8 @@ describe('Trickster', () => {
   it('Read (to the Operative, rules 1.34): Analyze costs 1 AP and names the enemy\'s next action, which its turn then does', () => {
     const f = fightWith([cls('infiltrator', 5, MIND)], [{}]);
     const u = tough(at(f, f.pc, '4,2')), foe = at(f, f.foe, '7,2'); order(f, u, foe); f.turn(u);
-    act(f, u, { type: 'combat/analyze', targetId: foe.id });
-    expect(f.unit(u.id).ap).toBe(5);
+    const ap0 = f.unit(u.id).ap; act(f, u, { type: 'combat/analyze', targetId: foe.id });
+    expect(ap0 - f.unit(u.id).ap).toBe((actionsJ as any).items.find((x: any) => x.id === 'analyze').ap); // rules 1.74 item 6011: the plain price (Acuity's Quick Read owns the cut)
     const it0 = f.unit(foe.id).readIntent!; expect(it0).toMatchObject({ kind: 'attack', targetId: u.id, by: u.id });
     expect(fx(f, 'intent')[0]).toMatchObject({ target: foe.id, kind: 'attack' });
     expect(logHas(f.cb, /Read: .* means to (shoot|use Suppress on)/)).toBe(true); // rules 1.12: a soldier opens with Suppress

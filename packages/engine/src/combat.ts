@@ -111,9 +111,9 @@ export interface Unit {
   mags?: number[]; loose?: number;
   /** Magazines picked up for a different weapon: carried back to the pack after the fight. */
   extra?: { weapon: string; rounds: number; type?: string | null }[];
-  /** Analyzed (spec: Analyze): the squad sees this enemy's numbers; weakPoint is Read Them's mark (rules 1.13): an
-   * enemy carrying it deals 15% less damage to the other side (effects/damage.ts). It adds no damage any more. */
-  analyzedBy?: string; weakPoint?: boolean; analysis?: number; vigilant?: number; overweight?: number;
+  /** Analyzed (spec: Analyze): the squad sees this enemy's numbers. Read Them's mark is a condition row now (rules 1.74
+   * item 6004: read_them, read_them_ii), put on by the perk, Case Closed and The Tell. */
+  analyzedBy?: string; analysis?: number; vigilant?: number; overweight?: number;
   /** Stances and reactions (spec: Prone; Brace; Overwatch; reactions). */
   prone?: boolean; braced?: boolean; overwatch?: 'shot' | 'aimed' | 'melee' | null; reactedRound?: number; vision?: number; sensory?: number; noSprint?: boolean; strength?: number;
   /** Weapons v2 (spec): the weapon's condition and mods, gear effects, and per-turn flags. */
@@ -2777,8 +2777,9 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
   say(cb, u.name + (melee ? ' smashes' : ' shoots') + ' the ' + c.name.toLowerCase() + ' at ' + refOf(tile) + damageObject(cb, tile, weaponDamage(w, r, who?.skills.raw_power || 0) * (who ? weaponMult(who, w.id) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1)) + '.');
   return null;
 }
-/** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
-export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', (u.analysis || 0) >= costOf('analyze', 'quick_at') ? 'ap_quick' : 'ap')).ap;
+/** Analyze (spec: Analyze): its data AP (rules 1.74 item 6004: the same for everyone; Acuity's perk Quick Read cuts it
+ * through the price); range 4 + Analysis; line of sight; no roll. */
+export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', 'ap')).ap;
 /** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
  * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap, choice}
  * (choice, rules 1.33: the action's pick, as a felt feeling given by Inspire). */
@@ -2807,9 +2808,9 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   { const no = whyNot(cb, u, cost); if (no) return no; }
   if (dist(u.pos, t.pos) > range) return 'Out of Analyze range (' + tilesN(range) + ').';
   if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';
-  pay(cb, u, cost); t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos }); t.weakPoint = (u.analysis || 0) >= 5;
+  pay(cb, u, cost); t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos });
   acted(cb, u, { action: 'analyze', t, ap: cost }); // P2: Analyze is a verb that fires its own `acted` (in the reducer's action, inside another one, on the area map)
-  say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
+  say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + '.');
   return null;
 }
 /** Two guns that can jam, one in each hand: then there is ONE Clear jam (Leon's ruling, 13 Nov 2026; Hands 5d). */

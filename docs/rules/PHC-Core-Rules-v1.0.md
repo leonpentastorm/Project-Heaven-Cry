@@ -12892,3 +12892,131 @@ steps at 3, 5, 7 and 9, Mastered at 10). Every new number here is PROVISIONAL. I
     Pressure (once a turn a foe; no Dexterity gate).
 5856. **Break Them** takes Shaken Nerves: Rout 1 AP less on your turn, and every save a foe makes against you is harder
     by 1 for each Pressure on it (at most 2; no Dexterity gate).
+### Rules 1.74 (Mind), the Mind lane of 0.32: Perception, Intelligence, Expression (19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (it wins over the sheets); the sheets are
+`docs/design/proposals/2026-11-19-attribute-drafts/perception.md`, `intelligence.md` and `expression.md` (Expression's
+sections 2 and 3 are void: the ruling layer's section 5 and 5b stand in their place). The shape (rules 1.70 item 5537):
+an alpha gives its door at 1, a small verb at 2, perk steps at 3, 6, 7 and 9, a fork at 4 and 8, a big verb at 5 and
+its Mastered perk at 10; a beta or gamma gives its per-point gain on every level, four perks of two tiers (steps at 3,
+5, 7, 9) and its Mastered perk at 10. Every new number is PROVISIONAL.
+
+**Perception (Ingenuity, Acuity, Vigilance; the Operative)**
+
+6000. **Ingenuity's ladder** (alpha, the door Shadow): **1** Shadow (Hide, Break, Go to Ground, First Shade, Tagged) and
+    Tag · **2** Lift and Decoy · **3** a perk step and Ghost Kill · **4** fork one (Light Fingers or Lend the Dark) ·
+    **5** Fade, and Shadow holds 2 · **6** a perk step and Cut the Strap · **7** a perk step and Open Seam, and Shadow
+    holds 3 · **8** fork two (Lightkiller or Spotter) · **9** a perk step and Timing · **10** Vanishing Act. The
+    per-point rows are unchanged (harder saves against your traps, poisons and Shadow verbs; +1 to be spotted every
+    2 points). PROVISIONAL.
+6001. **What leaves Ingenuity:** Still Breath and Close Quarters become Acuity's perk Still Breath (item 6005); Shadow
+    Run becomes Shadow Step's tier II (item 6002); Read Intent becomes a Vigilance perk (item 6009); Plant, Foul the
+    Action and Vault are cut (Tag, Cut the Strap and Athletics' Vault do their work; Lowered stays for other users);
+    Pick, Disable, Rig and Hijack become the Operative's (item 6011). Douse stays as the Shadow lane builds it.
+6002. **Shadow Step tier II:** once a turn a Hidden attack holding Shadow costs 1 AP less (as tier I), **and Shadow
+    Run**: once a turn, a move you make Hidden from beside cover to beside cover costs 1 AP less (at least 1).
+    PROVISIONAL.
+6003. **Ingenuity's forks** (both steps offered). **Light Fingers** (4): Lift costs 1 AP less, and a Lift the target
+    can't see gives +1 Shadow (once a turn). **Lend the Dark** (4): 1 AP and 1 Shadow, once a turn: an ally within 4
+    tiles that no enemy can see becomes Hidden (a fresh ambush). **Lightkiller** (8): once a fight, 1 AP and 2 Shadow:
+    you are Dimmed for 2 rounds (foes' eyes reach you from 3 tiles less: stat `seen_range` −3). **Spotter** (8): as
+    built. PROVISIONAL.
+6004. **Acuity** (beta): every level +1 tile Analyze reach, −5% critical damage taken, and its feed (foes need more to
+    find you while Hidden). Four perks: **Quick Read** (I: Analyze costs 1 AP less; II: and your first Analyze each
+    fight costs 0 AP), **Read Them** (I: a foe you Analyze is Read Them: it deals 15% less damage to your side for the
+    fight; II: 25%), **Still Breath** (item 6005), **Pattern Lock** (kept). Mastered: Case Closed (kept). Analyze is 2 AP
+    for everyone (its points gate at 3 is gone; Quick Read owns the cut), and the Read Them mark is a condition row
+    (`read_them`, `read_them_ii`), also put on by Case Closed and Detective's Eye's fight-start find. PROVISIONAL.
+6005. **Still Breath** (Acuity perk): I: foes' spot rolls against you are −2 while you stand next to cover; II: and an
+    enemy that ends next to you while you are Hidden rolls to spot you (at +4) instead of finding you outright.
+6006. **Vigilance** (gamma): every level +1 to notice, +1 tile notice range, +1 tile Spot reach (and the gamma's +1 on
+    checks). The Call Spot keeps its steps (1, 4, 8: rules 1.70) and the one price table. Four perks: **Cold Spine**
+    (item 6007), **The Tell** (item 6008), **Got You in My Sight** (kept), **Read Intent** (item 6009). Mastered:
+    Nothing Gets Past (kept).
+6007. **Cold Spine** (was Eyes in the Back; the passive Cold Spine folded in): I: you learn which way a hidden foe that
+    aims at you is, and you can't be flanked (half cover and a carried shield guard every side); II: allies next to
+    you can't be flanked either.
+6008. **The Tell** (was Detective's Eye, now Vigilance's; the passive The Tell folded in): I: in talk you notice hidden
+    weapons and hostile intent; one out-of-place detail a scene; a fight starts with one trap or weak point found
+    (Read Them on one foe); II: two details and whether they connect; two finds at a fight's start.
+6009. **Read Intent** (Vigilance perk; the verb leaves Ingenuity): I: your Spot also Reads its target (your side sees
+    its next action until its turn ends); II: and a Spot on an enemy that can't see you gives +1 Shadow (once a turn).
+    PROVISIONAL.
+6010. **Old saves** (rules 1.70 item 5538): Acuity's free Quick Read (3) and Read Them (5), and Vigilance's Cold Spine
+    (3) and The Tell (5), are preselected perks in the one re-pick. A Detective's Eye held under Acuity moves with the
+    perk to Vigilance (its Acuity step is owed again).
+6011. **The Operative's moves.** Rank I: Mark (kept); **Vanish** (id kept): once a turn your Hide costs 0 AP. Rank II:
+    Toxin (kept); **Sabotage** (id kept): Pick, Disable and Rig are yours (they need the Operative at rank II, and
+    Hijack the Operative at rank III: they leave the Ingenuity ladder), and Disable and Rig cost you no Shadow; the
+    old Sabotage actions and their Pin are gone (one copy: the verbs). Rank III: Execution and Called Shot (kept). The
+    gain Tradecraft keeps its start Shadow, its Read and its unseen Shadow; its Analyze price goes (Quick Read owns it).
+    PROVISIONAL.
+
+**Intelligence (Brain Power, Rumination, Eloquence; the Sigilist)**
+
+6020. **Brain Power's ladder** (alpha, the door Sigils): **1** Sigils (Draw, Evoke, Vent, Swap core, Scuff) · **2**
+    Overclock (moved from 3) · **3** a perk step · **4** fork one (Overflux or Clean Vent) · **5** Twin Draw · **6** a
+    perk step · **7** a perk step · **8** fork two (Written in Advance or Running Script) · **9** a perk step · **10**
+    Clean Draw (Junctions with it). Per point as before (+10% Sigil power, +1 word, harder Sigil saves; +1 reach and +1
+    round every 2). **The core-charge cut a Sigil comes at 3, 5 and 9** (it was 3, 6, 9): one step list in data
+    (`skills.json brain_power per_point.numbers.charge_at`), read by the one `sigilCoreSaving`. PROVISIONAL.
+6021. **Brain Power's forks** (both steps offered). **Overflux** (4): your Sigil spells deal +25% damage while your
+    Flux is at its limit. **Clean Vent** (4): once a turn, your Vent pushes every foe next to you 1 tile and deals
+    them 6 Sigil scorch (a flat amount, more as you level). **Written in Advance** (8): your first Evoke after a turn
+    you ended with glyphs drawn deals +20% damage. **Running Script** (8): after an Evoke, your next glyph this turn
+    costs 0 AP and adds no Flux. PROVISIONAL.
+6022. **Rumination** (beta): every level +1 on Brain saves and its feed (the Flux limit). Four perks: **Index** (I: once
+    a scene a true answer to one factual question; II: and your next Brain save after an Index answer in a fight is at
+    +2), **Proven Formula** (I: +3 on saves against a condition that already took hold on you this fight; II: +5),
+    **Footnote** (II: +2, and your own Sigils count the cited fact too), **Lab Coat** (kept). Mastered: **Established
+    Fact** (the story part kept) with an engine half: once a fight, your own Overload deals you no damage. PROVISIONAL.
+6023. **Eloquence** (gamma): every level +1 on Eloquence checks and Asks, +1 tile Brief reach (Persuasion in a fight
+    harder to resist). The Call **Brief** is re-stepped stronger (ruling layer section 2 item 4): **1** their next two
+    actions cost 1 AP less each · **4** the next 2 AP less and the one after 1 less · **8** the next two 2 AP less each.
+    Four perks: **Objection!** (I: expose a claim before listeners; II: and Burden of Proof's demand for evidence:
+    Burden of Proof is removed and maps to it), **Opening Argument** (I: the pre-fight debate as before; II: your first
+    Persuade, Threaten or Parley each fight costs 0 AP), **Overruled!** (kept), **Thinking Aloud** (I: after a Call,
+    your next Evoke this turn costs 0 AP, once a turn; II: and your next glyph this turn adds no Flux). Mastered:
+    **Closing Argument** (the story part kept) with an engine half: once a fight, your Persuade gets no save.
+    PROVISIONAL.
+6024. **Old saves:** Rumination's free Index (3) and Proven Formula (5), and Eloquence's Objection! (3) and Opening
+    Argument (5), are preselected perks in the one re-pick; a held Burden of Proof becomes Objection! at its tier.
+6025. **The Sigilist's moves.** Rank I: Barrage and Core Change (kept). Rank II: **Backdraft** replaces Overcharge (the
+    ladder gives Overclock at 2): when your Evoker overloads, every foe next to you takes its damage too (true damage, a flat amount block on the overload's amount, so it grows with your level as every character's flat damage does);
+    Bleed the Flux (kept). Rank III: Payload and Stored Spell (kept). PROVISIONAL.
+
+**Expression (Visualization, Improvisation, Charisma; the Rigger)** (the ruling layer's section 5 and 5b stand in
+place of the Expression sheet's sections 2 and 3)
+
+6040. **Visualization's ladder** (alpha, the door Figments; forms are learned, rules 1.70 item 5541): **1** Figments
+    (Picture, Redraw, Let go; Glimmer; 2 forms known; 1 held) · **2** Cash in (moved from 1: the verb row's `requires`,
+    read on the owner's sheet) · **3** a perk step · **4** fork one (Hard Light or Sharp Light) · **5** a second
+    Figment held · **6** a perk step · **7** a perk step and a third held · **8** fork two (Many Hands or Masterwork) ·
+    **9** a perk step · **10** Solid Image. Per point: +1 form known (2 to 9), +1 tile reach, +1 Figment to hit. The
+    old No Snap at 9 is gone (no fork takes it: ruling layer 5b). PROVISIONAL.
+6041. **Visualization's forks** (they upgrade every form you know; ruling layer 5b). **Hard Light** (4): your Figments
+    take 30% less damage; one destroyed gives you +1 AP next turn (once a round). **Sharp Light** (4): your Figments'
+    strikes deal +20% damage; after one drops a foe, your next Figment order costs 0 AP. **Many Hands** (8): +1 Figment
+    held; Picture costs 1 charge less (never under 1). **Masterwork** (8): 0 AP, once a turn, name one Figment you hold
+    your Masterwork (a tie kind `masterwork`, one at a time; naming another moves it): it has +2 to hit and takes 25%
+    less damage, and once a round one order to it costs 0 AP. PROVISIONAL.
+6042. **Improvisation** (beta): every level −10% ambush damage taken and its feed (Figment HP). Perks: **Tuned** (I: the
+    main-hand weapon never jams or breaks, as the old passive; II: and a core swap costs 1 AP less), **Jury-Rig** (I: a
+    Figment of yours destroyed gives +1 AP next turn, once a round, none with Hard Light, whose own AP stands; II: and +1
+    Visualizer charge; the old broken-weapon use is moot under Tuned and goes), **Hot-Swap** (kept). **Field Repair
+    stays the free unlock at 3** (its perk form, gated by holding it, waits on a primitive: the lane's hand-off), so
+    Improvisation has three perks for now. Mastered: Overhaul (kept). PROVISIONAL.
+6043. **Charisma** (gamma): every level +1 on Charisma checks, +1 tile Rally reach. The Call **Rally** is re-stepped
+    stronger (ruling layer section 2 item 4): **1** +2 AP to an ally · **4** +2 AP and 1 Pressure less · **8** +3 AP and
+    1 Pressure less. Perks: **Smooth** (I: a failed lie only raises suspicion; II: and once a scene a lie found out can
+    be walked back with a second check), **Parley** (id `talks_broke_down`; I: before a fight, one attempt to talk the
+    enemy down; II: a fight out of a talk won gives +2 AP on your first turn and every third after, and the first enemy
+    to act hesitates in round 1; the lost-talk penalty is gone), **Crowd Pleaser** (kept), **Showman** (I: Picture costs
+    1 charge less, never under 1; II: and once a turn one Figment order costs 0 AP). Mastered: Everyone's Friend (kept).
+    PROVISIONAL.
+6044. **Old saves:** Improvisation's free Tuned (5), and Charisma's Smooth (3) and Parley (5), are preselected perks in
+    the one re-pick; a held Talks Broke Down is Parley at its tier.
+6045. **The Rigger's moves.** Rank I: the Double (kept); **Quick Sketch** replaces Field Fix (once a turn, Picture costs
+    1 AP less, never under 1; Field Fix goes back to the move pool, its key kept). Rank II: **Salvage** trimmed to the
+    wreck (+2 Visualizer charge beside a wreck, once a wreck; Cash in and Field Repair do the rest); Redline (kept).
+    Rank III: Sleight and Scrap Sentinel (kept). The Rigger's Hands kept. PROVISIONAL.
