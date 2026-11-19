@@ -1470,7 +1470,7 @@ export class CombatLogic extends DCLogic {
       sel.extra = dotJoin(pkE.engine || !narratedRoom(g) ? '' : ADJ_MARKS.narrator + '.', pkState(pkE).tag ? pkState(pkE).why : ''); // rules 1.66 item 5212: a Narrator's call only where there is a Narrator
       // each single choice previewed as the engine would take it (the descriptor's form pick, once the target is picked)
       const whyOpt = flow && pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!flow.picks.targetId)) ? (id) => { const r = flow.peekWith({ form: { choice: id } }); return r && !r.ok ? r.why || 'Not now.' : ''; } : null;
-      Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt, pkEmpty));
+      Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt, pkEmpty ? 'None learned yet.' : '')); // (where they are chosen is said once, in the text above)
     }
     // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.
     const pkiE = isPerkInfo(S.action) && mineTurn ? (() => { const sh = pkShelves(); return [...sh.rides, ...sh.always].find((r) => PKI + r.key === S.action) || null; })() : null;
