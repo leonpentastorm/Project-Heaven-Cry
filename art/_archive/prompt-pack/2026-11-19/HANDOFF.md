@@ -1,10 +1,10 @@
 # November 19 art continuation
 
-Updated 19 November 2026 at 10:47 UTC+7. The 88 entries in files 01–04 have **53 delivered**, **34 to do** and **1 held**. Review candidates require visual approval.
+Updated 19 November 2026 at 10:51 UTC+7. The 88 entries in files 01–04 have **56 delivered**, **31 to do** and **1 held**. Review candidates require visual approval.
 
 | File | Delivered | Total listed |
 | --- | ---: | ---: |
-| 01 | 3 | 37 |
+| 01 | 6 | 37 |
 | 02 | 11 | 11 |
 | 03 | 20 | 21 |
 | 04 | 19 | 19 |
@@ -22,9 +22,6 @@ Run deliver.py review on candidate IDs, inspect the sheet, then run deliver.py d
 ## Remaining entries
 
 - 066 | File 03 | Running Script (fork): replaces the existing picture | `art/icons/forks/sigil-running-script.png`
-- 004 | File 01 | `move-draw-fire`: Called Out (Bulwark rank I, `class:defender.draw_fire`) | `art/icons/moves/draw-fire.png`
-- 005 | File 01 | `class:fighter.wind_up`: Wind-up (Breaker rank I) | `art/icons/moves/wind-up.png`
-- 006 | File 01 | `read_the_swing`: Read the Swing (Breaker rank II) | `art/icons/moves/read-the-swing.png`
 - 007 | File 01 | `mod_follow_guard`: Shield follow (mod) | `art/icons/gear/mod-follow_guard.png`
 - 008 | File 01 | `mod_afterword`: Afterword's edge (mod) | `art/icons/gear/mod-afterword.png`
 - 010 | File 01 | `kit-ahoc-ground-2`: AHOC ground 2 | `art/sprites/kit/ahoc/ground-2.png`

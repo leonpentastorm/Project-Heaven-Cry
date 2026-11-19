@@ -3148,19 +3148,22 @@ e73c6605a3f496afa440a9e5097c3d333f5f10faae0c2fb953b8045726c8b5b4  art/_archive/p
 c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/perks/wick/replaced/2026-11-16/shrug-it-off.png
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
-e21f7cb9e3d80d9112cf2c7d4bd8060fd006afae89656adf76c8692bba32ecfd  art/_archive/prompt-pack/2026-11-19/HANDOFF.md
+db09d8d283a824b76e28c7f4e5d56d5bbe3627894aab3f422793936ff0ac432d  art/_archive/prompt-pack/2026-11-19/HANDOFF.md
 68259168b9a0bdae8a3725b16edcad094e0e80af839d777b654c3bf731e5ad24  art/_archive/prompt-pack/2026-11-19/SPEC-UPDATE.md
-42a0e8ba7980eb8a1ecd3dd51f6d182223f46348b05e4fb7a8ac67b00229387b  art/_archive/prompt-pack/2026-11-19/asset-build-check.txt
+b5f96710e4519a4a4da2a7f8e47632fac97ff50d28cbb6ed38aa51c3853fcc76  art/_archive/prompt-pack/2026-11-19/asset-build-check.txt
 53a796e2821165185750f766accc3da9c9ecf119e0d266871323fbac659f13e9  art/_archive/prompt-pack/2026-11-19/checkpoint.py
 afb0a2ef9567cd56767c24206ef4c3996978bd0381ab389b520e1937fdbba250  art/_archive/prompt-pack/2026-11-19/deliver.py
 ba25f7da2445b248a4efaf13548568d050b5498880abacba727a07bb9da5d6a9  art/_archive/prompt-pack/2026-11-19/full-library-check.txt
-511fd38b01466ed926bbe01c691179ceee67707a9c3432545e98ad8a1b107d1c  art/_archive/prompt-pack/2026-11-19/generate-ink.js
+acb44d47bf43d913c4569bd3cbd0cecd60fb2d8d35551c36a1e7208264f09cd4  art/_archive/prompt-pack/2026-11-19/generate-ink.js
 9db4e9db8ae2e42ef9b0b82236a9a2152ab9a2a8b868bd00e229e57fd32f86ac  art/_archive/prompt-pack/2026-11-19/generate-painted.js
 6aff4dfe18ef2c3233f77511408659cdd60a0fa38229c7aa4ec4a2d915c7c9db  art/_archive/prompt-pack/2026-11-19/generation-failures/failure-53-1795057558567.json
-7e990fd06bfd23f82d18ae3bb67251d4ad8d7c16ffcef47966b35c62e1588636  art/_archive/prompt-pack/2026-11-19/manifest.json
+acc240e489ee0e4756de0e897b5a3f47cde23e15c3281bd84a549e3e5cb8cc91  art/_archive/prompt-pack/2026-11-19/manifest.json
 8b1b2c5d3cc564cfaadb5eb38bbfe4935f8f2c9ad71a78c138973727db01790c  art/_archive/prompt-pack/2026-11-19/native/001-fight-approach.png
 589b79858daac86a32585c03e930ccf1d30728c968c98a7a56311867f170c8a4  art/_archive/prompt-pack/2026-11-19/native/002-level-up.png
 4cd5ea974fe4ac72f747c0081a8756f24f51bce043542753aad14678758a75b3  art/_archive/prompt-pack/2026-11-19/native/003-second-wind.png
+aa5c99d459813f307f637cf02e163b37c594d6f1e6123c839364a1c35ddd3a91  art/_archive/prompt-pack/2026-11-19/native/004-draw-fire.png
+0625f5822a3aabd0a02c0a69402fc010f688cd5f6db1c2573af7de50d3741378  art/_archive/prompt-pack/2026-11-19/native/005-wind-up.png
+e12dbd429ba6a7eba89c84407872e6b4174e4bf6bf79037a66e0a753451f3bea  art/_archive/prompt-pack/2026-11-19/native/006-read-the-swing.png
 f9504fba998b445338883fb1d7d08a4d7409a2e4620a1cdb640fabc717660195  art/_archive/prompt-pack/2026-11-19/native/038-point-man.png
 766ed2d0d40fe0863ec0e4f7ed9a383166654c2649494e86c3c145427947205e  art/_archive/prompt-pack/2026-11-19/native/039-unflinching.png
 7a82f5efbc7ed049163134ace2eb4eab383e065031f34882668f863025cf35f7  art/_archive/prompt-pack/2026-11-19/native/040-marrow-talk.png
@@ -3213,11 +3216,14 @@ f200a875c854e656f6c6a022d535e31bda4a0c81d63d86524818156c6f9097b6  art/_archive/p
 099943fdce5c9527e1c92dcd9aab246ad4eade62f02957061eff86886b22a051  art/_archive/prompt-pack/2026-11-19/native/088-blessed-aim.png
 80afc58a078d43d61ce90b8ed199c3e62501073ac7632d973e2176c2a4a1763a  art/_archive/prompt-pack/2026-11-19/order.json
 042a050d1148a07bda28957bbae5844a2ae068e840b6d07ebc819c2ded384859  art/_archive/prompt-pack/2026-11-19/package.py
-1b005d87d25b22fc27002042ff3609198b8182eb6530d601cf5a812af9474854  art/_archive/prompt-pack/2026-11-19/progress.json
-44c674e1ed4c420e8c25089983ff470823ab664b73b4bfa763766547b23eaa1c  art/_archive/prompt-pack/2026-11-19/queue.json
+95f2cf8f82f8c3a85d11cdf28a00990c59aa4937e71ac7e968d3188cc615f37f  art/_archive/prompt-pack/2026-11-19/progress.json
+f2bb3844fa9f109fd737f87f0d167c3e4dc121f0f0988fb2ea94ed000724d6b7  art/_archive/prompt-pack/2026-11-19/queue.json
 632b19c6566cf0e63e8381e3daed8d495bcbe99c0dfc5b4eae038bb2d603a5ac  art/_archive/prompt-pack/2026-11-19/records/001.json
 c29e9c09a0e12d8b03754eebcafe9c6510800e83da06caca6b7e734223229e21  art/_archive/prompt-pack/2026-11-19/records/002.json
 127c7368e344c950ae993ec6d838b3d15382214d359bde569790aa9eeae653c5  art/_archive/prompt-pack/2026-11-19/records/003.json
+ab8b65bec4d6cb6ecac3ea5b2cc454fc78b2024c4146fb6e90a44368ea068318  art/_archive/prompt-pack/2026-11-19/records/004.json
+f3096985bd989c1f5e1489ce58c26f9debfa35ab590dde76409d3a18169e745f  art/_archive/prompt-pack/2026-11-19/records/005.json
+3bfbcf0231b23e7ca1c606ca5b41b013b15a6f730ac6611c813525d1a349a7e3  art/_archive/prompt-pack/2026-11-19/records/006.json
 1ebc6bd0b1b3e8da2708a14d4933e86f05a9ea2eb42c98bed3b2699eb79477e7  art/_archive/prompt-pack/2026-11-19/records/038.json
 edbda739989c4ee573b291d935d2537da3fb1d7bc67354b48ca3b31a3e07e2d7  art/_archive/prompt-pack/2026-11-19/records/039.json
 7bf0d26895aabf3c45802676a5a2bedfb1dbce2309b8a15f21b565e4c09c5105  art/_archive/prompt-pack/2026-11-19/records/040.json
@@ -3281,9 +3287,13 @@ ab4f2a286ae8f63f8f8bbc403ad88238c368064af404ffd52fdff49ef2ee0bc3  art/_archive/p
 b63c09b53dfe6def63f970ad5d0d5b1ebfba885f029ebc9e88fd00f770438bff  art/_archive/prompt-pack/2026-11-19/rejected/066-second-redesign/comparison.jpg
 aa894e675cd14496ab77138910443d72a115fd5566f4d5e5e92943a71e4990be  art/_archive/prompt-pack/2026-11-19/rejected/066-second-redesign/native.png
 038cbca7d7c53940c0acbb4d3ced8f9546d6fdfda034483cd39355669e1a4eaf  art/_archive/prompt-pack/2026-11-19/rejected/066-second-redesign/result.json
+144a610176e8ff9cfd45245c9b335fc1a4a98ee24f285d537d0bdd508a55f68d  art/_archive/prompt-pack/2026-11-19/rejected/066-third-redesign/REVIEW.md
+1857c65c37dc074ab45ec22cebf9c842b470a62f6828f616c7b22381fd7e3f48  art/_archive/prompt-pack/2026-11-19/rejected/066-third-redesign/native.png
+119b3dff120a23caab0e95d53474206b8629149e92145d980da26784530aef52  art/_archive/prompt-pack/2026-11-19/rejected/066-third-redesign/result.json
 0045ea14510ab484f7ca20f9979f083285764b5e28847945ef7feb305f03a189  art/_archive/prompt-pack/2026-11-19/review/batch-1-2.jpg
 aaf63d4e8173266efc4d011aa728248dff9546e957fac4e59429149e5ad89b87  art/_archive/prompt-pack/2026-11-19/review/batch-3-42.jpg
 d1a306bf219d05b86356bbc7acde32454d911ebd8296596faf28d28878b275a4  art/_archive/prompt-pack/2026-11-19/review/batch-38-39-40-41.jpg
+9aef2595fc0c44fbd0bde4e3cc2e2adfd5157db9241077c65b5eabf68537e933  art/_archive/prompt-pack/2026-11-19/review/batch-4-5-6.jpg
 ae263fa9b22c98dca01b38c33cb606477cf1d10f8b9444f82fbc148c28575c1a  art/_archive/prompt-pack/2026-11-19/review/batch-43-44-46-47.jpg
 60b2535427738cd5c8187870f35225ebeddaa0f6d5af3e9ec6da613c856c371c  art/_archive/prompt-pack/2026-11-19/review/batch-45-48.jpg
 548b800f3cbe05abdd20814bdd732b7c3c5d29710aba2065f7105097599bf6b1  art/_archive/prompt-pack/2026-11-19/review/batch-49-50-51-52-54-56-58.jpg
@@ -3308,6 +3318,7 @@ bc35cd2702ac914b236d6a80d52aef872b910620ac4b8e6dc0b08ff5e6d2b15b  art/_archive/p
 d34ea32893e6a1b0d8e7ea3b7cd272ebfcba45ab44f9ecdab6cf3ec7d73ce170  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/exports/64/soul-blood-price.png
 f7384ceef75e7b85ffa834583c16538bef529febcb9204aeceaa5567192ede41  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/prayer-held-breath.png
 0c4dae6ac582284c0b6fd3df4cfb4dba50fb972f16f1a731154aeea9f2ee6e65  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/forks/soul-blood-price.png
+5a6228a74f8f78ef607aedae0392eb83dc590cc8e9caefbf375bfe5189777e04  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/moves/draw-fire.svg
 dbe1781a6e42dc6d8950297cc5a6b25a3438b799b1b4bda0e7f4b061304ae30e  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/perks/exports/128/jury-rig.png
 79530ccb730c7fe92d8ef5e6bf150b39771d02c387563f90bf4af7beb37ee325  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/perks/exports/128/talks-broke-down.png
 dd495e3ca19c9ec817a732d599d18f0d9968747c9d83484c94f5cc034014ed60  art/_archive/prompt-pack/2026-11-19/superseded/art/icons/perks/exports/256/jury-rig.png
@@ -4654,7 +4665,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-f6c808a6d467bb62e01af97bfce056ea1d752ad7e4e927d037d259bfdcefe24e  art/catalog.json
+607acf8c8eb20113f1c8d0e611cfc84d5339b90e62fed9ffccc4bbe09ced0cdf  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -7507,6 +7518,7 @@ e707c17bee925fce6d70c842fe1b49b548046b488e1ff2db9ea55b608f9c73ca  art/icons/move
 5e088f0065ada345297941dc299550a1dec4e1ffd2fe63d8142ef26a5c56b15e  art/icons/moves/counter.png
 b0cc3156a8c6b283c0f38b158a0d2a8ab9f907e4b1ec13ad6125bff6e72f223a  art/icons/moves/deliver-the-sinner.png
 c2ffd709b603d7c2b8ec256b2805438ef32c90735da582e212e3befd39509179  art/icons/moves/double.png
+9799860587295694ece7017c5cb492130a46a15d7b12eb94a6666dce97dc59fe  art/icons/moves/draw-fire.png
 5a6228a74f8f78ef607aedae0392eb83dc590cc8e9caefbf375bfe5189777e04  art/icons/moves/draw-fire.svg
 cdc77726a70273901170a7bc50401aafdadda8a9853508fd3a0b5ec012ed4547  art/icons/moves/duck-and-roll.png
 0e93442cda0256a1d9518fe02682dd85f6a86f163f4ea7a841d499fb2f603e39  art/icons/moves/execute.png
@@ -7537,6 +7549,7 @@ bd2c740a3f925fa1f381ef22710b455436d1852bd9edf4a37985c9a37d89e0d8  art/icons/move
 2a4fd08d50df7d278c2a001fcca34b4451ddcba741e31e783c41902d302a5e81  art/icons/moves/exports/128/counter.png
 2088e7de94448ba6ab913f4e5e50dc9d914ce86083438cf7841527838118a731  art/icons/moves/exports/128/deliver-the-sinner.png
 2b0f2364638d95424d4522ca3f01296e0218f4179af6bb960bcd4d4d66a69bfb  art/icons/moves/exports/128/double.png
+c6195d0726199566cbb436d0e786cec70daba3506ae034bff362213f11fe2032  art/icons/moves/exports/128/draw-fire.png
 4415f5130ccca416ec84e7ea7e18832dd4b7357b83b1de08ae5c8410354558b9  art/icons/moves/exports/128/duck-and-roll.png
 ec334dcd2c4401ac760507d8b61d6cf511f75741fabfc01163632894de4e4c07  art/icons/moves/exports/128/execute.png
 e6894293f58460b896c9b3d02254da079c71a121885e10e57953623e9d5809ab  art/icons/moves/exports/128/execution.png
@@ -7587,6 +7600,7 @@ f883e9ff13b772f6dae7fd5dafcd35acfbad6c8e64c1591a2b4356f2e37a83d8  art/icons/move
 f6dd11ade82fe9a6860ca9f88e0a5ff7f6a6a3abbb9aa61f6a0e4d167643ac62  art/icons/moves/exports/128/quick-sketch.png
 d40a716b69e2d2fd0a8ba8352744d0a6190e3eddc305aa1546fddb2f0b8cd932  art/icons/moves/exports/128/rally.png
 01db5bb36b9080a2a61e6972a53cc28fbb0585ca32d23614ee275a7aee0cbf04  art/icons/moves/exports/128/reactive-plate.png
+9728296aced340066c4a4c4f0468e7c6e724c36a79e33263e53de3739287fd4b  art/icons/moves/exports/128/read-the-swing.png
 f2857a147e08a54843c06787eba68dc9e83dc1b837b8ebece47c1f37c94ca834  art/icons/moves/exports/128/reflex.png
 ab5e864d13b96ae9808a921458eed0f8aa20b49d5a323c37e39a334def5d857d  art/icons/moves/exports/128/reforge.png
 009ef7b45136295a2cc370b6ca78fd11aa9587f1504f60a2e5eaa3ecdd5334c5  art/icons/moves/exports/128/relocated.png
@@ -7634,6 +7648,7 @@ a10752311ad13cf2f4dda0d63ddb563ee67b2042b41ed1c76a12f37a7b7f4b02  art/icons/move
 7342079c7c03258841f8e3b8e9435230d1a4c557ffbea65f67b226e171756197  art/icons/moves/exports/128/verdict.png
 a72731acb4c5a5b64a06735aaa6f897ecdeff06a0b747985a3920a94b2f74f84  art/icons/moves/exports/128/wall.png
 70771ec6bc3c916d4a650c41e94d121697062117a80ef784c9493c927399bf9a  art/icons/moves/exports/128/weather-the-volley.png
+b7e037394765165f3160cb2efb974fa30664351501b8f99c10eb9f5f27ad6636  art/icons/moves/exports/128/wind-up.png
 3e93b20560693ee8903a0e194c03ebb30bdfe0dd1d5b7fb69833beaeaa1ab9c5  art/icons/moves/exports/128/wrecker.png
 a69ca433d1c1fdc07613d6bf3489a8d60a54e2acdfb1bbb2059a6ba283c5c03f  art/icons/moves/exports/24/amen.png
 be28366ef90bcc9d27a93782ea6905d9938404288a645b4a3170720efcfd078b  art/icons/moves/exports/24/anchor.png
@@ -7661,6 +7676,7 @@ cb1f88de7608f535c6fd404fd87d55112b52d2c727b2b94fb0ad655df25e6c2c  art/icons/move
 f3cd4da735b75150ae8121286c4538e0695a83217e105e83f69fcafaf47cf6fd  art/icons/moves/exports/24/counter.png
 157dd5c9f748c88ca21741abcb47ff3f328cd2c3aaee05e31f96aea25eefdcb7  art/icons/moves/exports/24/deliver-the-sinner.png
 3c34f2f98e0292b01b4f73f989420e752ae4d34e060959e016c7f62875c5abb3  art/icons/moves/exports/24/double.png
+3d21f02d52706eaa552bd1a6b2d7b89de53acd52870cb8bc0ad5cae71f0ca099  art/icons/moves/exports/24/draw-fire.png
 01ed07e3bc07bd7d2805a85a6e9e4af58000bb1f43504e8259603c3aaf27402a  art/icons/moves/exports/24/duck-and-roll.png
 2d77b0f88be0556b6b73e02a7d3f7882788d0cb7b5953c1881c0081282d6851a  art/icons/moves/exports/24/execute.png
 ae377ac00c577bb508c413b1511d5e7b16d44030915c9247eec76a5d02ff4c3a  art/icons/moves/exports/24/execution.png
@@ -7711,6 +7727,7 @@ cea3584d51ec2af9aa78dfb2c40ae077ce097d46751c810768f46d10ee634a70  art/icons/move
 c404e2ea56051edc7223ed160ee16b5d8d17655152c6849602cf021cfe870e72  art/icons/moves/exports/24/quick-sketch.png
 62698b2f79dcd3d4bf4ede564f97d8b4ce244605e88743740f7e704b21ad4102  art/icons/moves/exports/24/rally.png
 e0eb68a64fe9949e0b4259a3716b505b3337ef7239dd4c03c5e08b4c19d04068  art/icons/moves/exports/24/reactive-plate.png
+1a1c354a5878e0f177d9421feecd00b994e58c0e20a4dca8191f18d0e6b8c041  art/icons/moves/exports/24/read-the-swing.png
 c4e8cb8f24747704e5c46ae7b7dc55172e4d06fb00c0897e035f44dc9356ef16  art/icons/moves/exports/24/reflex.png
 3103c06edba94e2f04a6ef25a3bcbb930400074d498e0bb86f071f62181a23ba  art/icons/moves/exports/24/reforge.png
 1ad451a0e10775b845b9e356d92d23271a103e5bf93e594de1b2a144e6021987  art/icons/moves/exports/24/relocated.png
@@ -7758,11 +7775,15 @@ c0edf9a8459fa790acfb4aebd0856d397dc2dd46f51dd307875de4554fae9dcf  art/icons/move
 48e38e8485b6df33e520b2812b8a4f1061ad536e36e4dff48a0628a4f6107060  art/icons/moves/exports/24/verdict.png
 b6d111794e0f4df7fff1a3f0f693954f8593594d7535c6b4e564265df95d333f  art/icons/moves/exports/24/wall.png
 b9bbc7128a7c9b294295431acbc8a6046a75291662b9b138c16e47f0dfeb92a5  art/icons/moves/exports/24/weather-the-volley.png
+53a70abc93e5abac40da2ffa4a988910a8b0d1e9434745f6b4117c8b02f15ef8  art/icons/moves/exports/24/wind-up.png
 1b56c512844b6f648e39fed3c5bd4f832f6890a2f5493518ea0a3b4909706195  art/icons/moves/exports/24/wrecker.png
 667192c09efcf0b8fb2926cf4f4f04d1bdf918d2b0302c5189ac88306660849d  art/icons/moves/exports/256/backdraft.png
+63b7c15eae0f4bbabae9b84e501a7354e56885ea2c2237e9bb2ec73e3533e578  art/icons/moves/exports/256/draw-fire.png
 e396d9822ff5c1b60e20e7dd6e80414dd8534eed1142e30f63a2ef65b02a4784  art/icons/moves/exports/256/quick-sketch.png
+ba42fc59b6aef84b6052b39e1758fc3e933497737024b16233a81b9d84c97d99  art/icons/moves/exports/256/read-the-swing.png
 eb6f4ccf9afcdd07526ebf717c897ea84520d49098a123718e9281ec78937f3b  art/icons/moves/exports/256/reforge.png
 ff98d8d8bf0b2818f029793ccee3ed11bfa8c93c6d59f80a5214883875080e6f  art/icons/moves/exports/256/two-schools.png
+e859a5050bd4f0d44c2c9b89f902cc620c655ab16af8c58c0234a732464fb510  art/icons/moves/exports/256/wind-up.png
 e4d9a287398ba1b66bce4defde634e4bf7cafd7eabe753d569b20f15913d6f10  art/icons/moves/exports/32/amen.png
 86137d8f5574c4fce1577b4118295f360614a72538d6a79ea030243d6a89e053  art/icons/moves/exports/32/anchor.png
 129930ed55fbc4d53e3b050e497c37de294f98d18b2d497bbb84d3e9f5ce33ab  art/icons/moves/exports/32/answered-prayer.png
@@ -7789,6 +7810,7 @@ ccba3a2112319ea42ded3f0723837e04abe5394ae7878d6f6a41821e97bab86c  art/icons/move
 e2b10ca7099c0f3c4d023f2b6c776a66c2f0bce3e128f06721ffbff9edcd52b0  art/icons/moves/exports/32/counter.png
 73d7939f64129bcc6c0127ea1d981ff59975430f7b3b7caa1c2ec00a83ed15ca  art/icons/moves/exports/32/deliver-the-sinner.png
 3428290401677da8d2c36ac6657e7b161d31b23290de4c379e707852060879ae  art/icons/moves/exports/32/double.png
+f01cff014664a02c61f64a6c8be26754f8e23723b27516cef419c1897708362b  art/icons/moves/exports/32/draw-fire.png
 0decd779e2f79ade5c0dcd72bd07ea549c5dcbb524de27490707b84d8003e5c4  art/icons/moves/exports/32/duck-and-roll.png
 43ae17b49eb1521c2af656d22df8346592bb98316d4fc57c43fead3494e6c993  art/icons/moves/exports/32/execute.png
 34c4aea57542ce558a08f3eef2b80f9c94a5d215bc82075bcef62d0ee783084c  art/icons/moves/exports/32/execution.png
@@ -7839,6 +7861,7 @@ a0379bcabfc52da5f726141326e39fcb5b04dccf57791571acb84db2907db816  art/icons/move
 dca07cdaf6005c8b36c490265d9608b22ff6b9e8742457df31742405ad564c6f  art/icons/moves/exports/32/quick-sketch.png
 d3ac1ee49fd6a37eb4f81f08a2ef75f8978d63bdcfe33a8f9455e5f4ae01c45f  art/icons/moves/exports/32/rally.png
 621181382801c457a706c04f0a170412baf7f0ebf36fda2cb4fdf79c189150bd  art/icons/moves/exports/32/reactive-plate.png
+ea18e66d375ae52699aa3574b03e50c6a0dcbac6d335eb6b8b6cfe95e621f9d5  art/icons/moves/exports/32/read-the-swing.png
 1ba7f00e0d75057293e6ac37af4f1ad2f6814d47bd8646a09d7b6e84492a3a44  art/icons/moves/exports/32/reflex.png
 da885c27f19dc6a3e551fa4c7b370a39d67555bf3d62ad6c7db959b3770631be  art/icons/moves/exports/32/reforge.png
 40b0700c317b5127f7dfee458681b0e7b56e32cc8839e597fe52228010ba48e7  art/icons/moves/exports/32/relocated.png
@@ -7886,11 +7909,15 @@ ddb48157bbf0054c62bafae0d66efac8847931cd9d11872564adad30f192e41a  art/icons/move
 80ecfa69ce59ed3376c43932ae8c69b09fbe2caea92408203439e857b1e987b3  art/icons/moves/exports/32/verdict.png
 5a74ffbae1a2ee10a21ad54e1accdf24b49e0aba357acc591879f2c7593e5184  art/icons/moves/exports/32/wall.png
 9b861ae786a7231e1d48bf953eb9610cb0c15d30869e7bdb7d41e70f80c5727c  art/icons/moves/exports/32/weather-the-volley.png
+5e253da6de07b500efd0f2e3417ae18fa341653e21d19315aa7badef25dba2f0  art/icons/moves/exports/32/wind-up.png
 dccd4bc2e2c688eadc225d44b9eb6bc9daa8ab3ed2009040431bc0f177dd2a49  art/icons/moves/exports/32/wrecker.png
 d0f69d239bda312ea49acfe8dde806963a9b6cb4d17cc814b57dc4e8eb3d3d5f  art/icons/moves/exports/40/backdraft.png
+ad9c53c5cbc35877bae557a27db2a3ea2ea2f2e23390e854b7486c16604d3ff4  art/icons/moves/exports/40/draw-fire.png
 8a4a4f342f54c973331d828e0368aa624e000cd4c9e90b81da2a11bad51e72a5  art/icons/moves/exports/40/quick-sketch.png
+7e5f5fc14e887d8fd01676628d6db6d9120cf43d0fc6051c3c36b060ecbe5225  art/icons/moves/exports/40/read-the-swing.png
 904314fb48fffaca9f303d6d1db9b913fadc4df529f237670eb9a18723e3bd41  art/icons/moves/exports/40/reforge.png
 85083287158f7ca3837aef8bfe678d05fbf38bc4171fdca448723a524ae2ff0d  art/icons/moves/exports/40/two-schools.png
+c9d9d80b19da5b7d782ba789886bcbb6711db7ccd25f224b860666df20731838  art/icons/moves/exports/40/wind-up.png
 76c883bbdbfa37c6a7b4bf6f88f9c01ffed7da7f9b38a7c003760e55dbe02a52  art/icons/moves/exports/44/amen.png
 23760618b59977ef558ed5bb900f354ad29d15d2e10ee6ab025fbfb4b31a9267  art/icons/moves/exports/44/anchor.png
 eb7bd51fee51ffa50851a891db4bdd51154bcb7f18754d8494d1166cf68cff33  art/icons/moves/exports/44/answered-prayer.png
@@ -7917,6 +7944,7 @@ a6f38ca47d1aa66e2e6c63b3b1d3df2c94bb2734f204bb0daa3e1ff2c6f67080  art/icons/move
 7d4c7246bd2c721cbbead70b966612c7d92fe386b24d3341b633c1ae008fa1e9  art/icons/moves/exports/44/counter.png
 43a4e86e867da4026dd92bd1f361fa6ff3430f8c3bffbd926c506811859a05bd  art/icons/moves/exports/44/deliver-the-sinner.png
 7a02be99d5281a31f48bb54f62bff8086ab183d778459c39af69ffc561b57857  art/icons/moves/exports/44/double.png
+cafb25050ca57d2a0a2f34512b3b3d6af0a5aded5a63380a1a225dbe0e4dc087  art/icons/moves/exports/44/draw-fire.png
 8645d16a08203af84551227a0d8d2eb9162cd32341c03a19532ed32fe22883c0  art/icons/moves/exports/44/duck-and-roll.png
 8c18cd9ed30e9e711b9ac2d917a08122a46abf7b15c12ea32f3c3a7e9965815c  art/icons/moves/exports/44/execute.png
 f7fab8d522c9d5d3c4ebd6f05859f64c2d1cd78ad290d7427bca83a337e7d67d  art/icons/moves/exports/44/execution.png
@@ -7967,6 +7995,7 @@ eedfd5283ec178030a1ea77318990fff2dbc22bde01557fa7e88cbb198e5ef28  art/icons/move
 3a4ebbed4cc7e4e819c91524b69221fad7123a63f90a0c1e0a58d784c331dfe5  art/icons/moves/exports/44/quick-sketch.png
 376820f5c968d51b63c465a42eefc26ee8639619a265fb5ddc30049ec60cef9d  art/icons/moves/exports/44/rally.png
 9cc333575f6ae4374001d0099dd159f2f6356244b9aae6cd7ac686fe5f42f60a  art/icons/moves/exports/44/reactive-plate.png
+8c6220e8159c943d6cd48323b3bcabcfbcd0c873a7153486c70f3fb6721c63a5  art/icons/moves/exports/44/read-the-swing.png
 4fc3d732d69b2844b199979ec5c6bb6867853e90b22fef11a8dc2be498a273c4  art/icons/moves/exports/44/reflex.png
 7cb019b33e97d2f0109d427252d356cdb1538c7eadd90ae2f1c7ed15ee56e84f  art/icons/moves/exports/44/reforge.png
 df9737feacd86d6ca26e7ba3b545d7abbab48ee3ba8c6631a7f8e46ef8bcfc68  art/icons/moves/exports/44/relocated.png
@@ -8014,6 +8043,7 @@ a456e983fc02079a623cdec319eea7141d9fe0f9692c0c66fa25164a044ebefe  art/icons/move
 641a4f1344a902b926f6c8944ebb2af238961821034a3b20b5c8008a24d330ea  art/icons/moves/exports/44/verdict.png
 df7088d034c13f8db5c83072b6195d503ec97fc66e79bbe5f175fd596aec193b  art/icons/moves/exports/44/wall.png
 f6e6bad02a3afdf108a2100943c2967a6cfda86a0ace688cc61550bc5992c1bb  art/icons/moves/exports/44/weather-the-volley.png
+7f50a1988cac13e8eb6003bc2d9b308aa00f553e21c134cd587a178fd21f4c30  art/icons/moves/exports/44/wind-up.png
 299353e73b340ca8187ecd6e9d1e08131dc360300e6036bae86207f121d010c0  art/icons/moves/exports/44/wrecker.png
 d551e29aa16c2bdec9ec4095bff5abf32604bb9d6d80f9b61cfd8d59b075f12a  art/icons/moves/exports/48/amen.png
 4f0271b540febad0484802b622026294ef5c39fd52697b25bb0bb2947c04575e  art/icons/moves/exports/48/anchor.png
@@ -8041,6 +8071,7 @@ aa4d32d548ab890ed778363fe25795e519a9c08a9b3b5a71b53b232767ec12f9  art/icons/move
 d9c908146b961662de4465b0433c90955bd3eb7f931db97e3f07bda28168f5eb  art/icons/moves/exports/48/counter.png
 b7128321f43c07a73317e480c3d70b0866dd713af59f7627070e3247a694934b  art/icons/moves/exports/48/deliver-the-sinner.png
 18b8db6834a9e2b1295c29963910621232f39d2519add85a0e8d130470de0070  art/icons/moves/exports/48/double.png
+43101d64cbfb8d37d550916c10ff6f59e2e2759422f113be3cb5375f586c0ca1  art/icons/moves/exports/48/draw-fire.png
 f8aa7e975e5b322c417056fc39a955693a165e7c4b4927b5f39844517c23a2a8  art/icons/moves/exports/48/duck-and-roll.png
 350f11c8772a649aad01d93886b266b89cfad842e787b620b33facc50d6a3d8c  art/icons/moves/exports/48/execute.png
 f8d170d534f8e13270740aab94ffed484a3bcc81ca1f7c2d42423bab5e6d2e8d  art/icons/moves/exports/48/execution.png
@@ -8091,6 +8122,7 @@ daf32cc70967be0ff2633f7642bbd8975ff336515d4d2568f8817a6cdc98fee3  art/icons/move
 0a46385ddd0669139b11bc748ecdd4d748d28d441d0fe81c440b7394e0a0a9fa  art/icons/moves/exports/48/quick-sketch.png
 7f13505608d9c70d7a28b90492c05b28743e6653e723acd1fcd1b3d58022baf7  art/icons/moves/exports/48/rally.png
 901a693f9d7b2b9bbb2f56777ab38341bc02d5a1d6cab52af4708e8ccdf4745b  art/icons/moves/exports/48/reactive-plate.png
+f81ba07f6d806b63c6fc617c994a2904dcc51ffaee0de031d8d55444b33c77ed  art/icons/moves/exports/48/read-the-swing.png
 d70dea5d4b22b4c8ee9412ec18ffae23ea9b920c1db592b2dcc964a8c3cd6a08  art/icons/moves/exports/48/reflex.png
 be05544ad6b6a785c6f0bd05b32ab57de5ee2be207b26564f561549142b35f29  art/icons/moves/exports/48/reforge.png
 0eb124e581bdf497492c18fded0ade28e3f44d0f119c21ca0c56026c773e7f65  art/icons/moves/exports/48/relocated.png
@@ -8138,11 +8170,15 @@ db9dddab6e1245ddd6bc9e01bc0e85ad964f15aceb647f7002b7d81da7431254  art/icons/move
 731e02d3ea86281c1b9915a0ec49445be4d4fbe20432b54cc68af7cebb7c9e90  art/icons/moves/exports/48/verdict.png
 f9c802b76f6362c70d11a76ba06dc0141a2bc98d4c57237b928f352b8597a6ce  art/icons/moves/exports/48/wall.png
 c348eb848baf2180da16a5da4878b91017ac9c6b08128207900df4188ff3e38d  art/icons/moves/exports/48/weather-the-volley.png
+b324686508a7a1b173a08fb1be2791c8bb50908ddd51dad09cb13b3fca2c68f0  art/icons/moves/exports/48/wind-up.png
 6a5b209eea9c7d98107f6c30a1f0def6caf9c3dcfad09570dd49d49e8b2fc246  art/icons/moves/exports/48/wrecker.png
 a0387d91033870bb3c2bc1adc8202badf7af4190364a95d48629db0dad823bf5  art/icons/moves/exports/56/backdraft.png
+3366a0addba9a8ac805d6376747430a6b471886ecec1574d23de5d473ea605df  art/icons/moves/exports/56/draw-fire.png
 82e4087ffc698deb19af6cbcfa688cf14271b57007d287fb6319487bd4252e7d  art/icons/moves/exports/56/quick-sketch.png
+770b573d5c58afdc4d459eaba445085b015aa31e751b810fe47fada5813aa3c6  art/icons/moves/exports/56/read-the-swing.png
 f34b9c53f29a8c602d3d6cfdeb0ab273a0e19ea550eb2df17d5917c52d1b04bf  art/icons/moves/exports/56/reforge.png
 af91fe54f780eb5447f988058ed28d818a4251823b6b9b484fdf851749558518  art/icons/moves/exports/56/two-schools.png
+773c52785aa2831dd82424a1c739cd905722074ac3a1a943f6ec1f84696cd978  art/icons/moves/exports/56/wind-up.png
 1b955922b1ca1f5199c343c824d590662d954f34820c946b3aa60165a07a7e40  art/icons/moves/exports/64/amen.png
 debd2908efd717775e06644eb783239e1f2a703ac6fe4dbc9ae3870bc96b5d61  art/icons/moves/exports/64/anchor.png
 1cc697a12b4eb148a7232e5f044b6650016818dd3a75757e40227d0bb16f4909  art/icons/moves/exports/64/answered-prayer.png
@@ -8169,6 +8205,7 @@ ead8b288f0223701874cb5547b6d21d1d4a09cd1a2ccadb6f279847813e246f7  art/icons/move
 fb4c7a94e61c8e065e9652203d645f6bb979e11880de4d3119be4ea9ad39ba5b  art/icons/moves/exports/64/counter.png
 553d071cd0687a319dbabaae054dab3b40080164d5472accd7a92ede15693a00  art/icons/moves/exports/64/deliver-the-sinner.png
 7851056ee398bdf3f410398be607358341876251d2dda8a7d1d453da76934cf6  art/icons/moves/exports/64/double.png
+25351c2d1fc38374a83f65a9c88b47bafd28a85bf9215fb2d50548b4dd9ab2be  art/icons/moves/exports/64/draw-fire.png
 610af2ab02c62553700c3197ff927965ef5eb247b778db9317ef4673f31beb40  art/icons/moves/exports/64/duck-and-roll.png
 be5f9147bb1ba0eed754dd00e247dd1e6e09de1ef1490a9f19ff42dfc4ba8c9c  art/icons/moves/exports/64/execute.png
 1aab0d6010731832b36b564def7d2b98dbeb61b51a5ad612ed0b538798967461  art/icons/moves/exports/64/execution.png
@@ -8219,6 +8256,7 @@ b04966bc535abd61fac1aeed649c6a59ebe28a2e3fdf03634c43c0e796ffd8c6  art/icons/move
 e9a7aeedea76b88ad93bb616f9f8440869caf6fa2d81c156b36b8f0ccd2ea334  art/icons/moves/exports/64/quick-sketch.png
 5cee01de48fa695902e348a32e093cda6efb23d1b0ace1c65c7eb738ec3e2405  art/icons/moves/exports/64/rally.png
 771c439c68b8f4bea01c1991ea98280820f06867fff37249f826f0148da250ff  art/icons/moves/exports/64/reactive-plate.png
+f841e460c1a5708310922fd1b20baf2f475e7b08f80afe5637e982aa245bad9a  art/icons/moves/exports/64/read-the-swing.png
 9a6b76581b0ef6adfe2da4c58f80f142075a6c110c71eaa5f572e6ba885e9d33  art/icons/moves/exports/64/reflex.png
 606fe7406f2cacdf76c4d355f426c2ad533e09310243ee698acabbb52a77407f  art/icons/moves/exports/64/reforge.png
 e522cf41947383a34ec52b9098cb8b09bb0c6b827083f1cb1fe4757b4ab69a9b  art/icons/moves/exports/64/relocated.png
@@ -8266,6 +8304,7 @@ e6229b2045d015824016c937ef7581704f35bcf5b0ec6003e1351db023a17093  art/icons/move
 37a370bc991b6e6d6eb3190af6f0884572b2d63e621de97a011bd809308a947c  art/icons/moves/exports/64/verdict.png
 bc489b9654b9de05104b91eee42431b9785944e068c72ecbce773691f7561e85  art/icons/moves/exports/64/wall.png
 49938840805295264b56daefd1b82bdae0158d614724b6224279ccffc9c7ae4b  art/icons/moves/exports/64/weather-the-volley.png
+526e2c1b56496df3b35f850e0d54d2c2ea21d662b17ea195625ee0a7048b7404  art/icons/moves/exports/64/wind-up.png
 aa6bc6b24a756cda168b3637da2273a9a5fde6798737eadc2e29ba7a6bceea85  art/icons/moves/exports/64/wrecker.png
 b9719915dffd907dd56e6b4636aae737fba204a89b2935c921b62b13621771bb  art/icons/moves/eye-and-wall.png
 d664bc4959a21be2afd92c7f444d9140dc6e02194253a1698c94da366c19aa35  art/icons/moves/eye-of-the-storm.png
@@ -8314,6 +8353,7 @@ f74c14b65d01a86a585acadcda92b2bd8202d5ae1601e7c2c0dcabf335a684c1  art/icons/move
 4e1c5a93ed4c492cff284434698c4183328e892250927dcbe3721eda7b12c730  art/icons/moves/quick-sketch.png
 ca118d9a550e723857f9dc9a4813fd7f15cedc3fb9ba65e6fe841e607cbda912  art/icons/moves/rally.png
 1c5ca9e62c749f22d94077e699a3a70754289369e222c6673f79b70df3bfb6fe  art/icons/moves/reactive-plate.png
+58800e46f367858a0b68a560cebc01fa40c4f198a0a36f82190d9a0978f8cce9  art/icons/moves/read-the-swing.png
 901488ee221a03acb75ca9b17c18539ece991c3bc4e296b05943d89a7e952c62  art/icons/moves/reflex.png
 9416180eecbfe5fe51c262a12970474b250bbf69e81175e272aa27cd9994ea37  art/icons/moves/reforge.png
 8fc78207889a9430d49c0ee42bc8f01ec8acfd0ec9a682dc2bb3a189f3d14151  art/icons/moves/relocated.png
@@ -8361,6 +8401,7 @@ d38a85afafd8a04d708545329b64d5959816151f65692212abb098401a0652fb  art/icons/move
 0839b6f43054e0474092b112eb850924df7ca2d7f193a8b9528201e00f0dbf9d  art/icons/moves/verdict.png
 826444670d97ad63c78a8c06b517d3c3c6f3b302aa5714356892f8bc84411855  art/icons/moves/wall.png
 a4dfd19d1befb0c75a84bbe6da233ea56fd1ffd0c629b12508addce028afb98f  art/icons/moves/weather-the-volley.png
+4ab157276f6af5c4ee555cf7d985d6aa1ad6771f83862a689d80103b931543f7  art/icons/moves/wind-up.png
 bf9a222562d05cfeff86ebe06d548da26989c4add956a706ef80dc12c44f7ae8  art/icons/moves/wrecker.png
 264f5c2dbb09c0ad79f0ce29cbf30fc6d326c206e83ef27ffbcf63be35bde8c2  art/icons/panels/exports/24/run.png
 12bd47ce099548fcd3784286831bb6871c04c6423f4d81f64f12836bdf18ab92  art/icons/panels/exports/24/run_board.png

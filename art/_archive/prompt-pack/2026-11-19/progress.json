@@ -1,9 +1,9 @@
 {
-  "updated": "19 November 2026 at 10:47 UTC+7",
+  "updated": "19 November 2026 at 10:51 UTC+7",
   "source_baseline": "2020b5c2aa620ec17103b7c11669f643342ed68f",
   "listed": 88,
-  "delivered": 53,
-  "eligible_remaining": 34,
+  "delivered": 56,
+  "eligible_remaining": 31,
   "held": [
     9
   ],
@@ -11,6 +11,9 @@
     1,
     2,
     3,
+    4,
+    5,
+    6,
     38,
     39,
     40,
@@ -64,9 +67,6 @@
   ],
   "pending_in_order": [
     66,
-    4,
-    5,
-    6,
     7,
     8,
     10,

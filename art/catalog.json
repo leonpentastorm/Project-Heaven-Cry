@@ -32472,18 +32472,41 @@
       ]
     },
     "move-draw-fire": {
-      "label": "PLACEHOLDER: Draw Fire",
-      "path": "art/icons/moves/draw-fire.svg",
-      "sha256": "5a6228a74f8f78ef607aedae0392eb83dc590cc8e9caefbf375bfe5189777e04",
-      "placeholder": true,
-      "format": "svg",
+      "label": "Called Out (Bulwark rank I, `class:defender.draw_fire`)",
+      "path": "art/icons/moves/draw-fire.png",
+      "sha256": "9799860587295694ece7017c5cb492130a46a15d7b12eb94a6666dce97dc59fe",
+      "format": "png",
       "mode": "wick",
       "tint": "endurance",
-      "wanted": "art/icons/moves/draw-fire.png",
-      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #10",
+      "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:103",
       "slot": false,
-      "status": "placeholder",
-      "production_approved": false
+      "status": "review-candidate",
+      "production_approved": false,
+      "previous_path": "art/_archive/prompt-pack/2026-11-19/superseded/art/icons/moves/draw-fire.svg",
+      "previous_sha256": "5a6228a74f8f78ef607aedae0392eb83dc590cc8e9caefbf375bfe5189777e04",
+      "width": 1024,
+      "height": 1024,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/004-draw-fire.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/moves/exports/256/draw-fire.png",
+        "128": "art/icons/moves/exports/128/draw-fire.png",
+        "64": "art/icons/moves/exports/64/draw-fire.png",
+        "56": "art/icons/moves/exports/56/draw-fire.png",
+        "48": "art/icons/moves/exports/48/draw-fire.png",
+        "44": "art/icons/moves/exports/44/draw-fire.png",
+        "40": "art/icons/moves/exports/40/draw-fire.png",
+        "32": "art/icons/moves/exports/32/draw-fire.png",
+        "24": "art/icons/moves/exports/24/draw-fire.png"
+      },
+      "ink": "#FFFFFF"
     },
     "move-unbroken": {
       "label": "Wick — Unbroken",
@@ -36682,6 +36705,72 @@
         "24": "art/icons/moves/exports/24/two-schools.png"
       },
       "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:25",
+      "ink": "#FFFFFF"
+    },
+    "move-wind-up": {
+      "label": "Wind-up (Breaker rank I)",
+      "path": "art/icons/moves/wind-up.png",
+      "sha256": "4ab157276f6af5c4ee555cf7d985d6aa1ad6771f83862a689d80103b931543f7",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/005-wind-up.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/moves/exports/256/wind-up.png",
+        "128": "art/icons/moves/exports/128/wind-up.png",
+        "64": "art/icons/moves/exports/64/wind-up.png",
+        "56": "art/icons/moves/exports/56/wind-up.png",
+        "48": "art/icons/moves/exports/48/wind-up.png",
+        "44": "art/icons/moves/exports/44/wind-up.png",
+        "40": "art/icons/moves/exports/40/wind-up.png",
+        "32": "art/icons/moves/exports/32/wind-up.png",
+        "24": "art/icons/moves/exports/24/wind-up.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:113",
+      "ink": "#FFFFFF"
+    },
+    "move-read-the-swing": {
+      "label": "Read the Swing (Breaker rank II)",
+      "path": "art/icons/moves/read-the-swing.png",
+      "sha256": "58800e46f367858a0b68a560cebc01fa40c4f198a0a36f82190d9a0978f8cce9",
+      "width": 1024,
+      "height": 1024,
+      "format": "png",
+      "mode": "wick",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "background": "transparent",
+      "collection": "prompt-pack-2026-11-19",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19/native/006-read-the-swing.png",
+      "upscaled": false,
+      "exports": {
+        "256": "art/icons/moves/exports/256/read-the-swing.png",
+        "128": "art/icons/moves/exports/128/read-the-swing.png",
+        "64": "art/icons/moves/exports/64/read-the-swing.png",
+        "56": "art/icons/moves/exports/56/read-the-swing.png",
+        "48": "art/icons/moves/exports/48/read-the-swing.png",
+        "44": "art/icons/moves/exports/44/read-the-swing.png",
+        "40": "art/icons/moves/exports/40/read-the-swing.png",
+        "32": "art/icons/moves/exports/32/read-the-swing.png",
+        "24": "art/icons/moves/exports/24/read-the-swing.png"
+      },
+      "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:123",
       "ink": "#FFFFFF"
     }
   },

@@ -53,7 +53,8 @@
       "art/icons/perks/before-the-blink.png",
       "art/icons/moves/anchor.png",
       "art/icons/moves/barrage.png"
-    ]
+    ],
+    "staging": "The shield is one tall slab with one rounded cut, attached behind by ONE left forearm. Other arm extends to the right calling toward a turning cropped shoulder/helmet. Clearly visible one point and three short call strokes. Preserve only one Wick."
   },
   {
     "file": "01",
@@ -72,7 +73,8 @@
       "art/icons/perks/before-the-blink.png",
       "art/icons/moves/anchor.png",
       "art/icons/moves/barrage.png"
-    ]
+    ],
+    "staging": "Use one simple block-headed practice maul. One straight continuous haft runs through both separate mitten grips to a single compact blunt head socket. Keep the two visible haft sections on the same line. Over-shoulder wind-up is two-handed and supported by the two grips, never an X, no extra blade or shaft. Shift body weight to back leg."
   },
   {
     "file": "01",
@@ -91,7 +93,8 @@
       "art/icons/perks/before-the-blink.png",
       "art/icons/moves/anchor.png",
       "art/icons/moves/barrage.png"
-    ]
+    ],
+    "staging": "One broad white swing-band passes above and to the right of Wick's tilted head across transparent emptiness. Clear bent knee near stance, one foot stepping aside and one open hand low. No shield."
   },
   {
     "file": "01",
@@ -876,7 +879,7 @@
       "art/icons/forks/sigil-running-script.png"
     ],
     "staging": "Image edit of the first and only attached PNG. Preserve Wick's exact pose, contour, glyph plate and existing foreground glyph. The single new mark is a tiny unfinished angled glyph adjoined near the mitten's side. Match all original white ink and holes. No extra change.",
-    "reviewNote": "Two image-edit attempts changed the character pose and the existing square glyph. Reject both redraws. Preserve the current source. The brief only permits a small unfinished glyph beside it, with the pose and old glyph retained.",
+    "reviewNote": "Three image-edit attempts altered Wick's pose and the existing glyph. The originals of all three attempts are archived. Keep the current source. The brief calls for a localized edit that adds the one small glyph and retains the existing drawing.",
     "editPrompt": "Edit the first attached PNG, preserving its central composition exactly: a small frontal squat Wick leans toward viewer-right, with one short boot forward, one bent behind, the right mitten over a rounded rectangular square-in-ring mark at ground level. His ceramic screen tilts clockwise; the two little parallel fasteners are at its top right. The existing square in its oval ring and the three tiny diagonal trailing fragments to the right stay. In the empty space just beside the original glyph, place a single tiny broken angular white two-stroke mark much smaller than the main square. Restrict the edit to that area. Keep every existing shape where it is and retain the transparent backdrop. No changes to the character, lines, existing glyph, crop, pose or expression."
   },
   {
