@@ -12290,6 +12290,19 @@ Survival to stop 10). Each finding was reproduced through the real path first, t
     through `addStrain` (the `strain` hook, the Short at 3 over, the Shock), a loss through `easeStrain`
     (`strain_change`, then the Shock's end when the heart is back at its limit). It has no `max`: Strain may stand over
     the limit. A unit with no heart has no Strain to change.
+5454. **Approved engine surface, 0.31.11** (the lead's approvals at the release merge, 19 Nov 2026; these stay): the
+    exports `ladderCaps` and `LADDER_GROWS` (`ladder.ts`) with the `grows` field on a skill's `per_point.rows[]` (item
+    5452); the `amount` field on `PrayerPreview` (`faith.ts prayerFigure`: `{kind: heal | shield | damage, n, type?}`,
+    `type` the effect's own `damage_type`, soul when it names none); `fightTally(tape, units, rounds, cb?)` and
+    `TapeEv.by` (`run/tally.ts`: a blow that names its dealer, an owned unit's blows and kills its owner's; item 5504).
+5455. **The 0.31.11 release step** (the lead's brief, 19 Nov 2026): a prayer card's number is shown beside its full text,
+    never instead of it, and names its damage type (Thunderclap: lightning); the Damage school's ways read their
+    multipliers from the school's own `modes` (`soul_modules.json schools[damage].modes`, moved from `damage.modes`;
+    the engine's `damageModeMult` reads every school's modes) and say them once, in percent, on the WAY rows; the skill
+    page's three folds keep one state a fold kind for all skills; Iron Heart's card has no item-level use (its effect's
+    limit is the one spent); Cover Them's card says what it costs (1 Guard and your reaction); the texts this release
+    touched say results, not multipliers (Durability's shield row, Triage, Shape, Armoured, Hollow). Parry: item 5530,
+    amended. The level-up TO CHOOSE strip shows only chips that fit whole and counts the rest on '+N more'.
 
 ### 0.31.12, the outside playtest's blockers (19 Nov 2026)
 
