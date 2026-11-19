@@ -62,8 +62,11 @@ describe('rules 1.79 items 6705 and 6706: an enemy keeps its target across round
   function play(seed: string) {
     const { f, a, b, e } = setup(seed);
     orderAs(f, [a.id, b.id, e.id]);
+    // who the elite fired at in a stretch of the log (its first attack), as an id
+    const shotAt = (from: number) => { const m = /Foe 1 fires at (Tester \d)/.exec(log(f, from)); return m ? f.pcs.find((p: Unit) => p.name === m[1])?.id as string : ''; };
+    const n0 = f.cb.log.length;
     endTurn(f, f.unit(a.id)); endTurn(f, f.unit(b.id)); // the elite's turn runs after b's
-    const first = f.unit(e.id) as any, t1 = first.aimMem as string;
+    const t1 = shotAt(n0);
     expect(t1 === a.id || t1 === b.id).toBe(true);
     const other = t1 === a.id ? b.id : a.id;
     // a share of max HP: the other one 0.2 more hurt than the first target (the keep is 0.3)
@@ -71,7 +74,7 @@ describe('rules 1.79 items 6705 and 6706: an enemy keeps its target across round
     f.unit(t1).hp = f.unit(t1).maxHp;
     const n = f.cb.log.length; orderAs(f, [a.id, b.id, e.id]); f.cb.round += 0; // the next round comes by the end-turns
     endTurn(f, f.unit(a.id)); endTurn(f, f.unit(b.id));
-    return { t1, other, t2: (f.unit(e.id) as any).aimMem as string, said: log(f, n) };
+    return { t1, other, t2: shotAt(n), said: log(f, n) };
   }
   it('round 2: it stays on the one it fought in round 1, though the other is a little more hurt; the log says it once', () => {
     const r = play('AI179-F');

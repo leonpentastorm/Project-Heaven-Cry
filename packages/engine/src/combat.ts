@@ -3072,9 +3072,9 @@ export function alliesOn(cb: Combat, u: Unit, t: Unit): number {
  * each healer turned on (rules 1.23 and 1.25: the player is told why). */
 export function noteEnemyAim(cb: Combat, u: Unit, t: Unit, why?: AimWhy) {
   const age = cb.fire ? cb.round - cb.fire.round : -1;
-  if (age !== 0) { const was = cb.fire; cb.fire = { round: cb.round, on: {}, ...(was && age === 1 ? { prev: was.on } : {}) }; }
+  if (age !== 0) { const was = cb.fire; cb.fire = { round: cb.round, on: {}, ...(was && age === 1 && Number(FOCUS_MEMORY.carry) > 0 ? { prev: was.on } : {}) }; } // (the round before is kept only while carry reads it)
   const on = (cb.fire.on[aimOwner(t)] ||= []); if (!on.includes(u.id)) on.push(u.id);
-  if (u.side === 'foe' && !u.charId) { noteFocus(cb, u, aimOwner(t)); const A = aiUses(cb, u); A.uncool('ai:aim'); A.cool(1, 'ai:aim'); (u as any).aimMem = aimOwner(t); } // rules 1.79 item 6705: who it is fighting, and since when
+  if (u.side === 'foe' && !u.charId && ENEMY_AI.focus && ENEMY_AI.focus.on !== false) { noteFocus(cb, u, aimOwner(t)); const A = aiUses(cb, u); A.uncool('ai:aim'); A.cool(1, 'ai:aim'); (u as any).aimMem = aimOwner(t); } // rules 1.79 item 6705: who it is fighting, and since when
   if (why === 'healer') { noteHealerHunt(cb, u, t); return; }
   if (!why || (cb.doctrineSaid ||= {})[why]) return; cb.doctrineSaid[why] = true;
   say(cb, u.name + (why === 'spread' ? ' takes a target nobody else is shooting at: the enemy spreads its fire.' : why === 'wounded' ? ' picks out ' + t.name + ': the enemy goes for the wounded.' : ' goes at ' + t.name + ': it takes whoever is nearest.'));
