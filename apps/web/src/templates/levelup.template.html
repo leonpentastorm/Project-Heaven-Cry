@@ -4,7 +4,6 @@
 <div style="display: flex; flex-direction: column"><span style="font-size: 26px; font-weight: 700; letter-spacing: 0.08em; line-height: 1.05">{{title}}</span><span style="font-size: var(--fs-sub); color: #A3AEC2">{{kicker}}</span></div>
 <div class="phc-lu-budget" aria-label="To spend" style="display: flex; flex-wrap: wrap; gap: 8px; align-items: center"><sc-for list="{{budget}}" as="b" hint-placeholder-count="3"><span data-budget="{{b.key}}" style="{{b.style}}">{{b.text}}</span></sc-for><span class="phc-lu-rules" tabindex="0" tip="{{rules}}" aria-label="How points work" style="display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; border: 1px solid #A3AEC2; font-size: var(--fs-sub); font-weight: 700; color: #A3AEC2; cursor: help">?</span></div>
 <div style="margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; align-items: center">
-<span class="phc-lu-ceiling" style="font-size: var(--fs-sub); color: #A3AEC2">{{ceil}}</span>
 <span style="padding: 4px 12px; border-radius: 999px; border: 1px solid #F65157; color: #F65157; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em">{{hpChip}}</span>
 <sc-if value="{{canRevert}}"><button type="button" class="phc-lu-revert" onClick="{{revert}}" style="{{revertStyle}}" tip="Takes back what this visit spent. A fight or a class settles it for good.">↶ Revert</button></sc-if>
 <button type="button" class="phc-lu-done" onClick="{{done}}" style="{{doneStyle}}">{{doneLabel}}</button>
@@ -49,6 +48,7 @@
 <section aria-label="Level up" style="min-width: 0; display: flex; flex-direction: column">
 <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 4px">
 <div role="tablist" aria-label="Families" class="phc-lu-tabs" style="display: flex; gap: 4px"><sc-for list="{{famTabs}}" as="ft" hint-placeholder-count="3"><button type="button" role="tab" class="phc-lu-tab" data-fam="{{ft.key}}" aria-selected="{{ft.selected}}" onClick="{{ft.pick}}" style="{{ft.style}}">{{ft.name}}<sc-if value="{{ft.hasWait}}" hint-placeholder-val="{{false}}"><span style="font-size: var(--fs-sub); color: #FFFFFF">{{ft.wait}}</span></sc-if></button></sc-for></div>
+<span class="phc-lu-ceiling" style="margin-left: 12px; padding-bottom: 8px; font-size: var(--fs-sub); color: #A3AEC2">{{ceil}}</span>
 <sc-if value="{{hasSteps}}" hint-placeholder-val="{{false}}"><div class="phc-lu-steps-panel" aria-label="Perk steps waiting" style="margin-left: auto; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding-bottom: 6px"><sc-for list="{{steps}}" as="st" hint-placeholder-count="2"><button type="button" class="phc-lu-jump" data-skill="{{st.key}}" onClick="{{st.go}}" style="{{st.style}}">◆ {{st.name}} ›</button></sc-for></div></sc-if>
 </div>
 <sc-for list="{{tree}}" as="co" hint-placeholder-count="1">
@@ -67,12 +67,12 @@
 <div class="{{s.cls}}" data-skill="{{s.key}}" style="{{s.style}}">
 <div class="phc-lu-row">
 <img src="{{s.img}}" alt="" style="width: 28px; height: 35px; object-fit: cover; border-radius: 4px; background: #000; flex: none">
-<span style="display: flex; flex-direction: column; flex: 0 0 140px; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span class="phc-lu-slot" style="{{s.tagStyle}}">{{s.tag}}</span></span>
+<span style="display: flex; flex-direction: column; flex: 0 0 128px; min-width: 0"><span style="{{s.nameStyle}}">{{s.name}}</span><span class="phc-lu-slot" style="{{s.tagStyle}}">{{s.tag}}</span></span>
 <span class="phc-lu-pts" style="flex: none; min-width: 22px; text-align: center; font-size: 22px; font-weight: 700">{{s.pts}}</span>
 <sc-if value="{{s.canRaise}}" hint-placeholder-val="{{false}}"><button type="button" class="phc-lu-raise" data-raise="skill" onClick="{{s.raise}}" disabled="{{s.blocked}}" aria-label="{{s.raiseLabel}}" style="{{s.raiseStyle}}">+1</button></sc-if>
-<sc-if value="{{s.hasNext}}" hint-placeholder-val="{{true}}"><span class="phc-lu-next" data-next-at="{{s.nextAt}}" style="font-size: var(--fs-body); line-height: 1.35; color: #E7EBF3">{{s.next}}</span></sc-if>
+<sc-if value="{{s.showNext}}" hint-placeholder-val="{{true}}"><span class="phc-lu-next" data-next-at="{{s.nextAt}}" style="font-size: var(--fs-body); line-height: 1.35; color: #E7EBF3">{{s.next}}</span></sc-if>
 <sc-if value="{{s.hasFlash}}" hint-placeholder-val="{{false}}"><span class="phc-lu-gain" style="flex: none; font-size: var(--fs-body); font-weight: 700; color: #6FEA77">✓ {{s.flash}}</span></sc-if>
-<sc-if value="{{s.hasWhy}}" hint-placeholder-val="{{false}}"><span class="phc-lu-why" style="flex: none; display: inline-flex; align-items: center; gap: 8px"><span style="font-size: var(--fs-sub); font-weight: 600; color: #FFFFFF; white-space: nowrap">{{s.why}}</span><sc-if value="{{s.hasFix}}"><button type="button" class="phc-lu-fix" onClick="{{s.fix}}" style="{{s.fixStyle}}">{{s.fixLabel}}</button></sc-if></span></sc-if>
+<sc-if value="{{s.hasWhy}}" hint-placeholder-val="{{false}}"><span class="phc-lu-why" style="flex: 1 1 0; min-width: 0; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 8px"><span style="font-size: var(--fs-sub); font-weight: 600; color: #FFFFFF; white-space: nowrap">{{s.why}}</span><sc-if value="{{s.hasFix}}"><button type="button" class="phc-lu-fix" onClick="{{s.fix}}" style="{{s.fixStyle}}">{{s.fixLabel}}</button></sc-if></span></sc-if>
 <sc-if value="{{s.hasChip}}" hint-placeholder-val="{{false}}"><button type="button" class="phc-lu-chip" onClick="{{s.toggleChoice}}" aria-expanded="{{s.chipExpanded}}" style="{{s.chipStyle}}">{{s.chip}}</button></sc-if>
 <button type="button" onClick="{{s.help}}" aria-label="What is {{s.name}}? Its levels" style="{{s.helpStyle}}">?</button>
 </div>

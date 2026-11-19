@@ -119,7 +119,10 @@ describe('level-up screen', () => {
     // a skill is ONE row: name, points, a big +1, the one line its next point gives (the ladder's own row), "?"
     for (const r of el.querySelectorAll('.phc-lu-skill')) {
       const id = r.getAttribute('data-skill')!, p = (G.characters[c0.id].skills as any)[id] || 0;
-      expect(r.querySelector('.phc-lu-next')!.textContent).toBe(nextLine(id, p));
+      const off = (r.querySelector('button[data-raise="skill"]') as HTMLButtonElement).disabled;
+      // a refused +1 says why in the place of the line; otherwise the line is what its next point gives
+      if (off) { expect(r.querySelector('.phc-lu-why')!.textContent).toMatch(/\S/); expect(r.querySelector('.phc-lu-next')).toBeNull(); }
+      else expect(r.querySelector('.phc-lu-next')!.textContent).toBe(nextLine(id, p));
       expect((r.querySelector('button[data-raise="skill"]') as HTMLElement).style.minHeight).toBe('40px');
     }
     // Dexterity 5 with no perks: a white chip, two steps waiting; nothing to choose until it is opened

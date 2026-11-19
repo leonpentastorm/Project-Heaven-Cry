@@ -49,7 +49,7 @@ const BADGE_INK = { engine: '#E7EBF3', both: '#C9D3E3', narrator: '#A3AEC2' };
 const badgeStyle = (v) => 'flex: none; padding: 1px 8px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; border: 1px ' + (v === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v] + '; color: ' + BADGE_INK[v];
 ensureStyle('phc-levelup', [
   '.phc-lu-head{position:sticky;top:0;z-index:5;background:#0A0D13}',
-  '.phc-lu-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(240px,300px);gap:20px;padding:8px 28px 24px;align-items:start}',
+  '.phc-lu-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,280px);gap:20px;padding:8px 28px 24px;align-items:start}',
   '.phc-lu-class{position:sticky;top:96px}',
   '.phc-lu-pick{display:flex;flex-direction:column;gap:14px;padding:24px 32px 0}',
   '.phc-lu-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(max(280px,calc((100% - 24px) / 3)),1fr));gap:12px}',
@@ -60,6 +60,7 @@ ensureStyle('phc-levelup', [
   '.phc-lu-choice:hover{background:#FFFFFF!important;color:#0A0D13!important}',
   '.phc-lu-row{display:flex;align-items:center;gap:10px;min-width:0}',
   '.phc-lu-row .phc-lu-next{flex:1 1 0;min-width:0}',
+  '.phc-lu-row{flex-wrap:wrap}.phc-lu-row .phc-lu-next{min-width:200px}',
   '.phc-lu-pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:8px}',
   '@keyframes phc-lu-gain{0%{opacity:0;transform:translateY(4px)}15%{opacity:1;transform:none}80%{opacity:1}100%{opacity:0}}',
   '.phc-lu-gain{animation:phc-lu-gain 1.6s ease-out forwards}',
@@ -130,7 +131,8 @@ export class LevelUpLogic extends DCLogic {
         raise: () => { const gain = nextLine(s.id, c.skills[s.id] || 0); act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }); this.flash(s.id, gain); }, raiseStyle: raiseStyle(!why, ink, true),
         hasFix: needAttr, fixLabel: 'Raise ' + a.name, fix: () => act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }),
         fixStyle: 'flex: none; min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; border: 1px solid ' + a.ink + '; background: transparent; color: ' + a.ink,
-        hasNext: !!nxt, next: nxt, nextAt: p + 1,
+        // a refused +1 shows its reason in the place of the next line (what the point gives stays on the "?" page)
+        hasNext: !!nxt, showNext: !!nxt && !(why && c.unspent.skill && p < 10), next: nxt, nextAt: p + 1,
         // a waiting perk step or fork: a white chip on the row; it opens that choice inline, under the row
         hasChip: waits > 0, chip: '◆ ' + (x ? (x.free > 1 ? x.free + ' perk steps' : 'Perk step') : '') + (x && fp.length ? ' · ' : '') + (fp.length ? (fp.length > 1 ? fp.length + ' forks' : 'Fork') : ''),
         chipExpanded: open ? 'true' : 'false', toggleChoice: () => this.setState({ choice: open ? null : s.id }),

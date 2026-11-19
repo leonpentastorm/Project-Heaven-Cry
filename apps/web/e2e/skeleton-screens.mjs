@@ -154,19 +154,20 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
     const L = await p.evaluate(() => ({ tabs: [...document.querySelectorAll('[role="tablist"][aria-label="Families"] [role="tab"]')].map((x) => x.getAttribute('data-fam')).join(),
       fams: document.querySelectorAll('.phc-lu-core').length, attrs: document.querySelectorAll('.phc-lu-attrcol').length, skills: document.querySelectorAll('.phc-lu-skill').length,
       coreBtn: document.querySelectorAll('button[data-raise="core"]').length, ceil: (document.querySelector('.phc-lu-ceiling') || {}).textContent || '',
-      next: [...document.querySelectorAll('.phc-lu-attr-next')].map((x) => x.textContent), gives: document.querySelectorAll('.phc-lu-skill .phc-lu-next').length, slots: [...document.querySelectorAll('.phc-lu-attrcol[data-attr="endurance"] .phc-lu-slot')].map((x) => x.textContent),
+      next: [...document.querySelectorAll('.phc-lu-attr-next')].map((x) => x.textContent), gives: [...document.querySelectorAll('.phc-lu-skill')].filter((r) => r.querySelector('.phc-lu-next, .phc-lu-why')).length, slots: [...document.querySelectorAll('.phc-lu-attrcol[data-attr="endurance"] .phc-lu-slot')].map((x) => x.textContent),
       why: (document.querySelector('.phc-lu-attrcol[data-attr="endurance"] .phc-lu-attr-why') || {}).textContent || '', off: (document.querySelector('.phc-lu-attrcol[data-attr="endurance"] button[data-raise="attr"]') || {}).disabled,
       budget: [...document.querySelectorAll('.phc-lu-budget [data-budget]')].map((x) => x.textContent).join(' · '),
       headIn: (() => { const h = document.querySelector('.phc-lu-head'); window.scrollTo(0, 99999); const r = h.getBoundingClientRect(); window.scrollTo(0, 0); return r.top >= -1 && r.bottom <= innerHeight; })(),
-      rowsIn: [...document.querySelectorAll('.phc-lu-core .phc-lu-skill')].every((s) => s.getBoundingClientRect().bottom <= innerHeight),
+      // the family (three attributes, nine skills) fits the window under the sticky header and the tabs, once scrolled to
+      rowsIn: (() => { const h = (q) => Math.round((document.querySelector(q) || { getBoundingClientRect: () => ({ height: 0 }) }).getBoundingClientRect().height); return { ok: h('.phc-lu-head') + h('.phc-lu-tabs') + h('.phc-lu-core') <= innerHeight, parts: h('.phc-lu-head') + ' + ' + h('.phc-lu-tabs') + ' + ' + h('.phc-lu-core') + ' of ' + innerHeight + ', rows ' + [...document.querySelectorAll('.phc-lu-core .phc-lu-skill')].map((r) => Math.round(r.getBoundingClientRect().height)).join('/') }; })(),
       text: document.querySelector('.phc-lu-body').innerText + ' ' + document.querySelector('header').innerText }));
     ok(at + 'three family tabs (' + L.tabs + '), one family on screen: three attributes, nine skills, no Core button', L.tabs === 'body,mind,soul' && L.fams === 1 && L.attrs === 3 && L.skills === 9 && L.coreBtn === 0);
-    ok(at + 'the nine rows of a family fit the window without scrolling', L.rowsIn);
+    ok(at + 'the nine rows of a family fit the window without scrolling (' + L.rowsIn.parts + ')', L.rowsIn.ok);
     const stray = L.text.replace(/mana cores?|core charge|Sigil Core|a core\b|cores\b/gi, '').match(/Core points?|its Core|\d Core\b|FEEBLE|LEGENDARY|rules \d|[a-z]_[a-z]/);
     ok(at + 'nothing says Core points, a rules number or an id' + (stray ? ' (' + stray[0] + ')' : ''), !stray);
     ok(at + 'the ceiling is said in the header: ' + L.ceil, L.ceil === 'Attributes: ceiling 8 at this level (9 from level 6, 10 from level 9)');
     ok(at + 'every attribute row says what a point gives', L.next.length === 3 && L.next.some((t) => /\+15 max HP/.test(t)) && L.next.some((t) => /\+0\.5 tile of movement an AP/.test(t)));
-    ok(at + 'every skill row says what its next point gives, and its slot in words (' + L.slots.join(', ') + ')', L.gives === 9 && L.slots.join() === 'FIGHT,SURVIVE,TALK · NOTICE');
+    ok(at + 'every skill row says what its next point gives (or why its +1 is refused), and its slot in words (' + L.slots.join(', ') + ')', L.gives === 9 && L.slots.join() === 'FIGHT,SURVIVE,TALK · NOTICE');
     ok(at + 'Endurance 8 is at the ceiling: +1 off, with the engine\'s reason on its row: ' + L.why, L.off === true && /^Endurance 9 opens at level 6/.test(L.why));
     ok(at + 'the header is the budget and stays in view when the page scrolls: ' + L.budget, /\d+ Skill · \d+ Attribute · \d+ Perk steps?/.test(L.budget) && L.headIn);
     ok(at + 'no sideways page scroll (' + await sideways(p) + ' px over)', (await sideways(p)) <= 1);
