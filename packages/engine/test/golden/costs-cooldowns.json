@@ -45,8 +45,6 @@
 "cool/ap/perk/last_charge@ultimate/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/last_wall@mastered/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/last_wall@mastered/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
-"cool/ap/perk/litany@II/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
-"cool/ap/perk/litany@II/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/nobody_left_behind@I/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/nobody_left_behind@I/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/nothing_left_to_fear@mastered/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
