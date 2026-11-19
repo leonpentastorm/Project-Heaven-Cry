@@ -1,0 +1,62 @@
+{
+  "status": "drawing",
+  "branch": "art/2026-11-19-melee-armour",
+  "base_commit": "2020b5c2",
+  "claimed_files": [
+    "05-melee-forms.md",
+    "07-shields-armour.md"
+  ],
+  "reserved_for_other_gpt": [
+    "01",
+    "02",
+    "03",
+    "04"
+  ],
+  "target": 39,
+  "delivered": [
+    "weapon-trench_knife"
+  ],
+  "remaining": [
+    "weapon-lowland_chopper",
+    "weapon-dock_cutter",
+    "weapon-broadback_sabre",
+    "weapon-legion_leaf_dagger",
+    "weapon-legion_rank_sword",
+    "weapon-short_draw",
+    "weapon-long_draw",
+    "weapon-kemizuchi_side_sword",
+    "weapon-kemizuchi_sword_breaker",
+    "weapon-pitch_axe",
+    "weapon-legion_spear",
+    "weapon-war_pick",
+    "weapon-war_hammer",
+    "weapon-adamantile_plate_needle",
+    "weapon-adamantile_longsword",
+    "weapon-ork_skinner",
+    "weapon-ork_cleaver_glaive",
+    "weapon-weighted_gloves",
+    "shield-spiked_buckler",
+    "shield-boss_shield",
+    "shield-ram_plate",
+    "shield-deflector",
+    "shield-bulwark_screen",
+    "shield-barrier_wall",
+    "armour-assault_helm",
+    "armour-cowl",
+    "armour-hood",
+    "armour-blackout_hood",
+    "armour-spotters_monocle",
+    "armour-sight_visor",
+    "armour-breather",
+    "armour-sealed_visor",
+    "armour-breacher_plate",
+    "armour-mesh_undersuit",
+    "armour-rig_belt",
+    "armour-field_trousers",
+    "armour-tactical_gloves",
+    "armour-jump_boots"
+  ],
+  "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
+  "production_approved": false,
+  "updated_utc": "2026-11-19T03:21:49.280037+00:00"
+}
