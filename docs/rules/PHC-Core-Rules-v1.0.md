@@ -13191,3 +13191,9 @@ Every new number here is PROVISIONAL and a data field.
     item 5008), the engine emits the alarm's effects event with `joined` (no new kind), on the tile of the first
     character the foes learned of (item 5521). The screen draws CONTACT! there with the alarm's rings and sound; it
     shows no toast, since the BATTLE START card says the same.
+6604. **Aim marks on a Bonded ally (bonds-spec section 2 rule 8, closes rules 1.33's open aim read):** at the start of
+    each of a Bonder's turns, every enemy its side sees whose next action aims at an ally Bonded to it is Read (the
+    condition `read`: its intent is shown to the Bonder's side until that enemy's turn ends). A row of `tend.threads`
+    (`condition read`, `targets {side: foe, seen: true, aims_at: "tied:bond"}`), no new piece. The screen draws the
+    enemies a side has read aiming at one unit as one red crosshair on that unit's tile with their count ("◎ 2"); the
+    arrow on each enemy is unchanged. The text of Threads says so.

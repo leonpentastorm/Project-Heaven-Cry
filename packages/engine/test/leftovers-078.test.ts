@@ -3,10 +3,12 @@
 //   item 6601  two Sanctuaries on one tile do not stack (spec item 1908): one side's zones of a kind, the first laid acts
 //   item 6602  NULL unmakes a Figment on the tiles it covers (figments-spec rule 12; sigils.json null.dispel)
 //   item 6603  the fight joined is an effects event (the alarm's, joined: true) at the first character the foes learn of
+//   item 6604  aim marks on a Bonded ally: at the Bonder's turn start, each seen enemy aiming at a Bonded ally is Read
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { CLASS_MOVE_POOL, applyDamage, setDevotionXp, devotionThreshold, zonesAt, type Unit, type Action } from '../src';
-import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
+import { fightWith, withGame, storyWith, type CharSpec } from './helpers/perkfight';
+import { beginTurn, condOn, enemyIntent } from '../src';
 import { figFight } from './helpers/figfight';
 import { previewEvoke, apply, reachable, active, type GameState } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
@@ -78,5 +80,27 @@ describe('item 6603: the fight joined is an effects event (spec item 5010 c)', (
     expect(g!.combat!.approach).toBeUndefined();
     const a = alarms(g!); expect(a.length).toBe(1); expect(a[0].joined).toBe(true);
     if (a[0].at) expect(g!.combat!.units.some((u) => u.side === 'pc' && u.pos === a[0].at)).toBe(true);
+  });
+});
+
+describe('item 6604: who aims at a Bonded ally is read (bonds-spec section 2 rule 8)', () => {
+  function rig() {
+    const s: any = storyWith([{ name: 'Medic', level: 5, skills: { empathy: 5 }, attrs: { insight: 5 }, weapon: 'service_pistol' }, { name: 'Gun', level: 5 }, { name: 'Far', level: 5 }]);
+    s.g.characters[s.chars[0].id].offHand = { id: 'attuner' };
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight', combat: { name: 'Aim', map: 'yard16', difficulty: 'standard', level: 5,
+      enemies: [{ name: 'Soldier 1', tier: 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level: 5 }, { name: 'Soldier 2', tier: 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level: 5 }] } } });
+    const cb = () => s.g.combat, U = (n: string) => cb().units.find((u: any) => u.name === n);
+    U('Medic').pos = '2,6'; U('Gun').pos = '3,9'; U('Far').pos = '13,2'; U('Soldier 1').pos = '4,9'; U('Soldier 2').pos = '13,3';
+    const turn = (n: string) => { const c = cb(); c.turn = c.order.indexOf(U(n).id); delete c.window; withGame(s.g, () => beginTurn(c, s.g.rng)); };
+    turn('Medic'); U('Medic').ap = 9;
+    s.act({ type: 'combat/perk', unitId: U('Medic').id, id: 'verb:tend.bond', targetId: U('Gun').id });
+    return { s, cb, U, turn };
+  }
+  it("at the Medic's next turn start the enemy aiming at the Bonded ally is Read (its intent shown to the squad); the one aiming at an unbonded ally is not", () => {
+    const h = rig(); h.turn('Medic');
+    const gun = h.U('Gun').id, foes = h.cb().units.filter((u: any) => u.side === 'foe');
+    const aims = foes.map((u: any) => withGame(h.s.g, () => enemyIntent(h.cb(), u)).targetId === gun);
+    expect(aims.some(Boolean)).toBe(true); // the yard puts someone on the Bonded ally
+    foes.forEach((u: any, i: number) => { expect(condOn(u, 'read'), u.name).toBe(aims[i]); if (aims[i]) expect(u.readIntent?.targetId).toBe(gun); });
   });
 });
