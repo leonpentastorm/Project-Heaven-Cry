@@ -145,6 +145,8 @@ describe('the Outbursts tab (rules 1.5)', () => {
     L.setState({ action: 'outburst', design: 'fb' });
     const r = L.renderVals(), T = r.turnPanels[0];
     expect(r.turnPanels[0].pad.beginLabel).toMatch(/^Begin/);
+    expect(T.padDShow).toBe(true); // the pad is the mode step's renderer ('begin-snap'): shown because the action asks for it
+    expect((T.chips || T.sel.chips || []).map((c: any) => c.label)).not.toEqual(expect.arrayContaining(['Begin', 'Snap']));
     expect((T.sel.toggles || []).map((t: any) => t.label)).not.toEqual(expect.arrayContaining([expect.stringMatching(/^(Begin|Snap)/)]));
   });
 

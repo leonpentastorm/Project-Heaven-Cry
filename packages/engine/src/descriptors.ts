@@ -264,13 +264,13 @@ export function parseTechId(a: string | null | undefined): { hand: 'main' | 'off
   return { hand: hand as any, id, ...(itemS != null ? { item: /^\d+$/.test(itemS) ? Number(itemS) : itemS } : {}) };
 }
 /** What a technique's text lets you choose beyond its property line (args.opt). The first with '' is sent when nothing
- * is picked. A fourth entry names the property line (techniques.json `lines` props) the option needs: it is offered only
- * with a weapon that has that line for the technique (row 15 of the outside playtest: Leave it in on a Maul). */
-export const TECH_OPTIONS: Record<string, ([string, string, string] | [string, string, string, string])[]> = {
+ * is picked. An option a technique's data names in `opt_needs` (option id: property) is offered only with a weapon that
+ * has that property line for the technique (row 15 of the outside playtest: Leave it in on a Maul). */
+export const TECH_OPTIONS: Record<string, [string, string, string][]> = {
   called_shot: [['leg', 'LEG', 'Slowed on a hit.'], ['arm', 'ARM', 'Its weapon is lowered on a hit.'], ['head', 'HEAD', 'Dazed on a hit.']],
-  run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Only with a Reach weapon: you leave the weapon in the target and are unarmed. The target stays Pinned until the weapon is pulled out.', 'reach']],
-  bash: [['', 'DAZE', 'The target is Dazed.'], ['push', 'PUSH', 'With a Heavy weapon: the target is pushed 2 tiles instead.', 'heavy']],
-  trip: [['', 'TRIP', 'The target goes Prone.'], ['grapple', 'GO DOWN WITH IT', 'With bare hands, on a target next to you: you go Prone with it, and it is Grappled as well.', 'bare']],
+  run_through: [['', 'KEEP IT', 'Pull the weapon back after the thrust.'], ['leave', 'LEAVE IT IN', 'Only with a Reach weapon: you leave the weapon in the target and are unarmed. The target stays Pinned until the weapon is pulled out.']],
+  bash: [['', 'DAZE', 'The target is Dazed.'], ['push', 'PUSH', 'With a Heavy weapon: the target is pushed 2 tiles instead.']],
+  trip: [['', 'TRIP', 'The target goes Prone.'], ['grapple', 'GO DOWN WITH IT', 'With bare hands, on a target next to you: you go Prone with it, and it is Grappled as well.']],
   raise_shield: [['1', 'TURN 1', '1 Momentum becomes 1 Guard.'], ['2', 'TURN 2', '2 Momentum become 2 Guard.'], ['', 'ALL', 'All your Momentum becomes Guard, as much as the pool holds.']],
   drag: [['', 'AUTO', 'Pull it to you, or swap places when it is next to you.'], ['pull', 'PULL', 'Pull it toward you.'], ['swap', 'SWAP', 'Change places with it.']],
 };
@@ -316,7 +316,7 @@ function techPicks(x: DescCtx, e: { id: string; line?: string | null; choices?: 
   if (aim === 'ally') out.push({ key: 'allyId', kind: 'ally', prompt: 'Click an ally on the map.', choices: allyIds(x) });
   if (aim === 'tile' || aim.endsWith('+tile')) out.push({ key: 'tile', kind: 'tile', prompt: aim === 'enemy+tile' ? 'Now click the tile.' : 'Click a tile on the map.' });
   if (e.choices && e.choices.length > 1) out.push({ key: 'line', kind: 'option', prompt: 'Which line applies.', optional: true, options: e.choices.map((c) => ({ id: c.prop, label: c.prop.toUpperCase(), text: c.text })) });
-  const props = linePropsOf(e), o = (TECH_OPTIONS[e.id] || []).filter((r) => !r[3] || props.includes(r[3]));
+  const props = linePropsOf(e), needs: Record<string, string> = (TECHNIQUE as any)[e.id]?.opt_needs || {}, o = (TECH_OPTIONS[e.id] || []).filter(([id]) => !needs[id] || props.includes(needs[id]));
   if (o.length > 1) out.push({ key: 'opt', kind: 'option', prompt: 'Choose how.', optional: true, options: o.map(([id, label, text]) => ({ id, label, text })) });
   return out;
 }

@@ -1363,6 +1363,13 @@ if isinstance(pat, dict) and pat.get("tags"):
         for f in ("id", "name", "words", "broken_when"):
             if f not in v:
                 errors.append(f"patrons: vow {v.get('id')} has no {f}")
+        # what a vow needs before it can be sworn (faith.ts swearVow and faithView read them): a flag, true or absent
+        for f in ("needs_ally", "needs_yielding_foe"):
+            if f in v and v[f] is not True:
+                errors.append(f"patrons: vow {v.get('id')}: {f} is true or absent")
+        for f in v:
+            if f.startswith("needs_") and f not in ("needs_ally", "needs_yielding_foe"):
+                errors.append(f"patrons: vow {v.get('id')}: '{f}' is not a need the engine reads (needs_ally, needs_yielding_foe)")
     for p in items("patrons"):
         pid = p.get("id")
         for f in ("costume", "archetype", "accent", "likes", "taboos", "rule", "rites", "intervention", "hymns", "miracle", "lines"):
@@ -1677,6 +1684,16 @@ if isinstance(tq, dict):
             for pr in l.get("props") or []:
                 if pr not in props_ok:
                     errors.append(f"{where}: line {i} names '{pr}', not a {sysm} property")
+        # 0.31.12: an option of the technique offered only with a property line (descriptors.ts techPicks reads it)
+        on = t.get("opt_needs")
+        if on is not None:
+            line_props = {pr for l in (t.get("lines") or []) for pr in (l.get("props") or [])}
+            if not isinstance(on, dict) or not on:
+                errors.append(f"{where}: opt_needs is an object of option id: property")
+            else:
+                for oid, pr in on.items():
+                    if not isinstance(oid, str) or not oid or pr not in line_props:
+                        errors.append(f"{where}: opt_needs.{oid} names '{pr}', not one of the technique's property lines")
         for k, v in (t.get("numbers") or {}).items():
             if not isinstance(v, (int, float)) or isinstance(v, bool):
                 errors.append(f"{where}: numbers.{k} must be a number")

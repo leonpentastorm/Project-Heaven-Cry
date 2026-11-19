@@ -42,7 +42,7 @@ const couldStrike = (t: Tech, o: StrikeOpts) => strike({ ...t, preview: true, pv
 function attackSkill(t: Tech, att: Unit): number {
   const off = t.hand === 'off' && !!t.c, sk = off ? weaponPhys(t.weaponId).hits_with : weaponVia(t.u, 'melee');
   const base = off ? mod((t.c!.skills as any)[sk] || 0) : t.u.attack ?? 0;
-  const hk: any = emit(t.cb, 'attack_preview', { att: t.u, tgt: att, mode: 'melee', melee: true, ap: 0, techAp: 0, reach: 1, ignoreCover: false, terms: [], fail: null, free: true, preview: true, parry: true, cb: t.cb, mods: t.cb.mods || [] });
+  const hk: any = emit(t.cb, 'attack_preview', { att: t.u, tgt: att, mode: 'melee', melee: true, ap: 0, techAp: 0, reach: 1, ignoreCover: false, terms: [], fail: null, free: true, preview: true, cb: t.cb, mods: t.cb.mods || [] });
   const rw = rollWithPick(t.c, sk, hk?.rollWith);
   return base + (rw ? rw.delta : 0);
 }

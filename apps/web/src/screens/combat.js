@@ -1021,6 +1021,8 @@ export class CombatLogic extends DCLogic {
       : S.action === 'draw' && word ? { word, ...(strip.stroke ? { stroke: strip.stroke } : {}) } : S.action === 'evoke' && evV && evV.payload ? { evoke: evV.payload }
       : S.action === 'outburst' && dsel ? { design: dsel.id, mode: obMode, ...(S.aim ? { aim: S.aim } : {}) } : S.action === 'release' && S.aim ? { aim: S.aim } : {};
     const flow = mineTurn && !(S.action === 'analyze' && S.readTile) ? flowView(g, me, cur, S, flowExtra) : null;
+    // a pick step this screen renders itself: the Outburst's Begin / Snap (the flow leaves a step with a renderer to its panel)
+    const bsStep = flow ? flow.d.picks.find((st) => st.renderer === 'begin-snap') || null : null, bsOpt = (id) => ((bsStep && (bsStep.options || []).find((o) => o.id === id)) || { label: id }).label;
     this._flow = flow;
     this._pk = pkE ? { e: pkE, P: pkP, V: pkV, target: flow && flow.picks.targetId } : null;
     /** The row a picked action belongs to: its own, or its parent's (a technique's pad row, Hold a shot). */
@@ -1589,7 +1591,8 @@ export class CombatLogic extends DCLogic {
             + (on ? 'border: 1px solid ' + d.ink + '; background: #221A38; box-shadow: 0 0 10px rgba(174, 155, 255, 0.35)' : 'border: 1px solid #3A2E5C; background: #120E1E') + (d.canBegin ? '' : '; opacity: 0.7') }; }) : [],
       begin: () => { if (card && card.canBegin) { const a = sendDescriptor(g, cur.id, 'outburst', { design: card.id, mode: 'begin', ...(S.mods && S.mods.length ? { mods: S.mods } : {}) }, me); if (a) act(a); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
       snap: () => this.setState({ obMode: 'snap', aim: null }),
-      beginLabel: 'Begin' + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: 'Snap · ' + (card ? card.snapAp : 3) + ' AP ×' + STAGE_MULT[0],
+      // the renderer of the Outburst's `mode` step (descriptors.ts renderer 'begin-snap'): its two options, named by the engine
+      beginLabel: bsOpt('begin') + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: bsOpt('snap') + ' · ' + (card ? card.snapAp : 3) + ' AP ×' + STAGE_MULT[0],
       beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×' + STAGE_MULT[0] + ': hover to preview, click a tile to aim, then Confirm.',
       beginOff: !card || !card.canBegin, beginStyle: padBtn(obMode === 'begin', SOUL_INK), snapStyle: padBtn(obMode === 'snap', SOUL_INK), snapPressed: obMode === 'snap' ? 'true' : 'false',
       repick: isMagic && mineTurn && S.action === 'evoke' && !!evTile, repickFn: () => this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }),
@@ -1630,7 +1633,7 @@ export class CombatLogic extends DCLogic {
       if (no) { target.odds = no; target.breakdown = ''; target.line = 'A friend · ' + no; }
     }
     const tp = this.pres('tgt', hasTarget ? { ...target, id: tgtUnit.id } : null);
-    const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs ? pad : null);
+    const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs && bsStep ? pad : null); // the Begin / Snap pad is the 'begin-snap' step's renderer: shown when the action asks for that step
     // The technique pad (a weapon's Techniques, or Hold a shot): opens inside its row, as the glyph keyboard does; one at
     // a time. A chip picks the technique and closes the pad to the selected card; a greyed chip still says why.
     const padTV = padView(blocks, tpadOpen, null), CHIP = (c) => 'display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1px 6px; align-items: baseline; min-height: 44px; padding: 5px 8px; border-radius: 8px; text-align: left; font-family: inherit; cursor: ' + (c.ok && !c.reaction ? 'pointer' : 'default') + '; '

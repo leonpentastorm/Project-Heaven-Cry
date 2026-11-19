@@ -501,6 +501,7 @@
     },
     {
       "id": "bash",
+      "opt_needs": {"push": "heavy"},
       "name": "Bash",
       "system": "melee",
       "group": "strike",
@@ -971,6 +972,7 @@
     },
     {
       "id": "trip",
+      "opt_needs": {"grapple": "bare"},
       "name": "Trip",
       "system": "melee",
       "group": "link",
@@ -1182,6 +1184,7 @@
     },
     {
       "id": "run_through",
+      "opt_needs": {"leave": "reach"},
       "name": "Run Through",
       "system": "melee",
       "group": "finisher",
