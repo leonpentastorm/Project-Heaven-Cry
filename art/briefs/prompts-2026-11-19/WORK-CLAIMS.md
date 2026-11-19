@@ -1,42 +1,34 @@
-# November 19 work claims — continuation
+# November 19 art work claims — current checkpoint
 
-Checked the live remote branches and the other instance’s FILE-STATUS at commit550f80c7 before claiming. This branch claims **only file10 section1’s14 unfinished Standard reference repaints**. It preserves the three already delivered candidates and will reuse them rather than redraw them. No new drawing has started at this claim checkpoint.
+Checked live branches before drawing, each new claim and final handoff. Source briefs: develop2020b5c2 (unchanged). All entries are candidate masters; exports and trial renders do not count as extra delivered pictures.
 
-Claim branch: `art/2026-11-19-repaint-continuation`. Exact paths and checked branch SHAs: `art/_archive/gear/2026-11-19-repaint-continuation/claim.json`.
+## This worker
 
-## Claimed here
+- Files05/07:39/39 Standard candidates delivered on `art/2026-11-19-melee-armour` (fb992821).
+- File10 section1: the3 prior candidates are preserved.14 unfinished repaints remain blocked:12 rejected independent renders,2 missing the service-rifle repaint. No new repaint was delivered on `art/2026-11-19-repaint-continuation` (f48fcbd2).
+- File08 sectionD entries1–7 and15 were claimed before drawing on `art/2026-11-19-unique-melee-bow`. **5 delivered:** Last Sentence, Owed in Full, Breath of Morning, Rearguard, Windfall. **3 blocked by moderation:** Grandmother’s Teeth, Last Crossing, Reveille. No active renderer remains; an explicit takeover can update the claim after reading exact errors. No quota/reset timestamp was returned.
 
-Hellraiser service rifle; Decrkm SMG; Legion PDW; Mandestra drum-gun; Long rifle; .700 Blackpoint; CCEC marksman rifle; Adamantile battle rifle; Hellraiser LMG; Lumeri scattergun; Brigade auto-shotgun; Smetanita thumper; Breacher tube; Frontier hand cannon. Work in the source order, with service rifle before LMG/auto-shotgun. Existing historical paintings are not evidence that the requested repaint has been delivered.
+## Other instance — do not duplicate
 
-Service pistol, Magistrate heavy pistol and Decrkm auto-pistol are already delivered on `art/2026-11-19-reference-repaints`; preserve those three and their archived predecessors. Each new selected image is shown, exported, validated, committed and pushed before the next. No force pushes; develop stays untouched.
+`art/2026-11-19-unique-gear` at8b0bfbb7 reserves entries8,10,11,17,19–23. Seven candidates delivered there: Homecoming, Outpost Wall, Red Thread, Hearth Coat, Lucky Dent, Spring Air and The Long Road. In Triplicate and Encore were rejected. The broad earlier file08 reservation was narrowed into these explicit lanes; our five delivered uniques are distinct.
 
-## Free for another agent
+Files01–04 remain in `art/prompt-pack-01-04-2026-11-19` at550f80c7:85/88 candidates, with Running Script and Rim wall corner still requiring exact edits and Scrap Turret on the0.30 hold. Grade proofs remain in `art/2026-11-19-grade-proof` at450a9c19, pending the exact-outline check and approval gate.
 
-| Work | Remaining | Dependencies |
+## Available only with the listed blockers resolved
+
+| Work | Remaining | Current prerequisite/blocker |
 | --- | ---: | --- |
-| File06 Gun Forms | 14 of17 | 12 await file10 repaints; Arbalest and Fowling Gun remain generation/correction jobs. Preserve the3 delivered candidates. |
-| File09 Heavy and Strange | 8 of16 | 7 await file10 repaints; Twin Rotary remains a generation job. Preserve the8 delivered candidates. |
-| File10 section2 new maker lines | 15 of15 | Each line’s base first, then its two variants. No overlap with this section1 repaint claim. |
+| File06 Gun Forms | 14 | 12 need File10 reference repaints. Fowling Gun and Arbalest are paused, with service rejections and Arbalest draft corrections recorded on ba1ba223. Explicit takeover needed. |
+| File09 Heavy/Strange | 8 | 7 need File10 reference repaints; Twin Rotary has a recorded service rejection. |
+| File10 section1 | 14 | Paused handoff,12 rejected renders and2 dependent jobs. Preserve the3 prior candidates. |
+| File10 section2 | 15 | Five new line bases have recorded service rejections; each base must precede its two variants. No new delivery on95ea51f3. |
+| Unique entries9,12,13,14,16,18 | 6 | Missing or approved family references required by the individual Attach lines. |
+| Higher grades | 656 | Approved Standard masters and reviewed proof-sheet gate required. |
 
-Files01–04 and all of file08 belong to the other instance. File08 includes uniques as well as the grade proof: leave it alone. Files05/07 are complete:39 Standard candidates on `art/2026-11-19-melee-armour`, with handoff. No grade approval is implied.
+No additional independent, unclaimed unique brief was found after the final peer check. Do not duplicate another lane, reinterpret a rejected request to bypass moderation, or count an old painting as the requested repaint. Read each exact error and prerequisite before taking over.
 
-Before claiming free work, refresh remote branches and check whether a new reservation or delivery has appeared. Announce exact ids/paths and push the reservation before drawing. Catalog and checksum integration must preserve all workers’ entries. User approval gates still apply to higher-grade production.
+## Verified pack count
 
-## Repaint continuation checkpoint
+Baseline138 candidates (85 files01–04,39 files05/07,3 file06,8 file09,3 file10), plus12 unique candidates across the two branches = **150/215 base and unique pictures;150/871 overall**. Higher-grade production:0/656. Remaining721 includes the hold. The two Fine proof drafts and rejected/unselected images are excluded. Each candidate still needs Leon’s artistic approval.
 
-Rendering is now **paused on a service blocker**. All12 independent briefs were attempted once in this run and rejected with `moderation_blocked`; no image was returned. The service supplied no quota/reset timestamp. The LMG and Brigade auto-shotgun were not attempted because their service-rifle reference repaint is still missing. All14 repaints remain unfinished; none is counted as delivered. Exact request ids, input/output stages and complete errors are in `art/_archive/gear/2026-11-19-repaint-continuation/generation-failures/` and `failure-summary.json`.
-
-The continuation reservation is now a blocked handoff, with no renderer running. Another agent can explicitly take it over after checking this record and updating the claim; it should expect the service rejection. Do not repeat identical blocked requests in a loop, use the older paintings as evidence of a completed repaint, or replace them with technical/code-drawn substitutes. No timer-based retry is scheduled: no quota reset was returned.
-
-Files06 (14 remaining),09 (8 remaining) and10 section2 (15 new forms) remain available according to the remote refs checked again at this checkpoint. They also contain known image-service blockers and dependencies; read their handoffs first. Files01–04 and08 remain the other instance’s lane. Files05/07 remain completed Standard candidates.
-
-
-# Unique melee and bow work claim
-
-Claim pushed before drawing on `art/2026-11-19-unique-melee-bow`: File08 sectionD entries **1–7 and15 only** (Last Sentence, Grandmother’s Teeth, Last Crossing, Owed in Full, Reveille, Breath of Morning, Rearguard and Windfall). Eight unique paintings, no grade variants. Each target was checked absent from the live art branch trees and current catalog before claiming.
-
-The latest explicit partial claim on `art/2026-11-19-unique-gear` reserves entries17 and19–23 for the other instance. Its handoff marks1–7 and15 available, superseding the earlier broad reservation of all of file08. Do not duplicate either lane.
-
-Still available: unique entries8 (In Triplicate),10 (Encore),11 (Homecoming), plus the existing free-work lanes file06 pending forms, file09 pending forms and file10 section2. Read their service blockers and dependencies before claiming. Unique entries9,12,13,14,16,18 require missing or approved references. Higher-grade production still needs the proof-sheet gate. File10 section1 is a blocked handoff; no repeated prompt rewrites to evade moderation are authorized by this workflow.
-
-Each successful image is shown in chat, preserved, exported to1024RGBA and256/128/64/32PNGs, checked at64/32 on#10151F, validated, committed and pushed before the next render. Existing art is preserved. All candidates remain production_approved:false. Exact queue, prompts, reference sources and progress live beside this file. Develop and the other instance’s branches stay untouched.
+History of this worker’s previous claim text is retained in `art/_archive/gear/2026-11-19-unique-melee-bow/claim-history/`. Full-checkout validation and normal merge integration must preserve both workers’ catalog/checksum entries. Develop is untouched; no force pushes.

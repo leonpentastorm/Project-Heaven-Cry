@@ -74,7 +74,7 @@ def reviews(queue, manifest):
             columns = min(5, len(paths))
             sheet = Image.new('RGB', (columns * 220, ((len(paths)+columns-1)//columns) * (size+60)+32), '#10151F')
             draw = ImageDraw.Draw(sheet)
-            draw.text((10, 6), f'{family} | actual {size}px | existing + new Standard', font=font, fill='white')
+            draw.text((10, 6), f'{family} | actual {size}px | family Standard + new Unique', font=font, fill='white')
             for n, p in enumerate(paths):
                 x, y = n % columns * 220, n // columns * (size+60)+32
                 image = Image.open(ROOT / p).convert('RGBA').resize((size, size), Image.Resampling.LANCZOS)

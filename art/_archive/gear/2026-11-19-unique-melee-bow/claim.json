@@ -22,6 +22,9 @@
     15
   ],
   "other_instance_entries": [
+    8,
+    10,
+    11,
     17,
     19,
     20,
@@ -30,5 +33,8 @@
     23
   ],
   "checked_other_branch": "7f7b7eb99ad82815a7e793d3d2cb6d1ac60aa886",
-  "status": "claimed-before-drawing"
+  "status": "blocked",
+  "active_rendering": false,
+  "handoff_available": true,
+  "last_checked_other_branch": "8b0bfbb7c7b2459815d44949ed751e35c04b2f38"
 }

@@ -1,5 +1,5 @@
 {
-  "status": "drawing",
+  "status": "blocked",
   "target": 8,
   "delivered": [
     "weapon-last_sentence",
@@ -14,5 +14,15 @@
     "weapon-reveille"
   ],
   "production_approved": false,
-  "updated_utc": "2026-11-19T07:34:18.024471+00:00"
+  "updated_utc": "2026-11-19T07:34:18.024471+00:00",
+  "generated_native_images": 6,
+  "selected_delivered_images": 5,
+  "blocked": [
+    "weapon-grandmothers_teeth",
+    "weapon-last_crossing",
+    "weapon-reveille"
+  ],
+  "image_generation_quota": null,
+  "reset_timestamp": null,
+  "blocker": "3 moderation_blocked responses; no further unclaimed eligible unique entries after peer refresh8b0bfbb7"
 }

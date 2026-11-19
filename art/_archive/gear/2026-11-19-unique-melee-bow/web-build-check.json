@@ -1,0 +1,15 @@
+{
+  "scope": "Targeted actual unchanged emit/gear_key/gear loop; full site build not run in sparse checkout",
+  "builder_sha256": "bedf3981a5e3ddfd9bdf5e597ebcfff571d6c49296577239a954a4abd9cbb2d7",
+  "new_paintings": 5,
+  "webps_decoded": 10,
+  "all_gear_keys_unique": 217,
+  "baseline_preserved": "f48fcbd2 all catalog entries unchanged;5 exact new additions",
+  "keys": {
+    "weapon-last_sentence": "gear-last_sentence",
+    "weapon-owed_in_full": "gear-owed_in_full",
+    "weapon-breath_of_morning": "gear-breath_of_morning",
+    "weapon-rearguard": "gear-rearguard",
+    "weapon-windfall": "gear-windfall"
+  }
+}
