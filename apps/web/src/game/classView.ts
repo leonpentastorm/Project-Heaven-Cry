@@ -59,6 +59,8 @@ export function usesLine(g: any, c: any, key: string, tier?: string): string {
   return [...new Set(parts)].join(' · ');
 }
 
+/** A move's text on a card: its player card line (`short`, where the data has one: Sanctuary, Stored Spell) else its text;
+ *  the long text stays the Narrator's ruling. */
 export interface MoveView { key: string; id: string; name: string; text: string; rank: string; earned: boolean; unlock: string; badge: string; verdict: string; uses: string; ap: string }
 /** Every move of a class, by rank: earned (the rank has it) or locked with the attribute value it needs. */
 export function classMoves(g: any, c: any, clsId: string): MoveView[] {
@@ -67,7 +69,7 @@ export function classMoves(g: any, c: any, clsId: string): MoveView[] {
   return RANKS.flatMap((r, i) => ((k.ranks || {})[r]?.moves || []).map((m: any) => {
     // A move keeps the key its handler runs under (Bard's Triage is class:medic.triage).
     const key = m.key || 'class:' + clsId + '.' + m.id, v = { ...verdictFor(key, r), label: markFor(key, r, g).mark }, earned = rank > i;
-    return { key, id: m.id, name: m.name, text: m.text || '', rank: 'RANK ' + r, earned, unlock: earned ? '' : i === 0 ? 'unlocks with the class' : 'unlocks at ' + attrName(k.attribute) + ' ' + RANK_AT[r] + ' and level ' + RANK_LEVEL[r as 'II' | 'III'],
+    return { key, id: m.id, name: m.name, text: m.short || m.text || '', rank: 'RANK ' + r, earned, unlock: earned ? '' : i === 0 ? 'unlocks with the class' : 'unlocks at ' + attrName(k.attribute) + ' ' + RANK_AT[r] + ' and level ' + RANK_LEVEL[r as 'II' | 'III'],
       badge: v.label, verdict: v.verdict, uses: earned ? usesLine(g, c, key, r) : '', ap: m.ap_cost ? m.ap_cost + ' AP' : '' };
   }));
 }
@@ -83,7 +85,7 @@ export function classRanks(g: any, c: any, clsId: string): RankView[] {
 export function advancedMoves(g: any, c: any, advId: string): MoveView[] {
   const a = ADVANCED[advId]; if (!a || !advancedActive(advId)) return [];
   return (a.moves || []).map((m: any) => { const key = 'class:' + advId + '.' + m.id, v = { ...verdictFor(key, 'adv'), label: markFor(key, 'adv', g).mark };
-    return { key, id: m.id, name: m.name, text: m.text || '', rank: 'ADVANCED', earned: true, unlock: '', badge: v.label, verdict: v.verdict, uses: usesLine(g, c, key, 'adv'), ap: m.ap_cost ? m.ap_cost + ' AP' : '' }; });
+    return { key, id: m.id, name: m.name, text: m.short || m.text || '', rank: 'ADVANCED', earned: true, unlock: '', badge: v.label, verdict: v.verdict, uses: usesLine(g, c, key, 'adv'), ap: m.ap_cost ? m.ap_cost + ' AP' : '' }; });
 }
 
 /** A class's attribute and its three skills with the character's points, and the progress to the next rank (Class
@@ -117,7 +119,7 @@ export function classCard(c: any, clsId: string) {
   return { id: k.id, name: k.name, core: k.core, attribute: k.attribute, attributeName: an, attrInk: ATTR_INK[k.attribute] || '#E7EBF3', value: c?.attrs?.[k.attribute] || 1,
     tagline: k.tagline || '', resource: resourceLine(clsId), skills: (k.skills || []).map((s: string) => (SKILL as any)[s]?.name || s),
     rankLine: 'Rank II at ' + an + ' ' + RANK_AT.II + ' and level ' + RANK_LEVEL.II + ' · rank III at ' + an + ' ' + RANK_AT.III + ' and level ' + RANK_LEVEL.III,
-    moves: ((k.ranks?.I?.moves) || []).map((m: any) => ({ key: m.key || 'class:' + clsId + '.' + m.id, name: m.name, text: m.text || '', ap: m.ap_cost ? m.ap_cost + ' AP' : '' })), ...emblemOf(k.id) };
+    moves: ((k.ranks?.I?.moves) || []).map((m: any) => ({ key: m.key || 'class:' + clsId + '.' + m.id, name: m.name, text: m.short || m.text || '', ap: m.ap_cost ? m.ap_cost + ' AP' : '' })), ...emblemOf(k.id) };
 }
 
 /** Base classes by their attribute, highest first; `offered` marks the level-3 options (the highest attribute, ties included). */

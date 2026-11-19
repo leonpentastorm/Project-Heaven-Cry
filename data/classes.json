@@ -4194,6 +4194,7 @@
         "name": "Stored Spell",
         "ap_cost": 0,
         "uses": "at_will",
+        "short": "Out of a fight, write a Sigil spell onto an object · in a fight, set it off for {=effects.0.ap} AP",
         "text": "Out of a fight, write a whole Sigil spell onto an object: name its words (ones you know, up to your Max Sigil words) and pay its charge now. In a fight, with an Evoker in hand, you set off your oldest stored spell for {=effects.0.ap} AP: it goes off from your tile, in every direction, with its own Reach. You can keep as many stored spells as your Rumination modifier (at least 1), and they fade at your next rest. A spell with STAY, WAIT or WATCH can't be stored. Out of a fight, the Narrator decides what a stored spell does.",
         "effects": [
           {
@@ -4492,6 +4493,7 @@
             "provisional": true
           }
         },
+        "short": "A Hymn of your own: allies around a tile within {=effects.0.reach.tiles} take half damage until your next turn",
         "text": "A Hymn only you can say ({=effects.0.ap} AP; no MP, no Strain): it starts your one Hymn wait, and no Hymn of your patron's until the wait ends. Pick a tile you can see within {=effects.0.reach.tiles} tiles: allies on the 3×3 tiles around it, you included, take half damage until the start of your next turn. It prevents at most {=amounts.sanctuary_cap.base} × your Blessing power in all (growing with your level, like a prayer's shield), then it ends. If you are Faithful, a Sanctuary that is answered makes you Witnessed like your patron's own Hymn. An Atheist rolls for it like a Hymn. Two Sanctuaries on the same tile don't stack. Out of a fight it is the Narrator's to rule (what the sanctuary keeps out), with no MP.",
         "effects": [
           {
