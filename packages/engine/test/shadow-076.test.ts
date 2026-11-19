@@ -135,7 +135,7 @@ describe('the shadow sightline (rules 1.76 item 6404): Hide\'s row carries who w
     const hide: any = actionsFor(f.g, u.id, null).find((d: any) => d.id === 'hide');
     expect(w[u.pos] || []).toEqual(hide.eyes);
   });
-  it('on a dark map a foe's watched tiles shrink (the one sight range)', () => {
+  it('on a dark map the tiles a foe watches shrink (the one sight range)', () => {
     const { f, u, a } = two();
     const lit = Object.keys(watchOf(f, u.id)).filter((k) => (watchOf(f, u.id)[k] || []).includes(a.id)).length;
     f.cb.map = { ...f.cb.map, dark: true };
