@@ -68,12 +68,9 @@ export const handlerOf = (id: string): TechHandler | null => HANDLERS[id] || nul
 export const NOT_BUILT = 'This technique isn\'t in the game yet.';
 
 // ---------- this turn ----------
-/** A stamp for "this turn of this unit": the round and the turn index. */
-export const turnStamp = (cb: Combat) => cb.round + '.' + cb.turn;
-/** The user's melee chain this turn: how many melee techniques, the last one, and whether a Finisher ended it. */
-export function chainOf(cb: Combat, u: Unit): { t: string; n: number; last: string | null; ended: boolean } {
-  const c = u.chain; return c && c.t === turnStamp(cb) ? c : { t: turnStamp(cb), n: 0, last: null, ended: false }; // reading writes nothing
-}
+// turnStamp and chainOf live in physical/data.ts (a leaf the item actions read without a cycle: item K, 0.31.11)
+import { turnStamp, chainOf } from './data';
+export { turnStamp, chainOf };
 /** The chain to write to (kept on the unit). */
 function chainFor(cb: Combat, u: Unit) { const c = chainOf(cb, u); u.chain = c; return c; }
 /** A melee technique (or an action counted in a melee group: the Breaker's Launch) joins the chain; a Finisher ends it

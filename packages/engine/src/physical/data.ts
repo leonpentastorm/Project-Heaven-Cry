@@ -5,6 +5,7 @@ import { WEAPON, type WeaponDef } from '../data';
 import type { Character } from '../character';
 import { mod } from '../character';
 import type { TechDef, TechSystem, TechGroup } from './types';
+import type { Combat, Unit } from '../combat';
 
 export const PHYS_RULES: any = (techniquesJ as any).rules;
 export const TECHNIQUES: TechDef[] = (techniquesJ as any).items;
@@ -150,3 +151,10 @@ export function takePick(c: Character, weaponId: string, id: string): string | n
 /** A unit skill's modifier for a save or a contest: the character's, else the stat block's attack bonus. */
 export const charSkillMod = (c: Character | null | undefined, skill: string): number => mod(skillOf(c, skill));
 export type { WeaponDef };
+
+/** A stamp for "this turn of this unit": the round and the turn index. */
+export const turnStamp = (cb: Combat) => cb.round + '.' + cb.turn;
+/** The user's melee chain this turn: how many melee techniques, the last one, and whether a Finisher ended it. */
+export function chainOf(cb: Combat, u: Unit): { t: string; n: number; last: string | null; ended: boolean } {
+  const c = u.chain; return c && c.t === turnStamp(cb) ? c : { t: turnStamp(cb), n: 0, last: null, ended: false }; // reading writes nothing
+}

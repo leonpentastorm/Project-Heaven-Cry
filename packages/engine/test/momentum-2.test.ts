@@ -226,4 +226,13 @@ describe('item 5531: the Finisher lock holds Barrel In; Shove stays', () => {
     f.put(f.unit(other.id), 'D5');
     expect(refusal(() => f.act({ type: 'combat/shove', unitId: f.pc.id, targetId: other.id } as any))).toBe('');
   });
+  it('item K (0.31.11): the list reads the chain as the technique gate does (chainOf, the stamp of this turn), so a chain kept from an earlier turn locks nothing', () => {
+    const f = fight({ m: 3, foes: [{ at: 'D5' }, { at: 'E7' }] }); weak(f.foe); f.unit(f.foe.id).hp = 1; rig({ hit: true, die: 12 });
+    f.tech('coup', { targetId: f.foe.id }); rig(null);
+    f.momentum(f.pc, 2); f.pc.ap = 9;
+    const pc = f.unit(f.pc.id); (pc as any).chain = { ...(pc as any).chain, t: 'an earlier turn' }; // ended, but not this turn's
+    expect(chainOf(f.cb, pc).ended).toBe(false);
+    const bi = withGame(f.g, () => actionsFor(f.g, f.pc.id, 'host')).find((d: any) => d.id.includes('fighter.lunge'))!;
+    expect(bi.why || '').not.toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
+  });
 });
