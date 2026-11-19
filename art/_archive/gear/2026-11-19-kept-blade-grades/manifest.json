@@ -1730,6 +1730,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-striking_gloves--celestial",
+      "path": "art/icons/gear/weapon-striking_gloves--celestial.png",
+      "sha256": "6e41b22a1f43103b9eca9cc0433c4dcff86770cfd4f3724b1c142c09576215d2",
+      "label": "Striking Gloves — Celestial",
+      "family": "weapon-striking_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-striking_gloves--celestial.png",
+        "sha256": "615296ad432b5ba301a7b9f63a201f18d3c7ea814f6ccdb7228dd98bedad9de3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--celestial.png",
+        "sha256": "6e41b22a1f43103b9eca9cc0433c4dcff86770cfd4f3724b1c142c09576215d2"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-striking_gloves--celestial.txt",
+        "sha256": "2997714b7d92923802f82cd99e3767208c5d96225c7010296111a2bff9c9831a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-striking_gloves.png",
+          "sha256": "4e54720c6116953f5aa708040f4f083708ebaff75d8ee5ec794ffcb04c400576"
+        },
+        {
+          "path": "art/icons/gear/weapon-striking_gloves--relic.png",
+          "sha256": "9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-striking_gloves--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-striking_gloves--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-striking_gloves--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-striking_gloves--celestial.png"
+      },
+      "export_hashes": {
+        "256": "28e01bb9bc6ff2d9cd25e37941f36af2f5199a53c6dcdf935d0a6c34eda64f86",
+        "128": "05c91e814c8d69a724bdcbabf39fe3956e52ac09223556728981de3a5a94caad",
+        "64": "e846a9e9e3e993e099b55d87605b45a3f20bed9fae46d5cb6a4aefc979448273",
+        "32": "fdaf0821c96a4156e361bcc970bb87737736d45455b3f9973ec0117c636437e9"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-striking_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9805128747142989,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 16
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
