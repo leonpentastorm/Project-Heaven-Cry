@@ -32,7 +32,7 @@ Every rule-bearing item carries both:
   - `{"op":"skill_mod_tag","tag":"<alpha|beta|gamma|core:body|attr:<id>>","value":n}`
   - `{"op":"stat_mod","stat":"<hp|ap|ap_max|move|armor|init|mp_max|echo_max|...>","value":n}`
   - `{"op":"tn_mod","context":"<string>","value":n}`
-  - `{"op":"advantage","context":"<string>"}` / `{"op":"disadvantage","context":"<string>"}`
+  - `{"op":"two_dice","when":"attack_roll","keep":"<worse|better>"}` an attack rolls a second d20 and keeps the worse or the better
   - `{"op":"grant_action","action":"<id>","ap":n,"uses":"<at_will|per_scene|per_rest|per_session>"}`
   - `{"op":"resource","resource":"<echo|ammo|mana|core|mp|flux|strain|faith>","value":n,"when":"<trigger>"}`
   - `{"op":"condition","condition":"<id>","target":"<self|target|ally|area>","when":"<trigger>"}`

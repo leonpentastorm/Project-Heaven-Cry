@@ -2267,22 +2267,6 @@
       }
     },
     {
-      "id": "disadvantage",
-      "tier": "core",
-      "summary": "Roll twice, keep the lower.",
-      "count": 1,
-      "params": [
-        "context"
-      ],
-      "used_by": [
-        "skills:athletics"
-      ],
-      "example": {
-        "op": "disadvantage",
-        "context": "attacks_against_self:armor_class_0"
-      }
-    },
-    {
       "id": "double_or_nothing",
       "tier": "bespoke",
       "summary": "",
