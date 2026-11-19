@@ -126,6 +126,8 @@ describe('effects audit', () => {
     for (const w of pj.whispers) prayCase('whisper', any, w);
     for (const it of pj.items) { for (const hy of it.hymns) prayCase('hymn', it.id, hy); prayCase('miracle', it.id, it.miracle); }
     expect(ROWS.length).toBeGreaterThan(30);
+    // 0.33: Everyone Home's allies answer on their tokens (the Miracle's landing runs landOn)
+    expect(ROWS.find((r) => r.action.includes('everyone_home'))!.fault).toBe('ok');
   });
 
   it('bonds and tending', () => {

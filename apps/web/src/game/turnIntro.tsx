@@ -624,7 +624,8 @@ function EndPanel({ b, rm, onClose }: { b: Banner; rm: boolean; onClose: () => v
           <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.2em', color: '#A3AEC2', textTransform: 'uppercase' }}>{x.label}</span>
           <span style={{ fontSize: 26, fontWeight: 700, color: '#FFFFFF', fontVariantNumeric: 'tabular-nums' }}>{x.value}</span></span>)}
       </div>}
-      <span style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.22em', color: '#A3AEC2', textTransform: 'uppercase' }}>{CARDS.end.close}</span>
+      {/* 0.33 polish: on its own dark chip, so it never runs into the map under it */}
+      <span data-phc-end-close="" style={{ fontFamily: "'Chakra Petch', sans-serif", fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.22em', color: '#C9D3E3', textTransform: 'uppercase', padding: '6px 14px', borderRadius: 999, background: 'rgba(10, 13, 19, 0.92)', border: '1px solid #232D3F' }}>{CARDS.end.close}</span>
       <style>{'@keyframes ' + name + '{0%{opacity:0}' + p1 + '%{opacity:1}' + p2 + '%{opacity:1}100%{opacity:0}}'}</style>
     </div>
   );
@@ -728,9 +729,13 @@ function panelBox(right: boolean): { left: number; top: number; width: number; h
   const win = { left: 0, top: 0, width: typeof innerWidth === 'number' ? innerWidth : 1280, height: typeof innerHeight === 'number' ? innerHeight : 720 };
   if (typeof document === 'undefined') return win;
   const el = document.querySelector(right ? '#phc-cb-aside' : '.phc-cb-left') as HTMLElement | null, r = el?.getBoundingClientRect();
-  if (!r || r.width < 200 || r.height < 200) return win;
+  if (!r) return win;
+  // 0.33 polish: the box is clamped to the viewport; under 1000 px the side panel wraps below the map, so a panel
+  // whose visible part is under 200 px high or wide (or wholly off screen) falls back to the window.
   const top = Math.max(0, r.top), bottom = Math.min(win.height, r.bottom);
-  return { left: r.left + 4, top, width: r.width - 8, height: bottom - top };
+  const left = Math.max(0, r.left), right2 = Math.min(win.width, r.right);
+  if (right2 - left < 200 || bottom - top < 200) return win;
+  return { left: left + 4, top, width: right2 - left - 8, height: bottom - top };
 }
 
 /** For tests: what a banner and a cut-in would show for a unit. */

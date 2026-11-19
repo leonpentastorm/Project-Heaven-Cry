@@ -245,7 +245,7 @@ function WaveEnd({ game, isHost }: { game: GameState; isHost: boolean }) {
       <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.22em', color: won ? C.ok : C.red }}>{won ? '✓ WAVE CLEARED' : '✕ THE SQUAD IS DOWN'}</span>
       <span style={{ fontFamily: "'Spectral', serif", fontSize: 30, fontWeight: 600 }}>Wave {sb.wave}{won ? ' cleared' : ''}</span>
       <span style={{ fontSize: 'var(--fs-body)', lineHeight: 1.5, color: '#C9D3E3' }}>
-        {won ? 'The squad carries its HP, ammo and magic into the next wave. Gear up first to change weapons, refill or learn magic.' : 'Nothing is lost here: everyone is back up and refilled. Retry the wave now, or gear up first.'} Best so far: wave {sb.best}.
+        {won ? 'The squad carries its HP, ammo and magic into the next wave. Gear up first to change weapons, refill or learn magic.' : 'Nothing is lost here: everyone is back up and refilled. Retry the wave now, or gear up first.'} {sb.best > 0 ? 'Best so far: wave ' + sb.best + '.' : 'No wave cleared yet.'}
       </span>
       {won ? <div style={row}>
         <button type="button" data-sfx="start" style={{ ...primary, minHeight: 46, flex: 1 }} onClick={() => act({ type: 'sandbox/wave' })}>Next wave {sandboxNext(sb)} ›{auto && left > 0 ? ' · ' + left : ''}</button>

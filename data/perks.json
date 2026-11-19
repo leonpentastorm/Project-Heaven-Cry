@@ -7600,7 +7600,8 @@
                       "empathy": 5
                     }
                   },
-                  "when": "acted"
+                  "when": "acted",
+                  "say": "{self} soothes {target}: {cleansed}."
                 },
                 {
                   "op": "cleanse",
@@ -7637,7 +7638,8 @@
                       "empathy": 5
                     }
                   },
-                  "when": "acted"
+                  "when": "acted",
+                  "say": "{self} soothes {target}: {cleansed}."
                 },
                 {
                   "op": "condition",
@@ -7792,6 +7794,7 @@
                 "target_within": 1
               },
               "say": "{self} draws on the Bond; {target} is already at their side.",
+              "fx": {"k": "tie_pulse"},
               "when": "acted"
             }
           ],
@@ -7916,6 +7919,7 @@
                     "target_within": 1
                   },
                   "say": "{self} draws on the Bond; {target} is already at their side.",
+                  "fx": {"k": "tie_pulse"},
                   "when": "acted"
                 }
               ],
@@ -8040,6 +8044,7 @@
                     "target_within": 1
                   },
                   "say": "{self} draws on the Bond; {target} is already at their side.",
+                  "fx": {"k": "tie_pulse"},
                   "when": "acted"
                 }
               ],

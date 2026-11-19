@@ -274,7 +274,7 @@ export function PathMap({ v, onPick }: { v: RunViewV; onPick: (n: RunNodeV, el: 
     <div ref={outer} style={{ display: 'flex', flexDirection: 'column', gap: 8, minWidth: 0 }}>
     <div ref={scroller} data-phc-pathmap-scroll="" data-phc-pathmap-scale={scale} style={{ overflowX: 'auto', overflowY: 'hidden', borderRadius: 14, background: '#0B0A07', border: '1px solid #232D3F', width: ICON.pathMap * scale + 2, maxWidth: '100%', alignSelf: 'center', boxSizing: 'border-box' }}>
     <div style={{ width: ICON.pathMap * scale, height: ICON.pathMap * 9 / 16 * scale }}>
-    <div data-phc-pathmap="" data-tip-avoid='[data-phc-state="reachable"], [data-phc-state="here"]' style={{ position: 'relative', width: ICON.pathMap, display: 'grid', placeItems: 'center', transform: scale !== 1 ? 'scale(' + scale + ')' : undefined, transformOrigin: '0 0' }}>
+    <div data-phc-pathmap="" data-tip-avoid='[data-phc-node], [data-phc-node-camp]' style={{ position: 'relative', width: ICON.pathMap, display: 'grid', placeItems: 'center', transform: scale !== 1 ? 'scale(' + scale + ')' : undefined, transformOrigin: '0 0' }}>
       <style>{'@keyframes phc-pm-dash{to{stroke-dashoffset:-26}}.phc-pm-lit{animation:phc-pm-dash 1.2s linear infinite}@keyframes phc-pm-pulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.12);opacity:.25}}.phc-pm-here{animation:phc-pm-pulse 2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){.phc-pm-lit,.phc-pm-here{animation:none}}'}</style>
       {/* the 16:9 map at its own size (the frame scrolls sideways over it), so nothing on it is ever cut off */}
       <div data-phc-pathmap-box="" style={{ position: 'relative', width: '100%', aspectRatio: '16 / 9' }}>

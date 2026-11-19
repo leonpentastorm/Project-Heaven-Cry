@@ -1966,7 +1966,8 @@ export class CombatLogic extends DCLogic {
       confirmSfx: isMagic ? 'none' : undefined, confirmText: T.confirmText,
       // The header's right cluster (UI pass, screens/shell.js): room, Save, ⚙, ⚑, Leave.
       ...shellVals(this, 'combat'),
-      roundText: 'ROUND ' + cb.round + ' · ' + cb.map.name.toUpperCase() + ' · ' + cb.name.toUpperCase(),
+      // 0.33 polish: the fight's name and the map's are said once ("THE PROVING GROUND · PROVING GROUND · WAVE 1" repeated)
+      roundText: ((bare) => ['ROUND ' + cb.round, ...[cb.map.name, ...String(cb.name || '').split(' · ')].filter((x, i, all) => x && all.findIndex((y) => bare(y) === bare(x)) === i)].join(' · ').toUpperCase())((x) => String(x || '').trim().toLowerCase().replace(/^the /, '')),
       turnChip: cb.over ? (won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT') : mineTurn ? 'YOUR TURN' : cur && cur.side === 'foe' ? 'HOSTILES ACTING' : 'WAITING', turnChipStyle: 'padding: 6px 12px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.12em; border: 1px solid ' + (mineTurn ? '#FFFFFF' : '#232D3F') + '; color: ' + (mineTurn ? '#FFFFFF' : '#A3AEC2'),
       // 0.31.0 (U1): the squad list and the combat log fold like every other information box
       squadFold: foldVals('fight:squad', { redraw: () => this.setState({ foldTick: Date.now() }) }), logFold: foldVals('fight:log', { redraw: () => this.setState({ foldTick: Date.now() }) }),

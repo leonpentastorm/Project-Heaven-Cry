@@ -408,7 +408,7 @@ export class CreateLogic extends DCLogic {
               // One line: what the next point gives (the road map's step at points + 1; rules 1.54 item 4119).
               line: p < ATTR_CAP ? give : 'Top at creation (' + ATTR_CAP + ')', nextAt: p < ATTR_CAP ? p + 1 : 0,
               lineTitle: s.summary,
-              modChip: fmt(m), modTitle: 'Roll ' + fmt(m) + (p < ATTR_CAP ? ' now, ' + fmt(m1) + ' with the next point' : ''), face: s.img, open: () => this.setState({ epccg: s.id, hover: s.id }), openLabel: s.name + ': what each point gives (its EPCCG entry)',
+              modChip: fmt(m), modTitle: 'Added to your d20 when you roll this skill: ' + fmt(m) + (p === 0 ? ' (untrained)' : '') + (p < ATTR_CAP ? ' now, ' + fmt(m1) + ' with the next point' : ''), face: s.img, open: () => this.setState({ epccg: s.id, hover: s.id }), openLabel: s.name + ': what each point gives (its EPCCG entry)',
               inc, dec, keys: arrows(inc, dec), incOff: up2.ok ? 'false' : 'true', decOff: dn2.ok ? 'false' : 'true',
               incAria: up2.ok ? 'Raise ' + s.name + ' from ' + p + ' to ' + (p + 1) + ' for 1 Skill point' + (lifts ? ' and 1 Attribute point: ' + a.name + ' rises from ' + v + ' to ' + (p + 1) : '') + '. Roll ' + fmt(m1) + '. ' + give : 'Raise ' + s.name + ', now ' + p + '. Not possible: ' + up2.text,
               decAria: dn2.ok ? 'Lower ' + s.name + ' from ' + p + ' to ' + (p - 1) + '. 1 Skill point back.' : 'Lower ' + s.name + ', now ' + p + '. Not possible: ' + dn2.text,
@@ -545,13 +545,15 @@ export class CreateLogic extends DCLogic {
       ...(canSigil ? [['Sigil words: ' + sig.map((w) => SIGIL[w]?.word || w).join(' + '), !sigErr]] : []), ...(hasTech ? [['Techniques: ' + techSys.map((x) => x.picked).join(' · '), !techErr]] : []), ...(canSoul ? [['Outburst: ' + obName, !obErr]] : [])].map(([label, ok]) => ({
       label, mark: ok ? '✓' : '◆', markStyle: 'width: 20px; text-align: center; font-weight: 700; color: ' + (ok ? '#6FEA77' : '#FFFFFF') }));
     const cantLock = checks.some((c) => c.mark !== '✓');
+    // 0.33 polish: the grey button says why (the checklist's open lines), not only the checklist
+    const lockWhy = cantLock && !S.stamp ? 'Still to do: ' + checks.filter((c) => c.mark !== '✓').map((c) => c.label.charAt(0).toLowerCase() + c.label.slice(1)).join('; ') + '.' : '';
 
     // lock in: the full record (spec formulas; identity fields are free text, the sample shows MPAT's)
     const AV = der.attr, PT = (id) => S.skills[id] || 0, MD = (id) => mod(PT(id)), pos = (m) => Math.max(0, m);
     const sample = !!this.props.sampleName;
     const I = S.idv; const record = [['Race', 'Human (races later)'], ['Gender', I.gender], ['Blood type', I.blood], ['Main hand', I.hand],
       ['Association', I.association], ['Favourite song', I.songTitle ? I.songTitle + (I.songArtist ? ' · ' + I.songArtist : '') : I.song], ['Last dream', I.dream], ['History', I.history]]
-      .map(([k, v]) => ({ k, v: v || 'Not filled in', vStyle: 'max-height: 4.35em; overflow-wrap: anywhere; font-size: var(--fs-body); line-height: 1.45; color: ' + (v ? '#E7EBF3' : '#7F8BA1') }));
+      .map(([k, v]) => ({ k, v: v || 'Optional, left blank', vStyle: 'max-height: 4.35em; overflow-wrap: anywhere; font-size: var(--fs-body); line-height: 1.45; color: ' + (v ? '#E7EBF3' : '#7F8BA1') }));
     const seenKey = o ? Object.keys(o).find((k) => k.startsWith('People see you as')) : null; // Bazaim's reads "(in Central City)"
     const originRows = o ? [['Home', o.Home], ['Upbringing', o.Upbringing], ['You know', o['You know']], [seenKey || 'People see you as', seenKey ? o[seenKey] : ''], ['Suggested skills', o.Skills], ['Hook', o.Hook]]
       .filter(([, v]) => typeof v === 'string' && v).map(([k, v]) => ({ k: k.toUpperCase(), v: v.charAt(0).toUpperCase() + v.slice(1) })) : [];
@@ -594,7 +596,7 @@ export class CreateLogic extends DCLogic {
       trainedSkills, traitNames, leanText: der.leans.length ? (der.leans.length > 1 ? 'Tied: at level 3 you choose one of these, for good.' : 'Your highest attribute decides it. A tie lets you choose.') : 'Place some points first: your highest attribute decides your class.',
       record, originRows, stats, tree, traitFull, hasTraits: traitFull.length > 0, noTraits: traitFull.length === 0, voiceList, hasVoices: voiceList.length > 0, leanCards,
       originName: o ? o.name : 'No origin yet', hasOriginRows: !!o,
-      checks, cantLock, lockOff: cantLock, lockStyle: 'min-height: 50px; border-radius: 10px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: ' + (S.stamp ? 'default' : 'pointer') + '; ' + (S.stamp ? 'background: ' + STAMP_RED + '; color: #FFFFFF' : cantLock ? 'background: #1C2536; color: #7F8BA1' : 'background: #6FEA77; color: #0A0D13'),
+      checks, cantLock, lockOff: cantLock, lockWhy, hasLockWhy: !!lockWhy, lockStyle: 'min-height: 50px; border-radius: 10px; border: 0; font-family: inherit; font-size: 16px; font-weight: 700; cursor: ' + (S.stamp ? 'default' : 'pointer') + '; ' + (S.stamp ? 'background: ' + STAMP_RED + '; color: #FFFFFF' : cantLock ? 'background: #1C2536; color: #7F8BA1' : 'background: #6FEA77; color: #0A0D13'),
       stamped: !!S.stamp, stampMode: S.stamp || 'on', sealStyle: SEAL_STYLE + (S.stamp ? '0' : '0.55'),
       ...(() => { const yt = ytId(S.idv.song), st = S.songState;
         const note = !S.idv.song ? 'Played for the whole room when you do something amazing. Pick a video that allows embedding.' : !yt ? 'Not a YouTube link: it stays as text and won\'t play.' : st === 'checking' ? 'Checking the video…' : st === 'bad' ? '✗ This video doesn\'t allow embedding, so it can\'t play in the game. Try another upload of the song.' : st === 'ok' ? '✓ Plays in the game' + (ytStart(S.idv.song) ? ' from ' + Math.floor(ytStart(S.idv.song) / 60) + ':' + String(ytStart(S.idv.song) % 60).padStart(2, '0') : '') + '.' : 'Leave the field to check the link.';

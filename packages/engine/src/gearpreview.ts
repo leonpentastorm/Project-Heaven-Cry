@@ -61,7 +61,7 @@ const signed = (n: number) => (n >= 0 ? '+' : '') + n;
 function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
   const sk = weaponVia(u, isMelee(w) ? 'melee' : 'shot'), sc = weaponMultLabel(w.id, { live: true }), mode: AttackMode = w.category === 'thrown' ? 'thrown' : isMelee(w) ? 'melee' : 'shot';
   return [
-    { key: 'hits_with', label: 'To hit', value: signed(checkMod(c, sk)) + ' (' + (SKILL[sk]?.name || sk) + ')', num: null },
+    { key: 'hits_with', label: 'Skill to hit', value: signed(checkMod(c, sk)) + ' (' + (SKILL[sk]?.name || sk) + ')', num: null },
     // op roll_with (rules 1.55): the skill an item lets the attack roll with instead, when it would (the fight's own choice, combat.ts rollWithPick)
     ...rollWithLines(c, sk, mode),
     // only what moves the damage today: no line when every slope of the profile is 0 (lead's ruling, 15 Nov 2026)
@@ -69,7 +69,7 @@ function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
     // line the attack deals) stands from the profile's pin (rules 1.61, the lead's ruling R5, 16 Nov 2026): the flat
     // weapon profile's Stat (output.profiles.weapon, x1.5), where the melee and gun profiles meet it (Attribute 7), so an
     // all-in Attribute 7 reads +0%, Agility 1 with a gun -15%, Strength 10 with a maul +8%: "Damage: Strength · -15%"
-    ...(sc ? [{ key: 'scales_with', label: 'Damage', value: signed(Math.round((weaponMult(c, w.id) / statTerm('weapon', [], []) - 1) * 100)) + '% (' + sc + ')', num: null }] : []),
+    ...(sc ? [{ key: 'scales_with', label: 'Attribute on damage', value: signed(Math.round((weaponMult(c, w.id) / statTerm('weapon', [], []) - 1) * 100)) + '% (' + sc + ')', num: null }] : []),
   ];
 }
 /** The character's roll_with offers (items whose effect is op roll_with on `attack`), read without a fight: the card

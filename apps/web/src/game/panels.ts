@@ -19,10 +19,13 @@ export const PROVING_GROUND_PANELS = PG_PANELS.filter(isPanelId);
 /** What the play screen's right panel holds now, and what the sheet hides: the Proving Ground's list, the mode's own in
  * a run, else the story's (the campaign's: a story without a run). `key`: the list's name, for its stored order. */
 export interface PanelList { key: string; list: PanelId[]; hides: string[] }
-export function panelsOf(g: Pick<GameState, 'settings' | 'sandbox' | 'run'> | null | undefined): PanelList {
+export function panelsOf(g: (Pick<GameState, 'settings' | 'sandbox' | 'run'> & { characters?: GameState['characters'] }) | null | undefined): PanelList {
   if (g?.sandbox) return { key: 'proving_ground', list: PROVING_GROUND_PANELS, hides: [] };
   const mode = (g && g.run ? modeOf(playOf(g)) : undefined) || modeOf(OLD_SAVE_PLAY)!; // a story without a run: the campaign (OLD_SAVE_PLAY)
-  return { key: mode.id, list: (mode.panels || []).filter(isPanelId), hides: mode.hides || [] };
+  // 0.33 polish: Give hands things to another player; a game with one character leaves it out (it only said "No one to
+  // hand anything to"), as the shop's Give tab does. The key stays the mode's, so the stored order keeps its place.
+  const solo = !!g?.characters && Object.keys(g.characters).length <= 1;
+  return { key: mode.id, list: (mode.panels || []).filter(isPanelId).filter((id) => !(solo && id === 'give')), hides: mode.hides || [] };
 }
 /** The story's area map (the header's AREA MAP button and the M key) is offered where the mode's list holds the map
  * module: the story and the Proving Ground, never a run (ui-screens.md "The three columns": no area map in Survival). */

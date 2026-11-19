@@ -125,6 +125,21 @@ export function wrapBonds(H: Record<string, (e: FxEvent) => void>, K: BondKit) {
     if (reducedMotion()) { const p = K.at(K.posOf(l.to) || e.at); if (p) floatText(l.kind.toUpperCase() + ' BROKEN', p, l.ink, { small: true }); return; }
     breakTie(l, K);
   };
+  // 0.33 (rules 1.85 item 7301): a row's `tie_pulse` fx (Tug on a friend already beside you): a pulse runs down the
+  // tie line from the holder (target) to its other unit, which answers in the line's ink; nothing moves.
+  H.tie_pulse = (e: any) => {
+    const from = String(e.target || ''), to = String(e.other || ''); if (!from || !to) return;
+    const l = K.lines().find((x) => (x.from === from && x.to === to) || (x.from === to && x.to === from));
+    const ink = l?.ink || INSIGHT_INK, fp = K.at(K.posOf(from) || e.at), tp = K.at(K.posOf(to) || e.from); if (!fp || !tp) return;
+    trace('bond', { what: 'pulse', from, to });
+    fxMarker(tp, 'data-phc-bond-pulse', to, BOND_MS.pulse + 600);
+    const tt = K.tokOf(to, K.posOf(to)), answer = () => { ring(tp, ink, 420, { from: 0.8, to: 1.25, width: 4 }); if (tt) anim(tt, [{ filter: 'none' }, { filter: 'brightness(1.4) drop-shadow(0 0 7px ' + ink + ')', offset: 0.35 }, { filter: 'none' }], { duration: 520, easing: 'ease-out' }); };
+    K.play('sg_command', fp, { rate: 1.4, gain: 0.3 });
+    if (reducedMotion()) { answer(); return; }
+    windUp(K, from, K.posOf(from), tp, BOND_MS.pulse * 0.6, true, ink);
+    pulse(fp, tp, ink, BOND_MS.pulse);
+    after(answer, BOND_MS.pulse);
+  };
   const moment = (e: FxEvent) => { try { return bondFxOf(e, K.lines(), K.actor(), sideOf); } catch { return null; } };
   for (const k of ['cond', 'heal', 'shove', 'boon'] as const) {
     const b = base[k]; if (!b) continue;
