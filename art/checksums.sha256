@@ -3149,7 +3149,7 @@ c0ef0ea40e1f0c86b2313789cbc28b924f05da7d265e33638667234a0662f29e  art/_archive/p
 c7f83a2ab6ce6c912076dc20d5ad3e06368577fcd7a524eba9c344ec187b9161  art/_archive/perks/wick/replaced/2026-11-16/sleight-of-hand.png
 3cc4791e01d68872b034f093116e80c48adce7aef305d8af216eb3b1973081e9  art/_archive/perks/wick/replaced/origami-hands.png
 21ee13995e640df83fff24d2080a72c46ebba1e976b2ce8599327d28e13b17b0  art/_archive/prompt-pack/2026-11-19-file-08/HANDOFF.md
-ad6877159b4c122e5ee5fbcfe0e65e25a33ba76e09056d0365d98628a0d1cf1a  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
+451280c7fb15bae3f25da3a5a4d5cfa6aa6519b990ab6ce8bb6a3ada63c8b622  art/_archive/prompt-pack/2026-11-19-file-08/PROGRESS.md
 4fc6a553286de580915e3be7b1e553e5fbc400d27491234cfc94d3325770492e  art/_archive/prompt-pack/2026-11-19-file-08/WORK-CLAIMS.md
 19b73a4a98a502a5add175549b6dcd3a6bd4b2d6049d543e24ad03f4d4866c55  art/_archive/prompt-pack/2026-11-19-file-08/archive-proof.py
 b795a18cd4f37d13c209a56994cb1aeb912612a31f33f5420291b949aff32cb0  art/_archive/prompt-pack/2026-11-19-file-08/candidate-manifest.json
@@ -3236,6 +3236,8 @@ fd2ec8a84d2396f8e7055c456fd35838b0484e409b1687b342ac16af0af9a108  art/_archive/p
 f77c9213ee4df0d77b897f5877e480a0398050aedd2de324af896b10b049b0d5  art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--masterwork.png
 f475f62a47ff78d3762adb36f102c8bf10c8523ef047a130921ada23212fcdcd  art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.json
 674159c8818c9ddb98be40636c73affd8a6a57a783862b9280a6da9f77d424bd  art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-buckler--relic.png
+5d5a99416bc88d7dea91889110507d2f8620250faa24dcb3edc6d4ac7c3e5a53  art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--celestial.json
+489da40a8f5ba72f9c1520d58df3fcb3bf3a874d66d87855a72aa26929b8118a  art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--celestial.png
 fb768c8359097d25986d049c54702ef01fa4ff32083b2700b85c47074b994608  art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--fine.json
 a716f047c8bdfd306d0cf76fcca324f645f8182804a13f331d885948c8cb2dfa  art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--fine.png
 a45ed808a22e74eed2afd18a335f993cca65d72187d64b2c4c65e70cce50bc96  art/_archive/prompt-pack/2026-11-19-file-08/drafts/shield-pavise--masterwork.json
@@ -3312,7 +3314,7 @@ a25d818351d0b8191c1d209601f5c7f405d92df9b7f7c86318fd09a89ce11001  art/_archive/p
 d0c7775b5c19b84e5a1178cb913136e6c9ae915b5d603b26d9d4263173e4e0a7  art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.png
 bbaf31dfd852c44a721c40cbe5d64eadb728d6093ebc744cf9dc19ecce30f24b  art/_archive/prompt-pack/2026-11-19-file-08/prepare-candidates.py
 3ba3e36a8da309670de94fe5febbb6ee2452109e176014fdb221e290ca03f858  art/_archive/prompt-pack/2026-11-19-file-08/register-grade.py
-db503dbf0f09987406fafb242b0da41e941b07434a0c62f2b5ba4d9dfcf41e79  art/_archive/prompt-pack/2026-11-19-file-08/review/complete-proof-progress.jpg
+ea4cf4f9d4b7bdfdee03a1e2af6c47653d3a0908f15802f8a53af9a539ecaef2  art/_archive/prompt-pack/2026-11-19-file-08/review/complete-proof-progress.jpg
 ad1c63c5da9e8985fa216f1022b6e3787608f15e5c7a9c429b134c8b895ecc39  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-proof-retry.jpg
 684ad11905fdb53ebd4323ff5a36881197c747a37cc5d765a7c1bcf58f1d543f  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-proof-retry.json
 044c57bbbfeb998d681132071f5a52f10e225cee796a0e98fdbe17325e53e73a  art/_archive/prompt-pack/2026-11-19-file-08/review/fine-shape-proof.jpg
