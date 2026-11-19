@@ -3082,6 +3082,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "focus-emanator--masterwork",
+      "path": "art/icons/gear/focus-emanator--masterwork.png",
+      "sha256": "fb47dd64b85624c108ac22c7565869f152be38babd834164a3c051b45566c8ea",
+      "label": "Emanator — Masterwork",
+      "family": "focus-emanator",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/focus-emanator--masterwork.png",
+        "sha256": "42557996c6b5c747221b4ea5e3afbd16c42f2452197f5f64d4a0df6b73aaa4fe"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/focus-emanator--masterwork.png",
+        "sha256": "fb47dd64b85624c108ac22c7565869f152be38babd834164a3c051b45566c8ea"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/focus-emanator--masterwork.txt",
+        "sha256": "18c4a13f18923adf32a00cc497d45e581876e34d8e5f5e7f7a1a5d1d9f2a40ee"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/focus-emanator.png",
+          "sha256": "4fcd240a5ebe70b3c72cc08a8de1203f83e19382d4fd119b06a4ccd32e728bd5"
+        },
+        {
+          "path": "art/icons/gear/focus-emanator--fine.png",
+          "sha256": "7bc64e11d0f5dfcab0a6dd7f0458dd25602af388070080f88f5d16deba888f66"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/focus-emanator--masterwork.png",
+        "128": "art/icons/gear/exports/128/focus-emanator--masterwork.png",
+        "64": "art/icons/gear/exports/64/focus-emanator--masterwork.png",
+        "32": "art/icons/gear/exports/32/focus-emanator--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "a0e1e1c4f24e453777b201aa5912deded94c8e695877c1225818f71339ebeab6",
+        "128": "1dc30b449c6ad59f7fb99a8fb3f5aba252f52a55d34e8dc55a478a90db426639",
+        "64": "0db9009834c4e48636c4a4563f5bffe96d6c48dde5bd0c81722ebfd8d0aae7e6",
+        "32": "3e48cdd717ed56a9681562515b6afed009932d57363a34063f72dac9c1052cc3"
+      },
+      "grade": "masterwork",
+      "standard_id": "focus-emanator",
+      "outline": {
+        "solid_alpha_iou": 0.9811636635467443,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
