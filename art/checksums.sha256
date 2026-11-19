@@ -1218,12 +1218,13 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-5f46cb0012a297752a2d92a6431b6e81d7fed466404ca18174539851fbdeca4e  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
+e8aecfbbda64c15e534b6df933168da0584d4bd0191d9825b8a6bb76105b2a03  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
 9baea3255504f9e53d711446792e72b5372fbd74335ca4608add0486cf02e915  art/_archive/gear/2026-11-19-melee-armour/briefs/05-melee-forms.md
 c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/_archive/gear/2026-11-19-melee-armour/briefs/07-shields-armour.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/_archive/gear/2026-11-19-melee-armour/briefs/README.md
 95edab6065fdcc674b0bd1d662a6f49278080bd7ee0f31cfda198d5aeb9fd0c8  art/_archive/gear/2026-11-19-melee-armour/lowland-chopper-generation-error.json
-ad55e4f51b70f7a8dbd0e050e5741c4ffbff1c9937a05555bd9d31fe46d883c3  art/_archive/gear/2026-11-19-melee-armour/manifest.json
+63793785c26c2b2a1b47ac7ebbdb1ea30fac743eed2f6152e2afe2e4af9c9e1b  art/_archive/gear/2026-11-19-melee-armour/manifest.json
+ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-adamantile_longsword.png
 2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-adamantile_plate_needle.png
 1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-broadback_sabre.png
 60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-dock_cutter.png
@@ -1239,7 +1240,7 @@ fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4  art/_archive/g
 3f2848a00af47d2ff6f81fd988a2abf2f3d873015164e95e656e7fbaa60dc4a1  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-trench_knife.png
 c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_hammer.png
 bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_pick.png
-6b0b08a97c3489abda36ad652c53a73d89f1168be0d8ffe07eefd75793eda44e  art/_archive/gear/2026-11-19-melee-armour/progress.json
+7a80fe75b8ac6cb6aacf895e4118cd841d5588f5aabb6a30dc3cc7bb05547c2d  art/_archive/gear/2026-11-19-melee-armour/progress.json
 54760a740ba4b1ecec9bbe8ea567331a0e05792c98655e6927219559fb9c7162  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-assault_helm.txt
 84c98f75ca902406ed731b932a357031c90a45a13860786d04019ed78d13cd88  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-blackout_hood.txt
 7932a392b9ee47b9cb01a32677283c6c34a97179dc14ab802af6bc6e17902feb  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-breacher_plate.txt
@@ -1279,15 +1280,15 @@ aaa3859af91cde95cffa25d66fe7fe94c278858151a39c459bf6ec11acceb992  art/_archive/g
 2b712f5e14d4be982af410663cffa3e3878f3d0fcb901d64a60aea44649597df  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_hammer.txt
 b83d19be3f91a5c2ee62b9a25a7ead8fbce968ded227119ec6143113fb2c31f1  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_pick.txt
 65d16ef2b8326b175a40e20dcc6612fb28971f92faebb73dd2247719a6467c95  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-weighted_gloves.txt
-37d927fdf58df896aeae3941c04b8fa39de4fbb7b8a18233a84b57796770241a  art/_archive/gear/2026-11-19-melee-armour/queue.json
+186d95fab49c2c18addc1a33439d651cc9e64493b282715e6989b8fa1adecc46  art/_archive/gear/2026-11-19-melee-armour/queue.json
 9a913632855428ce70d55f4136797c88b34abfc1e6d8aa425b96ebfb6b37b30d  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-32px.png
 65ed57609c5852ab18a184c4ec9506f6814945e9310e4f3deefec161268946bf  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-64px.png
 5744777908b665d9a230e677084f58f2279d2c2c329a0740a4614c13f9621f14  art/_archive/gear/2026-11-19-melee-armour/reviews/05-cavalry-blades-32px.png
 65d2d24a990bb13cbe5823150787e18162d5c9e0ce8a0998846b8aba2fd117c2  art/_archive/gear/2026-11-19-melee-armour/reviews/05-cavalry-blades-64px.png
 e48860fb0abde491b86fbf32f40c6e82c8bdab51ffbc627b0e94d454992c6195  art/_archive/gear/2026-11-19-melee-armour/reviews/05-draw-blades-32px.png
 ae537e0c78bfb98ede23237fdbb533e027dbdc1fe46098f28d83dc0cbf13c3b7  art/_archive/gear/2026-11-19-melee-armour/reviews/05-draw-blades-64px.png
-c89ea4eecd01ab28f79a43c3b131c5a0eeb4b23e4fd9c0d2e85e4627beb92280  art/_archive/gear/2026-11-19-melee-armour/reviews/05-great-blades-32px.png
-32988885ae291288495b74dc0351c91393e2856a0d3f33823c04ecd00489f7e7  art/_archive/gear/2026-11-19-melee-armour/reviews/05-great-blades-64px.png
+8c467d2427ffada1a887e4b5575403b4345be717195c655ac70aabf98f56a513  art/_archive/gear/2026-11-19-melee-armour/reviews/05-great-blades-32px.png
+dbac2e18152d175cc7c8b353fea74f9b154a814c32f16e397033a28eb37036c9  art/_archive/gear/2026-11-19-melee-armour/reviews/05-great-blades-64px.png
 91f836a8d0524cfb90e866a0ad2dfce55b12cc0df8755445aaeec51839baae89  art/_archive/gear/2026-11-19-melee-armour/reviews/05-hammers-32px.png
 85386e6d042cd3f9f5aaefa244ecdfd392e3cafa15e7e0db478fa33a84f9ee96  art/_archive/gear/2026-11-19-melee-armour/reviews/05-hammers-64px.png
 0095bd8247900658f5afe14a2ba7323eb23812ae01af087b2b18bc19a10403ed  art/_archive/gear/2026-11-19-melee-armour/reviews/05-kemizuchi-duelling-32px.png
@@ -1299,6 +1300,7 @@ fc2d3aa9108e77d08c8b83e6fc583b2ecf6418d2f905ae1e7ac1e6590dfa07c8  art/_archive/g
 1fd5b5da3b4cd9e803475f67b8cafbfe703e43f6e5d29155b2ea36bf46f04a5c  art/_archive/gear/2026-11-19-melee-armour/reviews/05-service-knives-32px.png
 e4cd5d6946ffd737773062a205d9c633e91dc37f7367f2bd42f3bdb92a98b7f3  art/_archive/gear/2026-11-19-melee-armour/reviews/05-service-knives-64px.png
 f98429e5d1e6db3c7e7589c1e89b707f70f73e427384407532eac9e9a8f6cba0  art/_archive/gear/2026-11-19-melee-armour/short-draw-generation-error.json
+bb86956b8cc82b894caeebe5fcd4452c8369e8a27a51cab46c9b1cd73661a678  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png
 16c69e22ee36ba3e695d02c6305670527bde826496bb241bc25d2039bce55edd  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png
 17be737f3c5a31ff812f7ab1292d566d89a2aad30f53edbce73dbd019ca86580  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-broadback_sabre.png
 b689a9d6b02ce0f67d407b3e27ce4048400afcbb61aebeee1e7417856fc5e44c  art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png
@@ -4574,7 +4576,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-3856dd4ebef6621166a6e37bda3229ec886248e3bb4f7c7ed8305f4c243bc87f  art/catalog.json
+5077018b8a43c175a82b19986b30a153f6ec03421d1b7701fb52de33e395ee44  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6269,6 +6271,7 @@ caf5e96886f336b0ed21c30da9cadd3256be511ac0265c27aa8ebf485f4f5d8d  art/icons/gear
 e0d079dca4f750b40947c480d5cae3c9207b4c92661ce10629fe0de2ffd8b075  art/icons/gear/exports/128/tool-toolbox.png
 3b5e302b3ccc5f6e80b927ee1a407db56a271e962234bf5bda1c06315628797d  art/icons/gear/exports/128/weapon-adamantile_battle_rifle.png
 9a6d75caa44e94946a87bf09ba72dfa04bea7516312d0405493bb56c57ff043b  art/icons/gear/exports/128/weapon-adamantile_greatsword.png
+5de599df43b3bfbb54318f59344f5b6b1d5fd66a0a3634747f15e8b3ae91b1fb  art/icons/gear/exports/128/weapon-adamantile_longsword.png
 7d011079e0101bbc7fa38b3fd67c195a772cc68b4010b44fffff904d9052421f  art/icons/gear/exports/128/weapon-adamantile_plate_needle.png
 f51e9ed518424c5ccd38d49338994bfdb065aea4bc3aa5761166eeef659329fd  art/icons/gear/exports/128/weapon-afterword.png
 c18740378b72befe1e6c5966f34fabd81f343009fa63414cd770771e4a37d884  art/icons/gear/exports/128/weapon-beast_bite.png
@@ -6457,6 +6460,7 @@ ba86e559881cdb0c5dd018daa72de41ff72b37f1317ac577c10676cfa53f90f3  art/icons/gear
 c44c0cd724be76193315a841c03bc44f430bc320f8e418d9aa8a1f7f95718adb  art/icons/gear/exports/256/tool-toolbox.png
 3c99ec2fe1612de7d018f5869cd8c702c00e14aa176915461c01d75ddd5b7389  art/icons/gear/exports/256/weapon-adamantile_battle_rifle.png
 f90c55231d744f9a979deafc58df70ea935c53cfef90075d13341b3026ed7145  art/icons/gear/exports/256/weapon-adamantile_greatsword.png
+2050721bcab5ce9127f4a4bc1d55a0ad71c952e88cd0ec2e24fe479dd0a72ca7  art/icons/gear/exports/256/weapon-adamantile_longsword.png
 fc631e03b88895a38885dc6e0e95d951bc24557ec9d5013d532d52e783680050  art/icons/gear/exports/256/weapon-adamantile_plate_needle.png
 e800a662ddb5698fcadc24bd7d87bacbdb688f8fad780ecfc2e85634a895bf9e  art/icons/gear/exports/256/weapon-afterword.png
 e50bfb54d0489d3a5bd1b30490afab3a7229ea1fd7d76d77b0c5e66edc74054d  art/icons/gear/exports/256/weapon-beast_bite.png
@@ -6645,6 +6649,7 @@ aa401c3bd8b628bfd25d3284c094910c29fbf92e4a3f0288d16ebdd968ff67af  art/icons/gear
 8318aec4fbe1bdeb4df15dc3d35c2dc62ccca471189ec1df0ca28fae1d00827d  art/icons/gear/exports/32/tool-toolbox.png
 45af522c0dae41adf645268dc3095491b257c9b8da740b7697691772e911af38  art/icons/gear/exports/32/weapon-adamantile_battle_rifle.png
 7fd93518fa944d22ce7f1c05bf5d65d856fecd1caf6dbaf73421a0dacf7b419d  art/icons/gear/exports/32/weapon-adamantile_greatsword.png
+9c3519d231145ffc9793082557886e0573fa04235f1d34eed3566c3f3eac136f  art/icons/gear/exports/32/weapon-adamantile_longsword.png
 0b968cec8d3506ea5eae5ce6aa0c18d3adeabf0c9596f2591827504ac441db7a  art/icons/gear/exports/32/weapon-adamantile_plate_needle.png
 73f70d310877cec6ce915eeb213244fd54e226af894573149333884dbc448b6c  art/icons/gear/exports/32/weapon-afterword.png
 b64e5deba81984440c34d7db4d6ae0abe888bf8fc1bba9432e8d467e657c0ed2  art/icons/gear/exports/32/weapon-beast_bite.png
@@ -6833,6 +6838,7 @@ aebd664198401de593ee4cca034b2db41145c30bb6122737ee6630bcda78dd4d  art/icons/gear
 6ee71d39b855e83727ea8cfa6a9e6b3c82dffc0e72fef233cb20cb91c1c24c2e  art/icons/gear/exports/64/tool-toolbox.png
 0a422d8876c0131acfcecc90766ef47f2be2ff8130a6fea657d4546e1e9b1e27  art/icons/gear/exports/64/weapon-adamantile_battle_rifle.png
 e5debfd9a8010b9602881f42c6d559df53067c783bd2cd2c2305fce6e470a329  art/icons/gear/exports/64/weapon-adamantile_greatsword.png
+e592ce52df57e8a4a0b375b48e507a19725c2a4c04b740ab379746d0df6571eb  art/icons/gear/exports/64/weapon-adamantile_longsword.png
 f381b36111dd7d67dcfb30eb0a8622708fd44dcd275c9ea2e1ac4a669fc26b34  art/icons/gear/exports/64/weapon-adamantile_plate_needle.png
 b028aa160b11f88357ada7664b58582490d5b3712c9d6f72b166941819d39488  art/icons/gear/exports/64/weapon-afterword.png
 7ec14b081b7e6a4088dfcbafe5664c9e9a49227e1a397209a10ecff70306e3f4  art/icons/gear/exports/64/weapon-beast_bite.png
@@ -6985,6 +6991,7 @@ a90ea3563ce57dbc1bdb7c00650de460e70cb08b581377a533acd09e823b0589  art/icons/gear
 bba0793af050a0f45f72fc71e78258697ace49265634e7f5f9674d3289da8c84  art/icons/gear/tool-toolbox.png
 5ceab3a2e8ca3857674057e3bcbd9240eb688d62a14e73f87333607eb03449a7  art/icons/gear/weapon-adamantile_battle_rifle.png
 74764eb60ffb2b26b581206171e9d7f9a44453f23c061fb636fef61e2efe7f12  art/icons/gear/weapon-adamantile_greatsword.png
+ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8  art/icons/gear/weapon-adamantile_longsword.png
 2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13  art/icons/gear/weapon-adamantile_plate_needle.png
 69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb  art/icons/gear/weapon-afterword.png
 7f457aa27ebe1908fb9df93eb3a2d10efa67fbb8b029bb039bff882dace73a10  art/icons/gear/weapon-beast_bite.png

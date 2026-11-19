@@ -28,10 +28,10 @@
     "weapon-legion_spear",
     "weapon-war_pick",
     "weapon-war_hammer",
-    "weapon-adamantile_plate_needle"
+    "weapon-adamantile_plate_needle",
+    "weapon-adamantile_longsword"
   ],
   "remaining": [
-    "weapon-adamantile_longsword",
     "weapon-ork_skinner",
     "weapon-ork_cleaver_glaive",
     "weapon-weighted_gloves",
@@ -58,5 +58,5 @@
   ],
   "grade_scope": "Standard masters only; four higher grades require approved masters and file08 proof review",
   "production_approved": false,
-  "updated_utc": "2026-11-19T03:47:42.937222+00:00"
+  "updated_utc": "2026-11-19T03:49:31.037099+00:00"
 }
