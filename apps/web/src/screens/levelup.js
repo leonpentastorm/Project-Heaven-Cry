@@ -14,7 +14,7 @@
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, epRgba, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, perkRow } from './shared';
-import { CLASS, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, ADVANCED_SHELVED, doorForkView, allPendingDoorPicks, pendingRepicks, PERK as ENGINE_PERK } from '@engine';
+import { CLASS, PERKS, attrCapAt, attrCapLevel, canRaise, raiseNeed, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, ADVANCED_SHELVED, doorForkView, allPendingDoorPicks, pendingRepicks, PERK as ENGINE_PERK } from '@engine';
 import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 import { figmentLadderView } from '@engine';
@@ -26,7 +26,6 @@ import { foldVals } from '../game/fold';
 const ACQUIRED = {};
 for (const p of PERKS) { const sk = p.skills && p.skills[0]; if (sk && p.tier === 'acquired') (ACQUIRED[sk] ||= []).push(p); }
 /** The engine's refusal, with the attribute's name ("Needs agility 5" → "Needs Agility 5"). */
-const nice = (why) => (why ? why.replace(/Needs (\w+) (\d+)/, (m, a, n) => 'Needs ' + (ATTR[a] ? ATTR[a].name : a) + ' ' + n) : '');
 const LOCKED = '#7F8BA1';
 /** Rules 1.34, 0.28.2: the Figments door's card (the skill figments.json visualizer.door names) says what its points
  *  open (the engine's ladder view): "New" with the forms' icons when these points reached a step, else the next step,
@@ -133,11 +132,12 @@ export class LevelUpLogic extends DCLogic {
       const p = c.skills[s.id] || 0, a = ATTR[s.attr], ink = a.ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], fp = forkPend(s.id);
       const nxt = nextLine(s.id, p, c), [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
       // a refused +1: its reason on this row only, with a way to fix it when an Attribute point would ("Raise Agility")
-      const needAttr = !!why && /^Needs \w+ \d+/.test(why) && !!c.unspent.attr && !canRaise(c, 'attr', a.id);
+      // the need is the engine's structure (raiseNeed, rules 1.71 item 5606), never its sentence read back
+      const needAttr = !!raiseNeed(c, 'skill', s.id) && !!c.unspent.attr && !canRaise(c, 'attr', a.id);
       const waits = (x ? x.free || 1 : 0) + fp.length, fl = this.state.flash && this.state.flash.id === s.id ? this.state.flash.text : '';
       return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (x ? ' phc-lu-step' : '') + (fp.length ? ' phc-lu-forkwait' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
-        canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), hasWhy: !!(why && c.unspent.skill && p < 10), raiseLabel: 'Raise ' + s.name,
+        canRaise: !!c.unspent.skill, blocked: !!why, why: needAttr ? '' : (why || ''), hasWhy: !!(why && c.unspent.skill && p < 10), raiseLabel: 'Raise ' + s.name, // the reason once: the Raise <Attribute> button, or the line
         raise: () => { const gain = nextLine(s.id, c.skills[s.id] || 0, c); act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }); this.flash(s.id, gain); }, raiseStyle: raiseStyle(!why, ink, true),
         hasFix: needAttr, fixLabel: 'Raise ' + a.name, fix: () => act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }),
         fixStyle: 'flex: none; min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; border: 1px solid ' + a.ink + '; background: transparent; color: ' + a.ink,
@@ -165,7 +165,7 @@ export class LevelUpLogic extends DCLogic {
           return { key: a.id, name: a.name.toUpperCase(), val: v, cap: 'Skills up to ' + v,
             next: v >= 10 ? 'Top' : ATTR_GIVES[a.id],
             open: () => this.setState({ epccg: null, attrPage: a.id }), openLabel: a.name + ': what it gives', openStyle: 'padding: 0; border: 0; background: none; font-family: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; font-size: var(--fs-body); font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink,
-            canRaise: !!c.unspent.attr, blocked: !!aw, why: nice(aw), hasWhy: !!(aw && c.unspent.attr && v < 10), raise: () => { act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }); this.flash('attr:' + a.id, ATTR_GIVES[a.id]); }, raiseStyle: raiseStyle(!aw, a.ink, true), raiseLabel: 'Raise ' + a.name,
+            canRaise: !!c.unspent.attr, blocked: !!aw, why: aw || '', hasWhy: !!(aw && c.unspent.attr && v < 10), raise: () => { act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }); this.flash('attr:' + a.id, ATTR_GIVES[a.id]); }, raiseStyle: raiseStyle(!aw, a.ink, true), raiseLabel: 'Raise ' + a.name,
             hasFlash: !!(this.state.flash && this.state.flash.id === 'attr:' + a.id), flash: this.state.flash && this.state.flash.id === 'attr:' + a.id ? this.state.flash.text : '',
             valStyle: 'font-size: 22px; font-weight: 700; line-height: 1; min-width: 26px; text-align: center; color: ' + a.ink,
             skills: D.skills.filter((sk) => sk.attr === a.id).sort((x, y) => SLOT_ORDER[x.slot] - SLOT_ORDER[y.slot]).map(skillRow) }; }) };
