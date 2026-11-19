@@ -1,0 +1,130 @@
+[
+  {
+    "id": "katana",
+    "tier": "fine",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--fine-retry.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--fine.png",
+    "size64_mask_differing_pixels": 3,
+    "sha256": "81e1607c196cf5e1b8f686913e1b75e1cb235669c8c54dff4f3e1c9e2dfeacbd"
+  },
+  {
+    "id": "katana",
+    "tier": "masterwork",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--masterwork.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--masterwork.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "63be464d4cc977c8fbc1beebaad6b59e29fb30c3de01f8292aa8c49f9f1d4be7"
+  },
+  {
+    "id": "katana",
+    "tier": "relic",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--relic.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--relic.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "ffc538dbf8d885757ea58b8cc8fa9e80b7fc02dfec5231959907cad03fba62ff"
+  },
+  {
+    "id": "katana",
+    "tier": "celestial",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-katana--celestial.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-katana--celestial.png",
+    "size64_mask_differing_pixels": 7,
+    "sha256": "d8e2f577764ef58474fb59ebe68d50c577047e4576c104ceb97272478a3209ad"
+  },
+  {
+    "id": "combat_knife",
+    "tier": "fine",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--fine.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--fine.png",
+    "size64_mask_differing_pixels": 10,
+    "sha256": "f28790fe4f8599f15cf52239a86074aaf8f6cd388a3af1bb143fdb59f46e25e2"
+  },
+  {
+    "id": "combat_knife",
+    "tier": "masterwork",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--masterwork.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--masterwork.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "4222b0d6fef781f9703e9c928450b5b7631f3c977c55ca4fbebe1861bbbcdd09"
+  },
+  {
+    "id": "combat_knife",
+    "tier": "relic",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--relic.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--relic.png",
+    "size64_mask_differing_pixels": 14,
+    "sha256": "307dc24a5f2beaf30cb51945170de0f47f37240fb5a3da66b18cd0755c73684b"
+  },
+  {
+    "id": "combat_knife",
+    "tier": "celestial",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-combat_knife--celestial.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-combat_knife--celestial.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "2ab19d7ce0c09973488c7db7de3e8e600a19f7be0fad6b8c971d4094e161af57"
+  },
+  {
+    "id": "sabre",
+    "tier": "fine",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--fine.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--fine.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "3823ebb809c806053d98f65d5261b359f7f066a1527418e2f4c363cb968813c6"
+  },
+  {
+    "id": "sabre",
+    "tier": "masterwork",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--masterwork.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--masterwork.png",
+    "size64_mask_differing_pixels": 41,
+    "sha256": "e9b4f00166339e3f29ff2004fd1c9ce1b2ceaad44c337740e92586359c7e1eca"
+  },
+  {
+    "id": "sabre",
+    "tier": "relic",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--relic.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--relic.png",
+    "size64_mask_differing_pixels": 58,
+    "sha256": "307d956c47ea286dc878036ff28fb3f47a0253500a2855215bd44e00038e344a"
+  },
+  {
+    "id": "sabre",
+    "tier": "celestial",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-sabre--celestial.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-sabre--celestial.png",
+    "size64_mask_differing_pixels": 52,
+    "sha256": "9664edff03e39031484333f33c58ba9a6cd58f81a2ba0b62afd5488d1a1da41b"
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "fine",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--fine.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--fine.png",
+    "size64_mask_differing_pixels": 13,
+    "sha256": "6287af08128f37253c8f97592da21fd70a2c609c024cd534d8b98ba39301b931"
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "masterwork",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--masterwork.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--masterwork.png",
+    "size64_mask_differing_pixels": 12,
+    "sha256": "f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff"
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "relic",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--relic.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--relic.png",
+    "size64_mask_differing_pixels": 9,
+    "sha256": "95368a6d816581162abe7b435ed2566ad94ac53cd2d0ee2bcf01ea7bf5b349a8"
+  },
+  {
+    "id": "legion_gladius",
+    "tier": "celestial",
+    "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-legion_gladius--celestial.png",
+    "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-legion_gladius--celestial.png",
+    "size64_mask_differing_pixels": 15,
+    "sha256": "f16ae5c5c8c941d50083344a7d0538d2ba8da103998ed8af164dd2bfe875e30b"
+  }
+]
