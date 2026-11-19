@@ -1,0 +1,16 @@
+{
+  "id": "crossbow",
+  "tier": "fine",
+  "source": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/drafts/weapon-crossbow--fine.png",
+  "candidate": "/workspace/work/phc-prompt-pack-08/art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/weapon-crossbow--fine.png",
+  "size64_mask_differing_pixels": 16,
+  "sha256": "d3f2925bda407b4c640c0c75e98d9b2bbd1e7f9fcc7bbaab50591de18fa01168",
+  "path": "art/icons/gear/weapon-crossbow--fine.png",
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-crossbow--fine.png",
+    "128": "art/icons/gear/exports/128/weapon-crossbow--fine.png",
+    "64": "art/icons/gear/exports/64/weapon-crossbow--fine.png",
+    "32": "art/icons/gear/exports/32/weapon-crossbow--fine.png"
+  },
+  "source_sha256": "f2a1459e546259c8a7cf7383a84e376c9b6271e1cd084b1f3215f07350242600"
+}
