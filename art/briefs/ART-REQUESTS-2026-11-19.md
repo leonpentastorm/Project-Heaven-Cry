@@ -384,6 +384,11 @@ heavy. `id` = exists and painted; *italic* = PROPOSED new form.
 
 If every weapon stays its own family (Leon's "do not squeeze" reading), new forms rise to up to 42.
 
+> **RULED by Leon, 19 Nov 2026 (guns):** every maker line has a **base form that scales on Dexterity only**; its
+> other two variants take a **second skill where it applies** (the second skill feeds the line's signature; Dexterity
+> always rolls the shot). Which skill each variant takes is the lead's proposal in the prompt pack
+> (`art/briefs/prompts-2026-11-19/`), PROPOSED until Leon rules it.
+
 **Guns (12 maker lines, 36 forms: 21 exist, 15 new); 5 heavies stay one-offs**
 
 | Line | Forms | New |
