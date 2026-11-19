@@ -548,7 +548,7 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
     if (t.do === 'grade') for (const where of wheres) { const it = gearAt(c, where); if (it && maxDurOf(it.id, it.rarity) && nextGrade(it.rarity) && nextGrade(it.rarity) !== 'relic') one(String(where), t.name + ': ' + nameOf(it.id) + ' to ' + word(nextGrade(it.rarity)!), { where }); }
     else if (t.do === 'drill') for (const w of carriedWeapons(c)) { one(w, t.name + ': drill +' + t.drill + ' with the ' + nameOf(w), { weapon: w }); out[out.length - 1].costs = Math.floor(c.hp * t.hp_share) + ' HP'; }
     else if (t.do === 'wayside') for (const tr of ['devotion', 'study', 'practice'] as const) one(tr, t.name + ': ' + tr + ' +' + t[tr], { train: tr });
-    else if (t.do === 'salvage') packOf(c).forEach((it, i) => { const n = salvageWorth(c, i, t.rate); if (n != null) one(String(i), t.name + ': the ' + it.name, { pick: i }, t.text, n); });
+    else if (t.do === 'salvage') packOf(c).forEach((it, i) => { const n = salvageWorth(c, i, t.rate); if (n != null) one(String(i), t.name + ': ' + it.name, { pick: i }, String(t.pick_text || t.text).replace(/\{item\}/g, it.name), n); });
     else if (t.do === 'graft') { const gid = graftFor(g, c); one('x', t.name + (gid ? ': ' + relicRow(gid)!.name : ''), {}, gid ? relicRow(gid)!.text : t.text); }
     else one('x', t.name, {});
   }
