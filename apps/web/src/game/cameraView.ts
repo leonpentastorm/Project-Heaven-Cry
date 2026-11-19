@@ -165,6 +165,21 @@ export class CameraView {
     const g = this.scrolls() ? this.grid() : null;
     return g ? C.frameTiles(this.frame(), g, this.mapW, this.mapH) : { x0: 0, y0: 0, x1: Math.max(0, this.mapW - 1), y1: Math.max(0, this.mapH - 1) };
   }
+  /** The middle of the view in tiles (fractional), or of the view it is gliding to when `ahead`: what a new layout
+   *  keeps (centreAt). Null when the map does not scroll. */
+  middle(ahead = false): Pt2 | null {
+    const g = this.scrolls() ? this.grid() : null; if (!g) return null;
+    const f = this.frame(ahead ? this.goal : null);
+    return { x: (f.x + f.w / 2 - g.ox) / g.pitch, y: (f.y + f.h / 2 - g.oy) / g.pitch };
+  }
+  /** Put the middle of the view on this point (in tiles, from middle()) at once: the map laid out anew looks where it
+   *  looked, to the pixel (re-aiming at the middle tile moved it by up to a tile each time the panels changed size). */
+  centreAt(m: Pt2) {
+    if (!this.live() || !this.scrolls()) return;
+    this.cancelGlide();
+    const g = this.grid(), e = this.el!; if (!g) return;
+    this.glide(C.clampScroll(g.ox + m.x * g.pitch - e.clientWidth / 2, g.oy + m.y * g.pitch - e.clientHeight / 2, this.content(), { w: e.clientWidth, h: e.clientHeight }), { cut: true });
+  }
   /** Is this tile's centre on screen now? */
   shows(key: string): boolean { const g = this.scrolls() ? this.grid() : null; return !g || C.inFrame(this.frame(), C.pointOf(key, g)); }
 
