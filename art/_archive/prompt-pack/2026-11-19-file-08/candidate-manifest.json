@@ -446,5 +446,21 @@
     "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-field_helmet--celestial.png",
     "size64_mask_differing_pixels": 47,
     "sha256": "cc99ccf3f4f4df99199110df962ee28d8e0d8c0512db79e004b9a4124a691269"
+  },
+  {
+    "id": "armour-ballistic_helmet",
+    "tier": "fine",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--fine.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-ballistic_helmet--fine.png",
+    "size64_mask_differing_pixels": 16,
+    "sha256": "ac5c7ce93333712c92840b0081cfd88be26fc5db7b6f146adcbcd9b632b93a91"
+  },
+  {
+    "id": "armour-ballistic_helmet",
+    "tier": "masterwork",
+    "source": "art/_archive/prompt-pack/2026-11-19-file-08/drafts/armour-ballistic_helmet--masterwork.png",
+    "candidate": "art/_archive/prompt-pack/2026-11-19-file-08/candidate-masters/armour-ballistic_helmet--masterwork.png",
+    "size64_mask_differing_pixels": 18,
+    "sha256": "d941ec5615da03fd7246def003d2cb32ce1226fdfd6167c18f70bd0ba17e187a"
   }
 ]
