@@ -1300,6 +1300,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-maul--fine",
+      "path": "art/icons/gear/weapon-maul--fine.png",
+      "sha256": "780edebae0bd2a033f6be25bb5325d3f62515a5d4171a95d82623657d3ad9a33",
+      "label": "Maul — Fine",
+      "family": "weapon-maul",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-maul--fine.png",
+        "sha256": "874f427d6a4fdecaa16650095286ceae4cc1b1313b20ac9167ceab1ea4ef4cef"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-maul--fine.png",
+        "sha256": "780edebae0bd2a033f6be25bb5325d3f62515a5d4171a95d82623657d3ad9a33"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-maul--fine.txt",
+        "sha256": "168104681712217e1ae8f8808d2d0c5e9d9cb3787d9bdd9259611cf4dbdb0389"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-maul.png",
+          "sha256": "50f0d5620bd8dd5a51d0e676e69ebad5e586a47a01634ac17ac96d7a26da8dac"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-maul--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-maul--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-maul--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-maul--fine.png"
+      },
+      "export_hashes": {
+        "256": "8c1b161f079d0f56688250469b57356f4c28d205fa7d33aecfb9616e073560de",
+        "128": "b3c416bf1e3548619e8e63bcf055dcc903afbd0e148a6820045058e7471e8f18",
+        "64": "e781efc6b3ab629bb1e50dbcabf83bb5f33f248de12a4c96327f41ae441e7699",
+        "32": "014692f0487520634ba6e522d4b3f23fca15c756f1b329b77db8422c9fba2e54"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-maul",
+      "outline": {
+        "solid_alpha_iou": 0.9717558955538473,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
