@@ -36,6 +36,14 @@ describe('the fork card (game/forkView.ts)', () => {
     expect(card.steps.every((s) => /NOT OFFERED YET/.test(s.head) && s.opts.every((o) => !o.canPick))).toBe(true);
     expect(card.steps[0].why).toBe('Sealed: not yet issued.');
   });
+  it('row 16 (outside playtest 0.31.10): a sealed door level-up still shows its fork section, the steps reached sealed', () => {
+    for (const p of [4, 6, 7, 10]) {
+      const lu = forkLevelUp(ch({ ingenuity: p }), 'ingenuity', p, false);
+      expect(lu, 'Ingenuity ' + p).not.toBeNull();
+      expect(lu!.steps.filter((s) => /NOT OFFERED YET/.test(s.head)).length).toBeGreaterThan(0);
+      expect(lu!.steps.every((s) => s.opts.every((o) => !o.canPick))).toBe(true);
+    }
+  });
   it('an option not built yet shows its rule in words, never the data\'s designer note (no id, no rules number, no N-item)', () => {
     const offs = ['ingenuity', 'raw_power', 'hand_eye_coordination', 'volition', 'lore_master', 'empathy', 'faith'].flatMap((d) => forkCard(ch({ [d]: 10 }), d)?.steps.flatMap((s) => s.opts) || []);
     const unbuilt = offs.filter((o) => o.style.includes('opacity: 0.6'));
