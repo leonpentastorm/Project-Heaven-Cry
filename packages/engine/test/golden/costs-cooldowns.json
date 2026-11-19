@@ -53,6 +53,8 @@
 "cool/ap/perk/litany@II/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/nothing_left_to_fear@mastered/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/nothing_left_to_fear@mastered/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
+"cool/ap/perk/numb@II/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
+"cool/ap/perk/numb@II/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/on_my_mark@mastered/kill-blow": "+0: P1 ap9>7; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/on_my_mark@mastered/kill-shot": "+0: P1 ammo24>23 ap9>7 heat0>1; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
 "cool/ap/perk/outclassed@I/kill-blow": "+0: P1 ap9>7 apNext0>3; air mana20>25 | +1: ap6>4 | +2: ap6>4 | +3: ap6>4 | +4: ap6>4 | +5: ap6>4",
