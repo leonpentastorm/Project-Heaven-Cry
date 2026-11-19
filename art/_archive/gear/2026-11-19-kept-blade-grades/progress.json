@@ -36,7 +36,8 @@
     "weapon-hand_wraps--relic",
     "weapon-hand_wraps--celestial",
     "weapon-knuckledusters--fine",
-    "weapon-knuckledusters--masterwork"
+    "weapon-knuckledusters--masterwork",
+    "weapon-knuckledusters--relic"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -46,7 +47,6 @@
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
-    "weapon-knuckledusters--relic",
     "weapon-knuckledusters--celestial",
     "weapon-kemizuchi_strikers--fine",
     "weapon-kemizuchi_strikers--masterwork",
@@ -75,7 +75,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-19T09:55:04.739035+00:00",
+  "updated_utc": "2026-11-19T09:56:39.825323+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3
 }

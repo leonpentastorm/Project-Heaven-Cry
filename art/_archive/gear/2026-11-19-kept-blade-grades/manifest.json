@@ -2156,6 +2156,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-knuckledusters--relic",
+      "path": "art/icons/gear/weapon-knuckledusters--relic.png",
+      "sha256": "d3724818c60bc6770dcc780e8e632c0e22af6c71d502577bbaa2be43efb4ed37",
+      "label": "Knuckledusters — Relic",
+      "family": "weapon-knuckledusters",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-knuckledusters--relic.png",
+        "sha256": "0c826ee82ea2de6aae1f0053f571bda7dc03cfdbccd65c360aeb01d80484f871"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-knuckledusters--relic.png",
+        "sha256": "d3724818c60bc6770dcc780e8e632c0e22af6c71d502577bbaa2be43efb4ed37"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-knuckledusters--relic.txt",
+        "sha256": "dd874dc43fe32ef46de8bf3cae07b2c16fc94c85c32ace47344e544cfe17fd7f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-knuckledusters.png",
+          "sha256": "739f0487a4696800a0b0ac3979352df8cc595446a0d6f235cbcb5045d0fb245e"
+        },
+        {
+          "path": "art/icons/gear/weapon-knuckledusters--masterwork.png",
+          "sha256": "6b4920a5b67bf8513253d4199ac31e96480dedec450d8c0b00f54e0408d2f69a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-knuckledusters--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-knuckledusters--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-knuckledusters--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-knuckledusters--relic.png"
+      },
+      "export_hashes": {
+        "256": "db069dbe3c5f6f72c9f454badf0df628f725d48c6fde5c97bb1ab233338b33a9",
+        "128": "ba065244f0c84d6fbf234c8008e096fbedb3b67a0d9d30d42006f818dedafd25",
+        "64": "e8e5955b6692999b6d1aec15d76860c17cab2d812d4e02efa9ab3db276788e7d",
+        "32": "b85b973fc6326fe51e3420fff6374cc4841a494b1b4d64c4329c9a3df52e1f9a"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-knuckledusters",
+      "outline": {
+        "solid_alpha_iou": 0.9591668873987537,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 36
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
