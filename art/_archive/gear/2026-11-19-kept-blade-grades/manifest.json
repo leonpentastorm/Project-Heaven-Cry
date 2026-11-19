@@ -2586,6 +2586,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-iron_mitts--masterwork",
+      "path": "art/icons/gear/weapon-iron_mitts--masterwork.png",
+      "sha256": "4a644356dfe74e098e3fcda9510ea8f7ba3d743e5288a233e96d0926e5adda3c",
+      "label": "Iron Mitts — Masterwork",
+      "family": "weapon-iron_mitts",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-iron_mitts--masterwork.png",
+        "sha256": "f0043510dd8ca3fe30df23ccc30eaba9cc9d133b301dee63bf9bf6ce1481db8a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-iron_mitts--masterwork.png",
+        "sha256": "4a644356dfe74e098e3fcda9510ea8f7ba3d743e5288a233e96d0926e5adda3c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-iron_mitts--masterwork.txt",
+        "sha256": "03ff7e4b965bc3016f9739d525986a042aa3725b2bf384610de2aee2f6bd65ed"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-iron_mitts.png",
+          "sha256": "026003405fcfc8c519a886c370f5e6f0728ff8eb586cba7871225cd62e46b71a"
+        },
+        {
+          "path": "art/icons/gear/weapon-iron_mitts--fine.png",
+          "sha256": "4b264b157b726fbc1e9e46fea9fff3fd71efdce6f75e62a1d732c2f16ed96fe2"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-iron_mitts--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-iron_mitts--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-iron_mitts--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-iron_mitts--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "8af58625ebea0845bd78718d811c6d41a14951b32406e268469752c5802d3ce1",
+        "128": "728af8446e4017f9c31c0aafe1e865cf81ba1fc3c337cc4ed36bf4ca13d42211",
+        "64": "5913c94c6519d30b25a8c4c042d54b2f83545933f7b1e67514c65c88d210ba8c",
+        "32": "1c6602fe0fa820712b34e2a8d830c975143911b0ce996ac5f631c82e3f0f5d3d"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-iron_mitts",
+      "outline": {
+        "solid_alpha_iou": 0.9872305735586615,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 10
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

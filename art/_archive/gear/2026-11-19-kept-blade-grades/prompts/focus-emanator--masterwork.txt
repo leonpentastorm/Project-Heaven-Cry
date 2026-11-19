@@ -5,3 +5,5 @@ The maker’s signature parts are: the same single five-finger pale plated focus
 Grade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.
 
 The FIRST image is the Standard shape and registration master: preserve all alpha openings, handedness, pose, scale and margins. The SECOND image is the preceding grade candidate; preserve its earlier surface additions. The portrait supplies brushwork only. No extra figure, no hand inside, full transparency. Preserve all focus lens and channel colours; grade light stays in the seam, never over the lens.
+
+Masterwork stripe clarification: the thin line across the back is violet #9D7ADC, the existing item accent. It must not become a gold or brass line. All lens/core windows retain their original colour and contained luminosity unchanged.
