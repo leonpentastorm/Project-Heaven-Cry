@@ -463,8 +463,14 @@
         "ambushers_ap": 3,
         "surprised_can_act": false,
         "exception": "perk says so",
-        "built": false,
-        "built_note": "not built; see spec item 1501. What the engine does instead: an unaware enemy loses round 1 (Stealth and awareness, item 92), and an ambush from hiding opens on the attacker's own turn with the AP it has left. The spec's surprise round stands until Leon rules."
+        "built": true,
+        "on": true,
+        "lines": {
+          "side": "Caught by surprise: {units} lose their first turn.",
+          "immune": "{unit} felt them coming: not caught by surprise (Tremor).",
+          "ap": "{unit} shoots first: {n} AP in a turn it should not have had (Shoot First)."
+        },
+        "built_note": "rules 1.82 item 7004 (call made for Leon; `on` is the switch): when a fight in the approach is joined by an attack from a unit the other side did not see, every unit of that other side loses its first turn (waitRound 2), but one whose surprise_immune holds while a unit of the attacking side stands within its Vision (Tremor) and one with surprise_ap, which keeps its first turn with that many AP (Shoot First). Both sides. Contact by sight alone, or by the approach running out, surprises nobody. ambushers_ap is not read: an ambusher acts on its own turn with the AP it has (item 1501). One function: combat.ts surpriseSide"
       }
     },
     "turn": {

@@ -13526,3 +13526,16 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       They are held as one hidden item of the class (`class:<id>.dials`, `data.ts classDialMove`); a dial at exactly 1
       is no item at all. **Every dial is 1** (PROVISIONAL): the roadmap gives no number, the balance pass fits them. No
       number moves.
+7004. **Surprise in the approach** (Waiting on Leon 22, the lead's pick built; **call made for Leon**, the switch
+      `rules.json combat.initiative.surprise_round.on`, ON; closes item 1501 and rules 1.77 item 6517 c): when a fight not
+      yet joined (rules 1.64 item 5008) is joined by an attack, or any action that is not the approach's, from a unit the
+      other side did not see, **every unit of that other side loses its first turn** (`Unit.waitRound` 2; the log: "Caught
+      by surprise: ... lose their first turn.", and each turn passed "is caught by surprise"). Both sides: a character
+      acting unseen before contact catches the foes; a Hidden foe's attack catches the squad when the squad did not see it
+      as its turn began. Contact by sight alone, or by the approach running out of passes, surprises nobody. Two stats
+      (new engine pieces): `surprise_immune` (**Tremor** I and II: not caught while a unit of the attacking side stands
+      within its Vision; "moving on the ground" is not tested: no unit flies today) and `surprise_ap` (**Shoot First**: it
+      keeps its first turn with **3** AP at I, **4** at II, the perk's numbers). Tremor and Shoot First are
+      `adjudication: engine`. The old surprise round's `ambushers_ap` is not read (an ambusher acts on its own turn with
+      the AP it has, item 1501). A story fight's own ambush rules (unaware foes, an attack in the open) are unchanged.
+      One function, `combat.ts surpriseSide`.

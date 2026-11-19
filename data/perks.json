@@ -1074,8 +1074,11 @@
       "text": "I: Nothing moving on the ground within your Vision can take you by surprise: you act in the surprise round. II: Nothing moving on the ground within your Vision can take you by surprise, and you start each fight with {=tiers.II.effects.1.value} Guard.",
       "effects": [
         {
-          "op": "narrator",
-          "note": "This character is never surprised by anything moving on the ground within its Vision (no engine half yet: rules 1.73 item 5833, the approach has no per-unit surprise piece)."
+          "op": "stat_mod",
+          "stat": "surprise_immune",
+          "value": 1,
+          "label": "Tremor",
+          "note": "rules 1.82 item 7004: not surprised while a unit of the attacking side stands within its Vision (combat.ts surpriseSide)"
         }
       ],
       "tiers": {
@@ -1091,8 +1094,11 @@
           "short": "You act in the surprise round against anything on the ground",
           "effects": [
             {
-              "op": "narrator",
-              "note": "This character is never surprised by anything moving on the ground within its Vision (no engine half yet: rules 1.73 item 5833, the approach has no per-unit surprise piece)."
+              "op": "stat_mod",
+              "stat": "surprise_immune",
+              "value": 1,
+              "label": "Tremor",
+              "note": "rules 1.82 item 7004: not surprised while a unit of the attacking side stands within its Vision (combat.ts surpriseSide)"
             }
           ]
         },
@@ -1108,8 +1114,11 @@
           "short": "And +{=tiers.II.effects.1.value} Guard when a fight starts",
           "effects": [
             {
-              "op": "narrator",
-              "note": "As Tier I."
+              "op": "stat_mod",
+              "stat": "surprise_immune",
+              "value": 1,
+              "label": "Tremor",
+              "note": "rules 1.82 item 7004: not surprised while a unit of the attacking side stands within its Vision (combat.ts surpriseSide)"
             },
             {
               "op": "resource",
@@ -1124,7 +1133,7 @@
           "after": "I"
         }
       },
-      "adjudication": "hybrid",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "start",
@@ -3119,11 +3128,14 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You act in the surprise round even when your side is the one surprised ({=tiers.I.numbers.ap} AP). II: You act in the surprise round even when your side is the one surprised ({=tiers.II.numbers.ap} AP).",
+      "text": "I: You act in the surprise round even when your side is the one surprised ({=tiers.I.effects.0.value} AP). II: You act in the surprise round even when your side is the one surprised ({=tiers.II.effects.0.value} AP).",
       "effects": [
         {
-          "op": "narrator",
-          "note": "This character acts in the surprise round even when surprised, with 3 AP (no engine half yet: rules 1.73 item 5851, the approach has no per-unit surprise piece)."
+          "op": "stat_mod",
+          "stat": "surprise_ap",
+          "value": 3,
+          "label": "Shoot First",
+          "note": "rules 1.82 item 7004: surprised, it keeps its first turn with this many AP (combat.ts surpriseSide)"
         }
       ],
       "tiers": {
@@ -3135,17 +3147,17 @@
             }
           ],
           "ap_cost": null,
-          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.I.numbers.ap} AP).",
+          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.I.effects.0.value} AP).",
           "short": "Act in the surprise round, even when surprised",
           "effects": [
             {
-              "op": "narrator",
-              "note": "This character acts in the surprise round even when surprised, with 3 AP (no engine half yet: rules 1.73 item 5851, the approach has no per-unit surprise piece)."
+              "op": "stat_mod",
+              "stat": "surprise_ap",
+              "value": 3,
+              "label": "Shoot First",
+              "note": "rules 1.82 item 7004: surprised, it keeps its first turn with this many AP (combat.ts surpriseSide)"
             }
-          ],
-          "numbers": {
-            "ap": 3
-          }
+          ]
         },
         "II": {
           "requires": [
@@ -3155,22 +3167,22 @@
             }
           ],
           "ap_cost": null,
-          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.II.numbers.ap} AP).",
-          "short": "That action has {=tiers.II.numbers.ap} AP",
+          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.II.effects.0.value} AP).",
+          "short": "That action has {=tiers.II.effects.0.value} AP",
           "effects": [
             {
-              "op": "narrator",
-              "note": "As Tier I, with 4 AP."
+              "op": "stat_mod",
+              "stat": "surprise_ap",
+              "value": 4,
+              "label": "Shoot First",
+              "note": "rules 1.82 item 7004: surprised, it keeps its first turn with this many AP (combat.ts surpriseSide)"
             }
           ],
-          "numbers": {
-            "ap": 4
-          },
           "replaces_tier_I": true,
           "after": "I"
         }
       },
-      "adjudication": "narrator",
+      "adjudication": "engine",
       "recovered": null,
       "tags": [
         "start",
@@ -6260,8 +6272,24 @@
       "provisional": true,
       "source": "rules 1.74 item 6004 (was the Acuity 5 passive)",
       "numbers": {
-        "I": {"base": 0, "per": [{"of": "cond:read_them.effects.0.value", "value": 1}]},
-        "II": {"base": 0, "per": [{"of": "cond:read_them_ii.effects.0.value", "value": 1}]}
+        "I": {
+          "base": 0,
+          "per": [
+            {
+              "of": "cond:read_them.effects.0.value",
+              "value": 1
+            }
+          ]
+        },
+        "II": {
+          "base": 0,
+          "per": [
+            {
+              "of": "cond:read_them_ii.effects.0.value",
+              "value": 1
+            }
+          ]
+        }
       }
     },
     {
