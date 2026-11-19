@@ -16,7 +16,7 @@ function rig(rank3: boolean, allyAt: string, mode: 'shot' | 'melee' = 'shot', fo
     const w0 = wall.hp, k0 = kid.hp;
     withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), f.unit(kid.id), mode, null));
     const lost = { wall: w0 - f.unit(wall.id).hp, kid: k0 - f.unit(kid.id).hp, log: f.cb.log.join(' | ') };
-    if (lost.wall > 0 || lost.kid > 0) { if (process.env.SBM_LOG) console.log(lost.log.slice(-600)); return lost; }
+    if (lost.wall > 0 || lost.kid > 0) return lost;
   }
   throw new Error('no hit');
 }

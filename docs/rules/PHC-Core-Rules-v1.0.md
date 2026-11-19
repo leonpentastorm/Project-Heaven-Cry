@@ -13559,3 +13559,16 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       the Break's toggle, gated `self_skill ingenuity 9` and the Shadow held as the attack is rolled), after the Break's
       own reveal; Ghost Kill's rule is unchanged beside it (Parting Cut does not ask that no eyes reached you as you
       struck: the victim's own eyes do not stop it). `shadow.json pending` is empty. No new engine piece.
+7008. **Field Repair is Improvisation's fourth perk** (rules 1.74 item 6042 and rules 1.77 item 6517 b completed; the
+      expression draft section 3): the free unlock at Improvisation 3 is now its perk step ("Mastery 1"), and the perk
+      `field_repair` (I: **2** AP and one spare part: clear a jam, restore **10%** + **5%** a point of Improvisation above
+      the first perk step of a weapon's durability, or repair a machine or Figment for **15**, more as you level; out of
+      combat ten minutes and a charge restore half; II: no spare part) carries the numbers it always had. **Overhaul**
+      grants Field Repair too (at its **1** AP, twice the durability), so it is never dead without the perk. The new
+      engine piece: **an action gated by a held item** (`effects/actions.ts grantedBy`: the first held item whose
+      `grant_action` names the action; a `gate_only` grant opens the basic action and is no action of its own, so the
+      perk is not made an action item). The Field Repair row and the reducer refuse "Needs the Field Repair perk." without
+      one; the row's words are read from the perk's numbers (no typed number). **Old saves:** Improvisation's table is
+      at rev 2 (`perk_remap passives 3: field_repair`): a sheet at Improvisation 3 or more is offered the one re-pick
+      again, Field Repair preselected as far as its perk steps reach (its old perks first). The shelved Field Fix keeps
+      its own call (no gate, no part). Numbers unchanged (PROVISIONAL as before).

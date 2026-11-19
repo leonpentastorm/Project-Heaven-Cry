@@ -137,7 +137,7 @@ const TARGET_OF_SIDE: Record<string, ActionDef['target']> ={ foe: 'enemy', ally:
 
 /** The default actions of an item, from its data. */
 export function defaultActions(info: ItemInfo): ActionDef[] {
-  const grants = info.effects.filter((e) => e?.op === 'grant_action');
+  const grants = info.effects.filter((e) => e?.op === 'grant_action' && !e.gate_only); // rules 1.82 item 7008: a gate_only grant opens a basic action (grantedBy) and makes no action of its own
   const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
   const verb = info.kind === 'verb';
   const mk = (id: string, label: string, apRaw: any, usesRaw: string, effs: any[], g: any = {}): ActionDef => {
@@ -276,6 +276,16 @@ export interface PerkActionEntry {
 }
 type Who ={ u?: Unit | null; c?: Character | null; cb?: Combat | null; g?: any };
 
+/** Rules 1.82 item 7008 (an action gated by a held item; new engine piece): the first item the unit holds that grants
+ * this action (`grant_action action: <id>`), its key and that grant row, or null. A basic action whose rule says "yours
+ * while you hold it" (Field Repair: its perk, Overhaul) asks this, and reads its numbers from the row (its `parts`) and
+ * from the item it names (`numbers_from`, else the item itself). Such a grant is `gate_only`: it opens the basic action
+ * and is no action of its own (it does not make its item an action item: collect.ts isAction). */
+export function grantedBy(u: Unit | null | undefined, action: string): { key: string; row: any } | null {
+  if (!u) return null;
+  for (const h of holdersOf({ u })) { const row = h.info.effects.find((e: any) => e?.op === 'grant_action' && e.action === action); if (row) return { key: h.key, row }; }
+  return null;
+}
 /** Every action a holder's items give on this surface, available or greyed (hidden ones left out). */
 export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {
   const out: PerkActionEntry[] = [];

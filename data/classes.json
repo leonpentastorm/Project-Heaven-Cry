@@ -321,9 +321,15 @@
                     "actor": "foe",
                     "target": "ally",
                     "target_behind": true,
-                    "melee": false,
                     "by_hit": true,
-                    "self_alive": true
+                    "self_alive": true,
+                    "mode": [
+                      "shot",
+                      "aimed",
+                      "burst",
+                      "auto",
+                      "thrown"
+                    ]
                   },
                   "label": "Stand Behind Me",
                   "say": "{self} takes the shot meant for {target} (Stand Behind Me)."

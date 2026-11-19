@@ -3925,6 +3925,103 @@
       "source": "rules 1.74 item 6042 (the old broken-weapon use is moot under Tuned; its handler retired)"
     },
     {
+      "id": "field_repair",
+      "name": "Field Repair",
+      "tier": "acquired",
+      "perk_type": "ap_mod",
+      "skills": [
+        "proficiency"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "proficiency",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "numbers": {
+        "repair_base": 0.1,
+        "repair_per_point": 0.05
+      },
+      "amounts": {
+        "repair": {
+          "kind": "heal",
+          "base": 15,
+          "profile": "repair",
+          "provisional": true
+        }
+      },
+      "text": "I: {=tiers.I.effects.0.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=numbers.repair_base|pct}% + {=numbers.repair_per_point|pct}% per Improvisation point above the first perk step of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, ten minutes and one charge restore half a weapon's durability. II: As I, with no spare part.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "field_repair",
+          "uses": "at_will",
+          "label": "Field Repair",
+          "ap": 2,
+          "gate_only": true
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "{=tiers.I.effects.0.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=numbers.repair_base|pct}% + {=numbers.repair_per_point|pct}% per Improvisation point above the first perk step of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, ten minutes and one charge restore half a weapon's durability.",
+          "short": "{=tiers.I.effects.0.ap} AP and a spare part: clear a jam, mend a weapon, repair a machine or Figment",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "field_repair",
+              "uses": "at_will",
+              "label": "Field Repair",
+              "ap": 2,
+              "gate_only": true
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "proficiency",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As I, with no spare part.",
+          "short": "No spare part",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "field_repair",
+              "uses": "at_will",
+              "parts": 0,
+              "label": "Field Repair",
+              "ap": 2,
+              "gate_only": true
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "repair",
+        "mechanic"
+      ],
+      "provisional": true,
+      "source": "rules 1.82 item 7008 (rules 1.74 item 6042; expression draft section 3): the free unlock at Improvisation 3 made Improvisation's fourth perk; the action is gated by holding a grant of it (effects/actions.ts grantedBy)"
+    },
+    {
       "id": "hot_swap",
       "name": "Hot-Swap",
       "tier": "acquired",
@@ -11572,7 +11669,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "It left the factory good. It leaves your bench better.",
-      "text": "Field Repair costs 1 AP and restores twice as much. After a long rest, you can give one weapon a permanent extra mod slot, once per weapon.",
+      "text": "Field Repair is yours (even without its perk), costs {=effects.0.set} AP and restores twice as much. After a long rest, you can give one weapon a permanent extra mod slot, once per weapon.",
       "effects": [
         {
           "op": "action_cost",
@@ -11589,6 +11686,15 @@
           "value": 1,
           "when": "long_rest",
           "limit": "once per item"
+        },
+        {
+          "op": "grant_action",
+          "action": "field_repair",
+          "uses": "at_will",
+          "label": "Field Repair",
+          "numbers_from": "perk:field_repair",
+          "ap": 1,
+          "gate_only": true
         }
       ],
       "adjudication": "engine",

@@ -4,7 +4,7 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
 import { setLogMarker, remark, say, type LogMark, type LogSideMark } from './log';
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
-import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
+import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf, ladderSchedule } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
@@ -23,7 +23,7 @@ import type { Tie } from './kit';
 import { type OwnedBlock, tieCompanions } from './owned';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit, shieldTotal } from './effects/damage';
-import { itemAmount, amountSpecOf } from './effects/amounts';
+import { itemAmount, amountSpecOf, amountHome } from './effects/amounts';
 import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf, amountOf, scaleOf, mend } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, STIM_PCT, mendFactorOf, kitHeal, flatLevelOf } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
@@ -31,7 +31,7 @@ import { skillRollMod, immune, forbids } from './effects/core';
 import { price, priced, costOf, whyNot, canPay, pay, setAp, withAp, freely, apFor, creditFor } from './effects/cost';
 import { statQuery } from './effects/hooks';
 import { noteFallbacks } from './effects/narrator';
-import { windowStep } from './effects/actions';
+import { windowStep, grantedBy } from './effects/actions';
 import { type Hazard, hazardStep, spotHazards, hazardLiveAt, HAZARD } from './hazards';
 import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PILE } from './containers';
 import { canStand, standBlocker, unitsIn, inBounds, work, tiedTo } from './kit';
@@ -1776,8 +1776,9 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const pens = ['nausea', 'suppressed'].filter((id) => condOn(u, id)).map((id) => ({ n: -(condMods(id).ap || 0), why: condDef(id)!.title })); // the rows' AP (data/conditions.json)
   const pre: any = emit(cb, 'turn_start_pre', { u, grants: [], penalties: pens, cb, rng });
   const t = turnAp(u, pre.grants || [], pre.penalties || []);
-  setAp(u, t.ap); for (const l of t.lines) say(cb, l);
-  if (u.surpriseAp != null) { if (t.ap > u.surpriseAp) { setAp(u, u.surpriseAp); say(cb, sayWords(SURPRISE.lines.ap, u, u.surpriseAp)); } delete u.surpriseAp; } // rules 1.82 item 7004: Shoot First's first turn
+  const full = t.ap, cap = u.surpriseAp; delete u.surpriseAp; // rules 1.82 item 7004: Shoot First's first turn, at most its AP
+  setAp(u, cap != null ? Math.min(full, cap) : full); for (const l of t.lines) say(cb, l);
+  if (cap != null && cap < full) say(cb, sayWords(SURPRISE.lines.ap, u, cap));
   if (u.dazedNext) say(cb, u.name + ' is Dazed: −2 AP this turn.');
   if (u.shownTo) delete u.shownTo; // rules 1.61 item 4963: its last attack showed it until now
   clearStagger(u); dazeSpent(u); u.overwatch = null; u.owShots = 0; delete u.owSpend; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - (heatPair(u) ? 4 : 2)); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
@@ -1883,9 +1884,9 @@ function surpriseSide(cb: Combat, by: { side: 'pc' | 'foe'; unseen: boolean } | 
   const caught: Unit[] = [], them = cb.units.filter((t) => t.side === by.side && alive(t));
   for (const u of cb.units) {
     if (u.side === by.side || !alive(u) || u.downed) continue;
-    const q = (stat: 'surprise_immune' | 'surprise_ap') => (u.charId || u.held ? statQuery({ u, cb }, stat).add : 0);
-    if (q('surprise_immune') > 0 && them.some((t) => dist(t.pos, u.pos) <= (u.vision || 12))) { if (SURPRISE.lines.immune) say(cb, sayWords(SURPRISE.lines.immune, u)); continue; }
-    const ap = q('surprise_ap'); if (ap > 0) { u.surpriseAp = ap; continue; }
+    const own = !!(u.charId || u.held); // (only a unit with items of its own answers either)
+    if (own && statQuery({ u, cb }, 'surprise_immune').add > 0 && them.some((t) => dist(t.pos, u.pos) <= (u.vision || 12))) { if (SURPRISE.lines.immune) say(cb, sayWords(SURPRISE.lines.immune, u)); continue; }
+    const ap = own ? statQuery({ u, cb }, 'surprise_ap').add : 0; if (ap > 0) { u.surpriseAp = ap; continue; }
     if ((u.waitRound || 0) >= 2) continue; // already sits round 1 out (unaware)
     u.waitRound = 2; u.surprised = true; caught.push(u);
   }
@@ -2524,13 +2525,21 @@ export function repairWays(t: Unit): RepairWay[] {
  * repair a machine or Figment for the `repair` amount (profile repair, the repairer's Expression and Improvisation, its
  * level; a repair, not a heal: no healing multipliers; a Downed machine comes back up). With no target: your own weapon's
  * durability, as before. o (the Rigger's Field Fix): the item whose amount it is, its parts (0), its reach, no gate. */
+/** Rules 1.82 item 7008: Field Repair's numbers for this unit: the item that grants it (grantedBy; Overhaul names the
+ * perk's numbers with `numbers_from`) or the caller's own item (a class move: Field Fix), its durability shares and the
+ * key of its `repair` amount block; parts: the grant row's (a tier II grants it with none), else one. null: no grant. */
+export function repairOf(u: Unit, item?: string): { key: string; base: number; per: number; parts: number } | null {
+  const g = grantedBy(u, 'field_repair'), key = item || g?.row?.numbers_from || g?.key; if (!key) return null;
+  const n = amountHome(key)?.numbers || (g ? amountHome(g.row?.numbers_from || g.key)?.numbers : null) || {};
+  return { key, base: Number(n.repair_base) || 0, per: Number(n.repair_per_point) || 0, parts: typeof g?.row?.parts === 'number' ? g.row.parts : 1 };
+}
 export function fieldRepair(cb: Combat, u: Unit, o: { target?: Unit | null; way?: string | null; parts?: number; reach?: number; gate?: boolean; item?: string; label?: string } = {}): string | null {
-  const t = o.target || u, parts = o.parts ?? 1, gate = o.gate ?? true, label = o.label || 'Field Repair';
+  const t = o.target || u, gate = o.gate ?? true, label = o.label || 'Field Repair', rp = repairOf(u, o.item), parts = o.parts ?? rp?.parts ?? 1;
   if (t !== u && (t.side !== u.side || t.dead)) return 'Pick one of your side.';
   if (t !== u && dist(u.pos, t.pos) > (o.reach ?? 1)) return 'Out of reach (' + (o.reach ?? 1) + (o.reach === 1 || o.reach == null ? ' tile).' : ' tiles).');
   const ways = repairWays(t), way = (o.way || (t === u && !o.way ? 'restore_durability' : ways[0])) as RepairWay;
   if (t === u && way === 'restore_durability' && !u.maxDur) return 'Nothing to repair.';
-  if (gate && (u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
+  if (gate && !grantedBy(u, 'field_repair')) return 'Needs the Field Repair perk.'; // rules 1.82 item 7008: an action gated by a held item
   if (parts && (u.parts || 0) < parts) return 'No spare-parts charges.';
   if (!REPAIR_WAYS.includes(way)) return 'Pick what to fix.';
   if (!ways.includes(way)) return way === 'clear_jam' ? (t === u ? 'Your' : t.name + '\'s') + ' weapon isn\'t jammed.' : way === 'restore_durability' ? (t === u ? 'Already in full repair.' : t.name + '\'s weapon is in full repair.') : repairable(t) ? t.name + ' is undamaged.' : t.name + ' isn\'t a machine.';
@@ -2539,12 +2548,13 @@ export function fieldRepair(cb: Combat, u: Unit, o: { target?: Unit | null; way?
   pay(cb, u, cost); if (parts) u.parts = (u.parts || 0) - parts;
   if (way === 'clear_jam') { t.jammed = false; t.heat = 0; emitFx(cb, 'clear', { unit: t.id, at: t.pos, dur: 1000, by: u.id }); say(cb, u.name + ' clears ' + (t === u ? 'the' : t.name + '\'s') + ' jam (' + label + ').'); return null; }
   if (way === 'restore_durability') {
-    const fr: any = (SKILL.proficiency as any).unlocks?.['3']?.effects?.[0] || {}; // the card's numbers (skills.json Field Repair)
-    const add = Math.ceil(t.maxDur! * Math.max(fr.repair_base ?? 0.1, (fr.repair_base ?? 0.1) + (fr.repair_per_point ?? 0.05) * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
+    const first = ladderSchedule('proficiency').perk_steps[0] ?? 0; // the points above the skill's first perk step add
+    const add = Math.ceil(t.maxDur! * Math.max(rp?.base ?? 0, (rp?.base ?? 0) + (rp?.per ?? 0) * ((u.proficiency || first) - first)) * statQuery({ u }, 'field_repair_amount').mult);
     t.dur = Math.min(t.maxDur!, (t.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, ...(t !== u ? { target: t.id } : {}), at: t.pos, dur: 1400 });
     say(cb, u.name + (t === u ? ' patches the weapon' : ' fixes ' + t.name + '\'s weapon') + ': +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return null;
   }
-  const n = Math.floor(amountOf(amountSpecOf(o.item || 'skill:proficiency.3', 'repair'), u, { level: u.charId ? u.level : null }).raw);
+  if (!rp) return 'Needs the Field Repair perk.';
+  const n = Math.floor(amountOf(amountSpecOf(rp.key, 'repair'), u, { level: u.charId ? u.level : null }).raw);
   const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + n); if (up) setDowned(t, false);
   emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
   say(cb, u.name + ' repairs ' + t.name + ' (' + label + '): +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
@@ -3495,7 +3505,7 @@ export function weaponActions(u: Unit, cb?: Combat | null): WeaponAction[] {
   // Guard 2.0 (rules 1.56, the audit's b): the row says the Guard this unit's Brace gives (guardGain, through braceHook)
   const bg = pool ? braceHook.gain?.(u) ?? 0 : 0;
   if (braces || pool) add({ id: 'brace', label: bg ? 'Brace · +' + bg + ' Guard' : 'Brace', ap: price({ cb, u }, 'brace').ap, why: u.braced ? 'Already braced.' : need(price({ cb, u }, 'brace').ap), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (bg ? ' You gain ' + bg + ' Guard.' : '') + ' Moving ends it.' });
-  if (u.maxDur) { const c = price({ cb, u }, 'field_repair').ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
+  if (u.maxDur) { const c = price({ cb, u }, 'field_repair').ap, rp = repairOf(u), pct = (x: number) => Math.round(x * 100); add({ id: 'repair', label: 'Field Repair', ap: c, why: !rp ? 'Needs the Field Repair perk.' : rp.parts && (u.parts || 0) < rp.parts ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: rp ? (rp.parts ? 'One spare-parts charge: ' : 'No spare part: ') + '+' + pct(rp.base) + '% durability, +' + pct(rp.per) + '% per ' + SKILL.proficiency.name + ' point above the first perk step.' : 'Take the Field Repair perk (' + SKILL.proficiency.name + ') to repair in the field.' }); } // rules 1.82 item 7008
   const owAp = price({ cb, u }, 'overwatch', attackApCost(w, melee ? 'melee' : 'shot')).ap;
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });
   for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? ((w as any).grants?.effect?.op === 'auto_ap' ? (w as any).grants.effect.value : 4) : 3, why: null, text: '' });

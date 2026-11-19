@@ -26,8 +26,8 @@ describe('the nine classes (data)', () => {
     expect(CLASSES.map((k) => k.id)).toEqual(['defender', 'fighter', 'marksman', 'infiltrator', 'mage', 'trickster', 'bard', 'channeler', 'guardian']);
     expect(new Set(CLASSES.map((k) => k.attribute)).size).toBe(9);
     expect(CLASS.infiltrator).toMatchObject({ attribute: 'perception', core: 'mind', skills: ['ingenuity', 'analysis', 'vigilant'] }); // rules 1.13: Acuity (the id 'analysis') sits under Perception
-    for (const k of CLASSES) for (const r of ['I', 'II', 'III']) expect(k.ranks[r].moves.length, k.id + ' ' + r).toBe(2);
-    const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves));
+    for (const k of CLASSES) for (const r of ['I', 'II', 'III']) expect(k.ranks[r].moves.filter((m: any) => !m.ceiling).length, k.id + ' ' + r).toBe(2); // rules 1.82 item 7006: a rank III ceiling move is beside the two
+    const all = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => !m.ceiling);
     expect(all.length).toBe(54);
     expect(all.filter((m: any) => m.new).length).toBe(29); // rules 1.74: + Backdraft; rules 1.73: + Retort and Reforge; rules 1.60: + Read the Swing; the 20 new moves and Run and Gun (rules 1.30); rules 1.31: Ward and Smite in, Command out; less Field Fix (to the move pool, rules 1.32); rules 1.33: the Ledger and Take the Weight; rules 1.34: Salvage, Overclock, Scrap Turret in, Silver Tongue out
     expect(all.filter((m: any) => m.ref && !ADVANCED[m.ref.split('.')[0]]).length).toBe(21); // 28 old base moves; rules 1.73: Reactive Plate out; rules 1.74: Overcharge out (Backdraft), Field Fix out (Quick Sketch); rules 1.31: Will Shield out (Ward); rules 1.33: Stim Throw and Field Surgery out (everyone's); rules 1.34: Blind and Slow and Rewrite leave the Rigger, Field Fix is its ref
@@ -219,7 +219,7 @@ describe('Revision 2 saves migrate', () => {
 describe('the 20 new moves have handlers (phase B; behaviour in classes-rev3-moves.test.ts)', () => {
   const NEW = CLASSES.flatMap((k) => Object.values(k.ranks).flatMap((r: any) => r.moves)).filter((m: any) => m.new).map((m: any) => m.key.replace(/^class:/, ''));
   it('each has its full data entry, a registered handler, and no effect is a coverage gap', () => {
-    expect(NEW.length).toBe(29); // rules 1.74: + Backdraft; rules 1.73: + Retort and Reforge; rules 1.60: + Read the Swing (Wind-up replaced Shove); + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite (data only), − Command; − Field Fix (rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
+    expect(NEW.length).toBe(30); // rules 1.82: + Stand Behind Me; rules 1.74: + Backdraft; rules 1.73: + Retort and Reforge; rules 1.60: + Read the Swing (Wind-up replaced Shove); + Run and Gun (rules 1.30, data only); rules 1.31: + Ward and Smite (data only), − Command; − Field Fix (rules 1.32); rules 1.33: + the Ledger and Take the Weight; rules 1.34: + Salvage, Overclock, Scrap Turret, − Silver Tongue
     for (const k of NEW) {
       const info = itemInfo('class:' + k)!;
       expect(info, k).toBeTruthy(); expect(info.text.length, k).toBeGreaterThan(10); expect(info.provisional, k).toBe(true);

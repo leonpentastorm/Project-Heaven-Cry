@@ -3694,20 +3694,10 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Field Repair",
-          "category": "AP Mod",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "{=unlocks.3.effects.0.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=unlocks.3.effects.0.repair_base|pct}% + {=unlocks.3.effects.0.repair_per_point|pct}% per Improvisation point above 3 of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=unlocks.3.amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, 10 minutes per charge restores 50%.",
-          "player": "{=.effects.0.ap} AP and a spare part: clear a jam · restore {=.effects.0.repair_base|pct}% weapon durability · repair a machine or Figment for {=.amounts.repair.base}",
+          "text": "A perk step in this skill: one of its four perks at Tier I (Field Repair among them), or a Tier I upgraded to Tier II.",
           "effects": [
-            {
-              "op": "grant_action",
-              "action": "field_repair",
-              "ap": 2,
-              "uses": "at_will",
-              "repair_base": 0.1,
-              "repair_per_point": 0.05
-            },
             {
               "op": "perk_choice",
               "skill": "proficiency",
@@ -3715,15 +3705,7 @@
             }
           ],
           "adjudication": "engine",
-          "amounts": {
-            "repair": {
-              "kind": "heal",
-              "base": 15,
-              "profile": "repair",
-              "provisional": true
-            }
-          },
-          "provisional": true
+          "source": "rules 1.82 item 7008: Field Repair is a perk now (perks.json field_repair); this rung is its perk step"
         },
         "5": {
           "name": "Mastery 2",
@@ -3781,11 +3763,12 @@
         }
       },
       "perk_remap": {
-        "rev": 1,
+        "rev": 2,
         "passives": {
+          "3": "field_repair",
           "5": "tuned"
         },
-        "note": "rules 1.74 item 6044: Tuned became a perk (Field Repair stays the free unlock at 3: rules 1.74 item 6042)"
+        "note": "rules 1.74 item 6044: Tuned became a perk; rules 1.82 item 7008 (rev 2): Field Repair became a perk too, and a sheet at Improvisation 3+ is offered the re-pick again"
       },
       "overreach": {
         "from_points": 5,

@@ -86,7 +86,7 @@ export const revision2Classes = () => rev2;
 export function _setRevision2Classes(on: boolean) { rev2 = on; itemsCache.clear(); keyGen++; }
 
 const isAction = (effects: any[], ap: any, perkType?: string | null) =>
-  effects.some((e) => e && e.op === 'grant_action') || (typeof ap === 'number' && ap > 0) || (typeof ap === 'string' && !!ap) || perkType === 'active_skill';
+  effects.some((e) => e && e.op === 'grant_action' && !e.gate_only) || (typeof ap === 'number' && ap > 0) || (typeof ap === 'string' && !!ap) || perkType === 'active_skill';
 
 /** What a held perk's tier gives: Tier I, or Tier II alone when it replaces Tier I, else I then II. */
 export function perkEffects(id: string, tier: string): { effects: any[]; effTier: string[] } {
