@@ -93,7 +93,7 @@ describe('Measured Blow (rules 1.60 item 4623): once a fight, a door Finisher gi
 // ============================================================================================ R17: Deliver the Sinner
 describe('Deliver the Sinner (rules 1.60 item 4635): a patron\'s blow deals more to a Marked foe', () => {
   it('Rebuke on a Marked foe deals the unlock\'s bonus more than on one not Marked', () => {
-    const bonus = (SKILL as any).faith.unlocks['5'].effects[0].value;
+    const bonus = (SKILL as any).faith.unlocks['2'].effects[1].value; // rules 1.75 item 6220: Deliver the Sinner is Name the Sinner's half, at Faith 2
     const run = (marked: boolean) => {
       const f = fightWith([{ name: 'Faithful', skills: { faith: 5 }, attrs: { virtue: 5 }, level: 12 }], [{ at: 'F6' }], { level: 12 });
       const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'old_overcast' } as any; c.patron = 'old_overcast' as any; setDevotionXp(c, devotionThreshold(6)); c.devotion = 6;

@@ -35,7 +35,7 @@ const notes = (f: F) => (f.cb.notes || []).join('\n');
 
 describe('lane G coverage', () => {
   it('no effect of a lane G item is a gap', () => {
-    const ids = 'bedside_manner footnote burden_of_proof detectives_eye crowd_pleaser double_meaning old_tales real_power established_fact closing_argument everyones_friend their_own_idea foreseen cultured cold_read what_could_be every_lie_is_a_door gambler crowded_head cover_story cold_case interrogator holo_drama_addict born_performer'.split(' ');
+    const ids = 'bedside_manner footnote burden_of_proof detectives_eye crowd_pleaser double_meaning old_tales rank_has_privileges established_fact closing_argument everyones_friend their_own_idea foreseen cultured cold_read what_could_be every_lie_is_a_door gambler crowded_head cover_story cold_case interrogator holo_drama_addict born_performer'.split(' ');
     const gaps = coverageReport().filter((r) => ids.includes(r.key.split(':')[1]) && r.owner === 'gap');
     expect(gaps).toEqual([]);
   });
@@ -165,14 +165,13 @@ describe('Old Tales (Old Tongue folded into tier II, rules 1.75 item 6206)', () 
   });
 });
 
-describe('Real Power', () => {
-  it('I: who really runs it, once per organisation; II: and they agree to see you', () => {
-    const s = storyWith([{ perks: { real_power: 'I' } }, { perks: { real_power: 'II' } }]);
-    perk(s, s.chars[0], 'real_power', { text: 'The Dock Guild' });
-    expect(rulings(s.g, 'perk:real_power')[0].text).not.toMatch(/agrees to see/);
-    expect(() => perk(s, s.chars[0], 'real_power', { text: 'the dock guild' })).toThrow(/already know/);
-    perk(s, s.chars[1], 'real_power', { text: 'The Dock Guild' });
-    expect(rulings(s.g, 'perk:real_power')[1].text).toMatch(/agrees to see them/);
+describe('Rank Has Privileges II (Real Power folded in, rules 1.75 item 6224)', () => {
+  it('I: no organisation read; II: who really runs it, once per organisation, and they agree to see you', () => {
+    const s = storyWith([{ perks: { rank_has_privileges: 'I' } }, { perks: { rank_has_privileges: 'II' } }]);
+    expect(() => perk(s, s.chars[0], 'rank_has_privileges', { text: 'The Dock Guild' })).toThrow();
+    perk(s, s.chars[1], 'rank_has_privileges', { text: 'The Dock Guild' });
+    expect(rulings(s.g, 'perk:rank_has_privileges')[0].text).toMatch(/agrees to see them/);
+    expect(() => perk(s, s.chars[1], 'rank_has_privileges', { text: 'the dock guild' })).toThrow(/already know/);
   });
 });
 
@@ -470,8 +469,8 @@ describe('Born Performer', () => {
 
 describe('briefs', () => {
   it('every lane G item with a Narrator part has a short brief; other lanes\' items without one get the fallback', () => {
-    const s = storyWith([{ perks: { bedside_manner: 'I', real_power: 'II' }, traits: ['gambler', 'wanted'] }]); const c = s.chars[0];
-    for (const k of ['perk:bedside_manner', 'perk:real_power', 'trait:gambler', 'trait:wanted']) {
+    const s = storyWith([{ perks: { bedside_manner: 'I', rank_has_privileges: 'II' }, traits: ['gambler', 'wanted'] }]); const c = s.chars[0];
+    for (const k of ['perk:bedside_manner', 'perk:rank_has_privileges', 'trait:gambler', 'trait:wanted']) {
       const b = brief(s.g, c, k)!; expect(b.length).toBeGreaterThan(5); expect(b.split(/\s+/).length).toBeLessThanOrEqual(18);
     }
   });

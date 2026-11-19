@@ -12660,3 +12660,36 @@ tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each shee
     may be offered the moment the foe drops (the old setting always / ask / never). PROVISIONAL: half HP, 2 AP.
 6217. **The Mender.** All six moves kept. Triage is the only beside-you heal (its text loses "less than a Touch"; Short
     Thread lets it reach 2 tiles). **Field Surgery** joins the Mender's extras (it needs the Mender, rank I).
+
+**Virtue (Faith, Conscience, Authority; the Chaplain)**
+
+6220. **Faith's ladder.** 1 the door (Whisper, once a turn; Devotion) · 2 **Name the Sinner** (a Whisper: a foe you see is
+    Judged for 2 rounds, no save; your patron's blows, your prayers' damage, are +20% on a Judged or Marked foe: Deliver
+    the Sinner moved from 5 and given a verb) · 3 perk step, Hymns open (kept at 3: the sheet's open item 1, recommended
+    no) · 4 fork one · 5 Witnessed · 6, 7 perk steps (the Miracle at 7 with Devotion 10) · 8 fork two · 9 perk step · 10
+    Mastered Judgement Day. Every point: +10% Blessing power, saves against your prayers harder; the Hymn-wait row only on
+    the levels where it still moves (rules 1.70 item 5540). **Answered Prayer is cut** (it never ran). PROVISIONAL: 2
+    rounds.
+6221. **Faith's perks.** Unbroken Litany: I the first Hymn or Miracle each fight 1 AP less; **II the first two** (its old
+    -1 Hymn wait moves to Swift Psalm). Sinner's Due unchanged.
+6222. **Faith's forks.** Fork one, at 4: **Steadfast** (a Whisper or Ward on an ally at half HP or less costs 1 AP less;
+    the target-aware price, rules 1.70 P3: a prayer is priced with its target) or **Round of Blessings** (your first
+    prayer heal or shield each turn is +25%). Fork two, at 8: **Swift Psalm** (`fork.prayer.held_breath`, id kept: -1
+    round Hymn wait, never under its floor; `faith.ts hymnWait` now asks the stat of any sheet with a pick) or
+    **Benediction** (an answered Hymn gives you and allies within 2 tiles +1 to hit for 2 rounds: the condition
+    `blessed_aim`, Rising's numbers, apart from the song). PROVISIONAL: -1 AP, +25%, -1 round, +1 and 2 rounds.
+6223. **Conscience's four perks** (every point: shields on you, your prayer shields by Faith; Prayer shields at 1).
+    **Clean Hands** and **Red Line** kept. **Righteous** (`righteous`, rebuilt: the old AP cut never ran): I your prayer
+    heals and shields on an ally at half HP or less are +20%; II +40%. **Foresight** (`foresight`, from the unlock at 3): I
+    before a big decision the Narrator tells you its worst likely result, honestly; II once a fight, the first blow that
+    would drop an ally within 4 tiles leaves them on 1 HP. PROVISIONAL: 20%, 40%, 4 tiles.
+6224. **Authority's four perks** (every point: +1 tile Order reach, Karma; Order's steps and price are rules 1.70's).
+    **Outclassed** kept. **Rank Has Privileges** (`rank_has_privileges`, from the unlock at 3): I lower-ranked people
+    follow reasonable orders without a roll; II once per organisation the Narrator names who really holds power and they
+    agree to see you (Real Power folded in: removed, mapped to Rank Has Privileges II). **Five Stars** (`five_stars`, from
+    the unlock at 5, rebuilt: it never ran): I when the fight starts, every friend banks +1 AP for its first turn; II and
+    each rank-and-file foe makes a Heart save against your Authority or is Shaken for 1 round. **Commanding Voice**
+    (`commanding_voice`, new: it removes the door's tax, Silenced): I +3 on saves against Silenced, Shaken and Fear; II
+    immune to Silenced. PROVISIONAL: +1 AP, +3.
+6225. **The Chaplain.** All six moves kept (Ward, Smite, Under the Eye, Blessed Arms, Sanctuary, Verdict) and its five
+    gains. Smite's Judged is what Name the Sinner reads.

@@ -24,7 +24,7 @@ describe('the data of the pass', () => {
     expect(P.grapple).toBeUndefined(); expect(P.origami_hands).toBeUndefined();
     expect(P.iron_grip.name).toBe('Iron Grip'); expect(P.iron_grip.skills).toEqual(['raw_power']);
     expect(P.both_hands.name).toBe('Pressure Point'); expect(P.both_hands.skills).toEqual(['dexterity']); // rules 1.56: the id stays, the perk is new
-    expect(PERKS.length).toBe(114); // rules 1.75: 106; Determination +6 -2 (110); Insight +8 new (Hand-Off, Nobody Left Behind, Steady Hands, Pull Together, Between the Lines, Veiled Insult, Quiet Thread, Threads That Hold), -4 removed (Soulmate, Rally Cry, Sweet Talker, Double Meaning)
+    expect(PERKS.length).toBe(118); // Virtue +5 -1 // rules 1.75: 106; Determination +6 -2 (110); Insight +8 new (Hand-Off, Nobody Left Behind, Steady Hands, Pull Together, Between the Lines, Veiled Insult, Quiet Thread, Threads That Hold), -4 removed (Soulmate, Rally Cry, Sweet Talker, Double Meaning)
     const per: Record<string, number> = {}; for (const p of PERKS as any[]) if (p.tier === 'acquired') per[p.skills[0]] = (per[p.skills[0]] || 0) + 1;
     expect(Object.keys(per).length).toBe(27); for (const [sk, n] of Object.entries(per)) expect(n, sk).toBe((SKILL as any)[sk].slot === 'alpha' ? 2 : (SKILL as any)[sk].perk_remap ? 4 : 2); // rules 1.70 item 5537: a beta or gamma reshaped (its remap table) has four
   });

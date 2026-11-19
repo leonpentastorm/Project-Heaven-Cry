@@ -120,6 +120,12 @@ is the one to match). Until drawn, each shows the fallback the UI already uses f
 | `pull_together` | Camaraderie perk: Tug and Guide along a Bond | Wick pulling a thread hand over hand, a friend drawn toward him |
 | `veiled_insult` | Insinuation perk: a quiet jab that Taunts | Wick with a sly half-smile, a hand at his mouth as if sharing a secret |
 | `quiet_thread` | Insinuation perk: you (II and your Bonded friends) are never Traced | A thread from Wick's chest fading out where it leaves him: no trail |
+| `righteous` | Conscience perk: prayer heals and shields are stronger on a friend at half HP | Wick's raised hand over a wounded friend, the light from it brighter than usual |
+| `foresight` | Conscience perk: the Narrator warns of the worst; II a friend's killing blow leaves them on 1 HP | Wick with eyes closed seeing a shadow of the blow before it lands |
+| `five_stars` | Authority perk: the squad moves first; II foes are Shaken | Wick at attention with a command gesture, the squad already moving behind him |
+| `commanding_voice` | Authority perk: saves against Silenced, Shaken and Fear; II never Silenced | Wick speaking through a hand clamped over his mouth, the words still getting out |
+
+The Faith forks (`fork.prayer.steadfast`, `fork.prayer.round_of_blessings`, `fork.prayer.held_breath` now named **Swift Psalm**, `fork.prayer.benediction`) are built in 0.32 (rules 1.75 item 6222); their placeholders stand. Swift Psalm's icon should read as a quicker hymn (Wick singing on the move), no longer a held breath.
 
 ### 2. Outburst feelings and modules
 

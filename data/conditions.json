@@ -1578,6 +1578,36 @@
       "source": "rules 1.75 (Soul lane, 0.32) item 6206 (Lore Master's Warding Word)"
     },
     {
+      "id": "blessed_aim",
+      "name": "Blessed Aim",
+      "label": "Blessed Aim (to hit)",
+      "kind": "state",
+      "side": "helps",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "An answered Hymn steadies your hand: {=effects.0.value|signed} to hit. It lasts {=duration.rounds} rounds.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "value": 1
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222 (Faith's Benediction; Rising's numbers, apart from the song)"
+    },
+    {
       "id": "given_mark",
       "name": "Felt",
       "kind": "state",

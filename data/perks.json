@@ -6892,7 +6892,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Your first Hymn or Miracle each fight costs {=tiers.I.effects.0.value|abs} AP less. II: Your first Hymn or Miracle each fight costs {=tiers.II.effects.0.value|abs} AP less, and the wait between your Hymns is {=tiers.II.effects.2.value|abs} round shorter (never under its floor).",
+      "text": "I: Your first Hymn or Miracle each fight costs {=tiers.I.effects.0.value|abs} AP less. II: Your first {=tiers.II.effects.0.limit.n} Hymns or Miracles each fight cost {=tiers.II.effects.0.value|abs} AP less.",
       "effects": [
         {
           "op": "cost_mod",
@@ -6979,8 +6979,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "Your first Hymn or Miracle each fight costs {=tiers.II.effects.0.value|abs} AP less, and the wait between your Hymns is {=tiers.II.effects.2.value|abs} round shorter (never under its floor).",
-          "short": "Hymn wait {=tiers.II.effects.2.value} round, never under its floor",
+          "text": "Your first {=tiers.II.effects.0.limit.n} Hymns or Miracles each fight cost {=tiers.II.effects.0.value|abs} AP less.",
+          "short": "The first {=tiers.II.effects.0.limit.n} each fight",
           "effects": [
             {
               "op": "cost_mod",
@@ -6994,7 +6994,7 @@
               "min": 1,
               "limit": {
                 "per": "per_combat",
-                "n": 1,
+                "n": 2,
                 "key": "first",
                 "peek": true
               }
@@ -7009,14 +7009,9 @@
               },
               "limit": {
                 "per": "per_combat",
-                "n": 1,
+                "n": 2,
                 "key": "first"
               }
-            },
-            {
-              "op": "stat_mod",
-              "stat": "hymn_wait",
-              "value": -1
             }
           ],
           "replaces_tier_I": true,
@@ -7029,7 +7024,8 @@
         "faith",
         "ap"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6221"
     },
     {
       "id": "holy_ordnance",
@@ -7323,6 +7319,238 @@
       "provisional": true
     },
     {
+      "id": "righteous",
+      "name": "Righteous",
+      "tier": "acquired",
+      "perk_type": "combat_interaction",
+      "skills": [
+        "conscience"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "conscience",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: Your prayer heals and shields on an ally at half HP or less are {=tiers.I.effects.0.value|more}% stronger. II: Your prayer heals and shields on an ally at half HP or less are {=tiers.II.effects.0.value|more}% stronger.",
+      "effects": [
+        {
+          "op": "mend_mult",
+          "when": "heal",
+          "if": {
+            "actor": "self",
+            "target": "ally",
+            "target_hp_at_most": 0.5,
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.2,
+          "label": "Righteous"
+        },
+        {
+          "op": "mend_mult",
+          "when": "shield",
+          "if": {
+            "actor": "self",
+            "target": "ally",
+            "target_hp_at_most": 0.5,
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.2,
+          "label": "Righteous"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Your prayer heals and shields on an ally at half HP or less are {=tiers.I.effects.0.value|more}% stronger.",
+          "short": "Prayer heals and shields on a friend at half HP: +{=tiers.I.effects.0.value|more}%",
+          "effects": [
+            {
+              "op": "mend_mult",
+              "when": "heal",
+              "if": {
+                "actor": "self",
+                "target": "ally",
+                "target_hp_at_most": 0.5,
+                "how": [
+                  "blessing"
+                ]
+              },
+              "value": 1.2,
+              "label": "Righteous"
+            },
+            {
+              "op": "mend_mult",
+              "when": "shield",
+              "if": {
+                "actor": "self",
+                "target": "ally",
+                "target_hp_at_most": 0.5,
+                "how": [
+                  "blessing"
+                ]
+              },
+              "value": 1.2,
+              "label": "Righteous"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "Your prayer heals and shields on an ally at half HP or less are {=tiers.II.effects.0.value|more}% stronger.",
+          "short": "+{=tiers.II.effects.0.value|more}%",
+          "effects": [
+            {
+              "op": "mend_mult",
+              "when": "heal",
+              "if": {
+                "actor": "self",
+                "target": "ally",
+                "target_hp_at_most": 0.5,
+                "how": [
+                  "blessing"
+                ]
+              },
+              "value": 1.4,
+              "label": "Righteous"
+            },
+            {
+              "op": "mend_mult",
+              "when": "shield",
+              "if": {
+                "actor": "self",
+                "target": "ally",
+                "target_hp_at_most": 0.5,
+                "how": [
+                  "blessing"
+                ]
+              },
+              "value": 1.4,
+              "label": "Righteous"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "support",
+        "faith"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6223"
+    },
+    {
+      "id": "foresight",
+      "name": "Foresight",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "conscience"
+      ],
+      "skill_greek": "beta",
+      "requires": [
+        {
+          "skill": "conscience",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "per_combat",
+      "text": "I: Before a big decision, the Narrator tells you its worst likely result, honestly. II: As Tier I, and once a fight the first blow that would drop an ally within {=tiers.II.effects.1.if.target_within} tiles leaves them on {=tiers.II.effects.1.value} HP.",
+      "effects": [
+        {
+          "op": "narrator",
+          "note": "Narrator states the worst likely consequence honestly"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "Before a big decision, the Narrator tells you its worst likely result, honestly.",
+          "short": "Before a big decision: its worst likely result, honestly",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator states the worst likely consequence honestly"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "conscience",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and once a fight the first blow that would drop an ally within {=tiers.II.effects.1.if.target_within} tiles leaves them on {=tiers.II.effects.1.value} HP.",
+          "short": "Once a fight: a friend within {=tiers.II.effects.1.if.target_within} tiles stays on {=tiers.II.effects.1.value} HP",
+          "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator states the worst likely consequence honestly"
+            },
+            {
+              "op": "floor",
+              "when": "would_drop",
+              "if": {
+                "target": "ally",
+                "target_within": 4,
+                "open": true
+              },
+              "value": 1,
+              "limit": {
+                "per": "per_combat",
+                "n": 1
+              },
+              "label": "Foresight",
+              "say": "{self} saw it coming: {target} stays on 1 HP (Foresight)."
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "hybrid",
+      "recovered": null,
+      "tags": [
+        "support",
+        "defense"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6223"
+    },
+    {
       "id": "outclassed",
       "name": "Outclassed",
       "tier": "acquired",
@@ -7424,8 +7652,8 @@
       ]
     },
     {
-      "id": "real_power",
-      "name": "Real Power",
+      "id": "rank_has_privileges",
+      "name": "Rank Has Privileges",
       "tier": "acquired",
       "perk_type": "conversation_quirk",
       "skills": [
@@ -7441,11 +7669,11 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you. II: Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you, and that person agrees to see you; what they agree to after that is up to them.",
+      "text": "I: Lower-ranked people follow your reasonable orders without a roll. II: As Tier I, and once per organisation the Narrator names who really holds its power, and they agree to see you.",
       "effects": [
         {
           "op": "narrator",
-          "note": "Tell the player who actually holds power in any organisation they're dealing with."
+          "note": "Narrator judges which orders are reasonable"
         }
       ],
       "tiers": {
@@ -7457,12 +7685,12 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you.",
-          "short": "Once per organisation: the Narrator names who really holds power",
+          "text": "Lower-ranked people follow your reasonable orders without a roll.",
+          "short": "Lower-ranked people follow reasonable orders without a roll",
           "effects": [
             {
               "op": "narrator",
-              "note": "Tell the player who actually holds power in any organisation they're dealing with."
+              "note": "Narrator judges which orders are reasonable"
             }
           ]
         },
@@ -7474,9 +7702,13 @@
             }
           ],
           "ap_cost": null,
-          "text": "Once per organisation, ask who really holds the power in it, whatever the titles say. The Narrator tells you, and that person agrees to see you; what they agree to after that is up to them.",
-          "short": "That person agrees to see you",
+          "text": "As Tier I, and once per organisation the Narrator names who really holds its power, and they agree to see you.",
+          "short": "Once per organisation: who really holds power agrees to see you",
           "effects": [
+            {
+              "op": "narrator",
+              "note": "Narrator judges which orders are reasonable"
+            },
             {
               "op": "narrator",
               "note": "As Tier I, and that person agrees to meet the player."
@@ -7490,9 +7722,221 @@
       "recovered": null,
       "tags": [
         "social",
-        "politics"
+        "authority"
       ],
-      "provisional": true
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6224"
+    },
+    {
+      "id": "five_stars",
+      "name": "Five Stars",
+      "tier": "acquired",
+      "perk_type": "combat_starter",
+      "skills": [
+        "authority"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "authority",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: When the fight starts, every friend banks {=tiers.I.effects.0.value|signed} AP for its first turn. II: As Tier I, and each foe makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
+      "effects": [
+        {
+          "op": "grant_ap",
+          "when": "combat_start",
+          "value": 1,
+          "bank": true,
+          "targets": {
+            "of": "self",
+            "side": "side"
+          },
+          "label": "Five Stars",
+          "say": "{self}'s squad moves first (Five Stars)."
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "When the fight starts, every friend banks {=tiers.I.effects.0.value|signed} AP for its first turn.",
+          "short": "Fight start: every friend +{=tiers.I.effects.0.value} AP on its first turn",
+          "effects": [
+            {
+              "op": "grant_ap",
+              "when": "combat_start",
+              "value": 1,
+              "bank": true,
+              "targets": {
+                "of": "self",
+                "side": "side"
+              },
+              "label": "Five Stars",
+              "say": "{self}'s squad moves first (Five Stars)."
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and each foe makes a Heart save against your Authority or is Shaken for {=tiers.II.effects.1.rounds} round.",
+          "short": "And foes save or are Shaken",
+          "effects": [
+            {
+              "op": "grant_ap",
+              "when": "combat_start",
+              "value": 1,
+              "bank": true,
+              "targets": {
+                "of": "self",
+                "side": "side"
+              },
+              "label": "Five Stars",
+              "say": "{self}'s squad moves first (Five Stars)."
+            },
+            {
+              "op": "condition",
+              "when": "combat_start",
+              "condition": "shaken",
+              "via": "authority",
+              "rounds": 1,
+              "targets": {
+                "of": "self",
+                "side": "foe"
+              },
+              "label": "Five Stars"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "command",
+        "ap"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6224"
+    },
+    {
+      "id": "commanding_voice",
+      "name": "Commanding Voice",
+      "tier": "acquired",
+      "perk_type": "passive",
+      "skills": [
+        "authority"
+      ],
+      "skill_greek": "gamma",
+      "requires": [
+        {
+          "skill": "authority",
+          "min": 3
+        }
+      ],
+      "excludes": [],
+      "ap_cost": null,
+      "uses": "at_will",
+      "text": "I: You have {=tiers.I.effects.0.value|signed} on saves against Silenced, Shaken and Fear. II: As Tier I, and you are immune to Silenced.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "cond_incoming",
+          "if": {
+            "cond": [
+              "silenced",
+              "shaken",
+              "fear"
+            ]
+          },
+          "value": 3,
+          "label": "Commanding Voice"
+        }
+      ],
+      "tiers": {
+        "I": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 3
+            }
+          ],
+          "ap_cost": null,
+          "text": "You have {=tiers.I.effects.0.value|signed} on saves against Silenced, Shaken and Fear.",
+          "short": "{=tiers.I.effects.0.value|signed} on saves against Silenced, Shaken and Fear",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "cond_incoming",
+              "if": {
+                "cond": [
+                  "silenced",
+                  "shaken",
+                  "fear"
+                ]
+              },
+              "value": 3,
+              "label": "Commanding Voice"
+            }
+          ]
+        },
+        "II": {
+          "requires": [
+            {
+              "skill": "authority",
+              "min": 5
+            }
+          ],
+          "ap_cost": null,
+          "text": "As Tier I, and you are immune to Silenced.",
+          "short": "Immune to Silenced",
+          "effects": [
+            {
+              "op": "roll_mod",
+              "when": "cond_incoming",
+              "if": {
+                "cond": [
+                  "silenced",
+                  "shaken",
+                  "fear"
+                ]
+              },
+              "value": 3,
+              "label": "Commanding Voice"
+            },
+            {
+              "op": "immunity",
+              "to": "silenced"
+            }
+          ],
+          "replaces_tier_I": true,
+          "after": "I"
+        }
+      },
+      "adjudication": "engine",
+      "recovered": null,
+      "tags": [
+        "defense",
+        "command"
+      ],
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6224"
     },
     {
       "id": "last_wall",

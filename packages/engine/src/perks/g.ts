@@ -282,19 +282,20 @@ register({
   brief: (h) => 'reads any ancient or upper-realm script (tag such checks ancient_script)' + (tierII(h) ? '; speaks it: one parley per being' : '') + '; within the Veil',
 });
 
-// ---------- Real Power (Authority 3/5): who actually holds the power in an organisation; II: and they agree to see you ----------
+// ---------- Rank Has Privileges II (Real Power folded in, rules 1.75 item 6224): who actually holds the power in an organisation, and they agree to see you ----------
 // PROVISIONAL (plan 6): once per organisation; "agrees to see you" is not "agrees to anything"; Celestials only by cause.
 register({
-  id: 'real_power',
+  id: 'rank_has_privileges',
   narrator: 'all',
   actions: [{
-    id: 'read_org', label: 'Who really runs this? (Real Power)', scope: ['story'], target: 'text', ap: 0,
-    text: 'Name an organisation: the Narrator tells you who really holds the power there. II: that person also agrees to see you. Once per organisation.',
+    id: 'read_org', label: 'Who really runs this? (Rank Has Privileges)', scope: ['story'], target: 'text', ap: 0,
+    text: 'Name an organisation: the Narrator tells you who really holds the power there, and that person agrees to see you. Once per organisation.',
+    available: (h) => (tierII(h) ? true : false),
     preview: (h, a) => (sro(h).orgs || []).some((o: string) => nameMatch(o, textArg(a))) ? { ok: false, why: 'You already know who runs ' + clip(a.text, 40) + '.' } : {},
     run: (h, a) => {
       const org = clip(a.text, 80); (sst(h).orgs ||= []).push(org);
       const eid = postStory(h, 'looks past the titles in ' + org + '.');
-      ruling(h, 'Real Power: tell ' + h.c!.name + ' (perkLines, key perk:real_power) who really holds the power in ' + org + ', and keep it consistent (pin it in memory)' + (tierII(h) ? '; that person agrees to see them (a meeting, not a yes; Celestials only by cause)' : '') + '.', eid);
+      ruling(h, 'Rank Has Privileges: tell ' + h.c!.name + ' (perkLines, key perk:rank_has_privileges) who really holds the power in ' + org + ', and keep it consistent (pin it in memory)' + (tierII(h) ? '; that person agrees to see them (a meeting, not a yes; Celestials only by cause)' : '') + '.', eid);
     },
   }],
   on: { ruling_answered: (ctx, h) => { if (!refused(ctx, h)) return; const st = sst(h), i = (st.orgs || []).map((o: string) => String(ctx.r.text).includes('power in ' + o)).lastIndexOf(true); if (i >= 0) st.orgs.splice(i, 1); } },

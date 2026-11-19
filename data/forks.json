@@ -581,20 +581,65 @@
           "door_pick": "fork.prayer.round_of_blessings"
         }
       ],
-      "text": "Whisper an ally unblessed last round: Hymn wait {=numbers.cut} round shorter, or next prayer roll {=numbers.roll|signed}",
-      "numbers": {
-        "cut": 1,
-        "roll": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N7"
+      "text": "Your first prayer each turn: its heal or shield +{=effects.0.value|more}%",
+      "effects": [
+        {
+          "op": "mend_mult",
+          "when": "heal",
+          "if": {
+            "actor": "self",
+            "target": "any",
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.25,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "first",
+            "peek": true
+          },
+          "label": "Round of Blessings"
+        },
+        {
+          "op": "mend_mult",
+          "when": "shield",
+          "if": {
+            "actor": "self",
+            "target": "any",
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.25,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "first",
+            "peek": true
+          },
+          "label": "Round of Blessings"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "whisper",
+              "pray"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "first"
+          }
+        }
       ],
-      "why": "The Hymn's wait is not a count an op can move and the prayer roll is on no hook (N7, not approved). The cheaper wording (the next Hymn's heal or shield ×1.25) needs a predicate that tells a Hymn's heal from a Whisper's: both reach heal_in as kind blessing.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.prayer.steadfast",
@@ -608,16 +653,27 @@
           "door_pick": "fork.prayer.steadfast"
         }
       ],
-      "text": "Once a round, off your turn: say a Whisper as a reaction when a foe attacks an ally you see",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N6"
+      "text": "A Whisper or Ward on an ally at half HP or less: {=effects.0.value|abs} AP less",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "whisper",
+              "ward"
+            ],
+            "target": "ally",
+            "target_hp_at_most": 0.5
+          },
+          "value": -1,
+          "min": 0,
+          "label": "Steadfast"
+        }
       ],
-      "why": "A prayer as a reaction needs N6 (not approved). The cheaper wording (Health or Protection held on an ally, landing at its first hit) needs the Whisper's amount on a condition row, and a Whisper's heal and shield are faith.ts code (prayerAmount), not an amount block a row can deal.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.prayer.benediction",
@@ -631,27 +687,38 @@
           "door_pick": "fork.prayer.benediction"
         }
       ],
-      "text": "A Whisper on an ally may go wide: +{=numbers.ap} AP · allies within {=numbers.within} tile get {=numbers.share|pct}% · +{=numbers.wait} round Hymn wait",
+      "text": "An answered Hymn: you and allies within {=effects.0.targets.within} tiles {=numbers.hit|signed} to hit for {=numbers.rounds} rounds",
       "numbers": {
-        "ap": 1,
-        "within": 1,
-        "share": 0.7,
-        "wait": 1
+        "hit": 1,
+        "rounds": 2
       },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N5",
-        "N7"
+      "effects": [
+        {
+          "op": "condition",
+          "when": "acted",
+          "if": {
+            "action": [
+              "pray"
+            ]
+          },
+          "condition": "blessed_aim",
+          "skip_save": true,
+          "targets": {
+            "of": "self",
+            "within": 2,
+            "side": "side"
+          },
+          "label": "Benediction",
+          "say": "{self}'s Hymn steadies every hand near it (Benediction)."
+        }
       ],
-      "why": "The blessing runner reads no targets and the Hymn's wait is no count (N5, N7, not approved); the spec's cheaper wording (Intercession) is the one it rejects.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.prayer.held_breath",
-      "name": "Held Breath",
+      "name": "Swift Psalm",
       "kind": "verb",
       "door": "faith",
       "step": 8,
@@ -661,19 +728,17 @@
           "door_pick": "fork.prayer.held_breath"
         }
       ],
-      "text": "A turn with no Whisper is held (max {=numbers.held}): say it later as well as that turn's Whisper",
-      "numbers": {
-        "held": 1
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N7"
+      "text": "Hymn wait {=effects.0.value} round (never under its floor)",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "hymn_wait",
+          "value": -1
+        }
       ],
-      "why": "Whispers a turn are a literal, not a stat (N7, not approved); the spec's cheaper wording is to drop it.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.momentum.rolling_start",

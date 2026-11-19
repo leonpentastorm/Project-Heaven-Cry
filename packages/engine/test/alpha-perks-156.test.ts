@@ -5,7 +5,7 @@
 // number under its condition and does nothing outside it. Every number is read from data/perks.json.
 import { describe, it, expect } from 'vitest';
 import { onHook } from '../src/effects/hooks';
-import { d20, applyCond, previewAttack, previewDraw, hymnWait, setDevotionXp, devotionThreshold, beginTurn, clearPrayerLimits, condOn, type Unit } from '../src';
+import { PERK, d20, applyCond, previewAttack, previewDraw, hymnWait, setDevotionXp, devotionThreshold, beginTurn, clearPrayerLimits, condOn, type Unit } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { physFight, rig } from './helpers/physfight';
 import { figFight } from './helpers/figfight';
@@ -350,9 +350,9 @@ describe('Unbroken Litany (litany): the first Hymn or Miracle each fight costs l
     const a = run(true), b = run(false);
     expect(a.w).toBe(b.w); expect(b.h1 - a.h1).toBe(-E('litany', 'I').value); expect(a.h2).toBe(b.h2);
   });
-  it('II: the wait between Hymns is shorter by its data (never under the floor)', () => {
+  it('II no longer shortens the wait between Hymns (rules 1.75 item 6221: Swift Psalm has it, one copy of the lever)', () => {
     const a = priest({ litany: 'II' }), b = priest({});
     const wa = withGame(a.f.g, () => hymnWait(a.c, a.me)), wb = withGame(b.f.g, () => hymnWait(b.c, b.me));
-    expect(wa).toBe(Math.max(3, wb + E('litany', 'II', 2).value));
+    expect(wa).toBe(wb); expect((PERK as any).litany.tiers.II.effects.some((e: any) => e.stat === 'hymn_wait')).toBe(false);
   });
 });

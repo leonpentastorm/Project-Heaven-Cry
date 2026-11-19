@@ -52,10 +52,10 @@ describe('the 19 relabels (item 1101)', () => {
     for (const id of A_PERKS) expect(perkOf(id).adjudication, id).toBe('engine');
     for (const id of A_TRAITS) expect(traitOf(id).adjudication, id).toBe('engine');
   });
-  it('the labels of the 188: 135 engine, 45 hybrid, 8 narrator (rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine; rules 1.75 Determination: +Poker Face (hybrid), Stand Still, Pure Heart, Warding Word, Recitation (engine), Old Tales (narrator); -Old Tongue (hybrid), -You Get Used to It (engine))', () => {
+  it('the labels of the 192: 138 engine, 46 hybrid, 8 narrator (rules 1.14 left 119, 46, 15; the truth pass of 12 Nov 2026, spec item 1514, moved fifteen; rules 1.56 moved Long Dark and Many-Eyed Dream to engine; rules 1.75 Determination: +Poker Face (hybrid), Stand Still, Pure Heart, Warding Word, Recitation (engine), Old Tales (narrator); -Old Tongue (hybrid), -You Get Used to It (engine))', () => {
     const all = [...PERKS, ...TRAITS], n = (l: string) => all.filter((x) => x.adjudication === l).length;
-    expect(all.length).toBe(188); // rules 1.75 Insight: +8 new, -4 removed (Soulmate, Rally Cry, Sweet Talker, Double Meaning)
-    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([135, 45, 8]);
+    expect(all.length).toBe(192); // rules 1.75 Virtue: +Righteous, Five Stars, Commanding Voice (engine), Foresight (hybrid), Rank Has Privileges (narrator), -Real Power (narrator) // rules 1.75 Insight: +8 new, -4 removed (Soulmate, Rally Cry, Sweet Talker, Double Meaning)
+    expect([n('engine'), n('hybrid'), n('narrator')]).toEqual([138, 46, 8]);
   });
   it('no relabelled card still hands a rule to the Narrator: Talks Broke Down gives its timing rule, Verse of War has no audit', () => {
     for (const t of ['I', 'II']) { expect(perkOf('talks_broke_down').tiers[t].text).not.toMatch(/Narrator/); expect(perkOf('talks_broke_down').tiers[t].text).toMatch(/same story round .* or the round after/); }

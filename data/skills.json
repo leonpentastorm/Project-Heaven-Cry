@@ -5299,6 +5299,10 @@
           {
             "at": "each",
             "text": "Blessings: harder to save against"
+          },
+          {
+            "at": "at 3",
+            "text": "Hymns open"
           }
         ]
       },
@@ -5306,44 +5310,47 @@
         "gear:holy_relic"
       ],
       "unlocks": {
-        "3": {
-          "name": "Answered Prayer",
+        "2": {
+          "name": "Name the Sinner",
           "category": "Active Skill",
-          "mastery": 1,
-          "text": "Once per combat, reset your prayer cooldown.",
-          "player": "Once a fight: reset your prayers' wait",
+          "mastery": 0,
+          "text": "A Whisper: a foe you see is Judged for {=unlocks.2.effects.0.effects.0.rounds} rounds. Your prayers deal {=unlocks.2.effects.1.value|pct}% more to a Judged or Marked foe.",
+          "player": "Whisper: a foe is Judged · your prayers +{=.effects.1.value|pct}% on it",
           "effects": [
             {
               "op": "grant_action",
-              "action": "answered_prayer",
-              "ap": 0,
-              "uses": "per_combat"
+              "action": "name_the_sinner",
+              "label": "Name the Sinner",
+              "prayer": "whisper",
+              "ap": 1,
+              "uses": "at_will",
+              "scope": [
+                "combat"
+              ],
+              "reach": {
+                "sight": true,
+                "side": "foe",
+                "if": {
+                  "target_alive": true
+                },
+                "why": {
+                  "target_alive": "{target} is already down."
+                }
+              },
+              "effects": [
+                {
+                  "op": "condition",
+                  "condition": "judged",
+                  "target": "target",
+                  "skip_save": true,
+                  "rounds": 2,
+                  "say": "{self} names {target} before the patron.",
+                  "fx": {
+                    "k": "smite"
+                  }
+                }
+              ]
             },
-            {
-              "op": "perk_choice",
-              "skill": "faith",
-              "choice": "tier_1"
-            }
-          ],
-          "adjudication": "engine"
-        },
-        "4": {
-          "name": "Fork: Round of Blessings or Steadfast",
-          "category": "Fork",
-          "mastery": 0,
-          "text": "The door's first fork, Round of Blessings or Steadfast: not offered yet (Round of Blessings and Steadfast are still to be built; data/forks.json).",
-          "effects": [],
-          "adjudication": "engine",
-          "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
-        },
-        "5": {
-          "name": "Deliver the Sinner",
-          "category": "Combat Interaction",
-          "mastery": 0,
-          "text": "Your patron's blows (Smite, Amen, Rebuke, a Hymn's or an intervention's harm) deal {=unlocks.5.effects.0.value|pct}% more to a foe your squad has Marked (Marking is Shadow's).",
-          "player": "+{=.effects.0.value|pct}% damage from your patron's blows on a Marked foe",
-          "effects": [
             {
               "op": "damage_vs",
               "when": "dealing",
@@ -5355,15 +5362,51 @@
                 ],
                 "target": "foe",
                 "target_has": [
+                  "judged",
                   "marked"
                 ]
               },
               "label": "Deliver the Sinner"
             }
           ],
+          "adjudication": "engine",
           "provisional": true,
           "item": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6220"
+        },
+        "3": {
+          "name": "Mastery 1",
+          "mastery": 1,
+          "text": "A perk step in this skill: one of its two perks at Tier I.",
+          "effects": [
+            {
+              "op": "perk_choice",
+              "skill": "faith",
+              "choice": "tier_1"
+            }
+          ],
           "adjudication": "engine"
+        },
+        "4": {
+          "name": "Fork: Steadfast or Round of Blessings",
+          "category": "Fork",
+          "mastery": 0,
+          "text": "The door's first fork: choose Steadfast or Round of Blessings, once, out of a fight, kept for good (data/forks.json).",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6222"
+        },
+        "5": {
+          "name": "Witnessed",
+          "category": "Active Skill",
+          "mastery": 0,
+          "text": "An answered Hymn brings your patron's eye on you (Witnessed): more Devotion for what it likes, and its intervention once a fight (data/patrons.json prayer.witnessed).",
+          "player": "An answered Hymn: your patron watches (Witnessed)",
+          "effects": [],
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.75 (Soul lane, 0.32) item 6220"
         },
         "7": {
           "name": "Mastery 3",
@@ -5379,14 +5422,14 @@
           "adjudication": "engine"
         },
         "8": {
-          "name": "Fork: Benediction or Held Breath",
+          "name": "Fork: Swift Psalm or Benediction",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's second fork, Benediction or Held Breath: not offered yet (Benediction and Held Breath are still to be built; data/forks.json).",
+          "text": "The door's second fork: choose Swift Psalm or Benediction, once, out of a fight, kept for good (data/forks.json).",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
-          "source": "rules 1.60 slice C (Doors 3.0, the forks; items 4645 onward)"
+          "source": "rules 1.75 (Soul lane, 0.32) item 6222"
         },
         "9": {
           "name": "Mastery 4",
@@ -5529,42 +5572,30 @@
           "item": true
         },
         "3": {
-          "name": "Foresight",
-          "category": "Passive",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Before a major decision, ask the Narrator for its worst likely consequence. The answer is honest.",
-          "player": "Before a big decision: its worst likely result",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator states the worst likely consequence honestly"
-            },
             {
               "op": "perk_choice",
               "skill": "conscience",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Righteous",
-          "category": "AP Mod",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "While protecting innocents, your first action each turn costs {=unlocks.5.effects.0.value|abs} AP less.",
-          "player": "While you protect innocents, your first action each turn costs {=.effects.0.value|abs} AP less",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "ap_cost:first_action_when_protecting",
-              "value": -1
-            },
-            {
-              "op": "narrator",
-              "note": "Narrator confirms innocents are being protected"
+              "op": "perk_choice",
+              "skill": "conscience",
+              "choice": "perk_step"
             }
           ],
-          "adjudication": "hybrid"
+          "adjudication": "engine"
         },
         "7": {
           "name": "Mastery 3",
@@ -5652,6 +5683,15 @@
         "bad_for": "neutral alignments, emotionless robots, weathervanes.",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {},
+        "passives": {
+          "3": "foresight",
+          "5": "righteous"
+        },
+        "note": "Rules 1.75 item 6223: Foresight and Righteous became perks."
       }
     },
     {
@@ -5680,35 +5720,27 @@
       "gates": [],
       "unlocks": {
         "3": {
-          "name": "Rank Has Privileges",
-          "category": "Conversation Quirk",
+          "name": "Mastery 1",
           "mastery": 1,
-          "text": "Lower-ranked NPCs (soldiers, guards, clerks) follow reasonable orders without a roll.",
-          "player": "Lower ranks follow reasonable orders, no roll",
+          "text": "A perk step in this skill: one of its four perks at Tier I.",
           "effects": [
-            {
-              "op": "narrator",
-              "note": "Narrator judges which orders are reasonable"
-            },
             {
               "op": "perk_choice",
               "skill": "authority",
               "choice": "tier_1"
             }
           ],
-          "adjudication": "narrator"
+          "adjudication": "engine"
         },
         "5": {
-          "name": "Five Stars",
-          "category": "Combat Starter",
+          "name": "Mastery 2",
           "mastery": 2,
-          "text": "Your squad has +{=unlocks.5.effects.0.value} AP in round 1, and enemy rank-and-file make a Heart save or hesitate (−{=unlocks.5.effects.0.value} AP).",
-          "player": "Squad +{=.effects.0.value} AP in round one · foes save (Heart) or lose {=.effects.0.value} AP",
+          "text": "A perk step in this skill: one of its four perks at Tier I, or a Tier I upgraded to Tier II.",
           "effects": [
             {
-              "op": "stat_mod",
-              "stat": "squad_ap_round1",
-              "value": 1
+              "op": "perk_choice",
+              "skill": "authority",
+              "choice": "perk_step"
             }
           ],
           "adjudication": "engine"
@@ -5800,6 +5832,17 @@
         "bad_for": "sugar babies, fuckboys (you risk ending up married instead of a one-night stand).",
         "source": "docs/lore/EPCCG-Player-Character-Creation-Guide.md, Article 5",
         "game_text_edits": []
+      },
+      "perk_remap": {
+        "rev": 1,
+        "perks": {
+          "real_power": "rank_has_privileges"
+        },
+        "passives": {
+          "3": "rank_has_privileges",
+          "5": "five_stars"
+        },
+        "note": "Rules 1.75 item 6224: Rank Has Privileges and Five Stars became perks; Real Power is folded into Rank Has Privileges II."
       }
     }
   ],

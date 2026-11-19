@@ -406,9 +406,9 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `check_post` | a story check's d20 was rolled: items may change the result or forbid the fumble | `c`, `ck`, `die`, `mod`, `tn`, `auto`, `labels`, `noFumble` | game.ts:1235 | perks/a.ts:92 (+13) |  |
 | `check_result` | a story check is decided | `c`, `ck`, `roll` | game.ts:1246 | classes/j.ts:304 (+13) |  |
 | `passive` | a passive score is read (declared; asked as stat passive:<skill>, not emitted) |  | **never emitted** | none |  |
-| `voice_cap` | how many voice lines a player gets this beat | `player`, `c`, `chars`, `cap` | game.ts:1479 | perks/g.ts:561 |  |
-| `ask_limit` | how many times a skill may be Asked this scene | `c`, `skill`, `limit` | game.ts:819 | perks/g.ts:562 |  |
-| `overreach_cost` | the Echo price of resisting an Overreach | `c`, `skill`, `cost` | game.ts:833 | perks/g.ts:563 |  |
+| `voice_cap` | how many voice lines a player gets this beat | `player`, `c`, `chars`, `cap` | game.ts:1479 | perks/g.ts:562 |  |
+| `ask_limit` | how many times a skill may be Asked this scene | `c`, `skill`, `limit` | game.ts:819 | perks/g.ts:563 |  |
+| `overreach_cost` | the Echo price of resisting an Overreach | `c`, `skill`, `cost` | game.ts:833 | perks/g.ts:564 |  |
 | `echo_gain` | a character gained Echo | `c`, `n`, `why`, `cap` | effects/echo.ts:10 | none |  |
 | `scene_change` | the Narrator opened a new scene | `n`, `title` | game.ts:1448 | feelings.ts:218 (+12) |  |
 | `session_start` | a session started (or a late player joined one) | `n`, `late` | game.ts:700 (+1) | faith.ts:1724 (+15) |  |
@@ -605,10 +605,10 @@ Asked with `statQuery(x, id)`, answered by an item's `stat:` or a data `stat_mod
 
 `immune(x, what)` is also asked about: `bleed`, `knockback`, `opportunity_attack`, `shove` (`IMMUNE_IDS`).
 
-### The condition table (`data/conditions.json`, 112 rows; loader `condtable.ts`)
+### The condition table (`data/conditions.json`, 113 rows; loader `condtable.ts`)
 
 A condition is a row; these are the fields rows use (how many rows use each):
-`id` (112), `amounts` (7), `name` (112), `kind` (112), `side` (112), `family` (112), `save` (112), `engine` (112), `text` (112), `effects` (112), `duration` (112), `ends_on` (112), `stacks` (112), `adjudication` (112), `save_note` (1), `provisional` (83), `aliases` (2), `key` (2), `label` (65), `boon` (53), `notes` (1), `source` (77), `engine_state` (3), `params` (1), `set_by` (57).
+`id` (113), `amounts` (7), `name` (113), `kind` (113), `side` (113), `family` (113), `save` (113), `engine` (113), `text` (113), `effects` (113), `duration` (113), `ends_on` (113), `stacks` (113), `adjudication` (113), `save_note` (1), `provisional` (84), `aliases` (2), `key` (2), `label` (66), `boon` (54), `notes` (1), `source` (78), `engine_state` (3), `params` (1), `set_by` (57).
 Families: `body`, `brain`, `heart`.
 
 #### The item-ops runner (`effects/triggers.ts`)
@@ -1713,7 +1713,7 @@ A data row may name an fx kind for its op; the client draws it if a module there
 | `last_rites` |  | `classes:last_rites` | no | `fx/faith.ts` |
 | `rally` | `radius` | `classes:rally` | no | `fx/classes.ts` |
 | `shield` | `amount` | `perks:last_wall` | yes | `actionPickers.ts`, `camera.ts`, `faithArt.ts`, `faithView.ts`, `fx/faith.ts`, `fx/follow.ts`, `fx/play.ts`, `fx/soul.ts`, `sandbox.tsx` |
-| `smite` |  | `classes:smite` | no | `fx/faith.ts` |
+| `smite` |  | `classes:smite`, `skills:faith` | no | `fx/faith.ts` |
 | `stance` | `what`, `word` | `items:open_hand`, `items:jab`, `items:palm`, `items:sweep` (+4) | yes | `camera.ts`, `fx/melee-techniques.ts`, `fx/openhand.ts`, `fx/ranged.ts`, `fx/shadow.ts` |
 | `ward_seal` |  | `classes:ward`, `perks:lore_ward` | no | `fx/faith.ts` |
 

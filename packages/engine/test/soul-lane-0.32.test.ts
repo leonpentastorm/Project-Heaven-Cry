@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { PERK, SKILL, applyCond, condOn, previewAttack, saveAgainst, resolveAttack, beginTurn, applyDamage, setDowned, migrateLoaded, strainLimit, swellFree, readyDesigns, pendingRepicks, stepsTaken, saveBonus, type Unit } from '../src';
+import { PERK, SKILL, setDevotionXp, devotionThreshold, hymnWait, applyCond, condOn, previewAttack, saveAgainst, resolveAttack, beginTurn, applyDamage, setDowned, migrateLoaded, strainLimit, swellFree, readyDesigns, pendingRepicks, stepsTaken, saveBonus, type Unit } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { tiesOf } from '../src/kit';
 import forksJ from '../../../data/forks.json';
@@ -271,5 +271,86 @@ describe('old saves (the Insight tables)', () => {
     expect(c.perks.filter((x: any) => PERK[x.id]?.skills.includes('camaraderie'))).toEqual([{ id: 'pull_together', tier: 'II' }]);
     expect(c.perks.filter((x: any) => PERK[x.id]?.skills.includes('implication'))).toEqual([{ id: 'veiled_insult', tier: 'I' }, { id: 'between_the_lines', tier: 'I' }]);
     expect(pendingRepicks(c).map((x: any) => x.skill).sort()).toEqual(['camaraderie', 'implication']);
+  });
+});
+
+// ================================================================================================ Virtue
+/** A Faithful priest of Old Overcast (Devotion 6) and a friend against one Soldier; its turn begun. */
+function priestFight(spec: any = {}, friend: any = {}) {
+  const f = fightWith([{ name: 'Faithful', level: 12, attrs: { virtue: 5 }, ...spec, skills: { faith: 5, ...(spec.skills || {}) } }, { name: 'Friend', level: 12, ...friend }], [{ at: 'F6' }], { level: 12 });
+  const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'old_overcast' } as any; c.patron = 'old_overcast' as any; setDevotionXp(c, devotionThreshold(6)); c.devotion = 6;
+  const me = f.pc, al = f.pcs[1], foe = f.foe; me.pos = '2,5'; al.pos = '2,6'; al.maxHp = 5000; foe.pos = '6,5'; foe.hp = foe.maxHp = 5000; foe.armour = 0; foe.def = -40; // the friend has room for any heal
+  f.turn(me); f.unit(me.id).ap = 12;
+  const pray = (kind: string, id: string, targetId?: string, tile?: string) => { f.g.rng.state = 4242; f.act({ type: 'faith/pray', unitId: me.id, kind, id, ...(targetId ? { targetId } : {}), ...(tile ? { tile } : {}) } as any, 'host'); };
+  return { f, c, me, al, foe, pray };
+}
+
+describe('Faith (items 6220 to 6222)', () => {
+  it('Name the Sinner at 2: a Whisper Judges a foe for its rounds; Answered Prayer is gone', () => {
+    const r = priestFight({ skills: { faith: 2 } });
+    const act = (SKILL as any).faith.unlocks['2'].effects[0];
+    let ok = false; for (let i = 0; i < 6 && !condOn(r.f.unit(r.foe.id), 'judged'); i++) { r.f.unit(r.me.id).ap = 12; r.f.cb.turn = r.f.cb.order.indexOf(r.me.id); try { r.f.act({ type: 'combat/perk', unitId: r.me.id, id: 'skill:faith.2', actionId: act.action, targetId: r.foe.id } as any); ok = true; } catch { r.f.turn(r.me); } }
+    expect(ok).toBe(true); expect(condOn(r.f.unit(r.foe.id), 'judged')).toBe(true);
+    expect(JSON.stringify((SKILL as any).faith.unlocks)).not.toMatch(/answered_prayer/);
+  });
+  it('Steadfast: a Whisper on an ally at half HP or less costs its cut; above half, full price', () => {
+    const cost = (pick: boolean, low: boolean) => { const r = priestFight({ skills: { faith: 4 }, ...(pick ? { picks: ['fork.prayer.steadfast'] } : {}) }); const al = r.f.unit(r.al.id); al.hp = low ? 1 : al.maxHp;
+      const ap = r.f.unit(r.me.id).ap; r.pray('whisper', 'health', al.id); return ap - r.f.unit(r.me.id).ap; };
+    expect(cost(true, true)).toBe(Math.max(0, cost(false, true) + FK['fork.prayer.steadfast'].effects[0].value)); expect(cost(true, false)).toBe(cost(false, false));
+  });
+  it('Round of Blessings: the first prayer heal each turn is its multiplier more', () => {
+    const heal = (pick: boolean) => { const r = priestFight({ skills: { faith: 4 }, ...(pick ? { picks: ['fork.prayer.round_of_blessings'] } : {}) }); const al = r.f.unit(r.al.id); al.hp = 1; r.pray('whisper', 'health', al.id); return r.f.unit(r.al.id).hp - 1; };
+    const a = heal(false), b = heal(true); expect(a).toBeGreaterThan(0); expect(Math.abs(b - Math.floor(a * FK['fork.prayer.round_of_blessings'].effects[0].value))).toBeLessThanOrEqual(1);
+  });
+  it('Swift Psalm: the Hymn wait one round shorter, picked through door/pick, with no perk or trait held', () => {
+    const r = priestFight({ skills: { faith: 8 } }), w = priestFight({ skills: { faith: 8 }, picks: ['fork.prayer.held_breath'] });
+    const a = withGame(r.f.g, () => hymnWait(r.c, r.f.unit(r.me.id))), b = withGame(w.f.g, () => hymnWait(w.c, w.f.unit(w.me.id)));
+    expect(b).toBe(Math.max(2, a + FK['fork.prayer.held_breath'].effects[0].value));
+  });
+  it('Benediction: an answered Hymn gives you and allies within 2 tiles Blessed Aim', () => {
+    const r = priestFight({ skills: { faith: 8 }, picks: ['fork.prayer.benediction'] }); r.pray('hymn', 'thunderclap', r.foe.id, r.f.unit(r.foe.id).pos);
+    expect(condOn(r.f.unit(r.al.id), 'blessed_aim')).toBe(true);
+  });
+  it('Litany II: the first two Hymns or Miracles each fight are cheaper', () => {
+    const e = (PERK as any).litany.tiers.II.effects[0]; expect(e.limit.n).toBe(2);
+  });
+});
+
+describe('Conscience (item 6223)', () => {
+  it('Righteous: a prayer heal on an ally at half HP or less is its tier\'s multiplier more (I and II)', () => {
+    const heal = (perks: any) => { const r = priestFight({ skills: { conscience: 5 }, perks }); const al = r.f.unit(r.al.id); al.hp = 1; r.pray('whisper', 'health', al.id); return r.f.unit(r.al.id).hp - 1; };
+    const a = heal({}), i = heal({ righteous: 'I' }), ii = heal({ righteous: 'II' });
+    expect(Math.abs(i - Math.floor(a * (PERK as any).righteous.tiers.I.effects[0].value))).toBeLessThanOrEqual(1);
+    expect(Math.abs(ii - Math.floor(a * (PERK as any).righteous.tiers.II.effects[0].value))).toBeLessThanOrEqual(1);
+  });
+  it('Foresight II: once a fight, a blow that would drop a friend within 4 tiles leaves it on 1 HP; I does nothing in a fight', () => {
+    const blowOn = (tier: string) => { const r = priestFight({ skills: { conscience: 5 }, perks: { foresight: tier } }); const al = r.f.unit(r.al.id); al.hp = 5;
+      withGame(r.f.g, () => applyDamage(r.f.cb, al, 500, { by: r.f.unit(r.foe.id), type: 'weapon', ranged: true } as any)); return r.f.unit(r.al.id); };
+    expect(blowOn('II').hp).toBe(1); expect(blowOn('I').hp).toBe(0);
+  });
+});
+
+describe('Authority (item 6224)', () => {
+  it('Five Stars: I every friend banks its AP at the fight\'s start; II foes are Shaken on a failed save', () => {
+    const f1 = fightWith([{ skills: { authority: 5 }, perks: { five_stars: 'I' } }, { name: 'Friend' }], [{ at: 'F6' }]);
+    const f0 = fightWith([{ skills: { authority: 5 } }, { name: 'Friend' }], [{ at: 'F6' }]);
+    const ap = (f: any) => f.turn(f.pcs[1]).ap;
+    expect(ap(f1)).toBe(ap(f0) + (PERK as any).five_stars.tiers.I.effects[0].value);
+    let shaken = false; for (let i = 0; i < 6 && !shaken; i++) { const f2 = fightWith([{ skills: { authority: 9 }, perks: { five_stars: 'II' } }], [{ at: 'F6' }], { seed: 'FS' + i }); shaken = condOn(f2.foe, 'shaken'); }
+    expect(shaken).toBe(true);
+  });
+  it('Commanding Voice: I a bonus on the save against Shaken; II immune to Silenced', () => {
+    const f = fightWith([{ skills: { authority: 5 }, perks: { commanding_voice: 'II' } }], [{ at: 'F6' }]);
+    withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.pc, 'silenced', 2, undefined, { skipSave: true }));
+    expect(condOn(f.pc, 'silenced')).toBe(false);
+    const f2 = fightWith([{ skills: { authority: 5 }, perks: { commanding_voice: 'I' } }], [{ at: 'F6' }]);
+    withGame(f2.g, () => applyCond(f2.cb, f2.g.rng, f2.foe, f2.pc, 'silenced', 2, undefined, { skipSave: true }));
+    expect(condOn(f2.pc, 'silenced')).toBe(true);
+  });
+  it('old saves: Real Power loads as Rank Has Privileges at its tier, Five Stars after it', () => {
+    const s = storyWith([{ skills: { authority: 5 } }]); const id = s.chars[0].id;
+    const old = JSON.parse(JSON.stringify(s.g)); const c0 = old.characters[id]; delete c0.perkRev; c0.perks = [{ id: 'real_power', tier: 'I' }];
+    const c = migrateLoaded(old).characters[id];
+    expect(c.perks.filter((x: any) => PERK[x.id]?.skills.includes('authority'))).toEqual([{ id: 'rank_has_privileges', tier: 'I' }, { id: 'five_stars', tier: 'I' }]);
   });
 });

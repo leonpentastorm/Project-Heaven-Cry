@@ -152,7 +152,7 @@ export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_
  * 'hymn_wait' stat) and less 1 when the vow was fulfilled for this Hymn (`cut`), never under HYMN_COOLDOWN.minWait (2):
  * nothing but an item takes it lower, and there are none yet (item 1282). */
 export function hymnWait(c: Character, u?: Unit | null): number {
-  const base = prayerCooldown(c), q = c.perks?.length || c.traits?.length ? statQuery({ c }, 'hymn_wait').add : 0;
+  const base = prayerCooldown(c), q = c.perks?.length || c.traits?.length || Object.keys(c.doorPicks || {}).length ? statQuery({ c }, 'hymn_wait').add : 0; // rules 1.75 item 6222: a fork (Swift Psalm) answers it too
   return Math.max(Math.min(base, HYMN_COOLDOWN.minWait), base + q - (u?.faith?.hymnCut || 0));
 }
 /** Rounds left before this fighter may pray a Hymn again (0: now). */
@@ -281,7 +281,7 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
   if (!c) return no('Only a character can pray.');
   const pe = prayerEntry(c, kind, id); if (!pe) return no(kind === 'miracle' ? (beliefOf(c).kind === 'atheist' ? 'An Atheist never gets a Miracle.' : 'Your patron has no Miracle.') : 'No such prayer.');
   const belief = beliefOf(c), faith = faithOf(c), own = patronOf(c);
-  const ap = u ? price({ cb, u, c }, kind === 'whisper' ? 'whisper' : 'pray', AP_COST[kind]).ap : AP_COST[kind];
+  const ap = u ? price({ cb, u, c }, kind === 'whisper' ? 'whisper' : 'pray', AP_COST[kind], args.targetId ? { targetId: args.targetId } : {}).ap : AP_COST[kind]; // rules 1.70 P3: priced with its target (Steadfast, rules 1.75 item 6222)
   const target = pe.entry.target || (kind === 'hymn' ? 'self_or_ally' : 'none'); // an old-shape Blessing goes at you or an ally
   const fig = prayerFigure(pe.entry, c, u);
   const info = { ...base, ap, effectText: pe.entry.text || '', name: pe.entry.name || id, patron: pe.patron?.id || null, target, targets: targetsOf(g, c, u, cb, target), ...(fig ? { amount: fig } : {}) };
