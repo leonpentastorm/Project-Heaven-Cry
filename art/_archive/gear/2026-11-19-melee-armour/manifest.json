@@ -1622,6 +1622,59 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-hood",
+      "path": "art/icons/gear/armour-hood.png",
+      "sha256": "8c4e276582b096d10b0338b3bead760bb450cdfbc1c04c54b777d1b9c46d532b",
+      "label": "Hood",
+      "family": "07-hood",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/armour-hood.png",
+        "sha256": "a8575b529a8b21e76513a6b5e6c631f6e0554cd2f66dfae6ec7ebb3a02e65c65"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/armour-hood.png",
+        "sha256": "8c4e276582b096d10b0338b3bead760bb450cdfbc1c04c54b777d1b9c46d532b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/armour-hood.txt",
+        "sha256": "cf455835a48966eba902f3d408175f1913beadc09e48be85087a1f89e26f30be"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/armour-torso_class1_light.png",
+          "sha256": "993f7915c6be69db181495b5a8f185813e0ffa40a3e5deb9f5ad1fbd4ef5207f"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood.png",
+        "128": "art/icons/gear/exports/128/armour-hood.png",
+        "64": "art/icons/gear/exports/64/armour-hood.png",
+        "32": "art/icons/gear/exports/32/armour-hood.png"
+      },
+      "export_hashes": {
+        "256": "e9159abb587e71c5483d9c59bd75688cc91e572ea0f009804fddf51f5996b65e",
+        "128": "857bbb07a468482951513d16ad444462db030faea12f6da0e5862b8382752b40",
+        "64": "4f900f39d950a9df8c8b5470870080adf3404c1918c73f3324ed16b5c547bbe9",
+        "32": "f1c7d774717ea6d9905ba7d04901ce1f44d4fabec70cb4059867fced8abe9c37"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
