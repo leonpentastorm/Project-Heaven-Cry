@@ -3189,6 +3189,7 @@ fa21dfa23d65038a70f77e9accd51633a75759887de55c2c09f7a19e6525b622  art/_archive/p
 6dd722cf2136692fb97e5891087d825c71fc556ba18593f67c9a684cbc2d0bb6  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-legion_gladius--fine.json
 e13bc77884d1cf75190731a3738aeea45498c09e9a98c07040201ebf42951c21  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-legion_gladius--masterwork.json
 5806733044abfc56f6edc32fb5bb6a33f834359301eaff539a7ef10966158b39  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-legion_gladius--relic.json
+8b45e1726daad0bf116a133fd97e47abb2eba938cf1ec5cfb609fa3a63c284b0  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-longbow--celestial.json
 9331071ea6bf072e521d8534aa754bd91c58c4fd12e90d906324a7bc176a0bc7  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-longbow--fine.json
 d97003212e4a45bbf339ee4034ab5c1415eb4cc747b16db5e135bb1ffb305ad6  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-longbow--masterwork.json
 7f3d612d4fe4c7aca69057ab19f3140643f0114449250dbb8712f0c59854778d  art/_archive/prompt-pack/2026-11-19-file-08/delivered/weapon-longbow--relic.json
@@ -4592,7 +4593,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-f12509d14bc23d17eb8db32c6b62b2202b24b9a417c35005bc979ab678604ca9  art/catalog.json
+ac2516a18b2d8db0791721d10d52bdf4559fb6a9c758241aea403195ab5fb1e7  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6341,6 +6342,7 @@ f0d5518451c168c1256c38bf93dfeb4ac61451e77b1ae4eb6b18358251979bb8  art/icons/gear
 68af83b2bed0980c05032f0a93c4bc148a7db55edc396d0549ad62414ac235a5  art/icons/gear/exports/128/weapon-legion_pdw.png
 6bd7aa073b95d9b3750c5bf825e3ff305e767b86550e03f26d1c11cdd3534431  art/icons/gear/exports/128/weapon-lever_carbine.png
 6c2150ff83ef65d8d6a5b42207d007c5b01996117048011a4434dbacdd72d9e2  art/icons/gear/exports/128/weapon-long_rifle.png
+3ec63185a9a01aa15040b8b244ae8c2004a11f502b7fc0273a7749433b549cd5  art/icons/gear/exports/128/weapon-longbow--celestial.png
 34a8c5e75fb94f7ce710a62cdfeceba95f459514be023eee666590366d81e386  art/icons/gear/exports/128/weapon-longbow--fine.png
 12b99103db4cb2ace1ac82a4fe37a91822839cfc77838f4f82b83b9e7120c713  art/icons/gear/exports/128/weapon-longbow--masterwork.png
 81082666eefd73b79bb8f73278c7d4d3a4f6798bb6e19edeccb27c31a61ce308  art/icons/gear/exports/128/weapon-longbow--relic.png
@@ -6537,6 +6539,7 @@ b8d48e40b38b9b547bb51c62875d2762ac02109142e69ab45341a9a012d4368f  art/icons/gear
 3f0f8f175ead077af3c123c88e76aedb7534349ad0e883baa2143adc8bbd963e  art/icons/gear/exports/256/weapon-legion_pdw.png
 1ac210a16fd112bc05524ce789743e378c327528370fd769a33bf90bd84b5732  art/icons/gear/exports/256/weapon-lever_carbine.png
 e4ebd727b35523073d4bdbcb0e002c009c45ede48c6dd98d954517f2a461bba4  art/icons/gear/exports/256/weapon-long_rifle.png
+67ed16cc4d806aea5986b596d8ac6c95070db9bfcba86f8502db6203b32a0b31  art/icons/gear/exports/256/weapon-longbow--celestial.png
 1e4fc1b665c99bae42b1a2288778ce343f7e1b05a749e72e4a9abddac174900c  art/icons/gear/exports/256/weapon-longbow--fine.png
 18f35686999d4030bbf73a2b3590582cdb38df7842f0c0e5aeb736716114652b  art/icons/gear/exports/256/weapon-longbow--masterwork.png
 93cc86a42c80f640c629cb03fd48f74715c7f00047ce0d7ec1ea698dba4c5037  art/icons/gear/exports/256/weapon-longbow--relic.png
@@ -6733,6 +6736,7 @@ a36f5cf75f381e5e75459e4d2b2bba2c6d39d5821febf0db99ef66ffd5bd6145  art/icons/gear
 ba55647e761f2b7bee6a69a6d22ae40157e67f163d74825f8561a9d8e6d88a50  art/icons/gear/exports/32/weapon-legion_pdw.png
 7a55fa124c9ff5ddf788566d7e6b65b0b56a0556505f461f0a9809cb53a38ba7  art/icons/gear/exports/32/weapon-lever_carbine.png
 5a9ad4136252e8bc0cf13d61a8ea2c2ed8a145187894cba946ba4f6b68b07ac0  art/icons/gear/exports/32/weapon-long_rifle.png
+1b7e4556c6b96a5f7845c355450d3b10bebda23c31c62767b1517c6d24ebf897  art/icons/gear/exports/32/weapon-longbow--celestial.png
 9ced8fcad24e9d62aaf5deb6660fbebf605f00e04773ed9acc48f3923d657ae5  art/icons/gear/exports/32/weapon-longbow--fine.png
 02c8de6dd2eb50c190bbf5b1734ff69b23937d95d048c9e914f8dad7b8b709d3  art/icons/gear/exports/32/weapon-longbow--masterwork.png
 2566476e0bad72f26817db6207e1e6a8db19ebcd01d237819de0b2339d3acb80  art/icons/gear/exports/32/weapon-longbow--relic.png
@@ -6929,6 +6933,7 @@ e379740983ebbe09b75452dbde5dce631b533a76a39937f173cb25324b1b4432  art/icons/gear
 5d7c0eb43a8000de7de8d0ca7a3248cd6c292c99a77d570232c0cf14ccff1521  art/icons/gear/exports/64/weapon-legion_pdw.png
 b8a1a038f258ebb4171cd236992562d2d3111fd3f735e5b16c227c47862c9e5d  art/icons/gear/exports/64/weapon-lever_carbine.png
 778d15b88283e8d4bdb214e53dcce441d69547d130cfb02c3876e7872312d6e2  art/icons/gear/exports/64/weapon-long_rifle.png
+635b2939175cf51c625e4ead66ec951fcf37c7dffd7932564879806bcc598212  art/icons/gear/exports/64/weapon-longbow--celestial.png
 cf230d4b5418b80c55eb3fe9ddb0d70dba2f06d71615ea7fa3fa388cca55ef01  art/icons/gear/exports/64/weapon-longbow--fine.png
 426538a9a7517895ab29b2da34adcbf40e66ed332e56dc3b4ae833b23b939838  art/icons/gear/exports/64/weapon-longbow--masterwork.png
 66783c977233f05180fd357daabf31490d00d58008da230f8cd0e273f32510b4  art/icons/gear/exports/64/weapon-longbow--relic.png
@@ -7089,6 +7094,7 @@ f081c3096183aa5b8a818097aba307d421c6a00b474f65742f0af1a13b4194ff  art/icons/gear
 6d69f356c1f392d54de6a83bec57c2c388925b5f16b2ead6898b3a27e95e864c  art/icons/gear/weapon-legion_pdw.png
 240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07  art/icons/gear/weapon-lever_carbine.png
 ad7f4f3bf6366701a7b0886a3400574c0a9834e23c803cb47e66d0c470337831  art/icons/gear/weapon-long_rifle.png
+e9ed6bcb93b7cfee61b13d5ae5fb591443798fd0927c494a710095ab9b6a3424  art/icons/gear/weapon-longbow--celestial.png
 5b427ba226389bb9ef9ec78f9f370204fdd9bf99155f870ce4361e72c66da373  art/icons/gear/weapon-longbow--fine.png
 1fc682469a6064d6176e5420a52b5139881694615e52f81acb761f21593b2d9c  art/icons/gear/weapon-longbow--masterwork.png
 c3c085cf310247d0658e4cc1ef449fb21f7941219ebe62868fd542cb627b20a2  art/icons/gear/weapon-longbow--relic.png
