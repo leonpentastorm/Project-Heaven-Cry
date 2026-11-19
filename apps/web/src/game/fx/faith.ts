@@ -186,10 +186,12 @@ export function faithBatch(evs: any[]): void {
 }
 /** A prayer's entry in data (patrons.json): a Whisper by its id, a Hymn or the Miracle by the patron's own rows. */
 export function prayerData(e: { kind?: string; id?: string; patron?: string | null }): any {
-  if (e.kind === 'whisper') return (WHISPER as any)[String(e.id || '')] || null;
-  const p: any = (FAITH_PATRON as any)[String(e.patron || '')]; if (!p) return null;
-  if (e.kind === 'miracle') return p.miracle && (!e.id || p.miracle.id === e.id) ? p.miracle : null;
-  return (p.hymns || []).find((h: any) => h.id === e.id) || null;
+  // an id may come as the patron's key ("old_overcast.thunderclap", the action's own) or bare
+  const raw = String(e.id || ''), dot = raw.indexOf('.'), id = dot >= 0 ? raw.slice(dot + 1) : raw, pat = String(e.patron || (dot >= 0 ? raw.slice(0, dot) : ''));
+  if (e.kind === 'whisper') return (WHISPER as any)[id] || null;
+  const p: any = (FAITH_PATRON as any)[pat]; if (!p) return null;
+  if (e.kind === 'miracle') return p.miracle && (!id || p.miracle.id === id) ? p.miracle : null;
+  return (p.hymns || []).find((h: any) => h.id === id) || null;
 }
 /** The element of a prayer's damage (its data's damage_type, as the elements read it), or null for plain light. */
 export function prayerElement(entry: any): string | null {
@@ -198,13 +200,14 @@ export function prayerElement(entry: any): string | null {
 }
 /** Does the prayer's data wound (an HP change below zero, or a damage op)? Its light is the patron's then, cracked. */
 export const prayerWounds = (entry: any): boolean => (entry?.effects || []).some((x: any) => (x?.stat === 'hp' && Number(x.value) < 0) || /damage|execute/.test(String(x?.op || '')));
+const TILE = /^\d+,\d+$/;
 /** Ties a prayer to what it did (pure; faithBatch): every unit the batch's effects land on until the next action (its
  *  targets: _hits, the units its light goes to), and the prayer's element (its data's damage_type) onto its wounds, so
  *  they look and sound like it (a hurt's own element wins). */
 function prayerTies(evs: any[], i: number) {
   const e = evs[i], entry = prayerData(e), el = prayerElement(entry), hits: string[] = [];
   const add = (id: unknown) => { const s = id == null ? '' : String(id); if (s && s !== e.unit && !hits.includes(s)) hits.push(s); };
-  if (e.target) add(e.target);
+  if (e.target && !TILE.test(String(e.target))) add(e.target); // a tile prayer's target is its tile
   for (let j = i + 1; j < evs.length; j++) {
     const x = evs[j]; if (!x) continue;
     if (x.k === 'prayer' || x.k === 'turn' || x.k === 'shot' || x.k === 'melee' || x.k === 'move') break;
@@ -303,7 +306,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
   // In the story the events name characters (the area map's tokens are theirs): a unit's tile, else the character's.
   const posAny = (id: string | null | undefined) => posOf(id) || (K.posOfChar ? K.posOfChar(id) : undefined);
   const where = (e: any) => at(e.at || posAny(e.unit) || posAny(e.target));
-  const targetAt = (e: any) => at(e.targetAt || posAny(e.target) || e.at);
+  const targetAt = (e: any) => at(e.targetAt || (TILE.test(String(e.target || '')) ? e.target : posAny(e.target)) || e.at); // a tile prayer's target is its tile (the engine sends it as target)
   /** The one who prays: their own tile (where the icon or the face goes over the head). */
   const prayerAt = (e: any) => at(e.at || posAny(e.unit));
   const charAt = (e: any) => at(e.at || (K.posOfChar ? K.posOfChar(e.char) : null));
@@ -332,7 +335,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
     });
     // a state only (Resupply, Dig In, Hearthlight, Foreknowing...): its name over the unit it is on, or over the one who prays
     if (!e._effect && entry?.name) {
-      const q = at(posAny(e.target) || e.targetAt || e.at || posAny(e.unit)); if (q) fxMarker(q, 'data-phc-prayer-name', String(entry.name)); if (q) floatText(String(entry.name).toUpperCase(), { ...q, y: q.y + q.s * 0.55 }, FAITH_INK, { small: true, delay: delay + 80 });
+      const q = at((TILE.test(String(e.target || '')) ? e.target : posAny(e.target)) || e.targetAt || e.at || posAny(e.unit)); if (q) fxMarker(q, 'data-phc-prayer-name', String(entry.name)); if (q) floatText(String(entry.name).toUpperCase(), { ...q, y: q.y + q.s * 0.55 }, FAITH_INK, { small: true, delay: delay + 80 });
     }
   };
   return {

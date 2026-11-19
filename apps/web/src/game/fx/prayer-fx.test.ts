@@ -11,6 +11,7 @@ const storm: any = overcast.hymns.find((h: any) => (h.effects || []).some((x: an
 describe('a prayer read from data', () => {
   it('the entry by kind, id and patron; its element from damage_type (lightning is shock); plain light has none', () => {
     expect(prayerData({ kind: 'hymn', id: storm.id, patron: overcast.id })).toBe(storm);
+    expect(prayerData({ kind: 'hymn', id: overcast.id + '.' + storm.id, patron: overcast.id })).toBe(storm); // the action's own key
     expect(prayerElement(storm)).toBe('shock');
     const heal = (PJ as any).whispers.find((w: any) => (w.effects || []).every((x: any) => !x.damage_type));
     expect(prayerElement(heal)).toBeNull();
