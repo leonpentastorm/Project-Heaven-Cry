@@ -1,7 +1,7 @@
 # File 08 unique inventory paintings
 
-Updated 19 November 2026 at 14:10 UTC+7. Branch `art/2026-11-19-unique-gear`.
-**0 of 23 uniques delivered. 138 of 215 base pictures and uniques. 138 of 871 across the pack.**
+Updated 19 November 2026 at 14:15 UTC+7. Branch `art/2026-11-19-unique-gear`.
+**1 of 23 uniques delivered. 139 of 215 base pictures and uniques. 139 of 871 across the pack.**
 The baseline was 138 delivered candidates across the live branches. The count is per requested master.
 These independent unique paintings have been brought forward while the grade proof is open.
 The six uniques with missing or unapproved references still depend on those references.
@@ -27,7 +27,7 @@ The six uniques with missing or unapproved references still depend on those refe
 | 17 · Outpost Wall (Guard shield) | `art/icons/gear/shield-outpost_wall.png` | claimed, awaiting render or review |
 | 18 · Grudge Plate (Strike shield) | `art/icons/gear/shield-grudge_plate.png` | awaiting reference approval or a missing reference |
 | 19 · Red Thread (worn gloves) | `art/icons/gear/armour-red_thread_gloves.png` | claimed, awaiting render or review |
-| 20 · Hearth Coat (vest, outer torso) | `art/icons/gear/armour-hearth_coat.png` | claimed, awaiting render or review |
+| 20 · Hearth Coat (vest, outer torso) | `art/icons/gear/armour-hearth_coat.png` | delivered for review |
 | 21 · Lucky Dent (helmet) | `art/icons/gear/armour-lucky_dent.png` | claimed, awaiting render or review |
 | 22 · Spring Air (respirator) | `art/icons/gear/armour-spring_air.png` | claimed, awaiting render or review |
 | 23 · The Long Road (boots) | `art/icons/gear/armour-long_road.png` | claimed, awaiting render or review |

@@ -1,1 +1,42 @@
-[]
+[
+  {
+    "n": 20,
+    "id": "hearth_coat",
+    "title": "Hearth Coat (vest, outer torso)",
+    "path": "art/icons/gear/armour-hearth_coat.png",
+    "refs": [
+      "art/icons/gear/armour-torso_class1_light.png"
+    ],
+    "paint": "A unique padded coat, front view, laid out as for sale, no wearer: a long quilted coat with a high collar, front toggles and one reinforced shoulder, in dark waxed cloth with brown leather patches, an apron panel tied over the front with a deep pocket. The impossible material: the quilted lining, seen at the open collar and at the turned-back cuffs, is banked embers, glowing a low hearth orange #ED8A3C and never burning the cloth beside it, the glow contained inside the lining. The story detail: flour dusted on both cuffs and a wooden spoon standing in the apron pocket. Homely, warm, worn soft.\nAvoid: flames or smoke, a heart, a cross or medical mark, a wearer, a glow past the coat's outline.",
+    "span": 0.85,
+    "dependency": null,
+    "label": "Hearth Coat (vest, outer torso)",
+    "sha256": "6e8bc9b75109fd6ea7a652e28044e2960ac38f575390b530a71561f1302302c1",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/armour-hearth_coat.png",
+      "128": "art/icons/gear/exports/128/armour-hearth_coat.png",
+      "64": "art/icons/gear/exports/64/armour-hearth_coat.png",
+      "32": "art/icons/gear/exports/32/armour-hearth_coat.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-08-uniques",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/20-armour-hearth_coat.png",
+    "source_sha256": "564e67e453f84338116444b832332a5258ff6394f86da5675071ea6370a38136",
+    "export_sha256": {
+      "256": "e44f8f7b0887961b9b81124aa61bc56218e45cc77513e084d070accdbe53ae0f",
+      "128": "8e97caf5dada3f1063aa6445b8f679212e2446b85ac844998f754571a6cf3fd1",
+      "64": "ead01bfc770862c5aa5dc1942976842a5b5df75423672ab2233a490da4077eb3",
+      "32": "27abaee3b340b6e7f50ce1f0480f1431918b2ceb9e1be3a22986d9cda25d5cef"
+    },
+    "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The object is a fictional nonfunctional prop from Project Heaven Cry, shown only from one exterior view. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique padded coat, front view, laid out as for sale, no wearer: a long quilted coat with a high collar, front toggles and one reinforced shoulder, in dark waxed cloth with brown leather patches, an apron panel tied over the front with a deep pocket. The impossible material: the quilted lining, seen at the open collar and at the turned-back cuffs, is banked embers, glowing a low hearth orange #ED8A3C and never burning the cloth beside it, the glow contained inside the lining. The story detail: flour dusted on both cuffs and a wooden spoon standing in the apron pocket. Homely, warm, worn soft.\nAvoid: flames or smoke, a heart, a cross or medical mark, a wearer, a glow past the coat's outline.\n\nEmpty quilted padded coat, front on symmetrical and unobscured, open dark neck hole. Collar and turned cuff interior hold visible deep hearth orange fabric surfaces, keep the orange only within the cloth lining, no plasma or flame. Wooden spoon partly visible in apron pocket."
+  }
+]
