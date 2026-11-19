@@ -16,6 +16,7 @@ import { pressureOf, pressureCap } from '../src/physical/pressure';
 import forksJ from '../../../data/forks.json';
 import tendingJ from '../../../data/tending.json';
 import techniquesJ from '../../../data/techniques.json';
+import RULESJ from '../../../data/rules.json';
 
 const FK: Record<string, any> = Object.fromEntries((forksJ as any).items.map((x: any) => [x.id, x]));
 const T: any = tendingJ;
@@ -396,12 +397,12 @@ describe('Bonds, the first fork: Keep the Thread and Short Thread', () => {
     expect(Math.abs(sNear - kNear * near / through)).toBeLessThanOrEqual(1); // within 2: x near in place of x through (whole HP)
     expect(sNear).toBeGreaterThan(kNear);
   });
-  it('no fork makes a Mend free: with Short Thread the second Mend on one ally in a round costs its MP again', () => {
+  it('no fork makes a Mend free: with Short Thread the second Mend on one ally in a round costs its MP again, braked', () => {
     const r = bondRig(['fork.tend.short_thread']); r.bond(r.al); r.U(r.al.id).hp = 1;
     const mp0 = r.U(r.me.id).mg.mp; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull();
     const first = mp0 - r.U(r.me.id).mg.mp; r.U(r.me.id).ap = 12; r.U(r.al.id).hp = 1;
     const mp1 = r.U(r.me.id).mg.mp; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull();
-    expect(first).toBeGreaterThan(0); expect(mp1 - r.U(r.me.id).mg.mp).toBe(first); // (the healing brake, item 4640, is not built: it waits on a primitive)
+    expect(first).toBeGreaterThan(0); expect(mp1 - r.U(r.me.id).mg.mp).toBe(Math.round(first * (RULESJ as any).mending.brake.mult)); // the healing brake (item 4640, spec 5610: built in the 0.32 merge): the second give x mult
   });
 });
 

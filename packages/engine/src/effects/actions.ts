@@ -25,7 +25,7 @@ import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
 import { overworld } from '../kit';
-import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, type Priced } from './cost';
+import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, brakeGiven, type Priced } from './cost';
 import { isNumberBlock, numberOf } from './amounts';
 import { doorFeed } from './feed';
 import { pickedFork } from '../doorpicks';
@@ -229,7 +229,7 @@ export function dataAp(info: ItemInfo, actionId: string): number | string {
 function costOf(h: Holder, d: ActionDef, args: ActionArgs): Priced {
   const ap = typeof d.ap === 'function' ? d.ap(h, args) : d.ap === 'data' ? apFromData(dataAp(h.info, d.id), h.u) : d.ap, res = typeof d.res === 'function' ? d.res(h, args) : d.res;
   const site = d.site ?? h.key + '#' + d.id; // rules 1.33: a data action may name its cost site (Triage's 'triage': what items answer as ap_cost:triage)
-  return price({ cb: h.cb, u: h.u, c: h.c }, site, { ap, res: res || undefined }, { item: h.key, ...(args.targetId ? { targetId: args.targetId } : {}) }); // rules 1.70 P3: the id it is priced with (Long Thread's once a Bonded friend, rules 1.75 item 6212)
+  return price({ cb: h.cb, u: h.u, c: h.c }, site, { ap, res: res || undefined }, { item: h.key, actionId: d.id, ...(args.targetId ? { targetId: args.targetId } : {}) }); // rules 1.70 P3: the id it is priced with (Long Thread's once a Bonded friend, rules 1.75 item 6212; the healing brake, spec 5610)
 }
 /** The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`:
  * Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. */
@@ -431,6 +431,7 @@ export function runPerkAction(x: Who, id: string, args: ActionArgs & { actionId?
   const g = h.g ?? boundGame(), had = g?.story?.rulings?.length || 0;
   const wasActing = actingAs(d.label); let err: string | null | void;
   try { err = d.run(h, args, rng); } finally { actingAs(wasActing); }
+  if (!err && h.u && sc !== 'story') brakeGiven({ cb: h.cb, u: h.u, c: h.c }, { item: h.key, actionId: d.id, ...(args.targetId ? { targetId: args.targetId } : {}) }); // the healing brake counts the give (spec 5610)
   // Rulings this use opened carry it, so a refusal gives it back.
   for (const r of (g?.story?.rulings || []).slice(had)) if (!r.use && r.charId === (h.c?.id || h.u?.charId)) r.use = { per, key: h.key + '#' + d.id };
   return err || null;

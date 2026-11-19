@@ -44,6 +44,7 @@ import { emit, emitOwn, hookUsed, charOfUnit } from './hooks';
 import { actionAp } from './core';
 import { COST_SITES, type CostSite } from './stats';
 import { briefCredit, AP_MAX } from './ap';
+import { uses } from './uses';
 
 // ---------------------------------------------------------------------------------------------- the data
 /** What an action costs before anyone changes it. */
@@ -159,7 +160,7 @@ type Who = { cb?: Combat | null; u?: Unit | null; c?: Character | null; /** Clas
  * to. `action` is the cost site (actionName), `row` the name that was asked. Pass the fight (x.cb) whenever there is
  * one: without it only the unit's own items hear the hook (see the top of this file). */
 export function price(x: Who, action: string, base?: number | Cost | null, ctx: Record<string, unknown> = {}): Priced {
-  const b: Cost = base == null ? { ap: costOf(action) } : typeof base === 'number' ? { ap: base } : base;
+  const b: Cost = braked(x, ctx, base == null ? { ap: costOf(action) } : typeof base === 'number' ? { ap: base } : base);
   // one name, one floor, whichever of its two names the verb was asked by (the row's id or the site)
   let ap = b.ap ?? 0; const labels: string[] = [], site = actionName(action), min = verbOf(action)?.min ?? 0;
   // rules 1.64 item 5008: before contact (Combat.approach) the approach's actions (rules.json combat.approach.free) cost no AP
@@ -171,6 +172,22 @@ export function price(x: Who, action: string, base?: number | Cost | null, ctx: 
   if (!hookUsed('cost')) { /* nobody listens: nothing to ask */ } else if (x.cb) emit(x.cb, 'cost', c); else if (x.u) emitOwn(x.u, 'cost', c); // with no fight in reach, the unit's own items only
   return { action: site, ap: c.free ? 0 : r10(Math.max(c.min, c.ap)), res: c.res, labels, free: !!c.free };
 }
+// ---------- the healing brake per giver (rules 1.60 item 4640, Leon's ruling ii; spec 5610; rules.json mending.brake) ----------
+/** The brake's data: the actions it brakes (`<item key>#<action id>`), the multiplier, the window its gives are counted in. */
+const BRAKE: { built?: boolean; mult: number; per: any; actions: string[] } = (rulesJ as any).mending.brake;
+/** The gives a giver made to one target in the brake's window: one counter cell for every braked action (a Mend and a
+ * Shield on the same friend count together). */
+const brakeCell = (x: Who, target: string) => uses({ key: 'mending.brake', u: x.u!, c: x.c ?? null, cb: x.cb ?? null } as any).on(target);
+const brakeKey = (ctx: Record<string, unknown>): string | null => (ctx.item && ctx.actionId && ctx.targetId && BRAKE?.built && BRAKE.actions.includes(String(ctx.item) + '#' + String(ctx.actionId)) ? String(ctx.targetId) : null);
+/** THE brake, read at the one cost site with the price's target (rules 1.70 P3): a braked action's MP x `mult` for every
+ * give this giver already made to this target in the window (the second x1.5, the third x2.25). */
+function braked(x: Who, ctx: Record<string, unknown>, b: Cost): Cost {
+  const t = x.u && x.cb ? brakeKey(ctx) : null; if (!t || !b.res?.mp) return b;
+  const n = brakeCell(x, t).used(BRAKE.per); if (!n) return b;
+  return { ...b, res: { ...b.res, mp: Math.round(b.res.mp * Math.pow(BRAKE.mult, n)) } };
+}
+/** A braked action was given (effects/actions.ts runPerkAction, after it ran): counted for its giver on its target. */
+export function brakeGiven(x: Who, ctx: Record<string, unknown>): void { const t = x.u && x.cb ? brakeKey(ctx) : null; if (t) brakeCell(x, t).take(BRAKE.per, Infinity); }
 /** An action whose AP its own pipeline has already worked out (an attack's preview, a glyph's, an Outburst's): the
  * number as a Priced, through the `cost` hook like every other. */
 export const priced = (x: Who, action: string, ap: number, res?: Record<string, number>, ctx?: Record<string, unknown>): Priced => price(x, action, { ap, res }, ctx);

@@ -54,3 +54,33 @@ describe("m1: each Call once a turn for every Call paid in AP, an ally's windows
     expect(() => f.act({ type: 'combat/call', unitId: sp.id, id: 'call.rally', targetId: off.id } as any)).toThrow(/once a turn/);
   });
 });
+
+// Step 3a: the healing brake per giver (rules 1.60 item 4640; spec 5610; rules.json mending.brake), at the one cost site
+import { storyWith } from './helpers/perkfight';
+import { resLeft } from '../src/effects/cost';
+import RULESJ from '../../../data/rules.json';
+describe('the healing brake per giver (spec 5610): a give to the same target in the same round costs its MP x mult for each one before', () => {
+  const B: any = (RULESJ as any).mending.brake;
+  function mender() {
+    const s = storyWith([{ name: 'Mender', skills: { empathy: 5 }, attrs: { insight: 5, determination: 7 }, level: 5, weapon: 'service_pistol' } as any, { name: 'Ally', level: 5, weapon: 'service_pistol' } as any, { name: 'Other', level: 5, weapon: 'service_pistol' } as any]);
+    s.g.characters[s.chars[0].id].offHand = { id: 'attuner' } as any;
+    s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Brake', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol', at: '12,9', no_surrender: true }] } } } as any);
+    const cb = () => s.g.combat!, pcs = () => cb().units.filter((u) => u.side === 'pc');
+    pcs()[0].pos = '3,3'; pcs()[1].pos = '4,3'; pcs()[2].pos = '3,4';
+    const turn = () => { const c = cb(), u = pcs()[0]; c.turn = c.order.indexOf(u.id); delete c.window; };
+    turn();
+    const mp = () => resLeft(pcs()[0], 'mp', s.g.characters[s.chars[0].id]);
+    const mend = (t: any) => { const u = pcs()[0]; u.ap = 9; for (const p of pcs()) p.hp = Math.max(1, p.maxHp - 60); const was = mp(); s.act({ type: 'combat/perk', unitId: u.id, id: 'verb:tend.mend', actionId: 'tend_mend', targetId: t.id } as any); return was - mp(); };
+    return { s, cb, pcs, mend };
+  }
+  it('the data says it is built, and Touch (cut) is not in its list', () => { expect(B.built).toBe(true); expect(B.actions.some((a: string) => /touch/.test(a))).toBe(false); });
+  it('Mend twice on one ally in a round: the second costs x mult; another ally is not braked; a new round starts over', () => {
+    const m = mender(), [, ally, other] = m.pcs();
+    const first = m.mend(ally); expect(first).toBeGreaterThan(0);
+    expect(m.mend(ally)).toBe(Math.round(first * B.mult));
+    expect(m.mend(ally)).toBe(Math.round(first * B.mult * B.mult));
+    expect(m.mend(other)).toBe(first);
+    m.cb().round++;
+    expect(m.mend(ally)).toBe(first);
+  });
+});
