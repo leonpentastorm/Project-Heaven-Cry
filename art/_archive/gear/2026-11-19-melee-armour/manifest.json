@@ -1438,6 +1438,84 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-barrier_wall",
+      "path": "art/icons/gear/shield-barrier_wall.png",
+      "sha256": "2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803",
+      "label": "Barrier wall",
+      "family": "07-shields",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png",
+        "sha256": "b6f6fc809ac3f26cf41cc41a480a0cd3d1c156c543b1fd4d8a16e2804935c990"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-barrier_wall.png",
+        "sha256": "2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/shield-barrier_wall.txt",
+        "sha256": "e20f039435d06b519ddfb28c20f4d46bf5f0d9a802b7b62194ce32a910aea4f2"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/attempts/shield-barrier_wall/v1/source.png",
+          "sha256": "8fc43c0fc75be061ae6839d91964f1e7d7b3b9abdd4355fef50764b1fc422345"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/shield-pavise.png",
+          "sha256": "5d4a3d9d3befae48f6fa549b634ad79ef864406fd5186a9e75ea6fd19aac4d52"
+        },
+        {
+          "path": "art/icons/gear/shield-riot_shield.png",
+          "sha256": "be50f5e0eae8c794f4ba47ebc2e9d8d19f7a8a8cde211262e39c655d9195e8f0"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/icons/gear/shield-pavise.png",
+          "sha256": "5d4a3d9d3befae48f6fa549b634ad79ef864406fd5186a9e75ea6fd19aac4d52"
+        },
+        {
+          "path": "art/icons/gear/shield-riot_shield.png",
+          "sha256": "be50f5e0eae8c794f4ba47ebc2e9d8d19f7a8a8cde211262e39c655d9195e8f0"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-barrier_wall.png",
+        "128": "art/icons/gear/exports/128/shield-barrier_wall.png",
+        "64": "art/icons/gear/exports/64/shield-barrier_wall.png",
+        "32": "art/icons/gear/exports/32/shield-barrier_wall.png"
+      },
+      "export_hashes": {
+        "256": "80bf819245564beb274150ae4df5243b1eda019aa33d21e2f256494417383ed8",
+        "128": "17b6b12cc0b6793781b5dbd913a92108f6a3b3c630ffe798cee80e09a5f7c470",
+        "64": "13e3f736929db44d1e77542974c272da3344b7b1fb3403f03ead945673ae6544",
+        "32": "3eb65c787a4d88081ef03666237ae48424a7af756ff10373bc62bc54af29ec50"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

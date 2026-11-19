@@ -1218,12 +1218,15 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-60667af53d027238d4a2794bb30f1e8d62464e76ba6d5a3756b9d84c371624c6  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
+4c9a08201d8d4fcd88b4957b7be0cb5f85118a70bfeaaea5fa9971b11a65dea9  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
+07471adad875c9c2111822059651471b6f98fbc2b2d5a7e00b9e729c8378f340  art/_archive/gear/2026-11-19-melee-armour/attempts/shield-barrier_wall/v1/prompt.txt
+8fc43c0fc75be061ae6839d91964f1e7d7b3b9abdd4355fef50764b1fc422345  art/_archive/gear/2026-11-19-melee-armour/attempts/shield-barrier_wall/v1/source.png
 9baea3255504f9e53d711446792e72b5372fbd74335ca4608add0486cf02e915  art/_archive/gear/2026-11-19-melee-armour/briefs/05-melee-forms.md
 c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/_archive/gear/2026-11-19-melee-armour/briefs/07-shields-armour.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/_archive/gear/2026-11-19-melee-armour/briefs/README.md
 95edab6065fdcc674b0bd1d662a6f49278080bd7ee0f31cfda198d5aeb9fd0c8  art/_archive/gear/2026-11-19-melee-armour/lowland-chopper-generation-error.json
-5012f4f37616ae3833b51e015f19b14614d0e7894cc8b3b038fbf74d9c7f78b3  art/_archive/gear/2026-11-19-melee-armour/manifest.json
+abc27f0dc2064e9e171b5cbc863f2ff62bd64a32a284ed5a58374878349864fe  art/_archive/gear/2026-11-19-melee-armour/manifest.json
+2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803  art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-barrier_wall.png
 3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8  art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-boss_shield.png
 56e0aec15b0b546122ee1565b8b1dc246e7a0ef0df4fcba68bab9bdeb4966dc0  art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-bulwark_screen.png
 435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4  art/_archive/gear/2026-11-19-melee-armour/masters/v1/shield-deflector.png
@@ -1248,7 +1251,7 @@ fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4  art/_archive/g
 c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_hammer.png
 bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_pick.png
 a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a  art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-weighted_gloves.png
-d02b603cf9ccd84943f1371b3ff15aac0f7e5176674290061eddc43ceb2ca65c  art/_archive/gear/2026-11-19-melee-armour/progress.json
+3b96346ebba5844e2cd9b66b1dc0eb1ef0f52e2ba6dc69987578eeb03b5206f6  art/_archive/gear/2026-11-19-melee-armour/progress.json
 54760a740ba4b1ecec9bbe8ea567331a0e05792c98655e6927219559fb9c7162  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-assault_helm.txt
 84c98f75ca902406ed731b932a357031c90a45a13860786d04019ed78d13cd88  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-blackout_hood.txt
 7932a392b9ee47b9cb01a32677283c6c34a97179dc14ab802af6bc6e17902feb  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-breacher_plate.txt
@@ -1263,7 +1266,7 @@ a01b492cab880bef8b0c00eb839d1455dc7f3445a588335ef092ab146f0a4729  art/_archive/g
 c05766c233a1b96ee1ace0f047d29da59d63a9fbdd3bd584bf3dfc61f2b00a19  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-sight_visor.txt
 e6efb2213a2ea9e6ea0e6e5e0a9ae5e3bde572832de8cb4e7fdb4545208dc5c4  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-spotters_monocle.txt
 ae45631caca92edfa24e281ed068ccc6cfa50a2212227ef623c950a394079fae  art/_archive/gear/2026-11-19-melee-armour/prompts/armour-tactical_gloves.txt
-07471adad875c9c2111822059651471b6f98fbc2b2d5a7e00b9e729c8378f340  art/_archive/gear/2026-11-19-melee-armour/prompts/shield-barrier_wall.txt
+e20f039435d06b519ddfb28c20f4d46bf5f0d9a802b7b62194ce32a910aea4f2  art/_archive/gear/2026-11-19-melee-armour/prompts/shield-barrier_wall.txt
 c88fa81a7f58ec2de5364c74ba4a013ed1f7fa3f417194ad4f2f841d2a1cdc72  art/_archive/gear/2026-11-19-melee-armour/prompts/shield-boss_shield.txt
 ee24c8350ac772adcaebafb42efd9b93ba8633d11b699b6314d2ab4d1d95e234  art/_archive/gear/2026-11-19-melee-armour/prompts/shield-bulwark_screen.txt
 70e4e3031917346be9caefdba96cd5e4699eb02ca2c907d8e1518b60870319f4  art/_archive/gear/2026-11-19-melee-armour/prompts/shield-deflector.txt
@@ -1288,7 +1291,7 @@ aaa3859af91cde95cffa25d66fe7fe94c278858151a39c459bf6ec11acceb992  art/_archive/g
 2b712f5e14d4be982af410663cffa3e3878f3d0fcb901d64a60aea44649597df  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_hammer.txt
 b83d19be3f91a5c2ee62b9a25a7ead8fbce968ded227119ec6143113fb2c31f1  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_pick.txt
 65d16ef2b8326b175a40e20dcc6612fb28971f92faebb73dd2247719a6467c95  art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-weighted_gloves.txt
-8519c84dbb8521aa92f1445639874ce5fef3a3f70d66699e62a66909bd652383  art/_archive/gear/2026-11-19-melee-armour/queue.json
+e0618cc3a7be53d5cecbfc0a63c61fb1c61ea88d000a7ca59f6b80253f88aae3  art/_archive/gear/2026-11-19-melee-armour/queue.json
 08c79a4b7371726cf894ed27ad394528e512c03af6fd7c037489813207d8df83  art/_archive/gear/2026-11-19-melee-armour/references/fuel-drum-and-tool-rack.png
 9a913632855428ce70d55f4136797c88b34abfc1e6d8aa425b96ebfb6b37b30d  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-32px.png
 65ed57609c5852ab18a184c4ec9506f6814945e9310e4f3deefec161268946bf  art/_archive/gear/2026-11-19-melee-armour/reviews/05-axes-64px.png
@@ -1312,9 +1315,10 @@ fc2d3aa9108e77d08c8b83e6fc583b2ecf6418d2f905ae1e7ac1e6590dfa07c8  art/_archive/g
 f5e1d0a9c648246d57ebc0b24a413154679e7ee7689b64f0189b4dda25793605  art/_archive/gear/2026-11-19-melee-armour/reviews/05-scrap-cutters-64px.png
 1fd5b5da3b4cd9e803475f67b8cafbfe703e43f6e5d29155b2ea36bf46f04a5c  art/_archive/gear/2026-11-19-melee-armour/reviews/05-service-knives-32px.png
 e4cd5d6946ffd737773062a205d9c633e91dc37f7367f2bd42f3bdb92a98b7f3  art/_archive/gear/2026-11-19-melee-armour/reviews/05-service-knives-64px.png
-86be1b29afe672288b9d25b4c89f5ba614f6581e3ca3246e79a1b2e29f068e96  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-32px.png
-dd27add5e8c1b0fddc8b5dcc7ea4ec24ae14664d693da7c8a2cec2856b1542d4  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-64px.png
+2519f04bc737535b245c78159514dc7c6925607135b1a9b6197e3d068acf13e2  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-32px.png
+c92a0b80d50e59b155a9d5dd3dda994dcbb1d366cc68d14ba59df959db737c2a  art/_archive/gear/2026-11-19-melee-armour/reviews/07-shields-64px.png
 f98429e5d1e6db3c7e7589c1e89b707f70f73e427384407532eac9e9a8f6cba0  art/_archive/gear/2026-11-19-melee-armour/short-draw-generation-error.json
+b6f6fc809ac3f26cf41cc41a480a0cd3d1c156c543b1fd4d8a16e2804935c990  art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png
 e4594f2311e982ae2a4603db4c8c28e53d889d36fb7114e1625d49fccdcb113a  art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png
 643adb704e78fa71f8106ee942b6412a4a89aa6631a5560b1c602eae76ad5337  art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png
 981d7ba5269c8a312538f46ac4bfc41098a1537ca27a533a18dd4c9a2e5c3c69  art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png
@@ -4604,7 +4608,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-ce17c81824fb5e5fcc96ef0f9f3dff146f8ff4e5b25b35a856608f328e46c76b  art/catalog.json
+4ffdee3a05c01ceafefd07d77977ee97d6656e022a7833f4ba57e751eb69494a  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -6285,6 +6289,7 @@ cadae425dceecd7fa9437750385fb2c553ce6a1d626748304c9f15c04c2d4ade  art/icons/gear
 29709d0a187c7f9ce0637c385f46ce90521c7f12f9f05691c3be0a61ec9d0607  art/icons/gear/exports/128/rounds-rifle.png
 da4adea64bfd307980f72b19122d02af6fe00ce475b56f4f5db47f5d8a6b0bdd  art/icons/gear/exports/128/rounds-rocket.png
 a9e01df0470ac78131d8659fff5f4e841eed5fe5b02942243f8d9a3ef788e1df  art/icons/gear/exports/128/rounds-shell.png
+17b6b12cc0b6793781b5dbd913a92108f6a3b3c630ffe798cee80e09a5f7c470  art/icons/gear/exports/128/shield-barrier_wall.png
 2ea711901c5206da656acc4f679ddc8576f0e401d68f087ea1611ad2b87e7c1a  art/icons/gear/exports/128/shield-boss_shield.png
 5da29b430a2cbcff6d3259072c5cc2f7692bdf92617305e116190621816d2f68  art/icons/gear/exports/128/shield-buckler.png
 c2771c62753c2d46c730615da6594c720ffcba7bede9d128192c18a68da84aa9  art/icons/gear/exports/128/shield-bulwark_screen.png
@@ -6482,6 +6487,7 @@ ecf899a0fbb4ec95cc3eccf5645a89ad51edad5239825e5e74761fdc780bd0fb  art/icons/gear
 aad3f1c86473c88159bee240d7a89ae00d2dfc8500e62cd24f33a64286c81231  art/icons/gear/exports/256/rounds-rifle.png
 8f8659212784e66870b8960faa6e127156b561096e1f8df7886e4ca003fa4be8  art/icons/gear/exports/256/rounds-rocket.png
 9347d8dd235e2da03cca4793543a0a93bfd1f990bd7023129de82428cdf34b73  art/icons/gear/exports/256/rounds-shell.png
+80bf819245564beb274150ae4df5243b1eda019aa33d21e2f256494417383ed8  art/icons/gear/exports/256/shield-barrier_wall.png
 9de24182069e0066d5a21a68959573620d7f7b7a5a843eaf79f91ff430606ad7  art/icons/gear/exports/256/shield-boss_shield.png
 3ac68d6e10db2fcb55a712ffb6cb348289c649e41fd953f44b7f824a47c5ff52  art/icons/gear/exports/256/shield-buckler.png
 061a13c6afc0c4591d7a967912316f4de4fa68b37779f063869b1230107aaea6  art/icons/gear/exports/256/shield-bulwark_screen.png
@@ -6679,6 +6685,7 @@ a96eec864075a6c562b4cb0f88bdd56714f308b83c6659839e2b858e42c3a764  art/icons/gear
 fb5741582634ed0cd10833ea51047863f2385ff93c29899db653b3c6d895f331  art/icons/gear/exports/32/rounds-rifle.png
 5b574a0f2053f2163cd2f42351830f9406d544bb2421533da57215cc207562f0  art/icons/gear/exports/32/rounds-rocket.png
 00823379160f997389050947ffaba98e2fb2ed7b5b7004f5eebab3aaf78f1f59  art/icons/gear/exports/32/rounds-shell.png
+3eb65c787a4d88081ef03666237ae48424a7af756ff10373bc62bc54af29ec50  art/icons/gear/exports/32/shield-barrier_wall.png
 c1d113784ce519186f398dddf788b1966f4e24760c93c80569e48db1f2408389  art/icons/gear/exports/32/shield-boss_shield.png
 cb79e42fc5bf19a28158992fe3ea808e88af7a7cd327e2f1e568563438890e92  art/icons/gear/exports/32/shield-buckler.png
 b9944febdaf49294d33aebba157aab2a49455fb6033d5f571e42a4a51ebe9a18  art/icons/gear/exports/32/shield-bulwark_screen.png
@@ -6876,6 +6883,7 @@ dfc17761341a76101c1b4a374e21da79549aee8d6f435b34ac3a71563e4f1c27  art/icons/gear
 0caf376d6cc7459d1c158f5b0fa0f1c4224e98a668c4463d72be12034e2b13bd  art/icons/gear/exports/64/rounds-rifle.png
 3cce50ac9ee4642512b463137b360b52d8eff97b23c115a34fc721246c8835cf  art/icons/gear/exports/64/rounds-rocket.png
 4e12147b99c97baec2dacdf1a67c536e633e5acc6c840f03a36811c9ff891372  art/icons/gear/exports/64/rounds-shell.png
+13e3f736929db44d1e77542974c272da3344b7b1fb3403f03ead945673ae6544  art/icons/gear/exports/64/shield-barrier_wall.png
 60c7b023ba06cceee074fe1b53040711648dd9d5727ec6243461085f6f7a8167  art/icons/gear/exports/64/shield-boss_shield.png
 84df09148172bfe9d931ee6612398798f5bf1e2e57aea7c4d5ed98ef83dffac9  art/icons/gear/exports/64/shield-buckler.png
 6bfc564827b67b254e825c5a09a405a298c6d2238d0cac0d8b41d42ee63d31ba  art/icons/gear/exports/64/shield-bulwark_screen.png
@@ -7037,6 +7045,7 @@ f2dacbf673880506fdf7422fc3ade31ead256306666fdfbdd86c3b713c5655b2  art/icons/gear
 1c1c8c3f96fa0d124d731d4151398d1f150c1ee34e7c213607a6cd226d048f9a  art/icons/gear/rounds-rifle.png
 8c48d21b18c43479ec07746155bbf07737ae4a97cde866df7dc531d651dcc957  art/icons/gear/rounds-rocket.png
 a96c7fb9105e64c51cb74549ef4a24d6e9e02dc817bc9307a8e5e3825fbd07ae  art/icons/gear/rounds-shell.png
+2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803  art/icons/gear/shield-barrier_wall.png
 3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8  art/icons/gear/shield-boss_shield.png
 1aeb92d2b419c48978476f314468c35639a89abe0732b5edf8cdbcc4d8510b9b  art/icons/gear/shield-buckler.png
 56e0aec15b0b546122ee1565b8b1dc246e7a0ef0df4fcba68bab9bdeb4966dc0  art/icons/gear/shield-bulwark_screen.png
