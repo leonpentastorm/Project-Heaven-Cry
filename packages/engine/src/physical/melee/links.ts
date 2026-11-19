@@ -145,7 +145,8 @@ technique({
     say(t.cb, t.u.name + ' is on Guard (+' + def + ' Defense against melee' + (p === 'heavy' ? ' and shots from the front' : '') + ')' + (got ? ': +' + got + ' Guard (' + guardOf(t.u) + '/' + guardMax(t.u) + ')' : '') + '.');
     return null;
   },
-  ai: (t) => (t.u.ap <= 1 && t.cb.units.some((v) => v.side !== t.u.side && alive(v) && dist(v.pos, t.u.pos) <= 2) ? 4 : 0),
+  // rules 1.79 item 6710: a unit with Guard plates to raise (an enemy tier's `guard`) takes it over its last AP
+  ai: (t) => (t.u.ap <= 1 && t.cb.units.some((v) => v.side !== t.u.side && alive(v) && dist(v.pos, t.u.pos) <= 2) ? (guardGain(t.u) > 0 && guardOf(t.u) < guardMax(t.u) ? 6 : 4) : 0),
 });
 onHook('turn_start_pre', (ctx: any) => { const g = ctx.u && (ctx.u as any).tech?.guard; if (g?.on) delete g.on; }); // until your next turn
 onHook('attack_preview', (ctx: any) => {

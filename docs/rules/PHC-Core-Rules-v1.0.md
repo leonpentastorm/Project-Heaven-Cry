@@ -13168,3 +13168,70 @@ tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each shee
     merge reads obPeak 123 / 213 / 178 / 183% at levels 1 / 5 / 10 / 20, outside the old band (124 to 212%) at levels 1
     and 5. No class is refitted: the contract's `outburst_peak` row is set to what is measured (`level_lo` 0.74,
     `level_hi` 1.295: 122 to 214%). PROVISIONAL: the fun-and-balance pass judges it.
+
+### Rules 1.79 (enemies), 0.32: enemies react to what the doors do to them (19 Nov 2026)
+
+The enemy AI lane of 0.32. Behaviour is data: `enemies.json ai` holds four blocks (`pressure`, `focus`, `angle`,
+`bait`), each with `on` (false switches it off, for a measure) and its log lines; a row's `guard` gives an enemy
+Durability's door. No trigger, op, hook or export was added: the behaviours live in the enemy turn (`combat.ts`), its
+technique step (`physical/ai.ts`, on the existing `enemy_action_start` hook) and its route risk (`ai-sigil.ts
+aiRouteRisk`); their per-turn marks are `uses()` cells on the unit. **Every number here is PROVISIONAL.**
+
+6700. **Broken acts (item 1).** Before its first action of a turn a Broken enemy reaches cover: the tile against cover
+      (Pressure's own test, `atCover`) that the fewest of its foes can see, the fewest tiles first, within this turn's
+      AP. With no such tile in reach it drops Prone and stays down that turn (it does not stand back up). Already
+      against cover, it holds there that turn. The log says "X breaks and runs for cover." / "X throws itself flat and
+      stays down." (`ai.pressure.lines`). Never an enemy under a Command.
+6701. **Suppressed acts (item 1).** A Suppressed enemy not against cover first takes a covered tile within
+      `suppressed_cover_tiles` **3** that keeps a line on someone its side sees, if it can still attack after the walk
+      ("X keeps its head down and slides into cover."). Suppressed or Broken, it walks at most
+      `suppressed_move_tiles` **3** a move that turn (Broken: 0 after its cover move), and neither hunts the healer,
+      walks for an angle nor searches.
+6702. **Flee and cower are as they were.** Rout's failed save runs it its full move; Afraid keeps it from closing or
+      attacking; Surrender stays the player-made save. The Pressure table says neither flee nor cower, so no new
+      fleeing was built.
+6703. **The side's memory past the round (spec 4969 a).** `rules.json combat.focus_memory.carry`: each attacker of the
+      round before counts this share of an attacker in the doctrine's spread (`alliesOn`), so the first foe of a round
+      spreads its fire too. **Built and OFF (0):** any carry from 0.25 to 0.5 moved the enemy table's guard
+      (`test/balance/defence-measure`: the idle pair's first Down, 4.2 rounds at most, measured 5). For the lead.
+6704. *(Not used.)*
+6705. **Focus memory per enemy (item 2).** An enemy remembers the one it last attacked (a plain attack or a technique)
+      and keeps it for `ai.focus.rounds` **2** rounds: that target counts as more hurt by `keep` **0.3** of its max HP,
+      in the one doctrine (`enemyRank`; a technique takes it among targets it wants equally). Never against a Taunt, never on a Downed one.
+      The log says once a fight for each enemy "X stays on Y: it finishes what it started."
+6706. **A bigger threat breaks it.** When another character has hurt it since that attack, the keep goes, and the one
+      who hurt it counts as more hurt by `threat` **0.3** ("X turns on Y, who hurt it.", once a fight).
+6707. **The angle (item 3, spec 4969 b).** An enemy with a gun whose every target in reach is already under its side's
+      fire walks at most `ai.angle.max_tiles` **4** to a tile with a shot at a character its side perceives and nobody of
+      its side is attacking, if it can still fire after: the fewest tiles, plus the route's risk (held lanes and
+      fields it knows of), less `cover` **1** for a tile with cover from that character. Once a turn; never Taunted,
+      ordered, Afraid of that character, Suppressed or Broken. The intent says "move to X for an angle on Y: it spreads
+      its fire"; the log says "X moves for an angle on Y, whom nobody is shooting." once a fight for each enemy.
+6708. **The bait (item 4).** A held shot its side sees (an Overwatch: `aiRouteRisk`'s held lanes) is baited: a unit of a
+      `bait.tiers` tier (**vermin, minion**) counts crossing the lane as `lure` **12** better while an ally of a
+      `bait.for` tier (**soldier, elite, boss**) stands, so it walks in and draws the shot; that stronger ally counts the
+      lane `hold` **20** worse (on top of `held_risk` 10) while a bait has still to act this round (later in the turn
+      order, which both sides see), so it waits and commits once the shot is spent. "X breaks into the held lane to draw
+      the shot." once a round for each bait. Only what its side sees: a held shot it can't see is no lane.
+6709. **What the bait does not read:** a Retort, Parry or any other Answer (no AI reads them before acting); a held
+      blade (Blade's Hold) and a Figment's hold count as lanes as before (`held_risk`), never as bait.
+6710. **Enemy doors (item 5): Guard.** A row's `guard` (`{plates, durability}`, a tier's or a caster archetype's) gives
+      the unit its Guard pool full, the Durability points the door reads and the Guard technique. Then the door's code
+      runs for it as for a character: the plates soak hits (keeping one back), Pressure comes off them first, the Guard
+      technique raises them with its last AP (its AI want is 6 while plates are missing, else 4 as before). Given to
+      the **Heartfire elite** (`soul_casters heartfire_elite`: the sabre-and-heart elite that walks into you): plates
+      **3**, Durability **3**. No tier has `guard`.
+6711. **Doors an enemy cannot use yet (item 5, not built):** Slam, Challenge, Retort, Last Plate (Guard's verbs), Tag,
+      Ghost Kill and Stalk (Shadow 2.0), Tug and Snap (Bonds), a Figment order, and prayers. The door verbs are item
+      actions (`skills.json` unlocks, `effects/actions.ts`): a unit can hold them (`u.held`, as a Figment holds its
+      verbs) but the enemy AI has no step that weighs or runs an item action. Prayers read the character's patron and
+      Devotion (`faith.ts`, `charOfUnit`): an enemy has neither. Shadow's old half is an enemy's already (rules 1.32:
+      a skulker Hides and ambushes; `skulks`). Needs a new primitive (for the lead): an enemy step that weighs a held
+      item action by a want in its data, general for every door verb; a faith block on an enemy row.
+6712. **Speed (item 6).** The behaviours add no search loop over the whole map: the angle walks one path table for at
+      most the perceived targets nobody attacks; Broken and Suppressed one path table each, once a turn. Measured on a
+      4 v 12 fight (6 seeds, 432 enemy turns), best of four interleaved runs on a loaded machine: before 3.1 ms a turn
+      (worst 37), after 2.9 ms (worst 34).
+6713. **Survival (the balance check).** The simulator (`test/balance/survival-run.ts`, stage 1, 40 seeds, route gear),
+      before and after this revision: solo_gunner **31 → 30** of 40, four **38 → 38**, mixed **30 → 31**. No party fell
+      by more than a quarter; the encounter budget is untouched.

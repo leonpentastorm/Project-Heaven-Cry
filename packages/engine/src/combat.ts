@@ -12,8 +12,8 @@ import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
-import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
-import { armHeart, aiSoulStep } from './ai-soul';
+import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk, CASTER } from './ai-sigil';
+import { armHeart, aiSoulStep, HEART_CASTER } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook, statHeard, harmHeld } from './effects/hooks';
 import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion';
@@ -35,6 +35,7 @@ import { windowStep } from './effects/actions';
 import { type Hazard, hazardStep, spotHazards, hazardLiveAt, HAZARD } from './hazards';
 import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PILE } from './containers';
 import { canStand, standBlocker, unitsIn, inBounds, work, tiedTo } from './kit';
+import { uses } from './effects/uses';
 import { setBraced, setDowned, setNailed, stagger, clearStagger, rawDazed, rawBleed, setSideSees } from './unitstate';
 import { setProne, bleedTick, dazeSpent } from './magic';
 import { condMods, condDef } from './condtable';
@@ -292,7 +293,7 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
   sightWhy?: Record<string, 'hide' | 'reveal'>;
   /** Rules 1.25, the fire doctrine: who of each side's AI has attacked whom this round (target id -> attacker ids), and
    * the doctrine lines the log has already said this fight. */
-  fire?: { round: number; on: Record<string, string[]> }; doctrineSaid?: Record<string, true>;
+  fire?: { round: number; on: Record<string, string[]>; /** rules 1.79 item 6703: the round before's */ prev?: Record<string, string[]> }; doctrineSaid?: Record<string, true>;
   /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id: the tile it was on
    * when this side last saw it (seenAt), or a known position an item gave. The enemy AI searches there (enemySearchTile). */
   lastSeen?: Record<string, Record<string, string>>;
@@ -613,6 +614,15 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
     ...(t.techniques && (t.techniques.melee?.length || t.techniques.ranged?.length) ? { techs: [...(t.techniques.melee || []), ...(t.techniques.ranged || [])] } : {}),
     ...(t.calls?.length ? { calls: [...t.calls], callLevel: t.call_level || 1 } : {}), // rules 1.13: an officer's Calls
   };
+}
+/** Rules 1.79 item 6710, Durability's door on an enemy: a row's `guard` (enemies.json: a tier's, or a caster archetype's)
+ * gives the unit its Guard pool, full, the Durability points the door reads (physical/core.ts unitSkill), and the Guard
+ * technique the door gives anyone with Durability. Then the door's own code runs for it as for a character: the plates
+ * soak, Pressure comes off them first, the Guard technique and Brace raise them, Interpose at Durability 3. */
+function armGuard(u: Unit, row: any) {
+  const n = Number(row?.guard?.plates); if (!(n > 0)) return;
+  u.res = { ...(u.res || {}), guard: n }; u.resMax = { ...(u.resMax || {}), guard: n }; (u as any).durability = Math.max(1, Number(row.guard.durability) || 1);
+  if (!(u.techs || []).includes('guard')) u.techs = [...(u.techs || []), 'guard'];
 }
 /** Rules 1.15: a companion is its owner's level. Its own stat block (enemies.json companions) is the level 1 block; the
  * level table raises its HP, armour, Defense, attack bonus and damage. hpNow: the HP it carries from before (null: full).
@@ -1710,6 +1720,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
     if (f.hp != null && f.hp > 0) u.hp = Math.min(u.maxHp, Math.round(f.hp)); // wounded in a fight it walked away from
     armFoe(u, f); // an Evoker: its own words, or its caster archetype's (ai-sigil.ts)
     armHeart(u, f); // a Soul caster archetype (enemies.json soul_casters): an Emanator and its designs (ai-soul.ts)
+    armGuard(u, ENEMY[f.tier]); armGuard(u, f.caster ? CASTER[f.caster] || HEART_CASTER[f.caster] : null); // rules 1.79: a row's Guard
     levelFoeMagic(u); // rules 1.15: its spells grow as its weapon does
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
     if (f.drops && typeof f.drops === 'object') u.drops = JSON.parse(JSON.stringify(f.drops)); // rules 1.9 drop tables
@@ -2912,6 +2923,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
   const stood = new Set<string>([u.pos]); // the tiles it has stood on this turn: it doesn't pace between them
   let hunted = false; // rules 1.23: it repositions for a line on the healer at most once a turn
+  let angled = false; // rules 1.79 item 6707: it walks for an angle on an unattacked character at most once a turn
   // Classes 3.0 P2 (the review's finding 14): an enemy's own action fires `acted` as a player's does (the reducer's), named
   // as the reducer names it (a cost site, a move's kind, 'attack' with its mode). Its magic, technique and clearing steps
   // (ai-sigil.ts, ai-soul.ts, ENEMY_STEPS, aiClearBlock), whose own verbs the AI does not report, are named by their
@@ -2928,7 +2940,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (condOn(u, 'grappled') && affords(cb, u, 'escape')) { escapeHold(cb, rng, u); did('escape'); continue; }
     if (u.nailed && canPay(cb, u, price({ cb, u }, 'pull_free', u.nailed.ap))) { pullFree(cb, u); did('pull_free'); continue; } // rules 1.12
     if ((condOn(u, 'disarmed') && affords(cb, u, 'recover')) || (condOn(u, 'lowered') && affords(cb, u, 'recover', 'ap_lowered'))) { recoverHeld(cb, u); did('recover'); continue; }
-    if (u.prone && affords(cb, u, 'prone') && order !== 'kneel') { toggleProne(cb, u); did('prone'); continue; }
+    if (u.prone && affords(cb, u, 'prone') && order !== 'kneel' && !aiUses(cb, u).used('per_turn', 'ai:down')) { toggleProne(cb, u); did('prone'); continue; } // (rules 1.79: a Broken enemy that dropped stays down this turn)
     if (u.jammed && affords(cb, u, 'clear_jam')) { clearJam(cb, u); did('clear_jam'); continue; }
     if (enemyScuff(cb, u)) { did('scuff'); continue; }
     // Sigil casters (rules 1.4): step out of a hostile field, scuff a turret underfoot, then weigh a spell against the weapon.
@@ -2942,20 +2954,33 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { did('technique'); checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
     const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
     const targets = enemyTargets(cb, u, mode, order, pcs);
+    // rules 1.79 item 6701: a Suppressed or Broken enemy walks short this turn (physical/ai.ts sets the cap); it neither
+    // hunts, nor walks for an angle, nor searches; a cap of 0 holds it where it is
+    const short = aiShortOf(cb, u);
     // Rules 1.23, the hunt: an Elite or a Boss with a gun and no shot at the squad's healer steps to where it has one.
-    if (!order && !hunted) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; did('move', { tile: hunt.tile }); checkOver(cb); continue; } }
+    if (!order && !hunted && short == null) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; did('move', { tile: hunt.tile }); checkOver(cb); continue; } }
+    // Rules 1.79 item 6707 (spec 4969 b): every target in reach is already under its side's fire: a short walk for a shot
+    // at a character nobody is attacking, from cover where it can.
+    if (!order && !angled && short == null) { const ang = enemyAngleTile(cb, u, mode, pcs, targets, stood); if (ang) { angled = true; noteAngle(cb, u, ang.mark); if (moveUnit(cb, u, ang.tile, rng)) break; did('move', { tile: ang.tile }); checkOver(cb); continue; } }
     if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode, rng); else resolveAttack(cb, rng, u, t, mode, null); did('attack', { t, mode }); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { did('clear_block'); checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     // Rules 1.32 (shadow-spec 8.1): a skulker (tag skulk: a Vermin, Minion or Soldier) with no shot goes to ground when no
     // enemy has it in view, and ambushes from there (the flat Ambush multiplier); it carries no Shadow meter.
     if (!order && skulks(u) && !hideBlock(cb, u) && affords(cb, u, 'hide')) { hideAction(cb, u); did('hide'); continue; }
-    if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
+    if (order === 'halt' || order === 'kneel' || moveBlock(u) || short === 0) break;
+    if (!pcs.length && short != null) break;
     if (!pcs.length) { const go = enemySearchTile(cb, u, stood); if (!go || moveUnit(cb, u, go.tile, rng)) break; did('move', { tile: go.tile }); continue; } // nobody it perceives: it searches where its side last saw one
     const best = enemyCloseTile(cb, u, mode, order, pcs, w, stood);
+    if (best?.lure) noteBait(cb, u);
     if (!best || moveUnit(cb, u, best.tile, rng)) break;
     did('move', { tile: best.tile });
   }
 }
+/** Rules 1.79: the enemy AI's own counters on a unit (effects/uses.ts, the one door): its turn's walk cap and Prone
+ * hold (physical/ai.ts sets them), who it last fought and when, and its once-a-fight and once-a-round log lines. */
+const aiUses = (cb: Combat, u: Unit) => uses({ key: 'ai', u, c: null, cb, g: undefined } as any);
+/** The walk cap this turn (physical/ai.ts: Suppressed or Broken), or null. */
+const aiShortOf = (cb: Combat, u: Unit): number | null => (aiUses(cb, u).used('per_turn', 'ai:short') > 0 ? Number((u as any).aiShort) : null);
 const enemyDry = (u: Unit) => { const w = WEAPON[u.weapon]; return w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0); };
 const enemyNeedsReload = (u: Unit) => { const w = WEAPON[u.weapon]; return w.magazine != null && u.ammo <= 0 && !enemyDry(u) && !condOn(u, 'disarmed'); };
 const enemyMode = (u: Unit): 'melee' | 'shot' => (isMelee(WEAPON[u.weapon]) || enemyDry(u) || condOn(u, 'disarmed') ? 'melee' : 'shot');
@@ -3035,18 +3060,33 @@ export type AimWhy = 'healer' | 'spread' | 'wounded' | 'nearest';
 const aimOwner = (t: Unit): string => (t as any).ghostOf || t.id;
 /** How many other units of u's side have attacked this target this round (rules 1.25). */
 export function alliesOn(cb: Combat, u: Unit, t: Unit): number {
-  const f = cb.fire; if (!f || f.round !== cb.round) return 0;
-  return (f.on[aimOwner(t)] || []).filter((id) => id !== u.id && cb.units.find((x) => x.id === id)?.side === u.side).length;
+  const f = cb.fire; if (!f) return 0;
+  const id = aimOwner(t), of = (on: Record<string, string[]> | null | undefined) => (on?.[id] || []).filter((a) => a !== u.id && cb.units.find((x) => x.id === a)?.side === u.side).length;
+  // rules 1.79 item 6703 (spec 4969 a): the side's memory carries past the round: each attacker of the round before
+  // counts `carry` (rules.json combat.focus_memory), so the first foe of a round spreads its fire too
+  const age = cb.round - f.round, now = age === 0 ? f.on : null, before = age === 0 ? f.prev : age === 1 ? f.on : null, carry = Math.max(0, Number(FOCUS_MEMORY.carry) || 0);
+  return of(now) + (carry && before ? carry * of(before) : 0);
 }
 /** An enemy has aimed an attack (a plain one, a technique) at t: its side's fire this round remembers it (the spread
  * doctrine reads it), and the fight log says why it chose, once a fight for each doctrine reason and once a round for
  * each healer turned on (rules 1.23 and 1.25: the player is told why). */
 export function noteEnemyAim(cb: Combat, u: Unit, t: Unit, why?: AimWhy) {
-  if (!cb.fire || cb.fire.round !== cb.round) cb.fire = { round: cb.round, on: {} };
+  const age = cb.fire ? cb.round - cb.fire.round : -1;
+  if (age !== 0) { const was = cb.fire; cb.fire = { round: cb.round, on: {}, ...(was && age === 1 ? { prev: was.on } : {}) }; }
   const on = (cb.fire.on[aimOwner(t)] ||= []); if (!on.includes(u.id)) on.push(u.id);
+  if (u.side === 'foe' && !u.charId) { noteFocus(cb, u, aimOwner(t)); const A = aiUses(cb, u); A.uncool('ai:aim'); A.cool(1, 'ai:aim'); (u as any).aimMem = aimOwner(t); } // rules 1.79 item 6705: who it is fighting, and since when
   if (why === 'healer') { noteHealerHunt(cb, u, t); return; }
   if (!why || (cb.doctrineSaid ||= {})[why]) return; cb.doctrineSaid[why] = true;
   say(cb, u.name + (why === 'spread' ? ' takes a target nobody else is shooting at: the enemy spreads its fire.' : why === 'wounded' ? ' picks out ' + t.name + ': the enemy goes for the wounded.' : ' goes at ' + t.name + ': it takes whoever is nearest.'));
+}
+/** Rules 1.79: the fight log says once a fight for each enemy that it stayed on the one it fought in an earlier round
+ * (within ai.focus.rounds), or turned from it on whoever hurt it since. */
+function noteFocus(cb: Combat, u: Unit, id: string) {
+  const F = ENEMY_AI.focus, A = aiUses(cb, u), mem: string | undefined = (u as any).aimMem, at = A.cooledAt('ai:aim');
+  // (an earlier round than this one, within `rounds`: the cooldown's own reads)
+  if (!F || F.on === false || !mem || at == null || A.coolLeft(1, 'ai:aim') > 0 || !(A.coolLeft(F.rounds + 1, 'ai:aim') > 0)) return;
+  const kept = mem === id ? 'keep' : (u.hitRound?.[id] ?? -1) >= at ? 'threat' : null; if (!kept || !A.take('per_combat', 1, 'ai:said-' + kept)) return;
+  say(cb, F.lines[kept].replace(/\{name\}/g, u.name).replace(/\{target\}/g, cb.units.find((x) => x.id === id)?.name || id));
 }
 /** The one choice of target behind an enemy's plain attack (enemyTargets) and anything else it aims (enemyPreference:
  * a technique): the given enemies of it, best first, by its Taunter, standing before Downed, its doctrine (rules 1.25),
@@ -3069,8 +3109,16 @@ function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], rea
   if (mark) for (const x of list) if (aimOwner(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
   const near0 = d.near ? Math.min(...list.filter((x) => !x.t.downed).map((x) => x.far), Infinity) : 0;
   const lateOf = (x: Aim) => (late.length && late.includes(x.t) ? 1 : 0);
+  // Rules 1.79 items 6705 and 6706 (enemies.json ai.focus): it keeps the one it was fighting for `rounds` rounds (that one
+  // counts as more hurt by `keep`), unless someone else has hurt it since: then that one counts as more hurt by `threat`.
+  // Never against a Taunt (the Taunter comes first anyway).
+  const F = ENEMY_AI.focus, fo = F && F.on !== false && u.side === 'foe' && !u.charId && !tauntBy ? F : null, mem: string | undefined = fo ? (u as any).aimMem : undefined, AU = aiUses(cb, u), at = mem ? AU.cooledAt('ai:aim') : null;
+  const keepId = fo && mem && at != null && AU.coolLeft(fo.rounds + 1, 'ai:aim') > 0 && list.some((x) => aimOwner(x.t) === mem) ? mem : null;
+  let threatId: string | null = null, tr = -1;
+  if (keepId && u.hitRound) for (const [id, r] of Object.entries(u.hitRound)) if (id !== keepId && r >= at! && r > tr && list.some((x) => aimOwner(x.t) === id && !x.t.downed)) { tr = r; threatId = id; }
+  const held = (x: Aim) => (!fo || x.t.downed ? 0 : threatId ? (aimOwner(x.t) === threatId ? fo.threat : 0) : keepId && aimOwner(x.t) === keepId ? fo.keep : 0);
   // focus memory (rules 1.61 item 4964): each other attacker of its side this round makes the target less worth it, unless it is nearly finished
-  const key = (x: Aim) => hurtShare(cb, x.t) + d.spread * x.fire + (finishing(x.t) ? 0 : d.memory * x.fire) + ownedWeight(u, x.t) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
+  const key = (x: Aim) => hurtShare(cb, x.t) + d.spread * x.fire + (finishing(x.t) ? 0 : d.memory * x.fire) + ownedWeight(u, x.t) - held(x) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
   list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || lateOf(a) - lateOf(b) || key(a) - key(b) || pct(b) - pct(a));
   const top = list[0];
   if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {
@@ -3119,8 +3167,10 @@ function noteHealerHunt(cb: Combat, u: Unit, t: Unit) {
 /** Where an enemy closes in: the reachable tile that is nearest a living PC and has line of sight to one (Afraid: never
  * nearer the source; fleeing: the tile farthest from every PC). 'ai_move_risk' {u, from, to, risk} lets items add to a
  * tile's cost (Anchor: walking away from a Defender who will strike), only while someone listens. Pure. */
-function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon], stood?: Set<string>): { tile: string; near: Unit | null } | null {
+function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon], stood?: Set<string>): { tile: string; near: Unit | null; lure?: true } | null {
   const P = paths(cb, u.pos, u.id);
+  // rules 1.79 item 6701: a Suppressed or Broken enemy walks short (physical/ai.ts sets the cap for its turn)
+  const short = aiShortOf(cb, u);
   const fearOf = condSource(u, 'fear'), fu0 = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
   // Threatened (a Call, rules 1.13): it doesn't close on the one who threatened it this turn (as with what it fears).
   const cowBy = u.call?.cowed ? cb.units.find((x) => x.id === u.call!.cowed!.by && alive(x)) : null, fu = fu0 && !fu0.dead ? fu0 : cowBy || fu0, fu2 = fu === cowBy ? null : cowBy;
@@ -3140,27 +3190,67 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
     const sees = pcs.some((t) => dist(k, t.pos) <= Math.min(reach, eyes.get(t.id)!) && lineOfSight(cb, k, t.pos, false, walls));
     // (a tile with a line on someone is as good as any other such tile: a shooter doesn't creep closer with its spare AP)
     return order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100 + near) + tiles * 0.1; };
-  let best: string | null = null, bestScore = score0(u.pos, 0) - 0.05;
+  let best: string | null = null, bestScore = score0(u.pos, 0) - 0.05, bestRisk = 0;
   for (const [k, tiles] of Object.entries(P.dist)) {
-    if (k === u.pos || imaged.has(k) || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement) + (u.ap > 2 ? 2 : 0))) continue;
+    if (k === u.pos || imaged.has(k) || stood?.has(k) || (short != null && tiles > short) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement) + (u.ap > 2 ? 2 : 0))) continue;
     if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
     if (fu2 && dist(k, fu2.pos) < dist(u.pos, fu2.pos)) continue;
-    let score = score0(k, tiles) + aiRouteRisk(cb, u, P, k); // around known fields, spotted traps and held attacks it sees
+    const risk = aiRouteRisk(cb, u, P, k); // around known fields, spotted traps and held attacks it sees (a bait walks into a held lane: rules 1.79)
+    let score = score0(k, tiles) + risk;
     if (sneak && sneak.some((t) => unitSees(cb, t, k, walls, u))) score += ENEMY_AI.skulk_open; // rules 1.37: a skulker flanks through what the other side can't see
     if (risky) score += (emit(cb, 'ai_move_risk', { u, from: u.pos, to: k, risk: 0, cb }) as any).risk || 0;
-    if (score < bestScore) { bestScore = score; best = k; }
+    if (score < bestScore) { bestScore = score; best = k; bestRisk = risk; }
   }
   // Nothing nearer or in sight within this turn's reach, and it sees nobody from here: head for the nearest tile anywhere
   // that has a line on someone (around a wall, not up against it), one turn's walk at a time.
-  if (!best && order !== 'flee' && !risky && score0(u.pos, 0) >= 100) { // (not when an item prices the walk: Anchor's blow is weighed tile by tile above)
+  if (!best && order !== 'flee' && !risky && short == null && score0(u.pos, 0) >= 100) { // (not when an item prices the walk: Anchor's blow is weighed tile by tile above)
     let goal: string | null = null, gd = Infinity;
     for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || tiles >= gd || score0(k, 0) >= 100) continue; if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue; gd = tiles; goal = k; }
     if (goal) { const G = paths(cb, goal, u.id); let bd = G.dist[u.pos] ?? Infinity;
-      for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement))) continue; const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd) { bd = d; best = k; } } }
+      // (rules 1.79 item 6708: a unit holding back for its bait does not walk into the held lane this way either)
+      const B = ENEMY_AI.bait, holdAt = B && B.on !== false ? ENEMY_AI.held_risk + B.hold : Infinity;
+      for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement))) continue; const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd && !(holdAt < Infinity && aiRouteRisk(cb, u, P, k) >= holdAt)) { bd = d; best = k; } } }
   }
   if (!best) return null;
   const b = best;
-  return { tile: b, near: [...pcs].sort((a, c) => dist(b, a.pos) - dist(b, c.pos))[0] || null };
+  return { tile: b, near: [...pcs].sort((a, c) => dist(b, a.pos) - dist(b, c.pos))[0] || null, ...(bestRisk < 0 ? { lure: true as const } : {}) };
+}
+/** Rules 1.79 item 6708: the fight log says once a round for each enemy that walks into a held lane to draw the shot. */
+function noteBait(cb: Combat, u: Unit) {
+  const B = ENEMY_AI.bait; if (!B) return;
+  if (!aiUses(cb, u).take('per_round', 1, 'ai:said-bait')) return;
+  say(cb, B.line.replace(/\{name\}/g, u.name));
+}
+/** Rules 1.79 item 6707 (spec 4969 b), the angle: an enemy with a gun whose every target in reach is already under its
+ * side's fire (this round or, by the carried memory, the round before) walks at most `ai.angle.max_tiles` to a tile
+ * with a shot at a perceived character nobody of its side is attacking, if it can still fire after the walk: the
+ * fewest tiles, around the held lanes and fields it knows of (aiRouteRisk), a tile with cover from that character
+ * worth `cover` tiles less. Never when Taunted, ordered or unable to move, never on what it fears. Pure. */
+function enemyAngleTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], targets: Aim[], stood?: Set<string>): { tile: string; mark: Unit } | null {
+  const A = ENEMY_AI.angle; if (!A || A.on === false || mode !== 'shot' || u.side !== 'foe' || u.charId || tauntedBy(u) || moveBlock(u)) return null;
+  const live = targets.filter((x) => x.pv.ok && !x.t.downed); if (!live.length || live.some((x) => alliesOn(cb, u, x.t) <= 0)) return null;
+  const inReach = new Set(live.map((x) => aimOwner(x.t))), fearOf = condSource(u, 'fear');
+  const marks = pcs.filter((t) => !isGhost(t) && alive(t) && !t.downed && !inReach.has(t.id) && t.id !== fearOf && u.call?.cowed?.by !== t.id && alliesOn(cb, u, t) <= 0);
+  if (!marks.length) return null;
+  const w = WEAPON[u.weapon], P = paths(cb, u.pos, u.id), walls = sightBlockers(cb), left = apFor(cb, u) - attackApCost(w, 'shot'), taken = new Set(pcs.map((t) => t.pos));
+  let best: { tile: string; mark: Unit } | null = null, bs = Infinity;
+  for (const mark of marks) {
+    const eyes = cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, mark.pos, undefined, mark)) ? Infinity : eyeReach(cb, u, mark.pos, mark); // rules 1.76 item 6403: the one sight range
+    const reach = Math.min(effectiveRange(w), eyes);
+    for (const [k, tiles] of Object.entries(P.dist)) {
+      if (k === u.pos || taken.has(k) || stood?.has(k) || tiles <= 0 || tiles > A.max_tiles || apForTiles(tiles, u.bank, u.movement) > left) continue;
+      if (dist(k, mark.pos) > reach || !lineOfSight(cb, k, mark.pos, false, walls)) continue;
+      const sc = tiles + aiRouteRisk(cb, u, P, k) - (coverFor(cb, mark.pos, k) ? A.cover : 0);
+      if (sc < bs || (sc === bs && best != null && k < best.tile)) { bs = sc; best = { tile: k, mark }; }
+    }
+  }
+  return best;
+}
+/** The fight log says once a fight for each enemy that it walked for an angle (rules 1.79: the player is told why). */
+function noteAngle(cb: Combat, u: Unit, t: Unit) {
+  const A = ENEMY_AI.angle; if (!A) return;
+  if (!aiUses(cb, u).take('per_combat', 1, 'ai:said-angle')) return;
+  say(cb, A.line.replace(/\{name\}/g, u.name).replace(/\{target\}/g, t.name));
 }
 /** An enemy that perceives nobody (every hostile Hidden, or out of the fight) heads for where its side last saw one
  * (cb.lastSeen[its side]: the tile a hostile was on when this side saw it hide, or a known position an item gave),
@@ -3248,8 +3338,10 @@ function intentInner(cb: Combat, u: Unit): Intent {
   let out: Intent;
   const step = ENEMY_STEPS.map((s) => s.plan(cb, u)).find(Boolean);
   const hunt = step ? null : enemyHuntTile(cb, u, mode, pcs, targets);
+  const ang = step || hunt ? null : enemyAngleTile(cb, u, mode, pcs, targets);
   if (step) out = { kind: 'attack', text: step.text + (step.why ? AIM_WHY[step.why] : ''), ...(step.targetId ? { targetId: step.targetId } : {}), ...(step.why ? { why: step.why } : {}) };
   else if (hunt) out = { kind: 'move', text: 'move to ' + refOf(hunt.tile) + ' for a shot at ' + hunt.mark.name + HEALER_WHY, to: hunt.tile, targetId: hunt.mark.id, why: 'healer' };
+  else if (ang) out = { kind: 'move', text: 'move to ' + refOf(ang.tile) + ' for an angle on ' + ang.mark.name + AIM_WHY.spread, to: ang.tile, targetId: ang.mark.id, why: 'spread' };
   else if (targets.length) {
     const t = targets[0].t, ghost = isGhost(t), owner = ghost ? cb.units.find((x) => x.id === (t as any).ghostOf) : t;
     out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name) + (targets[0].why ? AIM_WHY[targets[0].why] : ''), targetId: owner!.id, ...(ghost ? { image: t.id } : {}), ...(targets[0].why ? { why: targets[0].why } : {}) };
