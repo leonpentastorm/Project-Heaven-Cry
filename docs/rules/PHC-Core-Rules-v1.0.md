@@ -13235,3 +13235,14 @@ aiRouteRisk`); their per-turn marks are `uses()` cells on the unit. **Every numb
 6713. **Survival (the balance check).** The simulator (`test/balance/survival-run.ts`, stage 1, 40 seeds, route gear),
       before and after this revision: solo_gunner **31 → 30** of 40, four **38 → 38**, mixed **30 → 31**. No party fell
       by more than a quarter; the encounter budget is untouched.
+6714. **Tables re-recorded on purpose.** The golden damage, rules and conditions tables did not move. Moved: the costs
+      table `costs-outburst` (4 lines: the Heartfire elite now starts with `res.guard 3`, item 6710), and 24 of the 29
+      whole-game replays. With every block of `enemies.json ai` off and no `guard` row, all 29 play as recorded
+      (measured). One block on at a time: `focus` moves all 24 (it keeps who each enemy fought, on every enemy
+      attack); `pressure` 11 (cover-4v6-guns-blades, proving-4v10-boss, proving-waves, open-4v6-blades-walk-away,
+      open-4v6-guns-blades, cover-4v6-level3, open-4v3-level3, cover-4v7-line, proving-waves-low,
+      proving-doors-hiding-watches-wave6, cover-4v7-blades-walk-away); `angle` 9 (cover-4v7-casters, proving-4v10-boss,
+      proving-doors-hiding-watches, cover-4v7-magic-boss, proving-4v12-guns, proving-4v12-magic,
+      story-fight-story-magic, proving-doors-hiding-watches-wave6, cover-4v7-blades-walk-away); `bait` 1
+      (proving-doors-hiding-watches-wave6); the Heartfire elite's `guard` 4 (cover-4v7-casters, open-4v7-casters,
+      cover-4v7-level20-allin, proving-4v12-magic). Unmoved: the five others.
