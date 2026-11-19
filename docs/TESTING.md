@@ -34,8 +34,10 @@ change with the cheapest tool that proves it. **Start at the top of this table a
    (`apps/web/e2e/groups.json`).
 4. **Read one line per suite.** The tools print a summary and only the failing lines. The full log is in `.check/`
    when you need it; don't print it.
-5. **One server, one build.** `npm run e2e` owns `apps/web/dist` and port 8787 while it runs. Don't run two at once,
-   and don't run it while another agent is half-way through an edit (the build would pick their half up).
+5. **One server, one build.** `npm run e2e` owns `apps/web/dist` and its port (8787, or `--port N` / `PHC_E2E_PORT`)
+   while it runs. Two worktrees run at once on two ports (`python tools/e2e.py --port 8797 <suite>`): the runner stops
+   only the server on its own port. Don't run two in one worktree, and don't run it while another agent is half-way
+   through an edit (the build would pick their half up).
 6. **A browser script must wait for what a player waits for,** not for a number of milliseconds: `pickAction` in
    `apps/web/e2e/lib.mjs` waits until the action panel is really yours. In a fight the screen shows the turn that is
    playing; the state can say "your turn" several seconds earlier. Read `window.__phc.getState()` for facts and the

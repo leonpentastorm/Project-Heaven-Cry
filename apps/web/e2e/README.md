@@ -17,7 +17,7 @@ npm run e2e -- sweep              # fx-sweep's whole table (about 17 minutes)
 npm run e2e -- --list             # the groups
 ```
 
-`tools/e2e.py` builds the game, starts the room server on port 8787 (and starts it again if it dies), runs the suites
+`tools/e2e.py` builds the game, starts the room server on port 8787 (`--port N` for another: one per worktree; it stops only the server on its own port) (and starts it again if it dies), runs the suites
 three at a time, prints one line a suite, and stops the server. Logs: `.check/e2e/<suite>.log`. Options: `--jobs N`, `--no-build`, `--slow`,
 `--no-retry`, `--base URL`.
 
