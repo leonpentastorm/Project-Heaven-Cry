@@ -30,6 +30,20 @@ def validate_images(paths):
             assert alpha.crop((size - 1, 0, size, size)).getbbox() is None, path
 
 
+def delivery_revision(asset, sha256):
+    """Use the archived file when a later repaint replaces this delivery."""
+    if asset['sha256'] == sha256 or asset.get('previous_sha256') != sha256:
+        return asset
+    return {
+        **asset,
+        'path': asset['previous_path'],
+        'sha256': asset['previous_sha256'],
+        'exports': asset['previous_exports'],
+        'source_path': asset['previous_source_path'],
+        'native_dimensions': asset['previous_native_dimensions'],
+    }
+
+
 def validate():
     manifest = json.loads((DELIVERY / 'manifest.json').read_text())
     catalog = json.loads((ROOT / 'art/catalog.json').read_text())['gear']
@@ -50,18 +64,19 @@ def validate():
         assert asset['status'] == 'review-candidate' and asset['production_approved'] is False
         assert asset['background'] == 'transparent' and (asset['width'], asset['height']) == (1024, 1024)
         replacement = replacements.get(name)
-        old_master = replacement['previous_path'] if replacement else asset['path']
+        revision = delivery_revision(asset, entry['sha256'])
+        old_master = replacement['previous_path'] if replacement else revision['path']
         assert entry['sha256'] == hashlib.sha256(local(old_master).read_bytes()).hexdigest(), name
         assert asset['exports'] == entry['exports'] and set(asset['exports']) == {'256', '128', '64', '32'}
-        old_source = replacement['previous_source_path'] if replacement else asset['source_path']
+        old_source = replacement['previous_source_path'] if replacement else revision['source_path']
         assert old_source == entry['source']
         with Image.open(local(entry['source'])) as source:
             assert list(source.size) == entry['native_dimensions'], name
         if not replacement:
-            assert asset['sha256'] == entry['sha256'] and asset['native_dimensions'] == entry['native_dimensions'], name
+            assert revision['sha256'] == entry['sha256'] and revision['native_dimensions'] == entry['native_dimensions'], name
         for size, path in asset['exports'].items():
             assert path == f'art/icons/gear/exports/{size}/{name}', path
-        old_exports = replacement['previous_exports'] if replacement else asset['exports']
+        old_exports = replacement['previous_exports'] if replacement else revision['exports']
         validate_images({1024: old_master, **{int(size): path for size, path in old_exports.items()}})
     for page in range(1, 8):
         for kind in ['overview', 'alpha-light', 'small-size']:
@@ -76,17 +91,18 @@ def validate():
             name = entry['filename']
             asset = catalog[Path(name).stem]
             assert asset['path'] == entry['path'] == f'art/icons/gear/{name}', name
-            assert asset['sha256'] == entry['sha256'] == hashlib.sha256(local(asset['path']).read_bytes()).hexdigest(), name
-            assert asset['source_path'] == entry['source'] and asset['native_dimensions'] == entry['native_dimensions'], name
+            revision = delivery_revision(asset, entry['sha256'])
+            assert revision['sha256'] == entry['sha256'] == hashlib.sha256(local(revision['path']).read_bytes()).hexdigest(), name
+            assert revision['source_path'] == entry['source'] and revision['native_dimensions'] == entry['native_dimensions'], name
             source = local(entry['source'])
             assert hashlib.sha256(source.read_bytes()).hexdigest() == entry['native_sha256'], name
             with Image.open(source) as image:
-                assert list(image.size) == asset['native_dimensions'], name
+                assert list(image.size) == revision['native_dimensions'], name
             assert asset['exports'] == entry['exports'] and set(asset['exports']) == {'256', '128', '64', '32'}
             for size, path in asset['exports'].items():
                 assert path == f'art/icons/gear/exports/{size}/{name}'
-                assert hashlib.sha256(local(path).read_bytes()).hexdigest() == entry['export_hashes'][size], path
-            validate_images({1024: asset['path'], **{int(size): path for size, path in asset['exports'].items()}})
+                assert hashlib.sha256(local(revision['exports'][size]).read_bytes()).hexdigest() == entry['export_hashes'][size], path
+            validate_images({1024: revision['path'], **{int(size): path for size, path in revision['exports'].items()}})
         print('OK: 13 Survival gear follow-ups, 65 RGBA files and three new magazine icons.')
 
 

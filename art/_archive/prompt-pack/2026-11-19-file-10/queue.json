@@ -1,0 +1,402 @@
+[
+  {
+    "n": 1,
+    "id": "hellraiser_service_rifle",
+    "title": "Hellraiser service rifle",
+    "path": "art/icons/gear/weapon-hellraiser_service_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_service_rifle.png"
+    ],
+    "paint": "A stamped-steel long-stroke assault rifle, the most common rifle pattern in the world. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a stamped steel receiver with a ribbed dust cover on top; a long gas tube above the barrel with a wooden upper handguard; a strongly curved, ribbed 30-round box magazine; a slanted muzzle brake; a tangent rear sight just in front of the dust cover and a front sight post on a triangular base near the muzzle; a large lever safety on the right side of the receiver; a wooden lower handguard, a separate pistol grip and a fixed wooden stock with a slight drop. Materials: dark blued and parkerised steel, warm reddish-brown wood with worn edges, steel rubbed bright at the edges and the magazine lips. Maker's touch: one muted oxide-red band (#CC2435) painted round the lower handguard. No bayonet.\nAt 32 px: the curved magazine, the gas tube over the barrel and the dropped wooden stock.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 2,
+    "id": "service_pistol",
+    "title": "Service pistol",
+    "path": "art/icons/gear/weapon-service_pistol.png",
+    "refs": [
+      "art/icons/gear/weapon-service_pistol.png"
+    ],
+    "paint": "A polymer-frame striker-fired service pistol, the pistol in every holster. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a blocky, squared steel slide with a flat top, squared front and fine vertical serrations at the rear; a small open ejection port; a polymer frame with a squared trigger guard; a trigger with a small safety blade in its face; no hammer showing; a slightly angled grip with shallow finger grooves and a flush magazine base. Materials: matte black slide with edges rubbed grey, black polymer frame. Maker's touch: one faded blue-grey (#5394AC) grip panel set into the side of the grip.\nAt 32 px: a plain blocky slide on a squared frame, no hammer.",
+    "repaint": true,
+    "span": 0.8
+  },
+  {
+    "n": 3,
+    "id": "magistrate_pistol",
+    "title": "Magistrate heavy pistol",
+    "path": "art/icons/gear/weapon-magistrate_pistol.png",
+    "refs": [
+      "art/icons/gear/weapon-magistrate_pistol.png"
+    ],
+    "paint": "A steel single-action heavy service pistol of the century-old pattern. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a slim, full-length flat-sided steel slide with vertical serrations at the rear; a short round barrel bushing at the muzzle, flush with the slide (no flare); a spur hammer at the back; a grip safety in the back of the grip with a beavertail; a thumb safety lever above the grip; a straight, near-vertical grip with flat side panels; a slim rounded trigger guard and a long flat trigger. Materials: polished dark blued steel with worn bright edges. Maker's touch: ivory grip panels with one small blank brass seal plate set in them.\nAt 32 px: a long slim flat slide over a straight grip with pale panels.",
+    "repaint": true,
+    "span": 0.8
+  },
+  {
+    "n": 4,
+    "id": "decrkm_autopistol",
+    "title": "Decrkm auto-pistol",
+    "path": "art/icons/gear/weapon-decrkm_autopistol.png",
+    "refs": [
+      "art/icons/gear/weapon-decrkm_autopistol.png"
+    ],
+    "paint": "A full-size select-fire burst machine pistol with a fold-down front grip. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a steel pistol with an open-top slide that shows the barrel; a short three-port compensator on the muzzle; an enlarged trigger guard; a small metal front grip hinged in front of the trigger guard and folded down, pointing to the ground; a long 20-round magazine reaching well below the grip; an exposed hammer. Materials: dark gunmetal, black grip panels, worn bright edges. Maker's touch: one small brass pin through the slide.\nAt 32 px: a pistol with a long magazine and a little grip hanging under its front.",
+    "repaint": true,
+    "span": 0.8
+  },
+  {
+    "n": 5,
+    "id": "decrkm_smg",
+    "title": "Decrkm SMG",
+    "path": "art/icons/gear/weapon-decrkm_smg.png",
+    "refs": [
+      "art/icons/gear/weapon-decrkm_smg.png"
+    ],
+    "paint": "A compact boxy telescoping-bolt submachine gun, the little SMG of every desert war. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width. Silhouette, kept exactly: a short, square, boxy stamped receiver; the straight magazine inserted through the pistol grip; a grip safety at the back of the grip; a short barrel with a knurled barrel nut at the front of the receiver; a ribbed top cover with a cocking knob on top; a folding metal stock folded forward under the receiver, its butt plate just behind the muzzle. Materials: gunmetal and worn black paint, black polymer grip. Maker's touch: none, no colour accent: bare worn gunmetal.\nAt 32 px: a small square box with the magazine coming out of the grip.",
+    "repaint": true,
+    "span": 0.75
+  },
+  {
+    "n": 6,
+    "id": "legion_pdw",
+    "title": "Legion PDW",
+    "path": "art/icons/gear/weapon-legion_pdw.png",
+    "refs": [
+      "art/icons/gear/weapon-legion_pdw.png"
+    ],
+    "paint": "The compact modern personal defence weapon with the long magazine through the pistol grip, the folding front grip and the two-rod sliding stock. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width. Silhouette, kept exactly: a short, tall, slab-sided polymer receiver whose top line steps down at the front, the tall part ending above the trigger guard and the lower front sloping forward to a short barrel that sticks out a hand's width; a full-length rail along the top with a small flip-up rear sight at the back and a flip-up front sight at the front; a T-shaped charging handle at the very back of the top; a pistol grip set well back, raked slightly, with a long straight magazine inserted through it and sticking out a good way below the grip; a large squared trigger guard; a vertical front grip hinged under the front of the receiver, folded down; a telescoping stock of two thin parallel rods with a small flat butt plate, pulled out to full length behind the receiver. Materials: olive-grey polymer and dark steel, anonymous and mass-produced. Maker's touch: none, no colour accent.\nAt 32 px: a short tall box with a long magazine dropping out of the grip, a front grip hanging under it and two thin rods behind; nothing lies on top of it.",
+    "repaint": true,
+    "span": 0.75
+  },
+  {
+    "n": 7,
+    "id": "mandestra_drum_gun",
+    "title": "Mandestra drum-gun",
+    "path": "art/icons/gear/weapon-mandestra_drum_gun.png",
+    "refs": [
+      "art/icons/gear/weapon-mandestra_drum_gun.png"
+    ],
+    "paint": "The classic drum-fed submachine gun of the old gang wars. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width. Silhouette, kept exactly: a finned (ribbed) barrel with a slotted compensator on its tip; a vertical wooden front grip under the barrel; a big round drum magazine under the receiver just in front of the trigger guard; a flat-sided receiver with a cocking knob on top; a wooden pistol grip; a fixed wooden stock. Materials: lacquered red-black finish on the metal, dark wood. Maker's touch: brass plates on the face of the drum, blank.\nAt 32 px: a round drum, a vertical front grip and a finned barrel.",
+    "repaint": true,
+    "span": 0.75
+  },
+  {
+    "n": 8,
+    "id": "long_rifle",
+    "title": "Long rifle",
+    "path": "art/icons/gear/weapon-long_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-long_rifle.png"
+    ],
+    "paint": "The classic military and police bolt-action precision rifle in a one-piece synthetic stock. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a one-piece synthetic stock with a straight comb, a near-vertical pistol grip, a deep wide fore-end and a thick rubber butt pad; a round cylindrical receiver with a turned-down bolt handle and a round knob on the right; a hinged floorplate flush under the stock, nothing hanging below; a long heavy round barrel, plain to a flat crown, no muzzle brake and no iron sights; a large long scope with tall adjustment turrets in two rings; a bipod folded under the front of the fore-end. Materials: matte olive-drab stock speckled darker, black matte steel, scuffed. Maker's touch: none, neutral matte.\nAt 32 px: a long heavy plain barrel, a big scope and a deep one-piece stock with no magazine showing.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 9,
+    "id": "blackpoint_700",
+    "title": ".700 Blackpoint anti-materiel",
+    "path": "art/icons/gear/weapon-blackpoint_700.png",
+    "refs": [
+      "art/icons/gear/weapon-blackpoint_700.png"
+    ],
+    "paint": "A huge semi-automatic anti-materiel rifle, the biggest rifle a person can fire. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 90% of the canvas width, drawn dense and heavy. Silhouette, kept exactly: a very long flat two-part receiver; a long heavy barrel ending in a large arrowhead-shaped double-chamber muzzle brake; a top rail with a big scope; a carry handle; a folding bipod at the front of the receiver; a box magazine; a big recoil pad on the butt. Materials: grim dark grey steel, worn. Maker's touch: none; the muzzle brake scorched dark.\nAt 32 px: a very long flat rifle with an arrowhead muzzle and a bipod.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 10,
+    "id": "ccec_marksman_rifle",
+    "title": "CCEC marksman rifle",
+    "path": "art/icons/gear/weapon-ccec_marksman_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-ccec_marksman_rifle.png"
+    ],
+    "paint": "The classic long, slim short-stroke-piston semi-automatic marksman rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long slim milled receiver; a short-stroke gas piston in a slim gas tube above a long thin barrel; a slotted flash hider; slotted handguards; a skeleton thumbhole stock with an open frame and a cheek rest; a long scope mounted offset on a side rail; a short, slightly curved 10-round box magazine. Materials: ivory polymer furniture, dark steel. Maker's touch: one thin blue-grey stripe (#5394AC) along the stock.\nAt 32 px: a long thin rifle with an open skeleton stock and a scope.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 11,
+    "id": "adamantile_battle_rifle",
+    "title": "Adamantile battle rifle",
+    "path": "art/icons/gear/weapon-adamantile_battle_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-adamantile_battle_rifle.png"
+    ],
+    "paint": "The tilting-breechblock metric battle rifle with the long slotted flash hider, the right arm of half the world's armies. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long slim receiver whose top cover tapers down at the back to a rear peep sight; a small folding cocking handle on the left side of the receiver, toward its front; a straight 20-round box magazine with a slight forward lean, set ahead of the trigger guard; a separate, steeply raked pistol grip; a slim handguard flaring wider at the back, with ventilation slots along it; a tall front sight post with two protective ears near the muzzle; a long slotted flash hider; a fixed stock in line with the receiver with a ribbed butt plate. No carry handle. Materials: dark steel and black furniture. Maker's touch: one small blank gilt boss at the heel of the stock and a thin brass-orange (#F68A38) trim line; no plates.\nAt 32 px: a long straight rifle with a straight magazine, a tall eared front sight and a long slotted flash hider.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 12,
+    "id": "hellraiser_lmg",
+    "title": "Hellraiser LMG",
+    "path": "art/icons/gear/weapon-hellraiser_lmg.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_lmg.png",
+      "art/icons/gear/weapon-hellraiser_service_rifle.png"
+    ],
+    "paint": "The light machine gun of the stamped long-stroke rifle family: the line's service rifle lengthened. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 90% of the canvas width, drawn dense and heavy. Silhouette, kept exactly: the same stamped receiver as the line's service rifle, with the ribbed dust cover and the large lever safety on the right; a long, heavier barrel running far past the handguard, with a plain slotted muzzle device; a folding bipod hinged near the muzzle, its two legs folded back along the barrel; a long gas tube with a wooden upper handguard and a wooden lower handguard; a long, strongly curved ribbed box magazine (longer than the rifle's); a tangent rear sight on the receiver; a fixed wooden stock with a deep club-foot butt. Materials: dark blued and parkerised steel, warm reddish-brown wood with hard scratches. Maker's touch: one muted oxide-red band (#CC2435) round the lower handguard. No trench spikes.\nAt 32 px: the service rifle's shape made long, with a bipod at the muzzle, a long curved magazine and a club-foot stock.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 13,
+    "id": "lumeri_scattergun",
+    "title": "Lumeri scattergun",
+    "path": "art/icons/gear/weapon-lumeri_scattergun.png",
+    "refs": [
+      "art/icons/gear/weapon-lumeri_scattergun.png"
+    ],
+    "paint": "A pump-action combat shotgun, the shotgun in every patrol car. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 80% of the canvas width. Silhouette, kept exactly: a long tube magazine under the barrel; a ribbed pump fore-end on the tube; a receiver with a side ejection port; a bead front sight; a plain fixed stock with a straight wrist. Materials: ivory-painted wood, dark steel. Maker's touch: one thin Lumeri gold (#F2C46A) inlay line along the stock.\nAt 32 px: a long barrel over a tube, with a ribbed pump.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 14,
+    "id": "brigade_auto_shotgun",
+    "title": "Brigade auto-shotgun",
+    "path": "art/icons/gear/weapon-brigade_auto_shotgun.png",
+    "refs": [
+      "art/icons/gear/weapon-brigade_auto_shotgun.png",
+      "art/icons/gear/weapon-hellraiser_service_rifle.png"
+    ],
+    "paint": "A box-fed semi-automatic shotgun on the stamped long-stroke rifle's body. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 80% of the canvas width. Silhouette, kept exactly: the stamped receiver with a ribbed dust cover and a large lever safety on the right; a fat, straight box magazine; a short gas tube over the barrel; a thick barrel; a separate pistol grip; a side-folding stock, extended. Materials: dark steel and black polymer. Maker's touch: one small blank gilt boss on the stock and a thin brass-orange (#F68A38) trim line; no plates.\nAt 32 px: the stamped rifle body with a fat straight magazine and a thick barrel.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 15,
+    "id": "smetanita_thumper",
+    "title": "Smetanita thumper",
+    "path": "art/icons/gear/weapon-smetanita_thumper.png",
+    "refs": [
+      "art/icons/gear/weapon-smetanita_thumper.png"
+    ],
+    "paint": "A single-shot break-action 40 mm grenade launcher, the classic shoulder-fired one. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 90% of the canvas width. Silhouette, kept exactly: a fat, short, wide barrel; a folding leaf sight standing up on top of the barrel; a break-action hinge in front of the trigger and a top lever; a slim wooden fore-end under the barrel; a wooden shoulder stock with a thick rubber pad. Materials: lacquered black metal, dark wood. Maker's touch: brass on the hinge and one small blank brass tag on the stock.\nAt 32 px: a fat stubby barrel on a slim wooden stock, with a leaf sight on top.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 16,
+    "id": "breacher_tube",
+    "title": "Breacher tube",
+    "path": "art/icons/gear/weapon-breacher_tube.png",
+    "refs": [
+      "art/icons/gear/weapon-breacher_tube.png"
+    ],
+    "paint": "A reusable shoulder-fired recoilless rifle. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 90% of the canvas width, drawn dense and heavy. Silhouette, kept exactly: a long fat tube; a flared venturi cone at the rear; a front grip under the front half; a pistol grip with the trigger under the middle; a padded shoulder rest; a side optic on a bracket on the left. Materials: olive-drab tube, black grips. Maker's touch: one pale stripe painted round the tube near the muzzle.\nAt 32 px: a fat tube with a flared rear, two grips and a side sight.",
+    "repaint": true,
+    "span": 0.85
+  },
+  {
+    "n": 17,
+    "id": "frontier_hand_cannon",
+    "title": "Frontier hand cannon",
+    "path": "art/icons/gear/weapon-frontier_hand_cannon.png",
+    "refs": [
+      "art/icons/gear/weapon-frontier_hand_cannon.png"
+    ],
+    "paint": "A big double-action magnum revolver, the detective's hand cannon. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a long barrel with a full-length underlug beneath it and a vented top rib; a large fluted six-chamber cylinder; an adjustable rear sight; an exposed hammer; a rubber-wrapped grip with finger grooves. Materials: dark polished steel, black rubber grip. Maker's touch: aged brass bands round the cylinder.\nAt 32 px: a long heavy barrel with a deep underlug and a big cylinder.",
+    "repaint": true,
+    "span": 0.8
+  },
+  {
+    "n": 18,
+    "id": "adcorp_line_rifle",
+    "title": "ADCorp line rifle (the line's base)",
+    "path": "art/icons/gear/weapon-adcorp_line_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_service_rifle.png",
+      "art/icons/gear/weapon-legion_bullpup.png"
+    ],
+    "paint": "A modular light assault rifle in the classic straight-line layout. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the stock, the buffer tube and the barrel all on one straight line; a two-part receiver (a flat-top upper with a full-length top rail, a separate lower with a flared magazine well); a slightly curved 30-round box magazine; a tall triangular A-frame front sight post over the gas block; a small flip-up rear sight on the rail; a forward assist bump and a round ejection-port cover on the right of the upper; a sliding six-position stock on a round tube; a round ribbed handguard; a birdcage flash hider; a separate pistol grip. Materials: black anodised metal and black polymer, rubbed grey at the edges and the magazine lips. Maker's touch: one small blank tag in muted vermilion (#C4553A) clipped to the sling loop at the stock.\nAt 32 px: the straight line from stock to muzzle, the triangle front sight and the curved magazine.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 19,
+    "id": "adcorp_short_carbine",
+    "title": "ADCorp short carbine",
+    "path": "art/icons/gear/weapon-adcorp_short_carbine.png",
+    "refs": [
+      "art/icons/gear/weapon-legion_pdw.png",
+      "art/icons/gear/weapon-adcorp_line_rifle.png"
+    ],
+    "paint": "The same modular rifle cut down for close quarters. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width like the submachine guns. Silhouette, kept exactly: the straight-line layout, the flat-top upper with a full-length rail and the flared magazine well of the modular rifle, but a very short barrel that ends just past a short free-float rail handguard with slots along its sides; a short angled foregrip; a compact sliding stock collapsed all the way in; a curved 30-round box magazine; a short flash hider; a small red-dot optic on the rail and no front sight post. Materials: black anodised metal and black polymer, edges worn grey. Maker's touch: one small blank tag in muted vermilion (#C4553A) on the sling loop.\nAt 32 px: the line rifle's body with almost no barrel, a collapsed stock and a dot sight.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 20,
+    "id": "adcorp_designated_rifle",
+    "title": "ADCorp designated rifle",
+    "path": "art/icons/gear/weapon-adcorp_designated_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-ccec_marksman_rifle.png",
+      "art/icons/gear/weapon-adcorp_line_rifle.png"
+    ],
+    "paint": "The modular rifle grown into a full-power semi-automatic marksman rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the straight-line two-part receiver of the modular rifle but larger and deeper; a long heavy free-floating barrel inside a long slim free-float rail handguard; a straight 20-round box magazine (not curved); a long scope in two rings on the top rail; a fixed adjustable precision stock with a raised cheek piece; a folded bipod under the handguard; a short muzzle brake. Materials: black and dark earth-brown polymer and anodised metal, scuffed. Maker's touch: one small blank tag in muted vermilion (#C4553A) on the stock's sling loop.\nAt 32 px: the straight-line modular body, long and scoped, with a straight magazine.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 21,
+    "id": "chezknov_battle_rifle",
+    "title": "Chezknov battle rifle (the line's base)",
+    "path": "art/icons/gear/weapon-chezknov_battle_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-adamantile_battle_rifle.png"
+    ],
+    "paint": "A roller-delayed full-power battle rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long slim stamped-steel receiver with a cocking tube running forward above the barrel, the cocking handle folded at the front-left of the tube; a hooded front sight post at the end of the tube and a round rotary drum rear sight at the back of the receiver; a straight 20-round box magazine; a slim, slightly flared ribbed fore-end; a separate pistol grip; a fixed long polymer stock with a flat butt; a slotted flash hider. Materials: black-painted stamped steel worn to grey on the edges, black or very dark green polymer furniture. Maker's touch: one brass rivet on the side of the receiver above the grip.\nAt 32 px: the long slim receiver with a tube on top, a drum sight at the back and a straight magazine.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 22,
+    "id": "chezknov_machine_carbine",
+    "title": "Chezknov machine carbine",
+    "path": "art/icons/gear/weapon-chezknov_machine_carbine.png",
+    "refs": [
+      "art/icons/gear/weapon-whisper_smg.png",
+      "art/icons/gear/weapon-chezknov_battle_rifle.png"
+    ],
+    "paint": "A roller-delayed submachine gun, the slim classic of every counter-terror team. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width like the submachine guns. Silhouette, kept exactly: a slim round stamped receiver tube with the cocking tube above the short barrel and the cocking handle at its front-left; a hooded front sight ring and a round rotary drum rear sight; a strongly curved 30-round pistol-calibre magazine set just ahead of the trigger group; a slim ribbed fore-end that tapers to the muzzle with three small lugs; a retracted sliding metal stock of two bars with a rubber butt pad. Materials: black stamped steel worn to grey, black polymer grip and fore-end. Maker's touch: one brass rivet on the receiver above the grip.\nAt 32 px: a slim tube with a curved magazine, a drum sight and a bar stock.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 23,
+    "id": "chezknov_precision_rifle",
+    "title": "Chezknov precision rifle",
+    "path": "art/icons/gear/weapon-chezknov_precision_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-long_rifle.png",
+      "art/icons/gear/weapon-chezknov_battle_rifle.png"
+    ],
+    "paint": "The roller-delayed rifle made into a heavy semi-automatic precision rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the same long slim stamped receiver and cocking tube as the battle rifle, but a heavy thick barrel and a deep squared fore-end; a big long scope low on a claw mount; a large adjustable precision stock with a tall cheek piece and an adjustable butt plate; a vertical palm-shelf pistol grip; a straight box magazine; a plain fore-end with nothing under it. Materials: black stamped steel and black polymer, matte. Maker's touch: one brass rivet on the receiver. Avoid: a bipod or support leg.\nAt 32 px: the battle rifle's body, thick and scoped, with a big squared adjustable stock.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 24,
+    "id": "arsenal_piston_rifle",
+    "title": "Arsenal piston rifle (the line's base)",
+    "path": "art/icons/gear/weapon-arsenal_piston_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_service_rifle.png",
+      "art/icons/gear/weapon-ccec_marksman_rifle.png"
+    ],
+    "paint": "A modern short-stroke piston modular assault rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long one-piece aluminium upper receiver with a continuous top rail from the back to the muzzle and short rails on the sides; a reciprocating charging handle on the left of the upper; an angular polymer lower with a flared magazine well; a slightly curved box magazine; a side-folding telescoping polymer stock with a stepped angular cheek riser, extended; a prong flash hider; folded flip-up iron sights. Materials: two-tone: sand-coloured polymer lower and stock, darker sand anodised upper, black barrel and magazine. Maker's touch: one thin blue-grey trim line (#5394AC) along the lower edge of the stock.\nAt 32 px: the long flat upper with a rail all the way, a sand two-tone body and an angular stock.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 25,
+    "id": "arsenal_courier_pdw",
+    "title": "Arsenal courier PDW",
+    "path": "art/icons/gear/weapon-arsenal_courier_pdw.png",
+    "refs": [
+      "art/icons/gear/weapon-legion_pdw.png",
+      "art/icons/gear/weapon-arsenal_piston_rifle.png"
+    ],
+    "paint": "A compact top-fed bullpup personal defence weapon. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width like the submachine guns. Silhouette, kept exactly: one smooth sculpted polymer body with rounded edges; a long flat translucent smoke-grey magazine lying horizontally along the whole top of the gun, with the small cartridges inside it seen lying sideways; a thumbhole-style grip with a large trigger-guard opening and a second hole in front for the support hand; a short barrel with a small flash hider; a small reflex sight above the front of the magazine. Materials: dark green-black polymer, the magazine smoke-grey and translucent. Maker's touch: one thin blue-grey trim line (#5394AC) along the butt.\nAt 32 px: a rounded body with a flat bar lying on top of it and a hole for the hand.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 26,
+    "id": "arsenal_heavy_rifle",
+    "title": "Arsenal heavy rifle",
+    "path": "art/icons/gear/weapon-arsenal_heavy_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-ccec_marksman_rifle.png",
+      "art/icons/gear/weapon-arsenal_piston_rifle.png"
+    ],
+    "paint": "The piston rifle in full-power precision form. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the same long one-piece upper with a continuous top rail and the angular lower as the piston rifle, larger; a long heavy barrel; a straight 20-round box magazine; a fixed precision stock with an adjustable cheek piece and an adjustable butt plate in the same angular stepped style; a long scope; a folded bipod; a muzzle brake. Materials: sand-coloured polymer and anodised metal, black barrel and magazine. Maker's touch: one thin blue-grey trim line (#5394AC) along the stock.\nAt 32 px: the piston rifle, longer and scoped, with a straight magazine and a fixed stock.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 27,
+    "id": "smetanita_service_pistol",
+    "title": "Smetanita service pistol (the line's base)",
+    "path": "art/icons/gear/weapon-smetanita_service_pistol.png",
+    "refs": [
+      "art/icons/gear/weapon-service_pistol.png",
+      "art/icons/gear/weapon-smetanita_thumper.png"
+    ],
+    "paint": "A full-size all-steel double-action service pistol whose slide rides inside the frame rails. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols. Silhouette, kept exactly: a low, slim, fully closed slide that sits down inside the frame, the frame rails showing as a line along the slide's lower edge, the barrel never showing on top; a full-length dust cover under the slide; an exposed spur hammer; a thumb safety on the frame above the grip, none on the slide; a short tang over the web of the hand; a plain rounded trigger guard with no hook; a long grip with a gentle swell and a flush magazine. Materials: matte black steel, black grip panels. Maker's touch: one small round brass medallion, blank, set in the grip panel.\nAt 32 px: a low slim slide sunk into the frame, a spur hammer and a long swelling grip; no open top and no barrel showing.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 28,
+    "id": "smetanita_pocket_pistol",
+    "title": "Smetanita pocket pistol",
+    "path": "art/icons/gear/weapon-smetanita_pocket_pistol.png",
+    "refs": [
+      "art/icons/gear/weapon-parlour_pistol.png",
+      "art/icons/gear/weapon-smetanita_service_pistol.png"
+    ],
+    "paint": "A small, slim double-action pocket pistol, the secret agent's pistol. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols (do not draw it smaller: it is told apart by shape). Silhouette, kept exactly: a slim, smoothly rounded slide that wraps around a fixed barrel, with fine vertical grip serrations at the back; a small round hammer spur; a slide-mounted safety lever; a short rounded grip with a finger rest under the magazine; a small rounded trigger guard; very small fixed sights. Materials: polished blued steel, black grip panels. Maker's touch: one small round brass medallion, blank, in the grip.\nAt 32 px: small, slim and rounded, with a short grip and a finger rest.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 29,
+    "id": "smetanita_hand_cannon",
+    "title": "Smetanita hand cannon",
+    "path": "art/icons/gear/weapon-smetanita_hand_cannon.png",
+    "refs": [
+      "art/icons/gear/weapon-frontier_hand_cannon.png",
+      "art/icons/gear/weapon-smetanita_service_pistol.png"
+    ],
+    "paint": "The big-bore gas-operated semi-automatic hand cannon. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols. Silhouette, kept exactly: a very long, tall, flat slab-sided slide and barrel unit whose front face is a big triangle around the muzzle; a long flat top rib along the barrel; a slide that stops well short of the muzzle; a large squared trigger guard; a wide, long grip with a hammer at the back; a heavy squared look throughout. Materials: polished lacquer-black steel with soft highlights. Maker's touch: one small round brass medallion, blank, in the grip.\nAt 32 px: a huge flat slab of a pistol with a triangular muzzle.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 30,
+    "id": "albert_town_service_rifle",
+    "title": "Albert Town service rifle (the line's base)",
+    "path": "art/icons/gear/weapon-albert_town_service_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-lever_carbine.png",
+      "art/icons/gear/weapon-hellraiser_service_rifle.png"
+    ],
+    "paint": "A wood-stocked full-power battle rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long one-piece wooden stock running from the butt nearly to the muzzle, with a short ventilated metal handguard on top of the barrel at the front; a steel receiver with the operating rod and its handle exposed along the right side; a short straight 20-round box magazine hanging below the receiver; a hooded aperture rear sight on the receiver and a winged front sight blade on a slotted flash suppressor; a straight wrist (no separate pistol grip). Materials: oiled walnut with dark grain, parkerised grey-black steel. Maker's touch: one brass screw in the buttplate.\nAt 32 px: a long all-wood rifle with a short box magazine and a slotted muzzle.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 31,
+    "id": "albert_town_brush_carbine",
+    "title": "Albert Town brush carbine",
+    "path": "art/icons/gear/weapon-albert_town_brush_carbine.png",
+    "refs": [
+      "art/icons/gear/weapon-lever_carbine.png",
+      "art/icons/gear/weapon-albert_town_service_rifle.png"
+    ],
+    "paint": "A semi-automatic wood carbine with a folding blade bayonet. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width like the short guns. Silhouette, kept exactly: a one-piece wooden stock with a straight wrist; a fixed box magazine that is a shallow bulge just in front of the trigger guard (no detachable magazine hanging down); a gas tube over the barrel ending at a hooded front sight; a folding blade bayonet hinged under the muzzle, folded back under the barrel against the wood; a tangent rear sight; a bolt handle on the right side of the receiver. Materials: reddish shellacked wood, blued steel worn to grey. Maker's touch: one brass screw in the buttplate.\nAt 32 px: a short wood carbine with a blade folded under its barrel and no hanging magazine.",
+    "repaint": false,
+    "span": 0.85
+  },
+  {
+    "n": 32,
+    "id": "albert_town_stalking_rifle",
+    "title": "Albert Town stalking rifle",
+    "path": "art/icons/gear/weapon-albert_town_stalking_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-long_rifle.png",
+      "art/icons/gear/weapon-albert_town_service_rifle.png"
+    ],
+    "paint": "The classic full-stocked bolt-action stalking rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a figured walnut stock running the full length of the short barrel to the muzzle, ending in a steel nose cap, with a raised cheek piece and a pistol-grip cap; a flat, spoon-shaped bolt handle swept back along the stock; a short barrel with a small folding leaf rear sight and a bead front sight at the nose cap; a small hunting scope in two low rings; a hinged floorplate with no magazine hanging below; a leather sling with two swivels. Materials: warm figured walnut, polished blued steel, oiled leather. Maker's touch: one brass screw in the buttplate.\nAt 32 px: wood all the way to the muzzle, a small scope and a flat swept-back bolt; against the long rifle, no heavy bare barrel, no big scope and no bipod.",
+    "repaint": false,
+    "span": 0.85
+  }
+]

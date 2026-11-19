@@ -1,0 +1,55 @@
+{
+  "n": 2,
+  "id": "service_pistol",
+  "title": "Service pistol",
+  "path": "art/icons/gear/weapon-service_pistol.png",
+  "refs": [
+    "art/icons/gear/weapon-service_pistol.png"
+  ],
+  "paint": "A polymer-frame striker-fired service pistol, the pistol in every holster. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a blocky, squared steel slide with a flat top, squared front and fine vertical serrations at the rear; a small open ejection port; a polymer frame with a squared trigger guard; a trigger with a small safety blade in its face; no hammer showing; a slightly angled grip with shallow finger grooves and a flush magazine base. Materials: matte black slide with edges rubbed grey, black polymer frame. Maker's touch: one faded blue-grey (#5394AC) grip panel set into the side of the grip.\nAt 32 px: a plain blocky slide on a squared frame, no hammer.",
+  "repaint": true,
+  "span": 0.8,
+  "label": "Service pistol",
+  "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-service_pistol.png",
+    "128": "art/icons/gear/exports/128/weapon-service_pistol.png",
+    "64": "art/icons/gear/exports/64/weapon-service_pistol.png",
+    "32": "art/icons/gear/exports/32/weapon-service_pistol.png"
+  },
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/02-weapon-service_pistol.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 1,
+  "origin": "brief",
+  "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-service_pistol.png",
+  "previous_exports": {
+    "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-service_pistol.png",
+    "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-service_pistol.png",
+    "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-service_pistol.png",
+    "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-service_pistol.png"
+  },
+  "previous_source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P049.png",
+  "implementation_ready": false,
+  "collection": "prompt-pack-2026-11-19-file-10",
+  "previous_sha256": "cd5841d14335d25229287f0398e49f76cf8c4e3d9f8459db78e920510aa6697e",
+  "previous_native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_sha256": "573c20fa7cc71b123b6d53169e3b8f75d6f4e4ce836c6fe4023a77a53ed9005b",
+  "export_sha256": {
+    "256": "bc50fd7f3a0a7d1b9ecded5fa0c49b01c1a4e478875cbef29e399312b1950e53",
+    "128": "8c15510dd69d0aa4a2cd4e6b28e20b0feeb583a9e90b246de448475a296a2354",
+    "64": "31612043d0aff4489da78ccd1e7ae41dfe397b08d8da36a99e972cd5f6cafb91",
+    "32": "ec396ae29667254e76ca104b2cfb4b381a79076e2e62095d42fb5d86670afdaf"
+  },
+  "generator_prompt": "One isolated fictional game inventory painting for Project Heaven Cry RPG. A stylized, nonfunctional prop, shown in one single exterior perspective, no schematic or inset. Heavenprint hand-painted gouache, bold contour, visible angular brushwork, crisp focal edge, medium dark shadows, upper-left warm ivory highlights, wear kept within the object. First reference is brushwork only. Remaining refs are fictional RPG family icons; use their brushwork, palette and scale. Service Pistol repaint for the RPG. A compact plain block of matte charcoal sits above a moderately angled black grip and a squared thin guard outline. Level side profile pointing right. Clean flat top, short straight squared front, a small closed dark inset at its top edge, short rear scorelines, flush bottom and no external hammer. A single narrow desaturated blue-grey grip panel, lightly worn. One understated blocky exterior prop. On a true transparent 1024 square with clear margins, no stage or cast shadow. No print, letters, numbers, people, logos, insignia, flare, smoke, backdrop or colored frame. One clear silhouette readable at 32 px."
+}

@@ -1,0 +1,55 @@
+{
+  "n": 3,
+  "id": "magistrate_pistol",
+  "title": "Magistrate heavy pistol",
+  "path": "art/icons/gear/weapon-magistrate_pistol.png",
+  "refs": [
+    "art/icons/gear/weapon-magistrate_pistol.png"
+  ],
+  "paint": "A steel single-action heavy service pistol of the century-old pattern. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a slim, full-length flat-sided steel slide with vertical serrations at the rear; a short round barrel bushing at the muzzle, flush with the slide (no flare); a spur hammer at the back; a grip safety in the back of the grip with a beavertail; a thumb safety lever above the grip; a straight, near-vertical grip with flat side panels; a slim rounded trigger guard and a long flat trigger. Materials: polished dark blued steel with worn bright edges. Maker's touch: ivory grip panels with one small blank brass seal plate set in them.\nAt 32 px: a long slim flat slide over a straight grip with pale panels.",
+  "repaint": true,
+  "span": 0.8,
+  "label": "Magistrate heavy pistol",
+  "sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-magistrate_pistol.png",
+    "128": "art/icons/gear/exports/128/weapon-magistrate_pistol.png",
+    "64": "art/icons/gear/exports/64/weapon-magistrate_pistol.png",
+    "32": "art/icons/gear/exports/32/weapon-magistrate_pistol.png"
+  },
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/03-weapon-magistrate_pistol.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 27,
+  "origin": "brief",
+  "implementation_ready": false,
+  "collection": "prompt-pack-2026-11-19-file-10",
+  "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-magistrate_pistol.png",
+  "previous_sha256": "2f2480add3d3b09b9546464aea65ccd153b8b843cc1df8a7969632286ba035cd",
+  "previous_exports": {
+    "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-magistrate_pistol.png",
+    "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-magistrate_pistol.png",
+    "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-magistrate_pistol.png",
+    "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-magistrate_pistol.png"
+  },
+  "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-magistrate_pistol.png",
+  "previous_native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_sha256": "0286bedbd84bf40e83861ff0d3c2df2f687f09939ec9431f2f21a749735c3cc2",
+  "export_sha256": {
+    "256": "58589365213cef08409f85fca1da9b5c0a6fe2041edcf2db2b1f22fbf5073653",
+    "128": "3c09773a50a1d14531a7629748e476744128204d3a46aac6b77b023b14642d73",
+    "64": "4a1aa3dbd5156911b7c265599e729f21d9764938d2afc29c2bc52ac357649eef",
+    "32": "0d31cf6968562f513336aea730d9238ed131f22820bb4c4146e781a328173162"
+  },
+  "generator_prompt": "One isolated fictional game inventory painting for Project Heaven Cry RPG. A stylized, nonfunctional prop, shown in one single exterior perspective, no schematic or inset. Heavenprint hand-painted gouache, bold contour, visible angular brushwork, crisp focal edge, medium dark shadows, upper-left warm ivory highlights, wear kept within the object. First reference is brushwork only. Remaining refs are fictional RPG family icons; use their brushwork, palette and scale. Magistrate Heavy Pistol repaint for the RPG. A long slim flat blued-steel top contour with an extremely subtle small circular end at right, a short upward rear spur, a simple rounded guard under it, near-vertical ivory handle, a tiny blank brass plate inset flush in the ivory. Rubbing on the dark steel edges only. Level side profile, narrow simple proportions. One prop with no ornamental crest or readable marks. On a true transparent 1024 square with clear margins, no stage or cast shadow. No print, letters, numbers, people, logos, insignia, flare, smoke, backdrop or colored frame. One clear silhouette readable at 32 px."
+}
