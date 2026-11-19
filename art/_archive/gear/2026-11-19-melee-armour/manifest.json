@@ -722,6 +722,66 @@
       "grade": "standard",
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_pick",
+      "path": "art/icons/gear/weapon-war_pick.png",
+      "sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7",
+      "label": "War pick",
+      "family": "05-hammers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-war_pick.png",
+        "sha256": "c4911c66a238d11eca0128f58602af33ad68c4c85f1815a3cb2189ce1a88763a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/masters/v1/weapon-war_pick.png",
+        "sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-melee-armour/prompts/weapon-war_pick.txt",
+        "sha256": "b83d19be3f91a5c2ee62b9a25a7ead8fbce968ded227119ec6143113fb2c31f1"
+      },
+      "references": [
+        {
+          "path": "art/sprites/objects/fuel-drum.png",
+          "sha256": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d"
+        },
+        {
+          "path": "art/sprites/objects/tool-rack.png",
+          "sha256": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616"
+        },
+        {
+          "path": "art/sprites/objects/field-lamp.png",
+          "sha256": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-maul.png",
+          "sha256": "50f0d5620bd8dd5a51d0e676e69ebad5e586a47a01634ac17ac96d7a26da8dac"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_pick.png",
+        "128": "art/icons/gear/exports/128/weapon-war_pick.png",
+        "64": "art/icons/gear/exports/64/weapon-war_pick.png",
+        "32": "art/icons/gear/exports/32/weapon-war_pick.png"
+      },
+      "export_hashes": {
+        "256": "e39d252c2ced127dbc25760de284fe14c71d0844f81667020e08327e35606c89",
+        "128": "01ddd209d50fa6433f92d3699a0ec2507835a272f59e5ce7fc9a1ef2b977bd7d",
+        "64": "73b6e7786c1a7c0cc7f9f33b68c8ae3602c86a75cedebe696f4ce567365d97af",
+        "32": "d76f286c44eab0f7a0f2fc6bef2b33bbebfde19cc6c60efbcb1a9e8f23e2717c"
+      },
+      "grade": "standard",
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
