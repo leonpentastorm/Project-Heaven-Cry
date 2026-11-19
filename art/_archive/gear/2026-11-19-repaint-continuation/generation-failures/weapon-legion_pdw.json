@@ -1,0 +1,4 @@
+{
+  "id": "weapon-legion_pdw",
+  "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID c041c158-ac09-4fd4-8541-ec1f20cfeec2. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+}

@@ -18,5 +18,16 @@
     "weapon-breacher_tube",
     "weapon-frontier_hand_cannon"
   ],
-  "production_approved": false
+  "production_approved": false,
+  "blocked": [
+    "weapon-hellraiser_service_rifle",
+    "weapon-decrkm_smg",
+    "weapon-legion_pdw",
+    "weapon-mandestra_drum_gun",
+    "weapon-long_rifle"
+  ],
+  "waiting_dependency": [
+    "weapon-hellraiser_lmg",
+    "weapon-brigade_auto_shotgun"
+  ]
 }

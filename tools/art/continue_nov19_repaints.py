@@ -23,7 +23,7 @@ def export(asset,source):
  master=BASE/f'masters/v1/{asset}.png';master.parent.mkdir(parents=True,exist_ok=True);shutil.copy2(target,master)
  row=read(OLD/f'records/{j["n"]:02}.json');record={'id':asset,'record':str((OLD/f'records/{j["n"]:02}.json').relative_to(ROOT)),'references':[rec(ROOT/p) for p in j['refs']],'reference_sources':[rec(ROOT/p) for p in j.get('reference_sources',[])],'prompt':rec(BASE/f'prompts/{asset}.txt'),'master':rec(master),'previous_catalog':rec(BASE/f'previous-catalog/{asset}.json')}
  dump(BASE/f'records/{asset}.json',record);j['status']='delivered';dump(BASE/'queue.json',q)
- progress=read(BASE/'progress.json');progress.update(status='drawing' if any(x['status']=='pending' for x in q) else 'complete-review-pending',delivered=[x['id'] for x in q if x['status']=='delivered'],remaining=[x['id'] for x in q if x['status']=='pending'],updated_utc=datetime.now(timezone.utc).isoformat());dump(BASE/'progress.json',progress)
+ progress=read(BASE/'progress.json');progress.update(status='drawing' if any(x['status']!='delivered' for x in q) else 'complete-review-pending',delivered=[x['id'] for x in q if x['status']=='delivered'],remaining=[x['id'] for x in q if x['status']!='delivered'],updated_utc=datetime.now(timezone.utc).isoformat());dump(BASE/'progress.json',progress)
  font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',12)
  for size in (64,32):
   paths=[ROOT/p for p in j['refs'] if '/gear/' in p or '/before/' in p];paths.append(target)
@@ -58,7 +58,7 @@ def validate(asset=None):
     box=m.check_frame(im,size)
     if size==1024:assert min(box[0],box[1],size-box[2],size-box[3])>=50
   for size in (64,32):assert (BASE/f'reviews/{j["id"]}-{size}px.png').is_file()
- assert p['delivered']==[j['id'] for j in q if j['status']=='delivered'];assert p['remaining']==[j['id'] for j in q if j['status']=='pending']
+ assert p['delivered']==[j['id'] for j in q if j['status']=='delivered'];assert p['remaining']==[j['id'] for j in q if j['status']!='delivered']
  print(f'PASS: {len(p["delivered"])}/14 selected File10 repaints; sources, archived previous masters/exports, references, hashes, RGBA margins and progress. Pixel scope: {asset or "all delivered"}. Historical omitted art not byte-validated.')
 if __name__=='__main__':
  ap=argparse.ArgumentParser();ap.add_argument('--id');ap.add_argument('--source',type=Path);ap.add_argument('--validate',action='store_true');args=ap.parse_args()
