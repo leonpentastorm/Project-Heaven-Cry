@@ -149,32 +149,38 @@ const sideways = (p) => p.evaluate(() => document.documentElement.scrollWidth - 
   for (const [W, H] of SIZES) {
     const at = W + '×' + H + ': ';
     await p.setViewportSize({ width: W, height: H }); await settle(p, 400);
-    const L = await p.evaluate(() => ({ fams: document.querySelectorAll('.phc-lu-core').length, attrs: document.querySelectorAll('.phc-lu-attrcol').length, skills: document.querySelectorAll('.phc-lu-skill').length,
-      coreBtn: document.querySelectorAll('button[data-raise="core"]').length, ceil: (document.querySelector('.phc-lu-ceiling') || {}).textContent || '', ceils: [...document.querySelectorAll('.phc-lu-ceil')].map((x) => x.textContent),
-      next: [...document.querySelectorAll('.phc-lu-attr-next')].map((x) => x.textContent), gives: document.querySelectorAll('.phc-lu-next').length, old: document.querySelectorAll('.phc-lu-give').length, marks: document.querySelectorAll('.phc-lu-marks [data-mark]').length, slots: [...document.querySelectorAll('.phc-lu-attrcol[data-attr="endurance"] .phc-lu-slot')].map((x) => x.textContent),
+    // spend first: one family on screen (BODY / MIND / SOUL tabs), the header holds the budget
+    await p.locator('[data-fam="body"]').click(); await settle(p, 200);
+    const L = await p.evaluate(() => ({ tabs: [...document.querySelectorAll('[role="tablist"][aria-label="Families"] [role="tab"]')].map((x) => x.getAttribute('data-fam')).join(),
+      fams: document.querySelectorAll('.phc-lu-core').length, attrs: document.querySelectorAll('.phc-lu-attrcol').length, skills: document.querySelectorAll('.phc-lu-skill').length,
+      coreBtn: document.querySelectorAll('button[data-raise="core"]').length, ceil: (document.querySelector('.phc-lu-ceiling') || {}).textContent || '',
+      next: [...document.querySelectorAll('.phc-lu-attr-next')].map((x) => x.textContent), gives: document.querySelectorAll('.phc-lu-skill .phc-lu-next').length, slots: [...document.querySelectorAll('.phc-lu-attrcol[data-attr="endurance"] .phc-lu-slot')].map((x) => x.textContent),
       why: (document.querySelector('.phc-lu-attrcol[data-attr="endurance"] .phc-lu-attr-why') || {}).textContent || '', off: (document.querySelector('.phc-lu-attrcol[data-attr="endurance"] button[data-raise="attr"]') || {}).disabled,
-      spend: (document.querySelector('.phc-lu-spend') || {}).textContent || '', text: document.querySelector('.phc-lu-body').innerText + ' ' + document.querySelector('header').innerText }));
-    ok(at + 'three families as headings, nine attributes, 27 skills, no Core button', L.fams === 3 && L.attrs === 9 && L.skills === 27 && L.coreBtn === 0);
+      budget: [...document.querySelectorAll('.phc-lu-budget [data-budget]')].map((x) => x.textContent).join(' · '),
+      headIn: (() => { const h = document.querySelector('.phc-lu-head'); window.scrollTo(0, 99999); const r = h.getBoundingClientRect(); window.scrollTo(0, 0); return r.top >= -1 && r.bottom <= innerHeight; })(),
+      rowsIn: [...document.querySelectorAll('.phc-lu-core .phc-lu-skill')].every((s) => s.getBoundingClientRect().bottom <= innerHeight),
+      text: document.querySelector('.phc-lu-body').innerText + ' ' + document.querySelector('header').innerText }));
+    ok(at + 'three family tabs (' + L.tabs + '), one family on screen: three attributes, nine skills, no Core button', L.tabs === 'body,mind,soul' && L.fams === 1 && L.attrs === 3 && L.skills === 9 && L.coreBtn === 0);
+    ok(at + 'the nine rows of a family fit the window without scrolling', L.rowsIn);
     const stray = L.text.replace(/mana cores?|core charge|Sigil Core|a core\b|cores\b/gi, '').match(/Core points?|its Core|\d Core\b|FEEBLE|LEGENDARY|rules \d|[a-z]_[a-z]/);
     ok(at + 'nothing says Core points, a rules number or an id' + (stray ? ' (' + stray[0] + ')' : ''), !stray);
-    ok(at + 'the ceiling is said beside the attributes: ' + L.ceil, L.ceil === 'Attributes: ceiling 8 at this level (9 from level 6, 10 from level 9)' && L.ceils.length === 3 && L.ceils.every((x) => x === 'ceiling 8 at this level'));
-    ok(at + 'every attribute says what a point gives', L.next.length === 9 && L.next.some((t) => /\+15 max HP/.test(t)) && L.next.some((t) => /\+0\.5 tile of movement an AP/.test(t)));
-    ok(at + 'every skill says what its next point gives, with its five mastery pips, and its slot in words (' + L.slots.join(', ') + ')', L.gives === 27 && L.old === 0 && L.marks === 27 * 5 && L.slots.join() === 'FIGHT,SURVIVE,TALK · NOTICE');
-    if (W === 1280 && process.env.LANE_SHOTS) { await p.evaluate(() => { const el = document.querySelector('.phc-lu-core[data-core="soul"]'); window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 8); }); await settle(p, 200);
-      await p.screenshot({ path: process.env.LANE_SHOTS + '/D-roadmap-levelup-soul.png' }); await p.evaluate(() => window.scrollTo(0, 0)); }
-    ok(at + 'Endurance 8 is at the ceiling: +1 off, with the engine\'s reason: ' + L.why, L.off === true && /^Endurance 9 opens at level 6/.test(L.why));
-    ok(at + 'what is left to spend, in words: ' + L.spend, /Skill point|Attribute point/.test(L.spend) && !/Core/.test(L.spend));
+    ok(at + 'the ceiling is said in the header: ' + L.ceil, L.ceil === 'Attributes: ceiling 8 at this level (9 from level 6, 10 from level 9)');
+    ok(at + 'every attribute row says what a point gives', L.next.length === 3 && L.next.some((t) => /\+15 max HP/.test(t)) && L.next.some((t) => /\+0\.5 tile of movement an AP/.test(t)));
+    ok(at + 'every skill row says what its next point gives, and its slot in words (' + L.slots.join(', ') + ')', L.gives === 9 && L.slots.join() === 'FIGHT,SURVIVE,TALK · NOTICE');
+    ok(at + 'Endurance 8 is at the ceiling: +1 off, with the engine\'s reason on its row: ' + L.why, L.off === true && /^Endurance 9 opens at level 6/.test(L.why));
+    ok(at + 'the header is the budget and stays in view when the page scrolls: ' + L.budget, /\d Skill · \d Attribute · \d Perk steps?/.test(L.budget) && L.headIn);
     ok(at + 'no sideways page scroll (' + await sideways(p) + ' px over)', (await sideways(p)) <= 1);
-    // the window shot shows the tree (the class picker above it is in the full-page shot)
-    await p.evaluate(() => { const el = document.querySelector('.phc-lu-guide'); window.scrollTo(0, el.getBoundingClientRect().top + window.scrollY - 12); }); await settle(p, 150);
-    await p.screenshot({ path: SHOTS + '/levelup-' + W + '.png' }); await p.evaluate(() => window.scrollTo(0, 0));
-    await p.screenshot({ path: SHOTS + '/levelup-' + W + '-full.png', fullPage: true });
+    await p.screenshot({ path: SHOTS + '/levelup-' + W + '.png' });
+    for (const f of ['mind', 'soul']) { await p.locator('[data-fam="' + f + '"]').click(); await settle(p, 200); await p.screenshot({ path: SHOTS + '/levelup-' + W + '-' + f + '.png' }); }
+    await p.locator('[data-fam="body"]').click(); await settle(p, 200);
   }
   // an Attribute point spent with a +1, and an attribute's name opens its page
   { const before = (await G()).characters[cid];
+    await p.locator('[data-fam="mind"]').click(); await settle(p, 200);
     await p.locator('.phc-lu-attrcol[data-attr="perception"] button[data-raise="attr"]').click(); await settle(p, 250);
     const after = (await G()).characters[cid];
     ok('an Attribute point spent on Perception (' + before.attrs.perception + ' → ' + after.attrs.perception + ')', after.attrs.perception === before.attrs.perception + 1 && after.unspent.attr === before.unspent.attr - 1);
+    await p.locator('[data-fam="body"]').click(); await settle(p, 200);
     await p.locator('.phc-lu-attrcol[data-attr="endurance"] .phc-lu-attrname').click(); await settle(p, 250);
     ok('level up: Endurance\'s name opens the Endurance page', (await p.locator('.phc-attr-page h2').innerText()) === 'Endurance');
     await p.screenshot({ path: SHOTS + '/levelup-attribute-page.png' });

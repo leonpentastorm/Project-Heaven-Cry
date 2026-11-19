@@ -151,42 +151,44 @@ await act({ type: 'sandbox/level', charId: cid, level: 9 });
 await settle(p, 500);
 await p.locator('button', { hasText: /Level up|Earn your class/ }).first().click();
 await p.locator('.phc-lu-core').first().waitFor({ timeout: 30000 });
-ok('the tree: three cores, nine attributes, twenty-seven skills', (await p.locator('.phc-lu-core').count()) === 3 && (await p.locator('.phc-lu-attrcol').count()) === 9 && (await p.locator('.phc-lu-skill').count()) === 27);
-ok('the floating ♪ / ◈ buttons step aside on level up (they sat over the tree\'s left column)', (await p.locator('[data-phc-float]:visible').count()) === 0);
+const fam = (f) => p.locator('[data-fam="' + f + '"]').click().then(() => settle(p, 200));
+ok('spend first: three family tabs, one family on screen (three attributes, nine skills)', (await p.locator('[role="tablist"][aria-label="Families"] [role="tab"]').count()) === 3 && (await p.locator('.phc-lu-core').count()) === 1 && (await p.locator('.phc-lu-attrcol').count()) === 3 && (await p.locator('.phc-lu-skill').count()) === 9);
+ok('the floating ♪ / ◈ buttons step aside on level up (they sat over the rows\' left edge)', (await p.locator('[data-phc-float]:visible').count()) === 0);
 for (const [w, h] of [[1280, 720], [1440, 900], [1920, 1080]]) { await p.setViewportSize({ width: w, height: h }); await settle(p, 500); await snap('levelup-' + w); }
 await p.setViewportSize({ width: 1440, height: 900 }); await settle(p, 300);
 const u0 = (await G()).characters[cid].unspent;
 // rules 1.13: no Core points; an Attribute at its level's ceiling can't rise (its +1 is disabled)
 ok('no Core raise button anywhere (Cores are group names)', (await p.locator('button[data-raise="core"]').count()) === 0);
-const capped = await p.locator('.phc-lu-attrcol button[data-raise="attr"]:disabled').count();
-console.log('note attributes at their ceiling now: ' + capped);
+await fam('mind');
 await p.locator('.phc-lu-attrcol[data-attr="intelligence"] button[data-raise="attr"]').click(); await settle(p, 250);
 ok('an Attribute point spent with Intelligence\'s +1', (await G()).characters[cid].unspent.attr === u0.attr - 1);
 const bpBefore = (await G()).characters[cid].skills.brain_power || 0;
-await p.locator('.phc-lu-skill[data-skill="brain_power"] button[data-raise="skill"]').click(); await settle(p, 250);
+await p.locator('.phc-lu-skill[data-skill="brain_power"] button[data-raise="skill"]').click(); await settle(p, 100);
 ok('a skill point spent with Brain Power\'s +1', ((await G()).characters[cid].skills.brain_power || 0) === bpBefore + 1);
-const step = p.locator('.phc-lu-skill.phc-lu-step').first();
-ok('a skill with a perk step waiting is marked on its card', (await step.count()) === 1);
-const choiceAria = await p.locator('button.phc-lu-choice').evaluateAll((bs) => bs.map((b) => b.getAttribute('aria-label') || ''));
-ok('every Take / Upgrade button names its perk and skill, its visible words first (' + choiceAria[0] + ')', choiceAria.length > 0 && choiceAria.every((a) => /^(Take · Tier I|Upgrade · Tier II): .+ \(.+\)$/.test(a)) && new Set(choiceAria).size === choiceAria.length);
+ok('…and its row says what was gained, where it was clicked', (await p.locator('.phc-lu-skill[data-skill="brain_power"] .phc-lu-gain').count()) === 1);
+// a perk step waiting: the jump opens its family and the choice under its row, the keyboard on Take
+ok('a perk step waiting is listed to jump to', (await p.locator('.phc-lu-jump').count()) > 0);
+const sk = await p.locator('.phc-lu-jump').first().getAttribute('data-skill');
 await p.locator('.phc-lu-jump').first().click(); await settle(p, 400);
-ok('a perk-step jump puts the keyboard on that skill\'s Take button', await p.evaluate(() => !!document.activeElement && document.activeElement.classList.contains('phc-lu-choice')));
-const sk = await step.getAttribute('data-skill'), perks0 = (await G()).characters[cid].perks.length;
-await step.locator('button.phc-lu-choice').first().click(); await settle(p, 300);
+ok('a perk-step jump opens that choice and puts the keyboard on its Take button', await p.evaluate(() => !!document.activeElement && document.activeElement.classList.contains('phc-lu-choice')));
+const row = p.locator('.phc-lu-skill[data-skill="' + sk + '"]');
+ok('the row with a step waiting carries a white chip (' + await row.locator('.phc-lu-chip').textContent() + ')', /^◆ .*waiting$/.test(await row.locator('.phc-lu-chip').textContent()));
+const choiceAria = await row.locator('button.phc-lu-choice').evaluateAll((bs) => bs.map((b) => b.getAttribute('aria-label') || ''));
+ok('every Take / Upgrade button names its perk and skill, its visible words first (' + choiceAria[0] + ')', choiceAria.length > 0 && choiceAria.every((a) => /^(Take · Tier I|Upgrade · Tier II): .+ \(.+\)$/.test(a)) && new Set(choiceAria).size === choiceAria.length);
+ok('…the choices are cards side by side, what each does on its face', (await row.locator('.phc-lu-pair .phc-lu-perk [data-perk-text]').count()) === choiceAria.length && await row.locator('.phc-lu-pair .phc-lu-perk [data-perk-text]').first().isVisible());
+const perks0 = (await G()).characters[cid].perks.length;
+await row.locator('button.phc-lu-choice').first().click(); await settle(p, 300);
 const c2 = (await G()).characters[cid], took = c2.perks.length > perks0 ? c2.perks.at(-1).id : null;
-ok('a perk step taken from the skill\'s own card (' + sk + ': ' + took + ')', !!took);
-ok('…and that perk now reads as yours on the card', !!took && /✓ TIER/.test(await p.locator('.phc-lu-skill[data-skill="' + sk + '"] .phc-lu-perk[data-perk="' + took + '"]').textContent()));
+ok('a perk step taken from the row\'s own choice (' + sk + ': ' + took + ')', !!took);
 // Revert (11 Nov 2026): what this visit spent comes back, then it is spent again so the rest of the script stands
 { const spent = JSON.stringify((await G()).characters[cid].unspent);
   ok('a Revert button shows once something is spent', (await p.locator('button.phc-lu-revert').count()) === 1);
   await p.locator('button.phc-lu-revert').click(); await settle(p, 300);
   const c3 = (await G()).characters[cid];
   ok('Revert gives the points back (' + spent + ' → ' + JSON.stringify(c3.unspent) + ') and the button goes', c3.unspent.attr === u0.attr && c3.unspent.skill > JSON.parse(spent).skill && (await p.locator('button.phc-lu-revert').count()) === 0);
+  await fam('mind');
   await p.locator('.phc-lu-attrcol[data-attr="intelligence"] button[data-raise="attr"]').click(); await settle(p, 200);
-  await p.locator('.phc-lu-skill[data-skill="brain_power"] button[data-raise="skill"]').click(); await settle(p, 200);
-  if (took) { await p.locator('.phc-lu-skill[data-skill="' + sk + '"] button.phc-lu-choice').first().click().catch(() => {}); await settle(p, 250); } }
-ok('…and what it does is on the card, not only on hover', await p.locator('.phc-lu-skill[data-skill="' + sk + '"] .phc-lu-perk[data-perk="' + took + '"] [data-perk-text]').isVisible());
-await p.locator('.phc-lu-skill[data-skill="' + sk + '"]').scrollIntoViewIfNeeded();
+  await p.locator('.phc-lu-skill[data-skill="brain_power"] button[data-raise="skill"]').click(); await settle(p, 200); }
 await snap('levelup-after');
 await p.getByRole('button', { name: /Back to the story/ }).click().catch(() => {}); await settle(p, 600);
 ok('back on the story screen the ♪ button is there again', (await p.locator('[data-phc-float="music"]').count()) === 1 && await p.locator('[data-phc-float="music"]').isVisible());

@@ -85,6 +85,7 @@ ok('a card only selects (no class yet)', !(await G()).characters[cid].classId);
 await snap('03-picker-selected');
 await p.locator('button.phc-lu-confirm-btn').click();
 await settle(p, 300);
+await p.evaluate(() => { const f = document.querySelector('.phc-lu-class-fold'); if (f && f.getAttribute('aria-expanded') === 'false') f.click(); }); await settle(p, 200); // a held class folds its panel to one line: open it
 g = await G();
 ok('confirmed: the ' + NAME.infiltrator, g.characters[cid].classId === 'infiltrator');
 ok('the picker is gone', (await cards.count()) === 0);
