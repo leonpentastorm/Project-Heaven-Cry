@@ -229,10 +229,11 @@ describe('level-up screen', () => {
     expect(agi.querySelector('.phc-lu-attr-why')!.textContent).toBe(canRaise(G.characters[c0.id], 'attr', 'agility'));
     expect(agi.querySelector('.phc-lu-attr-why')!.textContent).toMatch(/^Agility 9 opens at level 6/);
     expect([...agi.querySelectorAll('.phc-lu-slot')].map((x) => x.textContent)).toEqual(['FIGHT', 'SURVIVE', 'TALK · NOTICE']);
-    // Durability 2 under Endurance 2: its +1 is refused with the reason on the row, and "Raise Endurance" beside it
+    // Durability 2 under Endurance 2: its +1 is refused, and the reason is said once: the "Raise Endurance" button (the
+    // need read from the engine's raiseNeed, never its sentence: the 0.32 merge, Step 3c)
     const dur = () => el.querySelector('.phc-lu-skill[data-skill="durability"]')!;
     expect((dur().querySelector('button[data-raise="skill"]') as HTMLButtonElement).disabled).toBe(true);
-    expect(dur().querySelector('.phc-lu-why')!.textContent).toMatch(/^Needs Endurance 3/);
+    expect(dur().querySelector('.phc-lu-why')!.textContent).toBe('Raise Endurance');
     expect(el.querySelectorAll('.phc-lu-why .phc-lu-fix').length).toBeGreaterThan(0);
     await React.act(async () => { (dur().querySelector('.phc-lu-fix') as HTMLButtonElement).click(); });
     expect(G.characters[c0.id].attrs.endurance).toBe(3);
