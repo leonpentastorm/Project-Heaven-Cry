@@ -2231,6 +2231,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_rank_sword--relic",
+      "path": "art/icons/gear/weapon-legion_rank_sword--relic.png",
+      "sha256": "25221942040ff1dec7b2370fa67436b02eb49c6aeee88110ff0e8b477e2bd700",
+      "label": "Legion Rank Sword — Relic",
+      "family": "weapon-legion_rank_sword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_rank_sword--relic.png",
+        "sha256": "b90a83eb42640b76dbbf68505a2e794e59461ceac6fad2fb7b65852d61e11b7f"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_rank_sword--relic.png",
+        "sha256": "25221942040ff1dec7b2370fa67436b02eb49c6aeee88110ff0e8b477e2bd700"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_rank_sword--relic.txt",
+        "sha256": "0f557b0169962fda6b4d6eb8a9ba997865ada48f0893460bfaaf98eeac12cd90"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_rank_sword.png",
+          "sha256": "6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d"
+        },
+        {
+          "path": "art/icons/gear/weapon-legion_rank_sword--masterwork.png",
+          "sha256": "fdd3b7e90ef9dea5bf3deac6596e83ed6c2591064be766185aa1d6d56ecc2aae"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_rank_sword.png",
+          "sha256": "bc0c3ef3c706c75c3e483efb0ae0a4b65997f708ccd83fb52bbc8cbd008c5cd3"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_rank_sword--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_rank_sword--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_rank_sword--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_rank_sword--relic.png"
+      },
+      "export_hashes": {
+        "256": "29e9c123ef7ac8dcce3c5e5d07e4d35838178cc3ef5e7c738a4c5ab27a4f4ee5",
+        "128": "607b3328b35d7730b40a7051c9337ae2857b2d847b3d98e5a7818726147736ff",
+        "64": "4488d7cac5d7d1a2daec2e754f9d3e42ce5c8973fbc9d35ca6dbbb1c8e2d6559",
+        "32": "b13b57cf30f304d2fe89c843a1c0e6ac2a80f7c735d525bbde068829d6b06c94"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-legion_rank_sword",
+      "outline": {
+        "solid_alpha_iou": 0.9572737391899991,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 13
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
