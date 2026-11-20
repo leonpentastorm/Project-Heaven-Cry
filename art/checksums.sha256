@@ -2610,6 +2610,9 @@ d4641f47d5040bc171d64875d4fcc1c2ecba189d92b185a39c076e39d07b6bd0  art/_archive/g
 425ee58f62a3e76e13e08617c6b3d7a365d822b70a74c2652a663b5c2253c3ed  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/metadata.json
 286412b753dd9a9019ec948ffc696afc90f209376321b75d4b00056fe56c687f  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/native.png
 05f5795c496ca6a5d3d38af2950120edd8c26e1b4334b9de52fab848efa79180  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/prompt.txt
+eb9d2a79310798f9c1e7fbb57c8ac18aa273c60d6d6f09018a4acdc81c8c79c4  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-spiked_buckler--celestial/01-quality-review/metadata.json
+8e2223d3d327131e74da92c2837bb540715375e618ce555ed5b959d928067b03  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-spiked_buckler--celestial/01-quality-review/native.png
+c48ee9a445a40f98c556840fc8c24bd6f6c14f2e706e71ae6206e5bec12f5ae9  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-spiked_buckler--celestial/01-quality-review/prompt.txt
 7dc36c7c25bdd5a1a47eb1c4e17caa277c6cb9bb49664d597427128ce37919cd  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-spiked_buckler--relic/01-quality-review/metadata.json
 60ae693e937aa16681d75fb4b390c487f0b0821a0fac7d7aeb9b338ada35aa30  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-spiked_buckler--relic/01-quality-review/native.png
 83a6dd53e9420f524d397bef7438d080c105f27c9cd62d4d8e5e78c77176f398  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-spiked_buckler--relic/01-quality-review/prompt.txt
@@ -2762,7 +2765,7 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-b516902e8d62f4ec1c7618da85117eaaaa539d0ad4520ade3670c0e7686714ea  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+3033ac4c9392c4fd5718ce356816ff810bd81ed58972cf3cfee1fc4d45aaaa67  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 b8e3be98d9a87e3475c32e121b2108c08c53b900d4ab59c08707767833b82a3a  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-spiked_buckler-32px.png
