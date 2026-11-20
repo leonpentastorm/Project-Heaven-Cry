@@ -2374,18 +2374,24 @@ function physFog(cb: Combat, u: Combat['units'][number], me: 'pc' | 'foe'): Comb
   if (blind) delete x.watch;
   return x;
 }
+/** Rules 1.84 (item 7200): the human Narrator's seat: the host of a room in "I'll narrate" (settings.mode human), outside
+ * a Survival run and the Proving Ground (neither has a Narrator). The seat's view keeps what the story hides from the
+ * players (viewFor): voice hooks with their TN and truth, hidden objects, lurking people, hidden hazards, triggers,
+ * what people want and know, caches' contents. Every other view is unchanged. */
+export const narratorSeat = (g: GameState, playerId: string): boolean => g.settings?.mode === 'human' && playerId === g.hostId && !g.run && !g.sandbox;
 export function viewFor(g: GameState, playerId: string): GameState {
+  const seat = narratorSeat(g, playerId);
   // The skill panel shows Ask only where a voice has something (Silent elsewhere): which skills, never the hooks themselves.
   const sc = g.story.scene, voiced: Record<string, string[]> = {};
   for (const c of Object.values(g.characters)) if (c.owner === playerId) voiced[c.id] = [...new Set(sc.hooks.filter((h) => !sc.revealed.includes(c.id + ':' + h.id)).map((h) => h.skill))];
-  const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...sc, hooks: [], voiced } } };
+  const v: GameState = { ...g, story: { ...g.story, entries: g.story.entries.filter((e) => !e.to || e.to === playerId), scene: { ...sc, hooks: seat ? sc.hooks : [], voiced } } };
   v.overreach = g.overreach.filter((o) => g.characters[o.charId]?.owner === playerId);
   if (playerId !== g.hostId) delete v.memory; delete v.archive;
   // The viewer's side: 'pc', except team B of a Proving Ground team fight ('foe' in the engine; sandboxView flips it
   // to 'pc' for that player's screen once everything secret from that side is filtered out here).
   const me: 'pc' | 'foe' = g.sandbox?.mode === 'teams' && sandboxTeam(g.sandbox, playerId) === 'B' ? 'foe' : 'pc';
-  // Hidden objects (unspotted traps) stay hidden from every player, the host included.
-  if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
+  // Hidden objects (unspotted traps) stay hidden from every player, the host included; the human Narrator's seat sees them.
+  if (g.story.objects && !seat) v.story.objects = g.story.objects.filter((o) => !o.hidden);
   if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden && !(((o as any).rig || (o as any).laidBy) && (o as any).side && (o as any).side !== me)) }; // another side's rigged tile too (a laid trap: the Rig verb, the Operative's since rules 1.74 item 6011)
   // Sigil traps and hidden turrets (rules 1.4) show to their own side only, until spotted; so do their fx.
   if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, me)), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === me).map((e) => sightOwn(e, me)) };
@@ -2408,7 +2414,7 @@ export function viewFor(g: GameState, playerId: string): GameState {
   // The human Narrator (the host in "I'll narrate") keeps the whole fight. The music is picked on the whole fight (an
   // elite once seen keeps Heaven Falls playing after it slips out of sight).
   if (v.combat && g.combat) { v.combat = fogFight(g, g.combat, v.combat, me, playerId === g.hostId && g.settings.mode === 'human'); if (g.music) v.music = { ...g.music, view: musicFor(g) } as MusicState; }
-  worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents
+  if (!seat) worldView(v); // rules 1.7: no unseen hazard, no trigger, no unasked want or hint, no cache's contents (rules 1.84: the Narrator's seat keeps them)
   if (g.sandbox) sandboxView(g, v, playerId); // no saved room; a team fight seen from the player's side
   return v;
 }

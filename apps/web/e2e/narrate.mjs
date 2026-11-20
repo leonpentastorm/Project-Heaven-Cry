@@ -3,6 +3,9 @@
 // check they call (the TN is theirs, the engine rolls it on the guest's screen), the results, a ruling the story owes
 // (the guest's Clean Hands, refused: the use comes back), a prepared fight started from the desk, and in the fight an
 // attempt answered with a check from the fight screen's Narrator buttons. The desk keeps both side panels.
+// Rules 1.84 (0.33): the rest of the turn from the desk (a voice hook, a lurker, a hidden trap, XP: the AI's own
+// submit_turn fields), and the Narrator's private view: the host's left panel holds the Narrator's notes (never the
+// guest's character), the hidden things show on the host's notes and map only, and never reach the guest.
 // Run: BASE=http://127.0.0.1:8787 node apps/web/e2e/narrate.mjs
 import { readFileSync } from 'fs';
 import { chromium, player, click, BASE, OUT, hostAs, sidePanels } from './lib.mjs';
@@ -43,9 +46,12 @@ try {
   ok('the session starts and the Narrator\'s desk opens on the host\'s screen for the opening', /THE OPENING/.test(await desk.textContent()));
   await guest.waitForSelector('text=/Leon, the Narrator, is writing/', { timeout: 30000 });
   ok('the guest sees the Narrator writing, and no desk', (await guest.locator('[data-gm-desk]').count()) === 0);
-  // B13 (0.32): a character with no portrait (the guest's, here on the host's left sheet) shows NO PORTRAIT, never a broken image
   const broken = await host.evaluate(() => [...document.querySelectorAll('img')].filter((i) => i.getBoundingClientRect().width > 40 && i.complete && !i.naturalWidth).length);
-  ok('B13: no broken image on the host screen (' + broken + '); the portrait-less sheet says NO PORTRAIT', broken === 0 && (await host.locator('[data-phc-no-portrait]').count()) > 0);
+  ok('no broken image on the host screen (' + broken + ')', broken === 0);
+  // rules 1.84 item 7203: the host's left panel is the Narrator's notes, not the guest's character sheet
+  const left = host.locator('aside[aria-label="Character sheet"]');
+  ok('the host\'s left panel holds the Narrator\'s notes and no character sheet (no sheet tabs, no portrait)', (await left.locator('[data-gm-notes-view]').count()) === 1 && (await left.locator('#phc-sheet-tab-skills').count()) === 0 && (await left.locator('[data-phc-no-portrait]').count()) === 0);
+  ok('the desk\'s first fields are labelled (SCENE TITLE, YOUR NARRATION)', /SCENE TITLE/.test(await desk.textContent()) && /YOUR NARRATION/.test(await desk.textContent()));
   await sidePanels(host, 'the Narrator\'s desk');
   await host.getByLabel('Your narration').fill('The rear pad hums under a dead sky. Keel waits at the ramp, arms folded.');
   await host.locator('[data-gm-add-check]').click();
@@ -54,11 +60,51 @@ try {
   await row.locator('select[aria-label="Skill to roll"]').selectOption('conscience');
   await row.locator('select[aria-label="TN"]').selectOption('16');
   await row.getByLabel('What is at stake').fill('Talk Keel into lowering the ramp');
+  // rules 1.84 item 7202: the rest of the turn, the AI's own fields: a misleading voice hook, a lurker, a hidden trap
+  await desk.locator('[data-gm-group="scene"] summary').click();
+  await desk.locator('[data-gm-add="hooks"]').click();
+  const hk = desk.locator('[data-gm-entry="hooks.0"]');
+  await hk.getByLabel('Skill', { exact: true }).selectOption('conscience');
+  await hk.getByLabel('TN', { exact: true }).selectOption('8');
+  await hk.getByLabel('Truth', { exact: true }).selectOption('misleading');
+  await hk.getByLabel('Line', { exact: true }).fill('Keel is lying about the thrust.');
+  await desk.locator('[data-gm-group="world"] summary').click();
+  await desk.locator('[data-gm-add="npcs"]').click();
+  const np = desk.locator('[data-gm-entry="npcs.0"]');
+  await np.getByLabel('Name', { exact: true }).fill('Knife in the Rafters');
+  await np.getByLabel('Side', { exact: true }).selectOption('hostile');
+  await np.getByLabel('Tier', { exact: true }).selectOption('minion');
+  await np.getByLabel('Weapon', { exact: true }).fill('service_pistol');
+  await np.getByLabel('Tile', { exact: true }).fill('C2');
+  await np.getByLabel('Hidden', { exact: true }).check();
+  await desk.locator('[data-gm-add="objects"]').click();
+  const ob = desk.locator('[data-gm-entry="objects.0"]');
+  await ob.getByLabel('Kind', { exact: true }).selectOption('trap');
+  await ob.getByLabel('Tile', { exact: true }).fill('L9');
+  await ob.getByLabel('Name', { exact: true }).fill('Tripwire Under the Grating');
+  await ob.getByLabel('Text', { exact: true }).fill('A wire at ankle height.');
+  await ob.getByLabel('Hidden', { exact: true }).check();
+  await desk.locator('[data-gm-entry="objects.0"]').scrollIntoViewIfNeeded(); await host.screenshot({ path: OUT + 'narrate-desk.png' }).catch(() => {});
   await host.locator('[data-gm-send]').click();
   await guest.waitForSelector('text=Keel waits at the ramp', { timeout: 30000 });
   const ck = (await T(host)).checks.find((k) => !k.done);
   ok('the host\'s turn lands: the narration on the guest\'s screen, a Conscience check at TN 16 called on the guest (' + JSON.stringify(ck && { skills: ck.skills, tn: ck.tn }) + ')', !!ck && ck.tn === 16 && ck.skills[0] === 'conscience' && ck.charId === charId);
   ok('the desk closes once the turn is sent', await desk.waitFor({ state: 'detached', timeout: 30000 }).then(() => true, () => false));
+  const tr = await T(host), lurker = (tr.story.npcs || []).find((n) => n.name === 'Knife in the Rafters'), trap = (tr.story.objects || []).find((o) => o.name === 'Tripwire Under the Grating');
+  ok('the engine applied the desk\'s other fields: the hook (' + JSON.stringify(tr.story.scene.hooks.map((h) => [h.skill, h.tn, h.truth])) + '), the lurker hidden, the trap hidden',
+    tr.story.scene.hooks.some((h) => h.skill === 'conscience' && h.tn === 8 && h.truth === 'misleading') && !!lurker && lurker.hidden && !!trap && trap.hidden);
+  // rules 1.84 item 7200: the Narrator sees them; the guest never does (not on screen, not in the view the room sends)
+  const notes = host.locator('[data-gm-notes-view]');
+  await host.waitForFunction(() => /Knife in the Rafters/.test(document.querySelector('[data-gm-notes-view]')?.textContent || ''), null, { timeout: 15000 }).catch(() => {});
+  ok('the host\'s notes show the hook\'s truth and TN, the lurker and the hidden trap', /MISLEADING/.test(await notes.locator('[data-gm-notes-sec="hooks"]').textContent()) && /TN 8/.test(await notes.locator('[data-gm-notes-sec="hooks"]').textContent())
+    && /Knife in the Rafters/.test(await notes.locator('[data-gm-notes-sec="lurkers"]').textContent()) && /Tripwire Under the Grating/.test(await notes.locator('[data-gm-notes-sec="objects"]').textContent()));
+  const gv = await G(guest), gText = await guest.locator('body').textContent();
+  ok('the guest\'s view holds no lurker, no hidden trap, no hook: not even in the data the room sent', !(gv.story.npcs || []).some((n) => n.name === 'Knife in the Rafters') && !(gv.story.objects || []).some((o) => o.name === 'Tripwire Under the Grating') && !gv.story.scene.hooks.length);
+  ok('the guest\'s screen names none of it, and has no Narrator\'s notes', !/Knife in the Rafters|Tripwire Under the Grating|MISLEADING/.test(gText) && (await guest.locator('[data-gm-notes-view]').count()) === 0);
+  const areaBtn = host.getByRole('button', { name: /Area map/ }).first();
+  if (await areaBtn.count()) { await areaBtn.click(); await host.waitForSelector('[data-gm-secret="1"]', { timeout: 10000 }).catch(() => {}); }
+  ok('the host\'s area map marks the hidden things (' + (await host.locator('[data-gm-secret="1"]').count()) + ' tiles, HIDDEN FROM THE PLAYERS)', (await host.locator('[data-gm-secret="1"]').count()) >= 2);
+  if (await areaBtn.count()) { await host.getByRole('button', { name: 'Close', exact: true }).first().click(); await host.waitForSelector('[data-gm-secret="1"]', { state: 'detached', timeout: 10000 }).catch(() => {}); }
 
   // 4. the guest rolls it: the engine rolls against the Narrator's TN, shown on the guest's screen
   await guest.waitForSelector('text=CLICK TO ROLL', { timeout: 30000 });
@@ -74,7 +120,18 @@ try {
   const watch = host.locator('div[aria-label="Dice table"]').getByRole('button', { name: 'Close', exact: true });
   if (await watch.count()) await watch.first().click();
   await host.getByLabel('Your narration').fill('Keel shrugs and hits the switch. The ramp groans down.');
+  // XP from the desk (the AI's xp field): the engine gives it
+  const xp0 = (await T(host)).characters[charId].xp;
+  await desk.locator('[data-gm-group="rewards"] summary').click();
+  await desk.locator('[data-gm-add="xp"]').click();
+  const xr = desk.locator('[data-gm-entry="xp.0"]');
+  await xr.getByLabel('Who', { exact: true }).selectOption(charId);
+  await xr.getByLabel('Source', { exact: true }).selectOption('dialogue');
+  await xr.getByLabel('Amount', { exact: true }).fill('30');
+  await xr.getByLabel('Reason', { exact: true }).fill('talked the ramp down');
   await host.locator('[data-gm-send]').click();
+  await host.waitForFunction(([id, x]) => window.__phc.truth().characters[id].xp > x, [charId, xp0], { timeout: 30000 }).catch(() => {});
+  ok('the desk\'s XP is given by the engine (' + xp0 + ' to ' + (await T(host)).characters[charId].xp + ')', (await T(host)).characters[charId].xp === xp0 + 30);
   await guest.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 });
   ok('the results are told and the next round opens for the players', true);
 

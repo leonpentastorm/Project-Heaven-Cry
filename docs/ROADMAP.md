@@ -145,8 +145,8 @@ Tests only (`packages/engine/test/balance/`): no engine source, no data, no game
 
 ### Co-op (`wip/0.32-coop`; hand-off `docs/design/handoffs/0.32-COOP.md`; spec rules 1.80 items 6800-6802)
 
-- **The Narrator's desk, the rest of the turn.** Owed: voice hooks, NPCs, objects, hazards, triggers, loot, XP and the other optional fields of `narrator/turn`; a fight made up on the spot (only the campaign's prepared fights now). [M] [partly; checked in code 19 Nov 2026] [spec 6802]
-- **The human Narrator's private view in the story.** The host sees what the players see (hidden objects and lurkers stay hidden from the host too); a Narrator needs them. Needs a ruling on what the seat sees, then `viewFor`. [M] [not built] [spec 6802]
+- **The Narrator's desk, the rest of the turn.** Owed: voice hooks, NPCs, objects, hazards, triggers, loot, XP and the other optional fields of `narrator/turn`; a fight made up on the spot (only the campaign's prepared fights now). [M] [built 20 Nov 2026, rules 1.84 items 7200 to 7204: the desk is the AI's `submit_turn` read as a form; not yet playtested by a person] [spec 6802]
+- **The human Narrator's private view in the story.** The host sees what the players see (hidden objects and lurkers stay hidden from the host too); a Narrator needs them. Needs a ruling on what the seat sees, then `viewFor`. [M] [built 20 Nov 2026, rules 1.84 items 7200, 7201, 7204; the ruling (the seat sees everything, also when the host plays a character) is a call made for Leon] [spec 6802]
 - **Input delay from far away.** Locally a guest's action is on the guest's screen in about 60 ms (median); Leon measures 2 to 3 s from Vietnam to a US host. The local hops are not where the time goes: measure the live room (the same stamps on the live site) before changing anything. [M] [open] [0.32-COOP.md]
 - **Co-op stall (0.21.0).** Not reproduced in 0.32's loop either (see the hand-off); `coop-loop.mjs` stays as the opt-in hunt. [S] [open; watch] [coop-stall.md]
 
@@ -277,7 +277,7 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 - **Run summary:** "Keep Kade as a draft (level 5)" wraps to two lines (1600-073). [S] [open]
 - **Sheet and Proving Ground:** the bottom hint box covers the EQUIPPED section of the tools panel; the STATUS tab's foot rows overlap (1280-140); the MP row reads "100 / 100 stowed" with the word under the number. [S] [open]
 - **Level-up:** the "◇◇" marks are unexplained (1280-149); "Class: choose it from TO CHOOSE" alone in a panel and "+8 more" hides most chips (1280-146). [S] [open]
-- **Narrator's desk:** the first field is an empty unlabelled box; the left sheet shows the guest's character on the host's screen (1280-161). [S] [open]
+- **Narrator's desk:** the first field is an empty unlabelled box; the left sheet shows the guest's character on the host's screen (1280-161). [S] [built 20 Nov 2026, rules 1.84 items 7203 and 7205]
 - **Browser suite `camera`:** four checks red on the release head before the fix pass (fight opens on your unit, drag moved the view, target in frame, camera stayed on the target): find whether the suite or the camera is wrong. [S] [open; 20 Nov 2026]
 
 ## After 0.32, before Items 2.0
