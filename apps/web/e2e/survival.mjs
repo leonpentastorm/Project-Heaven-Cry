@@ -121,8 +121,8 @@ await campConfirmGo(p);
 // shop's prices), then the starting boon, then Ready ----------
 await p.waitForSelector('[data-phc-camp]', { timeout: 60000 });
 const LO = SVD.loadout, campId = Object.keys((await G()).characters)[0];
-/** An archetype's weapons cheapest first (Leon, 14 Nov: the free one is the most basic, the rack's better one the next). */
-const archOf = (id) => { const a = LO.archetypes.list.find((x) => x.id === id); return Object.values(WPN).filter((w) => w.mastery_family === a.family && w.category === a.category && !(a.skip || []).includes(w.id) && w.price_credits > 0).sort((x, y) => x.price_credits - y.price_credits || (x.id < y.id ? -1 : 1)).map((w) => w.id); };
+/** An archetype's weapons cheapest first (Leon, 14 Nov: the free one is the most basic, the rack's better one the next); rules 1.93 item 8100: the issue rows only. */
+const archOf = (id) => { const a = LO.archetypes.list.find((x) => x.id === id); return Object.values(WPN).filter((w) => w.mastery_family === a.family && w.category === a.category && !(a.skip || []).includes(w.id) && w.price_credits > 0 && (w.tags || []).includes(LO.archetypes.tag)).sort((x, y) => x.price_credits - y.price_credits || (x.id < y.id ? -1 : 1)).map((w) => w.id); };
 const FREE = (id) => archOf(id)[0], GUN = FREE('smgs');
 const pick0 = () => G().then((g) => g.run.loadout?.[campId]), me0 = () => G().then((g) => g.characters[campId]);
 const numIn = (sel) => p.locator(sel).textContent().then((t) => Number((t.match(/\d+/g) || []).pop()));
