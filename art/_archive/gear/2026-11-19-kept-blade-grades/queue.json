@@ -7517,7 +7517,13 @@
     "standard_sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
     "standard_status": "review-candidate",
     "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
-    "current_data_item_present": true
+    "current_data_item_present": true,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-magistrate_pistol--masterwork--1795161461802.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-magistrate_pistol--masterwork--1795161461802.json",
+      "request_id": "5e41c9fb-9f58-490e-a773-d19764ecda06"
+    }
   },
   {
     "id": "weapon-magistrate_pistol--relic",
