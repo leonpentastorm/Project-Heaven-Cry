@@ -1268,5 +1268,665 @@
       "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_rank_sword.png"
     ],
     "depends_on": "weapon-legion_rank_sword--relic"
+  },
+  {
+    "id": "weapon-short_draw--fine",
+    "standard_id": "weapon-short_draw",
+    "grade": "fine",
+    "label": "Short Draw — Fine",
+    "path": "art/icons/gear/weapon-short_draw--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-short_draw.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-short_draw",
+    "family_references": [
+      "art/icons/gear/weapon-short_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork blade inlay is bright brass. Keep the wavy tempered edge line distinct from the new thin spine inlay; keep the dark diamond lattice grip arrangement. No sheath or new guard arms.",
+    "keep_line": "the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png"
+    ]
+  },
+  {
+    "id": "weapon-short_draw--masterwork",
+    "standard_id": "weapon-short_draw",
+    "grade": "masterwork",
+    "label": "Short Draw — Masterwork",
+    "path": "art/icons/gear/weapon-short_draw--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-short_draw.png",
+      "art/icons/gear/weapon-short_draw--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-short_draw",
+    "family_references": [
+      "art/icons/gear/weapon-short_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork blade inlay is bright brass. Keep the wavy tempered edge line distinct from the new thin spine inlay; keep the dark diamond lattice grip arrangement. No sheath or new guard arms.",
+    "keep_line": "the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png"
+    ],
+    "depends_on": "weapon-short_draw--fine"
+  },
+  {
+    "id": "weapon-short_draw--relic",
+    "standard_id": "weapon-short_draw",
+    "grade": "relic",
+    "label": "Short Draw — Relic",
+    "path": "art/icons/gear/weapon-short_draw--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-short_draw.png",
+      "art/icons/gear/weapon-short_draw--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-short_draw",
+    "family_references": [
+      "art/icons/gear/weapon-short_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork blade inlay is bright brass. Keep the wavy tempered edge line distinct from the new thin spine inlay; keep the dark diamond lattice grip arrangement. No sheath or new guard arms. The ONE old repair is a single short section of the EXISTING grip binding rewrapped in older contrasting cord, inside the original grip outline. No extra repair, no plate, no sewn fabric on metal. Place one tiny flush gilt ornament on the existing guard or bolster.",
+    "keep_line": "the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png"
+    ],
+    "depends_on": "weapon-short_draw--masterwork"
+  },
+  {
+    "id": "weapon-short_draw--celestial",
+    "standard_id": "weapon-short_draw",
+    "grade": "celestial",
+    "label": "Short Draw — Celestial",
+    "path": "art/icons/gear/weapon-short_draw--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-short_draw.png",
+      "art/icons/gear/weapon-short_draw--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-short_draw",
+    "family_references": [
+      "art/icons/gear/weapon-short_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork blade inlay is bright brass. Keep the wavy tempered edge line distinct from the new thin spine inlay; keep the dark diamond lattice grip arrangement. No sheath or new guard arms. All visible blade flats, bevels, guard and pommel are clean pale pearl-ivory material, with dark charcoal only in recess shadows; no remaining brown or black patina. Preserve the repair location but make its cord ivory. Keep the tiny gilt ornament at its previous guard position. The contained lit inlay remains one thin line.",
+    "keep_line": "the same short gently curved single-edged steel blade with angular pointed tip, pale wavy temper line along the cutting edge, compact round aged-brass guard collar, long black diamond-lattice cord grip and small round brass end cap. Preserve the blade curve, temper wave, exact grip-to-blade ratio and all guard fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png"
+    ],
+    "depends_on": "weapon-short_draw--relic"
+  },
+  {
+    "id": "weapon-long_draw--fine",
+    "standard_id": "weapon-long_draw",
+    "grade": "fine",
+    "label": "Long Draw — Fine",
+    "path": "art/icons/gear/weapon-long_draw--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-long_draw.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-long_draw",
+    "family_references": [
+      "art/icons/gear/weapon-long_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is bright brass. Keep the pale temper wave distinct from the new thin spine inlay. No sheath, strap or new guard arms.",
+    "keep_line": "the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png"
+    ]
+  },
+  {
+    "id": "weapon-long_draw--masterwork",
+    "standard_id": "weapon-long_draw",
+    "grade": "masterwork",
+    "label": "Long Draw — Masterwork",
+    "path": "art/icons/gear/weapon-long_draw--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-long_draw.png",
+      "art/icons/gear/weapon-long_draw--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-long_draw",
+    "family_references": [
+      "art/icons/gear/weapon-long_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is bright brass. Keep the pale temper wave distinct from the new thin spine inlay. No sheath, strap or new guard arms.",
+    "keep_line": "the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png"
+    ],
+    "depends_on": "weapon-long_draw--fine"
+  },
+  {
+    "id": "weapon-long_draw--relic",
+    "standard_id": "weapon-long_draw",
+    "grade": "relic",
+    "label": "Long Draw — Relic",
+    "path": "art/icons/gear/weapon-long_draw--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-long_draw.png",
+      "art/icons/gear/weapon-long_draw--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-long_draw",
+    "family_references": [
+      "art/icons/gear/weapon-long_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is bright brass. Keep the pale temper wave distinct from the new thin spine inlay. No sheath, strap or new guard arms. The ONE old repair is a single short section of the EXISTING grip binding rewrapped in older contrasting cord, inside the original grip outline. No extra repair, no plate, no sewn fabric on metal. Place one tiny flush gilt ornament on the existing guard or bolster.",
+    "keep_line": "the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png"
+    ],
+    "depends_on": "weapon-long_draw--masterwork"
+  },
+  {
+    "id": "weapon-long_draw--celestial",
+    "standard_id": "weapon-long_draw",
+    "grade": "celestial",
+    "label": "Long Draw — Celestial",
+    "path": "art/icons/gear/weapon-long_draw--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-long_draw.png",
+      "art/icons/gear/weapon-long_draw--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-long_draw",
+    "family_references": [
+      "art/icons/gear/weapon-long_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is bright brass. Keep the pale temper wave distinct from the new thin spine inlay. No sheath, strap or new guard arms. All visible blade flats, bevels, guard and pommel are clean pale pearl-ivory material, with dark charcoal only in recess shadows; no remaining brown or black patina. Preserve the repair location but make its cord ivory. Keep the tiny gilt ornament at its previous guard position. The contained lit inlay remains one thin line.",
+    "keep_line": "the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png"
+    ],
+    "depends_on": "weapon-long_draw--relic"
+  },
+  {
+    "id": "weapon-kemizuchi_side_sword--fine",
+    "standard_id": "weapon-kemizuchi_side_sword",
+    "grade": "fine",
+    "label": "Kemizuchi Side Sword — Fine",
+    "path": "art/icons/gear/weapon-kemizuchi_side_sword--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_side_sword.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_side_sword",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_side_sword.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long straight tapered solid double-edged steel blade with short fuller near its hilt, crimson lacquer round disc guard, squared crossbar with a rivet at each end behind the disc, crimson crossed binding over the black grip, one curving steel knuckle bar and squared open ring pommel. Preserve the disc, two crossbar rivets, all open spaces and each hilt part.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork blade inlay is the existing muted crimson #86234E, never brass. Crimson lacquer and crossed crimson binding stay at their original locations. At Celestial the structural grip cord becomes ivory with a faint crimson trace at the same crossing locations, while the disc retains a pale muted crimson lacquer accent; preserve all original parts. Do not add a basket or new bars.",
+    "keep_line": "the same long straight tapered solid double-edged steel blade with short fuller near its hilt, crimson lacquer round disc guard, squared crossbar with a rivet at each end behind the disc, crimson crossed binding over the black grip, one curving steel knuckle bar and squared open ring pommel. Preserve the disc, two crossbar rivets, all open spaces and each hilt part.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png"
+    ]
+  },
+  {
+    "id": "weapon-kemizuchi_side_sword--masterwork",
+    "standard_id": "weapon-kemizuchi_side_sword",
+    "grade": "masterwork",
+    "label": "Kemizuchi Side Sword — Masterwork",
+    "path": "art/icons/gear/weapon-kemizuchi_side_sword--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_side_sword.png",
+      "art/icons/gear/weapon-kemizuchi_side_sword--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_side_sword",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_side_sword.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long straight tapered solid double-edged steel blade with short fuller near its hilt, crimson lacquer round disc guard, squared crossbar with a rivet at each end behind the disc, crimson crossed binding over the black grip, one curving steel knuckle bar and squared open ring pommel. Preserve the disc, two crossbar rivets, all open spaces and each hilt part.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork blade inlay is the existing muted crimson #86234E, never brass. Crimson lacquer and crossed crimson binding stay at their original locations. At Celestial the structural grip cord becomes ivory with a faint crimson trace at the same crossing locations, while the disc retains a pale muted crimson lacquer accent; preserve all original parts. Do not add a basket or new bars.",
+    "keep_line": "the same long straight tapered solid double-edged steel blade with short fuller near its hilt, crimson lacquer round disc guard, squared crossbar with a rivet at each end behind the disc, crimson crossed binding over the black grip, one curving steel knuckle bar and squared open ring pommel. Preserve the disc, two crossbar rivets, all open spaces and each hilt part.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png"
+    ],
+    "depends_on": "weapon-kemizuchi_side_sword--fine"
+  },
+  {
+    "id": "weapon-kemizuchi_side_sword--relic",
+    "standard_id": "weapon-kemizuchi_side_sword",
+    "grade": "relic",
+    "label": "Kemizuchi Side Sword — Relic",
+    "path": "art/icons/gear/weapon-kemizuchi_side_sword--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_side_sword.png",
+      "art/icons/gear/weapon-kemizuchi_side_sword--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_side_sword",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_side_sword.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long straight tapered solid double-edged steel blade with short fuller near its hilt, crimson lacquer round disc guard, squared crossbar with a rivet at each end behind the disc, crimson crossed binding over the black grip, one curving steel knuckle bar and squared open ring pommel. Preserve the disc, two crossbar rivets, all open spaces and each hilt part.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork blade inlay is the existing muted crimson #86234E, never brass. Crimson lacquer and crossed crimson binding stay at their original locations. At Celestial the structural grip cord becomes ivory with a faint crimson trace at the same crossing locations, while the disc retains a pale muted crimson lacquer accent; preserve all original parts. Do not add a basket or new bars. The ONE old repair is a single short section of the EXISTING grip binding rewrapped in older contrasting cord, inside the original grip outline. No extra repair, no plate, no sewn fabric on metal. Place one tiny flush gilt ornament on the existing guard or bolster.",
+    "keep_line": "the same long straight tapered solid double-edged steel blade with short fuller near its hilt, crimson lacquer round disc guard, squared crossbar with a rivet at each end behind the disc, crimson crossed binding over the black grip, one curving steel knuckle bar and squared open ring pommel. Preserve the disc, two crossbar rivets, all open spaces and each hilt part.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png"
+    ],
+    "depends_on": "weapon-kemizuchi_side_sword--masterwork"
+  },
+  {
+    "id": "weapon-kemizuchi_side_sword--celestial",
+    "standard_id": "weapon-kemizuchi_side_sword",
+    "grade": "celestial",
+    "label": "Kemizuchi Side Sword — Celestial",
+    "path": "art/icons/gear/weapon-kemizuchi_side_sword--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_side_sword.png",
+      "art/icons/gear/weapon-kemizuchi_side_sword--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_side_sword",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_side_sword.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long straight tapered solid double-edged steel blade with short fuller near its hilt, crimson lacquer round disc guard, squared crossbar with a rivet at each end behind the disc, crimson crossed binding over the black grip, one curving steel knuckle bar and squared open ring pommel. Preserve the disc, two crossbar rivets, all open spaces and each hilt part.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork blade inlay is the existing muted crimson #86234E, never brass. Crimson lacquer and crossed crimson binding stay at their original locations. At Celestial the structural grip cord becomes ivory with a faint crimson trace at the same crossing locations, while the disc retains a pale muted crimson lacquer accent; preserve all original parts. Do not add a basket or new bars. All visible blade flats, bevels, guard and pommel are clean pale pearl-ivory material, with dark charcoal only in recess shadows; no remaining brown or black patina. Preserve the repair location but make its cord ivory. Keep the tiny gilt ornament at its previous guard position. The contained lit inlay remains one thin line.",
+    "keep_line": "the same long straight tapered solid double-edged steel blade with short fuller near its hilt, crimson lacquer round disc guard, squared crossbar with a rivet at each end behind the disc, crimson crossed binding over the black grip, one curving steel knuckle bar and squared open ring pommel. Preserve the disc, two crossbar rivets, all open spaces and each hilt part.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png"
+    ],
+    "depends_on": "weapon-kemizuchi_side_sword--relic"
+  },
+  {
+    "id": "weapon-kemizuchi_sword_breaker--fine",
+    "standard_id": "weapon-kemizuchi_sword_breaker",
+    "grade": "fine",
+    "label": "Kemizuchi Sword Breaker — Fine",
+    "path": "art/icons/gear/weapon-kemizuchi_sword_breaker--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_sword_breaker.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_sword_breaker",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_sword_breaker.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short broad straight single-edged dark steel blade with exactly FOUR deep square open comb slots on its back and angular pointed tip, squared crossguard with one round rivet at each end, crimson crossed cord over a short black grip and squared open ring pommel. Preserve the four slot widths and depths, all teeth and negative spaces; there is no round guard disc.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is muted crimson #86234E, in one thin uninterrupted line on the SOLID blade flat beside the smooth edge, safely below every slot. The comb is four large square slots, never small saw teeth. At Celestial the grip cord is ivory with only a faint trace of crimson retained at the original binding crossings. No disc guard or added parts.",
+    "keep_line": "the same short broad straight single-edged dark steel blade with exactly FOUR deep square open comb slots on its back and angular pointed tip, squared crossguard with one round rivet at each end, crimson crossed cord over a short black grip and squared open ring pommel. Preserve the four slot widths and depths, all teeth and negative spaces; there is no round guard disc.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png"
+    ]
+  },
+  {
+    "id": "weapon-kemizuchi_sword_breaker--masterwork",
+    "standard_id": "weapon-kemizuchi_sword_breaker",
+    "grade": "masterwork",
+    "label": "Kemizuchi Sword Breaker — Masterwork",
+    "path": "art/icons/gear/weapon-kemizuchi_sword_breaker--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_sword_breaker.png",
+      "art/icons/gear/weapon-kemizuchi_sword_breaker--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_sword_breaker",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_sword_breaker.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short broad straight single-edged dark steel blade with exactly FOUR deep square open comb slots on its back and angular pointed tip, squared crossguard with one round rivet at each end, crimson crossed cord over a short black grip and squared open ring pommel. Preserve the four slot widths and depths, all teeth and negative spaces; there is no round guard disc.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is muted crimson #86234E, in one thin uninterrupted line on the SOLID blade flat beside the smooth edge, safely below every slot. The comb is four large square slots, never small saw teeth. At Celestial the grip cord is ivory with only a faint trace of crimson retained at the original binding crossings. No disc guard or added parts.",
+    "keep_line": "the same short broad straight single-edged dark steel blade with exactly FOUR deep square open comb slots on its back and angular pointed tip, squared crossguard with one round rivet at each end, crimson crossed cord over a short black grip and squared open ring pommel. Preserve the four slot widths and depths, all teeth and negative spaces; there is no round guard disc.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png"
+    ],
+    "depends_on": "weapon-kemizuchi_sword_breaker--fine"
+  },
+  {
+    "id": "weapon-kemizuchi_sword_breaker--relic",
+    "standard_id": "weapon-kemizuchi_sword_breaker",
+    "grade": "relic",
+    "label": "Kemizuchi Sword Breaker — Relic",
+    "path": "art/icons/gear/weapon-kemizuchi_sword_breaker--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_sword_breaker.png",
+      "art/icons/gear/weapon-kemizuchi_sword_breaker--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_sword_breaker",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_sword_breaker.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short broad straight single-edged dark steel blade with exactly FOUR deep square open comb slots on its back and angular pointed tip, squared crossguard with one round rivet at each end, crimson crossed cord over a short black grip and squared open ring pommel. Preserve the four slot widths and depths, all teeth and negative spaces; there is no round guard disc.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is muted crimson #86234E, in one thin uninterrupted line on the SOLID blade flat beside the smooth edge, safely below every slot. The comb is four large square slots, never small saw teeth. At Celestial the grip cord is ivory with only a faint trace of crimson retained at the original binding crossings. No disc guard or added parts. The ONE old repair is a single short section of the EXISTING grip binding rewrapped in older contrasting cord, inside the original grip outline. No extra repair, no plate, no sewn fabric on metal. Place one tiny flush gilt ornament on the existing guard or bolster.",
+    "keep_line": "the same short broad straight single-edged dark steel blade with exactly FOUR deep square open comb slots on its back and angular pointed tip, squared crossguard with one round rivet at each end, crimson crossed cord over a short black grip and squared open ring pommel. Preserve the four slot widths and depths, all teeth and negative spaces; there is no round guard disc.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png"
+    ],
+    "depends_on": "weapon-kemizuchi_sword_breaker--masterwork"
+  },
+  {
+    "id": "weapon-kemizuchi_sword_breaker--celestial",
+    "standard_id": "weapon-kemizuchi_sword_breaker",
+    "grade": "celestial",
+    "label": "Kemizuchi Sword Breaker — Celestial",
+    "path": "art/icons/gear/weapon-kemizuchi_sword_breaker--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-kemizuchi_sword_breaker.png",
+      "art/icons/gear/weapon-kemizuchi_sword_breaker--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-kemizuchi_sword_breaker",
+    "family_references": [
+      "art/icons/gear/weapon-kemizuchi_sword_breaker.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short broad straight single-edged dark steel blade with exactly FOUR deep square open comb slots on its back and angular pointed tip, squared crossguard with one round rivet at each end, crimson crossed cord over a short black grip and squared open ring pommel. Preserve the four slot widths and depths, all teeth and negative spaces; there is no round guard disc.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is muted crimson #86234E, in one thin uninterrupted line on the SOLID blade flat beside the smooth edge, safely below every slot. The comb is four large square slots, never small saw teeth. At Celestial the grip cord is ivory with only a faint trace of crimson retained at the original binding crossings. No disc guard or added parts. All visible blade flats, bevels, guard and pommel are clean pale pearl-ivory material, with dark charcoal only in recess shadows; no remaining brown or black patina. Preserve the repair location but make its cord ivory. Keep the tiny gilt ornament at its previous guard position. The contained lit inlay remains one thin line.",
+    "keep_line": "the same short broad straight single-edged dark steel blade with exactly FOUR deep square open comb slots on its back and angular pointed tip, squared crossguard with one round rivet at each end, crimson crossed cord over a short black grip and squared open ring pommel. Preserve the four slot widths and depths, all teeth and negative spaces; there is no round guard disc.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png"
+    ],
+    "depends_on": "weapon-kemizuchi_sword_breaker--relic"
+  },
+  {
+    "id": "weapon-adamantile_plate_needle--fine",
+    "standard_id": "weapon-adamantile_plate_needle",
+    "grade": "fine",
+    "label": "Adamantile Plate Needle — Fine",
+    "path": "art/icons/gear/weapon-adamantile_plate_needle--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_plate_needle",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses brass-orange #F68A38 along the same blade flat and retains the existing orange base accent. Keep the gilt crest boss as the existing maker fitting; the Relic ornament is only a tiny flush flourish on the existing wing surface, with no second crest or backing plate. No bell guard, widened blade or gem.",
+    "keep_line": "the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png"
+    ]
+  },
+  {
+    "id": "weapon-adamantile_plate_needle--masterwork",
+    "standard_id": "weapon-adamantile_plate_needle",
+    "grade": "masterwork",
+    "label": "Adamantile Plate Needle — Masterwork",
+    "path": "art/icons/gear/weapon-adamantile_plate_needle--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png",
+      "art/icons/gear/weapon-adamantile_plate_needle--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_plate_needle",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses brass-orange #F68A38 along the same blade flat and retains the existing orange base accent. Keep the gilt crest boss as the existing maker fitting; the Relic ornament is only a tiny flush flourish on the existing wing surface, with no second crest or backing plate. No bell guard, widened blade or gem.",
+    "keep_line": "the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png"
+    ],
+    "depends_on": "weapon-adamantile_plate_needle--fine"
+  },
+  {
+    "id": "weapon-adamantile_plate_needle--relic",
+    "standard_id": "weapon-adamantile_plate_needle",
+    "grade": "relic",
+    "label": "Adamantile Plate Needle — Relic",
+    "path": "art/icons/gear/weapon-adamantile_plate_needle--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png",
+      "art/icons/gear/weapon-adamantile_plate_needle--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_plate_needle",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses brass-orange #F68A38 along the same blade flat and retains the existing orange base accent. Keep the gilt crest boss as the existing maker fitting; the Relic ornament is only a tiny flush flourish on the existing wing surface, with no second crest or backing plate. No bell guard, widened blade or gem. The ONE old repair is a single short section of the EXISTING grip binding rewrapped in older contrasting cord, inside the original grip outline. No extra repair, no plate, no sewn fabric on metal. Place one tiny flush gilt ornament on the existing guard or bolster.",
+    "keep_line": "the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png"
+    ],
+    "depends_on": "weapon-adamantile_plate_needle--masterwork"
+  },
+  {
+    "id": "weapon-adamantile_plate_needle--celestial",
+    "standard_id": "weapon-adamantile_plate_needle",
+    "grade": "celestial",
+    "label": "Adamantile Plate Needle — Celestial",
+    "path": "art/icons/gear/weapon-adamantile_plate_needle--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png",
+      "art/icons/gear/weapon-adamantile_plate_needle--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_plate_needle",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses brass-orange #F68A38 along the same blade flat and retains the existing orange base accent. Keep the gilt crest boss as the existing maker fitting; the Relic ornament is only a tiny flush flourish on the existing wing surface, with no second crest or backing plate. No bell guard, widened blade or gem. All visible blade flats, bevels, guard and pommel are clean pale pearl-ivory material, with dark charcoal only in recess shadows; no remaining brown or black patina. Preserve the repair location but make its cord ivory. Keep the tiny gilt ornament at its previous guard position. The contained lit inlay remains one thin line.",
+    "keep_line": "the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png"
+    ],
+    "depends_on": "weapon-adamantile_plate_needle--relic"
+  },
+  {
+    "id": "weapon-adamantile_longsword--fine",
+    "standard_id": "weapon-adamantile_longsword",
+    "grade": "fine",
+    "label": "Adamantile Brigade Longsword — Fine",
+    "path": "art/icons/gear/weapon-adamantile_longsword--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_longsword.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_longsword",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_longsword.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses the existing brass-orange #F68A38 line inside the fuller. Preserve the existing pommel crest as a maker part. Relic adds only one tiny flush gilt ornament on an existing guard wing, no second crest or added plate. No ring pommel or enlarged slab blade.",
+    "keep_line": "the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png"
+    ]
+  },
+  {
+    "id": "weapon-adamantile_longsword--masterwork",
+    "standard_id": "weapon-adamantile_longsword",
+    "grade": "masterwork",
+    "label": "Adamantile Brigade Longsword — Masterwork",
+    "path": "art/icons/gear/weapon-adamantile_longsword--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_longsword.png",
+      "art/icons/gear/weapon-adamantile_longsword--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_longsword",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_longsword.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses the existing brass-orange #F68A38 line inside the fuller. Preserve the existing pommel crest as a maker part. Relic adds only one tiny flush gilt ornament on an existing guard wing, no second crest or added plate. No ring pommel or enlarged slab blade.",
+    "keep_line": "the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png"
+    ],
+    "depends_on": "weapon-adamantile_longsword--fine"
+  },
+  {
+    "id": "weapon-adamantile_longsword--relic",
+    "standard_id": "weapon-adamantile_longsword",
+    "grade": "relic",
+    "label": "Adamantile Brigade Longsword — Relic",
+    "path": "art/icons/gear/weapon-adamantile_longsword--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_longsword.png",
+      "art/icons/gear/weapon-adamantile_longsword--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_longsword",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_longsword.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses the existing brass-orange #F68A38 line inside the fuller. Preserve the existing pommel crest as a maker part. Relic adds only one tiny flush gilt ornament on an existing guard wing, no second crest or added plate. No ring pommel or enlarged slab blade. The ONE old repair is a single short section of the EXISTING grip binding rewrapped in older contrasting cord, inside the original grip outline. No extra repair, no plate, no sewn fabric on metal. Place one tiny flush gilt ornament on the existing guard or bolster.",
+    "keep_line": "the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png"
+    ],
+    "depends_on": "weapon-adamantile_longsword--masterwork"
+  },
+  {
+    "id": "weapon-adamantile_longsword--celestial",
+    "standard_id": "weapon-adamantile_longsword",
+    "grade": "celestial",
+    "label": "Adamantile Brigade Longsword — Celestial",
+    "path": "art/icons/gear/weapon-adamantile_longsword--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_longsword.png",
+      "art/icons/gear/weapon-adamantile_longsword--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_longsword",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_longsword.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses the existing brass-orange #F68A38 line inside the fuller. Preserve the existing pommel crest as a maker part. Relic adds only one tiny flush gilt ornament on an existing guard wing, no second crest or added plate. No ring pommel or enlarged slab blade. All visible blade flats, bevels, guard and pommel are clean pale pearl-ivory material, with dark charcoal only in recess shadows; no remaining brown or black patina. Preserve the repair location but make its cord ivory. Keep the tiny gilt ornament at its previous guard position. The contained lit inlay remains one thin line.",
+    "keep_line": "the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png"
+    ],
+    "depends_on": "weapon-adamantile_longsword--relic"
   }
 ]

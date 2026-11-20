@@ -342,6 +342,240 @@
           "sha256": "71cad3ddf13bf261f55da68afb7a70351b542ff77b55ed6f68d78d86641f4eca"
         }
       ]
+    },
+    {
+      "id": "weapon-short_draw",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Short draw",
+        "path": "art/icons/gear/weapon-short_draw.png",
+        "sha256": "1c03568b71751f093978788917e768c26df2a156e1f573a9dc0d262d6956d08f",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-short_draw.png",
+          "128": "art/icons/gear/exports/128/weapon-short_draw.png",
+          "64": "art/icons/gear/exports/64/weapon-short_draw.png",
+          "32": "art/icons/gear/exports/32/weapon-short_draw.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 7,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-short_draw.png": "1c03568b71751f093978788917e768c26df2a156e1f573a9dc0d262d6956d08f",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png": "251886e2fa6aaee22e844d498239ef610edcec77d15ca25d062a1962eab8e082",
+        "art/icons/gear/exports/256/weapon-short_draw.png": "ef9a0acb77af528ca6ba1218801f74e9f99de88d47949f9cc01b2efe2f06c3f9",
+        "art/icons/gear/exports/128/weapon-short_draw.png": "1a9003c7c096eca6d338d8e5ce1508cee1938322c4bffb40dd5a35187e5b270f",
+        "art/icons/gear/exports/64/weapon-short_draw.png": "abcaf929a4a6ace1c84861ee5a15ae66537cfbfec71978ef2519305af10a8e95",
+        "art/icons/gear/exports/32/weapon-short_draw.png": "22f4731c492f90a4acaa5e1bb7b33d0ef6ba617920ce796cb31fe5b0a6b2f620"
+      }
+    },
+    {
+      "id": "weapon-long_draw",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Long draw",
+        "path": "art/icons/gear/weapon-long_draw.png",
+        "sha256": "fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-long_draw.png",
+          "128": "art/icons/gear/exports/128/weapon-long_draw.png",
+          "64": "art/icons/gear/exports/64/weapon-long_draw.png",
+          "32": "art/icons/gear/exports/32/weapon-long_draw.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 8,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-long_draw.png": "fa298daed0c52cab93c63b1b4290e940df2ba1a35e7f67bf890475ffc75b52c4",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png": "c4d822422be9e1415fd055784be8781bbe3ed8bef6af84c56203d5ea10c516d5",
+        "art/icons/gear/exports/256/weapon-long_draw.png": "d62ad20b5819e2722ca64e58f8a3cf39530a889b3c38018e7c4715c1ccd132d6",
+        "art/icons/gear/exports/128/weapon-long_draw.png": "add586d102e4a602d8fe3502305bc588a466be40c7b755c96529cb9a5fda799f",
+        "art/icons/gear/exports/64/weapon-long_draw.png": "44289994607d37d6432c7d187458e369d91e33a4a6d7421b7a8be6ce7d19f333",
+        "art/icons/gear/exports/32/weapon-long_draw.png": "7e87cdcaa84baff32e3b96339643265860fb6758e100fb8889a1521c37117475"
+      }
+    },
+    {
+      "id": "weapon-kemizuchi_side_sword",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Kemizuchi side-sword",
+        "path": "art/icons/gear/weapon-kemizuchi_side_sword.png",
+        "sha256": "ab263efaac50ca2d6289353002bcf9226a7f17c9d9dcbebd6faee5346f32f5d6",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-kemizuchi_side_sword.png",
+          "128": "art/icons/gear/exports/128/weapon-kemizuchi_side_sword.png",
+          "64": "art/icons/gear/exports/64/weapon-kemizuchi_side_sword.png",
+          "32": "art/icons/gear/exports/32/weapon-kemizuchi_side_sword.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 9,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-kemizuchi_side_sword.png": "ab263efaac50ca2d6289353002bcf9226a7f17c9d9dcbebd6faee5346f32f5d6",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png": "77cb7f7c217c2dcfe16d884006634aa99f23fec5f35ce477cd5ae12a23eb02c6",
+        "art/icons/gear/exports/256/weapon-kemizuchi_side_sword.png": "4ca9332ee08108a1da0ffa28832aa531003ea0bcc2f83f38076cff23a7b8e182",
+        "art/icons/gear/exports/128/weapon-kemizuchi_side_sword.png": "4506b78f676fbcdb50d6ccff483fb2b8abb5dcb86bef0ed463210feb83a3a2ed",
+        "art/icons/gear/exports/64/weapon-kemizuchi_side_sword.png": "ecbf7dd94d3465e111c8c9405af934e62a051e5cd77763f9f0bfac1adb9fd07a",
+        "art/icons/gear/exports/32/weapon-kemizuchi_side_sword.png": "48c69fac279b129b93ce3158f01bf7a44e9659bfe02daaf92e981ca604e25854"
+      }
+    },
+    {
+      "id": "weapon-kemizuchi_sword_breaker",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Kemizuchi sword-breaker",
+        "path": "art/icons/gear/weapon-kemizuchi_sword_breaker.png",
+        "sha256": "58521e7d0c861cb4aefa8e85275d67177cf7988d8270c1b1d20af51984080b80",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-kemizuchi_sword_breaker.png",
+          "128": "art/icons/gear/exports/128/weapon-kemizuchi_sword_breaker.png",
+          "64": "art/icons/gear/exports/64/weapon-kemizuchi_sword_breaker.png",
+          "32": "art/icons/gear/exports/32/weapon-kemizuchi_sword_breaker.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 10,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-kemizuchi_sword_breaker.png": "58521e7d0c861cb4aefa8e85275d67177cf7988d8270c1b1d20af51984080b80",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png": "3f942bad0ad5813a6bac00f280bbe61730e7a34c6fda3f3652cc93ed2f894529",
+        "art/icons/gear/exports/256/weapon-kemizuchi_sword_breaker.png": "bbff32291df83a464eea561d3f5ab549d25a3d6ef06fa0d5b6476c6656c5efaa",
+        "art/icons/gear/exports/128/weapon-kemizuchi_sword_breaker.png": "91d56e4c5a6b02d7dbbbf9dad3b2c4fa43d01f7c656837088f4d6d55231d410c",
+        "art/icons/gear/exports/64/weapon-kemizuchi_sword_breaker.png": "af9cc2c224330adae6cb9afff2e596a4b10e4e56c5cac19959f6ceb68b9856d8",
+        "art/icons/gear/exports/32/weapon-kemizuchi_sword_breaker.png": "6e3d9de61e55afb28c3d231d53b23863e338568fa2c37ced5d50fdc11b2b49b8"
+      }
+    },
+    {
+      "id": "weapon-adamantile_plate_needle",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Plate needle",
+        "path": "art/icons/gear/weapon-adamantile_plate_needle.png",
+        "sha256": "2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-adamantile_plate_needle.png",
+          "128": "art/icons/gear/exports/128/weapon-adamantile_plate_needle.png",
+          "64": "art/icons/gear/exports/64/weapon-adamantile_plate_needle.png",
+          "32": "art/icons/gear/exports/32/weapon-adamantile_plate_needle.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 15,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-adamantile_plate_needle.png": "2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png": "16c69e22ee36ba3e695d02c6305670527bde826496bb241bc25d2039bce55edd",
+        "art/icons/gear/exports/256/weapon-adamantile_plate_needle.png": "fc631e03b88895a38885dc6e0e95d951bc24557ec9d5013d532d52e783680050",
+        "art/icons/gear/exports/128/weapon-adamantile_plate_needle.png": "7d011079e0101bbc7fa38b3fd67c195a772cc68b4010b44fffff904d9052421f",
+        "art/icons/gear/exports/64/weapon-adamantile_plate_needle.png": "f381b36111dd7d67dcfb30eb0a8622708fd44dcd275c9ea2e1ac4a669fc26b34",
+        "art/icons/gear/exports/32/weapon-adamantile_plate_needle.png": "0b968cec8d3506ea5eae5ce6aa0c18d3adeabf0c9596f2591827504ac441db7a"
+      }
+    },
+    {
+      "id": "weapon-adamantile_longsword",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Brigade longsword",
+        "path": "art/icons/gear/weapon-adamantile_longsword.png",
+        "sha256": "ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-adamantile_longsword.png",
+          "128": "art/icons/gear/exports/128/weapon-adamantile_longsword.png",
+          "64": "art/icons/gear/exports/64/weapon-adamantile_longsword.png",
+          "32": "art/icons/gear/exports/32/weapon-adamantile_longsword.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 16,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-adamantile_longsword.png": "ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png": "bb86956b8cc82b894caeebe5fcd4452c8369e8a27a51cab46c9b1cd73661a678",
+        "art/icons/gear/exports/256/weapon-adamantile_longsword.png": "2050721bcab5ce9127f4a4bc1d55a0ad71c952e88cd0ec2e24fe479dd0a72ca7",
+        "art/icons/gear/exports/128/weapon-adamantile_longsword.png": "5de599df43b3bfbb54318f59344f5b6b1d5fd66a0a3634747f15e8b3ae91b1fb",
+        "art/icons/gear/exports/64/weapon-adamantile_longsword.png": "e592ce52df57e8a4a0b375b48e507a19725c2a4c04b740ab379746d0df6571eb",
+        "art/icons/gear/exports/32/weapon-adamantile_longsword.png": "9c3519d231145ffc9793082557886e0573fa04235f1d34eed3566c3f3eac136f"
+      }
     }
   ]
 }

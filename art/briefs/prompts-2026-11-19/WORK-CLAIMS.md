@@ -1,5 +1,14 @@
 # Active reset production — 20 November 2026
 
+Run `reset-20261120-165ac7984341` on `art/2026-11-20-reset-continuation`. First46:37 delivered,9 service-blocked/dependent. New claim7030148205: all four grades for `weapon-short_draw`, `weapon-long_draw`, `weapon-kemizuchi_side_sword`, `weapon-kemizuchi_sword_breaker`, `weapon-adamantile_plate_needle`, `weapon-adamantile_longsword` (24). Exact70 IDs and current states: archive reset-continuation queue/claim/progress. Each selected picture is validated/committed/pushed before the next request. Imported Standards are unchanged prior work, not new pictures.
+
+Peer owns new armour56 (claim7029516545); its six kept gunFine requests are service-blocked and higher18 dependent. Do not retry them. Other new melee/shield grades require live claim and source checks. All candidates remain unapproved. Read live issue3 body and all comments, and inspect remote destinations before EVERY image.
+
+---
+Historical snapshot below; live issue3 supersedes it.
+
+# Active reset production — 20 November 2026
+
 Run `reset-20261120-165ac7984341` on `art/2026-11-20-reset-continuation`. Initial22:18 delivered,2 actual service rejections plus2 dependent. New claim7029498929: all four grades for `weapon-trench_knife`, `weapon-lowland_chopper`, `weapon-dock_cutter`, `weapon-broadback_sabre`, `weapon-legion_leaf_dagger`, `weapon-legion_rank_sword` (24). Exact46 IDs and current states: archive reset-continuation queue/claim/progress. Each selected picture is validated/committed/pushed before the next request. Imported Standards are unchanged prior work, not new pictures.
 
 Peer owns new armour56 (claim7029516545); its six kept gunFine requests are service-blocked and higher18 dependent. Do not retry them. Other new melee/shield grades require live claim and source checks. All candidates remain unapproved. Read live issue3 body and all comments, and inspect remote destinations before EVERY image.

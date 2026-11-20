@@ -2601,7 +2601,7 @@ bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/g
 f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/gear/2026-11-19-unique-melee-bow/web-build-check.json
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
-3ada8614d4663b7df6be7142c5d120f8fb55d13bf469cd38de587fe4e5cdaced  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
+a4fcbbaff10351c05ad27e4a5e540455a04607966f2aadff9e4daff09c63f9c4  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
 1006204c5e813723abfb237b9be15ccb822febfcdcff4f3180aba731f6e9d711  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
@@ -2625,7 +2625,7 @@ c257290b2dcb78d185eaed5202bc547d6590195687506bb952c11df03ecbc55e  art/_archive/g
 f6d47f3e21b258b7ad4929c5cc9f97b415985fbd1d7a5831e6fad5dc9dc0cd62  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-throwing_knives--celestial/01-quality-review/metadata.json
 fa9b0574d0860c6ec4f1c061021928cbf0f221b3c2073eff49ea225816f5bff8  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-throwing_knives--celestial/01-quality-review/native.png
 44e3257ac1602555b61f545fd4ac6a27288771d93b7f3a6d5abf706ebe171863  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-throwing_knives--celestial/01-quality-review/prompt.txt
-9636fd853c350a34a135705c7384fe3392deebfa7f9d4aa9ac701baabcb5df25  art/_archive/gear/2026-11-20-reset-continuation/claim.json
+73f48f67888f210d6b101fc86c297f2880db42e2c0f014b66455a5871b4c2fe4  art/_archive/gear/2026-11-20-reset-continuation/claim.json
 1e24a83e66dd5b43f4396978c53cdd048cd83977a22a6a31f1c08942fca83886  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-broadback_sabre--relic.json
 2999330cbaa663b251233bac0c1d1cf8c47d761f63114e094fe256ac9b95aa43  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-dock_cutter--masterwork.json
 1d20b77054e5ac7326d126cebf353f98412aeafa2b62cb32ffc2e1f785fb289c  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-hellraiser_rotary--celestial.json
@@ -2668,7 +2668,7 @@ a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921  art/_archive/g
 0ade2a5a847a28f800c042112b7ab0be26ee6641929d9a0e924f39990bc4ba10  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--fine.png
 96c9588f2420f194bf05621dd6fa72ad02c0b340f3dd3822996fd35a604f3a1f  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--masterwork.png
 c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--relic.png
-f21992be3c170a6bbcf5c181ce4aaab0f67f7812d04c594d96618ed1357e744c  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+b51a250a99d0b091b21e468fbe761c5fe70c94daa767f1ae6d9a5da753378969  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
 7f2013ecf274cfe3c25bb6ea6a28ece6fd0a7e46ecb91aab7de71ace2120fadb  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-broadback_sabre--fine.txt
@@ -2706,7 +2706,7 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-38d7941ac482a4f6760ce72b82b877d8ae6213a09564dff624389e30fbd7f4eb  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+ef47f1de382770193caf6da916a653b8d55f29c68fe6bfb9d2fc484db3375320  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 deaf4e20e3843235790df048073620b0e76bfe152a29a7968d3c1860de696192  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-broadback_sabre-32px.png
@@ -2769,7 +2769,7 @@ a95d493366bd428f7668a4742bbffac44a865fd9cdb983eb8cde7b9c90f5d6ba  art/_archive/g
 b1b3a2fd8333c4807cc1e18293cf3073ea0482240986414e33f8a8ca4b7f47a7  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-trench_knife--fine.png
 123f70ca001098833ae78ebf1a03d0dbdaaef7c9db65849ae7be3ed23e9348aa  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-trench_knife--masterwork.png
 d59f0ea404dfcabb50edad83167091dc09419759da99c3a720a62ef6c59dba3e  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-trench_knife--relic.png
-aae7c46b42555746f0ad26b1af74475e173784f9cad13d2f0ea908159c84d507  art/_archive/gear/2026-11-20-reset-continuation/standard-imports.json
+657b5659869b9591c9c2e27d7c14e0aee69201191b9c2e52cb5305928a1119e0  art/_archive/gear/2026-11-20-reset-continuation/standard-imports.json
 2c6492a6359aa99556e2f66b6efccbdfc7425edab13e2f1203e724e265ab1517  art/_archive/gear/2026-11-20-reset-continuation/standard-reference-sheet.jpg
 8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/_archive/icons/perks/2026-11-12/both-hands.png
 bee60137688c6ac3615d3935ce9aadbb1937bc223cbcb791fa92572044cf2380  art/_archive/icons/perks/2026-11-12/exports/128/both-hands.png
@@ -6359,7 +6359,7 @@ c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/briefs/pro
 d35c91984152452f0484e327db6e6dadf34deaeab105bddf9b0dc9e4601323dd  art/briefs/prompts-2026-11-19/09-heavy-and-strange.md
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/briefs/prompts-2026-11-19/10-rifle-analogues.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/briefs/prompts-2026-11-19/README.md
-206e96fdcb368bbca73fe65927c99ba642eb77ee13b928422ff5d71365b569be  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
+dcbd86aa4f7ceba3476140db0746f6f3a7d7a50ab7955e81de01a0c32f4448fd  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
 f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/title-screen.md
 dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/title-screen/gaze-guide.jpg
 621ac2546d6520ab704ab84af7429b5f30c32309707fbe3d59ea7e5dec0bd0e5  art/briefs/title-screen/ref-spellsword-soul.webp
