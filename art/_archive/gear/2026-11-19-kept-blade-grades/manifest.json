@@ -8522,6 +8522,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-spotters_monocle--masterwork",
+      "path": "art/icons/gear/armour-spotters_monocle--masterwork.png",
+      "sha256": "6355171267de35682fd099e389feb6308716f56bbc599b8f124286de4704e3d6",
+      "label": "Spotter's monocle — Masterwork",
+      "family": "armour-spotters_monocle",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-spotters_monocle--masterwork.png",
+        "sha256": "1ac17a5dba944da3daad2b1280b71b84f7f16c580f24154e2532480b4977deb4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-spotters_monocle--masterwork.png",
+        "sha256": "6355171267de35682fd099e389feb6308716f56bbc599b8f124286de4704e3d6"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-spotters_monocle--masterwork.txt",
+        "sha256": "a131e4296343f174eb024ccca2883bb5cbcede4a12ed4792fd8da6d4e8eb6ef2"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-spotters_monocle.png",
+          "sha256": "819496772c36e8eba62f4b709185feeca90f3d9db192af408d91fc26b77a18f2"
+        },
+        {
+          "path": "art/icons/gear/armour-spotters_monocle--fine.png",
+          "sha256": "8aa14473f5fe948b0496e0863360c7b6376aa1ab445ae28988c9e380e0b117e5"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-spotters_monocle--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-spotters_monocle--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-spotters_monocle--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-spotters_monocle--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "872886f034b4c7541ed15a2480e37bbe9ab5a6b6faa52e610bdd8ff50dbf6ae5",
+        "128": "02ce6e254b3229e6a1de9ce8b05b2072447ffa6054b7d761e951d31d9d5153c0",
+        "64": "07ac8b7460c28f6764c13828bbfb3eb632497df307c4936d8508e1e9cece00c1",
+        "32": "9418352d72532f33ce07ec2f6633a61a3a8a6eeaca25e6695475e92602fdc65a"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-spotters_monocle",
+      "outline": {
+        "solid_alpha_iou": 0.9711075607576286,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 33
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
