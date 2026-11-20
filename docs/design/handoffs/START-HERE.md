@@ -1,4 +1,4 @@
-Owed work: docs/ROADMAP.md (the only list). Anything below that reads as a to-do is history unless the roadmap carries it. Live is 0.32.0 (20 Nov 2026; account: docs/design/handoffs/0.32.0-LIVE.md); older live-version lines below are history.
+Owed work: docs/ROADMAP.md (the only list). Anything below that reads as a to-do is history unless the roadmap carries it. Live is 0.33.0 (20 Nov 2026; account: docs/design/handoffs/0.33.0-LIVE.md); older live-version lines below are history.
 
 # Start here (14 Nov 2026)
 

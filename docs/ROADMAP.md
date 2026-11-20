@@ -1,6 +1,6 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
-**Live: 0.32.0 (20 Nov 2026; rules 1.70 to 1.81; account `docs/design/handoffs/0.32.0-LIVE.md`). 0.33 is on `wip/release-0.33` (rules 1.82 to 1.85; not live).** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
+**Live: 0.33.0 (20 Nov 2026; rules 1.82 to 1.90; account `docs/design/handoffs/0.33.0-LIVE.md`). Next: Items 2.0 (`docs/design/proposals/2026-11-20-items-2.0-plan.md`), built and left ready, not live without Leon's word.** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
 
 Item format: `**Short name.** What is owed. [size S/M/L] [state: open | partly | not verified; checked in code 19 Nov 2026 | from documents only] [source]`. Sizes: S under an hour, M a few hours, L about a day.
 
@@ -332,6 +332,10 @@ Direct questions. Where the lead gave a recommendation, it is built as stated un
 24. **Enemy fire memory carried into the next round** (rules 1.79 item 6703; `rules.json combat.focus_memory.carry`, built and off): any carry from 0.25 fails the idle-pair bound in `test/balance/defence-measure` (first Down at round 5 against 4.2). Keep it off? Lead's pick: off.
 
 Answered on 19 Nov (verification file): carry weight (nothing changes); camp budget (stays 300); ceilings (a relative measure, not a hard line, so "all-in 7/1/1 builds sit over every ceiling" is not a fault by itself); Operative and Sigilist 0 of 40 (the bot's policy).
+
+- **`fight-panel` fails about 3 runs in 7:** the compact You card's mini meters collapse into one overlapping line at 1280x720 and the charge row covers the "+N" chip. Not reproduced on demand. [S] [open; seen in the 0.33.0 full run, 20 Nov 2026]
+- **Settings' Fight tabs page is the only React.lazy with no error boundary:** a failed chunk blanks the page. [S] [open; 0.33.0 ship review]
+- **Builders report anything that touches live at once** (the 20 Nov accidental deploy was seen three hours late); `tools/deploy_site.py` deploys only with `--deploy`. [done, `9b09ff463`; keep the rule in every brief]
 
 ## Housekeeping
 
