@@ -28589,6 +28589,42 @@
         "different_pixels_32": 16,
         "different_pixels_64": 21
       }
+    },
+    "shield-barrier_wall--fine": {
+      "label": "Barrier Wall — Fine",
+      "path": "art/icons/gear/shield-barrier_wall--fine.png",
+      "sha256": "8ec72b454cb2c83a7845fbe85c04f1028700170403d4b69349b0c65fdcfcda57",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-barrier_wall--fine.png",
+        "128": "art/icons/gear/exports/128/shield-barrier_wall--fine.png",
+        "64": "art/icons/gear/exports/64/shield-barrier_wall--fine.png",
+        "32": "art/icons/gear/exports/32/shield-barrier_wall--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-barrier_wall--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.6",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "shield-barrier_wall",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9940307539955437,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 8
+      }
     }
   },
   "survival_art": {

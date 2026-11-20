@@ -4576,6 +4576,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-barrier_wall--fine",
+      "path": "art/icons/gear/shield-barrier_wall--fine.png",
+      "sha256": "8ec72b454cb2c83a7845fbe85c04f1028700170403d4b69349b0c65fdcfcda57",
+      "label": "Barrier Wall — Fine",
+      "family": "shield-barrier_wall",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-barrier_wall--fine.png",
+        "sha256": "92b68e46e6008e921e27db559cc60a7ef9d34e5b5587c361f86fe6a3335a2d0d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-barrier_wall--fine.png",
+        "sha256": "8ec72b454cb2c83a7845fbe85c04f1028700170403d4b69349b0c65fdcfcda57"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-barrier_wall--fine.txt",
+        "sha256": "e50f0b11dbb2039b85a244bf71010b66fe6f2c16250a9a2f50095a31fcaf5722"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-barrier_wall.png",
+          "sha256": "2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png",
+          "sha256": "b6f6fc809ac3f26cf41cc41a480a0cd3d1c156c543b1fd4d8a16e2804935c990"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-barrier_wall--fine.png",
+        "128": "art/icons/gear/exports/128/shield-barrier_wall--fine.png",
+        "64": "art/icons/gear/exports/64/shield-barrier_wall--fine.png",
+        "32": "art/icons/gear/exports/32/shield-barrier_wall--fine.png"
+      },
+      "export_hashes": {
+        "256": "6c46ac8dc1b3712df0b168dd52e1447ba2ae134c176a850d24e14e50bd1cb80b",
+        "128": "3b16a688f510b4243f1c188826a70a7be6906d74a623168896062629723f1b32",
+        "64": "4cb2004190a7c864376a9992b58656b70e646f5e74ef82375790159dfc89e6ac",
+        "32": "2e86f8bfd434d9d65150bcfc01337c96c7db5bbe090853decaefbb9846af1e82"
+      },
+      "grade": "fine",
+      "standard_id": "shield-barrier_wall",
+      "outline": {
+        "solid_alpha_iou": 0.9940307539955437,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 8
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
