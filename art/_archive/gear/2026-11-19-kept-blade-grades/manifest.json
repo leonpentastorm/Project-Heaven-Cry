@@ -9328,6 +9328,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-sealed_visor--relic",
+      "path": "art/icons/gear/armour-sealed_visor--relic.png",
+      "sha256": "c71e62cf2d247bc1d0cd32d38a7cf76cdf33873c6457a17cebcada5af14fe983",
+      "label": "Sealed visor — Relic",
+      "family": "armour-sealed_visor",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sealed_visor--relic.png",
+        "sha256": "aa224ef9d36ffdb01e42f65c22ad3b424bd65cc3d77a5391adab9968d78efcd0"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-sealed_visor--relic.png",
+        "sha256": "c71e62cf2d247bc1d0cd32d38a7cf76cdf33873c6457a17cebcada5af14fe983"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-sealed_visor--relic.txt",
+        "sha256": "91ffa0949db4c6c11f56ec23925a1fccad840a3817a4dca3f0cf5431a6ea490d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-sealed_visor.png",
+          "sha256": "6b03c6bb25fea954fb32478df0042d8a8bb0a6091dcf1f1674dae5a3a5c6c532"
+        },
+        {
+          "path": "art/icons/gear/armour-sealed_visor--masterwork.png",
+          "sha256": "65380f576a365899575af54a07469f9747a82560c519e0068ba9c077c565d407"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor--relic.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor--relic.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor--relic.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor--relic.png"
+      },
+      "export_hashes": {
+        "256": "c7b2f74ebb859f542fc8c5da0187f5570ad5a44ec8eeabc89ff9b5bfb161c124",
+        "128": "12945ee940dd5a8b1cb0c7a50a5893fdad59e7fcbc3e26cfd958533970c38184",
+        "64": "48dbeffb74bb04931a0cb890595a6c3c57c81dba02cf169ac0ba71c1e1c408ed",
+        "32": "ba9e23b27c208620e9128f0e9619d0fec44b40cb0c4d4e406b16c483b558e164"
+      },
+      "grade": "relic",
+      "standard_id": "armour-sealed_visor",
+      "outline": {
+        "solid_alpha_iou": 0.9846128523420891,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
