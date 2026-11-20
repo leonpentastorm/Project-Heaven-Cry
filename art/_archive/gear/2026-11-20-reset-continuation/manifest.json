@@ -4773,6 +4773,77 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-barrier_wall--celestial",
+      "path": "art/icons/gear/shield-barrier_wall--celestial.png",
+      "sha256": "a1f4788783466f3e2bb7bc9293a74dd22e08afe0bb0583ee52e9e191eae7afa4",
+      "label": "Barrier Wall — Celestial",
+      "family": "shield-barrier_wall",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-barrier_wall--celestial.png",
+        "sha256": "4b3a6dc9418cb102145db3059b88b734e47f917341b01900cfadf1265b58edd7"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-barrier_wall--celestial.png",
+        "sha256": "a1f4788783466f3e2bb7bc9293a74dd22e08afe0bb0583ee52e9e191eae7afa4"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-barrier_wall--celestial.txt",
+        "sha256": "d66561bf70f8db762cd400558efdc502b276e286665d0f14b9ecb72c4ec2c656"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-barrier_wall.png",
+          "sha256": "2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803"
+        },
+        {
+          "path": "art/icons/gear/shield-barrier_wall--relic.png",
+          "sha256": "979200faeb63356d12db04626971b87d9e5a1962f4fc0894b822297943ddc231"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-barrier_wall--celestial/01-quality-review/native.png",
+          "sha256": "65301e61e590a9a78f2fded3f8e9808755934489378b707cf150d51da872862c"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png",
+          "sha256": "b6f6fc809ac3f26cf41cc41a480a0cd3d1c156c543b1fd4d8a16e2804935c990"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-barrier_wall--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-barrier_wall--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-barrier_wall--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-barrier_wall--celestial.png"
+      },
+      "export_hashes": {
+        "256": "39cef4b5feba1f86b78f6431bf79076d27901ea726d52175604830bc0b66afdc",
+        "128": "aa0f7fc70839072a5ca8e835805d36f73567a956ba29f16f686fe41abaadf758",
+        "64": "d58a844c5a7765a3a906f7521d3853f3f9e040c7e8a868b4d27d0fc68b67d2c1",
+        "32": "76f483afd4c339cc5ecf7e5980474f737305c510b8fe92a753744a0cbe23cbab"
+      },
+      "grade": "celestial",
+      "standard_id": "shield-barrier_wall",
+      "outline": {
+        "solid_alpha_iou": 0.990304883729852,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 24
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
