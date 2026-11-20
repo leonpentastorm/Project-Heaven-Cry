@@ -12044,6 +12044,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_darts--relic",
+      "path": "art/icons/gear/weapon-throwing_darts--relic.png",
+      "sha256": "b17911d2a1662f9f7c69c72545ef361cb3f56cd92b01da0ad324e80d13f01826",
+      "label": "Throwing darts — Relic",
+      "family": "weapon-throwing_darts",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--relic.png",
+        "sha256": "c4a5c03f770f517530a8f38cb74c7cc12fa18bbffae527f8925c25e4938d78f5"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_darts--relic.png",
+        "sha256": "b17911d2a1662f9f7c69c72545ef361cb3f56cd92b01da0ad324e80d13f01826"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_darts--relic.txt",
+        "sha256": "c89d6cc45c748c2f89f451ee39433d2257cb6bdaa463af258f967bd84be48cba"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-throwing_darts.png",
+          "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_darts--masterwork.png",
+          "sha256": "4117155ac790c69b11737ffcde76ca014016b1002c7c487c03b5c84466538182"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_darts--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_darts--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_darts--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_darts--relic.png"
+      },
+      "export_hashes": {
+        "256": "3fa88184448d0cecb1d0fe2faab7be498caa21c97befee0a3881f5d452a2cb26",
+        "128": "a89f71a47ab1b13e8d46f1e572b699842beb97785888ace3867d0c53f5b57b5a",
+        "64": "fd9dbdda52a162b8affbe0c1376dc68d9c48908328df70c830c7c607d0bad7fe",
+        "32": "c06d8cf7bd957816dbf287548aa95eaae98a7b13a59f9f6b89ba3a5d1797e97e"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-throwing_darts",
+      "outline": {
+        "solid_alpha_iou": 0.97773648571624,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 36
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
