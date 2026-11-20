@@ -12168,6 +12168,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_javelins--fine",
+      "path": "art/icons/gear/weapon-throwing_javelins--fine.png",
+      "sha256": "5c56e147e3e347452f5e2a3c3afade5819646e609057fe3bac345bf7415e9d0d",
+      "label": "Throwing javelins — Fine",
+      "family": "weapon-throwing_javelins",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--fine.png",
+        "sha256": "b890d1d6241d7486a31038ae3b485c9acd3c7930752366e767e6314c2543b8f8"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--fine.png",
+        "sha256": "5c56e147e3e347452f5e2a3c3afade5819646e609057fe3bac345bf7415e9d0d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_javelins--fine.txt",
+        "sha256": "b94dbdcc16c97cca4ede9ae0b6640728e987f3c3516ca2a5d9d23e8bf0bbc515"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-throwing_javelins.png",
+          "sha256": "50f55c624c9d5e0e72a60eeb623182329ebe0a3f4f5c6000872e87cc6af53621"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_javelins--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_javelins--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_javelins--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_javelins--fine.png"
+      },
+      "export_hashes": {
+        "256": "e5b00af88a82ffca02c82ee7f2f3ccb4a1f710f7f61b4dfa1f472670f591f9c4",
+        "128": "7a6ea3f0a8387d268b04e5439297e1802ecc7816b83a296e3c4a9db4a81b8c32",
+        "64": "a2232c41e297dce22c0e6a2b5c1d5fb520709c3b87c318eec3c999d745a58183",
+        "32": "0082125d2d1b96e844c47d1a78db62cea45fa2b04eed256763ecd4744cc68c4c"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-throwing_javelins",
+      "outline": {
+        "solid_alpha_iou": 0.9796177392862476,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 8
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
