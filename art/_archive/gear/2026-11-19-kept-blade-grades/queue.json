@@ -7357,7 +7357,13 @@
     "standard_sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
     "standard_status": "review-candidate",
     "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
-    "current_data_item_present": true
+    "current_data_item_present": true,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-service_pistol--fine--1795161248045.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-service_pistol--fine--1795161248045.json",
+      "request_id": "8d74c1c1-f648-4bbd-a386-8b841dca346e"
+    }
   },
   {
     "id": "weapon-service_pistol--masterwork",
