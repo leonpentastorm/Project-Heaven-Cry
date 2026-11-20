@@ -10,6 +10,8 @@ import {
 } from './character';
 import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT, migrateCharacterFigments } from './figments';
 import { migrateCharacterPerks, answerRepick } from './character';
+import { isGrade } from './character';
+import { gradeFor } from './itemtags';
 import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
@@ -1251,7 +1253,7 @@ function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
   // Rules 1.9 (item 682): ammo by id: mag:<weapon> (one magazine; qty its rounds, 1 for a full one) and rounds:<calibre>.
   if (/^(mag|rounds):/i.test(id)) { const its = lootToPack({ item: id, qty: Number(l.qty), name: label }); if (its.length && its.every((x) => x.kind === 'ammo')) {
     for (const it of its) packAdd(pack, it); c.pack = pack; push(g, { kind: 'system', text: c.name + ' gets ' + its.map(itemLabel).join(', ') + '.' }); return; } }
-  const rarity = (['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(l.rarity || '') ? l.rarity : 'standard') as Rarity;
+  const rarity = gradeFor(id, isGrade(l.rarity) ? l.rarity : null); // rules 1.91 items 7905, 7917
   let given = '';
   let guns: string[] = [];
   if (WEAPON[id]) { given = (label || WEAPON[id].name).slice(0, 60); for (let i = 0; i < Math.min(n, 3); i++) { pack.push({ id, name: given, qty: 1, kind: 'weapon', weapon: id, rarity }); guns.push(id); } if (rarity !== 'standard') given += ' (' + rarity + ')'; }
@@ -4366,7 +4368,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
       sbLog(g, list.map((c) => c.name).join(', ') + ': refilled.'); return;
     }
     case 'sandbox/give': {
-      const c = mine(a.charId), rarity = (['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(a.rarity || '') ? a.rarity : 'standard') as Rarity;
+      const c = mine(a.charId), rarity = gradeFor(a.item, isGrade(a.rarity) ? a.rarity : null); // rules 1.91 items 7905, 7917
       if (!WEAPON[a.item] && !ITEM[a.item]) fail('No such item.');
       if (isCarriedModifier(a.item)) fail('That is a rule a weapon carries, not an item.');
       let err: string | null = null;

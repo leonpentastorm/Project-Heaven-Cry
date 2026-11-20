@@ -17,6 +17,7 @@ import { allPendingDoorPicks } from './doorpicks';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 import { feedOf } from './effects/feed';
+import { itemTags, hasTag, fixedGradeOf } from './itemtags';
 
 export interface Sheet {
   name: string; portrait: string; origin: string;
@@ -166,11 +167,26 @@ export type Rarity = 'standard' | 'fine' | 'masterwork' | 'relic' | 'celestial';
  * property its instance carries (a `relic` item: a Relic's "one named property, written per item"), kept with the
  * instance through hand, pack, pile, drop and give as rarity and mods are; it works only while the instance is in a hand
  * (heldOfChar) and only for what is made with it (the item-op predicate `with_this`). */
-export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string; prop?: string }
-/** Rarity (spec: Weapons v2, Rarity; data/rules.json `rarity` since rules 1.26): accuracy, damage and durability bonuses; price multiplier. */
-export const RARITY: Record<Rarity, { acc: number; dmg: number; dur: number; price: number; marks: number }> = Object.fromEntries((['standard', 'fine', 'masterwork', 'relic', 'celestial'] as Rarity[]).map((r) => {
-  const d: any = (RULES as any).rarity?.[r]; if (!d) throw new Error('data/rules.json rarity.' + r + ' is missing');
-  return [r, { acc: Number(d.acc), dmg: Number(d.dmg), dur: Number(d.dur), price: Number(d.price), marks: Number(d.marks) }];
+export interface GearState { rarity?: Rarity; dur?: number; mods?: string[]; name?: string; prop?: string;
+  /** Rules 1.91 item 7918: the instance's Weapon Art card. Optional, null, never written in this pass (the Weapon Arts
+   * patch fills it; saving it now means that patch adds no saved field). */
+  weapon_art?: string | null }
+/** Rules 1.91 item 7905: the grade ladder, the rules.json rarity rows in their `order` (Standard first). The one list of
+ * the grades: every other list reads it. */
+export const GRADES: Rarity[] = (Object.entries((RULES as any).rarity || {}) as [string, any][]).filter(([, v]) => v && typeof v === 'object')
+  .sort((a, b) => Number(a[1].order) - Number(b[1].order)).map(([k]) => k as Rarity);
+if (!GRADES.length) throw new Error('data/rules.json rarity is missing');
+/** Is this word a grade? */
+export const isGrade = (x: unknown): x is Rarity => typeof x === 'string' && (GRADES as string[]).includes(x);
+/** A grade's word ("Masterwork"; rules.json rarity row `name`). */
+export const gradeWord = (r: Rarity | string): string => (RULES as any).rarity?.[r]?.name || String(r);
+/** The grades a shop or the Forge ever gives (rows with `sold`; Celestial is a Boss reward only), in order. */
+export const SOLD_GRADES: Rarity[] = GRADES.filter((r) => (RULES as any).rarity[r].sold !== false);
+/** Rarity (spec: Weapons v2, Rarity; data/rules.json `rarity` since rules 1.26): accuracy, damage and durability bonuses;
+ * price multiplier; marks; `arm` (rules 1.91 item 7906: a graded worn piece's armour value, read by lane A2). */
+export const RARITY: Record<Rarity, { acc: number; dmg: number; dur: number; price: number; marks: number; arm: number }> = Object.fromEntries(GRADES.map((r) => {
+  const d: any = (RULES as any).rarity?.[r];
+  return [r, { acc: Number(d.acc), dmg: Number(d.dmg), dur: Number(d.dur), price: Number(d.price), marks: Number(d.marks), arm: Number(d.arm ?? 1) }];
 })) as any;
 export const maxDurOf = (weaponId: string, rarity: Rarity = 'standard') => Math.round(((WEAPON[weaponId] as any)?.durability || ITEM[weaponId] && (ITEM[weaponId] as any).durability || 0) * RARITY[rarity].dur);
 export const weaponDurOf = (c: Character) => c.weaponState?.dur ?? maxDurOf(c.weapon, c.weaponState?.rarity);
@@ -947,7 +963,7 @@ export interface HoldSpec { slot?: 'hand' | 'person'; /** a focus kind, the skil
   /** Rules 1.56 (P15, the unarmed fighter): what is in the hands by its properties (phys.props): `only` true, every hand
    *  is empty or holds a thing with all of them (a focus, a shield or another weapon fails); `only` false (the default),
    *  at least one hand holds such a thing. */
-  hands?: { props: string[]; only?: boolean };
+  hands?: { props?: string[]; /** rules 1.91 item 7910: item tags (`family:axes`) beside the properties */ tags?: string[]; only?: boolean };
   /** Rules 1.56 (P15): the armour worn is at most this weight class (rules.json combat.armor.classes: its name, `light`,
    *  or its number). */
   body?: { armour_at_most: string | number } }
@@ -1003,9 +1019,10 @@ export function shieldLineNow<T extends PackItem | null | undefined>(it: T): T {
 }
 /** Rules 1.56 (P15): the hands half of `holds`. Bare fists in the main hand and no off hand are empty hands; the off
  * hand under a two-handed weapon is filled by it. */
-function handsHold(hands: string[], o: { props: string[]; only?: boolean }): boolean {
-  const filled = hands.filter((id) => !!id && id !== 'fists'), want = o.props || [];
-  const ok = (id: string) => !isFocusId(id) && want.every((p) => thingProps(id).includes(p));
+function handsHold(hands: string[], o: { props?: string[]; tags?: string[]; only?: boolean }): boolean {
+  const filled = hands.filter((id) => !!id && id !== 'fists'), want = o.props || [], tags = o.tags || [];
+  // rules 1.91 item 7910 (N2): `tags` beside `props`: every tag on the thing in the hand (itemtags.ts, its row's tags)
+  const ok = (id: string) => !isFocusId(id) && want.every((p) => thingProps(id).includes(p)) && tags.every((t) => hasTag(id, t));
   return o.only ? filled.every(ok) : filled.some(ok);
 }
 /** Rules 1.56 (P15): an armour weight class by its name (rules.json combat.armor.classes: none, light, medium…) or its
@@ -1056,7 +1073,6 @@ export function gearAt(c: Character, where: GearWhere): { id: string; rarity: Ra
   const it = packOf(c)[where as number]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
   return of(it.weapon || it.item || it.id, it);
 }
-const GRADES: Rarity[] = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
 /** Rules 1.43 (survival-spec 4.2 item 10): set the rarity of ONE carried weapon or focus instance (a hand, or a pack
  * line: one of a stack is split off), keeping its mods, name, property and identity (drill is per weapon id, so it is
  * kept too). Its durability is restored to the new grade's full (`maxDurOf`; a focus has none; `o.durShare` leaves a
@@ -1065,10 +1081,12 @@ const GRADES: Rarity[] = ['standard', 'fine', 'masterwork', 'relic', 'celestial'
  * changes): a rarity past Celestial or not one, a plot item, nothing graded there, a thrown thing. General: a shop's or
  * a Forge's grade step, a trade, a smith, a campaign's reward. */
 export function setGrade(c: Character, where: GearWhere, rarity: Rarity, prop?: string | null, o: { /** the durability it is left with, a share of the new full (a worn step) */ durShare?: number } = {}): string | null {
-  if (!GRADES.includes(rarity)) return 'There is no grade "' + rarity + '": the grades are Standard, Fine, Masterwork, Relic and Celestial.';
+  if (!GRADES.includes(rarity)) return 'There is no grade "' + rarity + '": the grades are ' + GRADES.slice(0, -1).map(gradeWord).join(', ') + ' and ' + gradeWord(GRADES[GRADES.length - 1]) + '.';
   if (typeof where === 'number' && isPlotItem(packOf(c)[where])) return 'A plot item has no grade.';
   const g = gearAt(c, where); if (!g) return 'There is no weapon or focus there to grade.';
   if ((WEAPON[g.id] as any)?.category === 'thrown') return 'A thrown thing is not graded.';
+  // rules 1.91 item 7917: a unique's grade is fixed (itemtags.ts fixedGradeOf); nothing grades it to another
+  { const f = fixedGradeOf(g.id); if (f && f !== rarity) return 'Its grade is its own: ' + gradeWord(f) + '.'; }
   const dur = Math.round(maxDurOf(g.id, rarity) * Math.max(0, Math.min(1, o.durShare ?? 1))), keepProp = prop === undefined ? g.prop : prop || undefined;
   const st = <T extends { dur?: number; prop?: string; rarity?: Rarity }>(old: T): T => { const { prop: _p, dur: _d, ...rest } = old; void _p; void _d; return { ...rest, rarity, ...(dur ? { dur } : {}), ...(keepProp ? { prop: keepProp } : {}) } as T; };
   if (where === 'main') c.weaponState = st({ ...(c.weaponState || {}) });
@@ -1506,7 +1524,7 @@ export function twoHands(c: Character, wid: string | null | undefined): boolean 
   return true;
 }
 const equipBanWhy = (c: Character, ctx: any): string => {
-  const w: any = ctx.weapon ? WEAPON[ctx.weapon] : null, t: string[] = w?.tags || [];
+  const t: string[] = ctx.weapon ? itemTags(ctx.weapon).filter((x) => x.startsWith('role:')).map((x) => x.slice(5)) : []; // rules 1.91: the row's role tags
   // rules 1.56: a mod's tags are its data (the red dot is `electronic`); its name is the refusal's
   const em = [ctx.mod, ...(ctx.mods || [])].map((id: string) => (id ? (ITEM[id] as any) : null)).find((m: any) => (m?.tags || []).includes('electronic'));
   if ((c.traits || []).includes('old_school')) return em ? 'Old School: no ' + String(em.name).toLowerCase() + ' on your guns.' : t.includes('evoker_linked') ? 'Old School: you won\'t carry an Evoker-linked gun.' : 'Old School: you won\'t carry an electronic gun.';

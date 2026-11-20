@@ -15,7 +15,15 @@ import { renderText } from './datatext';
 /** One modifier of a variant line: a kind, its form (when the kind has more than one), its value. */
 export interface VariantMod { kind: string; form?: string; value?: number }
 /** A variant line of data/variants.json. */
-export interface VariantLine { id: string; name: string; base: string; rarity?: string; mods: VariantMod[]; provisional?: boolean }
+export interface VariantLine { id: string; name: string; base: string; rarity?: string; mods: VariantMod[]; provisional?: boolean;
+  /** Rules 1.91 item 7917: a unique line. Its `rarity` is its FIXED grade (itemtags.ts fixedGradeOf, written to the
+   * instance at every grant and pool; the Forge's grade step refuses it); no modifier cap and no worth cap. */
+  unique?: boolean;
+  /** A unique's own effects (item-op effects): made into one modifier item of the row (`vmod.<id>.unique`), held while
+   * the instance is in a hand as every variant modifier is (hooks.ts heldOfChar); held while worn comes with N4. */
+  effects?: any[]; text?: string;
+  /** Rules 1.91 item 7918: the Weapon Art slot, null until the Weapon Art patch. */
+  weapon_art?: null }
 
 const clone = (o: any) => JSON.parse(JSON.stringify(o));
 function putAt(root: any, path: string, v: number) {
@@ -30,6 +38,7 @@ export function expandVariants(file: any, weapons: Record<string, any>, items: R
   const kinds: Record<string, any> = Object.fromEntries(((file?.kinds || []) as any[]).map((k) => [k.id, k]));
   const out = { weapons: [] as any[], items: [] as any[], mods: [] as any[] };
   for (const line of (file?.items || []) as VariantLine[]) {
+    // (rules 1.91 item 7917: a body armour class row as a base is lane A2's seam, once the class rows are the one copy)
     const baseRow = weapons[line.base] || items[line.base];
     if (!baseRow) throw new Error('data/variants.json ' + line.id + ': base "' + line.base + '" is neither a weapon nor an item');
     const row: any = { ...clone(baseRow), id: line.id, name: line.name, variant_of: line.base, variant_grade: line.rarity || 'standard', variant_worth: 0, variant_mods: [] as string[], provisional: true };
@@ -50,6 +59,14 @@ export function expandVariants(file: any, weapons: Record<string, any>, items: R
       for (const p of f.puts || []) putAt({ effects }, p, value);
       out.mods.push({ id, kind: 'relic', name: k.name, text, value, effects, variant_of: line.id, adjudication: 'engine', provisional: true });
       row.variant_mods.push(id);
+    }
+    if (line.unique) {
+      row.unique = true;
+      if ((line.effects || []).length) {
+        const id = 'vmod.' + line.id + '.unique';
+        out.mods.push({ id, kind: 'relic', name: line.name, text: line.text || '', effects: clone(line.effects), variant_of: line.id, adjudication: 'engine', provisional: true });
+        row.variant_mods.push(id);
+      }
     }
     row.variant_worth = Math.round(row.variant_worth * 100) / 100;
     row.variant_lines = lines;

@@ -7,6 +7,8 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import ltJ from '../../../data/loot_tables.json';
 import { WEAPON, ITEM, CALIBRE_NAME, SIGIL, TONE, SCHOOL, MODULE } from './data';
 import { type PackItem, type Rarity, maxDurOf, plotItem, roundsOf, moduleShelved } from './character';
+import { isGrade } from './character';
+import { gradeFor, hasTag } from './itemtags';
 import { lootToPack, magItem, itemLabel, PILE, LOOT_QTY_MAX } from './containers';
 import { say, type Combat, type Unit, dropToPile } from './combat';
 import { type Rng, next, die } from './rng';
@@ -25,13 +27,12 @@ export interface LootTable { id: string; name?: string; text?: string; none?: nu
 const L: any = ltJ;
 /** The drop rules (PROVISIONAL, items 691–700). */
 export const LOOT: {
-  caps: Record<string, number>; worn_durability: { min: number; max: number }; spare_mags_max: number; inline_max: number; natural_weapons: string[];
+  caps: Record<string, number>; worn_durability: { min: number; max: number }; spare_mags_max: number; inline_max: number;
   rolls_by_tier: Record<string, number>; kind_tables: Record<string, string>; caster_table: string; boss_table: string; personal_items: { name: string; text: string }[];
 } = L;
 /** The engine's own tables, by id. */
 export const LOOT_TABLES: Record<string, LootTable> = Object.fromEntries((L.items as LootTable[]).map((t) => [t.id, t]));
 
-const RARITIES = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
 const calibreOk = (s: string) => Object.keys(CALIBRE_NAME).some((k) => k.toLowerCase() === s.toLowerCase() || CALIBRE_NAME[k].toLowerCase() === s.toLowerCase());
 /** An id the engine knows as a thing (not a plot item): a weapon, an item, a magazine for a magazine weapon, rounds of a
  * calibre, a personal effect. */
@@ -59,7 +60,7 @@ function cleanEntry(e: any, weighted: boolean): DropEntry | null {
   const q = cleanQty(e.qty, item); if (q !== undefined) out.qty = q;
   if (weighted) { const w = Number(e.weight); if (!(w > 0)) return null; out.weight = w; }
   else if (e.chance != null && Number.isFinite(Number(e.chance))) out.chance = Math.max(0, Math.min(1, Number(e.chance)));
-  if (RARITIES.includes(e.rarity)) out.rarity = e.rarity;
+  if (isGrade(e.rarity)) out.rarity = e.rarity;
   if (typeof e.name === 'string' && e.name.trim()) out.name = e.name.trim().slice(0, 60);
   if (typeof e.text === 'string' && e.text.trim()) out.text = e.text.trim().slice(0, 200);
   if (typeof e.note === 'string' && e.note.trim()) out.note = e.note.trim().slice(0, 40);
@@ -130,12 +131,12 @@ export const defaultTable = (u: Unit) => (isCaster(u) ? LOOT.caster_table : LOOT
  * left; for a weapon loaded round by round, its loose rounds (at most 2 loads). Natural weapons drop nothing. */
 export function alwaysDrops(rng: Rng, u: Unit): PackItem[] {
   const w = WEAPON[u.weapon], out: PackItem[] = [];
-  if (!w || LOOT.natural_weapons.includes(w.id)) return out;
+  if (!w || hasTag(w.id, 'role:natural')) return out; // rules 1.91 item 7919: a body's own weapon (the role tag natural)
   if (w.category === 'thrown') { out.push({ id: w.id, name: w.name, qty: 1, kind: 'weapon', weapon: w.id }); return out; }
-  const rarity: Rarity = 'standard', max = maxDurOf(w.id, rarity);
+  const rarity: Rarity = gradeFor(w.id), max = maxDurOf(w.id, rarity); // rules 1.91 item 7917: a unique keeps its fixed grade
   const lo = Math.round(LOOT.worn_durability.min * 100), hi = Math.round(LOOT.worn_durability.max * 100), pct = lo + die(rng, hi - lo + 1) - 1;
   const loaded = w.magazine != null ? Math.max(0, Math.round(u.ammo || 0)) : undefined;
-  out.push({ id: w.id, name: w.name, qty: 1, kind: 'weapon', weapon: w.id, ...(max ? { dur: Math.max(1, Math.round(max * pct / 100)) } : {}), ...(loaded != null ? { loaded } : {}), ...(loaded && u.ammoType ? { ammoType: u.ammoType } : {}) });
+  out.push({ id: w.id, name: w.name, qty: 1, kind: 'weapon', weapon: w.id, ...(rarity !== 'standard' ? { rarity } : {}), ...(max ? { dur: Math.max(1, Math.round(max * pct / 100)) } : {}), ...(loaded != null ? { loaded } : {}), ...(loaded && u.ammoType ? { ammoType: u.ammoType } : {}) });
   if (w.reload === 'magazine' && u.mags?.length) {
     const spares = u.mags.map((n, i) => ({ n, t: u.magTypes?.[i] ?? null, i })).filter((x) => x.n > 0).sort((a, b) => b.n - a.n || a.i - b.i).slice(0, LOOT.spare_mags_max);
     for (const s of spares) out.push(magItem(w.id, s.n, s.t));

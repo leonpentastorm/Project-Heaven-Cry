@@ -11,12 +11,14 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, packOf, roundsOf, classResources, drawnWeapon, QUIVER_ITEM, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from '../character';
+import { GRADES } from '../character';
 import { lootToPack, grantGoods, itemLabel, magItem, COUNTED } from '../containers';
 import { CORE_ITEM } from '../magic';
 import { priceOf, creditsOf, payCredits, earnCredits, cantPay, ROUND_PRICE, emptyMagPrice } from '../credits';
 import { rollTable } from '../loot';
 import { rngFor, die } from '../rng';
-import { gunsOf, priceBand, cappedRarity, pickedItem } from './rewards';
+import { gunsOf, priceBand, cappedRarity, pickedItem, rolledGear } from './rewards';
+import { itemsWith, tagOf, gradeFor } from '../itemtags';
 import type { RunState } from './state';
 
 const SV: any = svJ;
@@ -62,15 +64,16 @@ export interface ShopState {
   log: string[];
 }
 
-const RARITIES: Rarity[] = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
+const RARITIES: Rarity[] = GRADES; // rules 1.91 item 7905: the one grade ladder
 const nameOf = (id: string): string => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id;
 const isFocusItem = (id: string) => !!(ITEM[id] as any)?.focus;
 /** A piece's tags for a face's bias: weapon, melee, thrown, focus, mana, item, core, mod. */
+// (rules 1.91 item 7901: the face's words read the item's `kind:` tag, its row's category)
 function tagsOf(id: string): string[] {
-  const w: any = WEAPON[id], it: any = ITEM[id];
-  if (w) return ['weapon', ...(/melee|unarmed/.test(w.category) ? ['melee'] : []), ...(w.category === 'thrown' ? ['thrown'] : []), ...(w.category === 'mana' ? ['mana'] : [])];
-  if (it?.focus) return ['focus', 'weapon'];
-  return ['item', ...(id === CORE_ITEM ? ['core'] : []), ...(it?.category === 'mod' ? ['mod'] : [])];
+  const k = tagOf(id, 'kind') || '';
+  if (WEAPON[id]) return ['weapon', ...(/melee|unarmed/.test(k) ? ['melee'] : []), ...(k === 'thrown' ? ['thrown'] : []), ...(k === 'mana' ? ['mana'] : [])];
+  if (k === 'focus') return ['focus', 'weapon'];
+  return ['item', ...(id === CORE_ITEM ? ['core'] : []), ...(k === 'mod' ? ['mod'] : [])];
 }
 const biasOf = (face: Face | undefined, id: string) => tagsOf(id).reduce((t, k) => t * (face?.bias?.[k] ?? 1), 1);
 /** The rarity table of the rolled stock at a stage (the last row whose `from_stage` it reaches). */
@@ -79,10 +82,11 @@ const rollRarity = (rng: ReturnType<typeof rngFor>, table: Record<string, number
   cappedRarity(((rollTable(rng, { id: 'rarity', entries: Object.entries(table).map(([item, weight]) => ({ item, weight: Number(weight) })) } as any)?.item) || 'standard') as Rarity, stage);
 /** The weapons and foci a shop may roll (priced, not thrown: those are the counter's). */
 // (a variant, rules 1.56 L4, is never rolled: a shop sells one only when something names it)
-const GEAR_POOL: string[] = [...Object.keys(WEAPON).filter((id) => (WEAPON[id] as any).category !== 'thrown'), ...Object.keys(ITEM).filter(isFocusItem)].filter((id) => priceOf(id) != null && !((WEAPON[id] || ITEM[id]) as any).variant_of).sort();
+const GEAR_POOL: string[] = rolledGear().sort(); // rules 1.91 item 7920: the one rolled-gear list (rewards.ts), by tags
 /** The items a shop may roll (`stock.item_categories`; priced; never on the counter already). */
 const ITEM_POOL = (): string[] => { const counter = new Set(SHOP_DATA.always.flatMap((s) => s.ids.map((x) => x.id)));
-  return Object.keys(ITEM).filter((id) => (SHOP_DATA.stock.item_categories as string[]).includes((ITEM[id] as any).category) && !isFocusItem(id) && !counter.has(id) && priceOf(id) != null).sort(); };
+  // rules 1.91 item 7920: by tags (the kinds of stock.item_categories, no focus, rolled: priced and no variant)
+  return itemsWith({ from: 'items', any: (SHOP_DATA.stock.item_categories as string[]).map((k) => 'kind:' + k), none: ['kind:focus'], rolled: true }).filter((id) => !counter.has(id)).sort(); };
 /** Today's rolled stock at a shop node (rule 25): `weapons` weapons and foci and `items` items within the depth's price
  * band, `rare` pieces in the band x `rare_band` at `rare_rarity`, every rarity capped by the stage's ceiling, the face's
  * bias weighting the picks and its `price` the prices. From `rngFor(seed, node + '#shop')`. */
@@ -92,7 +96,7 @@ export function rollStock(seed: string, node: { id: string; depth: number }, sta
     const l = pool.filter((id) => (priceOf(id) || Infinity) <= max && !out.some((p) => p.id === id)); if (!l.length) return null;
     return (rollTable(rng, { id: 'shop', entries: l.map((item) => ({ item, weight: biasOf(face, item) })) } as any)?.item as string) || l[die(rng, l.length) - 1];
   };
-  const add = (id: string | null, rarity: Rarity, rare = false) => { if (!id) return; out.push({ key: 's' + out.length, id, rarity, price: Math.round((priceOf(id, rarity) || 0) * (face?.price ?? 1)), ...(rare ? { rare: true } : {}) }); };
+  const add = (id: string | null, rarity: Rarity, rare = false) => { if (!id) return; rarity = gradeFor(id, rarity); /* rules 1.91 item 7917 */ out.push({ key: 's' + out.length, id, rarity, price: Math.round((priceOf(id, rarity) || 0) * (face?.price ?? 1)), ...(rare ? { rare: true } : {}) }); };
   for (let i = 0; i < S.weapons; i++) add(pick(GEAR_POOL, band), rollRarity(rng, rarityRow(stage), stage));
   const items = ITEM_POOL(); for (let i = 0; i < S.items; i++) add(pick(items, band), 'standard');
   for (let i = 0; i < S.rare; i++) { const r = rollRarity(rng, S.rare_rarity, stage); add(pick(GEAR_POOL, band * S.rare_band), RARITIES.indexOf(r) < 1 ? cappedRarity('fine', stage) : r, true); }

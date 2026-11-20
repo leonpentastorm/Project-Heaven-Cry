@@ -4,9 +4,9 @@
 // General: a campaign's rewards and a roguelike's missions use the same purse. (The shelved advanced class in
 // classes/j.ts keeps its own class-state credits; it moves here when it returns.)
 import { WEAPON, ITEM, RULES, ARMOUR_CLASSES } from './data';
-import { RARITY, type Character, type Rarity, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from './character';
-/** The grades in order (rules.json rarity): what a variant's own grade is compared against. */
-const rarityOrder = (): string[] => Object.keys(RARITY);
+import { RARITY, GRADES, type Character, type Rarity, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from './character';
+/** The grades in order (rules.json rarity `order`, rules 1.91 item 7905): what a variant's own grade is compared against. */
+const rarityOrder = (): string[] => GRADES;
 
 /** The credits a character holds (0 when it has never had any). */
 export const creditsOf = (c: { credits?: number } | null | undefined): number => Math.max(0, Math.floor(Number(c?.credits) || 0));

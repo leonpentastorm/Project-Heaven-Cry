@@ -30,6 +30,8 @@ import { nextPools } from './stage';
 import type { GameState } from '../game';
 import { registerShopService, type ServiceCard } from './shop';
 import { gearPreview } from '../gearpreview';
+import { GRADES, SOLD_GRADES, gradeWord } from '../character';
+import { fixedGradeOf, itemsWith } from '../itemtags';
 import { useProblem, useNow } from '../give';
 
 const SV: any = svJ;
@@ -59,8 +61,12 @@ const TRADE: Record<string, TradeRow> = Object.fromEntries(TRADES.items.map((t) 
 const FORGE_SLOTS: number = SV.forge.slots, FIT: Record<string, number> = SV.armour_fit.price;
 /** Rules 1.55: the Forge's fee to fit, swap or take off a weapon mod (survival.json forge.fit): `rate` x the mod's price, at least `min`. */
 const MOD_FIT: { rate: number; min: number; extra_actions: string[] } = SV.forge.fit;
-const LADDER: Rarity[] = ['standard', 'fine', 'masterwork', 'relic'];
-const GRADE_WORD: Record<string, string> = { standard: 'Standard', fine: 'Fine', masterwork: 'Masterwork', relic: 'Relic', celestial: 'Celestial' };
+/** Rules 1.91 item 7905: the Forge's ladder is the grades a shop or the Forge ever gives (rules.json rarity `sold`), in
+ * order; a grade's word is its row's. */
+const LADDER: Rarity[] = SOLD_GRADES;
+const GRADE_WORD: Record<string, string> = Object.fromEntries(GRADES.map((r) => [r, gradeWord(r)]));
+/** Rules 1.91 item 7917: a unique's grade is its own (itemtags.ts fixedGradeOf): no step changes it. */
+const fixedWhy = (id: string): string | null => (fixedGradeOf(id) ? 'The ' + nameOf(id) + "'s grade is its own: no armourer changes it." : null);
 const nameOf = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id;
 
 /** The actions of this file (the run reducer hands them here; game.ts Action lists them). */
@@ -129,6 +135,7 @@ export function upgradeProblem(g: GameState, c: Character, a: { where: GearWhere
   if (h.n.kind !== a.place) return 'This is not a ' + (a.place === 'forge' ? 'Forge' : 'shop') + '.';
   const it = gearAt(c, a.where); if (!it) return 'There is no weapon or focus there to upgrade.';
   if ((WEAPON[it.id] as any)?.category === 'thrown') return 'Thrown weapons can\'t be upgraded.';
+  { const f = fixedWhy(it.id); if (f) return f; }
   const to = nextGrade(it.rarity); if (!to) return 'The ' + GRADE_WORD[it.rarity] + ' ' + nameOf(it.id) + ' is as good as any armourer can make it.';
   const ceil = stageCeiling(h.r.stage);
   if (LADDER.indexOf(to) > LADDER.indexOf(ceil) || (to === 'relic' && h.r.stage < GRADE_UP.relic_from_stage)) return gradeOpens(to);
@@ -195,7 +202,8 @@ export function forgeStock(g: GameState, rng: ReturnType<typeof rngFor>): RunSto
   const chars = Object.values(g.characters).filter((c) => !c.dead);
   const want = [...new Set(chars.flatMap((c) => lastingFor(c)))];
   const archers = chars.some((c) => quiversOf(c).length); // rules 1.53: enchantments are stocked for a party that carries quivers
-  const any = (Object.values(ITEM) as any[]).filter((it) => (it.category === 'mod' || (it.category === 'armour' && it.slot)) && (archers || it.mod_slot !== 'enchantment') && priceOf(it.id) != null).map((it) => it.id);
+  // rules 1.91 item 7920: by tags (a mod, or a worn armour piece: a row with its slot), priced
+  const any = itemsWith({ from: 'items', any: ['kind:mod', 'kind:armour'] }).filter((id) => { const it: any = ITEM[id]; return (it.category === 'mod' || !!it.slot) && (archers || it.mod_slot !== 'enchantment') && priceOf(id) != null; });
   const out: string[] = [];
   for (const pool of [want, any.filter((id) => !want.includes(id))]) { const p = [...pool]; while (out.length < FORGE_SLOTS && p.length) out.push(p.splice(die(rng, p.length) - 1, 1)[0]); }
   return out.map((id) => ({ id, price: priceOf(id) || 0 }));
@@ -373,6 +381,7 @@ export function tradeProblem(g: GameState, c: Character, a: { trade: string; whe
     case 'grade': {
       const it = a.where != null ? gearAt(c, a.where) : null; if (!it) return 'Pick a weapon ' + c.name + ' carries.';
       if (!maxDurOf(it.id, it.rarity)) return 'The off-books armourer works on weapons, not foci.';
+      { const f = fixedWhy(it.id); if (f) return f; }
       const to = nextGrade(it.rarity); if (!to || to === 'relic') return 'The off-books armourer only upgrades to Fine or Masterwork.';
       const ceil = stageCeiling(h.r.stage); if (LADDER.indexOf(to) > LADDER.indexOf(ceil)) return gradeOpens(to);
       return cantPay(c, tradePrice(c, a));

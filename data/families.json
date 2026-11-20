@@ -1,0 +1,36 @@
+{
+  "$schema_version": "1.0",
+  "kind": "families",
+  "source": "PHC Core Rules v1.0, rules 1.91 (Items 2.0 stage A) items 7902 and 7903; docs/design/proposals/2026-11-20-items-2.0-design.md section 4 and -tables.md sections 2 to 6.",
+  "note": "Mode-neutral. A weapon, shield or armour piece belongs to one family (the row's `family`) and is one of its forms (the row's `form`). A family row: id, name, its maker line, its forms (each form's id and, for a weapon family, `teaches`: the technique the form lends while held and teaches at drill mark I) and weapon_art (null until the Weapon Art patch). A form's technique lives here, once: a row names phys.teaches only to override its family's, and tools/validate.py refuses a row that repeats it (packages/engine/src/physical/data.ts weaponTeaches reads the row, then the family). A row with no family is its own family and keeps its own phys.teaches. A form with no `teaches` lends none from the family (a new row's technique is stage B's). mastery_family is a separate key (saved state) and is unchanged.",
+  "adjudication": "engine",
+  "form_kinds": {
+    "melee": ["dex", "hybrid", "str"],
+    "gun": ["close", "standard", "long"],
+    "gear": ["light", "standard", "heavy"]
+  },
+  "form_rules": {
+    "about": "Rules 1.91 item 7903: what a melee form hits with and grows with (phys.hits_with, phys.scales_with). A form names one or more patterns; a row of that form matches one of them. A form not listed here is not checked (a form is a label and never overrides a row's numbers).",
+    "dex": [{ "hits_with": "dexterity", "scales_with": ["agility"] }],
+    "str": [{ "hits_with": "raw_power", "scales_with": ["strength"] }],
+    "hybrid": [
+      { "hits_with": "dexterity", "scales_with": ["agility"] },
+      { "hits_with": "raw_power", "scales_with": ["strength"] },
+      { "hits_with": "dexterity", "scales_with": ["strength"] }
+    ]
+  },
+  "items": [
+    { "id": "cavalry_blades", "name": "Cavalry blades", "line": "officers", "form_kind": "melee", "weapon_art": null,
+      "forms": [
+        { "id": "dex", "teaches": "riposte" },
+        { "id": "hybrid" },
+        { "id": "str" }
+      ] },
+    { "id": "axes", "name": "Axes", "line": "frontier", "form_kind": "melee", "weapon_art": null,
+      "forms": [
+        { "id": "dex" },
+        { "id": "hybrid", "teaches": "drag" },
+        { "id": "str", "teaches": "sunder" }
+      ] }
+  ]
+}

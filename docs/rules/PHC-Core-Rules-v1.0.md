@@ -7630,6 +7630,7 @@ The engine never reads this document; it reads the data pack. Every rule-bearing
 | perks.json | 106 | 54 Acquired, 27 Mastered, 19 Achieved, 6 Ultimate |
 | conditions.json | 29 | Debuffs by family (body, brain, heart), helpful states, Downed |
 | weapons.json | 20 | Starter weapons, each with its mastery family |
+| families.json | 2 | Item families (rules 1.91 items 7902, 7903): each family's maker line, its forms and their techniques, its Weapon Art slot; the melee forms' hit and growth patterns |
 | weapon_mastery.json | 10 + 30 | Weapon mastery families and levels, and 30 weapon perks (3 per family) |
 | techniques.json | 58 | Physical techniques (rules 1.12): 27 melee and 31 ranged, each with its group, AP, rounds, text, property lines and placeholder numbers; `rules` holds Momentum, Pressure, ready slots and drill. Each weapon's `phys` block in weapons.json holds its properties, the skill it hits with, what its damage scales with and the technique it teaches |
 | items.json | 1 | Items with rules of their own: Essence of Experience |

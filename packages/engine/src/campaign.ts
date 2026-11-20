@@ -2,6 +2,7 @@
 // Narrator steers by (beginning, middle, end, secrets), an opening, a cast and suggested fights. Built-in campaigns live
 // in data/campaigns/; a host can load their own file in the same format (docs/design/campaign-format.md).
 import './datatext'; // fills the texts' {=placeholders} before any data is read
+import { GRADES } from './character';
 import { type MapDef, keyOf } from './combat';
 import { OBJ, MARK } from './objects';
 import { sizeProblem, expandZone, expandCampaign, deployEnemy } from './maplayout';
@@ -171,7 +172,7 @@ export function validateCampaign(c: any): string[] {
   for (const m of c.moments || []) { need(m && m.id && m.art && m.caption, 'Every moment needs id, art and caption.'); if (m?.zone) need(ids.has(m.zone), 'Moment "' + m.id + '" names unknown zone "' + m.zone + '".'); }
   // Rules 1.9 drop tables (items 691, 698): the campaign's own tables, and every drops value it gives.
   const tableIds = new Set<string>(Object.keys(LOOT_TABLES));
-  const RAR = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
+  const RAR: string[] = GRADES; // rules 1.91 item 7905: the one grade ladder
   const qtyOk = (q: any, id: string) => { const [lo, hi] = /^(mag|rounds):/i.test(id) ? [0, 120] : [1, 20], ok = (n: any) => Number.isInteger(n) && n >= lo && n <= hi;
     return q === undefined || ok(q) || (Array.isArray(q) && q.length === 2 && q.every(ok) && q[0] <= q[1]); };
   const entryErrs = (e: any, where: string, weighted: boolean) => {

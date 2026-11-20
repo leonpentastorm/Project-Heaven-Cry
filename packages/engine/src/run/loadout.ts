@@ -17,6 +17,7 @@ import { grantGoods, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
 import { priceOf } from '../credits';
+import { itemsWith } from '../itemtags';
 import { counterLines, lineGoods, SHOP_DATA } from './shop';
 import { magazineWorth } from './rewards';
 import { stripGear } from '../loadout';
@@ -43,7 +44,8 @@ export interface Archetype { id: string; name: string; family: string; category:
 /** An archetype's weapons, cheapest first by priceOf at Standard (a tie by id): the first is its free weapon, the second
  * the rack's better one. */
 export function archetypeWeapons(a: Archetype): string[] {
-  return Object.keys(WEAPON).filter((id) => { const w: any = WEAPON[id]; return w.mastery_family === a.family && w.category === a.category && !w.variant_of && !(a.skip || []).includes(id) && priceOf(id) != null; })
+  // rules 1.91 item 7920: by tags (its kind, rolled: priced and no variant), then the row's mastery_family
+  return itemsWith({ from: 'weapons', all: ['kind:' + a.category], rolled: true }).filter((id) => (WEAPON[id] as any).mastery_family === a.family && !(a.skip || []).includes(id))
     .sort((x, y) => (priceOf(x) || 0) - (priceOf(y) || 0) || (x < y ? -1 : 1));
 }
 /** The camp's weapon rack by archetype (rules 1.52; Leon, 14 Nov): the free weapon (the archetype's most basic), the

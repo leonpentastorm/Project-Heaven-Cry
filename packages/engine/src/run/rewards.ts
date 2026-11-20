@@ -6,6 +6,8 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, isGunId, quiversOf, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer, carriedGuns } from '../character';
+import { GRADES } from '../character';
+import { itemsWith, tagOf } from '../itemtags';
 import { CORE_CHARGE, coreChargeOf, CORE_ITEM, VIS_CHARGE, visChargeNow } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
@@ -135,12 +137,14 @@ export const supplyMult = (c: Character): number => statQuery({ c }, 'run_supply
 /** Rules 1.44: a node's credits as this character takes them (the stat `run_credits`, which its relics answer: Tithe). */
 export const creditsFor = (c: Character, credits: number): number => Math.round(credits * statQuery({ c }, 'run_credits').mult);
 
-const RARITIES: Rarity[] = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
-/** The weapons and foci a pick can offer (rule 26): every weapon and focus with a price, no thrown things. */
-// (a variant, rules 1.56 L4, is never rolled: loot, a shop or a campaign names one by id)
-const PICKABLE: string[] = [...Object.keys(WEAPON).filter((id) => (WEAPON[id] as any).category !== 'thrown'), ...Object.keys(ITEM).filter((id) => (ITEM[id] as any).focus)]
-  .filter((id) => priceOf(id) != null && !((WEAPON[id] || ITEM[id]) as any).variant_of);
-const categoryOf = (id: string): string => (WEAPON[id] as any)?.category || ((ITEM[id] as any)?.focus ? 'focus' : 'item');
+const RARITIES: Rarity[] = GRADES; // rules 1.91 item 7905: the one grade ladder
+/** The weapons and foci a pick or a shop can roll (rule 26; rules 1.91 item 7920, by tags): every weapon row with a price
+ * that is not thrown, then every focus with a price; never a variant (rules 1.56 L4: loot, a shop or a campaign names one
+ * by id). The one list (the shop's rolled gear is it, sorted). */
+export const rolledGear = (): string[] => [...itemsWith({ from: 'weapons', none: ['kind:thrown'], rolled: true }), ...itemsWith({ from: 'items', all: ['kind:focus'], rolled: true })];
+const PICKABLE: string[] = rolledGear();
+/** A pick's kind (its `kind:` tag: the row's category), for the "own kind" offer. */
+const categoryOf = (id: string): string | null => tagOf(id, 'kind');
 /** The highest price a pick may roll at a node (rule 26), on the standard price. */
 export const priceBand = (k: PayKind, depth: number, stage: number): number => {
   const b = SV.rewards.price_band; return (b.base + b.per_depth * depth + b.per_stage * (Math.max(1, stage) - 1)) * mult(b, k);
