@@ -434,6 +434,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_rip_saw--masterwork",
+      "path": "art/icons/gear/weapon-ork_rip_saw--masterwork.png",
+      "sha256": "55a6fb0a12ed7525d9f15349d9cbe8ebdb507e8e3968f2398be788e579c741dd",
+      "label": "Ork Rip Saw — Masterwork",
+      "family": "weapon-ork_rip_saw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_rip_saw--masterwork.png",
+        "sha256": "9d1acf6e205356ab3a596af8185b714d557614bca3ef0ddb77cd7d7c3b397be4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-ork_rip_saw--masterwork.png",
+        "sha256": "55a6fb0a12ed7525d9f15349d9cbe8ebdb507e8e3968f2398be788e579c741dd"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-ork_rip_saw--masterwork.txt",
+        "sha256": "71f6f5287378cf7ee05754ec7060096fa66d306828b007142d556d05541a98a1"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_rip_saw.png",
+          "sha256": "c84615ce46a39d894b3d9df041db64b66f0ea1470ccd8f08b1e3c0ce2e940776"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_rip_saw--fine.png",
+          "sha256": "c84db806215bb0d3c44e1a068354b577aaa7333e94feea2c4fe03ab8f8d4f510"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_rip_saw--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_rip_saw--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_rip_saw--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_rip_saw--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "6079bb3026d3bed0b65007c44aebfee3dcd1870cf233afb526d678e3503f66ed",
+        "128": "7720f9fa51911d6185dcbb99c281da942cd8c62e1694ee474285ea45357a49e2",
+        "64": "f12b12f95c32915b7fdc0559b89f906e898966880caab00949e7b0ebfeda6d75",
+        "32": "59db85db272a1b73bbf3379302443d7ef62fb3adb7c8c8fb1ca3e52a516f6bd6"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-ork_rip_saw",
+      "outline": {
+        "solid_alpha_iou": 0.9429700429915877,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 46
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
