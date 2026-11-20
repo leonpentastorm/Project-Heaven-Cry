@@ -496,6 +496,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_rip_saw--relic",
+      "path": "art/icons/gear/weapon-ork_rip_saw--relic.png",
+      "sha256": "77bfe7eb6e402177972727e99e85aca3195a586c0e800a0a3a1d8a343c575b2e",
+      "label": "Ork Rip Saw — Relic",
+      "family": "weapon-ork_rip_saw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_rip_saw--relic.png",
+        "sha256": "251cea82f7c42fe88e0a99a5ccad7006c6bdf338fd01c35755dc31fc98cdd219"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-ork_rip_saw--relic.png",
+        "sha256": "77bfe7eb6e402177972727e99e85aca3195a586c0e800a0a3a1d8a343c575b2e"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-ork_rip_saw--relic.txt",
+        "sha256": "7a41f65ab55be447e5a57ffd52215ee82e251056c2d94d4b87b1330e3039fadd"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_rip_saw.png",
+          "sha256": "c84615ce46a39d894b3d9df041db64b66f0ea1470ccd8f08b1e3c0ce2e940776"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_rip_saw--masterwork.png",
+          "sha256": "55a6fb0a12ed7525d9f15349d9cbe8ebdb507e8e3968f2398be788e579c741dd"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_rip_saw--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_rip_saw--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_rip_saw--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_rip_saw--relic.png"
+      },
+      "export_hashes": {
+        "256": "7a066180a6485b82e5606cb72eb70b9894b70fbfecdbd27ba2654948cfe9c29f",
+        "128": "13b2aebf047920bd3e378984df92d1e4135d8f1024fe85cac54708202cceff2e",
+        "64": "8fc35ed705c7500932021524cf3377048503e3b4c1b313bf78d08726776a101e",
+        "32": "b934bf50252700fcda1d03ca99dcd787a627589d2d6c6d68e28ea9b7439e7d3c"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-ork_rip_saw",
+      "outline": {
+        "solid_alpha_iou": 0.9389827208566561,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 48
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
