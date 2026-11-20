@@ -286,6 +286,15 @@ Built (merged from `wip/0.34-b0`, which holds lanes A1 to A5 and B0, and `wip/0.
     moved onto 46 family forms (goldens unmoved); class VI on the sheet, the Proving Ground's buttons from the class
     rows, body armour's family line, `figmentPng` on the Figment order rows and trait chips (`55ee7a78f`);
   - step 6, the measure: `docs/design/handoffs/0.34-MEASURES.md` column "0.34 final" (measured, not fitted).
+  - step 7, the review's findings fixed (rules 1.93 items 8113-8119, `e36e94020`): one reader of a body armour id
+    (`armourClassNumOf`, any digits); an ungraded row handed out at Standard (`gradeFor`; saved grades kept,
+    `heldGrade`); a weapon family id resolves to its Standard row for enemies, npcs and loot (`weaponIdOf`; an unknown
+    word logged); the card lists carried modifier rows (`ItemCardV.carries`); no bare hands or natural weapon in rolled
+    gear; the demolitionist sets the strongest carried charge; one grade ladder in the simulator, validator and sheet;
+  - step 8, the weapon measure merged (`wip/0.34-measure`, `746f6be59`: `docs/design/handoffs/0.34-WEAPON-MEASURES.md` and
+    the opt-in `items2-measure.test.ts`) and the lead's first fit (rules 1.93 item 8120, `2afed3dd6`): 34 new rows'
+    damage, two magazines; golden lines of the changed new rows recorded on purpose (0 old lines); re-measured in
+    `0.34-MEASURES.md` "After the lead's first fit".
 
 Owed:
 
@@ -299,7 +308,8 @@ Owed:
 - **Survival placement:** where the breacher plate (class 6) is found; re-run the hood's `seen_range` with `npm run try`. [S] [open; 20 Nov 2026] [0.34-LANE-A2.md]
 - **Debt:** the shop faces' bias words as tag queries in data (a data ruling); `power.ts` FITS stays row fields unless a gun tag is ruled; party-fit's `sur` lever and survival-run's `SIM_SUR` are no-ops since 0.33; `tools/items2_sheet.py --check` is not in `check.py` (the sheet is a record now); `tools/technique_fx_inventory.py` reads `phys.teaches` only (not the family forms); the written consolidation report in `docs/design/proposals/`. [M] [open; 20 Nov 2026] [0.34 hand-offs]
 - **The Narrator's weapon list is families now** (rules 1.93 item 8108): it looks a family up before it names an enemy's weapon in it; watch the AI's first fights for a wrong id. [S] [open; 20 Nov 2026] [rules 1.93]
-- **Stage C: the lead's balance fit** over the new rows, with the class measure in `0.34-MEASURES.md` (column "0.34 final"). [L] [open; 20 Nov 2026] [items 2.0 plan]
+- **Stage C, what the first fit left flagged** (`0.34-MEASURES.md`, "After the lead's first fit"): 53 cells on 23 changed rows still more than 15% from their family's existing form (the snarl knife and piston knuckles now under their family at L1 and L10 normal; the war pick, sword-breaker, rank and leaf swords, spinner, darts, votive torch and Blackpoint carbine still under at some columns; the javelins, drum launcher, fowling gun, plate needle, cathedral burner over). Not fitted further: the lead's call. The party-fit walk-in table after the fit: one flag, solo_rigger +4 (the 0.34 release's own, unchanged); every other cell within 3 clears of 0.33. [L] [open; 21 Nov 2026] [rules 1.93 item 8120]
+- **The review's other minor findings (0.34 integration review, 21 Nov 2026; not fixed in 0.34):** the body armour's name written four ways (the sheet reads a field that does not exist); `ARMOUR_SLOT` read in three engine files plus a typed `torso_outer` in the validator; `families.json` has a second reader (gearpreview's form words) and the wiki filters family membership by hand; a unique's fixed grade applied at five write sites rather than at the one instance read; the role-tag list typed into the validator; the slot table kept twice in rules.json (`slots` and `table`, `key` forced equal to `id`); the camp rack's pool rule copied in the validator and the survival browser suite with a different price test; reach marked two ways in weapon data (`properties` `reach_2` and `phys.props` `reach`). [M] [open; 21 Nov 2026] [the review's journal]
 
 ## After 0.32, before Items 2.0
 
@@ -378,6 +388,9 @@ Direct questions. Where the lead gave a recommendation, it is built as stated un
 22. **Ambush numbers from play:** TN 12/16/20, the solo fumble 15% of max HP, the scout's +2, Tremor +1/+2; measured: always ambushing loses about 70% of rolls for a squad with no Operative. (Surprise, rules 1.82 item 7004, is closed: superseded by the ambush, rules 1.90.) [0.33-LANE-AMBUSH.md]
 23. **Stand Behind Me.** Built as the lead's pick, a call made for Leon (rules 1.82 item 7006): the Bulwark's rank III ceiling move (a ranged attack on the ally behind you lands on your plates). [0.33-LANE-RULES.md]
 24. **Enemy fire memory carried into the next round** (rules 1.79 item 6703; `rules.json combat.focus_memory.carry`, built and off): any carry from 0.25 fails the idle-pair bound in `test/balance/defence-measure` (first Down at round 5 against 4.2). Keep it off? Lead's pick: off.
+25. **The old weapon rows over their lines on the new measure** (`0.34-WEAPON-MEASURES.md`): guns 19 of 74 over 145% all in, melee 42 of 51 over 125%. The lines were set on older tools. Lead's proposal: re-draw the lines when Weapon Arts are designed, not nerf 40 weapons now. [0.34 weapon measure]
+26. **Strike shields earn as much Guard as the Guard family in pairs** (the two-shield measure in `0.34-WEAPON-MEASURES.md`): the Strike family is meant to trade Guard for its follow strike. A ruling on whether that is wanted. [0.34 weapon measure]
+27. **The shotgun pistols read as weak sidearms** (the Brigade shot pistol, the Lumeri hand scatter: 26 to 44% of the rifle, 54 to 71% under their family's base form): kept as sidearms, or lifted? [0.34 weapon measure]
 
 Answered on 19 Nov (verification file): carry weight (nothing changes); camp budget (stays 300); ceilings (a relative measure, not a hard line, so "all-in 7/1/1 builds sit over every ceiling" is not a fault by itself); Operative and Sigilist 0 of 40 (the bot's policy).
 
