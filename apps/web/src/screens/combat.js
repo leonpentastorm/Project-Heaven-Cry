@@ -326,7 +326,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   // Every turn: bring the acting unit's tile into view (and zoom on it when it is yours).
   window.addEventListener('phc:focus-tile', (e) => { const d = (e && e.detail) || {}; if (onScreen()) focusTile(d.key, !!d.mine); });
   // Keys 1–9 flip the action tabs on your turn (the row wraps onto a second line when the tabs don't fit); a resize refits the grid beside the pinned action column.
-  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); LIVE.camKey(e); } });
+  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.confirmKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); LIVE.camKey(e); } });
   // Ctrl or ⌘ with the wheel over the map sizes the map (not the page). Non-passive, so the page zoom is held back there.
   window.addEventListener('wheel', (e) => { if (!LIVE || !onScreen() || !(e.ctrlKey || e.metaKey) || !e.target || typeof e.target.closest !== 'function' || !e.target.closest('.phc-grid-scroll, .phc-mapzoom')) return;
     e.preventDefault(); const now = Date.now(); if (now - (LIVE._wheelAt || 0) < 90) return; LIVE._wheelAt = now; LIVE.zoomBy(e.deltaY < 0 ? 'in' : 'out'); }, { passive: false });
@@ -693,6 +693,16 @@ export class CombatLogic extends DCLogic {
   }
   /** H or \ (not while typing, not under a dialog or the turn card): hide or show the column. */
   /** The backpack (rules 1.9, Gear in a fight): B opens and closes it, Escape closes it. */
+  // Space is Confirm (Leon, 20 Nov 2026): it presses the fight's own Confirm button, so whatever that button would do
+  // (and refuse) is what Space does. Never while typing, under a dialog or a cut-in; the key never scrolls the page here.
+  confirmKey(e) {
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || !(e.key === ' ' || e.code === 'Space')) return;
+    if (typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
+    if (!getState().game?.combat) return;
+    e.preventDefault(); if (e.repeat) return;
+    const b = document.querySelector('.phc-cb-confirm button.phc-cb-act');
+    if (b && !b.disabled && !b.hidden) b.click();
+  }
   packKey(e) {
     if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat) return;
     // Another dialog over the fight (Settings, an in-game question): its keys are its own (the backpack is a dialog too).
