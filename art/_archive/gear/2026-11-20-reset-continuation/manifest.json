@@ -2700,6 +2700,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-adamantile_plate_needle--fine",
+      "path": "art/icons/gear/weapon-adamantile_plate_needle--fine.png",
+      "sha256": "0195bf4893364dd1fd56f25bb7d378daa77ecd5a4d5189e711e1d13e4c0271c0",
+      "label": "Adamantile Plate Needle — Fine",
+      "family": "weapon-adamantile_plate_needle",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-adamantile_plate_needle--fine.png",
+        "sha256": "085c77262b77069b1864de5cf09dc356f6ba500e37bf9d3cabe4c134f64390a0"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-adamantile_plate_needle--fine.png",
+        "sha256": "0195bf4893364dd1fd56f25bb7d378daa77ecd5a4d5189e711e1d13e4c0271c0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-adamantile_plate_needle--fine.txt",
+        "sha256": "3d0581393f326a528d9c400e1428e47bbe777c7c20c9205770121fe63a7f0894"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-adamantile_plate_needle.png",
+          "sha256": "2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png",
+          "sha256": "16c69e22ee36ba3e695d02c6305670527bde826496bb241bc25d2039bce55edd"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_plate_needle--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_plate_needle--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_plate_needle--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_plate_needle--fine.png"
+      },
+      "export_hashes": {
+        "256": "34a0372556247499d2dc9c255dedfee5224593ead4dad2e928ebdb765aa7644d",
+        "128": "aec6f48079bc29439ce95956c2bdd07dac5c2185324e55dc464758f3f1125422",
+        "64": "0178ca8055a68d81f43856b1df8e56f701e1c4964d323055b8d782171871d26f",
+        "32": "e3c2d0de7b095a942b055f0b0dd3ae9c53c87d28c108b42adc0caf8e95c25ee5"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-adamantile_plate_needle",
+      "outline": {
+        "solid_alpha_iou": 0.9553722269493051,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
