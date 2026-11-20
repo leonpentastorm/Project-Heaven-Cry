@@ -26861,6 +26861,42 @@
         "different_pixels_32": 10,
         "different_pixels_64": 27
       }
+    },
+    "weapon-lowland_chopper--fine": {
+      "label": "Lowland Chopper — Fine",
+      "path": "art/icons/gear/weapon-lowland_chopper--fine.png",
+      "sha256": "fa38ba739f8141e5006119a96bd17c1d1004fb3fb6542a1aa19559c2aa3ac102",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lowland_chopper--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-lowland_chopper--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-lowland_chopper--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-lowland_chopper--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-lowland_chopper--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lowland_chopper",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9737526116804298,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 14
+      }
     }
   },
   "survival_art": {

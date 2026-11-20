@@ -1376,6 +1376,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lowland_chopper--fine",
+      "path": "art/icons/gear/weapon-lowland_chopper--fine.png",
+      "sha256": "fa38ba739f8141e5006119a96bd17c1d1004fb3fb6542a1aa19559c2aa3ac102",
+      "label": "Lowland Chopper — Fine",
+      "family": "weapon-lowland_chopper",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-lowland_chopper--fine.png",
+        "sha256": "79b311977859a3fa513fbdc10c4f9318765436c208f4b44288220c75ae9fc5a4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-lowland_chopper--fine.png",
+        "sha256": "fa38ba739f8141e5006119a96bd17c1d1004fb3fb6542a1aa19559c2aa3ac102"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-lowland_chopper--fine.txt",
+        "sha256": "3295cdc991b5d1c132abd1ee44ed359bee4c07713781c6c17c0bb6edbf062c75"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lowland_chopper.png",
+          "sha256": "3448226ac076dedebcff4fd4f6a45dfacdc43dc66aa355a78aa468c95e537fff"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-lowland_chopper.png",
+          "sha256": "bc6a4335dbcdcca7250dd548b502da43fd85eddf95df823d00007f811d21fea4"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lowland_chopper--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-lowland_chopper--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-lowland_chopper--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-lowland_chopper--fine.png"
+      },
+      "export_hashes": {
+        "256": "16d41ad1d19713b8e6467085eaa4fdd1fab4c086ada2f1f5944a252a46049888",
+        "128": "8092c81aba6412162df1e875145558579181177fb40957d49a46d5e024d77dbc",
+        "64": "13fd642c43ac5151c4a04b697db78a60ce2ce1b9c6bfe7b8d220896252576775",
+        "32": "53538971ab4050d25921e0993cbb1590e6ef07ef23d48a9c2b9be6a2bee9978e"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-lowland_chopper",
+      "outline": {
+        "solid_alpha_iou": 0.9737526116804298,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 14
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
