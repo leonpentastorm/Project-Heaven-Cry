@@ -11982,6 +11982,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_darts--masterwork",
+      "path": "art/icons/gear/weapon-throwing_darts--masterwork.png",
+      "sha256": "4117155ac790c69b11737ffcde76ca014016b1002c7c487c03b5c84466538182",
+      "label": "Throwing darts — Masterwork",
+      "family": "weapon-throwing_darts",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--masterwork.png",
+        "sha256": "f922abde77079670e277a486fc5bf70cdb65af1877ab9f0362f164ee780634ac"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_darts--masterwork.png",
+        "sha256": "4117155ac790c69b11737ffcde76ca014016b1002c7c487c03b5c84466538182"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_darts--masterwork.txt",
+        "sha256": "1b1f18e2c4662816ba1cd323e02929674f6ed28c01b231d5c77bea75b9b9eefc"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-throwing_darts.png",
+          "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_darts--fine.png",
+          "sha256": "67e73d5a2efea36b05d7acf03df6fca43aef0c4111b26c9ae5b6ca94ca1f6110"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_darts--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_darts--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_darts--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_darts--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "c0ad123a3bb17f583cc14d49329fbcf61d2bd38e5c98983504fd691dd3d0a0d3",
+        "128": "c7dc9b2af05e5b519cc7d24e38f189a5e6e55b4871c565e2aaa5d9b9bf78cd6c",
+        "64": "eff96c2cf7b8811ff13a616ffa11de31420f0e164f7b05d406a7a52e4a8ee35b",
+        "32": "dfcb593bf398ab11acce6b07820f7b02fc14523df50e1f8a31e0231e932a1d36"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-throwing_darts",
+      "outline": {
+        "solid_alpha_iou": 0.9839050981564753,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 22
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
