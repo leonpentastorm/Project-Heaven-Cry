@@ -9208,6 +9208,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-sealed_visor--fine",
+      "path": "art/icons/gear/armour-sealed_visor--fine.png",
+      "sha256": "5251720edeac62f6b624bb21653d7896b09158aaae7ad16e7a1fd8d7afb39f0a",
+      "label": "Sealed visor — Fine",
+      "family": "armour-sealed_visor",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sealed_visor--fine.png",
+        "sha256": "891b1056428d65374b73a2793ccc658419a9e9f5f85e04f77a25a6ad4608d33e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-sealed_visor--fine.png",
+        "sha256": "5251720edeac62f6b624bb21653d7896b09158aaae7ad16e7a1fd8d7afb39f0a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-sealed_visor--fine.txt",
+        "sha256": "2aacdf59a129cb84115e57e37ef9e01f215a4c957beb61df06c178d7c4f07346"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-sealed_visor.png",
+          "sha256": "6b03c6bb25fea954fb32478df0042d8a8bb0a6091dcf1f1674dae5a3a5c6c532"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor--fine.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor--fine.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor--fine.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor--fine.png"
+      },
+      "export_hashes": {
+        "256": "de5943a62850fb3c7337c6fa6592a315e535e962022d233dc5f987b0e54c0857",
+        "128": "a899474ab22ba3cfbaf3ed4b35747929f65758f8031fda83ab455864f2f5015e",
+        "64": "3cf108021ddc791ae56f65ab429c2180fab91d87a4dc31501f543439c5ecb66b",
+        "32": "599226c24a344a4e6c9d8ab61f17b18cab0021602dcf3c55d81815ee4ca81eed"
+      },
+      "grade": "fine",
+      "standard_id": "armour-sealed_visor",
+      "outline": {
+        "solid_alpha_iou": 0.9916544881162987,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 7
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
