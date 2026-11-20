@@ -2901,6 +2901,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-adamantile_plate_needle--celestial",
+      "path": "art/icons/gear/weapon-adamantile_plate_needle--celestial.png",
+      "sha256": "28963abe7a7432540342dbebd045c73dca2b7bf292ddb1b02d58de87366a193d",
+      "label": "Adamantile Plate Needle — Celestial",
+      "family": "weapon-adamantile_plate_needle",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-adamantile_plate_needle--celestial.png",
+        "sha256": "eb282bd3c901baddf2fa532d426b0179178ee7fb272cf1f75d7ef350798a2ed3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-adamantile_plate_needle--celestial.png",
+        "sha256": "28963abe7a7432540342dbebd045c73dca2b7bf292ddb1b02d58de87366a193d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-adamantile_plate_needle--celestial.txt",
+        "sha256": "10796f4f79068661ca28426808fbb237c26cfdfb722250b392d798b1127fe888"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-adamantile_plate_needle.png",
+          "sha256": "2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13"
+        },
+        {
+          "path": "art/icons/gear/weapon-adamantile_plate_needle--relic.png",
+          "sha256": "30d457612f41329cb9543296f14fe812f21ee7ee8de7e319d5ee9e2a9d4eeab7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png",
+          "sha256": "16c69e22ee36ba3e695d02c6305670527bde826496bb241bc25d2039bce55edd"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_plate_needle--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_plate_needle--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_plate_needle--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_plate_needle--celestial.png"
+      },
+      "export_hashes": {
+        "256": "f718d2824025eabfc149fee9e322fadc6ddcb6244f361da7295ddce79f606802",
+        "128": "cccc437de718d92bc0e589274ac82eef129f04db495e62adb5c8d8ad7b83a675",
+        "64": "676c38483be2db5220056497a85f42be6fea89da7118fbfac7af693aa7ce8d40",
+        "32": "fdfe913e2bb98e12f9ab0b777ad663109b465fe0966e5efeabd252ec4b15059e"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-adamantile_plate_needle",
+      "outline": {
+        "solid_alpha_iou": 0.9563636363636364,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 11
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
