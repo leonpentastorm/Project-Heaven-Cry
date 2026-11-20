@@ -3091,7 +3091,13 @@
     "keep_line": "the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.",
     "status": "pending",
     "production_approved": false,
-    "depends_on": null
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-parlour_pistol--fine--1795145062151.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-parlour_pistol--fine--1795145062151.json",
+      "request_id": "56ae837a-a224-4099-a83d-3fbcf0ab51ac"
+    }
   },
   {
     "id": "weapon-parlour_pistol--masterwork",
