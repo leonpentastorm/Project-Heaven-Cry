@@ -1175,6 +1175,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-trench_knife--masterwork",
+      "path": "art/icons/gear/weapon-trench_knife--masterwork.png",
+      "sha256": "96c9588f2420f194bf05621dd6fa72ad02c0b340f3dd3822996fd35a604f3a1f",
+      "label": "Trench Knife — Masterwork",
+      "family": "weapon-trench_knife",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-trench_knife--masterwork.png",
+        "sha256": "123f70ca001098833ae78ebf1a03d0dbdaaef7c9db65849ae7be3ed23e9348aa"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--masterwork.png",
+        "sha256": "96c9588f2420f194bf05621dd6fa72ad02c0b340f3dd3822996fd35a604f3a1f"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt",
+        "sha256": "4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-trench_knife.png",
+          "sha256": "3f2848a00af47d2ff6f81fd988a2abf2f3d873015164e95e656e7fbaa60dc4a1"
+        },
+        {
+          "path": "art/icons/gear/weapon-trench_knife--fine.png",
+          "sha256": "0ade2a5a847a28f800c042112b7ab0be26ee6641929d9a0e924f39990bc4ba10"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-trench_knife.png",
+          "sha256": "866c269d85c698eb57af17cf228a5d789028c408e6525d0a78917bd0ea0fb387"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-trench_knife--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-trench_knife--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-trench_knife--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-trench_knife--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "d7504d8a5dc444a2a3a02617b4ccc1041cb30e611fc39798dc797931dc00d19f",
+        "128": "bef13dc9c79f339c49c6e3b77394dadcd9493aa9a549877a41dbc26eae0948ef",
+        "64": "5c9bcb22e42d552ae3b910c291e0bd3412c5d91310ef9b4ea5b3b86e3c076e60",
+        "32": "ffe98a89d67e48d67ed80bfb9b55d73b8cdb4aa8c6cf5d49d11ba5597c5c9fbe"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-trench_knife",
+      "outline": {
+        "solid_alpha_iou": 0.980617854001759,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 10
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
