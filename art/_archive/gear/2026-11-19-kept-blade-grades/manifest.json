@@ -9510,6 +9510,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-breacher_plate--masterwork",
+      "path": "art/icons/gear/armour-breacher_plate--masterwork.png",
+      "sha256": "27cdc67929746abed7838aca9d3dc66385396e1894a4c7ac7b9b32099815e873",
+      "label": "Breacher plate — Masterwork",
+      "family": "armour-breacher_plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breacher_plate--masterwork.png",
+        "sha256": "caf48fcc96968ec1c6772cad359024eaf53efac79bc79749a48d6476adf1f394"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-breacher_plate--masterwork.png",
+        "sha256": "27cdc67929746abed7838aca9d3dc66385396e1894a4c7ac7b9b32099815e873"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-breacher_plate--masterwork.txt",
+        "sha256": "11046d551b4eda83c77e91b75195da8a39fe434e7c1dd9d1d46d7f31994d6c0b"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-breacher_plate.png",
+          "sha256": "b5478d1d99942caa91c505c71a679b6a331f3b5f5c791148ff5641acc87edcb7"
+        },
+        {
+          "path": "art/icons/gear/armour-breacher_plate--fine.png",
+          "sha256": "4c70c90de9a62a30cd86897ad4940039af5b0a75d34e16bc51aff587a16bc57f"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breacher_plate--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-breacher_plate--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-breacher_plate--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-breacher_plate--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "f56ce7602948a459771759861cabfb3e3896ef83a3c1f2ddb7c70c05776a61aa",
+        "128": "269ac610f870f6d09dba3a25553720689825c706693915aa7b5f1d6698db0562",
+        "64": "51cebbdc808b7a7b4c8c22fcaedf594257b2b04a767a61f435beaea35cdfe568",
+        "32": "c9228f42f2603965f26f6466a89f13da4985a22f5f94be353eafdf591ae3a8bb"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-breacher_plate",
+      "outline": {
+        "solid_alpha_iou": 0.9894703926586301,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
