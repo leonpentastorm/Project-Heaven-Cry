@@ -1,0 +1,50 @@
+{
+  "id": "shield-deflector--relic",
+  "job": {
+    "id": "shield-deflector--relic",
+    "standard_id": "shield-deflector",
+    "grade": "relic",
+    "label": "Deflector \u2014 Relic",
+    "path": "art/icons/gear/shield-deflector--relic.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-deflector.png",
+      "art/icons/gear/shield-deflector--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-deflector",
+    "family_references": [
+      "art/icons/gear/shield-deflector.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.\n\nGrade: Relic. Keep the shape and the rim inlay. The face takes a warm, deep, battle-old patina, the inlay turns to dull old gold, and a flush gilt ring is set around the boss or the centre of the face. Add one old repair that tells a story: a riveted patch plate over an old breach, or one board replaced with a darker plank.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses muted cyan matching the core. All grades keep the original cyan window and its exact circuit lines, glass never ivory. Relic gilt ring sits on the existing hexagonal core FRAME, following that frame without covering the cyan glass or inventing a circular boss. The ONE repair is a small flush riveted metal patch on the lower-left face area, inside the rim, clear of core and cyan vertical trace.  Keep rim and all face panels free of decorative scrollwork, symbols or extra engraving; only the stated ring and ONE repair are added.",
+    "keep_line": "the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png"
+    ],
+    "depends_on": "shield-deflector--masterwork"
+  },
+  "preflight": {
+    "id": "shield-deflector--relic",
+    "peer": "7917579078c952f152f006f28048cb2b90865f73",
+    "latest_comment": 7031031149,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 05:11:46 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-d2625994-2e90-4bcf-9036-bb7ff3f33ed6.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-deflector--relic/01-quality-review/native.png",
+  "sha256": "a73b86fca1399ab0a83fd08b9b2b5f073415bffbf5b9870f4eb2d27476ebd5a7",
+  "status": "unselected-quality-review",
+  "review_note": "Relic rim inlay stays cyan rather than old gold and adds a separate circular ring instead of gilding the existing core frame.",
+  "reference_hashes": {
+    "art/icons/gear/shield-deflector.png": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4",
+    "art/icons/gear/shield-deflector--masterwork.png": "3ea23e5d50a13fcbeaa1e920dca3cdca3c4560104d671baa1d1b7a666da84dea",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}
