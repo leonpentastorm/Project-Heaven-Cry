@@ -10940,6 +10940,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_snarl_knife--fine",
+      "path": "art/icons/gear/weapon-ork_snarl_knife--fine.png",
+      "sha256": "36bb6f5d0d9e641ec58e27107f37c5be3b98eb6a0559a25e9cceb2a4b0478b73",
+      "label": "Snarl knife — Fine",
+      "family": "weapon-ork_snarl_knife",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--fine.png",
+        "sha256": "73c2ca8376e2610bd08ccee8c10e40986b8277ab7b3aa585887cae2012b0c320"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_snarl_knife--fine.png",
+        "sha256": "36bb6f5d0d9e641ec58e27107f37c5be3b98eb6a0559a25e9cceb2a4b0478b73"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_snarl_knife--fine.txt",
+        "sha256": "074e07eb656c384e897a0469b182d8482e425361b94e747028f2630660e53d1f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+          "sha256": "4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife--fine.png"
+      },
+      "export_hashes": {
+        "256": "99338e80ef5e113820c89b48abcb9e220a49bebdbf48875d64c71bae62348149",
+        "128": "0ce6d02500651cee71b076d9fcc687c3cbfab68af12f7ef2bb4561fd7a8e5419",
+        "64": "14f41bcf3c8db30fe1d361ed12930a89cd76d263b35fddc10e81bf8e5b9f832c",
+        "32": "e16d15fcc97196b7a86a280b28caf78fc6838ebcb46c94d956f917744ffe6f69"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-ork_snarl_knife",
+      "outline": {
+        "solid_alpha_iou": 0.9634498320738875,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 11
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
