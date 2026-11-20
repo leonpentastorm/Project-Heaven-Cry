@@ -468,6 +468,97 @@ Lightkiller's direction stands (Wick in a small ring of darkness). K25 to K28 (t
 item 6021) with new rules: K28 Running Script's direction becomes "a glyph drawn with no smoke right after a spell fires"
 (it no longer stays lit); K25 to K27 stand.
 
+### Items 2.0 (release 0.34): the new weapon and armour rows, ship on a placeholder (requested 20 Nov 2026)
+
+**84 new item ids** (72 weapons, 12 worn pieces) have no painting yet and **ship on a placeholder** (the game shows the monoline stand-in; nothing blocks on art). The pictures and ready-to-paste prompts are in [`prompts-2026-11-19/`](prompts-2026-11-19/): melee `05-melee-forms.md`, guns `06-gun-forms.md`, shields and armour `07-shields-armour.md`, grades and uniques `08-grades-and-uniques.md`, heavy and strange `09-heavy-and-strange.md`, rifle analogues `10-rifle-analogues.md`. File to `art/icons/gear/` under the id (the naming rule is `art/style-guide/gear-icons.md`). The breacher plate and the breather (held back) are not in this list. Status: Wanted.
+
+| id | Name | Family | Form | What it is |
+| --- | --- | --- | --- | --- |
+| `trench_knife` | Trench knife | service_knives | hybrid | light melee, 1H; physical |
+| `lowland_chopper` | Lowland chopper | service_knives | str | heavy melee, 1H; physical |
+| `dock_cutter` | Dock cutter | cavalry_blades | hybrid | light melee, 1H; physical |
+| `broadback_sabre` | Broadback sabre | cavalry_blades | str | heavy melee, 1H; physical |
+| `legion_leaf_dagger` | Legion leaf-dagger | legion_blades | dex | light melee, 1H; physical |
+| `legion_rank_sword` | Legion rank sword | legion_blades | str | heavy melee, 1H; physical |
+| `short_draw` | Short draw | draw_blades | dex | light melee, 1H; physical |
+| `long_draw` | Long draw | draw_blades | str | heavy melee, 2H; physical |
+| `kemizuchi_side_sword` | Kemizuchi side-sword | kemizuchi_duelling | hybrid | light melee, 1H; physical |
+| `kemizuchi_sword_breaker` | Kemizuchi sword-breaker | kemizuchi_duelling | str | heavy melee, 1H; physical |
+| `pitch_axe` | Pitch axe | axes | dex | light melee, 1H; physical |
+| `legion_spear` | Legion spear | polearms | dex | light melee, 2H; physical |
+| `war_pick` | War pick | hammers | dex | light melee, 1H; physical |
+| `war_hammer` | War hammer | hammers | hybrid | light melee, 1H; physical |
+| `adamantile_plate_needle` | Plate needle | great_blades | dex | light melee, 2H; physical |
+| `adamantile_longsword` | Adamantile longsword | great_blades | hybrid | light melee, 1H; physical |
+| `ork_skinner` | Ork skinner | ork_cutters | dex | light melee, 1H; physical |
+| `ork_cleaver_glaive` | Ork cleaver-glaive | ork_cutters | str | heavy melee, 2H; physical |
+| `weighted_gloves` | Weighted gloves | heavy_fists | hybrid | unarmed, 1H; physical |
+| `spiked_buckler` | Spiked buckler | strike_shields | light | shield, 1H; physical |
+| `boss_shield` | Boss shield | strike_shields | standard | shield, 1H; physical |
+| `ram_plate` | Ram plate | strike_shields | heavy | shield, 1H; physical |
+| `deflector` | Deflector | ward_shields | light | shield, 1H; physical |
+| `bulwark_screen` | Bulwark screen | ward_shields | standard | shield, 1H; physical |
+| `barrier_wall` | Barrier wall | ward_shields | heavy | shield, 1H; physical |
+| `snub_revolver` | Snub revolver | revolvers | close | revolver, 1H; physical |
+| `decrkm_carbine` | Decrkm carbine | decrkm_automatics | long | smg, 2H; physical |
+| `legion_marksman_rifle` | Legion marksman rifle | legion_automatics | long | rifle, 2H; physical |
+| `whisper_pistol` | Whisper pistol | whisper | close | pistol, 1H; physical |
+| `whisper_carbine` | Whisper carbine | whisper | long | smg, 2H; physical |
+| `mandestra_drum_pistol` | Mandestra drum pistol | mandestra_drum_guns | close | pistol, 1H; physical |
+| `mandestra_drum_rifle` | Mandestra drum rifle | mandestra_drum_guns | long | smg, 2H; physical |
+| `hellraiser_trench_carbine` | Hellraiser trench carbine | hellraiser_line | close | rifle, 2H; physical |
+| `adamantile_carbine` | Adamantile carbine | adamantile_battle_rifles | close | rifle, 2H; physical |
+| `adamantile_heavy_rifle` | Adamantile heavy rifle | adamantile_battle_rifles | long | rifle, 2H; physical |
+| `fowling_gun` | Fowling gun | break_action_shotguns | long | shotgun, 2H; physical |
+| `brigade_shot_pistol` | Brigade shot pistol | brigade_auto_shotguns | close | shotgun, 1H; physical |
+| `brigade_drum_shotgun` | Brigade drum shotgun | brigade_auto_shotguns | long | shotgun, 2H; physical |
+| `lumeri_hand_scatter` | Lumeri hand scatter | lumeri_scatterguns | close | shotgun, 1H; physical |
+| `lumeri_long_scatter` | Lumeri long scatter | lumeri_scatterguns | long | shotgun, 2H; physical |
+| `adcorp_short_carbine` | ADCorp short carbine | adcorp | close | rifle, 2H; physical |
+| `adcorp_line_rifle` | ADCorp line rifle | adcorp | standard | rifle, 2H; physical |
+| `adcorp_designated_rifle` | ADCorp designated rifle | adcorp | long | rifle, 2H; physical |
+| `chezknov_machine_carbine` | Chezknov machine carbine | chezknov_works | close | smg, 2H; physical |
+| `chezknov_battle_rifle` | Chezknov battle rifle | chezknov_works | standard | rifle, 2H; physical |
+| `chezknov_precision_rifle` | Chezknov precision rifle | chezknov_works | long | rifle, 2H; physical |
+| `arsenal_courier_pdw` | Arsenal courier PDW | central_command_arsenal | close | smg, 1H; physical |
+| `arsenal_piston_rifle` | Arsenal piston rifle | central_command_arsenal | standard | rifle, 2H; physical |
+| `arsenal_heavy_rifle` | Arsenal heavy rifle | central_command_arsenal | long | rifle, 2H; physical |
+| `smetanita_pocket_pistol` | Smetanita pocket pistol | smetanita_sidearms | close | pistol, 1H; physical |
+| `smetanita_service_pistol` | Smetanita service pistol | smetanita_sidearms | standard | pistol, 1H; physical |
+| `smetanita_hand_cannon` | Smetanita hand cannon | smetanita_sidearms | long | revolver, 1H; physical |
+| `albert_town_brush_carbine` | Albert Town brush carbine | albert_town | close | rifle, 2H; physical |
+| `albert_town_service_rifle` | Albert Town service rifle | albert_town | standard | rifle, 2H; physical |
+| `albert_town_stalking_rifle` | Albert Town stalking rifle | albert_town | long | rifle, 2H; physical |
+| `short_bow` | Short bow | bows | close | bow, 2H; physical |
+| `arbalest` | Arbalest | crossbows | long | bow, 2H; physical |
+| `smetanita_snub_launcher` | Smetanita snub launcher | launchers | light | heavy, 2H; physical |
+| `smetanita_drum_launcher` | Smetanita drum launcher | launchers | heavy | heavy, 2H; physical |
+| `legion_throwaway_tube` | Legion throwaway tube | rocket_tubes | light | heavy, 2H; physical |
+| `legion_siege_tube` | Legion siege tube | rocket_tubes | heavy | heavy, 2H; physical |
+| `lumeri_votive_torch` | Lumeri votive torch | flamers | light | heavy, 2H; fire |
+| `lumeri_cathedral_burner` | Lumeri cathedral burner | flamers | heavy | heavy, 2H; fire |
+| `hellraiser_spinner` | Hellraiser spinner | rotary_and_belt_fed | light | heavy, 2H; physical |
+| `hellraiser_twin_rotary` | Hellraiser twin rotary | rotary_and_belt_fed | heavy | heavy, 2H; physical |
+| `blackpoint_carbine` | Blackpoint carbine | anti_materiel | light | heavy, 2H; physical |
+| `ork_snarl_knife` | Ork snarl knife | powered_blades | light | light melee, 1H; physical |
+| `ork_wreck_saw` | Ork wreck saw | powered_blades | heavy | heavy melee, 2H; physical |
+| `hellraiser_piston_knuckles` | Hellraiser piston knuckles | power_gauntlets | light | unarmed, 1H; physical |
+| `hellraiser_door_knocker` | Hellraiser door knocker | power_gauntlets | heavy | unarmed, 1H; physical |
+| `throwing_darts` | Throwing darts | thrown | light | light melee, 1H; physical |
+| `throwing_javelins` | Throwing javelins | thrown | heavy | light melee, 1H; physical |
+| `assault_helm` | Assault helm | helmets | heavy | worn: head |
+| `cowl` | Cowl | hoods | light | worn: head |
+| `hood` | Hood | hoods | standard | worn: head |
+| `blackout_hood` | Blackout hood | hoods | heavy | worn: head |
+| `spotters_monocle` | Spotter's monocle | optics | light | worn: head accessory |
+| `sight_visor` | Sight visor | optics | heavy | worn: head accessory |
+| `sealed_visor` | Sealed visor | respirators | heavy | worn: head accessory |
+| `mesh_undersuit` | Mesh undersuit | undershirts | standard | worn: inner torso |
+| `rig_belt` | Rig belt | belts | standard | worn: lower torso |
+| `field_trousers` | Field trousers | legwear | standard | worn: legs |
+| `tactical_gloves` | Tactical gloves | worn_gloves | standard | worn: hands |
+| `jump_boots` | Jump boots | boots | standard | worn: footwear |
+
 ## At risk in the balance pass
 
 The balance pass (`docs/design/proposals/2026-11-balance-pass.md`) will rewrite, merge or remove perks, traits and
