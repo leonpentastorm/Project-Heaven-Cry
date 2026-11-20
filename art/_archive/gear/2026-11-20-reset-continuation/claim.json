@@ -26,7 +26,10 @@
     "shield-ram_plate",
     "shield-deflector",
     "shield-bulwark_screen",
-    "shield-barrier_wall"
+    "shield-barrier_wall",
+    "weapon-ork_skinner",
+    "weapon-ork_cleaver_glaive",
+    "weapon-weighted_gloves"
   ],
   "ids": [
     "armour-ballistic_helmet--relic",
@@ -122,7 +125,19 @@
     "shield-barrier_wall--fine",
     "shield-barrier_wall--masterwork",
     "shield-barrier_wall--relic",
-    "shield-barrier_wall--celestial"
+    "shield-barrier_wall--celestial",
+    "weapon-ork_skinner--fine",
+    "weapon-ork_skinner--masterwork",
+    "weapon-ork_skinner--relic",
+    "weapon-ork_skinner--celestial",
+    "weapon-ork_cleaver_glaive--fine",
+    "weapon-ork_cleaver_glaive--masterwork",
+    "weapon-ork_cleaver_glaive--relic",
+    "weapon-ork_cleaver_glaive--celestial",
+    "weapon-weighted_gloves--fine",
+    "weapon-weighted_gloves--masterwork",
+    "weapon-weighted_gloves--relic",
+    "weapon-weighted_gloves--celestial"
   ],
   "shared_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
   "reservation_comment": 7026736883,
@@ -226,6 +241,24 @@
         "shield-barrier_wall--masterwork",
         "shield-barrier_wall--relic",
         "shield-barrier_wall--celestial"
+      ],
+      "source_commit": "fb99282187819f5fedf48705ac2f8d4512d52337"
+    },
+    {
+      "comment": 7031397068,
+      "ids": [
+        "weapon-ork_skinner--fine",
+        "weapon-ork_skinner--masterwork",
+        "weapon-ork_skinner--relic",
+        "weapon-ork_skinner--celestial",
+        "weapon-ork_cleaver_glaive--fine",
+        "weapon-ork_cleaver_glaive--masterwork",
+        "weapon-ork_cleaver_glaive--relic",
+        "weapon-ork_cleaver_glaive--celestial",
+        "weapon-weighted_gloves--fine",
+        "weapon-weighted_gloves--masterwork",
+        "weapon-weighted_gloves--relic",
+        "weapon-weighted_gloves--celestial"
       ],
       "source_commit": "fb99282187819f5fedf48705ac2f8d4512d52337"
     }

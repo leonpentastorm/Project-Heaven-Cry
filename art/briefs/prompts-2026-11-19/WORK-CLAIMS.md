@@ -1,3 +1,12 @@
+# Active Ork and weighted-glove grade extension
+
+Run reset-20261120-165ac7984341, branch art/2026-11-20-reset-continuation. Claim7031397068 exact12grades: weapon-ork_skinner, weapon-ork_cleaver_glaive, weapon-weighted_gloves, all four grades each. Prior94jobs:74 delivered,20 service-blocked/dependent. All24shields complete. Full106ID queue/claim/progress in reset-continuation archive. All review candidates, no artistic approval. Each image is shown/inspected/validated/committed/pushed before the next request; latest issue3 and actual remote deliveries checked before EVERY image.
+
+Peer armour56 remains owned. FREE at this checkpoint: PitchAxe,LegionSpear,WarPick,WarHammer16grades, subject to live issue3 claims/source checks. Baseline count refreshed453/871 before new12; imports/exports/attempts excluded. No actual quota yet.
+
+---
+Historical snapshots below; live issue3 supersedes them.
+
 # Active reset production — 20 November 2026
 
 Run `reset-20261120-165ac7984341` on `art/2026-11-20-reset-continuation`. First70:50 delivered,20 service-blocked/dependent. New shield claim7030619048: all four grades for `shield-spiked_buckler`, `shield-boss_shield`, `shield-ram_plate`, `shield-deflector`, `shield-bulwark_screen`, `shield-barrier_wall` (24). Exact94 IDs and current states: archive reset-continuation queue/claim/progress. Each selected picture is validated/committed/pushed before the next request. Imported Standards are unchanged prior work, not new pictures.

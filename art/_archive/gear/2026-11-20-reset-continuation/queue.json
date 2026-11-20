@@ -2701,5 +2701,335 @@
         "reason": "Celestial omits the original central rivet inside the gilt ring, retains brown grip and strap, and keeps saturated orange rather than a pale trim trace."
       }
     ]
+  },
+  {
+    "id": "weapon-ork_skinner--fine",
+    "standard_id": "weapon-ork_skinner",
+    "grade": "fine",
+    "label": "Ork Skinner — Fine",
+    "path": "art/icons/gear/weapon-ork_skinner--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_skinner.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_skinner",
+    "family_references": [
+      "art/icons/gear/weapon-ork_skinner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short thick forward-hooked scrap-steel blade with a deep concave sharpened inner curve, five uneven back notches and hooked point, two original ochre slash daubs on its blade flat, rectangular two-rivet collar, hollow pipe grip wrapped in dark brown leather and two proud nail heads. Preserve every back notch, hollow grip opening, two nails and two paint slashes exactly.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. The back notches and rough weld-like facets are geometry; preserve them while removing surface rust/wear at Fine and Masterwork. Masterwork blade inlay uses dirty OCHRE, in one narrow line on the solid blade flat beside the notched back, separate from and not crossing the two existing daubs. Do not turn the hook into a neat crescent or add a shaft. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
+    "keep_line": "the same short thick forward-hooked scrap-steel blade with a deep concave sharpened inner curve, five uneven back notches and hooked point, two original ochre slash daubs on its blade flat, rectangular two-rivet collar, hollow pipe grip wrapped in dark brown leather and two proud nail heads. Preserve every back notch, hollow grip opening, two nails and two paint slashes exactly.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_skinner.png"
+    ]
+  },
+  {
+    "id": "weapon-ork_skinner--masterwork",
+    "standard_id": "weapon-ork_skinner",
+    "grade": "masterwork",
+    "label": "Ork Skinner — Masterwork",
+    "path": "art/icons/gear/weapon-ork_skinner--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_skinner.png",
+      "art/icons/gear/weapon-ork_skinner--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_skinner",
+    "family_references": [
+      "art/icons/gear/weapon-ork_skinner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short thick forward-hooked scrap-steel blade with a deep concave sharpened inner curve, five uneven back notches and hooked point, two original ochre slash daubs on its blade flat, rectangular two-rivet collar, hollow pipe grip wrapped in dark brown leather and two proud nail heads. Preserve every back notch, hollow grip opening, two nails and two paint slashes exactly.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. The back notches and rough weld-like facets are geometry; preserve them while removing surface rust/wear at Fine and Masterwork. Masterwork blade inlay uses dirty OCHRE, in one narrow line on the solid blade flat beside the notched back, separate from and not crossing the two existing daubs. Do not turn the hook into a neat crescent or add a shaft. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
+    "keep_line": "the same short thick forward-hooked scrap-steel blade with a deep concave sharpened inner curve, five uneven back notches and hooked point, two original ochre slash daubs on its blade flat, rectangular two-rivet collar, hollow pipe grip wrapped in dark brown leather and two proud nail heads. Preserve every back notch, hollow grip opening, two nails and two paint slashes exactly.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_skinner.png"
+    ],
+    "depends_on": "weapon-ork_skinner--fine"
+  },
+  {
+    "id": "weapon-ork_skinner--relic",
+    "standard_id": "weapon-ork_skinner",
+    "grade": "relic",
+    "label": "Ork Skinner — Relic",
+    "path": "art/icons/gear/weapon-ork_skinner--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_skinner.png",
+      "art/icons/gear/weapon-ork_skinner--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_skinner",
+    "family_references": [
+      "art/icons/gear/weapon-ork_skinner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short thick forward-hooked scrap-steel blade with a deep concave sharpened inner curve, five uneven back notches and hooked point, two original ochre slash daubs on its blade flat, rectangular two-rivet collar, hollow pipe grip wrapped in dark brown leather and two proud nail heads. Preserve every back notch, hollow grip opening, two nails and two paint slashes exactly.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. The back notches and rough weld-like facets are geometry; preserve them while removing surface rust/wear at Fine and Masterwork. Masterwork blade inlay uses dirty OCHRE, in one narrow line on the solid blade flat beside the notched back, separate from and not crossing the two existing daubs. Do not turn the hook into a neat crescent or add a shaft. The ONE repair is a short section of the EXISTING leather grip rewrapped in older contrasting cord, never covers any original nail head. Place ONE tiny flush gilt ornament on the original collar, no added plate or extra ornament. The original ochre daubs remain where they are, aged and muted, and the separate inlay becomes old gold.",
+    "keep_line": "the same short thick forward-hooked scrap-steel blade with a deep concave sharpened inner curve, five uneven back notches and hooked point, two original ochre slash daubs on its blade flat, rectangular two-rivet collar, hollow pipe grip wrapped in dark brown leather and two proud nail heads. Preserve every back notch, hollow grip opening, two nails and two paint slashes exactly.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_skinner.png"
+    ],
+    "depends_on": "weapon-ork_skinner--masterwork"
+  },
+  {
+    "id": "weapon-ork_skinner--celestial",
+    "standard_id": "weapon-ork_skinner",
+    "grade": "celestial",
+    "label": "Ork Skinner — Celestial",
+    "path": "art/icons/gear/weapon-ork_skinner--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_skinner.png",
+      "art/icons/gear/weapon-ork_skinner--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_skinner",
+    "family_references": [
+      "art/icons/gear/weapon-ork_skinner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same short thick forward-hooked scrap-steel blade with a deep concave sharpened inner curve, five uneven back notches and hooked point, two original ochre slash daubs on its blade flat, rectangular two-rivet collar, hollow pipe grip wrapped in dark brown leather and two proud nail heads. Preserve every back notch, hollow grip opening, two nails and two paint slashes exactly.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. The back notches and rough weld-like facets are geometry; preserve them while removing surface rust/wear at Fine and Masterwork. Masterwork blade inlay uses dirty OCHRE, in one narrow line on the solid blade flat beside the notched back, separate from and not crossing the two existing daubs. Do not turn the hook into a neat crescent or add a shaft. ALL blade flats, bevels, collar, pipe shaft and pommel become flawless pale PEARL-IVORY metal; all leather and repair binding IVORY HIDE/cord. Existing ochre daubs remain faint pale ochre in exactly their original two/three positions. The separate inlay becomes a thin contained IVORY-GOLD line, no dark patina or old rust, no extra gold motifs. Keep the Relic ornament at its existing collar position.",
+    "keep_line": "the same short thick forward-hooked scrap-steel blade with a deep concave sharpened inner curve, five uneven back notches and hooked point, two original ochre slash daubs on its blade flat, rectangular two-rivet collar, hollow pipe grip wrapped in dark brown leather and two proud nail heads. Preserve every back notch, hollow grip opening, two nails and two paint slashes exactly.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_skinner.png"
+    ],
+    "depends_on": "weapon-ork_skinner--relic"
+  },
+  {
+    "id": "weapon-ork_cleaver_glaive--fine",
+    "standard_id": "weapon-ork_cleaver_glaive",
+    "grade": "fine",
+    "label": "Ork Cleaver Glaive — Fine",
+    "path": "art/icons/gear/weapon-ork_cleaver_glaive--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_cleaver_glaive.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_cleaver_glaive",
+    "family_references": [
+      "art/icons/gear/weapon-ork_cleaver_glaive.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. This item is explicitly a BLADE-class scrap cutter in File08 C3 (A3.1), despite its glaive name: keep its short steel-tube handle and existing parts, no additional haft strips. The rough notches and weld bead keep their geometry while surface rust/wear is removed at Fine and Masterwork. Masterwork blade inlay is dirty OCHRE, a single thin line inside the notched back, clear of the three original ochre daubs. No new mechanism or longer pole. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
+    "keep_line": "the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png"
+    ]
+  },
+  {
+    "id": "weapon-ork_cleaver_glaive--masterwork",
+    "standard_id": "weapon-ork_cleaver_glaive",
+    "grade": "masterwork",
+    "label": "Ork Cleaver Glaive — Masterwork",
+    "path": "art/icons/gear/weapon-ork_cleaver_glaive--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_cleaver_glaive.png",
+      "art/icons/gear/weapon-ork_cleaver_glaive--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_cleaver_glaive",
+    "family_references": [
+      "art/icons/gear/weapon-ork_cleaver_glaive.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. This item is explicitly a BLADE-class scrap cutter in File08 C3 (A3.1), despite its glaive name: keep its short steel-tube handle and existing parts, no additional haft strips. The rough notches and weld bead keep their geometry while surface rust/wear is removed at Fine and Masterwork. Masterwork blade inlay is dirty OCHRE, a single thin line inside the notched back, clear of the three original ochre daubs. No new mechanism or longer pole. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
+    "keep_line": "the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png"
+    ],
+    "depends_on": "weapon-ork_cleaver_glaive--fine"
+  },
+  {
+    "id": "weapon-ork_cleaver_glaive--relic",
+    "standard_id": "weapon-ork_cleaver_glaive",
+    "grade": "relic",
+    "label": "Ork Cleaver Glaive — Relic",
+    "path": "art/icons/gear/weapon-ork_cleaver_glaive--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_cleaver_glaive.png",
+      "art/icons/gear/weapon-ork_cleaver_glaive--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_cleaver_glaive",
+    "family_references": [
+      "art/icons/gear/weapon-ork_cleaver_glaive.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.\n\nGrade: Relic. Keep the shape and the inlay line. Age it as an heirloom: the steel darkens to a warm deep patina (blued brown, oiled, never rust), the inlay line turns to dull old gold, and the guard (or the collar) carries one small raised gilt ornament set flush inside its outline. Add one old repair that tells a story: the grip rewrapped in an older cord of a different colour, or a small riveted collar mended where blade meets guard. The edge is still bright: it is old and loved, not neglected.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. This item is explicitly a BLADE-class scrap cutter in File08 C3 (A3.1), despite its glaive name: keep its short steel-tube handle and existing parts, no additional haft strips. The rough notches and weld bead keep their geometry while surface rust/wear is removed at Fine and Masterwork. Masterwork blade inlay is dirty OCHRE, a single thin line inside the notched back, clear of the three original ochre daubs. No new mechanism or longer pole. The ONE repair is a short section of the EXISTING leather grip rewrapped in older contrasting cord, never covers any original nail head. Place ONE tiny flush gilt ornament on the original collar, no added plate or extra ornament. The original ochre daubs remain where they are, aged and muted, and the separate inlay becomes old gold.",
+    "keep_line": "the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png"
+    ],
+    "depends_on": "weapon-ork_cleaver_glaive--masterwork"
+  },
+  {
+    "id": "weapon-ork_cleaver_glaive--celestial",
+    "standard_id": "weapon-ork_cleaver_glaive",
+    "grade": "celestial",
+    "label": "Ork Cleaver Glaive — Celestial",
+    "path": "art/icons/gear/weapon-ork_cleaver_glaive--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_cleaver_glaive.png",
+      "art/icons/gear/weapon-ork_cleaver_glaive--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_cleaver_glaive",
+    "family_references": [
+      "art/icons/gear/weapon-ork_cleaver_glaive.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. This item is explicitly a BLADE-class scrap cutter in File08 C3 (A3.1), despite its glaive name: keep its short steel-tube handle and existing parts, no additional haft strips. The rough notches and weld bead keep their geometry while surface rust/wear is removed at Fine and Masterwork. Masterwork blade inlay is dirty OCHRE, a single thin line inside the notched back, clear of the three original ochre daubs. No new mechanism or longer pole. ALL blade flats, bevels, collar, pipe shaft and pommel become flawless pale PEARL-IVORY metal; all leather and repair binding IVORY HIDE/cord. Existing ochre daubs remain faint pale ochre in exactly their original two/three positions. The separate inlay becomes a thin contained IVORY-GOLD line, no dark patina or old rust, no extra gold motifs. Keep the Relic ornament at its existing collar position.",
+    "keep_line": "the same broad belly-curved cleaver head with angular tip and three large uneven concave back notches, three ochre slash daubs on the broad blade flat, thick two-rivet mounting collar and visible weld bead, short stout steel pipe shaft, brown leather grip patch pierced by three nail heads, and angular scrap-iron counterweight fixed by its single butt bolt. Preserve the exact head shape, three notches, weld, three daubs, grip nails and counterweight.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png"
+    ],
+    "depends_on": "weapon-ork_cleaver_glaive--relic"
+  },
+  {
+    "id": "weapon-weighted_gloves--fine",
+    "standard_id": "weapon-weighted_gloves",
+    "grade": "fine",
+    "label": "Weighted Gloves — Fine",
+    "path": "art/icons/gear/weapon-weighted_gloves--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-weighted_gloves.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-weighted_gloves",
+    "family_references": [
+      "art/icons/gear/weapon-weighted_gloves.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same ONE empty black-leather glove with four half-curled fingers and separate thumb, a thick sewn padded knuckle ridge divided into four soft stitched lobes, short broad open wrist cuff, one closing leather strap with square brass buckle and the original line of brass cuff studs. Preserve all five digits, their curl and overlap, cuff opening, soft pad seams, buckle and exact stud count. There is NO hand inside.\n\nGrade: Fine. The same glove, newly kept. The leather or cloth is cleaned and conditioned, the stitching neat and even, any metal knuckles or plates bright. Add one thin line across the back of the hand: stitched on leather, engraved on metal, woven into the wrap on cloth. Nothing else is added. No hand inside.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. This is padded weighted LEATHER, including the swollen knuckle ridge; no metal knuckle plates, bars or armour. Fine adds ONE uncoloured stitched line across the existing pad/back-of-hand surface. Masterwork makes this line BRASS THREAD with darker supple black hide; the existing buckle and cuff studs keep their shapes. All other seams remain exactly where they are. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
+    "keep_line": "the same ONE empty black-leather glove with four half-curled fingers and separate thumb, a thick sewn padded knuckle ridge divided into four soft stitched lobes, short broad open wrist cuff, one closing leather strap with square brass buckle and the original line of brass cuff studs. Preserve all five digits, their curl and overlap, cuff opening, soft pad seams, buckle and exact stud count. There is NO hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png"
+    ]
+  },
+  {
+    "id": "weapon-weighted_gloves--masterwork",
+    "standard_id": "weapon-weighted_gloves",
+    "grade": "masterwork",
+    "label": "Weighted Gloves — Masterwork",
+    "path": "art/icons/gear/weapon-weighted_gloves--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-weighted_gloves.png",
+      "art/icons/gear/weapon-weighted_gloves--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-weighted_gloves",
+    "family_references": [
+      "art/icons/gear/weapon-weighted_gloves.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same ONE empty black-leather glove with four half-curled fingers and separate thumb, a thick sewn padded knuckle ridge divided into four soft stitched lobes, short broad open wrist cuff, one closing leather strap with square brass buckle and the original line of brass cuff studs. Preserve all five digits, their curl and overlap, cuff opening, soft pad seams, buckle and exact stud count. There is NO hand inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. The line becomes a cord or inlay in the item's accent colour (bright brass thread if it has no accent), one clear stripe across the back of the hand. The leather is a finer, darker, supple hide in the same shapes; metal parts are polished crisp; the cuff is bound with a neat edge. A focus's lens or core window is unchanged.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. This is padded weighted LEATHER, including the swollen knuckle ridge; no metal knuckle plates, bars or armour. Fine adds ONE uncoloured stitched line across the existing pad/back-of-hand surface. Masterwork makes this line BRASS THREAD with darker supple black hide; the existing buckle and cuff studs keep their shapes. All other seams remain exactly where they are. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
+    "keep_line": "the same ONE empty black-leather glove with four half-curled fingers and separate thumb, a thick sewn padded knuckle ridge divided into four soft stitched lobes, short broad open wrist cuff, one closing leather strap with square brass buckle and the original line of brass cuff studs. Preserve all five digits, their curl and overlap, cuff opening, soft pad seams, buckle and exact stud count. There is NO hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png"
+    ],
+    "depends_on": "weapon-weighted_gloves--fine"
+  },
+  {
+    "id": "weapon-weighted_gloves--relic",
+    "standard_id": "weapon-weighted_gloves",
+    "grade": "relic",
+    "label": "Weighted Gloves — Relic",
+    "path": "art/icons/gear/weapon-weighted_gloves--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-weighted_gloves.png",
+      "art/icons/gear/weapon-weighted_gloves--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-weighted_gloves",
+    "family_references": [
+      "art/icons/gear/weapon-weighted_gloves.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same ONE empty black-leather glove with four half-curled fingers and separate thumb, a thick sewn padded knuckle ridge divided into four soft stitched lobes, short broad open wrist cuff, one closing leather strap with square brass buckle and the original line of brass cuff studs. Preserve all five digits, their curl and overlap, cuff opening, soft pad seams, buckle and exact stud count. There is NO hand inside.\n\nGrade: Relic. Keep the shape and the line. The leather darkens smooth with use like an heirloom, the metal takes a warm patina, the line turns to old gold thread, and the cuff buckle or the knuckle bar carries one small flush gilt ornament. Add one old repair that tells a story: a seam re-stitched in a different, older thread, or a knuckle plate held by a replaced rivet.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. This is padded weighted LEATHER, including the swollen knuckle ridge; no metal knuckle plates, bars or armour. Fine adds ONE uncoloured stitched line across the existing pad/back-of-hand surface. Masterwork makes this line BRASS THREAD with darker supple black hide; the existing buckle and cuff studs keep their shapes. All other seams remain exactly where they are. The ONE repair is a short section of the existing cuff seam re-stitched in older contrasting thread. Put the ONE tiny gilt ornament engraved flush on the current brass BUCKLE; no ornament on the soft knuckle pad, no metal added to the glove.",
+    "keep_line": "the same ONE empty black-leather glove with four half-curled fingers and separate thumb, a thick sewn padded knuckle ridge divided into four soft stitched lobes, short broad open wrist cuff, one closing leather strap with square brass buckle and the original line of brass cuff studs. Preserve all five digits, their curl and overlap, cuff opening, soft pad seams, buckle and exact stud count. There is NO hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png"
+    ],
+    "depends_on": "weapon-weighted_gloves--masterwork"
+  },
+  {
+    "id": "weapon-weighted_gloves--celestial",
+    "standard_id": "weapon-weighted_gloves",
+    "grade": "celestial",
+    "label": "Weighted Gloves — Celestial",
+    "path": "art/icons/gear/weapon-weighted_gloves--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-weighted_gloves.png",
+      "art/icons/gear/weapon-weighted_gloves--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-weighted_gloves",
+    "family_references": [
+      "art/icons/gear/weapon-weighted_gloves.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.5",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same ONE empty black-leather glove with four half-curled fingers and separate thumb, a thick sewn padded knuckle ridge divided into four soft stitched lobes, short broad open wrist cuff, one closing leather strap with square brass buckle and the original line of brass cuff studs. Preserve all five digits, their curl and overlap, cuff opening, soft pad seams, buckle and exact stud count. There is NO hand inside.\n\nGrade: Celestial. Keep the shape, the line and the ornament's place. The leather becomes a pale ivory hide, the metal pearl-ivory, unmarked. The stitched line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo. A focus's lens or core window keeps its own colour and glow exactly as before; the ivory-gold light never enters it.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. This is padded weighted LEATHER, including the swollen knuckle ridge; no metal knuckle plates, bars or armour. Fine adds ONE uncoloured stitched line across the existing pad/back-of-hand surface. Masterwork makes this line BRASS THREAD with darker supple black hide; the existing buckle and cuff studs keep their shapes. All other seams remain exactly where they are. ALL leather, including every finger, thumb, padded knuckle lobe, strap and cuff, becomes pale IVORY HIDE; buckle and studs pearl-ivory. The one stitched line gives contained ivory-gold light. Preserve original soft seams and repair location, no metal plate on the padded knuckles.",
+    "keep_line": "the same ONE empty black-leather glove with four half-curled fingers and separate thumb, a thick sewn padded knuckle ridge divided into four soft stitched lobes, short broad open wrist cuff, one closing leather strap with square brass buckle and the original line of brass cuff studs. Preserve all five digits, their curl and overlap, cuff opening, soft pad seams, buckle and exact stud count. There is NO hand inside.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png"
+    ],
+    "depends_on": "weapon-weighted_gloves--relic"
   }
 ]

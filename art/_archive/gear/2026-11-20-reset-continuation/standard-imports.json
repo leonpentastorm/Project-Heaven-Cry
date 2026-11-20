@@ -810,6 +810,123 @@
         "art/icons/gear/exports/64/shield-barrier_wall.png": "13e3f736929db44d1e77542974c272da3344b7b1fb3403f03ead945673ae6544",
         "art/icons/gear/exports/32/shield-barrier_wall.png": "3eb65c787a4d88081ef03666237ae48424a7af756ff10373bc62bc54af29ec50"
       }
+    },
+    {
+      "id": "weapon-ork_skinner",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Ork skinner",
+        "path": "art/icons/gear/weapon-ork_skinner.png",
+        "sha256": "780bde15cfd66b073d80dd8087e1a4f204af717f4392a4c6522bd46dc71f9886",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-ork_skinner.png",
+          "128": "art/icons/gear/exports/128/weapon-ork_skinner.png",
+          "64": "art/icons/gear/exports/64/weapon-ork_skinner.png",
+          "32": "art/icons/gear/exports/32/weapon-ork_skinner.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_skinner.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 17,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-ork_skinner.png": "780bde15cfd66b073d80dd8087e1a4f204af717f4392a4c6522bd46dc71f9886",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_skinner.png": "569382b3a98782be292324aea7f73823628cbcb572ce026ff63b9db2ad7cc59b",
+        "art/icons/gear/exports/256/weapon-ork_skinner.png": "6f5015bb6c2a106a8a2c0f49e1a1beceeee06775f444f83714cdbf96ae7da44e",
+        "art/icons/gear/exports/128/weapon-ork_skinner.png": "931dfc09097211b9ddd908b8e502e16125ab45522e1dc0e15d8605a7eaa05243",
+        "art/icons/gear/exports/64/weapon-ork_skinner.png": "655097f514264bb30de086cadff7f19cf8e50fcf28b4e34fc11852f6b82290d1",
+        "art/icons/gear/exports/32/weapon-ork_skinner.png": "16a338d5fcb703b372b9059afd0b6504e6ad2c11c51790c5e9e634019ff2abcc"
+      }
+    },
+    {
+      "id": "weapon-ork_cleaver_glaive",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Ork cleaver-glaive",
+        "path": "art/icons/gear/weapon-ork_cleaver_glaive.png",
+        "sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-ork_cleaver_glaive.png",
+          "128": "art/icons/gear/exports/128/weapon-ork_cleaver_glaive.png",
+          "64": "art/icons/gear/exports/64/weapon-ork_cleaver_glaive.png",
+          "32": "art/icons/gear/exports/32/weapon-ork_cleaver_glaive.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 18,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-ork_cleaver_glaive.png": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png": "1d0e20b248d040c349b9a4c36ae7c20b1aefe9c0a4f13e6fe5566dfbabd64b75",
+        "art/icons/gear/exports/256/weapon-ork_cleaver_glaive.png": "8c697a01126fb1e7281205568a40d24033988bf6b54156394a927a36b7daae17",
+        "art/icons/gear/exports/128/weapon-ork_cleaver_glaive.png": "1dddbc30f1aec1aece2f90ef2ffeb7d04b189b38f65b2d4a363db0c2c0d4075a",
+        "art/icons/gear/exports/64/weapon-ork_cleaver_glaive.png": "e676f3a5a4122dcc601ed3fc36adc0b92e233ad22c367c04c0349b93600f2b83",
+        "art/icons/gear/exports/32/weapon-ork_cleaver_glaive.png": "089da8f70ae8b967b6e9b43499c346cde23f57b594482b186d909e9ae29cff26"
+      }
+    },
+    {
+      "id": "weapon-weighted_gloves",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Weighted gloves",
+        "path": "art/icons/gear/weapon-weighted_gloves.png",
+        "sha256": "a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-weighted_gloves.png",
+          "128": "art/icons/gear/exports/128/weapon-weighted_gloves.png",
+          "64": "art/icons/gear/exports/64/weapon-weighted_gloves.png",
+          "32": "art/icons/gear/exports/32/weapon-weighted_gloves.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 19,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-weighted_gloves.png": "a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png": "0189245e4f1c2eeff8998b07ae9f383745a1d2c2e6fe1127c9f34c301b2fa623",
+        "art/icons/gear/exports/256/weapon-weighted_gloves.png": "3a03f9bb561e05696b2dfb0b04381ffc5983a8d6abb1f4ae453a90469867052c",
+        "art/icons/gear/exports/128/weapon-weighted_gloves.png": "4140008361b8e36984a2d8fd5b0e529954c7ed185d998b680644469455167557",
+        "art/icons/gear/exports/64/weapon-weighted_gloves.png": "6a371f69334481951d74a757d7f443a07d0f246a393e53d91fe16d8623fdb9ad",
+        "art/icons/gear/exports/32/weapon-weighted_gloves.png": "57a1614702ef9396069438a843ad6bee66941e9738fb5fde085c261ba4ada075"
+      }
     }
   ]
 }
