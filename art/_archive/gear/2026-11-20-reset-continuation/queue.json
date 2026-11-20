@@ -865,7 +865,11 @@
     "reference_sources": [
       "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png"
     ],
-    "depends_on": "weapon-dock_cutter--fine"
+    "depends_on": "weapon-dock_cutter--fine",
+    "generation_error": {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-dock_cutter--masterwork.json"
+    }
   },
   {
     "id": "weapon-dock_cutter--relic",
