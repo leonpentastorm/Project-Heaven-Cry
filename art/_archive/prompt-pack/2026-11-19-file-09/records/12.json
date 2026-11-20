@@ -1,0 +1,42 @@
+{
+  "n": 12,
+  "id": "ork_wreck_saw",
+  "title": "Wreck saw",
+  "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+  "refs": [
+    "art/icons/gear/weapon-ork_rip_saw.png",
+    "art/icons/weapons/ork_rip_saw.svg"
+  ],
+  "paint": "For plates, cover and the man inside them: a two-hand circular saw on a long engine body. Pose: on the 45 degree diagonal, the saw head top-right as the focal point, nearly corner to corner. Silhouette: a huge round toothed saw disc at the head with a bent guard over it, a long welded engine body, two exhaust stacks, a crossbar handle. Materials: rust, scorched steel, welded plates, nails. Accent: dirty ochre daubs, soot black. A heavy slow weapon: it must look heavy.\nAt 32 px: a round disc, not the rip-saw's long bar.",
+  "pattern": false,
+  "needs": false,
+  "span": 0.89,
+  "label": "Wreck saw",
+  "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw.png",
+    "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw.png",
+    "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw.png",
+    "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw.png"
+  },
+  "collection": "prompt-pack-2026-11-19-file-09",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/12-weapon-ork_wreck_saw.png",
+  "source_sha256": "e12ff7875e50b8b985aa7972e0ca1f67b23fe0277b8180b1df264f97c285be0f",
+  "export_sha256": {
+    "256": "90218d6b804dc77fd507b585230800051f645232f31e7ec9fd5b4c589c0d3ffc",
+    "128": "2cabcc6398d8c5c573c48311edbddb4d3892ebd82d2d5515989c7d8eed67d85c",
+    "64": "f80b086dc1cc0e3d69ae5f19d88df2b44ed7416b54f0282aa0a462fea184ba2d",
+    "32": "08db7a0c988d75e004b1feab77155e401813a62269ba93f2d0565c8ee1ecf0d1"
+  },
+  "generator_prompt": "Paint a single fictional nonfunctional video-game inventory icon for Project Heaven Cry, a fantasy role-playing game. It is concept art of an imagined prop. Use one exterior, slightly three-quarter view only. Hand-painted opaque Heavenprint gouache, bold readable contour, angular scuffed brushstrokes and selective hatching, charcoal shadows, upper-left ivory highlights and restrained accent paint. The first reference shows only brushwork and materials. Any item reference is a fictional prop in the same game, for family color and scale. Wreck Saw, a heavy made-up fantasy scrap-cutter prop. One oversized continuous round toothed steel disc at upper right, partly enclosed by a thick curved yellow-ochre guard, merges into a long dark blocky engine-shaped handle assembly toward lower left. There is a clear painted central hub, a single broad crossbar grip and two small dark protrusions at the back. A whole, unbroken silhouette, no loose pieces. Thick irregular charcoal, rust and dirty faded ochre. Forty-five degree diagonal, very distinct from the narrow rip-saw. Square 1024 PNG on true transparent alpha with ample margins. Legible as one silhouette at 32 pixels. No lettering, insignia, numbers, logos, people, background, dimension marks, inset diagrams or view of interior parts."
+}

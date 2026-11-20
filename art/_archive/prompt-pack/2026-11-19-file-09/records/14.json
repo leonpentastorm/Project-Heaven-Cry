@@ -1,0 +1,42 @@
+{
+  "n": 14,
+  "id": "hellraiser_door_knocker",
+  "title": "Door-knocker",
+  "path": "art/icons/gear/weapon-hellraiser_door_knocker.png",
+  "refs": [
+    "art/icons/gear/weapon-hellraiser_servo_fist.png",
+    "art/icons/weapons/hellraiser_servo_fist.svg"
+  ],
+  "paint": "A mining ram worn by trench troops: a forearm-length pneumatic ram gauntlet with a flat striking plate. Pose: upright, three-quarter, filling about 75% of the canvas; no hand or arm inside. Silhouette: a massive flat square ram plate over the knuckles, two thick pistons running the length of the forearm, an air tank at the elbow, short trench spikes on the plate's edge. Materials: dark steel, dented plate, black hoses. Accent: oxide red #CC2435.\nAt 32 px: twice as long as the servo-fist, with a flat square plate in front.",
+  "pattern": false,
+  "needs": false,
+  "span": 0.75,
+  "label": "Door-knocker",
+  "sha256": "02aac08ab2efeec09c1767064e2a9dd0ae2504fa6412d6c7686b7cca58d88e40",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker.png",
+    "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker.png",
+    "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker.png",
+    "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker.png"
+  },
+  "collection": "prompt-pack-2026-11-19-file-09",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/14-weapon-hellraiser_door_knocker.png",
+  "source_sha256": "77e9069cda67f98cd14537f5316401a2b33f4b2a75d652255a32f2b2190ac758",
+  "export_sha256": {
+    "256": "2dc24d0bf4349a461d352df5aed8bfb82bf66e85bdc87169d8758b6a320aa2af",
+    "128": "fda08539ad63643bb17595c7830b4348ab3e678eac89ba36202d4f85f58b3661",
+    "64": "c95c2822e5fc1fded7ff7422e7d7cc0ab64147f14a0648941a4675823b52a541",
+    "32": "1bf12a56e43e8942ee1f63c77b32404c6db7faab257ca2c599f8c4fe92679bb8"
+  },
+  "generator_prompt": "Repaint this completed fantasy inventory art in the same rough gouache and worn oxide-red palette. New composition: an UPRIGHT tall gauntlet standing vertically, cuff opening and air tank at the BOTTOM of the image, steel square plate at the TOP of the image. This is a mining ram wrist brace, displayed empty, with one visible hollow forearm opening at the bottom in three-quarter view. The two thick parallel pistons visibly run vertically along a long forearm brace from bottom to top and join the same flat heavy steel plate, with short points at the edge. Elongate the body so it reads as long as two short gloves. Keep one coherent object of clear, readable near-vertical silhouette, same red steel palette, no human, no label, no ground. Transparent square."
+}
