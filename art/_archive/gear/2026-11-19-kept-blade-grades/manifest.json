@@ -9022,6 +9022,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-breather--masterwork",
+      "path": "art/icons/gear/armour-breather--masterwork.png",
+      "sha256": "94a935d094642e6f8b310896996eb8954585281c558bebacc79f523a19a8363d",
+      "label": "Breather — Masterwork",
+      "family": "armour-breather",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--masterwork.png",
+        "sha256": "64cf0e0144cfe0a381038018939af015aa28c1092af82b9114fdfc03b6a03323"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-breather--masterwork.png",
+        "sha256": "94a935d094642e6f8b310896996eb8954585281c558bebacc79f523a19a8363d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-breather--masterwork.txt",
+        "sha256": "66579e64bc99576d054e6343d6c1fe3d85ffc3d6fc9c07cf7938b8ae92e0cb42"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-breather.png",
+          "sha256": "122ce61995e1f39338eafa5d03b36c19766c9fac17fa0eb3a441b2390e9d45ce"
+        },
+        {
+          "path": "art/icons/gear/armour-breather--fine.png",
+          "sha256": "441d96ff6e4b937dfd8102d7fa0a73a5cc22a0ff4345f1c3a7611e9950d0ac1a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-breather--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-breather--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-breather--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "5ef457ad8b954858ba0761632da5c02f692b20c5d85e71040223d6d6724ac2cf",
+        "128": "b636661ca3238da2edf444588fae49d2460bab8ee440a73097236543876b7e7e",
+        "64": "69fe3b6c64bcd9350cdb147581dc82259ace6837f0cd574bc3845fb6e059caab",
+        "32": "a487e7cdf136f14e9095f0ffb999b48923b589d45259e41a5429c795f0ee0bee"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-breather",
+      "outline": {
+        "solid_alpha_iou": 0.98122369257377,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 19
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
