@@ -10386,6 +10386,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-field_trousers--celestial",
+      "path": "art/icons/gear/armour-field_trousers--celestial.png",
+      "sha256": "3db6088a857af66a699289022a4cf3e1a2135c8904e466f4f808509dd2b8ec85",
+      "label": "Field trousers — Celestial",
+      "family": "armour-field_trousers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_trousers--celestial.png",
+        "sha256": "bf4d11a0e8e2621da73c7672266f76a1a536ac2b17b5f9b232872c6bd2ca85c6"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-field_trousers--celestial.png",
+        "sha256": "3db6088a857af66a699289022a4cf3e1a2135c8904e466f4f808509dd2b8ec85"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-field_trousers--celestial.txt",
+        "sha256": "f29ca7b0d084e8ced6b2c5343f45273c2792f5e48f1726dc2b7eea99de3a85c6"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-field_trousers.png",
+          "sha256": "644b0fbc3da4c8259b5e88aceb8f7b140573ab63a3679b6cf1439c0f0ed573ab"
+        },
+        {
+          "path": "art/icons/gear/armour-field_trousers--relic.png",
+          "sha256": "0577c47bd90282a9ab34fe5ef895bb2b254358c6e0cd950c708e8f02a59c4e2c"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_trousers--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-field_trousers--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-field_trousers--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-field_trousers--celestial.png"
+      },
+      "export_hashes": {
+        "256": "c5e4855170a42397739b295d821e9ad13e3778e9b889993441757f02ae1373c9",
+        "128": "f9812304f8c3c57be09414f9bec83571eb12b32be0476fc32d8dc1e68074376d",
+        "64": "f36d84619f9598c7f522f0ffb5cdc540f91ed5f5d44555febc542eb4cb36aab0",
+        "32": "3af0b0ab072ce2e8d1effb2151b2d67d914b758f18ec4534519ec1f57b8bca3d"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-field_trousers",
+      "outline": {
+        "solid_alpha_iou": 0.9649392359054713,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 42
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
