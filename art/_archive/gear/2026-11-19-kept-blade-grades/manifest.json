@@ -8708,6 +8708,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-sight_visor--fine",
+      "path": "art/icons/gear/armour-sight_visor--fine.png",
+      "sha256": "eff5787254486a6a35414fa948c666e2131ad56f701485a40fc82c996cee3160",
+      "label": "Sight visor — Fine",
+      "family": "armour-sight_visor",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sight_visor--fine.png",
+        "sha256": "c036f408ee1a23bb3341edb427bedfebe76a74ba7717cb5f5f2d7c8177643043"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-sight_visor--fine.png",
+        "sha256": "eff5787254486a6a35414fa948c666e2131ad56f701485a40fc82c996cee3160"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-sight_visor--fine.txt",
+        "sha256": "ec5eb46722572398d972c7ecccf8eb6a14f6c3fbfff2ba63d626e570be746d03"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-sight_visor--fine/v1/source.png",
+          "sha256": "4e3613e96743273abdb5791c8087fe142f028aeaa71a26a74eaa25e556d65651"
+        },
+        {
+          "path": "art/icons/gear/armour-sight_visor.png",
+          "sha256": "477c0f52e43494ba1432e0d9f0964cbc28cd7c5454367c531bbb9aff367b26a0"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sight_visor--fine.png",
+        "128": "art/icons/gear/exports/128/armour-sight_visor--fine.png",
+        "64": "art/icons/gear/exports/64/armour-sight_visor--fine.png",
+        "32": "art/icons/gear/exports/32/armour-sight_visor--fine.png"
+      },
+      "export_hashes": {
+        "256": "d1be6a52f425f800b12739fb3ad738a1b8d3cf55ecb37c82b1738bb11543f496",
+        "128": "a94388046889422509cc81ea31f82216f41f1b30656be157efd33ccaf7ffefbc",
+        "64": "f243909a5c4330fdd3bac6995a2d0c32dc81c3cf1f56eb09d96f16b12cc149cc",
+        "32": "b2688b97e34d72496a283df983e171fbdd9ca6617de9267c2658a665ad1666e8"
+      },
+      "grade": "fine",
+      "standard_id": "armour-sight_visor",
+      "outline": {
+        "solid_alpha_iou": 0.9669074063175241,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 42
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -26861,6 +26861,42 @@
         "different_pixels_32": 12,
         "different_pixels_64": 45
       }
+    },
+    "armour-sight_visor--fine": {
+      "label": "Sight visor — Fine",
+      "path": "art/icons/gear/armour-sight_visor--fine.png",
+      "sha256": "eff5787254486a6a35414fa948c666e2131ad56f701485a40fc82c996cee3160",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sight_visor--fine.png",
+        "128": "art/icons/gear/exports/128/armour-sight_visor--fine.png",
+        "64": "art/icons/gear/exports/64/armour-sight_visor--fine.png",
+        "32": "art/icons/gear/exports/32/armour-sight_visor--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sight_visor--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sight_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9669074063175241,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 42
+      }
     }
   },
   "survival_art": {
