@@ -1,0 +1,90 @@
+{
+  "id": "kit-rim-wall-corner",
+  "src": "/workspace/generated_images/exec-79f469b7-2c85-4b13-9d50-3616b723c474.png",
+  "job": {
+    "id": "kit-rim-wall-corner",
+    "number": 13,
+    "file": 1,
+    "path": "art/sprites/kit/rim/wall-corner.png",
+    "references": [
+      "art/sprites/kit/rim/wall-straight.png",
+      "art/sprites/kit/rim/wall-corner.png"
+    ],
+    "prompt": "This is fictional RPG game art for Project Heaven Cry. Edit the supplied existing PNG for a specific unfinished art correction. Preserve the supplied image's composition and canvas. Deliver one image only, PNG with genuine transparent alpha, no background or checkerboard. Create the corrected 256x256 Rim wall CORNER tile using the first reference's straight wall as the exact paint/material authority and the second reference only for L geometry. Strict top-down orthographic, no perspective. A 128px-thick L joins LEFT edge centred y64..191 to BOTTOM edge centred x64..191. Outer elbow is square at x192,y64; inner elbow at x64,y192. Transparent empty above y64 and right of x192, with empty lower-left notch x0..63,y192..255. Both arms have completely flat cut ends at the cell border with no end outline or end cap: left end exactly y64 through191 inclusive, bottom end exactly x64 through191 inclusive. No opaque pixels on top or right cell edge. Match the attached STRAIGHT exactly: same blue-grey bulkhead value and brushed, worn plate texture, same ivory cap-band width, same thin cyan #8BDEEE light strip through the centre. Carry cap and cyan strip in continuous clean right-angle bends around the corner, meeting the straight reference at each opening's same centreline/height. Top-left light; no cast shadow. Remove the old corner's panel grid, hazard stripes, corner fittings and extra bolts. No new seams, panel grid, rivets, lettering, rounded corners or lighter cap. Transparent canvas right to flat-cut openings. Output one square tile, preserve full canvas and exact half-tile dimensions.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/sprites/kit/rim/wall-straight.png": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4",
+      "art/sprites/kit/rim/wall-corner.png": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c"
+    },
+    "original_sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c"
+  },
+  "preflight": {
+    "id": "kit-rim-wall-corner",
+    "own": "53c7da747e200976ae8deb2b410ce00c0e8d76ff",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "run": "sole-20261120-1615",
+    "latest_comment": 7044738722
+  },
+  "clock": {
+    "current_time": "2026-11-20 16:35:44 UTC"
+  },
+  "attempt": "013-sole-v1",
+  "review": "Inspected native and 256px output. Correct alpha openings: left64..191 and bottom64..191, no top/right opaque coverage. Reject material joins: bottom cut end incorrectly sealed with horizontal ivory cap; cyan turns aboutx138 instead of x128 and does not meet adjoining straight at centred bottom opening. Original remains unchanged. No artistic approval; count0.",
+  "source_sha256": "06da1f1e908abefd4a10165c692f60c11c85f89e074028a2f75acb29762b6598",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "native_mode": "RGBA",
+  "native_alpha_bbox": [
+    0,
+    26,
+    1245,
+    1254
+  ],
+  "references": [
+    {
+      "original_path": "art/sprites/kit/rim/wall-straight.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v1/references/00-wall-straight.png",
+      "sha256": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4"
+    },
+    {
+      "original_path": "art/sprites/kit/rim/wall-corner.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v1/references/01-wall-corner.png",
+      "sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c"
+    }
+  ],
+  "technical_previews": {
+    "1024": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v1/preview-1024.png",
+      "sha256": "8c033d4ba4ae6ee76958a7974fb8c87a58e5efc277ed006e69f57c8099b2c12d"
+    },
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v1/preview-256.png",
+      "sha256": "25c4d181a46dbf7f39a6c53a24b7ef30e941424cd9e73bd7c77d094f0279f3c0"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v1/preview-128.png",
+      "sha256": "f38a5d0894a1be9fbbdea3e43c2917695ea46872aea23bdbb77968c9be8d7d29"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v1/preview-64.png",
+      "sha256": "7923fbca27f72d383495680a1199d07e13cb50080bd918ad6693bb40d0dea279"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v1/preview-32.png",
+      "sha256": "632d095753b026001d02b71061e5748c27a41f433ef5faf2eca41ab68d6a2655"
+    }
+  },
+  "selected": false,
+  "count_contribution": 0,
+  "status": "quality-rejected",
+  "production_approved": false,
+  "implementation_ready": false
+}
