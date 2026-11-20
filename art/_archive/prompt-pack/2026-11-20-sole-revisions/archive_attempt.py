@@ -32,4 +32,4 @@ for size in (1024, 256, 128, 64, 32):
 record = {**payload, 'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(), 'native_dimensions': list(image.size), 'native_mode': Image.open(source).mode, 'native_alpha_bbox': image.getchannel('A').getbbox(), 'references': references, 'technical_previews': files, 'selected': False, 'count_contribution': 0, 'status': 'quality-rejected', 'production_approved': False, 'implementation_ready': False}
 (attempt / 'review.json').write_text(json.dumps(record, indent=2) + '\n')
 assert hashlib.sha256((root / job['path']).read_bytes()).hexdigest() == job['original_sha256']
-print(json.dumps({'archived': str(attempt.relative_to(root)), 'original_unchanged': True, 'count': 508, 'selected': False}))
+print(json.dumps({'archived': str(attempt.relative_to(root)), 'original_unchanged': True, 'count_contribution': 0, 'selected': False}))
