@@ -2164,6 +2164,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_rank_sword--masterwork",
+      "path": "art/icons/gear/weapon-legion_rank_sword--masterwork.png",
+      "sha256": "fdd3b7e90ef9dea5bf3deac6596e83ed6c2591064be766185aa1d6d56ecc2aae",
+      "label": "Legion Rank Sword — Masterwork",
+      "family": "weapon-legion_rank_sword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_rank_sword--masterwork.png",
+        "sha256": "de2d1b2c28ef80acb74bc69856a3992f0f18f416a6579dbfee8c02e2fb4a4338"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_rank_sword--masterwork.png",
+        "sha256": "fdd3b7e90ef9dea5bf3deac6596e83ed6c2591064be766185aa1d6d56ecc2aae"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_rank_sword--masterwork.txt",
+        "sha256": "21f02eee291f275d4d5e54ad8e60fbf9b70c7d4216f0b5f6581db84d9f4d763f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_rank_sword.png",
+          "sha256": "6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d"
+        },
+        {
+          "path": "art/icons/gear/weapon-legion_rank_sword--fine.png",
+          "sha256": "c1bf4af12324ecc89373718ea918c8d389b3299391b5e63b93e982123a8e24e0"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_rank_sword.png",
+          "sha256": "bc0c3ef3c706c75c3e483efb0ae0a4b65997f708ccd83fb52bbc8cbd008c5cd3"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_rank_sword--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_rank_sword--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_rank_sword--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_rank_sword--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "62ca71e769a35f9dd5b5058b158741390fc525bcc8659554451fecea4bb84600",
+        "128": "f1a5124dd914fadeaba6122ce59c420dc1ad857f2ec9baf3150b9b32e8ccc08c",
+        "64": "5149dc53ce5c1d7e07a3fca11b2a36e05813acf2bdd4f5b3cd0439b9150dba42",
+        "32": "508d66fd7d956f131ec6856907323f13e8e585d382dd68a3d06ce62841b7b4ab"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-legion_rank_sword",
+      "outline": {
+        "solid_alpha_iou": 0.9514246373863654,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 7
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
