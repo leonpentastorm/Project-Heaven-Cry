@@ -1,3 +1,5 @@
+> Current kept-grades update20Nov: armour56 complete, own177selected; next WarPick4/WarHammer4 exact reservation7032134179. Queue216 with31 prior service-blocked/dependent. Peer PitchAxe/LegionSpear excluded. All remain review candidates.
+
 # Active56-armour extension —20November2026
 
 Current exact claim7029516545: all four grades for14new file07 armour Standards on `art/2026-11-19-kept-blade-grades`.56ready prompts committed in queue.json (total208:121delivered,56eligible,31earlier rejected/dependent). Initial reset scope26 yielded GasMask2delivered; all six independent kept-gunFine requests rejected, higher18dependent, all exact responses retained. Those gun requests are not free retries and were not quota failures. Peer new24blade claim7029498929 is separate. All14Standard paintings and newgrades remain unapproved candidates. Read live issue3opening+allcomments and check actualremote deliveries beforeEVERY creative request.

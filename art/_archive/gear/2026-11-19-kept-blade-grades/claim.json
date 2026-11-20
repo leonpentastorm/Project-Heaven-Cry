@@ -1,6 +1,6 @@
 {
   "branch": "art/2026-11-19-kept-blade-grades",
-  "updated_utc": "2026-11-20T01:02:18.665866+00:00",
+  "updated_utc": "2026-11-20T06:20:24.239486+00:00",
   "ids": [
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
@@ -209,7 +209,15 @@
     "armour-jump_boots--fine",
     "armour-jump_boots--masterwork",
     "armour-jump_boots--relic",
-    "armour-jump_boots--celestial"
+    "armour-jump_boots--celestial",
+    "weapon-war_pick--fine",
+    "weapon-war_pick--masterwork",
+    "weapon-war_pick--relic",
+    "weapon-war_pick--celestial",
+    "weapon-war_hammer--fine",
+    "weapon-war_hammer--masterwork",
+    "weapon-war_hammer--relic",
+    "weapon-war_hammer--celestial"
   ],
   "standards": [
     "weapon-kemizuchi_duelling_blade",
@@ -263,7 +271,9 @@
     "armour-rig_belt",
     "armour-field_trousers",
     "armour-tactical_gloves",
-    "armour-jump_boots"
+    "armour-jump_boots",
+    "weapon-war_pick",
+    "weapon-war_hammer"
   ],
   "other_agent_proof_standards": [
     "weapon-katana",
@@ -278,9 +288,9 @@
     "weapon-legion_gladius"
   ],
   "peer_canonical_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
-  "target": 208,
-  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7029516545",
+  "target": 216,
+  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7032134179",
   "latest_implementer_commit": "7e1f6bd065b47ce6f9d9325629abdeaffba7b0e9",
-  "handoff_status": "active continuous production;newarmour56 claimed7029516545;prior31rejected/dependent",
+  "handoff_status": "active; armour56 complete; next hafted8 reserved;31 earlier blocked/dependent",
   "next_reset_utc": "2026-11-20T03:19:14Z"
 }

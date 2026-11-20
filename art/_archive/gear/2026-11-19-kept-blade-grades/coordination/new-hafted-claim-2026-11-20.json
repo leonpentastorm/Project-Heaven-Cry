@@ -1,0 +1,78 @@
+{
+  "owner": "kept-20261120-mwoeq1o9",
+  "branch": "art/2026-11-19-kept-blade-grades",
+  "claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7032134179",
+  "ids": [
+    "weapon-war_pick--fine",
+    "weapon-war_pick--masterwork",
+    "weapon-war_pick--relic",
+    "weapon-war_pick--celestial",
+    "weapon-war_hammer--fine",
+    "weapon-war_hammer--masterwork",
+    "weapon-war_hammer--relic",
+    "weapon-war_hammer--celestial"
+  ],
+  "status": "reserved; prompts ready",
+  "remote_refs_checked": 128,
+  "delivered_conflicts": [],
+  "standards": {
+    "weapon-war_pick": {
+      "label": "War pick",
+      "path": "art/icons/gear/weapon-war_pick.png",
+      "sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_pick.png",
+        "128": "art/icons/gear/exports/128/weapon-war_pick.png",
+        "64": "art/icons/gear/exports/64/weapon-war_pick.png",
+        "32": "art/icons/gear/exports/32/weapon-war_pick.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-war_pick.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+      "brief_number": 13,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-war_hammer": {
+      "label": "War hammer",
+      "path": "art/icons/gear/weapon-war_hammer.png",
+      "sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_hammer.png",
+        "128": "art/icons/gear/exports/128/weapon-war_hammer.png",
+        "64": "art/icons/gear/exports/64/weapon-war_hammer.png",
+        "32": "art/icons/gear/exports/32/weapon-war_hammer.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-war_hammer.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+      "brief_number": 14,
+      "collection": "2026-11-19-melee-armour",
+      "grade": "standard",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    }
+  },
+  "current_data_note": "No war_pick/war_hammer entries in current data/weapons.json; source file05 supplies planned form, no invented engine mechanics.",
+  "peer_excluded": [
+    "weapon-pitch_axe",
+    "weapon-legion_spear"
+  ],
+  "updated_utc": "2026-11-20T06:20:24.239486+00:00"
+}
