@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-2ee5037f81e7e2eefe58dd9656a82838302764c176c5b03882d9897efb2a7ab9  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+1c69ce8098f95928bce22fe173b04639934f2ad2a9d65b245bf013efd2c34ed0  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 cfe0b7165b9763268d0236c6c4e2d3115516495eb909f41cfb8621beee42e813  art/_archive/gear/2026-11-19-kept-blade-grades/START-HERE-2026-11-20.md
 8ee34c72311bf68773c6853ab0bb7d25b31c2b57e8143486cfbd5f27578d9e64  art/_archive/gear/2026-11-19-kept-blade-grades/TOMORROW.md
 dc45fc3c9fb69cc8ef2a2ab30aaefdfe979447725ab1cf53391fc2ffe47c8ca4  art/_archive/gear/2026-11-19-kept-blade-grades/VALIDATION.md
@@ -1845,7 +1845,7 @@ f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/g
 86815a3e71deba87e231646449a0fd7b61d852d12b6fd8f15784d008e5600fdb  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sawn_off--fine--1795145285032.json
 9e9bbb8dfef43cad55fe67a508994d3d5aba04f34c2298ca5792d8007429ca4c  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_axe--fine.json
 63fe7ac88a5e6ac611b6d1d7336d6104cec11fa77f81d5d1b786da46672b42b9  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json
-7e3945b8bed26d8ae99ae66b41628059e56cda900517546a30d5ccf61f75a191  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+b9a521c70450591e453cc958a3a71ec716513154b9eb47ceb0cdcc1e1a3e4bf1  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
 31b9266c8a923ce1e84e1237e45494829d72265679afc370a72675e70d85c156  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--celestial.png
 f93411441905437355171c2f6a64045a0cfe2099aaf24cf694d5dd7da311afa6  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--fine.png
 fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--masterwork.png
@@ -1894,6 +1894,7 @@ da9b5d9f48e4cd58f270c2dbcca71e260dd9d76dea4d756af9064feeaa6b19f4  art/_archive/g
 673107d05e0be8aef5b37f19913c2f5dd5de10c422bd07e2c0fd130d6db2815f  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-hood--fine.png
 ecc89a15d64f9caf44e5312d541c3a859271c3b8501a993647f79e6a34952ddf  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-hood--masterwork.png
 34f4280d2ce75cfd123692dcdbbdba5fa9b76206e8f9076c514561d192901d45  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-hood--relic.png
+58141b36e5628203b008006c43a1b15215d4c3d5a7faa23a6baa4889e5a453cf  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-jump_boots--celestial.png
 21bd97b78647cce8ab697213d2e4c80afc7e2cc5887689276b4a64d7da78834e  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-jump_boots--fine.png
 81b13bebdb00bb12f5bfd733fac172382b65c54f8f72508efcd2eccfd83f5d94  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-jump_boots--masterwork.png
 67565872db3a3afb188259c3a0272fd35138f4cc064efb2a5c7e4e180d861451  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-jump_boots--relic.png
@@ -2025,7 +2026,7 @@ dab3bbbdf442bc217948fd60eee32f838a211d1eb1fe57e133a194b9c3d5e740  art/_archive/g
 876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--fine.png
 ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--masterwork.png
 9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--relic.png
-6a76cfebc945e4caac4f44e95a46f0a7bec1f727fd2bd28322d74434e1c149a7  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+c32a5b88825c509a625e9f75b03e5926fa7259299ff6bf0ec7b911f8bf34fafc  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 7072283c256a7cd34d750cfe09118d83631509ed58760961580028abc78f6bf8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt
 048ccfc688b5412dd99ae31c3119eaae6f4126ba06c421f73ccb095a68e03315  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--fine.txt
 109c7d7ccd649f9b5ca60c47fa35ef9a7c9308c47c1c903dba426028fbf7b521  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt
@@ -2074,7 +2075,7 @@ a1c95d0d2dd58c67306aaf006a7826f9b911ec9c6035dd32b8677e78f332b276  art/_archive/g
 a938e48c5f7f6248df428190c2a2493a161fa0bf11171b78a3439ee88b22fef8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-hood--fine.txt
 388a3392e0ad3afa27ec3399bef05a9dc60df65f70c6cb4c282b2cd117974d2a  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-hood--masterwork.txt
 c986d170e4b0b90ccdfb7cbf0c2ec88188e28b7b839180e04f6e8b46e7a97446  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-hood--relic.txt
-92ffe54f5a085d651549a68d6cc717c13bc37a7e0c894bb3399175b04e92be2c  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-jump_boots--celestial.txt
+be6acfacfabe5ca292297c9efcd796f0a6b3c6afb9d7d78f055f2c11a1cddbcf  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-jump_boots--celestial.txt
 ac6a4fb5dbcd084794d811cdb670611f24d68ee51280cf6f398771689da205bf  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-jump_boots--fine.txt
 9034a02aa2e4d6e4a3f79a0b38d8939ebcf2379fb5f754b18a0bd40295977c23  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-jump_boots--masterwork.txt
 788f023d9a9bd456500c13075cb58efe621ab0c6aa588335340816b9ba93672a  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-jump_boots--relic.txt
@@ -2246,7 +2247,7 @@ bee7477a9e07b82ad229c32541939deea912fb45b3155a89d95d7db1a2a39834  art/_archive/g
 3dea41ecea9988023656c2dbfa4e527fcb8194d71b6aea386f1ed9f9e6294d0b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--fine.txt
 684d47c91ba4301ee4c3f08b30bcf0f4e1883952dbc341a5852a161ae3effafd  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--masterwork.txt
 50a61f4ac3a7e5f5690ba802260fb911300852923bddd0fd2e750b56d2123871  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--relic.txt
-c4c96995066c0dc2763ea07f2e6f20947054cf477014a66cdb67d4a88967f5a3  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+cc8e15744bb09a20803760dc488844c6976338181cb9c1bf76523c94ce9a52bb  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 40590eb9b576e9d16899ba703041c16e3244a5a4fd689355e53adc4dd536d2fb  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-32px.png
 9b9c6401e3920bb264df0cc7aad2ea9bf468b2b079f3eeb7efd87a219275fa67  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-64px.png
 ac788bb44b1e1e9dfaf3afe95f2b8facc30a95c3eeb2e07876760fb7c46cc2bc  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-assault_helm-32px.png
@@ -2271,8 +2272,8 @@ ab2129c8b6086e7ae8433c8051f0a6770f1c65b2f5a426d98e828e174f0932a9  art/_archive/g
 5542217fd02037655062a235ca7d91ab81aef3c4aeffafec6e7f3c7c0de8f3e7  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-heavy_boots-64px.png
 70d00236f88bc02388e8c68d4926feab56cb9fdae44e2a1b835280de4f826619  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-hood-32px.png
 1f8a2a2bb0e61aa9eaa08fff971fd1bc6b84d4c9241229ae9aaa8ccee5f9c912  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-hood-64px.png
-4beda35ffbe5824e02d24f1fcb18b418e1a56b4d566ef88026dcd8893c092e2a  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-jump_boots-32px.png
-86d0c72d0db78e0817f250448f6e6b76b23cf618329d1b2cc82390b18549ff01  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-jump_boots-64px.png
+636a7139c9392168fa8c60e64c741ffa00c7a935f322004740473fb0c29c0093  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-jump_boots-32px.png
+2d0a65bd6fc08e05c7d8c2e6b6e260556b195cb74df759359326c077004e4a6f  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-jump_boots-64px.png
 d3b3d4f85ab2db36039aaed65e2e1aca22bc88147f4a9d6f95694fec5c917ccc  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-mesh_undersuit-32px.png
 26ebd502af05016cb456668fe4cbb61e25dbf0dd7343d2d1da682d9f29c87b52  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-mesh_undersuit-64px.png
 31ac37f667d13721fa114eb2a91883a59fbb80b08836a412e628a4fc711d7b54  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-night_goggles-32px.png
@@ -2391,6 +2392,7 @@ c494134407b12bc986217c7566e384c2f0d414742d292bd434dbddf1dde6859e  art/_archive/g
 93ee897aaa85d5be9d203a1d74cc4594fa8dee4ac9538021d46b64c61ac9d598  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--fine.png
 b0ee4460eb1e52f226207b82dd169e6960513a05023ad11a697a783b96ac8c7b  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--masterwork.png
 88d554864e5e0fe77dd7cccca7022666e12c27dfb8ad3409b72466ec37400e12  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--relic.png
+bffe9cb9a717b8dcf2ed500e4bc4cee3ea910efe755e169bd9fe9bb793081248  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--celestial.png
 27b2bcb16fb9b5e7fdd1beb4189f307c55cc5f7cff6bd283a8fa0b178e882936  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--fine.png
 63c9a3eff911abe1002d6cd531388373a9d344bb47df3a4e5b0f78396c95cf1f  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--masterwork.png
 b6f6428ee5bece2fff23ef4d401c6127a5c5fcf32786a33ee638c8380ec63c3f  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--relic.png
@@ -6455,7 +6457,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-75779d00d0ac9b8758be548acfa7363a3770e0f8819f0bca336d79d756da0adc  art/catalog.json
+506d11e57221d0da8816263625a443ee4089147699623ec84b6f4201340a6c10  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8083,6 +8085,7 @@ bf6aa28766f45a090f5289c830c5638b78a1b54fc8034dda83eca4e4d839bf96  art/icons/gear
 ecc89a15d64f9caf44e5312d541c3a859271c3b8501a993647f79e6a34952ddf  art/icons/gear/armour-hood--masterwork.png
 34f4280d2ce75cfd123692dcdbbdba5fa9b76206e8f9076c514561d192901d45  art/icons/gear/armour-hood--relic.png
 8c4e276582b096d10b0338b3bead760bb450cdfbc1c04c54b777d1b9c46d532b  art/icons/gear/armour-hood.png
+58141b36e5628203b008006c43a1b15215d4c3d5a7faa23a6baa4889e5a453cf  art/icons/gear/armour-jump_boots--celestial.png
 21bd97b78647cce8ab697213d2e4c80afc7e2cc5887689276b4a64d7da78834e  art/icons/gear/armour-jump_boots--fine.png
 81b13bebdb00bb12f5bfd733fac172382b65c54f8f72508efcd2eccfd83f5d94  art/icons/gear/armour-jump_boots--masterwork.png
 67565872db3a3afb188259c3a0272fd35138f4cc064efb2a5c7e4e180d861451  art/icons/gear/armour-jump_boots--relic.png
@@ -8262,6 +8265,7 @@ ba261deaf6f44e218b0d907d3f6bb208e42a3d6726208980da4081538c7753e2  art/icons/gear
 faedc7c176c98a6d3fadec816cda5603114fb8d33da4e9ef68806a25d4a6e974  art/icons/gear/exports/128/armour-hood--masterwork.png
 25cfd11a74f3f198af994139522e2a14607296c25ebc9270a6dc2414908e82c4  art/icons/gear/exports/128/armour-hood--relic.png
 857bbb07a468482951513d16ad444462db030faea12f6da0e5862b8382752b40  art/icons/gear/exports/128/armour-hood.png
+531cf51f4404a1149dc24069bd2bd6e118e2fd1be17e405fa5b8ff46c65a25a1  art/icons/gear/exports/128/armour-jump_boots--celestial.png
 371570fe4a90fccf3f90ec235eef72fc45400e9496a6b2200b80b545a9582ccd  art/icons/gear/exports/128/armour-jump_boots--fine.png
 dd735272ede66a6b3e6a84d55ba537f118d173f9a9953f717346e2475ce448df  art/icons/gear/exports/128/armour-jump_boots--masterwork.png
 455a471ca79ebb24c5431db0f815fa1d3ab8222e05a3416069e72d235c0c7c9f  art/icons/gear/exports/128/armour-jump_boots--relic.png
@@ -8713,6 +8717,7 @@ a4790b8e4904cef32613380ecc4ac73159839977032b49b1f58654894042cb23  art/icons/gear
 f3f26af08492177902ee3d3446947dcee52d18f060b532d5bdca9099c4e1eacc  art/icons/gear/exports/256/armour-hood--masterwork.png
 13fe1ddd207300bb2569cedd96ac305a0b6c519d2a0381e98b381418230b978f  art/icons/gear/exports/256/armour-hood--relic.png
 e9159abb587e71c5483d9c59bd75688cc91e572ea0f009804fddf51f5996b65e  art/icons/gear/exports/256/armour-hood.png
+223a8c0c47fdad26834d6feadbb98214009fa3c302c21f842a8530b164216f44  art/icons/gear/exports/256/armour-jump_boots--celestial.png
 81d456ee5782d61f3ed0bedf45db6196c0c5eae4b1094efa8efa9c2d1714df5c  art/icons/gear/exports/256/armour-jump_boots--fine.png
 5ae8e0d0305ecf7630c4f2fdd3f00f7148597c4a48150dd47bc686160c452b0d  art/icons/gear/exports/256/armour-jump_boots--masterwork.png
 f72c6fe91e3fa1ad01c890f7c2968297c0ce43cffca71ed629debb876a9c48fd  art/icons/gear/exports/256/armour-jump_boots--relic.png
@@ -9164,6 +9169,7 @@ dc557d684a6d0292bee32935b5f4a606b95507e1a93a67a535a4239385609509  art/icons/gear
 3a2b7c618486431c0d7cadc65c2f092377dd8377cd404ea25b0e8460b7a4b0f6  art/icons/gear/exports/32/armour-hood--masterwork.png
 a9851b63d3c3fb8a3106d6b69e2b3796a093a3c5c33fb9d09646e8fbe18df002  art/icons/gear/exports/32/armour-hood--relic.png
 f1c7d774717ea6d9905ba7d04901ce1f44d4fabec70cb4059867fced8abe9c37  art/icons/gear/exports/32/armour-hood.png
+9f0dc61b54fbc100c99d3799f7eb37a3bab3748014b3555f89fcbfdd7cb1b41f  art/icons/gear/exports/32/armour-jump_boots--celestial.png
 9ee28064036c07670c76c1e7d8d4bbf741ada75b124d7736f1976da7110741f2  art/icons/gear/exports/32/armour-jump_boots--fine.png
 986e014165e53468436d40edb5ce594b57d434a969bcd4035f89e4802ca6c47b  art/icons/gear/exports/32/armour-jump_boots--masterwork.png
 f7edfe57a378ef42e154b36b47b74e3cdb18f040fbcfea2df053be4041cf74db  art/icons/gear/exports/32/armour-jump_boots--relic.png
@@ -9615,6 +9621,7 @@ d60d2708c6f23075bc679be3fc0f931780a539ec9279b7a94de830ac20513c7b  art/icons/gear
 359dc70c358561f23a785e5b0bf23a0ccb689b0034164147e4fc81db71c9ac09  art/icons/gear/exports/64/armour-hood--masterwork.png
 f6ea37890d51b9654e2d249e989b42ec5e09a368f7b5cac72d4c28c07165c42c  art/icons/gear/exports/64/armour-hood--relic.png
 4f900f39d950a9df8c8b5470870080adf3404c1918c73f3324ed16b5c547bbe9  art/icons/gear/exports/64/armour-hood.png
+80d13f22e7ac457b36ee30e76e6ca2f419c24339d8ae2727254cbf94572438a1  art/icons/gear/exports/64/armour-jump_boots--celestial.png
 85425569f8c24db7b9efb8e994403610c8c832e444536cc85eaec7ba5a72ee09  art/icons/gear/exports/64/armour-jump_boots--fine.png
 3e56425f6948e809ebdd834a2ee34bdea6cad63bef14af46fdf8cfff3dca2c26  art/icons/gear/exports/64/armour-jump_boots--masterwork.png
 4bd1d801c5a89b96e94a17b85580f591cb14f9b1d63dbe9694c4241aee1babd3  art/icons/gear/exports/64/armour-jump_boots--relic.png

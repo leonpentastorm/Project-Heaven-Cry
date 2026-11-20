@@ -10878,6 +10878,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-jump_boots--celestial",
+      "path": "art/icons/gear/armour-jump_boots--celestial.png",
+      "sha256": "58141b36e5628203b008006c43a1b15215d4c3d5a7faa23a6baa4889e5a453cf",
+      "label": "Jump boots — Celestial",
+      "family": "armour-jump_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--celestial.png",
+        "sha256": "bffe9cb9a717b8dcf2ed500e4bc4cee3ea910efe755e169bd9fe9bb793081248"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-jump_boots--celestial.png",
+        "sha256": "58141b36e5628203b008006c43a1b15215d4c3d5a7faa23a6baa4889e5a453cf"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-jump_boots--celestial.txt",
+        "sha256": "be6acfacfabe5ca292297c9efcd796f0a6b3c6afb9d7d78f055f2c11a1cddbcf"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-jump_boots.png",
+          "sha256": "a7fecba2c9d8dd2c3b03bf96e33358197a3737b6d93bae98b0b32a520213c6cb"
+        },
+        {
+          "path": "art/icons/gear/armour-jump_boots--relic.png",
+          "sha256": "67565872db3a3afb188259c3a0272fd35138f4cc064efb2a5c7e4e180d861451"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-jump_boots--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-jump_boots--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-jump_boots--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-jump_boots--celestial.png"
+      },
+      "export_hashes": {
+        "256": "223a8c0c47fdad26834d6feadbb98214009fa3c302c21f842a8530b164216f44",
+        "128": "531cf51f4404a1149dc24069bd2bd6e118e2fd1be17e405fa5b8ff46c65a25a1",
+        "64": "80d13f22e7ac457b36ee30e76e6ca2f419c24339d8ae2727254cbf94572438a1",
+        "32": "9f0dc61b54fbc100c99d3799f7eb37a3bab3748014b3555f89fcbfdd7cb1b41f"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-jump_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9837683917414697,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
