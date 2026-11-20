@@ -10448,6 +10448,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-tactical_gloves--fine",
+      "path": "art/icons/gear/armour-tactical_gloves--fine.png",
+      "sha256": "43100e2ac87dffbc05488422fa53d783f4e60c63e8e8628d165dfbc3b5cc7f74",
+      "label": "Tactical gloves — Fine",
+      "family": "armour-tactical_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-tactical_gloves--fine.png",
+        "sha256": "f299ad28104eafadafd9afb659374e49f6fccc1233bc2dea07a2120eed8d1b7e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-tactical_gloves--fine.png",
+        "sha256": "43100e2ac87dffbc05488422fa53d783f4e60c63e8e8628d165dfbc3b5cc7f74"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-tactical_gloves--fine.txt",
+        "sha256": "4de4e3e1019092603081cde6ecd2370b744116827c05013e9211d26702f3d037"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-tactical_gloves.png",
+          "sha256": "694555171cd0bc70dd47e3fb1c2f33283f84790423e9eb464977fc37e4a4c265"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-tactical_gloves--fine.png",
+        "128": "art/icons/gear/exports/128/armour-tactical_gloves--fine.png",
+        "64": "art/icons/gear/exports/64/armour-tactical_gloves--fine.png",
+        "32": "art/icons/gear/exports/32/armour-tactical_gloves--fine.png"
+      },
+      "export_hashes": {
+        "256": "a1e1cac630a2a133b1bd4f4df2d33d427d63a0da6eb04d60be977640bc1968ed",
+        "128": "9887a3df132964cf1f9022fa6b2105c1535671ce2d506f481182cabce39c0366",
+        "64": "ed41430faf8211609333cc122710a50c38f1713da06743de33a57a3ebed13b28",
+        "32": "3ed11469e55850f57f6956384c493419cf81f55ddfffd6f3060aa0a4c386002b"
+      },
+      "grade": "fine",
+      "standard_id": "armour-tactical_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9792279237408708,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 19
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
