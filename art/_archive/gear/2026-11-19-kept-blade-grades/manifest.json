@@ -9700,6 +9700,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-mesh_undersuit--fine",
+      "path": "art/icons/gear/armour-mesh_undersuit--fine.png",
+      "sha256": "2df4c52b37e4037d72b8cdc8afa4760039b365f2416d76ea96075672f6320d12",
+      "label": "Mesh undersuit — Fine",
+      "family": "armour-mesh_undersuit",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-mesh_undersuit--fine.png",
+        "sha256": "748ccb1b7da62b7bf541328aafb345e1c95537b747b6be528bd7f9de0050d81d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-mesh_undersuit--fine.png",
+        "sha256": "2df4c52b37e4037d72b8cdc8afa4760039b365f2416d76ea96075672f6320d12"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-mesh_undersuit--fine.txt",
+        "sha256": "e1b67dcd8c0304235841d40fa8fc5b969a4549a69fa374949d270b1aac62dd3e"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-mesh_undersuit.png",
+          "sha256": "5a36c6129138e8b7b640bf3a216b8bab73b604f9701396f6a054913f74fca1a9"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit--fine.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit--fine.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit--fine.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit--fine.png"
+      },
+      "export_hashes": {
+        "256": "5d9547d4bfbadf900029470a41eacef0d5695fa36f0bcdcd7239ce118add7644",
+        "128": "c4e1e4590ab85f761aad83564d31d011da16e33afea23167721b938e4e326ebf",
+        "64": "c44d88445ad46ecd4a9ab4e9231551152f8bfd5f199a6752a1c4f556ffd94aad",
+        "32": "2c0637279911df3f35380e39a33d15fb946eae2d8387ef7780792d69d7e31094"
+      },
+      "grade": "fine",
+      "standard_id": "armour-mesh_undersuit",
+      "outline": {
+        "solid_alpha_iou": 0.9862896052510505,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
