@@ -1,0 +1,50 @@
+{
+  "id": "shield-ram_plate--relic",
+  "job": {
+    "id": "shield-ram_plate--relic",
+    "standard_id": "shield-ram_plate",
+    "grade": "relic",
+    "label": "Ram Plate \u2014 Relic",
+    "path": "art/icons/gear/shield-ram_plate--relic.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-ram_plate.png",
+      "art/icons/gear/shield-ram_plate--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-ram_plate",
+    "family_references": [
+      "art/icons/gear/shield-ram_plate.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.\n\nGrade: Relic. Keep the shape and the rim inlay. The face takes a warm, deep, battle-old patina, the inlay turns to dull old gold, and a flush gilt ring is set around the boss or the centre of the face. Add one old repair that tells a story: a riveted patch plate over an old breach, or one board replaced with a darker plank.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses brass-orange #F68A38, preserving the original central orange stripe. Relic adds its small flush gilt ring around the centre point on the existing central reinforcing ridge, no new boss; the ONE repair is a small flush riveted patch on the lower-left flat side panel, inside the rim, without covering or bending the ridge.  Keep rim and all face panels free of decorative scrollwork, symbols or extra engraving; only the stated ring and ONE repair are added.",
+    "keep_line": "the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png"
+    ],
+    "depends_on": "shield-ram_plate--masterwork"
+  },
+  "preflight": {
+    "id": "shield-ram_plate--relic",
+    "peer": "fcba9f025ad53c5258dfe4949c4fe6329362d6f0",
+    "latest_comment": 7030873867,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 05:03:05 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-bf4a0a58-8c24-4af8-a5a3-2b605afc40ce.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-ram_plate--relic/01-quality-review/native.png",
+  "sha256": "0d4f4dfe218dbfebd15e7f02c2b379b773e39ead02fa6cccd16e2172edfa6677",
+  "status": "unselected-quality-review",
+  "review_note": "Relic repair plate covers the original lower-left face rivet; every original fastener must remain visible.",
+  "reference_hashes": {
+    "art/icons/gear/shield-ram_plate.png": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599",
+    "art/icons/gear/shield-ram_plate--masterwork.png": "ccadda5d6551dd068915e5bb622b7d3429a3dbfb39fe336a0b1c782309149b4b",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}
