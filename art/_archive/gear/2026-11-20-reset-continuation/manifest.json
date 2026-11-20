@@ -3031,6 +3031,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-adamantile_longsword--masterwork",
+      "path": "art/icons/gear/weapon-adamantile_longsword--masterwork.png",
+      "sha256": "bcb3baeee5a55d9235a76315889de9e3019460614a2f00ac04d6749ae11a12f9",
+      "label": "Adamantile Brigade Longsword — Masterwork",
+      "family": "weapon-adamantile_longsword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-adamantile_longsword--masterwork.png",
+        "sha256": "f69d9be76f76d2aaf483ea4b1181a33e4faf378468a5dc227d6e7229e65c4a3b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-adamantile_longsword--masterwork.png",
+        "sha256": "bcb3baeee5a55d9235a76315889de9e3019460614a2f00ac04d6749ae11a12f9"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-adamantile_longsword--masterwork.txt",
+        "sha256": "d3e18cf45ac488281726672adbf787c371c56ee23532a6a290fa0a297eed55e5"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-adamantile_longsword.png",
+          "sha256": "ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-adamantile_longsword--fine.png",
+          "sha256": "1a8ef784a6c0a141940987c9d11737e9b343bbf736a482ef4a988a5272eb5f6c"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png",
+          "sha256": "bb86956b8cc82b894caeebe5fcd4452c8369e8a27a51cab46c9b1cd73661a678"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_longsword--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_longsword--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_longsword--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_longsword--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "3e74d941c59d61e14441f74a6f57180aa5ceee0a0fe71eb6c78a9f0ce50e2c05",
+        "128": "897bffdeb3affeba8ee2e83aa697b761266c509b1560dfdd95a3e8ebfdd1c37d",
+        "64": "c70183879b7b8ac1ae1e9f5f7307ebe593b3c9a403a07a75aa5d9fac483aeedc",
+        "32": "e747e228536641c99899a80784692d956d04e05231a9a4de302bc5eb852c5250"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-adamantile_longsword",
+      "outline": {
+        "solid_alpha_iou": 0.9425494513299478,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 32
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
