@@ -11122,6 +11122,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_snarl_knife--celestial",
+      "path": "art/icons/gear/weapon-ork_snarl_knife--celestial.png",
+      "sha256": "eb52552c61fa3f5b0e713a0d5e1fe5b19407735b61eed01d8167f78977e55d4c",
+      "label": "Snarl knife — Celestial",
+      "family": "weapon-ork_snarl_knife",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--celestial.png",
+        "sha256": "45c8fe6e458d60c562a843ffa0994ce84dbd5858c9af413ea1d3870410c5d736"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_snarl_knife--celestial.png",
+        "sha256": "eb52552c61fa3f5b0e713a0d5e1fe5b19407735b61eed01d8167f78977e55d4c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_snarl_knife--celestial.txt",
+        "sha256": "f8effb1e3a5b76eddff97a56ac7bdeca6ccf4053c51cf3aacb6474f2c26f7ab6"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-ork_snarl_knife--celestial/v1/source.png",
+          "sha256": "a52cebff9f5f9779f6f6679850d2fc25298d6575170f3ea9fc0731d7c075e2d4"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+          "sha256": "4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_snarl_knife--relic.png",
+          "sha256": "f9f99f9012ee74a3dd4c11426fbe7a1d474396118eb506861bd6becca9395557"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife--celestial.png"
+      },
+      "export_hashes": {
+        "256": "fda62e49e70bb37e916e9703c8e87c6dde9ae99e5404f6043ab5fd785459d34b",
+        "128": "0ff0de71f993f20cf57b12f97b55622489c386cf907747cfad17c303fb4d4c7d",
+        "64": "317d4415a29987abe683283886d052591a081a90c3d35cb492803b5dc878b345",
+        "32": "16f47ddf2025624db44debc817499f05ac6d8bb5bb3eecc9535ce7cfd063508a"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-ork_snarl_knife",
+      "outline": {
+        "solid_alpha_iou": 0.9149504163354115,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 13,
+        "different_pixels_64": 47
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
