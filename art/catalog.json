@@ -26393,6 +26393,42 @@
         "different_pixels_32": 11,
         "different_pixels_64": 48
       }
+    },
+    "weapon-ork_rip_saw--celestial": {
+      "label": "Ork Rip Saw — Celestial",
+      "path": "art/icons/gear/weapon-ork_rip_saw--celestial.png",
+      "sha256": "39bc9ec8e6ec392836fa4662e2048619f7c53fc7d0f30bbcb825b9ae47a2e678",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_rip_saw--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_rip_saw--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_rip_saw--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_rip_saw--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_rip_saw--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_rip_saw",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.926904899691358,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 59
+      }
     }
   },
   "survival_art": {

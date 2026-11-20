@@ -558,6 +558,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_rip_saw--celestial",
+      "path": "art/icons/gear/weapon-ork_rip_saw--celestial.png",
+      "sha256": "39bc9ec8e6ec392836fa4662e2048619f7c53fc7d0f30bbcb825b9ae47a2e678",
+      "label": "Ork Rip Saw — Celestial",
+      "family": "weapon-ork_rip_saw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_rip_saw--celestial.png",
+        "sha256": "27b40dcc5b73b4a88cf2c61a1ce32598a67c5b577d3a33cc080f33d41191db56"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-ork_rip_saw--celestial.png",
+        "sha256": "39bc9ec8e6ec392836fa4662e2048619f7c53fc7d0f30bbcb825b9ae47a2e678"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-ork_rip_saw--celestial.txt",
+        "sha256": "6d01729e0528754fa87752c1843c7f311afd54908893b173d93bc25c097d5dfe"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_rip_saw.png",
+          "sha256": "c84615ce46a39d894b3d9df041db64b66f0ea1470ccd8f08b1e3c0ce2e940776"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_rip_saw--relic.png",
+          "sha256": "77bfe7eb6e402177972727e99e85aca3195a586c0e800a0a3a1d8a343c575b2e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_rip_saw--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_rip_saw--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_rip_saw--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_rip_saw--celestial.png"
+      },
+      "export_hashes": {
+        "256": "3a2401b6b888e81919b3aff9e264ef33149ee1a722d8b5aa94d0d6411663310f",
+        "128": "0504da66407fb483da172f367fa67edb91bfbcad739a88b84e6d7088e9933016",
+        "64": "9e68c5db86b56cde0f9c6c864d1557215d4070e07fb0612eb10b9687cdb5dd0b",
+        "32": "252cdbd36bfa47925716f4984c9e5bbda3026c625fb10b39469c2a8ed4ef2376"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-ork_rip_saw",
+      "outline": {
+        "solid_alpha_iou": 0.926904899691358,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 59
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
