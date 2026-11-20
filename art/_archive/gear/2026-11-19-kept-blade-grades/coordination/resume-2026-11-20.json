@@ -97,5 +97,14 @@
       "path": "art/icons/gear/weapon-whisper_smg.png",
       "sha256": "b916756013c04cb3db56a413db970873a054e1964531142606f77e5a26138765"
     }
-  ]
+  ],
+  "automation": {
+    "id": "Automation_b00bc1fec3b081918bbc97b6dc30f74c",
+    "enabled_confirmed": true,
+    "next_run_time": "2026-11-20T10:19:14+07:00",
+    "timing_mode": "exact_schedule",
+    "one_time": true,
+    "action": "actual continuous image production through new quota, not reminder",
+    "environment_selection": "inherited"
+  }
 }

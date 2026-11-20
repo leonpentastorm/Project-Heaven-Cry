@@ -2,6 +2,8 @@
 
 Run owner: `kept-grades-20261120-031914Z`, destination `art/2026-11-19-kept-blade-grades`, worktree `/workspace/PHC-art-2026-11-19`. **26 eligible drawings reserved:** Gas Mask Relic/Celestial2, then all four grades each of Parlour Pistol, Lever Carbine, Sawn-off, Coach Gun, Legion Bullpup and Whisper SMG24. Exact IDs, references and protocol: `coordination/resume-2026-11-20.json`; full prompts: `queue.json` and `prompts/`. Claim: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7027017190 . This preparation is NOT a production START;119 delivered remain119.
 
+**Timer confirmed enabled:** one-time actual-production restart20November2026 at10:19:14Asia/Saigon (03:19:14UTC). Automation details are in coordination/resume-2026-11-20.json. Another scheduled producer on this queue must not be created.
+
 ## Wait until the actual reset
 
 Own reset epoch1795144754 = **20November2026 at10:19:14 Asia/Saigon /03:19:14UTC**. No image request earlier. Check current clock and progress.image_quota first. The peer's earlier09:45:39 reset does not override this reset. Timer starts actual work, not a reminder. Work continuously until a new real quota, while claiming more eligible unowned work if this26 finishes. Stop on a new actual usage limit, preserve exact response/reset and push a handoff; never repeatedly retry a quota before reset or a moderation rejection with changed wording.
