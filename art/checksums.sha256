@@ -2616,6 +2616,9 @@ d06932a2d53ef91319eb3b845fceb19cdac32d871ed1506ea24ca56065e1f7b0  art/_archive/g
 005fc2b382ad501bd303a76da90358960294b773c9bc030bcb27790a8e3581fc  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-hellraiser_servo_fist--relic/01-quality-review/metadata.json
 452e24b5cc33a77d9f3ac19deb656580b7f06b8bb218e432193ff53ecde67a10  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-hellraiser_servo_fist--relic/01-quality-review/native.png
 1e70a1bda172bf1b72e321b7b363bd2e34493cc0b3ab6f2a538c0c46309fb0f4  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-hellraiser_servo_fist--relic/01-quality-review/prompt.txt
+3ed23b580c6fdbd1662c969ee0a1987f47f5848d7204a7081223157d822c9271  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-lowland_chopper--fine/01-quality-review/metadata.json
+0d7fc6cb8ec5a772500f289afd30f5723c1d205bbc4651959e11ddf0b8084ec3  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-lowland_chopper--fine/01-quality-review/native.png
+2f19d0220596129b6530ddcdbf7c49818fd0b9d545b7112ab5918f42cbaf22f0  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-lowland_chopper--fine/01-quality-review/prompt.txt
 f6d47f3e21b258b7ad4929c5cc9f97b415985fbd1d7a5831e6fad5dc9dc0cd62  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-throwing_knives--celestial/01-quality-review/metadata.json
 fa9b0574d0860c6ec4f1c061021928cbf0f221b3c2073eff49ea225816f5bff8  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-throwing_knives--celestial/01-quality-review/native.png
 44e3257ac1602555b61f545fd4ac6a27288771d93b7f3a6d5abf706ebe171863  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-throwing_knives--celestial/01-quality-review/prompt.txt
@@ -2668,7 +2671,7 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-58fb3c3159f41418cddf14b92ac940acc624e6f8be868e5936ab7bc179e2f4eb  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+9f1e84329a8d57f9ff176c70f7355634424934c0f59e7ba80d1d5fa25b62a1c8  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 1e2078119cbfd74a3c4537b723705411ba9532e76cf268878a21621261b015dd  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-hellraiser_rotary-32px.png
