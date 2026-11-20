@@ -927,6 +927,84 @@
         "art/icons/gear/exports/64/weapon-weighted_gloves.png": "6a371f69334481951d74a757d7f443a07d0f246a393e53d91fe16d8623fdb9ad",
         "art/icons/gear/exports/32/weapon-weighted_gloves.png": "57a1614702ef9396069438a843ad6bee66941e9738fb5fde085c261ba4ada075"
       }
+    },
+    {
+      "id": "weapon-pitch_axe",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Pitch axe",
+        "path": "art/icons/gear/weapon-pitch_axe.png",
+        "sha256": "764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-pitch_axe.png",
+          "128": "art/icons/gear/exports/128/weapon-pitch_axe.png",
+          "64": "art/icons/gear/exports/64/weapon-pitch_axe.png",
+          "32": "art/icons/gear/exports/32/weapon-pitch_axe.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 11,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-pitch_axe.png": "764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png": "22b4dc28c0c3d3f7945546bd3a752c11fcce29798618561b279ad238784a078c",
+        "art/icons/gear/exports/256/weapon-pitch_axe.png": "36bf0e1c3346941c573a704d40b227cb8a2ecc64e986bb112ab3ff2cde7dde6c",
+        "art/icons/gear/exports/128/weapon-pitch_axe.png": "b0ba9022c825dd6561de887f44d57657c79737285f637a973646d63c2c1ad137",
+        "art/icons/gear/exports/64/weapon-pitch_axe.png": "d3358de67f24d4e64f16dae82a8a1902057b7e12a3f223afcf8d0d37a6cc8536",
+        "art/icons/gear/exports/32/weapon-pitch_axe.png": "a5a6d8efaef9fedc71b569a4cd32b14e149ed120d150cdb30f7a9489cbca0ce5"
+      }
+    },
+    {
+      "id": "weapon-legion_spear",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Legion spear",
+        "path": "art/icons/gear/weapon-legion_spear.png",
+        "sha256": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-legion_spear.png",
+          "128": "art/icons/gear/exports/128/weapon-legion_spear.png",
+          "64": "art/icons/gear/exports/64/weapon-legion_spear.png",
+          "32": "art/icons/gear/exports/32/weapon-legion_spear.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 12,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/weapon-legion_spear.png": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png": "7260ce6282468891bb8a310b25d6bf0779fc218f52404ae26073317cd0226bd5",
+        "art/icons/gear/exports/256/weapon-legion_spear.png": "8de0b4059393f27aa7a67b848cadb741b2cda9610d9d352f8899f9b587ba5496",
+        "art/icons/gear/exports/128/weapon-legion_spear.png": "700e1eb4ccbce619a8a4ea201005150115ae18a22c256dcb5103e8ab17a7566c",
+        "art/icons/gear/exports/64/weapon-legion_spear.png": "ae09259aab3748974fb755346c1b71cada67af21d683899a84160be8ffd2e939",
+        "art/icons/gear/exports/32/weapon-legion_spear.png": "f9284a4f126281a167bd65eac7fac0e5f3cdd06657d7caf36b88d138bc9a7472"
+      }
     }
   ]
 }
