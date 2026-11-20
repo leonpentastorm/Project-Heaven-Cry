@@ -5699,6 +5699,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_spear--fine",
+      "path": "art/icons/gear/weapon-legion_spear--fine.png",
+      "sha256": "a9b30c3f4852e20cde6fca0ddef63dc8c3ebb0ee39af36feec0cd8275fa93b71",
+      "label": "Legion Spear — Fine",
+      "family": "weapon-legion_spear",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_spear--fine.png",
+        "sha256": "dcbb4ce749011204f63aa1c5dfd0eba807dd5707628dd51c1a13be11ad8b823e"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_spear--fine.png",
+        "sha256": "a9b30c3f4852e20cde6fca0ddef63dc8c3ebb0ee39af36feec0cd8275fa93b71"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_spear--fine.txt",
+        "sha256": "302c1d229aa0a29dd23634f878c915a5545b843714fb6e9fa72d6012151927d3"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_spear.png",
+          "sha256": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png",
+          "sha256": "7260ce6282468891bb8a310b25d6bf0779fc218f52404ae26073317cd0226bd5"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_spear--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_spear--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_spear--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_spear--fine.png"
+      },
+      "export_hashes": {
+        "256": "67ecb81258f027728b3308b0abc0d0009cc075d63ae7dbc0ae908079eccffe3e",
+        "128": "ba44695d12b646ef732940d16832eb5f9179e42e8bf39741b21ff3f327bc0955",
+        "64": "b68abb928015a39496887cf43079324453f01c606c6288291c3556aab728b08a",
+        "32": "4e36c8e819e076316deb913fb1087cdd1e4d8ec96dfbd79284f092c957a530aa"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-legion_spear",
+      "outline": {
+        "solid_alpha_iou": 0.9011396865861888,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
