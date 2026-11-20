@@ -10754,6 +10754,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-jump_boots--masterwork",
+      "path": "art/icons/gear/armour-jump_boots--masterwork.png",
+      "sha256": "81b13bebdb00bb12f5bfd733fac172382b65c54f8f72508efcd2eccfd83f5d94",
+      "label": "Jump boots — Masterwork",
+      "family": "armour-jump_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--masterwork.png",
+        "sha256": "63c9a3eff911abe1002d6cd531388373a9d344bb47df3a4e5b0f78396c95cf1f"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-jump_boots--masterwork.png",
+        "sha256": "81b13bebdb00bb12f5bfd733fac172382b65c54f8f72508efcd2eccfd83f5d94"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-jump_boots--masterwork.txt",
+        "sha256": "9034a02aa2e4d6e4a3f79a0b38d8939ebcf2379fb5f754b18a0bd40295977c23"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-jump_boots.png",
+          "sha256": "a7fecba2c9d8dd2c3b03bf96e33358197a3737b6d93bae98b0b32a520213c6cb"
+        },
+        {
+          "path": "art/icons/gear/armour-jump_boots--fine.png",
+          "sha256": "21bd97b78647cce8ab697213d2e4c80afc7e2cc5887689276b4a64d7da78834e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-jump_boots--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-jump_boots--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-jump_boots--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-jump_boots--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "5ae8e0d0305ecf7630c4f2fdd3f00f7148597c4a48150dd47bc686160c452b0d",
+        "128": "dd735272ede66a6b3e6a84d55ba537f118d173f9a9953f717346e2475ce448df",
+        "64": "3e56425f6948e809ebdd834a2ee34bdea6cad63bef14af46fdf8cfff3dca2c26",
+        "32": "986e014165e53468436d40edb5ce594b57d434a969bcd4035f89e4802ca6c47b"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-jump_boots",
+      "outline": {
+        "solid_alpha_iou": 0.984739874735164,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 18
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
