@@ -1,6 +1,6 @@
 {
   "branch": "art/2026-11-20-reset-continuation",
-  "status": "drawing",
+  "status": "all-pending-service-blocked-or-dependent",
   "partial_grade_claim": true,
   "standards": [
     "armour-ballistic_helmet",
@@ -289,5 +289,8 @@
   ],
   "sole_artist_run": "sole-20261120-1615",
   "ownership_authority": "Leon explicitly appointed this worker sole artist, directed peer integration and continued production",
-  "takeover_comment": 7044430497
+  "takeover_comment": 7044430497,
+  "active_rendering": false,
+  "current_run": "sole-20261120-1615",
+  "next_eligible_lane": "RunningScript component plan; alternate editing-method instruction pending"
 }

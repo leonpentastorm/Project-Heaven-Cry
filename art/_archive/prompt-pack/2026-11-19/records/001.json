@@ -1,0 +1,61 @@
+{
+  "file": "01",
+  "source": "01-today-and-gaps.md",
+  "line": 67,
+  "title": "`banner-approach`: APPROACH banner mark",
+  "path": "art/icons/banners/fight-approach.png",
+  "notes": "- **Mode:** White-ink sign, 1024 x 1024 PNG, transparent.\n- **Save as:** `art/icons/banners/fight-approach.png`.\n- **Shows:** the fight's first big banner while no foe has seen the squad (sub-line \"Unseen · moving is free\"); drawn as a mask in the stripe colour, beside `banner-fight-start`, `-won`, `-lost` and `-field`.",
+  "paint": "A sign for APPROACH, the quiet minute before contact when nobody has seen the squad yet. One flat white boot print, toe pointing up and to the right, set low in front of three horizontal bands of fog that thin out to the right: the first band solid, the second broken into long dashes, the third only a few scattered dots. A little clear space between the print and the first band. The meaning is stealth before contact, a step into the unseen. At icon size it must read as one print leading into dissolving bars. It must look different from the start mark, the won mark, the lost mark and the free-roam mark: no ring, no pair of crossing prints, no looping arrow, no flag, no burst, no crosshair. Avoid: a magnifying glass, an eye, a ? glyph, a ghost, a compass, wavy cloud outlines, any text.",
+  "status": "review-candidate",
+  "n": 1,
+  "kind": "sign",
+  "label": "APPROACH banner mark",
+  "sha256": "e2862ca4afdcc937b8b4ac0a2d16daf28cf9d9b9ddad7e99685d3ba743824901",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "sign",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/001-fight-approach.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/banners/exports/256/fight-approach.png",
+    "128": "art/icons/banners/exports/128/fight-approach.png",
+    "64": "art/icons/banners/exports/64/fight-approach.png",
+    "48": "art/icons/banners/exports/48/fight-approach.png",
+    "44": "art/icons/banners/exports/44/fight-approach.png",
+    "32": "art/icons/banners/exports/32/fight-approach.png",
+    "24": "art/icons/banners/exports/24/fight-approach.png",
+    "16": "art/icons/banners/exports/16/fight-approach.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:67",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a scene: Wick does not appear; a small generic faceless silhouette may. One subject, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 16 px in a tile corner or beside a word and at 48 px on a banner: silhouette first, two interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nA sign for APPROACH, the quiet minute before contact when nobody has seen the squad yet. One flat white boot print, toe pointing up and to the right, set low in front of three horizontal bands of fog that thin out to the right: the first band solid, the second broken into long dashes, the third only a few scattered dots. A little clear space between the print and the first band. The meaning is stealth before contact, a step into the unseen. At icon size it must read as one print leading into dissolving bars. It must look different from the start mark, the won mark, the lost mark and the free-roam mark: no ring, no pair of crossing prints, no looping arrow, no flag, no burst, no crosshair. Avoid: a magnifying glass, an eye, a ? glyph, a ghost, a compass, wavy cloud outlines, any text.\nOne crisp standalone symbol with generous transparent margin. No Wick. Use only the requested components.\n\nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/banners/fight-start.png",
+    "art/icons/banners/fight-won.png",
+    "art/icons/banners/fight-lost.png",
+    "art/icons/banners/fight-field.png",
+    "art/icons/boons/edge.png"
+  ],
+  "family": "interface_icons",
+  "id": "banner-fight-approach",
+  "source_sha256": "8b1b2c5d3cc564cfaadb5eb38bbfe4935f8f2c9ad71a78c138973727db01790c",
+  "export_sha256": {
+    "256": "213415f1e1156e274cc3f4862e6a7f77176c84ef714f19037bcc204812efd314",
+    "128": "deff8e4880a50c66a1839d86df9610a5e39e82144cd0bcb14fc432004bcb1c42",
+    "64": "c399a09ac366d214dccd132d95ee645866d35bdd642d28ebc0d1b6cabf33c27c",
+    "48": "d701a725dda7592bc8d834c181fa851f8c302f3153ba1ab1269fd0d3698d0f10",
+    "44": "4289609022092ade1b61c8e3fdf3b940163fd2159b90984688ec02ae575b52e7",
+    "32": "8927d4f01a0e7fd9c1926f319b4127594809b03a21013120266a5d2e92cedafc",
+    "24": "ac03532d090961530f6b1333a664867e95f52573e5dae6fbf73682b9d9fb12fe",
+    "16": "d44b26dea554ec4c8f21ee021815e2a21e813505a0e0264891c279f373b92797"
+  }
+}

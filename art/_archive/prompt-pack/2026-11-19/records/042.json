@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 75,
+  "title": "5. `untouchable`: Untouchable",
+  "path": "art/icons/perks/untouchable.png",
+  "notes": "- **Save as:** `art/icons/perks/untouchable.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card\n- **At icon size it must read as:** a blow going through empty air where Wick was.",
+  "paint": "Wick sidestepped to the right edge of the frame in a light leaning crouch, capelet flying, no armour on his chest. His previous place on the left is shown only as an empty cut-out of his own outline made of a few small gaps (an after-image of dashes, not a second figure). A single diagonal slash line passes straight through that empty outline and carries on, touching nothing.\nAvoid: a ghost or transparent double figure, a shield or armour piece, motion-blur smears, a trail of footprints, cartoon dust clouds.",
+  "status": "review-candidate",
+  "n": 42,
+  "kind": "wick",
+  "label": "Untouchable",
+  "sha256": "d30e604e9f11680d507ec6fa119be20e4c47bca3200dc2b7c70fa41315d72c9a",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/042-untouchable.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/untouchable.png",
+    "128": "art/icons/perks/exports/128/untouchable.png",
+    "64": "art/icons/perks/exports/64/untouchable.png",
+    "56": "art/icons/perks/exports/56/untouchable.png",
+    "48": "art/icons/perks/exports/48/untouchable.png",
+    "44": "art/icons/perks/exports/44/untouchable.png",
+    "40": "art/icons/perks/exports/40/untouchable.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:75",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick sidestepped to the right edge of the frame in a light leaning crouch, capelet flying, no armour on his chest. His previous place on the left is shown only as an empty cut-out of his own outline made of a few small gaps (an after-image of dashes, not a second figure). A single diagonal slash line passes straight through that empty outline and carries on, touching nothing.\nAvoid: a ghost or transparent double figure, a shield or armour piece, motion-blur smears, a trail of footprints, cartoon dust clouds.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perk_candidates",
+  "id": "untouchable",
+  "source_sha256": "410f85ed682b61fa6695983640dbf40d00ed2595c4638ab821a4cc59089ea0fb",
+  "export_sha256": {
+    "256": "94aa74a9b2ff04c94226d7d769926beeab4eeb515f35e71104a6b42ea5892646",
+    "128": "724713703d2fff46567e3f731da18f3c4177d4b8c46d26a942c8b8ef7927bbba",
+    "64": "9c747306df6ddae85f141ed1a0ce2860f266129f4e04bc7c241ced2d943d90d3",
+    "56": "01c9296c981763316f753bef6b62dec33d7c919dd698034d76d2e1990eea0f49",
+    "48": "cd3a53a1ff5e0a20a758d5f93abd0af422302c4b74136a478e79fb5d885e77af",
+    "44": "499e808d92e8ad06eed35d0a6b7ed1fc5fc490f7556ee614f4c3b7810a0aaf52",
+    "40": "f8d1006a9ca8316b17eeb149718a5192a86a1aeac096ef14c5b670281599aaf0"
+  }
+}

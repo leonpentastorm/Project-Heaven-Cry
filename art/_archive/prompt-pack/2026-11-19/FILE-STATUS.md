@@ -1,3 +1,7 @@
+# Current sole-artist checkpoint
+
+Current sole artist511/871: all92 earlier missing deliveries now integrated with exact sources/metadata; imported work adds0. New sole deliveries ReturnClause,GrudgePlate,RimCorner are pushed. RunningScript alone remains eligible, generated rune ready pending explicit alternate-method instruction; all other pending jobs blocked/dependent/held. No actual new imagequota. Exact remaining IDs: REMAINING-WORK.json.
+
 > Current kept-grades20Nov: armour56/powered/thrown24/Lumeri8 complete, own210selected (91new). Next12 repaint-based gun-grade reservation7033714996, exact272-ID queue. Prior50 service-blocked/dependent retained without retry; no actual new quota. Three already-integrated Standards are unchanged and excluded from new counts.
 
 > Current kept-grades20Nov: armour56 and powered/thrown24 complete, own201selected (82new). Next16 Lumeri/Whisper reservation7033232334, exact260-ID queue. Prior43 service-blocked/dependent retained without retry; no actual new quota. Four further existing Standard imports are unchanged and excluded from new counts.

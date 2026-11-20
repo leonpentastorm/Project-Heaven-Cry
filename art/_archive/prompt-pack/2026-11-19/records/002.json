@@ -1,0 +1,61 @@
+{
+  "file": "01",
+  "source": "01-today-and-gaps.md",
+  "line": 77,
+  "title": "`banner-level-up`: LEVEL UP banner mark",
+  "path": "art/icons/banners/level-up.png",
+  "notes": "- **Mode:** White-ink sign, 1024 x 1024 PNG, transparent.\n- **Save as:** `art/icons/banners/level-up.png`.\n- **Shows:** a new banner shown to the whole room when a character levels (today only a log line and the words LEVEL UP).",
+  "paint": "A sign for LEVEL UP, a character growing. A short stair of three solid steps rising to the right, a small faceless generic silhouette standing on the top step with one foot lifted to go higher, and above it a nested pair of upward chevrons with three short rays fanning out over the top. Everything solid white, bold, with a little clear space between the stair, the silhouette and the chevrons. The meaning is growth, not victory: rising, not winning. At icon size the stair and the upward chevrons carry it; the silhouette may fall to a dot. It must differ from the won mark (no wreath, no flag, no raised arms). Avoid: a star, a crown, a trophy, a medal, a laurel, a plus sign, an up arrow with text, a number, any letters, a cartoon thumbs-up.",
+  "status": "review-candidate",
+  "n": 2,
+  "kind": "sign",
+  "label": "LEVEL UP banner mark",
+  "sha256": "713b527bb83b479723b5ab459ce2726764e14f9cf58894ecf0c2e4350ba58087",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "sign",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/002-level-up.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/banners/exports/256/level-up.png",
+    "128": "art/icons/banners/exports/128/level-up.png",
+    "64": "art/icons/banners/exports/64/level-up.png",
+    "48": "art/icons/banners/exports/48/level-up.png",
+    "44": "art/icons/banners/exports/44/level-up.png",
+    "32": "art/icons/banners/exports/32/level-up.png",
+    "24": "art/icons/banners/exports/24/level-up.png",
+    "16": "art/icons/banners/exports/16/level-up.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:77",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a scene: Wick does not appear; a small generic faceless silhouette may. One subject, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 16 px in a tile corner or beside a word and at 48 px on a banner: silhouette first, two interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nA sign for LEVEL UP, a character growing. A short stair of three solid steps rising to the right, a small faceless generic silhouette standing on the top step with one foot lifted to go higher, and above it a nested pair of upward chevrons with three short rays fanning out over the top. Everything solid white, bold, with a little clear space between the stair, the silhouette and the chevrons. The meaning is growth, not victory: rising, not winning. At icon size the stair and the upward chevrons carry it; the silhouette may fall to a dot. It must differ from the won mark (no wreath, no flag, no raised arms). Avoid: a star, a crown, a trophy, a medal, a laurel, a plus sign, an up arrow with text, a number, any letters, a cartoon thumbs-up.\nOne crisp standalone symbol with generous transparent margin. No Wick. Use only the requested components.\n\nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/banners/fight-start.png",
+    "art/icons/banners/fight-won.png",
+    "art/icons/banners/fight-lost.png",
+    "art/icons/banners/fight-field.png",
+    "art/icons/boons/edge.png"
+  ],
+  "family": "interface_icons",
+  "id": "banner-level-up",
+  "source_sha256": "589b79858daac86a32585c03e930ccf1d30728c968c98a7a56311867f170c8a4",
+  "export_sha256": {
+    "256": "20c209b1a3593f3b14093212dd46c2b1690b7906242872408902fe9745f919b9",
+    "128": "2244249504bfb4aaf2a5fcc811a60d64f1481f5c7a95a995bf13d1945839fcd6",
+    "64": "7f29b8fc87751ef18e78a928ae02faa9cb7a002a2c83537d9cc2f65fcc16463d",
+    "48": "e2bca28fc3c4b1bf7a561b0292d89cd28489b9bef3c68400e3c7c4f630a3b599",
+    "44": "358a0b382f2039355a8aebb2234fd9b7c3780555d1c36523273c78445eddd7a2",
+    "32": "2bc782903b67acd80fed3640aef62917a382c973c6274d0d0757a7fc08ddc36a",
+    "24": "174188228d8462eedf4a9db66da16aa9714ba23920e95e82e1869910b9b28d21",
+    "16": "6238f06893234c4beceb502671d299863eda0fac43997080330c45fa5a44c996"
+  }
+}

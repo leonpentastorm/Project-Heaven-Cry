@@ -1,0 +1,42 @@
+{
+  "n": 19,
+  "id": "red_thread_gloves",
+  "title": "Red Thread (worn gloves)",
+  "path": "art/icons/gear/armour-red_thread_gloves.png",
+  "refs": [
+    "art/icons/gear/armour-work_gloves.png",
+    "art/icons/gear/armour-combat_gloves.png",
+    "art/icons/armour/work_gloves.svg"
+  ],
+  "paint": "A unique pair of fitted field gloves, shown side by side as one object, front view, no hands inside: supple dark leather with light padding at the knuckles, neat stitching, short cuffs. The impossible material: one red thread #D879AF that has no end: it runs out of the right glove's index fingertip, loops once across the gap between the pair, and goes into the left glove's cuff, where it is stitched into the seam and comes out again at its fingertip, a single unbroken loop binding the two. The story detail: a small empty thread spool clipped at the right cuff, polished by use. Warm, tidy, fond.\nAvoid: hearts, a knot shaped like a heart, hands or skin, a loose thread end, a glow, any lettering.",
+  "span": 0.85,
+  "dependency": null,
+  "label": "Red Thread (worn gloves)",
+  "sha256": "7ad75afd0c8a3b2f2eae1b72a71ce56adb7a36b8a9ab330effc6d73665e01310",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/armour-red_thread_gloves.png",
+    "128": "art/icons/gear/exports/128/armour-red_thread_gloves.png",
+    "64": "art/icons/gear/exports/64/armour-red_thread_gloves.png",
+    "32": "art/icons/gear/exports/32/armour-red_thread_gloves.png"
+  },
+  "collection": "prompt-pack-2026-11-19-file-08-uniques",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/native/19-armour-red_thread_gloves.png",
+  "source_sha256": "b23d882950cfb6a2917a444b45d3bcd7c828cb0968763e52da718c2e1bf4992a",
+  "export_sha256": {
+    "256": "fc3b73851a6ab85c2d821cdc30e8476c8b0e11fdbed514441110871799c2064b",
+    "128": "425fef04e69c02c2fb49902352a5a260de92ceb83e971bbd5dd0f2950455c4ef",
+    "64": "1fad1f0d61f654597eb967381517d43c1214dd8b071deb3e1bf893ce72d92bfa",
+    "32": "b87aacb86cfd4d1048bd138844f5d51072e738788e044933d5d7c1555383f51c"
+  },
+  "generator_prompt": "One local surface edit to this fictional inventory art, preserving the glove shapes. Keep the two diagonal pink threads crossing between the cuffs and fingers. The two finger-end pink stitch groups are presently on the tallest fingers. Move each pink attachment onto the shorter inner finger immediately next to the glove's small inward-facing thumb, closer to the center gap. Remove the original pink stitches from the two tall middle fingers. Keep both cuff attachments and the little spool right where they are. Only the short top segments of the red thread move with their new stitched attachment points. Empty leather gloves, neutral hand-painted RPG icon, transparent background and clear margins."
+}

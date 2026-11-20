@@ -1,0 +1,60 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 45,
+  "title": "`stand_still`: Stand Still",
+  "path": "art/icons/perks/stand-still.png",
+  "notes": "- **Save as:** `art/icons/perks/stand-still.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** a planted, motionless figure with motion lines streaming past.",
+  "paint": "Wick standing bolt upright, feet planted shoulder-width, arms hanging loose at his sides, head level, screen face calm. Streaming past him from left to right, parallel to the ground, are three long tapered white speed lines that bend around his silhouette without touching it, leaving a clean gap of empty space hugging his body. Two small short ticks at his feet mark that he is rooted. Strong vertical figure against horizontal streaks.",
+  "status": "review-candidate",
+  "n": 72,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "previousPaint": "Wick standing bolt upright, feet planted shoulder-width, arms hanging loose at his sides, flame head level and calm. Streaming past him from left to right, parallel to the ground, are three long tapered white speed lines that bend around his silhouette without touching it, leaving a clean gap of empty space hugging his body. Two small short ticks at his feet mark that he is rooted. Strong vertical figure against horizontal streaks.",
+  "staging": "Stand perfectly upright, planted and unbending. Three narrow continuous horizontal streaks curve around the silhouette with a visible gap. Distinct from Unflinching's short deflected strikes and chest chevron.",
+  "label": "Stand Still",
+  "sha256": "8ad4c384023dde4ed6ae005fc04f812dfc8a70e70b09a403748b124d1e0aa039",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/072-stand-still.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/stand-still.png",
+    "128": "art/icons/perks/exports/128/stand-still.png",
+    "64": "art/icons/perks/exports/64/stand-still.png",
+    "56": "art/icons/perks/exports/56/stand-still.png",
+    "48": "art/icons/perks/exports/48/stand-still.png",
+    "44": "art/icons/perks/exports/44/stand-still.png",
+    "40": "art/icons/perks/exports/40/stand-still.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:45",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick standing bolt upright, feet planted shoulder-width, arms hanging loose at his sides, head level, screen face calm. Streaming past him from left to right, parallel to the ground, are three long tapered white speed lines that bend around his silhouette without touching it, leaving a clean gap of empty space hugging his body. Two small short ticks at his feet mark that he is rooted. Strong vertical figure against horizontal streaks.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\nStand perfectly upright, planted and unbending. Three narrow continuous horizontal streaks curve around the silhouette with a visible gap. Distinct from Unflinching's short deflected strikes and chest chevron. \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "stand-still",
+  "source_sha256": "e4b00620ab5fef91c85f9fd8d0f4acb8b4213533dbe11b31933281b771cfe4f8",
+  "export_sha256": {
+    "256": "7f0c77c76a3dfb80f3615c97bd8019b75f7a0dfac320839c522e537d92300217",
+    "128": "92effcfb68f6072ea091e257ec25b8d98f4920c0fbcbeab70f5635f43bfbd395",
+    "64": "8a04f3be0d18259fbb738a4ca6b1ffa0538a7588eabee5af4c45a341e29cd458",
+    "56": "d331c3e119bcd43fbedb38f82b89f00a5782ff4c389052778821167e5d87b311",
+    "48": "c282867201f796a6ad4c510bd8b82dcf33f1ad216842b7f3bee7ba5324e06df7",
+    "44": "e3b9c6ff967348b6ebd252150ee4a86014d66b7ed92294b9fd1a2d1e0f537ae9",
+    "40": "b228e41cc0ab8c3624f2420f1d5b235b36bfef9db3f88cfdd5a16a3e46d61328"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 87,
+  "title": "6. `shoot_first`: Shoot First",
+  "path": "art/icons/perks/shoot-first.png",
+  "notes": "- **Save as:** `art/icons/perks/shoot-first.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card\n- **At icon size it must read as:** one figure already firing while the others have not started.",
+  "paint": "Wick at full extension with an invented compact pistol (a plain angular silhouette, no real model) thrust out in one hand, a short sharp muzzle-flash star already flaring at its tip; behind him at the left edge, two partial silhouettes (a shoulder and a hand each) are only just reaching toward their own holsters, their hands open and empty. The gap in time is the picture: Wick's arm is straight, theirs are still bent.\nAvoid: a real gun make, a gunslinger hat or duel stance, smoke clouds, a clock or stopwatch, a bullet in flight drawn as a long streak.",
+  "status": "review-candidate",
+  "n": 43,
+  "kind": "wick",
+  "label": "Shoot First",
+  "sha256": "26e8f83ad9600c1254aae639fddc84a91f4ef32406e6a0a1b52366f03298cc9c",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/043-shoot-first.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/shoot-first.png",
+    "128": "art/icons/perks/exports/128/shoot-first.png",
+    "64": "art/icons/perks/exports/64/shoot-first.png",
+    "56": "art/icons/perks/exports/56/shoot-first.png",
+    "48": "art/icons/perks/exports/48/shoot-first.png",
+    "44": "art/icons/perks/exports/44/shoot-first.png",
+    "40": "art/icons/perks/exports/40/shoot-first.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:87",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick at full extension with an invented compact pistol (a plain angular silhouette, no real model) thrust out in one hand, a short sharp muzzle-flash star already flaring at its tip; behind him at the left edge, two partial silhouettes (a shoulder and a hand each) are only just reaching toward their own holsters, their hands open and empty. The gap in time is the picture: Wick's arm is straight, theirs are still bent.\nAvoid: a real gun make, a gunslinger hat or duel stance, smoke clouds, a clock or stopwatch, a bullet in flight drawn as a long streak.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perk_candidates",
+  "id": "shoot-first",
+  "source_sha256": "6176534c8e53ec3e044b40b66f55ba733487904a37944e10a396a7b63d078446",
+  "export_sha256": {
+    "256": "e85a627cfcf3eb80ccdba27afc9e4cad9f6822367afe866a505119c41e4636fd",
+    "128": "38ac87ba2bdd11d84df42680236f49cbea7dd2c027ed88976a1f100965c42fe2",
+    "64": "b31f834b330522ce63df85d27f032a5396108197fe9866ad31b449a9ff136345",
+    "56": "1720dbc5104c93ffa80b09b67f4a67d5e09614db0c71364c5d1c39285b622f41",
+    "48": "0b1594e05a8969dd9d7953819861333b8a0718c9a06cfd300e5a437092f59915",
+    "44": "6e813fa01313642d75f2a9e14a6815b412162543418e7a4bed18dfb641b6cb61",
+    "40": "277c4870dc5a240b79b2d083b4dfeaead2f4b6ddd2bb2d838f6ffeb82d431661"
+  }
+}

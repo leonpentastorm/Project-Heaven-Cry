@@ -1,0 +1,60 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 165,
+  "title": "Darkened (condition)",
+  "path": "art/icons/conditions/darkened.png",
+  "notes": "- **Id:** `darkened`. **Save as:** `art/icons/conditions/darkened.png`. **Mode:** white-ink sign (use the sign base prompt, not the Wick one). **Shows:** the status strip and the token's chip: darkness gathers round a unit, and foes see it only from close by. It must read apart from `conditions/blinded.png` (attached as the contrast: Blinded is the bearer's own eye struck out; Darkened is the bearer hidden from an eye looking at it).",
+  "paint": "The icon shows: on the left, one open almond-shaped eye with a clear circular pupil, looking right; its gaze drawn as a cone of two straight lines running out toward the right and stopping abruptly at a thick solid bar across the cone's end. On the right, beyond the bar and out of the cone's reach, one small solid round dot (the unit) sitting inside a ring of short, thin, evenly spaced white dashes gathered round the dot, with gaps of empty transparency between them. The eye looks, the bar stops its gaze, the dot stays unseen. The eye, the bar and the dot beyond it are what to read at 24 px. Avoid: a crossed-out eye, a closed eye with lashes, a moon, a lightbulb with a slash, a filled solid disc, a figure with a face.",
+  "status": "review-candidate",
+  "n": 69,
+  "kind": "sign",
+  "refs": [
+    "art/icons/conditions/blinded.png",
+    "art/icons/conditions/bleeding.png",
+    "art/icons/conditions/braced.png"
+  ],
+  "previousPaint": "The icon shows: on the left, one open almond-shaped eye with a clear circular pupil, looking right; its gaze drawn as a cone of two straight lines running out toward the right and stopping abruptly at a thick solid bar across the cone's end. On the right, beyond the bar and out of the cone's reach, one small solid round dot (the unit) sitting inside a soft ring of short dark dashes, the darkness gathered round it. The eye looks, the bar stops its gaze, the dot stays unseen. The eye, the bar and the dot beyond it are what to read at 24 px. Avoid: a crossed-out eye, a closed eye with lashes, a moon, a lightbulb with a slash, a full black circle (that is Blinded), a figure with a face.",
+  "label": "Darkened (condition)",
+  "sha256": "15f67c5d282cdb947a3b0ae6e6ba947a54716df11b4283b10aa84f12e77c5ca0",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "sign",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/069-darkened.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/conditions/exports/256/darkened.png",
+    "128": "art/icons/conditions/exports/128/darkened.png",
+    "64": "art/icons/conditions/exports/64/darkened.png",
+    "48": "art/icons/conditions/exports/48/darkened.png",
+    "44": "art/icons/conditions/exports/44/darkened.png",
+    "32": "art/icons/conditions/exports/32/darkened.png",
+    "24": "art/icons/conditions/exports/24/darkened.png",
+    "16": "art/icons/conditions/exports/16/darkened.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:165",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons (bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight). No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. This icon is a sign, not a scene: Wick does not appear. One subject, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 24 px beside a word on a token and at 48 px on a card: silhouette first, two interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nThe icon shows: on the left, one open almond-shaped eye with a clear circular pupil, looking right; its gaze drawn as a cone of two straight lines running out toward the right and stopping abruptly at a thick solid bar across the cone's end. On the right, beyond the bar and out of the cone's reach, one small solid round dot (the unit) sitting inside a ring of short, thin, evenly spaced white dashes gathered round the dot, with gaps of empty transparency between them. The eye looks, the bar stops its gaze, the dot stays unseen. The eye, the bar and the dot beyond it are what to read at 24 px. Avoid: a crossed-out eye, a closed eye with lashes, a moon, a lightbulb with a slash, a filled solid disc, a figure with a face.\nOne crisp standalone symbol with generous transparent margin. No Wick. Use only the requested components.\nOnly the eye, barred cone and dot ring. Every dash and dot is white on transparent, with broad true-transparent gaps and no lash, colored accent or shadow. \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "condition_icons",
+  "id": "cond-darkened",
+  "source_sha256": "96fa0bd36f65da2c3995b1a99c3c4f6a851b78f0d1874311c3e6a356a1eb790c",
+  "export_sha256": {
+    "256": "22d27bf0d16d800889e2bd78dfc91c1f4eab0febade91beb7aa4da8659a6c1ed",
+    "128": "f62ba7aaa152c9819ce5c80642e11b2d06dade06e355899dac76805c1fccecda",
+    "64": "d2f429a0b2d68c26c9c477d7ddc0502bcfb4ae6f342dd1fe2c37cdc33bcbdec7",
+    "48": "e999cce682b1148f5e3c0b0a170fdf9e58e3d7a244ca6d5e7e3dbe5815a8b61e",
+    "44": "4bad3a115f7489c362bd3fffd3cfa5db8bbb24fa339f4a861cb2f7109ce644c2",
+    "32": "137da45a79d8dcd84601012e7179200cab7f19293944e072b260a45b513413c3",
+    "24": "2c9f23d6df9018f97a481d01904bc33d742b569b410456e82b69e10316acfe23",
+    "16": "dac41c5e89746dc8b981bbb27170738dbd5b058b2ee2fec5feae044ccb7abe61"
+  }
+}

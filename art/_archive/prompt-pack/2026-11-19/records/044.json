@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 99,
+  "title": "7. `cut_in`: Cut In",
+  "path": "art/icons/perks/cut-in.png",
+  "notes": "- **Save as:** `art/icons/perks/cut-in.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card\n- **At icon size it must read as:** Wick's body stepping between two things that were about to meet.",
+  "paint": "Wick darting in sideways between a partial speaker on the left (an open hand and a shoulder, mid-gesture) and a partial raised blade on the right (a fist and the first third of a short sword, mid-swing), one foot planted in the narrow gap and one arm flung out flat across it like a bar. The two partial figures' gesture lines both stop short at his arms. Wick is the only full figure.\nAvoid: a speech bubble or text, a referee's whistle or hand signal, a full second fighter, a clock, a crowd.",
+  "status": "review-candidate",
+  "n": 44,
+  "kind": "wick",
+  "label": "Cut In",
+  "sha256": "0570ff79ffea9d9fbfbaa27508e74dda524583af8b430d0c2dc9d18a50d2eed8",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/044-cut-in.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/cut-in.png",
+    "128": "art/icons/perks/exports/128/cut-in.png",
+    "64": "art/icons/perks/exports/64/cut-in.png",
+    "56": "art/icons/perks/exports/56/cut-in.png",
+    "48": "art/icons/perks/exports/48/cut-in.png",
+    "44": "art/icons/perks/exports/44/cut-in.png",
+    "40": "art/icons/perks/exports/40/cut-in.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:99",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick darting in sideways between a partial speaker on the left (an open hand and a shoulder, mid-gesture) and a partial raised blade on the right (a fist and the first third of a short sword, mid-swing), one foot planted in the narrow gap and one arm flung out flat across it like a bar. The two partial figures' gesture lines both stop short at his arms. Wick is the only full figure.\nAvoid: a speech bubble or text, a referee's whistle or hand signal, a full second fighter, a clock, a crowd.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perk_candidates",
+  "id": "cut-in",
+  "source_sha256": "e621f74c1e4c1a0e34fdbf6d39f883778e3e1c3039718addec3f6f1f02cdb4b8",
+  "export_sha256": {
+    "256": "fff083375a8482b1242fdd08f3af2f27aae5a8229eb52f155d6b82c287e9e628",
+    "128": "ef4861d2fec0d63a6ec88c41a1cb4630bc81eeb7b0f6929ab0419417e26e9a3b",
+    "64": "c0fd8c4c590c4d33b1bf1deb77d0fef98a99f0a32ab877b929e375fb6e10a7b1",
+    "56": "021fc2ef2fdbc698a0305bb72a828f2810243227e13ffb6e3b1cd08953ae7256",
+    "48": "504598625ff8a43ba2b0ac6a674ac9e859cffe47799abc433a5fb97b0fcd06a2",
+    "44": "55ae58440e31268f5746da3fed030f39af7b8c61b90dcc830750ddc89cfdcfa8",
+    "40": "3960a503d0207789f70d6fdb9c52b7c4b96f739cf7a0887e9e8b87db3b33c5a4"
+  }
+}

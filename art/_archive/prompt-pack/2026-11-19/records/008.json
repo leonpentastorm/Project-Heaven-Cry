@@ -1,0 +1,52 @@
+{
+  "file": "01",
+  "source": "01-today-and-gaps.md",
+  "line": 147,
+  "title": "`mod_afterword`: Afterword's edge (mod)",
+  "path": "art/icons/gear/mod-afterword.png",
+  "notes": "- **Mode:** Gear painting, 1024 x 1024 PNG, transparent.\n- **Save as:** `art/icons/gear/mod-afterword.png`; match the painting `art/icons/gear/weapon-afterword.png` (hammered bronze-brown blade, brass rings, rust-red stitched leather).\n- **Shows:** Backpack, Forge. A fitted edge for the reversed-grip knife.",
+  "paint": "Subject: a fitted knife edge, Afterword's edge (a hand-sized part). Silhouette feature: a slim detachable edge plate the length of a hand, shaped like a leaf blade with a straight back, a single small stepped notch cut into its spine near the base, and two round brass rivets in a short brass clamp collar at its base, so it clips over a knife's own edge. Laid at a slight diagonal, point to the lower left, as the knife is. Materials and accent: hammered dark bronze-brown steel with a pale honed cutting edge, brass collar; the one accent is the same rust-red stitched leather as on Afterword, a small tab between the two rivets and nowhere else. At 32 px: a bronze leaf blade with a rust-red tab. Against Afterword itself: no handle, no wrap, no pommel; it is the blade part only. Avoid: a full knife, a sword, a real brand mark, a blood drop (bleeding is shown by words).",
+  "status": "review-candidate",
+  "n": 8,
+  "kind": "gear",
+  "label": "Afterword's edge (mod)",
+  "sha256": "c3ef7f845d32dd536da258281002c84ece826653adb145412f03870d9a5239ea",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "gear",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/008-mod-afterword.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/mod-afterword.png",
+    "128": "art/icons/gear/exports/128/mod-afterword.png",
+    "64": "art/icons/gear/exports/64/mod-afterword.png",
+    "32": "art/icons/gear/exports/32/mod-afterword.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/01-today-and-gaps.md:147",
+  "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, three-quarter view, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills about 80% of the canvas (at least 50 px of clear margin on every side). No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. Everything is invented: never a recognisable real-world make, model or emblem. The silhouette is bold and readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal in charcoal, steel grey and warm ivory highlights; one accent colour only, given below. No coloured rarity border (the UI adds it). Standard finish with honest wear. The object:\nSubject: a fitted knife edge, Afterword's edge (a hand-sized part). Silhouette feature: a slim detachable edge plate the length of a hand, shaped like a leaf blade with a straight back, a single small stepped notch cut into its spine near the base, and two round brass rivets in a short brass clamp collar at its base, so it clips over a knife's own edge. Laid at a slight diagonal, point to the lower left, as the knife is. Materials and accent: hammered dark bronze-brown steel with a pale honed cutting edge, brass collar; the one accent is the same rust-red stitched leather as on Afterword, a small tab between the two rivets and nowhere else. At 32 px: a bronze leaf blade with a rust-red tab. Against Afterword itself: no handle, no wrap, no pommel; it is the blade part only. Avoid: a full knife, a sword, a real brand mark, a blood drop (bleeding is shown by words).",
+  "refs": [
+    "art/icons/gear/mod-foregrip.png",
+    "art/icons/gear/mod-bayonet.png",
+    "art/icons/gear/mod-compensator.png",
+    "art/portraits/world/new-faces/orren-vask.png",
+    "art/icons/gear/weapon-afterword.png"
+  ],
+  "family": "gear",
+  "id": "mod-afterword",
+  "source_sha256": "5ef02f4600515f3bca7e47154c49f075049adb42cf796072039230f7333cd431",
+  "export_sha256": {
+    "256": "f984e278bde8cd8d4d9ed7e3a9c4189cbe14dbc21bac223c53bf8bd4271defba",
+    "128": "95aa2d805de042d6c9fa636c8178855546ad713bd530a57717c47b4439beec79",
+    "64": "08efe36c30f5acbb6106188e0af2e86a4f271d1e73945cc023d5d519999ee638",
+    "32": "09b22dac751cb5d54536c38a8ba65acdabe612c976e95015de0f97907c492fd2"
+  }
+}

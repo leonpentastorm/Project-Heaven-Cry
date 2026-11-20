@@ -1,0 +1,62 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 151,
+  "title": "11. `reforge`: Reforge",
+  "path": "art/icons/moves/reforge.png",
+  "notes": "- **Save as:** `art/icons/moves/reforge.png`\n- **Mode:** Wick icon\n- **Shows in:** class move card\n- **At icon size it must read as:** an armour plate with a seam being joined.",
+  "paint": "Wick kneeling beside a single large armour plate propped upright on the ground line, a jagged crack running down its middle; in one hand he holds a short hammer raised to strike and in the other a small pair of tongs pressing the two halves together, with a short row of three small spark-dashes along the seam where the crack is closing and the lower half already runs smooth. The plate and the crack are the biggest shapes.\nAvoid: a forge fire or anvil scene, a full suit of armour, a wrench or cog, a shield on his arm, flame texture.",
+  "status": "review-candidate",
+  "n": 48,
+  "kind": "wick",
+  "label": "Reforge",
+  "sha256": "9416180eecbfe5fe51c262a12970474b250bbf69e81175e272aa27cd9994ea37",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/048-reforge.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/moves/exports/256/reforge.png",
+    "128": "art/icons/moves/exports/128/reforge.png",
+    "64": "art/icons/moves/exports/64/reforge.png",
+    "56": "art/icons/moves/exports/56/reforge.png",
+    "48": "art/icons/moves/exports/48/reforge.png",
+    "44": "art/icons/moves/exports/44/reforge.png",
+    "40": "art/icons/moves/exports/40/reforge.png",
+    "32": "art/icons/moves/exports/32/reforge.png",
+    "24": "art/icons/moves/exports/24/reforge.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:151",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick kneeling beside a single large armour plate propped upright on the ground line, a jagged crack running down its middle; in one hand he holds a short hammer raised to strike and in the other a small pair of tongs pressing the two halves together, with a short row of three small spark-dashes along the seam where the crack is closing and the lower half already runs smooth. The plate and the crack are the biggest shapes.\nAvoid: a forge fire or anvil scene, a full suit of armour, a wrench or cog, a shield on his arm, flame texture.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "move_icons",
+  "id": "move-reforge",
+  "source_sha256": "22e770c842fa0df126682e6aff736780fa8afb009b3c0439acd5bf4143fc02c1",
+  "export_sha256": {
+    "256": "eb6f4ccf9afcdd07526ebf717c897ea84520d49098a123718e9281ec78937f3b",
+    "128": "ab5e864d13b96ae9808a921458eed0f8aa20b49d5a323c37e39a334def5d857d",
+    "64": "606fe7406f2cacdf76c4d355f426c2ad533e09310243ee698acabbb52a77407f",
+    "56": "f34b9c53f29a8c602d3d6cfdeb0ab273a0e19ea550eb2df17d5917c52d1b04bf",
+    "48": "be05544ad6b6a785c6f0bd05b32ab57de5ee2be207b26564f561549142b35f29",
+    "44": "7cb019b33e97d2f0109d427252d356cdb1538c7eadd90ae2f1c7ed15ee56e84f",
+    "40": "904314fb48fffaca9f303d6d1db9b913fadc4df529f237670eb9a18723e3bd41",
+    "32": "da885c27f19dc6a3e551fa4c7b370a39d67555bf3d62ad6c7db959b3770631be",
+    "24": "3103c06edba94e2f04a6ef25a3bcbb930400074d498e0bb86f071f62181a23ba"
+  }
+}

@@ -1,3 +1,7 @@
+# Current sole-artist checkpoint
+
+Current sole artist511/871: all92 earlier missing deliveries now integrated with exact sources/metadata; imported work adds0. New sole deliveries ReturnClause,GrudgePlate,RimCorner are pushed. RunningScript alone remains eligible, generated rune ready pending explicit alternate-method instruction; all other pending jobs blocked/dependent/held. No actual new imagequota. Exact remaining IDs: REMAINING-WORK.json.
+
 # Sole artist continuation — 20 November 2026
 
 Leon explicitly appointed this worker sole artist and directed integration of the stopped peer. Active run `sole-20261120-1615`, branch `art/2026-11-20-reset-continuation`. Issue3 takeover comment7044430497 supersedes the two former producer records. Exact job ownership stays logged before drawing.

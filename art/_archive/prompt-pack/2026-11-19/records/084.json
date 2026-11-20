@@ -1,0 +1,59 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 176,
+  "title": "`righteous`: Righteous",
+  "path": "art/icons/perks/righteous.png",
+  "notes": "- **Save as:** `art/icons/perks/righteous.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** a healing hand on a badly hurt ally.",
+  "paint": "Wick on the left with one hand extended to the right, palm down, resting on the shoulder of a partial wounded ally cut by the right frame edge, who hangs slumped, head low. A soft fan of three short straight rays spreads from Wick's palm over the ally, and a plain plus-shaped cut-out sits on the ally's chest where the hurt is. Wick's screen face is steady and kind, tilted toward them. The ally is mostly a silhouette; the contact between hand and shoulder is the focus.",
+  "status": "review-candidate",
+  "n": 84,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "previousPaint": "Wick on the left with one hand extended to the right, palm down, resting on the shoulder of a partial wounded ally cut by the right frame edge, who hangs slumped, head low. A soft fan of three short straight rays spreads from Wick's palm over the ally, and a plain plus-shaped cut-out sits on the ally's chest where the hurt is. Wick's flame head is steady and kind, tilted toward them. The ally is mostly a silhouette; the contact between hand and shoulder is the focus.",
+  "label": "Righteous",
+  "sha256": "310e273c7ef4393a308877a6681038c372587316c5c725eab7fd8578a7b51d70",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/084-righteous.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/righteous.png",
+    "128": "art/icons/perks/exports/128/righteous.png",
+    "64": "art/icons/perks/exports/64/righteous.png",
+    "56": "art/icons/perks/exports/56/righteous.png",
+    "48": "art/icons/perks/exports/48/righteous.png",
+    "44": "art/icons/perks/exports/44/righteous.png",
+    "40": "art/icons/perks/exports/40/righteous.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:176",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick on the left with one hand extended to the right, palm down, resting on the shoulder of a partial wounded ally cut by the right frame edge, who hangs slumped, head low. A soft fan of three short straight rays spreads from Wick's palm over the ally, and a plain plus-shaped cut-out sits on the ally's chest where the hurt is. Wick's screen face is steady and kind, tilted toward them. The ally is mostly a silhouette; the contact between hand and shoulder is the focus.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "righteous",
+  "source_sha256": "f200a875c854e656f6c6a022d535e31bda4a0c81d63d86524818156c6f9097b6",
+  "export_sha256": {
+    "256": "c808f1dd49da59257e974857614179b0bf38c3a3f8bc0b076231aab31eec63c3",
+    "128": "e821d187605914c8b05b6189165c0b1610d12ba03d764e8d324b8a7130a99284",
+    "64": "76883afb3cfe93779123e5d0ccd7f815ca451ed66d5853dd09d0368c435c839e",
+    "56": "73dcddffce3b7dee337d5114f056f50252419c50b1de317cea71fa9d06cdd7f5",
+    "48": "7126c8713e6ef32962ca5ae00bd80380ff2b1d075265718f0e6ebc5b63ac15d9",
+    "44": "8d41f9a4c8bb0c3370e0eedbc89fb84bb65e23c67ac31b1420727b263a073809",
+    "40": "befa943d099915be3b3a2a1725d1ad41be145d32825b0a0b7f7751730033eed6"
+  }
+}

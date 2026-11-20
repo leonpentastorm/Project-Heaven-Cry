@@ -1,0 +1,60 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 55,
+  "title": "`lore_ward`: Warding Word",
+  "path": "art/icons/perks/lore-ward.png",
+  "notes": "- **Save as:** `art/icons/perks/lore-ward.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** a spoken word becoming a protective shell around someone else.",
+  "paint": "Wick on the left, one hand raised to mouth level, three short curved sound-arcs leaving his mouth, flowing to the right and flaring into a rounded dome-shaped shell of bold white that settles over a partial silhouette of an ally cut by the right frame edge (only their head and shoulder). The dome has a few carved notches in its rim, abstract angular notches, never letterforms. The ally's shape is solid, the shell is a thick arc around them.",
+  "status": "review-candidate",
+  "n": 73,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "previousPaint": "Wick on the left, one hand raised to mouth level, three short curved sound-arcs leaving his mouth, flowing to the right and flaring into a rounded dome-shaped shell of bold white that settles over a partial silhouette of an ally cut by the right frame edge (only their head and shoulder). The dome has a few carved notches in its rim, abstract angular marks and no real letters. The ally's shape is solid, the shell is a thick arc around them.",
+  "staging": "Three abstract V-shaped rim cuts, irregular and detached. No Hebrew, Latin, other letters or written text. Strong solid white shell with transparent interior.",
+  "label": "Warding Word",
+  "sha256": "3b9869b58e938b6630eedb93ccc752a7d115046cc9cf875955faf85ce81bfd5c",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/073-lore-ward.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/lore-ward.png",
+    "128": "art/icons/perks/exports/128/lore-ward.png",
+    "64": "art/icons/perks/exports/64/lore-ward.png",
+    "56": "art/icons/perks/exports/56/lore-ward.png",
+    "48": "art/icons/perks/exports/48/lore-ward.png",
+    "44": "art/icons/perks/exports/44/lore-ward.png",
+    "40": "art/icons/perks/exports/40/lore-ward.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:55",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick on the left, one hand raised to mouth level, three short curved sound-arcs leaving his mouth, flowing to the right and flaring into a rounded dome-shaped shell of bold white that settles over a partial silhouette of an ally cut by the right frame edge (only their head and shoulder). The dome has a few carved notches in its rim, abstract angular notches, never letterforms. The ally's shape is solid, the shell is a thick arc around them.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\nThree abstract V-shaped rim cuts, irregular and detached. No Hebrew, Latin, other letters or written text. Strong solid white shell with transparent interior. \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "lore-ward",
+  "source_sha256": "b8c498402a76aacd746ae007be26ee988dbecaa18d230d8466e3ffc8c00556a3",
+  "export_sha256": {
+    "256": "139a917560034df4929fa779951d1d40ee26ec2cda2a70896064a8b5e23549b8",
+    "128": "b720f65dbbe27ff9c44c2d87761805255240564dbc8410fe09d6f96e508ef06d",
+    "64": "c5c7326b0d7df3db0330b0ad08226eb83a917743699bf50ce78034c1fcf45c6f",
+    "56": "e5353cc7336722a1fc9bba1ec8137d1990841804b9f8efaddc120c27546396fe",
+    "48": "3555828ee1af2dfe9ea699eb7395d0a07d3c6201f96631b38cbe69435d1cb97d",
+    "44": "96a43a0ab5acad521808aa440d519b0ea6c0045e04a159a667cadfc1c042f464",
+    "40": "b4255478d35a227187341c4727b91a91871719a5b7942581dc1ab339d1efebf8"
+  }
+}

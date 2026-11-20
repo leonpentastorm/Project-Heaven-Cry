@@ -19,5 +19,6 @@
   "permission_needed": "Explicit alternate-method instruction required by imagegen tool rule before code composite; no composite yet",
   "count_contribution": 0,
   "production_approved": false,
-  "implementation_ready": false
+  "implementation_ready": false,
+  "existing_source_alpha_pixels_under_new_ink": 0
 }

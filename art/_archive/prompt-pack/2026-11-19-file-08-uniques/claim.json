@@ -1,0 +1,87 @@
+{
+  "branch": "art/2026-11-19-unique-gear",
+  "baseline_source": "2020b5c2aa620ec17103b7c11669f643342ed68f",
+  "baseline_delivered": 138,
+  "claimed": [
+    8,
+    10,
+    11,
+    17,
+    19,
+    20,
+    21,
+    22,
+    23
+  ],
+  "checked_refs": [
+    [
+      "art/after-0.30-2026-11-17",
+      "d2e5eb1afedf42682c11645c16323156075da67f"
+    ],
+    [
+      "art/figments-2026-11-15",
+      "0b9ad9491ef32efed45977d5fcf7e6f5d15c922c"
+    ],
+    [
+      "art/nine-doors-2026-11-16",
+      "1317c61d984409c0516034bead8d1dbb6678d77d"
+    ],
+    [
+      "art/prompt-pack-01-04-2026-11-19",
+      "550f80c7dad612133638cb2edc7cf326d127c428"
+    ],
+    [
+      "art/survival-foes-2026-11-14",
+      "89f5b04a5b4562fb3f61d56cffaf9e236e0f12f3"
+    ],
+    [
+      "art/2026-11-19-grade-proof",
+      "450a9c19e4e7cbd8f35eda62fe052e10fdb21477"
+    ],
+    [
+      "art/2026-11-19-gun-forms",
+      "ba1ba223a0698cb601da1008f89c9bde478e40d0"
+    ],
+    [
+      "art/2026-11-19-heavy-and-strange",
+      "c51fe4cc33b0dab7aaa5e47350ded60003e57871"
+    ],
+    [
+      "art/2026-11-19-melee-armour",
+      "fb99282187819f5fedf48705ac2f8d4512d52337"
+    ],
+    [
+      "art/2026-11-19-reference-repaints",
+      "95ea51f3e2d1e2a5ff8f966c37ed35ae4f77645a"
+    ],
+    [
+      "art/2026-11-19-repaint-continuation",
+      "f48fcbd299cfefbdf360a28df3836a6e195d0806"
+    ],
+    [
+      "develop",
+      "2020b5c2aa620ec17103b7c11669f643342ed68f"
+    ]
+  ],
+  "peer": {
+    "branch": "art/2026-11-19-unique-melee-bow",
+    "sha": "7078ec6ee1aef80d58911505eb5b6f5e84907fa2",
+    "claimed": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      15
+    ],
+    "delivered": [
+      1,
+      4,
+      6,
+      7,
+      15
+    ]
+  }
+}

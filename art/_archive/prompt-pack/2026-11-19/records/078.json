@@ -1,0 +1,59 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 111,
+  "title": "`nobody_left_behind`: Nobody Left Behind",
+  "path": "art/icons/perks/nobody-left-behind.png",
+  "notes": "- **Save as:** `art/icons/perks/nobody-left-behind.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** Wick kneeling over a fallen friend and reaching to pull them up.",
+  "paint": "Wick kneeling on one knee in the lower left, leaning over a fallen partial figure lying along the bottom of the frame (a head and a limp shoulder only, cut by the frame edge). One of Wick's hands is under the friend's shoulder, the other hand reaches upward and out, palm open, as if offering to pull them to standing; a short arch of three small lines rises from the fallen figure's shoulder to show they are being lifted. Wick's head is turned to the fallen friend. Low, grounded composition, heavy on the bottom half.",
+  "status": "review-candidate",
+  "n": 78,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "previousPaint": "Wick kneeling on one knee in the lower left, leaning over a fallen partial figure lying along the bottom of the frame (a head and a limp shoulder only, cut by the frame edge). One of Wick's hands is under the friend's shoulder, the other hand reaches upward and out, palm open, as if offering to pull them to standing; a short arch of three small lines rises from the fallen figure's shoulder to show they are being lifted. Wick's flame head is turned to the fallen friend. Low, grounded composition, heavy on the bottom half.",
+  "label": "Nobody Left Behind",
+  "sha256": "8aec503afa8202aa6c22038debd412f279296705f8d99c2fe83f59111e515486",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/078-nobody-left-behind.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/nobody-left-behind.png",
+    "128": "art/icons/perks/exports/128/nobody-left-behind.png",
+    "64": "art/icons/perks/exports/64/nobody-left-behind.png",
+    "56": "art/icons/perks/exports/56/nobody-left-behind.png",
+    "48": "art/icons/perks/exports/48/nobody-left-behind.png",
+    "44": "art/icons/perks/exports/44/nobody-left-behind.png",
+    "40": "art/icons/perks/exports/40/nobody-left-behind.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:111",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick kneeling on one knee in the lower left, leaning over a fallen partial figure lying along the bottom of the frame (a head and a limp shoulder only, cut by the frame edge). One of Wick's hands is under the friend's shoulder, the other hand reaches upward and out, palm open, as if offering to pull them to standing; a short arch of three small lines rises from the fallen figure's shoulder to show they are being lifted. Wick's head is turned to the fallen friend. Low, grounded composition, heavy on the bottom half.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "nobody-left-behind",
+  "source_sha256": "1b76f67b70da0ddc405442e66304ad089cdd233d01763e5b638df44d2c9de0bc",
+  "export_sha256": {
+    "256": "25cee5f0368d928181730ec432ab2e5d99e0e4ff754ba734eb46f924e36680f3",
+    "128": "3b964d3d67e30859f5ddaf0b36804a2f566d7673853e391f3d60b1e4912c05ef",
+    "64": "3c2195c56fc1edb5cc0fee49459d4a784f65fae196314e0cb74e0a62c6dca8db",
+    "56": "01bd011b7d9c4d0cdec78f28fbefc5aa1826848ff0ae9ed827315421917164af",
+    "48": "b4c708972f2cbac1e8ad3b35079cf0db153c5e50f124211a033e28c0e12ad0f1",
+    "44": "171ad231f14c1bbf8c45ea948f09b0771f8709b8c4f443381fb39a172ed04a0d",
+    "40": "93f057a3c7108e21859793ca8212f3366ed005a869ad3da536b67fb5d6ce55a4"
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 86,
+  "title": "`pure_heart`: Pure Heart (a new Wick icon in `perks/`)",
+  "path": "art/icons/perks/pure-heart.png",
+  "notes": "- **Existing file to attach (to see what changes):** `art/icons/moves/pure-heart.png`. **Save as:** `art/icons/perks/pure-heart.png` (a new file; the old `art/icons/moves/pure-heart.png` is left as it is, do not overwrite it).\n- **What changes:** today it is a sign-style heart and star, not Wick, and does not match the perk set. Redraw it as a Wick icon.\n- **Shows:** perk card.\n- **Must read as:** an unclouded heart that refuses what would overflow it.",
+  "paint": "Wick standing with both palms open and lifted, holding between them at chest height a perfectly clear solid heart shape with one small plain four-point star cut out of its centre as negative space. Above the heart, a jagged rising wave of three spiked tongues (an overflow coming down on it) is stopped by one flat solid bar hovering just over the heart, and the tongues bend away to either side without touching it. Wick's screen face looks at the heart, quiet. No other marks.",
+  "status": "review-candidate",
+  "n": 76,
+  "kind": "wick",
+  "refs": [
+    "art/icons/moves/pure-heart.png",
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "previousPaint": "Wick standing with both palms open and lifted, holding between them at chest height a perfectly clear solid heart shape with one small plain four-point star cut out of its centre as negative space. Above the heart, a jagged rising wave of three spiked tongues (an overflow coming down on it) is stopped by one flat solid bar hovering just over the heart, and the tongues bend away to either side without touching it. Wick's flame head looks at the heart, quiet. No other marks.",
+  "label": "Pure Heart (a new Wick icon in `perks/`)",
+  "sha256": "ed3ffaee1d542a530c62dea8e8d9699fd086119fd0630ec5b67dbf7721c97711",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/076-pure-heart.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/pure-heart.png",
+    "128": "art/icons/perks/exports/128/pure-heart.png",
+    "64": "art/icons/perks/exports/64/pure-heart.png",
+    "56": "art/icons/perks/exports/56/pure-heart.png",
+    "48": "art/icons/perks/exports/48/pure-heart.png",
+    "44": "art/icons/perks/exports/44/pure-heart.png",
+    "40": "art/icons/perks/exports/40/pure-heart.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:86",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick standing with both palms open and lifted, holding between them at chest height a perfectly clear solid heart shape with one small plain four-point star cut out of its centre as negative space. Above the heart, a jagged rising wave of three spiked tongues (an overflow coming down on it) is stopped by one flat solid bar hovering just over the heart, and the tongues bend away to either side without touching it. Wick's screen face looks at the heart, quiet. No other marks.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "pure-heart",
+  "source_sha256": "6598c755f7fefe50d0ef9a396ec5bad6da7e72c098eb18c616d0ee84e61d6c64",
+  "export_sha256": {
+    "256": "54b1a3952ff6847bebd28530972a6fda63b1cd8e04ff9e7f77b5161990b2ada3",
+    "128": "500dece84110e6565aa79652bb858efb5fc82d1357a046745787c1034f03d66e",
+    "64": "cbcf816ca28b1c6715fc88eeabc3757df7aa95828e8d7ca414de00a2ec67ea6c",
+    "56": "5eba3fd9d6ebc9cce8fb43f97d4b3fc8abf415890724f5cffc034bc9f3d14dcc",
+    "48": "7ba6bac61e354a39916f00280dd70c3f61a9ddfb9662a3bcb43b3e10798c97d4",
+    "44": "443ef8cf7542ac5eabb45fad056a7af4df800d0b9bd2a97602fdfc6df15efe47",
+    "40": "43818cc12898a6ef76e980903112f4e81c5f4b9fd9516187ae96f7977b303d01"
+  }
+}

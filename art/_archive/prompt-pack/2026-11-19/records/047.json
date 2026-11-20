@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 139,
+  "title": "10. `tremor`: Tremor",
+  "path": "art/icons/perks/tremor.png",
+  "notes": "- **Save as:** `art/icons/perks/tremor.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card\n- **At icon size it must read as:** a hand on the ground and rings spreading from it.",
+  "paint": "Wick crouched low, one palm pressed flat on a short ground line, his head turned sharply to one side as if listening through the floor. Three concentric shallow arcs spread outward along the ground from under his palm, the outermost one broken by a tiny chevron of an approaching shape far off at the right edge of the frame, only a point.\nAvoid: a crater, an earthquake crack across the whole frame, a stethoscope, an ear drawn large, debris and dust, a sonar screen.",
+  "status": "review-candidate",
+  "n": 47,
+  "kind": "wick",
+  "label": "Tremor",
+  "sha256": "26a0a40fb1038b230e738c8bf695cf71427c41e8cff3d394647c97158c4e7fc4",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/047-tremor.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/tremor.png",
+    "128": "art/icons/perks/exports/128/tremor.png",
+    "64": "art/icons/perks/exports/64/tremor.png",
+    "56": "art/icons/perks/exports/56/tremor.png",
+    "48": "art/icons/perks/exports/48/tremor.png",
+    "44": "art/icons/perks/exports/44/tremor.png",
+    "40": "art/icons/perks/exports/40/tremor.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:139",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick crouched low, one palm pressed flat on a short ground line, his head turned sharply to one side as if listening through the floor. Three concentric shallow arcs spread outward along the ground from under his palm, the outermost one broken by a tiny chevron of an approaching shape far off at the right edge of the frame, only a point.\nAvoid: a crater, an earthquake crack across the whole frame, a stethoscope, an ear drawn large, debris and dust, a sonar screen.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perk_candidates",
+  "id": "tremor",
+  "source_sha256": "80e0da08fedfd90c836c8f12434199da2102d8b4a096e88d51c4e040afd8b340",
+  "export_sha256": {
+    "256": "6e62f768172eb1c6fb9b2eda1417e96c57925d1c82146c0b7a560ca3ac68544d",
+    "128": "9533c95eed3e5c1fe3ebd4a8f4118a2c217f1d9bcefa017d6d6743ced8b13bc5",
+    "64": "6b11000c6e9a556d3e1801ff29332995c0fe008f2ddd5a090a49aaafcbe64410",
+    "56": "cdc6837c2da871acea076fa1df3c5a2ceab4dd5edbdd279658771a9cd35e241e",
+    "48": "d90201b9d33658c90e962a51ca7974a39d18fbbeb217a1277fb41faa0af41fbe",
+    "44": "7ffa6c9c3a73cd70d0e80c880c8b94c96959eba06fa0f296ac4386f6789bd971",
+    "40": "cb375c527183ef65e03ed8d644e673a13bf5e86f29ddb92cbbf0d899b8278c70"
+  }
+}

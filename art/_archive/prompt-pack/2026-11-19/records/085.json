@@ -1,0 +1,58 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 186,
+  "title": "`foresight`: Foresight",
+  "path": "art/icons/perks/foresight.png",
+  "notes": "- **Save as:** `art/icons/perks/foresight.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** Wick seeing the blow before it lands, a ghost of it already in the air.",
+  "paint": "Wick facing right, eyes wide, one hand raised toward the frame edge in a halting gesture. In front of him, drawn as a hollow ghost (a white band with an empty inside, built of dashed arc segments) is a big swinging blow, a crescent sweep coming down on a partial friend's silhouette at the right frame edge. Between the ghost-blow and the friend, a single short solid white bar stands as a stop, catching it, so the friend's silhouette stays whole. The ghost is faint in meaning; the stop is solid.",
+  "status": "review-candidate",
+  "n": 85,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "label": "Foresight",
+  "sha256": "bb88565e3a5d2f674f85330ff8301c465f18030595c1d0f3c8408a6b8bd6e330",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/085-foresight.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/foresight.png",
+    "128": "art/icons/perks/exports/128/foresight.png",
+    "64": "art/icons/perks/exports/64/foresight.png",
+    "56": "art/icons/perks/exports/56/foresight.png",
+    "48": "art/icons/perks/exports/48/foresight.png",
+    "44": "art/icons/perks/exports/44/foresight.png",
+    "40": "art/icons/perks/exports/40/foresight.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:186",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick facing right, eyes wide, one hand raised toward the frame edge in a halting gesture. In front of him, drawn as a hollow ghost (a white band with an empty inside, built of dashed arc segments) is a big swinging blow, a crescent sweep coming down on a partial friend's silhouette at the right frame edge. Between the ghost-blow and the friend, a single short solid white bar stands as a stop, catching it, so the friend's silhouette stays whole. The ghost is faint in meaning; the stop is solid.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "foresight",
+  "source_sha256": "43e00364ba59fe731fa6af29aee27120b8bb6758f6c5fe21bdf2acd12585265c",
+  "export_sha256": {
+    "256": "d0d6dfd9a94ef2239829aef9c222f3334a13797edd3bc3a0495711c0da2a7a52",
+    "128": "2f112e442a33bc8e591ec0d48beaa048a6678515adad89aa075b66cd6e601890",
+    "64": "f9885dbcd06228e17aafcfd45e6583ce9e94107609e87ee60644e4b1adb2e534",
+    "56": "3beef974f6a68781579b6abb018e5ab17a82423d1f0b5eab153a1a8eab61d497",
+    "48": "5989364a41e0afeb65f700b30eff56ad0ea167204c0fd2d6956d8472db5634b8",
+    "44": "ac59bcc99b2b8edcd873ca3d51aaeabd587f81ff5d9d9ad7e79f78547b0b600b",
+    "40": "538495d3da1428a784d2229648113c1319c62e977df2ddb3d1abddde43cefecd"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 125,
+  "title": "Opening Argument",
+  "path": "art/icons/perks/opening-argument.png",
+  "notes": "- **Id:** `opening_argument`. **Save as:** `art/icons/perks/opening-argument.png`. **Mode:** Wick icon. **Shows:** the perk card.",
+  "paint": "The icon shows: Wick stepping forward alone onto open ground with one hand raised in a measured speaker's gesture, facing across a wide empty gap a ragged line of foe silhouettes (plain solid shapes cut by the frame, one taller leader in front) whose weapons are all still lowered; the gap is a clear band of empty space between them. The lone speaker and the wide gap before the held line is what to read at 32 px. Avoid: a podium with a microphone, a flag, a cheering crowd, crossed swords, a document.",
+  "status": "review-candidate",
+  "n": 63,
+  "kind": "wick",
+  "label": "Opening Argument",
+  "sha256": "b9db3b62dc4c657773aa13e4b26120cb1b1345b4a6a6e9f3c7042504ff33b58b",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/063-opening-argument.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/opening-argument.png",
+    "128": "art/icons/perks/exports/128/opening-argument.png",
+    "64": "art/icons/perks/exports/64/opening-argument.png",
+    "56": "art/icons/perks/exports/56/opening-argument.png",
+    "48": "art/icons/perks/exports/48/opening-argument.png",
+    "44": "art/icons/perks/exports/44/opening-argument.png",
+    "40": "art/icons/perks/exports/40/opening-argument.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:125",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick stepping forward alone onto open ground with one hand raised in a measured speaker's gesture, facing across a wide empty gap a ragged line of foe silhouettes (plain solid shapes cut by the frame, one taller leader in front) whose weapons are all still lowered; the gap is a clear band of empty space between them. The lone speaker and the wide gap before the held line is what to read at 32 px. Avoid: a podium with a microphone, a flag, a cheering crowd, crossed swords, a document.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perk_candidates",
+  "id": "opening-argument",
+  "source_sha256": "55abdf3fd7dfbc903089f42f14514b9236a6944735b0dd01eda698e5cfc0890f",
+  "export_sha256": {
+    "256": "df9a872c883fbfb51442674b5ed77e95f9fe1ce211f2f7966032101340e7efbe",
+    "128": "3ddeba1990a27caba33a5fad090a7a8990f6c58f55e0954dec20789d891a972c",
+    "64": "159631627e08a743f88c16f8c627d3035f2ee303362446de9a742556b3b34228",
+    "56": "9730ae509f0137f9a460653d230221abe5b39701d916d2f919aa9f48707ec641",
+    "48": "722b3d99d353ee590fc6a22431763990771e6e246723034c0557412474799734",
+    "44": "e477b9d76c9f91d173e1641e74e71d91cd01c4ef448917158d9eee271917324b",
+    "40": "2481711673b1f7b99bc3d106464e02413d8cc83e031023d8a60eb9eb803748d6"
+  }
+}

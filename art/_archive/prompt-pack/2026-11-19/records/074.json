@@ -1,0 +1,58 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 65,
+  "title": "`recitation`: Recitation",
+  "path": "art/icons/perks/recitation.png",
+  "notes": "- **Save as:** `art/icons/perks/recitation.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** a spoken line and a heart quieting.",
+  "paint": "Wick holding an open book flat in his left hand, reading aloud: three sound-arcs leave his mouth and curve up and away. On his chest, a plain solid heart shape with three small concentric ripple rings spreading outward and fading flat, drawn as wide thin ripples, as if the heart is settling like still water. The book is a simple slab with a spine cut, its pages as two or three flat bands, no letters on them.",
+  "status": "review-candidate",
+  "n": 74,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "label": "Recitation",
+  "sha256": "3ef23b2f678a293c4785deeda9159105b7f677f629b7a7e894934dc1261acd8a",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/074-recitation.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/recitation.png",
+    "128": "art/icons/perks/exports/128/recitation.png",
+    "64": "art/icons/perks/exports/64/recitation.png",
+    "56": "art/icons/perks/exports/56/recitation.png",
+    "48": "art/icons/perks/exports/48/recitation.png",
+    "44": "art/icons/perks/exports/44/recitation.png",
+    "40": "art/icons/perks/exports/40/recitation.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:65",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick holding an open book flat in his left hand, reading aloud: three sound-arcs leave his mouth and curve up and away. On his chest, a plain solid heart shape with three small concentric ripple rings spreading outward and fading flat, drawn as wide thin ripples, as if the heart is settling like still water. The book is a simple slab with a spine cut, its pages as two or three flat bands, no letters on them.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "recitation",
+  "source_sha256": "5689d09b2bcb16dde296647461d881dfcb51507d609fb3820ffc15e3cf17a022",
+  "export_sha256": {
+    "256": "2d265a575caa36dd563c097ab37561e5e904a0e875c7d2ebd8be83789eb07de8",
+    "128": "4fa11b6109866811d0acb45392c66b6b8328e9e61fdf6a5b1cc9d85e997fbc32",
+    "64": "4d15ef05a7f104f9d9939300bac60241245915295480c9daf95ac05bf9b4d074",
+    "56": "9d83826c803195d10b23b81c9e878d5f75437662f9fde92275c844e4c52659a3",
+    "48": "15ac28db3cf886b719d9f8c79cefb8e82abab3a23ae8109e4735028882af1294",
+    "44": "cd97374865e35292c79925571182841ae6885876eced266074b5553439b519ca",
+    "40": "de9a94d797a491edddaa1991ad40a1f25316add88080705b914f85562cdd96fe"
+  }
+}

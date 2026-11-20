@@ -1,0 +1,59 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 91,
+  "title": "Showman",
+  "path": "art/icons/perks/showman.png",
+  "notes": "- **Id:** `showman`. **Save as:** `art/icons/perks/showman.png`. **Mode:** Wick icon. **Shows:** the perk card.",
+  "paint": "The icon shows: Wick bowing deeply to the side with one arm flung out in a flourish towards a hollow Figment figure stepping onto a small raised round stage behind him, the stage a thick low disc with a half-ring of three footlight dots at its lip. His other hand sweeps back, presenting it. The bow plus the Figment on the little stage is what to read at 32 px. Avoid: a curtain with fringe, a top hat, a spotlight cone, a mask, an audience of faces.",
+  "status": "review-candidate",
+  "n": 58,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png",
+    "art/icons/perks/mirage.png",
+    "art/icons/perks/solid-image.png"
+  ],
+  "label": "Showman",
+  "sha256": "521afa5b60804104a62510cf0034e539182bee1f9e4f7d1606628fed91261755",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/058-showman.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/showman.png",
+    "128": "art/icons/perks/exports/128/showman.png",
+    "64": "art/icons/perks/exports/64/showman.png",
+    "56": "art/icons/perks/exports/56/showman.png",
+    "48": "art/icons/perks/exports/48/showman.png",
+    "44": "art/icons/perks/exports/44/showman.png",
+    "40": "art/icons/perks/exports/40/showman.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:91",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick bowing deeply to the side with one arm flung out in a flourish towards a hollow Figment figure stepping onto a small raised round stage behind him, the stage a thick low disc with a half-ring of three footlight dots at its lip. His other hand sweeps back, presenting it. The bow plus the Figment on the little stage is what to read at 32 px. Avoid: a curtain with fringe, a top hat, a spotlight cone, a mask, an audience of faces.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "showman",
+  "source_sha256": "421bae93c62915a6b1e790dff86dab4f2d95bc06d60d8df6f413945e4dfe0735",
+  "export_sha256": {
+    "256": "f005478e8900161d4969c8682a1a70bcc341111075258b8e2d3dfa3cdc2e5126",
+    "128": "45845c31d38bb18f5386110db43ced7f31976d56bac2efe76dff8d257e4d58e8",
+    "64": "87ccc10bfa2121979d29776c95cecca213de91d7dea9ca8cd2545a003f1ab7bc",
+    "56": "58d7d58d5bdda11f77ced807ef47db2c263099083a84d5d4dfb38c9571d0385a",
+    "48": "a1db5767f96137e0e9570431d7701c0eb390a1a1bbb68d9ee8b12c40ac0d249a",
+    "44": "36166b1bb7c422ebfe4d6cd64e528af4fa19205fad0dec765ba77c4993fb177f",
+    "40": "44912e6b1a07ff7aab0bf16e1f6f3c722ae3721d402023a434dcde8e91117b12"
+  }
+}

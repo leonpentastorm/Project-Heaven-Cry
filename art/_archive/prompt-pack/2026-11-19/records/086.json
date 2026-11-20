@@ -1,0 +1,58 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 196,
+  "title": "`five_stars`: Five Stars",
+  "path": "art/icons/perks/five-stars.png",
+  "notes": "- **Save as:** `art/icons/perks/five-stars.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** a commander in rank marks, the squad surging forward.",
+  "paint": "Wick standing tall and proud on a low rise, chest out, one arm pointing forward and right, wearing on his shoulder a neat row of five small solid diamond-shaped marks (an invented rank sign, not a real insignia). Behind and beside him, partial silhouettes of three squad-mates cut by the frame lean forward into a charge, each with a short speed line, their silhouettes stacked in a wedge pointing the way he points. Wick stationary and upright, everyone around him flowing forward.",
+  "status": "review-candidate",
+  "n": 86,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "label": "Five Stars",
+  "sha256": "1858f8e71575d353be83a4b6e8409d98a7b77692c8234aacb95d581515704bec",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/086-five-stars.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/five-stars.png",
+    "128": "art/icons/perks/exports/128/five-stars.png",
+    "64": "art/icons/perks/exports/64/five-stars.png",
+    "56": "art/icons/perks/exports/56/five-stars.png",
+    "48": "art/icons/perks/exports/48/five-stars.png",
+    "44": "art/icons/perks/exports/44/five-stars.png",
+    "40": "art/icons/perks/exports/40/five-stars.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:196",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick standing tall and proud on a low rise, chest out, one arm pointing forward and right, wearing on his shoulder a neat row of five small solid diamond-shaped marks (an invented rank sign, not a real insignia). Behind and beside him, partial silhouettes of three squad-mates cut by the frame lean forward into a charge, each with a short speed line, their silhouettes stacked in a wedge pointing the way he points. Wick stationary and upright, everyone around him flowing forward.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "five-stars",
+  "source_sha256": "0af556f8e46d5992525dd9c40f90219c4b98ba39477e98c176f3c07b87112162",
+  "export_sha256": {
+    "256": "c58077c1e90201840cfe1fe3d5e2a7aa4539ef19fcbb43c6aefdbd0a0e16f219",
+    "128": "3f1891d8a6f6bf1e8ac9a809151b3b8dda43dd806cc951c45b3af679ec9dc120",
+    "64": "36fc1e3fc7989aae8006ce17a8629d0ee4af9f506ca7d1936a9f0d2420a862ea",
+    "56": "425f4c4624594a58f954cc6d884daca3c66fc81a662415916786a8b273d4c097",
+    "48": "ad0bfe86d9fb943be8c6da4209eeff5ef55c54dccd8b28fbbc28b2463b9649b8",
+    "44": "23fd1e25bba54d08a83bef462e24036fcc3affa9b10a4401650be5e95551775a",
+    "40": "aea8fe30b3f36957649311af5b3ca758b90e0a762484673347613710118b5933"
+  }
+}

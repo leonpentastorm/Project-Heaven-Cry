@@ -1,0 +1,58 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 153,
+  "title": "Quick Read",
+  "path": "art/icons/perks/quick-read.png",
+  "notes": "- **Id:** `quick_read`. **Save as:** `art/icons/perks/quick-read.png`. **Mode:** Wick icon. **Shows:** the perk card. It also serves the Analyze action.",
+  "paint": "The icon shows: Wick glancing sideways with one eye wide and the other narrowed, one hand flicked up beside his face with two fingers pointing at his own eye, while across the gap a foe silhouette (a plain solid shape cut by the frame) is crossed by three quick thin measuring ticks at its head, chest and feet, as if sized up in a single look. The sidelong glance with the three quick ticks on the foe is what to read at 32 px. Avoid: a magnifying glass, binoculars, a clipboard, a radar sweep, a robot eye.",
+  "status": "review-candidate",
+  "n": 67,
+  "kind": "wick",
+  "label": "Quick Read",
+  "sha256": "085ebbc277c3fce774f2d68b5ee8796c35cd2b328c9154ac5cf6faa515fb63d2",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/067-quick-read.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/quick-read.png",
+    "128": "art/icons/perks/exports/128/quick-read.png",
+    "64": "art/icons/perks/exports/64/quick-read.png",
+    "56": "art/icons/perks/exports/56/quick-read.png",
+    "48": "art/icons/perks/exports/48/quick-read.png",
+    "44": "art/icons/perks/exports/44/quick-read.png",
+    "40": "art/icons/perks/exports/40/quick-read.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:153",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick glancing sideways with one eye wide and the other narrowed, one hand flicked up beside his face with two fingers pointing at his own eye, while across the gap a foe silhouette (a plain solid shape cut by the frame) is crossed by three quick thin measuring ticks at its head, chest and feet, as if sized up in a single look. The sidelong glance with the three quick ticks on the foe is what to read at 32 px. Avoid: a magnifying glass, binoculars, a clipboard, a radar sweep, a robot eye.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perk_candidates",
+  "id": "quick-read",
+  "source_sha256": "272931f9b409808f7397458df8689e9d4eca670bf3c5ede97889ef4d54f21c83",
+  "export_sha256": {
+    "256": "7a141f20be12786efd69d31e3796278f8366de3b3d644d54552be26db0288c19",
+    "128": "aac7c58c66cc968946bc5d9bc80f47fbe802d6f977c9ed640d854c3a2f7fad73",
+    "64": "b65543536ca6fa295bf13913fa3c7e990f2d636f1266a2237f9615bf2cedb462",
+    "56": "68ed344b3d3f01b670fb5cc6a6b04d1f081963f1f3adb7622069dbf91d45729b",
+    "48": "57e4dca78a3228eb41725821a8b3c685f63750c9d08ea589f3b2834393dfad5d",
+    "44": "de4bc798e9597548c38647936f858b42332a4c6d54c360892be552c0cc826033",
+    "40": "921b848a47a4469502f7a5ba3680a34354162cd03b418c9bef9008c9c35ac1a8"
+  }
+}

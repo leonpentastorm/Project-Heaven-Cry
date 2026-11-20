@@ -1,0 +1,63 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 97,
+  "title": "Quick Sketch",
+  "path": "art/icons/moves/quick-sketch.png",
+  "notes": "- **Id:** `trickster.quick_sketch`. **Save as:** `art/icons/moves/quick-sketch.png`. **Mode:** Wick icon. **Shows:** the class move card (Rigger). One single movement, so it must not look like a perk.",
+  "paint": "The icon shows: Wick's arm swinging in one fast diagonal stroke, his hand holding a thin drawing stylus, trailing one long unbroken line behind it; the line has just closed into a loop at its end and a small hollow Figment figure is standing up out of the loop's bottom edge as if pulled up by the line's own tail. One stroke, one figure, nothing else. The single long line ending in a standing Figment is what to read at 32 px. Avoid: a paintbrush with a palette, a pencil and paper, a magic wand, a rabbit from a hat, sparkles.",
+  "status": "review-candidate",
+  "n": 59,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png",
+    "art/icons/perks/mirage.png",
+    "art/icons/perks/solid-image.png"
+  ],
+  "label": "Quick Sketch",
+  "sha256": "4e1c5a93ed4c492cff284434698c4183328e892250927dcbe3721eda7b12c730",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/059-quick-sketch.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/moves/exports/256/quick-sketch.png",
+    "128": "art/icons/moves/exports/128/quick-sketch.png",
+    "64": "art/icons/moves/exports/64/quick-sketch.png",
+    "56": "art/icons/moves/exports/56/quick-sketch.png",
+    "48": "art/icons/moves/exports/48/quick-sketch.png",
+    "44": "art/icons/moves/exports/44/quick-sketch.png",
+    "40": "art/icons/moves/exports/40/quick-sketch.png",
+    "32": "art/icons/moves/exports/32/quick-sketch.png",
+    "24": "art/icons/moves/exports/24/quick-sketch.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:97",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick's arm swinging in one fast diagonal stroke, his hand holding a thin drawing stylus, trailing one long unbroken line behind it; the line has just closed into a loop at its end and a small hollow Figment figure is standing up out of the loop's bottom edge as if pulled up by the line's own tail. One stroke, one figure, nothing else. The single long line ending in a standing Figment is what to read at 32 px. Avoid: a paintbrush with a palette, a pencil and paper, a magic wand, a rabbit from a hat, sparkles.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "move_icons",
+  "id": "move-quick-sketch",
+  "source_sha256": "fef70b1a72466b75719a3ce562c7b10e87c6908d232b2af8ddfbf7c7e1c49ba1",
+  "export_sha256": {
+    "256": "e396d9822ff5c1b60e20e7dd6e80414dd8534eed1142e30f63a2ef65b02a4784",
+    "128": "f6dd11ade82fe9a6860ca9f88e0a5ff7f6a6a3abbb9aa61f6a0e4d167643ac62",
+    "64": "e9a7aeedea76b88ad93bb616f9f8440869caf6fa2d81c156b36b8f0ccd2ea334",
+    "56": "82e4087ffc698deb19af6cbcfa688cf14271b57007d287fb6319487bd4252e7d",
+    "48": "0a46385ddd0669139b11bc748ecdd4d748d28d441d0fe81c440b7394e0a0a9fa",
+    "44": "3a4ebbed4cc7e4e819c91524b69221fad7123a63f90a0c1e0a58d784c331dfe5",
+    "40": "8a4a4f342f54c973331d828e0368aa624e000cd4c9e90b81da2a11bad51e72a5",
+    "32": "dca07cdaf6005c8b36c490265d9608b22ff6b9e8742457df31742405ad564c6f",
+    "24": "c404e2ea56051edc7223ed160ee16b5d8d17655152c6849602cf021cfe870e72"
+  }
+}

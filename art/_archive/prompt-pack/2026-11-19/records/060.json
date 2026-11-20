@@ -1,0 +1,58 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 107,
+  "title": "Index",
+  "path": "art/icons/perks/index.png",
+  "notes": "- **Id:** `index`. **Save as:** `art/icons/perks/index.png`. **Mode:** Wick icon. **Shows:** the perk card.",
+  "paint": "The icon shows: Wick standing at a tall narrow cabinet of small shallow drawers, drawing one drawer halfway out with a finger and looking into it, while his other hand holds one thin leaf of paper up to the light with a row of plain tick-lines on it (no letters). A single drawer pulled open is what to read at 32 px. Avoid: a library full of books, a magnifying glass, a computer, an encyclopedia spine with text, a ? glyph.",
+  "status": "review-candidate",
+  "n": 60,
+  "kind": "wick",
+  "label": "Index",
+  "sha256": "13fcc4ea83503a8dc1cdd40846fff0a65350270adfe439f986706c8735d711d3",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/060-index.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/index.png",
+    "128": "art/icons/perks/exports/128/index.png",
+    "64": "art/icons/perks/exports/64/index.png",
+    "56": "art/icons/perks/exports/56/index.png",
+    "48": "art/icons/perks/exports/48/index.png",
+    "44": "art/icons/perks/exports/44/index.png",
+    "40": "art/icons/perks/exports/40/index.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:107",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick standing at a tall narrow cabinet of small shallow drawers, drawing one drawer halfway out with a finger and looking into it, while his other hand holds one thin leaf of paper up to the light with a row of plain tick-lines on it (no letters). A single drawer pulled open is what to read at 32 px. Avoid: a library full of books, a magnifying glass, a computer, an encyclopedia spine with text, a ? glyph.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perk_candidates",
+  "id": "index",
+  "source_sha256": "3730d6566cc697105425d9d67ac3f0112c7b716270866f7c0a53cd9489990688",
+  "export_sha256": {
+    "256": "068a3152f9160c81f040460adbc780fadf27487f528299b17ab7aeadedf6152f",
+    "128": "09e29670a51c9ded26033978d2be5caca79a8d1dd51ae604a0253bc4485b0135",
+    "64": "59426e175c344aa2efae057cd1707c6e682dd4d1b6bc3ed0bdcd750190ad7ff3",
+    "56": "7317a1df4073441e7c9f6bb1be27b18902ecac851e1ff5309d5a4d264ce3309a",
+    "48": "10f11038b62ed4ad96f9886acb5d75efaca5a68eab3f6b29b789fee5e37f962b",
+    "44": "7427b08d597699fbf450aecdc3fc43413fcbb45e8e21f9de3d35f30cdd273e6f",
+    "40": "fd42c28d0043fe503a7ff91740eca8302727a17027d796cee054821db59fdf0d"
+  }
+}

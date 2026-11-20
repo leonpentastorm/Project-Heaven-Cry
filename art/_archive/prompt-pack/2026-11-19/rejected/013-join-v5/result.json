@@ -1,0 +1,9 @@
+{
+  "n": 13,
+  "refs": [
+    "art/sprites/kit/rim/wall-corner.png",
+    "art/sprites/kit/rim/wall-straight.png"
+  ],
+  "prompt": "In-place surface repaint of IMAGE ONE for a Project Heaven Cry map tile. It is already the EXACT wall corner shape. Keep its pixel-aligned alpha footprint, camera, crop and the original blue line centerline EXACTLY. Keep both straight arms ending flush at the left and bottom canvas borders, with no end cap at either border. The tile starts 25% down from top at left and ends at 75% down; bottom starts 25% from left and ends 75% to the right. On these matched ends the thin blue line is exactly halfway across the wide grey wall band. Repaint only the existing wall material: replace the panel grid and yellow marks inside that fixed silhouette with the continuous smooth worn gray steel texture and narrow ivory cap bands of IMAGE TWO. Plain and subtle, no added seams, no bright bolts, no change in centerline. Pure transparent alpha everywhere the first image is transparent. Return the entire painted corner tile at the same crop.",
+  "src": "art/_archive/prompt-pack/2026-11-19/rejected/013-join-v5/native.png"
+}

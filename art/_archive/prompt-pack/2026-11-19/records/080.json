@@ -1,0 +1,58 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 131,
+  "title": "`pull_together`: Pull Together",
+  "path": "art/icons/perks/pull-together.png",
+  "notes": "- **Save as:** `art/icons/perks/pull-together.png`. **Mode:** Wick.\n- **Shows:** perk card.\n- **Must read as:** a friend hauled to safety along a taut line.",
+  "paint": "Wick on the left, leaning back with both hands gripping a thick taut cord that runs in a straight line across the frame to the right, where a partial silhouette of a friend (head and one reaching arm, cut by the right frame edge) is being drawn toward him, leaning forward and off balance, feet leaving the ground. The cord is a single bold line with one small knot near Wick's hands. Behind the friend, a jagged cut-out wedge suggests the danger they are leaving.",
+  "status": "review-candidate",
+  "n": 80,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "label": "Pull Together",
+  "sha256": "00a9266adc70f2aa4f498c09cd67a0df0c2b761b4d449749ff855a33dd7a24a6",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/080-pull-together.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/pull-together.png",
+    "128": "art/icons/perks/exports/128/pull-together.png",
+    "64": "art/icons/perks/exports/64/pull-together.png",
+    "56": "art/icons/perks/exports/56/pull-together.png",
+    "48": "art/icons/perks/exports/48/pull-together.png",
+    "44": "art/icons/perks/exports/44/pull-together.png",
+    "40": "art/icons/perks/exports/40/pull-together.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:131",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick on the left, leaning back with both hands gripping a thick taut cord that runs in a straight line across the frame to the right, where a partial silhouette of a friend (head and one reaching arm, cut by the right frame edge) is being drawn toward him, leaning forward and off balance, feet leaving the ground. The cord is a single bold line with one small knot near Wick's hands. Behind the friend, a jagged cut-out wedge suggests the danger they are leaving.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "perk_candidates",
+  "id": "pull-together",
+  "source_sha256": "20c2924dceed9ded18c3fda5e0322ab9ccebc824ae6d9d2259fda2560cb09253",
+  "export_sha256": {
+    "256": "d26c7399b689204ec6afdfda055de470589734aaba6d2ffb338c1eeac6ca5700",
+    "128": "5823c12ac8784ba007debb0f21e36b83b1ad58dc060ea31ce75cc6d598d543cd",
+    "64": "83d0f5bffacef91bdbcc8b8ad2b462df11c849d3b595333eff8d15ee5573d63b",
+    "56": "db045e92d5205bea4f993166aea8fbd341660a6b87432172a785f4490fda6436",
+    "48": "3455a9561dd0d56a661b35c5a2925373a98c5d2fda2b6022926d5e00774cff93",
+    "44": "a6670be8814142390c4339b31c8c7147229604cbb8b86136d17c31d52e518eeb",
+    "40": "7f8a022447b50abdc47840bd679f2fc39e479a85721be086cab09f335e18276f"
+  }
+}

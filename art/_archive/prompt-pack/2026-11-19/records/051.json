@@ -1,0 +1,63 @@
+{
+  "file": "03",
+  "source": "03-skills-mind.md",
+  "line": 47,
+  "title": "Many Hands (fork)",
+  "path": "art/icons/forks/figment-many-hands.png",
+  "notes": "- **Id:** fork option `fork.figment.many_hands`; it must differ from the Camaraderie perk `many_hands` (Wick with a crowd of helping hands): do not reuse or echo that picture. **Save as:** `art/icons/forks/figment-many-hands.png`. **Mode:** Wick icon. **Shows:** the fork card.",
+  "paint": "The icon shows: Wick at the centre holding a fan of three hollow Figment figures at once, each on its own thin drawn thread from Wick's raised fingers, the three standing in a shallow arc, each in a different stance (one crouched, one reaching, one guarding). Three threads and three figures is what to read at 32 px. Avoid: many human hands, a spider, a puppeteer's cross-bar with strings to the limbs, a crowd, a flower.",
+  "status": "review-candidate",
+  "n": 51,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png",
+    "art/icons/perks/mirage.png",
+    "art/icons/perks/solid-image.png"
+  ],
+  "label": "Many Hands (fork)",
+  "sha256": "c59e30d69b8c3bf464b3a4c256cd6716ae2f038ac0f0012ba0261ebe239013a3",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/051-figment-many-hands.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/forks/exports/256/figment-many-hands.png",
+    "128": "art/icons/forks/exports/128/figment-many-hands.png",
+    "64": "art/icons/forks/exports/64/figment-many-hands.png",
+    "56": "art/icons/forks/exports/56/figment-many-hands.png",
+    "48": "art/icons/forks/exports/48/figment-many-hands.png",
+    "44": "art/icons/forks/exports/44/figment-many-hands.png",
+    "40": "art/icons/forks/exports/40/figment-many-hands.png",
+    "32": "art/icons/forks/exports/32/figment-many-hands.png",
+    "24": "art/icons/forks/exports/24/figment-many-hands.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:47",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full solid figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame); a Figment is a hollow figure in one bold white contour with two or three parallel hatch strokes inside. One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands or insignia. The icon shows:\nThe icon shows: Wick at the centre holding a fan of three hollow Figment figures at once, each on its own thin drawn thread from Wick's raised fingers, the three standing in a shallow arc, each in a different stance (one crouched, one reaching, one guarding). Three threads and three figures is what to read at 32 px. Avoid: many human hands, a spider, a puppeteer's cross-bar with strings to the limbs, a crowd, a flower.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "fork_icons",
+  "id": "fork-figment-many_hands",
+  "source_sha256": "1e8554f0bcc489d96b0bfd5a2d46e89d6eb6320d60ac275230a3bcdae3b9c11e",
+  "export_sha256": {
+    "256": "98c88c3295528a0d711cbdd32db84cc46313c6536704b8ecd2cb45d410d8d34a",
+    "128": "783c8c1b01ece9b589681561efdd52a3afbea24288e424b2151d92816c139508",
+    "64": "9abfa0154adb029e0e09b03b76721f0db1b8e43c5b1e2ef1c245ebd6d0c85209",
+    "56": "0c75ad6de682343f7ab103a039ed123f467961f84286029a10ee6fd3dccbf4fe",
+    "48": "c54b112de67f841d9f7742097416862b2d90396e25ae574c1ee3be12872edd21",
+    "44": "0dffae7c150548d00226cc29247642ad56473b6381ec715e485ecba9bfc54736",
+    "40": "0ae7e7161613c683fc70068876ffc32a22e7a3a17a688b2660b70a575a2e3462",
+    "32": "b2bf586af2acf5d235a11db8c02a310a3452644e7370e9d7efcbcbecfda5c31a",
+    "24": "25249ade0dc80ebc3a4c34a82b7dcdc516ffd9021b5c64768a8dea852a0fcd12"
+  }
+}

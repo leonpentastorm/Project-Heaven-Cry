@@ -1,0 +1,58 @@
+{
+  "file": "02",
+  "source": "02-skills-body.md",
+  "line": 127,
+  "title": "9. `read_the_air`: Read the Air",
+  "path": "art/icons/perks/read-the-air.png",
+  "notes": "- **Save as:** `art/icons/perks/read-the-air.png`\n- **Mode:** Wick icon\n- **Shows in:** perk card\n- **At icon size it must read as:** Wick noticing one small thing on another person.",
+  "paint": "Wick tilted forward, his screen face turned toward a partial stranger on the right (a head in three-quarter view and a shoulder, cut by the frame), one short bright line from Wick's face to a single small detail on the stranger: the stranger's hand, which is clenched, with two tiny tick marks at the knuckles. Everything else about the stranger stays plain. A small open bracket round that one hand highlights it.\nAvoid: a magnifying glass, a detective hat, a lie-detector graph, a cartoon eyeball, a ? glyph, a speech bubble.",
+  "status": "review-candidate",
+  "n": 46,
+  "kind": "wick",
+  "label": "Read the Air",
+  "sha256": "145d5c241e428c929c7067710f564d0bf82c3fc8a05ee7347a4bdcb7dd597605",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/046-read-the-air.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/perks/exports/256/read-the-air.png",
+    "128": "art/icons/perks/exports/128/read-the-air.png",
+    "64": "art/icons/perks/exports/64/read-the-air.png",
+    "56": "art/icons/perks/exports/56/read-the-air.png",
+    "48": "art/icons/perks/exports/48/read-the-air.png",
+    "44": "art/icons/perks/exports/44/read-the-air.png",
+    "40": "art/icons/perks/exports/40/read-the-air.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/02-skills-body.md:127",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small ceramic pixel-screen automaton of the trait and perk icons, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only: nothing recognisable from real-world works, brands, insignia or religions. The icon shows:\nWick tilted forward, his screen face turned toward a partial stranger on the right (a head in three-quarter view and a shoulder, cut by the frame), one short bright line from Wick's face to a single small detail on the stranger: the stranger's hand, which is clenched, with two tiny tick marks at the knuckles. Everything else about the stranger stays plain. A small open bracket round that one hand highlights it.\nAvoid: a magnifying glass, a detective hat, a lie-detector graph, a cartoon eyeball, a ? glyph, a speech bubble.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/bulwark.png",
+    "art/icons/perks/bedside-manner.png",
+    "art/icons/perks/before-the-blink.png"
+  ],
+  "family": "perk_candidates",
+  "id": "read-the-air",
+  "source_sha256": "8c3701a7cb7a6db56985ad727a91e682e178f5e302e4a37434a6db0dd5b904c0",
+  "export_sha256": {
+    "256": "8f577b0ac6bf4482fff14f547949b60daacd4dac880fb555a98e723d53d1ac9d",
+    "128": "ef143db1aac6c7c680b9ed8dc3ae084d14d806b60bf8eb3606006c0527f22c27",
+    "64": "d5326a6e7e28ee3e52e8358be0401edbdee3b154dcd9f9d4fc6ab3276893fe96",
+    "56": "299e518ab95dd3b06a2c31cb89ae08f02e7d7c8b3a678cd18e8cd2234a253337",
+    "48": "75e690a02c4ecb3bc6499e89fd328f600a0bcc6e2b74da22a315c064f2ff3db5",
+    "44": "a09a54e4c45884c57a1b9259b82332e98c2f44b35f087f7707a4beef153e2134",
+    "40": "80b2019b46cd4675055a76549a49ee4695d191609bec5c3a3c87485ac2f9b6d0"
+  }
+}

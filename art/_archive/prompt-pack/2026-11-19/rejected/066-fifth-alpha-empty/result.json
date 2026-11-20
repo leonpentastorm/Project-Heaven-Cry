@@ -1,0 +1,8 @@
+{
+  "n": 66,
+  "refs": [
+    "art/icons/forks/sigil-running-script.png"
+  ],
+  "prompt": "Make one tiny additive ink edit on this exact Project Heaven Cry icon. Leave every part of the supplied white mascot drawing and all existing glyph marks completely alone. In the transparent space just above the existing tiny chain of white boxes on the right of the image, add a small half-drawn angular white glyph, like a short unfinished open corner in three fine joined strokes. Its last stroke stops toward the pen. Match the clean white ink. Do not rescale the long horizontal illustration or redraw the figure. Output the entire provided exact icon with only this tiny addition, keeping the original white and true transparent pixels everywhere else.",
+  "src": "art/_archive/prompt-pack/2026-11-19/rejected/066-fifth-alpha-empty/native.png"
+}

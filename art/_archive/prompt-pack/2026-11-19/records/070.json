@@ -1,0 +1,63 @@
+{
+  "file": "04",
+  "source": "04-skills-soul.md",
+  "line": 25,
+  "title": "`soul_modules.second_school`: Two Schools",
+  "path": "art/icons/moves/two-schools.png",
+  "notes": "- **Save as:** `art/icons/moves/two-schools.png`. **Mode:** Wick.\n- **Shows:** the verb button and the design card in the Outburst designer.\n- **Must read at icon size as:** one big shape with a smaller shape nested inside it.",
+  "paint": "Wick standing with both arms cradling one large rounded burst of light held at his chest, a solid white orb. Inside the orb, cut out as a negative shape, sits a second smaller shape with a different silhouette (a small teardrop), so the orb reads as one thing carrying another inside it. Wick's head tilts down toward it, calm. Bold flat shapes, the outer orb and the inner cut-out are the whole picture: no rays, no sparks.",
+  "status": "review-candidate",
+  "n": 70,
+  "kind": "wick",
+  "refs": [
+    "art/icons/traits/mind-without-fog.png",
+    "art/icons/perks/sweet-talker.png",
+    "art/icons/perks/litany.png",
+    "art/icons/perks/shared-breath.png"
+  ],
+  "previousPaint": "Wick standing with both arms cradling one large rounded burst of light held at his chest, a solid white orb. Inside the orb, cut out as a negative shape, sits a second smaller shape with a different silhouette (a small teardrop flame), so the orb reads as one thing carrying another inside it. Wick's flame head tilts down toward it, calm. Bold flat shapes, the outer orb and the inner cut-out are the whole picture: no rays, no sparks.",
+  "label": "Two Schools",
+  "sha256": "9a23849b23d2e9bee3e9d48a2fa106bfec6ec4f07a6f448813cae487fed7f5c9",
+  "width": 1024,
+  "height": 1024,
+  "format": "png",
+  "mode": "wick",
+  "production_approved": false,
+  "implementation_ready": false,
+  "background": "transparent",
+  "collection": "prompt-pack-2026-11-19",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19/native/070-two-schools.png",
+  "upscaled": false,
+  "exports": {
+    "256": "art/icons/moves/exports/256/two-schools.png",
+    "128": "art/icons/moves/exports/128/two-schools.png",
+    "64": "art/icons/moves/exports/64/two-schools.png",
+    "56": "art/icons/moves/exports/56/two-schools.png",
+    "48": "art/icons/moves/exports/48/two-schools.png",
+    "44": "art/icons/moves/exports/44/two-schools.png",
+    "40": "art/icons/moves/exports/40/two-schools.png",
+    "32": "art/icons/moves/exports/32/two-schools.png",
+    "24": "art/icons/moves/exports/24/two-schools.png"
+  },
+  "brief": "art/briefs/prompts-2026-11-19/04-skills-soul.md:25",
+  "ink": "#FFFFFF",
+  "prompt": "Draw one icon in pure white flat ink (#FFFFFF) on a fully transparent background, in exactly the style of the attached reference icons: Wick, the small figure of the trait and perk icons with the ceramic pixel-screen head, capelet and lantern heart, in bold flat white shapes, a confident inked silhouette with a few interior cuts, the same line weight. No outline in another colour, no shading, no gradient, no texture, no glow, no colour and no grey. Wick is the only full figure; anyone else is a partial (a hand, a shoulder, a silhouette cut by the frame). One action, centred, with clear space around it, square, 1024 x 1024 PNG with transparency. It must read at 32 px in a row and at 44 px on a chip: silhouette first, two or three interior cuts at most. No text, no letters, no numbers, no border, no frame. Invented shapes only. The icon shows:\nWick standing with both arms cradling one large rounded burst of light held at his chest, a solid white orb. Inside the orb, cut out as a negative shape, sits a second smaller shape with a different silhouette (a small teardrop), so the orb reads as one thing carrying another inside it. Wick's head tilts down toward it, calm. Bold flat shapes, the outer orb and the inner cut-out are the whole picture: no rays, no sparks.\nWick always has the exact approved oversized rounded ceramic screen head, transparent face recess with white pixel expression, ear discs, offset shell fittings, short asymmetric capelet, lantern-heart inset, chunky mitten hands and cuffed boots. The silhouette of the head ends at the smooth ceramic shell. There is NO flame, tuft, plume, candle or object attached to or above his head. Resolve any stale flame wording through the angle or pixel expression. Omit default floating cup and reference arrows.\n \nAll dark voids are physically transparent alpha cutouts, never solid black or gray. Clear border, stable negative space at game size, pure white flat ink.",
+  "family": "move_icons",
+  "id": "move-two-schools",
+  "source_sha256": "b2fe914ff1ba581d01a4d07b2f229ae2318352ab3f4bc2520118a9a6964d19ad",
+  "export_sha256": {
+    "256": "ff98d8d8bf0b2818f029793ccee3ed11bfa8c93c6d59f80a5214883875080e6f",
+    "128": "a4a9109f49a1ceecb2e424f828c4c2809b7bedfa4f26b28805c3f3e18292f5b5",
+    "64": "2f043ea7821d7c291ce4ea87d03e9cb049a7c05a2058c9396ca653fd4477aa20",
+    "56": "af91fe54f780eb5447f988058ed28d818a4251823b6b9b484fdf851749558518",
+    "48": "830b3de42e9ce765d0c2d84055a3ea794ddb63c14d3ba97e86f72cdaa5502a7e",
+    "44": "484c27d0ee800f2d95b9d06bb9d7774aac08a50483b0d22ed9d0c532bfd4e2ac",
+    "40": "85083287158f7ca3837aef8bfe678d05fbf38bc4171fdca448723a524ae2ff0d",
+    "32": "7afefa6e7559d6e2d7ebe89ff8ace49c36787b807bff24fa1bfe934b7d6d9e47",
+    "24": "c0edf9a8459fa790acfb4aebd0856d397dc2dd46f51dd307875de4554fae9dcf"
+  }
+}
