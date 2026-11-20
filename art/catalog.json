@@ -27005,6 +27005,42 @@
         "different_pixels_32": 25,
         "different_pixels_64": 79
       }
+    },
+    "armour-breather--fine": {
+      "label": "Breather — Fine",
+      "path": "art/icons/gear/armour-breather--fine.png",
+      "sha256": "441d96ff6e4b937dfd8102d7fa0a73a5cc22a0ff4345f1c3a7611e9950d0ac1a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--fine.png",
+        "128": "art/icons/gear/exports/128/armour-breather--fine.png",
+        "64": "art/icons/gear/exports/64/armour-breather--fine.png",
+        "32": "art/icons/gear/exports/32/armour-breather--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breather",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9853352740110903,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 20
+      }
     }
   },
   "survival_art": {

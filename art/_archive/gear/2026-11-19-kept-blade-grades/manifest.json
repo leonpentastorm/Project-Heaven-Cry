@@ -8964,6 +8964,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-breather--fine",
+      "path": "art/icons/gear/armour-breather--fine.png",
+      "sha256": "441d96ff6e4b937dfd8102d7fa0a73a5cc22a0ff4345f1c3a7611e9950d0ac1a",
+      "label": "Breather — Fine",
+      "family": "armour-breather",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--fine.png",
+        "sha256": "f4131e800fc5c8b9b51b98b8ea7b251c8d055c42ef483a9e6bb9420bd7c520b5"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-breather--fine.png",
+        "sha256": "441d96ff6e4b937dfd8102d7fa0a73a5cc22a0ff4345f1c3a7611e9950d0ac1a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-breather--fine.txt",
+        "sha256": "50b73cec46ae73ba400c834c1a938e86ceabf70734aed8834f0518fd1942af71"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-breather.png",
+          "sha256": "122ce61995e1f39338eafa5d03b36c19766c9fac17fa0eb3a441b2390e9d45ce"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--fine.png",
+        "128": "art/icons/gear/exports/128/armour-breather--fine.png",
+        "64": "art/icons/gear/exports/64/armour-breather--fine.png",
+        "32": "art/icons/gear/exports/32/armour-breather--fine.png"
+      },
+      "export_hashes": {
+        "256": "43703f202d75c50270891df2d285bcb29f4bbda7f6ac7236139bb4e8701c68e6",
+        "128": "f3b9d4cfc59c2f1cfcf48b13c7812bf7b138a0210c59dc297cc13e41378e363c",
+        "64": "d235ab5a08c3e6edcd5b1aef3a5ca91b4af67bcb27e5ab38dd931229da23dd0e",
+        "32": "02ac2aea42478ebe1c3757c86ac4cb38f684b8ee6295922f8cd3188c10286aa0"
+      },
+      "grade": "fine",
+      "standard_id": "armour-breather",
+      "outline": {
+        "solid_alpha_iou": 0.9853352740110903,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
