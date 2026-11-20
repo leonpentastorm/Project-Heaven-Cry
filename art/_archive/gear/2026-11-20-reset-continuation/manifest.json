@@ -744,6 +744,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hellraiser_servo_fist--relic",
+      "path": "art/icons/gear/weapon-hellraiser_servo_fist--relic.png",
+      "sha256": "a3645baabb1f18c0bb48f31476a0e4779c8932a868395a41a3044ce4aa2c6bd3",
+      "label": "Hellraiser Servo Fist — Relic",
+      "family": "weapon-hellraiser_servo_fist",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_servo_fist--relic.png",
+        "sha256": "7d966b027c8d32633051225c648d835ee3c0eafffa8d2f458cbfe01cc40c2f7d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-hellraiser_servo_fist--relic.png",
+        "sha256": "a3645baabb1f18c0bb48f31476a0e4779c8932a868395a41a3044ce4aa2c6bd3"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-hellraiser_servo_fist--relic.txt",
+        "sha256": "6d133dece1e02fda1316bbc6f1539615864852284e72f507d2c8e3a35e24a30f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hellraiser_servo_fist.png",
+          "sha256": "194e053129041c6456b705be701992e72d6ec8420a7901f10fe8cf0bf92bec00"
+        },
+        {
+          "path": "art/icons/gear/weapon-hellraiser_servo_fist--masterwork.png",
+          "sha256": "d41f627c908cdb82d0030478fbfc718a576b94ed4d53b0cdfda598e5f05e4c21"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-hellraiser_servo_fist--relic/01-quality-review/native.png",
+          "sha256": "452e24b5cc33a77d9f3ac19deb656580b7f06b8bb218e432193ff53ecde67a10"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_servo_fist--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_servo_fist--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_servo_fist--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_servo_fist--relic.png"
+      },
+      "export_hashes": {
+        "256": "4bafb2aae1ec0190caa9dbe1d0edf6894f1f919b28aa22eb74a9f47723df57f7",
+        "128": "6651bbe267af130f57bf81bbde4a6e69da5cc092a3bf52f6aa6faf701d8df8eb",
+        "64": "7fd07c80046a641a4d8cccc664e58144050bf5ca2fb004fe231a6c75ab0daf44",
+        "32": "9db54fb6b3d9634e228845c653f45672b6bf548c0a2db13e95b4d59e8556c761"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-hellraiser_servo_fist",
+      "outline": {
+        "solid_alpha_iou": 0.9354116417099533,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 18,
+        "different_pixels_64": 53
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
