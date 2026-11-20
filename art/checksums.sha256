@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-77ca2704753813d4f21fd5eec68a18b0fe620d9fc8a3915bfb28c86f25ca34c9  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+993458ccb4b274ee0e522a947aeacd782f80e439dd7f3814c91c6495c46841e9  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 cfe0b7165b9763268d0236c6c4e2d3115516495eb909f41cfb8621beee42e813  art/_archive/gear/2026-11-19-kept-blade-grades/START-HERE-2026-11-20.md
 8ee34c72311bf68773c6853ab0bb7d25b31c2b57e8143486cfbd5f27578d9e64  art/_archive/gear/2026-11-19-kept-blade-grades/TOMORROW.md
 dc45fc3c9fb69cc8ef2a2ab30aaefdfe979447725ab1cf53391fc2ffe47c8ca4  art/_archive/gear/2026-11-19-kept-blade-grades/VALIDATION.md
@@ -1861,7 +1861,7 @@ f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/g
 413b2adf894497a56b98375b72437e60d2a8805d53727e3441070c247e265c32  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json
 e49b88c1c8e8faccd29fab4de73c1d9e3b9d656d510539f826076b68a6323021  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_pick--fine--1795155670059.json
 63fe7ac88a5e6ac611b6d1d7336d6104cec11fa77f81d5d1b786da46672b42b9  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json
-ea9ea943f3e70265559b7a3fc30dd3dce3ad6c600a38dd9280dba15f3daae6a0  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+8991db12db911d60dcd00c181cecea71e45a11531a3414623127e59f993f35c2  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
 31b9266c8a923ce1e84e1237e45494829d72265679afc370a72675e70d85c156  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--celestial.png
 f93411441905437355171c2f6a64045a0cfe2099aaf24cf694d5dd7da311afa6  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--fine.png
 fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--masterwork.png
@@ -2042,6 +2042,7 @@ eb52552c61fa3f5b0e713a0d5e1fe5b19407735b61eed01d8167f78977e55d4c  art/_archive/g
 36bb6f5d0d9e641ec58e27107f37c5be3b98eb6a0559a25e9cceb2a4b0478b73  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_snarl_knife--fine.png
 e60a8f9bfac24f0da82bbb57ce5af2f0d4b3c1fdc17f0cd61d112c62609f0afa  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_snarl_knife--masterwork.png
 f9f99f9012ee74a3dd4c11426fbe7a1d474396118eb506861bd6becca9395557  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_snarl_knife--relic.png
+634edd23357ced5b14d41a822405b8a8d5175c4ef31bf76f68d0f9a9d5f2af8a  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_wreck_saw--celestial.png
 1b97fe1e892376933d74932eb444a98a54e8a7c5b7d16a18af20fa468c92b6a3  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_wreck_saw--fine.png
 ba141ac9fa41333ee978c92bb5f534e805ba1c6797ce7a3f25ebb6d1c6a23f09  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_wreck_saw--masterwork.png
 cb6af16fe46cf881c21bd95a77d73180f6b7dc62e68514fea15179baa1c7e08d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_wreck_saw--relic.png
@@ -2049,7 +2050,7 @@ cb6af16fe46cf881c21bd95a77d73180f6b7dc62e68514fea15179baa1c7e08d  art/_archive/g
 876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--fine.png
 ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--masterwork.png
 9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--relic.png
-715993334a1b5affa0286657dd9a3f439e28837bd26b1052f2947ac5ee1d9022  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+cfb9a7eab7f67add949d0eb6a824ad2577528862d8eea15d25117d61fcb1c070  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 7072283c256a7cd34d750cfe09118d83631509ed58760961580028abc78f6bf8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt
 048ccfc688b5412dd99ae31c3119eaae6f4126ba06c421f73ccb095a68e03315  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--fine.txt
 109c7d7ccd649f9b5ca60c47fa35ef9a7c9308c47c1c903dba426028fbf7b521  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt
@@ -2258,7 +2259,7 @@ f8effb1e3a5b76eddff97a56ac7bdeca6ccf4053c51cf3aacb6474f2c26f7ab6  art/_archive/g
 074e07eb656c384e897a0469b182d8482e425361b94e747028f2630660e53d1f  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_snarl_knife--fine.txt
 64cbaa0420b84ba698fea6bd8454d5e4867895fb90a12355ab286bd781d71e7f  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_snarl_knife--masterwork.txt
 82fd4ab9c19adc4d2a85ff6819be2be66d493a3e5ebb094c4c5d271200fa81ea  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_snarl_knife--relic.txt
-eea086b91a4a88f05500025a40996dd73cb184d4040f91638e4fe1b4bf805f51  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_wreck_saw--celestial.txt
+e3cc914bcd222e1b4b2ad5a50b45520d8867a9e728060ace45cd08145f9e5571  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_wreck_saw--celestial.txt
 2a0d1325bfd8db41984919fc17949a5e251dbe7d8e10212f0cb4097943a928bd  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_wreck_saw--fine.txt
 c0bbdb17311ca2126cd639ce37e0d708bf9f801198f9fb3f0badbbf060281799  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_wreck_saw--masterwork.txt
 6b5a437de0785b4d62f292139bcb833e57e5fd790a21321c2717bfd2135ea39f  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_wreck_saw--relic.txt
@@ -2306,7 +2307,7 @@ bc68a83c56a8024aa509dbc18cd09734ffcdd82548d35c4442ec53dc05ea409f  art/_archive/g
 3dea41ecea9988023656c2dbfa4e527fcb8194d71b6aea386f1ed9f9e6294d0b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--fine.txt
 684d47c91ba4301ee4c3f08b30bcf0f4e1883952dbc341a5852a161ae3effafd  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--masterwork.txt
 50a61f4ac3a7e5f5690ba802260fb911300852923bddd0fd2e750b56d2123871  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--relic.txt
-ed3764152ab4ababb215a1ff359b683a9bcae04f1bd7215807ca70167d1bcecc  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+640fbe11f3f69284ec122f336ea6ed0ce64f2424d29126796286c386a0bbae2b  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 40590eb9b576e9d16899ba703041c16e3244a5a4fd689355e53adc4dd536d2fb  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-32px.png
 9b9c6401e3920bb264df0cc7aad2ea9bf468b2b079f3eeb7efd87a219275fa67  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-64px.png
 ac788bb44b1e1e9dfaf3afe95f2b8facc30a95c3eeb2e07876760fb7c46cc2bc  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-assault_helm-32px.png
@@ -2402,8 +2403,8 @@ ec27867383d47f60f54771504e2943438395a1c7a056372217dca2ef6cf9dfc5  art/_archive/g
 347e1c4b6c7a03de28a01bf851d80b4ac010a13d96ba9c445c6d8d4f0bea67e7  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-ork_machete-64px.png
 03b0b456d66b9d0fa157eafc5a610c928cb2555176d6a08e06ea0174519d7296  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-ork_snarl_knife-32px.png
 78195bcab57af0841c4f76fde384ccbf3d4b57516cbbb45e5174d214711e7df6  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-ork_snarl_knife-64px.png
-9050e780e8acd1cb357c1a2540e3e699256d9972beb3f496a01136464a3355d7  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-ork_wreck_saw-32px.png
-1fb0036dce86e5f638a5b3c3c900813c095d05633f01381e17c37bd4502632cd  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-ork_wreck_saw-64px.png
+2150df685fd1d3cc06a43e812225adb8ea6abcb0b4cf7ccae87971f3003c16b1  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-ork_wreck_saw-32px.png
+0456c5457b2c344d3700b05e457d1ad1614830cb9edfa59ed522eb297990792a  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-ork_wreck_saw-64px.png
 10174c0e9ed341e69981dac015d5f7dcd950779224d44745a092d93da06d9dfc  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-striking_gloves-32px.png
 32d9a9d6198c7840cf58ff9ea7046bfe9c78760bb30b92b117266a6ea844f007  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-striking_gloves-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-19-kept-blade-grades/source-brief.md
@@ -2587,6 +2588,7 @@ e5aca654d25a8baedf932b765c48782ca273e8108eb8314368548e52e70645e3  art/_archive/g
 73c2ca8376e2610bd08ccee8c10e40986b8277ab7b3aa585887cae2012b0c320  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--fine.png
 62f748d0d401bf28d20e022f2cb91e9b64381597d8a45355143f4c36821d3521  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--masterwork.png
 69c1cc1f86315153c121f0a7b14a987d5ac6e86f26c15d462136d6662571de1d  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--relic.png
+102289b198f74c63c8c61307f0388b404ec54aed08ddc06a7cb70bca70115f92  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--celestial.png
 2645a95c7b6452035974a80dcc27999e246f79d45245d7831cd8bed58735b27d  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--fine.png
 ae9e42f0d0a8f828646b45413d8d592c2946a9b5736f1fd9754001601921a296  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--masterwork.png
 d11d05e0ec115a0c2ff1628e5c28d87946ae93c223cacad2a4096c5757edab4d  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--relic.png
@@ -6541,7 +6543,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-63bddfdf65a940fd52311efcc08b3622c86f8bd3b7fc00344b41fcb808c7b688  art/catalog.json
+a92b6af455489c0bc2afb15fb3b3e36248a7a01d8357bf8d2f5e58c02f6ea337  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8693,6 +8695,7 @@ a837bb6f642515b9c6c9a0ad48fd1c5e86f4006c3053c821b402e0e27a1707dd  art/icons/gear
 a463fecc156d211bae36e50c9e41ac708ba9a632cf7dc57ba3b04d67965bf8a7  art/icons/gear/exports/128/weapon-ork_snarl_knife--masterwork.png
 df23b2a2b840e2eebc46445113cbc13ac4e937a3fb77c96c8038e1bee85c8c33  art/icons/gear/exports/128/weapon-ork_snarl_knife--relic.png
 7e20f210d541c3f8b697cccda1ced8fc6bdf03dc57635bcd0272fd3936692de6  art/icons/gear/exports/128/weapon-ork_snarl_knife.png
+c078745a21551e213286bac994c0952fc2ebf83bcde44f75d481b3f5757099da  art/icons/gear/exports/128/weapon-ork_wreck_saw--celestial.png
 3a1be482ac0ae6fe8bbdadf70a97aafc2ec8ea3cf99bc6f57d20982c636f9ddf  art/icons/gear/exports/128/weapon-ork_wreck_saw--fine.png
 65c0257ee18dc3b613779f6f0a6f381cedfd2d2cf64a087f38e5f779521b0b39  art/icons/gear/exports/128/weapon-ork_wreck_saw--masterwork.png
 1d43f33767f6860fea775f5a57cb30c4ea5e48403ead21eea3a49cdeba8eda79  art/icons/gear/exports/128/weapon-ork_wreck_saw--relic.png
@@ -9159,6 +9162,7 @@ fda62e49e70bb37e916e9703c8e87c6dde9ae99e5404f6043ab5fd785459d34b  art/icons/gear
 c49681d9b00bea3d029d689eb8b524742b3e3d87976cf6790c1f72dfdfafb929  art/icons/gear/exports/256/weapon-ork_snarl_knife--masterwork.png
 67161a9c78748bcfcb615b55a52edb252111ebbe8f55d8647b4e63a04bc97f57  art/icons/gear/exports/256/weapon-ork_snarl_knife--relic.png
 82d7f7365ab64e17fc55df02ea46a68b19cb078d9157dc1640899e416a595dcc  art/icons/gear/exports/256/weapon-ork_snarl_knife.png
+6deac166332375686670e8904ea9998f1f913c1b792b64eb607aaac3e77cc35e  art/icons/gear/exports/256/weapon-ork_wreck_saw--celestial.png
 6c0e43ec0fb9f5a0cbfaad7d71c8de801ba5c2f128b9bc5a999acfd8bd66fc32  art/icons/gear/exports/256/weapon-ork_wreck_saw--fine.png
 78addcb9903b42cd1ffd1cbcff0a7d8ef3a7be71f8a0240c25a2b139d549e002  art/icons/gear/exports/256/weapon-ork_wreck_saw--masterwork.png
 422618aaa9dd18421eaa9251d74aee21590c2679afa02e1b0b5485c1b8beea6f  art/icons/gear/exports/256/weapon-ork_wreck_saw--relic.png
@@ -9625,6 +9629,7 @@ e16d15fcc97196b7a86a280b28caf78fc6838ebcb46c94d956f917744ffe6f69  art/icons/gear
 7c7b9efdfe1f2e45c170e600794df1ba1d8e31c4c28e0fecc157e9479b979835  art/icons/gear/exports/32/weapon-ork_snarl_knife--masterwork.png
 fdae2c1fa9cc3b90845f7fbcc8c2b8bf1f5466f16685cf269268bd15879772ae  art/icons/gear/exports/32/weapon-ork_snarl_knife--relic.png
 d9e88fca96de992dd6998fbfca44042f880575c4e0f6530bbb47883fab9f0098  art/icons/gear/exports/32/weapon-ork_snarl_knife.png
+26cae814af02fbc655088321cec652089c9c6b38384b0dd7b3d7d18ae8c3e9ac  art/icons/gear/exports/32/weapon-ork_wreck_saw--celestial.png
 5b29e7ddb0cb8394c86583ac4190c56dce08a80233341c0f961fcd8e5029cd05  art/icons/gear/exports/32/weapon-ork_wreck_saw--fine.png
 49b3624631c87e8bf6c2344dee0e67c1d2e4e64b0da4d075c61890810e06fff3  art/icons/gear/exports/32/weapon-ork_wreck_saw--masterwork.png
 decdf00cd2115871869ef4ccffd5076ec479358d972350ebfbec59e48a7bcef8  art/icons/gear/exports/32/weapon-ork_wreck_saw--relic.png
@@ -10091,6 +10096,7 @@ e5dc2dd903322ee39fbe3e545e1eb857d042b724b1a9b9dd943e9519a800992a  art/icons/gear
 f7243ccbc645135b9a5b9c5c18b79a260b5b95a5bf4aecaf679f83c2232f7443  art/icons/gear/exports/64/weapon-ork_snarl_knife--masterwork.png
 685a3bc67ee856ca4607f6666ec1e72c098b0f8c74e00cca0bc6e2a5ac743f67  art/icons/gear/exports/64/weapon-ork_snarl_knife--relic.png
 e6e3890825eb7ea3b3e54c666cc5492f2c7efcdce57c7f7adb8a6c25c6bf9cbd  art/icons/gear/exports/64/weapon-ork_snarl_knife.png
+28bc4a7e596249ad88d25d473320bbd28d69fb1cae8504cd571f377059582b99  art/icons/gear/exports/64/weapon-ork_wreck_saw--celestial.png
 ec602a5a38ccbba985b98d67eab358cd5f4596f179e595e416b811222eb496a7  art/icons/gear/exports/64/weapon-ork_wreck_saw--fine.png
 fa25a6ba84ebcfcc0887450739616cddc42b8d20a625a72f584f694cc31da6bb  art/icons/gear/exports/64/weapon-ork_wreck_saw--masterwork.png
 19e26b0ec5f36eaf79609ca894d07304799bf67f453a906831fc8fc3f0a2d1d5  art/icons/gear/exports/64/weapon-ork_wreck_saw--relic.png
@@ -10377,6 +10383,7 @@ eb52552c61fa3f5b0e713a0d5e1fe5b19407735b61eed01d8167f78977e55d4c  art/icons/gear
 e60a8f9bfac24f0da82bbb57ce5af2f0d4b3c1fdc17f0cd61d112c62609f0afa  art/icons/gear/weapon-ork_snarl_knife--masterwork.png
 f9f99f9012ee74a3dd4c11426fbe7a1d474396118eb506861bd6becca9395557  art/icons/gear/weapon-ork_snarl_knife--relic.png
 4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3  art/icons/gear/weapon-ork_snarl_knife.png
+634edd23357ced5b14d41a822405b8a8d5175c4ef31bf76f68d0f9a9d5f2af8a  art/icons/gear/weapon-ork_wreck_saw--celestial.png
 1b97fe1e892376933d74932eb444a98a54e8a7c5b7d16a18af20fa468c92b6a3  art/icons/gear/weapon-ork_wreck_saw--fine.png
 ba141ac9fa41333ee978c92bb5f534e805ba1c6797ce7a3f25ebb6d1c6a23f09  art/icons/gear/weapon-ork_wreck_saw--masterwork.png
 cb6af16fe46cf881c21bd95a77d73180f6b7dc62e68514fea15179baa1c7e08d  art/icons/gear/weapon-ork_wreck_saw--relic.png

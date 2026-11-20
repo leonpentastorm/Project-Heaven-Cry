@@ -11374,6 +11374,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_wreck_saw--celestial",
+      "path": "art/icons/gear/weapon-ork_wreck_saw--celestial.png",
+      "sha256": "634edd23357ced5b14d41a822405b8a8d5175c4ef31bf76f68d0f9a9d5f2af8a",
+      "label": "Wreck saw — Celestial",
+      "family": "weapon-ork_wreck_saw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--celestial.png",
+        "sha256": "102289b198f74c63c8c61307f0388b404ec54aed08ddc06a7cb70bca70115f92"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_wreck_saw--celestial.png",
+        "sha256": "634edd23357ced5b14d41a822405b8a8d5175c4ef31bf76f68d0f9a9d5f2af8a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_wreck_saw--celestial.txt",
+        "sha256": "e3cc914bcd222e1b4b2ad5a50b45520d8867a9e728060ace45cd08145f9e5571"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+          "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_wreck_saw--relic.png",
+          "sha256": "cb6af16fe46cf881c21bd95a77d73180f6b7dc62e68514fea15179baa1c7e08d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw--celestial.png"
+      },
+      "export_hashes": {
+        "256": "6deac166332375686670e8904ea9998f1f913c1b792b64eb607aaac3e77cc35e",
+        "128": "c078745a21551e213286bac994c0952fc2ebf83bcde44f75d481b3f5757099da",
+        "64": "28bc4a7e596249ad88d25d473320bbd28d69fb1cae8504cd571f377059582b99",
+        "32": "26cae814af02fbc655088321cec652089c9c6b38384b0dd7b3d7d18ae8c3e9ac"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-ork_wreck_saw",
+      "outline": {
+        "solid_alpha_iou": 0.9272837736789631,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 19,
+        "different_pixels_64": 87
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
