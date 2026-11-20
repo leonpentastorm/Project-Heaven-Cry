@@ -3705,6 +3705,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-boss_shield--celestial",
+      "path": "art/icons/gear/shield-boss_shield--celestial.png",
+      "sha256": "3c18cca07924c8fc5a5432d1fc9fdb987145619526490ba967a70e6cb485b962",
+      "label": "Boss Shield — Celestial",
+      "family": "shield-boss_shield",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-boss_shield--celestial.png",
+        "sha256": "a4a893632b043f2d7ccf8e6110dc615035de9a7ba9921c75ab666c72939cce3d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-boss_shield--celestial.png",
+        "sha256": "3c18cca07924c8fc5a5432d1fc9fdb987145619526490ba967a70e6cb485b962"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-boss_shield--celestial.txt",
+        "sha256": "d461fb6cd98cb9fa46fcaaf66af9019ef178e9feef0cc37698a0f250da293802"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-boss_shield.png",
+          "sha256": "3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8"
+        },
+        {
+          "path": "art/icons/gear/shield-boss_shield--relic.png",
+          "sha256": "9af1111d93c1ee9239cc3ebecb79a43c73f128d2604af681cf152528a6ad4174"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png",
+          "sha256": "e4594f2311e982ae2a4603db4c8c28e53d889d36fb7114e1625d49fccdcb113a"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-boss_shield--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-boss_shield--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-boss_shield--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-boss_shield--celestial.png"
+      },
+      "export_hashes": {
+        "256": "638e359664a1fdf8322fcbf53348981d146cfcadcc78989b9feda008377b0499",
+        "128": "a7516e521d894a2ded91ae7e2698b802526d91acd346e804ab53591cf08a2f3c",
+        "64": "c34392283686b98fff03f28627c16c61b889a0d49b77bea1011165055b117272",
+        "32": "b778ba260b5ab027ca335c7a0764bc1cccee714f47423c5662d0bacdb0901656"
+      },
+      "grade": "celestial",
+      "standard_id": "shield-boss_shield",
+      "outline": {
+        "solid_alpha_iou": 0.9869014081687,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 14
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
