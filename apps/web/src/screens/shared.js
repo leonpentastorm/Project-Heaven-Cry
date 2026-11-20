@@ -1,5 +1,6 @@
 // Shared screen helpers: the prototypes' D data, the EPCCG "?" pop-up, the lightbox and the Mastered card,
 // ported from design/canvas-build/{epccg,lightbox}.logic.js. Screens import what they need.
+import { drawingFrames } from '../game/frames';
 import PD from '../game/protodata.json';
 import epTpl from '../templates/epccg.template.html?raw';
 import lbTpl from '../templates/lightbox.template.html?raw';
@@ -606,6 +607,8 @@ export const motionRoot = () => (reducedMotion() ? 'phc-rm' : '');
 /** Close something with its out animation: mark it closing (state.closing[name]), then run done() after the animation.
  *  A second call while it is closing does nothing. */
 export function closeAnim(self, name, done) {
+  // a page that draws no frames plays no out animation and its timers may wait a minute: close at once (game/frames.ts)
+  if (!drawingFrames()) { done(); return; }
   if ((self.state.closing || {})[name]) return;
   self.setState({ closing: { ...(self.state.closing || {}), [name]: true } });
   setTimeout(() => { try { done(); } finally { self.setState({ closing: { ...(self.state.closing || {}), [name]: false } }); } }, reducedMotion() ? 150 : MOTION_MS);

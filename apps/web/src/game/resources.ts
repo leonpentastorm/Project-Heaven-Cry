@@ -129,6 +129,12 @@ export function classResInfo(c: any, resId: string): { label: string; source: st
  *  for the integrator: the Sigils and Outbursts lanes read the same field for their doors), shown under the Guard row of
  *  every unit with a Guard pool, whatever it holds. */
 /** Guard's rule in one sentence (the soak is the engine's number). */
+/** The Shadow door's word for a unit, from the engine's sight (rules 1.32): Seen, In view or Unseen ('' with no fight).
+ *  The one reader of it: the Shadow meter's "Eye" line and the SHADOW tab's header say the same word. */
+export function sightWord(cb: any, u: any): string {
+  if (!cb || !u) return '';
+  try { const [s1, s2] = E.sightOf(cb, u); return s1 === 'seen' ? 'Seen' : s2 === 'in_view' ? 'In view' : 'Unseen'; } catch { return ''; }
+}
 export const guardRule = (soak: number) => 'Guard: each point soaks ' + soak + ' damage; Brace and the Guard technique refill it.';
 
 // ---------- the model ----------
@@ -361,7 +367,7 @@ export function resourcesOf(u: any | null, c: any | null, g: any): ResRow[] {
     const gv = id === 'guard' && u && cb ? (() => { try { return E.phys.physView(cb, u, u.side, g)?.guard || null; } catch { return null; } })() : null;
     const gRule = id === 'guard' ? guardRule(gv?.soak ?? E.phys.guardSoak(u || { level: c?.level ?? 1, skills: c?.skills })) : '';
     // Shadow (rules 1.32): Perception's door, in Perception ink, with the engine's sight word for the unit (Unseen, In view, Seen)
-    const sight = id === 'shadow' && u && cb ? (() => { try { const [s1, s2] = E.sightOf(cb, u); return s1 === 'seen' ? 'Seen' : s2 === 'in_view' ? 'In view' : 'Unseen'; } catch { return ''; } })() : '';
+    const sight = id === 'shadow' ? sightWord(cb, u) : '';
     const sRule = id === 'shadow' ? 'Shadow: built while unseen (a turn ended Hidden with no attack, a move from cover to cover, a kill nobody saw; at most 2 a turn), lost 1 at the start of a turn while seen, spent all at once by a Break on a weapon attack from Hidden.' : '';
     rows.push({ key: 'res-' + id, label: info.label, value: n + ' / ' + max, now: n, max, kind: max <= 10 ? 'pips' : 'bar', colour: id === 'shadow' ? RES_INK.perception : ink, sub: id === 'momentum' ? MOMENTUM_SUB : id === 'shadow' ? (sight ? 'Eye: ' + sight : 'Built while unseen') : (id === 'guard' ? doorLineOf('durability') || gRule : '') || info.source || '',
       ...(n >= max && max > 0 ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : n <= 0 && id === 'supplies' ? { warn: 'EMPTY' as ResWarn, level: 'caution' as const } : {}),

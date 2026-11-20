@@ -1249,6 +1249,7 @@
           "op": "grant_action",
           "action": "open_breath",
           "label": "Breath",
+          "text": "Once a turn: end your newest Body harm and be Guarded. Only with the Open Hand's gloves, or none, in your hands.",
           "ap": 1,
           "uses": "per_turn",
           "if": {

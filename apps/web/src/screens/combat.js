@@ -1,6 +1,10 @@
 // Combat, ported from design/canvas-build/combat.logic.js onto the engine's fight: real initiative, the grid,
 // path arrows with their AP cost, real hit odds, and every action checked by the engine. Enemies act on their own.
 import { dotJoin } from '../game/dotJoin';
+import { pinLogs } from '../game/logPin';
+import { drawingFrames } from '../game/frames';
+/** Whether a line is already said in one of these texts (its words, ignoring a closing stop and the case). */
+const saidIn = (line, ...texts) => { const n = (x) => String(x || '').trim().replace(/[.\s]+$/, '').toLowerCase(), l = n(line); return !!l && texts.some((t) => n(t).includes(l)); };
 import { narratedRoom, ADJ_MARKS, standingModsFor, kitSeenFor } from '@engine';
 import { shellVals } from './shell';
 import { DCLogic } from '../dc/runtime';
@@ -91,7 +95,7 @@ import { EV_FOLDS_CHANGED } from '../game/tabPrefs';
 import { vowPromptVals, patronLogCard, faithHeadVals } from './faithCombat';
 import { FAITH_GOLD, FAITH_INK } from '../game/faithView';
 import { pickTiles } from '../game/pickOverlay';
-import { resourcesOf, resView, heldOutburstOf, RES_CSS, sigilChip, sigilChipStyle } from '../game/resources';
+import { resourcesOf, resView, heldOutburstOf, RES_CSS, sigilChip, sigilChipStyle, sightWord } from '../game/resources';
 import { bondStripVals, reactionPipsVals } from '../game/bondStrip';
 import { designCards, heartPanel, heartVals, aimOverlay, idleOverlay, noOverlay, overlayTileStyle, overlayRingStyle, markChipStyle, markChipText } from '../game/heartView';
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
@@ -159,6 +163,14 @@ export function hitBreakdown(pv) {
 //   .phc-pip-drain   an AP pip just spent: flashes white, then drains
 //   .phc-wait-dots   the waiting card's three dots
 // Their times are × var(--phc-k): the combat speed (game/combatSpeed.ts; Normal ≈ 15% slower than Fast).
+/** The You card's compact form (a short window, or a taller one whose full card does not fit: fitYouCard). */
+const YOU_COMPACT = '.phc-me-full{padding:0!important;border:0!important;background:transparent!important;gap:4px!important}.phc-me-full>:not(.phc-me-hp){display:none!important}.phc-me-mini{display:flex!important}.phc-me-urgent{display:grid!important}.phc-cb-aside.phc-mine>.phc-cb-top>:not(.phc-me-full){display:none!important}.phc-cb-aside.phc-mine>.phc-cb-top{max-height:none!important;overflow:visible!important}.phc-cb-aside{gap:5px!important}.phc-me-hp{position:static!important;background:transparent!important;padding:0!important}';
+/** The compact card's row of urgent meters. */
+const YOU_URGENT = '.phc-me-urgent{display:flex!important;flex-wrap:wrap;align-items:center;gap:2px 12px;max-height:36px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-me-urgent>.phc-res-row.phc-res-mini{display:flex;flex:none;margin:0;padding:0 2px}.phc-me-urgent .phc-res-line{display:flex!important;gap:5px!important}.phc-me-urgent .phc-res-line>span:first-child{font-size:var(--fs-sub)!important}.phc-me-urgent .phc-res-line>span:nth-child(2){flex:0 0 auto!important;min-width:40px!important;max-width:84px!important;overflow:hidden!important}.phc-me-urgent .phc-res-line>span:nth-child(3){font-size:var(--fs-sub)!important}.phc-me-urgent .phc-res-chip{font-size:var(--fs-sub)!important;line-height:14px!important;padding:0 5px!important}';
+/** The class on <html> while the full You card does not fit (fitYouCard). */
+const YOU_TIGHT = 'phc-you-tight';
+/** Flat CSS rules (no @ blocks) with every selector put under a prefix. */
+const scopeCss = (css, pre) => css.split('}').filter((r) => r.includes('{')).map((r) => { const [sel, body] = r.split('{'); return sel.split(',').map((x) => pre + x.trim()).join(',') + '{' + body + '}'; }).join('');
 const COMBAT_CSS = [
   // The map's row and column labels take the pointer over their 2 px gaps too, so a tile scrolled under them is never hovered.
   '.phc-axis::before{content:\'\';position:absolute;inset:-2px}',
@@ -235,7 +247,7 @@ const COMBAT_CSS = [
   // Short windows (1280×720): You shrinks to one line in the bar, and on your turn the squad list steps aside (the
   // initiative strip and the grid still show everyone's HP), so the turn box keeps its room.
   // 0.31.1: on a short window the You card shrinks to its HP and status strip (under the small portrait, above the urgent meters), never gone
-  '@media (max-height:820px) and (min-width:1000px){.phc-me-full{padding:0!important;border:0!important;background:transparent!important;gap:4px!important}.phc-me-full>:not(.phc-me-hp){display:none!important}.phc-me-mini{display:flex!important}.phc-me-urgent{display:grid!important}.phc-cb-aside.phc-mine>.phc-cb-top>:not(.phc-me-full){display:none!important}.phc-cb-aside.phc-mine>.phc-cb-top{max-height:none!important;overflow:visible!important}.phc-cb-aside{gap:5px!important}.phc-me-hp{position:static!important;background:transparent!important;padding:0!important}}',
+  '@media (max-height:820px) and (min-width:1000px){' + YOU_COMPACT + '}',
   // Very short windows (1093×526): the squad list goes (the initiative strip and the grid still show it), one line of
   // action text, slimmer tabs, pips and buttons, no portrait on the target card. The tab panel keeps at least 44 px.
   '@media (max-height:620px) and (min-width:1000px){.phc-cb-aside{gap:6px!important;padding-top:6px!important}.phc-cb-turn,.phc-cb-dock{gap:6px!important}.phc-cb-aplabel{display:none!important}.phc-cb-turn .phc-pips>span{height:8px!important}.phc-cb-tabs>[role=tab]{min-height:30px!important}.phc-cb-aside .phc-cb-tabpanel{min-height:44px!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-selextra{display:none!important}.phc-cb-tgtimg{display:none!important}.phc-cb-foot>div{padding-top:6px!important;padding-bottom:6px!important}.phc-cb-confirm>button{min-height:38px!important}.phc-cb-say input,.phc-cb-say button{min-height:34px!important}}',
@@ -263,7 +275,10 @@ const COMBAT_CSS = [
   // 0.31.0 (U5): the action list keeps at least four rows (game/fold.ts listMinPx: LIST_MIN_ROWS rows); the blocks above
   // it give up their room first: on short windows the urgent meters are one line of minis and the tab panel's own title
   // line (the weapon block under it says the same) is dropped.
-  '@media (max-height:820px) and (min-width:1000px){.phc-me-urgent{display:flex!important;flex-wrap:wrap;align-items:center;gap:2px 12px;max-height:36px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-me-urgent>.phc-res-row.phc-res-mini{display:flex;flex:none;margin:0;padding:0 2px}.phc-me-urgent .phc-res-line{display:flex!important;gap:5px!important}.phc-me-urgent .phc-res-line>span:first-child{font-size:var(--fs-sub)!important}.phc-me-urgent .phc-res-line>span:nth-child(2){flex:0 0 auto!important;min-width:40px!important;max-width:84px!important;overflow:hidden!important}.phc-me-urgent .phc-res-line>span:nth-child(3){font-size:var(--fs-sub)!important}.phc-me-urgent .phc-res-chip{font-size:var(--fs-sub)!important;line-height:14px!important;padding:0 5px!important}.phc-cb-tpname{display:none!important}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:32px!important}.phc-vow-sub,.phc-vow-words{display:none!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-aside .phc-cb-tabpanel{min-height:' + listMinShortPx() + 'px!important}.phc-cb-aside .phc-cb-dock{gap:5px!important}.phc-cb-selbox{padding:5px 12px!important}.phc-cb-aside [data-phc-vow-prompt]{padding:3px 10px!important;gap:4px 8px!important}.phc-vow-grid{display:flex!important;overflow-x:auto;scrollbar-width:none}.phc-vow-grid>[data-vow]{flex:none;min-height:22px!important;padding:0 8px!important;row-gap:0!important}.phc-vow-grid img{width:18px!important;height:18px!important;grid-row:auto!important}.phc-cb-aside [data-phc-vow-prompt][data-open=true]{flex-direction:row!important;flex-wrap:wrap;align-items:center}.phc-cb-aside [data-phc-vow-prompt][data-open=true]>.phc-fold-h{flex:none;max-width:42%}.phc-cb-aside [data-phc-vow-prompt][data-open=true]>.phc-vow-grid{flex:1 1 140px;min-width:0}.phc-cb-aside [data-phc-vow-prompt][data-open=true]>[role=group]{flex:1 0 100%}}',
+  '@media (max-height:820px) and (min-width:1000px){' + YOU_URGENT + '.phc-cb-tpname{display:none!important}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:32px!important}.phc-vow-sub,.phc-vow-words{display:none!important}.phc-cb-seltext{-webkit-line-clamp:1!important}.phc-cb-aside .phc-cb-tabpanel{min-height:' + listMinShortPx() + 'px!important}.phc-cb-aside .phc-cb-dock{gap:5px!important}.phc-cb-selbox{padding:5px 12px!important}.phc-cb-aside [data-phc-vow-prompt]{padding:3px 10px!important;gap:4px 8px!important}.phc-vow-grid{display:flex!important;overflow-x:auto;scrollbar-width:none}.phc-vow-grid>[data-vow]{flex:none;min-height:22px!important;padding:0 8px!important;row-gap:0!important}.phc-vow-grid img{width:18px!important;height:18px!important;grid-row:auto!important}.phc-cb-aside [data-phc-vow-prompt][data-open=true]{flex-direction:row!important;flex-wrap:wrap;align-items:center}.phc-cb-aside [data-phc-vow-prompt][data-open=true]>.phc-fold-h{flex:none;max-width:42%}.phc-cb-aside [data-phc-vow-prompt][data-open=true]>.phc-vow-grid{flex:1 1 140px;min-width:0}.phc-cb-aside [data-phc-vow-prompt][data-open=true]>[role=group]{flex:1 0 100%}}',
+  // 0.33 (outside playtest of 0.32.0, 1280x900: YOUR TURN over the You card's HP and meters): a window taller than 820 px
+  // whose full You card still does not fit its share of the column (fitYouCard, below) uses the short window's compact card
+  '@media (min-width:1000px) and (min-height:821px){' + scopeCss(YOU_COMPACT + YOU_URGENT, 'html.' + YOU_TIGHT + ' ') + '}',
   // An open vow prompt gives up its room before the list does: beside the map it shrinks as far as its head line and
   // scrolls inside itself (its explainer is the head's hover card on short windows). The foot (the chosen action, Confirm
   // and End turn) sticks to the dock's bottom edge, so it is never scrolled away; the mini meters take at most two lines.
@@ -272,6 +287,21 @@ const COMBAT_CSS = [
 ].join('');
 ensureMotionCss();
 ensureStyle('phc-combat-motion', COMBAT_CSS);
+/** 0.33: the full You card in a window taller than 820 px, when it does not fit the column's share (its own box scrolls
+ *  past HP and the meters, and YOUR TURN sat over them at 1280x900): the compact card instead (YOU_TIGHT). Measured with
+ *  the full card on, again only when the window, the column or the card's words change. */
+let youKey = '';
+export function fitYouCard() {
+  if (typeof document === 'undefined' || typeof document.querySelector !== 'function' || !document.documentElement || typeof innerWidth !== 'number') return;
+  const root = document.documentElement, top = document.querySelector('.phc-cb-aside.phc-mine > .phc-cb-top');
+  if (!top || innerWidth < 1000 || innerHeight <= 820) { youKey = ''; root.classList.remove(YOU_TIGHT); return; }
+  const key = innerWidth + 'x' + innerHeight + '|' + Math.round(top.getBoundingClientRect().width) + '|' + (top.textContent || '').length;
+  if (key === youKey) return;
+  youKey = key;
+  root.classList.remove(YOU_TIGHT);
+  if (top.scrollHeight > top.clientHeight + 4) root.classList.add(YOU_TIGHT);
+}
+if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('resize', () => fitYouCard());
 ensureStyle('phc-combat-layout', LAYOUT_CSS);
 ensureStyle('phc-resources', RES_CSS);
 ensureStyle('phc-combat-mapzoom', ZOOM_CSS);
@@ -598,6 +628,7 @@ export class CombatLogic extends DCLogic {
     const P = this._pres || (this._pres = {}), cur = P[name];
     if (val) { if (cur && cur.timer) clearTimeout(cur.timer); P[name] = { val }; return { show: true, cls: '', val }; }
     if (!cur) return { show: false, cls: '', val: null };
+    if (!drawingFrames()) { delete P[name]; return { show: false, cls: '', val: null }; } // no frames: no out animation (game/frames.ts)
     if (!cur.timer) cur.timer = setTimeout(() => { if (P[name] === cur) { delete P[name]; this.setState({}); } }, reducedMotion() ? 150 : ms * fightPace()); // the out animation runs × the combat speed
     return { show: true, cls: ' phc-closing', val: cur.val };
   }
@@ -605,7 +636,8 @@ export class CombatLogic extends DCLogic {
   /** The turn panel (your actions, or the waiting card): a new one slides in while the last one slides out over it. */
   panels(key, vals) {
     const P = this._panels || (this._panels = { cur: null, old: [] });
-    if (P.cur && P.cur.key !== key) {
+    if (P.cur && P.cur.key !== key && !drawingFrames()) P.old = []; // no frames: the last panel goes at once (game/frames.ts)
+    else if (P.cur && P.cur.key !== key) {
       const gone = P.cur; P.old = [gone, ...P.old.filter((o) => o.key !== gone.key)].slice(0, 2);
       setTimeout(() => { if (P.old.includes(gone)) { P.old = P.old.filter((o) => o !== gone); this.setState({}); } }, reducedMotion() ? 150 : 230 * fightPace());
     }
@@ -938,6 +970,7 @@ export class CombatLogic extends DCLogic {
   }
 
   renderVals() {
+    if (!this._pinAsked && typeof setTimeout !== 'undefined') { this._pinAsked = true; setTimeout(() => { this._pinAsked = false; pinLogs(); fitYouCard(); }, 0); } // the combat log rests on its newest line (game/logPin.ts)
     const st = getState(), g = st.game, me = st.me.id;
     // HP follows the effects (fx/play.ts fxShownHp): a bar falls when its hit plays, not when the state arrives.
     const F0 = fightNow(g), onField = F0.open; // rules 1.55 item 61: the field's header and its Give; every turn rule is the fight's (rules 1.62 item 4906)
@@ -955,6 +988,12 @@ export class CombatLogic extends DCLogic {
     const curId = cb && active(cb) ? active(cb).id : null;
     const newTurn = curId !== this._curId;
     if (curId !== this._curId) { if (this._curId !== undefined) Object.assign(this.state, { aim: null, glyphTile: null, evc: null, sgToast: '', obMode: 'begin', word: null, stroke: null, design: null, ...(MAGIC.includes(this.state.action) ? { action: 'move' } : {}) }); this._curId = curId; }
+    // 0.33 (outside playtest of 0.32.0): every turn starts with nothing chosen. The Chosen action box kept the last turn's
+    // technique and its target into the next turn and into the field after the fight (Confirm would have fired it
+    // again); now a new turn (the fight's own count: a unit, a round, a place in the order) opens on Move, no target,
+    // no tile, no switches. Within a turn the pick is kept across tabs (the tab that holds it wears the white dot).
+    const turnKey = cb && active(cb) ? [active(cb).id, cb.round, cb.turn, cb.over ? 'over' : cb.field ? 'field' : 'fight'].join(':') : null;
+    if (turnKey !== this._turnKey) { if (this._turnKey !== undefined && turnKey) Object.assign(this.state, { action: 'move', target: null, tile: null, mods: null, pickWhy: null, readTile: null, pkForm: null }); this._turnKey = turnKey; }
     const S = this.state;
     if (!cb) return { ...lightboxVals(this), ...shellVals(this, 'combat'), lay: this.layoutVals(PANEL_HIDDEN), mz: this.zoomVals(), initiative: [], tiles: [], legend: [], apPips: [], groups: [], log: [], who: {}, sel: {}, target: {}, toStory: () => go('main'), report: openReport, roundText: 'NO FIGHT', gridStyle: '', gridLeave: () => {}, confirmText: 'Confirm', pad: {}, magicLegend: [] };
     // Whose turn is on screen: while earlier turns are still playing out, the unit whose banner played last, not the
@@ -1472,7 +1511,10 @@ export class CombatLogic extends DCLogic {
       draw: 'Draw a glyph', evoke: 'Evoke', scuff: 'Scuff', vent: 'Vent Flux', core: 'Swap core', outburst: 'Outburst', release: 'Release', syphon: 'Syphon', crystallise: 'Crystallise',
       pump: 'Pump', steady: 'Steady the heart', letgo: 'Let it go', feed: 'Feed the glyph', heartwatch: 'Heart Overwatch' }[S.action] || '';
     // The selected action's panel: on the flow, the descriptor's name and cost and the engine's preview in words.
-    const sel = { name: isMove ? actName + ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : '1 AP per ' + mv + (mv === 1 ? ' tile' : ' tiles')) : flow ? flow.sel.name : actName,
+    // 0.33: a move's price before a tile is hovered is its own row's (the engine's descriptor: Sprint 2 AP, a free
+    // Disengage 0 AP), not Move's "1 AP per 2 tiles" for all three
+    const moveRow = isMove ? groups.flatMap((gr) => gr.items).find((a) => a.key === S.action) : null;
+    const sel = { name: isMove ? actName + ' · ' + (hv ? moveAp + ' AP for ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') : moveRow && moveRow.cost && S.action !== 'move' ? moveRow.cost : '1 AP per ' + mv + (mv === 1 ? ' tile' : ' tiles')) : flow ? flow.sel.name : actName,
       text: !mineTurn ? (cb.over ? 'The fight is over.' : cur && cur.side === 'foe' ? cur.name + ' is acting…' : cur ? 'Waiting for ' + (playerOf(owner(cur))?.name || 'a player') + ' (' + cur.name + ').' : '') : isMove ? (MO && MO.why ? MO.why : 'Hover a highlighted tile to see the path and its AP cost; click to move.')
         : flow ? flow.sel.text : S.action === 'analyze' && readSel ? readText : S.action === 'pickup' ? '' : 'Click a hostile to target it.',
       hasPick: false, pickFields: [], extra: flow ? flow.sel.extra : mineTurn && isMove && cur.bank ? cur.bank + ' paid-for tile' + (cur.bank > 1 ? 's' : '') + ' left this turn.' : '' };
@@ -1724,6 +1766,9 @@ export class CombatLogic extends DCLogic {
       let no = null; try { const v = previewAction(g, { type: 'combat/attack', unitId: cur.id, targetId: tgtUnit.id, mode: attackMode }, getState().me.id); no = v.ok ? null : v.why; } catch { no = null; }
       if (no) { target.odds = no; target.breakdown = ''; target.line = 'A friend · ' + no; }
     }
+    // 0.33 (outside playtest of 0.32.0: "Out of melee reach. Out of melee reach.", "Needs 4 AP. Needs 4 AP."): a refusal is
+    // said once, by the action box (its text or its extra line); the target's roll line then carries no second copy
+    if (target) { if (target.odds && saidIn(target.odds, sel.text, sel.extra)) target.odds = ''; target.hasOdds = !!target.odds; }
     const tp = this.pres('tgt', hasTarget ? { ...target, id: tgtUnit.id } : null);
     const pw = this.pres('padW', pad.words ? pad : null), pd = this.pres('padD', pad.designs && bsStep ? pad : null); // the Begin / Snap pad is the 'begin-snap' step's renderer: shown when the action asks for that step
     // The technique pad (a weapon's Techniques, or Hold a shot): opens inside its row, as the glyph keyboard does; one at
@@ -1903,7 +1948,7 @@ export class CombatLogic extends DCLogic {
           + (on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #E7EBF3' : c.ok ? 'border: 1px solid #3B475D; background: #10151F; color: #E7EBF3' : 'border: 1px dashed #2E3A50; background: transparent; color: #7F8BA1') } }; };
     const tabG = groups.find((gr) => gr.id === S.tab) || groups[0];
     const tabDoor = tabG ? tabDoorLine(tabG.id) : null; // the door's one line under the tab's name (skills.json door_line)
-    const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name, nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
+    const tabPanel = tabG ? [{ key: 'tp-' + tabG.id, tab: 'phc-tab-' + tabG.id, name: tabG.name + ((w) => (w ? ' · ' + w.toUpperCase() : ''))(tabG.id === 'shadow' && tabMine ? sightWord(cb, cur) : ''), /* 0.33: the SHADOW header says the Eye's live word (it read a fixed "UNSEEN" while the Eye said Seen) */ nameStyle: tabG.nameStyle, cls: 'phc-cb-tabpanel', innerCls: this._tabCls,
       hasDoor: !!tabDoor, doorSkill: tabDoor ? tabDoor.skill : '', doorLine: tabDoor ? tabDoor.line : '',
       // rules 1.60 (the beta feeds its door): the door's beta line from the engine's view of the sheet whose turn it is (game/doorView.ts feedLineOf)
       ...(() => { const fl = tabDoor && tabMine ? feedLineOf(tabChar, tabDoor.skill) : ''; return { hasFeed: !!fl, feedLine: fl }; })(),
@@ -2027,8 +2072,9 @@ export class CombatLogic extends DCLogic {
       // 0.31.0 (U1): the squad list and the combat log fold like every other information box
       squadFold: foldVals('fight:squad', { redraw: () => this.setState({ foldTick: Date.now() }) }), logFold: foldVals('fight:log', { redraw: () => this.setState({ foldTick: Date.now() }) }),
       initiative, tiles, apPips, apText: apNow, ytWord: T.ytWord, groups, sel, hasTarget, squad, say, talk, me: mePanel, hasMe: !!mePanel, allyRows, hasAllies: allyRows.length > 0, target: target || {},
-      // The whole fight (the last 120 lines), newest first: the box is a reversed column, so it rests on the newest line
-      // and scrolls up into the fight's history (Leon, 11 Nov 2026: it showed six lines and no way back).
+      // The whole fight (the last 120 lines), in the order they happened (0.33: they were written newest first into a
+      // reversed column, so a screen reader read them backwards): the box rests on the newest line (game/logPin.ts) and
+      // scrolls up into the fight's history (Leon, 11 Nov 2026: it showed six lines and no way back).
       // …and only the lines written before the effect now playing: the log keeps step with what is on screen.
       log: [...(() => { const upTo = fxShownLog(g), lines = upTo == null ? cb.log : cb.log.slice(0, Math.max(0, upTo));
         // 0.28.2: a line naming a Figment of this fight carries its line icon (figmentIcons.ts: by the names it had here)
@@ -2036,7 +2082,7 @@ export class CombatLogic extends DCLogic {
         return lines.slice(-120).map((text, i, all) => { const pl = patronLogCard(text), fi = pl ? '' : figmentLogIcon(text, figs); return { key: lines.length - all.length + i, text, isPlain: !pl, isPatron: !!pl, pl: pl || {}, hasFig: !!fi, figIcon: fi }; }); })(),
         // Rules 1.9 (item 695): what the loot cap held back, for the host's eyes only (the engine strips lootLog from
         // everyone else's view).
-        ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])].reverse(),
+        ...(me === g.hostId && cb.lootLog && cb.lootLog.length ? [{ key: 'lootlog', text: lootLogLine(cb.lootLog), isPlain: true, isPatron: false, pl: {} }] : [])],
       cantConfirm, noConfirm: T.noConfirm, confirm: T.confirm, endTurn: () => act({ type: 'combat/end-turn', unitId: cur.id }), notMine: !mineTurn, // rules 1.62 item 4906: the field has turns
       toStory: () => go(homeScreen(g)), toStoryLabel: g.run ? (g.phase === 'lobby' ? 'Back to the room ›' : 'Back to the map ›') : 'Back to the story ›', report: openReport, over: !!cb.over && !fv && !(g.run && cb.over === 'win'), // rules 1.62 item 4903: a run's won fight has no end card (VICTORY is its banner; the leave goes straight on) // a field saved by 0.28.2 shows its vote, not the end card
       field: fieldVals(fv), overColor: won ? '#6FEA77' : extracted ? '#A3AEC2' : '#F65157', overKicker: won ? 'VICTORY' : extracted ? 'EXTRACTED' : 'DEFEAT',
@@ -2045,8 +2091,14 @@ export class CombatLogic extends DCLogic {
   }
 
   tileClick(k) {
-    // In the overview a click on a tile goes back to the camera, centred there; it never acts.
-    if (this._overview) { this.toggleOverview(k); return; }
+    // In the overview a click goes back to the camera, centred there. 0.33 (outside playtest of 0.32.0: "Whole map click
+    // pans instead of moving"): on a tile the picked move can reach (lit), or on a unit, it then acts as it would in the
+    // usual view; anywhere else it only goes back.
+    if (this._overview) {
+      const acts = (this._move && this._move.tiles && !!this._move.tiles[k]) || (() => { const F = fightNow(getState().game); return !!(F.cb && F.cb.units.some((x) => x.pos === k && !x.dead)); })();
+      this.toggleOverview(k);
+      if (!acts) return;
+    }
     const S = this.state, g = getState().game, F = fightNow(g), cb = F.cb, cur = F.cur;
     if (fieldView(g, getState().me.id) && !F.open) return; // rules 1.55 item 66: a field saved by 0.28.2 is only left
     if (MAGIC.includes(S.action) && cur && cur.mg) return this.magicClick(k, cur);

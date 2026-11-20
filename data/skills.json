@@ -114,7 +114,7 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your melee attacks (a shield's own strike and its follow included) roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door); a gun, a bow or a throw rolls with its own skill. The blow's damage still grows with the weapon's own attribute, never with Durability. Challenge (Durability {=unlocks.1.effects.1.if.self_skill.durability}): {=unlocks.1.effects.1.ap} AP and {=unlocks.1.effects.1.res.guard} Guard, named at one foe you see within {=unlocks.1.effects.1.reach.tiles} tiles: every foe you see within {=unlocks.1.effects.1.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else). Slam (Durability {=unlocks.1.effects.2.if.self_skill.durability}): {=unlocks.1.effects.2.ap} AP and {=unlocks.1.effects.2.res.guard} Guard: every foe next to you is pushed {=unlocks.1.effects.2.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
+          "text": "Guard is Durability's door: the Guard technique is yours with any weapon. While you hold Guard, your melee attacks (a shield's own strike and its follow included) roll with Durability's modifier in place of the weapon's own skill when Durability's is higher (never added on top: the tank hits through its door); a gun, a bow or a throw rolls with its own skill. The blow's damage still grows with the weapon's own attribute, never with Durability. Its two moves, Challenge and Slam, open with more Durability; each has its own card.",
           "player": "plates soak hits · melee rolls with Durability when higher",
           "effects": [
             {
@@ -134,6 +134,7 @@
               "op": "grant_action",
               "action": "guard_challenge",
               "label": "Challenge",
+              "text": "From Durability {=.if.self_skill.durability}. Named at one foe you see within {=.reach.tiles} tiles: every foe you see within {=.effects.0.targets.within} tiles makes a Heart save or is Taunted (a Boss too: it is never forced to attack you, but it is worse at hitting anyone else).",
               "ap": 1,
               "res": {
                 "guard": 1
@@ -180,6 +181,7 @@
               "op": "grant_action",
               "action": "guard_slam",
               "label": "Slam",
+              "text": "From Durability {=.if.self_skill.durability}. Every foe next to you is pushed {=.effects.1.tiles} tile (a Boss holds its ground) and makes a Body save or is Off Balance.",
               "ap": 2,
               "res": {
                 "guard": 2
@@ -1872,7 +1874,7 @@
       ],
       "fork_runs_on": "Shadow",
       "door_tab": "shadow",
-      "door_title": "SHADOW · UNSEEN",
+      "door_title": "SHADOW",
       "per_point": {
         "numbers": {
           "spot": 1

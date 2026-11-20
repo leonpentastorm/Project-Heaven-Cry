@@ -3,8 +3,9 @@
 import { DCLogic } from '../dc/runtime';
 import { D, ART, epccgVals, lightboxVals, zoomer, epBtnStyle, checkMod, ATTR_GIVES as ATTR_NEXT, SLOT_WORD, SLOT_ORDER, nextLine } from './shared';
 import { designInfo, toneChips, toneInk, toneName, formIconUri } from '../game/heartView';
-import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS, deriveCreation, BUDGET as ENGINE_BUDGET, FOG_CORE, SKILL as ENGINE_SKILL } from '@engine';
+import { validateSheet, SHEET_REV, isMusicTrait, roomSheetError, ytId, ytStart, startingMagicError, startingWordsError, startingTechniqueSlots, startingTechniqueChoices, startingTechniquesError, defaultTechniques, phys, migrateWords, STARTING_DEFAULT, moduleSlots, sigilRangeBonus, sigilDurationBonus, soulCostSaving, designCost, MANA_BANDS, SIGILS, SIGIL, SCHOOLS, SCHOOL, MODULES, MODULE, TONE, soulRangeBonus , FEELINGS, deriveCreation, BUDGET as ENGINE_BUDGET, FOG_CORE, SKILL as ENGINE_SKILL, doorForkView } from '@engine';
 import { feelingInk, feelingIconSrc, iconStyle, feelingTip } from '../game/feelingsView';
+import { doorsOf } from '../game/doorView';
 const FEELING_START = ['rage', 'love'];
 import { act, getState, go, saveToLibrary, toast } from '../game/store';
 import { uploadPortrait } from '../game/charfile';
@@ -482,6 +483,13 @@ export class CreateLogic extends DCLogic {
       return { key: sys, title, ink, titleStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.16em; color: ' + ink, cardStyle: 'display: flex; flex-direction: column; gap: 10px; padding: 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + ink,
         groups, picked: picked.map((id) => phys.TECHNIQUE[id]?.name || id).join(' + ') || 'none yet', reset: () => this.setState({ tech: { ...this.state.tech, [sys]: null } }), resetLabel: 'Back to ' + defaultTechniques({ skills: S.skills })[sys].map((id) => phys.TECHNIQUE[id]?.name || id).join(' + ') };
     });
+    // 0.33 (outside playtest of 0.32.0: a Durability 7 build read "No techniques or magic yet"): every door the build
+    // opens, its own line (skills.json door_line, the one the fight tab heads with) and its forks still to choose (the
+    // engine's doorForkView)
+    const pcD = previewCharacter(S.skills, der.attr, S.traits, null);
+    const doorCards = pcD ? doorsOf(pcD).map((d) => { let open = 0; try { open = doorForkView(pcD, d.skill)?.pending || 0; } catch { open = 0; }
+      return { key: d.skill, name: d.name.toUpperCase(), line: d.line, hasFork: open > 0, fork: open + (open > 1 ? ' forks' : ' fork') + ' to choose on Level up, once the character is locked in.',
+        nameStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.14em; color: ' + (d.ink || '#E7EBF3'), style: 'display: flex; flex-direction: column; gap: 6px; padding: 14px 18px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F; border-left: 3px solid ' + (d.ink || '#232D3F') }; }) : [];
     const hasTech = techSys.length > 0, techVerdict = techErr || 'Ready: ' + techSys.map((x) => x.picked).join(' · ') + '.';
     const sig = S.sigils || [], sigErr = sig.length < 2 ? 'Pick ' + (2 - sig.length) + ' more word' + (sig.length === 1 ? '' : 's') + ': one Subject and one Reach word.' : startingMagicError({ sigils: sig, skills: S.skills });
     const pickWord = (w) => () => {
@@ -580,7 +588,7 @@ export class CreateLogic extends DCLogic {
 
     return { ...epccgVals(this, (id) => S.skills[id] || 0), ...lightboxVals(this), zoomPortrait: zoomer(this, portrait.img, '', 'portrait'),
       steps, headerName: S.name || 'UNNAMED', budgetChip: left === 0 && statsPlaced ? '✓ EVERY POINT PLACED' : left + ' SKILL · ' + der.attrLeft + ' ATTRIBUTE LEFT', budgetChipStyle: chip(left === 0 && statsPlaced ? '#6FEA77' : '#FFFFFF'),
-      isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isMoves: S.step === 'moves', noMoves: !hasTech && !hasMagic, noMovesText: (S.skills.empathy || 0) > 0 ? 'No techniques or magic yet. Empathy opens Bonds and Tending once you hold an Attuner, which the mode gives when play starts.' : 'No techniques or magic yet: techniques come with Dexterity or Raw Power, magic with Brain Power or Will Power.', isLockin: S.step === 'lockin', isBelief: S.step === 'belief',
+      isIdentity: S.step === 'identity', isArchetype: S.step === 'archetype', isSkills: S.step === 'skills', isTraits: S.step === 'traits', isMoves: S.step === 'moves', doorCards, hasDoors: doorCards.length > 0, noMoves: !hasTech && !hasMagic && !doorCards.length, noMovesText: (S.skills.empathy || 0) > 0 ? 'No techniques or magic yet. Empathy opens Bonds and Tending once you hold an Attuner, which the mode gives when play starts.' : 'No techniques or magic yet: techniques come with Dexterity or Raw Power, magic with Brain Power or Will Power.', isLockin: S.step === 'lockin', isBelief: S.step === 'belief',
       ...this.beliefVals(),
       name: S.name, onName: (e) => this.setState({ name: e.target.value }), originCards, hasOrigin: !!o, origin, portrait, portraitThumbs,
       famTabs, famBlurb, archCards, pv, useArch, useLabel,

@@ -106,7 +106,7 @@
 </div>
 </div>
 <div class="{{tabCls}}" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px">
-<sc-for list="{{status}}" as="r" hint-placeholder-count="10"><div data-derived="{{r.key}}" style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: var(--fs-sub); border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="display: flex; flex-direction: column; min-width: 0"><span style="color: #A3AEC2">{{r.k}}</span><sc-if value="{{r.hasFrom}}" hint-placeholder-val="{{true}}"><span data-derived-from="" style="font-size: var(--fs-sub); color: #7F8BA1">{{r.from}}</span></sc-if></span><span style="white-space: nowrap; font-weight: 600">{{r.v}}</span></div></sc-for>
+<sc-for list="{{status}}" as="r" hint-placeholder-count="10"><div data-derived="{{r.key}}" style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: var(--fs-sub); border-bottom: 1px solid #1C2536; padding: 5px 0"><span style="display: flex; flex-direction: column; min-width: 0"><span style="color: #A3AEC2">{{r.k}}</span><sc-if value="{{r.hasFrom}}" hint-placeholder-val="{{true}}"><span data-derived-from="" style="font-size: var(--fs-sub); color: #7F8BA1">{{r.from}}</span></sc-if></span><span style="flex: 0 1 auto; min-width: 0; text-align: right; font-weight: 600">{{r.v}}</span></div></sc-for>
 </div>
 <div class="{{tabCls}}" style="display: flex; flex-direction: column; gap: 4px; padding-top: 6px">
 <span style="font-size: var(--fs-sub); letter-spacing: 0.16em; color: #A3AEC2">REPUTATION</span>

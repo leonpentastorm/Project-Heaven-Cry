@@ -379,7 +379,12 @@ export function perkState(e: PerkActionEntry): { tag: string; why: string | null
   if (e.why === 'Already armed.') return { tag: ' · ARMED', why: 'Armed. Your next Release this turn uses it.' };
   return { tag: '', why: e.why };
 }
-export const perkText = (e: PerkActionEntry) => e.text + (e.engine ? '' : ' The Narrator decides the rest.');
+/** 0.33 (outside playtest of 0.32.0: Lift's card said "2 AP" while it cost 0): a verb's text opens on its base price
+ *  ("1 AP: …", "1 AP and 1 Shadow: …", "1 AP, once a turn, …"); the descriptor's own cost (priceOf, with every
+ *  discount) is the one price the card and the action box show, so that opening is dropped here. */
+const LEAD_PRICE = /^\d+(?:\.\d+)?\s*AP(?:\s+and\s+[^:,.]+?)?(?::\s+|,\s+)/;
+const dropLeadPrice = (t: string) => { const m = LEAD_PRICE.exec(t || ''); if (!m) return t; const r = t.slice(m[0].length); return r.charAt(0).toUpperCase() + r.slice(1); };
+export const perkText = (e: PerkActionEntry) => dropLeadPrice(e.text) + (e.engine ? '' : ' The Narrator decides the rest.');
 function perkEntriesOf(x: DescCtx): PerkActionEntry[] { return safe(() => withGame(x.g, () => perkActionsFor({ u: x.u, c: x.c, cb: x.cb, g: x.g }, 'combat')), []); }
 
 // ---------- the built-in systems ----------
@@ -680,7 +685,7 @@ function techRows(x: DescCtx): ActionDescriptor[] {
       if (more.length) pad = [...pad, { group: 'answer', label: 'Answers', entries: more }];
       const chips = pad.filter((gr: any) => gr.group !== 'watch' && gr.group !== 'answer').flatMap((gr: any) => gr.entries.filter((e: any) => !e.plain));
       const usable = chips.filter((e: any) => e.ok).length, name = 'Shield';
-      out.push(D(TPAD + hand, 'attack', 'Shield techniques · ' + usable, 0, chips.length ? usable + ' of ' + chips.length + ' now' : '', 'What you can do with the ' + name + '. Pick Shield Bash or Raise Shield in the pad. Its reactions happen by themselves.', chips.length ? null : 'No shield techniques.', { pad: true, preview: 'none', hand }));
+      out.push(D(TPAD + hand, 'attack', 'Shield techniques', 0, chips.length ? usable + ' of ' + chips.length + ' now' : '', 'What you can do with the ' + name + '. Pick Shield Bash or Raise Shield in the pad. Its reactions happen by themselves.', chips.length ? null : 'No shield techniques.', { pad: true, preview: 'none', hand }));
       for (const e of chips) out.push(chip(hand, e, TPAD + hand));
       sys[hand] = 'melee'; continue;
     }
@@ -691,7 +696,7 @@ function techRows(x: DescCtx): ActionDescriptor[] {
     const chips = pad.filter((gr: any) => gr.group !== 'watch' && gr.group !== 'answer').flatMap((gr: any) => gr.entries.filter((e: any) => !e.plain).map((e: any) => [e, undefined] as [any, any]));
     if (hand === 'main') for (const pk of safe(() => packPad(cb, u, g), [] as any[])) for (const e of pk.entries) chips.push([e, pk.item]);
     const usable = chips.filter(([e]) => e.ok).length;
-    out.push(D(TPAD + hand, 'attack', 'Techniques · ' + usable, 0, chips.length ? usable + ' of ' + chips.length + ' now' : '', 'What you can do with the ' + ((hand === 'main' ? (u as any).weaponName : null) || w.name) + '. Pick one in the pad, then its target.', chips.length ? null : 'No techniques ready for this weapon.', { pad: true, preview: 'none', hand }));
+    out.push(D(TPAD + hand, 'attack', 'Techniques', 0, chips.length ? usable + ' of ' + chips.length + ' now' : '', 'What you can do with the ' + ((hand === 'main' ? (u as any).weaponName : null) || w.name) + '. Pick one in the pad, then its target.', chips.length ? null : 'No techniques ready for this weapon.', { pad: true, preview: 'none', hand }));
     for (const [e, item] of chips) out.push(chip(hand, e, TPAD + hand, item));
     for (const e of pad.find((gr: any) => gr.group === 'watch')?.entries || []) if (!seenW.has(e.id)) { seenW.add(e.id); watch.push(chip(hand, e, TWATCH)); }
   }
@@ -701,7 +706,7 @@ function techRows(x: DescCtx): ActionDescriptor[] {
     out.push(D('paired', 'attack', sys.main === 'melee' ? 'Strike with both' : 'Fire both', 0, 'AP +1', 'Make one attack with each weapon at the same target. It costs the higher of the two AP costs, plus 1. The main hand is at −1 to hit and the off hand at −3, improved by 1 for every 3 points of Dexterity, up to −1.', null, { picks: basicPicks(x, 'paired'), preview: 'attack', hand: 'both' }));
     if (pe.length) {
       const usable = pe.filter((e) => e.ok).length;
-      out.push(D(TPAD + 'both', 'attack', 'Techniques · ' + usable, 0, usable + ' of ' + pe.length + ' now', 'Use one technique with each weapon in turn, the main hand at −1 to hit and the off hand at −3, for 1 AP more. Pick one in the pad, then its target.', null, { pad: true, preview: 'none', hand: 'both' }));
+      out.push(D(TPAD + 'both', 'attack', 'Techniques', 0, usable + ' of ' + pe.length + ' now', 'Use one technique with each weapon in turn, the main hand at −1 to hit and the off hand at −3, for 1 AP more. Pick one in the pad, then its target.', null, { pad: true, preview: 'none', hand: 'both' }));
       for (const e of pe) out.push(chip('both', e, TPAD + 'both'));
     }
   }

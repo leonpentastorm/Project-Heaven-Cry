@@ -8,6 +8,8 @@ import PD from './game/protodata.json';
 import { startPreload } from './game/preload';
 import { TITLE_ART } from './title/Title';
 import { TYPE_SCALE_CSS } from './game/typeScale';
+import { watchFrames } from './game/frames';
+watchFrames(); // a page that draws no frames shows every animation's end state (game/frames.ts)
 
 // The prototypes' shared CSS (keyframes, icon hover zoom, reduced motion), from design/canvas-build/build.py HELMET.
 const style = document.createElement('style');

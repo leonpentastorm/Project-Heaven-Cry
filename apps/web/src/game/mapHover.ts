@@ -18,6 +18,7 @@
 // legal tiles, the chips, the tooltip, the click target) is unchanged.
 import { activeCamera } from './cameraView';
 import { fxDebug } from './fx/play';
+import { nextFrame } from './frames';
 
 /** What the screen gives: its current hovered tile and how to change it (a setState). */
 export interface HoverHost { hovered(): string | null; setHover(key: string | null): void }
@@ -27,8 +28,10 @@ export interface HoverHost { hovered(): string | null; setHover(key: string | nu
 export const SCROLL_QUIET_MS = 90;
 
 const now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now());
-const raf: (f: () => void) => number = typeof requestAnimationFrame === 'function' ? (f) => requestAnimationFrame(f) : (f) => setTimeout(f, 16) as unknown as number;
-const unraf: (id: number) => void = typeof cancelAnimationFrame === 'function' ? (id) => cancelAnimationFrame(id) : (id) => clearTimeout(id);
+// (the next frame, or a timer when the page draws none: frames.ts; a hover that waited on a frame never came there)
+const CANCELS = new Map<number, () => void>(); let nextId = 0;
+const raf = (f: () => void): number => { const id = ++nextId; CANCELS.set(id, nextFrame(() => { CANCELS.delete(id); f(); })); return id; };
+const unraf = (id: number): void => { const c = CANCELS.get(id); if (c) { CANCELS.delete(id); c(); } };
 
 /** Tile key of an element of the grid this module has seen (the tile buttons the screen's handlers ran for). */
 const KEY_OF = new WeakMap<Element, string>();
