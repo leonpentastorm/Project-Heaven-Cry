@@ -199,6 +199,9 @@ export const WORN_SHARE: number = Number((RULES as any).weapons_rules?.worn?.sha
 /** The state of a thing that wears (Weapons v2, Durability rules 2 and 3): Broken at 0, Worn at WORN_SHARE of full or
  * less, else sound. The one test of a worn weapon: the fight's jam and melee rules and every screen's mark read it. */
 export const wearState = (now: number, max: number): 'sound' | 'worn' | 'broken' => (max <= 0 ? 'sound' : now <= 0 ? 'broken' : now <= max * WORN_SHARE ? 'worn' : 'sound');
+/** Rules 1.92 item 8010: the Heavy word (rules.json weapons_rules.heavy): its role tag and what it takes from Movement. */
+const HEAVY_TAG: string = 'role:' + String((RULES as any).weapons_rules?.heavy?.tag || 'heavy');
+const HEAVY_MOVE: number = Number((RULES as any).weapons_rules?.heavy?.movement ?? 0);
 /** Effects of everything worn and held in a hand (slot armour, lights, a focus; rules 1.57 (A1): a shield is a weapon
  * row whose own `effects` give its Defense and Movement in either hand, so two shields each give theirs). A weapon row
  * with no `effects` gives nothing here. */
@@ -207,7 +210,9 @@ export function gearEffects(c: Character): { op: string; value?: number; hazard?
   // rules 1.91 item 7954: a worn piece's grade scales its armour value (armour_bonus) by its rarity row's `arm`, nothing else
   const worn = Object.entries(c.worn || {}).flatMap(([slot, id]) => { const k = armOf(wornGrade(c, slot)), fx = (((ITEM[id] as any)?.effects || []) as { op: string; value?: number; hazard?: string }[]);
     return k === 1 ? fx : fx.map((e) => (e.op === 'armour_bonus' && typeof e.value === 'number' ? { ...e, value: e.value * k } : e)); });
-  return [...worn, ...held.map((id) => (WEAPON[id] as any) || (ITEM[id] as any)).flatMap((d) => (d?.effects || []) as { op: string; value?: number; hazard?: string }[])];
+  // rules 1.92 item 8010: a held piece with the role tag Heavy (rules.json weapons_rules.heavy) takes its Movement, each one
+  const heavy = held.filter((id) => hasTag(id, HEAVY_TAG)).map(() => ({ op: 'movement_bonus', value: HEAVY_MOVE }));
+  return [...worn, ...held.map((id) => (WEAPON[id] as any) || (ITEM[id] as any)).flatMap((d) => (d?.effects || []) as { op: string; value?: number; hazard?: string }[]), ...heavy];
 }
 /** Rules 1.91 item 7908: the slot body armour's grade sits at (rules.json equipment_slots.armour_class_from). */
 export const ARMOUR_SLOT: string = (RULES as any).equipment_slots?.armour_class_from || 'torso_outer';

@@ -1001,6 +1001,12 @@
       "carried": 2,
       "provisional": true
     },
+    "heavy": {
+      "about": "Rules 1.92 item 8010 (Items 2.0 stage B): the Heavy word. A piece in a hand whose row carries the role tag `heavy` (its `tags`) takes `movement` from its holder's Movement (tiles per AP), added where held and worn gear is summed (character.ts gearEffects, which the one Movement reader reads); two Heavy pieces stack. The ram plate, the barrier wall and the pavise are Heavy; the riot shield keeps its own -0.5 and is not.",
+      "tag": "heavy",
+      "movement": -0.5,
+      "provisional": true
+    },
     "melee": {
       "reach": 1,
       "reach_polearm": 2,
@@ -2637,7 +2643,7 @@
     { "id": "pattern", "about": "the row's real-pattern word; art and collections only, no rules reader" },
     { "id": "grade", "about": "the instance's grade (GearState.rarity; a unique's fixed grade); a row with no instance is standard" },
     { "id": "slot", "about": "the slot of equipment_slots.table the row is worn or held in (the row's slot; a weapon row with none: main_hand)" },
-    { "id": "role", "about": "words general code asks for, from the row's tags (lever, electronic, evoker_linked, natural)" },
+    { "id": "role", "about": "words general code asks for, from the row's tags (lever, electronic, evoker_linked, natural; heavy: rules 1.92 item 8010, the Heavy word)" },
     { "id": "unique", "about": "true on a unique variants line (rules 1.91 item 7917): never rolled" }
   ],
   "equipment_slots": {

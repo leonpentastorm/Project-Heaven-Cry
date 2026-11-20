@@ -811,7 +811,10 @@ for t in items("traits"):
         elif t.get("id") not in (tmap[x].get("excludes") or []):
             errors.append(f"traits:{t.get('id')}: excludes {x}, but {x} doesn't exclude it back")
 DMG_TYPES = {"physical", "elemental", "fire", "lightning", "emp", "sigil", "soul", "true"}
-WTAGS = {"electronic", "evoker_linked", "lever", "natural"}  # the role tags (rules 1.91 item 7900; natural: item 7919)
+WTAGS = {"electronic", "evoker_linked", "lever", "natural", "heavy"}  # the role tags (rules 1.91 item 7900; natural: item 7919; heavy: rules 1.92 item 8010)
+_HEAVY = (((data.get("rules") or {}).get("weapons_rules") or {}).get("heavy") or {})
+if _HEAVY.get("tag") != "heavy" or not isinstance(_HEAVY.get("movement"), (int, float)) or isinstance(_HEAVY.get("movement"), bool) or _HEAVY.get("movement") >= 0 or _HEAVY.get("provisional") is not True:
+    errors.append("rules: weapons_rules.heavy needs tag 'heavy', a negative movement and provisional: true (rules 1.92 item 8010)")
 for w in items("weapons"):
     if w.get("damage_type") is not None and w.get("damage_type") not in DMG_TYPES:
         errors.append(f"weapons:{w.get('id')}: damage_type {w.get('damage_type')} is not one of {sorted(DMG_TYPES)}")

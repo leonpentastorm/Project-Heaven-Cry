@@ -1726,6 +1726,135 @@
       ]
     },
     {
+      "id": "mod_follow_strike",
+      "name": "Strike follow",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Follow strike: ×{=effects.0.value} of the shield's blow. No Guard on a hit.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "with_this": true,
+            "mode": ["follow"]
+          },
+          "value": 0.6
+        }
+      ]
+    },
+    {
+      "id": "mod_ward_light",
+      "name": "Ward (light)",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Ward: each ranged or elemental hit on you while the shield is in your hand is {=effects.0.value|abs} less (none from a melee blow).",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "when": "taking",
+          "if": {
+            "with_this": true,
+            "damage": ["ranged", "elemental"],
+            "melee": false,
+            "by_hit": true
+          },
+          "value": -3
+        }
+      ]
+    },
+    {
+      "id": "mod_ward_standard",
+      "name": "Ward (standard)",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Ward: each ranged or elemental hit on you while the shield is in your hand is {=effects.0.value|abs} less (none from a melee blow).",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "when": "taking",
+          "if": {
+            "with_this": true,
+            "damage": ["ranged", "elemental"],
+            "melee": false,
+            "by_hit": true
+          },
+          "value": -5
+        }
+      ]
+    },
+    {
+      "id": "mod_ward_heavy",
+      "name": "Ward (heavy)",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Ward: each ranged or elemental hit on you while the shield is in your hand is {=effects.0.value|abs} less (none from a melee blow).",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "when": "taking",
+          "if": {
+            "with_this": true,
+            "damage": ["ranged", "elemental"],
+            "melee": false,
+            "by_hit": true
+          },
+          "value": -7
+        }
+      ]
+    },
+    {
+      "id": "mod_line_arsenal",
+      "name": "Arsenal action",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Central Command Arsenal: reloading this gun costs {=effects.0.value|abs} AP less.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": ["reload"],
+            "with_this": true
+          },
+          "value": -1
+        }
+      ]
+    },
+    {
+      "id": "mod_siege_reload",
+      "name": "Siege loader",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "With Raw Power {=effects.0.if.self_skill.raw_power} or more, reloading this tube costs {=effects.0.value|abs} AP less.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": ["reload"],
+            "with_this": true,
+            "self_skill": {
+              "raw_power": 5
+            }
+          },
+          "value": -1
+        }
+      ]
+    },
+    {
       "id": "mod_afterword",
       "name": "Afterword's edge",
       "category": "mod",

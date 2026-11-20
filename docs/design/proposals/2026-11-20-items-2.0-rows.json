@@ -1,0 +1,5014 @@
+{
+ "about": "Items 2.0 stage B's typing sheet (rules 1.92). Written by tools/items2_sheet.py from the lead's numbers file, the copy-from rows and the tables' placements; do not edit by hand: change the sources and run the script. B1 types `weapons` and `edits` into data/weapons.json (in this order, after the last row), B2 types `items` into data/items.json; each row as it is here less the keys that begin with an underscore. `holds` are rows that are NOT typed. `families` and `family_teaches` are already in data/families.json (B0).",
+ "weapons": [
+  {
+   "id": "trench_knife",
+   "name": "Trench knife",
+   "category": "light_melee",
+   "family": "service_knives",
+   "form": "hybrid",
+   "line": "hellraiser",
+   "weapon_art": null,
+   "damage": 18,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 0.7,
+   "accuracy": 0,
+   "price_credits": 150,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "trench_knife",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "edge",
+     "point"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "grants": {
+    "name": "Finish It",
+    "text": "Deals +{=grants.effect.mult|more}% damage to a target that is Dazed, Stunned, Bleeding or Downed.",
+    "effect": {
+     "op": "vs_status_damage",
+     "statuses": [
+      "dazed",
+      "stunned",
+      "bleeding",
+      "downed"
+     ],
+     "mult": 1.5
+    }
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "combat_knife",
+   "_notes": [
+    "no throw: no thrown property, no throw cost"
+   ]
+  },
+  {
+   "id": "lowland_chopper",
+   "name": "Lowland chopper",
+   "category": "heavy_melee",
+   "family": "service_knives",
+   "form": "str",
+   "line": "black_scavenger",
+   "weapon_art": null,
+   "damage": 33,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 3
+   },
+   "ammo": null,
+   "weight_kg": 2.2,
+   "accuracy": 0,
+   "price_credits": 220,
+   "properties": [],
+   "mastery_family": "heavy_melee",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "lowland_chopper",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "edge"
+    ],
+    "hits_with": "raw_power",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "ork_machete"
+  },
+  {
+   "id": "dock_cutter",
+   "name": "Dock cutter",
+   "category": "light_melee",
+   "family": "cavalry_blades",
+   "form": "hybrid",
+   "line": "officers",
+   "weapon_art": null,
+   "damage": 21,
+   "provisional": true,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 1.6,
+   "accuracy": 0,
+   "price_credits": 350,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "dock_cutter",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "edge"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "sabre"
+  },
+  {
+   "id": "broadback_sabre",
+   "name": "Broadback sabre",
+   "category": "heavy_melee",
+   "family": "cavalry_blades",
+   "form": "str",
+   "line": "officers",
+   "weapon_art": null,
+   "damage": 36,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 3
+   },
+   "ammo": null,
+   "weight_kg": 2.4,
+   "accuracy": 0,
+   "price_credits": 450,
+   "properties": [],
+   "mastery_family": "heavy_melee",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "broadback_sabre",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "edge"
+    ],
+    "hits_with": "raw_power",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "ork_machete"
+  },
+  {
+   "id": "legion_leaf_dagger",
+   "name": "Legion leaf-dagger",
+   "category": "light_melee",
+   "family": "legion_blades",
+   "form": "dex",
+   "line": "legion",
+   "weapon_art": null,
+   "damage": 16,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 0.6,
+   "accuracy": 0,
+   "price_credits": 200,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "legion_leaf_dagger",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "edge",
+     "point"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "grants": {
+    "name": "Shield Partner",
+    "text": "+{=grants.effect.value} Defense while you hold a shield in your off hand.",
+    "effect": {
+     "op": "defense_with_shield",
+     "value": 1
+    }
+   },
+   "text": "+{=grants.effect.value} Defense while you hold a shield in your off hand.",
+   "lore": "",
+   "_copy_from": "legion_gladius"
+  },
+  {
+   "id": "legion_rank_sword",
+   "name": "Legion rank sword",
+   "category": "heavy_melee",
+   "family": "legion_blades",
+   "form": "str",
+   "line": "legion",
+   "weapon_art": null,
+   "damage": 34,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 3
+   },
+   "ammo": null,
+   "weight_kg": 2.2,
+   "accuracy": 0,
+   "price_credits": 400,
+   "properties": [],
+   "mastery_family": "heavy_melee",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "legion_rank_sword",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "edge",
+     "point"
+    ],
+    "hits_with": "raw_power",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "ork_machete"
+  },
+  {
+   "id": "short_draw",
+   "name": "Short draw",
+   "category": "light_melee",
+   "family": "draw_blades",
+   "form": "dex",
+   "line": "kemizuchi",
+   "weapon_art": null,
+   "damage": 18,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 1,
+   "accuracy": 0,
+   "price_credits": 400,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "short_draw",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "edge"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "katana"
+  },
+  {
+   "id": "long_draw",
+   "name": "Long draw",
+   "category": "heavy_melee",
+   "family": "draw_blades",
+   "form": "str",
+   "line": "kemizuchi",
+   "weapon_art": null,
+   "damage": 41,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 3
+   },
+   "ammo": null,
+   "weight_kg": 3,
+   "accuracy": 0,
+   "price_credits": 800,
+   "properties": [],
+   "mastery_family": "heavy_melee",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "long_draw",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "edge"
+    ],
+    "hits_with": "raw_power",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "adamantile_greatsword"
+  },
+  {
+   "id": "kemizuchi_side_sword",
+   "name": "Kemizuchi side-sword",
+   "category": "light_melee",
+   "family": "kemizuchi_duelling",
+   "form": "hybrid",
+   "line": "kemizuchi",
+   "weapon_art": null,
+   "damage": 21,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 1.4,
+   "accuracy": 0,
+   "price_credits": 600,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "kemizuchi_side_sword",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "point",
+     "edge"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "grants": {
+    "name": "Lunge",
+    "text": "Your melee attacks reach a target 2 tiles away.",
+    "effect": {
+     "op": "reach",
+     "value": 2
+    }
+   },
+   "text": "Your melee attacks reach a target 2 tiles away.",
+   "lore": "",
+   "_copy_from": "kemizuchi_duelling_blade"
+  },
+  {
+   "id": "kemizuchi_sword_breaker",
+   "name": "Kemizuchi sword-breaker",
+   "category": "heavy_melee",
+   "family": "kemizuchi_duelling",
+   "form": "str",
+   "line": "kemizuchi",
+   "weapon_art": null,
+   "damage": 33,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 3
+   },
+   "ammo": null,
+   "weight_kg": 2,
+   "accuracy": 0,
+   "price_credits": 650,
+   "properties": [],
+   "mastery_family": "heavy_melee",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "kemizuchi_sword_breaker",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "edge",
+     "hook"
+    ],
+    "hits_with": "raw_power",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "ork_machete"
+  },
+  {
+   "id": "pitch_axe",
+   "name": "Pitch axe",
+   "category": "light_melee",
+   "family": "axes",
+   "form": "dex",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 17,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2,
+    "throw": 2
+   },
+   "ammo": null,
+   "weight_kg": 0.8,
+   "accuracy": 0,
+   "price_credits": 100,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "pitch_axe",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "edge",
+     "hook",
+     "thrown"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "grants": {
+    "name": "Splitter",
+    "text": "Deals double damage to cover.",
+    "effect": {
+     "op": "cover_damage_mult",
+     "value": 2
+    }
+   },
+   "text": "Deals double damage to cover.",
+   "lore": "",
+   "_copy_from": "hatchet"
+  },
+  {
+   "id": "legion_spear",
+   "name": "Legion spear",
+   "category": "light_melee",
+   "family": "polearms",
+   "form": "dex",
+   "line": "legion",
+   "weapon_art": null,
+   "damage": 22,
+   "provisional": true,
+   "damage_type": "physical",
+   "range_tiles": 2,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 2.5,
+   "accuracy": 0,
+   "price_credits": 450,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "2H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "legion_spear",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "point",
+     "reach"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "sabre",
+   "_notes": [
+    "reach from lance (phys.props reach, range 2); the rest from sabre"
+   ]
+  },
+  {
+   "id": "war_pick",
+   "name": "War pick",
+   "category": "light_melee",
+   "family": "hammers",
+   "form": "dex",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 18,
+   "provisional": true,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 1.2,
+   "accuracy": 0,
+   "price_credits": 300,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "war_pick",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "point"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "sabre"
+  },
+  {
+   "id": "war_hammer",
+   "name": "War hammer",
+   "category": "light_melee",
+   "family": "hammers",
+   "form": "hybrid",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 23,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 2.5,
+   "accuracy": 0,
+   "price_credits": 400,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "war_hammer",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "blunt",
+     "point"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "hatchet",
+   "_notes": [
+    "no throw: no thrown property, no throw cost"
+   ]
+  },
+  {
+   "id": "adamantile_plate_needle",
+   "name": "Plate needle",
+   "category": "light_melee",
+   "family": "great_blades",
+   "form": "dex",
+   "line": "adamantile_brigade",
+   "weapon_art": null,
+   "damage": 24,
+   "provisional": true,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 2,
+   "accuracy": 0,
+   "price_credits": 800,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "2H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "adamantile_plate_needle",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "point"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "sabre"
+  },
+  {
+   "id": "adamantile_longsword",
+   "name": "Adamantile longsword",
+   "category": "light_melee",
+   "family": "great_blades",
+   "form": "hybrid",
+   "line": "adamantile_brigade",
+   "weapon_art": null,
+   "damage": 23,
+   "provisional": true,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 1.8,
+   "accuracy": 0,
+   "price_credits": 750,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "adamantile_longsword",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "edge",
+     "point"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "sabre"
+  },
+  {
+   "id": "ork_skinner",
+   "name": "Ork skinner",
+   "category": "light_melee",
+   "family": "ork_cutters",
+   "form": "dex",
+   "line": "ork",
+   "weapon_art": null,
+   "damage": 17,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 0.8,
+   "accuracy": 0,
+   "price_credits": 120,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "ork_skinner",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "edge",
+     "hook"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "combat_knife",
+   "_notes": [
+    "no throw: no thrown property, no throw cost"
+   ]
+  },
+  {
+   "id": "ork_cleaver_glaive",
+   "name": "Ork cleaver-glaive",
+   "category": "heavy_melee",
+   "family": "ork_cutters",
+   "form": "str",
+   "line": "ork",
+   "weapon_art": null,
+   "damage": 37,
+   "damage_type": "physical",
+   "range_tiles": 2,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 3
+   },
+   "ammo": null,
+   "weight_kg": 4.5,
+   "accuracy": 0,
+   "price_credits": 700,
+   "properties": [],
+   "mastery_family": "heavy_melee",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "ork_cleaver_glaive",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "edge",
+     "reach"
+    ],
+    "hits_with": "raw_power",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "glaive"
+  },
+  {
+   "id": "weighted_gloves",
+   "name": "Weighted gloves",
+   "category": "unarmed",
+   "family": "heavy_fists",
+   "form": "hybrid",
+   "line": "smetanita",
+   "weapon_art": null,
+   "damage": 22,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 0.8,
+   "accuracy": 0,
+   "price_credits": 300,
+   "properties": [],
+   "mastery_family": "unarmed",
+   "hands": "1H",
+   "durability": 200,
+   "mod_slots": [],
+   "type": "weighted_gloves",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "bare",
+     "blunt",
+     "open_hand"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "striking_gloves"
+  },
+  {
+   "id": "spiked_buckler",
+   "name": "Spiked buckler",
+   "category": "shield",
+   "family": "strike_shields",
+   "form": "light",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 20,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 2.5,
+   "accuracy": 0,
+   "price_credits": 350,
+   "properties": [],
+   "mastery_family": "unarmed",
+   "hands": "1H",
+   "durability": 150,
+   "mod_slots": [],
+   "type": "spiked_buckler",
+   "provisional": true,
+   "adjudication": "engine",
+   "effects": [
+    {
+     "op": "defense_bonus",
+     "value": 1
+    }
+   ],
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "shield",
+     "follows"
+    ],
+    "hits_with": "durability",
+    "scales_with": [
+     "endurance"
+    ]
+   },
+   "variant_mods": [
+    "mod_follow_strike"
+   ],
+   "text": "Held in either hand, one to a hand. +{=effects.0.value} Defense. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and more Guard from Brace and the Guard technique (a shield in each hand doubles every Guard gain instead). Its own blow rolls with Durability and its damage grows with Endurance. In the off hand it follows: each melee technique of your one-handed main weapon is followed by one blow from it; that blow gives no Guard.",
+   "lore": "",
+   "_copy_from": "buckler"
+  },
+  {
+   "id": "boss_shield",
+   "name": "Boss shield",
+   "category": "shield",
+   "family": "strike_shields",
+   "form": "standard",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 25,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 6,
+   "accuracy": 0,
+   "price_credits": 800,
+   "properties": [],
+   "mastery_family": "unarmed",
+   "hands": "1H",
+   "durability": 150,
+   "mod_slots": [],
+   "type": "boss_shield",
+   "provisional": true,
+   "adjudication": "engine",
+   "effects": [
+    {
+     "op": "defense_bonus",
+     "value": 1
+    }
+   ],
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "shield",
+     "follows"
+    ],
+    "hits_with": "durability",
+    "scales_with": [
+     "endurance"
+    ]
+   },
+   "variant_mods": [
+    "mod_follow_strike"
+   ],
+   "text": "Held in either hand, one to a hand. +{=effects.0.value} Defense. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and more Guard from Brace and the Guard technique (a shield in each hand doubles every Guard gain instead). Its own blow rolls with Durability and its damage grows with Endurance. In the off hand it follows: each melee technique of your one-handed main weapon is followed by one blow from it; that blow gives no Guard.",
+   "lore": "",
+   "_copy_from": "riot_shield"
+  },
+  {
+   "id": "ram_plate",
+   "name": "Ram plate",
+   "category": "shield",
+   "family": "strike_shields",
+   "form": "heavy",
+   "line": "adamantile_brigade",
+   "weapon_art": null,
+   "damage": 30,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 11,
+   "accuracy": 0,
+   "price_credits": 1300,
+   "properties": [],
+   "mastery_family": "unarmed",
+   "hands": "1H",
+   "durability": 150,
+   "mod_slots": [],
+   "type": "ram_plate",
+   "provisional": true,
+   "adjudication": "engine",
+   "effects": [
+    {
+     "op": "defense_bonus",
+     "value": 1
+    }
+   ],
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "shield",
+     "follows"
+    ],
+    "hits_with": "durability",
+    "scales_with": [
+     "endurance"
+    ]
+   },
+   "tags": [
+    "heavy"
+   ],
+   "variant_mods": [
+    "mod_follow_strike"
+   ],
+   "text": "Held in either hand, one to a hand. +{=effects.0.value} Defense. Heavy: it slows your Movement (two Heavy pieces slow it twice). As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and more Guard from Brace and the Guard technique (a shield in each hand doubles every Guard gain instead). Its own blow rolls with Durability and its damage grows with Endurance. In the off hand it follows: each melee technique of your one-handed main weapon is followed by one blow from it; that blow gives no Guard.",
+   "lore": "",
+   "_copy_from": "pavise",
+   "_notes": [
+    "no copy-from row given: the Guard family's heavy form (pavise), without its plant (rules 1.92 item 8012)"
+   ]
+  },
+  {
+   "id": "deflector",
+   "name": "Deflector",
+   "category": "shield",
+   "family": "ward_shields",
+   "form": "light",
+   "line": "science_team",
+   "weapon_art": null,
+   "damage": 12,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 2,
+   "accuracy": 0,
+   "price_credits": 450,
+   "properties": [],
+   "mastery_family": "unarmed",
+   "hands": "1H",
+   "durability": 150,
+   "mod_slots": [],
+   "type": "deflector",
+   "provisional": true,
+   "adjudication": "engine",
+   "effects": [
+    {
+     "op": "defense_bonus",
+     "value": 1
+    }
+   ],
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "shield",
+     "follows"
+    ],
+    "hits_with": "durability",
+    "scales_with": [
+     "endurance"
+    ]
+   },
+   "variant_mods": [
+    "mod_follow_guard",
+    "mod_ward_light"
+   ],
+   "text": "Held in either hand, one to a hand. +{=effects.0.value} Defense. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and more Guard from Brace and the Guard technique (a shield in each hand doubles every Guard gain instead). Its own blow rolls with Durability and its damage grows with Endurance. In the off hand it follows: each melee technique of your one-handed main weapon is followed by one blow from it, and the first that lands in a turn gives Guard. Its ward takes some of every ranged or elemental hit on you (none from a melee blow).",
+   "lore": "",
+   "_copy_from": "buckler"
+  },
+  {
+   "id": "bulwark_screen",
+   "name": "Bulwark screen",
+   "category": "shield",
+   "family": "ward_shields",
+   "form": "standard",
+   "line": "science_team",
+   "weapon_art": null,
+   "damage": 15,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 6,
+   "accuracy": 0,
+   "price_credits": 950,
+   "properties": [],
+   "mastery_family": "unarmed",
+   "hands": "1H",
+   "durability": 150,
+   "mod_slots": [],
+   "type": "bulwark_screen",
+   "provisional": true,
+   "adjudication": "engine",
+   "effects": [
+    {
+     "op": "defense_bonus",
+     "value": 2
+    }
+   ],
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "shield",
+     "follows"
+    ],
+    "hits_with": "durability",
+    "scales_with": [
+     "endurance"
+    ]
+   },
+   "variant_mods": [
+    "mod_follow_guard",
+    "mod_ward_standard"
+   ],
+   "text": "Held in either hand, one to a hand. +{=effects.0.value} Defense. As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and more Guard from Brace and the Guard technique (a shield in each hand doubles every Guard gain instead). Its own blow rolls with Durability and its damage grows with Endurance. In the off hand it follows: each melee technique of your one-handed main weapon is followed by one blow from it, and the first that lands in a turn gives Guard. Its ward takes some of every ranged or elemental hit on you (none from a melee blow).",
+   "lore": "",
+   "_copy_from": "riot_shield"
+  },
+  {
+   "id": "barrier_wall",
+   "name": "Barrier wall",
+   "category": "shield",
+   "family": "ward_shields",
+   "form": "heavy",
+   "line": "science_team",
+   "weapon_art": null,
+   "damage": 15,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 11,
+   "accuracy": 0,
+   "price_credits": 1500,
+   "properties": [],
+   "mastery_family": "unarmed",
+   "hands": "1H",
+   "durability": 150,
+   "mod_slots": [],
+   "type": "barrier_wall",
+   "provisional": true,
+   "adjudication": "engine",
+   "effects": [
+    {
+     "op": "defense_bonus",
+     "value": 2
+    }
+   ],
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "shield",
+     "follows"
+    ],
+    "hits_with": "durability",
+    "scales_with": [
+     "endurance"
+    ]
+   },
+   "tags": [
+    "heavy"
+   ],
+   "variant_mods": [
+    "mod_follow_guard",
+    "mod_ward_heavy"
+   ],
+   "text": "Held in either hand, one to a hand. +{=effects.0.value} Defense. Heavy: it slows your Movement (two Heavy pieces slow it twice). As a shield it gives you Shield Bash, Raise Shield and Shield Wall, and more Guard from Brace and the Guard technique (a shield in each hand doubles every Guard gain instead). Its own blow rolls with Durability and its damage grows with Endurance. In the off hand it follows: each melee technique of your one-handed main weapon is followed by one blow from it, and the first that lands in a turn gives Guard. Its ward takes some of every ranged or elemental hit on you (none from a melee blow).",
+   "lore": "",
+   "_copy_from": "pavise",
+   "_notes": [
+    "no copy-from row given: the Guard family's heavy form (pavise), without its plant (rules 1.92 item 8012)"
+   ]
+  },
+  {
+   "id": "snub_revolver",
+   "name": "Snub revolver",
+   "category": "revolver",
+   "family": "revolvers",
+   "form": "close",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 26,
+   "damage_type": "physical",
+   "range_tiles": 6,
+   "recoil": 1,
+   "magazine": 5,
+   "heat_limit": 5,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "revolver",
+   "weight_kg": 1,
+   "accuracy": 0,
+   "price_credits": 300,
+   "properties": [],
+   "mastery_family": "sidearms",
+   "reload": "magazine",
+   "magazine_kg": 0.05,
+   "reload_unit": "speedloader",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "snub_revolver",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "quick",
+     "precise"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "grants": {
+    "name": "Fan the Hammer",
+    "text": "For {=grants.effect.ap} AP, fire up to {=grants.effect.shots} shots at one target, each at −2 to hit.",
+    "effect": {
+     "op": "multi_shot",
+     "ap": 3,
+     "shots": 3,
+     "extra": -2
+    }
+   },
+   "second_skill": "ingenuity",
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "drifter_revolver"
+  },
+  {
+   "id": "decrkm_carbine",
+   "name": "Decrkm carbine",
+   "category": "smg",
+   "family": "decrkm_automatics",
+   "form": "long",
+   "line": "decrkm",
+   "weapon_art": null,
+   "damage": 21,
+   "damage_type": "physical",
+   "range_tiles": 12,
+   "recoil": 1,
+   "magazine": 30,
+   "heat_limit": 10,
+   "modes": [
+    "single",
+    "burst",
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3,
+    "auto": 4
+   },
+   "ammo": ".32 decrkm",
+   "weight_kg": 3.6,
+   "accuracy": 0,
+   "price_credits": 800,
+   "properties": [],
+   "mastery_family": "smgs",
+   "reload": "magazine",
+   "magazine_kg": 0.2,
+   "reload_unit": "magazine",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "decrkm_carbine",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "quick",
+     "auto"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "provisional": true,
+   "grants": {
+    "name": "Spray and Pray",
+    "text": "Full auto costs 3 AP instead of 4.",
+    "effect": {
+     "op": "auto_ap",
+     "value": 3
+    }
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "decrkm_smg"
+  },
+  {
+   "id": "legion_marksman_rifle",
+   "name": "Legion marksman rifle",
+   "category": "rifle",
+   "family": "legion_automatics",
+   "form": "long",
+   "line": "legion",
+   "weapon_art": null,
+   "damage": 32,
+   "damage_type": "physical",
+   "range_tiles": 20,
+   "recoil": 1,
+   "magazine": 15,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "rifle",
+   "weight_kg": 4.2,
+   "accuracy": 0,
+   "price_credits": 1500,
+   "properties": [],
+   "mastery_family": "rifles",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine"
+   ],
+   "type": "legion_marksman_rifle",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.15,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "sound": "gun_sniper",
+    "mag": "box_mag"
+   },
+   "second_skill": "empathy",
+   "text": "",
+   "lore": "",
+   "_copy_from": "ccec_marksman_rifle"
+  },
+  {
+   "id": "whisper_pistol",
+   "name": "Whisper pistol",
+   "category": "pistol",
+   "family": "whisper",
+   "form": "close",
+   "line": "whisper",
+   "weapon_art": null,
+   "damage": 15,
+   "damage_type": "physical",
+   "range_tiles": 6,
+   "recoil": 1,
+   "magazine": 10,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": ".32 decrkm",
+   "weight_kg": 0.9,
+   "accuracy": 0,
+   "price_credits": 600,
+   "properties": [],
+   "mastery_family": "sidearms",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [],
+   "type": "whisper_pistol",
+   "provisional": true,
+   "reload": "loose",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "quick",
+     "silent"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "rate": 1.15,
+    "eject": "reload",
+    "load": "break",
+    "mag": null
+   },
+   "second_skill": "ingenuity",
+   "text": "",
+   "lore": "",
+   "_copy_from": "parlour_pistol"
+  },
+  {
+   "id": "whisper_carbine",
+   "name": "Whisper carbine",
+   "category": "smg",
+   "family": "whisper",
+   "form": "long",
+   "line": "whisper",
+   "weapon_art": null,
+   "damage": 19,
+   "damage_type": "physical",
+   "range_tiles": 11,
+   "recoil": 1,
+   "magazine": 30,
+   "heat_limit": 12,
+   "modes": [
+    "single",
+    "burst",
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3,
+    "auto": 4
+   },
+   "ammo": ".32 decrkm",
+   "weight_kg": 3.8,
+   "accuracy": 0,
+   "price_credits": 1400,
+   "properties": [
+    "silent"
+   ],
+   "mastery_family": "smgs",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [
+    "optic",
+    "magazine"
+   ],
+   "type": "whisper_carbine",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.2,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "auto",
+     "silent"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "second_skill": "ingenuity",
+   "text": "",
+   "lore": "",
+   "_copy_from": "whisper_smg"
+  },
+  {
+   "id": "mandestra_drum_pistol",
+   "name": "Mandestra drum pistol",
+   "category": "pistol",
+   "family": "mandestra_drum_guns",
+   "form": "close",
+   "line": "mandestra",
+   "weapon_art": null,
+   "damage": 18,
+   "damage_type": "physical",
+   "range_tiles": 6,
+   "recoil": 1,
+   "magazine": 40,
+   "heat_limit": 9,
+   "modes": [
+    "single",
+    "burst"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3
+   },
+   "ammo": ".32 decrkm",
+   "weight_kg": 2,
+   "accuracy": 0,
+   "price_credits": 800,
+   "properties": [],
+   "mastery_family": "sidearms",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine"
+   ],
+   "type": "mandestra_drum_pistol",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.12,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "quick",
+     "auto"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "decrkm_autopistol"
+  },
+  {
+   "id": "mandestra_drum_rifle",
+   "name": "Mandestra drum rifle",
+   "category": "smg",
+   "family": "mandestra_drum_guns",
+   "form": "long",
+   "line": "mandestra",
+   "weapon_art": null,
+   "damage": 21,
+   "damage_type": "physical",
+   "range_tiles": 11,
+   "recoil": 1,
+   "magazine": 90,
+   "heat_limit": 12,
+   "modes": [
+    "single",
+    "burst",
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3,
+    "auto": 4
+   },
+   "ammo": ".32 decrkm",
+   "weight_kg": 6,
+   "accuracy": 0,
+   "price_credits": 1700,
+   "properties": [],
+   "mastery_family": "smgs",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [
+    "optic",
+    "underbarrel"
+   ],
+   "type": "mandestra_drum_rifle",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.6,
+   "reload_unit": "drum",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "auto",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "mag": "drum"
+   },
+   "grants": {
+    "name": "Wide Spray",
+    "text": "Full auto also catches enemies up to 2 tiles to either side of the line of fire.",
+    "effect": {
+     "op": "auto_width",
+     "value": 2
+    }
+   },
+   "text": "Full auto also catches enemies up to 2 tiles to either side of the line of fire.",
+   "lore": "",
+   "_copy_from": "mandestra_drum_gun"
+  },
+  {
+   "id": "hellraiser_trench_carbine",
+   "name": "Hellraiser trench carbine",
+   "category": "rifle",
+   "family": "hellraiser_line",
+   "form": "close",
+   "line": "hellraiser",
+   "weapon_art": null,
+   "damage": 28,
+   "damage_type": "physical",
+   "range_tiles": 11,
+   "recoil": 1,
+   "magazine": 20,
+   "heat_limit": 8,
+   "modes": [
+    "single",
+    "burst",
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3,
+    "auto": 4
+   },
+   "ammo": "rifle",
+   "weight_kg": 3.2,
+   "accuracy": 0,
+   "price_credits": 800,
+   "properties": [],
+   "mastery_family": "rifles",
+   "reload": "magazine",
+   "magazine_kg": 0.15,
+   "reload_unit": "magazine",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "hellraiser_trench_carbine",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "auto",
+     "precise"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "second_skill": "raw_power",
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "hellraiser_service_rifle"
+  },
+  {
+   "id": "adamantile_carbine",
+   "name": "Adamantile carbine",
+   "category": "rifle",
+   "family": "adamantile_battle_rifles",
+   "form": "close",
+   "line": "adamantile_brigade",
+   "weapon_art": null,
+   "damage": 28,
+   "damage_type": "physical",
+   "range_tiles": 13,
+   "recoil": 1,
+   "magazine": 15,
+   "heat_limit": 6,
+   "modes": [
+    "single",
+    "burst"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3
+   },
+   "ammo": "rifle",
+   "weight_kg": 3.8,
+   "accuracy": 0,
+   "price_credits": 1000,
+   "properties": [],
+   "mastery_family": "rifles",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "adamantile_carbine",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.2,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "rate": 0.9,
+    "mag": "box_mag"
+   },
+   "grants": {
+    "name": "Armour-Breaker",
+    "text": "Shots ignore {=grants.effect.value} points of the target's armour.",
+    "effect": {
+     "op": "ignore_armour",
+     "value": 5
+    }
+   },
+   "text": "Shots ignore {=grants.effect.value} points of the target's armour.",
+   "lore": "",
+   "_copy_from": "adamantile_battle_rifle"
+  },
+  {
+   "id": "adamantile_heavy_rifle",
+   "name": "Adamantile heavy rifle",
+   "category": "rifle",
+   "family": "adamantile_battle_rifles",
+   "form": "long",
+   "line": "adamantile_brigade",
+   "weapon_art": null,
+   "damage": 36,
+   "damage_type": "physical",
+   "range_tiles": 22,
+   "recoil": 1,
+   "magazine": 8,
+   "heat_limit": 5,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "rifle",
+   "weight_kg": 6.5,
+   "accuracy": 0,
+   "price_credits": 2000,
+   "properties": [],
+   "mastery_family": "rifles",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "adamantile_heavy_rifle",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.2,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "rate": 0.9,
+    "mag": "box_mag"
+   },
+   "grants": {
+    "name": "Armour-Breaker",
+    "text": "Shots ignore {=grants.effect.value} points of the target's armour.",
+    "effect": {
+     "op": "ignore_armour",
+     "value": 5
+    }
+   },
+   "text": "Shots ignore {=grants.effect.value} points of the target's armour.",
+   "second_skill": "raw_power",
+   "lore": "",
+   "_copy_from": "adamantile_battle_rifle"
+  },
+  {
+   "id": "fowling_gun",
+   "name": "Fowling gun",
+   "category": "shotgun",
+   "family": "break_action_shotguns",
+   "form": "long",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": {
+    "within_4": 40,
+    "within_8": 30
+   },
+   "damage_type": "physical",
+   "range_tiles": 10,
+   "recoil": 1,
+   "magazine": 2,
+   "heat_limit": 4,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "shell",
+   "weight_kg": 4,
+   "accuracy": 0,
+   "price_credits": 600,
+   "properties": [
+    "damage_falloff"
+   ],
+   "mastery_family": "shotguns",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [],
+   "type": "fowling_gun",
+   "provisional": true,
+   "reload": "loose",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "spread",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "eject": "reload",
+    "load": "break",
+    "cycle": 0
+   },
+   "grants": {
+    "name": "Both Barrels",
+    "text": "For {=grants.effect.ap} AP, fire both shells as one attack that deals +50% damage.",
+    "effect": {
+     "op": "multi_shot",
+     "ap": 3,
+     "shots": 1,
+     "extra": 0,
+     "dmg_mult": 1.5,
+     "rounds": 2
+    }
+   },
+   "text": "For {=grants.effect.ap} AP, fire both shells as one attack that deals +50% damage.",
+   "lore": "",
+   "_copy_from": "coach_gun"
+  },
+  {
+   "id": "brigade_shot_pistol",
+   "name": "Brigade shot pistol",
+   "category": "shotgun",
+   "family": "brigade_auto_shotguns",
+   "form": "close",
+   "line": "adamantile_brigade",
+   "weapon_art": null,
+   "damage": {
+    "within_4": 38,
+    "within_8": 14
+   },
+   "damage_type": "physical",
+   "range_tiles": 5,
+   "recoil": 1,
+   "magazine": 5,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "shell",
+   "weight_kg": 1.8,
+   "accuracy": 0,
+   "price_credits": 900,
+   "properties": [
+    "damage_falloff"
+   ],
+   "mastery_family": "shotguns",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [],
+   "type": "brigade_shot_pistol",
+   "provisional": true,
+   "reload": "loose",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "spread",
+     "quick"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "rate": 1.05,
+    "eject": "reload",
+    "load": "break",
+    "cycle": 0
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "sawn_off"
+  },
+  {
+   "id": "brigade_drum_shotgun",
+   "name": "Brigade drum shotgun",
+   "category": "shotgun",
+   "family": "brigade_auto_shotguns",
+   "form": "long",
+   "line": "adamantile_brigade",
+   "weapon_art": null,
+   "damage": {
+    "within_4": 40,
+    "within_8": 24
+   },
+   "damage_type": "physical",
+   "range_tiles": 8,
+   "recoil": 1,
+   "magazine": 20,
+   "heat_limit": 11,
+   "modes": [
+    "single",
+    "burst"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3
+   },
+   "ammo": "shell",
+   "weight_kg": 6.5,
+   "accuracy": 0,
+   "price_credits": 2400,
+   "properties": [
+    "damage_falloff"
+   ],
+   "mastery_family": "shotguns",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [
+    "optic",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "brigade_drum_shotgun",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.3,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "spread",
+     "auto"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "mag": "shotgun_mag",
+    "load": null,
+    "cycle": 0
+   },
+   "second_skill": "durability",
+   "text": "",
+   "lore": "",
+   "_copy_from": "brigade_auto_shotgun"
+  },
+  {
+   "id": "lumeri_hand_scatter",
+   "name": "Lumeri hand scatter",
+   "category": "shotgun",
+   "family": "lumeri_scatterguns",
+   "form": "close",
+   "line": "lumeri",
+   "weapon_art": null,
+   "damage": {
+    "within_4": 36,
+    "within_8": 15
+   },
+   "damage_type": "physical",
+   "range_tiles": 5,
+   "recoil": 1,
+   "magazine": 3,
+   "heat_limit": 4,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "shell",
+   "weight_kg": 1.8,
+   "accuracy": 0,
+   "price_credits": 450,
+   "properties": [
+    "damage_falloff"
+   ],
+   "mastery_family": "shotguns",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [],
+   "type": "lumeri_hand_scatter",
+   "provisional": true,
+   "reload": "loose",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "spread",
+     "quick"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "rate": 1.05,
+    "eject": "reload",
+    "load": "break",
+    "cycle": 0
+   },
+   "grants": {
+    "name": "Door Key",
+    "text": "Deals double damage to doors and cover.",
+    "effect": {
+     "op": "cover_damage_mult",
+     "value": 2
+    }
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "sawn_off"
+  },
+  {
+   "id": "lumeri_long_scatter",
+   "name": "Lumeri long scatter",
+   "category": "shotgun",
+   "family": "lumeri_scatterguns",
+   "form": "long",
+   "line": "lumeri",
+   "weapon_art": null,
+   "damage": {
+    "within_4": 40,
+    "within_8": 30
+   },
+   "damage_type": "physical",
+   "range_tiles": 10,
+   "recoil": 1,
+   "magazine": 6,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "shell",
+   "weight_kg": 4.8,
+   "accuracy": 0,
+   "price_credits": 950,
+   "properties": [
+    "damage_falloff"
+   ],
+   "mastery_family": "shotguns",
+   "reload": "loose",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [
+    "optic",
+    "underbarrel"
+   ],
+   "type": "lumeri_long_scatter",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "spread",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "grants": {
+    "name": "Door Key",
+    "text": "Deals double damage to doors and cover.",
+    "effect": {
+     "op": "cover_damage_mult",
+     "value": 2
+    }
+   },
+   "second_skill": "faith",
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "lumeri_scattergun"
+  },
+  {
+   "id": "adcorp_short_carbine",
+   "name": "ADCorp short carbine",
+   "category": "rifle",
+   "family": "adcorp",
+   "form": "close",
+   "line": "adcorp",
+   "weapon_art": null,
+   "damage": 27,
+   "damage_type": "physical",
+   "range_tiles": 12,
+   "recoil": 1,
+   "magazine": 30,
+   "heat_limit": 8,
+   "modes": [
+    "single",
+    "burst",
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3,
+    "auto": 4
+   },
+   "ammo": "rifle",
+   "weight_kg": 3,
+   "accuracy": 0,
+   "price_credits": 1000,
+   "properties": [],
+   "mastery_family": "rifles",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine"
+   ],
+   "type": "adcorp_short_carbine",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.18,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "auto",
+     "quick"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "legion_bullpup"
+  },
+  {
+   "id": "adcorp_line_rifle",
+   "name": "ADCorp line rifle",
+   "category": "rifle",
+   "family": "adcorp",
+   "form": "standard",
+   "line": "adcorp",
+   "weapon_art": null,
+   "damage": 30,
+   "damage_type": "physical",
+   "range_tiles": 16,
+   "recoil": 1,
+   "magazine": 30,
+   "heat_limit": 8,
+   "modes": [
+    "single",
+    "burst",
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3,
+    "auto": 4
+   },
+   "ammo": "rifle",
+   "weight_kg": 3.8,
+   "accuracy": 0,
+   "price_credits": 1300,
+   "properties": [],
+   "mastery_family": "rifles",
+   "reload": "magazine",
+   "magazine_kg": 0.15,
+   "reload_unit": "magazine",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "adcorp_line_rifle",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "auto",
+     "precise"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "hellraiser_service_rifle"
+  },
+  {
+   "id": "adcorp_designated_rifle",
+   "name": "ADCorp designated rifle",
+   "category": "rifle",
+   "family": "adcorp",
+   "form": "long",
+   "line": "adcorp",
+   "weapon_art": null,
+   "damage": 34,
+   "damage_type": "physical",
+   "range_tiles": 22,
+   "recoil": 1,
+   "magazine": 15,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "rifle",
+   "weight_kg": 4.6,
+   "accuracy": 0,
+   "price_credits": 1800,
+   "properties": [],
+   "mastery_family": "rifles",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine"
+   ],
+   "type": "adcorp_designated_rifle",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.15,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "sound": "gun_sniper",
+    "mag": "box_mag"
+   },
+   "second_skill": "ingenuity",
+   "text": "",
+   "lore": "",
+   "_copy_from": "ccec_marksman_rifle"
+  },
+  {
+   "id": "chezknov_machine_carbine",
+   "name": "Chezknov machine carbine",
+   "category": "smg",
+   "family": "chezknov_works",
+   "form": "close",
+   "line": "chezknov",
+   "weapon_art": null,
+   "damage": 20,
+   "damage_type": "physical",
+   "range_tiles": 9,
+   "recoil": 1,
+   "magazine": 30,
+   "heat_limit": 10,
+   "modes": [
+    "single",
+    "burst",
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3,
+    "auto": 4
+   },
+   "ammo": ".32 decrkm",
+   "weight_kg": 3,
+   "accuracy": 0,
+   "price_credits": 850,
+   "properties": [],
+   "mastery_family": "smgs",
+   "reload": "magazine",
+   "magazine_kg": 0.2,
+   "reload_unit": "magazine",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "chezknov_machine_carbine",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "quick",
+     "auto"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "provisional": true,
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "decrkm_smg"
+  },
+  {
+   "id": "chezknov_battle_rifle",
+   "name": "Chezknov battle rifle",
+   "category": "rifle",
+   "family": "chezknov_works",
+   "form": "standard",
+   "line": "chezknov",
+   "weapon_art": null,
+   "damage": 31,
+   "damage_type": "physical",
+   "range_tiles": 17,
+   "recoil": 1,
+   "magazine": 20,
+   "heat_limit": 7,
+   "modes": [
+    "single",
+    "burst"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3
+   },
+   "ammo": "rifle",
+   "weight_kg": 4.4,
+   "accuracy": 0,
+   "price_credits": 1400,
+   "properties": [],
+   "mastery_family": "rifles",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "chezknov_battle_rifle",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.2,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "rate": 0.9,
+    "mag": "box_mag"
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "adamantile_battle_rifle"
+  },
+  {
+   "id": "chezknov_precision_rifle",
+   "name": "Chezknov precision rifle",
+   "category": "rifle",
+   "family": "chezknov_works",
+   "form": "long",
+   "line": "chezknov",
+   "weapon_art": null,
+   "damage": 35,
+   "damage_type": "physical",
+   "range_tiles": 24,
+   "recoil": 1,
+   "magazine": 5,
+   "heat_limit": 5,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "rifle",
+   "weight_kg": 5,
+   "accuracy": 0,
+   "price_credits": 1900,
+   "properties": [],
+   "mastery_family": "rifles",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine"
+   ],
+   "type": "chezknov_precision_rifle",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.15,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "sound": "gun_sniper",
+    "mag": "box_mag"
+   },
+   "second_skill": "ingenuity",
+   "text": "",
+   "lore": "",
+   "_copy_from": "ccec_marksman_rifle"
+  },
+  {
+   "id": "arsenal_courier_pdw",
+   "name": "Arsenal courier PDW",
+   "category": "smg",
+   "family": "central_command_arsenal",
+   "form": "close",
+   "line": "arsenal",
+   "weapon_art": null,
+   "damage": 19,
+   "damage_type": "physical",
+   "range_tiles": 8,
+   "recoil": 1,
+   "magazine": 20,
+   "heat_limit": 9,
+   "modes": [
+    "single",
+    "burst",
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3,
+    "auto": 4
+   },
+   "ammo": ".32 decrkm",
+   "weight_kg": 2,
+   "accuracy": 0,
+   "price_credits": 800,
+   "properties": [],
+   "mastery_family": "smgs",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine"
+   ],
+   "type": "arsenal_courier_pdw",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.18,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "quick",
+     "auto"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "legion_pdw",
+   "variant_mods": [
+    "mod_line_arsenal"
+   ]
+  },
+  {
+   "id": "arsenal_piston_rifle",
+   "name": "Arsenal piston rifle",
+   "category": "rifle",
+   "family": "central_command_arsenal",
+   "form": "standard",
+   "line": "arsenal",
+   "weapon_art": null,
+   "damage": 30,
+   "damage_type": "physical",
+   "range_tiles": 16,
+   "recoil": 1,
+   "magazine": 30,
+   "heat_limit": 8,
+   "modes": [
+    "single",
+    "burst",
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "burst": 3,
+    "auto": 4
+   },
+   "ammo": "rifle",
+   "weight_kg": 3.6,
+   "accuracy": 0,
+   "price_credits": 1250,
+   "properties": [],
+   "mastery_family": "rifles",
+   "reload": "magazine",
+   "magazine_kg": 0.15,
+   "reload_unit": "magazine",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "arsenal_piston_rifle",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "auto",
+     "precise"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "hellraiser_service_rifle",
+   "variant_mods": [
+    "mod_line_arsenal"
+   ]
+  },
+  {
+   "id": "arsenal_heavy_rifle",
+   "name": "Arsenal heavy rifle",
+   "category": "rifle",
+   "family": "central_command_arsenal",
+   "form": "long",
+   "line": "arsenal",
+   "weapon_art": null,
+   "damage": 38,
+   "damage_type": "physical",
+   "range_tiles": 20,
+   "recoil": 1,
+   "magazine": 10,
+   "heat_limit": 5,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": ".50 frontier",
+   "weight_kg": 6,
+   "accuracy": 0,
+   "price_credits": 2100,
+   "properties": [],
+   "mastery_family": "rifles",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine",
+    "underbarrel"
+   ],
+   "type": "arsenal_heavy_rifle",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.2,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "rate": 0.9,
+    "mag": "box_mag"
+   },
+   "second_skill": "brain_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "adamantile_battle_rifle",
+   "variant_mods": [
+    "mod_line_arsenal"
+   ]
+  },
+  {
+   "id": "smetanita_pocket_pistol",
+   "name": "Smetanita pocket pistol",
+   "category": "pistol",
+   "family": "smetanita_sidearms",
+   "form": "close",
+   "line": "smetanita",
+   "weapon_art": null,
+   "damage": 15,
+   "damage_type": "physical",
+   "range_tiles": 4,
+   "recoil": 1,
+   "magazine": 6,
+   "heat_limit": 5,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": ".32 decrkm",
+   "weight_kg": 0.4,
+   "accuracy": 0,
+   "price_credits": 200,
+   "properties": [],
+   "mastery_family": "sidearms",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [],
+   "type": "smetanita_pocket_pistol",
+   "provisional": true,
+   "reload": "loose",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "quick"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "rate": 1.15,
+    "eject": "reload",
+    "load": "break",
+    "mag": null
+   },
+   "second_skill": "ingenuity",
+   "text": "",
+   "lore": "",
+   "_copy_from": "parlour_pistol",
+   "_notes": [
+    "not silent: the silent property dropped"
+   ]
+  },
+  {
+   "id": "smetanita_service_pistol",
+   "name": "Smetanita service pistol",
+   "category": "pistol",
+   "family": "smetanita_sidearms",
+   "form": "standard",
+   "line": "smetanita",
+   "weapon_art": null,
+   "damage": 21,
+   "damage_type": "physical",
+   "range_tiles": 8,
+   "recoil": 1,
+   "magazine": 10,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": ".32 decrkm",
+   "weight_kg": 1,
+   "accuracy": 0,
+   "price_credits": 350,
+   "properties": [],
+   "mastery_family": "sidearms",
+   "reload": "magazine",
+   "magazine_kg": 0.1,
+   "reload_unit": "magazine",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [
+    "optic",
+    "muzzle",
+    "magazine"
+   ],
+   "type": "smetanita_service_pistol",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "quick"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "service_pistol"
+  },
+  {
+   "id": "smetanita_hand_cannon",
+   "name": "Smetanita hand cannon",
+   "category": "revolver",
+   "family": "smetanita_sidearms",
+   "form": "long",
+   "line": "smetanita",
+   "weapon_art": null,
+   "damage": 36,
+   "damage_type": "physical",
+   "range_tiles": 8,
+   "recoil": 1,
+   "magazine": 6,
+   "heat_limit": 4,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": ".50 frontier",
+   "weight_kg": 2,
+   "accuracy": 0,
+   "price_credits": 850,
+   "properties": [],
+   "mastery_family": "sidearms",
+   "hands": "1H",
+   "durability": 300,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "smetanita_hand_cannon",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 0.06,
+   "reload_unit": "speedloader",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "loud",
+     "precise"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "sound": "gun_magnum",
+    "rate": 0.9,
+    "shell": "magnum"
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "frontier_hand_cannon"
+  },
+  {
+   "id": "albert_town_brush_carbine",
+   "name": "Albert Town brush carbine",
+   "category": "rifle",
+   "family": "albert_town",
+   "form": "close",
+   "line": "albert_town",
+   "weapon_art": null,
+   "damage": 31,
+   "damage_type": "physical",
+   "range_tiles": 12,
+   "recoil": 1,
+   "magazine": 6,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "rifle",
+   "weight_kg": 3.2,
+   "accuracy": 0,
+   "price_credits": 650,
+   "properties": [],
+   "mastery_family": "rifles",
+   "reload": "loose",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle"
+   ],
+   "type": "albert_town_brush_carbine",
+   "tags": [
+    "lever"
+   ],
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise",
+     "quick"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "sound": "gun_lever",
+    "mag": null,
+    "load": "rounds",
+    "cycle": 170
+   },
+   "second_skill": "raw_power",
+   "provisional": true,
+   "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
+   "lore": "",
+   "_copy_from": "lever_carbine",
+   "grants": {
+    "name": "Still Turn",
+    "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
+    "effect": {
+     "op": "aimed_still_bonus",
+     "value": 1
+    }
+   }
+  },
+  {
+   "id": "albert_town_service_rifle",
+   "name": "Albert Town service rifle",
+   "category": "rifle",
+   "family": "albert_town",
+   "form": "standard",
+   "line": "albert_town",
+   "weapon_art": null,
+   "damage": 32,
+   "damage_type": "physical",
+   "range_tiles": 18,
+   "recoil": 1,
+   "magazine": 8,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "rifle",
+   "weight_kg": 4,
+   "accuracy": 0,
+   "price_credits": 950,
+   "properties": [],
+   "mastery_family": "rifles",
+   "reload": "loose",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle"
+   ],
+   "type": "albert_town_service_rifle",
+   "tags": [
+    "lever"
+   ],
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise",
+     "quick"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "sound": "gun_lever",
+    "mag": null,
+    "load": "rounds",
+    "cycle": 170
+   },
+   "provisional": true,
+   "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
+   "lore": "",
+   "_copy_from": "lever_carbine",
+   "grants": {
+    "name": "Still Turn",
+    "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
+    "effect": {
+     "op": "aimed_still_bonus",
+     "value": 1
+    }
+   }
+  },
+  {
+   "id": "albert_town_stalking_rifle",
+   "name": "Albert Town stalking rifle",
+   "category": "rifle",
+   "family": "albert_town",
+   "form": "long",
+   "line": "albert_town",
+   "weapon_art": null,
+   "damage": 44,
+   "damage_type": "physical",
+   "range_tiles": 28,
+   "recoil": 1,
+   "magazine": 4,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 3,
+    "aimed": 4
+   },
+   "ammo": "rifle",
+   "weight_kg": 5.5,
+   "accuracy": 0,
+   "price_credits": 1500,
+   "properties": [],
+   "mastery_family": "rifles",
+   "reload": "loose",
+   "hands": "2H",
+   "durability": 400,
+   "mod_slots": [
+    "optic",
+    "muzzle"
+   ],
+   "type": "albert_town_stalking_rifle",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "precise",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "cycle_ap": 1,
+   "provisional": true,
+   "fx": {
+    "sound": "gun_sniper",
+    "mag": null,
+    "load": "rounds",
+    "cycle": 260
+   },
+   "second_skill": "ingenuity",
+   "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
+   "lore": "",
+   "_copy_from": "long_rifle",
+   "grants": {
+    "name": "Still Turn",
+    "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
+    "effect": {
+     "op": "aimed_still_bonus",
+     "value": 1
+    }
+   }
+  },
+  {
+   "id": "short_bow",
+   "name": "Short bow",
+   "category": "bow",
+   "family": "bows",
+   "form": "close",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 24,
+   "damage_type": "physical",
+   "range_tiles": 10,
+   "recoil": 0,
+   "magazine": 40,
+   "heat_limit": null,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "arrow",
+   "weight_kg": 1,
+   "accuracy": 0,
+   "price_credits": 200,
+   "properties": [
+    "silent",
+    "no_heat",
+    "quiver"
+   ],
+   "mastery_family": "bows",
+   "reload": "loose",
+   "hands": "2H",
+   "durability": 200,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "short_bow",
+   "phys": {
+    "system": "ranged",
+    "props": [
+     "drawn",
+     "silent",
+     "quick"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "provisional": true,
+   "text": "",
+   "lore": "",
+   "_copy_from": "recurve_bow",
+   "_notes": [
+    "a plain number: no Raw Power term (the bows' others carry one)"
+   ]
+  },
+  {
+   "id": "arbalest",
+   "name": "Arbalest",
+   "category": "bow",
+   "family": "crossbows",
+   "form": "long",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 72,
+   "damage_type": "physical",
+   "range_tiles": 20,
+   "recoil": 0,
+   "magazine": 1,
+   "heat_limit": null,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 3,
+    "aimed": 4
+   },
+   "ammo": "bolt",
+   "weight_kg": 6,
+   "accuracy": 0,
+   "price_credits": 900,
+   "properties": [
+    "silent",
+    "no_heat",
+    "autoload"
+   ],
+   "mastery_family": "bows",
+   "reload": "loose",
+   "hands": "2H",
+   "durability": 200,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "arbalest",
+   "phys": {
+    "system": "ranged",
+    "props": [
+     "precise",
+     "silent"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "provisional": true,
+   "requires": {
+    "raw_power": 3
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "crossbow"
+  },
+  {
+   "id": "smetanita_snub_launcher",
+   "name": "Smetanita snub launcher",
+   "category": "heavy",
+   "family": "launchers",
+   "form": "light",
+   "line": "smetanita",
+   "weapon_art": null,
+   "damage": 36,
+   "damage_type": "physical",
+   "range_tiles": 10,
+   "recoil": 1,
+   "magazine": 1,
+   "heat_limit": 3,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "40 mm grenade",
+   "weight_kg": 2.5,
+   "accuracy": 0,
+   "price_credits": 1100,
+   "properties": [
+    "area_radius_2"
+   ],
+   "mastery_family": "heavy",
+   "hands": "2H",
+   "durability": 500,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "smetanita_snub_launcher",
+   "provisional": true,
+   "reload": "loose",
+   "explosive": true,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "heavy",
+     "blast",
+     "arc"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "smetanita_thumper"
+  },
+  {
+   "id": "smetanita_drum_launcher",
+   "name": "Smetanita drum launcher",
+   "category": "heavy",
+   "family": "launchers",
+   "form": "heavy",
+   "line": "smetanita",
+   "weapon_art": null,
+   "damage": 40,
+   "damage_type": "physical",
+   "range_tiles": 14,
+   "recoil": 1,
+   "magazine": 12,
+   "heat_limit": 6,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "40 mm grenade",
+   "weight_kg": 8,
+   "accuracy": 0,
+   "price_credits": 3200,
+   "properties": [
+    "area_radius_2"
+   ],
+   "mastery_family": "heavy",
+   "hands": "2H",
+   "durability": 500,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "smetanita_drum_launcher",
+   "provisional": true,
+   "reload": "loose",
+   "explosive": true,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "heavy",
+     "blast",
+     "arc"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "smetanita_thumper"
+  },
+  {
+   "id": "legion_throwaway_tube",
+   "name": "Legion throwaway tube",
+   "category": "heavy",
+   "family": "rocket_tubes",
+   "form": "light",
+   "line": "legion",
+   "weapon_art": null,
+   "damage": 90,
+   "damage_type": "physical",
+   "range_tiles": 12,
+   "recoil": 1,
+   "magazine": 1,
+   "heat_limit": null,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "rocket",
+   "weight_kg": 4,
+   "accuracy": 0,
+   "price_credits": 700,
+   "properties": [
+    "area_radius_1"
+   ],
+   "mastery_family": "heavy",
+   "hands": "2H",
+   "durability": 500,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "legion_throwaway_tube",
+   "provisional": true,
+   "reload": "loose",
+   "reload_ap": 3,
+   "explosive": true,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "heavy",
+     "blast",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "splash_damage": 60,
+   "grants": {
+    "name": "Bunker Buster",
+    "text": "Rockets deal triple damage to cover.",
+    "effect": {
+     "op": "cover_damage_mult",
+     "value": 3
+    }
+   },
+   "text": "Rockets deal triple damage to cover.",
+   "second_skill": "ingenuity",
+   "lore": "",
+   "_copy_from": "breacher_tube",
+   "_notes": [
+    "single use: no existing piece carries it, so it ships reloadable at reload 3 and its text does not promise it (numbers file; rules 1.92 item 8033)"
+   ]
+  },
+  {
+   "id": "legion_siege_tube",
+   "name": "Legion siege tube",
+   "category": "heavy",
+   "family": "rocket_tubes",
+   "form": "heavy",
+   "line": "legion",
+   "weapon_art": null,
+   "damage": 130,
+   "damage_type": "physical",
+   "range_tiles": 20,
+   "recoil": 1,
+   "magazine": 1,
+   "heat_limit": null,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "rocket",
+   "weight_kg": 12,
+   "accuracy": 0,
+   "price_credits": 4500,
+   "properties": [
+    "area_radius_1"
+   ],
+   "mastery_family": "heavy",
+   "hands": "2H",
+   "durability": 500,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "legion_siege_tube",
+   "provisional": true,
+   "reload": "loose",
+   "reload_ap": 3,
+   "explosive": true,
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "heavy",
+     "blast",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "splash_damage": 60,
+   "grants": {
+    "name": "Bunker Buster",
+    "text": "Rockets deal triple damage to cover.",
+    "effect": {
+     "op": "cover_damage_mult",
+     "value": 3
+    }
+   },
+   "text": "Rockets deal triple damage to cover.",
+   "second_skill": "raw_power",
+   "lore": "",
+   "_copy_from": "breacher_tube",
+   "variant_mods": [
+    "mod_siege_reload"
+   ]
+  },
+  {
+   "id": "lumeri_votive_torch",
+   "name": "Lumeri votive torch",
+   "category": "heavy",
+   "family": "flamers",
+   "form": "light",
+   "line": "lumeri",
+   "weapon_art": null,
+   "damage": 16,
+   "damage_type": "fire",
+   "range_tiles": 2,
+   "recoil": 1,
+   "magazine": 6,
+   "heat_limit": null,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "fuel canister",
+   "weight_kg": 6,
+   "accuracy": 0,
+   "price_credits": 1200,
+   "properties": [
+    "cone_3",
+    "applies_burning",
+    "ignores_half_cover"
+   ],
+   "mastery_family": "heavy",
+   "hands": "2H",
+   "durability": 500,
+   "mod_slots": [],
+   "type": "lumeri_votive_torch",
+   "provisional": true,
+   "reload": "loose",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "heavy",
+     "spread"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "purifier_flamer"
+  },
+  {
+   "id": "lumeri_cathedral_burner",
+   "name": "Lumeri cathedral burner",
+   "category": "heavy",
+   "family": "flamers",
+   "form": "heavy",
+   "line": "lumeri",
+   "weapon_art": null,
+   "damage": 24,
+   "damage_type": "fire",
+   "range_tiles": 4,
+   "recoil": 1,
+   "magazine": 16,
+   "heat_limit": null,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": "fuel canister",
+   "weight_kg": 18,
+   "accuracy": 0,
+   "price_credits": 3800,
+   "properties": [
+    "cone_3",
+    "applies_burning",
+    "ignores_half_cover"
+   ],
+   "mastery_family": "heavy",
+   "hands": "2H",
+   "durability": 500,
+   "mod_slots": [],
+   "type": "lumeri_cathedral_burner",
+   "provisional": true,
+   "reload": "loose",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "heavy",
+     "spread"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "purifier_flamer"
+  },
+  {
+   "id": "hellraiser_spinner",
+   "name": "Hellraiser spinner",
+   "category": "heavy",
+   "family": "rotary_and_belt_fed",
+   "form": "light",
+   "line": "hellraiser",
+   "weapon_art": null,
+   "damage": 20,
+   "damage_type": "physical",
+   "range_tiles": 12,
+   "recoil": 1,
+   "magazine": 100,
+   "heat_limit": 16,
+   "modes": [
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "auto": 4
+   },
+   "ammo": "rifle",
+   "weight_kg": 11,
+   "accuracy": 0,
+   "price_credits": 3000,
+   "properties": [],
+   "mastery_family": "heavy",
+   "hands": "2H",
+   "durability": 500,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "hellraiser_spinner",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 1.2,
+   "reload_unit": "belt",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "heavy",
+     "auto",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "sound": "gun_rifle",
+    "rate": 0.85,
+    "mag": "belt_box"
+   },
+   "text": "",
+   "lore": "",
+   "_copy_from": "hellraiser_rotary",
+   "_notes": [
+    "no Spin Up (the rotary's is a narrator grant, not copied) and no emplacement penalty (the property dropped)"
+   ]
+  },
+  {
+   "id": "hellraiser_twin_rotary",
+   "name": "Hellraiser twin rotary",
+   "category": "heavy",
+   "family": "rotary_and_belt_fed",
+   "form": "heavy",
+   "line": "hellraiser",
+   "weapon_art": null,
+   "damage": 22,
+   "damage_type": "physical",
+   "range_tiles": 16,
+   "recoil": 1,
+   "magazine": 400,
+   "heat_limit": 28,
+   "modes": [
+    "auto"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3,
+    "auto": 4
+   },
+   "ammo": "rifle",
+   "weight_kg": 30,
+   "accuracy": 0,
+   "price_credits": 8000,
+   "properties": [
+    "minus2_to_hit_unless_emplaced"
+   ],
+   "mastery_family": "heavy",
+   "hands": "2H",
+   "durability": 500,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "hellraiser_twin_rotary",
+   "provisional": true,
+   "reload": "magazine",
+   "magazine_kg": 1.2,
+   "reload_unit": "belt",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "heavy",
+     "auto",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "fx": {
+    "sound": "gun_rifle",
+    "rate": 0.85,
+    "mag": "belt_box"
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "hellraiser_rotary"
+  },
+  {
+   "id": "blackpoint_carbine",
+   "name": "Blackpoint carbine",
+   "category": "heavy",
+   "family": "anti_materiel",
+   "form": "light",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 54,
+   "damage_type": "physical",
+   "range_tiles": 28,
+   "recoil": 1,
+   "magazine": 1,
+   "heat_limit": 3,
+   "modes": [
+    "single"
+   ],
+   "ap_cost": {
+    "single": 2,
+    "aimed": 3
+   },
+   "ammo": ".700",
+   "weight_kg": 9,
+   "accuracy": 0,
+   "price_credits": 2600,
+   "properties": [
+    "armor_ignore_10",
+    "requires_braced_or_prone"
+   ],
+   "mastery_family": "heavy",
+   "reload": "magazine",
+   "magazine_kg": 0.3,
+   "reload_unit": "magazine",
+   "hands": "2H",
+   "durability": 500,
+   "mod_slots": [
+    "optic"
+   ],
+   "type": "blackpoint_carbine",
+   "phys": {
+    "system": "ranged",
+    "profile": "gun",
+    "props": [
+     "heavy",
+     "precise",
+     "loud"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "provisional": true,
+   "fx": {
+    "rate": 0.85,
+    "shell": "big_rifle"
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "blackpoint_700"
+  },
+  {
+   "id": "ork_snarl_knife",
+   "name": "Ork snarl knife",
+   "category": "light_melee",
+   "family": "powered_blades",
+   "form": "light",
+   "line": "ork",
+   "weapon_art": null,
+   "damage": 22,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 1.5,
+   "accuracy": 0,
+   "price_credits": 900,
+   "properties": [
+    "armor_ignore_5"
+   ],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge",
+    "grip"
+   ],
+   "type": "ork_snarl_knife",
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "edge"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "grants": {
+    "name": "Rip",
+    "text": "A plain attack that hits leaves the target Bleeding.",
+    "effect": {
+     "op": "on_hit",
+     "apply": "bleed"
+    }
+   },
+   "text": "A plain attack that hits leaves the target Bleeding.",
+   "second_skill": "raw_power",
+   "provisional": true,
+   "lore": "",
+   "_copy_from": "ork_rip_saw",
+   "_notes": [
+    "shape (category, hands, AP, durability, mod slots, mastery) from combat_knife; effects (properties, the Rip grant, the technique) from ork_rip_saw; no throw (rules 1.92 item 8013)"
+   ]
+  },
+  {
+   "id": "ork_wreck_saw",
+   "name": "Ork wreck saw",
+   "category": "heavy_melee",
+   "family": "powered_blades",
+   "form": "heavy",
+   "line": "ork",
+   "weapon_art": null,
+   "damage": 46,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 3
+   },
+   "ammo": null,
+   "weight_kg": 9,
+   "accuracy": 0,
+   "price_credits": 2400,
+   "properties": [
+    "armor_ignore_5"
+   ],
+   "mastery_family": "heavy_melee",
+   "hands": "2H",
+   "durability": 300,
+   "mod_slots": [
+    "grip"
+   ],
+   "type": "ork_wreck_saw",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "edge"
+    ],
+    "hits_with": "raw_power",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "grants": {
+    "name": "Rip",
+    "text": "A plain attack that hits leaves the target Bleeding.",
+    "effect": {
+     "op": "on_hit",
+     "apply": "bleed"
+    }
+   },
+   "text": "A plain attack that hits leaves the target Bleeding.",
+   "lore": "",
+   "_copy_from": "ork_rip_saw"
+  },
+  {
+   "id": "hellraiser_piston_knuckles",
+   "name": "Hellraiser piston knuckles",
+   "category": "unarmed",
+   "family": "power_gauntlets",
+   "form": "light",
+   "line": "hellraiser",
+   "weapon_art": null,
+   "damage": 24,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 1.5,
+   "accuracy": 0,
+   "price_credits": 900,
+   "properties": [],
+   "mastery_family": "unarmed",
+   "hands": "1H",
+   "durability": 200,
+   "mod_slots": [],
+   "type": "hellraiser_piston_knuckles",
+   "provisional": true,
+   "requires": {
+    "raw_power": 3
+   },
+   "tags": [
+    "electronic"
+   ],
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "bare",
+     "blunt",
+     "open_hand"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "grants": {
+    "name": "Haymaker",
+    "text": "A plain attack that hits pushes the target 2 tiles away from you.",
+    "effect": {
+     "op": "on_hit",
+     "apply": "push",
+     "value": 2
+    }
+   },
+   "text": "A plain attack that hits pushes the target 2 tiles away from you.",
+   "second_skill": "raw_power",
+   "lore": "",
+   "_copy_from": "hellraiser_servo_fist"
+  },
+  {
+   "id": "hellraiser_door_knocker",
+   "name": "Hellraiser door knocker",
+   "category": "unarmed",
+   "family": "power_gauntlets",
+   "form": "heavy",
+   "line": "hellraiser",
+   "weapon_art": null,
+   "damage": 34,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2
+   },
+   "ammo": null,
+   "weight_kg": 5,
+   "accuracy": 0,
+   "price_credits": 2200,
+   "properties": [],
+   "mastery_family": "unarmed",
+   "hands": "1H",
+   "durability": 200,
+   "mod_slots": [],
+   "type": "hellraiser_door_knocker",
+   "provisional": true,
+   "requires": {
+    "raw_power": 3
+   },
+   "tags": [
+    "electronic"
+   ],
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "heavy",
+     "bare",
+     "blunt",
+     "open_hand"
+    ],
+    "hits_with": "raw_power",
+    "scales_with": [
+     "strength"
+    ]
+   },
+   "grants": {
+    "name": "Haymaker",
+    "text": "A plain attack that hits pushes the target {=grants.effect.value} tiles away from you.",
+    "effect": {
+     "op": "on_hit",
+     "apply": "push",
+     "value": 3
+    }
+   },
+   "text": "A plain attack that hits pushes the target {=grants.effect.value} tiles away from you.",
+   "lore": "",
+   "_copy_from": "hellraiser_servo_fist",
+   "_notes": [
+    "its own signature (tables section 6): the 3-tile push through the servo-fist's grant op; x3 to cover is owed (one grant a row: rules 1.92 item 8032)"
+   ]
+  },
+  {
+   "id": "throwing_darts",
+   "name": "Throwing darts",
+   "category": "light_melee",
+   "family": "thrown",
+   "form": "light",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 9,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2,
+    "throw": 2
+   },
+   "ammo": null,
+   "weight_kg": 0.3,
+   "accuracy": 0,
+   "price_credits": 60,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge"
+   ],
+   "type": "throwing_darts",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "point",
+     "thrown"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "second_skill": "ingenuity",
+   "text": "",
+   "lore": "",
+   "_copy_from": "throwing_knives"
+  },
+  {
+   "id": "throwing_javelins",
+   "name": "Throwing javelins",
+   "category": "light_melee",
+   "family": "thrown",
+   "form": "heavy",
+   "line": "frontier",
+   "weapon_art": null,
+   "damage": 24,
+   "damage_type": "physical",
+   "range_tiles": 1,
+   "magazine": null,
+   "heat_limit": null,
+   "modes": [],
+   "ap_cost": {
+    "attack": 2,
+    "throw": 2
+   },
+   "ammo": null,
+   "weight_kg": 2,
+   "accuracy": 0,
+   "price_credits": 200,
+   "properties": [],
+   "mastery_family": "light_blades",
+   "hands": "1H",
+   "durability": 250,
+   "mod_slots": [
+    "edge"
+   ],
+   "type": "throwing_javelins",
+   "provisional": true,
+   "phys": {
+    "system": "melee",
+    "profile": "melee",
+    "props": [
+     "light",
+     "point",
+     "thrown"
+    ],
+    "hits_with": "dexterity",
+    "scales_with": [
+     "agility"
+    ]
+   },
+   "second_skill": "raw_power",
+   "text": "",
+   "lore": "",
+   "_copy_from": "throwing_knives"
+  }
+ ],
+ "edits": [
+  {
+   "id": "pavise",
+   "file": "weapons.json",
+   "row": {
+    "id": "pavise",
+    "name": "Pavise",
+    "category": "shield",
+    "family": "guard_shields",
+    "form": "heavy",
+    "line": "frontier",
+    "weapon_art": null,
+    "damage": 20,
+    "damage_type": "physical",
+    "range_tiles": 1,
+    "magazine": null,
+    "heat_limit": null,
+    "modes": [],
+    "ap_cost": {
+     "attack": 2
+    },
+    "ammo": null,
+    "weight_kg": 10,
+    "accuracy": 0,
+    "price_credits": 1200,
+    "properties": [],
+    "text": "Held in either hand, one to a hand. A shield with no Defense of its own. Heavy: it slows your Movement (two Heavy pieces slow it twice). As a shield it gives you Shield Bash, Raise Shield and Shield Wall, the Parry bonus, and more Guard from Brace and the Guard technique (a shield in each hand doubles every Guard gain instead). Its own blow rolls with Durability and its damage grows with Endurance. In the off hand it follows: each melee technique of your one-handed main weapon is followed by one blow from it, and the first that lands in a turn gives Guard.",
+    "mastery_family": "unarmed",
+    "hands": "1H",
+    "durability": 150,
+    "mod_slots": [],
+    "lore": "",
+    "type": "pavise",
+    "provisional": true,
+    "adjudication": "engine",
+    "effects": [],
+    "phys": {
+     "system": "melee",
+     "profile": "melee",
+     "props": [
+      "shield",
+      "follows"
+     ],
+     "hits_with": "durability",
+     "scales_with": [
+      "endurance"
+     ]
+    },
+    "variant_mods": [
+     "mod_follow_guard"
+    ],
+    "tags": [
+     "heavy"
+    ]
+   },
+   "_notes": [
+    "rules 1.92 item 8011: Heavy (tags heavy), buyable (built removed), its plant cut (hp, the narrator effect); every number as its row"
+   ]
+  }
+ ],
+ "items": [
+  {
+   "id": "assault_helm",
+   "name": "Assault helm",
+   "category": "armour",
+   "family": "helmets",
+   "form": "heavy",
+   "line": "frontier",
+   "weapon_art": null,
+   "weight_kg": 2,
+   "price_credits": 700,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Head: +{=effects.0.value} armour; +{=effects.1.value}% Injury resistance.",
+   "slot": "head",
+   "effects": [
+    {
+     "op": "armour_bonus",
+     "value": 3
+    },
+    {
+     "op": "injury_resist_bonus",
+     "value": 10
+    }
+   ]
+  },
+  {
+   "id": "cowl",
+   "name": "Cowl",
+   "category": "armour",
+   "family": "hoods",
+   "form": "light",
+   "line": "shadow",
+   "graded": false,
+   "weapon_art": null,
+   "weight_kg": 0.2,
+   "price_credits": 150,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Head: others see you from {=effects.0.value|abs} tile less far.",
+   "slot": "head",
+   "effects": [
+    {
+     "op": "stat_mod",
+     "stat": "seen_range",
+     "value": -1
+    }
+   ]
+  },
+  {
+   "id": "hood",
+   "name": "Hood",
+   "category": "armour",
+   "family": "hoods",
+   "form": "standard",
+   "line": "shadow",
+   "graded": false,
+   "weapon_art": null,
+   "weight_kg": 0.3,
+   "price_credits": 350,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Head: others see you from {=effects.0.value|abs} tiles less far.",
+   "slot": "head",
+   "effects": [
+    {
+     "op": "stat_mod",
+     "stat": "seen_range",
+     "value": -2
+    }
+   ]
+  },
+  {
+   "id": "blackout_hood",
+   "name": "Blackout hood",
+   "category": "armour",
+   "family": "hoods",
+   "form": "heavy",
+   "line": "shadow",
+   "graded": false,
+   "weapon_art": null,
+   "weight_kg": 0.4,
+   "price_credits": 700,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Head: others see you from {=effects.0.value|abs} tiles less far.",
+   "slot": "head",
+   "effects": [
+    {
+     "op": "stat_mod",
+     "stat": "seen_range",
+     "value": -3
+    }
+   ]
+  },
+  {
+   "id": "spotters_monocle",
+   "name": "Spotter's monocle",
+   "category": "armour",
+   "family": "optics",
+   "form": "light",
+   "line": "frontier",
+   "graded": false,
+   "weapon_art": null,
+   "weight_kg": 0.1,
+   "price_credits": 250,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Head accessory: +{=effects.0.value} Vision.",
+   "slot": "head_accessory",
+   "effects": [
+    {
+     "op": "stat_mod",
+     "stat": "vision",
+     "value": 2
+    }
+   ]
+  },
+  {
+   "id": "sight_visor",
+   "name": "Sight visor",
+   "category": "armour",
+   "family": "optics",
+   "form": "heavy",
+   "line": "frontier",
+   "graded": false,
+   "weapon_art": null,
+   "weight_kg": 0.4,
+   "price_credits": 800,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Head accessory: +{=effects.0.value} Vision.",
+   "slot": "head_accessory",
+   "effects": [
+    {
+     "op": "stat_mod",
+     "stat": "vision",
+     "value": 4
+    }
+   ]
+  },
+  {
+   "id": "sealed_visor",
+   "name": "Sealed visor",
+   "category": "armour",
+   "family": "respirators",
+   "form": "heavy",
+   "line": "frontier",
+   "graded": false,
+   "weapon_art": null,
+   "weight_kg": 0.6,
+   "price_credits": 400,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Head accessory: toxic spills don't hurt you.",
+   "slot": "head_accessory",
+   "effects": [
+    {
+     "op": "hazard_immune",
+     "hazard": "toxic"
+    }
+   ],
+   "_notes": [
+    "smoke: no smoke harm exists in the engine (smoke only blocks sight), so the text does not promise it (owed, rules 1.92 item 8031)"
+   ]
+  },
+  {
+   "id": "mesh_undersuit",
+   "name": "Mesh undersuit",
+   "category": "armour",
+   "family": "undershirts",
+   "form": "standard",
+   "line": "frontier",
+   "weapon_art": null,
+   "weight_kg": 0.8,
+   "price_credits": 220,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Inner torso: +{=effects.0.value} armour.",
+   "slot": "inner_torso",
+   "effects": [
+    {
+     "op": "armour_bonus",
+     "value": 2
+    }
+   ]
+  },
+  {
+   "id": "rig_belt",
+   "name": "Rig belt",
+   "category": "armour",
+   "family": "belts",
+   "form": "standard",
+   "line": "frontier",
+   "graded": false,
+   "weapon_art": null,
+   "weight_kg": 0.5,
+   "price_credits": 180,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Lower torso: +{=effects.0.value} kg carry limit.",
+   "slot": "lower_torso",
+   "effects": [
+    {
+     "op": "carry_bonus",
+     "value": 5
+    }
+   ]
+  },
+  {
+   "id": "field_trousers",
+   "name": "Field trousers",
+   "category": "armour",
+   "family": "legwear",
+   "form": "standard",
+   "line": "frontier",
+   "weapon_art": null,
+   "weight_kg": 1,
+   "price_credits": 250,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Legs: +{=effects.0.value} armour.",
+   "slot": "legs",
+   "effects": [
+    {
+     "op": "armour_bonus",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": "tactical_gloves",
+   "name": "Tactical gloves",
+   "category": "armour",
+   "family": "worn_gloves",
+   "form": "standard",
+   "line": "frontier",
+   "weapon_art": null,
+   "weight_kg": 0.2,
+   "price_credits": 130,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Hands: +{=effects.0.value} armour.",
+   "slot": "hands",
+   "effects": [
+    {
+     "op": "armour_bonus",
+     "value": 1
+    }
+   ]
+  },
+  {
+   "id": "jump_boots",
+   "name": "Jump boots",
+   "category": "armour",
+   "family": "boots",
+   "form": "standard",
+   "line": "frontier",
+   "graded": false,
+   "weapon_art": null,
+   "weight_kg": 0.8,
+   "price_credits": 350,
+   "adjudication": "engine",
+   "provisional": true,
+   "text": "Footwear: +{=effects.0.value} Movement; rough ground costs no extra.",
+   "slot": "footwear",
+   "effects": [
+    {
+     "op": "movement_bonus",
+     "value": 0.5
+    },
+    {
+     "op": "ignore_difficult"
+    }
+   ]
+  }
+ ],
+ "holds": [
+  {
+   "id": "breather",
+   "why": "its one effect, immunity to smoke, has no carrier: smoke harms nobody in the engine (it only blocks sight); the row waits for the lead's ruling (rules 1.92 item 8031)"
+  },
+  {
+   "id": "blackpoint_wall_gun",
+   "why": "prone only: no existing piece carries it (requires_braced_or_prone is braced OR prone), so the row waits, not shipped (numbers file section 5; rules 1.92 item 8034)"
+  }
+ ],
+ "families": [
+  {
+   "id": "strike_shields",
+   "name": "Strike shields",
+   "line": "frontier",
+   "form_kind": "gear",
+   "weapon_art": null,
+   "forms": [
+    {
+     "id": "light"
+    },
+    {
+     "id": "standard"
+    },
+    {
+     "id": "heavy"
+    }
+   ]
+  },
+  {
+   "id": "ward_shields",
+   "name": "Ward shields",
+   "line": "science_team",
+   "form_kind": "gear",
+   "weapon_art": null,
+   "forms": [
+    {
+     "id": "light"
+    },
+    {
+     "id": "standard"
+    },
+    {
+     "id": "heavy"
+    }
+   ]
+  },
+  {
+   "id": "hoods",
+   "name": "Hoods",
+   "line": "shadow",
+   "form_kind": "gear",
+   "weapon_art": null,
+   "forms": [
+    {
+     "id": "light"
+    },
+    {
+     "id": "standard"
+    },
+    {
+     "id": "heavy"
+    }
+   ]
+  },
+  {
+   "id": "adcorp",
+   "name": "ADCorp",
+   "line": "adcorp",
+   "form_kind": "gun",
+   "weapon_art": null,
+   "forms": [
+    {
+     "id": "close",
+     "teaches": "shift"
+    },
+    {
+     "id": "standard",
+     "teaches": "suppress"
+    },
+    {
+     "id": "long",
+     "teaches": "called_shot"
+    }
+   ]
+  },
+  {
+   "id": "chezknov_works",
+   "name": "Chezknov Works",
+   "line": "chezknov",
+   "form_kind": "gun",
+   "weapon_art": null,
+   "forms": [
+    {
+     "id": "close",
+     "teaches": "rake"
+    },
+    {
+     "id": "standard",
+     "teaches": "punch_through"
+    },
+    {
+     "id": "long",
+     "teaches": "called_shot"
+    }
+   ]
+  },
+  {
+   "id": "central_command_arsenal",
+   "name": "Central Command Arsenal",
+   "line": "arsenal",
+   "form_kind": "gun",
+   "weapon_art": null,
+   "forms": [
+    {
+     "id": "close",
+     "teaches": "storm"
+    },
+    {
+     "id": "standard",
+     "teaches": "suppress"
+    },
+    {
+     "id": "long",
+     "teaches": "punch_through"
+    }
+   ]
+  },
+  {
+   "id": "smetanita_sidearms",
+   "name": "Smetanita sidearms",
+   "line": "smetanita",
+   "form_kind": "gun",
+   "weapon_art": null,
+   "forms": [
+    {
+     "id": "close",
+     "teaches": "crossfire"
+    },
+    {
+     "id": "standard",
+     "teaches": "snap_shot"
+    },
+    {
+     "id": "long",
+     "teaches": "last_round"
+    }
+   ]
+  },
+  {
+   "id": "albert_town",
+   "name": "Albert Town",
+   "line": "albert_town",
+   "form_kind": "gun",
+   "weapon_art": null,
+   "forms": [
+    {
+     "id": "close",
+     "teaches": "walking_fire"
+    },
+    {
+     "id": "standard",
+     "teaches": "walking_fire"
+    },
+    {
+     "id": "long",
+     "teaches": "bead"
+    }
+   ]
+  }
+ ],
+ "family_teaches": [
+  {
+   "family": "adamantile_battle_rifles",
+   "form": "close",
+   "teaches": "punch_through"
+  },
+  {
+   "family": "adamantile_battle_rifles",
+   "form": "long",
+   "teaches": "punch_through"
+  },
+  {
+   "family": "adcorp",
+   "form": "close",
+   "teaches": "shift"
+  },
+  {
+   "family": "adcorp",
+   "form": "long",
+   "teaches": "called_shot"
+  },
+  {
+   "family": "adcorp",
+   "form": "standard",
+   "teaches": "suppress"
+  },
+  {
+   "family": "albert_town",
+   "form": "close",
+   "teaches": "walking_fire"
+  },
+  {
+   "family": "albert_town",
+   "form": "long",
+   "teaches": "bead"
+  },
+  {
+   "family": "albert_town",
+   "form": "standard",
+   "teaches": "walking_fire"
+  },
+  {
+   "family": "anti_materiel",
+   "form": "light",
+   "teaches": "dead_centre"
+  },
+  {
+   "family": "axes",
+   "form": "dex",
+   "teaches": "drag"
+  },
+  {
+   "family": "bows",
+   "form": "close",
+   "teaches": "pin_down"
+  },
+  {
+   "family": "break_action_shotguns",
+   "form": "long",
+   "teaches": "mag_dump"
+  },
+  {
+   "family": "brigade_auto_shotguns",
+   "form": "close",
+   "teaches": "storm"
+  },
+  {
+   "family": "brigade_auto_shotguns",
+   "form": "long",
+   "teaches": "burst"
+  },
+  {
+   "family": "cavalry_blades",
+   "form": "hybrid",
+   "teaches": "riposte"
+  },
+  {
+   "family": "cavalry_blades",
+   "form": "str",
+   "teaches": "cleave"
+  },
+  {
+   "family": "central_command_arsenal",
+   "form": "close",
+   "teaches": "storm"
+  },
+  {
+   "family": "central_command_arsenal",
+   "form": "long",
+   "teaches": "punch_through"
+  },
+  {
+   "family": "central_command_arsenal",
+   "form": "standard",
+   "teaches": "suppress"
+  },
+  {
+   "family": "chezknov_works",
+   "form": "close",
+   "teaches": "rake"
+  },
+  {
+   "family": "chezknov_works",
+   "form": "long",
+   "teaches": "called_shot"
+  },
+  {
+   "family": "chezknov_works",
+   "form": "standard",
+   "teaches": "punch_through"
+  },
+  {
+   "family": "crossbows",
+   "form": "long",
+   "teaches": "heavy_bolt"
+  },
+  {
+   "family": "decrkm_automatics",
+   "form": "long",
+   "teaches": "rake"
+  },
+  {
+   "family": "draw_blades",
+   "form": "dex",
+   "teaches": "draw_cut"
+  },
+  {
+   "family": "draw_blades",
+   "form": "str",
+   "teaches": "sweep"
+  },
+  {
+   "family": "great_blades",
+   "form": "dex",
+   "teaches": "riposte"
+  },
+  {
+   "family": "great_blades",
+   "form": "hybrid",
+   "teaches": "riposte"
+  },
+  {
+   "family": "hammers",
+   "form": "dex",
+   "teaches": "riposte"
+  },
+  {
+   "family": "hammers",
+   "form": "hybrid",
+   "teaches": "drag"
+  },
+  {
+   "family": "heavy_fists",
+   "form": "hybrid",
+   "teaches": "sidestep"
+  },
+  {
+   "family": "hellraiser_line",
+   "form": "close",
+   "teaches": "suppress"
+  },
+  {
+   "family": "kemizuchi_duelling",
+   "form": "hybrid",
+   "teaches": "lunge"
+  },
+  {
+   "family": "kemizuchi_duelling",
+   "form": "str",
+   "teaches": "cleave"
+  },
+  {
+   "family": "launchers",
+   "form": "heavy",
+   "teaches": "lob"
+  },
+  {
+   "family": "launchers",
+   "form": "light",
+   "teaches": "lob"
+  },
+  {
+   "family": "legion_automatics",
+   "form": "long",
+   "teaches": "called_shot"
+  },
+  {
+   "family": "legion_blades",
+   "form": "dex",
+   "teaches": "parry"
+  },
+  {
+   "family": "legion_blades",
+   "form": "str",
+   "teaches": "cleave"
+  },
+  {
+   "family": "lumeri_scatterguns",
+   "form": "close",
+   "teaches": "storm"
+  },
+  {
+   "family": "lumeri_scatterguns",
+   "form": "long",
+   "teaches": "flush"
+  },
+  {
+   "family": "mandestra_drum_guns",
+   "form": "close",
+   "teaches": "burst"
+  },
+  {
+   "family": "mandestra_drum_guns",
+   "form": "long",
+   "teaches": "rake"
+  },
+  {
+   "family": "ork_cutters",
+   "form": "dex",
+   "teaches": "coup"
+  },
+  {
+   "family": "ork_cutters",
+   "form": "str",
+   "teaches": "keep_back"
+  },
+  {
+   "family": "polearms",
+   "form": "dex",
+   "teaches": "riposte"
+  },
+  {
+   "family": "power_gauntlets",
+   "form": "heavy",
+   "teaches": "throw_down"
+  },
+  {
+   "family": "power_gauntlets",
+   "form": "light",
+   "teaches": "throw_down"
+  },
+  {
+   "family": "powered_blades",
+   "form": "heavy",
+   "teaches": "hamstring"
+  },
+  {
+   "family": "powered_blades",
+   "form": "light",
+   "teaches": "hamstring"
+  },
+  {
+   "family": "revolvers",
+   "form": "close",
+   "teaches": "mag_dump"
+  },
+  {
+   "family": "rocket_tubes",
+   "form": "heavy",
+   "teaches": "flush"
+  },
+  {
+   "family": "rocket_tubes",
+   "form": "light",
+   "teaches": "flush"
+  },
+  {
+   "family": "rotary_and_belt_fed",
+   "form": "heavy",
+   "teaches": "suppress"
+  },
+  {
+   "family": "rotary_and_belt_fed",
+   "form": "light",
+   "teaches": "suppress"
+  },
+  {
+   "family": "service_knives",
+   "form": "hybrid",
+   "teaches": "coup"
+  },
+  {
+   "family": "service_knives",
+   "form": "str",
+   "teaches": "cleave"
+  },
+  {
+   "family": "smetanita_sidearms",
+   "form": "close",
+   "teaches": "crossfire"
+  },
+  {
+   "family": "smetanita_sidearms",
+   "form": "long",
+   "teaches": "last_round"
+  },
+  {
+   "family": "smetanita_sidearms",
+   "form": "standard",
+   "teaches": "snap_shot"
+  },
+  {
+   "family": "thrown",
+   "form": "heavy",
+   "teaches": "flurry"
+  },
+  {
+   "family": "thrown",
+   "form": "light",
+   "teaches": "flurry"
+  },
+  {
+   "family": "whisper",
+   "form": "close",
+   "teaches": "crossfire"
+  },
+  {
+   "family": "whisper",
+   "form": "long",
+   "teaches": "spot"
+  }
+ ],
+ "missing": []
+}
