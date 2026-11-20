@@ -28877,6 +28877,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 32
       }
+    },
+    "weapon-ork_cleaver_glaive--fine": {
+      "label": "Ork Cleaver Glaive — Fine",
+      "path": "art/icons/gear/weapon-ork_cleaver_glaive--fine.png",
+      "sha256": "9b441dc76f79238a748edf487cf6f7ada56056274c67495c9d0fc5313466b333",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_cleaver_glaive--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_cleaver_glaive--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_cleaver_glaive--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_cleaver_glaive--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_cleaver_glaive--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_cleaver_glaive",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9746252094750668,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 15
+      }
     }
   },
   "survival_art": {

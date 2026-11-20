@@ -5108,6 +5108,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_cleaver_glaive--fine",
+      "path": "art/icons/gear/weapon-ork_cleaver_glaive--fine.png",
+      "sha256": "9b441dc76f79238a748edf487cf6f7ada56056274c67495c9d0fc5313466b333",
+      "label": "Ork Cleaver Glaive — Fine",
+      "family": "weapon-ork_cleaver_glaive",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_cleaver_glaive--fine.png",
+        "sha256": "3a54f919e2174358a28b95fb7dc87311ea8488215374e7e7b463faa1ffd529e5"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-ork_cleaver_glaive--fine.png",
+        "sha256": "9b441dc76f79238a748edf487cf6f7ada56056274c67495c9d0fc5313466b333"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-ork_cleaver_glaive--fine.txt",
+        "sha256": "dc5a354dd34e0fdbd0e674084f2b0341617e84473923edd5bdc5966176bb07d1"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_cleaver_glaive.png",
+          "sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png",
+          "sha256": "1d0e20b248d040c349b9a4c36ae7c20b1aefe9c0a4f13e6fe5566dfbabd64b75"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_cleaver_glaive--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_cleaver_glaive--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_cleaver_glaive--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_cleaver_glaive--fine.png"
+      },
+      "export_hashes": {
+        "256": "f60ac1da1966d11605f29950fc01bcc09af8468014417c384d3957f447c1bb41",
+        "128": "1883e1f79012c384a5073f88a2e59d1e8c4c51162250452f20882a46499040e7",
+        "64": "385a77a6c622fe186851a328c9d99da029fda253e6946432a11734f18c430958",
+        "32": "6cdb11081966dd560354c082d635fd0a2180e8cdf3fcf467324cd121dd5d55c3"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-ork_cleaver_glaive",
+      "outline": {
+        "solid_alpha_iou": 0.9746252094750668,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
