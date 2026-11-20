@@ -1640,6 +1640,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-dock_cutter--fine",
+      "path": "art/icons/gear/weapon-dock_cutter--fine.png",
+      "sha256": "0061edd8e5b2297235b593eaaf92d94e91e49566b3a0a8447172afe29878ec79",
+      "label": "Dock Cutter — Fine",
+      "family": "weapon-dock_cutter",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-dock_cutter--fine.png",
+        "sha256": "71422a49dd1c67c79653bc4cd623d78b15409db8dd0d738b555dc15472505585"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-dock_cutter--fine.png",
+        "sha256": "0061edd8e5b2297235b593eaaf92d94e91e49566b3a0a8447172afe29878ec79"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-dock_cutter--fine.txt",
+        "sha256": "4ecf52eea6c0d0755b385859a1274afaa64e227438454beb2a651b7d8a3d998d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-dock_cutter.png",
+          "sha256": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png",
+          "sha256": "b689a9d6b02ce0f67d407b3e27ce4048400afcbb61aebeee1e7417856fc5e44c"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-dock_cutter--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-dock_cutter--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-dock_cutter--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-dock_cutter--fine.png"
+      },
+      "export_hashes": {
+        "256": "0621c1065986ed5566d0861ac231e0af94b1d5645f039d1c7e85ba3e63ac3b8d",
+        "128": "2b7bb04a6fce7446dfd4233f5ba7b098b4ab160d2bd469fcc896f30ffd413f2b",
+        "64": "8b7320d12462fd44e140c1fdff46fe6c8eb5a3ac02fcd287b7cf4612c8ba49dc",
+        "32": "b55d951772672e8d8d0019b2cf45f627c8e161c3118185a108590cb59df0a04e"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-dock_cutter",
+      "outline": {
+        "solid_alpha_iou": 0.9838963035582986,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 0,
+        "different_pixels_64": 12
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
