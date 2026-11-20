@@ -10064,6 +10064,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-rig_belt--relic",
+      "path": "art/icons/gear/armour-rig_belt--relic.png",
+      "sha256": "dfb1c1918d806fb46823ba1c891f68cd1a0cb3f4f42fb7ab365ff3ddc62a7499",
+      "label": "Rig belt — Relic",
+      "family": "armour-rig_belt",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-rig_belt--relic.png",
+        "sha256": "010b3354663768992a5b87606ffd2d715cc557a98ae2b17d8fb07a3e926ce896"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-rig_belt--relic.png",
+        "sha256": "dfb1c1918d806fb46823ba1c891f68cd1a0cb3f4f42fb7ab365ff3ddc62a7499"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-rig_belt--relic.txt",
+        "sha256": "4cecfe03a5ec968508e1f0fdb7fdd3d02899b49a16525a3c3e746ea75536c79b"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-rig_belt--relic/v1/source.png",
+          "sha256": "e9f972cfc6803600fdbea527922d0dfd85373c2a7a2832a03f0920481e8ffacc"
+        },
+        {
+          "path": "art/icons/gear/armour-rig_belt.png",
+          "sha256": "44bd233e33a7f498cb19cd94101e71a0e5e1cbbdb12c4a1e9a60d4b656a63269"
+        },
+        {
+          "path": "art/icons/gear/armour-rig_belt--masterwork.png",
+          "sha256": "fdc64692167dc6af259bd25c5ebdd1bae7c079e0e8ef8171c48c51056f34fd1e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-rig_belt--relic.png",
+        "128": "art/icons/gear/exports/128/armour-rig_belt--relic.png",
+        "64": "art/icons/gear/exports/64/armour-rig_belt--relic.png",
+        "32": "art/icons/gear/exports/32/armour-rig_belt--relic.png"
+      },
+      "export_hashes": {
+        "256": "b9b98afec85c9a28cc83f833c21711f82d341cb287f4ce59ab26d3bd6f744be8",
+        "128": "68e56568e8ba60ec21fa47f6b6dc77f77f5d7e37c47c9e7a368fab69afbac841",
+        "64": "a60080aa1081afe169d6e0939a9bc80c4dcd895d6432885f6c240f80c3443f82",
+        "32": "e1d433e637e8cd9dfdd04bd59b2b0f7b1df68d61f68c33199bc4d64e0d2bc12a"
+      },
+      "grade": "relic",
+      "standard_id": "armour-rig_belt",
+      "outline": {
+        "solid_alpha_iou": 0.97714707512799,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 27
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
