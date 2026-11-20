@@ -1,6 +1,6 @@
 {
   "branch": "art/2026-11-20-reset-continuation",
-  "status": "starting-waiting-reset",
+  "status": "drawing",
   "delivered": [],
   "remaining": [
     "armour-ballistic_helmet--relic",
@@ -30,5 +30,7 @@
   "project_total": 871,
   "updated_utc": "2026-11-20T00:51:30.696250+00:00",
   "active_run_id": "reset-20261120-165ac7984341",
-  "started_utc": "2026-11-20T02:44:45.333049+00:00"
+  "started_utc": "2026-11-20T02:44:45.333049+00:00",
+  "successful_generation_attempts": 1,
+  "first_post_reset_generation_succeeded": true
 }

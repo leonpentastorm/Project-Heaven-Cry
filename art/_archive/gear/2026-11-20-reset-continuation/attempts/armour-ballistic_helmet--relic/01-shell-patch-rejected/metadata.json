@@ -1,0 +1,47 @@
+{
+  "id": "armour-ballistic_helmet--relic",
+  "job": {
+    "id": "armour-ballistic_helmet--relic",
+    "standard_id": "armour-ballistic_helmet",
+    "grade": "relic",
+    "label": "Ballistic Helmet \u2014 Relic",
+    "path": "art/icons/gear/armour-ballistic_helmet--relic.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-ballistic_helmet.png",
+      "art/icons/gear/armour-ballistic_helmet--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-ballistic_helmet",
+    "family_references": [
+      "art/icons/gear/armour-ballistic_helmet.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same rounded olive-grey ballistic shell, flat brow band and rectangular front mount, side riveted fittings, deep U-shaped face opening and dark padded liner. Preserve every edge, opening, stud and mounting part. No wearer.\n\nGrade: Relic. Keep the shape and the stripe. The piece takes an heirloom's warm deep patina (darker, warmer cloth and leather, plate in an oiled bronze-dark), the stripe becomes dull old gold, and one small flush gilt ornament sits at the place named below. Add one old repair that tells a story: a patch sewn on in an older cloth, or a plate held by replaced rivets. The focal part and the ornament's place: the brow rim of the shell; the ornament at the chin-strap rivet.\n\nThe FIRST image locks the Standard silhouette, camera, proportions and margins. The SECOND image supplies the preceding grade; keep its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. Preserve exact part counts and negative spaces. All additions stay flush inside the existing silhouette. Fully transparent canvas, no lettering or external glow.",
+    "keep_line": "the same rounded olive-grey ballistic shell, flat brow band and rectangular front mount, side riveted fittings, deep U-shaped face opening and dark padded liner. Preserve every edge, opening, stud and mounting part. No wearer.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "depends_on": "armour-ballistic_helmet--masterwork"
+  },
+  "preflight": {
+    "id": "armour-ballistic_helmet--relic",
+    "peer": "eab8df9b72f05642ba1fab4d6e9a4e89e231a07c",
+    "latest_comment": 7028694115,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 02:46:01 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-7db79796-8e7b-4518-814b-566be2561c05.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/native.png",
+  "sha256": "286412b753dd9a9019ec948ffc696afc90f209376321b75d4b00056fe56c687f",
+  "status": "unselected-physical-coherence",
+  "review_note": "The sewn cloth repair sits on the metal shell. Move the repair to existing padded liner, leaving the metal shell intact.",
+  "reference_hashes": {
+    "art/icons/gear/armour-ballistic_helmet.png": "7358ee39e955f8f5362faee1f96608313272f0cc164d0c7ca6b22c5755460d2f",
+    "art/icons/gear/armour-ballistic_helmet--masterwork.png": "7d0b4e1842a954e689e6a3ebe9c3a50f47f3ec573b5fc0ba7a7bfb8797019a53",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}
