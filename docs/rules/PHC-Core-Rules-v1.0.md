@@ -13579,3 +13579,12 @@ new engine pieces"); each is listed in item 7110. **Every number here is PROVISI
       (f) `enemyAimWeight` (combat.ts): what a system adds to how an enemy weighs a target, and the aim reason `bait`.
       (g) `pressurePlan`, `answerReady` (physical/ai.ts), `baitRole` exported (ai-sigil.ts), `unitSkill` moved to
       effects/hooks.ts. No trigger, predicate, op, hook, cost site, stat or scope was added.
+7111. **Survival (the balance check).** The party fit (`test/balance/party-fit.ts`, stage 1, 40 seeds, the nine doors
+      solo and four of a door), 0.32 -> 0.33: solo Bulwark 25 -> 23, Breaker 19 -> 17, Skirmisher 35 -> 35, Operative
+      13 -> 13, Sigilist 2 -> 2, Rigger 23 -> 22, Mender 10 -> 10, Channeler 19 -> 19, Chaplain 11 -> 11; four Bulwarks
+      17 -> 16, Breakers 14 -> 12, Skirmishers 40 -> 40, Operatives 22 -> 23, Sigilists 0 -> 0, Riggers 39 -> 39,
+      Menders 30 -> 31, Channelers 16 -> 17, Chaplains 31 -> 30. Every class within 2. No player number moved; the
+      wants and which rows hold verbs were tuned (items 7102, 7103, 7107).
+7112. **Tables re-recorded on purpose.** 14 of the 29 replays: the door step moves 11, the bait reading Answers 5 (two
+      in both); with `ai.doors.on` false and `answer_lure` / `answer_hold` 0 all 29 play as recorded. Golden damage,
+      rules, costs, item ops and conditions tables unmoved.
