@@ -3433,6 +3433,77 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-spiked_buckler--celestial",
+      "path": "art/icons/gear/shield-spiked_buckler--celestial.png",
+      "sha256": "6ddaf2e1ca0abfe61ff9eb2563914c4560a772ce28e0645b5afc1f8ac21f3d65",
+      "label": "Spiked Buckler — Celestial",
+      "family": "shield-spiked_buckler",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-spiked_buckler--celestial.png",
+        "sha256": "0a1fdfa7f9d10da10f9178761eee84e9365238abcfdfd228e8f814855cffc1cf"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-spiked_buckler--celestial.png",
+        "sha256": "6ddaf2e1ca0abfe61ff9eb2563914c4560a772ce28e0645b5afc1f8ac21f3d65"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-spiked_buckler--celestial.txt",
+        "sha256": "6e91059df5ccf5d941eb914e465a5fcd4cb74633dc20edc38279448a050aaf82"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-spiked_buckler.png",
+          "sha256": "cdb395c131f9003a42f4c412da035f3a2801a2c963033c4edf39d0f94a384fcf"
+        },
+        {
+          "path": "art/icons/gear/shield-spiked_buckler--relic.png",
+          "sha256": "2e7924be018a295006cf666d6883624bf16b417fbe3b5e1f8ea25d7ce00549bf"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-spiked_buckler--celestial/01-quality-review/native.png",
+          "sha256": "8e2223d3d327131e74da92c2837bb540715375e618ce555ed5b959d928067b03"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png",
+          "sha256": "d5266a8b194d1b285c695b02b594484989848822cbb75320e7be8c196095583b"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-spiked_buckler--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-spiked_buckler--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-spiked_buckler--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-spiked_buckler--celestial.png"
+      },
+      "export_hashes": {
+        "256": "28049d4da33304a063678566d10396213ace1d07b7d0255f3e60aa26085a14ee",
+        "128": "030659a22173a7902a815fb7abbcea3fcd7dd2825ddee3de811269f05d998501",
+        "64": "cb080fdf10c70c4fde0ad373f6cc3523cbf5b8372ac9d69d9a4e4f2d29a7dbf3",
+        "32": "ee5b674a9b57d7f11e4aec92a39522c5325592a4930137afc12f0343dd6b40c9"
+      },
+      "grade": "celestial",
+      "standard_id": "shield-spiked_buckler",
+      "outline": {
+        "solid_alpha_iou": 0.9693150213719899,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 14,
+        "different_pixels_64": 64
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

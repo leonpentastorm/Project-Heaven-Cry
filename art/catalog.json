@@ -27977,6 +27977,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 24
       }
+    },
+    "shield-spiked_buckler--celestial": {
+      "label": "Spiked Buckler — Celestial",
+      "path": "art/icons/gear/shield-spiked_buckler--celestial.png",
+      "sha256": "6ddaf2e1ca0abfe61ff9eb2563914c4560a772ce28e0645b5afc1f8ac21f3d65",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-spiked_buckler--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-spiked_buckler--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-spiked_buckler--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-spiked_buckler--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-spiked_buckler--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.6",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "shield-spiked_buckler",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9693150213719899,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 14,
+        "different_pixels_64": 64
+      }
     }
   },
   "survival_art": {
