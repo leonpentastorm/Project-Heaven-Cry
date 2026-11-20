@@ -1,0 +1,347 @@
+{
+  "new_drawings": 0,
+  "standards": [
+    {
+      "id": "weapon-trench_knife",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Trench knife",
+        "path": "art/icons/gear/weapon-trench_knife.png",
+        "sha256": "3f2848a00af47d2ff6f81fd988a2abf2f3d873015164e95e656e7fbaa60dc4a1",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-trench_knife.png",
+          "128": "art/icons/gear/exports/128/weapon-trench_knife.png",
+          "64": "art/icons/gear/exports/64/weapon-trench_knife.png",
+          "32": "art/icons/gear/exports/32/weapon-trench_knife.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-trench_knife.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 1,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": [
+        {
+          "path": "art/icons/gear/weapon-trench_knife.png",
+          "sha256": "3f2848a00af47d2ff6f81fd988a2abf2f3d873015164e95e656e7fbaa60dc4a1"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-trench_knife.png",
+          "sha256": "866c269d85c698eb57af17cf228a5d789028c408e6525d0a78917bd0ea0fb387"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-trench_knife.png",
+          "sha256": "4610d2990aaf109bf3789ff0948c4ad3d27f5de0cc50a682bf2655ae0a056553"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-trench_knife.png",
+          "sha256": "d8165ae2c5d20a5b286ffbe956e15b984b7c74f446dfd23ecc11b107f59b64de"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-trench_knife.png",
+          "sha256": "09771b9c81b29a762e45a736b398cdd19b15bbd6a623d2aebba306b73b54629d"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-trench_knife.png",
+          "sha256": "1ca20a31831b409b3f47dfb352b45f6526cf68a557850b0eea844743d51011a6"
+        }
+      ]
+    },
+    {
+      "id": "weapon-lowland_chopper",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Lowland chopper",
+        "path": "art/icons/gear/weapon-lowland_chopper.png",
+        "sha256": "3448226ac076dedebcff4fd4f6a45dfacdc43dc66aa355a78aa468c95e537fff",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-lowland_chopper.png",
+          "128": "art/icons/gear/exports/128/weapon-lowland_chopper.png",
+          "64": "art/icons/gear/exports/64/weapon-lowland_chopper.png",
+          "32": "art/icons/gear/exports/32/weapon-lowland_chopper.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-lowland_chopper.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 2,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": [
+        {
+          "path": "art/icons/gear/weapon-lowland_chopper.png",
+          "sha256": "3448226ac076dedebcff4fd4f6a45dfacdc43dc66aa355a78aa468c95e537fff"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-lowland_chopper.png",
+          "sha256": "bc6a4335dbcdcca7250dd548b502da43fd85eddf95df823d00007f811d21fea4"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-lowland_chopper.png",
+          "sha256": "6cb6d20f5de96bbf37f94ef1167ab3116b9f5274ff3b38a602008098b344b12e"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-lowland_chopper.png",
+          "sha256": "91cffaeffd781c8543e776fcafcf842eb0641301a92d127fb39d53df7429fce6"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-lowland_chopper.png",
+          "sha256": "daa571ba8715b88bb652d3c9145e9e42f66b94fe0e60754783995c784ef12027"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-lowland_chopper.png",
+          "sha256": "87a75e39a2a8f76f637f53f4a00e287345807175b42a9ff88284869b4bff4ba4"
+        }
+      ]
+    },
+    {
+      "id": "weapon-dock_cutter",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Dock cutter",
+        "path": "art/icons/gear/weapon-dock_cutter.png",
+        "sha256": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-dock_cutter.png",
+          "128": "art/icons/gear/exports/128/weapon-dock_cutter.png",
+          "64": "art/icons/gear/exports/64/weapon-dock_cutter.png",
+          "32": "art/icons/gear/exports/32/weapon-dock_cutter.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 3,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": [
+        {
+          "path": "art/icons/gear/weapon-dock_cutter.png",
+          "sha256": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png",
+          "sha256": "b689a9d6b02ce0f67d407b3e27ce4048400afcbb61aebeee1e7417856fc5e44c"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-dock_cutter.png",
+          "sha256": "6c2ddae0b13eb5676967d519a0fa106696e79a9744c86b23a0ce43e1cb3f6f77"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-dock_cutter.png",
+          "sha256": "7e8c56f85470119a47535de3da3a3c693fe8d965c9c9f19518e83579d0ddf0f7"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-dock_cutter.png",
+          "sha256": "9be6bc3f9c068f3cfe199bbd11edab67db0d0a57b7d8ae705bc2f91b74ca4cf8"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-dock_cutter.png",
+          "sha256": "0f142833fe03147fe2e9ffbaef1f2f077d3676f62254b5f96fb440ab16570958"
+        }
+      ]
+    },
+    {
+      "id": "weapon-broadback_sabre",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Broadback sabre",
+        "path": "art/icons/gear/weapon-broadback_sabre.png",
+        "sha256": "1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-broadback_sabre.png",
+          "128": "art/icons/gear/exports/128/weapon-broadback_sabre.png",
+          "64": "art/icons/gear/exports/64/weapon-broadback_sabre.png",
+          "32": "art/icons/gear/exports/32/weapon-broadback_sabre.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-broadback_sabre.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 4,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": [
+        {
+          "path": "art/icons/gear/weapon-broadback_sabre.png",
+          "sha256": "1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-broadback_sabre.png",
+          "sha256": "17be737f3c5a31ff812f7ab1292d566d89a2aad30f53edbce73dbd019ca86580"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-broadback_sabre.png",
+          "sha256": "b68fbb7c2b81d6edb1672803c773730837afdc0288db0013d960154ae8c9ae6b"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-broadback_sabre.png",
+          "sha256": "970c0498a4aee6f04b6bad6c8462d814802ee2975f24bf29d57cd7d8c6fde1e0"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-broadback_sabre.png",
+          "sha256": "9d9b392bb85c355b7f5c3b8012e9119fdcdea0dd235d57a0fc73112aab0e1552"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-broadback_sabre.png",
+          "sha256": "e3e1b3bca132bf02b4cde30e7988955a100a145d35d2c22608e15229e307f134"
+        }
+      ]
+    },
+    {
+      "id": "weapon-legion_leaf_dagger",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Legion leaf-dagger",
+        "path": "art/icons/gear/weapon-legion_leaf_dagger.png",
+        "sha256": "c074f9aa7dc085ce042244859c3e1e7c004b2070e0fa7c7af2cc22183ba946db",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-legion_leaf_dagger.png",
+          "128": "art/icons/gear/exports/128/weapon-legion_leaf_dagger.png",
+          "64": "art/icons/gear/exports/64/weapon-legion_leaf_dagger.png",
+          "32": "art/icons/gear/exports/32/weapon-legion_leaf_dagger.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_leaf_dagger.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 5,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": [
+        {
+          "path": "art/icons/gear/weapon-legion_leaf_dagger.png",
+          "sha256": "c074f9aa7dc085ce042244859c3e1e7c004b2070e0fa7c7af2cc22183ba946db"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_leaf_dagger.png",
+          "sha256": "5e5f7c73b4a37ae47866b5669929b7760a43adac2cb83a9089f0da4541610715"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-legion_leaf_dagger.png",
+          "sha256": "c39eead9d11c1abb27f096a33013ea1510e1ae8f6cecc14067a4030060c4878e"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-legion_leaf_dagger.png",
+          "sha256": "6b3ea8b46c5effb586a11a05324ac2378d83f51e29c03b31cd3d9a7dcd9cd6d1"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-legion_leaf_dagger.png",
+          "sha256": "2dbd00725d2bc784f913a04a20820723ca5b6eb95fe84b84d6c52b56877ebba6"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-legion_leaf_dagger.png",
+          "sha256": "7536ee90bec6a9d36ca5ac8533f7cf85dbf3e0997a38023f7cf101af644f6b52"
+        }
+      ]
+    },
+    {
+      "id": "weapon-legion_rank_sword",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Legion rank sword",
+        "path": "art/icons/gear/weapon-legion_rank_sword.png",
+        "sha256": "6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-legion_rank_sword.png",
+          "128": "art/icons/gear/exports/128/weapon-legion_rank_sword.png",
+          "64": "art/icons/gear/exports/64/weapon-legion_rank_sword.png",
+          "32": "art/icons/gear/exports/32/weapon-legion_rank_sword.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_rank_sword.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+        "brief_number": 6,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": [
+        {
+          "path": "art/icons/gear/weapon-legion_rank_sword.png",
+          "sha256": "6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_rank_sword.png",
+          "sha256": "bc0c3ef3c706c75c3e483efb0ae0a4b65997f708ccd83fb52bbc8cbd008c5cd3"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-legion_rank_sword.png",
+          "sha256": "aa6c328966598d8c53ebf2d92d10bf9a93a032a01d2ce7ed273c25408e1020d4"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-legion_rank_sword.png",
+          "sha256": "edcc3410c92878ff2ea34bad9d53b71b52eb5700fa23d682598ed66f0edf51bf"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-legion_rank_sword.png",
+          "sha256": "5810e5fa0360136de2ca9dfdc0a89e749e4be8a91af61edbcbaed2608c978667"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-legion_rank_sword.png",
+          "sha256": "71cad3ddf13bf261f55da68afb7a70351b542ff77b55ed6f68d78d86641f4eca"
+        }
+      ]
+    }
+  ]
+}

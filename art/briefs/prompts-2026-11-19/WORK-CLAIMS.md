@@ -1,3 +1,12 @@
+# Active reset production — 20 November 2026
+
+Run `reset-20261120-165ac7984341` on `art/2026-11-20-reset-continuation`. Initial22:18 delivered,2 actual service rejections plus2 dependent. New claim7029498929: all four grades for `weapon-trench_knife`, `weapon-lowland_chopper`, `weapon-dock_cutter`, `weapon-broadback_sabre`, `weapon-legion_leaf_dagger`, `weapon-legion_rank_sword` (24). Exact46 IDs and current states: archive reset-continuation queue/claim/progress. Each selected picture is validated/committed/pushed before the next request. Imported Standards are unchanged prior work, not new pictures.
+
+Peer owns new armour56 (claim7029516545); its six kept gunFine requests are service-blocked and higher18 dependent. Do not retry them. Other new melee/shield grades require live claim and source checks. All candidates remain unapproved. Read live issue3 body and all comments, and inspect remote destinations before EVERY image.
+
+---
+Historical snapshot below; live issue3 supersedes it.
+
 # Scheduled restart claim — 20 November 2026
 
 **Live coordination is mandatory:** read the current issue 3 opening ledger and all newer comments at startup and immediately before each image request. Check actual remote deliveries; a missing local file does not establish availability. Publish a START/RESUME with run identifier; do not start a second producer on an unreleased active queue. Exact claims must be posted and pushed before drawing, then reread; earliest unreleased nonconflicting ownership wins. Skip conflicting or already delivered IDs and choose other eligible work. Announce releases and quota handoffs explicitly.

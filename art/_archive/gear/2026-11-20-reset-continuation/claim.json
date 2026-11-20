@@ -1,6 +1,6 @@
 {
   "branch": "art/2026-11-20-reset-continuation",
-  "status": "claimed-waiting-reset",
+  "status": "drawing",
   "partial_grade_claim": true,
   "standards": [
     "armour-ballistic_helmet",
@@ -8,7 +8,13 @@
     "weapon-ork_rip_saw",
     "weapon-hellraiser_servo_fist",
     "weapon-hellraiser_rotary",
-    "weapon-purifier_flamer"
+    "weapon-purifier_flamer",
+    "weapon-trench_knife",
+    "weapon-lowland_chopper",
+    "weapon-dock_cutter",
+    "weapon-broadback_sabre",
+    "weapon-legion_leaf_dagger",
+    "weapon-legion_rank_sword"
   ],
   "ids": [
     "armour-ballistic_helmet--relic",
@@ -32,7 +38,31 @@
     "weapon-purifier_flamer--fine",
     "weapon-purifier_flamer--masterwork",
     "weapon-purifier_flamer--relic",
-    "weapon-purifier_flamer--celestial"
+    "weapon-purifier_flamer--celestial",
+    "weapon-trench_knife--fine",
+    "weapon-trench_knife--masterwork",
+    "weapon-trench_knife--relic",
+    "weapon-trench_knife--celestial",
+    "weapon-lowland_chopper--fine",
+    "weapon-lowland_chopper--masterwork",
+    "weapon-lowland_chopper--relic",
+    "weapon-lowland_chopper--celestial",
+    "weapon-dock_cutter--fine",
+    "weapon-dock_cutter--masterwork",
+    "weapon-dock_cutter--relic",
+    "weapon-dock_cutter--celestial",
+    "weapon-broadback_sabre--fine",
+    "weapon-broadback_sabre--masterwork",
+    "weapon-broadback_sabre--relic",
+    "weapon-broadback_sabre--celestial",
+    "weapon-legion_leaf_dagger--fine",
+    "weapon-legion_leaf_dagger--masterwork",
+    "weapon-legion_leaf_dagger--relic",
+    "weapon-legion_leaf_dagger--celestial",
+    "weapon-legion_rank_sword--fine",
+    "weapon-legion_rank_sword--masterwork",
+    "weapon-legion_rank_sword--relic",
+    "weapon-legion_rank_sword--celestial"
   ],
   "shared_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
   "reservation_comment": 7026736883,
@@ -47,5 +77,37 @@
     "claim_winner": "earliest unreleased nonconflicting exact-ID reservation",
     "conflicting_or_delivered_job": "skip and update queue; continue other eligible work",
     "release_requires_explicit_channel_update": true
-  }
+  },
+  "extensions": [
+    {
+      "comment": 7029498929,
+      "ids": [
+        "weapon-trench_knife--fine",
+        "weapon-trench_knife--masterwork",
+        "weapon-trench_knife--relic",
+        "weapon-trench_knife--celestial",
+        "weapon-lowland_chopper--fine",
+        "weapon-lowland_chopper--masterwork",
+        "weapon-lowland_chopper--relic",
+        "weapon-lowland_chopper--celestial",
+        "weapon-dock_cutter--fine",
+        "weapon-dock_cutter--masterwork",
+        "weapon-dock_cutter--relic",
+        "weapon-dock_cutter--celestial",
+        "weapon-broadback_sabre--fine",
+        "weapon-broadback_sabre--masterwork",
+        "weapon-broadback_sabre--relic",
+        "weapon-broadback_sabre--celestial",
+        "weapon-legion_leaf_dagger--fine",
+        "weapon-legion_leaf_dagger--masterwork",
+        "weapon-legion_leaf_dagger--relic",
+        "weapon-legion_leaf_dagger--celestial",
+        "weapon-legion_rank_sword--fine",
+        "weapon-legion_rank_sword--masterwork",
+        "weapon-legion_rank_sword--relic",
+        "weapon-legion_rank_sword--celestial"
+      ],
+      "source_commit": "fb99282187819f5fedf48705ac2f8d4512d52337"
+    }
+  ]
 }
