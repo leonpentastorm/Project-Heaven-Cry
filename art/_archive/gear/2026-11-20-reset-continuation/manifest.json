@@ -376,6 +376,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_rip_saw--fine",
+      "path": "art/icons/gear/weapon-ork_rip_saw--fine.png",
+      "sha256": "c84db806215bb0d3c44e1a068354b577aaa7333e94feea2c4fe03ab8f8d4f510",
+      "label": "Ork Rip Saw — Fine",
+      "family": "weapon-ork_rip_saw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_rip_saw--fine.png",
+        "sha256": "9a9abb4aae2227d8f545a36529b827639d657b85d8a4c91e1e8d33ca665ce021"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-ork_rip_saw--fine.png",
+        "sha256": "c84db806215bb0d3c44e1a068354b577aaa7333e94feea2c4fe03ab8f8d4f510"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-ork_rip_saw--fine.txt",
+        "sha256": "7dd9e073e872d1040c037c862a2a342446b78cd268a1e3c7448fec3ff84bddad"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_rip_saw.png",
+          "sha256": "c84615ce46a39d894b3d9df041db64b66f0ea1470ccd8f08b1e3c0ce2e940776"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_rip_saw--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_rip_saw--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_rip_saw--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_rip_saw--fine.png"
+      },
+      "export_hashes": {
+        "256": "3c8468c198656abd1ad47bb1ba4cf5dcd1e5b9f8cc89f0b2310923c6dac597bb",
+        "128": "1ab193516ecfcb2311247b8a6de6f24d704ec0d540604637ff1c9537203d6381",
+        "64": "d1838782ffa296f9d5d432296dc14fc7e696c5fcf95e8627f470548ee53568ad",
+        "32": "6ef212470e81c150d9a4288f15658b9d9d37755ccb5eca6511b00b3341b123ea"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-ork_rip_saw",
+      "outline": {
+        "solid_alpha_iou": 0.9639126588946202,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
