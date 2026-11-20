@@ -28373,6 +28373,42 @@
         "different_pixels_32": 8,
         "different_pixels_64": 32
       }
+    },
+    "shield-deflector--relic": {
+      "label": "Deflector — Relic",
+      "path": "art/icons/gear/shield-deflector--relic.png",
+      "sha256": "9c51f84922ec29aa589cf5c28c7feb99e30ad5e943ffb73400f61cc39c43e6c7",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-deflector--relic.png",
+        "128": "art/icons/gear/exports/128/shield-deflector--relic.png",
+        "64": "art/icons/gear/exports/64/shield-deflector--relic.png",
+        "32": "art/icons/gear/exports/32/shield-deflector--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-deflector--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.6",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "shield-deflector",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9630912420349084,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 43
+      }
     }
   },
   "survival_art": {
