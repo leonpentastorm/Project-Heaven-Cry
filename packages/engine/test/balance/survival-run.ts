@@ -55,7 +55,7 @@
 // ammunition carried before it), each stage's credits earned and spent, XP and level, grade steps, the vault.
 import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, gearAt, wearAt, WEAPON, ITEM, pendingPerkSteps, maxHp,
   counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive, isStartBoon, lineOf, startOffer,
-  dist, standable, zoneMap, makeView, priceOf, ROUND_PRICE, RECIPES, coresCarried, loadoutLines, holds, gearEntry, equip } from '../../src';
+  dist, standable, zoneMap, makeView, priceOf, ROUND_PRICE, RECIPES, coresCarried, loadoutLines, holds, gearEntry, equip, hasTag, tagOf } from '../../src';
 import { fxTaps } from '../../src/fxtap';
 import { allPendingDoorPicks } from '../../src/doorpicks';
 import { perkActionsFor } from '../../src';
@@ -160,7 +160,7 @@ export interface RunResult { party: string; route: RoutePolicy; seed: string; ho
 const RANK = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
 const rankOf = (r: string) => RANK.indexOf(r || 'standard');
 /** Where a character's door item is: a caster's focus in the off hand, else the gun or blade in the main hand. */
-const doorWhere = (c: any): 'main' | 'off' => { const off = c.offHand?.id; return off && (ITEM[off] as any)?.category === 'focus' ? 'off' : 'main'; };
+const doorWhere = (c: any): 'main' | 'off' => { const off = c.offHand?.id; return off && hasTag(off, 'kind:focus') ? 'off' : 'main'; };
 /** Rounds carried for the gun in the main hand (loaded, in magazines, loose), or null for no magazine gun. */
 export function roundsFor(c: any): number | null {
   if (!c) return null; // a character the run no longer holds
@@ -217,7 +217,14 @@ const TAP: { on: boolean; evs: any[] } = { on: false, evs: [] };
 if (!(fxTaps as any).__survivalRun) { (fxTaps as any).__survivalRun = true; fxTaps.push((_cb: any, ev: any) => { if (TAP.on && ev && ev.target && (ev.k === 'shot' || ev.k === 'melee' || ev.k === 'hurt')) TAP.evs.push(ev); }); }
 const tapDealt = (cb: any): number => { const foe = new Set((cb?.units || []).filter((u: any) => u.side !== 'pc' && !u.companion).map((u: any) => u.id));
   return TAP.evs.reduce((t, ev) => t + (foe.has(ev.target) ? ((ev.k === 'hurt' || ev.hit) ? Math.max(0, ev.dmg || 0) : 0) : 0), 0); };
-const MATS = ['gunpowder', 'casing', 'mana_residue'];
+// Rules 1.92 item 8042 (Items 2.0 lane A5): the simulator reads the run's own data and item tags, never an item id. The
+// materials are the run's reward materials (survival.json rewards.materials), in their order; the round maker is the tool
+// of the recipes that make rounds, and the round materials what they need; the core and its materials are the recipe a
+// focus presses (data/recipes.json).
+const MATS: string[] = ((svJ as any).rewards.materials.items as any[]).map((x) => x.item);
+const ROUND_RECIPE: any = RECIPES.find((q: any) => q.tool.item && q.gives.some((g: any) => String(g.item).startsWith('rounds:')));
+const MAKER: string = ROUND_RECIPE.tool.item, ROUND_MATS = new Set<string>(ROUND_RECIPE.needs.map((l: any) => l.item));
+const CORE_RECIPE: any = RECIPES.find((q: any) => q.tool.focus), CORE: string = CORE_RECIPE.gives[0].item, CORE_MATS = new Set<string>(CORE_RECIPE.needs.map((l: any) => l.item));
 const matsOf = (c: any): Record<string, number> => { const o: Record<string, number> = {}; for (const m of MATS) o[m] = packOf(c).filter((x: any) => (x.item || x.id) === m).reduce((t: number, x: any) => t + (x.qty || 0), 0); return o; };
 const addTo = (a: Record<string, number>, b: Record<string, number>, sign = 1) => { for (const [k, v] of Object.entries(b)) if (v) a[k] = (a[k] || 0) + sign * v; };
 /** The guns in a character's hands that fire rounds (main, off). */
@@ -287,7 +294,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   // ---- P2: making (gear/make through the make view): rounds for the guns in hand, cores for a core user
   const makeAll = (id: string) => {
     if (!MAKE) return; const c = C(id); if (!c || c.dead || c.hp <= 0) return;
-    const want = new Set([...gunsHeld(c).map((w) => 'rounds:' + (WEAPON[w] as any).ammo), ...(coreUser(id) ? ['standard_core'] : [])]);
+    const want = new Set([...gunsHeld(c).map((w) => 'rounds:' + (WEAPON[w] as any).ammo), ...(coreUser(id) ? [CORE] : [])]);
     for (const row of makeView(r.g, by(id), id)?.rows || []) {
       if (!(row.most > 0) || row.why || !row.gives.some((q: any) => want.has(q.item))) continue;
       const was = matsOf(C(id));
@@ -300,19 +307,19 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   /** P2: the ammo maker pays (survival-run.ts header): the rounds the materials held and the next ten fights' would make. */
   const makerPays = (id: string): boolean => {
     const c = C(id), w: any = WEAPON[c.weapon]; if (!w?.ammo) return false;
-    const rec = RECIPES.find((q: any) => q.tool.item === 'ammo_maker' && q.gives.some((g: any) => g.item === 'rounds:' + w.ammo)); if (!rec) return false;
+    const rec = RECIPES.find((q: any) => q.tool.item === MAKER && q.gives.some((g: any) => g.item === 'rounds:' + w.ammo)); if (!rec) return false;
     const have = matsOf(c), times = (m: Record<string, number>) => Math.min(...rec.needs.map((l: any) => (m[l.item] || 0) / l.n));
     const ahead = 10 * times(gotAll[id]) / Math.max(1, wonN.n), give = rec.gives.find((g: any) => g.item === 'rounds:' + w.ammo).n;
-    return (Math.floor(times(have)) + ahead) * give * (ROUND_PRICE[w.ammo] || 0) >= (priceOf('ammo_maker') || Infinity);
+    return (Math.floor(times(have)) + ahead) * give * (ROUND_PRICE[w.ammo] || 0) >= (priceOf(MAKER) || Infinity);
   };
-  const hasMaker = (id: string) => holds(C(id), { slot: 'person', item: 'ammo_maker' });
+  const hasMaker = (id: string) => holds(C(id), { slot: 'person', item: MAKER });
   /** P2: sell what the character cannot use (survival-run.ts header), from the end of the pack so the indices hold. */
   const sellJunk = (id: string) => {
     if (!MAKE) return; const keepMats = hasMaker(id) || makerPays(id), guns = new Set(gunsHeld(C(id))), cals = new Set([...guns].map((w) => (WEAPON[w] as any).ammo));
     for (let i = packOf(C(id)).length - 1; i >= 0; i--) {
       const x: any = packOf(C(id))[i], it = x.item || x.id;
-      const junk = (x.weapon && !x.mags && !guns.has(x.weapon) && (WEAPON[x.weapon] as any)?.category !== 'thrown') || (x.mags && !guns.has(x.weapon)) || (x.calibre && !cals.has(x.calibre))
-        || ((it === 'gunpowder' || it === 'casing') && !keepMats) || (it === 'mana_residue' && !coreUser(id));
+      const junk = (x.weapon && !x.mags && !guns.has(x.weapon) && !hasTag(x.weapon, 'kind:thrown')) || (x.mags && !guns.has(x.weapon)) || (x.calibre && !cals.has(x.calibre))
+        || (ROUND_MATS.has(it) && !keepMats) || (CORE_MATS.has(it) && !ROUND_MATS.has(it) && !coreUser(id));
       if (!junk || !(sellValue(x) > 0)) continue;
       const q = x.mags ? x.mags.length : x.qty;
       if (!act({ type: 'run/sell', charId: id, idx: i, qty: q }, by(id)) && MATS.includes(it)) st.soldMat![ids.indexOf(id)][it] = (st.soldMat![ids.indexOf(id)][it] || 0) + q;
@@ -365,7 +372,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
   };
   const savingForRelic = (id: string) => { const c = C(id), it = gearAt(c, doorWhere(c)); return r.g.run.stage >= GRADE_UP.relic_from_stage && it && it.rarity === 'masterwork'; };
   const fitBought = (id: string, item: string) => { const c = C(id), i = packOf(c).findIndex((x) => (x.item || x.id) === item); if (i < 0) return;
-    if ((ITEM[item] as any)?.category === 'mod') { if ((ITEM[item] as any).mod_slot === 'enchantment') act({ type: 'gear/mod', charId: id, idx: i }, by(id)); else { const o = opts(id).find((q) => q.group === 'mod' && !q.why && q.action.type === 'run/fit_mod' && q.action.where == null && !q.action.extra && q.action.idx === i); if (o) act(o.action, by(id)); } } /* rules 1.55: the armourer fits it at a Forge, for a fee; picked elsewhere, it waits in the pack */ else act({ type: 'gear/equip', charId: id, idx: i, to: 'worn' }, by(id)); };
+    if (hasTag(item, 'kind:mod')) { if ((ITEM[item] as any).mod_slot === 'enchantment') act({ type: 'gear/mod', charId: id, idx: i }, by(id)); else { const o = opts(id).find((q) => q.group === 'mod' && !q.why && q.action.type === 'run/fit_mod' && q.action.where == null && !q.action.extra && q.action.idx === i); if (o) act(o.action, by(id)); } } /* rules 1.55: the armourer fits it at a Forge, for a fee; picked elsewhere, it waits in the pack */ else act({ type: 'gear/equip', charId: id, idx: i, to: 'worn' }, by(id)); };
 
   // ---- repairs (rules 1.50): every carried thing Worn or Broken, the hands first, when affordable
   const repairHere = (id: string) => {
@@ -380,7 +387,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
     // P2: sell what it cannot use, buy the ammo maker when it pays (a reserve of 60 credits kept), make, and an empty
     // magazine for each magazine's worth of loose rounds with nowhere to go
     sellJunk(id);
-    if (MAKE && !hasMaker(id) && makerPays(id)) { const l = counterLines([C(id)]).find((q: any) => q.id === 'ammo_maker'); if (l && creditsOf(C(id)) >= (priceOf('ammo_maker') || 0) + 60 && !act({ type: 'run/buy', charId: id, key: l.key, qty: 1 }, by(id))) st.makers!++; }
+    if (MAKE && !hasMaker(id) && makerPays(id)) { const l = counterLines([C(id)]).find((q: any) => q.id === MAKER); if (l && creditsOf(C(id)) >= (priceOf(MAKER) || 0) + 60 && !act({ type: 'run/buy', charId: id, key: l.key, qty: 1 }, by(id))) st.makers!++; }
     makeAll(id);
     { const c = C(id), w: any = WEAPON[c.weapon];
       if (MAKE && w?.reload === 'magazine' && w.ammo) for (let k = 0; k < 4; k++) {
@@ -397,7 +404,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
     act({ type: 'gear/load', charId: id }, by(id));
     if (w?.magazine && w.ammo) { const line = lines.find((l) => l.key === 'mag:' + c.weapon) || lines.find((l) => l.key === 'guns:rounds:' + w.ammo);
       for (let k = 0; line && k < 16 && (roundsFor(C(id)) ?? 0) < Math.max(5 * w.magazine, 120); k++) if (act({ type: 'run/buy', charId: id, key: line.key, qty: 1 }, by(id))) break; }
-    if (coreUser(id)) { const have = () => packOf(C(id)).filter((x) => (x.item || x.id) === 'standard_core').reduce((t, x) => t + x.qty, 0), line = lines.find((l) => l.id === 'standard_core');
+    if (coreUser(id)) { const have = () => packOf(C(id)).filter((x) => (x.item || x.id) === CORE).reduce((t, x) => t + x.qty, 0), line = lines.find((l) => l.id === CORE);
       for (let k = 0; line && k < 6 && have() < 4; k++) if (act({ type: 'run/buy', charId: id, key: line.key, qty: 1 }, by(id))) break; }
     for (const l of lines.filter((q) => q.res)) { const room = restockRoom(C(id), l.res!); if (room > 0) act({ type: 'run/buy', charId: id, key: l.key, qty: room }, by(id)); }
   };
@@ -431,7 +438,7 @@ function simRunWith(cfg: RunCfg, L: Set<string>): RunResult {
     if (rankOf(w.rarity) <= rankOf(it.rarity)) return false;
     if (w.id === it.id) return true;
     const a: any = WEAPON[w.id] || ITEM[w.id], b: any = WEAPON[it.id] || ITEM[it.id];
-    return !!a && !!b && (a.category === b.category) && (a.price_credits || 0) >= (b.price_credits || 0) && (a.magazine ?? 0) >= (b.magazine ?? 0) && a.ammo === b.ammo && (where === 'off' ? (ITEM[w.id] as any)?.category === 'focus' : !!WEAPON[w.id]); };
+    return !!a && !!b && (tagOf(w.id, 'kind') === tagOf(it.id, 'kind')) && (a.price_credits || 0) >= (b.price_credits || 0) && (a.magazine ?? 0) >= (b.magazine ?? 0) && a.ammo === b.ammo && (where === 'off' ? hasTag(w.id, 'kind:focus') : !!WEAPON[w.id]); };
   const picks = () => {
     const run = r.g.run, vault = runNode(run, run.at)?.kind === 'vault';
     for (const id of ids) { const o = r.g.run.offers?.[id]; if (!o) continue; const c = C(id);

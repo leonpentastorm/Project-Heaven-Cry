@@ -16,7 +16,7 @@
 //               the nearest foe and a Wall (else a Double) when the charge allows, swap a core when the charge is short,
 //               strike with the Figment (it walks to the foe first), then the pistol with the AP left.
 // Echo stays unplayed by every policy (survival-spec 13.9.6).
-import { coverBonus, lineOfSight, isPressed, SIGIL, previewAttack, previewPerkAction, glyphApOf, groundCap, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit, isMelee, paths, apForTiles, objectsOf, isPile, entryPack, PICKUP_AP } from '../../src';
+import { coverBonus, lineOfSight, isPressed, SIGIL, previewAttack, previewPerkAction, glyphApOf, groundCap, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit, isMelee, paths, apForTiles, objectsOf, isPile, entryPack, PICKUP_AP, hasTag } from '../../src';
 import { POLICIES, sigil, sigilAfter, sigilLines, outburst, plain, plainCands, best, gunner, optimised, fixOrMove, type Policy, type Ctx, type Step } from './policies';
 import { pickedFork } from '../../src/doorpicks';
 import { obHeal } from './heal-measure';
@@ -259,7 +259,7 @@ function fightsWith(u: any, it: any): 'ammo' | 'weapon' | null {
   if (it.mags && it.weapon === u.weapon && it.mags.some((n: number) => n > 0)) return 'ammo';
   if (it.calibre && !it.mags && w?.ammo && it.calibre === w.ammo && (it.qty || 0) > 0) return 'ammo';
   const iw: any = it.kind === 'weapon' ? WEAPON[it.weapon || it.id] : null;
-  if (iw && iw.category !== 'thrown' && iw.category !== 'mana' && (isMelee(iw) || (it.loaded ?? 0) > 0)) return 'weapon';
+  if (iw && !hasTag(iw.id, 'kind:thrown') && !hasTag(iw.id, 'kind:mana') && (isMelee(iw) || (it.loaded ?? 0) > 0)) return 'weapon'; // rules 1.92 item 8042: the kind tag
   return null;
 }
 export const fallback = (pol: Policy): Policy => (x) => {

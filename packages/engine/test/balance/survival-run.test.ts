@@ -6,7 +6,9 @@
 //  - THE MEASURE (opt-in): SURVIVAL_SIM=1 plays the cells named in SIM_CELLS ("party:route,…"; default all) over
 //    SIM_SEEDS seeds (default 8) and writes every run to SIM_OUT (JSON) for survival-run-report.ts to tabulate.
 //    How to run it and what it printed: docs/design/handoffs/survival-steps-9-10.md.
-import { SURPRISE } from '../../src/combat';
+import * as COMBAT from '../../src/combat';
+// 0.33 (rules 1.90, the ambush) removed Surprise and its switch: a stand-in keeps the old lever harmless (the measure ran broken since)
+const SURPRISE: { on: boolean } = (COMBAT as any).SURPRISE || { on: false };
 import { describe, expect, it } from 'vitest';
 import { writeFileSync, readFileSync } from 'node:fs';
 import { simRun, PARTIES, type RoutePolicy } from './survival-run';

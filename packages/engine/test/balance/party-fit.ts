@@ -17,7 +17,9 @@
 import { onHook } from '../../src/effects/hooks';
 import { ENC_BUDGET, WEAPON, isMelee, dist, RULES, COVER, SKILL } from '../../src';
 import { HIDDEN_ATTACK } from '../../src/tactics';
-import { SURPRISE } from '../../src/combat';
+import * as COMBAT from '../../src/combat';
+// 0.33 (rules 1.90, the ambush) removed Surprise and its switch: a stand-in keeps the old lever harmless (the measure ran broken since)
+const SURPRISE: { on: boolean } = (COMBAT as any).SURPRISE || { on: false };
 import { CALL } from '../../src';
 import svJ from '../../../../data/survival.json';
 import { Rec } from '../helpers/replay';
