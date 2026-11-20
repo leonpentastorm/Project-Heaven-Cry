@@ -7782,6 +7782,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-cowl--masterwork",
+      "path": "art/icons/gear/armour-cowl--masterwork.png",
+      "sha256": "232afee8ff987ee00ebfbfa97e0bce0f308dd9b65fe5dddb8d82e61326ce53a2",
+      "label": "Cowl — Masterwork",
+      "family": "armour-cowl",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-cowl--masterwork.png",
+        "sha256": "5810885387ed880be9a142b7830194a9a6c4c694615336973371cc73de40ec1d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-cowl--masterwork.png",
+        "sha256": "232afee8ff987ee00ebfbfa97e0bce0f308dd9b65fe5dddb8d82e61326ce53a2"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-cowl--masterwork.txt",
+        "sha256": "273dd4dfb708c9cf16d3f3aa0280117a73ccd3436fb58e8b7af70c7d1e2e62e7"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-cowl.png",
+          "sha256": "a9d1a28e40f4433587bdd8aa3fd9d8c1617a11bf1f42ac8de4f49821ab3d7efa"
+        },
+        {
+          "path": "art/icons/gear/armour-cowl--fine.png",
+          "sha256": "b8c78fa692bac74e76deb439f945e7b811ef051dca2a8b12bf5a33f9a276810d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-cowl--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-cowl--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-cowl--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "98228dce5e156e562008d788cf76dda812be5981cd9741b0517a4138eb1c7711",
+        "128": "c32cd5d4663f81601311f3f719d41d7e7903e6c459c20624107a3a5ed20678d0",
+        "64": "8f65069322360493cb8ecac695a82ec35b33b55bf87b09744864f4c5b6f6bf4e",
+        "32": "0fa342eddcb9425a2f652ec62b1ceed9534c55852b051fa6fc93e9cb7f74f05f"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-cowl",
+      "outline": {
+        "solid_alpha_iou": 0.9886147293646673,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 15
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
