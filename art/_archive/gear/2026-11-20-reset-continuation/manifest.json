@@ -1703,6 +1703,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-broadback_sabre--fine",
+      "path": "art/icons/gear/weapon-broadback_sabre--fine.png",
+      "sha256": "35517c194752fe89abea9fea2071f1895d426057487192e0f8744fab4eab9fcf",
+      "label": "Broadback Sabre — Fine",
+      "family": "weapon-broadback_sabre",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-broadback_sabre--fine.png",
+        "sha256": "940cc99c989eace8bccd3de2316f5867f42ba6cc4ee71e79f110781c9414835d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-broadback_sabre--fine.png",
+        "sha256": "35517c194752fe89abea9fea2071f1895d426057487192e0f8744fab4eab9fcf"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-broadback_sabre--fine.txt",
+        "sha256": "7f2013ecf274cfe3c25bb6ea6a28ece6fd0a7e46ecb91aab7de71ace2120fadb"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-broadback_sabre.png",
+          "sha256": "1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-broadback_sabre.png",
+          "sha256": "17be737f3c5a31ff812f7ab1292d566d89a2aad30f53edbce73dbd019ca86580"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-broadback_sabre--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-broadback_sabre--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-broadback_sabre--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-broadback_sabre--fine.png"
+      },
+      "export_hashes": {
+        "256": "40a186ed94e89d59ff53b127f58890b0ac5b9554ccb7db5c301c52978a944c4f",
+        "128": "391e8618f7713f5056236fc925ac95816abe2d56a595e1b90fe59aaeab04fe35",
+        "64": "0139efd5e8a484202340a3087ad42a7c0728059c90d8a4040a1fda08fd5126a6",
+        "32": "c84102f9fc9d29abe21d9b9f7f8e142902d404bb06fadd8a3d30bdcdda1b3cfc"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-broadback_sabre",
+      "outline": {
+        "solid_alpha_iou": 0.9811612222598998,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 7
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
