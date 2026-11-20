@@ -776,7 +776,7 @@
     "tn": { "fight": "standard", "elite": "hard", "gate": "hard", "vault_guard": "hard", "boss": "heroic" },
     "fumble": { "squad_max": 1, "floor_hp": 1 },
     "words": {
-      "head": "THE APPROACH",
+      "head": "THE FIGHT AHEAD",
       "ask": "How do you go in?",
       "walk": "Walk in",
       "walk_text": "A frontal attack: the normal initiative roll, nobody loses a turn.",
