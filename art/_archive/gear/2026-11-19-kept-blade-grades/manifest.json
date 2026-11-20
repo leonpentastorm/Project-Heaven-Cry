@@ -10634,6 +10634,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-tactical_gloves--celestial",
+      "path": "art/icons/gear/armour-tactical_gloves--celestial.png",
+      "sha256": "54153dfb89beecb33589c52256c2fba464da86289e212fdbfb13f6c1892399b3",
+      "label": "Tactical gloves — Celestial",
+      "family": "armour-tactical_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-tactical_gloves--celestial.png",
+        "sha256": "ed4b9eb0836f80484488feeed9861c3697bbab4c357f80cd2ad623c102fab467"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-tactical_gloves--celestial.png",
+        "sha256": "54153dfb89beecb33589c52256c2fba464da86289e212fdbfb13f6c1892399b3"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-tactical_gloves--celestial.txt",
+        "sha256": "076907092709d62d0b8cc131cc3346c509a5d3c4f5d26550ed3f5909aeb2243b"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-tactical_gloves.png",
+          "sha256": "694555171cd0bc70dd47e3fb1c2f33283f84790423e9eb464977fc37e4a4c265"
+        },
+        {
+          "path": "art/icons/gear/armour-tactical_gloves--relic.png",
+          "sha256": "16f62eaf2993e794087dc41ee32967aefcdca91a704da89064abbd90aa630c51"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-tactical_gloves--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-tactical_gloves--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-tactical_gloves--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-tactical_gloves--celestial.png"
+      },
+      "export_hashes": {
+        "256": "e31a52a323f5fd1231afacca80512539af66ed219eecf115261cda40fd79a520",
+        "128": "338f5885f8ad056852d1a270901efda3536f1aabade7cfe838871207f0cd9f07",
+        "64": "de254c0459341f108b9ea52cb9abe9ff3c326f56211862c9b1b016f45f3ba53f",
+        "32": "4221005b4392f2c26acae108d4fad5f4b7bf407b0679895ca3128c69c545f41c"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-tactical_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9634503254932525,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 37
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
