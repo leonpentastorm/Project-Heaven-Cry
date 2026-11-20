@@ -5723,7 +5723,13 @@
     "standard_sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7",
     "standard_status": "review-candidate",
     "current_data_item_present": false,
-    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00"
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_pick--fine--1795155670059.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_pick--fine--1795155670059.json",
+      "request_id": "4cd33425-c230-4758-b1ad-253a6b514cfa"
+    }
   },
   {
     "id": "weapon-war_pick--masterwork",
