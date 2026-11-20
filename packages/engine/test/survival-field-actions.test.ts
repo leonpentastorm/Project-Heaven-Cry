@@ -4,7 +4,7 @@
 // 1.55 items 61 to 67.) Everything through the reducer with real actions; numbers are read from the state and the data.
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, reachable, packOf, giveView, magazineWorth, maxHp } from '../src';
-import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, leaveField, walkIn } from './helpers/survival';
 import type { Pc } from './helpers/replay';
 
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'plain_gun', level: 1 }];
@@ -18,7 +18,7 @@ function inFight(pcs: Pc[] = DUO, prep?: (g: GameState) => void, seed = 'PHC-FIE
   prep?.(g);
   const n = reachable(g.run!).find((x) => x.kind === 'fight')!;
   for (let i = 0; i < pcs.length && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
-  expect(g.run!.state).toBe('fight');
+  g = walkIn(g); expect(g.run!.state).toBe('fight');
   return g;
 }
 /** The won fight's field (the test room's skip). */

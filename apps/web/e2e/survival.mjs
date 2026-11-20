@@ -46,8 +46,13 @@
 // end a focus is placed in the pack (the suite's set-up), held in the off hand through the sheet (the knife in the main
 // hand), and ten mana residue are pressed into a core through Make. TOP_SHOTS=dir copies top-make, top-lootcards and
 // top-trainingbar there.
-import { readFileSync, copyFileSync } from 'node:fs';
+import { readFileSync, copyFileSync, mkdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { chromium, player, click, hostAs, lockIn, until, pickAction, settle, OUT, BASE, campStart, campConfirmGo, sidePanels } from './lib.mjs';
+// PHC_SHOTS=1: the ambush screens for the lead (rules 1.90), at 1280 x 720, in .check/ambush-033/
+const AMBUSH_SHOTS = process.env.PHC_SHOTS ? fileURLToPath(new URL('../../../.check/ambush-033', import.meta.url)) : null;
+if (AMBUSH_SHOTS) mkdirSync(AMBUSH_SHOTS, { recursive: true });
+const CARDS = JSON.parse(readFileSync(new URL('../../../data/rules.json', import.meta.url), 'utf8')).combat.cards;
 const DATA = (f) => JSON.parse(readFileSync(new URL('../../../data/' + f, import.meta.url), 'utf8'));
 const SVD = DATA('survival.json'), WPN = Object.fromEntries(DATA('weapons.json').items.map((w) => [w.id, w])), RAR = DATA('rules.json').rarity;
 // rules 1.54 (materials and making): the recipes and the items, from data (no item id typed here)
@@ -260,7 +265,17 @@ await mapFits('stage 1\'s map');
 
 // ---------- node 1 by hand ----------
 await p.locator('[data-phc-node="' + lit[0] + '"]').click();
+// rules 1.90 items 7801, 7803, 7805, 7807: the fight node asks first; Try an ambush, won (the game's next d20 a natural 20):
+// the hostiles sit round 1 out, the fight opens with SQUAD ADVANTAGE, the roll's sum and TN under it
+await p.waitForSelector('[data-phc-engage-screen]', { timeout: 60000 });
+ok('rules 1.90: node 1 stops at the engage screen, both choices offered, the odds with TN and % ("' + (await p.locator('[data-phc-ambush-odds]').textContent()) + '")', (await run()).state === 'engage' && await p.locator('[data-phc-engage="walk"]').isEnabled() && await p.locator('[data-phc-engage="ambush"]').isEnabled() && /TN \d+[\s\S]*\d+%/.test(await p.locator('[data-phc-ambush-odds]').textContent()));
+await p.evaluate((d) => { window.__phc.getState().game.rng.state = d; }, dieSeed(20));
+await p.locator('[data-phc-engage="ambush"]').click();
 await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 });
+{ const card = await p.waitForSelector('[data-phc-card="fight"]', { timeout: 30000 }).then((e) => e.textContent(), () => ''), cb = (await G()).combat, o = cb.opening || {};
+  if (AMBUSH_SHOTS) { await settle(p, 500); await p.screenshot({ path: AMBUSH_SHOTS + '/banner-squad-advantage.png' }); }
+  ok('Try an ambush won: SQUAD ADVANTAGE with the roll\'s total and TN ("' + card.slice(0, 90) + '"), every hostile caught (round 1 out)', o.ambush && o.won === true && card.includes(CARDS.ambush_won.name) && card.includes(String(o.total)) && card.includes(String(o.tn))
+    && cb.units.filter((u) => u.side === 'foe').every((u) => u.caught)); }
 { // the host's browser asks no Narrator in a run (rules 1.54 item 1): no narrator/ action is sent, so no refusal toast
   await settle(p, 1500);
   const seen = await p.evaluate(() => ({ mode: window.__phc.getState().game.settings.mode, toast: window.__phc.getState().toast?.text || '' }));
@@ -282,14 +297,15 @@ for (let i = 0; i < 400; i++) {
   if (s !== 'mine' || !(await p.locator('text=ACTION POINTS').count()) || await p.evaluate(() => { const d = document.querySelector('.phc-cb-dock'); return d ? d.getAttribute('data-lock') || '' : 'none'; })) { await settle(p, 120); continue; }
   await pickAction(p, /^(Shot|Strike)/, { timeout: 2000 }).catch(() => {});
   await p.evaluate((s) => { window.__phc.getState().game.rng.state = s; }, D18); // rules 1.46: node 1 cannot lose (every shot an 18)
-  const conf = p.getByRole('button', { name: 'Confirm', exact: true });
+  const conf = p.locator('button[aria-keyshortcuts="Space"]:not([hidden])').first(); // the fight's Confirm (its SPACE hint, CSS ::after, is in its accessible name since 0.33: no name match)
   // rules 1.45: a generated map has walls and cover, so the target the Shot starts on may be out of sight; aim at each
   // standing hostile in turn (by clicking its tile, as a player does) until the Shot can be confirmed
-  if (!(await conf.isEnabled().catch(() => false))) {
+  if (!(await conf.isEnabled({ timeout: 2000 }).catch(() => false))) {
     const foes = await p.evaluate(() => window.__phc.getState().game.combat.units.filter((u) => u.side === 'foe' && !u.dead && !u.downed).map((u) => { const [x, y] = u.pos.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); }));
-    for (const r of foes) { const t = p.locator('button.phc-tok[aria-label^="' + r + ' · "]').first(); if (!(await t.count())) continue; await t.click({ timeout: 5000 }).catch(() => {}); await settle(p, 60); if (await conf.isEnabled().catch(() => false)) break; }
+    for (const r of foes) { const t = p.locator('button.phc-tok[aria-label^="' + r + ' · "]').first(); if (!(await t.count())) continue; await t.click({ timeout: 5000 }).catch(() => {}); await settle(p, 60); if (await conf.isEnabled({ timeout: 2000 }).catch(() => false)) break; }
   }
-  try { if (await conf.isEnabled({ timeout: 30000 })) await conf.click({ timeout: 30000 }); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 30000 }); } catch { /* the turn moved on under us */ }
+  // (rules 1.90: no approach brings the foes into sight first: a turn with no Shot to confirm ends, never waits on a Confirm that is not there)
+  try { if (await conf.isEnabled({ timeout: 2000 }).catch(() => false)) await conf.click({ timeout: 30000 }); else await p.getByRole('button', { name: 'End turn', exact: true }).click({ timeout: 30000 }); } catch { /* the turn moved on under us */ }
   await settle(p, 60);
 }
 let g = await G();
@@ -784,6 +800,8 @@ while (guard++ < 40) {
   } else if (r.state === 'shop') {
     if (!sawShop) await shopChecks();
     else { await p.locator('[data-phc-phase="leave"]').click(); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'shop', null, { timeout: 30000 }); }
+  } else if (r.state === 'engage') { // rules 1.90: a fight node asks first; walk in
+    await p.locator('[data-phc-engage="walk"]').click({ timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'engage', null, { timeout: 30000 });
   } else if (r.state === 'fight') {
     await p.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
     const e = await act({ type: 'run/skip' }); if (e) { ok('run/skip in a fight: ' + e, false); break; }
@@ -899,6 +917,8 @@ for (let i = 0; i < 160; i++) {
     await p.locator('[data-phc-node="' + next + '"]').click();
     await p.waitForFunction((id) => window.__phc.getState().game.run.at === id, next, { timeout: 30000 }).catch(() => {});
     if ((await run()).at !== next) { ok('stage 2: the click on ' + next + ' moved the squad', false); break; }
+  } else if (r.state === 'engage') { // rules 1.90: a fight node asks first; walk in
+    await p.locator('[data-phc-engage="walk"]').click({ timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'engage', null, { timeout: 30000 }).catch(() => {});
   } else if (r.state === 'fight') {
     e = await act({ type: 'run/skip' });
     if (!e && s2by[r.at]?.kind === 'vault_guard' && !seen.guard) { const f = (await run()).stats.fights.at(-1), name = (await G()).run && f.foes.map((x) => x.name);
@@ -982,12 +1002,30 @@ let hr = (await HG()).run;
 // the way to the first shop: a path through the links from the first row
 const byId = Object.fromEntries(hr.nodes.map((n) => [n.id, n])), shopN = hr.nodes.filter((n) => n.kind === 'shop').sort((a, b) => a.depth - b.depth)[0];
 const way = (() => { const back = (id) => { const n = byId[id]; if (n.depth === 1) return [id]; const prev = hr.nodes.find((x) => x.links.includes(id) && back(x.id)); return prev ? [...back(prev.id), id] : null; }; return back(shopN.id) || []; })();
-let coopReward = false;
+let coopReward = false, coopEngage = false;
 for (let i = 0; i < 80; i++) {
   hr = (await HG()).run; if (hr.state === 'shop' || hr.state === 'over') break;
   let e = null;
   // the guest's move only where the way forks (on a lane with one way forward the host's click walks the squad on)
   if (hr.state === 'map') { const next = way[hr.path.length], at = hr.nodes.find((n) => n.id === hr.at), forks = !at || at.links.length >= 2; e = await actOn(h, { type: 'run/move', node: next }); if (!e && forks) { await settle(h, 150); e = await actOn(gu, { type: 'run/move', node: next }); } }
+  else if (hr.state === 'engage' && !coopEngage) { // rules 1.90 items 7801, 7805, 7811: the guest sees the choice greyed; the host tries an ambush, lost (a natural 1): the squad sits round 1 out
+    coopEngage = true;
+    await gu.waitForSelector('[data-phc-engage-screen]', { timeout: 30000 }).catch(() => {});
+    const gWait = (await gu.locator('[data-phc-waiting]').textContent().catch(() => '')) || '';
+    const gNow = await actOn(gu, { type: 'run/engage', how: 'walk' }); await settle(gu, 1200); // a guest's action goes to the host: its refusal comes back as the guest's toast
+    const gRefused = gNow || await gu.evaluate(() => window.__phc.getState().toast?.text || '');
+    if (AMBUSH_SHOTS) { await gu.mouse.move(2, 2); await settle(gu, 400); await gu.screenshot({ path: AMBUSH_SHOTS + '/engage-guest.png' }); }
+    ok('C: the guest sees the engage screen with both choices greyed and "' + gWait + '"; its run/engage is refused ("' + gRefused + '")', await gu.locator('[data-phc-engage="walk"]').isDisabled() && await gu.locator('[data-phc-engage="ambush"]').isDisabled() && gWait === SVD.ambush.words.waiting && !!gRefused && (await HG()).run.state === 'engage');
+    await h.evaluate((d) => { window.__phc.getState().game.rng.state = d; }, dieSeed(1));
+    await h.evaluate(() => { const w = window; w.__ambCard = ''; new MutationObserver(() => { const el = document.querySelector('[data-phc-card="fight"]'); if (el && !w.__ambCard) w.__ambCard = el.textContent || ''; }).observe(document, { childList: true, subtree: true }); }); // the opening banner's words, whenever it shows
+    await h.waitForSelector('[data-phc-engage="ambush"]', { timeout: 30000 }); await h.locator('[data-phc-engage="ambush"]').click();
+    await h.waitForFunction(() => !!window.__phc.getState().game.combat, null, { timeout: 30000 }).catch(() => {});
+    const cb = (await HG()).combat, o = cb.opening || {}, first = cb.units.find((u) => u.id === cb.order[cb.turn]); // read at once: round 1 is the hostiles' (the caught characters' turns pass)
+    const card = await h.waitForFunction(() => window.__ambCard || null, null, { timeout: 30000 }).then((x) => x.jsonValue(), () => '');
+    ok('C: Try an ambush lost by two: ENEMY ADVANTAGE with the total and TN ("' + card.slice(0, 80) + '"), every character caught, no fumble, the first turn a hostile\'s (' + first?.name + ')', o.ambush && o.won === false && !o.fumble && card.includes(CARDS.ambush_lost.name) && card.includes(String(o.total)) && card.includes(String(o.tn))
+      && cb.units.filter((u) => u.charId).every((u) => u.caught) && (await HG()).combat.log.filter((l) => /is caught by the ambush/.test(l)).length >= 2 && (cb.round > 1 || first?.side !== 'pc'));
+  }
+  else if (hr.state === 'engage') e = await actOn(h, { type: 'run/engage', how: 'walk' });
   else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
   else if (hr.state === 'field') e = await actOn(h, { type: 'run/leave', close: true }); // rules 1.55: the host closes the field
   else if (hr.state === 'reward' && !coopReward && Object.keys(hr.offers || {}).length === 2) { // rules 1.64: each player's own reward panel
@@ -1067,6 +1105,7 @@ for (let i = 0; i < 80; i++) {
   if (hr.state === 'map' && nexts.length >= 2) break;
   let e = null;
   if (hr.state === 'map') e = await actOn(h, { type: 'run/move', node: nexts[0] });
+  else if (hr.state === 'engage') e = await actOn(h, { type: 'run/engage', how: 'walk' }); // rules 1.90
   else if (hr.state === 'fight') e = await actOn(h, { type: 'run/skip' });
   else if (hr.state === 'shop') { e = await actOn(h, { type: 'run/leave', close: true }); }
   else if (hr.state === 'field') e = await actOn(h, { type: 'run/leave', close: true }); // rules 1.55: the host closes the field
@@ -1120,6 +1159,7 @@ const walkD = async (stop, why) => { for (let i = 0; i < 400; i++) {
   const dr = (await DG()).run; if (!dr || dr.state === 'over' || await stop(dr)) return true;
   let e = null;
   if (dr.state === 'map') { const here = dr.nodes.find((n) => n.id === dr.at), nx = here ? here.links.filter((l) => dr.nodes.find((n) => n.id === l)?.kind !== 'vault_guard') : dr.nodes.filter((n) => n.depth === 1).map((n) => n.id); e = await dAct({ type: 'run/move', node: nx[0] }); }
+  else if (dr.state === 'engage') e = await dAct({ type: 'run/engage', how: 'walk' }); // rules 1.90
   else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
   else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
   else if (dr.state === 'field') e = await dAct({ type: 'run/leave', close: true }); // rules 1.55: the host closes the field
@@ -1156,6 +1196,7 @@ for (let i = 0; i < 80; i++) {
   dr = (await DG()).run; if (dr.at === toForge.at(-1) || dr.state === 'over') break;
   let e = null;
   if (dr.state === 'map') e = await dAct({ type: 'run/move', node: toForge[dr.path.filter((x) => x.startsWith('s3.')).length] });
+  else if (dr.state === 'engage') e = await dAct({ type: 'run/engage', how: 'walk' }); // rules 1.90
   else if (dr.state === 'fight') e = await dAct({ type: 'run/skip' });
   else if (dr.state === 'shop') e = await dAct({ type: 'run/leave' });
   else if (dr.state === 'field') e = await dAct({ type: 'run/leave', close: true }); // rules 1.55: the host closes the field

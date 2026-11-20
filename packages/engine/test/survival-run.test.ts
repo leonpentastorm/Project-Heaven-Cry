@@ -7,7 +7,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, mapNodes, pathMap, reachable, runNode, nodeXp, nodeCredits, ENC_BUDGET, creditsOf, priceOf, maxHp, NODE_TEXT, WEAPON, type RunNode } from '../src';
 import { Rec, type Pc } from './helpers/replay';
-import { survivalRoom, startRun, ownerOf, playStage, leaveField } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, playStage, leaveField, walkIn } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -17,7 +17,7 @@ const SQUAD: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'tank', level: 1
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
 const started = (pcs: Pc[], seed = 'PHC-0001', test = true) => startRun(survivalRoom(seed, pcs, { test }), seed);
 /** Take a node: every player marks it (rules 1.48: where the way forks; on a lane with one way the first click goes). */
-const take = (g: GameState, node: RunNode | string, n: number) => { let x = g; const id = typeof node === 'string' ? node : node.id; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
+const take = (g: GameState, node: RunNode | string, n: number) => { let x = g; const id = typeof node === 'string' ? node : node.id; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return walkIn(x); };
 const firstOf = (g: GameState, kind: string) => g.run!.nodes.find((n) => n.kind === kind)!;
 /** A copy with the run standing on `id` (as if the path there was walked), on its map. */
 const standOn = (g: GameState, id: string | null): GameState => { const x: GameState = JSON.parse(JSON.stringify(g)); x.run!.at = id; x.run!.state = 'map'; return x; };
@@ -211,7 +211,10 @@ describe('Survival, one stage (rules 1.41)', () => {
     // a seed scan of PHC-0001 to PHC-0020 on the merged build: 0002, 0003 and 0019 reach the boon; 0003 plays eight fights.
     // PHC-0002 since rules 1.64 (0.31.2: the sabre's refit and a fight not yet joined, item 5008): PHC-0003 now loses its
     // eighth fight; a seed scan of PHC-0001 to PHC-0020: 0002 and 0019 reach the boon; 0002 plays six fights.
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0002', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0002', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
+    // PHC-0007 since rules 1.90 (0.33: the approach removed, every fight walked in) on top of the 0.33 lanes (Rally and
+    // Brief, Silent ON, the Heart adept's Bond): PHC-0002 now loses its sixth fight; a seed scan of PHC-0001 to PHC-0020 on
+    // the merged release: 0007, 0010 and 0019 reach the boon; 0007 plays eight fights.
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0007', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0007', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());

@@ -6,6 +6,7 @@
 // enemy, Mend yourself, and the echo lands on the Bonded enemy.
 import { describe, it, expect } from 'vitest';
 import { apply, newGame, ARCHETYPES, beginTurn, withGame, reachable, actionsFor } from '../src';
+import { walkIn } from './helpers/survival';
 import tendingJ from '../../../data/tending.json';
 
 const BOND: any = (tendingJ as any).bond;
@@ -19,13 +20,13 @@ function survivalFight(duo: boolean) {
   g = apply(g, { type: 'run/ready', close: true }, 'host');
   const med: any = Object.values(g.characters).find((c: any) => c.name === 'Medic');
   const node = reachable(g.run).find((n: any) => n.kind === 'fight') || reachable(g.run)[0];
-  for (const by of duo ? ['host', 'p2'] : ['host']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by);
+  for (const by of duo ? ['host', 'p2'] : ['host']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by); g = walkIn(g);
   const cb = g.combat, mu = cb.units.find((u: any) => u.charId === med.id), foe = cb.units.find((u: any) => u.side === 'foe');
   const al = cb.units.find((u: any) => u.side === 'pc' && u.id !== mu.id) || null;
   const [x, y] = mu.pos.split(',').map(Number);
   if (al) { al.pos = x + ',' + (y + 1); al.hp = 40; }
   foe.pos = (x + 2) + ',' + y; foe.sv = { heart: -99 }; mu.hp = 40; // the foe fails its Heart save
-  cb.turn = cb.order.indexOf(mu.id); delete cb.window; delete cb.approach; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5008: the fight is set up by hand as joined
+  cb.turn = cb.order.indexOf(mu.id); delete cb.window; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5008: the fight is set up by hand as joined
   const box = { g };
   const U = (id: string) => box.g.combat.units.find((u: any) => u.id === id);
   const act = (id: string, t: any = null) => { U(mu.id).ap = 9; const n = box.g.combat.log.length, f = (box.g.combat.fx || []).length; box.g = apply(box.g, { type: 'combat/perk', unitId: mu.id, id, ...(t ? { targetId: t.id } : {}) }, 'host'); return { log: box.g.combat.log.slice(n), fx: (box.g.combat.fx || []).slice(f) }; };

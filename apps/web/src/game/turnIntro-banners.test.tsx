@@ -20,12 +20,14 @@ function camp(): GameState {
   g = apply(g, { type: 'run/start', seed: 'PHC-0003' } as any, 'host'); g = apply(g, { type: 'run/ready', close: true } as any, 'host');
   return g;
 }
+/** Rules 1.90 item 7800: onto a fight node and in (Walk in unless `how` says ambush), through the reducer. */
+const enter = (g: GameState, node: string, how: 'walk' | 'ambush' = 'walk') => apply(apply(g, { type: 'run/move', node } as any, 'host'), { type: 'run/engage', how } as any, 'host');
 const big = (el: HTMLElement) => el.querySelector('[data-phc-big]') as HTMLElement | null;
 
 describe('the fight\'s big banners (rules 1.62 item 4900)', () => {
   it('the words and the hold are the data\'s; the whole time on screen is the hold and the slides', () => {
     expect(CARDS.hold_ms).toBeGreaterThanOrEqual(1250);
-    const g = camp(), f = apply(g, { type: 'run/move', node: reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id } as any, 'host');
+    const g = camp(), f = enter(g, reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id);
     const b = _test.fightCard(f, f.combat, 'host'); expect(b.name).toBe(CARDS.joined.name); expect(b.hold).toBe(CARDS.hold_ms);
     // rules 1.62 item 4902: the player's view (the engine's fog); a hostile out of sight as the fight opens, and
     // BATTLE START's line says every step costs AP; with every hostile in sight, no such line
@@ -47,10 +49,9 @@ describe('the fight\'s big banners (rules 1.62 item 4900)', () => {
     let g = camp();
     const draw = async (x: GameState) => { await React.act(async () => { root.render(React.createElement(TurnIntro as any, { game: x, meId: 'host', screen: x.phase === 'combat' ? 'combat' : 'main' })); }); };
     await draw(g);
-    g = apply(g, { type: 'run/move', node: reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id } as any, 'host');
+    g = enter(g, reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id);
     expect(g.phase).toBe('combat');
     await draw(g);
-    expect((g.combat as any).approach).toBeFalsy(); // PHC-0003's first fight opens seen: BATTLE START only, no APPROACH (rules item 5522)
     const b = big(el); expect(b?.getAttribute('data-phc-card')).toBe('fight');
     expect(b!.textContent).toContain(CARDS.joined.name); expect(b!.style.pointerEvents).toBe('none');
     // still fully up just before the end of its slide in and its hold, at the slowest pace
@@ -66,37 +67,26 @@ describe('the fight\'s big banners (rules 1.62 item 4900)', () => {
     expect(seen.filter((k) => k === 'victory' || k === 'field')).toEqual(['victory', 'field']);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   }, 60_000);
-  // Rules 1.64 item 5008: a fight opened not yet joined has no BATTLE START until contact; at contact it comes
-  it('not yet joined: no BATTLE START until contact, then BATTLE START', async () => {
-    vi.useFakeTimers();
-    const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
-    const draw = async (x: GameState) => { await React.act(async () => { root.render(React.createElement(TurnIntro as any, { game: x, meId: 'host', screen: x.phase === 'combat' ? 'combat' : 'main' })); }); };
-    let g: GameState | null = null;
-    for (let s = 1; s <= 40 && !g; s++) {
-      let x = newGame('BANNERS', { id: 'host', name: 'Leon' }, 'banners'); (x as any).settings.play = 'survival'; (x as any).settings.test = true;
+  // Rules 1.90 item 7807 (Leon, 20 Nov 2026): a fight opened by an ambush roll shows SQUAD ADVANTAGE (won) or ENEMY
+  // ADVANTAGE (lost, a solo fumble included) in place of BATTLE START, with the roll's sum and TN under it
+  it('an ambush opens with SQUAD ADVANTAGE or ENEMY ADVANTAGE, the roll’s sum and TN under it', async () => {
+    const got: Record<string, any> = {};
+    for (let s = 1; s <= 40 && !(got.won && got.lost); s++) {
+      let x = newGame('BANNERS', { id: 'host', name: 'Leon' }, 'banners' + s); (x as any).settings.play = 'survival'; (x as any).settings.test = true;
       x = apply(x, { type: 'char/add', sheet: sheetFrom('sharpshooter', 'Gun') } as any, 'host');
-      const seed = 'PHC-' + String(s).padStart(4, '0');
-      x = apply(x, { type: 'run/start', seed } as any, 'host'); x = apply(x, { type: 'run/ready', close: true } as any, 'host');
+      x = apply(x, { type: 'run/start', seed: 'PHC-' + String(s).padStart(4, '0') } as any, 'host'); x = apply(x, { type: 'run/ready', close: true } as any, 'host');
       const n = reachable((x as any).run).find((q: any) => q.kind === 'fight'); if (!n) continue;
-      await draw(x); const f = apply(x, { type: 'run/move', node: n.id } as any, 'host');
-      if ((f.combat as any)?.approach) g = f;
+      const f = enter(x, n.id, 'ambush'), o = (f.combat as any)?.opening; if (o) got[o.won ? 'won' : 'lost'] ||= f;
     }
-    expect(g).toBeTruthy();
-    await draw(g!);
-    const seen: string[] = []; const watch = async (ms: number) => { for (let t = 0; t < ms / 250; t++) { await React.act(async () => { vi.advanceTimersByTime(250); }); const k = big(el)?.getAttribute('data-phc-card'); if (k && seen[seen.length - 1] !== k) seen.push(k); } };
-    await watch(4000); expect(seen).not.toContain('fight');
-    // rules item 5522: the approach's own banner comes first, its words the data's, held as the others
-    expect(seen[0]).toBe('approach');
-    const ab = _test.approachCard(g!.combat); expect(ab.name).toBe(CARDS.approach.name); expect(ab.sub).toBe(CARDS.approach.sub); expect(ab.hold).toBe(CARDS.hold_ms);
-    // the turn strip's sub-line while it lasts: YOUR TURN stays, the round reads the approach's line
-    expect(_test.roundWords(g!.combat, 1)).toBe(String((RULES as any).combat.approach.line).toUpperCase());
-    const pc = () => (g!.combat as any).units.find((u: any) => u.side === 'pc');
-    for (let i = 0; i < 10 && (g!.combat as any).approach; i++) g = apply(g!, { type: 'combat/end-turn', unitId: pc().id } as any, 'host');
-    expect((g!.combat as any).approach).toBeUndefined();
-    await draw(g!); await watch(3000); expect(seen).toContain('fight'); expect(seen.indexOf('fight')).toBeGreaterThan(seen.indexOf('approach'));
-    expect(_test.roundWords(g!.combat, 1)).toBe('ROUND 1');
-    await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
-  }, 60_000);
+    expect(got.won && got.lost).toBeTruthy();
+    const w = _test.fightCard(got.won, got.won.combat, 'host'), o = got.won.combat.opening;
+    expect(w.name).toBe(CARDS.ambush_won.name); expect(w.sub).toContain(String(o.total)); expect(w.sub).toContain(String(o.tn)); expect(w.hold).toBe(CARDS.hold_ms);
+    const l = _test.fightCard(got.lost, got.lost.combat, 'host'), ol = got.lost.combat.opening;
+    expect(l.name).toBe(CARDS.ambush_lost.name); expect(l.sub).toContain(String(ol.total)); expect(l.sub).toContain(String(ol.fumble.dmg)); // solo: the fumble's words
+    // a walk in keeps BATTLE START
+    const g = enter(camp(), reachable((camp() as any).run).find((n: any) => n.kind === 'fight')!.id); expect(_test.fightCard(g, g.combat, 'host').name).toBe(CARDS.joined.name);
+    expect(_test.roundWords(g.combat, 1)).toBe('ROUND 1');
+  });
   it('with the effects clock on, the first field turn banner waits for VICTORY and FREE ROAM (they come first, it after them)', async () => {
     vi.useFakeTimers();
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
@@ -107,7 +97,7 @@ describe('the fight\'s big banners (rules 1.62 item 4900)', () => {
     const clockTo = async (x: GameState) => { const cb: any = x.combat, fx = cb.fx || [], n = cb.fxSeq || (fx.length ? fx[fx.length - 1].n : 0);
       await React.act(async () => { window.dispatchEvent(new CustomEvent(EV_FX_AT, { detail: { stream: combatStreamKey(x), n } })); }); };
     await draw(g);
-    g = apply(g, { type: 'run/move', node: reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id } as any, 'host');
+    g = enter(g, reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id);
     await draw(g); await clockTo(g);
     await React.act(async () => { vi.advanceTimersByTime(8000); });
     g = apply(g, { type: 'run/skip' } as any, 'host'); expect((g as any).run.state).toBe('field');
@@ -137,7 +127,7 @@ describe('the fight\'s big banners (rules 1.62 item 4900)', () => {
     const clockTo = async (x: GameState) => { const fx: any[] = (x.combat as any).fx || [];
       for (const e of fx) await React.act(async () => { window.dispatchEvent(new CustomEvent(EV_FX_AT, { detail: { stream: combatStreamKey(x), n: e.n } })); }); };
     let g = camp(); await draw(viewFor(g, 'host') as GameState);
-    g = apply(g, { type: 'run/move', node: reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id } as any, 'host');
+    g = enter(g, reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id);
     await draw(viewFor(g, 'host') as GameState); await clockTo(viewFor(g, 'host') as GameState);
     await React.act(async () => { vi.advanceTimersByTime(8000); });
     const pcU = () => (g.combat as any).units.find((u: any) => u.side === 'pc' && u.charId);

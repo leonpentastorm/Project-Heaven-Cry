@@ -413,9 +413,10 @@
   },
   "combat": {
     "cards": {
-      "about": "Rules 1.62 item 4900: the fight's big banners in the middle of the screen (apps/web/src/game/turnIntro.tsx draws them): `hold_ms`, the least time each is fully on screen (the combat speed never shortens it); the words of each (`approach`: the first banner of a fight that opens with no foe seeing the squad, rules item 5522, BATTLE START following at contact; `level_up`: rules item 5524, shown to the whole room on any screen when a character gains a level, `{level}` its new level, `sounds` the game's own sound names; `joined.fog`: BATTLE START's line when a hostile in the fight is out of the party's sight, rules 1.62 item 4902). The field's banner is survival.json run.after_fight.field.",
+      "about": "Rules 1.62 item 4900: the fight's big banners in the middle of the screen (apps/web/src/game/turnIntro.tsx draws them): `hold_ms`, the least time each is fully on screen (the combat speed never shortens it); the words of each (`ambush_won` / `ambush_lost`: rules 1.90 item 7807, the banner of a fight opened by an ambush roll, SQUAD ADVANTAGE or ENEMY ADVANTAGE in place of BATTLE START, `{total}` and `{tn}` the roll's sum and TN, `fumble` the solo fumble's line; `level_up`: rules item 5524, shown to the whole room on any screen when a character gains a level, `{level}` its new level, `sounds` the game's own sound names; `joined.fog`: BATTLE START's line when a hostile in the fight is out of the party's sight, rules 1.62 item 4902). The field's banner is survival.json run.after_fight.field.",
       "hold_ms": 1250,
-      "approach": { "name": "APPROACH", "sub": "Unseen · moving is free", "provisional": true },
+      "ambush_won": { "name": "SQUAD ADVANTAGE", "sub": "Ambush {total} vs {tn} · the hostiles lose their first turn", "provisional": true },
+      "ambush_lost": { "name": "ENEMY ADVANTAGE", "sub": "Ambush {total} vs {tn} · the squad loses its first turn", "fumble": "Ambush {total} vs {tn} · fumbled: {unit} takes {dmg} damage", "provisional": true },
       "level_up": { "name": "LEVEL UP", "sub": "Level {level}", "sounds": ["level_up"], "provisional": true },
       "joined": { "name": "BATTLE START", "fog": "Hostiles still in the fog" },
       "won": { "name": "VICTORY" },
@@ -433,15 +434,15 @@
       },
       "provisional": true
     },
-    "approach": {
-      "about": "Rules 1.64 item 5008 (Leon, 16 Nov 2026: \"you run into an enemy in the fog, combat start and you stood there like an idiot with zero AP\"): a Survival fight that opens with no foe seeing any character is not yet joined (Combat.approach). Until contact the actions of `free` cost no AP, no round passes, nothing that lasts ticks and no foe acts but a Hidden one; the turn strip shows `line`. Contact (a foe sees a character, a character's attack lands or is made, a Hidden foe attacks, or `passes_max` full passes of the turn order go by with no contact) joins the fight: BATTLE START, the initiative order read out, round 1 from the top of the order, every unit's first turn on full AP (`joined_log` in the fight's log). Rules item 5521, the alarm: at contact every foe group learns where each character not Hidden stands and comes for it (`alarm_log`, once). Rules 1.64 item 5011: any other action (an action type not in `quiet`, or a move whose site is not in `free`) is contact itself: the fight is joined before it resolves, so it is paid from that unit's round-1 turn; if after the initiative order is read out it is not that unit's turn, the action is not made and the log says `acts_log`.",
-      "free": ["move", "sprint"],
-      "quiet": ["combat/move", "combat/end-turn", "combat/decline"],
-      "acts_log": "moves to act: the fight is joined, and acts on its turn.",
-      "passes_max": 3,
-      "line": "Approach · unseen",
-      "joined_log": "Contact: the fight is joined.",
-    "alarm_log": "Alarm: every hostile on the map comes for you.",
+    "free_turn": {
+      "about": "Rules 1.90 items 7805, 7806 (Leon, 20 Nov 2026: \"if you win you get a free turn, if you lost the enemy get a free turn. The approach phase is out entirely\"): a fight may open with one side's free turn (combat.ts startCombat extra.freeTurn; Survival's ambush, survival.json ambush): every unit of the other side sits round 1 out (Unit.waitRound 2), but a unit whose stat ambush_immune holds (Tremor) and one with ambush_ap, which keeps its first turn with that many AP (Shoot First). `ap`: the free side's first turn at most this many AP (null: a full turn; the number to soften it with). The log: `side` once ({units}: who sits out), `immune` and `ap` per unit, `sits` for each turn passed. (Retired: rules 1.64 item 5008's approach and rules 1.82 item 7004's Surprise, superseded by rules 1.90 item 7800.)",
+      "ap": null,
+      "lines": {
+        "side": "Ambushed: {units} lose their first turn.",
+        "immune": "{unit} felt them coming: not caught (Tremor).",
+        "ap": "{unit} shoots first: {n} AP in a turn it should not have had (Shoot First).",
+        "sits": "is caught by the ambush: no turn this round."
+      },
       "provisional": true
     },
     "grid": {
@@ -476,23 +477,7 @@
       "roll": "d20 + initiative_bonus",
       "order": "high first",
       "tie": "higher agility",
-      "tie_after_agility": null,
-      "surprise_round": {
-        "ambushers_ap": 3,
-        "surprised_can_act": false,
-        "exception": "perk says so",
-        "built": true,
-        "on": false,
-        "on_note": "OFF (Leon, 20 Nov 2026: \"turn it off, we need more thinking on this\"): with it on, a squad that acts first unseen takes every foe's first turn in most fights, and a class that can only walk in gets it for nothing. Built and tested behind this switch.",
-        "springs": ["pc"],
-        "springs_note": "Leon, 20 Nov 2026: only the squad springs a surprise for now (a class with no scouting tool had no answer to a Hidden foe taking the whole squad's first turn). Add \"foe\" to let a Hidden foe's unseen attack catch the squad again.",
-        "lines": {
-          "side": "Caught by surprise: {units} lose their first turn.",
-          "immune": "{unit} felt them coming: not caught by surprise (Tremor).",
-          "ap": "{unit} shoots first: {n} AP in a turn it should not have had (Shoot First)."
-        },
-        "built_note": "rules 1.82 item 7004 (call made for Leon; `on` is the switch): when a fight in the approach is joined by an attack from a unit the other side did not see, every unit of that other side loses its first turn (waitRound 2), but one whose surprise_immune holds while a unit of the attacking side stands within its Vision (Tremor) and one with surprise_ap, which keeps its first turn with that many AP (Shoot First). Both sides. Contact by sight alone, or by the approach running out, surprises nobody. ambushers_ap is not read: an ambusher acts on its own turn with the AP it has (item 1501). One function: combat.ts surpriseSide"
-      }
+      "tie_after_agility": null
     },
     "turn": {
       "start": [
@@ -2419,6 +2404,9 @@
           "type": "true",
           "provisional": true
         }
+      },
+      "ambush_fumble": {
+        "damage": { "kind": "damage", "base": 0, "per": [{ "of": "max_hp", "value": 0.15 }], "profile": "flat", "type": "true", "armour": "none", "text": "rules 1.90 item 7808: a solo character's fumbled ambush (run/ambush.ts): a share of its own max HP, before round 1; no armour, Guard or item changes it, and it stops at survival.json ambush.fumble.floor_hp", "provisional": true }
       },
       "school_rider": {
         "heal": {

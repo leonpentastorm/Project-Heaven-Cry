@@ -11,7 +11,7 @@ import { type GameState, apply, RuleError, boonWorks, boonServes, FOCUS_IDS, STA
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
 import { BUILDS } from './balance/builds';
-import { survivalRoom, ownerOf, leaveField } from './helpers/survival';
+import { survivalRoom, ownerOf, leaveField, walkIn } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -345,6 +345,7 @@ describe('rules 1.51: the supply pack (spec rule 52)', () => {
     const g0 = clone(apply(camp(pcs), { type: 'run/go' }, 'host')), r = g0.run!, n = r.nodes.find((x) => x.depth === 3)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;
     n.kind = 'fight'; r.at = prev.id; r.state = 'map';
     let g = g0; for (let i = 0; i < 2 && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
+    g = walkIn(g);
     const sig = g.combat!.units.find((u) => u.charId === 'c1')!, out = g.combat!.units.find((u) => u.charId === 'c2')!;
     const before = cores(packOf(g.characters.c1)), g2 = clone(g);
     sig.mg!.charge = 1; sig.mg!.cores -= 1; sig.mg!.flux = 3; out.mg!.mp = 5; // one spare core swapped in and most of the loaded one spent: one core burnt
@@ -363,6 +364,7 @@ describe('rules 1.51: the supply pack (spec rule 52)', () => {
     const g0 = clone(apply(camp(pcs), { type: 'run/go' }, 'host')), r = g0.run!, n = r.nodes.find((x) => x.depth === 3)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;
     n.kind = 'boss'; r.at = prev.id; r.state = 'map';
     let g = g0; for (let i = 0; i < 2 && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
+    g = walkIn(g);
     const sig = g.combat!.units.find((u) => u.charId === 'c1')!, out = g.combat!.units.find((u) => u.charId === 'c2')!;
     const before = cores(packOf(g.characters.c1));
     sig.mg!.charge = 1; sig.mg!.cores -= 1; out.mg!.mp = 5;

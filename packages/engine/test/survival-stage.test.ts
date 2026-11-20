@@ -11,7 +11,7 @@ import { type GameState, apply, RuleError, BOONS, BOON_CAP, worthOf, runWorth, c
   renownOf, keptDraft, xpForLevel, devotionXpOf, setDevotionXp, devotionThreshold, maxHp, graftFor, mapNodes, pathMap, eliteUp, type RunNode } from '../src';
 import { fightWith } from './helpers/perkfight';
 import { Rec, type Pc } from './helpers/replay';
-import { survivalRoom, startRun, ownerOf, playStage, leaveField } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, playStage, leaveField, walkIn } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -22,7 +22,7 @@ const boon = (id: string) => BOONS.find((b) => b.id === id)! as any;
 const started = (pcs: Pc[] = DUO, seed = 'PHC-0001') => startRun(survivalRoom(seed, pcs, { test: true }), seed);
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
 /** Take a node: every player marks it (rules 1.48: where the way forks; on a lane with one way the first click goes). */
-const take = (g: GameState, id: string, n: number) => { let x = g; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return x; };
+const take = (g: GameState, id: string, n: number) => { let x = g; for (let i = 0; i < n && x.run!.at !== id; i++) x = apply(x, { type: 'run/move', node: id }, ownerOf(i)); return walkIn(x); };
 /** The squad on a fight node (depth 3), its fight under way; `prep` changes the state first (relics, HP). */
 function inFight(prep: (g: GameState) => void = () => {}, pcs: Pc[] = DUO): GameState {
   const g0 = clone(started(pcs)), r = g0.run!, n = r.nodes.find((x) => x.depth === 3)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;

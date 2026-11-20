@@ -61,7 +61,7 @@ export function gearLockWhy(g: { run?: { state: string } | null; phase?: string;
  * after a won fight (offers; rules 1.55: after `field`, the won fight's map roamed freely until everyone marks Leave); `shop`: a shop open full screen at the node (rules 1.42, `shop`); `boon` and `tile`:
  * after a Boss (the stage is cleared; rules 1.44: each character picks a boon, then the squad picks the next tile);
  * `over`: lost or retired. */
-export type RunPhase = 'loadout' | 'map' | 'fight' | 'field' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
+export type RunPhase = 'loadout' | 'map' | /** rules 1.90 item 7800: a fight node's choice (run/engage) */ 'engage' | 'fight' | 'field' | 'reward' | 'shop' | 'boon' | 'tile' | 'over';
 /** A node of a stage's path map (spec section 9's shape, so a node can later hold a designed room): run/map.ts. */
 export type RunNode = PathNode;
 /** A tile of the world the party walks (rule 32): a stage's setting and its boon pool. */
@@ -180,6 +180,7 @@ export function runMoveProblem(g: { run?: RunState | null; players: Who[]; chara
   if (!g.players.some((p) => p.id === by)) return 'Only a player in the room picks the way.';
   if (r.state === 'loadout') return 'Finish your loadout at the camp first: everyone marks Ready, or the host starts the run.';
   if (r.state === 'fight') return 'The fight is on.';
+  if (r.state === 'engage') return String((survivalJ as any).ambush.words.ask); // rules 1.90 item 7800
   if (r.state === 'field') return 'Leave the field first: everyone marks Leave, or the host closes it.';
   if (r.state === 'reward') return rewardWaitWhy(g, by);
   if (r.state === 'shop') return 'Leave the shop first: everyone marks ready, or the host closes it.';

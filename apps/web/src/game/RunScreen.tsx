@@ -23,6 +23,7 @@ import { PlaceBar, BarNumber } from './PlaceBar';
 import { MoveOn } from './runPanels';
 import { LoadoutScreen } from './LoadoutScreen';
 import { StageScreen } from './StageScreen';
+import { EngageScreen } from './EngageScreen';
 import { boonIconSvg } from './boonIcons';
 import { TallyTable } from './RunTally';
 import { lastFightTally } from './tallyView';
@@ -70,6 +71,7 @@ export function RunScreen() {
   if (place && !placeClosed(run)) return <PlaceScreen onLeave={() => closePlace(run)} />; // rules 1.46: every safe node (in the middle since rules 1.54)
   if (v.state === 'loadout') return <LoadoutScreen />; // rules 1.52: the camp before node 1
   if (v.state === 'shop') return <ShopScreen />; // rules 1.42: the shop (spec 8.3)
+  if (v.state === 'engage') return <EngageScreen />; // rules 1.90: a fight node's choice, Walk in or Try an ambush
   if (v.state === 'boon' || v.state === 'tile' || v.over) return <StageScreen />; // rules 1.44: the stage's end and the summary
   // rules 1.64: the reward panel (the viewer's pay and own picks), open by itself until closed for this reward
   const rp = rewardPanelView(g, me, v), panelOpen = !!rp && rp.owe && closedOn !== rp.key;

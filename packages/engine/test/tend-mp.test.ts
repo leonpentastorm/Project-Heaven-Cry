@@ -6,6 +6,7 @@
 // Through the reducer, in a Survival fight at level 1 with the Empath archetype on the camp's Recommended loadout.
 import { describe, it, expect } from 'vitest';
 import { apply, newGame, ARCHETYPES, beginTurn, withGame, reachable, actionsFor, sendDescriptor } from '../src';
+import { walkIn } from './helpers/survival';
 import tendingJ from '../../../data/tending.json';
 
 const grant = (id: string): any => (tendingJ as any).items.find((x: any) => x.id === id).effects.find((e: any) => e.op === 'grant_action');
@@ -19,11 +20,11 @@ function survivalFight() {
   g = apply(g, { type: 'run/ready', close: true }, 'host');
   const med: any = Object.values(g.characters).find((c: any) => c.name === 'Medic');
   const node = reachable(g.run).find((n: any) => n.kind === 'fight') || reachable(g.run)[0];
-  for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by);
+  for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by); g = walkIn(g);
   const cb = g.combat, mu = cb.units.find((u: any) => u.charId === med.id), al = cb.units.find((u: any) => u.side === 'pc' && u.id !== mu.id);
   const [x, y] = mu.pos.split(',').map(Number); al.pos = x + ',' + (y + 1); al.hp = Math.max(1, Math.floor(al.maxHp / 2));
   g.characters[mu.charId].relics = []; if (mu.held) mu.held = { ...mu.held, relics: [] }; // the run's start boon may give MP back on a heal (Kindled): the price alone is measured here
-  cb.turn = cb.order.indexOf(mu.id); delete cb.window; delete cb.approach; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5011: the fight set up by hand as joined
+  cb.turn = cb.order.indexOf(mu.id); delete cb.window; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5011: the fight set up by hand as joined
   return { g, mu, al };
 }
 const U = (g: any, id: string) => g.combat.units.find((u: any) => u.id === id);

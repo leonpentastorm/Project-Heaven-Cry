@@ -36,6 +36,7 @@ function field() {
   doAct({ type: 'run/start', seed: 'PHC-0003' }); doAct({ type: 'run/ready', close: true });
   const node = reachable((G as any).run).find((n: any) => n.kind === 'fight')!.id;
   for (const by of [ME, 'p2']) if ((G as any).run.state === 'map') G = apply(G, { type: 'run/move', node } as any, by);
+  doAct({ type: 'run/engage', how: 'walk' }); // rules 1.90: the host walks in
   doAct({ type: 'run/skip' });
   expect((G as any).run.state).toBe('field'); expect(G.combat!.field).toMatchObject({ round: 1, of: 3 });
   const gun = G.combat!.units.find((u) => u.name === 'Gun' && !u.companion)!;

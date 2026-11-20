@@ -11926,7 +11926,7 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     cover-4v7-level20-allin, cover-4v6-level3, open-4v3-level3, proving-4v12-guns, proving-4v12-magic,
     proving-waves-long, proving-waves-low, story-fight-story-magic, proving-doors-hiding-watches-wave6,
     cover-4v7-blades-walk-away.
-5008. **A fight not yet joined (K1; Leon: "you run into an enemy in the fog, combat start and you stood there like an
+5008. **[SUPERSEDED by rules 1.90 item 7800]** **A fight not yet joined (K1; Leon: "you run into an enemy in the fog, combat start and you stood there like an
     idiot with zero AP, giving them a full turn"; the lead's approved primitive; supersedes item 4908 and item 4902's
     "every step costs AP"):** a Survival fight that opens with no foe seeing any character (`combat.ts openApproach`,
     called by `game.ts runFight`) carries `Combat.approach` `{ passes }`. Until contact: the actions named in
@@ -11964,7 +11964,7 @@ D7 (16 Nov 2026). Every item is `adjudication: engine`; every number is a data f
     item 5001, which keys `per_campaign` by the run and the stage instead); (b) a Relic property for thrown items (item 5004); (c) an fx
     event for a fight joined (item 5008's banner reads the state, `Combat.approach` going away, as item 4908 noted).
     Items 5000 to 5011 are rules 1.64's.
-5011. **No turns of actions before contact (item 5008, review fix):** before contact only the approach's own actions
+5011. **[SUPERSEDED by rules 1.90 item 7800]** **No turns of actions before contact (item 5008, review fix):** before contact only the approach's own actions
     are free of contact: the action types in `rules.json combat.approach.quiet` (**combat/move** whose site is in
     `combat.approach.free`, **combat/end-turn**, **combat/decline**). Any other action (an attack, Hide, Overwatch, a
     Begin or Pump, a glyph, Crystallise, a reload, a stim) is contact itself: `game.ts combatAction` joins the fight
@@ -12403,7 +12403,7 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     26 → 26 of 40; duo SIM-1 to 20, 17 → 17; four 15 → 14; mixed 16 → 17 (74 → 74 of 100). Replays unchanged (29 of
     29; no run fight in them). Proof: `test/fog-alarm.test.ts` (through the reducer: a free walk off the start, contact
     by passes, the foe side knows the squad's tile now, the line once; the farthest foe closes in).
-5522. **The approach gets its own banner** (Leon, 18 Nov: "add a phase when you enter the combat node but have not found
+5522. **[SUPERSEDED by rules 1.90 item 7800]** **The approach gets its own banner** (Leon, 18 Nov: "add a phase when you enter the combat node but have not found
     any enemy yet, with its own popup banner too, the first one every fight if the enemy do not see you at all"): a
     fight that opens in the approach (item 5008) shows the big banner **APPROACH**, sub-line "Unseen · moving is free"
     (`rules.json combat.cards.approach`, PROVISIONAL), first, the same component and hold as the others
@@ -13526,7 +13526,7 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       They are held as one hidden item of the class (`class:<id>.dials`, `data.ts classDialMove`); a dial at exactly 1
       is no item at all. **Every dial is 1** (PROVISIONAL): the roadmap gives no number, the balance pass fits them. No
       number moves.
-7004. **Surprise in the approach** (Waiting on Leon 22, the lead's pick built; **call made for Leon**, the switch
+7004. **[SUPERSEDED by rules 1.90 items 7800, 7805 to 7809]** **Surprise in the approach** (Waiting on Leon 22, the lead's pick built; **call made for Leon**, the switch
       `rules.json combat.initiative.surprise_round.on`, ON; closes item 1501 and rules 1.77 item 6517 c): when a fight not
       yet joined (rules 1.64 item 5008) is joined by an attack, or any action that is not the approach's, from a unit the
       other side did not see, **every unit of that other side loses its first turn** (`Unit.waitRound` 2; the log: "Caught
@@ -13939,7 +13939,8 @@ through the reducer before anything changed (`docs/design/handoffs/0.33-LANE-BUG
 7703. **bugs-engine: a push or pull says itself.** An item op `displace` whose row has no `say` of its own logs the move
     in a line, as `deal` logs its blow ("Slam: Trooper is pushed 1 tile."). Slam's Off Balance row names each Body
     save (`{then}`); Stand Fast's shockwave the same.
-7704. **bugs-engine: a free walk before contact spends no discount.** A walk the approach makes free (rules 1.64 item
+7704. **bugs-engine: a free walk before contact spends no discount.** *(First half superseded by rules 1.90 item 7800:
+    no walk is free before a fight, so there is nothing to skip; the discount-is-no-debt half stands.)* A walk the approach makes free (rules 1.64 item
     5008) is told to the items at 0 AP, so a first-move discount (Glass Runner's Runner) is kept for the fight's first
     paid move. A discount an item makes on a move (`move_cost`) is a discount, not a debt: the tiles paid for are the
     walk's own price, never fewer than 0 ("-2 paid-for tiles" is gone).
@@ -13978,3 +13979,98 @@ through the reducer before anything changed (`docs/design/handoffs/0.33-LANE-BUG
     when the choice is offered (the engine resolves a roll and all it sets off, a jam, an Answer, a Riposte, in one
     action; a reroll after seeing it needs a held roll the reducer does not have), what a reroll undoes (a natural 1's
     jam and Heat), and how a Survival run, which has no sessions, refills it. Listed for Leon.
+
+### Rules 1.90 (the ambush), 0.33: Walk in or Try an ambush; the approach is out (20 Nov 2026)
+
+Leon, 20 Nov 2026: *"every combat node have a frontal attack or try ambushing option, if you go frontal you get normal
+initiative roll, if you try ambush the squad roll some how, if you win you get a free turn, if you lost the enemy get a
+free turn. The approach phase is out entirely."* His reason: the approach (rules 1.64 item 5008) gave nothing to a class
+that can only walk in, such as the Bulwark, and the Surprise rule built on it (rules 1.82 item 7004, already switched
+off) was either free for the squad or unanswerable. Every number here is PROVISIONAL and in data
+(`data/survival.json ambush`, `data/rules.json combat.free_turn`, `combat.cards.ambush_won` / `ambush_lost`,
+`output.amounts.ambush_fumble`). Items 7800 to 7819 are rules 1.90's.
+
+7800. **The approach is out (supersedes rules 1.64 items 5008 and 5011, the approach's parts of items 5521, 5522 and
+      5523, rules 1.78 item 6603, and rules 1.82 item 7004).** No fight opens "not yet joined": every fight (Survival,
+      the Proving Ground, a story fight) starts joined, round 1, the normal initiative roll. Gone with it:
+      `Combat.approach`, the free unseen walk, the passes, contact by sight or by an action, the APPROACH banner and the
+      "Approach · unseen" strip, the alarm at contact (item 5521: a fight's opening already gives each side where the
+      other stands) and its CONTACT! event (item 6603), the approach's calm music (the field after a win keeps it),
+      `rules.json combat.approach`; and the Surprise rule (`surprise_round`, `surpriseSide`, the stats
+      `surprise_immune` and `surprise_ap`). History is kept above; those items read with this one.
+7801. **A fight node asks first.** Entering a Survival fight node (`survival.json ambush.kinds`: an ordinary fight, an
+      Elite, the gate, the vault's guard, the Boss) sets `run.state` to **engage**: no fight yet. Its place screen (the
+      middle column; the side panels stay) asks "How do you go in?": **Walk in** or **Try an ambush**, one choice for
+      the squad, the action `run/engage {how: 'walk' | 'ambush'}`. **Call made for Leon:** the host chooses (as the host
+      sends the squad on with Go now); the others see the choice, the odds and, once made, the roll.
+7802. **Walk in:** the fight starts joined with the normal initiative roll, exactly as a fight before the approach.
+      Nobody loses a turn.
+7803. **Try an ambush: one roll for the squad** (call made for Leon on "the squad roll some how"): d20 + the squad's
+      modifier against the node's TN. Each living character's own number is its **best** check modifier among the
+      skills of `ambush.skills` (**Ingenuity, Athletics, Senses**: stealth, moving quietly, reading the ground), by the
+      check rule (a gamma skill adds its full points; the skill's item mods); the squad's modifier is the **average**
+      of those numbers, **rounded down** (an Operative lifts the squad, a heavy lowers it; a solo character rolls its
+      own). TN by node (`ambush.tn`): an ordinary fight **Standard 12**, an Elite, the gate and the vault's guard
+      **Hard 16**, the Boss **Heroic 20** (the spec's four TNs). A natural 20 wins, a natural 1 loses. The engine rolls
+      it on the game's dice (`run/ambush.ts rollAmbush`, through `rolls.ts rollVs`); the log and the opening banner show
+      the die, each term, the TN and the sum. **Echo does not reroll it** (the roll is the squad's, not one character's
+      check, and the Echo reroll path is a character's check: left out on purpose).
+7804. **The chance in words and numbers** on the node's screen (`engageView`): the terms (the squad's average, Tremor,
+      a scout), the TN, and the chance (the 20 faces judged, `rolls.ts passFaces`), e.g. "d20 +2 Squad +2 Scout = d20 +4
+      vs TN 12 · 65% to win".
+7805. **Won: the squad's free turn.** Every hostile sits round 1 out (`Unit.waitRound` 2, `Unit.caught`; the log
+      "Ambushed: ... lose their first turn." and, as each turn passes, "is caught by the ambush"). Elites and Bosses are
+      caught like anyone else (the TN is their protection). **Lost** (a squad of two or more): the hostiles' free turn,
+      every character sits round 1 out. **Call made for Leon:** a free turn is a full turn (full AP) for the side that
+      has it; `rules.json combat.free_turn.ap` (null: full) softens it. The general piece: `combat.ts startCombat`
+      `extra.freeTurn` (the side that sits out), applied before the first turn begins.
+7806. **The free turn's exceptions** are stats an item answers: `ambush_immune` (not caught) and `ambush_ap` (caught,
+      it keeps its first turn with at most that many AP: `Unit.firstAp`, read by `beginTurn`).
+7807. **The opening banner** (Leon, 20 Nov 2026): a fight that follows an ambush roll opens with **SQUAD ADVANTAGE**
+      (won) or **ENEMY ADVANTAGE** (lost, a solo fumble included) in place of BATTLE START, the roll's sum and TN under
+      it (`rules.json combat.cards.ambush_won` / `ambush_lost`; the engine's `Combat.opening`; the same banner code as
+      BATTLE START). A walk in keeps BATTLE START.
+7808. **A solo fumble** (Leon, 20 Nov 2026: "eat some dmg"): when the squad at the roll is `ambush.fumble.squad_max`
+      (**1**) character or fewer, a lost roll gives **no free turn**: the fight starts as a walk in, and the character
+      takes **15% of its max HP** (`rules.json output.amounts.ambush_fumble`; the share is a call made for Leon) before
+      round 1, through the one damage path (`applyDamage`, the damage type `fumble`, which no listener changes: armour,
+      Guard, shields and items do not reduce it), stopping at `ambush.fumble.floor_hp` (**1**: it never Downs). The log
+      says it; the banner is ENEMY ADVANTAGE with the damage. Tremor's holder takes none.
+7809. **Tremor and Shoot First rebuilt on the ambush** (`adjudication: engine`): **Tremor** answers `ambush_roll`
+      (**+1** at I, **+2** at II: added to the squad's roll as its own term; the best in the squad counts, never the
+      sum; a call made for Leon) and `ambush_immune` (not caught when the roll is lost: it acts in the hostiles' free
+      turn; no fumble damage); II keeps its Guard at a fight's start. **Shoot First** answers `ambush_ap` (**3** AP at I,
+      **4** at II, the perk's numbers): caught by the hostiles' free turn, it still acts in it with that many AP. A solo
+      fumble gives no free turn, so Shoot First has nothing to do there (its text names the free turn only).
+7810. **What stays a fight rule:** dark maps, Douse, enemy notice and the vision tiers, held shots, Hide and the
+      Operative's Shadow (it no longer starts unseen for free: it Hides on its turn as in any fight, and a won ambush's
+      free turn is where it Hides and builds Shadow; First Shade, Stalk and the SHADOW tab's first-turn rule read the
+      fight as before). The field after a won fight (`Combat.field`) is not the approach and is unchanged.
+7811. **The node's screen** (`apps/web EngageScreen.tsx`, the middle column; `engageView`): the two choices, the roll's
+      terms, TN and chance, each member's number and skill, the scout's line and the line-up when a scout goes ahead;
+      a guest sees "The host chooses how the squad goes in." and the choices greyed.
+7812. **Scouting before the choice** (the lead's pick on Leon's remark that the Rigger's Eye lost its scouting job with
+      the approach; Leon, 20 Nov 2026: "give the full ingenuity guy that scouting tag too"). A squad with a scout sees
+      the **line-up** (each waiting hostile's name and tier, and the count: the encounter the node will compose, the
+      same pure function of the run's seed) before it chooses, and its ambush roll takes the scout's bonus as its own
+      term (**+2**). Scouts never stack: one scout line, the best bonus. Two holders, both data: (a) the stat
+      `ambush_scout`, which any held item may answer: the **Ingenuity door at 5** answers it (the step "Fade" now also
+      carries "Scout", `skills.json` ingenuity unlock 5, now an item; the character goes in person: "Vesper goes
+      ahead"); (b) a Figment form's `scouts` block (`figments.json`): the **Eye** carries it; a character who knows the
+      form and could picture it now (the Visualizer carried, the form's charge loaded; nothing spent) sends it ahead
+      ("Kade's Eye goes ahead"). Nothing changes in a fight (the Eye keeps its sight, dark sight and Stare). Before 1.90
+      no fight node showed its line-up to anyone before the fight. **Calls made for Leon:** the step's place (Ingenuity
+      5), the bonus (+2), and that no perk slot of a beta or gamma skill was used.
+7813. **The simulator** (`test/balance/survival-run.ts`): the bots walk in by default (`engage`; `SIM_ENGAGE=ambush`
+      always tries the ambush); `party-fit.ts` records each fight's opening (walk, won, lost, fumble). The measure is in
+      `docs/design/handoffs/0.33-LANE-AMBUSH.md`.
+7814. **New engine pieces** (approved by Leon on 20 Nov 2026 for this lane): the stats `ambush_immune`, `ambush_ap`,
+      `ambush_roll`, `ambush_scout` (the two `surprise_*` stats removed); `startCombat`'s `extra.freeTurn`; the run phase
+      `engage` and the action `run/engage`; `Combat.opening`; `Unit.caught` and `Unit.firstAp` (in place of the Surprise
+      rule's `surprised` and `surpriseAp`); the damage type `fumble` in `effects/damage.ts UNSOFTENED`; the module
+      `run/ambush.ts` (`AMBUSH`, `ambushOdds`, `rollAmbush`, `scoutOf`, `lineUp`, `engageView`, `fumbleDamage`).
+      Removed exports: `APPROACH`, `openApproach`, `contactCheck`, `SURPRISE`.
+7815. **Replays and goldens** moved only by the approach's removal are re-recorded on purpose (the hand-off names them).
+7816. **Old saves:** a fight saved not yet joined (`Combat.approach`) loads as a joined fight at round 1 (`game.ts
+      migrateLoaded`: the state dropped, the turn under way goes on); a character already at Ingenuity 5 or more holds
+      the Scout step on load (the step is an item of the skill's points, read on every load).

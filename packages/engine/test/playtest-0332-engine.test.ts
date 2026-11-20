@@ -10,9 +10,8 @@ import { HIDDEN_ATTACK } from '../src/tactics';
 import { fightTally, settleTape } from '../src/run/tally';
 import { physFight, rig } from './helpers/physfight';
 import { fightWith, storyWith } from './helpers/perkfight';
-import { survivalRoom, startRun, ownerOf, upTurn } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, upTurn, walkIn } from './helpers/survival';
 import survivalJ from '../../../data/survival.json';
-import rulesJ from '../../../data/rules.json';
 
 beforeEach(() => rig(null));
 
@@ -84,23 +83,22 @@ describe('items 7702, 7703: Challenge and Slam say what they did', () => {
   });
 });
 
-describe('item 4 (by spec item 5011; done on this branch): Brace before contact', () => {
-  it('Brace in the approach joins the fight: made when the order gives the character the first turn, else said and made on its turn (surprise is OFF in 0.33)', () => {
+describe('item 4 (by spec item 5011; the approach removed by rules 1.90 item 7800): Brace at a fight node', () => {
+  it("a fight node walked into opens joined at round 1 (no approach); Brace on the character's own turn is made", () => {
     let tested = 0;
     for (let s = 1; s <= 30 && tested < 2; s++) {
       const seed = 'PHC-' + String(s).padStart(4, '0');
       let g = startRun(survivalRoom(seed, [{ build: 'tank', level: 1 }] as any, { test: true }), seed);
       const n = reachable(g.run!).find((x) => x.kind === 'fight'); if (!n) continue;
       g = apply(g, { type: 'run/move', node: n.id } as any, ownerOf(0));
-      if (!g.combat?.approach) continue;
-      const u = g.combat.units.find((x) => x.side === 'pc')!;
+      expect(g.run!.state).toBe('engage'); expect(g.combat).toBeFalsy();
+      g = walkIn(g);
+      expect((g.combat as any).approach).toBeUndefined(); expect(g.combat!.round).toBe(1);
+      const u = g.combat!.units.find((x) => x.side === 'pc')!;
+      if (g.combat!.order[g.combat!.turn] !== u.id) continue;
       g = apply(g, { type: 'combat/brace', unitId: u.id } as any, ownerOf(0));
       const u2 = g.combat!.units.find((x) => x.id === u.id)!;
-      expect(g.combat!.approach).toBeFalsy();
-      // rules 1.64 item 5011: Brace is contact; with the surprise round off (rules.json surprise_round.on false) it is
-      // made at once only when the initiative order gives this unit the first turn, else the log says so (acts_log)
-      if (u2.braced) expect(u2.res?.guard).toBeGreaterThan(0);
-      else expect(g.combat!.log.some((l: string) => l.includes((rulesJ as any).combat.approach.acts_log))).toBe(true);
+      expect(u2.braced).toBe(true); expect(u2.res?.guard).toBeGreaterThan(0);
       tested++;
     }
     expect(tested).toBeGreaterThan(0);
@@ -123,12 +121,10 @@ describe('item 7704: Glass Runner and the paid-for tiles', () => {
     f.cb.objects = []; f.put(f.pc, 'B5'); f.turn(f.pc); f.unit(f.pc.id).ap = 6; f.unit(f.pc.id).bank = 0;
     return f;
   };
-  it('a walk the approach makes free keeps the discount for the first paid move', () => {
-    const f = runner(); (f.cb as any).approach = { passes: 0 };
-    let from = f.cb.log.length;
-    f.act({ type: 'combat/move', unitId: f.pc.id, to: f.tile('C5') } as any);
-    expect(logSince(f, from)).not.toMatch(/Glass Runner/);
-    delete (f.cb as any).approach; from = f.cb.log.length;
+  // (rules 1.90 item 7800: the approach and its free walk are gone, so item 7704's first half has nothing left to test;
+  // the fight's first paid move takes the discount, and the discount is no debt)
+  it("the fight's first paid move takes the discount", () => {
+    const f = runner(); const from = f.cb.log.length;
     f.act({ type: 'combat/move', unitId: f.pc.id, to: f.tile('F5') } as any);
     expect(logSince(f, from)).toMatch(/Glass Runner/);
   });
@@ -170,7 +166,7 @@ describe('item 9 (by rule): a Lifted magazine stays on the field and is picked u
     const seed = 'PHC-0003';
     let g = startRun(survivalRoom(seed, [{ build: 'plain_gun', level: 1 }] as any, { test: true }), seed);
     const n = reachable(g.run!).find((x) => x.kind === 'fight')!;
-    g = apply(g, { type: 'run/move', node: n.id } as any, ownerOf(0));
+    g = walkIn(apply(g, { type: 'run/move', node: n.id } as any, ownerOf(0)));
     const cb = g.combat!, u = cb.units.find((x) => x.side === 'pc')!, tile = u.pos;
     withGame(g, () => dropToPile(cb, tile, [magsOf('service_pistol', 1)], 'lift'));
     g = upTurn(g, u.id);

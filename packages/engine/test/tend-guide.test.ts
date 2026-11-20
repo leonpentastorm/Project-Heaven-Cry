@@ -7,6 +7,7 @@
 // Through the reducer, in a Survival fight at level 1 with the Empath archetype on the camp's Recommended loadout.
 import { describe, it, expect } from 'vitest';
 import { PERK, apply, newGame, ARCHETYPES, beginTurn, withGame, reachable, actionsFor, previewDescriptor, sendDescriptor } from '../src';
+import { walkIn } from './helpers/survival';
 import tendingJ from '../../../data/tending.json';
 
 const GUIDE: any = (PERK as any).pull_together.tiers.II.effects[1]; // rules 1.75 item 6213: Guide is Pull Together II's
@@ -21,12 +22,12 @@ function survivalFight() {
   const med: any = Object.values(g.characters).find((c: any) => c.name === 'Medic');
   med.skills.camaraderie = Math.max(med.skills.camaraderie || 0, 5); med.perks = [...(med.perks || []), { id: 'pull_together', tier: 'II' }]; // rules 1.75: Guide is a Camaraderie perk's
   const node = reachable(g.run).find((n: any) => n.kind === 'fight') || reachable(g.run)[0];
-  for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by);
+  for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by); g = walkIn(g);
   const cb = g.combat, mu = cb.units.find((u: any) => u.charId === med.id), al = cb.units.find((u: any) => u.side === 'pc' && u.id !== mu.id);
   // a clear row to walk on: every unit but these two sent far off, and nothing standing on the row
   const [x, y] = mu.pos.split(',').map(Number);
   al.pos = x + ',' + (y + 1);
-  cb.turn = cb.order.indexOf(mu.id); delete cb.window; delete cb.approach; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5011: the fight set up by hand as joined
+  cb.turn = cb.order.indexOf(mu.id); delete cb.window; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5011: the fight set up by hand as joined
   return { g, mu, al, x, y };
 }
 const U = (g: any, id: string) => g.combat.units.find((u: any) => u.id === id);

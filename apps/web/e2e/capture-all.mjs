@@ -136,20 +136,12 @@ const route1 = await p.evaluate(() => { const r = window.__phc.getState().game.r
 const fightNo = { n: 0 };
 async function fightScreens(tag, size) {
   let gotFight = false;
-  // the approach banner, BATTLE START, the first turn's card, the action tabs, a token card, the Backpack
+  // the engage screen (rules 1.90: a fight node asks first), BATTLE START, the first turn's card, the action tabs, a token card, the Backpack
   await p.setViewportSize({ width: size[0], height: size[1] }); await settle(p, 300);
   await p.locator('[data-phc-node="' + tag + '"]').click();
+  if (await p.waitForSelector('[data-phc-engage-screen]', { timeout: 30000 }).then(() => true, () => false)) { await settle(p, 400); await snap(p, 'fight-engage-screen'); await p.locator('[data-phc-engage="walk"]').click(); }
+  else skipped.push('the engage screen not seen');
   await p.waitForFunction(() => window.__phc?.getState().screen === 'combat', null, { timeout: 90000 });
-  if ((await G(p)).combat?.approach) {
-    if (await waitCard('approach', 15000)) { await settle(p, 0); await new Promise((r) => setTimeout(r, 250)); await quick('fight-APPROACH-banner'); } else skipped.push('APPROACH banner not seen');
-    await myTurn();
-    await snap(p, 'fight-approach-first-turn');
-    for (let i = 0; i < 14 && (await G(p)).combat?.approach; i++) {
-      const cb = (await G(p)).combat; await act({ type: 'combat/end-turn', unitId: cb.order[cb.turn] });
-      for (let k = 0; k < 8 && !gotFight; k++) { await pause(p, 90); if (await p.locator('[data-phc-card="fight"]').count()) { await pause(p, 120); await quick('fight-BATTLE-START-banner'); gotFight = true; } }
-      await settle(p, 250);
-    }
-  } else skipped.push('this fight had no approach (APPROACH banner)');
   if (!gotFight) { if (await waitCard('fight', 30000)) { await pause(p, 200); if (await p.locator('[data-phc-card="fight"]').count()) { await quick('fight-BATTLE-START-banner'); gotFight = true; } } if (!gotFight) skipped.push('BATTLE START banner: not on screen when looked for'); }
   await myTurn();
   await settle(p, 600);
@@ -234,6 +226,7 @@ for (let i = 0; i < 90; i++) {
     if (!nextId) break;
     if (vg) vg0 = vg;
     await p.locator('[data-phc-node="' + nextId + '"]').click({ timeout: 20000 }).catch(async () => { await act({ type: 'run/move', node: nextId }); });
+    if ((await state()) === 'engage') await act({ type: 'run/engage', how: 'walk' }); // rules 1.90: a fight node asks first
     await p.waitForFunction((id) => window.__phc.getState().game.run.at === id, nextId, { timeout: 20000 }).catch(() => {});
     const kind = (await run()).nodes.find((n) => n.id === nextId)?.kind;
     const st = (await run()).state;
@@ -247,6 +240,7 @@ for (let i = 0; i < 90; i++) {
     } else if (['vault_guard', 'elite', 'boss'].includes(kind)) seenKind.add(kind);
     continue;
   }
+  if (r.state === 'engage') { await act({ type: 'run/engage', how: 'walk' }); continue; } // rules 1.90
   if (r.state === 'fight') { const e = await act({ type: 'run/skip' }); if (e) { skipped.push('run/skip: ' + e); break; } continue; }
   if (r.state === 'field') { await act({ type: 'run/leave' }); continue; }
   if (r.state === 'shop') { await act({ type: 'run/leave' }); continue; }

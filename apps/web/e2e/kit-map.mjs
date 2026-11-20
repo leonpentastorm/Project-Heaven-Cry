@@ -51,6 +51,7 @@ for (let step = 0; step < 40 && fights < 3; step++) {
     const fight = lit.find((id) => ['fight', 'elite'].includes(r.nodes.find((n) => n.id === id)?.kind)) || lit[0];
     await p.locator('[data-phc-node="' + fight + '"]').click();
     await settle(p, 400);
+    if ((await G()).run.state === 'engage') { await p.locator('[data-phc-engage="walk"]').click({ timeout: 30000 }); await p.waitForFunction(() => window.__phc.getState().game.run.state !== 'engage', null, { timeout: 30000 }); } // rules 1.90: a fight node asks first; walk in
     if ((await G()).run.state !== 'fight') { // a safe node: leave it the way the run's suite does
       await act({ type: 'run/leave' }).catch(() => {});
       // rules 1.48's lanes can lead the walk into a rest or another place, which opens full screen (rules 1.46): walk

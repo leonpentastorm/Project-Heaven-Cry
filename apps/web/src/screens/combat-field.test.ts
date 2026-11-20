@@ -34,6 +34,7 @@ function field() {
   doAct({ type: 'char/add', sheet: sheetFrom('mender', 'Medic') });
   doAct({ type: 'run/start', seed: 'PHC-0003' }); doAct({ type: 'run/ready', close: true });
   doAct({ type: 'run/move', node: reachable((G as any).run).find((n: any) => n.kind === 'fight')!.id });
+  doAct({ type: 'run/engage', how: 'walk' }); // rules 1.90: the host walks in
   doAct({ type: 'run/skip' });
   expect((G as any).run.state).toBe('field'); expect(G.combat!.field).toMatchObject({ round: 1, of: 3 }); expect(G.phase).toBe('combat');
 }

@@ -6,7 +6,7 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, isGunId, quiversOf, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer, carriedGuns } from '../character';
-import { CORE_CHARGE, coreChargeOf, CORE_ITEM, VIS_CHARGE } from '../magic';
+import { CORE_CHARGE, coreChargeOf, CORE_ITEM, VIS_CHARGE, visChargeNow } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
 import { rollTable, defaultTable, type Drops, type DropEntry } from '../loot';
@@ -122,7 +122,7 @@ export function supplyMp(c: Character, count: number | PackN): number {
 }
 /** Rules 1.51 (spec rule 52 b): the Sigil and Figment charge a character holds: its spare cores x a core's charge, and
  * the loaded charge of each Evoker and Visualizer it carries. (Shown on the run's screens; the supply pack counts cores.) */
-export const chargeHeld = (c: Character): number => coresCarried(c) * coreChargeOf({ c }) + evoChargeNow(c) + (carriesVisualizer(c) ? Math.max(0, Math.min(VIS_CHARGE, c.visCharge ?? VIS_CHARGE)) : 0);
+export const chargeHeld = (c: Character): number => coresCarried(c) * coreChargeOf({ c }) + evoChargeNow(c) + (carriesVisualizer(c) ? visChargeNow(c) : 0);
 /** Rules 1.51 (spec rule 52 b; the review): the spare cores burnt in a fight, from two counts of the cores carried
  * (coresCarried) as it began and as it ended: never below 0, never more than were held as it began. The core loaded in a
  * focus is not counted until it is swapped out (a Rest fills it). */

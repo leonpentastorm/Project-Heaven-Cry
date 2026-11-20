@@ -5,11 +5,10 @@
 //   the Rigger (Visualization 1, its only door): a level-up is due before the run (two Figment forms to choose); two
 //   door/picks at figment_forms; in the first fight Picture one of them: a Figment stands;
 //   the Mender (the Empath archetype, Empathy 4, the Attuner): Bond on its ally (the Rigger): the Bond holds.
-// And the bug the browser found: the first fight opens in the approach (no foe sees the squad), and an action that joins
-// it, previewed on a player's view of the fight (viewFor: an unseen foe's place in the order has no unit), threw in
-// joinFight (active(cb) undefined), so the screen greyed Picture and Bond as "Not now." for every new character. The
-// preview on the view is now the reducer's verdict: ok.
+// And the bug the browser found: Picture and Bond, previewed on a player's view of the fight (viewFor), were greyed as
+// "Not now." for every new character. The preview on the view is the reducer's verdict: ok.
 import { describe, it, expect } from 'vitest';
+import { walkIn } from './helpers/survival';
 import { apply, newGame, ARCHETYPES, levelUpDue, allPendingDoorPicks, previewAction, viewFor, FIG_DOOR } from '../src';
 
 const RIGGER = { name: 'Wren', portrait: '', origin: 'Thousand-Planet frontier', traits: [], identity: {},
@@ -30,7 +29,7 @@ function firstFight(g: any) {
   if (g.run.state === 'loadout') g = apply(g, { type: 'run/ready', close: true }, 'host');
   const node = g.run.nodes.find((n: any) => n.depth === 1 && n.kind === 'fight');
   g = apply(g, { type: 'run/move', node: node.id }, 'host'); if (g.phase !== 'combat') g = apply(g, { type: 'run/move', node: node.id }, 'p2');
-  return g;
+  return walkIn(g); // rules 1.90: the host walks in
 }
 /** End turns (each by its owner) until this unit is up. */
 function upFor(g: any, unitId: string) {
@@ -41,11 +40,9 @@ function upFor(g: any, unitId: string) {
   expect(g.combat.order[g.combat.turn]).toBe(unitId);
   return g;
 }
-/** Rules 1.64 item 5011: the first action of the approach joins the fight and is made only if it is then that unit's turn
- * (else the log says so and it is made on its turn): act, and if it was not made, play on to its turn and act again. */
+/** Act; if it was not made, play on to its turn and act again. */
 function actJoining(g: any, a: any, by: string, done: (g: any) => boolean) {
   g = apply(g, a, by); if (done(g)) return g;
-  expect(g.combat.approach).toBeFalsy();
   g = upFor(g, a.unitId); return apply(g, a, by);
 }
 const freeNear = (cb: any, k: string) => { const [x0, y0] = k.split(',').map(Number), taken = new Set(cb.units.filter((u: any) => !u.dead).map((u: any) => u.pos)), bad = new Set([...(cb.map.solid || []), ...(cb.map.cover || []), ...(cb.map.full || []), ...(cb.objects || []).map((o: any) => o.pos)]);
@@ -61,7 +58,6 @@ describe('0.32 B8: a new Rigger and a new Mender open their doors in their first
     expect(g.characters[rid].doorPicks[FIG_DOOR]).toHaveLength(2);
     g = firstFight(g);
     expect(g.characters[rid].offHand?.id).toBe('visualizer');
-    expect(g.combat.approach).toBeTruthy(); // the fight opens unseen: Picture joins it
     const ru = g.combat.units.find((u: any) => u.charId === rid); g = upFor(g, ru.id);
     const a = { type: 'combat/perk', unitId: ru.id, id: 'verb:picture', choice: g.characters[rid].doorPicks[FIG_DOOR][0], tile: freeNear(g.combat, ru.pos) };
     const pv = previewAction(viewFor(g, 'host'), a as any, 'host');

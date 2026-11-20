@@ -12,7 +12,8 @@
 //      FIGMENTS tab says the forms still to choose and where, and Picture's empty pick says the same, never a bare
 //      "Nothing to pick.".
 // The characters are added by char/add, the action creation's Lock in sends, with sheets as creation fills them.
-import { readFileSync } from 'node:fs';
+import { readFileSync, mkdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { chromium, player, click, hostAs, settle, until, pickAction, campStart, OUT, BASE } from './lib.mjs';
 const DATA = (f) => JSON.parse(readFileSync(new URL('../../../data/' + f, import.meta.url), 'utf8'));
 const ARCH = DATA('archetypes.json'), ARCHS = Array.isArray(ARCH) ? ARCH : ARCH.items;
@@ -26,6 +27,8 @@ const actH = mkAct(h), actG = mkAct(gu);
 const G = () => h.evaluate(() => window.__phc.getState().game);
 const ref = (k) => { const [x, y] = k.split(',').map(Number); return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[x] + (y + 1); };
 const tok = (pg, k) => pg.locator('button.phc-tok[aria-label^="' + ref(k) + ' ·"]').first();
+/** A button that comes live within 5 s (a check made the instant after a click read the dock mid-update). */
+const liveSoon = async (b) => { for (let i = 0; i < 25; i++) { if (await b.isEnabled().catch(() => false)) return true; await new Promise((r) => setTimeout(r, 200)); } return false; };
 const dismissCut = async (pg) => { for (let i = 0; i < 4; i++) { if (!(await pg.locator('[data-phc-cutin]').count())) return; await pg.keyboard.press('Escape'); await settle(pg, 300); } };
 
 // the sheets, as creation fills them (10 Skill points, 10 Attribute points)
@@ -86,6 +89,12 @@ ok('the camp done: the path map (' + g.run.state + '); the Rigger holds the Visu
 // ---------- C. the first fight ----------
 const node = g.run.nodes.find((n) => n.depth === 1 && n.kind === 'fight') || g.run.nodes.find((n) => n.depth === 1);
 await actH({ type: 'run/move', node: node.id }); await actG({ type: 'run/move', node: node.id });
+// rules 1.90 items 7800, 7801: a fight node asks first; the host walks the squad in (a scout's line shown when one goes ahead, item 7812)
+await h.waitForSelector('[data-phc-engage-screen]', { timeout: 60000 }).catch(() => {});
+ok('the fight node asks first: the engage screen (run ' + (await G()).run.state + ')', (await G()).run.state === 'engage' && await h.locator('[data-phc-engage="walk"]').count() === 1);
+if (process.env.PHC_SHOTS && await h.locator('[data-phc-scout]').count()) { const dir = fileURLToPath(new URL('../../../.check/ambush-033', import.meta.url)); mkdirSync(dir, { recursive: true }); await h.mouse.move(2, 2); await settle(h, 400); await h.screenshot({ path: dir + '/engage-scout.png' }); }
+console.log('note the scout line: ' + ((await h.locator('[data-phc-scout]').textContent().catch(() => '')) || 'none'));
+await h.locator('[data-phc-engage="walk"]').click();
 await h.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
 await gu.waitForFunction(() => window.__phc.getState().screen === 'combat', null, { timeout: 60000 }).catch(() => {});
 ok('the first fight begins', (await G()).phase === 'combat');
@@ -108,9 +117,6 @@ let ru = await unitOf(rigId);
 const freeNear = async (k) => h.evaluate((k) => { const cb = window.__phc.getState().game.combat, [x0, y0] = k.split(',').map(Number);
   const taken = new Set(cb.units.filter((u) => !u.dead).map((u) => u.pos)), bad = new Set([...(cb.map.solid || []), ...(cb.map.cover || []), ...(cb.map.full || []), ...(cb.objects || []).map((o) => o.pos)]);
   for (let r = 1; r <= 3; r++) for (let dx = -r; dx <= r; dx++) for (let dy = -r; dy <= r; dy++) { const kk = (x0 + dx) + ',' + (y0 + dy); if (x0 + dx < 0 || y0 + dy < 0 || x0 + dx >= cb.map.w || y0 + dy >= cb.map.h || taken.has(kk) || bad.has(kk)) continue; return kk; } return null; }, k);
-// rules 1.64 item 5011: the fight opens in the approach (no foe sees the squad); the first action that is not the approach's
-// own joins it and is made only if it is then that unit's turn ("…acts on its turn"): then it is made again on its turn
-const approach0 = !!(await G()).combat.approach;
 const figOf = async () => (await G()).combat.units.find((u) => u.owned?.kind === 'figment' && !u.dead) || null;
 async function pictureByHand(first) {
   await dismissCut(h);
@@ -124,14 +130,13 @@ async function pictureByHand(first) {
   if ((await chips.first().getAttribute('aria-pressed')) !== 'true') await chips.first().click(); await settle(h, 200); // (a chip stays picked from the try before)
   const at = await freeNear((await unitOf(rigId)).pos);
   await tok(h, at).click({ force: true }); await settle(h, 300);
-  const conf = h.getByRole('button', { name: 'Confirm', exact: true });
-  const live = await conf.isEnabled().catch(() => false);
+  const conf = h.locator('button[aria-keyshortcuts="Space"]:not([hidden])').first();
+  const live = await liveSoon(conf); // (the dock may still be settling from the turn's banner: up to 5 s)
   ok('Picture: a form chosen and a tile clicked, Confirm is live (the dock: ' + ((await h.locator('.phc-cb-dock').first().innerText().catch(() => '')) || '').replace(/\s+/g, ' ').slice(0, 120) + ')', live);
   await h.screenshot({ path: OUT + 'doors-new-rigger-picture.png' });
   if (live) await conf.click(); await settle(h, 800);
 }
 await pictureByHand(true);
-if (!(await figOf()) && approach0 && !(await G()).combat.approach) { ok('the first action joined the fight (the log: "' + (await G()).combat.log.slice(-1)[0] + '"); Picture again on the Rigger\'s turn', await upFor(rigId)); await pictureByHand(false); }
 g = await G();
 const fig = await figOf();
 ok('Picture: a Figment stands (' + (fig ? fig.name + ' at ' + ref(fig.pos) : 'none; toast ' + JSON.stringify(await h.evaluate(() => window.__phc.getState().toast?.text || '')) + ' log ' + JSON.stringify(g.combat.log.slice(-2))) + ')', !!fig);
@@ -147,15 +152,13 @@ async function bondByHand() {
   await gu.locator('#phc-tab-tend').click({ timeout: 30000 }); await settle(gu, 300);
   await pickAction(gu, /^\d*\s*Bond/); await settle(gu, 300);
   await tok(gu, (await unitOf(rigId)).pos).click({ force: true }); await settle(gu, 300);
-  const conf = gu.getByRole('button', { name: 'Confirm', exact: true });
-  const live = await conf.isEnabled().catch(() => false);
+  const conf = gu.locator('button[aria-keyshortcuts="Space"]:not([hidden])').first();
+  const live = await liveSoon(conf); // (the dock may still be settling from the turn's banner: up to 5 s)
   ok('Bond: the Rigger clicked, Confirm is live (the dock: ' + ((await gu.locator('.phc-cb-dock').first().innerText().catch(() => '')) || '').replace(/\s+/g, ' ').slice(0, 120) + ')', live);
   await gu.screenshot({ path: OUT + 'doors-new-mender-bond.png' });
   if (live) await conf.click(); await settle(gu, 800);
 }
-const joinedBefore = !(await G()).combat.approach;
 await bondByHand();
-if (!(await bondOf()) && !joinedBefore && !(await G()).combat.approach) { ok('Bond joined the fight; Bond again on the Mender\'s turn', await upFor(menId)); await bondByHand(); }
 g = await G();
 ok('Bond on the Rigger holds (' + ((await bondOf()) ? 'tied' : 'none; toast ' + JSON.stringify(await gu.evaluate(() => window.__phc.getState().toast?.text || '')) + ' log ' + JSON.stringify(g.combat.log.slice(-2))) + ')', !!(await bondOf()));
 await gu.screenshot({ path: OUT + 'doors-new-mender-bonded.png' });

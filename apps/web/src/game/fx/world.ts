@@ -34,7 +34,7 @@ export function worldWord(e: Partial<FxEvent> & { k: string }): string {
     case 'hazard_gone': return x.why === 'disarmed' ? 'MADE SAFE' : 'CLEARED';
     case 'safe_path': return 'SAFE PATH';
     case 'trigger': return x.then === 'fight' ? 'AMBUSH!' : x.then === 'spawn' ? 'SOMEONE COMES' : 'REVEALED';
-    case 'alarm': return x.joined ? 'CONTACT!' : 'ALARM!'; // rules 1.78 item 6603: the fight joined
+    case 'alarm': return 'ALARM!';
     case 'approach': return x.ok ? 'SUCCESS' : 'FAILED';
     case 'talk': return x.what === 'objective' ? 'ASKED ABOUT THE OBJECTIVE' : 'ASKED WHAT THEY WANT';
     case 'marker': return 'MARKED';
@@ -111,7 +111,7 @@ function say(text: string) { import('../store').then((m) => m.toast(text, true),
 export function worldLine(e: Partial<FxEvent> & { k: string }): string {
   const x: any = e, n = (x.spawned || x.revealed || []).length;
   if (e.k === 'trigger') return (x.then === 'fight' ? '⚠ Ambush! ' : x.then === 'spawn' ? 'Someone comes. ' : 'Something is revealed. ') + (n ? n + (n === 1 ? ' appears' : ' appear') + (x.then === 'fight' ? ': the fight starts.' : '.') : '');
-  if (e.k === 'alarm') return x.joined ? '' : '⚠ The alarm is up' + (n ? ': ' + n + ' hidden ' + (n === 1 ? 'hostile wakes.' : 'hostiles wake.') : '.'); // a fight joined: BATTLE START says it (turnIntro.tsx)
+  if (e.k === 'alarm') return '⚠ The alarm is up' + (n ? ': ' + n + ' hidden ' + (n === 1 ? 'hostile wakes.' : 'hostiles wake.') : '.');
   return '';
 }
 export function worldHandlers(K: WorldKit): Record<string, (e: FxEvent) => void> {

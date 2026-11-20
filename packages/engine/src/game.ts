@@ -14,9 +14,9 @@ import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
 import { setGearService, isPressed, useTechnique, TECHNIQUE, TECHNIQUES, PHYS_RULES, ensurePhys, physOf, given, readyError, takePick, addDrill, startingTechniquesError, weaponSystem, loadQuiverWith, addPressureTo, lowerPressureOf, pressureOf, ensureMomentum, type TechArgs, type TechSystem } from './physical';
-import { objectAtLevel, openApproach, contactCheck, APPROACH, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
+import { objectAtLevel, say, sayAt, sayOf, levelFoeMagic, stampFxHp, trimFx, unitSees, sideSees, pullFree, dropNailed, dropStuck, effectiveArmour, setEffectiveArmour, reloadHands, resourcesFor, type Combat, noteSighted, noteSeenAt, type MapDef, type AttackMode, type FxEvent, FX_CAP, emitFx, sightFx, sightQuietly, useWeaponSkill, fieldRepair, pairedAttack, fireBurst, fireAuto, shove, toggleProne, brace, setOverwatch, MAPS, keyOf, refOf, standable, walkable, defaultObjects, spotTraps, dist, toggleDoor, active, analyze, acted, pickUp, loadMagazine, shootCover, movePaths, routeTo, checkOver, clearJam, combatXp, endTurn, enemyTurn, moveUnit, previewAttack, reload, resolveAttack, startCombat, useStim, paths, apForTiles, unitFromCharacter, unitFromEnemy, beginTurn, dropToPile, objectsOf, lineOfSight, litAt, isMelee, attackApCost, effectiveRange, layoutMap } from './combat';
 import { type Rng, seedFrom } from './rng';
-import { rollD20, rollVs, judge } from './rolls';
+import { rollD20, rollVs, judge, rollText } from './rolls';
 import { CALL, useCall, callView, briefUsed, type CallArgs } from './calls';
 import { type Campaign, builtInCampaign, validateCampaign, zoneToMap, expandCampaign } from './campaign';
 import { nearestFree } from './maplayout';
@@ -27,7 +27,6 @@ import { type Memory, type MemOp, type MemEdit, editMemory, memoryOf, applyMemOp
 import { type MapObject, type Approach, type CacheItem, OBJ, makeObject, kindOf, blocksMove, isTrap, mergeApproaches, ensureMark, MARK } from './objects';
 import type { Hazard } from './hazards';
 import { type Where, setWhere } from './missions';
-import { fxTaps } from './fxtap';
 import { type Trigger, type WorldEvent, worldAfter, tryApproach, approachResult, talkAsk, carry as carryNpc, putDown, search as searchCache, examineTriggers, enterTriggers, cleanApproaches, cleanItems, npcTalkFields, avatarOf,
   applyHazardOp, applyTriggerOp, eventsSeen, walkStory, zoneHazards, setZoneHazards, landDropped, worldView, hazardEvents, applyGroundOp, pickupWorld, pileFog, worldEvent } from './world';
 import { isCache, isPile, packAdd, grantGoods, lootToPack, LOOT_QTY_MAX, itemLabel, magItem, dropOnTile, PILE, COUNTED, intoCounts } from './containers';
@@ -64,6 +63,7 @@ import { type PlayMode, type RunState, type RunNode, type RunOffer, newRun, runS
 import { MAP_DATA } from './run/map';
 import { fightTally, settleTape } from './run/tally';
 import { composeEncounter, SETTING } from './run/encounter';
+import { AMBUSH, asksEngage, rollAmbush, fumbles, fumbleDamage, fillAmbush } from './run/ambush';
 import { type PayKind, nodeXp, nodeCredits, packCount, ammoPack, weaponOffer, pickedItem, magazineWorth, NODE_TEXT, creditsFor, ammoMult, vaultGrade, supplyMp, coresBurnt, runFoeDrops } from './run/rewards';
 import { boonOffer, boonProblem, nextTiles, tileProblem, enterStage, stageLog, renownOf, boonsOf } from './run/stage';
 import { relicRow, worthOf, BOON_CAP } from './run/power';
@@ -340,7 +340,7 @@ export type Action =
   | ({ type: 'run/loadout' } & LoadoutAction) | { type: 'run/ready'; close?: boolean; undo?: boolean }
   // rules 1.41 (Survival step 3): mark (or, solo, take) the next node; the host goes at once; a weapon pick or its
   // credits; tests only, win the fight under way
-  | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/pick'; charId: string; choice: number | 'materials' | 'credits' } | { type: 'run/skip' }
+  | { type: 'run/move'; node: string } | { type: 'run/go' } | { type: 'run/engage'; how: 'walk' | 'ambush' } | { type: 'run/pick'; charId: string; choice: number | 'materials' | 'credits' } | { type: 'run/skip' }
   | { type: 'run/boon'; charId: string; choice: number } | { type: 'run/tile'; tile: string } // rules 1.44 (run/stage.ts)
   | ProgressAction // rules 1.43 (run/progress.ts): run/upgrade, run/repair (rules 1.50), run/forge, run/fit, run/fit_mod and run/unfit_mod (rules 1.55), run/train, run/shrine, run/trade, run/take
   /** Rules 1.42 (run/shop.ts): buy a counter line or a rolled piece (`key`), sell a pack entry, restock a class resource, leave (the host may close). */
@@ -516,6 +516,10 @@ function migrateFloor(g: GameState) {
 /** A save as it comes off the disk or the wire, before any screen draws it: renamed and removed perks and traits and the Figment forks are
  * settled on every sheet (the other migrations wait for the first action, as before). */
 export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
+  // rules 1.90 item 7816: a fight saved not yet joined (the retired approach, rules 1.64 item 5008) is a joined fight at
+  // round 1: the state is dropped, the round set to 1, and the turn under way goes on (its AP as it was). Its retired
+  // stand-ins on units (the old Surprise rule's fields, never set live: the switch was off) go too.
+  try { const cb: any = (g as any)?.combat; if (cb && 'approach' in cb) { delete cb.approach; cb.round = 1; for (const u of cb.units || []) { delete u.surprised; delete u.surpriseAp; } } } catch { /* a fight this old is handled by apply */ }
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterItems(c as any); } catch { /* a save this old is handled by apply */ }
   // rules 1.56 (Figments 2.0; 0.29 wave-2 review MF3): a sheet from before the forks keeps the old ladder's forms here,
   // at the load door, so the first view (the Figments tab, the level-up card, Picture) is right before any action
@@ -1685,8 +1689,6 @@ function startStoryFight(g: GameState, combat: NonNullable<NarratorTurn['combat'
 }
 
 // ---------- combat actions ----------
-/** Rules 1.64 item 5011: true while an action made before contact is tried on a copy (the try itself joins nothing). */
-let PROBING = false;
 function combatAction(g: GameState, a: Action, by: string) {
   const cb = g.combat; if (!cb || g.phase !== 'combat') fail('No fight is on.');
   if (cb!.over) fail('The fight is over.');
@@ -1714,16 +1716,6 @@ function combatAction(g: GameState, a: Action, by: string) {
     // a free technique is the plain action it stands for (rules 1.12): Shot is 'shot', Aimed Shot 'aimed', Cut 'melee'
     const id = a.type === 'combat/attack' ? a.mode || 'shot' : a.type === 'combat/move' ? a.how || 'move' : a.type === 'combat/technique' ? ({ shot: 'shot', aimed_shot: 'aimed', cut: 'melee', overwatch: 'overwatch' } as Record<string, string>)[(a as any).id] || 'technique' : a.type.slice('combat/'.length);
     if (!u.allowedActions.includes(id)) fail(u.name + ' can only ' + u.allowedActions.map((x) => ACT_NAME[x] || x).join(', ') + ' and end its turn.');
-  }
-  // rules 1.64 item 5011: before contact, an action that is not the approach's own (a free walk, End turn) is contact:
-  // the fight is joined first and the action is paid from this unit's round-1 turn; not its turn now, it is not made.
-  // An action the reducer would refuse now is refused as before, and joins nothing: it is first tried on a copy.
-  if (!PROBING && cb!.approach && !(APPROACH.quiet.includes(a.type) && (a.type !== 'combat/move' || APPROACH.free.includes(a.how || 'move')))) {
-    // (the try's effects are its copy's alone: the stream's taps are held off while it runs, so no watcher counts them)
-    const taps = fxTaps.splice(0); PROBING = true;
-    try { apply(g, a, by); } catch (e) { if (e instanceof RuleError) fail(e.message); throw e; } finally { PROBING = false; fxTaps.push(...taps); }
-    contactCheck(cb!, g.rng, { acting: true });
-    if (active(cb!) !== u) { say(cb!, u.name + ' ' + APPROACH.acts_log); runEnemies(g); return; }
   }
   const who = u.charId ? c : null; // a companion or puppet fights with its own numbers
   let err: string | null = null;
@@ -2204,9 +2196,7 @@ const fieldDone = (cb: Combat): boolean => !!(cb.field && typeof cb.field === 'o
 function runEnemies(g: GameState) {
   const cb = g.combat!;
   for (let guard = 0; guard < 40 && !checkOver(cb) && !fieldDone(cb); guard++) { // rules 1.62 item 4906: a field's last round ends it
-    contactCheck(cb, g.rng); // rules 1.64 item 5008: after every action and every foe's turn, contact joins the fight
     const u = active(cb)!;
-    if (cb.approach && u.side === 'foe' && !u.hidden && !u.charId) { endTurn(cb, g.rng); continue; } // before contact no foe acts but a Hidden one
     // A player's unit Downed, killed or out of the fight on its own turn (a reaction, a trap, a barrel, a Mana Short), or
     // already Downed when the fight began, can't act or press End turn: its turn passes on by itself.
     if (u.side !== 'foe' && !cb.window && (u.dead || u.downed || u.surrendered)) { endTurn(cb, g.rng); continue; }
@@ -3464,6 +3454,12 @@ function runAction(g: GameState, a: Action, by: string) {
       if ('left' in res && res.left) push(g, { kind: 'system', head: 'THE SHOP', text: (res.line ? res.line + ' ' : '') + 'The squad is back on the trail.' });
       return;
     }
+    case 'run/engage': { // rules 1.90 items 7800 to 7808: the fight node's choice, the host's: Walk in, or Try an ambush (one roll for the squad)
+      const r = g.run; if (r?.state !== 'engage' || !r.at) fail('There is no fight to go into now.');
+      if (!isHost(g, by)) fail(AMBUSH.words.waiting);
+      if (a.how !== 'walk' && a.how !== 'ambush') fail('Walk in or try an ambush.');
+      runFight(g, runNode(r!, r!.at)!, a.how); return;
+    }
     case 'run/skip': { // tests only (the browser suites' room): the fight under way is won at once
       if (!g.settings.test) fail('Skipping a fight is for the test room only.');
       if (!isHost(g, by)) fail('Only the host skips a fight.');
@@ -3571,7 +3567,8 @@ function runEnter(g: GameState, id: string) {
   closeVisit(r); stageLog(r).nodes++; // rules 1.44: the stage's log
   r.at = id; r.path = [...r.path, id]; r.leans = {}; r.note = null; r.visit = null;
   newScene(g, 'Stage ' + r.stage + ' · ' + (n.gate ? 'The Gate' : word) + ' · stop ' + n.depth + ' of ' + MAP_DATA.rows);
-  if (n.kind === 'fight' || n.kind === 'elite' || n.kind === 'boss' || n.kind === 'vault_guard') { runFight(g, n); return; }
+  // rules 1.90 item 7800: a fight node asks first (Walk in or Try an ambush, run/engage); the fight starts on the answer
+  if (asksEngage(n)) { r.state = 'engage'; r.ready = {}; r.note = { node: id, kind: n.kind }; push(g, { kind: 'system', head: (n.gate ? 'THE GATE' : word.toUpperCase()), text: AMBUSH.words.ask }); return; }
   if (n.kind === 'shop') { // rules 1.42 (spec 8.3): no node card: the shop opens full screen at once
     const sh = openShop(r, n, runSetting(r)), f = FACES.find((x) => x.id === sh.face);
     r.visit = openVisit(g, n); // rules 1.43: the shop's grade step is counted on the visit (run/progress.ts)
@@ -3609,10 +3606,14 @@ function runAmmo(c: Character, count: ReturnType<typeof packCount>, burnt?: numb
   return out;
 }
 /** A fight node: the encounter composed for this party (run/encounter.ts) and started on the fight's own dice. */
-function runFight(g: GameState, n: RunNode) {
+function runFight(g: GameState, n: RunNode, how: 'walk' | 'ambush' = 'walk') {
   const r = g.run!, chars = Object.values(g.characters).filter((c) => !c.dead);
   const enc = composeEncounter({ levels: chars.map((c) => c.level), node: n, stage: r.stage, setting: runSetting(r), seed: r.seed, last: r.last });
-  const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' || n.kind === 'vault_guard' ? 'hard' : 'standard', g.rng);
+  // rules 1.90 items 7803 to 7808: an ambush is one roll for the squad, made before the fight; won, the hostiles sit
+  // round 1 out; lost, the squad does (startCombat's freeTurn), but a squad small enough fumbles instead (no free turn)
+  const roll = how === 'ambush' ? rollAmbush(chars, n, g.rng) : null, solo = fumbles(chars);
+  const free: 'pc' | 'foe' | null = !roll ? null : roll.ok ? 'pc' : solo ? null : 'foe';
+  const cb = startCombat('Survival · ' + enc.name, enc.map, chars.map((c) => ({ c })), enc.foes, n.kind === 'boss' ? 'boss' : n.kind === 'elite' || n.kind === 'vault_guard' ? 'hard' : 'standard', g.rng, undefined, { freeTurn: free === 'pc' ? 'foe' : free === 'foe' ? 'pc' : null });
   for (const u of cb.units) if (dropsLoot(u)) u.drops = runFoeDrops(u); // rules 1.54 item 3: no gear, materials (run/rewards.ts)
   cb.units.filter((u) => u.side === 'foe').forEach((u, i) => { const p = enc.foes[i]?.portrait; if (p) u.img = p; }); // its face (survival.json foe_faces)
   magicIn(g, cb);
@@ -3621,6 +3622,15 @@ function runFight(g: GameState, n: RunNode) {
   // before the tape existed, so it is taken from the effects (else a blow with no source on that turn had no one to credit)
   cb.tape = (cb.fx || []).filter((e) => e.k === 'turn').slice(-1) as any;
   sayAt(cb, 0, (n.gate ? 'THE GATE' : n.kind === 'vault_guard' ? 'THE VAULT\'S GUARD' : n.kind.toUpperCase()) + ' · ' + enc.name + ' · ' + enc.foes.length + (enc.foes.length === 1 ? ' foe' : ' foes') + ' · level ' + enc.level);
+  if (roll) { // rules 1.90 item 7807: the roll in the log (its terms, the TN, the sum) and on the fight for the opening banner
+    sayAt(cb, 1, fillAmbush(AMBUSH.words.log_try, { roll: rollText(roll) + ' (' + roll.parts.map((p) => (p.add >= 0 ? '+' : '−') + Math.abs(p.add) + ' ' + p.label).join(', ') + ')', result: roll.ok ? AMBUSH.words.won : AMBUSH.words.lost }));
+    cb.opening = { ambush: true, won: roll.ok, die: roll.die, mod: roll.mod, total: roll.total, tn: roll.tn, nat: roll.nat, free };
+    if (!roll.ok && solo) for (const u of cb.units.filter((x) => x.side === 'pc' && x.charId && !x.companion && !x.dead && !x.downed)) { // the solo fumble (item 7808)
+      const amt = Math.min(fumbleDamage(g.characters[u.charId!]), Math.max(0, u.hp - AMBUSH.fumble.floor_hp)); if (amt <= 0) continue;
+      const res = applyDamage(cb, u, amt, { type: 'fumble', shield: false, credit: 'none' });
+      say(cb, fillAmbush(AMBUSH.words.fumble, { unit: u.name, dmg: res.dealt })); cb.opening = { ...cb.opening, fumble: { unit: u.id, dmg: res.dealt } };
+    }
+  } else sayAt(cb, 1, AMBUSH.words.log_walk);
   r.state = 'fight'; r.last = enc.template; r.out = [];
   const cores = Object.fromEntries(chars.map((c) => [c.id, coresCarried(c)])); // rules 1.51: the supply pack's cores are the spare cores the fight burnt
   r.stats = { ...r.stats, fights: [...r.stats.fights, { node: n.id, cores, stage: r.stage, depth: n.depth, kind: n.gate ? 'gate' : n.kind, template: enc.template, setting: runSetting(r), level: enc.level,
@@ -3629,7 +3639,6 @@ function runFight(g: GameState, n: RunNode) {
   g.combat = cb; g.phase = 'combat'; g.story.await = 'none'; g.story.work = null;
   if (!wasLive) musicOf(g).fight++;
   syncSong(g);
-  openApproach(cb); // rules 1.64 item 5008: opened unseen, the fight is not yet joined
   runEnemies(g);
 }
 /** A run's fight is decided (rules 1.41; spec rules 4, 5, 14, 23, 26). Lost: the fighters written back as every fight's
@@ -3659,7 +3668,7 @@ function runFightOver(g: GameState) {
     return;
   }
   // rules 1.55 item 61: the field: the same fight, still running, with no enemies left
-  cb.over = null; delete cb.window; delete cb.approach; cb.field = { from: cb.round + 1, of: FIELD.rounds, round: 1 }; // rules 1.62 item 4906: the field's rounds
+  cb.over = null; delete cb.window; cb.field = { from: cb.round + 1, of: FIELD.rounds, round: 1 }; // rules 1.62 item 4906: the field's rounds
   for (const u of cb.units) if (!u.dead) shockClear(cb, u, 'fight over'); // rules 1.56 item 4508: the Mana Shock ends with the fight, the field included
   const xp = nodeXp(k, n.depth, r.stage), cr = nodeCredits(k, n.depth, r.stage), offers: Record<string, RunOffer> = {}, paid: Record<string, { xp: number; credits: number }> = {};
   sbChange(g, chars, () => { // the XP may bring a level (its HP): the sheets take it, and the fighters with them
@@ -3692,7 +3701,7 @@ function leaveField(g: GameState) {
  * round: the turn under way ends there, as a field opening's does. */
 function fieldRounds(g: GameState) {
   const cb = g.combat; if (!cb || cb.field !== true || g.phase !== 'combat') return;
-  delete cb.approach; cb.field = { from: cb.round + 1, of: FIELD.rounds, round: 1 };
+  cb.field = { from: cb.round + 1, of: FIELD.rounds, round: 1 };
   endTurn(cb, g.rng, { newRound: true }); runEnemies(g);
 }
 /** Rules 1.61 party fit item 2: the HP a character stands up at after a won fight (the one copy: the dead of rule 5 and
@@ -3779,7 +3788,7 @@ const sbOf = (g: GameState): Sandbox => g.sandbox || fail('The Proving Ground is
 const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.combat && !g.combat.over ? g.combat : null);
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
-  'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'surprised', 'surpriseAp', 'analyzedBy', 'song', 'init',
+  'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'caught', 'firstAp', 'analyzedBy', 'song', 'init',
   'condBy', 'condVia', 'condArg', 'condFresh', 'lastTurn', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
   'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed',

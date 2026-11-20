@@ -7,11 +7,18 @@
 // rewards with no end card (rules 1.62 item 4903); the next fight's BATTLE START
 // under reduced motion (shown, not moved); a reload in the middle of it shows no FIGHT again; DEFEAT once the
 // squad falls, after the fight's last effect has played. Each card once, read from its data-phc-card attribute.
-import { readFileSync } from 'fs';
-import { chromium, player, click, hostAs, lockIn, until, settle, pause, OUT, campStart, campConfirmGo } from './lib.mjs';
+import { readFileSync, mkdirSync } from 'fs';
+import { fileURLToPath } from 'url';
+import { chromium, player, click, hostAs, lockIn, until, settle, pause, OUT, campStart, campConfirmGo, sidePanels } from './lib.mjs';
 const SHOTS = process.env.SHOTS || OUT;
+// PHC_SHOTS=1: the ambush screens for the lead (rules 1.90), at 1280 x 720, in .check/ambush-033/
+const AMBUSH_SHOTS = process.env.PHC_SHOTS ? fileURLToPath(new URL('../../../.check/ambush-033', import.meta.url)) : null;
+if (AMBUSH_SHOTS) mkdirSync(AMBUSH_SHOTS, { recursive: true });
 const SVD = JSON.parse(readFileSync(new URL('../../../data/survival.json', import.meta.url), 'utf8'));
 const CARDS = JSON.parse(readFileSync(new URL('../../../data/rules.json', import.meta.url), 'utf8')).combat.cards;
+// The engine's dice (packages/engine/src/rng.ts): a state whose next d20 is v.
+function nextR(r) { let t = (r.state = (r.state + 0x6d2b79f5) | 0); t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+const dieSeed = (v) => { for (let s = 1; s < 1e7; s++) { const r = { state: s }; if (1 + Math.floor(nextR(r) * 20) === v) return s; } return 1; };
 const browser = await chromium.launch();
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const p = await player(browser, 'host', { play: 'survival' });
@@ -64,19 +71,17 @@ const way = await route();
 ok('the map has two fights in a row from the first row (' + (way || []).join(' then ') + ')', !!way);
 const [n1, n2] = way || [];
 await p.locator('[data-phc-node="' + n1 + '"]').click();
-// rules 1.64 (0.31.2): a fight whose foes have not seen the squad is not joined yet: no BATTLE START until contact.
+// rules 1.90 items 7800, 7801, 7811: a fight node asks first (Walk in or Try an ambush): no fight, no BATTLE START yet
+await p.waitForSelector('[data-phc-engage-screen]', { timeout: 60000 });
+{ const odds = (await p.locator('[data-phc-ambush-odds]').textContent()) || '';
+  ok('rules 1.90: a fight node stops at the engage screen (run ' + (await G()).run.state + '), Walk in and Try an ambush offered, the odds "' + odds + '" with TN and %', (await G()).run.state === 'engage' && !(await G()).combat
+    && await p.locator('[data-phc-engage="walk"]').isEnabled() && await p.locator('[data-phc-engage="ambush"]').isEnabled() && /TN \d+/.test(odds) && /\d+%/.test(odds) && (await cards('fight')).length === 0); }
+await sidePanels(p, 'the engage screen');
+if (AMBUSH_SHOTS) { await p.mouse.move(2, 2); await pause(p, 400); await p.screenshot({ path: AMBUSH_SHOTS + '/engage-solo.png' }); }
+await p.locator('[data-phc-engage="walk"]').click();
 await p.waitForFunction(() => window.__phc?.getState().screen === 'combat', null, { timeout: 90000 });
-let turnSkip = 0; // the approach's own turn banners come before the join: the first turn of the joined fight is the one after them
-if ((await G()).combat?.approach) {
-  // 0.31.12 lane 2 item 3: an unseen fight opens on its own banner, APPROACH, with the sub-line 'Unseen · moving is free'
-  ok('the approach opens on its own banner: APPROACH, then its sub-line (' + CARDS.approach.sub + ')', await waitCard('approach', 1, 15000));
-  { const ap = (await cards('approach'))[0]; ok('the APPROACH banner says APPROACH and "' + CARDS.approach.sub + '"', !!ap && /APPROACH/i.test(ap.text) && ap.text.includes(CARDS.approach.sub) && ap.big); }
-  await pause(p, 300); await p.screenshot({ path: SHOTS + '/card-approach.png' });
-  await pause(p, 1200);
-  ok('the approach: no BATTLE START before contact', (await cards('fight')).length === 0);
-  for (let i = 0; i < 12 && (await G()).combat?.approach; i++) { const cb = (await G()).combat; turnSkip = await p.evaluate(() => window.__turnT.length); await act({ type: 'combat/end-turn', unitId: cb.order[cb.turn] }); await pause(p, 250); }
-  ok('the approach ends (idle passes join the fight)', !(await G()).combat?.approach);
-}
+const turnSkip = 0;
+ok('Walk in: the fight starts joined at round 1, no ambush roll (rules 1.90 item 7802)', !(await G()).combat.opening?.ambush && (await G()).combat.round === 1);
 ok('BATTLE START comes up as the fight is joined', await waitCard('fight'));
 await pause(p, 260); await p.screenshot({ path: SHOTS + '/card-fight.png' });
 await p.waitForFunction((n) => window.__turnT.length > n, turnSkip, { timeout: 60000 }).catch(() => {});
@@ -95,13 +100,14 @@ const fx1 = await p.evaluate(() => window.__fxT.length);
 // won by a real last kill, not run/skip: the falling foe side's sight effects the squad's view never holds came after the
 // kill, and the panel waited for them by its 20 s safety net. Set-up by hand (as fog-victory.test.ts): every foe but one
 // fallen, the last on 1 HP beside the squad's character; then its real strike.
-for (let i = 0; i < 30; i++) { const up = await p.evaluate(() => { const cb = window.__phc.getState().game.combat, u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!(u && u.charId) && !(window.__phcHold?.() > performance.now()); }); if (up) break; await pause(p, 500); }
+for (let i = 0; i < 120; i++) { const up = await p.evaluate(() => { const cb = window.__phc.getState().game.combat, u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!(u && u.charId) && !(window.__phcHold?.() > performance.now()); }); if (up) break; await pause(p, 500); }
 const kill = await p.evaluate(() => { const g = window.__phc.truth(), cb = g.combat, pc = cb.units.find((x) => x.id === cb.order[cb.turn] && x.charId); if (!pc) return null; const [px, py] = pc.pos.split(',').map(Number);
   const foes = cb.units.filter((x) => x.side === 'foe' && !x.dead); for (const f of foes.slice(1)) { f.hp = 0; f.dead = true; }
   const last = foes[0], taken = new Set(cb.units.filter((v) => !v.dead && v !== last).map((v) => v.pos)), bad = new Set([...(cb.map.solid || []), ...(cb.map.cover || []), ...(cb.map.full || [])]);
   last.hp = 1; last.hidden = false; last.pos = [[1, 0], [0, 1], [-1, 0], [0, -1]].map(([dx, dy]) => (px + dx) + ',' + (py + dy)).find((k) => !taken.has(k) && !bad.has(k)); pc.ap = 9; return { pc: pc.id, last: last.id }; });
 let killAt = 0;
-if (kill) for (let k = 0; k < 6; k++) { killAt = await p.evaluate(() => performance.now()); await act({ type: 'combat/attack', unitId: kill.pc, targetId: kill.last, mode: 'melee' }); if ((await G()).run?.state === 'field') break; }
+if (!kill) console.log('(no character turn came up for the set-up kill)');
+if (kill) for (let k = 0; k < 6; k++) { killAt = await p.evaluate(() => performance.now()); const ke = await act({ type: 'combat/attack', unitId: kill.pc, targetId: kill.last, mode: 'melee' }); if (ke) console.log('(the strike: ' + ke + ')'); if ((await G()).run?.state === 'field') break; }
 if ((await G()).run?.state !== 'field') { console.log('(the strike did not end it: run/skip)'); killAt = 0; ok('the fight is won (run/skip, the test room\'s)', (await act({ type: 'run/skip' })) === null); }
 ok('VICTORY comes up when it is won', await waitCard('victory'));
 { const v = (await cards('victory'))[0]; ok('0.33: VICTORY within 2.5 s of the last kill (' + (killAt ? ((v.t - killAt) / 1000).toFixed(2) + ' s' : 'no real kill') + ')', !!killAt && !!v && v.t - killAt <= 2500); }
@@ -135,9 +141,18 @@ ok('the reward taken as the materials (rules 1.54 item 2)', (await act({ type: '
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'map', null, { timeout: 30000 });
 await p.emulateMedia({ reducedMotion: 'reduce' });
 await p.locator('[data-phc-node="' + n2 + '"]').click();
-ok('the next fight has its own BATTLE START (a fight of the same template is no longer skipped)', await waitCard('fight', 2));
-{ const f2 = (await cards('fight'))[1];
-  ok('… under reduced motion it is shown, not moving (animation ' + f2?.anim + ', ' + f2?.box + ' px tall)', /^(phcBigFade|none)/.test(f2?.anim || '') && f2.box > 0); }
+// rules 1.90 items 7803, 7807, 7808: Try an ambush, solo, the roll lost (the game's next d20 a natural 1): the fumble, no
+// free turn, the character's damage, the ENEMY ADVANTAGE banner with the roll's sum and TN
+await p.waitForSelector('[data-phc-engage="ambush"]', { timeout: 60000 });
+const hpBefore = (await G()).characters[cid].hp;
+await p.evaluate((d) => { window.__phc.getState().game.rng.state = d; }, dieSeed(1));
+await p.locator('[data-phc-engage="ambush"]').click();
+ok('the next fight has its own opening banner (a fight of the same template is no longer skipped)', await waitCard('fight', 2));
+{ const f2 = (await cards('fight'))[1], cb = (await G()).combat, o = cb.opening || {}, me = cb.units.find((u) => u.charId === cid);
+  ok('Try an ambush lost solo: a fumble, ENEMY ADVANTAGE with the roll\'s total and TN ("' + (f2?.text || '').slice(0, 90) + '")', o.ambush && o.won === false && !!f2 && f2.text.includes(CARDS.ambush_lost.name) && f2.text.includes(String(o.total)) && f2.text.includes(String(o.tn)) && !f2.text.includes(CARDS.joined.name));
+  ok('… the fumble: no free turn (nobody caught), ' + Math.max(0, hpBefore - me?.hp) + ' damage = opening.fumble.dmg (' + o.fumble?.dmg + ')', !!o.fumble && o.fumble.dmg > 0 && me.hp === hpBefore - o.fumble.dmg && !cb.units.some((u) => u.caught));
+  ok('… under reduced motion it is shown, not moving (animation ' + f2?.anim + ', ' + f2?.box + ' px tall)', /^(phcBigFade|none)/.test(f2?.anim || '') && f2.box > 0);
+  if (AMBUSH_SHOTS) { await pause(p, 300); await p.screenshot({ path: AMBUSH_SHOTS + '/banner-enemy-advantage.png' }); } }
 await p.waitForFunction(() => window.__turnT.length > 1, null, { timeout: 60000 }).catch(() => {});
 await pause(p, 1500);
 await p.reload();
@@ -149,8 +164,6 @@ ok('a reload in the middle of the fight shows no FIGHT again (' + (await cards()
 // ---------- lost: DEFEAT, after the last hostile effect ----------
 // The squad ends every turn until it falls; the dice favour the hostiles (the engine's rng, as survival.mjs and cutins.mjs
 // set it: a state whose next d20 is high).
-function nextR(r) { let t = (r.state = (r.state + 0x6d2b79f5) | 0); t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
-const dieSeed = (v) => { for (let s = 1; s < 1e7; s++) { const r = { state: s }; if (1 + Math.floor(nextR(r) * 20) === v) return s; } return 1; };
 const D19 = dieSeed(19), t0 = Date.now();
 while (Date.now() - t0 < 240000) {
   const s = await p.evaluate(() => { const g = window.__phc.getState().game, cb = g.combat; if (!cb || cb.over) return 'over'; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return u && u.charId && !(window.__phcHold?.() > performance.now()) ? u.id : ''; });

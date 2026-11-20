@@ -12,6 +12,7 @@
 // Run it once on the old data and once on the new to compare (nothing here knows a price).
 import { describe, it, expect } from 'vitest';
 import { apply, newGame, ARCHETYPES, beginTurn, withGame, reachable, actionsFor, sendDescriptor, maxMp } from '../../src';
+import { walkIn } from '../helpers/survival';
 import svJ from '../../../../data/survival.json';
 import { simRun, PARTIES } from './survival-run';
 
@@ -26,7 +27,7 @@ function fightAt(level: number, cls: string | null) {
   if (level > 1) { med0.level = level; med0.xp = 250; }
   if (cls) med0.classId = cls;
   const node = reachable(g.run).find((n: any) => n.kind === 'fight') || reachable(g.run)[0];
-  for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by);
+  for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by); g = walkIn(g);
   const cb = g.combat, med: any = Object.values(g.characters).find((c: any) => c.name === 'Medic');
   const mu = cb.units.find((u: any) => u.charId === med.id), al = cb.units.find((u: any) => u.side === 'pc' && u.id !== mu.id);
   const [x, y] = mu.pos.split(',').map(Number); al.pos = x + ',' + (y + 1); al.maxHp = 5000; al.hp = 100;

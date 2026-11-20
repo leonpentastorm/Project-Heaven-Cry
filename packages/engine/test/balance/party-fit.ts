@@ -142,7 +142,7 @@ function begin(cb: any, doors: string[]): FightStat {
   const near = (u: any, fs: any[]) => (fs.length ? Math.min(...fs.map((f) => dist(u.pos, f.pos))) : 0);
   const order: string[] = cb.order || [];
   const before = pcs.map((u: any) => order.slice(0, Math.max(0, order.indexOf(u.id))).filter((id) => foes.some((f: any) => f.id === id)).length);
-  return { kind: '', n: pcs.length, foes: foes.length, gunFoes: guns.length, map: cb.map?.w || 0, spawn: pcs.reduce((t: number, u: any) => t + near(u, foes), 0) / Math.max(1, pcs.length), spawnGun: guns.length ? pcs.reduce((t: number, u: any) => t + near(u, guns), 0) / pcs.length : NaN,
+  return { open: cb.opening ? (cb.opening.won ? 'won' : cb.opening.free ? 'lost' : 'fumble') : 'walk', fumbleDmg: cb.opening?.fumble?.dmg || 0, kind: '', n: pcs.length, foes: foes.length, gunFoes: guns.length, map: cb.map?.w || 0, spawn: pcs.reduce((t: number, u: any) => t + near(u, foes), 0) / Math.max(1, pcs.length), spawnGun: guns.length ? pcs.reduce((t: number, u: any) => t + near(u, guns), 0) / pcs.length : NaN,
     firstTurnFoesBefore: before.reduce((t: number, x: number) => t + x, 0) / Math.max(1, before.length), rounds: 0, won: false, attacks: 0, attacksR12: 0, hitsR12: 0, dmgTaken: 0, dmgR12: 0, downs: 0, downsR12: 0, focus: 0,
     firstDown: null, firstDownRound: null, ff: 0, ffHits: 0, healed: 0, healWasted: 0, apLeft: 0, turns: 0, perChar: pcs.map((u: any) => ({ door: doors[Number(String(u.charId).slice(1)) - 1] || '?', dmg: 0, attacksOn: 0, downs: 0 })) };
 }

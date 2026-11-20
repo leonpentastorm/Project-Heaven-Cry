@@ -107,14 +107,14 @@
       "adjudication": "engine", "provisional": true
     },
     {
-      "id": "eye", "name": "Eye", "icon": "figment-eye", "owned_kind": "figment", "turn": "owner", "eyes": true,
+      "id": "eye", "name": "Eye", "icon": "figment-eye", "owned_kind": "figment", "turn": "owner", "eyes": true, "scouts": { "bonus": 2, "about": "rules 1.90 item 7812 (Leon, 20 Nov 2026): before a fight node's choice, a character who knows this form and could picture it now (the Visualizer carried, the form's charge in its loaded charge; nothing is spent) sends it ahead: the line-up is shown and this is the squad's ambush bonus (run/ambush.ts; the best scout counts)", "provisional": true },
       "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
       "hp": 15, "defense": 15, "armour": 0, "attack_bonus": 0, "movement": 4, "weapon": "fists", "flies": true, "vision": 8, "dark_sight": true,
       "actions": ["move"], "verbs": ["figment_stare", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-eye", "glyph": "◉",
       "short": "Flying eye: {=hp} HP · sees {=vision} tiles, in the dark, for your side · Stare keeps a foe seen",
-      "text": "A floating eye: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. It sees {=vision} tiles, in the dark too, for your whole side. Stare: one unit it sees stays seen by your side until your next turn, Hidden or not.",
+      "text": "A floating eye: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. It sees {=vision} tiles, in the dark too, for your whole side. Stare: one unit it sees stays seen by your side until your next turn, Hidden or not. Before a fight it can go ahead (when you could picture it, nothing spent): the squad sees who is waiting, and its ambush roll takes +{=scouts.bonus}.",
       "adjudication": "engine", "provisional": true
     },
     {

@@ -1,15 +1,13 @@
 // Rules 1.78 (0.32, the leftovers lane): the client's halves. Each reads the engine's event or view; nothing here
 // works out a rule.
-//   item 6603  the fight joined: the alarm event with joined draws CONTACT! and says no toast (BATTLE START says it)
+//   item 6603  (retired by rules 1.90: no fight is joined after it starts; the alarm keeps its own word and line)
 //   item 6604  aim marks: the enemies the side has read aiming at one unit are one crosshair with their count
 import { describe, expect, it } from 'vitest';
 import { worldWord, worldLine } from './fx/world';
 import { classMarks } from './classMarks';
 
-describe('item 6603: the fight joined', () => {
-  it('CONTACT! over the tile, no toast; a plain alarm keeps its word and its line', () => {
-    expect(worldWord({ k: 'alarm', joined: true } as any)).toBe('CONTACT!');
-    expect(worldLine({ k: 'alarm', joined: true } as any)).toBe('');
+describe('item 6603 (retired by rules 1.90): the alarm', () => {
+  it('a plain alarm keeps its word and its line', () => {
     expect(worldWord({ k: 'alarm' } as any)).toBe('ALARM!');
     expect(worldLine({ k: 'alarm' } as any)).toMatch(/alarm is up/);
   });
