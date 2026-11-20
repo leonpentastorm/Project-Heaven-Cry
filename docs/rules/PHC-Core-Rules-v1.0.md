@@ -14700,3 +14700,11 @@ The integration of Items 2.0 stage B (lane B1's 72 weapon rows) and the consolid
       number (`per: [{of: armour_value, value: 3}]`); the perk's text reads it. PROVISIONAL. Settles item 7959.
 8106. **Albert Town's grant is named "Settled Shot"** (item 8023's placeholder "Still Turn" retired).
 8107. **No colour per grade in this pass:** a grade shows by its frame and its word (rules 1.91), nothing more.
+8108. **The Narrator meets the weapons as families** (the prompt's size cap holds with 144 rows): the Narrator's rules name
+      every weapon row in no family by its id, and the weapon families by id, not each row (`apps/web/src/narrator/
+      context.ts`); the wiki's `family:<id>` entry lists a family's rows with their forms (`glossary.ts`, read from
+      `families.json` and the rows). The Narrator's size caps (faith-context 26,200, the long campaign 45,000) are not
+      raised.
+8109. **The new rows ship on the placeholder** (rules 1.92): the 72 weapon ids, the 12 worn pieces and the new guns'
+      magazines have no picture until the artist's lands (`art/briefs/ART-REQUESTS.md`, the Items 2.0 section); the icon
+      guards exempt an id the typing sheet adds only while it has no picture.

@@ -33,9 +33,9 @@ describe('what each weapon throws off', () => {
   it('every gun in the data has a casing (per shot, or at the reload), every magazine gun a magazine, every bow a draw', () => {
     for (const w of ranged()) {
       const b = brassOf(w.id, w.category);
-      if (w.category === 'bow') { expect(b.bow, w.id).toBe(/crossbow/.test(w.id) ? 'crossbow' : 'bow'); expect(b.shell, w.id).toBeNull(); continue; }
-      if (w.id === 'purifier_flamer') { expect(b.shell, w.id).toBeNull(); continue; } // a jet of fire
-      if (w.id === 'breacher_tube') { expect(b.when, w.id).toBeNull(); expect(b.load, w.id).toBe('rounds'); continue; } // a rocket: nothing thrown off, but its reload shows the round going in
+      if (w.category === 'bow') { expect(b.bow, w.id).toBe(w.family === 'crossbows' ? 'crossbow' : 'bow'); expect(b.shell, w.id).toBeNull(); continue; } // a crossbow by the row's family (data), never its id
+      if (w.family === 'flamers') { expect(b.shell, w.id).toBeNull(); continue; } // a jet of fire (the row's family)
+      if (w.family === 'rocket_tubes') { expect(b.when, w.id).toBeNull(); expect(b.load, w.id).toBe('rounds'); continue; } // a rocket: nothing thrown off, but its reload shows the round going in
       expect(b.shell, w.id).not.toBeNull();
       // a magazine gun drops its magazine; a revolver, a break-action, a pump or a lever loads its own way
       if (w.reload === 'magazine' && b.load !== 'cylinder') expect(b.mag, w.id).not.toBeNull();

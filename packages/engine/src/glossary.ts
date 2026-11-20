@@ -16,6 +16,7 @@ import lootJ from '../../../data/loot_tables.json';
 import feelingsJ from '../../../data/feelings.json';
 import techniquesJ from '../../../data/techniques.json';
 import { verdictFor } from './effects/coverage';
+import { FAMILIES } from './itemtags';
 
 export interface WikiEntry { key: string; name: string; text: string }
 const str = (x: any) => (x == null ? '' : typeof x === 'string' ? x : JSON.stringify(x));
@@ -37,6 +38,11 @@ function build(): WikiEntry[] {
   for (const w of WEAPONS as any[]) add('weapon:' + w.id, w.name, line(w.name + ': a ' + (w.hands || '') + ' ' + w.category + (w.ammo ? ' firing ' + w.ammo : '') + ', used with ' + (SKILL[w.skill]?.name || w.skill) + '.',
     w.grants ? 'Grants ' + w.grants.name + ': ' + w.grants.text : '',
     w.phys ? 'Properties: ' + (w.phys.props.join(', ') || 'none') + '.' + (weaponTeaches(w.id) ? ' Lends the technique ' + (TQ.find((t: any) => t.id === weaponTeaches(w.id))?.name || weaponTeaches(w.id)) + ' while held, and teaches it at drill mark I.' : '') : '', w.text, w.lore ? 'Lore: ' + w.lore : '', w.price_credits ? 'Price ' + w.price_credits + ' credits.' : ''));
+  // rules 1.93 item 8108: a family's rows (the Narrator's prompt names one weapon a family; this lists them all)
+  for (const f of FAMILIES) {
+    const rows = [...(WEAPONS as any[]), ...(Object.values(ITEM) as any[])].filter((r) => r.family === f.id && !r.variant_of);
+    if (rows.length) add('family:' + f.id, f.name, line(f.name + ' (an item family; maker line ' + f.line + ').', 'Its rows: ' + rows.map((r) => r.id + (r.form ? ' (' + r.form + ')' : '')).join(', ') + '.'));
+  }
   for (const [id, it] of Object.entries(ITEM) as [string, any][]) add('item:' + id, it.name, line(it.name + ' (' + (it.category || 'item') + (it.slot ? ', ' + it.slot.replace(/_/g, ' ') : '') + ').', it.text, it.price_credits ? 'Price ' + it.price_credits + ' credits.' : ''));
   for (const c of CONDITION_ROWS) add('condition:' + c.id, c.name, line(c.name + ' (' + c.kind + ').', c.text));
   // Class Roster Revision 3: one base class per attribute; advanced classes are shelved (being rebuilt).

@@ -470,7 +470,7 @@ item 6021) with new rules: K28 Running Script's direction becomes "a glyph drawn
 
 ### Items 2.0 (release 0.34): the new weapon and armour rows, ship on a placeholder (requested 20 Nov 2026)
 
-**84 new item ids** (72 weapons, 12 worn pieces) have no painting yet and **ship on a placeholder** (the game shows the monoline stand-in; nothing blocks on art). The pictures and ready-to-paste prompts are in [`prompts-2026-11-19/`](prompts-2026-11-19/): melee `05-melee-forms.md`, guns `06-gun-forms.md`, shields and armour `07-shields-armour.md`, grades and uniques `08-grades-and-uniques.md`, heavy and strange `09-heavy-and-strange.md`, rifle analogues `10-rifle-analogues.md`. File to `art/icons/gear/` under the id (the naming rule is `art/style-guide/gear-icons.md`). The breacher plate and the breather (held back) are not in this list. Status: Wanted.
+**84 new item ids** (72 weapons, 12 worn pieces) have no painting yet and **ship on a placeholder** (the game shows the monoline stand-in; nothing blocks on art). The pictures and ready-to-paste prompts are in [`prompts-2026-11-19/`](prompts-2026-11-19/): melee `05-melee-forms.md`, guns `06-gun-forms.md`, shields and armour `07-shields-armour.md`, grades and uniques `08-grades-and-uniques.md`, heavy and strange `09-heavy-and-strange.md`, rifle analogues `10-rifle-analogues.md`. File to `art/icons/gear/` under the id (the naming rule is `art/style-guide/gear-icons.md`). The breacher plate and the breather (held back) are not in this list. Status: Wanted. Their magazines (`mag:<id>` of each new magazine gun) ship on the magazine placeholder too and want the monoline magazine icon of the family (0.34 integration).
 
 | id | Name | Family | Form | What it is |
 | --- | --- | --- | --- | --- |

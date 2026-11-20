@@ -1,7 +1,7 @@
 // Rules 1.93 (0.34, the integration): the lead's rulings on what stage B handed back, through the real paths (the
 // reducer's combat/attack, the item tags, the data's own rows).
 import { describe, it, expect } from 'vitest';
-import { WEAPON, ITEM, ARMOUR_CLASSES, FAMILY, itemTags } from '../src';
+import { WEAPON, ITEM, ARMOUR_CLASSES, FAMILY, itemTags, wikiLookup } from '../src';
 import { physFight, rig } from './helpers/physfight';
 
 describe('rules 1.93 item 8102: a Smetanita sidearm\'s hit lays 1 Pressure, once a turn for each target', () => {
@@ -49,5 +49,14 @@ describe('rules 1.93 item 8106: Albert Town\'s grant is Settled Shot', () => {
     const rows = (Object.values(WEAPON) as any[]).filter((w) => w.family === 'albert_town');
     expect(rows.length).toBe(3);
     for (const w of rows) expect(w.grants.name).toBe('Settled Shot');
+  });
+});
+
+describe('rules 1.93 item 8108: the wiki lists a family\'s rows (the Narrator\'s prompt names families, not every row)', () => {
+  it('family:<id> gives every weapon of the family with its form', () => {
+    for (const fam of ['service_sidearms', 'albert_town', 'crossbows']) {
+      const e = wikiLookup('family:' + fam)!; expect(e, fam).toBeTruthy();
+      for (const w of (Object.values(WEAPON) as any[]).filter((x) => x.family === fam && !x.variant_of)) expect(e.text, w.id).toContain(w.id + ' (' + w.form + ')');
+    }
   });
 });

@@ -14,7 +14,7 @@ import { gearIconUri, packGearId, torsoGearId } from './gearIcons';
 // artist's is taken in (art/briefs/ART-REQUESTS.md); the item card draws its marked placeholder (itemCardView). It is exempt
 // from `none` only while it has none, so the day its picture lands the guard binds it again.
 const SHEET = JSON.parse(readFileSync(new URL('../../../../docs/design/proposals/2026-11-20-items-2.0-rows.json', import.meta.url), 'utf8'));
-const ON_PLACEHOLDER = new Set<string>([...SHEET.weapons, ...SHEET.items].map((r: any) => r.id));
+const ON_PLACEHOLDER = new Set<string>([...SHEET.weapons, ...SHEET.items].flatMap((r: any) => [r.id, 'mag:' + r.id, 'mag:' + r.id + ':0'])); // a new gun's magazine too (0.34)
 
 const big = (id: string) => gearIconUri(id, undefined, { large: true });
 /** What the GEAR tab draws for what an id puts in the pack (body armour of a class: the outer slot's torso). */
@@ -53,6 +53,7 @@ describe('Survival icons: the shop, the camp and the rewards draw what the GEAR 
   });
   it("a magazine or rounds never draw their gun's picture; an empty magazine draws the full one's", () => {
     for (const w of magGuns) {
+      if (ON_PLACEHOLDER.has('mag:' + w) && !big('mag:' + w)) continue; // a new gun's magazine on the placeholder (0.34)
       expect(big('mag:' + w), w).toBeTruthy();
       expect(big('mag:' + w), w).not.toBe(big(w));
       expect(big('mag:' + w + ':0'), w).toBe(big('mag:' + w));

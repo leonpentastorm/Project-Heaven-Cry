@@ -30,6 +30,13 @@ const ADV_LIVE = Object.keys(ADVANCED).some((id) => advancedActive(id));
 /** The nine base classes, compactly: "Defender (Endurance), Fighter (Strength), …" (Class Roster Revision 3). */
 const CLASS_LINE = Object.values(CLASS).map((k: any) => k.name + ' (' + (ATTR as any)[k.attribute]?.name + ')').join(', ');
 /** Wiki class keys: the base classes, plus advanced ones only while some are active. */
+/** Rules 1.93 item 8108: the weapons the prompt names, as families, not 144 rows: every weapon row in no family by its
+ * id, and the weapon families by id (wiki_lookup family:<id> gives a family's weapon ids and forms). */
+const WEAPON_IDS: string = (() => {
+  const ws = (WEAPONS as any[]).filter((w) => !/smoke|flash/.test(w.id));
+  const fams = [...new Set(ws.map((w) => w.family).filter(Boolean))];
+  return ws.filter((w) => !w.family).map((w) => w.id).join(', ') + '. Weapon families (wiki_lookup family:<id> for their weapon ids): ' + fams.join(', ');
+})();
 const wikiClasses = () => wikiKinds().class.filter((id: string) => (CLASS as any)[id] || (ADV_LIVE && advancedActive(id)));
 const NEVER = ['advanced-classes', 'how-the-existing-material', 'open-questions'];
 export interface LoreChunk { key: string; head: string; text: string }
@@ -164,7 +171,7 @@ FIGHTS
 - Enemy tiers, weakest to strongest: vermin (a swarm; one hit kills one), minion (fodder), soldier (trained), elite (a veteran or a specialist), boss (the fight's centre). You name the tier; the engine sets every number from the fight's level, which is the squad's average level.
 - The engine picks every enemy's target. Enemies turn on whoever is healing the squad; the fight log says when.
 - level_shift moves that level: 0 for a fair fight, -1 to -3 for an easier one, +1 or +2 for a deadly one.
-- Weapon ids: ${WEAPONS.filter((w: any) => !/smoke|flash/.test(w.id)).map((w: any) => w.id).join(', ')}.
+- Weapon ids: ${WEAPON_IDS}.
 
 MAGIC (the engine runs every number)
 - Sigil magic (Mind; needs an Evoker and mana cores). Words (id = the word in lower case): ${SIGIL_GROUPS}.
@@ -255,7 +262,7 @@ FAITH (rules 1.6.1)
 - Each character's belief, Devotion, vow and pieces are in THE PARTY. A patron's likes, taboos and rites: wiki_lookup patron:<id>.
 
 THE WIKI (wiki_lookup)
-- You carry only what this moment needs. For anything else, call wiki_lookup with keys before you answer: skill:<id>, trait:<id>, perk:<id>, weapon:<id>, technique:<id>, property:<id>, item:<id>, condition:<id>, class:<id>, patron:<id>, enemy:<tier>, object:<kind>, sigil:<word>, school:<id>, module:<id>, lore:<key>. Batch your keys in one call; at most a few calls per turn. Never look up what is already above.
+- You carry only what this moment needs. For anything else, call wiki_lookup with keys before you answer: skill:<id>, trait:<id>, perk:<id>, weapon:<id>, family:<id>, technique:<id>, property:<id>, item:<id>, condition:<id>, class:<id>, patron:<id>, enemy:<tier>, object:<kind>, sigil:<word>, school:<id>, module:<id>, lore:<key>. Batch your keys in one call; at most a few calls per turn. Never look up what is already above.
 - Conditions: ${wikiKinds().condition.join(', ')}.${ADV_LIVE ? ' Advanced classes: ' + wikiClasses().filter((id: string) => !(CLASS as any)[id]).join(', ') + '.' : ''} Patrons: ${wikiKinds().patron.join(', ')}.\n- Soul schools: ${wikiKinds().school.join(', ')}. Soul modules: ${wikiKinds().module.join(', ')}.
 - Lore keys (beyond what the campaign block already gives you): ${loreKeys().join(', ')}.
 - Looked-up lore is still Narrator-only: never reveal its truths outright.
