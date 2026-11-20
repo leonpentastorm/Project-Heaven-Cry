@@ -9820,6 +9820,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-mesh_undersuit--relic",
+      "path": "art/icons/gear/armour-mesh_undersuit--relic.png",
+      "sha256": "962ad8c2499b1eca9abc7567f2c6e5e7e34fbb6396272127cbc022678fc77bf0",
+      "label": "Mesh undersuit — Relic",
+      "family": "armour-mesh_undersuit",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-mesh_undersuit--relic.png",
+        "sha256": "841318fc9b5d9d3d140f838d8a9a5ebbad2119d5c6fa5bbef9097e3153d3ecf8"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-mesh_undersuit--relic.png",
+        "sha256": "962ad8c2499b1eca9abc7567f2c6e5e7e34fbb6396272127cbc022678fc77bf0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-mesh_undersuit--relic.txt",
+        "sha256": "7f129352fb15d5f996d430ccb37b7b6b8eddb313a8caa23d0061cb3bec822b9d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-mesh_undersuit.png",
+          "sha256": "5a36c6129138e8b7b640bf3a216b8bab73b604f9701396f6a054913f74fca1a9"
+        },
+        {
+          "path": "art/icons/gear/armour-mesh_undersuit--masterwork.png",
+          "sha256": "385c606eb348f0602d86a2bdb81f3bb3dfec30fc02cfc45f0d74c4ecd68fcf48"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit--relic.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit--relic.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit--relic.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit--relic.png"
+      },
+      "export_hashes": {
+        "256": "d5fc4bcac1bc1851ed26db1578403dc28cc34a3448dfd384b25caaa1c833b66e",
+        "128": "69c2b38929ae7d95350f57cfd69491b116e56b0e9b64ecb2c05baaf0f78587d7",
+        "64": "915eea1405149b48593dc2a015f4b6f2a432177225912da054648bbe54e8980d",
+        "32": "5ec1d3669ec9b535559ace1ca4507c7429ee323e9731428ebf5a808d83febe37"
+      },
+      "grade": "relic",
+      "standard_id": "armour-mesh_undersuit",
+      "outline": {
+        "solid_alpha_iou": 0.9795319924079334,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 25
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
