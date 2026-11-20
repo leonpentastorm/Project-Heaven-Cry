@@ -13,3 +13,5 @@ Sole expansion7045298880: `shield-return_clause` #16 and `shield-grudge_plate` #
 Sole delivery: ReturnClause unique#16 delivered, normal per-picture push. Current distinct total509/871 = prior508 +1new unique. GrudgePlate#18 next. Family outline IoU0.9197, exact-outline pass false; all approval flags false.
 
 Sole delivery: GrudgePlate unique#18 delivered; unique expansion2/2. Current total510/871 =150prior base/unique +358grades +2newunique. Both new sources/masters/exports validated and pushed per picture. Approval and implementation_ready false.
+
+Sole delivery: RimWallCorner File01#013 selected after joined-tile inspection and exact128px-opening validation. Original and catalog snapshots preserved. Current511/871: files01–04 86/88 +new/repaint Standards53/104 +uniques14/23 +grades358/656. RunningScript remains sole-owned/pixel-preservation pending; ScrapTurret held; other remaining jobs service-blocked/dependent. No actual image quota.

@@ -1,0 +1,117 @@
+{
+  "id": "kit-rim-wall-corner",
+  "src": "/workspace/generated_images/exec-e171f6bf-369f-4de2-87c5-e3ad96b460f3.png",
+  "job": {
+    "id": "kit-rim-wall-corner",
+    "number": 13,
+    "file": 1,
+    "path": "art/sprites/kit/rim/wall-corner.png",
+    "references": [
+      "art/sprites/kit/rim/wall-straight.png"
+    ],
+    "prompt": "Paint a NEW square seamless L-corner game tile from this straight-wall material, for fictional RPG Project Heaven Cry. Strict orthographic overhead view, transparent PNG,256x256 equivalent. EXACT geometry: horizontal arm is rectangle x0..191,y64..191; vertical arm is rectangle x64..191,y64..255; their union is one continuous square-elbow L, open at left and bottom cell edges. Thus left opening rows64..191 and bottom opening columns64..191. Everything else transparent. No top-edge or right-edge pixels. Copy attached straight walls blue-grey steel value, directional brushed worn texture, ivory edge cap width and thin cyan strip width. One cyan light stripe follows the CENTRE of this L: (x0,y128) to (x128,y128) then (x128,y256), sharp rightangle. Both sides of vertical cyan have equal steel width. Ivory cap follows ONLY exposed boundaries of L, never across left or bottom open end. Steel surface and cyan run off both openings with no endcap/outline. Both exposed elbow corners square. No extra panel grid, bolts, hazards, seams or cast shadows. One single tile, full square canvas, no perspective or background.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/sprites/kit/rim/wall-straight.png": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4"
+    },
+    "original_sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c",
+    "previous_prompt": "This is fictional RPG game art for Project Heaven Cry. Edit the supplied existing PNG for a specific unfinished art correction. Preserve the supplied image's composition and canvas. Deliver one image only, PNG with genuine transparent alpha, no background or checkerboard. Create the corrected 256x256 Rim wall CORNER tile using the first reference's straight wall as the exact paint/material authority and the second reference only for L geometry. Strict top-down orthographic, no perspective. A 128px-thick L joins LEFT edge centred y64..191 to BOTTOM edge centred x64..191. Outer elbow is square at x192,y64; inner elbow at x64,y192. Transparent empty above y64 and right of x192, with empty lower-left notch x0..63,y192..255. Both arms have completely flat cut ends at the cell border with no end outline or end cap: left end exactly y64 through191 inclusive, bottom end exactly x64 through191 inclusive. No opaque pixels on top or right cell edge. Match the attached STRAIGHT exactly: same blue-grey bulkhead value and brushed, worn plate texture, same ivory cap-band width, same thin cyan #8BDEEE light strip through the centre. Carry cap and cyan strip in continuous clean right-angle bends around the corner, meeting the straight reference at each opening's same centreline/height. Top-left light; no cast shadow. Remove the old corner's panel grid, hazard stripes, corner fittings and extra bolts. No new seams, panel grid, rivets, lettering, rounded corners or lighter cap. Transparent canvas right to flat-cut openings. Output one square tile, preserve full canvas and exact half-tile dimensions."
+  },
+  "preflight": {
+    "id": "kit-rim-wall-corner",
+    "own": "faf6309c56beebf10341b3fb542d7d48199b5633",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "run": "sole-20261120-1615",
+    "latest_comment": 7045450156
+  },
+  "clock": {
+    "current_time": "2026-11-20 16:57:59 UTC"
+  },
+  "review": "Selected review candidate after native/256 tile and joined horizontal+vertical montage inspection. Half-tile openings exact at alpha>=127, no endcaps, cyan bottom centre matches straight127..128. Left cyan strongest127 only while straight127..128, left cross-section RGB mean absolute difference7.875/255: handpainted value variation disclosed, no pixel-identical paint or artistic approval claimed. No grid/hazards/new bolts, original superseded and retained.",
+  "production_approved": false,
+  "implementation_ready": false,
+  "path": "art/sprites/kit/rim/wall-corner.png",
+  "production": {
+    "path": "art/sprites/kit/rim/wall-corner.png",
+    "sha256": "abab40e38bd67e82cd34bad19e803b376a0ba13bfa99ccef207a0b15350b2c91"
+  },
+  "source": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/native.png",
+    "sha256": "4c116c259160f2f9765700643a07d70297175975fccc81a9267f72f7f7d94c53"
+  },
+  "prompt": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/prompt.txt",
+    "sha256": "708831bd0a0b819cd26c8d7d9e4b40ed635bf06eab315075d200ab48461681c9"
+  },
+  "master": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/master-1024.png",
+    "sha256": "d5852f73923712a1dd93eb7c43e6f39060813b41bf1dc2fcde66d565dcaba8d2"
+  },
+  "references": [
+    {
+      "original": {
+        "path": "art/sprites/kit/rim/wall-straight.png",
+        "sha256": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4"
+      },
+      "snapshot": {
+        "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/references/00-wall-straight.png",
+        "sha256": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4"
+      }
+    }
+  ],
+  "previous": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/superseded/art/sprites/kit/rim/wall-corner.png",
+    "sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c"
+  },
+  "exports": {
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/exports/256/wall-corner.png",
+      "sha256": "abab40e38bd67e82cd34bad19e803b376a0ba13bfa99ccef207a0b15350b2c91"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/exports/128/wall-corner.png",
+      "sha256": "a67d9cd7b4681cb289695c602775cc2394f852388fa5bc6600fb4e7fc2b25cb9"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/exports/64/wall-corner.png",
+      "sha256": "d0307595404db03df85922e0207cdd6b479c11536a048f4ce3df4a396b2cdc7e"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/exports/32/wall-corner.png",
+      "sha256": "5aefadf882009ec52c8b68e155fb4e0ab547b586202ffe9ba503006c5c08d67e"
+    }
+  },
+  "join_review": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/013-v1/join-review.png",
+    "sha256": "d9cc318e5789f8b4dbf6a480916b104492da1d95c613113d3202f60dbe7f79d2"
+  },
+  "metrics": {
+    "alpha_threshold": 127,
+    "left_opening": [
+      64,
+      191
+    ],
+    "bottom_opening": [
+      64,
+      191
+    ],
+    "top_right_empty": true,
+    "bottom_cyan": [
+      127,
+      128
+    ],
+    "left_cyan": [
+      127
+    ],
+    "left_join_rgb_mean_absolute_difference": 7.875,
+    "pixel_identical_paint": false
+  },
+  "status": "review-candidate",
+  "count_contribution": 1
+}

@@ -1,0 +1,33 @@
+{
+  "survival_art": {
+    "label": "wall-corner.png",
+    "path": "art/sprites/kit/rim/wall-corner.png",
+    "sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c",
+    "width": 256,
+    "height": 256,
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "upscaled": false,
+    "background": "transparent",
+    "mode": "wall",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "collection": "survival-rim-2026-11-13",
+    "source_path": "art/_archive/survival/2026-11-13-rim/native-renders/K188.png"
+  },
+  "kit": {
+    "setting": "rim",
+    "piece": "wall-corner",
+    "kind": "wall",
+    "path": "art/sprites/kit/rim/wall-corner.png",
+    "width": 256,
+    "height": 256,
+    "delivery": "survival-k188",
+    "status": "review-candidate",
+    "use": false,
+    "why": "not the straight piece's wall: another panel grid and shade, so every corner shows a join"
+  }
+}

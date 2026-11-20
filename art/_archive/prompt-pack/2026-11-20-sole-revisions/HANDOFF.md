@@ -1,0 +1,5 @@
+# Sole revision delivery
+
+Current project511/871. RimCorner File01#013 selected and exported as unapproved review candidate: both128px openings, no top/right edge alpha, no endcaps; cyan bottom127..128. Left cyan strongest127 (straight127..128), RGB cross-section mean absolute difference7.875/255. No pixel-identical painted-match claim. Original256 master and both prior catalog entries preserved in selected/013-v1/superseded and previous-catalog.json. Native bytes, prompt, refs,1024 archive master,256 production tile+four exports, joined-tile review and validator preserved.
+
+RunningScript File03#066 remains pending: best066-sole-v3 has correct alpha, pose and added glyph visually, but unchanged-source-pixel requirement not passed (outside-glyph alpha IoU0.93498;6379 differing binary alpha pixels). Native and white-ink technical preview retained; production original untouched. Six unsuccessful corner attempts and three icon attempts count0. No actual image quota yet. Sole artist retains RunningScript exact claim; do not retry moderation-blocked jobs or draw held ScrapTurret. Read issue3/all comments and remote deliveries before any further image.
