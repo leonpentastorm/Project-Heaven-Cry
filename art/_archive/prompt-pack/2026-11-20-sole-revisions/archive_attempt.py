@@ -29,7 +29,7 @@ for size in (1024, 256, 128, 64, 32):
     path = attempt / f'preview-{size}.png'
     image.resize((size, size), Image.Resampling.LANCZOS).save(path)
     files[str(size)] = {'path': str(path.relative_to(root)), 'sha256': hashlib.sha256(path.read_bytes()).hexdigest()}
-record = {**payload, 'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(), 'native_dimensions': list(image.size), 'native_mode': Image.open(source).mode, 'native_alpha_bbox': image.getchannel('A').getbbox(), 'references': references, 'technical_previews': files, 'selected': False, 'count_contribution': 0, 'status': 'quality-rejected', 'production_approved': False, 'implementation_ready': False}
+record = {**payload, 'source_sha256': hashlib.sha256(source.read_bytes()).hexdigest(), 'native_dimensions': list(image.size), 'native_mode': Image.open(source).mode, 'native_alpha_bbox': image.getchannel('A').getbbox(), 'references': references, 'technical_previews': files, 'selected': False, 'count_contribution': 0, 'status': payload.get('status', 'quality-rejected'), 'production_approved': False, 'implementation_ready': False}
 (attempt / 'review.json').write_text(json.dumps(record, indent=2) + '\n')
 assert hashlib.sha256((root / job['path']).read_bytes()).hexdigest() == job['original_sha256']
 print(json.dumps({'archived': str(attempt.relative_to(root)), 'original_unchanged': True, 'count_contribution': 0, 'selected': False}))

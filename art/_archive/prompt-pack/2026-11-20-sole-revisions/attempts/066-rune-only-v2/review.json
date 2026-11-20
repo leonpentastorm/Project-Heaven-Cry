@@ -1,0 +1,91 @@
+{
+  "id": "fork.sigil.running_script",
+  "src": "/workspace/generated_images/exec-8814e6e5-d275-4bb9-959e-38e5b7235786.png",
+  "job": {
+    "id": "fork.sigil.running_script",
+    "number": 66,
+    "file": 3,
+    "path": "art/icons/forks/sigil-running-script.png",
+    "references": [
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/rune-two-stroke-detail.png",
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/native.png"
+    ],
+    "prompt": "Make one small invented rune for fictional RPG game art: a flat black angular contour on fully transparent alpha, square canvas, centred and occupying the central60percent so its THREE strokes are clear. Use attached two-stroke angular hook as the starting shape. KEEP those first two joined segments, and ADD A THIRD SHORT straight diagonal stroke to its bottom endpoint. Third stroke rises toward the upper-left for only HALF the length of the first segment, then stops abruptly, unfinished. Thus FOUR vertices, THREE connected straight segments, exactly: long down-right diagonal, long straight down vertical, SHORT up-left diagonal. One connected open broken zigzag, no enclosed area, no letter, numeral or writing. Uniform thin black stroke, crisp flat shape, no rounded caps, no grey, texture, spatter, shadow, white underfill, matte or background. Do not include any robot, old glyph, frame or other mark. Transparent PNG. This is the isolated addon drawing only.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/rune-two-stroke-detail.png": "4add0b14b5a259743be5eb74357fcbf9a3d968955388cb9a75a502f1dbb937c0",
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/native.png": "e3d7d686b6c79748020b51e5c56c2bda0c4dcb9a014cd40f722b9ac55ccf1182"
+    },
+    "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+    "technical_export_note": "Intermediate flat black ink requested to preserve negative-space alpha; if faithful, exporter may normalize visible RGB to purewhite without modifying alpha or geometry. No code-created drawing or compositing.",
+    "generation_mode": "delta-only overlay; no production composite without explicit alternate editing authorization"
+  },
+  "preflight": {
+    "own": "6d8576b923cede542261501a7d4b4fa723e15354",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "run": "sole-20261120-1615",
+    "latest_comment": 7045450156
+  },
+  "clock": {
+    "current_time": "2026-11-20 18:18:43 UTC"
+  },
+  "attempt": "066-rune-only-v2",
+  "status": "component-ready",
+  "review": "Standalone generated rune inspected on white magnified preview: exactly three connected straight segments, final up-left segment shorter/half-finished, clean flat black with transparent background, no old character/glyph marks or matte. Component ready for potential localized addition; no composite/production replacement performed, no picture count. Original source untouched.",
+  "source_sha256": "7be587944768b44ec08657fe399df14c477d769240a99b5d6541883377180d60",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "native_mode": "RGBA",
+  "native_alpha_bbox": [
+    218,
+    134,
+    1178,
+    1174
+  ],
+  "references": [
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/rune-two-stroke-detail.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/references/00-rune-two-stroke-detail.png",
+      "sha256": "4add0b14b5a259743be5eb74357fcbf9a3d968955388cb9a75a502f1dbb937c0"
+    },
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/native.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/references/01-native.png",
+      "sha256": "e3d7d686b6c79748020b51e5c56c2bda0c4dcb9a014cd40f722b9ac55ccf1182"
+    }
+  ],
+  "technical_previews": {
+    "1024": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/preview-1024.png",
+      "sha256": "18f0fcc523f0b65cf36c80ec9ba055baa3b7929409b013c7d52d535a5de60c20"
+    },
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/preview-256.png",
+      "sha256": "8c70098205eb8d2b9593852d70efd6f77addce8b04be0e1965c6c30ff078223f"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/preview-128.png",
+      "sha256": "8a0d52c3ba9736fa36d5bf382b2f9f5f275a548c9178a1227e5951dbdea259d1"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/preview-64.png",
+      "sha256": "e4d23f48de7062faa3aeb1e3b9622449679183416e385ef24336c6b9779786e9"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/preview-32.png",
+      "sha256": "2920b821c880d6a4749a28750b70c2cc282a0b2e14ea9855f36e112c3dae51f4"
+    }
+  },
+  "selected": false,
+  "count_contribution": 0,
+  "production_approved": false,
+  "implementation_ready": false
+}

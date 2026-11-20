@@ -1,0 +1,23 @@
+{
+  "status": "component-ready, production-composite not performed",
+  "component_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/rune-technical-export-31x50.png",
+  "component_sha256": "0a6a20c3db7d5f17d13a6b406511691aa8973259394761077ebfdba93618c3bf",
+  "native_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/native.png",
+  "native_sha256": "7be587944768b44ec08657fe399df14c477d769240a99b5d6541883377180d60",
+  "source_path": "art/icons/forks/sigil-running-script.png",
+  "source_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+  "proposed_top_left": [
+    630,
+    620
+  ],
+  "size": [
+    31,
+    50
+  ],
+  "existing_nonzero_source_alpha_pixels_in_zone": 4,
+  "technical_exports_only": "crop source alpha bounds, uniform resize and normalize inkRGB towhite; no new shape drawing",
+  "permission_needed": "Explicit alternate-method instruction required by imagegen tool rule before code composite; no composite yet",
+  "count_contribution": 0,
+  "production_approved": false,
+  "implementation_ready": false
+}
