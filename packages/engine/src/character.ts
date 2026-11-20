@@ -89,6 +89,9 @@ export interface Character extends Sheet {
   quivers?: QuiverInst[];
   /** Slot armour worn, by slot (head, head_accessory, inner_torso, lower_torso, legs, hands, footwear). */
   worn?: Record<string, string>;
+  /** Rules 1.91 item 7953 (primitive N3): the state of a worn instance (its grade), by the slot's saved key; body armour's
+   * at the armour_class_from slot (`torso_outer`). Absent means Standard; written only for a piece that is not. */
+  wornState?: Record<string, GearState>;
   /** Magic (spec: Mana, rules 1.2): Sigil words known; Outburst designs ready and the schools and modules learned;
    * MP in the Emanator; charge left in the core loaded in the Evoker; the scene a word was last learned in. */
   outbursts?: OutburstDesign[]; soulKnown?: { schools: string[]; modules: string[]; tones?: string[] };
@@ -201,9 +204,35 @@ export const wearState = (now: number, max: number): 'sound' | 'worn' | 'broken'
  * with no `effects` gives nothing here. */
 export function gearEffects(c: Character): { op: string; value?: number; hazard?: string }[] {
   const held = inHands(c).filter((id) => !!id && id !== 'fists');
-  return [...Object.values(c.worn || {}).map((id) => ITEM[id] as any), ...held.map((id) => (WEAPON[id] as any) || (ITEM[id] as any))]
-    .flatMap((d) => (d?.effects || []) as { op: string; value?: number; hazard?: string }[]);
+  // rules 1.91 item 7954: a worn piece's grade scales its armour value (armour_bonus) by its rarity row's `arm`, nothing else
+  const worn = Object.entries(c.worn || {}).flatMap(([slot, id]) => { const k = armOf(wornGrade(c, slot)), fx = (((ITEM[id] as any)?.effects || []) as { op: string; value?: number; hazard?: string }[]);
+    return k === 1 ? fx : fx.map((e) => (e.op === 'armour_bonus' && typeof e.value === 'number' ? { ...e, value: e.value * k } : e)); });
+  return [...worn, ...held.map((id) => (WEAPON[id] as any) || (ITEM[id] as any)).flatMap((d) => (d?.effects || []) as { op: string; value?: number; hazard?: string }[])];
 }
+/** Rules 1.91 item 7908: the slot body armour's grade sits at (rules.json equipment_slots.armour_class_from). */
+export const ARMOUR_SLOT: string = (RULES as any).equipment_slots?.armour_class_from || 'torso_outer';
+/** Rules 1.91 item 7953: the grade of the instance worn at a slot's saved key (body armour: ARMOUR_SLOT); Standard
+ * when none is recorded. */
+export const wornGrade = (c: Pick<Character, 'wornState'>, slot: string): Rarity => c.wornState?.[slot]?.rarity || 'standard';
+/** Rules 1.91 items 7906, 7954: what a grade multiplies an armour value by (its rarity row's `arm`). */
+export const armOf = (r: Rarity): number => RARITY[r]?.arm ?? 1;
+/** Rules 1.91 item 7907: does this worn piece or body armour take a grade? A body armour class (`armour:<n>`, n > 0),
+ * or a worn armour row (an items row of the armour kind with a slot) whose `graded` is not false. */
+export function gradedArmour(id: string | null | undefined): boolean {
+  if (!id) return false;
+  const a = /^armour:(\d+)$/.exec(id); if (a) return Number(a[1]) > 0 && !!ARMOUR_CLASSES[Number(a[1])];
+  const r: any = ITEM[id]; return !!r && r.category === 'armour' && !!r.slot && r.slot !== 'off_hand' && r.graded !== false;
+}
+/** Write the state of the instance worn at a slot (rules 1.91 item 7953): kept only when not Standard; the field goes
+ * when nothing is left in it. */
+function setWornState(c: Character, slot: string, st: GearState | null | undefined) {
+  const ws = { ...(c.wornState || {}) };
+  if (st?.rarity && st.rarity !== 'standard') ws[slot] = { rarity: st.rarity }; else delete ws[slot];
+  if (Object.keys(ws).length) c.wornState = ws; else delete c.wornState;
+}
+/** Rules 1.91 item 7953: a new body armour class is a new plate (a fitting, the camp's choice, the Proving Ground): its
+ * grade is Standard. The one door that sets the class. */
+export function setArmourClass(c: Character, cls: number) { c.armourClass = cls; if (c.wornState?.[ARMOUR_SLOT]) setWornState(c, ARMOUR_SLOT, null); }
 export const gearBonus = (c: Character, op: string) => gearEffects(c).filter((e) => e.op === op).reduce((t, e) => t + (e.value || 0), 0);
 export const gearHas = (c: Character, op: string) => gearEffects(c).some((e) => e.op === op);
 export type InjuryLoc = 'head' | 'torso' | 'arm' | 'leg';
@@ -744,15 +773,29 @@ const P = (c: Character, id: string) => c.skills[id] || 0;
 const A = (c: Character, id: string) => c.attrs[id] || 1;
 /** A derived stat after items (plan 2.4): + the items' adds, × their multipliers (effects/hooks.ts statQuery). */
 const fx = (c: Character, stat: StatId, base: number, ctx: any = {}) => { if (!c.perks?.length && !c.traits?.length && !c.classId && !c.advancedClass && !c.relics?.length) return base; /* rules 1.43: a relic answers stats too (a graft's max HP) */ const q = statQuery({ c }, stat, ctx); return (base + q.add) * q.mult; };
-export const ARMOUR = [{ value: 0, move: 0, dodge: 0 }, { value: 5, move: 0, dodge: 0 }, { value: 10, move: 0, dodge: 0 }, { value: 15, move: -0.5, dodge: 0 }, { value: 20, move: -0.5, dodge: -1 }, { value: 25, move: -1, dodge: 0 }];
+/** Rules 1.91 items 7950, 7951: body armour by class, read from the class rows (rules.json combat.armor.classes, the one
+ * copy; the typed table is gone): the armour value, the Movement and Dodge penalties, no Sprint, armoured. */
+export const ARMOUR: { value: number; move: number; dodge: number; noSprint: boolean; armoured: boolean }[] = ARMOUR_CLASSES.map((r) => ({
+  value: Number(r.value) || 0, move: Number(r.penalty?.movement) || 0, dodge: Number(r.penalty?.dodge) || 0, noSprint: !!r.penalty?.no_sprint, armoured: !!r.armoured }));
+/** Rules 1.91 item 7950: the smallest armour value of an armoured row (a unit with no sheet is armoured at it or more). */
+export const ARMOURED_FROM: number = Math.min(...ARMOUR.filter((r) => r.armoured).map((r) => r.value));
+/** Rules 1.91 item 7950: the value of the `light_cap` row, the cap "your armour counts as at most Class I's" (Forlorn Hope). */
+export const LIGHT_CAP: number = Number(ARMOUR_CLASSES.find((r) => r.light_cap)?.value ?? 0);
+/** Rules 1.91 item 7950: can't Sprint in this class (its row's penalty.no_sprint). */
+export const noSprintClass = (cls: number | null | undefined): boolean => !!ARMOUR[cls || 0]?.noSprint;
+/** Rules 1.91 item 7950: does this class count as armour (its row's `armoured`)? */
+export const armouredClass = (cls: number | null | undefined): boolean => !!ARMOUR[cls || 0]?.armoured;
+/** Rules 1.91 item 7954: the one reader of a character's body armour value: its class row's value x the grade's `arm`
+ * (the plate's grade at wornState.torso_outer). Unscaled by level (armourOf scales it). */
+export const bodyArmourValue = (c: Pick<Character, 'armourClass' | 'wornState'>): number => (ARMOUR[c.armourClass]?.value || 0) * armOf(wornGrade(c, ARMOUR_SLOT));
 // Skeleton 2.0 (rules 1.13): defence numbers sit on the betas. HP a level reads Pain Threshold (it was Durability).
 export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'pain_threshold'));
 /** Rules 1.36 (the level scale): max HP = round(scale(level) × (100 + 15 × (Endurance − 1) + (level − 1) × HP a level)),
  * perks and traits inside the bracket: a point of Endurance or Pain Threshold is the same share of the bar at every level. */
 export const maxHp = (c: Character) => Math.max(1, Math.round(scaleOf(c.level) * fx(c, 'hp', 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c))));
 /** Rules 1.36: a character's armour (its Class, what gear and items add), in HP: × scale at the wearer's level. */
-export const armourOf = (c: Character, add = 0) => classArmour(c.armourClass, c.level, add);
-/** Rules 1.36: the armour of a Class (0 to 5) at a level, plus what is added, × scale at that level. */
+export const armourOf = (c: Character, add = 0) => Math.round(scaleOf(c.level) * (bodyArmourValue(c) + add));
+/** Rules 1.36: the armour of a Class (a class row) at a level, plus what is added, × scale at that level (a Standard plate). */
 export const classArmour = (armourClass: number, level: number, add = 0) => Math.round(scaleOf(level) * ((ARMOUR[armourClass]?.value || 0) + add));
 /** The level scale's revision (rules 1.36): a save from before it is moved once (migrateCharacterHp). */
 export const HP_REV = 136;
@@ -1060,14 +1103,20 @@ export const gearProps = (c: Character): string[] => [
 ];
 /** Where a carried instance is: a hand, or a pack line by its index. */
 /** A carried instance: a hand, a pack line, or a carried quiver (rules 1.53: `quiver:0` the worn one, `quiver:1` the ready one). */
-export type GearWhere = 'main' | 'off' | number | `quiver:${number}`;
+export type GearWhere = 'main' | 'off' | number | `quiver:${number}` | `worn:${string}`;
 const quiverAt = (where: GearWhere): number | null => (typeof where === 'string' && where.startsWith('quiver:') ? Number(where.slice(7)) : null);
+/** Rules 1.91 item 7953: a worn instance's slot (`worn:<saved key>`; body armour at `worn:torso_outer`), or null. */
+const wornAt = (where: GearWhere): string | null => (typeof where === 'string' && where.startsWith('worn:') ? where.slice(5) : null);
+/** Rules 1.91 item 7953: the id worn at a slot: the piece, or body armour's class (`armour:<n>`) at ARMOUR_SLOT; null when bare. */
+export const wornIdAt = (c: Pick<Character, 'worn' | 'armourClass'>, slot: string): string | null => (slot === ARMOUR_SLOT ? (c.armourClass ? 'armour:' + c.armourClass : null) : c.worn?.[slot] || null);
 /** The one focus test: is this id a focus of any kind (an item or a weapon in FOCUS_IDS)? */
 export const isFocusId = (id: string) => ALL_FOCUS_IDS.includes(id);
 /** The weapon or focus instance at `where`: its id, rarity and property, or null (an empty hand, fists, a line that is
  * not a weapon or a focus). */
 export function gearAt(c: Character, where: GearWhere): { id: string; rarity: Rarity; prop?: string; focus: boolean } | null {
-  const of = (id: string | undefined, st: { rarity?: Rarity; prop?: string } | undefined | null) => (!id || id === 'fists' || (!WEAPON[id] && !isFocusId(id) && !isQuiverItem(id)) ? null : { id, rarity: st?.rarity || 'standard', ...(st?.prop ? { prop: st.prop } : {}), focus: isFocusId(id) });
+  // rules 1.91 item 7907: a graded armour piece (worn, or a pack line) and the body armour are graded instances too
+  const of = (id: string | undefined, st: { rarity?: Rarity; prop?: string } | undefined | null) => (!id || id === 'fists' || (!WEAPON[id] && !isFocusId(id) && !isQuiverItem(id) && !gradedArmour(id)) ? null : { id, rarity: st?.rarity || 'standard', ...(st?.prop ? { prop: st.prop } : {}), focus: isFocusId(id) });
+  { const slot = wornAt(where); if (slot != null) { const id = wornIdAt(c, slot); return id && gradedArmour(id) ? of(id, c.wornState?.[slot]) : null; } }
   if (where === 'main') return of(c.weapon, c.weaponState);
   if (where === 'off') return c.offHand && !twoHands(c, c.weapon) ? of(c.offHand.id, c.offHand) : null;
   { const qi = quiverAt(where); if (qi != null) { const q = quiversOf(c)[qi]; return q ? of(q.id, q) : null; } }
@@ -1090,7 +1139,8 @@ export function setGrade(c: Character, where: GearWhere, rarity: Rarity, prop?: 
   { const f = fixedGradeOf(g.id); if (f && f !== rarity) return 'Its grade is its own: ' + gradeWord(f) + '.'; }
   const dur = Math.round(maxDurOf(g.id, rarity) * Math.max(0, Math.min(1, o.durShare ?? 1))), keepProp = prop === undefined ? g.prop : prop || undefined;
   const st = <T extends { dur?: number; prop?: string; rarity?: Rarity }>(old: T): T => { const { prop: _p, dur: _d, ...rest } = old; void _p; void _d; return { ...rest, rarity, ...(dur ? { dur } : {}), ...(keepProp ? { prop: keepProp } : {}) } as T; };
-  if (where === 'main') c.weaponState = st({ ...(c.weaponState || {}) });
+  if (wornAt(where) != null) setWornState(c, wornAt(where)!, { rarity }); // rules 1.91 item 7953: a worn piece's grade
+  else if (where === 'main') c.weaponState = st({ ...(c.weaponState || {}) });
   else if (where === 'off') c.offHand = st({ ...c.offHand! });
   else if (quiverAt(where) != null) { const qi = quiverAt(where)!; setQuivers(c, quiversOf(c).map((q, k) => (k === qi ? st({ ...q }) : q))); }
   else {
@@ -1114,7 +1164,7 @@ export function wearAt(c: Character, where: GearWhere): Wear | null {
   };
   if (where === 'main') return one(c.weapon, c.weaponState);
   if (where === 'off') return c.offHand && !twoHands(c, c.weapon) ? one(c.offHand.id, c.offHand) : null;
-  if (quiverAt(where) != null) return null; // a quiver does not wear (rules 1.53)
+  if (quiverAt(where) != null || wornAt(where) != null) return null; // a quiver does not wear (rules 1.53), nor armour
   const it = packOf(c)[where as number]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
   return one(it.weapon || it.item || it.id, it);
 }
@@ -1376,7 +1426,21 @@ export function migrateCharacterItems(c: Character): string[] {
   }
   if ((c.traits || []).some((t) => !knownTrait(t))) c.traits = c.traits.filter(knownTrait);
   if (migrateSpecialRounds(c)) notes.push(c.name + ': special rounds are carried by calibre now; the old ones are ' + (CALIBRE_NAME[SPECIAL_REF_CALIBRE] || SPECIAL_REF_CALIBRE) + ' rounds.');
+  migrateWornKeys(c);
   return notes;
+}
+/** Rules 1.91 item 7958: the slots' older spellings (a saved `worn.torso_inner`) moved once to the saved key; when that
+ * slot is filled already, the older piece goes to the pack. Nothing is written when no old key is there. */
+const OLD_SLOT_KEYS: Record<string, string> = { torso_inner: 'inner_torso' };
+function migrateWornKeys(c: Character) {
+  const w: Record<string, string> | undefined = c.worn; if (!w || !Object.keys(OLD_SLOT_KEYS).some((k) => k in w)) return;
+  const worn = { ...w };
+  for (const [old, key] of Object.entries(OLD_SLOT_KEYS)) {
+    if (!(old in worn)) continue; const id = worn[old]; delete worn[old];
+    if (!id) continue;
+    if (!worn[key]) worn[key] = id; else { const e = gearEntry(id, null); if (e) c.pack = [...packOf(c), e]; }
+  }
+  c.worn = worn;
 }
 export function migrateCharacterFocus(c: Character): string[] {
   if (c.focusRev === FOCUS_REV) return [];
@@ -1581,7 +1645,9 @@ export function equip(c: Character, idx: number, to: 'main' | 'off' | 'worn'): s
     { const rq = requiresWhy(c, item.requires); if (rq) return rq; } // a worn piece that asks a skill
     // Heavy armour (rules 1.13): a piece that carries an armour class (outer torso, Class 4 and 5) asks Pain Threshold.
     if (typeof item.armour_class === 'number') { const ag = armourGateWhy(c, item.armour_class); if (ag) return ag; }
-    take(); const worn = { ...(c.worn || {}) }; if (worn[slot]) putBack(worn[slot], undefined); worn[slot] = it.item || it.id; c.worn = worn;
+    // rules 1.91 item 7953: the piece takes its pack line's grade into the slot; the piece it replaces goes back with its own
+    take(); const worn = { ...(c.worn || {}) }; if (worn[slot]) putBack(worn[slot], c.wornState?.[slot]); worn[slot] = it.item || it.id; c.worn = worn;
+    setWornState(c, slot, gradedArmour(worn[slot]) ? { rarity: it.rarity } : null);
   }
   c.pack = pack; return null;
 }
@@ -1610,7 +1676,7 @@ export function unequip(c: Character, slot: string): string | null {
   const pack = packOf(c).map((x) => ({ ...x }));
   if (slot === 'main') { const e = handEntry(c, 'main'); if (!e) return 'Your hands are already empty.'; pack.push(e); emptyHand(c, 'main'); }
   else if (slot === 'off') { if (!c.offHand) return 'Nothing there.'; const e = gearEntry(c.offHand.id, c.offHand, c.offHand.loaded); if (e) pack.push(e); c.offHand = null; }
-  else { const id = c.worn?.[slot]; if (!id) return 'Nothing there.'; pack.push({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id) }); const w = { ...c.worn }; delete w[slot]; c.worn = w; }
+  else { const id = c.worn?.[slot]; if (!id) return 'Nothing there.'; const r = wornGrade(c, slot); pack.push({ id, item: id, name: ITEM[id]?.name || id, qty: 1, kind: packKindOf(id), ...(r !== 'standard' ? { rarity: r } : {}) }); const w = { ...c.worn }; delete w[slot]; c.worn = w; setWornState(c, slot, null); } // rules 1.91 item 7953: with its grade
   c.pack = pack; return null;
 }
 /** Where a gun is carried: a hand, or a pack line by its index. */

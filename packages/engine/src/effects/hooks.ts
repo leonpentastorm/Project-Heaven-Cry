@@ -7,7 +7,7 @@ import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
 import type { ActiveEffect, CheckMod, Holder, HookName, ItemHandler, ItemInfo, StatAnswer, ItemKind } from './types';
 import type { StatId } from './stats';
-import { type Held, instanceMods, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, verbsOf, classMoveKeys, rawItem, _addRawItems, _clearRawItems } from './collect';
+import { type Held, instanceMods, itemsOf, heldKey, keyOf, heldAny, skillItemsOf, verbsOf, classMoveKeys, rawItem, _addRawItems, _clearRawItems, wornHeldEffects } from './collect';
 
 // ---------- the bound game (set by apply() for the length of one action) ----------
 let G: any = null;
@@ -206,7 +206,11 @@ export function heldOfChar(c: Character | null | undefined): Held {
   if (!handsHook) hands = [{ hand: 'main', id: c.weapon, st: c.weaponState }, ...(c.offHand ? [{ hand: 'off' as const, id: c.offHand.id, st: c.offHand }] : [])];
   else if (!askingHands.has(c)) { askingHands.add(c); try { hands = handsHook(c); } finally { askingHands.delete(c); } }
   const m = hands.map((x) => instanceMods(x.id, x.st));
-  const props = [...m.flatMap((x) => x.prop), ...(c.pack || []).map((x) => x.prop), ...m.flatMap((x) => x.mods), ...m.flatMap((x) => x.baked)].filter((x): x is string => !!x);
+  // Rules 1.91 item 7956 (N4): a worn piece is held the same way: its id when its row carries effects the engine runs on
+  // a holder (collect.ts wornHeldEffects: not the gear ops gearEffects sums), and a worn variant's modifiers (a unique's
+  // effects among them). A piece with only gear ops adds nothing, so a held list is unchanged by what is worn today.
+  const worn = Object.entries(c.worn || {}).flatMap(([slot, id]) => [...(wornHeldEffects(id).length ? [id] : []), ...instanceMods(id, c.wornState?.[slot]).baked]);
+  const props = [...m.flatMap((x) => x.prop), ...(c.pack || []).map((x) => x.prop), ...m.flatMap((x) => x.mods), ...m.flatMap((x) => x.baked), ...worn].filter((x): x is string => !!x);
   const rel = props.length ? [...new Set([...(c.relics || []), ...props])] : c.relics || [];
   return { perks: (c.perks || []).map((p) => ({ id: p.id, tier: p.tier })), traits: [...(c.traits || [])], cls: c.classId || null, rank, adv: c.advancedClass || null, ...(sk.length ? { skills: sk } : {}), ...(rel.length ? { relics: [...rel] } : {}), ...(vb.length ? { verbs: vb } : {}) };
 }

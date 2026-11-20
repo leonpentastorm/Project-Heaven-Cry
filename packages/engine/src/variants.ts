@@ -20,7 +20,7 @@ export interface VariantLine { id: string; name: string; base: string; rarity?: 
    * instance at every grant and pool; the Forge's grade step refuses it); no modifier cap and no worth cap. */
   unique?: boolean;
   /** A unique's own effects (item-op effects): made into one modifier item of the row (`vmod.<id>.unique`), held while
-   * the instance is in a hand as every variant modifier is (hooks.ts heldOfChar); held while worn comes with N4. */
+   * the instance is in a hand as every variant modifier is, or worn (N4, rules 1.91 item 7956; hooks.ts heldOfChar). */
   effects?: any[]; text?: string;
   /** Rules 1.91 item 7918: the Weapon Art slot, null until the Weapon Art patch. */
   weapon_art?: null }
@@ -34,13 +34,14 @@ function putAt(root: any, path: string, v: number) {
 
 /** Expand the variant lines: the variant rows for the weapon table and for the item table (a focus), and the modifier
  * items their effect kinds make. A line whose base or kind is unknown throws (the validator refuses it first). */
-export function expandVariants(file: any, weapons: Record<string, any>, items: Record<string, any>): { weapons: any[]; items: any[]; mods: any[] } {
+export function expandVariants(file: any, weapons: Record<string, any>, items: Record<string, any>,
+  /** rules 1.91 item 7957: a body armour class as a base (`armour:<n>`: data.ts makes it an items row), or null */ classBase: (id: string) => any | null = () => null): { weapons: any[]; items: any[]; mods: any[] } {
   const kinds: Record<string, any> = Object.fromEntries(((file?.kinds || []) as any[]).map((k) => [k.id, k]));
   const out = { weapons: [] as any[], items: [] as any[], mods: [] as any[] };
   for (const line of (file?.items || []) as VariantLine[]) {
-    // (rules 1.91 item 7917: a body armour class row as a base is lane A2's seam, once the class rows are the one copy)
-    const baseRow = weapons[line.base] || items[line.base];
-    if (!baseRow) throw new Error('data/variants.json ' + line.id + ': base "' + line.base + '" is neither a weapon nor an item');
+    // rules 1.91 item 7957: a body armour class (armour:<n>) is a base too, made an items row of the armour kind
+    const baseRow = weapons[line.base] || items[line.base] || classBase(line.base);
+    if (!baseRow) throw new Error('data/variants.json ' + line.id + ': base "' + line.base + '" is neither a weapon, an item nor a body armour class');
     const row: any = { ...clone(baseRow), id: line.id, name: line.name, variant_of: line.base, variant_grade: line.rarity || 'standard', variant_worth: 0, variant_mods: [] as string[], provisional: true };
     const lines: { kind: string; name: string; text: string }[] = [];
     for (const m of line.mods || []) {
