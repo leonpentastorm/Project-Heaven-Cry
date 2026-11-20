@@ -171,7 +171,8 @@
     "armour-field_trousers--masterwork",
     "armour-field_trousers--relic",
     "armour-field_trousers--celestial",
-    "armour-tactical_gloves--fine"
+    "armour-tactical_gloves--fine",
+    "armour-tactical_gloves--masterwork"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -205,7 +206,6 @@
     "weapon-whisper_smg--masterwork",
     "weapon-whisper_smg--relic",
     "weapon-whisper_smg--celestial",
-    "armour-tactical_gloves--masterwork",
     "armour-tactical_gloves--relic",
     "armour-tactical_gloves--celestial",
     "armour-jump_boots--fine",
@@ -215,7 +215,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-20T05:23:46.734517+00:00",
+  "updated_utc": "2026-11-20T05:25:35.595648+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3,
   "quota_history": [
