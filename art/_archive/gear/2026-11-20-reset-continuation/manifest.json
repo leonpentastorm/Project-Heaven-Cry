@@ -4639,6 +4639,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-barrier_wall--masterwork",
+      "path": "art/icons/gear/shield-barrier_wall--masterwork.png",
+      "sha256": "06e5dd1d232a885348ea673c5f3c45b44ca33ade3f052a28e62a7b73237fe640",
+      "label": "Barrier Wall — Masterwork",
+      "family": "shield-barrier_wall",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-barrier_wall--masterwork.png",
+        "sha256": "df8d3be4bf71345d64a26da94c8fb2707b71170076eefedbd1cab11f36bc759c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-barrier_wall--masterwork.png",
+        "sha256": "06e5dd1d232a885348ea673c5f3c45b44ca33ade3f052a28e62a7b73237fe640"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-barrier_wall--masterwork.txt",
+        "sha256": "cedd9326c2cfde31aae080e26ec8d5765a0a0da6bac17a92fba68e12af5591c7"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-barrier_wall.png",
+          "sha256": "2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803"
+        },
+        {
+          "path": "art/icons/gear/shield-barrier_wall--fine.png",
+          "sha256": "8ec72b454cb2c83a7845fbe85c04f1028700170403d4b69349b0c65fdcfcda57"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png",
+          "sha256": "b6f6fc809ac3f26cf41cc41a480a0cd3d1c156c543b1fd4d8a16e2804935c990"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-barrier_wall--masterwork.png",
+        "128": "art/icons/gear/exports/128/shield-barrier_wall--masterwork.png",
+        "64": "art/icons/gear/exports/64/shield-barrier_wall--masterwork.png",
+        "32": "art/icons/gear/exports/32/shield-barrier_wall--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "a8f8d776835dcdc0914ea5e5366a81bb581a336bf2b1a4b37d50f87d0decfea9",
+        "128": "420df22c9b504f24c60911fa2295ef40229e4eb89b5a196ca72493a4fd7a9781",
+        "64": "4d96239a60e8194d60749da20729a90244cb90c20749633fe29077962efa1293",
+        "32": "60ec70e052b9e851493e75e6dc076a58232468603d04e185aeb27d24a54e7c45"
+      },
+      "grade": "masterwork",
+      "standard_id": "shield-barrier_wall",
+      "outline": {
+        "solid_alpha_iou": 0.9952763283839406,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 0,
+        "different_pixels_64": 24
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
