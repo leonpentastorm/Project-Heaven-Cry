@@ -26537,6 +26537,42 @@
         "different_pixels_32": 4,
         "different_pixels_64": 19
       }
+    },
+    "armour-hood--celestial": {
+      "label": "Hood — Celestial",
+      "path": "art/icons/gear/armour-hood--celestial.png",
+      "sha256": "24eb18be44b31038356f3e238eca28571e3cd646ccaf8604eafead40ae6f1fc6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-hood--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-hood--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-hood--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9889849824959376,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 26
+      }
     }
   },
   "survival_art": {

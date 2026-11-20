@@ -8158,6 +8158,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-hood--celestial",
+      "path": "art/icons/gear/armour-hood--celestial.png",
+      "sha256": "24eb18be44b31038356f3e238eca28571e3cd646ccaf8604eafead40ae6f1fc6",
+      "label": "Hood — Celestial",
+      "family": "armour-hood",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--celestial.png",
+        "sha256": "9dbedca6f3fa613c748315f7b7df2643608cde6ef979a22324bd6f96baecc1a9"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-hood--celestial.png",
+        "sha256": "24eb18be44b31038356f3e238eca28571e3cd646ccaf8604eafead40ae6f1fc6"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-hood--celestial.txt",
+        "sha256": "a1c95d0d2dd58c67306aaf006a7826f9b911ec9c6035dd32b8677e78f332b276"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-hood.png",
+          "sha256": "8c4e276582b096d10b0338b3bead760bb450cdfbc1c04c54b777d1b9c46d532b"
+        },
+        {
+          "path": "art/icons/gear/armour-hood--relic.png",
+          "sha256": "34f4280d2ce75cfd123692dcdbbdba5fa9b76206e8f9076c514561d192901d45"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-hood--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-hood--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-hood--celestial.png"
+      },
+      "export_hashes": {
+        "256": "a4790b8e4904cef32613380ecc4ac73159839977032b49b1f58654894042cb23",
+        "128": "96b40ed8a10530e263f70321134577222484de43c38d308fc4350a1bde82bd62",
+        "64": "835a06b030dba87cea3291027bcb38e128875f5af4c7eda4c9186a0073e49377",
+        "32": "2b9ca5d8a723dbf1f1adecdb4d7b8d6b4136cd4edd4932f54c06385c3cd02cc2"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-hood",
+      "outline": {
+        "solid_alpha_iou": 0.9889849824959376,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
