@@ -174,27 +174,27 @@ describe('Run and Gun (rules 1.30 item 1808)', () => {
     const foe = f.unit(f.foe.id); foe.hp = foe.maxHp = 9999; foe.attack = 60; f.unit(u.id).attack = 60; f.unit(u.id).hp = f.unit(u.id).maxHp = 9999;
     return { f, u };
   };
-  it('after an attack, the next move of up to numbers.tiles tiles is free and draws no opportunity attack; the bank keeps', () => {
+  it('after an attack, the next move of up to the row path_tiles_at_most tiles is free and draws no opportunity attack; the bank keeps', () => {
     const { f, u } = setUp();
     f.act({ unitId: u.id, type: 'combat/attack', targetId: f.foe.id, mode: 'shot' } as any);
     const ap = f.unit(u.id).ap, bank = f.unit(u.id).bank, L = f.cb.log.length;
-    f.act({ unitId: u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles) } as any);
+    f.act({ unitId: u.id, type: 'combat/move', to: '4,' + (4 - rg().effects[1].if.path_tiles_at_most) } as any);
     expect(f.unit(u.id).ap).toBe(ap); expect(f.unit(u.id).bank).toBe(bank);
     expect(count(f, /opportunity attack/, L)).toBe(0);
     expect(condOn(f.unit(u.id), 'slipping')).toBe(false); // it ended with the move
   });
   it('without an attack first, the same move is paid and draws the opportunity attack', () => {
     const { f, u } = setUp(), ap = f.unit(u.id).ap, L = f.cb.log.length;
-    f.act({ unitId: u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles) } as any);
+    f.act({ unitId: u.id, type: 'combat/move', to: '4,' + (4 - rg().effects[1].if.path_tiles_at_most) } as any);
     expect(f.unit(u.id).ap).toBeLessThan(ap);
     expect(count(f, /opportunity attack/, L)).toBe(1);
   });
-  it('a longer move is not free; the next hit after the free move adds numbers.pressure more Pressure', () => {
+  it('a longer move is not free; the next hit after the free move adds the row value more Pressure', () => {
     const { f, u } = setUp();
     at(f, f.foe, '9,4');
     f.act({ unitId: u.id, type: 'combat/attack', targetId: f.foe.id, mode: 'shot' } as any);
     const ap = f.unit(u.id).ap;
-    f.act({ unitId: u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles - 1) } as any);
+    f.act({ unitId: u.id, type: 'combat/move', to: '4,' + (4 - rg().effects[1].if.path_tiles_at_most - 1) } as any);
     expect(f.unit(u.id).ap).toBeLessThan(ap);
     // the Pressure the second hit adds, with the free move between the hits and without it
     const added = (ran: boolean) => {
@@ -209,7 +209,7 @@ describe('Run and Gun (rules 1.30 item 1808)', () => {
     };
     // the move also sets up Relocated (rules 1.56 Pressure 2.0, the Skirmisher's gain): its own +Pressure on that hit
     const rel = (CLASS.marksman as any).gain.find((m: any) => m.id === 'relocated').effects[2].value;
-    expect(added(true) - added(false)).toBe(rg().numbers.pressure + rel);
+    expect(added(true) - added(false)).toBe(rg().effects[2].value + rel);
   });
   // Rules 1.60 item 4627 (R9): Run and Gun is no longer the turn's one free move: it neither reads nor puts the
   // free_move_spent marker, so a rank III Skirmisher may take Run and Gun's move and Fire and Move's step in one turn.
@@ -218,17 +218,17 @@ describe('Run and Gun (rules 1.30 item 1808)', () => {
     const a = setUp(); at(a.f, a.f.foe, '9,4');
     a.f.act({ unitId: a.u.id, type: 'combat/attack', targetId: a.f.foe.id, mode: 'shot' } as any);
     let ap = a.f.unit(a.u.id).ap;
-    a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles) } as any);
+    a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().effects[1].if.path_tiles_at_most) } as any);
     expect(a.f.unit(a.u.id).ap).toBe(ap); // Run and Gun's
     expect(condOn(a.f.unit(a.u.id), 'free_move_spent')).toBe(false); // Run and Gun puts no marker now
     a.f.unit(a.u.id).ap = 6; a.f.unit(a.u.id).heat = 0;
     a.f.act({ unitId: a.u.id, type: 'combat/attack', targetId: a.f.foe.id, mode: 'shot' } as any);
     ap = a.f.unit(a.u.id).ap;
-    a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles - step) } as any);
+    a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().effects[1].if.path_tiles_at_most - step) } as any);
     expect(a.f.unit(a.u.id).ap).toBe(ap); // Fire and Move's step, free as well
     expect(condOn(a.f.unit(a.u.id), 'free_move_spent')).toBe(true); // Fire and Move's own marker
     ap = a.f.unit(a.u.id).ap;
-    a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().numbers.tiles - 2 * step) } as any);
+    a.f.act({ unitId: a.u.id, type: 'combat/move', to: '4,' + (4 - rg().effects[1].if.path_tiles_at_most - 2 * step) } as any);
     expect(a.f.unit(a.u.id).ap).toBeLessThan(ap); // a third move is paid
     a.f.act({ unitId: a.u.id, type: 'combat/end-turn' } as any);
     expect(condOn(a.f.unit(a.u.id), 'free_move_spent')).toBe(false); // the marker ends with the turn

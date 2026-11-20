@@ -1562,7 +1562,7 @@
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.defense} Defense"
+            "text": "+{=per_point.numbers.defense} Defense from point {=per_point.numbers.defense_from}"
           }
         ]
       },

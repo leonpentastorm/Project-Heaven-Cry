@@ -13619,3 +13619,10 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       now means a Release gives nothing away, not even your tile. A silent attack's target still rolls to spot you when its
       eyes reach your tile (shadow-spec 2.6, unchanged). Balance: an Operative that keeps shooting from Hidden is not
       revealed by it; its measure is owed to the balance lane.
+7013. **The gaps lane's group F, two of the leftovers** (wave 3 SHOULD-FIX 7 and 18): Run and Gun's text reads its rule's
+      own fields (the free move's `path_tiles_at_most`, the hit's Pressure `value`; its copy in `numbers` is gone), and
+      Launch's AP is one copy (the class move's `ap_cost`; the grant's own `ap` is gone, the grant falls back to it). No
+      number moves. Left, each with its reason in the hand-off: 1 (forced moves on a Boss typed per item: one rule in
+      `forcedRefusal` would move the golden forced-move table and Slam's Boss rule, a ruling), 8 (the client's `within`
+      fallback in `fx/guard.ts`: client code, the effects lane's), 11 (two tests that call inner functions), 14
+      (`enemySearchTile`: AI in code, the enemy lane's).

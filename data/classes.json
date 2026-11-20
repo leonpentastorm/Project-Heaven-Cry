@@ -734,13 +734,12 @@
               "provisional": true
             }
           },
-          "text": "{=effects.0.ap} AP and all your Momentum (at least {=effects.0.res.momentum}): heave an enemy next to you away. It takes a blow that grows with each Momentum beyond the first {=effects.0.res.momentum}, then makes a Body save against your Raw Power: on a failure it is Off Balance, flies {=effects.0.effects.3.tiles} tiles and lands Prone; on a success it staggers back {=effects.0.effects.4.tiles} tile, whatever it was before (an Off Balance it already had is shaken off by the throw). Whatever it lands on (fire, a trap) acts on it. A Boss takes the blow and the save but is never moved.",
+          "text": "{=ap_cost} AP and all your Momentum (at least {=effects.0.res.momentum}): heave an enemy next to you away. It takes a blow that grows with each Momentum beyond the first {=effects.0.res.momentum}, then makes a Body save against your Raw Power: on a failure it is Off Balance, flies {=effects.0.effects.3.tiles} tiles and lands Prone; on a success it staggers back {=effects.0.effects.4.tiles} tile, whatever it was before (an Off Balance it already had is shaken off by the throw). Whatever it lands on (fire, a trap) acts on it. A Boss takes the blow and the save but is never moved.",
           "effects": [
             {
               "op": "grant_action",
               "action": "breaker_launch",
               "label": "Launch",
-              "ap": 2,
               "uses": "at_will",
               "res": {
                 "momentum": 2
@@ -1458,11 +1457,7 @@
               "name": "Run and Gun",
               "ap_cost": 0,
               "uses": "per_turn",
-              "numbers": {
-                "tiles": 2,
-                "pressure": 1
-              },
-              "text": "Once a turn after you attack: your next move of up to {=numbers.tiles} tiles is free, with no opportunity attack · your next hit adds +{=numbers.pressure} Pressure",
+              "text": "Once a turn after you attack: your next move of up to {=effects.1.if.path_tiles_at_most} tiles is free, with no opportunity attack · your next hit adds +{=effects.2.value} Pressure",
               "effects": [
                 {
                   "op": "mark",
