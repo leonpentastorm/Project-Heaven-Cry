@@ -4442,6 +4442,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-bulwark_screen--relic",
+      "path": "art/icons/gear/shield-bulwark_screen--relic.png",
+      "sha256": "08f04cf30c92679a1176a9fecb5c370d1f966a2222bc316b1c0369c877e75a83",
+      "label": "Bulwark Screen — Relic",
+      "family": "shield-bulwark_screen",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-bulwark_screen--relic.png",
+        "sha256": "693c0c30181b709d491357e32191da44d8f54dfa0170a925b341bd25f4d8df7a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-bulwark_screen--relic.png",
+        "sha256": "08f04cf30c92679a1176a9fecb5c370d1f966a2222bc316b1c0369c877e75a83"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-bulwark_screen--relic.txt",
+        "sha256": "14b680faa06a097f6c2aad4a84085afe8182a8845334b60353a07845f38563b9"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-bulwark_screen.png",
+          "sha256": "56e0aec15b0b546122ee1565b8b1dc246e7a0ef0df4fcba68bab9bdeb4966dc0"
+        },
+        {
+          "path": "art/icons/gear/shield-bulwark_screen--masterwork.png",
+          "sha256": "bca8d0f71eac243d57721b68062a7b2fa383db81fa16bcc9d0a2a272384086d5"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png",
+          "sha256": "643adb704e78fa71f8106ee942b6412a4a89aa6631a5560b1c602eae76ad5337"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-bulwark_screen--relic.png",
+        "128": "art/icons/gear/exports/128/shield-bulwark_screen--relic.png",
+        "64": "art/icons/gear/exports/64/shield-bulwark_screen--relic.png",
+        "32": "art/icons/gear/exports/32/shield-bulwark_screen--relic.png"
+      },
+      "export_hashes": {
+        "256": "8b12bfe141bfdb697f816c70a6e4ee84319397f43bc715485a856bc9b38ab335",
+        "128": "490f73fca4492d2b156094ac9a4618edc204ad419ee0b9a92a81a98f2832539e",
+        "64": "1a82eef453105ee797e8f65737431bf17ecad7bf33cb1e331786b42c65bf2477",
+        "32": "4a1d1b3bbb1ba017220b68c353a836d7b5b33ae9d67a9c94d24c7b2f0ddc4a9e"
+      },
+      "grade": "relic",
+      "standard_id": "shield-bulwark_screen",
+      "outline": {
+        "solid_alpha_iou": 0.9775822367119559,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 16,
+        "different_pixels_64": 17
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
