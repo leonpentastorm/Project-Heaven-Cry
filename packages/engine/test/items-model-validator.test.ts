@@ -43,10 +43,10 @@ describe('the validator and the item model (rules 1.91)', () => {
         { id: 'sabre.test_bad_empty', name: 'Bad empty', base: 'sabre', unique: true },
       );
       const w = (id: string) => d.weapons.items.find((x: any) => x.id === id);
-      Object.assign(w('sabre'), { family: 'cavalry_blades', form: 'dex' }); // repeats riposte, the family's dex technique
+      Object.assign(w('sabre'), { family: 'cavalry_blades', form: 'dex' }); w('sabre').phys.teaches = 'riposte'; // repeats riposte, the family's dex technique (the live row names none since lane A4)
       Object.assign(w('war_axe'), { family: 'axes', form: 'dex' }); // a Raw Power row in a dex form
       Object.assign(w('hatchet'), { family: 'axes', form: 'hybrid', weapon_art: 'a_card' }); // its pattern is a hybrid's (right), the card is not (wrong)
-      Object.assign(w('maul'), { form: 'str' }); // a form with no family
+      Object.assign(w('afterword'), { form: 'str' }); // a form with no family (a row in no family; the maul is in hammers since lane A4)
       d.families.items.push({ id: 'test_bad_family', name: 'Bad', line: 'frontier', form_kind: 'melee', weapon_art: null, forms: [{ id: 'long' }] });
     });
     expect(lines(out, 'test_good'), 'the right uses').toEqual([]);
@@ -57,7 +57,7 @@ describe('the validator and the item model (rules 1.91)', () => {
     expect(lines(out, 'weapons:war_axe').join('\n')).toMatch(/a dex form hits with and grows with/);
     expect(lines(out, 'weapons:hatchet').join('\n')).toMatch(/weapon_art is null/);
     expect(lines(out, 'weapons:hatchet').join('\n')).not.toMatch(/form hits with/);
-    expect(lines(out, 'weapons:maul').join('\n')).toMatch(/a form belongs to a family/);
+    expect(lines(out, 'weapons:afterword').join('\n')).toMatch(/a form belongs to a family/);
     expect(lines(out, 'test_bad_family').join('\n')).toMatch(/its forms are distinct forms of its kind/);
   }, 60000);
   it('the data as it ships: 0 errors', () => {

@@ -22,7 +22,9 @@ describe('rules 1.91 items 7900, 7901: the tags', () => {
     expect(ITEM_TAG_KINDS).not.toContain('explosive'); expect(ITEM_TAG_KINDS).not.toContain('rarity');
   });
   it('a row with no family is its own family; the kind is the raw category; the grade is the instance\'s', () => {
-    expect(itemTags('sabre')).toEqual(['kind:light_melee', 'family:sabre', 'slot:main_hand', 'grade:standard']);
+    expect(itemTags('afterword')).toEqual(expect.arrayContaining(['family:afterword', 'grade:standard'])); // a row in no family (lane A4 placed the sabre)
+    expect(itemTags('afterword').some((t) => t.startsWith('form:'))).toBe(false);
+    expect(itemTags('sabre')).toEqual(['kind:light_melee', 'family:cavalry_blades', 'form:dex', 'line:officers', 'slot:main_hand', 'grade:standard']);
     expect(itemTags('sabre', { rarity: 'fine' })).toContain('grade:fine');
     expect(tagOf('evoker', 'kind')).toBe('focus'); expect(tagOf('evoker', 'slot')).toBe('off_hand');
     expect(itemTags('ballistic_helmet')).toEqual(expect.arrayContaining(['kind:armour', 'slot:head']));
@@ -30,7 +32,7 @@ describe('rules 1.91 items 7900, 7901: the tags', () => {
     expect(itemTags('no_such_thing')).toEqual([]);
     // a variant is its base's family
     const v = Object.keys(WEAPON).find((id) => (WEAPON[id] as any).variant_of)!;
-    expect(itemFamilyOf(v)).toBe((WEAPON[v] as any).variant_of);
+    expect(itemFamilyOf(v)).toBe(itemFamilyOf((WEAPON[v] as any).variant_of)); // its base's family (lane A4 placed the bases in families)
   });
   it('the role tags: the row\'s tags (lever, electronic, evoker_linked) and natural on the fists and the bite', () => {
     expect(hasTag('lever_carbine', 'role:lever')).toBe(true);
@@ -76,10 +78,12 @@ describe('rules 1.91 item 7920: the pools read tags and hold what the category f
 
 describe('rules 1.91 items 7902 to 7904: the families', () => {
   it('two sample families, their forms; a row with no family keeps its own technique', () => {
-    expect(Object.keys(FAMILY)).toEqual(['cavalry_blades', 'axes']);
+    expect(Object.keys(FAMILY)).toEqual(expect.arrayContaining(['cavalry_blades', 'axes'])); // lane A4 added the tables' families
     expect(FAMILY.cavalry_blades.forms.map((f) => f.id)).toEqual(['dex', 'hybrid', 'str']);
-    expect(weaponTeaches('sabre')).toBe((WEAPON.sabre as any).phys.teaches);
-    expect(familyForm('sabre')).toBeNull();
+    expect((WEAPON.sabre as any).phys.teaches).toBeUndefined(); // lane A4: the family's form carries it
+    expect(weaponTeaches('sabre')).toBe('riposte');
+    expect(familyForm('sabre')?.id).toBe('dex');
+    expect(familyForm('afterword')).toBeNull();
   });
   it('a row that names a family and form and no technique lends its family form\'s (the one copy)', () => {
     const was = WEAPON.sabre, row: any = { ...was, family: 'cavalry_blades', form: 'dex', phys: { ...(was as any).phys } };
@@ -140,7 +144,7 @@ describe('rules 1.91 item 7917: the unique-ready variants line (a test-only fixt
     expect(w.unique).toBe(true);
     expect(w.variant_mods).toContain('vmod.' + FIX_ID + '.unique');
     expect(VARIANT_MOD['vmod.' + FIX_ID + '.unique'].effects).toEqual(FIX.items[0].effects);
-    expect(itemTags(FIX_ID)).toEqual(expect.arrayContaining(['unique:true', 'family:ork_machete', 'grade:relic']));
+    expect(itemTags(FIX_ID)).toEqual(expect.arrayContaining(['unique:true', 'family:ork_cutters', 'grade:relic']));
     expect(fixedGradeOf(FIX_ID)).toBe('relic'); expect(fixedGradeOf('ork_machete')).toBeNull();
     expect(rolledGear()).not.toContain(FIX_ID); expect(itemsWith({ rolled: true })).not.toContain(FIX_ID);
   });

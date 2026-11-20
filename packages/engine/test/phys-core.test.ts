@@ -180,7 +180,7 @@ describe('damage follows what the weapon is aimed with', () => {
     expect(weaponMult(c, 'recurve_bow')).toBe(k); // a bow names no profile
     expect(weaponMult(c, 'sabre')).toBeCloseTo(m.k * (1 + m.attr * 4), 9); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
     expect(weaponMult(c, 'maul')).toBeCloseTo(m.k * (1 + m.attr * 2), 9); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');
-    expect(weaponMult(c, 'fists')).toBeCloseTo(m.k * (1 + m.attr * 2), 9); expect(weaponMultLabel('fists')).toBe('Strength, Raw Power and Dexterity');
+    expect(weaponMult(c, 'fists')).toBeCloseTo(m.k * (1 + m.attr * 2), 9); expect(weaponMultLabel('fists')).toBe('Strength and Raw Power'); // design item 12 (lane A4): also_scales removed, the label's intended change
     expect(weaponMultLabel('sabre', { live: true })).toBe('Agility'); expect(weaponMultLabel('service_pistol', { live: true })).toBe('Agility'); expect(weaponMultLabel('recurve_bow', { live: true })).toBe('');
   });
 });
