@@ -534,6 +534,7 @@ Spells that inflict a condition instead of damage call for a save from the targe
 | III | Heavy | 15 | −0.5 Movement |
 | IV | Assault | 20 | −0.5 Movement, −1 Dodge |
 | V | Juggernaut | 25 | −1 Movement, no Sprint |
+| VI | Breacher plate | 18 | −0.5 Movement; needs Pain Threshold 2 (rules 1.91 item 7951; appended after V, PROVISIONAL) |
 
 **Equipment slots** (from the 2020 sheet): main hand, off hand, head, head accessory, outer torso, inner torso, lower torso, legs, hands, footwear, **Veil**, and a backpack. The armour in the **outer torso** slot sets your Armour Class. Pieces in the other slots carry their own small effects, listed per item.
 
@@ -14213,3 +14214,76 @@ A1 lays down.
 7921. **Old saves** load unchanged: no id is renamed or removed (the 72 weapon ids, every item id, `armour:<n>`); the new
       saved field (`GearState.weapon_art`) is optional and never written; no revision stamp is written. The recorded
       replays and every golden table stay as recorded, except what the commits of items 7912 and 7914 name.
+
+#### Rules 1.91 continued (lane A2: armour), 0.34 (20 Nov 2026)
+
+Items 7950 to 7979 are lane A2's: they build items 7907 to 7909 and say what those left open. No number moves: every
+piece worn today gives exactly what it gave (the `arm` column is 1 for every grade, item 7906); the golden tables and
+the recorded replays prove it.
+
+7950. **The class rows are the one copy of body armour** (`rules.json combat.armor.classes`; supersedes the typed table
+      in code). A row holds `class`, `name`, `value` (the armour value), `penalty` (`movement`, `dodge`, `no_sprint`),
+      `weight_kg`, `price_credits`, and the fields code reads in place of a class number:
+      - `penalty.no_sprint`: the wearer can't Sprint (was the typed "class 5 or more");
+      - `armoured`: the row counts as armour for what asks whether a target is armoured (the Grand Sigilist's storm
+        arcs to an armoured target; was "class 2 or more"); a unit with no sheet is armoured when its armour is at least
+        the smallest value of an armoured row (was a typed 10, the Medium row's value);
+      - `light_cap`: the row whose value is the cap "your armour counts as at most Class I's" (Forlorn Hope, item 137;
+        was the typed "row 1");
+      - `forge_fit`: the Forge fits this class (item 7952);
+      - the tag fields `family` and `form` (item 7900; `kind:armour` and `slot:torso_outer` come from the kind of row):
+        the Vests family (`vests`: Light the light form, Medium the standard, Heavy the heavy) and the Plate family
+        (`plate`: the breacher plate the light form, Assault the standard, Juggernaut the heavy). A class row's maker
+        `line` is not decided (none is written). The families' own rows in `data/families.json` are written with the
+        other families (lane A4, stage B); until then the validator checks a class row's form against the gear forms and
+        its family against `families.json` only when that family is there.
+      Class 0 (None) has no family and is not armoured.
+7951. **Class 6, the breacher plate, is appended** (a save stores the class number, so a class is never inserted): the
+      Plate family's light form; armour 18, 14 kg, 1,400 cr, Movement −0.5, no Dodge penalty, Sprint allowed, armoured;
+      it needs Pain Threshold 2 (`techniques.json rules.gear_gates.heavy_armour`, the one home of the armour gates, beside
+      Assault's 3 and Juggernaut's 5). Every number PROVISIONAL (the lead's, `2026-11-20-items-2.0-numbers.md` section 3;
+      stage C fits them). The Forge does not fit it (item 7952); in this pass it is reached by a Narrator's or the
+      Proving Ground's hand only.
+7952. **The Forge's armour fitting** fits the next class up, class by class, to the last row with `forge_fit` (classes 1
+      to 5; Juggernaut was out of reach before): classes 1 to 4 at `survival.json armour_fit.price` as before, a class with
+      no fitting price there at its class row's own price (Juggernaut 4,000 cr: `price_credits`, the one price of a
+      class). The class's gate (Pain Threshold) and a trait's cap hold as before. A fitting is a new plate: its grade is
+      Standard (item 7953). From a class the Forge does not fit next (Juggernaut, the breacher plate) there is no
+      fitting.
+7953. **Worn-piece state** (`Character.wornState`, primitive N3): by the slot's saved key, the worn instance's
+      `GearState` (its grade; armour has no wear and no mods). Absent means Standard; it is written only for a piece that
+      is not Standard and goes when the piece does. It moves with the piece: wearing a pack line takes the line's grade
+      into the slot (the piece it replaces goes back to the pack with its own); taking a piece off puts it in the pack
+      with its grade; a worn piece is given by taking it off first, as before, so it reaches the other character's pack
+      graded. Body armour's grade sits at the `armour_class_from` slot (`wornState.torso_outer`); it is not given (as
+      before), and a new class (a fitting, the camp's choice, the Proving Ground) is a new plate at Standard. An ungraded
+      piece (`graded: false`) never holds a grade.
+7954. **What a grade gives armour:** its `arm` multiplies the piece's armour value and nothing else: a worn piece's
+      `armour_bonus` lines where the gear effects are summed (`gearEffects`), the body armour's class value where it is
+      read (the one reader of a character's body armour value, which the fight's armour and Forlorn Hope's cap both
+      read). The sum is rounded where the armour is scaled by level, as before. With `arm` 1 nothing moves.
+7955. **The grade step on armour** (item 7907): a worn graded piece (by its slot), a graded piece in the pack, and the body
+      armour take the Forge's grade step at the grade ladder's fees (`grade_up`, the Forge's factor), one step a visit as
+      for any instance. A shop's grade step does not take armour ("only a Forge grades armour"), nor does the
+      Crossroads' off-books step (it returns the piece worn, and armour does not wear). The Relic step is refused for
+      armour in this pass ("armour takes no Relic property yet"): armour stops at Masterwork by the step. Armour does not
+      wear (no repair) and takes no mods, as before.
+7956. **A worn piece is held (primitive N4).** The ids of the worn pieces whose rows carry effects the engine runs on a
+      holder (any op that is not one of the gear ops summed by `gearEffects`, the `item` tier of `data/effect_ops.json`:
+      `armour_bonus`, `injury_resist_bonus`, `movement_bonus`, `carry_bonus`, `defense_bonus`, `dark_sight`,
+      `hazard_immune`, `ignore_difficult`, `unarmed_damage_bonus`, `light`), and a worn variant's modifiers (its row's
+      `variant_mods`, a unique's `effects` among them: item 7917), join the held relics list the hands' properties, mods
+      and modifiers are in. So a worn piece's `stat_mod` (a hood's `seen_range`, an optic's `vision`) answers `statQuery`
+      as a carried relic's does. A piece with only gear ops (every piece of 0.33) adds nothing, so no held list and no
+      recorded fight changes.
+7957. **A body armour class as a variant's base** (item 7917's seam): a variants line's `base` may be `armour:<n>`. The
+      loader makes its row an items row of the armour kind in the `torso_outer` slot that carries the class (`armour_class`
+      n) and the class row's value, weight, price and tag fields. Wearing such a row as body armour is the uniques patch's
+      (no line uses it in this pass; it is tested on a test-only line).
+7958. **The inner torso slot's id is `inner_torso`** (supersedes the `torso_inner` spelling of item 7908): the slot table
+      and the slots list say `inner_torso`, the saved key. A save that holds `worn.torso_inner` has it moved once, on load,
+      to `worn.inner_torso` (if that slot is already filled, the older piece goes to the pack); nothing is written when the
+      old key is not there. The Dark Steward's bare torso reads the one key.
+7959. **Open, for the lead:** Last Charge's shield by armour (`perks.json last_charge amounts.shield_by_armour`, 15 a
+      class) reads the class NUMBER, so the breacher plate (class 6, armour 18) would give 90, more than Juggernaut's 75.
+      Not changed here (no number is this lane's); a row field for it, or a reading by value, is the lead's ruling.
