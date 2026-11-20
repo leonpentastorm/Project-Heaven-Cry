@@ -1,0 +1,1 @@
+running-script-on-charcoal.png is a technical visibility preview, original RGBA alpha-composited onto #10151F without changing any source pixels or geometry. Source art/icons/forks/sigil-running-script.png sha256 38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca. Original transparent PNG attached separately. Preview is never production art or a counted picture.
