@@ -29,9 +29,10 @@ export function useCentreBox(): { left: number; top: number; width: number; heig
   React.useLayoutEffect(() => {
     let raf = 0;
     const on = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => setBox((o) => { const n = read(); return o.left === n.left && o.top === n.top && o.width === n.width && o.height === n.height ? o : n; })); };
-    on(); addEventListener('resize', on); addEventListener('scroll', on, true);
+    // (a screen's entrance slides the middle in: read again when an animation ends, a transform moves no ResizeObserver)
+    on(); addEventListener('resize', on); addEventListener('scroll', on, true); addEventListener('animationend', on, true);
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(on) : null; const el = document.querySelector('[data-phc-centre]'); if (ro && el) ro.observe(el);
-    return () => { cancelAnimationFrame(raf); removeEventListener('resize', on); removeEventListener('scroll', on, true); ro?.disconnect(); };
+    return () => { cancelAnimationFrame(raf); removeEventListener('resize', on); removeEventListener('scroll', on, true); removeEventListener('animationend', on, true); ro?.disconnect(); };
   }, []);
   return box;
 }

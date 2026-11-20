@@ -128,7 +128,7 @@ describe('effects audit', () => {
     expect(ROWS.length).toBeGreaterThan(30);
     // 0.33: Everyone Home's allies answer on their tokens (the Miracle's landing runs landOn)
     expect(ROWS.find((r) => r.action.includes('everyone_home'))!.fault).toBe('ok');
-  });
+  }, 60000); // every prayer through the reducer: seconds on a quiet machine, past 5 s on a busy one
 
   it('bonds and tending', () => {
     const verbs: [string, string, string?][] = [['bond', 'ally'], ['mend', 'ally', 'bond'], ['shield', 'ally', 'bond'], ['touch', 'ally', 'bond'], ['settle', 'ally', 'bond'], ['soothe', 'ally', 'bond'], ['tug', 'ally', 'bond'], ['guide', 'ally', 'bond'], ['raise', 'downed', 'bond'], ['snap', 'ally', 'bond'], ['let_go', 'ally', 'bond'], ['bond', 'foe'], ['mend_self', 'self', 'bondfoe'], ['echo: foe hits the Bonded ally', 'hit', 'bond']];
@@ -148,7 +148,7 @@ describe('effects audit', () => {
       });
     }
     expect(ROWS.some((r) => r.group === 'bond')).toBe(true);
-  });
+  }, 60000);
 
   it('figments', () => {
     const forms = ['beast', 'husk', 'ward', 'blade', 'double', 'eye', 'hand', 'sentinel'];
@@ -167,5 +167,5 @@ describe('effects audit', () => {
       }
     }
     expect(ROWS.some((r) => r.group === 'figment')).toBe(true);
-  });
+  }, 60000);
 });
