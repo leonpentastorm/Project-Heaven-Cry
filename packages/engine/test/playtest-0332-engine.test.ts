@@ -6,11 +6,13 @@ import { type GameState, apply, reachable, objectsOf, dropToPile, withGame, roun
 import { previewDescriptor, actionsFor, sendDescriptor } from '../src/descriptors';
 import { makeObject } from '../src/objects';
 import { magsOf } from '../src/character';
+import { HIDDEN_ATTACK } from '../src/tactics';
 import { fightTally, settleTape } from '../src/run/tally';
 import { physFight, rig } from './helpers/physfight';
 import { fightWith, storyWith } from './helpers/perkfight';
 import { survivalRoom, startRun, ownerOf, upTurn } from './helpers/survival';
 import survivalJ from '../../../data/survival.json';
+import rulesJ from '../../../data/rules.json';
 
 beforeEach(() => rig(null));
 
@@ -83,7 +85,7 @@ describe('items 7702, 7703: Challenge and Slam say what they did', () => {
 });
 
 describe('item 4 (by spec item 5011; done on this branch): Brace before contact', () => {
-  it('Brace in the approach joins the fight and is made (the surprise round, rules 1.82, gives the character the first turn)', () => {
+  it('Brace in the approach joins the fight: made when the order gives the character the first turn, else said and made on its turn (surprise is OFF in 0.33)', () => {
     let tested = 0;
     for (let s = 1; s <= 30 && tested < 2; s++) {
       const seed = 'PHC-' + String(s).padStart(4, '0');
@@ -94,7 +96,11 @@ describe('item 4 (by spec item 5011; done on this branch): Brace before contact'
       const u = g.combat.units.find((x) => x.side === 'pc')!;
       g = apply(g, { type: 'combat/brace', unitId: u.id } as any, ownerOf(0));
       const u2 = g.combat!.units.find((x) => x.id === u.id)!;
-      expect(g.combat!.approach).toBeFalsy(); expect(u2.braced).toBe(true); expect(u2.res?.guard).toBeGreaterThan(0);
+      expect(g.combat!.approach).toBeFalsy();
+      // rules 1.64 item 5011: Brace is contact; with the surprise round off (rules.json surprise_round.on false) it is
+      // made at once only when the initiative order gives this unit the first turn, else the log says so (acts_log)
+      if (u2.braced) expect(u2.res?.guard).toBeGreaterThan(0);
+      else expect(g.combat!.log.some((l: string) => l.includes((rulesJ as any).combat.approach.acts_log))).toBe(true);
       tested++;
     }
     expect(tested).toBeGreaterThan(0);
@@ -147,8 +153,15 @@ describe('item 7705: Ghost Kill asks every hostile eye (a knife technique, as th
     return { sight, ghost: f.cb.log.some((l: string) => /Ghost Kill/.test(l)), dead: f.unit(t.id).hp <= 0, hidden: !!f.unit(u.id).hidden };
   };
   it('with the victim\'s eyes on the killer at the roll: no Ghost Kill; no eye and nobody seeing: Ghost Kill', () => {
-    const a = stab(true); expect(a.dead).toBe(true); expect(a.sight[1]).toBe('in_view'); expect(a.ghost).toBe(false); expect(a.hidden).toBe(false);
-    const b = stab(false); expect(b.dead).toBe(true); expect(b.sight).toEqual(['unseen', 'out_of_view']); expect(b.ghost).toBe(true); expect(b.hidden).toBe(true);
+    // Silent ships ON (rules 1.87 item 7503): a loud kill from Hidden keeps the killer Hidden, so Ghost Kill has nothing to
+    // put back; the eye rule is pinned with the switch at reveal, where the kill reveals and Ghost Kill answers it
+    const was = HIDDEN_ATTACK.gives; HIDDEN_ATTACK.gives = 'reveal';
+    try {
+      const a = stab(true); expect(a.dead).toBe(true); expect(a.sight[1]).toBe('in_view'); expect(a.ghost).toBe(false); expect(a.hidden).toBe(false);
+      const b = stab(false); expect(b.dead).toBe(true); expect(b.sight).toEqual(['unseen', 'out_of_view']); expect(b.ghost).toBe(true); expect(b.hidden).toBe(true);
+    } finally { HIDDEN_ATTACK.gives = was; }
+    // at tile (as shipped) the seen killer stays Hidden all the same, its tile given away
+    const c = stab(true); expect(c.dead).toBe(true); expect(c.ghost).toBe(false); expect(c.hidden).toBe(true);
   });
 });
 
