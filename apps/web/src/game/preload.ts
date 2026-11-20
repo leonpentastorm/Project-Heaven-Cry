@@ -25,8 +25,8 @@ export const NEXT: Record<Screen, Screen[]> = {
   ultimate: ['main', 'combat'],
 };
 /** Code reached from a screen beyond NEXT's (its chunk only, not its art): the title's Continue and the Proving Ground
- *  open the play screen straight away. */
-export const CODE_NEXT: Partial<Record<Screen, Screen[]>> = { home: ['main'] };
+ *  open the play screen straight away, and a saved fight or the Proving Ground's first fight can follow within a second. */
+export const CODE_NEXT: Partial<Record<Screen, Screen[]>> = { home: ['main', 'combat'] };
 /** The art each screen draws (asset-name prefixes: art/catalog.json ids), the part worth warming ahead. */
 export const SCREEN_ART: Record<Screen, string[]> = {
   home: ['title-', 'wick-run', 'wick-stop', 'wick-idle', 'wick-hello', 'wick-wave', 'wick-welcome'],
