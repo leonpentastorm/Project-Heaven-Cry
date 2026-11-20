@@ -2298,6 +2298,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_rank_sword--celestial",
+      "path": "art/icons/gear/weapon-legion_rank_sword--celestial.png",
+      "sha256": "019de95c002af3720390b60921858092a8faae7020f8ecc8c49866bfc29a75fd",
+      "label": "Legion Rank Sword — Celestial",
+      "family": "weapon-legion_rank_sword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_rank_sword--celestial.png",
+        "sha256": "9dbae996f733ebb704100caa4714798557ef0c99c29ea70d7ebf4045e12fad7c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_rank_sword--celestial.png",
+        "sha256": "019de95c002af3720390b60921858092a8faae7020f8ecc8c49866bfc29a75fd"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_rank_sword--celestial.txt",
+        "sha256": "a8a5bda3e8916c1bd1615f2fb533e76195cd72a156ed5fff14ac53c64e9ea296"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_rank_sword.png",
+          "sha256": "6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d"
+        },
+        {
+          "path": "art/icons/gear/weapon-legion_rank_sword--relic.png",
+          "sha256": "25221942040ff1dec7b2370fa67436b02eb49c6aeee88110ff0e8b477e2bd700"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_rank_sword.png",
+          "sha256": "bc0c3ef3c706c75c3e483efb0ae0a4b65997f708ccd83fb52bbc8cbd008c5cd3"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_rank_sword--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_rank_sword--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_rank_sword--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_rank_sword--celestial.png"
+      },
+      "export_hashes": {
+        "256": "55565629561e65174a6e6098a9caa8fd89f422ad39fe77d565566a56620e84be",
+        "128": "31b91ead0e1d116208e0d15734961a7e4073a40623b9d915e7f004fc38cd5317",
+        "64": "0e4e377487348fe8a07b5f3f4271c08e85072dd498f42f72ed5def44517bf236",
+        "32": "bf75f3397d05e8077a83a3a7f73562b07a0981c96c1df2bd2228f4caf61f4828"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-legion_rank_sword",
+      "outline": {
+        "solid_alpha_iou": 0.937892216122152,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
