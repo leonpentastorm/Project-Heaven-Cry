@@ -880,7 +880,7 @@ export const triggerHook = (e: any): HookName | null => (isTriggered(e) ? TRIGGE
 const condInfo = (row: any): ItemInfo => ({ key: 'condition:' + row.id, kind: 'condition', id: row.id, name: row.name, tier: 'I', effects: row.effects || [], effTier: (row.effects || []).map(() => 'I'), text: row.text || '', adjudication: row.adjudication || 'engine', active: false, bound: false, ap: null, uses: 'at_will' });
 /** The index over the rows (rebuilt when rows are added: condtable.ts condRowsVersion): per hook, the rows with a
  * runnable item op on it and each such effect; per stat, the rows whose plain stat_mod answers it. */
-let CIDX: { v: number; on: Record<string, { row: any; info: ItemInfo; e: any }[]>; stat: Record<string, { row: any; value: number }[]> } | null = null;
+let CIDX: { v: number; on: Record<string, { row: any; info: ItemInfo; e: any }[]>; stat: Record<string, { row: any; value: number }[]>; ids: Record<string, string[]> } | null = null;
 function condIndex() {
   if (CIDX && CIDX.v === condRowsVersion) return CIDX;
   const on: Record<string, { row: any; info: ItemInfo; e: any }[]> = {}, stat: Record<string, { row: any; value: number }[]> = {};
@@ -891,7 +891,7 @@ function condIndex() {
       else if (e?.op === 'stat_mod' && !e.when && typeof e.value === 'number' && isStatId(e.stat) && !COND_TABLE_STATS.has(e.stat)) (stat[e.stat] ||= []).push({ row, value: e.value });
     }
   }
-  return (CIDX = { v: condRowsVersion, on, stat });
+  return (CIDX = { v: condRowsVersion, on, stat, ids: {} });
 }
 /** Does the unit bear this condition (a table condition or a flag one)? */
 const bears = (u: Unit, id: string) => condOn(u, id);
@@ -906,5 +906,5 @@ function condsOn(u: Unit, name: HookName, cb: Combat) {
 // hooks above keep bears: a flag condition's own engine code runs its timed rows, Bleeding's tick)
 function condStat(u: Unit, stat: string): number { const l = condIndex().stat[stat]; if (!l) return 0; let n = 0; for (const x of l) if (condHas(u, x.row.id)) n += x.value; return n; }
 
-setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat, auraSet, auraProblem, ifFails: ifFailsImpl, runOwn: runOwnImpl, isOp: (op) => !!OPS[op], condStatRows: (s) => (condIndex().stat[s] || []).map((x) => x.row.id) });
+setTriggerRunner({ isTriggered, problem: triggerProblem, hookOf: triggerHook, run: runTriggered, conds: condsOn, condHooks: () => Object.keys(condIndex().on), condStat, auraSet, auraProblem, ifFails: ifFailsImpl, runOwn: runOwnImpl, isOp: (op) => !!OPS[op], condStatRows: (s) => { const ix = condIndex(); return (ix.ids[s] ||= (ix.stat[s] || []).map((x) => x.row.id)); } }); // the ids per stat, made once per index (0.33 engine speed: statHeard asks it on every sight test)
 setAllItems(allItems);

@@ -584,13 +584,38 @@ let FREEZE_ON = false; const FROZEN = new WeakSet<object>();
 export function _freezeShared(on: boolean): boolean { const was = FREEZE_ON; FREEZE_ON = on; return was; }
 const freezing = () => FREEZE_ON || (globalThis as any).__PHC_FREEZE_SHARED === true;
 function deepFreeze(o: any) { if (!o || typeof o !== 'object' || FROZEN.has(o)) return; FROZEN.add(o); Object.freeze(o); for (const v of Object.values(o)) deepFreeze(v); }
+/** The JSON round trip (JSON.parse(JSON.stringify(v))) without the text in between: the same copy, value for value and
+ * key for key, two to three times faster on a saved fight (0.33 engine speed; docs/design/handoffs/0.33-LANE-ENGSPEED.md).
+ * JSON's own rules, kept: a key whose value is undefined, a function or a symbol is left out of an object and is null in
+ * an array (a hole too); NaN and the infinities are null, -0 is 0; keys in Object.keys order; a value with toJSON (a
+ * Date) and anything that is not a plain object or array goes through JSON itself. Not exported: apply()'s copy only. */
+function jsonCopy(v: any): any {
+  if (v === null) return null;
+  const t = typeof v;
+  if (t === 'string' || t === 'boolean') return v;
+  if (t === 'number') return Number.isFinite(v) ? (v === 0 ? 0 : v) : null;
+  if (t !== 'object') return undefined; // undefined, a function, a symbol (a bigint: JSON throws, so does the fallback below)
+  if (Array.isArray(v)) {
+    const n = v.length, out = new Array(n);
+    for (let i = 0; i < n; i++) { const x = jsonCopy(v[i]); out[i] = x === undefined ? null : x; }
+    return out;
+  }
+  const proto = Object.getPrototypeOf(v);
+  if ((proto !== Object.prototype && proto !== null) || typeof v.toJSON === 'function') return JSON.parse(JSON.stringify(v));
+  const out: any = {};
+  for (const k of Object.keys(v)) {
+    const x = jsonCopy(v[k]); if (x === undefined) continue;
+    if (k === '__proto__') Object.defineProperty(out, k, { value: x, enumerable: true, writable: true, configurable: true }); else out[k] = x;
+  }
+  return out;
+}
 /** The copy apply() works on: everything but the campaign, the archive's lines and the campaign a Proving Ground
  * parked in sandbox.saved (the room's own, read back whole at sandbox/end), in the same key order. */
 function workingCopy(state: GameState): GameState {
   const parked = (state as any).sandbox?.saved?.campaign || null; // a Proving Ground opened from the title has none (null)
   const slim: any = {}; for (const k of Object.keys(state)) if (k !== 'campaign' && k !== 'archive') slim[k] = (state as any)[k];
   if (parked) slim.sandbox = { ...slim.sandbox, saved: { ...slim.sandbox.saved, campaign: null } }; // the key keeps its place; the object goes back below
-  const copy = JSON.parse(JSON.stringify(slim)), g: any = {};
+  const copy = jsonCopy(slim), g: any = {};
   if (parked) copy.sandbox.saved.campaign = parked;
   for (const k of Object.keys(state)) {
     if (k === 'campaign') { if (state.campaign !== undefined) g.campaign = state.campaign; }
