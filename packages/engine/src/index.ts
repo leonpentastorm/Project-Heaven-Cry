@@ -37,6 +37,7 @@ export * from './run/power';
 export * from './run/progress';
 export * from './run/stage';
 export * from './run/tally';
+export * from './run/ambush';
 export * from './credits';
 export * from './give';
 export * from './ladder';

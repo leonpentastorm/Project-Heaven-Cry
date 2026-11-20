@@ -5,7 +5,7 @@
 // rewards are as before. Everything through the reducer.
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, reachable, nodeXp, runNode, magazineWorth, paths } from '../src';
-import { survivalRoom, startRun, ownerOf, upTurn } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, upTurn, walkIn } from './helpers/survival';
 import type { Pc } from './helpers/replay';
 
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'plain_gun', level: 1 }];
@@ -18,8 +18,7 @@ function inFight(): GameState {
   for (const c of Object.values(g.characters)) { c.weapon = 'service_pistol'; c.pack = [...(c.pack || []), ...magazineWorth('service_pistol'), ...magazineWorth('service_pistol')]; }
   const n = reachable(g.run!).find((x) => x.kind === 'fight')!;
   for (let i = 0; i < 2 && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
-  expect(g.run!.state).toBe('fight');
-  delete g.combat!.approach; // rules 1.64 item 5011: the fight set up by hand as joined (the test is about the field after it)
+  g = walkIn(g); expect(g.run!.state).toBe('fight');
   return g;
 }
 const piles = (g: GameState) => (g.combat!.objects || []).filter((o: any) => o.kind === 'pile' && (o.items || []).length);

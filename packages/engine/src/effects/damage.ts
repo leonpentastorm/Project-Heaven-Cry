@@ -66,7 +66,7 @@ export const pastShields = (src: { type?: string; dmgType?: string }): boolean =
  * or Guard reduces, raises (Pain Eater's +50% taken: Leon, 16 Nov 2026, "do all 4"), redirects, shares or floors it;
  * 'after', on_damaged and on_downed still speak (Hollow Heart, the Down that ends the Shock). One gate here, for every
  * listener there is and every one to come, lowering or raising. */
-const UNSOFTENED = new Set(['strain', /* borrowed time running out (effects/triggers.ts last_turn): the blow put off lands as it was */ 'last_turn']);
+const UNSOFTENED = new Set(['strain', /* borrowed time running out (effects/triggers.ts last_turn): the blow put off lands as it was */ 'last_turn', /* rules 1.87 item 7508: a solo fumbled ambush (game.ts runFight; its floor is the caller's) */ 'fumble']);
 /** Take damage (already past armour) off a unit's HP. */
 export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: DamageSrc): DamageResult {
   const res: DamageResult = { dealt: 0, shielded: 0, killed: false, downedHit: false, prevented: false, amount: 0 };

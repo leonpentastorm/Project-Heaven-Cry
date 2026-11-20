@@ -22,6 +22,11 @@ export function startRun(g: any, seed: string, o: { by?: string; keep?: boolean 
   if (!o.keep) for (const c of Object.values(out.characters) as any[]) c.relics = (c.relics || []).filter((id: string) => !isStartBoon(id));
   return out;
 }
+/** Rules 1.87 item 7500: at a fight node's choice (run.state engage) the host walks in (or tries the ambush); any
+ * other state is returned as it is. For the tests that move onto a fight node and measure the fight, not the choice. */
+export function walkIn(g: GameState, how: 'walk' | 'ambush' = 'walk'): GameState {
+  return g.run?.state === 'engage' ? apply(g, { type: 'run/engage', how } as any, g.hostId) : g;
+}
 /** Rules 1.55: off a won fight's field to its rewards: every player in the room marks Leave (run/leave). */
 export function leaveField(g: GameState): GameState {
   let x = g; for (const p of g.players) if (x.run?.state === 'field') x = apply(x, { type: 'run/leave' } as any, p.id);
@@ -49,7 +54,7 @@ export function chooseNode(g: any, prefer: string[] = ['fight', 'elite', 'rest',
 }
 /** Walk the run until the stage is cleared, lost or `maxNodes` nodes are walked; fights by the simulator's policies
  * (or won at once by run/skip when `skip`). Returns the recorder. */
-export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: boolean; prefer?: string[]; /** rules 1.44: play on through this stage (boons: each the first offered; the tile: everyone marks the first) */ through?: number } = {}) {
+export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: boolean; prefer?: string[]; /** rules 1.44: play on through this stage (boons: each the first offered; the tile: everyone marks the first) */ through?: number; /** rules 1.87: the fight node's choice (default walk) */ engage?: 'walk' | 'ambush' } = {}) {
   for (let guard = 0; guard < 200 * (o.through || 1); guard++) {
     const run = r.g.run; if (!run || run.state === 'over' || r.g.phase === 'lobby') break;
     if (run.state === 'camp') { // rules 1.51: each character takes the first card of its starting offer
@@ -68,6 +73,7 @@ export function playStage(r: Rec, n: number, o: { maxNodes?: number; skip?: bool
       // rules 1.48: on a lane with one way forward the first click walks the squad on; where the way forks everyone marks
       const marks = reachable(r.g.run).length === 1 ? 1 : n;
       for (let i = 0; i < marks; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i));
+    } else if (run.state === 'engage') { r.must({ type: 'run/engage', how: o.engage || 'walk' }); // rules 1.87: the walker walks in
     } else if (run.state === 'fight') {
       if (o.skip) r.must({ type: 'run/skip' });
       else { r.fight(40); if (r.g.combat && !r.g.combat.over && !r.g.combat.field && r.g.phase === 'combat') { r.errors.push('a fight did not end in 40 rounds'); break; } }

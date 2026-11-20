@@ -106,10 +106,10 @@ export interface Unit {
   npcId?: string;
   /** Attacked in the open from the overworld: this unit sits out every round before this one (spec: Overworld rounds). */
   waitRound?: number;
-  /** Rules 1.82 item 7004: caught by surprise as the fight was joined (the log's words for its lost turn). */
-  surprised?: boolean;
-  /** Rules 1.82 item 7004 (Shoot First): surprised, it keeps its first turn with at most this many AP. */
-  surpriseAp?: number;
+  /** Rules 1.87 item 7505: its side gave the other a free turn (an ambush): it sits round 1 out (the log's words for its lost turn). */
+  caught?: boolean;
+  /** Rules 1.87 item 7506: its first turn has at most this many AP (Shoot First when caught; the free turn's own cap, data). */
+  firstAp?: number;
   /** Injuries (spec: Injuries): head and torso last this fight; arm and leg go back to the character. */
   injuries?: Injury[]; bleed?: number; dazedNext?: number; injResist?: number; hand?: 'left' | 'right';
   /** PCs: spare magazines (rounds in each) and loose rounds for the weapon. Enemies leave these out: unlimited spares. */
@@ -248,10 +248,11 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
    * last has ended (game.ts leaveField). The fight does not end by a win check (checkOver): it ends when the party
    * leaves (game.ts run/leave) or its rounds run out. `true`: a field saved by 0.29 or 0.30 (game.ts fieldRounds). */
   field?: true | FieldRounds;
-  /** Rules 1.64 item 5008: a Survival fight not yet joined (rules.json combat.approach): no foe has seen a character and
-   * nobody has attacked. `passes`: full passes of the turn order gone by in it. Absent: the fight is joined (every fight
-   * but a run's that opened unseen; every save before 0.31.2). */
-  approach?: { passes: number; /** rules 1.82 item 7004: the last unit to begin a turn before contact, and whether the other side saw it then */ actor?: { id: string; unseen: boolean } };
+  /** Rules 1.87 item 7507: how the fight was opened, when it was not a plain walk in: an ambush tried, its roll (the
+   * squad's one d20, its modifier, the TN, the sum), won or lost, the side that had the free turn ('pc', 'foe', or none
+   * on a solo fumble) and a solo fumble's damage. Read by the opening banner. (A save from before 0.33 may carry
+   * `approach`, the retired fight not yet joined: game.ts migrateLoaded drops it.) */
+  opening?: { ambush: true; won: boolean; die: number; mod: number; total: number; tn: number; nat: 1 | 20 | null; free: 'pc' | 'foe' | null; fumble?: { unit: string; dmg: number } };
   /** Retired in rules 1.9: what lay on the floor in old saves (apply() turns it into piles once; World Play 1.1). */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
@@ -1766,7 +1767,7 @@ export function fightLevel(chars: { level: number }[], o: { level?: unknown; shi
 interface FieldRounds { from: number; of: number; round: number; done?: true }
 /** A field's rounds, or null (not a field, or one saved before rules 1.62: game.ts fieldRounds gives it its rounds). */
 const fieldRoundsOf = (cb: Combat | null | undefined): FieldRounds | null => (cb && cb.field && typeof cb.field === 'object' ? cb.field : null);
-export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean; /** rules 1.15: the fight's level outright, or a shift on the squad's */ level?: number | null; levelShift?: number | null } = {}): Combat {
+export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Character; pos?: string; comp?: Record<string, string> }[], foes: FoeSpec[], difficulty: string, rng: Rng, objects?: MapObject[], extra: { fear?: boolean; fromTalk?: boolean; /** rules 1.15: the fight's level outright, or a shift on the squad's */ level?: number | null; levelShift?: number | null; /** rules 1.87 item 7505: this side sits round 1 out (the other side's free turn: an ambush) */ freeTurn?: 'pc' | 'foe' | null } = {}): Combat {
   const map = typeof mapId === 'string' ? MAPS[mapId] || MAPS.rear_pad : mapId;
   const objs = objects ? JSON.parse(JSON.stringify(objects)) as MapObject[] : defaultObjects(map);
   const units: Unit[] = [], taken = new Set<string>(objs.filter(blocksMove).map((o) => o.pos));
@@ -1802,9 +1803,10 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
   if (Array.isArray(cs.order) && cs.order.length === cb.order.length && cs.order.every((id: string) => cb.order.includes(id))) cb.order = cs.order;
   noteFallbacks(cb);
+  if (extra.freeTurn) freeTurn(cb, extra.freeTurn); // rules 1.87 item 7505: before the first turn begins
   sightFx(cb); // presentation: who each side sees as the fight opens (recorded; nothing comes "into" sight yet)
   beginTurn(cb, rng);
-  { const u0 = active(cb); if (u0 && (u0.skipTurn || (u0.waitRound && cb.round < u0.waitRound))) endTurn(cb, rng); }
+  { const u0 = active(cb); if (u0 && (u0.skipTurn || (u0.waitRound && cb.round < u0.waitRound))) { if (u0.caught && u0.waitRound && cb.round < u0.waitRound) say(cb, sitsOut(u0)); endTurn(cb, rng); } }
   return cb;
 }
 
@@ -1818,8 +1820,6 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const u = active(cb);
   guardNextAction(); // the Elite and Boss guard: a new turn is a new action
   if (!u) return;
-  // rules 1.64 item 5008: before contact a turn is only its AP (nothing that lasts ticks; no death save, no hazard)
-  if (cb.approach) { if (u.side === 'foe') cb.approach.actor = { id: u.id, unseen: !sideSees(cb, 'pc', u) }; setAp(u, turnAp(u, [], []).ap); u.moved = false; u.bank = 0; u.sprinted = false; emitFx(cb, 'turn', { unit: u.id, side: u.side, at: u.pos, round: cb.round }); return; }
   // AP (spec: Skills, traits and perks in play): 'turn_start_pre' {u, grants, penalties} collects perk AP ({n, why});
   // turnAp clamps 6 + perk AP (at most +3 a turn) − Stunned − Dazed to 2..9, then takes any debt.
   condSourcesCheck(cb, u); // a grapple whose grappler is gone ends, and so on
@@ -1827,9 +1827,9 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const pens = ['nausea', 'suppressed'].filter((id) => condOn(u, id)).map((id) => ({ n: -(condMods(id).ap || 0), why: condDef(id)!.title })); // the rows' AP (data/conditions.json)
   const pre: any = emit(cb, 'turn_start_pre', { u, grants: [], penalties: pens, cb, rng });
   const t = turnAp(u, pre.grants || [], pre.penalties || []);
-  const full = t.ap, cap = u.surpriseAp; delete u.surpriseAp; // rules 1.82 item 7004: Shoot First's first turn, at most its AP
+  const full = t.ap, cap = u.firstAp; delete u.firstAp; // rules 1.87 item 7506: a first turn with at most this many AP (Shoot First caught)
   setAp(u, cap != null ? Math.min(full, cap) : full); for (const l of t.lines) say(cb, l);
-  if (cap != null && cap < full) say(cb, sayWords(SURPRISE.lines.ap, u, cap));
+  if (cap != null && cap < full && FREE_TURN.lines.ap) say(cb, sayWords(FREE_TURN.lines.ap, u, cap));
   if (u.dazedNext) say(cb, u.name + ' is Dazed: −2 AP this turn.');
   if (u.shownTo) delete u.shownTo; // rules 1.61 item 4963: its last attack showed it until now
   clearStagger(u); dazeSpent(u); u.overwatch = null; u.owShots = 0; delete u.owSpend; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - (heatPair(u) ? 4 : 2)); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
@@ -1897,52 +1897,29 @@ export function checkOver(cb: Combat) {
   return cb.over;
 }
 
-/** Rules 1.64 item 5008 (rules.json combat.approach): the words and numbers of the time before contact. */
-export const APPROACH: { free: string[]; quiet: string[]; acts_log: string; passes_max: number; line: string; joined_log: string; alarm_log: string } = (RULES as any).combat.approach;
-/** Rules 1.64 item 5008: open the time before contact on a fight that has just started, when no foe sees any character
- * (a run's fight: game.ts runFight). True when it opened. */
-export function openApproach(cb: Combat): boolean {
-  const pcs = cb.units.filter((u) => u.side === 'pc' && alive(u));
-  if (!pcs.length || pcs.some((p) => sideSees(cb, 'foe', p))) return false;
-  cb.approach = { passes: 0 }; return true;
-}
-/** Rules 1.64 item 5008: is there contact now? A foe sees a character, a character has attacked (this turn) or a foe has
- * been hurt, or a foe (a Hidden one: the only kind that acts before contact) has attacked. Then the fight is joined
- * (joinFight) and true. A fight already joined: false. o.acting (rules 1.64 item 5011): a unit is about to make an
- * action that is not the approach's (rules.json combat.approach.quiet / free): that is contact itself. */
-export function contactCheck(cb: Combat, rng: Rng, o: { acting?: boolean } = {}): boolean {
-  if (!cb.approach) return false;
-  if (o.acting) { const a = active(cb); joinFight(cb, rng, a ? { side: a.side, unseen: !sideSees(cb, a.side === 'pc' ? 'foe' : 'pc', a) } : null); return true; }
-  const seen = cb.units.some((u) => u.side === 'pc' && alive(u) && sideSees(cb, 'foe', u));
-  const pcHit = cb.units.some((u) => (u.side === 'pc' && (u.attackedTurn || (u.shotsThisTurn || 0) > 0)) || (u.side === 'foe' && u.hp < u.maxHp));
-  const foeHit = cb.units.some((u) => u.side === 'foe' && u.attackedTurn);
-  if (!seen && !pcHit && !foeHit) return false;
-  // rules 1.82 item 7004: who made contact by an attack, and whether the other side saw the one who acted (a character
-  // acting before contact is unseen by the approach's own rule; a foe acting before contact is a Hidden one, seen or not
-  // as its turn began). Contact by sight alone surprises nobody.
-  const atk = foeHit ? cb.units.find((u) => u.side === 'foe' && u.attackedTurn) : null;
-  const by = pcHit ? { side: 'pc' as const, unseen: true } : atk ? { side: 'foe' as const, unseen: cb.approach.actor?.id === atk.id && cb.approach.actor.unseen } : null;
-  joinFight(cb, rng, by); return true;
-}
-/** Rules 1.82 item 7004 (rules.json combat.initiative.surprise_round): a surprise in the approach. Its switch, its log lines. */
-export const SURPRISE: { on: boolean; springs: string[]; lines: { side: string; immune: string; ap: string } } = { on: !!(RULES as any).combat.initiative.surprise_round?.on, springs: (RULES as any).combat.initiative.surprise_round?.springs || ['pc', 'foe'], lines: (RULES as any).combat.initiative.surprise_round?.lines || { side: '', immune: '', ap: '' } };
+/** Rules 1.87 items 7505, 7506 (rules.json combat.free_turn): a side's free turn as a fight opens (an ambush, won or
+ * lost). Its log lines; `ap`: the free side's first turn at most this many AP (null: a full turn). */
+export const FREE_TURN: { ap: number | null; lines: { side: string; immune: string; ap: string; sits: string } } = (RULES as any).combat.free_turn;
 const sayWords = (t: string, u: Unit | null, n?: number) => t.replace(/\{unit\}/g, u?.name || '').replace(/\{n\}/g, String(n ?? ''));
-/** Rules 1.82 item 7004: the side that did not make contact, when it saw nobody of the side that did, is surprised: each
- * of its units loses round 1 (waitRound 2), but one whose `surprise_immune` holds while a unit of the contact side stands
- * within its Vision (Tremor), and one with `surprise_ap`, which keeps its first turn with that many AP (Shoot First). */
-function surpriseSide(cb: Combat, by: { side: 'pc' | 'foe'; unseen: boolean } | null): void {
-  if (!SURPRISE.on || !by || !by.unseen || !SURPRISE.springs.includes(by.side)) return; // `springs`: the sides that may catch the other (data)
-  const caught: Unit[] = [], them = cb.units.filter((t) => t.side === by.side && alive(t));
+/** Rules 1.87 item 7505: the side `caught` sits round 1 out (Unit.waitRound 2), as the other side has a free turn:
+ * but a unit whose stat `ambush_immune` holds is not caught (Tremor), and one with `ambush_ap` keeps its first turn with
+ * that many AP (Shoot First). The free side's units take FREE_TURN.ap as their first turn's cap, when data gives one.
+ * Called by startCombat (extra.freeTurn) before the first turn begins. */
+function freeTurn(cb: Combat, caught: 'pc' | 'foe'): void {
+  const sat: Unit[] = [];
   for (const u of cb.units) {
-    if (u.side === by.side || !alive(u) || u.downed) continue;
+    if (!alive(u) || u.downed) continue;
+    if (u.side !== caught) { if (FREE_TURN.ap != null) u.firstAp = FREE_TURN.ap; continue; }
     const own = !!(u.charId || u.held); // (only a unit with items of its own answers either)
-    if (own && statQuery({ u, cb }, 'surprise_immune').add > 0 && them.some((t) => dist(t.pos, u.pos) <= (u.vision || 12))) { if (SURPRISE.lines.immune) say(cb, sayWords(SURPRISE.lines.immune, u)); continue; }
-    const ap = own ? statQuery({ u, cb }, 'surprise_ap').add : 0; if (ap > 0) { u.surpriseAp = ap; continue; }
+    if (own && statQuery({ u, cb }, 'ambush_immune').add > 0) { if (FREE_TURN.lines.immune) say(cb, sayWords(FREE_TURN.lines.immune, u)); continue; }
+    const ap = own ? statQuery({ u, cb }, 'ambush_ap').add : 0; if (ap > 0) { u.firstAp = ap; continue; }
     if ((u.waitRound || 0) >= 2) continue; // already sits round 1 out (unaware)
-    u.waitRound = 2; u.surprised = true; caught.push(u);
+    u.waitRound = 2; u.caught = true; sat.push(u);
   }
-  if (caught.length && SURPRISE.lines.side) say(cb, sayWords(SURPRISE.lines.side, null).replace(/\{units\}/g, caught.map((u) => u.name).join(', ')));
+  if (sat.length && FREE_TURN.lines.side) say(cb, sayWords(FREE_TURN.lines.side, null).replace(/\{units\}/g, sat.map((u) => u.name).join(', ')));
 }
+/** The words for a unit that sits a round out (unaware, caught by a free turn, or reeling from an attack in the open). */
+const sitsOut = (u: Unit): string => u.name + (u.tags?.includes('unaware') ? ' is caught unaware: no turn this round.' : u.caught ? ' ' + FREE_TURN.lines.sits : ' is still reeling from striking in the open: no turn this round.');
 /** The initiative line (spec item 5605): every unit in the order by name and Initiative. A side that does not see some of
  * them reads them as one count ("2 unseen"): each side's line is built here, where it is written, and kept on the
  * line's mark (fog.ts sends it as it is). The fight's opening one is marked again whenever the set-up changes who is
@@ -1964,39 +1941,6 @@ function sayInitiative(cb: Combat, lead: string) {
   remark(cb, at, initiativeMark(cb, at));
 }
 function remarkOpening(cb: Combat) { const at = cb.log.findIndex((l, i) => i < 4 && l.startsWith(INIT_HEAD)); if (at >= 0) remark(cb, at, initiativeMark(cb, at)); }
-/** Rules 1.64 item 5008: contact. The fight is joined: round 1 from the top of the initiative order (rolled as the fight
- * began, read out now), every unit's first turn on full AP (beginTurn). */
-function joinFight(cb: Combat, rng: Rng, by: { side: 'pc' | 'foe'; unseen: boolean } | null = null) {
-  delete cb.approach; cb.round = 1;
-  sayInitiative(cb, APPROACH.joined_log + ' ');
-  surpriseSide(cb, by); // rules 1.82 item 7004: before the alarm tells the foes where the squad stands
-  const told = raiseAlarm(cb);
-  // rules 1.78 item 6603 (spec item 5010 c): the fight joined is an effects event (the alarm's, `joined`), over the first
-  // character the foes learned of (no tile: nobody was told; the screen still sounds it)
-  emitFx(cb, 'alarm', { joined: true, ...(told ? { at: told } : {}) });
-  for (let i = 0; i < cb.order.length; i++) {
-    // (a player's view of the fight keeps an unseen foe's place in the order with no unit: fog.ts; the preview of an
-    // action that joins the fight runs there, so a place with no unit is passed over, never read: 0.32 B8)
-    cb.turn = i; const u = active(cb);
-    if (!u || u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
-    if (u.waitRound && cb.round < u.waitRound) { if (u.surprised) say(cb, u.name + ' is caught by surprise: no turn this round.'); continue; } // rules 1.82 item 7004: surprised (or unaware), it sits round 1 out
-    beginTurn(cb, rng); return;
-  }
-}
-/** Rules item 5521, the alarm (0.31.12; Leon: no walking the fog to find the last foes): when the fight is joined every
- * foe group on the map learns where each character not Hidden stands now (the foe side's seenAt, read by knownTile), so
- * a group that never saw the squad comes for it (enemySearchTile) instead of searching where the squad started. A Hidden
- * character stays unknown; the foes' own Hidden (ambushers) keep their rule. The log says it once (rules.json
- * combat.approach.alarm_log), when it told the foes anything. Returns the first told character's tile (null: none). */
-function raiseAlarm(cb: Combat): string | null {
-  let told: string | null = null;
-  for (const p of cb.units) {
-    if (p.side !== 'pc' || !alive(p) || p.hidden) continue;
-    if (cb.seenAt?.foe?.[p.id] !== p.pos) { noteSeen(cb, 'foe', p.id, p.pos); told ??= p.pos; }
-  }
-  if (told && APPROACH.alarm_log) say(cb, APPROACH.alarm_log);
-  return told;
-}
 /** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). o.newRound: the round ends with
  * this turn (rules 1.62 item 4906: a field opens on a new round). On a field (rules 1.62 item 4906) the round that would
  * pass its last marks it done and begins nobody's turn (game.ts leaveField). */
@@ -2004,23 +1948,19 @@ export function endTurn(cb: Combat, rng: Rng, o: { newRound?: boolean } = {}) {
   if (fieldRoundsOf(cb)?.done) return;
   if (cb.window) { windowStep(cb, true); return; } // ending a window's turn hands it on, not the round
   if (checkOver(cb)) return;
-  { const u0 = active(cb); if (u0 && !cb.approach) { emit(cb, 'turn_end', { u: u0, cb, rng }); closeTurn(cb, rng, u0); } else if (u0) spotHidden(cb, rng, u0); } // 'turn_end' {u}: before the turn passes (rules 1.64 item 5008: before contact nothing ticks; eyes still look)
+  { const u0 = active(cb); if (u0) { emit(cb, 'turn_end', { u: u0, cb, rng }); closeTurn(cb, rng, u0); } } // 'turn_end' {u}: before the turn passes
   if (checkOver(cb)) return;
   if (o.newRound) cb.turn = cb.order.length - 1;
   for (let guard = 0; guard < cb.units.length * 3; guard++) {
     cb.turn++;
-    if (cb.turn >= cb.order.length && cb.approach) { // rules 1.64 item 5008: no round passes before contact; a pass is counted
-      cb.turn = 0; cb.approach.passes++;
-      if (cb.approach.passes >= APPROACH.passes_max) { joinFight(cb, rng); return; }
-    }
     if (cb.turn >= cb.order.length) {
       cb.turn = 0; cb.round++;
       const f = fieldRoundsOf(cb); if (f) { f.round = cb.round - f.from + 1; if (f.round > f.of) { f.round = f.of; f.done = true; return; } }
       magicRoundTick(cb); emit(cb, 'round_start', { cb, round: cb.round, rng });
     }
     const u = active(cb)!;
-    if (u.dead || u.surrendered || (u.side === 'foe' && (u.downed || cb.field || (cb.approach && !u.hidden)))) continue; // rules 1.62 item 4906: no foe has a turn on the field; rules 1.64 item 5008: nor before contact, but a Hidden one
-    if (u.waitRound && cb.round < u.waitRound) { say(cb, u.name + (u.tags?.includes('unaware') ? ' is caught unaware: no turn this round.' : u.surprised ? ' is caught by surprise: no turn this round.' : ' is still reeling from striking in the open: no turn this round.')); continue; }
+    if (u.dead || u.surrendered || (u.side === 'foe' && (u.downed || cb.field))) continue; // rules 1.62 item 4906: no foe has a turn on the field
+    if (u.waitRound && cb.round < u.waitRound) { say(cb, sitsOut(u)); continue; }
     beginTurn(cb, rng);
     if (u.dead || (u.downed && u.side === 'pc') || u.skipTurn) { closeTurn(cb, rng, u); checkOver(cb); if (cb.over) return; continue; }
     return;

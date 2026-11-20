@@ -110,7 +110,7 @@ White-ink signs, the same set and style as the fight banners' `banner-fight-star
 
 | id | where | direction |
 | --- | --- | --- |
-| `banner-fight-approach` | the APPROACH banner (a fight opened with no foe seeing the squad) | an eye half-closed or a footstep in fog: unseen, moving quietly |
+| `banner-fight-advantage` | the SQUAD ADVANTAGE and ENEMY ADVANTAGE banners (rules 1.87 item 7507: a fight opened by an ambush roll; drawn in green or red). Replaces `banner-fight-approach` (the APPROACH banner, retired with the approach, rules 1.87 item 7500); until drawn they use `banner-fight-start` | a figure crouched to spring from cover: the first move taken |
 | `banner-level-up` | the LEVEL UP banner (any character of the room gains a level; any screen) | a rising chevron or a step mark climbing: growth, not a weapon |
 
 ### 0d. Shadow verb added in 0.32 (requested 19 Nov 2026)

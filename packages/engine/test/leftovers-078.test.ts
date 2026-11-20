@@ -66,26 +66,8 @@ describe('item 6602: NULL unmakes a Figment (figments-spec rule 12)', () => {
   });
 });
 
-describe('item 6603: the fight joined is an effects event (spec item 5010 c)', () => {
-  it("a Survival fight opened unseen: no alarm event before contact; at contact one, joined, on a character's tile", () => {
-    let g: GameState | null = null;
-    for (let s = 1; s <= 40 && !g; s++) {
-      const seed = 'PHC-' + String(s).padStart(4, '0');
-      let x = startRun(survivalRoom(seed, [{ build: 'plain_gun', level: 1 }] as any, { test: true }), seed);
-      const n = reachable(x.run!).find((y) => y.kind === 'fight'); if (!n) continue;
-      x = apply(x, { type: 'run/move', node: n.id } as any, ownerOf(0));
-      if (x.combat?.approach) g = x;
-    }
-    expect(g).toBeTruthy();
-    const alarms = (x: GameState) => (x.combat!.fx || []).filter((e: any) => e.k === 'alarm');
-    expect(alarms(g!).length).toBe(0);
-    for (let k = 0; k < 8 && g!.combat!.approach; k++) g = apply(g!, { type: 'combat/end-turn', unitId: active(g!.combat!)!.id } as any, ownerOf(0));
-    expect(g!.combat!.approach).toBeUndefined();
-    const a = alarms(g!); expect(a.length).toBe(1); expect(a[0].joined).toBe(true);
-    if (a[0].at) expect(g!.combat!.units.some((u) => u.side === 'pc' && u.pos === a[0].at)).toBe(true);
-  });
-});
-
+// item 6603 (the fight joined as an effects event) is retired with the approach (rules 1.87 item 7500): every fight
+// starts joined, so no fight is joined later and no event says it.
 describe('item 6604: who aims at a Bonded ally is read (bonds-spec section 2 rule 8)', () => {
   function rig() {
     const s: any = storyWith([{ name: 'Medic', level: 5, skills: { empathy: 5 }, attrs: { insight: 5 }, weapon: 'service_pistol' }, { name: 'Gun', level: 5 }, { name: 'Far', level: 5 }]);

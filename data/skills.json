@@ -2338,11 +2338,12 @@
           "name": "Fade",
           "category": "Active Skill",
           "mastery": 0,
+          "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "Your Shadow holds one more, and the big verb of the door opens: Fade (step to cover and go Hidden even while seen).",
-          "player": "Shadow holds more · New move: Fade (slip back into Hidden)",
-          "effects": [],
+          "text": "Your Shadow holds one more, and the big verb of the door opens: Fade (step to cover and go Hidden even while seen). Scout: before a fight you go ahead alone, so the squad sees who is waiting before it chooses, and its ambush roll takes +{=unlocks.5.effects.0.value} (the best scout counts, never two).",
+          "player": "Shadow holds more · New move: Fade (slip back into Hidden) · Scout: see who waits, +{=.effects.0.value} to the ambush roll",
+          "effects": [{ "op": "stat_mod", "stat": "ambush_scout", "value": 2, "label": "Scout", "note": "rules 1.87 item 7512 (Leon, 20 Nov 2026: \"give the full ingenuity guy that scouting tag too\"): a squad holding a scout sees the line-up before the choice, and this is its bonus on the ambush roll (run/ambush.ts; the best scout counts)", "provisional": true }],
           "source": "rules 1.74 item 6000"
         },
         "6": {

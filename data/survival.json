@@ -769,6 +769,35 @@
   },
   "give": { "about": "Rules 1.46 (spec rule 47; primitive 13), rules 1.55 items 30 and 31: where a character of a run may give another credits: the node kinds with no fight (`where`), and before the first node (`at_start`). An item (a pack entry, or a counted item: a stim, an Essence) is given anywhere no fight is on (rules 1.55 item 30: the path map, every place, the camp, the field, the rewards). A give is plain (no confirm from the receiver) and logged in words. Never given: boons, tokens and the graft (c.relics), trainings, the fitted armour class; a Relic whose property would take the receiver past the boon cap is refused. Out of a run (a campaign) a give is made out of a fight.", "where": ["shop", "forge", "training", "shrine", "rest", "cache", "event"], "at_start": true, "provisional": true },
   "field": { "about": "Rules 1.55 item 35 as item 64 states it (0.28.3: the field is the fight still running): what an item's action may do on the field is its row in data/actions.json `field` (G3 of 0.32, spec item 5609: a flag per action, in place of the guess from its limit, its cost and its ops that this row's lasting_ops fed; no row, refused).", "rounds": 3, "rounds_about": "Rules 1.62 item 4906: the field is turns: `rounds` rounds of real turns after the won fight (AP, waits and durations as in a fight), then the party leaves by itself; a vote leaves at once. Its words on screen are run.after_fight.field.", "provisional": true },
+  "ambush": {
+    "about": "Rules 1.87 items 7500 to 7512 (Leon, 20 Nov 2026: \"every combat node have a frontal attack or try ambushing option, if you go frontal you get normal initiative roll, if you try ambush the squad roll some how, if you win you get a free turn, if you lost the enemy get a free turn. The approach phase is out entirely.\"). A fight node (`kinds`) asks before the fight, on its place screen (run.state engage), one choice for the squad (the host's): `walk` (the fight starts joined, the normal initiative roll) or `try` (one roll for the squad, run/ambush.ts ambushRoll). The roll: d20 + the squad's modifier against the node's TN (`tn`, a TN name of the spec's four: rolls.ts TN); each living character's own number is its best check modifier among `skills` (the check rule: a gamma skill adds its full points; its items' skill mods), the squad's is their average rounded down, plus the best `ambush_roll` (Tremor) and the best scout's bonus (a held item answering `ambush_scout`, the Ingenuity door at 5; a Figment form with `scouts` it can picture now), each its own term. A natural 20 wins, a natural 1 loses. Won: the hostiles sit round 1 out (rules.json combat.free_turn). Lost: the squad sits round 1 out; but a squad of `fumble.squad_max` characters or fewer fumbles instead (Leon, 20 Nov 2026): no free turn for anyone, and each character takes the fumble's damage (rules.json output.amounts.ambush_fumble: a share of its max HP; nothing reduces it; it stops at `fumble.floor_hp`; Tremor's holder takes none). Echo does not reroll it (the roll is the squad's, no one character's). `words`: the screen's and the log's.",
+    "kinds": ["fight", "elite", "boss", "vault_guard"],
+    "skills": ["ingenuity", "athletics", "sensory"],
+    "tn": { "fight": "standard", "elite": "hard", "gate": "hard", "vault_guard": "hard", "boss": "heroic" },
+    "fumble": { "squad_max": 1, "floor_hp": 1 },
+    "words": {
+      "head": "THE APPROACH",
+      "ask": "How do you go in?",
+      "walk": "Walk in",
+      "walk_text": "A frontal attack: the normal initiative roll, nobody loses a turn.",
+      "try": "Try an ambush",
+      "try_text": "The squad rolls once. Win: the hostiles lose their first turn. Lose: the squad loses its first turn.",
+      "try_text_solo": "You roll once. Win: the hostiles lose their first turn. Lose: you fumble it and take {dmg} damage, and the fight starts as a walk in.",
+      "chance": "{pct}% to win",
+      "waiting": "The host chooses how the squad goes in.",
+      "scout": "{name} goes ahead",
+      "scout_form": "{name}'s {form} goes ahead",
+      "lineup": "Waiting: {foes}",
+      "squad": "Squad",
+      "scout_term": "Scout",
+      "log_walk": "The squad walks in.",
+      "log_try": "Ambush: {roll}: {result}.",
+      "won": "the hostiles are caught",
+      "lost": "the hostiles saw them coming",
+      "fumble": "{unit} fumbles the ambush and takes {dmg} damage."
+    },
+    "provisional": true
+  },
   "map": {
     "about": "Rules 1.48 (Leon, 13 Nov: lanes; survival-spec rules 7 to 9, section 3.1): the path map. From the start every lane can be chosen; a lane is a run of nodes with exactly one way forward; lanes meet only at junctions (two or three neighbouring lanes, `junction.sizes`, merge into one node and split again), at the gate (every lane), at the final junction (every lane, before row 14's shop and rest) and at the Boss. A segment, a lane's run between two meeting nodes, is `junction.segment` nodes long and takes a theme (`themes`: what it holds, placed where the rules allow; `fill`: what fills the rest, none: fights) distinct from its siblings', so a party picks a lane by reading ahead. `junction_kinds`: what a junction node rolls. `every_route`: kinds every route passes in depths 1 to final_row; `guarantees`: the reference route's windows; `shop_gap`: a shop within that many nodes of the start and of every junction on some route (and the reference route's shops never further apart). One vault a map: a spur of a guard fight and a chest off an edge lane node (`vault.edge`) in `vault.depths`.",
     "rows": 15,
@@ -808,7 +837,7 @@
     "provisional": true
   },
   "music": {
-    "about": "Rules 1.54 (survival-spec section 14): what plays in a run, by situation, read by musicFor. camp: the loadout camp; map: the path map, one track per setting id, else `default`; place: a node's own track by its kind (shop, forge, rest); a place with none (training, shrine, Crossroads, cache, the vault's chest) plays the setting's map track; boon: the boon pick. A fight keeps the fight music, but for its quiet phases (rules item 5523): `quiet`, the one calm track of a run fight's approach before contact and its field after a win (FREE ROAM); PROVISIONAL. A new track is one line here (and its id in the engine's OstId list).",
+    "about": "Rules 1.54 (survival-spec section 14): what plays in a run, by situation, read by musicFor. camp: the loadout camp; map: the path map, one track per setting id, else `default`; place: a node's own track by its kind (shop, forge, rest); a place with none (training, shrine, Crossroads, cache, the vault's chest) plays the setting's map track; boon: the boon pick. A fight keeps the fight music, but for its quiet phase (rules item 5523; rules 1.87 item 7500: no approach any more): `quiet`, the one calm track of a run fight's field after a win (FREE ROAM); PROVISIONAL. A new track is one line here (and its id in the engine's OstId list).",
     "camp": "surv_camp",
     "map": { "default": "surv_map", "ahoc": "surv_map_ahoc", "city": "surv_map_city", "field": "surv_map_field", "works": "surv_map_works", "shrine": "surv_map_shrine", "rim": "surv_map_rim" },
     "place": { "shop": "surv_shop", "forge": "surv_forge", "rest": "surv_rest" },

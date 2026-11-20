@@ -1071,14 +1071,21 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Nothing moving on the ground within your Vision can take you by surprise: you act in the surprise round. II: Nothing moving on the ground within your Vision can take you by surprise, and you start each fight with {=tiers.II.effects.1.value} Guard.",
+      "text": "I: You feel them before you see them: +{=tiers.I.effects.1.value} to the squad's ambush roll, and when an ambush fails you are not caught (you act in the hostiles' free turn; a lone fumble does not hurt you). II: +{=tiers.II.effects.2.value} to the squad's ambush roll, never caught when it fails, and you start each fight with {=tiers.II.effects.1.value} Guard.",
       "effects": [
         {
           "op": "stat_mod",
-          "stat": "surprise_immune",
+          "stat": "ambush_immune",
           "value": 1,
           "label": "Tremor",
-          "note": "rules 1.82 item 7004: not surprised while a unit of the attacking side stands within its Vision (combat.ts surpriseSide)"
+          "note": "rules 1.87 item 7509: not caught when an ambush gives the hostiles the free turn (it acts in their free turn), and no solo fumble damage (combat.ts freeTurn, run/ambush.ts)"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "ambush_roll",
+          "value": 1,
+          "label": "Tremor",
+          "note": "rules 1.87 item 7509: added to the squad's ambush roll, its own term (the best in the squad; run/ambush.ts)"
         }
       ],
       "tiers": {
@@ -1090,15 +1097,22 @@
             }
           ],
           "ap_cost": null,
-          "text": "Nothing moving on the ground within your Vision can take you by surprise: you act in the surprise round.",
-          "short": "You act in the surprise round against anything on the ground",
+          "text": "You feel them before you see them: +{=tiers.I.effects.1.value} to the squad's ambush roll, and when an ambush fails you are not caught (you act in the hostiles' free turn; a lone fumble does not hurt you).",
+          "short": "+{=tiers.I.effects.1.value} to the ambush roll; never caught by its failure",
           "effects": [
             {
               "op": "stat_mod",
-              "stat": "surprise_immune",
+              "stat": "ambush_immune",
               "value": 1,
               "label": "Tremor",
-              "note": "rules 1.82 item 7004: not surprised while a unit of the attacking side stands within its Vision (combat.ts surpriseSide)"
+              "note": "rules 1.87 item 7509: not caught when an ambush gives the hostiles the free turn (it acts in their free turn), and no solo fumble damage (combat.ts freeTurn, run/ambush.ts)"
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ambush_roll",
+              "value": 1,
+              "label": "Tremor",
+              "note": "rules 1.87 item 7509: added to the squad's ambush roll, its own term (the best in the squad; run/ambush.ts)"
             }
           ]
         },
@@ -1110,15 +1124,15 @@
             }
           ],
           "ap_cost": null,
-          "text": "Nothing moving on the ground within your Vision can take you by surprise, and you start each fight with {=tiers.II.effects.1.value} Guard.",
-          "short": "And +{=tiers.II.effects.1.value} Guard when a fight starts",
+          "text": "+{=tiers.II.effects.2.value} to the squad's ambush roll, never caught when it fails, and you start each fight with {=tiers.II.effects.1.value} Guard.",
+          "short": "+{=tiers.II.effects.2.value} to the ambush roll, and +{=tiers.II.effects.1.value} Guard when a fight starts",
           "effects": [
             {
               "op": "stat_mod",
-              "stat": "surprise_immune",
+              "stat": "ambush_immune",
               "value": 1,
               "label": "Tremor",
-              "note": "rules 1.82 item 7004: not surprised while a unit of the attacking side stands within its Vision (combat.ts surpriseSide)"
+              "note": "rules 1.87 item 7509: not caught when an ambush gives the hostiles the free turn (it acts in their free turn), and no solo fumble damage (combat.ts freeTurn, run/ambush.ts)"
             },
             {
               "op": "resource",
@@ -1127,6 +1141,13 @@
               "value": 2,
               "label": "Tremor",
               "say": "{self} felt them coming: +{gain} Guard (Tremor)."
+            },
+            {
+              "op": "stat_mod",
+              "stat": "ambush_roll",
+              "value": 2,
+              "label": "Tremor",
+              "note": "rules 1.87 item 7509: added to the squad's ambush roll, its own term (the best in the squad; run/ambush.ts)"
             }
           ],
           "replaces_tier_I": true,
@@ -3128,14 +3149,14 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: You act in the surprise round even when your side is the one surprised ({=tiers.I.effects.0.value} AP). II: You act in the surprise round even when your side is the one surprised ({=tiers.II.effects.0.value} AP).",
+      "text": "I: When a failed ambush gives the hostiles the free turn, you still act in it ({=tiers.I.effects.0.value} AP). II: When a failed ambush gives the hostiles the free turn, you still act in it ({=tiers.II.effects.0.value} AP).",
       "effects": [
         {
           "op": "stat_mod",
-          "stat": "surprise_ap",
+          "stat": "ambush_ap",
           "value": 3,
           "label": "Shoot First",
-          "note": "rules 1.82 item 7004: surprised, it keeps its first turn with this many AP (combat.ts surpriseSide)"
+          "note": "rules 1.87 item 7509: caught by a failed ambush (the hostiles' free turn), it still has its first turn with this many AP (combat.ts freeTurn)"
         }
       ],
       "tiers": {
@@ -3147,15 +3168,15 @@
             }
           ],
           "ap_cost": null,
-          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.I.effects.0.value} AP).",
-          "short": "Act in the surprise round, even when surprised",
+          "text": "When a failed ambush gives the hostiles the free turn, you still act in it ({=tiers.I.effects.0.value} AP).",
+          "short": "Act in the hostiles' free turn after a failed ambush",
           "effects": [
             {
               "op": "stat_mod",
-              "stat": "surprise_ap",
+              "stat": "ambush_ap",
               "value": 3,
               "label": "Shoot First",
-              "note": "rules 1.82 item 7004: surprised, it keeps its first turn with this many AP (combat.ts surpriseSide)"
+              "note": "rules 1.87 item 7509: caught by a failed ambush (the hostiles' free turn), it still has its first turn with this many AP (combat.ts freeTurn)"
             }
           ]
         },
@@ -3167,15 +3188,15 @@
             }
           ],
           "ap_cost": null,
-          "text": "You act in the surprise round even when your side is the one surprised ({=tiers.II.effects.0.value} AP).",
+          "text": "When a failed ambush gives the hostiles the free turn, you still act in it ({=tiers.II.effects.0.value} AP).",
           "short": "That action has {=tiers.II.effects.0.value} AP",
           "effects": [
             {
               "op": "stat_mod",
-              "stat": "surprise_ap",
+              "stat": "ambush_ap",
               "value": 4,
               "label": "Shoot First",
-              "note": "rules 1.82 item 7004: surprised, it keeps its first turn with this many AP (combat.ts surpriseSide)"
+              "note": "rules 1.87 item 7509: caught by a failed ambush (the hostiles' free turn), it still has its first turn with this many AP (combat.ts freeTurn)"
             }
           ],
           "replaces_tier_I": true,
