@@ -26573,6 +26573,42 @@
         "different_pixels_32": 18,
         "different_pixels_64": 60
       }
+    },
+    "weapon-hellraiser_rotary--fine": {
+      "label": "Hellraiser Rotary — Fine",
+      "path": "art/icons/gear/weapon-hellraiser_rotary--fine.png",
+      "sha256": "21242efc2ec291373fe0c9845051cb1b25c18e907c76899a5735002bbb2f3682",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_rotary--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_rotary--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_rotary--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_rotary--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_rotary--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_rotary",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9891511750263066,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 17
+      }
     }
   },
   "survival_art": {

@@ -872,6 +872,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hellraiser_rotary--fine",
+      "path": "art/icons/gear/weapon-hellraiser_rotary--fine.png",
+      "sha256": "21242efc2ec291373fe0c9845051cb1b25c18e907c76899a5735002bbb2f3682",
+      "label": "Hellraiser Rotary — Fine",
+      "family": "weapon-hellraiser_rotary",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_rotary--fine.png",
+        "sha256": "7189c725d6f0cb95bbaab40e3342cfaad8aea8888f0aefd33b520bdcda8e8e2d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-hellraiser_rotary--fine.png",
+        "sha256": "21242efc2ec291373fe0c9845051cb1b25c18e907c76899a5735002bbb2f3682"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-hellraiser_rotary--fine.txt",
+        "sha256": "96454334a6baa1492c198e312da71ab7a579139afd01a4d5724f8d9f02f1564d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hellraiser_rotary.png",
+          "sha256": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_rotary--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_rotary--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_rotary--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_rotary--fine.png"
+      },
+      "export_hashes": {
+        "256": "6ca16f2d85f98caa0b9ef668107228c215ee7c86f0b75147807a0cb6f430a199",
+        "128": "7b03b17f0d322c34b6cf63f2ea011e6e68a262c9bd39ed117fba9c718ed68635",
+        "64": "3474ac0bf1716c7320ab68945f9d2ec86ea356b8899be9e2256cc786acf35f32",
+        "32": "5ceb33eb5bd88227173b47ec6e34a2d9d2c5d8d805b5ead0a5e9beff4512b46f"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-hellraiser_rotary",
+      "outline": {
+        "solid_alpha_iou": 0.9891511750263066,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 17
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
