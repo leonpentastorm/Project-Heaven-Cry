@@ -9,17 +9,24 @@ import { fileURLToPath } from 'node:url';
 import './helpers/yard16';
 import { fightWith, storyWith, withGame, type CharSpec } from './helpers/perkfight';
 import { physFight, rig } from './helpers/physfight';
-import { SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, type Unit, type Action } from '../src';
+import { PERK, SKILLS, SKILL, apply, applyCond, condOn, resolveAttack, migrateLoaded, ladderSchedule, pendingDoorPicks, doorForkView, doorForkViews, forkRow, forkBuilt, formsOf, FIG_REV, beginTurn, viewFor, heldOfChar, type Unit, type Action } from '../src';
 import { onHook } from '../src/effects/hooks';
 import { tiesOf } from '../src/kit';
 import { pressureOf, pressureCap } from '../src/physical/pressure';
 import forksJ from '../../../data/forks.json';
 import tendingJ from '../../../data/tending.json';
+import techniquesJ from '../../../data/techniques.json';
+import RULESJ from '../../../data/rules.json';
 
 const FK: Record<string, any> = Object.fromEntries((forksJ as any).items.map((x: any) => [x.id, x]));
 const T: any = tendingJ;
-const grant = (id: string) => T.items.find((x: any) => x.id === id).effects.find((e: any) => e.op === 'grant_action');
+// rules 1.75 item 6213: Tug, Guide, Settle, Soothe and Raise are Camaraderie perks' actions now (their grant_action rows)
+const MOVED: Record<string, [string, number]> = { 'tend.tug': ['pull_together', 0], 'tend.guide': ['pull_together', 1], 'tend.settle': ['steady_hands', 0], 'tend.soothe': ['steady_hands', 1], 'tend.raise': ['nobody_left_behind', 2] };
+const movedGrant = (id: string) => (PERK as any)[MOVED[id][0]].tiers.II.effects[MOVED[id][1]];
+const grant = (id: string) => (MOVED[id] ? movedGrant(id) : T.items.find((x: any) => x.id === id).effects.find((e: any) => e.op === 'grant_action'));
 const ALPHAS = (SKILLS as any[]).filter((s) => Array.isArray(s.forks));
+/** The second fork's point of an alpha skill (rules 1.70 item 5536: skills.json ladder, the forks at 4 and 8). */
+const FORK2 = (skill: string): number => ladderSchedule(skill).forks[1];
 const SLAM = () => (SKILL as any).durability.unlocks['1'].effects.find((e: any) => e.action === 'guard_slam');
 
 let SAVES: 'pass' | 'fail' | null = null;
@@ -33,12 +40,15 @@ const big = (f: F, u: Unit) => { const x = f.unit(u.id); x.hp = x.maxHp = 9999; 
 const blow = (f: F, by: Unit, t: Unit, mode = 'shot') => withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(by.id), f.unit(t.id), mode, null, { noAp: true }));
 
 // ============================================================================================ the framework (N1, N2)
-describe('the forks as data (N1): two steps a door, at 4 and 6 of its alpha skill, picked once through door/pick', () => {
-  it('every alpha skill but Visualization names two steps; each option is a forks.json row of its door at its step', () => {
-    expect(ALPHAS.map((s) => s.id).sort()).toEqual(['brain_power', 'dexterity', 'durability', 'empathy', 'faith', 'ingenuity', 'raw_power', 'will_power']);
+describe('the forks as data (N1): two steps a door, at 4 and 8 of its alpha skill (rules 1.70 item 5536: the ladder schedule), picked once through door/pick', () => {
+  it('every alpha skill names two steps (Visualization too since rules 1.74 item 6041); each option is a forks.json row of its door at its step', () => {
+    expect(ALPHAS.map((s) => s.id).sort()).toEqual(['brain_power', 'dexterity', 'durability', 'empathy', 'faith', 'ingenuity', 'raw_power', 'visualization', 'will_power']);
     for (const s of ALPHAS) {
-      expect(s.forks.map((f: any) => f.at), s.id).toEqual([4, 6]);
-      for (const st of s.forks) for (const o of st.of) expect(FK[o], o).toMatchObject({ door: s.id, step: st.at });
+      const at = ladderSchedule(s.id).forks;
+      expect(at, s.id).toEqual([4, 8]);
+      expect(s.forks.length, s.id).toBe(at.length);
+      for (const st of s.forks) expect(st.at, s.id + ': a fork row names no point of its own; the schedule does').toBeUndefined();
+      for (const st of s.forks) for (const o of st.of) { expect(FK[o], o).toMatchObject({ door: s.id }); expect((FK[o] as any).step, o + ': its points are the schedule, no copy (m7)').toBeUndefined(); }
     }
   });
   it('a step opens at its points, and only when both of its options are built; the view says which are missing', () => {
@@ -50,7 +60,7 @@ describe('the forks as data (N1): two steps a door, at 4 and 6 of its alpha skil
       expect(pendingDoorPicks(c, s.id).map((p) => p.grant), s.id).toEqual(offered);
       const v = doorForkView(c, s.id)!;
       for (const [i, f] of s.forks.entries()) {
-        expect(v.steps[i].offered, s.id + ' ' + f.at).toBe(f.of.every(forkBuilt));
+        expect(v.steps[i].offered, s.id + ' ' + ladderSchedule(s.id).forks[i]).toBe(f.of.every(forkBuilt));
         expect(v.steps[i].missing).toEqual(f.of.filter((o: string) => !forkBuilt(o)).map((o: string) => FK[o].name));
         if (!v.steps[i].offered) expect(v.steps[i].why).toMatch(/Sealed: not yet issued/); // rules 1.66 item 5212
       }
@@ -65,21 +75,22 @@ describe('the forks as data (N1): two steps a door, at 4 and 6 of its alpha skil
     expect(doorForkView(c, 'durability')!.steps[0]).toMatchObject({ picked: 'fork.guard.provoke', pending: false });
     expect(() => s.act({ type: 'door/pick', charId: id, door: 'durability', option: 'fork.guard.cover_them' } as Action)).toThrow(/No Durability choice is open/);
     c.skills.ingenuity = 10;
-    expect(() => s.act({ type: 'door/pick', charId: id, door: 'ingenuity', option: 'fork.shadow.lend_the_dark' } as Action)).toThrow(/No such choice/);
-    c.skills.durability = 6;
+    const shelf = (forksJ as any).items.find((x: any) => x.shelved); // rules 1.74: Ingenuity's options are built now; a shelved row, if any is left, is refused
+    if (shelf) { (c.skills as any)[shelf.door] = 10; expect(() => s.act({ type: 'door/pick', charId: id, door: shelf.door, option: shelf.id } as Action)).toThrow(/No such choice/); }
+    c.skills.durability = FORK2('durability');
     expect(() => s.act({ type: 'door/pick', charId: id, door: 'durability', option: 'fork.pressure.lockdown' } as Action)).toThrow(/No such choice/);
     const f = fightWith([{ skills: { durability: 4 } }], [{}]);
     expect(() => f.act({ type: 'door/pick', charId: f.pc.charId, door: 'durability', option: 'fork.guard.provoke' } as Action)).toThrow(/after the fight/);
   });
   it('a picked option is held (a door verb, requires door_pick) and the other is not; door_pick / no_door_pick read the pick (N2)', () => {
-    const f = fightWith([{ skills: { durability: 6 }, picks: ['fork.guard.cover_them', 'fork.guard.stand_fast'] }], [{}]);
+    const f = fightWith([{ skills: { durability: FORK2('durability') }, picks: ['fork.guard.cover_them', 'fork.guard.stand_fast'] }], [{}]);
     const verbs = withGame(f.g, () => heldOfChar(f.g.characters[f.pc.charId]).verbs || []);
     expect(verbs).toContain('fork.guard.cover_them'); expect(verbs).toContain('fork.guard.stand_fast');
     expect(verbs).not.toContain('fork.guard.provoke'); expect(verbs).not.toContain('fork.guard.drive');
   });
-  it('a two-door character (Durability 6 and Dexterity 6) holds four picks; they survive a save and a level-up', () => {
+  it('a two-door character (Durability and Dexterity at their second fork, 8) holds four picks; they survive a save and a level-up', () => {
     const picks = ['fork.guard.provoke', 'fork.guard.drive', 'fork.pressure.walk_it_in', 'fork.pressure.lockdown'];
-    const s = storyWith([{ skills: { durability: 6, dexterity: 6 }, attrs: { endurance: 6, agility: 6 }, level: 9, picks }]), id = s.chars[0].id;
+    const s = storyWith([{ skills: { durability: FORK2('durability'), dexterity: FORK2('dexterity') }, attrs: { endurance: FORK2('durability'), agility: FORK2('dexterity') }, level: 9, picks }]), id = s.chars[0].id;
     let c = s.g.characters[id];
     expect([...c.doorPicks.durability, ...c.doorPicks.dexterity].sort()).toEqual([...picks].sort());
     expect(doorForkViews(c).filter((v) => v.picked.length).map((v) => [v.door, v.picked.length])).toEqual([['durability', 2], ['dexterity', 2]]);
@@ -97,27 +108,26 @@ describe('the forks as data (N1): two steps a door, at 4 and 6 of its alpha skil
 
 // ============================================================================================ Figments' forks at 4 and 6
 describe('Figments\' forks move to 4 and 6 (spec 2.9): old saves', () => {
-  it('a 0.29.0 character that picked at 3 and 5 keeps both forms; nothing reopens at 4 or 6', () => {
+  it('a 0.29.0 character that picked at 3 and 5 keeps both forms; at 4 the new fork (rules 1.74 item 6041) is what opens, never a form', () => {
     const s = storyWith([{ skills: { visualization: 5 }, forms: ['wall', 'beast'] }]), id = s.chars[0].id;
     const g = migrateLoaded(JSON.parse(JSON.stringify(s.g))); const c = g.characters[id];
     expect(c.figRev).toBe(FIG_REV);
     expect(formsOf(c)).toEqual(expect.arrayContaining(['wall', 'beast']));
-    for (const p of [4, 5, 6]) { c.skills.visualization = p; expect(pendingDoorPicks(c, 'visualization'), 'at ' + p).toEqual([]); }
+    for (const p of [4, 5, 6]) { c.skills.visualization = p; expect(JSON.stringify(pendingDoorPicks(c, 'visualization')).match(/"(wall|beast|eye|blade|husk|ward|sentinel|hand|double|snare)"/), 'at ' + p).toBeNull(); }
   });
-  it('a 0.29.0 character at Visualization 5 that picked only at 3: the second fork waits for 6 (it was open at 5)', () => {
-    const s = storyWith([{ skills: { visualization: 5 }, forms: ['eye'] }]), id = s.chars[0].id;
-    const g = migrateLoaded(JSON.parse(JSON.stringify(s.g))); const c = g.characters[id];
-    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
-    c.skills.visualization = 6;
-    expect(pendingDoorPicks(c, 'visualization').flatMap((p) => p.options.map((o) => o.id))).toEqual(['beast', 'blade', 'husk', 'sentinel']);
-    expect(doorForkView(c, 'visualization')!.steps.map((x) => [x.at, x.picked])).toEqual([[4, 'eye'], [6, null]]);
+  it('a 0.29.0 character at Visualization 5 that picked at the old fork: its pick is learned at figment_forms (rules 1.70 item 5541); the fork at 4 is Hard Light or Sharp Light (rules 1.74 item 6041)', () => {
+    const s = storyWith([{ skills: { visualization: 5 } }]), id = s.chars[0].id;
+    const old = JSON.parse(JSON.stringify(s.g)); old.characters[id].figRev = 1; old.characters[id].doorPicks = { visualization: ['eye'] };
+    const c = migrateLoaded(old).characters[id];
+    expect(formsOf(c)).toContain('eye');
+    expect(doorForkView(c, 'visualization')!.steps.map((s: any) => s.at)).toEqual([4, 8]);
   });
   it('the 0.28.2 Rigger save (no fork stamp, Visualization 5) loads, holds the Eye, the Wall, the Beast and the Blade, and plays on', () => {
     const g0 = migrateLoaded(JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/save-0.28.2-rigger-mid-fight.json', import.meta.url)), 'utf8')));
     let g = apply(g0, { type: 'player/online', id: 'host', online: true } as any, 'host');
     const c = g.characters.c1;
     for (const f of ['eye', 'wall', 'beast', 'blade']) expect(formsOf(c)).toContain(f);
-    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
+    expect(pendingDoorPicks(c, 'figment_forms')).toEqual([]); // rules 1.70 item 5541: the count is full
     const pc = g.combat.units.find((u: any) => u.charId === 'c1'), wall = g.combat.units.find((u: any) => u.owned?.kind === 'figment' && u.name === 'Wall');
     g = apply(g, { type: 'combat/owned', unitId: pc.id, owned: wall.id, verb: 'figment_cash_in' } as any, 'host');
     expect(g.combat.units.some((u: any) => u.id === wall.id)).toBe(false);
@@ -161,6 +171,14 @@ describe('Guard, the first fork: Provoke and Cover Them', () => {
     blow(r.f, r.foe, r.ally); // the second ranged hit of the round lands on the ally
     expect(r.f.unit(r.ally.id).hp).toBeLessThan(hp);
   });
+  it('rules 1.70 item 5547 (P6): Cover Them\'s Guard cost reads techniques.json rules.guard.interpose_cost (one copy)', () => {
+    const G: any = (techniquesJ as any).rules.guard, was = G.interpose_cost;
+    const spent = () => { const r = cover(['fork.guard.cover_them'], { guard: 6 }), g0 = r.f.unit(r.me.id).res.guard; blow(r.f, r.foe, r.ally); return g0 - r.f.unit(r.me.id).res.guard; };
+    try {
+      const one = spent(); G.interpose_cost = was + 1; const two = spent();
+      expect(two - one).toBe(1);
+    } finally { G.interpose_cost = was; }
+  });
   it('Cover Them takes no melee hit, nothing with no Guard, and Provoke\'s holder covers nobody', () => {
     for (const [picks, o] of [[['fork.guard.cover_them'], { melee: true }], [['fork.guard.cover_them'], { guard: 0 }], [['fork.guard.provoke'], {}]] as const) {
       const r = cover(picks as any, o as any), hp = r.ally.hp;
@@ -172,7 +190,7 @@ describe('Guard, the first fork: Provoke and Cover Them', () => {
 
 describe('Guard, the second fork: Stand Fast and Drive (Slam\'s paired rows read the pick)', () => {
   function slam(picks: string[], saves: 'pass' | 'fail') {
-    const f = fightWith([tank(picks, 6)], [{ at: 'F6' }, { at: 'G6' }, { at: 'H6' }]);
+    const f = fightWith([tank(picks, FORK2('durability'))], [{ at: 'F6' }, { at: 'G6' }, { at: 'H6' }]);
     const me = big(f, at(f, f.pc, '5,5')); f.turn(me); f.unit(me.id).res.guard = 4; f.unit(me.id).ap = 6;
     const [a, b, c] = f.foes; at(f, a, '6,5'); at(f, b, '7,3'); at(f, c, '10,5'); for (const x of f.foes) { big(f, x); f.unit(x.id).conds = {}; }
     SAVES = saves;
@@ -205,12 +223,17 @@ describe('Guard, the second fork: Stand Fast and Drive (Slam\'s paired rows read
 // ============================================================================================ Momentum (Raw Power)
 describe('Momentum, the first fork: Rolling Start and Grindstone', () => {
   const charger = (picks: string[]) => physFight([{ weapon: 'sabre', known: ['charge'], skills: { raw_power: 4, athletics: 4 }, attrs: { strength: 4 }, level: 6, picks }], [{ at: '8,4', tier: 'elite' }]);
-  it('Rolling Start: a Charge from a 2-tile straight run (N23 tech_num), costs no Momentum and builds 1 on a hit', () => {
+  it('Rolling Start: a Charge from a 2-tile straight run (N23 tech_num) costs its Momentum (rules 1.73 item 5805: no free Charge) and builds 1 on a hit', () => {
+    const RS = FK['fork.momentum.rolling_start'];
+    expect(RS.effects.some((e: any) => String(e.stat).startsWith('momentum_cost:'))).toBe(false);
     const f = charger(['fork.momentum.rolling_start']); f.cb.objects = [];
     const u = f.turn(f.pc); f.put(u, '5,4'); f.put(f.foe, '8,4'); big(f, f.foe); f.unit(u.id).ap = 9; f.unit(u.id).openerUsed = true; f.momentum(u, 1);
     rig({ hit: true, die: 12 });
     expect(f.tech('charge', { targetId: f.foe.id })).toBeNull();
-    expect(f.momentum(f.unit(u.id))).toBe(1 + FK['fork.momentum.rolling_start'].effects[2].value);
+    expect(f.momentum(f.unit(u.id))).toBe(1 - 1 + RS.effects[1].value); // the Opener's 1, then the hit's build
+    const g = charger(['fork.momentum.rolling_start']); g.cb.objects = [];
+    const w = g.turn(g.pc); g.put(w, '5,4'); g.put(g.foe, '8,4'); big(g, g.foe); g.unit(w.id).ap = 9; g.unit(w.id).openerUsed = true; g.momentum(w, 0);
+    expect(g.tech('charge', { targetId: g.foe.id })).toMatch(/Needs 1 Momentum/); // at x0 the loop is closed
   });
   it('without it (Grindstone held), the 2-tile run is refused', () => {
     const f = charger(['fork.momentum.grindstone']); f.cb.objects = [];
@@ -227,9 +250,56 @@ describe('Momentum, the first fork: Rolling Start and Grindstone', () => {
   });
 });
 
+// ============================================================================================ Momentum's second fork (rules 1.73)
+describe('Momentum, the second fork at 8: Spill and Headlong (rules 1.73 items 5806, 5807)', () => {
+  const at8 = (picks: string[], foes: any[]) => physFight([{ weapon: 'sabre', known: ['coup', 'charge'], skills: { raw_power: 8, athletics: 4, dexterity: 6 }, attrs: { strength: 8 }, level: 12, picks }], foes);
+  it('the step is offered at 8 with both options built', () => {
+    const s = storyWith([{ skills: { raw_power: 8 }, attrs: { strength: 8 }, level: 12, picks: ['fork.momentum.grindstone'] }]), c = s.g.characters[s.chars[0].id];
+    const v = doorForkView(c, 'raw_power')!; expect(v.steps[1].offered).toBe(true); expect(v.steps[1].missing).toEqual([]);
+    s.act({ type: 'door/pick', charId: c.id, door: 'raw_power', option: 'fork.momentum.spill' } as Action);
+    expect(s.g.characters[c.id].doorPicks.raw_power).toEqual(['fork.momentum.grindstone', 'fork.momentum.spill']);
+  });
+  it('Spill: a Coup that drops its foe carries the blow into one foe beside it, no roll; without the pick, or with no kill, nothing', () => {
+    const run = (picks: string[], hp: number) => {
+      const f = at8(picks, [{ at: '6,4', tier: 'soldier' }, { at: '7,4', tier: 'soldier' }]); f.cb.objects = [];
+      const u = f.turn(f.pc); f.put(u, '5,4'); f.put(f.foes[0], '6,4'); f.put(f.foes[1], '7,4');
+      f.unit(f.foes[0].id).hp = hp; f.unit(f.foes[0].id).maxHp = 5000; big(f, f.foes[1]); f.unit(u.id).ap = 9; f.momentum(u, 3); rig({ hit: true, die: 12 });
+      expect(f.tech('coup', { targetId: f.foes[0].id })).toBeNull(); rig(null);
+      return { other: 9999 - f.unit(f.foes[1].id).hp, f };
+    };
+    const yes = run(['fork.momentum.spill'], 1);
+    expect(yes.other).toBeGreaterThan(0); expect(yes.f.cb.log.some((l: any) => /\(Spill\)/.test(String(l)))).toBe(true);
+    expect(run(['fork.momentum.headlong'], 1).other).toBe(0);
+    expect(run(['fork.momentum.spill'], 5000).other).toBe(0);
+  });
+  it('Headlong: once a turn a Charge’s strike costs no AP (its run is paid as usual) but 2 more Momentum, and builds none', () => {
+    const HL = FK['fork.momentum.headlong'];
+    const plain = at8(['fork.momentum.spill'], [{ at: '9,4', tier: 'elite' }]); plain.cb.objects = [];
+    const p0 = plain.turn(plain.pc); plain.put(p0, '5,4'); plain.put(plain.foe, '9,4'); plain.unit(p0.id).openerUsed = true; plain.momentum(p0, 5);
+    const full = plain.pv('charge', { targetId: plain.foe.id }).ap;
+    const f = at8(['fork.momentum.headlong'], [{ at: '9,4', tier: 'elite' }, { at: '9,8', tier: 'elite' }]); f.cb.objects = [];
+    const u = f.turn(f.pc); f.put(u, '5,4'); f.put(f.foes[0], '9,4'); f.put(f.foes[1], '9,8'); big(f, f.foes[0]); big(f, f.foes[1]);
+    f.unit(u.id).ap = 9; f.unit(u.id).openerUsed = true; f.momentum(u, 5); rig({ hit: true, die: 12 });
+    const pv = f.pv('charge', { targetId: f.foes[0].id }); expect(pv.ap).toBeLessThan(full);
+    expect(f.tech('charge', { targetId: f.foes[0].id })).toBeNull();
+    expect(f.unit(u.id).ap).toBe(9 - pv.ap); // the run only
+    expect(f.momentum(f.unit(u.id))).toBe(5 - 1 + HL.effects[1].and[0].value); // the Opener's 1 and Headlong's 2, nothing built
+    expect(condOn(f.unit(u.id), 'headlong_paid')).toBe(false); // the mark ends with the action
+    f.put(f.unit(u.id), '5,8'); f.momentum(f.unit(u.id), 5); f.unit(u.id).ap = 9;
+    expect(f.tech('charge', { targetId: f.foes[1].id })).toMatch(/Opener/); // a second Charge in a turn is no Opener: once a turn holds by itself
+  });
+  it('Headlong needs the Momentum: under it the Charge pays its AP as usual, and a Breaker\u2019s Charge Carries builds as usual', () => {
+    const f = at8(['fork.momentum.headlong'], [{ at: '9,4', tier: 'elite' }]); f.cb.objects = [];
+    const u = f.turn(f.pc); f.put(u, '5,4'); f.put(f.foe, '9,4'); big(f, f.foe); f.unit(u.id).ap = 9; f.unit(u.id).openerUsed = true; f.momentum(u, 1);
+    const plain = at8(['fork.momentum.spill'], [{ at: '9,4', tier: 'elite' }]); plain.cb.objects = [];
+    const p0 = plain.turn(plain.pc); plain.put(p0, '5,4'); plain.put(plain.foe, '9,4'); plain.unit(p0.id).openerUsed = true; plain.momentum(p0, 1);
+    expect(f.pv('charge', { targetId: f.foe.id }).ap).toBe(plain.pv('charge', { targetId: plain.foe.id }).ap);
+  });
+});
+
 // ============================================================================================ Pressure (Dexterity)
 describe('Pressure\'s forks: Converging Fire, Walk It In, Through the Gap, Lockdown', () => {
-  const gun = (picks: string[], name = 'Gun'): CharSpec => ({ name, weapon: 'hellraiser_service_rifle', skills: { dexterity: 6 }, attrs: { agility: 6 }, level: 6, picks });
+  const gun = (picks: string[], name = 'Gun'): CharSpec => ({ name, weapon: 'hellraiser_service_rifle', skills: { dexterity: FORK2('dexterity') }, attrs: { agility: FORK2('dexterity') }, level: 6, picks });
   function setUp(specs: CharSpec[], tier = 'soldier') {
     const f = physFight(specs as any, [{ weapon: 'combat_knife', at: '10,4', tier }]); f.cb.objects = [];
     f.pcs.forEach((u, i) => { at(f, u, '4,' + (2 + 2 * i)); big(f, u); }); at(f, f.foe, '10,4'); big(f, f.foe); f.unit(f.foe.id).conds = {};
@@ -277,8 +347,8 @@ describe('Pressure\'s forks: Converging Fire, Walk It In, Through the Gap, Lockd
 });
 
 // ============================================================================================ Bonds (Empathy)
-function bondRig(picks: string[], o: { empathy?: number; doorPicks?: Record<string, string[]> } = {}) {
-  const s: any = storyWith([{ name: 'Medic', level: 6, skills: { empathy: o.empathy ?? 4 }, attrs: { insight: 4 }, weapon: 'service_pistol', picks, ...(o.doorPicks ? { doorPicks: o.doorPicks } : {}) }, { name: 'Gun', level: 6 }]);
+function bondRig(picks: string[], o: { empathy?: number; doorPicks?: Record<string, string[]>; mender?: boolean } = {}) {
+  const s: any = storyWith([{ name: 'Medic', level: 6, skills: { empathy: o.empathy ?? 4 }, attrs: { insight: 4 }, weapon: 'service_pistol', picks, ...(o.mender ? { classId: 'bard' } : {}), ...(o.doorPicks ? { doorPicks: o.doorPicks } : {}) }, { name: 'Gun', level: 6 }]);
   s.g.characters[s.chars[0].id].offHand = { id: 'attuner' };
   s.act({ type: 'narrator/turn', turn: { narration: 'Fight', combat: { name: 'Bonds', map: 'yard16', difficulty: 'standard', level: 6,
     enemies: [{ name: 'Soldier 1', tier: 'soldier', weapon: 'service_pistol', at: '', no_surrender: true, level: 6 }] } } });
@@ -307,11 +377,11 @@ describe('Bonds, the first fork: Keep the Thread and Short Thread', () => {
     expect(r.U(r.al.id).hp).toBeGreaterThan(1);
     expect(tiesOf(r.cb(), r.U(r.me.id), 'bond', 'from').some((k: any) => k.to === r.al.id)).toBe(false);
   });
-  it('Short Thread: Touch reaches a Bonded ally 2 tiles away, and the Tending is ×near/through; Keep the Thread\'s holder is refused', () => {
+  it('Short Thread: the Mender\'s Triage reaches a friend 2 tiles away (rules 1.75 item 6212: Touch is cut); Keep the Thread\'s holder is refused', () => {
     const healed: number[] = [];
     for (const picks of [['fork.tend.short_thread'], ['fork.tend.keep_the_thread']]) {
-      const r = bondRig(picks); r.bond(r.al);
-      const hp = r.U(r.al.id).hp, err = r.act('verb:tend.touch', r.U(r.al.id));
+      const r = bondRig(picks, { mender: true });
+      const hp = r.U(r.al.id).hp, err = r.act('class:medic.triage', r.U(r.al.id), 'triage');
       if (picks[0] === 'fork.tend.short_thread') { expect(err).toBeNull(); healed.push(r.U(r.al.id).hp - hp); }
       else expect(err).toMatch(/range|reach|next to/i);
     }
@@ -327,12 +397,12 @@ describe('Bonds, the first fork: Keep the Thread and Short Thread', () => {
     expect(Math.abs(sNear - kNear * near / through)).toBeLessThanOrEqual(1); // within 2: x near in place of x through (whole HP)
     expect(sNear).toBeGreaterThan(kNear);
   });
-  it('no fork makes a Mend free: with Short Thread the second Mend on one ally in a round costs its MP again', () => {
+  it('no fork makes a Mend free: with Short Thread the second Mend on one ally in a round costs its MP again, braked', () => {
     const r = bondRig(['fork.tend.short_thread']); r.bond(r.al); r.U(r.al.id).hp = 1;
     const mp0 = r.U(r.me.id).mg.mp; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull();
     const first = mp0 - r.U(r.me.id).mg.mp; r.U(r.me.id).ap = 12; r.U(r.al.id).hp = 1;
     const mp1 = r.U(r.me.id).mg.mp; expect(r.act('verb:tend.mend', r.U(r.al.id))).toBeNull();
-    expect(first).toBeGreaterThan(0); expect(mp1 - r.U(r.me.id).mg.mp).toBe(first); // (the healing brake, item 4640, is not built: it waits on a primitive)
+    expect(first).toBeGreaterThan(0); expect(mp1 - r.U(r.me.id).mg.mp).toBe(Math.round(first * (RULESJ as any).mending.brake.mult)); // the healing brake (item 4640, spec 5610: built in the 0.32 merge): the second give x mult
   });
 });
 

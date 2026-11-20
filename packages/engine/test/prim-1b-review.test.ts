@@ -56,7 +56,7 @@ describe('rule 3: one key for every answer to a step, with a serial', () => {
 
 describe('the lead\'s rulings (rules 1.28)', () => {
   it('Order: the ordered ally\'s move is its reaction: it provokes no opportunity attack', () => {
-    const f = physFight([{ skills: { authority: 3 } }, {}], [{}]);
+    const f = physFight([{ skills: { authority: CALL['call.order'].steps[1].at } }, {}], [{}]);
     const a = f.pcs[1], foe = f.foes[0];
     f.put(f.pcs[0], '2,2'); f.put(a, '3,2'); f.put(foe, '4,2'); f.cb.order = [f.pcs[0].id, a.id, foe.id]; f.turn(f.pc);
     const hp = a.hp; f.act({ type: 'combat/call', unitId: f.pc.id, id: 'call.order', targetId: a.id, opt: 'move', tile: '3,4' });

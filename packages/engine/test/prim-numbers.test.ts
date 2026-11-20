@@ -81,7 +81,7 @@ describe('P3 moved the handlers\' math into data', () => {
   // Rules 1.60 item 4623 (R5): the class's Finisher action is Measured Blow, a data row; its number is its effect's value.
   it('Measured Blow: the Momentum it gives back is its data’s number', () => {
     const h = { key: 'class:fighter.finisher' };
-    expect(effNum(h, 'resource')).toBe(fin.effects[0].value); expect(fin.effects[0].limit.per).toBe('per_combat');
+    expect(effNum(h, 'resource')).toBe(fin.effects[1].value); expect(fin.effects[2].limit.per).toBe('per_combat'); // rules 1.73 item 5808: the kill row, then the once-a-fight row
   });
   it('Reactive Plate: its cut, its shed and its count come from its effects', () => {
     const h = { key: 'class:defender.reactive_plate' };

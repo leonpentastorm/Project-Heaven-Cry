@@ -13,6 +13,7 @@ import { type Combat, type Unit, dist, emitFx } from '../combat';
 import { compileSpell, MAX_GLYPHS, MAX_STAGE, SHORT_AT_OVER, stageMult, addStrain, isBoon, type Spell } from '../magic';
 import type { Rng } from '../rng';
 import { say, rngOf } from '../kit';
+import { num } from '../effects/num';
 
 const mine = (h: Holder, u: Unit | null | undefined) => !!u && !!h.u && u.id === h.u.id;
 const evokerWhy = (h: Holder): string | true => (!h.u?.mg ? 'Needs Sigil magic.' : !h.u.mg.evoker ? 'Needs an Evoker in hand.' : true);
@@ -43,7 +44,7 @@ const overclock = (scope: 'combat' | 'world'): ActionDef => ({
   run: (h) => { const st = stateOf(h); st.armed = true; ocSync(st, h.u, h.cb); say(h.cb, h.u!.name + ' overclocks: the next glyph may go one word past Max Sigil words (+' + OC_CHARGE + ' charge).'); },
 });
 register({
-  id: 'skill:brain_power.3', kind: 'skill', claims: 'all',
+  id: 'skill:brain_power.2', kind: 'skill', claims: 'all', // rules 1.74 item 6020: Overclock at 2 (it was 3)
   actions: [overclock('combat'), overclock('world')],
   on: {
     glyph_cost: (ctx, h) => { const st = stateOf(h); ocSync(st, h.u, h.cb); if (mine(h, ctx.u) && st.armed) ctx.charge += OC_CHARGE; },
@@ -98,28 +99,29 @@ register({
 // Rules 1.13 (a beta is defence; the old Sigil discount is what Brain Power's Twin Draw and Parallel Thought give): +3 on
 // your saves against a spell or condition that has already hit you this combat. Engine reading: a condition that has
 // taken hold on you once this fight (whatever delivered it) is saved against at +3 from then on.
-const PF_SAVE = 3;
+// Rules 1.74 item 6022: a Rumination perk (it was the free passive at 5); +3 at tier I, +5 at II (the tier's numbers.save).
+const pfSave = (h: Holder) => num(h, 'save');
 register({
-  id: 'skill:rumination.5', kind: 'skill', claims: 'all',
+  id: 'proven_formula', claims: 'all',
   on: {
     cond_landed: (ctx, h) => { if (!mine(h, ctx.t) || isBoon(ctx.id)) return; const st = stateOf(h); if (!(st.hit ||= []).includes(ctx.id)) st.hit.push(ctx.id); },
     cond_apply: (ctx, h) => {
       if (!mine(h, ctx.t) || ctx.skipSave || !((h.u?.ps?.[h.key] as any)?.hit || []).includes(ctx.id)) return;
-      ctx.saveAdd = (ctx.saveAdd || 0) + PF_SAVE; say(h.cb, '(Proven Formula: ' + h.u!.name + ' has been hit by this before, +' + PF_SAVE + ' on the save.)');
+      ctx.saveAdd = (ctx.saveAdd || 0) + pfSave(h); say(h.cb, '(Proven Formula: ' + h.u!.name + ' has been hit by this before, +' + pfSave(h) + ' on the save.)');
     },
   },
   brief: () => null,
 });
 
-// ---------- Will Power · Overdraw (Mastery 1; rules 1.14, item 1010) ----------
+// ---------- Will Power · Overdraw (Will Power 2 since rules 1.75 item 6200; rules 1.14, item 1010) ----------
 // Once a turn, a toggle on a Pump ("Overdraw"): that Pump adds 2 stages, not 1 (to stage 4 at most, so it needs stage 2
 // or lower), for the Pump's own AP. The first Overdraw of a fight costs no Strain; each one after it costs 1 Strain
 // once the Pump is done (it can burn and short like any Strain). Rules 1.5 had it once a fight, always for 1 Strain;
 // that counter (this item's own per_combat cell) is not read any more, so a save that spent it is not locked out.
-const OD_STRAIN = 1; // PROVISIONAL (item 1010)
+// The Strain after the first is the unlock's own number (skills.json will_power unlocks.2.numbers.strain; PROVISIONAL).
 /** Has this fight's Strain-free Overdraw been spent? */
 const odFreeLeft = (h: Holder) => uses(h).left('per_combat', 1, h.key + '#free') > 0;
-const odStrain = (h: Holder) => (odFreeLeft(h) ? 0 : OD_STRAIN);
+const odStrain = (h: Holder) => (odFreeLeft(h) ? 0 : num(h, 'strain'));
 const odWhy = (h: Holder): string | true | false => {
   const m = h.u?.mg; if (!m?.held) return false;
   if (uses(h).left('per_turn', 1) <= 0) return 'Once a turn.';
@@ -127,7 +129,7 @@ const odWhy = (h: Holder): string | true | false => {
   return true;
 };
 register({
-  id: 'skill:will_power.3', kind: 'skill', claims: 'all', noDefaultActions: true, // used from Pump (the Overdraw chip)
+  id: 'skill:will_power.2', kind: 'skill', claims: 'all', noDefaultActions: true, // used from Pump (the Overdraw chip)
   toggles: [{ id: 'overdraw', label: 'Overdraw (+2 stages, once a turn)', on: ['combat/pump'],
     available: (h) => odWhy(h),
     preview: (h) => 'This Pump adds 2 stages. ' + (odStrain(h) ? 'You take ' + odStrain(h) + ' Strain after it.' : 'Your first Overdraw of the fight costs no Strain.') }],
@@ -141,7 +143,7 @@ register({
       // The Pump has added its own stage already: the second needs room (stage 2 or lower before the Pump).
       if (m.held.stage > MAX_STAGE - 1 || !uses(h).take('per_turn', 1)) return;
       const free = uses(h).take('per_combat', 1, h.key + '#free');
-      m.held.stage = Math.min(MAX_STAGE, m.held.stage + 1); stateOf(h).owed = free ? 0 : OD_STRAIN;
+      m.held.stage = Math.min(MAX_STAGE, m.held.stage + 1); stateOf(h).owed = free ? 0 : num(h, 'strain');
       emitFx(h.cb!, 'pump', { unit: h.u!.id, at: h.u!.pos, stage: m.held.stage, mult: stageMult(m.held.stage), free: true, max: m.held.stage >= MAX_STAGE, tone: m.held.tone || 'raw', overdraw: true });
       say(h.cb, h.u!.name + ' overdraws the heart: stage ' + m.held.stage + ' (×' + stageMult(m.held.stage) + ')' + (free ? ', no Strain the first time in a fight' : '') + '.');
     },
@@ -153,17 +155,18 @@ register({
   brief: () => null,
 });
 
-// ---------- Will Power · Pure Heart (Mastery 2; rules 1.5, item 540) ----------
+// ---------- Composure · Pure Heart (a Composure perk since rules 1.75 item 6203; rules 1.5, item 540) ----------
 // 1.2's "ignore your first failed Mana Short check in each combat" re-derived for a Short that has no roll: once a
 // fight, the first Strain that would short you (3 over your limit) is refused instead: your Strain falls to your limit,
-// with no Stun, no wild release and no backlash. Automatic.
+// with no Stun, no wild release and no backlash. Automatic. Its uses a fight are its tier's number (perks.json pure_heart
+// numbers.uses: I once, II twice; PROVISIONAL).
 register({
-  id: 'skill:will_power.5', kind: 'skill', claims: 'all', priority: 950, noDefaultActions: true, // automatic
+  id: 'pure_heart', claims: 'all', priority: 950, noDefaultActions: true, // automatic
   on: {
     strain: (ctx, h) => {
       const m = h.u?.mg; if (!mine(h, ctx.u) || !m || ctx.n <= 0 || !h.cb) return;
-      const limit = ctx.limit ?? m.strainLimit; if (m.strain + ctx.n - limit < SHORT_AT_OVER || uses(h).left('per_combat', 1) <= 0) return;
-      uses(h).take('per_combat', 1); ctx.n = 0;
+      const limit = ctx.limit ?? m.strainLimit, n = num(h, 'uses'); if (m.strain + ctx.n - limit < SHORT_AT_OVER || uses(h).left('per_combat', n) <= 0) return;
+      uses(h).take('per_combat', n); ctx.n = 0;
       const was = m.strain; m.strain = Math.min(m.strain, limit);
       if (was !== m.strain) emit(h.cb, 'strain_change', { u: h.u, from: was, to: m.strain, why: 'pure_heart', limit, cb: h.cb });
       emitFx(h.cb, 'calm', { unit: h.u!.id, at: h.u!.pos, way: 'pure_heart', by: was - m.strain, strain: m.strain });

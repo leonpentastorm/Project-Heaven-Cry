@@ -82,14 +82,31 @@ export function aiRouteRisk(cb: Combat, u: Unit, P: { prev: Record<string, strin
   if (!(cb.zones || []).length && !held.length) return 0;
   let r = 0;
   if ((cb.zones || []).length) for (let t = k; t && t !== u.pos; t = P.prev[t]) r += aiTileRisk(cb, u, t);
+  const role = held.some((h) => h.kind === 'watch') ? baitRole(cb, u) : null, B = ENEMY_AI.bait;
   for (const h of held) {
     if (h.kind === 'burst') { if (dist(k, h.u.pos) <= h.reach) r += ENEMY_AI.held_risk; continue; }
     for (let t = k; t && t !== u.pos; t = P.prev[t]) {
       const from = P.prev[t] ?? u.pos;
-      if (h.kind === 'watch' ? dist(h.u.pos, t) <= h.reach && unitSees(cb, h.u, t) : (dist(from, h.u.pos) <= 1) !== (dist(t, h.u.pos) <= 1)) { r += ENEMY_AI.held_risk; break; }
+      if (h.kind === 'watch' ? dist(h.u.pos, t) <= h.reach && unitSees(cb, h.u, t, undefined, u) : (dist(from, h.u.pos) <= 1) !== (dist(t, h.u.pos) <= 1)) {
+        // rules 1.79 item 6708, the bait: a cheap mover draws a held shot its side sees while a stronger ally has still to
+        // act this round; that ally keeps out of the lane until then
+        r += h.kind === 'watch' && role === 'lure' ? -B!.lure : ENEMY_AI.held_risk + (h.kind === 'watch' && role === 'hold' ? B!.hold : 0); break;
+      }
     }
   }
   return r;
+}
+/** Rules 1.79 item 6708 (enemies.json ai.bait): 'lure' for a unit of a bait tier while an ally of a stronger tier is
+ * standing; 'hold' for that stronger unit while a bait ally has still to act this round (later in the order, standing);
+ * else null. Only what its side knows: the turn order is open to both sides. */
+function baitRole(cb: Combat, u: Unit): 'lure' | 'hold' | null {
+  const B = ENEMY_AI.bait; if (!B || B.on === false || u.side !== 'foe' || u.charId || !u.tier) return null;
+  const lure = B.tiers.includes(u.tier), hold = B.for.includes(u.tier); if (!lure && !hold) return null;
+  // a bait draws the shot for any stronger ally still standing (this round's or the next's commit); the stronger one
+  // holds only while a bait has still to act this round (later in the order)
+  const want = lure ? B.for : B.tiers, from = lure ? 0 : cb.turn + 1;
+  for (let i = from; i < cb.order.length; i++) { const a = cb.units.find((x) => x.id === cb.order[i]); if (a && a !== u && a.side === u.side && !a.charId && !a.dead && !a.downed && !a.surrendered && want.includes(a.tier || '')) return lure ? 'lure' : 'hold'; }
+  return null;
 }
 /** The other side's held attacks u's side perceives now (rules 1.37), once for a set of paths (P). */
 interface Held { u: Unit; kind: 'watch' | 'hold' | 'burst'; reach: number }

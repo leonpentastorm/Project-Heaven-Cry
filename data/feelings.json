@@ -37,7 +37,7 @@
         "text": "You take 25% of your max HP or more in one hit."
       },
       "pour": {
-        "text": "+0.5 to the multiplier (a plain Pump gives +0.2). +{=pour.strain} Strain when you pour it in.",
+        "text": "+{=step.base}: it adds {=step.base|pct}% of the Outburst's base damage to the Release, more than a plain Pump's. +{=pour.strain} Strain when you pour it in.",
         "strain": 1,
         "effects": [
           {
@@ -373,7 +373,7 @@
         "text": "You roll a natural 1, or a vow breaks."
       },
       "pour": {
-        "text": "+0.5 to the multiplier. It deals {=pour.self_damage} damage to you at the Release; armour and shields don't stop it.",
+        "text": "+{=step.base}: it adds {=step.base|pct}% of the Outburst's base damage to the Release. It deals {=pour.self_damage} damage to you at the Release; armour and shields don't stop it.",
         "self_damage": 8,
         "per_pour": true,
         "effects": [
@@ -421,7 +421,7 @@
         "text": "You take down an Elite or Boss."
       },
       "pour": {
-        "text": "+0.6 to the multiplier. If the Release takes nobody down, you take {=pour.strain_unless_down} Strain after it.",
+        "text": "+{=step.base}: it adds {=step.base|pct}% of the Outburst's base damage to the Release. If the Release takes nobody down, you take {=pour.strain_unless_down} Strain after it.",
         "strain_unless_down": 2,
         "effects": [
           {
@@ -780,7 +780,7 @@
         "text": "A Miracle or a Grand form happens in your sight."
       },
       "pour": {
-        "text": "+0: this Pump adds a stage but nothing to the multiplier. In return targets hit have {=pour.ap_loss} AP less on their next turn (no save).",
+        "text": "{=step.base|signed}: this Pump adds a stage but no damage. In return targets hit have {=pour.ap_loss} AP less on their next turn (no save).",
         "ap_loss": 1,
         "effects": [
           {
@@ -1124,7 +1124,7 @@
         "text": "You indulge an Overreach."
       },
       "pour": {
-        "text": "+0.8 to the multiplier, the biggest step there is. +{=pour.strain} Strain when you pour it in.",
+        "text": "+{=step.base}: it adds {=step.base|pct}% of the Outburst's base damage to the Release, the biggest step there is. +{=pour.strain} Strain when you pour it in.",
         "strain": 2,
         "effects": [
           {

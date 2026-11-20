@@ -21,9 +21,9 @@ const LAUNCH = row('launch').effects[0];
 const SK = { athletics: 6, raw_power: 6, dexterity: 6 };
 type F = ReturnType<typeof fight>;
 /** A Breaker (or, cls null, a classless fighter) on C5, foes where given (default one next to it on D5), its turn. */
-function fight(o: { weapon?: string; known?: string[]; foes?: { at: string; tier?: string }[]; m?: number; cls?: string | null; level?: number; perks?: Record<string, string> } = {}) {
+function fight(o: { weapon?: string; known?: string[]; foes?: { at: string; tier?: string }[]; m?: number; cls?: string | null; level?: number; perks?: Record<string, string>; attrs?: Record<string, number> } = {}) {
   const foes = o.foes || [{ at: 'D5' }];
-  const f = physFight([{ weapon: o.weapon || 'sabre', known: o.known || [], skills: SK, ...(o.perks ? { perks: o.perks } : {}), classId: o.cls === undefined ? 'fighter' : o.cls, level: o.level ?? 3 } as any], foes.map((x) => ({ tier: x.tier || 'elite', ...x })) as any);
+  const f = physFight([{ weapon: o.weapon || 'sabre', known: o.known || [], skills: SK, ...(o.perks ? { perks: o.perks } : {}), ...(o.attrs ? { attrs: o.attrs } : {}), classId: o.cls === undefined ? 'fighter' : o.cls, level: o.level ?? 3 } as any], foes.map((x) => ({ tier: x.tier || 'elite', ...x })) as any);
   f.cb.objects = [];
   f.put(f.pc, 'C5'); foes.forEach((x, i) => { const u = f.put(f.foes[i], x.at); u.hp = u.maxHp = 900; });
   f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1;
@@ -198,19 +198,20 @@ describe('Keep Swinging counts every Breaker Finisher by its group: Cleave, Brea
 });
 
 // The 0.29 consolidation (MF1): ONE reading of "is a Finisher" (physical/data.ts techGroupOf): a Launch that drops its
-// foe is a Finisher for Follow Through (Raw Power 5) and ends the melee chain, as Cleave, Break and Coup do.
-describe('a Launch kill is a Finisher everywhere: Follow Through and the end of the chain', () => {
-  for (const how of ['cleave', 'break', 'coup', 'launch']) it(how + ': Follow Through keeps 1 Momentum and the chain has ended', () => {
-    const f = fight({ m: 3 }); weak(f.foe); f.foe.hp = 1; rig({ hit: true, die: 12 });
+// foe is a Finisher for Measured Blow's follow-through (rules 1.73 item 5808: Follow Through left Raw Power 5 for the
+// Breaker's rank III) and ends the melee chain, as Cleave, Break and Coup do.
+describe('a Launch kill is a Finisher everywhere: Measured Blow and the end of the chain', () => {
+  for (const how of ['cleave', 'break', 'coup', 'launch']) it(how + ': a rank III Breaker follows through (x1) and the chain has ended', () => {
+    const f = fight({ m: 3, level: 12, attrs: { strength: 8 } }); weak(f.foe); f.foe.hp = 1; rig({ hit: true, die: 12 });
     if (how === 'launch') launch(f, f.foe); else f.tech(how, { targetId: f.foe.id });
     rig(null);
-    expect(f.cb.log.some((l: any) => /Follow Through/.test(typeof l === 'string' ? l : l?.text || ''))).toBe(true);
+    expect(f.cb.log.some((l: any) => /follows through \(Measured Blow\)/.test(typeof l === 'string' ? l : l?.text || ''))).toBe(true);
     expect(chainOf(f.cb, f.unit(f.pc.id)).ended).toBe(true);
   });
 });
 
 // Item 5531 (the lead's ruling on row 15d of the outside playtest): after a Finisher the chain is locked to every action
-// the technique data places in a melee group: the Breaker's Barrel In (action id `lunge`, read as the Lunge technique)
+// the technique data places in a melee group: the Breaker's Barrel In (its own action id `barrel_in`, an Opener by rules.group_actions; the old id `lunge` still finds it)
 // is refused in the list, the preview and the reducer, in the data's one sentence; the basic Shove (no Momentum) is not.
 import { actionsFor } from '../src';
 describe('item 5531: the Finisher lock holds Barrel In; Shove stays', () => {
@@ -221,6 +222,8 @@ describe('item 5531: the Finisher lock holds Barrel In; Shove stays', () => {
     f.momentum(f.pc, 2); f.pc.ap = 9; const other = f.foes[1];
     const list = withGame(f.g, () => actionsFor(f.g, f.pc.id, 'host'));
     const bi = list.find((d: any) => d.id.includes('fighter.lunge'))!; expect(bi).toBeTruthy();
+    expect(bi.id).toMatch(/#barrel_in$/); // spec item 5608: its own action id, an Opener by techniques.json rules.group_actions
+    expect(refusal(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'class:fighter.lunge', actionId: 'barrel_in', targetId: other.id } as any))).toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
     expect(bi.why).toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
     expect(refusal(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'class:fighter.lunge', actionId: 'lunge', targetId: other.id } as any))).toContain(PHYS_RULES.chain_ended.replace(/\.$/, ''));
     f.put(f.unit(other.id), 'D5');

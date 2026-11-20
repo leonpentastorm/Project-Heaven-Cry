@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
-  applyDamage, applyCond, resolveAttack, previewAttack, shove, healUnit, blessing, movement, carryLimit, maxHp, skillRollMod, PATRONS, condOn,
+  applyDamage, applyCond, resolveAttack, previewAttack, shove, healUnit, blessing, movement, carryLimit, maxHp, skillRollMod, PATRONS, condOn, PERK, SKILL,
   type Unit, type Combat,
 } from '../src';
 
@@ -28,68 +28,30 @@ function storyCheck(s: ReturnType<typeof storyWith>, charId: string, skills: str
 
 // (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Shrug It Off'
 
-describe('Used to the Pain', () => {
-  // rules 1.13: no AP any more. A light first hit hardens you against the next hit; a heavy one doesn't.
-  const hits = (tier: string, first: number) => {
-    const f = fightWith([{ perks: { used_to_the_pain: tier } }]); const pc = f.pc, hp = pc.maxHp;
-    const src = () => ({ by: f.foe, type: 'weapon', ranged: true }) as any;
-    return withGame(f.g, () => {
-      applyDamage(f.cb, pc, Math.floor(hp * first), src());
-      const a = pc.hp; applyDamage(f.cb, pc, 20, src()); const second = a - pc.hp;
-      const b = pc.hp; applyDamage(f.cb, pc, 20, src()); return { second, third: b - pc.hp, ap: f.turn(pc).ap, log: f.cb.log };
-    });
-  };
-  it('Tier I: a first hit under 20% of max HP makes the next hit deal 25% less; only that one; a heavy first hit gives nothing', () => {
-    const light = hits('I', 0.1); expect(light.second).toBe(15); expect(light.third).toBe(20); expect(light.ap).toBe(6);
-    expect(light.log.some((l) => /Used to the Pain/.test(l))).toBe(true);
-    const heavy = hits('I', 0.25); expect(heavy.second).toBe(20); expect(heavy.ap).toBe(6); // no AP penalty either
-  });
-  it('Tier II: the threshold is 30%, and the next hit deals 40% less', () => {
-    expect(hits('II', 0.25).second).toBe(12);
-    expect(hits('II', 0.35).second).toBe(20);
+// rules 1.73 item 5826: Used to the Pain and Scar Tissue are removed (fiddly; a copy of the per-point elemental row); an old
+// save holding one gets Second Wind or Numb at the same tier (skills.json pain_threshold.perk_remap). Their play is gone.
+describe('Used to the Pain and Scar Tissue are removed, mapped for old saves (rules 1.73 item 5826)', () => {
+  it('neither is a perk any more; the remap names their replacements, at Pain Threshold', () => {
+    expect((PERK as any).used_to_the_pain).toBeUndefined(); expect((PERK as any).scar_tissue).toBeUndefined();
+    expect((SKILL as any).pain_threshold.perk_remap.perks).toMatchObject({ used_to_the_pain: 'second_wind', scar_tissue: 'numb' });
   });
 });
 
-describe('Scar Tissue', () => {
-  it('Tier I: each wound adds 5% Elemental reduction (up to 25%), on top of the derived reduction', () => {
-    const f = fightWith([{ perks: { scar_tissue: 'I' }, skills: { pain_threshold: 0 } }]);
-    const u = f.pc;
-    withGame(f.g, () => {
-      for (let i = 0; i < 7; i++) applyDamage(f.cb, u, 1, { by: f.foe, type: 'weapon' });
-      u.hp = u.maxHp;
-      const r = applyDamage(f.cb, u, 100, { by: f.foe, type: 'elemental', dmgType: 'fire' });
-      expect(r.dealt).toBe(Math.floor(100 * (1 - (u.elemTaken || 0)) * 0.75));
-    });
-  });
-  it('Tier II: up to 40%, and each wound adds 5 points of Injury resistance (provisional "limb damage")', () => {
-    const f = fightWith([{ perks: { scar_tissue: 'II' }, skills: { pain_threshold: 0 } }]);
-    const u = f.pc, base = u.injResist || 0;
-    withGame(f.g, () => {
-      for (let i = 0; i < 9; i++) applyDamage(f.cb, u, 1, { by: f.foe, type: 'weapon' });
-      expect(u.injResist).toBe(base + 40);
-      u.hp = u.maxHp;
-      const r = applyDamage(f.cb, u, 100, { by: f.foe, type: 'elemental', dmgType: 'lightning' });
-      expect(r.dealt).toBe(Math.floor(100 * (1 - (u.elemTaken || 0)) * 0.6));
-    });
-  });
-});
-
-describe('Iron Stomach', () => {
-  it('Tier I: Fear and Nausea last at most 1 round', () => {
-    const f = fightWith([{ perks: { iron_stomach: 'I' } }]);
+describe('Steady (Guts; Iron Stomach folded in, rules 1.73 item 5811)', () => {
+  it('Tier II: Fear and Nausea last at most 1 round; Tier I (a rule for the Narrator) leaves their length alone', () => {
+    const f = fightWith([{ perks: { steady: 'II' } }]);
     withGame(f.g, () => { applyCond(f.cb, rng(), f.foe, f.pc, 'fear', 3, undefined, { skipSave: true }); applyCond(f.cb, rng(), f.foe, f.pc, 'nausea', undefined, undefined, { skipSave: true }); });
     expect(f.pc.conds!.fear).toBe(1); expect(f.pc.conds!.nausea).toBe(1);
+    const g = fightWith([{ perks: { steady: 'I' } }]);
+    withGame(g.g, () => { applyCond(g.cb, rng(), g.foe, g.pc, 'fear', 3, undefined, { skipSave: true }); });
+    expect(g.pc.conds!.fear).toBe(3);
   });
-  it('Tier II: immune (no save rolled); story Fear-tagged checks pass automatically', () => {
-    const f = fightWith([{ perks: { iron_stomach: 'II' } }]);
-    const out = withGame(f.g, () => applyCond(f.cb, rng(), f.foe, f.pc, 'nausea'));
-    expect(out).toMatch(/untouched/); expect(condOn(f.pc, 'nausea')).toBe(false);
-    const s = storyWith([{ perks: { iron_stomach: 'II' } }]);
-    expect(storyCheck(s, s.chars[0].id, ['composure'], { tags: ['horror'], tn: 20 }).roll()).toMatch(/SUCCESS \(AUTO\)/);
+  it('no tier is immune any more (the Mastered perk is the Fear immunity): Nausea lands on Tier II', () => {
+    const f = fightWith([{ perks: { steady: 'II' } }]);
+    withGame(f.g, () => applyCond(f.cb, rng(), f.foe, f.pc, 'nausea', undefined, undefined, { skipSave: true }));
+    expect(condOn(f.pc, 'nausea')).toBe(true);
   });
 });
-
-
 
 describe('Earthbreaker', () => {
   it('once per combat, 4 AP: everyone in the 3×3 takes melee damage and falls Prone; cover in it breaks', () => {

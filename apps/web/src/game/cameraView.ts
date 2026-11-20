@@ -76,13 +76,18 @@ export class CameraView {
   myTurn = false;
   /** The player's own unit's tile (the jump-back key). */
   home: string | null = null;
-  miniHidden: boolean;
+  /** The player's own choice for the small map (stored in this browser), or null: the default. */
+  private miniChoice: 'hidden' | 'shown' | null = null;
+  /** Under this window width the small map starts folded (B5, 0.32: at 1280 it sat over the board's right third); 0: never. */
+  private miniFoldUnder: number;
+  /** Is the small map folded away (the player's choice, else folded on a narrow window)? */
+  get miniHidden(): boolean { return this.miniChoice ? this.miniChoice === 'hidden' : this.narrow(); }
+  private narrow() { return this.miniFoldUnder > 0 && typeof innerWidth === 'number' && innerWidth < this.miniFoldUnder; }
   /** Called after the small map is shown or hidden (the screen lays the map out again). */
   onMini: (() => void) | null = null;
-  constructor(id: string, miniKey = 'phc.miniMap') {
-    this.id = id; this.miniKey = miniKey;
-    let h = false; try { h = localStorage.getItem(miniKey) === 'hidden'; } catch { /* */ }
-    this.miniHidden = h;
+  constructor(id: string, miniKey = 'phc.miniMap', miniFoldUnder = 0) {
+    this.id = id; this.miniKey = miniKey; this.miniFoldUnder = miniFoldUnder;
+    try { const v = localStorage.getItem(miniKey); this.miniChoice = v === 'hidden' || v === 'shown' ? v : null; } catch { /* */ }
   }
 
   // ---------- the window ----------
@@ -159,6 +164,21 @@ export class CameraView {
   tiles(): { x0: number; y0: number; x1: number; y1: number } {
     const g = this.scrolls() ? this.grid() : null;
     return g ? C.frameTiles(this.frame(), g, this.mapW, this.mapH) : { x0: 0, y0: 0, x1: Math.max(0, this.mapW - 1), y1: Math.max(0, this.mapH - 1) };
+  }
+  /** The middle of the view in tiles (fractional), or of the view it is gliding to when `ahead`: what a new layout
+   *  keeps (centreAt). Null when the map does not scroll. */
+  middle(ahead = false): Pt2 | null {
+    const g = this.scrolls() ? this.grid() : null; if (!g) return null;
+    const f = this.frame(ahead ? this.goal : null);
+    return { x: (f.x + f.w / 2 - g.ox) / g.pitch, y: (f.y + f.h / 2 - g.oy) / g.pitch };
+  }
+  /** Put the middle of the view on this point (in tiles, from middle()) at once: the map laid out anew looks where it
+   *  looked, to the pixel (re-aiming at the middle tile moved it by up to a tile each time the panels changed size). */
+  centreAt(m: Pt2) {
+    if (!this.live() || !this.scrolls()) return;
+    this.cancelGlide();
+    const g = this.grid(), e = this.el!; if (!g) return;
+    this.glide(C.clampScroll(g.ox + m.x * g.pitch - e.clientWidth / 2, g.oy + m.y * g.pitch - e.clientHeight / 2, this.content(), { w: e.clientWidth, h: e.clientHeight }), { cut: true });
   }
   /** Is this tile's centre on screen now? */
   shows(key: string): boolean { const g = this.scrolls() ? this.grid() : null; return !g || C.inFrame(this.frame(), C.pointOf(key, g)); }
@@ -359,8 +379,10 @@ export class CameraView {
     this.miniSig = sig; this.mini = m; this.buildMini(); this.drawMini();
   }
   toggleMini() {
-    this.miniHidden = !this.miniHidden;
-    try { if (this.miniHidden) localStorage.setItem(this.miniKey, 'hidden'); else localStorage.removeItem(this.miniKey); } catch { /* */ }
+    const hide = !this.miniHidden;
+    // the choice is kept only where it differs from the default (shown on a wide window: nothing stored)
+    this.miniChoice = hide ? 'hidden' : this.narrow() ? 'shown' : null;
+    try { if (this.miniChoice) localStorage.setItem(this.miniKey, this.miniChoice); else localStorage.removeItem(this.miniKey); } catch { /* */ }
     this.buildMini(); this.drawMini(); this.onMini?.();
   }
   /** The small map's longest side: 150 px; 96 px on a narrow window (under 1000 px wide), where the map's window is small. */

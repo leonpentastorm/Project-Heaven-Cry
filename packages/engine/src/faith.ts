@@ -16,11 +16,12 @@
 // Like missions.ts, this file imports only types from game.ts; game.ts binds the few helpers it needs (bindFaith).
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import patronsJ from '../../../data/patrons.json';
+import survivalJ from '../../../data/survival.json';
 import type { GameState, Entry } from './game';
 import { type Character, type Belief, type Vow, packKindOf, mod, prayerCooldown, HYMN_COOLDOWN, blessingPower, maxHp, magazineSize, modsOn, maxDurOf, packOf, devotionXpOf, setDevotionXp, devotionThreshold, devotionLevelOf, devotionWords, DEVOTION_MAX_LEVEL, DEVOTION_MAX_XP, FAITH_REV } from './character';
 import type { Combat, Unit } from './combat';
 import { say, unguarded, emitFx, FX_CAP, alive, dist, unitSees, refOf, isMelee, reload, reloadHands, resourcesFor, encoreKey, swapUnits } from './combat';
-import { condOn, applyCond, endCond, harm, withDoor, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE, coreChargeOf } from './magic';
+import { condOn, applyCond, endCond, harm, withDoor, withElement, type SpellAmount, shiftMana, unitSave, unitStrength, withVia, saveAgainst, viaOf, condSource, condIsBoon, condName as condNameOf, MANA_START, CORE_CHARGE, coreChargeOf } from './magic';
 import { pushAway, mendShown } from './effects/core';
 import { setPrayerDoor } from './effects/actions';
 import { price, whyNot, pay, refund, grantAp, freely, poolWhyNot, setResSetter } from './effects/cost';
@@ -152,7 +153,7 @@ export const interventionHeal = (c: Character, power = 1) => { const e = (FAITH_
  * 'hymn_wait' stat) and less 1 when the vow was fulfilled for this Hymn (`cut`), never under HYMN_COOLDOWN.minWait (2):
  * nothing but an item takes it lower, and there are none yet (item 1282). */
 export function hymnWait(c: Character, u?: Unit | null): number {
-  const base = prayerCooldown(c), q = c.perks?.length || c.traits?.length ? statQuery({ c }, 'hymn_wait').add : 0;
+  const base = prayerCooldown(c), q = c.perks?.length || c.traits?.length || Object.keys(c.doorPicks || {}).length ? statQuery({ c }, 'hymn_wait').add : 0; // rules 1.75 item 6222: a fork (Swift Psalm) answers it too
   return Math.max(Math.min(base, HYMN_COOLDOWN.minWait), base + q - (u?.faith?.hymnCut || 0));
 }
 /** Rounds left before this fighter may pray a Hymn again (0: now). */
@@ -281,7 +282,7 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
   if (!c) return no('Only a character can pray.');
   const pe = prayerEntry(c, kind, id); if (!pe) return no(kind === 'miracle' ? (beliefOf(c).kind === 'atheist' ? 'An Atheist never gets a Miracle.' : 'Your patron has no Miracle.') : 'No such prayer.');
   const belief = beliefOf(c), faith = faithOf(c), own = patronOf(c);
-  const ap = u ? price({ cb, u, c }, kind === 'whisper' ? 'whisper' : 'pray', AP_COST[kind]).ap : AP_COST[kind];
+  const ap = u ? price({ cb, u, c }, kind === 'whisper' ? 'whisper' : 'pray', AP_COST[kind], args.targetId ? { targetId: args.targetId } : {}).ap : AP_COST[kind]; // rules 1.70 P3: priced with its target (Steadfast, rules 1.75 item 6222)
   const target = pe.entry.target || (kind === 'hymn' ? 'self_or_ally' : 'none'); // an old-shape Blessing goes at you or an ally
   const fig = prayerFigure(pe.entry, c, u);
   const info = { ...base, ap, effectText: pe.entry.text || '', name: pe.entry.name || id, patron: pe.patron?.id || null, target, targets: targetsOf(g, c, u, cb, target), ...(fig ? { amount: fig } : {}) };
@@ -362,6 +363,8 @@ export interface FaithView {
   miracle: { id: string; name: string; text: string; usedThisSession: boolean; preview: PrayerPreview } | null;
   pieces: Record<string, number>;
   /** The vow sworn this fight (null out of a fight). */
+  /** Rules 1.72 item 5705: the standing vow (null: no choice yet; id null: unsworn) and whether it may be chosen or changed here and now. */
+  standing: { id: string | null; allyCharId?: string } | null; vowChange: boolean;
   vow: Vow | null; vows: { id: string; name: string; words: string; brokenWhen: string; /** Rules 1.22: the moment in a fight that fulfils it (1 round off the Hymn's wait). */ fulfilledWhen: string; needsAlly: boolean }[];
   rites: { id: string; name: string; text: string; engine: boolean; keptThisSession: boolean; available: boolean; why?: string }[];
   rule: 'open' | 'jealous' | null;
@@ -401,6 +404,7 @@ export function faithView(g: GameState, charId: string): FaithView | null {
     hymns,
     miracle: p?.miracle ? { id: p.miracle.id, name: p.miracle.name, text: p.miracle.text, usedThisSession: c.miracleSession === sessionN(g), preview: previewPrayer(g, who, 'miracle', p.miracle.id) } : null,
     pieces: { ...(c.faithPieces || {}) },
+    standing: c.vowStanding ? { ...c.vowStanding } : null, vowChange: !cb && vowChangeNow(g, c),
     vow: u?.vow || null, vows: VOWS.filter((v) => !(cb && vowNoFoe(cb, u, v))).map((v) => ({ id: v.id, name: v.name, words: v.words, brokenWhen: v.broken_when, fulfilledWhen: v.fulfilled_when || '', needsAlly: !!v.needs_ally })),
     rites: (p?.rites || []).map((r: any) => ({ id: r.id, name: r.name, text: r.text, engine: !!r.engine, keptThisSession: c.ritesKept?.[p.id + '.' + r.id] === sessionN(g), ...riteState(g, c, r) })),
     rule: p?.rule || null,
@@ -855,6 +859,12 @@ export function registerFaithHooks() {
     // Requisition Approved (item 728): what each character brought into the fight (its restock tops up to at least this).
     for (const u of cb.units) if (u.charId && !u.companion) fs(u).stock = { weapon: u.weapon, mags: u.mags?.length || 0, loose: u.loose || 0, throwables: { ...(u.throwables || {}) } };
     quartermasterDry(cb); // the charge and MP each fighter brings in (item 742): a fight begun at 0 is no "runs dry"
+    // Rules 1.72 item 5705: the standing vow is sworn for each character as the fight starts (the action's own rule:
+    // vowRefusal; refused, e.g. Mercy with no foe that can yield, the fight asks as before)
+    for (const u of cb.units) {
+      if (!u.charId || u.companion || u.vow) continue; const c = unitChar(u), sv = c?.vowStanding; if (!c || !sv?.id || beliefOf(c).kind !== 'faithful') continue;
+      const v = VOW[sv.id]; if (!v) continue; const r = vowRefusal(cb, u, v, sv.allyCharId); if (typeof r !== 'string') swearOn(cb, u, c, v, r.allyId);
+    }
     for (const u of cb.units) {
       if (!u.charId || u.companion || u.dead) continue; const c = unitChar(u); if (!c) continue;
       const gr = grudgeOf(g, c); if (!gr) continue; const p = patronById(gr.patron);
@@ -957,12 +967,25 @@ function likedAttack(cb: Combat, att: Unit, tgt: Unit): boolean {
   return (likes.includes('judge') && !!tgt.faith?.harmedHelpless) || (likes.includes('burn') && dt === 'fire') || (likes.includes('storm') && dt === 'lightning');
 }
 function harmLine(cb: Combat, by: Unit, t: Unit, n: number | SpellAmount, type: 'soul' | 'elemental', dmgType?: string): string {
-  return withDoor('prayer', null, () => harm(cb, rngOf(), by, t, typeof n === 'number' ? Math.round(n) : n, type, dmgType)); // rules 1.56 P1: a prayer's damage names its door
+  // rules 1.56 P1: a prayer's damage names its door; rules 1.72 item 5702: its hurt carries its element (the damage type,
+  // as the effects read an element's names), so the client draws a storm prayer's wound without reading the data
+  return withDoor('prayer', null, () => withElement(type === 'elemental' && dmgType ? dmgType : null, () => harm(cb, rngOf(), by, t, typeof n === 'number' ? Math.round(n) : n, type, dmgType)));
 }
 function healLine(cb: Combat, by: Unit | null, t: Unit, n: number, gate: 'whisper' | 'hymn' | 'intervention' | null = null): string {
   // the percent gate and the cap (heal-shield-percent-spec.md section 4): a Whisper's and a Hymn's own share (rules.json mending.gate)
   const r = mendSized(cb, by, t, 'heal', Math.round(n), gate ? { of: gate } : null, { healKind: 'blessing' }); mendShown(cb, t, 'heal', r); // rules 1.62 item 4905: the one mend's green number
   return r.revived ? ' stands again at ' + t.hp + ' HP' : ' heals ' + r.restored;
+}
+/** Rules 1.72 item 5704: a prayer that only changes a state (a buff, a zone: nothing hurt, healed, warded, cleansed, moved
+ * or conditioned on another unit) is shown by the existing `stance` fx with its data name as the word (what `prayer`),
+ * on the unit it landed on, else its tile, else the one who prays. Read from the fx the prayer itself sent. */
+const SHOWN_KINDS = ['hurt', 'heal', 'boon', 'shove', 'cond', 'shield', 'miss'];
+function stateOnlyShown(cb: Combat, u: Unit, pfx: { n: number }, entry: any, t: Unit | null, tile: string | null) {
+  if (!entry?.name) return;
+  const after = (cb.fx || []).filter((x: any) => x.n > pfx.n);
+  if (after.some((x: any) => SHOWN_KINDS.includes(x.k) && !(x.k === 'cond' && x.target === u.id))) return;
+  const on = t && t.pos ? t : u;
+  emitFx(cb, 'stance', { unit: on.id, at: t && t.pos ? t.pos : tile || u.pos, what: 'prayer', how: entry.id || null, by: u.id, word: entry.name });
 }
 /** A prayer's shield (Protection, Saint's Shield): the one mend, and its ward's effect (rules 1.62 item 4905). */
 function shieldLine(cb: Combat, by: Unit, t: Unit, n: number, gate: 'whisper' | 'hymn'): string {
@@ -1009,7 +1032,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
     }
   }
   const power = u.blessPower || blessingPower(c);
-  emitFx(cb, FAITH_FX.prayer, { unit: u.id, kind, id, patron: patron?.id || null, at: u.pos, target: typeof t === 'object' && t && 'id' in t ? (t as any).id : a.tile || null, ok: true });
+  const pfx = emitFx(cb, FAITH_FX.prayer, { unit: u.id, kind, id, patron: patron?.id || null, at: u.pos, target: typeof t === 'object' && t && 'id' in t ? (t as any).id : a.tile || null, ok: true });
   // The Miracle's fx (item 746) goes on the list before its effects (the cut-in plays first); once they have run it is
   // given the grant line (item 745: picked after them, so the line never moves the Miracle's own dice) and the summary
   // of what they did: the web needs no engine call.
@@ -1017,6 +1040,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   // A Miracle is past the Elite and Boss guard (bug sweep, 12 Nov 2026: it may exceed the ceilings, once a session, for five levels of Devotion).
   const did = kind === 'miracle' ? unguarded(() => runEntry(cb, rng, u, kind, pe, t, a, power)) : runEntry(cb, rng, u, kind, pe, t, a, power);
   line += did;
+  stateOnlyShown(cb, u, pfx, pe.entry, typeof t === 'object' && t && 'id' in t ? (t as any) : null, a.tile || null);
   say(cb, line + '.');
   if (mfx) { const grant = grantLine(rng, patron, c.name); mfx.line = grant; mfx.summary = summaryOf(did); if (grant) speak(g, cb, rng, c, patron, 'grant', grant); }
   // The price after the effect, and after its line in the log (item 621's order; items 725, 737): its own tags give
@@ -1347,7 +1371,9 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       for (const v of cb.units.filter((x) => x.side === u.side && !x.dead)) out += land(cb, rng, u, v, e, power, (pw) => {
         const up = v.downed; healUnit(cb, v, v.maxHp, u, 'blessing', { noLimit: true }); v.hp = v.maxHp; // to full whatever trims a heal
         const ended = cleanseHarmful(cb, v);
-        return ' · ' + v.name + (up ? ' stands at full HP' : ' heals to full') + (ended.length ? ', cleansed (' + ended.join(', ') + ')' : '') + ', a ' + grantShield(cb, v, prayerAmount('shield', effVal(e, 'shield'), pw, levelTerm(u)), u, { kind: 'blessing' }) + ' shield';
+        // rules 1.72 item 5703: its shield is shown through the one mend's effect (mendShown: the ward's number, as any shield)
+        const sh = grantShield(cb, v, prayerAmount('shield', effVal(e, 'shield'), pw, levelTerm(u)), u, { kind: 'blessing' }); mendShown(cb, v, 'shield', { restored: 0, revived: false, shield: sh });
+        return ' · ' + v.name + (up ? ' stands at full HP' : ' heals to full') + (ended.length ? ', cleansed (' + ended.join(', ') + ')' : '') + ', a ' + sh + ' shield';
       });
       return out;
     }
@@ -1448,24 +1474,51 @@ export function faithReduce(g: GameState, a: FaithAction, by: string): string | 
 
 /** Swear a vow (round 1 of a fight, before the character first acts; one a fight; free). */
 function swearVow(g: GameState, a: Extract<FaithAction, { type: 'faith/vow' }>, by: string): string | null {
-  const cb = g.phase === 'combat' && g.combat && !g.combat.over ? g.combat : null; if (!cb) return 'Swear a vow at the start of a fight.';
+  const cb = g.phase === 'combat' && g.combat && !g.combat.over ? g.combat : null; if (!cb) return standVow(g, a, by);
   const u = cb.units.find((x) => x.id === a.unitId || x.charId === a.unitId); if (!u?.charId) return 'Only a character swears a vow.';
   const c = g.characters[u.charId]; if (!c || c.owner !== by) return 'Not your character.';
   if (beliefOf(c).kind !== 'faithful') return 'Only the Faithful swear vows.';
   const v = VOW[a.id]; if (!v) return 'No such vow.';
   if (u.vow) return 'One vow a fight.';
   if (cb.round !== 1 || fs(u).acted) return 'Swear a vow at the start of the fight, before you act.';
+  const r = vowRefusal(cb, u, v, a.allyId); if (typeof r === 'string') return r;
+  swearOn(cb, u, c, v, r.allyId);
+  return null;
+}
+/** Who may swear this vow in this fight now (one copy: the action and the standing vow's seeding at a fight's start):
+ * a refusal, or the ally's unit id when the vow names one. */
+function vowRefusal(cb: Combat, u: Unit, v: any, allyRef: string | undefined): string | { allyId?: string } {
   if (u.dead || u.downed) return 'You can\'t swear anything right now.';
   if (vowNoFoe(cb, u, v)) return 'No enemy here can yield.';
-  let allyId: string | undefined;
-  if (v.needs_ally) {
-    const al = cb.units.find((x) => (x.id === a.allyId || (x.charId && x.charId === a.allyId)) && x !== u && x.side === u.side && !x.dead);
-    if (!al) return 'Name the ally you shield.'; allyId = al.id;
-  }
+  if (!v.needs_ally) return {};
+  const al = cb.units.find((x) => (x.id === allyRef || (x.charId && x.charId === allyRef)) && x !== u && x.side === u.side && !x.dead);
+  return al ? { allyId: al.id } : 'Name the ally you shield.';
+}
+function swearOn(cb: Combat, u: Unit, c: Character, v: any, allyId: string | undefined) {
   u.vow = { id: v.id, ...(allyId ? { allyId } : {}), state: 'sworn' }; c.vow = { ...u.vow };
   if (v.id === 'stand') fs(u).standFrom = nearestEnemy(cb, u);
   emitFx(cb, FAITH_FX.vow, { unit: u.id, char: c.id, id: v.id, state: 'sworn', ...(allyId ? { allyId } : {}) });
   say(cb, u.name + ' swears a vow: "' + v.words + '"' + (allyId ? ' (' + cb.units.find((x) => x.id === allyId)!.name + ')' : '') + '.');
+}
+/** Rules 1.72 item 5705: where the standing vow may be chosen or changed (out of a fight): the first choice anywhere; a
+ * change in a Survival run only at a node of a kind survival.json `vow_change_nodes.kinds` names (the rest); out of a run,
+ * any time out of a fight. */
+function vowChangeNow(g: GameState, c: Character): boolean {
+  if (!c.vowStanding) return true;
+  const r: any = (g as any).run; if (!r) return true;
+  const kind = r.note?.kind; return !!kind && ((survivalJ as any).vow_change_nodes.kinds as string[]).includes(kind);
+}
+/** Rules 1.72 item 5705: faith/vow out of a fight sets the character's standing vow (unitId: the character; id '':
+ * fighting unsworn; allyId: the ally's character). */
+function standVow(g: GameState, a: Extract<FaithAction, { type: 'faith/vow' }>, by: string): string | null {
+  const c = g.characters[a.unitId]; if (!c) return 'Swear a vow at the start of a fight.';
+  if (c.owner !== by) return 'Not your character.';
+  if (beliefOf(c).kind !== 'faithful') return 'Only the Faithful swear vows.';
+  const v = a.id ? VOW[a.id] : null; if (a.id && !v) return 'No such vow.';
+  if (!vowChangeNow(g, c)) return 'Change your vow at a rest.';
+  let ally: string | undefined;
+  if (v?.needs_ally) { const al = a.allyId ? g.characters[a.allyId] : null; if (!al || al.id === c.id || al.dead) return 'Name the ally you shield.'; ally = al.id; }
+  c.vowStanding = { id: v ? v.id : null, ...(ally ? { allyCharId: ally } : {}) };
   return null;
 }
 

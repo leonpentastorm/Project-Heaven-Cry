@@ -5,7 +5,7 @@
   "tab_also": [
     "hide"
   ],
-  "source": "docs/design/shadow-spec.md section 3; rules 1.32 (Classes 3.0 step 6): Perception's door verbs, through Ingenuity. Each is a door verb (kind verb, P6) held by anyone whose Ingenuity reaches its `requires`; the Break is a toggle on the attack card (skills.json ingenuity.1); the passive Still Breath is Ingenuity's unlock 5.",
+  "source": "docs/design/shadow-spec.md section 3; rules 1.32 (Classes 3.0 step 6): Perception's door verbs, through Ingenuity. Each is a door verb (kind verb, P6) held by anyone whose Ingenuity reaches its `requires`; the Break is a toggle on the attack card (skills.json ingenuity.1); Still Breath is Acuity's perk (rules 1.74 item 6005); Pick, Disable, Rig and Hijack are the Operative's (requires its class and rank: rules 1.74 item 6011).",
   "groups": {
     "slip": "Slip",
     "mark": "Mark",
@@ -69,6 +69,50 @@
       ]
     },
     {
+      "id": "shadow.case",
+      "name": "Case",
+      "kind": "verb",
+      "group": "mark",
+      "requires": [
+        {
+          "skill": "ingenuity",
+          "min": 3
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "{=effects.0.ap} AP: an enemy within {=effects.0.reach.tiles} tiles that can't see you is Cased until the fight ends: your side sees its weapon, its rounds, its armour and what it carries, and a Lift on it costs less.",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "case",
+          "ap": 1,
+          "uses": "at_will",
+          "reach": {
+            "tiles": 8,
+            "side": "foe",
+            "sight": true,
+            "if": {
+              "target_sees_self": false
+            },
+            "why": {
+              "target_sees_self": "{target} can see you."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "when": "acted",
+              "condition": "cased",
+              "target": "target",
+              "skip_save": true,
+              "say": "{self} cases {target}."
+            }
+          ]
+        }
+      ]
+    },
+    {
       "id": "shadow.lift",
       "name": "Lift",
       "kind": "verb",
@@ -76,7 +120,7 @@
       "requires": [
         {
           "skill": "ingenuity",
-          "min": 3
+          "min": 2
         }
       ],
       "adjudication": "engine",
@@ -163,56 +207,6 @@
       ]
     },
     {
-      "id": "shadow.read_intent",
-      "name": "Read Intent",
-      "kind": "verb",
-      "group": "mark",
-      "requires": [
-        {
-          "skill": "ingenuity",
-          "min": 3
-        }
-      ],
-      "adjudication": "engine",
-      "provisional": true,
-      "text": "{=effects.0.ap} AP, from Hidden: an enemy that can't see you is Read: your side sees its next action until its turn ends.",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "read_intent",
-          "ap": 1,
-          "uses": "at_will",
-          "if": {
-            "self_has": [
-              "hidden"
-            ]
-          },
-          "reach": {
-            "tiles": 8,
-            "side": "foe",
-            "if": {
-              "target_sees_self": false
-            },
-            "why": {
-              "target_sees_self": "{target} can see you."
-            }
-          },
-          "effects": [
-            {
-              "op": "condition",
-              "condition": "read",
-              "target": "target",
-              "skip_save": true,
-              "say": "{self} reads {target}'s next move."
-            }
-          ],
-          "why": {
-            "self_has": "An enemy sees you: this needs you Hidden."
-          }
-        }
-      ]
-    },
-    {
       "id": "shadow.open_seam",
       "name": "Open Seam",
       "kind": "verb",
@@ -220,7 +214,7 @@
       "requires": [
         {
           "skill": "ingenuity",
-          "min": 5
+          "min": 7
         }
       ],
       "adjudication": "engine",
@@ -273,7 +267,7 @@
       "requires": [
         {
           "skill": "ingenuity",
-          "min": 7
+          "min": 9
         }
       ],
       "adjudication": "engine",
@@ -334,7 +328,7 @@
       "requires": [
         {
           "skill": "ingenuity",
-          "min": 3
+          "min": 6
         }
       ],
       "adjudication": "engine",
@@ -380,120 +374,14 @@
       ]
     },
     {
-      "id": "shadow.foul",
-      "name": "Foul the Action",
-      "kind": "verb",
-      "group": "work",
-      "requires": [
-        {
-          "skill": "ingenuity",
-          "min": 5
-        }
-      ],
-      "adjudication": "engine",
-      "provisional": true,
-      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: an adjacent enemy that can't see you has its weapon Lowered (a save against your Ingenuity).",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "foul",
-          "ap": 1,
-          "res": {
-            "shadow": 1
-          },
-          "uses": "at_will",
-          "if": {
-            "self_has": [
-              "hidden"
-            ]
-          },
-          "reach": {
-            "tiles": 1,
-            "side": "foe",
-            "if": {
-              "target_sees_self": false
-            },
-            "why": {
-              "target_sees_self": "{target} can see you."
-            }
-          },
-          "effects": [
-            {
-              "op": "condition",
-              "condition": "lowered",
-              "target": "target",
-              "via": "ingenuity",
-              "say": "{self} fouls {target}'s weapon{then}."
-            }
-          ],
-          "why": {
-            "self_has": "An enemy sees you: this needs you Hidden."
-          }
-        }
-      ]
-    },
-    {
-      "id": "shadow.plant",
-      "name": "Plant",
-      "kind": "verb",
-      "group": "work",
-      "requires": [
-        {
-          "skill": "ingenuity",
-          "min": 7
-        }
-      ],
-      "adjudication": "engine",
-      "provisional": true,
-      "text": "{=effects.0.ap} AP and {=effects.0.res.shadow} Shadow, from Hidden: slip a tracker onto an adjacent enemy that can't see you: it is Marked by you (your squad hits it more easily, and it can't hide).",
-      "effects": [
-        {
-          "op": "grant_action",
-          "action": "plant",
-          "ap": 2,
-          "res": {
-            "shadow": 1
-          },
-          "uses": "at_will",
-          "if": {
-            "self_has": [
-              "hidden"
-            ]
-          },
-          "reach": {
-            "tiles": 1,
-            "side": "foe",
-            "if": {
-              "target_sees_self": false
-            },
-            "why": {
-              "target_sees_self": "{target} can see you."
-            }
-          },
-          "effects": [
-            {
-              "op": "condition",
-              "condition": "marked",
-              "target": "target",
-              "skip_save": true,
-              "say": "{self} plants a tracker on {target}{then}."
-            }
-          ],
-          "why": {
-            "self_has": "An enemy sees you: this needs you Hidden."
-          }
-        }
-      ]
-    },
-    {
       "id": "shadow.disable",
       "name": "Disable",
       "kind": "verb",
       "group": "work",
       "requires": [
         {
-          "skill": "ingenuity",
-          "min": 7
+          "class": "infiltrator",
+          "rank": 2
         }
       ],
       "adjudication": "engine",
@@ -551,8 +439,12 @@
       "group": "work",
       "requires": [
         {
+          "class": "infiltrator",
+          "rank": 3
+        },
+        {
           "skill": "ingenuity",
-          "min": 9
+          "min": 5
         }
       ],
       "adjudication": "engine",
@@ -611,7 +503,7 @@
       "requires": [
         {
           "skill": "ingenuity",
-          "min": 3
+          "min": 2
         }
       ],
       "adjudication": "engine",
@@ -648,49 +540,62 @@
       ]
     },
     {
-      "id": "shadow.vault",
-      "name": "Vault",
+      "id": "shadow.stalk",
+      "name": "Stalk",
       "kind": "verb",
       "group": "slip",
       "requires": [
         {
           "skill": "ingenuity",
-          "min": 5
+          "min": 1
         }
       ],
       "adjudication": "engine",
       "provisional": true,
-      "text": "{=effects.0.ap} AP, from Hidden: cross one tile of half cover, a barricade or a hole to the free tile beyond it.",
+      "text": "{=effects.0.ap} AP, once a turn, from Hidden: +{=effects.0.effects.0.value} Shadow. It counts toward the door's {=effects.0.effects.0.limit.n} gains a turn, and not at a full meter.",
       "effects": [
         {
           "op": "grant_action",
-          "action": "vault",
-          "ap": 1,
-          "uses": "at_will",
+          "action": "stalk",
+          "ap": 2,
+          "uses": "per_turn",
           "if": {
             "self_has": [
               "hidden"
-            ]
-          },
-          "reach": {
-            "tile": true,
-            "tiles": 2,
-            "over": [
-              "half",
-              "barricade",
-              "hole"
-            ]
+            ],
+            "self_not_res": {
+              "shadow": {
+                "at": "limit"
+              }
+            },
+            "uses_left": {
+              "per": "per_turn",
+              "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]},
+              "shared": "shadow_gain"
+            }
           },
           "effects": [
             {
-              "op": "displace",
-              "to": "tile",
-              "say": "{self} vaults over{then}.",
-              "tiles": 2
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "acted",
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} waits in the dark: Shadow {res:shadow}.",
+              "limit": {
+                "per": "per_turn",
+                "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]},
+                "shared": "shadow_gain"
+              }
             }
           ],
           "why": {
-            "self_has": "An enemy sees you: this needs you Hidden."
+            "self_has": "An enemy sees you: Stalk needs you Hidden.",
+            "self_not_res": "Your Shadow is full.",
+            "uses_left": "You have built all the Shadow you can this turn."
           }
         }
       ]
@@ -702,8 +607,8 @@
       "group": "work",
       "requires": [
         {
-          "skill": "ingenuity",
-          "min": 5
+          "class": "infiltrator",
+          "rank": 2
         }
       ],
       "adjudication": "engine",
@@ -790,8 +695,8 @@
       "group": "work",
       "requires": [
         {
-          "skill": "ingenuity",
-          "min": 7
+          "class": "infiltrator",
+          "rank": 2
         }
       ],
       "adjudication": "engine",
@@ -848,13 +753,6 @@
       "group": "break",
       "min": 9,
       "why": "a toggle that rides on the Break (both on one attack, with its own points gate), and a re-hide after the Break's own reveal at the action's end: no primitive orders two toggles' acted effects or gates a toggle on the points it spends (rules 1.32 item 1966)"
-    },
-    {
-      "id": "shadow.case",
-      "name": "Case",
-      "group": "mark",
-      "min": 3,
-      "why": "no read-out of a unit's kit and rolled loot for a side (a condition row's `reveal` knows only `intent`; the fog and the hover card would need `what: kit`) (item 1966)"
     }
   ]
 }

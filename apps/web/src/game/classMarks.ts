@@ -48,6 +48,8 @@ export function classMarks(cb: any, side: 'pc' | 'foe' = 'pc', o: ClassMarkOpts 
     note(img.pos, 'False Image of ' + own.name + (mine && fooled ? ' (' + fooled + ' fooled)' : ''));
   }
   // ---- Read: what an enemy means to do on its next turn (until that turn ends) ----
+  // rules 1.78 item 6604: the units the side has read aiming at one tile, as one crosshair with their count
+  const aimedAt: Record<string, string[]> = {};
   for (const u of units) {
     const it = u.readIntent; if (!it || u.dead || u.side === side) continue;
     const by = units.find((x) => x.id === it.by); if (by && by.side !== side) continue;
@@ -60,16 +62,18 @@ export function classMarks(cb: any, side: 'pc' | 'foe' = 'pc', o: ClassMarkOpts 
     if (to && to !== u.pos) {
       const hostile = it.kind === 'attack' || it.kind === 'spell' || it.kind === 'outburst';
       const ink = hostile ? HP : READ_INK, t = T(to);
-      t.marks.push({ key: 'intentto' + u.id, text: hostile ? '◎' : '▸', title: line, style: badge(ink) + '; right: 1px; top: 1px' });
-      t.layer = (t.layer ? t.layer + '; ' : '') + 'outline: 2px dashed ' + ink + '; outline-offset: -3px';
+      if (hostile) (aimedAt[to] ||= []).push(line);
+      else t.marks.push({ key: 'intentto' + u.id, text: '▸', title: line, style: badge(ink) + '; right: 1px; top: 1px' });
+      if (!hostile || aimedAt[to].length === 1) t.layer = (t.layer ? t.layer + '; ' : '') + 'outline: 2px dashed ' + ink + '; outline-offset: -3px';
       note(to, (hostile ? u.name + ' means to strike here' : u.name + ' means to go here') + (img ? ' (at the False Image)' : '') + ' · ' + refOf(to));
     }
   }
+  for (const [to, lines] of Object.entries(aimedAt)) T(to).marks.push({ key: 'aimed' + to, text: '◎' + (lines.length > 1 ? ' ' + lines.length : ''), title: lines.join(' '), style: badge(HP) + '; right: 1px; top: 1px' });
   // ---- Sabotage: a rigged tile (its own side only), barricades and turrets put out of action ----
   for (const ob of cb.objects || []) {
-    if (ob.rig && !ob.resolved) {
+    if ((ob.rig || (ob.laidBy && ob.kind === 'trap')) && !ob.resolved) { // the Operative's Rig verb lays it (rules 1.74 item 6011)
       if (ob.side && ob.side !== side) continue;
-      const own = units.find((u) => u.id === ob.owner), t = T(ob.pos), text = 'Rigged by ' + (own ? own.name : 'your side') + ': the next enemy to step here takes ' + (ob.damage || 30) + ' and may be Pinned (Body save). The enemy can\'t see it.';
+      const own = units.find((u) => u.id === ob.owner), t = T(ob.pos), text = 'Rigged by ' + (own ? own.name : 'your side') + ': the next enemy to step here takes ' + (ob.damage || 30) + ' damage and stops there. The enemy can\'t see it.';
       t.layer = (t.layer ? t.layer + '; ' : '') + 'box-shadow: inset 0 0 0 2px ' + RIG_INK + '; background: repeating-linear-gradient(-45deg, rgba(64, 186, 160, 0.18) 0 4px, transparent 4px 8px)';
       t.marks.push({ key: 'rig' + ob.id, text: '✱ RIG', title: text, style: badge(RIG_INK) + '; left: 1px; bottom: 1px' });
       note(ob.pos, text);

@@ -112,7 +112,7 @@ describe('a save written by the live build (origin/main, 0.22.0) loads and plays
     let g = g0, sent = 0, refused = 0, checked = 0;
     // every unit of a player attacks what it can (a shot, else a blow) and ends its turn; the enemies are the engine's.
     // Every action goes through `step`: the result is the deep-copy result, the earlier state is untouched.
-    for (let guard = 0; guard < 600 && g.phase === 'combat' && !g.combat.over && g.combat.round <= 14; guard++) {
+    for (let guard = 0; guard < 600 && g.phase === 'combat' && !g.combat.over && g.combat.round <= 20; guard++) {
       const cb = g.combat, id = cb.window?.queue?.[0]?.unitId ?? cb.order[cb.turn], u = cb.units.find((q: any) => q.id === id), by = owner(g, id);
       if (cb.window) { try { g = step(g, { type: 'combat/decline', unitId: id }, by); } catch { g = step(g, { type: 'combat/end-turn', unitId: id }, by); } continue; }
       if (u.side === 'pc' && !u.downed && !u.dead) {
@@ -126,7 +126,7 @@ describe('a save written by the live build (origin/main, 0.22.0) loads and plays
       if (g.phase === 'combat' && !g.combat.over && g.combat.order[g.combat.turn] === id && !g.combat.window) { g = step(g, { type: 'combat/end-turn', unitId: id }, by); checked++; }
     }
     expect(sent).toBeGreaterThan(3); expect(checked).toBeGreaterThan(10);
-    expect(g.combat.over, 'the fight ended within 14 rounds (seeded: it always does)').toBeTruthy();
+    expect(g.combat.over, 'the fight ended within 20 rounds (seeded: it always does; rules 1.79, enemies keep their target: 14 was the old AI\'s, and it now runs past 14)').toBeTruthy();
     g = step(g, { type: 'narrator/turn', turn: { narration: 'The bridge is quiet.' } }, 'host'); // the Narrator closes the fight
     expect(g.phase).toBe('story');
     // the story goes on: 40 more lines push 40 more into the archive, after the 511 that were there
@@ -322,7 +322,7 @@ describe('rules 1.56: a 0.28.2 Rigger keeps its forms through the forks, mid-fig
     let g = apply(g0, { type: 'player/online', id: 'host', online: true } as any, 'host');
     const c = g.characters.c1; expect(c.figRev).toBe(FIG_REV);
     for (const f of ['double', 'snare', 'hand', 'eye', 'wall', 'beast', 'blade']) expect(formsOf(c)).toContain(f);
-    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
+    expect(pendingDoorPicks(c, 'visualization').filter((x: any) => !JSON.stringify(x).includes('fork.figment.'))).toEqual([]); // rules 1.74 item 6041: only the new forks are owed, never a form
     expect(pictureOptions(c).map((o) => o.id)).toEqual(expect.arrayContaining(['d:hound', 'd:lookout', 'eye', 'wall', 'beast', 'blade']));
     const pc = g.combat.units.find((u: any) => u.charId === 'c1'), wall = g.combat.units.find((u: any) => u.owned?.kind === 'figment' && u.name === 'Wall');
     const before = pc.ap;
@@ -334,9 +334,9 @@ describe('rules 1.56: a 0.28.2 Rigger keeps its forms through the forks, mid-fig
     const g0 = load(NAME); // the client's load door, and nothing after it
     const c = g0.characters.c1; expect(c.figRev).toBe(FIG_REV);
     for (const f of ['double', 'snare', 'hand', 'eye', 'wall', 'beast', 'blade']) expect(formsOf(c)).toContain(f);
-    expect(pendingDoorPicks(c, 'visualization')).toEqual([]);
+    expect(pendingDoorPicks(c, 'visualization').filter((x: any) => !JSON.stringify(x).includes('fork.figment.'))).toEqual([]); // rules 1.74 item 6041: only the new forks are owed, never a form
     expect(pictureOptions(c).map((o) => o.id)).toEqual(expect.arrayContaining(['d:hound', 'd:lookout']));
-    const v: any = viewFor(g0, 'host'); expect(formsOf(v.characters.c1)).toEqual(formsOf(c)); expect(pendingDoorPicks(v.characters.c1, 'visualization')).toEqual([]);
+    const v: any = viewFor(g0, 'host'); expect(formsOf(v.characters.c1)).toEqual(formsOf(c)); expect(pendingDoorPicks(v.characters.c1, 'visualization').filter((x: any) => !JSON.stringify(x).includes('fork.figment.'))).toEqual([]);
     // a door/pick sent from that view is refused for the right reason (nothing open), not after a late migration
     expect(() => apply(g0, { type: 'door/pick', charId: 'c1', door: 'visualization', option: 'ward' } as any, 'host')).toThrow();
   });

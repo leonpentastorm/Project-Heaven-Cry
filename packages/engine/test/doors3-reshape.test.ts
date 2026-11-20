@@ -71,29 +71,34 @@ describe('Durability 3 is a perk step (rules 1.60 item 4620)', () => {
 });
 
 // ============================================================================================ R5: Measured Blow
-describe('Measured Blow (rules 1.60 item 4623): once a fight, a door Finisher gives Momentum back', () => {
-  const MB: any = CLASS_MOVE_POOL['fighter.finisher'], back = MB.effects[0].value;
-  it('a rank III Breaker\'s Coup leaves it the data\'s Momentum, once a fight; a rank I Breaker\'s leaves none', () => {
-    const run = (strength: number) => {
-      const f = fightWith([{ classId: 'fighter', level: 12, attrs: { strength }, skills: { raw_power: 3 }, weapon: 'sabre' }], [{ at: 'F6' }]);
-      const me = at(f, f.pc, '4,2'), foe = at(f, f.foe, '5,2'); foe.hp = foe.maxHp = 5000; foe.def = -40; foe.armour = 0;
-      const after: number[] = [];
-      for (let i = 0; i < 2; i++) {
-        f.cb.round++; f.turn(me); f.unit(me.id).ap = 9; f.unit(me.id).res!.momentum = 4;
-        f.act({ type: 'combat/technique', unitId: me.id, id: 'coup', targetId: foe.id } as Action, 'host');
-        after.push(f.unit(me.id).res!.momentum!);
-      }
-      return after;
-    };
-    expect(run(8)).toEqual([back, 0]); // rank III: once a fight
-    expect(run(3)).toEqual([0, 0]);    // rank I: no Measured Blow
+describe('Measured Blow (rules 1.60 item 4623; rules 1.73 item 5808, Follow Through merged in)', () => {
+  const MB: any = CLASS_MOVE_POOL['fighter.finisher'], kept = MB.effects[1].value, back = MB.effects[2].value;
+  const run = (strength: number, hp: number) => {
+    const f = fightWith([{ classId: 'fighter', level: 12, attrs: { strength }, skills: { raw_power: 3 }, weapon: 'sabre' }], [{ at: 'F6' }]);
+    const me = at(f, f.pc, '4,2'), foe = at(f, f.foe, '5,2'); foe.hp = hp; foe.maxHp = 5000; foe.def = -40; foe.armour = 0;
+    const after: number[] = [];
+    for (let i = 0; i < 2; i++) {
+      if (f.unit(foe.id).dead) break;
+      f.cb.round++; f.turn(me); f.unit(me.id).ap = 9; f.unit(me.id).res!.momentum = 4;
+      f.act({ type: 'combat/technique', unitId: me.id, id: 'coup', targetId: foe.id } as Action, 'host');
+      after.push(f.unit(me.id).res!.momentum!);
+    }
+    return { after, f };
+  };
+  it('a rank III Breaker’s Coup that drops nobody leaves it the data’s Momentum, once a fight; a rank I Breaker’s leaves none', () => {
+    expect(run(8, 5000).after).toEqual([back, 0]); // rank III: once a fight
+    expect(run(3, 5000).after).toEqual([0, 0]);    // rank I: no Measured Blow
+  });
+  it('a rank III Breaker’s Coup that drops its foe leaves it x1, every time, and the once-a-fight use is still there', () => {
+    const k = run(8, 1); expect(k.after).toEqual([kept]); expect(k.f.cb.log.some((l: any) => /follows through \(Measured Blow\)/.test(String(l)))).toBe(true);
+    expect(run(3, 1).after).toEqual([0]);
   });
 });
 
 // ============================================================================================ R17: Deliver the Sinner
 describe('Deliver the Sinner (rules 1.60 item 4635): a patron\'s blow deals more to a Marked foe', () => {
   it('Rebuke on a Marked foe deals the unlock\'s bonus more than on one not Marked', () => {
-    const bonus = (SKILL as any).faith.unlocks['5'].effects[0].value;
+    const bonus = (SKILL as any).faith.unlocks['2'].effects[1].value; // rules 1.75 item 6220: Deliver the Sinner is Name the Sinner's half, at Faith 2
     const run = (marked: boolean) => {
       const f = fightWith([{ name: 'Faithful', skills: { faith: 5 }, attrs: { virtue: 5 }, level: 12 }], [{ at: 'F6' }], { level: 12 });
       const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'old_overcast' } as any; c.patron = 'old_overcast' as any; setDevotionXp(c, devotionThreshold(6)); c.devotion = 6;

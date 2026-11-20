@@ -88,6 +88,9 @@ await click(p, 'Next ›'); await click(p, 'Next ›'); await click(p, 'Next ›
 await click(p, 'Next ›'); await lockIn(p);
 await p.waitForSelector('text=✓ LOCKED IN');
 ok('a test room (settings.test, from the test hook)', (await G()).settings.test === true);
+// B3 (0.32): at 1280 x 720 the lobby's mode cards and Start the run are on the first screen (they ran below the fold)
+const fold = await p.evaluate(() => { const s = document.querySelector('[data-phc-start]').getBoundingClientRect(), m = [...document.querySelectorAll('[data-phc-mode]')].map((e) => e.getBoundingClientRect().bottom); return { start: s.bottom, modes: Math.max(...m), vh: innerHeight }; });
+ok('B3: the lobby at 1280 x 720 shows the mode cards (to ' + Math.round(fold.modes) + ') and Start the run (to ' + Math.round(fold.start) + ') above the fold', fold.start <= fold.vh && fold.modes <= fold.vh);
 await click(p, 'Start the run');
 // item E (0.31.12): a level-up due (unclaimed steps) asks first, from the lobby's Start the run as from the camp's Ready; going on starts the run
 { await settle(p, 400); const dlg = p.locator('[data-phc-dialog]'); const asked = (await dlg.count()) > 0 && /Level up first\?/.test(await dlg.first().innerText());
@@ -183,9 +186,11 @@ await p.locator('[data-phc-startboon="' + pickId + '"]').click(); await settle(p
 for (const [w, hh] of [[1280, 720], [1920, 1080]]) { // the boon step: the cards centred, nothing spills; at 1080 Carrying in sight
   await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
   const bad = await campOverflow(), m = await p.evaluate(() => { const t = document.querySelector('[data-phc-camp-take]').getBoundingClientRect(), cs = [...document.querySelectorAll('[data-phc-startboon]')].map((e) => e.getBoundingClientRect());
-    const l = Math.min(...cs.map((c) => c.left)), r = Math.max(...cs.map((c) => c.right)); return { off: Math.abs((l - t.left) - (t.right - r)), w: Math.min(...cs.map((c) => c.width)), carry: document.querySelector('[data-phc-camp-carry]').getBoundingClientRect().bottom, vh: innerHeight }; });
-  ok('the starting boon at ' + w + ': the cards centred (' + Math.round(m.off) + ' px off), each ' + Math.round(m.w) + ' px wide, no text spills' + (bad.length ? ' (' + bad.join(' | ') + ')' : '') + (hh >= 1080 ? ', Carrying in sight' : ''),
-    !bad.length && m.off < 24 && m.w >= 280 && (hh < 1080 || m.carry <= m.vh));
+    const l = Math.min(...cs.map((c) => c.left)), r = Math.max(...cs.map((c) => c.right)), bt = [...document.querySelectorAll('[data-phc-boon-choose]')].map((e) => e.getBoundingClientRect().bottom);
+    return { off: Math.abs((l - t.left) - (t.right - r)), w: Math.min(...cs.map((c) => c.width)), row: cs.every((c) => Math.abs(c.top - cs[0].top) < 2), choose: Math.max(...bt), carry: document.querySelector('[data-phc-camp-carry]').getBoundingClientRect().bottom, vh: innerHeight }; });
+  // B2 (0.32): the three cards in one row, each CHOOSE on the first screen (at 1280 they stacked, the first CHOOSE cut)
+  ok('the starting boon at ' + w + ': the three cards in a row, centred (' + Math.round(m.off) + ' px off), each ' + Math.round(m.w) + ' px wide, every CHOOSE in the window (' + Math.round(m.choose) + ' of ' + m.vh + '), no text spills' + (bad.length ? ' (' + bad.join(' | ') + ')' : '') + (hh >= 1080 ? ', Carrying in sight' : ''),
+    !bad.length && m.off < 24 && m.row && m.w >= 160 && m.choose <= m.vh && (hh < 1080 || m.carry <= m.vh));
 }
 await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
 ok('a starting boon chosen (' + pickId + '): marked, given when the camp closes', (await pick0()).boon === pickId && !((await me0()).relics || []).includes(pickId) && await p.locator('[data-phc-camp-ready]').count() === 1);
@@ -198,9 +203,11 @@ ok('the starting boon is the character\'s relic for the run; the squad panel sho
 
 // ---------- the path map ----------
 const drawn = await p.locator('[data-phc-node]').count();
-ok('every node of the stage is drawn (' + drawn + ' of ' + r.nodes.length + '), each with its word and its icon', drawn === r.nodes.length
+// (B1, 0.32: a word with no room beside its marker is left out of the picture; the node still names itself to a screen
+// reader and on hover, and the B1 check below proves the Boss and the lit stops always show theirs)
+ok('every node of the stage is drawn (' + drawn + ' of ' + r.nodes.length + '), each with its word (drawn, or in its name) and its icon', drawn === r.nodes.length
   && await p.locator('[data-phc-node] [data-phc-marker]').count() === r.nodes.length
-  && (await p.locator('[data-phc-node]').allTextContents()).every((t) => /Fight|Elite|Boss|Shop|Forge|Training|Shrine|Rest|Cache|Crossroads|Gate|Vault/.test(t)));
+  && (await p.locator('[data-phc-node]').evaluateAll((l) => l.map((e) => (e.textContent || '') + ' ' + e.getAttribute('aria-label')))).every((t) => /Fight|Elite|Boss|Shop|Forge|Training|Shrine|Rest|Cache|Crossroads|Gate|Vault/.test(t)));
 // ART-REQUESTS S9 (the artist's 14 Nov delivery): the inked markers replace the SVG stand-ins (was: an svg in every node);
 // the kinds with no marker (the vault's guard and chest, the camp) keep their line icon; the setting's painted backdrop
 // is drawn by catalog id, not the field chart
@@ -227,7 +234,7 @@ ok('a run offers no area map: no AREA MAP button (' + areaMap.button + '), and M
 await shot("survival-path-map"); await p.setViewportSize({ width: 1920, height: 1080 }); await shot("survival-path-map-1920"); await p.setViewportSize({ width: 1280, height: 720 });
 // rules 1.49 (build step 10): the map always fits its frame: every marker, its word and the camp inside the map's frame
 // (the vault's guard and chest were clipped by the frame's bottom at 1280 x 720), at three screen sizes
-const mapFits = async (when) => { for (const [w, hh] of [[1280, 720], [1280, 800], [1920, 1080], [2560, 1080]]) {
+const mapFits = async (when) => { for (const [w, hh] of [[1280, 720], [1280, 800], [1600, 900], [1920, 1080], [2560, 1080]]) {
   await p.setViewportSize({ width: w, height: hh }); await settle(p, 500);
   const out = await p.evaluate(() => { const f = document.querySelector('[data-phc-pathmap]')?.getBoundingClientRect(); if (!f) return ['no map'];
     const bad = []; for (const n of document.querySelectorAll('[data-phc-node], [data-phc-node-camp]')) for (const e of [n, ...n.querySelectorAll('span')]) { const b = e.getBoundingClientRect(); if (!b.width) continue;
@@ -238,7 +245,16 @@ const mapFits = async (when) => { for (const [w, hh] of [[1280, 720], [1280, 800
   const fill = await p.evaluate(() => { const r = (s) => document.querySelector(s)?.getBoundingClientRect(); const m = r('[data-phc-pathmap]'), a = r('[data-phc-pathmap-art]') || r('[data-phc-pathmap-box]'), sc = r('[data-phc-pathmap-scroll]'), sec = r('[aria-label="Path map"]'), hint = r('[data-phc-map-hint]');
     return { same: Math.abs(m.left - a.left) < 1.5 && Math.abs(m.top - a.top) < 1.5 && Math.abs(m.width - a.width) < 1.5 && Math.abs(m.height - a.height) < 1.5, share: Math.min(m.width, sc.width) / sec.width, capped: hint.bottom <= innerHeight + 1 && hint.bottom >= innerHeight - 60, frameOver: sc.width - m.width, hintOn: hint.bottom <= innerHeight + 1 }; });
   ok('the path map at ' + w + ' x ' + hh + ': the layer is the backdrop\'s box, ' + Math.round(fill.share * 100) + '% of the width' + (fill.capped ? ' (height cap)' : '') + ', no black remainder (' + Math.round(fill.frameOver) + ' px)',
-    fill.same && (fill.share >= 0.9 || fill.capped) && fill.frameOver <= 4); }
+    fill.same && (fill.share >= 0.9 || fill.capped) && fill.frameOver <= 4);
+  // B1 (0.32): the whole map fits its column (at 1280 it scrolled, the Boss and the vault cut off at the right), and no
+  // marker's word touches another or leaves the frame (at 1600 CROSSROADS ran into REST); the Boss's word is drawn
+  const words = await p.evaluate(() => { const sc = document.querySelector('[data-phc-pathmap-scroll]'), f = sc.getBoundingClientRect();
+    const r = [...document.querySelectorAll('[data-phc-node-word]')].map((e) => e.getBoundingClientRect()); let touch = 0;
+    for (let i = 0; i < r.length; i++) for (let j = i + 1; j < r.length; j++) if (r[i].left < r[j].right - 1 && r[j].left < r[i].right - 1 && r[i].top < r[j].bottom - 1 && r[j].top < r[i].bottom - 1) touch++;
+    return { n: r.length, touch, out: r.filter((b) => b.left < f.left - 0.5 || b.right > f.right + 0.5 || b.top < f.top - 0.5 || b.bottom > f.bottom + 0.5).length,
+      scrolls: sc.scrollWidth > sc.clientWidth + 1, inView: f.right <= innerWidth + 0.5, boss: !!document.querySelector('[data-phc-kind="boss"] [data-phc-node-word]') }; });
+  ok('B1: the path map at ' + w + ' x ' + hh + ' fits its column (no sideways scroll, inside the window), ' + words.n + ' words, none touching (' + words.touch + ') or cut (' + words.out + '), the Boss named',
+    !words.scrolls && words.inView && !words.touch && !words.out && words.boss); }
   await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300); };
 await mapFits('stage 1\'s map');
 
@@ -835,7 +851,7 @@ const both = async (name) => { await shot(name + '-1280'); await p.setViewportSi
 const cid0 = Object.keys(g.characters)[0], offer = r.boons[cid0];
 const cards = await p.locator('[data-phc-boons="' + cid0 + '"] [data-phc-boon]').allTextContents();
 ok('the boon pick: three large cards, each its name, its sentence with its number from data and its worth (' + offer.join(', ') + ')', cards.length === 3 && offer.length === 3
-  && cards.every((t) => /\d/.test(t) && /Room \d|No room used/.test(t)) /* 0.31.11 wording: 'Room N' */ && await p.locator('[data-phc-boons] [data-phc-boon] [data-phc-boon-icon]').count() === 3); // 0.28.1: the artist's icon
+  && cards.every((t) => /\d/.test(t) && /Uses \d+ of your boon room|Uses no boon room/.test(t)) /* 0.32 B10 wording: 'Uses N of your boon room' */ && await p.locator('[data-phc-boons] [data-phc-boon] [data-phc-boon-icon]').count() === 3); // 0.28.1: the artist's icon
 await both('survival-boon-pick');
 await p.locator('[data-phc-boon="' + offer[0] + '"]').click();
 await p.waitForFunction(() => window.__phc.getState().game.run.state === 'tile', null, { timeout: 30000 });
@@ -909,6 +925,9 @@ const sum = (await p.locator('[data-phc-summary]').textContent()).replace(/\s+/g
 ok('retire: the summary (' + sum.slice(0, 110) + '): 2 stages cleared, 32 nodes (stage 2 took the vault\'s two), a row a stage with its fights, foes, credits, grade steps and boons', g.run.end.how === 'retired' && g.run.end.cleared === 2
   && /2 stages cleared/.test(sum) && /32 stops walked/.test(sum) && await p.locator('[data-phc-stage-row]').count() === 2 && sum.includes(g.run.end.stages[0].boons[cid0] ? 'Kade: ' : 'Boons'));
 await both('survival-summary');
+// B11 (0.32): the stage table fits its panel at 1280 x 720 (its BOONS column ran past the right edge)
+const stTable = await p.evaluate(() => { const t = document.querySelector('[data-phc-stages]'), w = t.parentElement; return { t: t.getBoundingClientRect().right, w: w.getBoundingClientRect().right, scroll: w.scrollWidth > w.clientWidth + 1, vw: innerWidth }; });
+ok('B11: the run summary stage table fits its panel at ' + stTable.vw + ' (table to ' + Math.round(stTable.t) + ', panel to ' + Math.round(stTable.w) + ')', !stTable.scroll && stTable.t <= stTable.w + 0.5);
 await sidePanels(p, 'the summary');
 // ---------- rules 1.47 (build step 6): the summary's tallies and Report a run ----------
 {

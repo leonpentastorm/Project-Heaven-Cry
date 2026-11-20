@@ -1,6 +1,6 @@
 // Class Roster Revision 3 review fixes (8 Nov 2026): each test reproduces a reviewed bug and failed before its fix.
 import { describe, expect, it } from 'vitest';
-import { CLASS, ADVANCED, viewFor, paths, makeObject, resourcesFor, perkActionsFor, bindGame, reload, type Combat, type Unit } from '../src';
+import { applyCond, CLASS, ADVANCED, viewFor, paths, makeObject, resourcesFor, perkActionsFor, bindGame, reload, type Combat, type Unit } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 
 const cls = (id: string, n: number, extra: CharSpec = {}): CharSpec => ({ ...extra, classId: id, level: 12, attrs: { [CLASS[id].attribute]: n, ...(extra.attrs || {}) } });
@@ -87,12 +87,13 @@ describe('Proving Ground team fights: secrets filtered by the viewer\'s side, th
   const teams = () => {
     const f = fightWith([cls('infiltrator', 8), cls('trickster', 8, { archetype: 'sigilist', kit: 'sigil' })], [{ at: 'P11' }]);
     const [a, b] = f.pcs;
-    f.turn(a); f.act({ type: 'combat/perk', unitId: a.id, id: 'class:infiltrator.sabotage', actionId: 'rig' } as any);
+    f.turn(a); withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(a.id), 'hidden', undefined, undefined, { skipSave: true })); // rules 1.74 item 6011: the rig is the Operative's Rig verb (from Hidden)
+    f.act({ type: 'combat/perk', unitId: a.id, id: 'verb:shadow.rig', tile: f.unit(a.id).pos } as any);
     const g: any = JSON.parse(JSON.stringify(f.g));
     g.sandbox = { mode: 'teams', team: { p2: 'B' }, saved: {} };
     const bu = g.combat.units.find((x: Unit) => x.id === b.id); bu.side = 'foe'; // team B's fighter
     // Team B's own secrets: a rigged tile, a Sigil trap and their fx, and a False Image.
-    g.combat.objects.push(makeObject('rigB', 'trap', '9,9', { name: 'Rigged tile', damage: 30, owner: b.id, side: 'foe', rig: 'class:infiltrator.sabotage', hidden: false } as any));
+    g.combat.objects.push(makeObject('rigB', 'trap', '9,9', { name: 'Rigged tile', damage: 30, owner: b.id, side: 'foe', laidBy: 'verb:shadow.rig', hidden: false } as any));
     g.combat.zones = [...(g.combat.zones || []), { id: 'trB', kind: 'trap', side: 'foe', tiles: ['8,8'], spotted: [] }, { id: 'trA', kind: 'trap', side: 'pc', tiles: ['7,7'], spotted: ['foe'] }];
     g.combat.fx = [...(g.combat.fx || []), { k: 'rig', at: '9,9', only: 'foe', seq: 999 }];
     g.combat.images = [{ id: 'imgB', owner: b.id, pos: '5,5', side: 'foe', round: 1, fooled: [] }];
@@ -100,7 +101,7 @@ describe('Proving Ground team fights: secrets filtered by the viewer\'s side, th
   };
   it('team B sees its own rig, trap and fx (as its side), not team A\'s', () => {
     const { g } = teams(), v: any = viewFor(g, 'p2');
-    const rigs = v.combat.objects.filter((o: any) => o.rig);
+    const rigs = v.combat.objects.filter((o: any) => o.laidBy);
     expect(rigs.map((o: any) => [o.pos, o.side])).toEqual([['9,9', 'pc']]);
     expect(v.combat.fx.filter((e: any) => e.k === 'rig').map((e: any) => [e.at, e.only])).toEqual([['9,9', 'pc']]);
     const z = v.combat.zones.filter((x: any) => x.kind === 'trap').map((x: any) => [x.id, x.side, x.spotted]);
@@ -109,7 +110,7 @@ describe('Proving Ground team fights: secrets filtered by the viewer\'s side, th
   });
   it('team A sees its own rig and fx, not team B\'s; nothing flips', () => {
     const { g } = teams(), v: any = viewFor(g, 'host');
-    const rigs = v.combat.objects.filter((o: any) => o.rig);
+    const rigs = v.combat.objects.filter((o: any) => o.laidBy);
     expect(rigs.length).toBe(1); expect(rigs[0].side).toBe('pc'); expect(rigs[0].pos).not.toBe('9,9');
     expect(v.combat.fx.filter((e: any) => e.k === 'rig').every((e: any) => e.only === 'pc')).toBe(true);
     expect(v.combat.fx.some((e: any) => e.k === 'rig')).toBe(true);

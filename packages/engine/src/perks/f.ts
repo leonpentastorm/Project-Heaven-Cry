@@ -6,13 +6,13 @@
 // Every item runs its tiers in combat and its story part (checks, story conditions, rest, session start) where it has
 // one; what the engine can't judge goes to the Narrator (note / pendRuling / brief). Recommended fixes from the audit
 // (plan section 6) are marked PROVISIONAL here and listed in the spec (section 14, tags F…) and docs/design/perk-runtime.md.
-import { effNum } from '../effects/num';
+import { effNum, num } from '../effects/num';
 import { register, stateOf, uses, note, pendRuling, postStory, bankAp, pushAp, has, armedOf, disarm, modOn, charOfUnit, bindGame, restN, grantShield, type Holder } from '../effects';
 import { itemAmount, amountMult } from '../effects/amounts';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import { mod, packOf } from '../character';
-import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, lineOfSight, refOf, tauntedBy, type AttackMode } from '../combat';
+import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSees, emitFx, litAt, refOf, tauntedBy, type AttackMode } from '../combat';
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength, saveAgainst , saveTn } from '../magic';
 import { tendHook } from '../effects/damage';
 import { WEAPON, PERK } from '../data';
@@ -84,13 +84,13 @@ register({
       text: 'Threaten an enemy who can see and hear you. It makes a Heart save or is Shaken. II: every enemy in earshot who sees you makes the save.',
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
-        if (!unitSees(h.cb!, t, h.u.pos)) return { ok: false, why: t.name + ' has to see you.' };
+        if (!unitSees(h.cb!, t, h.u.pos, undefined, h.u)) return { ok: false, why: t.name + ' has to see you.' };
         const tn = saveTn(h.u, 'intimidation');
         return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + tn + ' or Shaken' + (tierII(h) ? '. Every enemy in earshot who sees you rolls too.' : '.')] };
       },
       run: (h, a, rng) => {
         const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!;
-        const group = tierII(h) ? cb.units.filter((v) => v.side === t.side && up(v) && dist(v.pos, u.pos) <= HEARING && unitSees(cb, v, u.pos)) : [t];
+        const group = tierII(h) ? cb.units.filter((v) => v.side === t.side && up(v) && dist(v.pos, u.pos) <= HEARING && unitSees(cb, v, u.pos, undefined, u)) : [t];
         if (!group.includes(t)) group.unshift(t);
         let out = ''; for (const v of group) out += applyCond(cb, rng, u, v, 'shaken', undefined, 'heart', { via: 'intimidation' });
         say(cb, u.name + ' leans in (Bone Talk' + (a.text ? ': "' + a.text.slice(0, 160) + '"' : '') + ')' + out + '.');
@@ -136,7 +136,7 @@ register({
     },
     turn_end: (ctx, h) => {
       const cb = h.cb!, u = h.u, t: Unit = ctx.u;
-      if (!up(u) || !t || t.side === u.side || !up(t) || t.hp * 2 > t.maxHp || !canSurrender(t) || !unitSees(cb, t, u.pos)) return;
+      if (!up(u) || !t || t.side === u.side || !up(t) || t.hp * 2 > t.maxHp || !canSurrender(t) || !unitSees(cb, t, u.pos, undefined, u)) return;
       say(cb, t.name + ' remembers whose name it is (The Name They Whisper)' + trySurrender(cb, rngOf(h, ctx), u, t, 0, 'intimidation') + '.');
     },
   },
@@ -152,17 +152,20 @@ function mercyOk(t: Unit) { const was = t.surrenderTried; t.surrenderTried = fal
 const offered = (h: Holder): string[] => (stateOf(h).offered ||= []);
 function offerMercy(h: Holder, t: Unit, rng: Rng): string {
   offered(h).push(t.id);
-  const sv = saveAgainst(h.cb!, rng, h.u!, t, 'heart', 'surrender', { via: 'empathy' }), held = sv.ok;
+  const sv = saveAgainst(h.cb!, rng, h.u!, t, 'heart', 'surrender', { via: 'implication' }), held = sv.ok; // rules 1.75 item 6216: Insinuation's
   const roll = ' (' + sv.text + ')';
   return held ? ' · ' + t.name + ' won\'t take it' + roll : surrender(h.cb!, t, h.u!, 'mercy accepted' + roll);
 }
 const mercyMode = (h: Holder) => ro(h.c).open_hand || 'always';
+// Rules 1.75 item 6216 (Open Hand moved to Insinuation, Mercy folded in): below its tier's share of HP (numbers.below), for
+// its tier's AP (numbers.ap: 2 at I, 0 at II); offered the moment the foe drops only when it costs nothing (tier II).
+const beaten = (h: Holder, t: Unit) => t.hp <= num(h, 'below') * t.maxHp;
 register({
   id: 'open_hand', claims: 'all',
   on: {
     on_damaged: (ctx, h) => {
       const t: Unit = ctx.t, u = h.u, cb = h.cb!;
-      if (!up(u) || !t || t.side === u.side || !up(t) || ctx.prevHp * 4 <= t.maxHp || t.hp * 4 > t.maxHp || !mercyOk(t) || offered(h).includes(t.id) || !unitSees(cb, u, t.pos)) return;
+      if (!up(u) || !t || t.side === u.side || !up(t) || num(h, 'ap') > 0 || ctx.prevHp <= num(h, 'below') * t.maxHp || !beaten(h, t) || !mercyOk(t) || offered(h).includes(t.id) || !unitSees(cb, u, t.pos, undefined, t)) return;
       const rng = rngOf(h); if (!rng) return;
       if (mercyMode(h) !== 'always') { if (mercyMode(h) === 'ask') say(cb, u.name + ' could offer ' + t.name + ' mercy (Open Hand: free on your turn).'); return; }
       say(cb, u.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.');
@@ -170,15 +173,15 @@ register({
   },
   actions: [
     {
-      id: 'offer_mercy', label: 'Offer mercy', scope: ['combat'], target: 'enemy', ap: 0,
-      text: 'Offer mercy to an enemy you can see that is at a quarter of its HP or less. It makes a Heart save. If it fails, it surrenders. Once per enemy.',
+      id: 'offer_mercy', label: 'Offer mercy', scope: ['combat'], target: 'enemy', ap: (h) => num(h, 'ap'),
+      text: 'Offer mercy to an enemy you can see that is beaten (below its share of HP). It makes a Heart save. If it fails, it surrenders. Once per enemy.',
       preview: (h, a) => {
         const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
-        if (t.hp * 4 > t.maxHp) return { ok: false, why: t.name + ' isn\'t beaten enough yet. It must be at a quarter of its HP or less.' };
+        if (!beaten(h, t)) return { ok: false, why: t.name + ' isn\'t beaten enough yet. It must be below ' + Math.round(num(h, 'below') * 100) + '% of its HP.' };
         if (offered(h).includes(t.id)) return { ok: false, why: 'Mercy was offered to ' + t.name + ' already.' };
         if (!mercyOk(t)) return { ok: false, why: t.name + ' won\'t surrender.' };
-        if (!unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' };
-        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (saveTn(h.u, 'empathy')) + ' or it surrenders.'] };
+        if (!unitSees(h.cb!, h.u, t.pos, undefined, t)) return { ok: false, why: 'You can\'t see them.' };
+        return { lines: ['Heart save ' + sgn(unitSave(t, 'heart')) + ' vs ' + (saveTn(h.u, 'implication')) + ' or it surrenders.'] };
       },
       run: (h, a, rng) => { const t = h.cb!.units.find((x) => x.id === a.targetId)!; say(h.cb, h.u!.name + ' offers ' + t.name + ' an open hand' + offerMercy(h, t, rng) + '.'); },
     },
@@ -250,7 +253,7 @@ register({
   actions: [{
     id: 'judgement', label: 'Judgement', scope: ['combat'], target: 'enemy', ap: 'data', uses: { per: 'per_combat', n: 1 }, needsSight: true,
     text: 'Once a fight: judge an enemy you can see. Its next attack on your side fails, and your attacks on it deal +50% damage for the rest of the fight.',
-    preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && h.u && !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return { lines: ['Its next attack on your side fails. Your attacks on it deal +50% damage.'] }; },
+    preview: (h, a) => { const t = h.cb?.units.find((x) => x.id === a.targetId); if (t && h.u && !unitSees(h.cb!, h.u, t.pos, undefined, t)) return { ok: false, why: 'You can\'t see them.' }; return { lines: ['Its next attack on your side fails. Your attacks on it deal +50% damage.'] }; },
     run: (h, a) => {
       const t = h.cb!.units.find((x) => x.id === a.targetId)!; stateOf(h).judged = { id: t.id, spent: false };
       emitFx(h.cb!, 'cond', { target: t.id, at: t.pos, id: 'marked' });
@@ -342,20 +345,27 @@ register({
 // defence): you and every ally have +2 Defense against an enemy you analyzed (its attacks on your side are at −2); the
 // +2 to hit is gone; the squad's +20% damage on the target is back (Leon, 10 Nov 2026). An enemy an ally analyzed can be re-read with Close the case (the Analyze cost).
 // Story: a successful Acuity check on an NPC owes the motive (a pending ruling).
+/** Read Them's two marks (rules 1.74 item 6004: condition rows of data/conditions.json), the ones its tiers put on
+ * (perks.json read_them: tier I's condition op, tier II's). */
+const readMark = (tier: string): string => ((PERK as any).read_them.tiers[tier].effects as any[]).find((e) => e.op === 'condition').condition;
+const READ_WEAK = readMark('I'), READ_STRONG = readMark('II');
+/** THE plain Read Them mark another item puts on (Case Closed, Detective's Eye): tier I's, without a save, never over a
+ * mark already there (the stronger tier II's is never downgraded). */
+export function readThem(cb: Combat | null | undefined, rng: any, by: Unit | null | undefined, t: Unit): void { if (cb && by && !condOn(t, READ_WEAK) && !condOn(t, READ_STRONG)) applyCond(cb, rng, by, t, READ_WEAK, undefined, undefined, { skipSave: true }); }
 const closed = (h: Holder): string[] => ((h.u?.ps?.[h.key] as any)?.closed || []);
-function closeCase(h: Holder, t: Unit) {
+function closeCase(h: Holder, t: Unit, rng: any) {
   const st = stateOf(h); (st.closed ||= []).includes(t.id) || st.closed.push(t.id);
-  t.weakPoint = true;
+  readThem(h.cb, rng, h.u, t);
   const conds = debuffsOf(t);
   say(h.cb, 'Case Closed on ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + ', ' + (t.kind || 'human') + ((t.tags || []).length ? ' (' + t.tags!.join(', ') + ')' : '') +
-    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · read: it deals 15% less to the squad, the squad has +' + Math.abs(CASE_CLOSED[1]?.value ?? -2) + ' Defense against it and deals ' + Math.round(((CASE_CLOSED[2]?.value ?? 1.2) - 1) * 100) + '% more to it · motive: for the Narrator.');
+    ', saves body ' + sgn(unitSave(t, 'body')) + ' brain ' + sgn(unitSave(t, 'brain')) + ' heart ' + sgn(unitSave(t, 'heart')) + (conds.length ? ', ' + conds.join(', ') : '') + ' · Read Them; the squad has +' + Math.abs(CASE_CLOSED[1]?.value ?? -2) + ' Defense against it and deals ' + Math.round(((CASE_CLOSED[2]?.value ?? 1.2) - 1) * 100) + '% more to it · motive: for the Narrator.');
   note(h, h.u!.name + ' read ' + t.name + ' completely: say what it wants, in the report.');
 }
 register({
   id: 'case_closed', claims: 'all',
   on: {
-    acted: (ctx, h) => { if (ctx.action === 'analyze' && ctx.u === h.u && ctx.t) closeCase(h, ctx.t); },
-    attack_preview: (ctx, h) => { if (h.u && ctx.tgt && !ctx.volleyCost && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: CASE_CLOSED[1]?.value ?? -2, label: 'Case Closed' }); },
+    acted: (ctx, h) => { if (ctx.action === 'analyze' && ctx.u === h.u && ctx.t) closeCase(h, ctx.t, rngOf(h, ctx)); },
+    to_hit: (ctx, h) => { if (ctx.type === 'weapon' && h.u && ctx.tgt && ctx.tgt.side === h.u.side && ctx.att.side !== h.u.side && closed(h).includes(ctx.att.id) && !ctx.terms.some((x: any) => x.label === 'Case Closed')) ctx.terms.push({ v: CASE_CLOSED[1]?.value ?? -2, label: 'Case Closed' }); },
     damage_out: (ctx, h) => { if (h.u && ctx.att && ctx.tgt && ctx.att.side === h.u.side && closed(h).includes(ctx.tgt.id) && !ctx.mults.some((x: any) => x.label === 'Case Closed')) ctx.mults.push({ v: CASE_CLOSED[2]?.value ?? 1.2, label: 'Case Closed' }); },
     check_result: (ctx, h) => {
       if (ctx.c !== h.c || !ctx.roll?.ok || !ctx.ck.skills?.includes('analysis') || !h.g || !h.c) return;
@@ -370,10 +380,10 @@ register({
       const t = h.cb?.units.find((x) => x.id === a.targetId); if (!t || !h.u) return {};
       if (!t.analyzedBy) return { ok: false, why: 'It has to be Analyzed first.' };
       if (closed(h).includes(t.id)) return { ok: false, why: 'Already read.' };
-      if (dist(h.u.pos, t.pos) > 4 + (h.u.analysis || 0) || !unitSees(h.cb!, h.u, t.pos)) return { ok: false, why: 'Out of Analyze range or sight.' };
+      if (dist(h.u.pos, t.pos) > 4 + (h.u.analysis || 0) || !unitSees(h.cb!, h.u, t.pos, undefined, t)) return { ok: false, why: 'Out of Analyze range or sight.' };
       return {};
     },
-    run: (h, a) => { closeCase(h, h.cb!.units.find((x) => x.id === a.targetId)!); },
+    run: (h, a, rng) => { closeCase(h, h.cb!.units.find((x) => x.id === a.targetId)!, rng); },
   }],
   brief: () => 'Narrator: the motive (in the fight report, or after a successful Acuity check)',
 });
@@ -579,7 +589,7 @@ register({
 // +2 to their spotting against you in a fight, +2 tiles of NPC notice range in the story.
 const lit = (h: Holder) => ro(h.c).lit_scene === sceneN(h) && h.g != null;
 register({
-  id: 'chain_smoker', claims: [0, 3],
+  id: 'chain_smoker', claims: [0], // (Hacking Cough's +2 to their Detection is its data row: stat seen_range)
   actions: [{
     id: 'light_up', label: 'Light Up', scope: ['combat', 'world', 'story', 'run'], target: 'none', ap: (h) => (h.cb ? 2 : 0),
     text: 'Light a cigarette: +2 Composure for the scene, and remove one Heart debuff from yourself.',
@@ -598,11 +608,6 @@ register({
     check_mod: (ctx, h) => { if (ctx.c === h.c && lit(h) && composureCk(ctx.ck)) ctx.add.push({ add: 2, label: 'Light Up' }); },
     spot: (ctx, h) => { if (ctx.u === h.u) ctx.mod += 2; },
     notice: (ctx, h) => { if (ctx.c === h.c) ctx.range += 2; },
-    // In the fog: enemies see you 2 tiles farther than their Vision (the sight hook), line of sight still needed.
-    sees: (ctx, h) => {
-      const u = h.u, cb: Combat = ctx.cb; if (!u || ctx.t !== u || ctx.side === u.side || ctx.seen) return;
-      if (cb.units.some((v) => v.side === ctx.side && alive(v) && (!ctx.by || ctx.by === v) && dist(v.pos, u.pos) <= (litAt(cb, u.pos) || v.darkSight ? (v.vision || 12) : Math.floor((v.vision || 12) / 2)) + 2 && lineOfSight(cb, v.pos, u.pos))) ctx.seen = !u.hidden;
-    },
   },
   brief: () => null,
 });
@@ -695,7 +700,7 @@ register({
     on_damaged: (ctx, h) => { if (ctx.src?.by === h.u && ctx.t.side !== h.u!.side) markAttacked(h); },
     forced_move: (ctx, h) => { if (ctx.by === h.u && ctx.u?.side !== h.u!.side) markAttacked(h); },
     outburst_begin: (ctx, h) => { if (ctx.u === h.u) markAttacked(h); },
-    attack_preview: (ctx, h) => { if (ctx.tgt === h.u && ctx.att.side !== h.u!.side && !attacked(h)) ctx.terms.push({ v: -2, label: 'Sanctuary' }); },
+    to_hit: (ctx, h) => { if (ctx.type === 'weapon' && ctx.tgt === h.u && ctx.att.side !== h.u!.side && !attacked(h)) ctx.terms.push({ v: -2, label: 'Sanctuary' }); },
     damage_in: (ctx, h) => { if (ctx.phase === 'would_drop_to_0' && ctx.src?.by === h.u && ctx.t.side !== h.u!.side && !ctx.t.companion && modOn(h, 'nonlethal')) ctx.src.nonlethal = true; },
     on_surrender: (ctx, h) => {
       if (!ctx.t?.subdued || (ctx.by !== h.u && ctx.t.lastHitBy !== h.u?.id)) return;

@@ -1,7 +1,7 @@
 // Combat, ported from design/canvas-build/combat.logic.js onto the engine's fight: real initiative, the grid,
 // path arrows with their AP cost, real hit odds, and every action checked by the engine. Enemies act on their own.
 import { dotJoin } from '../game/dotJoin';
-import { narratedRoom, ADJ_MARKS } from '@engine';
+import { narratedRoom, ADJ_MARKS, standingModsFor, kitSeenFor } from '@engine';
 import { shellVals } from './shell';
 import { DCLogic } from '../dc/runtime';
 import { D, IMG, ART, faceOf, zoneOf, spriteOf, tileBg, spriteStyle, lightboxVals, zoomer, mod, fmt, tokenVals, effectsOf, bodyFigure, ensureStyle, ensureMotionCss, tabNavIndex } from './shared';
@@ -57,23 +57,31 @@ import { glyphUri, scratchUri, heartUri, joinUri, SIGIL_INK, SIGIL_GLOW, SOUL_IN
 import { glyphKeyNav } from '../game/glyphKeys';
 import { classMarks } from '../game/classMarks';
 import { fadeStyle, SHADE_POOL, shadowHeld, wispsUri, wispStyle, SHADOW_INK } from '../game/tokenFade';
-import { tieLayerVals, eyeLines } from '../game/tieLayer';
+/** 0.32 (Q.2.f): the status strip on the token face: the first three signs of the same groups the token card shows
+ *  (game/statusStrip.ts), each ringed in its group's ink (helps, hurts, state). */
+const faceStatus = (groups) => { const fs = (groups || []).flatMap((sg) => sg.chips.filter((c) => c.hasIcon).map((c) => ({ key: c.key, icon: c.icon, style: 'width: 12px; height: 12px; padding: 1px; border-radius: 3px; background: #0A0D13; box-shadow: 0 0 0 1px ' + sg.ink }))).slice(0, 3); return { hasFaceSt: fs.length > 0, faceSt: fs }; };
+import { tieLayerVals, eyeLines, eyeLinesAt, tieWords } from '../game/tieLayer';
+import { sightlineOn, toggleSightline, sightTile, sightWords, sightBar } from '../game/sightline';
 import { drawStrip, wordRows, shortWhy, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, actionPreviewTiles, strokeButtons, strokeLayer, readableAt, traceMark, wordMasteryChips } from '../game/sigilView';
 import { backpackView } from '../game/backpack';
 import { physOf, pressureLook, momentumLook, physLines, physChips, watchMarks, weaponBlocks, padView, padOf, padAction, techAction, TWATCH, TPAD, needsAlly, ATTACK_MODES, isAttackMode, targetAttackPreview } from '../game/techView';
 import { gearIconUri, GEAR_INK, GEAR_INK_OFF } from '../game/gearIcons';
 import { lootLogLine } from '../game/worldView';
 import { callChips, CL } from '../game/callView';
-import { actionIconOf, uiMarkOf } from '../game/doorArt';
+import { actionIconOf, uiMarkOf, moveIconOf } from '../game/doorArt';
+/** Rules 1.78 item 6613: a standing to-hit term's picture: its item's own move picture for that term (catalog data_ids
+ *  `<item key>#<the term's label as an id>`: the Open Hand's stance is `relic:open_hand#open_guard`), or none. */
+export const guardPicOf = (t) => (t.src ? moveIconOf(t.src + '#' + String(t.label || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '')) : '');
 import { mapLegacy, isLegacyUnit, plainAction, actionGroups, hideHelp, resolveCommands, readPrefs, openCustomise, BAND_NAME, TAB_NAME, EV_CMDS_CHANGED, tabIdsKnown, perkEntries, isPerkInfo, PKI, parsePk, PK, classOf, pkState, PACK_EVOKER } from '../game/commands';
 import { pickerFor, buildArgs, gridPick } from '../game/actionPickers';
 import { flowView, pickToggle, verdictOf } from '../game/actionFlow';
 import { tipAttrs, mountActionTips } from '../game/actionTip';
 import { areaOrder, areaHead, subHead, figmentHead } from '../game/attackAreas';
 import { figmentIconUri, figmentIconOfUnit, figmentLogIcon, FIG_LINE } from '../game/figmentIcons';
+import { powerPct } from '../game/power'; // 0.32 B6: an Outburst's strength in percent
 import { perkShelves, turnMark, SHELF_LABEL, SHELF_HELP } from '../game/perkShelves';
 import { firstTurnTab, tabDoorLine, focusFilter, tabFocusLine, tabMirrors, tabBareWarning, feedLineOf } from '../game/doorView';
-import { forkChipsLine } from '../game/forkLine';
+import { forkChipsLine, doorChoiceLine, doorChoiceEmpty } from '../game/forkLine';
 import { noteTabs, noteLive, tabKey, shownTabs, firstUsable, NO_PREFS, EV_TABS_CHANGED } from '../game/tabPrefs';
 import { openSettings } from '../game/settings';
 import { sideOf, shortWord, statusGroups, SIDE_INK, SIDE_GLYPH } from '../game/statusStrip';
@@ -193,6 +201,9 @@ const COMBAT_CSS = [
   '.phc-cb-tabs::-webkit-scrollbar{display:none}.phc-cb-tabs>[role=tab]{transition:background-color .12s,color .12s,border-color .12s}.phc-cb-tabs>[role=tab]:not([aria-selected=true]):hover{background:#141B27;color:#E7EBF3}',
   '.phc-cb-tabpanel{scrollbar-width:thin;scrollbar-color:#2E3A50 transparent}.phc-cb-tabpanel::-webkit-scrollbar{width:8px}.phc-cb-tabpanel::-webkit-scrollbar-thumb{background:#2E3A50;border-radius:4px}',
   '.phc-cb-tabs>[role=tab]:focus-visible,.phc-cb-tabpanel:focus-visible{outline:2px solid #FFFFFF;outline-offset:-2px}',
+  // B14, 0.32: the list scrolls in its own box above the chosen action's box; its last line fades out instead of a row
+  // looking cut in half under that box, and the room under the last row lets it scroll clear of the fade
+  '@media (min-width:1000px){.phc-cb-aside .phc-cb-tabpanel{padding-bottom:18px!important;-webkit-mask-image:linear-gradient(to bottom,#000 calc(100% - 18px),rgba(0,0,0,.15));mask-image:linear-gradient(to bottom,#000 calc(100% - 18px),rgba(0,0,0,.15))}}',
   // Short windows (1280×720): a slimmer header and initiative strip, so the grid keeps its size.
   '@media (max-height:800px) and (min-width:1000px){.phc-cb-head{padding-top:6px!important;padding-bottom:6px!important}.phc-init{padding-top:5px!important;padding-bottom:5px!important}.phc-init [data-init]{padding-top:3px!important;padding-bottom:3px!important}.phc-init [data-init] img,.phc-init [data-init]>span:first-child{width:28px!important;height:28px!important}.phc-cb-row{padding-bottom:8px!important}.phc-cb-turn .phc-yt{padding-top:3px!important;padding-bottom:3px!important}.phc-cb-turn .phc-yt>span:first-child{font-size:16px!important}.phc-cb-ap .phc-pips>span{height:10px!important}.phc-cb-tabpanel .phc-cb-act[data-act]{min-height:34px!important}.phc-cb-tline{display:none!important}}',
   // The column, top to bottom: a bar (You in one line on short windows · Customise · Hide panel), the You card and the
@@ -260,7 +271,9 @@ ensureStyle('phc-camera', CAMERA_CSS);
 mountActionTips();
 /** The fight's camera (roadmap 2c; game/cameraView.ts): the map's window keeps the usual tile size and follows the play.
  *  Local to this browser: every player in a room has their own. */
-const CAM = new CameraView('fight');
+/** Under this window width the fight's small map starts folded (its button opens it): it covered the board's right third. */
+const MINI_FOLD_UNDER = 1400;
+const CAM = new CameraView('fight', 'phc.miniMap', MINI_FOLD_UNDER); // B5, 0.32: the small map starts folded on a window under MINI_FOLD_UNDER px wide
 /** Room kept free beside the map for the small map, so the tiles in that corner can be scrolled out from under it. */
 /** Two-key codes: how long after the first number the second still counts (provisional; balance pass section 15). */
 const CHORD_MS = 1000;
@@ -386,7 +399,7 @@ export function perkShelfVals(sh, items, sel, redraw) {
 }
 /** The chosen perk or class move's picker in the combat footer (game/actionPickers.ts): option chips, a second pick on
  *  the grid (shown as chips you can clear), and a prose box only where the move needs words. Never a typed detail. */
-function pickerVals(self, cb, P, V, whyOpt) {
+function pickerVals(self, cb, P, V, whyOpt, emptyWhy = '') {
   if (!P) return { hasPick: false, pickFields: [] };
   const key = self.state.action, form = () => (self.state.pkForm && self.state.pkForm.key === key ? self.state.pkForm.v : {});
   const setV = (patch) => self.setState({ pkForm: { key, v: { ...form(), ...patch } } });
@@ -402,7 +415,7 @@ function pickerVals(self, cb, P, V, whyOpt) {
         const icon = o.icon ? figmentIconUri(o.icon, on.includes(o.id) ? '#FFFFFF' : FIG_LINE) : '';
         return { key: o.id, label: o.label + (why ? ' · ' + chipWhy(why) : ''), title: why || o.title || '', pressed: on.includes(o.id) ? 'true' : 'false', off: !!why, hasIcon: !!icon, icon, style: CHIP(on.includes(o.id)) + (icon ? '; display: inline-flex; align-items: center; gap: 6px; padding-left: 6px' : '') + (why ? '; opacity: 0.5; cursor: default' : ''),
         pick: () => { if (why) return; const now = Array.isArray(form()[f.key]) ? form()[f.key] : []; setV({ [f.key]: now.includes(o.id) ? now.filter((y) => y !== o.id) : multi > 1 ? [...now, o.id].slice(-multi) : [o.id] }); } }; });
-      return { ...base, head: f.head + (multi > 1 ? ' (up to ' + multi + ')' : ''), isChips: true, opts, isEmpty: !opts.length, emptyText: f.empty || 'Nothing to pick.' };
+      return { ...base, head: f.head + (multi > 1 ? ' (up to ' + multi + ')' : ''), isChips: true, opts, isEmpty: !opts.length, emptyText: emptyWhy || f.empty || 'Nothing to pick.' };
     }
     if (f.kind === 'prose') return { ...base, isProse: true, text: V[f.key] || '', holder: f.holder, onText: (ev) => setV({ [f.key]: ev.target.value }) };
     if (f.kind === 'unit' || f.kind === 'tile') {
@@ -880,10 +893,13 @@ export class CombatLogic extends DCLogic {
     if (z !== (this._zoom || 1) || vw !== v0.w || vh !== v0.h || col !== v0.col || needed !== !!this._camNeeded) {
       // The map is laid out anew (the first fit of this screen, a resized window, a size the player picked): the camera
       // keeps what it was looking at. The first time that is the player's own unit (back from the level-up screen in the
-      // middle of a fight, the view was left in the map's top-left corner); after that, the tile in the middle of the view.
-      const first = !this._view, t = !first && CAM.live() && CAM.scrolls() ? CAM.tiles() : null, mid = t ? Math.round((t.x0 + t.x1) / 2) + ',' + Math.round((t.y0 + t.y1) / 2) : null;
+      // middle of a fight, the view was left in the map's top-left corner); after that, the point in the middle of the
+      // view, or of the view it is gliding to (0.32: the panels change size as a turn starts; aimed at the middle tile,
+      // the view moved by up to a tile on a hostile's turn, and on your first turn it went back to where the fight's
+      // opening had left it, your unit out of frame, the camera suite).
+      const first = !this._view, mid = !first && CAM.live() ? CAM.middle(true) : null;
       this._zoom = z; this._view = { w: vw, h: vh, col }; this._camNeeded = needed; this.setState({});
-      if (!this._overview && (first || mid)) this.camAfter(() => { const k = first ? CAM.home : mid; if (k && !CAM.overview) CAM.follow([k], 'ask', true); });
+      if (!this._overview && (first || mid)) this.camAfter(() => { if (CAM.overview) return; if (first) { if (CAM.home) CAM.follow([CAM.home], 'ask', true); } else CAM.centreAt(mid); });
     }
     CAM.fits = !this._overview && fitsWhole(aW, aH, w, h, z);
     CAM.sync();
@@ -936,6 +952,10 @@ export class CombatLogic extends DCLogic {
     if (S.tab === 'shadow' || S.action === 'hide') this._spotsArmed = true; else if (!isMove) this._spotsArmed = false;
     const HH = mineTurn ? hideHelp(cb, cur, ch, g) : null;
     const spotsOn = !!(HH && HH.spots && HH.spots.length && this._spotsArmed);
+    // Rules 1.76 item 6404, the shadow sightline (game/sightline.ts): the engine's watched tiles on Hide's row, shaded by
+    // how many enemies' eyes would reach you there; hovering an enemy outlines its reach; hovering a tile says who sees you there.
+    const slOn = !!(HH && cur && !cb.over && sightlineOn(cur, S.tab)), slWatch = slOn ? HH.watch : null;
+    const slFoe = slOn && S.hover ? ((cb.units || []).find((x) => x.pos === S.hover && x.side !== cur.side && !x.dead) || {}).id || null : null;
     const spotSet = new Set(spotsOn ? HH.spots : []), spotNear = spotsOn ? HH.spots[0] : null;
     const route = {}; let moveAp = 0;
     // Rules 1.9 (item 683): the route a click takes goes around revealed hazards when it can (the engine's movePaths), and
@@ -1228,7 +1248,7 @@ export class CombatLogic extends DCLogic {
       const prs = u && !u.dead && u.side === 'pc' ? presenceVals(u, g, cb) : null;
       // Physical 2.0 (part 3): Pressure pips over every token (public), Stopped once and a held Watch in its hover card
       // and aria-label; held Watches your side can see, tinted on their tiles with a dotted line from the watcher.
-      const uPhys = u ? physOf(g, cb, u, 'pc') : null, pLook = pressureLook(uPhys), mLook = momentumLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
+      const uPhys = u ? physOf(g, cb, u, 'pc') : null, uSt = u && (u.side === 'pc' || u.analyzedBy) ? statusGroups(statusOf(u, g, uPhys, refOf, false), { small: true }) : null, pLook = pressureLook(uPhys), mLook = momentumLook(uPhys), pLines = physLines(uPhys), wT = WMk.tiles.get(k), wChip = u ? WMk.chips.get(u.id) : null;
       const wc = WLc.cells.get(k) || {}, kb = u && u.side === 'foe' ? kindBadge(u.kind, true) : null, dr = !u ? dropAt[k] : null;
       const pileHere = pileReach.some((o) => o.pos === k);
       // (a Call's reach: the one overlay's, pkTiles, since rules 1.65; the picked tile: a white edge)
@@ -1243,8 +1263,9 @@ export class CombatLogic extends DCLogic {
         hasSgChip: !!sgc, sgChip: sgc ? sgc.text : '', sgChipTitle: sgc ? sgc.title : '', sgChipStyle: sgc ? sigilChipStyle(sgc) : '',
         hasPress: pLook.has && !isHeld, press: pLook.pips, pressStyle: pLook.style, pressTitle: pLook.title, hasPressTag: !!pLook.tag && !isHeld, pressTag: pLook.tag, pressTagStyle: pLook.tagStyle,
         hasMom: mLook.has && !isHeld, mom: mLook.text, momStyle: mLook.style, momTitle: mLook.title, momFull: mLook.full ? '1' : '',
+        ...((st) => ({ hasSight: st.has, sightN: String(st.n), sightStyle: st.style }))(sightTile(slWatch, k, slFoe)),
         hasWatchT: !!wT, watchTStyle: wT ? wT.style : '', watchTTitle: wT ? wT.title : '', hasWatchChip: !!wChip && !isHeld, watchChip: wChip ? wChip.text : '', watchChipStyle: wChip ? wChip.style : '', watchChipTitle: wChip ? wChip.title : '',
-        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + ((ow) => (ow ? ' · ' + ow.line : ''))(ownedView(cb, u)) + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + ((sb) => (sb.has ? ' · ' + sb.head + ': ' + sb.words : ''))(shieldBlock(svOf(u))) + (u.downed ? ' · Downed' : '') + (u.side === 'pc' ? coverWord(k) : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight through it; −' + COVER.full + ' to shots at whoever is beside it on this side)' : 'Half cover (−' + COVER.half + ' to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : (diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + coverWord(k)) + (spotSet.has(k) ? ' · hide spot: out of the eyes of every enemy you see' + (k === spotNear ? ' (nearest)' : '') : '') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (note && !pkOn ? ' · ' + note : '') + magicNote + (red.has(k) && !pkOn ? ' · in reach' + (red.get(k) ? ' (range band ' + (red.get(k) + 1) + ')' : '') : ''), title: u ? '' : refOf(k) + (note && !pkOn ? ' · ' + note : '') + magicNote,
+        key: k, isLabel: false, isTile: true, cover: cv, label: refOf(k) + ' · ' + (u ? u.name + (u.side === 'foe' ? ' (hostile)' : '') + ((ow) => (ow ? ' · ' + ow.line : ''))(ownedView(cb, u)) + (u.side === 'pc' || u.analyzedBy ? ' · HP ' + u.hp + '/' + u.maxHp : ' · looks ' + condWord(u)) + ((sb) => (sb.has ? ' · ' + sb.head + ': ' + sb.words : ''))(shieldBlock(svOf(u))) + (u.downed ? ' · Downed' : '') + (u.side === 'pc' ? coverWord(k) : '') + (u.surrendered ? ' · Surrendered' : '') + (pLines.length ? ' · ' + pLines.join(' · ') : '') + (() => { const cs = [...effectsOf(u).map(([k, t]) => k + ': ' + t), ...condChips(u, g).filter((c) => c.key !== 'shield').map((c) => c.t)]; return cs.length ? ' · ' + cs.join(' · ') : ''; })() : solid.has(k) ? 'Solid' : ob ? ob.name + (ob.hp != null ? ' · HP ' + ob.hp + '/' + ob.max : '') + (kindOf(ob).door ? (ob.locked ? ' · locked' : ob.open ? ' · open' : ' · closed') : '') + (ob.text ? ' · ' + ob.text : '') + (cv ? ' · ' + cv.kind + ' cover' : '') : cv ? (cv.kind === 'full' ? 'Full cover (blocks sight through it; −' + COVER.full + ' to shots at whoever is beside it on this side)' : 'Half cover (−' + COVER.half + ' to shots at whoever is behind it)') + ' · HP ' + cv.hp + '/' + cv.max : (diff.has(k) ? ((cb.rubble || []).includes(k) ? 'Rubble' : 'Difficult terrain') : 'open') + coverWord(k)) + (spotSet.has(k) ? ' · hide spot: out of the eyes of every enemy you see' + (k === spotNear ? ' (nearest)' : '') : '') + (!vis.tiles.has(k) ? ' · out of sight' : '') + (cb.map.dark && !litAt(cb, k) ? ' · dark' : '') + (slOn ? ' · sightline: ' + sightWords(cb, slWatch, k) : '') + (note && !pkOn ? ' · ' + note : '') + magicNote + (red.has(k) && !pkOn ? ' · in reach' + (red.get(k) ? ' (range band ' + (red.get(k) + 1) + ')' : '') : ''), title: u ? '' : refOf(k) + (note && !pkOn ? ' · ' + note : '') + magicNote + (slOn ? ' · ' + sightWords(cb, slWatch, k) : ''),
         worldNote: (wc.hz ? ' · ' + wc.hz.title : '') + (wc.cache ? ' · ' + wc.cache.title : '') + (wc.pile ? ' · ' + wc.pile.title.replace(/:\n/, ': ').replace(/\n/g, ', ') : '') + (dr ? ' · ' + dr.npc.name + ' lies here' : '') + (crossAt.has(k) ? ' · your path crosses this hazard' : ''),
         hasPile: !!wc.pile, pileStyle: wc.pile ? wc.pile.style : '', pileIconStyle: wc.pile ? wc.pile.iconStyle : '', pileCount: wc.pile ? wc.pile.count : '', pileCountStyle: wc.pile ? wc.pile.countStyle : '',
         hasPileTip: !!wc.pile && S.hover === k, pileTip: wc.pile ? wc.pile.tip : '', pileRows: wc.pile ? wc.pile.tipRows : [], pileTipStyle: wc.pile ? pileTipStyle(wc.pile, vxOf(x), vyOf(y), vW, !!u) : '',
@@ -1255,7 +1276,9 @@ export class CombatLogic extends DCLogic {
         hasKind: !!(kb && kb.has) && !isHeld, kindText: kb ? kb.text : '', kindStyle: kb ? kb.style + TOKEN_KIND_POS : '', kindTitle: kb ? kb.title : '',
         hasDrop: !!dr, dropText: dr ? '▾ ' + dr.npc.name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '', dropTitle: dr ? dr.npc.name + ' lies here (dropped when the carrier went down; back on the map after the fight)' : '',
         hasPresence: !!prs, presence: prs || {},
-        hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines, pose: pLook.pose, status: u.side === 'pc' || u.analyzedBy ? statusGroups(statusOf(u, g, uPhys, refOf, false), { small: true }) : null }) : null, hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
+        hasTok: !!u, t: u ? tokenVals(u, { ...tokOpt(u, x, y), extra: pLines, ties: tieWords(cb, u.id), guards: standingModsFor(g, u.id).map((t) => ({ ...t, pic: guardPicOf(t) })), kit: u.side !== 'pc' ? kitSeenFor(g, u.id, 'pc') : null, pose: pLook.pose, status: uSt }) : null,
+        // 0.32 (Q.2.f): the status strip on the token face: the first three of the same groups' signs, in each group's ink
+        ...faceStatus(uSt), hasObj: !!ob && !u && !spr && !wc.cache && !wc.sigil, hasSigMark: !!wc.sigil && !u, sigMark: wc.sigil ? wc.sigil.src : '', sigMarkStyle: wc.sigil ? wc.sigil.style : '', objGlyph: ob ? kindOf(ob).glyph : '', objStyle: 'position: absolute; inset: 0 0 12px 0; display: grid; place-items: center; font-size: 20px; color: ' + (ob && (kindOf(ob).hazard || ob.kind === 'trap' || kindOf(ob).explodes) ? '#F65157' : ob && ob.kind === 'poi' ? '#FFFFFF' : '#C9D3E3'),
         click: () => this.tileClick(k), hover: (e) => hoverFor(this).enter(k, e),
         hasArrow: !!route[k] && k !== (cur && cur.pos), arrow: route[k] || '', hasCost: k === hv || !!mTag || !!aTag, cost: !(k === hv || mTag || aTag) ? '' : mTag || (aTag ? aTag.text : (moveAp ? '−' + moveAp + ' AP' : 'Paid') + ' · ' + hvTiles + (hvTiles === 1 ? ' tile' : ' tiles') + (crossing.length ? ' · ⚠ HAZARD' : '')),
         // The chip over the hovered tile: kept whole inside the map (it was cut off at the map's edge when the reason was
@@ -1322,7 +1345,19 @@ export class CombatLogic extends DCLogic {
     for (const t of tiles) if (t.worldNote) t.label += t.worldNote;
     // The map's tie lines (game/tieLayer.ts: a Bond's faint line, from the view's ties; stronger on the Bonder's turn or a hovered chip)
     const tieLayer0 = tieLayerVals(cb, { turnOf: cur ? cur.id : null, hotTo: S.tieHot || null, motion: !reducedMotion() });
-    const eyeL = HH && HH.eyes.length && S.tab === 'shadow' && S.hover && S.hover === cur.pos ? eyeLines(cb, cur.id, HH.eyes, SHADOW_INK) : [];
+    // the eye lines: with the sightline on, from each enemy that would see you on the hovered tile (or where you stand);
+    // without it, as before (the SHADOW tab, hovering your own token)
+    const slAt = slOn ? (S.hover && S.hover !== cur.pos && !slFoe ? S.hover : cur.pos) : null;
+    const eyeL = slOn ? (slAt === cur.pos ? eyeLines(cb, cur.id, HH.eyes, SHADOW_INK) : eyeLinesAt(cb, slAt, slAt, (slWatch && slWatch[slAt]) || [], SHADOW_INK))
+      : HH && HH.eyes.length && S.tab === 'shadow' && S.hover && S.hover === cur.pos ? eyeLines(cb, cur.id, HH.eyes, SHADOW_INK) : [];
+    // (the switch stays on the map's bar through the others' turns of a fight where it showed on yours, drawing nothing
+    // there: it came and went with each turn, the bar wrapped to a second row on your turn only, and the map's window
+    // changed size, and its zoom, every time a turn changed hands; 0.32, the camera suite)
+    const slFight = (g.code || '') + '|' + cb.name + '|' + (cb.log[0] || '');
+    if (HH && cur && !cb.over) this._slFight = slFight;
+    const slMine = !HH && !cb.over && this._slFight === slFight ? cb.units.find((u) => u.side === 'pc' && owner(u) === me && !u.dead) : null;
+    const sl = HH && cur && !cb.over ? { can: true, ...sightBar(cb, slWatch, slOn, slAt, refOf), toggle: () => { toggleSightline(slOn); sfx('toggle'); this.setState({}); } }
+      : slMine ? ((on) => ({ can: true, ...sightBar(cb, null, on, null, refOf), toggle: () => { toggleSightline(on); sfx('toggle'); this.setState({}); } }))(sightlineOn(slMine, S.tab)) : { can: false };
     const tieLayer = eyeL.length ? { ...tieLayer0, has: true, lines: [...tieLayer0.lines, ...eyeL] } : tieLayer0;
     // The strip turns over: the acting unit first, then who comes next (each slides to its new place).
     // An unseen hostile's place in the order is an opaque mark (the engine's fog): a card with nothing on it.
@@ -1423,8 +1458,8 @@ export class CombatLogic extends DCLogic {
         sel.extra = pp && pp.overload ? pp.overload : '';
       } else if (S.action === 'outburst') {
         const pl = hzPlan, aura = card && card.form === 'aura';
-        sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP ×' + STAGE_MULT[0] : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
-        sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (×' + STAGE_MULT[0] + '). Pump it (1 AP a stage, to ×' + STAGE_MULT[STAGE_MULT.length - 1] + ') and Release it (1 AP). Confirm to begin.' : card.beginWhy)
+        sel.name = 'Outburst' + (dsel ? ' · ' + dsel.name : '') + (card ? ' · ' + (obMode === 'snap' ? 'Snap ' + card.snapAp + ' AP at ' + powerPct(STAGE_MULT[0]) : 'Begin ' + card.beginAp + ' AP') + ' · ' + card.mp + ' MP' : '');
+        sel.text = !dsel ? 'You have no Outburst designs.' : held ? 'You are holding ' + (heldD ? heldD.name : 'an Outburst') + ': Pump it, Release it or Let it go (the HEART panel).' : !card ? 'Not now.' : obMode === 'begin' ? (card.canBegin ? 'Begin ' + dsel.name + ': it holds at stage 0 (' + powerPct(STAGE_MULT[0]) + ' power). Pump it (1 AP a stage, to ' + powerPct(STAGE_MULT[STAGE_MULT.length - 1]) + ') and Release it (1 AP). Confirm to begin.' : card.beginWhy)
           : !S.aim && !aura ? (card.snapWhy || (hz.aim && hz.summary.length ? 'Preview at ' + refOf(hz.aim) + ': ' + hz.summary.join(' ') + ' Click to aim.' : 'Snap: hover to preview, click a tile to aim (' + card.line + ').' + (hz.summary.length ? ' ' + hz.summary.join(' ') : ''))) : pl && pl.ok ? (aura ? 'All around you. ' : 'At ' + refOf(S.aim) + '. ') + (hz.summary.length ? hz.summary.join(' ') : 'Nobody is there.') + ' Confirm to let it go.' : (pl && pl.why) || card.snapWhy || 'Not now.';
         sel.extra = card ? card.line : mg.emanator ? '' : 'No Emanator: Outbursts draw on the air.'; // MP and Strain: the unit panel's
       } else if (S.action === 'release') {
@@ -1444,12 +1479,14 @@ export class CombatLogic extends DCLogic {
     }
     if (pkE && mineTurn) {
       // The panel's words are the flow's; the form says what it still needs, and the class move's standing state.
-      if (pkMissing && flow && flow.d.available) sel.text = pkMissing;
+      // an empty pick list on a door's tab with that door's choices still open (Picture before any form is learned) says where they are chosen
+      const pkDoor = tabDoorLine(S.tab), pkChar = cur && cur.charId ? g.characters[cur.charId] : null, pkEmpty = pkDoor && pkP && pkP.fields.some((f) => f.kind === 'chips' && !f.options.length) ? doorChoiceEmpty(pkChar, pkDoor.skill) : '';
+      if (pkMissing && flow && flow.d.available) sel.text = pkEmpty || pkMissing;
       // (the refusal is the engine's verdict, said once in the text by the flow; the extra line says only a standing state: row 14)
       sel.extra = dotJoin(pkE.engine || !narratedRoom(g) ? '' : ADJ_MARKS.narrator + '.', pkState(pkE).tag ? pkState(pkE).why : ''); // rules 1.66 item 5212: a Narrator's call only where there is a Narrator
       // each single choice previewed as the engine would take it (the descriptor's form pick, once the target is picked)
       const whyOpt = flow && pkP && pkP.fields.length === 1 && !pkP.build && (pkE.target === 'none' || (pkE.target === 'tile' ? !!S.tile : !!flow.picks.targetId)) ? (id) => { const r = flow.peekWith({ form: { choice: id } }); return r && !r.ok ? r.why || 'Not now.' : ''; } : null;
-      Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt));
+      Object.assign(sel, pickerVals(this, cb, pkP, pkV, whyOpt, pkEmpty ? 'None learned yet.' : '')); // (where they are chosen is said once, in the text above)
     }
     // A read-only Perks row (rules 1.14: RIDES AN ACTION and ALWAYS ON): its whole card to read, and no Confirm.
     const pkiE = isPerkInfo(S.action) && mineTurn ? (() => { const sh = pkShelves(); return [...sh.rides, ...sh.always].find((r) => PKI + r.key === S.action) || null; })() : null;
@@ -1461,7 +1498,7 @@ export class CombatLogic extends DCLogic {
       const n = tpadOpen.kind === 'watch' ? 'Hold a shot' : 'Techniques · ' + ((blocks.find((b) => b.hand === tpadOpen.hand) || {}).name || '');
       sel.name = n; sel.text = 'Pick one in the pad (arrow keys move, Enter picks), then its target on the map.'; sel.extra = '';
     }
-    sel.toggles = tgls.map((t) => ({ key: t.id, label: t.label + (t.on ? ' ✓' : ''), pressed: t.on ? 'true' : 'false', title: dotJoin(t.preview || t.label, t.why), off: !!t.why,
+    sel.toggles = tgls.map((t) => ({ key: t.id, label: t.label + (t.on ? ' ✓' : ''), ...((m) => ({ mark: m, hasMark: !!m }))(moveIconOf(t.id)), /* a form's sign (a toggle's id is <item key>#<form>) (the Open Hand's Jab, Palm, Sweep, Snatch: catalog data_ids) */ pressed: t.on ? 'true' : 'false', title: dotJoin(t.preview || t.label, t.why), off: !!t.why,
       pick: () => this.setState({ mods: pickToggle(this.state.mods, tgls, t) }),
       style: 'min-height: 30px; padding: 0 10px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; ' + (t.on ? 'border: 1px solid #FFFFFF; background: #1C2536; color: #FFFFFF' : 'border: 1px solid #2E3A50; background: transparent; color: #A3AEC2') + (t.why ? '; opacity: 0.45' : '') }));
     // A technique whose weapon has two of the properties it reads: the player picks which line applies (args.line).
@@ -1593,8 +1630,8 @@ export class CombatLogic extends DCLogic {
       begin: () => { if (card && card.canBegin) { const a = sendDescriptor(g, cur.id, 'outburst', { design: card.id, mode: 'begin', ...(S.mods && S.mods.length ? { mods: S.mods } : {}) }, me); if (a) act(a); this.setState({ aim: null, obMode: 'begin', action: 'pump' }); } },
       snap: () => this.setState({ obMode: 'snap', aim: null }),
       // the renderer of the Outburst's `mode` step (descriptors.ts renderer 'begin-snap'): its two options, named by the engine
-      beginLabel: bsOpt('begin') + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: bsOpt('snap') + ' · ' + (card ? card.snapAp : 3) + ' AP ×' + STAGE_MULT[0],
-      beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ×' + STAGE_MULT[0] + ': hover to preview, click a tile to aim, then Confirm.',
+      beginLabel: bsOpt('begin') + (card ? ' ' + card.name : '') + ' · ' + (card ? card.beginAp : 2) + ' AP', snapLabel: bsOpt('snap') + ' · ' + (card ? card.snapAp : 3) + ' AP at ' + powerPct(STAGE_MULT[0]),
+      beginTitle: card ? (card.canBegin ? 'Begin ' + card.name + ' and hold it at stage 0 (+1 Strain).' : card.beginWhy) : '', snapTitle: 'Begin and Release at once, at ' + powerPct(STAGE_MULT[0]) + ' power: hover to preview, click a tile to aim, then Confirm.',
       beginOff: !card || !card.canBegin, beginStyle: padBtn(obMode === 'begin', SOUL_INK), snapStyle: padBtn(obMode === 'snap', SOUL_INK), snapPressed: obMode === 'snap' ? 'true' : 'false',
       repick: isMagic && mineTurn && S.action === 'evoke' && !!evTile, repickFn: () => this.setState({ glyphTile: null, aim: null, evc: null, sgToast: '' }),
       ...sigilPad(evV, S, (x) => this.setState(x)),
@@ -1817,6 +1854,8 @@ export class CombatLogic extends DCLogic {
       // rules 1.60 (the beta feeds its door): the door's beta line from the engine's view of the sheet whose turn it is (game/doorView.ts feedLineOf)
       ...(() => { const fl = tabDoor && tabMine ? feedLineOf(tabChar, tabDoor.skill) : ''; return { hasFeed: !!fl, feedLine: fl }; })(),
       // rules 1.60 (the forks): the door's forks held, and a pick still to do, as one line (game/forkView.ts, the engine's doorForkView)
+      // a door's own choices still open (Figment forms known), with where they are chosen (the pick is refused in a fight)
+      ...(() => { const dl = tabDoor && tabMine ? doorChoiceLine(tabChar, tabDoor.skill) : ''; return { hasChoice: !!dl, choiceLine: dl, choiceStyle: 'font-size: var(--fs-sub); line-height: 1.45; font-weight: 700; padding: 0 2px 2px; color: #FFFFFF' }; })(),
       ...(() => { const fl = tabDoor && tabMine ? forkChipsLine(tabChar, tabDoor.skill) : ''; return { hasForks: !!fl, forkLine: fl, forkStyle: 'font-size: var(--fs-sub); line-height: 1.45; font-weight: 700; padding: 0 2px 2px; color: ' + (/still to do/.test(fl) ? '#FFFFFF' : '#C9D3E3') }; })(),
       // the focus rule: the door's focus only in the pack, one line on top says to put it on (skills.json door_focus_line)
       ...(() => { const fl = tabFocusLine(tabMine ? tabChar : null, tabG.id); return { hasFocusLine: !!fl, focusLine: fl, focusStyle: 'font-size: var(--fs-sub); line-height: 1.45; color: #FFFFFF; padding: 0 2px 2px' }; })(), ...(() => { const bw = tabBareWarning(tabG.id), on = !!bw && !!tabMine && !!cur && !!cur.mg && !cur.mg.emanator; return { hasBare: on, bareHeadline: on ? bw.headline : '', bareLine: on ? bw.line : '', bareStyle: 'display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; border-radius: 8px; border: 2px solid #F65157; background: rgba(246, 81, 87, 0.12); color: #F65157', bareHeadStyle: 'font-size: 15px; font-weight: 700; letter-spacing: 0.04em' }; })(), doorStyle: 'font-size: var(--fs-sub); line-height: 1.45; color: #C9D3E3; padding: 0 2px 2px',
@@ -1896,7 +1935,7 @@ export class CombatLogic extends DCLogic {
       gridLeave: () => hoverFor(this).leave(), // the stroke tip and lit stroke go with the cursor
       // isolation: the map is one stacking layer, so nothing in it (a hovered tile, a chip, a token's card) rises above the
       // small map, the camera's arrows or any panel; inside it the axis labels are on top (GRID_LAYER).
-      tieLayer,
+      tieLayer, sl,
       gridStyle: 'display: grid; position: relative; isolation: isolate; grid-template-columns: 18px repeat(' + cb.map.w + ', 46px); grid-template-rows: 18px repeat(' + cb.map.h + ', 46px); gap: 2px; width: max-content; padding: 8px; border-radius: 12px; background: #05070B; border: 1px solid #232D3F' + (zoom !== 1 ? '; zoom: ' + zoom : '') + (this._camNeeded && !this._overview && !CAM.miniHidden ? '; margin-right: ' + Math.round(MINI_SLACK / zoom) + 'px' : ''),
       // The map's window (the camera): the grid scrolls inside it when it is bigger.
       camStyle: 'flex: none; max-width: ' + (this._view ? this._view.w + 'px' : '100%') + (this._view ? '; max-height: ' + this._view.h + 'px' : ''),

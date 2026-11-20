@@ -13,7 +13,7 @@ technique({
   run(t) { holdWatch(t, { trigger: 'moves' }); return null; },
   react: {
     move_step(ctx, t) {
-      const m = ctx.u; if (!m || m.side === t.u.side || !alive(m) || m.hidden || ctx.skipOW || !unitSees(t.cb, t.u, m.pos)) return;
+      const m = ctx.u; if (!m || m.side === t.u.side || !alive(m) || m.hidden || ctx.skipOW || !unitSees(t.cb, t.u, m.pos, undefined, m)) return;
       const p = t.line('precise', 'auto', 'spread');
       if (p === 'spread' && dist(t.u.pos, m.pos) > t.num('spread_range', 4)) return;
       if (!canStrike(t, m)) return;
@@ -93,7 +93,7 @@ technique({
       const ids = w.allyIds || (w.allyId ? [w.allyId] : []);
       // an enemy of the holder, attacking a named ally, in the holder's sight; the covering fire is a held shot, so it
       // needs a round and a shot it could make: in range and line of sight (review fix: it went off at any distance seen)
-      if (att.side === t.u.side || !alive(att) || att.hidden || !ids.includes(tgt.id) || !unitSees(t.cb, t.u, att.pos) || !loaded(t) || !canStrike(t, att)) return;
+      if (att.side === t.u.side || !alive(att) || att.hidden || !ids.includes(tgt.id) || !unitSees(t.cb, t.u, att.pos, undefined, att) || !loaded(t) || !canStrike(t, att)) return;
       const shoot = t.line('auto', 'precise') === 'precise';
       fireWatch(t, ctx, att, () => {
         const pen = t.num('attack_penalty', 2);

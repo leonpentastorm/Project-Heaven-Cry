@@ -249,7 +249,7 @@ function dataVerbAimWhy(cb: Combat, owner: Unit, me: Unit, dv: any, o: { targetI
     if (dv.reach.side === 'foe' && t.side === owner.side) return 'Pick an enemy.';
     if (dv.reach.side === 'ally' && t.side !== owner.side) return 'Pick an ally.';
     if (dist(me.pos, t.pos) > (dv.reach.tiles ?? 1)) { const n = dv.reach.tiles ?? 1; return 'Out of reach (' + n + (n === 1 ? ' tile' : ' tiles') + ' from ' + me.name + ').'; }
-    if (dv.reach.eyes ? !unitSees(cb, me, t.pos) : t.side !== owner.side && !sideSeesUnit(cb, owner.side, t)) return 'It can\'t see them.';
+    if (dv.reach.eyes ? !unitSees(cb, me, t.pos, undefined, t) : t.side !== owner.side && !sideSeesUnit(cb, owner.side, t)) return 'It can\'t see them.';
     if (dv.dash && dist(me.pos, t.pos) > 1) { const to = dashTo(cb, me, dv, t); if (typeof to !== 'string') return to.why; }
   }
   return null;
@@ -294,7 +294,7 @@ onHook('turn_start', (ctx: any, cb: Combat) => {
   for (const u of ownedBy(cb, owner)) {
     const up = (u as any).owned?.upkeep as OwnedBlock['upkeep']; if (!up || u.dead) continue; // (a destroyed one pays nothing: rules 1.34)
     const c = charOfUnit(owner);
-    if (resLeft(owner, up.res, c) >= up.n) resGive(cb, owner, up.res, -up.n, { c, why: 'upkeep' }); else unmakeOwned(cb, u);
+    if (resLeft(owner, up.res, c, cb) >= up.n) resGive(cb, owner, up.res, -up.n, { c, why: 'upkeep' }); else unmakeOwned(cb, u);
   }
   // turn auto: once, after the upkeep, each acts through runOwned (paid by its owner); a refusal is said, nothing paid
   for (const u of orderable(cb, owner)) {

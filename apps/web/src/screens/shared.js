@@ -8,13 +8,14 @@ import shellTpl from '../templates/shell.template.html?raw';
 import mastTpl from '../templates/mastered.template.html?raw';
 import { bigPortrait } from '../game/charfile';
 import { reducedMotion } from '../game/sfx';
-import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, doorForkView, doorFeedView, ENGINE_DEEDS, PERKS as ENGINE_PERKS, ladderCaps } from '@engine';
+import { checkModOf, SKILL as ENGINE_SKILL, attrCapAt, callOfSkill, SAVE_SKILL_OF, healthView, shieldsView, CALL_RULES, callRangeAt, calls as CALLS_NS, ladderStepAt, ladderSchedule, doorForkView, doorFeedView, ENGINE_DEEDS, PERKS as ENGINE_PERKS, ladderCaps } from '@engine';
 import { forkIconOf } from '../game/forkIcon';
 import { foldVals } from '../game/fold';
 import { shieldBlock } from '../game/shieldLook';
 import { kitSprite } from '../game/kitMap';
 import { figmentFaceOf } from '../game/figmentIcons';
-import { bigOf } from '../game/doorArt';
+import { bigOf, moveIconOf } from '../game/doorArt';
+import { iconOr } from '../game/markIcon'; // 0.32 B12: an icon slot with no art shows its name's mark, never an empty box
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 
 export const D = PD;
@@ -35,13 +36,14 @@ export const SLOT_ORDER = { alpha: 0, beta: 1, gamma: 2 };
 // A skill's gains are rows tied to points (skills.json per_point.rows, numbers already filled by the engine's data
 // load). ONE helper places them on the points 1 to 10 for all three screens (creation, the "?" pop-up, level up):
 // `each` is the head line ("Every point: ..."), `every 2` lands on 2, 4, 6, 8, 10, `every 3` on 3, 6, 9, `from n`,
-// `at n` and `each from n` once on n. The steps also carry what the skill's own unlocks put there: a named unlock (one
+// `at n` and `each from n` once on n, `at n, m, ...` on each point listed (rules 1.75 item 6202: Composure's Strain limit). The steps also carry what the skill's own unlocks put there: a named unlock (one
 // with a category), a perk step (mastery 1 to 4) with the skill's two perks, the Mastered perk (mastery 5).
-const AT = /^(?:(each)|every (\d+)|(each from|from|at) (\d+))$/;
+const AT = /^(?:(each)|every (\d+)|(each from|from|at) (\d+)|at (\d+(?:, \d+)+))$/;
 /** The points a row lands on, out of 1..top (an `each` row lands on none: it is the head line). */
 export const rowPoints = (at, top = 10) => {
   const m = AT.exec(String(at || '')); if (!m || m[1]) return [];
   if (m[2]) return Array.from({ length: top }, (_, i) => i + 1).filter((n) => n % Number(m[2]) === 0);
+  if (m[5]) return m[5].split(', ').map(Number).filter((n) => n >= 1 && n <= top);
   const n = Number(m[4]); return n >= 1 && n <= top ? [n] : [];
 };
 const rowsOf = (id) => (ENGINE_SKILL[id] && ENGINE_SKILL[id].per_point && ENGINE_SKILL[id].per_point.rows) || [];
@@ -76,7 +78,7 @@ export function roadMap(id, who) {
     rows.forEach((r, j) => { if (j !== fi && !isEach(r) && rowPoints(r.at, top).includes(n)) lines.push({ key: 'r' + j, kind: 'row', at: r.at, text: r.text, tip: '' }); });
     const cs = cb ? cb.ladder.find((x) => x.n === n) : null;
     if (cs) lines.push({ key: 'c', kind: 'call', at: 'at ' + n, text: cb.name + ': ' + cs.what.charAt(0).toLowerCase() + cs.what.slice(1), tip: '' });
-    const u = un[n], m = u ? Number(u.mastery) || 0 : 0;
+    const u = un[n], ls = ladderStepAt(id, n); // rules 1.70 item 5537: the perk steps and the Mastered perk are the schedule's
     const fs = u && u.category === 'Fork' && forks ? forks.steps.find((x) => x.at === n) : null;
     if (fs) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + fs.options.map((o) => o.name).join(' or ') + (fs.offered ? '' : ' · sealed'),
       tip: fs.options.filter((o) => o.text).map((o) => o.name + ': ' + o.text).join(' / ') });
@@ -88,7 +90,7 @@ export function roadMap(id, who) {
       if (u.player && bare) lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player, tip: '' });
       else lines.push({ key: 'u', kind: 'unlock', at: 'at ' + n, text: u.player ? u.name : 'Unlocks ' + u.name, tip: u.player ? u.name + ': ' + u.player : '' });
     }
-    const step = m >= 1 && m <= 4 ? 'M' + m : m === 5 ? 'mastered' : '';
+    const step = ls === 'fork' ? '' : ls;
     const perks = step === 'mastered' ? (ep.mastered ? [ep.mastered] : []) : step ? ep.perks || [] : [];
     // the first perk step names the two perks; a later one says "Perk" (the names and what they do in its hover)
     if (step === 'mastered') lines.push({ key: 'm', kind: 'mastered', at: 'at ' + n, text: 'Mastered: ' + (ep.mastered ? ep.mastered.name : 'its Mastered perk'), tip: ep.mastered && ep.mastered.text ? ep.mastered.name + ': ' + ep.mastered.text : '' });
@@ -105,17 +107,20 @@ export const rowText = (step) => (step ? step.lines.map((l) => l.text).join(' ·
 export function callBlock(id, pts) {
   const def = callOfSkill(id); if (!def) return null;
   const R = CALL_RULES, has = typeof pts === 'number', p = has ? pts : 0, C = CALLS_NS;
-  const marks = [
-    ...def.steps.map((st) => ({ n: st.at, what: st.short || st.text })),
-    { n: R.cheap_at, what: 'costs ' + C.callBaseAp(R.cheap_at) + ' AP instead of ' + R.ap },
-    ...(C.callReactWhy(def) ? [] : [{ n: R.reaction_at, what: 'also as a reaction, for ' + R.reaction_ap + ' AP, once a round' }]),
-    { n: R.free_at, what: 'your first Call each turn costs no AP' },
-  ].sort((a, b) => a.n - b.n);
+  // rules 1.70 item 5535: how it grows is the one price table (calls.json rules.price), read row by row
+  const priceMarks = R.price.slice(1).flatMap((r, i) => {
+    const was = R.price[i], out = [];
+    if (r.ap !== was.ap) out.push('costs ' + r.ap + ' AP instead of ' + was.ap);
+    if (r.per_turn !== was.per_turn) out.push(r.per_turn === 2 ? 'twice a turn' : r.per_turn + ' times a turn');
+    if (r.reaction && !was.reaction) out.push('on your turn your reaction may pay for it' + (C.callReactWhy(def) ? '' : '; off your turn as a reaction, for ' + R.reaction_ap + ' AP, once a round'));
+    return out.length ? [{ n: r.from, what: out.join('; ') }] : [];
+  });
+  const marks = [...def.steps.map((st) => ({ n: st.at, what: st.short || st.text })), ...priceMarks].sort((a, b) => a.n - b.n);
   const merged = []; for (const x of marks) { const last = merged[merged.length - 1]; if (last && last.n === x.n) last.what += '; ' + x.what; else merged.push({ ...x }); }
   const cur = has ? merged.filter((x) => x.n <= p).map((x) => x.n).pop() : undefined;
   const cm = has ? checkModOf(id, p) : 0;
   return { name: def.name, text: def.text, kind: def.kind,
-    now: has && p > 0 ? C.callBaseAp(p) + ' AP · reach ' + callRangeAt(p) : R.ap + ' AP · reach ' + callRangeAt(1) + ', +1 each point',
+    now: has && p > 0 ? C.callBaseAp(p) + ' AP · reach ' + callRangeAt(p) : C.callBaseAp(1) + ' AP · reach ' + callRangeAt(1) + ', +1 each point',
     checks: has && p > 0 ? (cm >= 0 ? '+' : '') + cm + ' on checks and Asks' : 'Checks and Asks: +1 each point',
     ladder: merged.map((x) => ({ key: x.n, n: x.n, what: x.what.charAt(0).toUpperCase() + x.what.slice(1), now: x.n === cur, owned: has && x.n <= p })) };
 }
@@ -143,7 +148,9 @@ export const nextLine = (id, p, who) => {
   const rank = { unlock: 0, fork: 0, call: 1, row: 2 };
   const own = s.lines.filter((l) => l.kind in rank).sort((x, y) => rank[x.kind] - rank[y.kind]).map((l) => l.text);
   const each = s.lines.filter((l) => l.kind === 'each').map((l) => l.text), extra = s.lines.filter((l) => l.kind === 'perk' || l.kind === 'mastered').map((l) => l.text);
-  return [...(own.length ? own : each.length ? each : r.head), ...extra].slice(0, 2).join(' · ');
+  // a perk step always shows (rules 1.73: a level whose only other lines are per-point rows keeps its perk on the card)
+  const base = own.length ? own : each.length ? each : r.head;
+  return [...base.slice(0, extra.length ? 1 : 2), ...extra].slice(0, 2).join(' · ');
 };
 /** What each point of a skill gives, in one line (the attribute page's skill cards): the head line's texts. */
 export const perPoint = (id) => roadMap(id).head.join(' · ') || (SK[id] && SK[id].summary) || '';
@@ -183,12 +190,17 @@ const FORKROW_TPL = '<div class="phc-fork-row" data-fork-opt="{{X.key}}" style="
 const PERK_OF = {}; ENGINE_PERKS.forEach((p) => { PERK_OF[p.id] = p; });
 const PERK_ART = {}; D.skills.forEach((s) => { s.ep.perks.forEach((p) => { PERK_ART[p.id] = p.icon; }); if (s.ep.mastered) PERK_ART[s.ep.mastered.id] = s.ep.mastered.icon; });
 const cap1 = (s) => (s ? s.charAt(0).toUpperCase() + s.slice(1) : '');
+/** A perk's name by its id: the perk's own, else a removed perk's old name kept in its skill's remap table (skills.json
+ *  perk_remap.names: an old save's re-pick names what it held), else the id in words. */
+export const perkNameOf = (id) => (PERK_OF[id] && PERK_OF[id].name) || Object.values(ENGINE_SKILL).map((k) => k && k.perk_remap && k.perk_remap.names && k.perk_remap.names[id]).find(Boolean) || cap1(String(id || '').replace(/_/g, ' '));
+/** A perk's ink: its first skill's attribute colour (the mark of a perk with no art yet). */
+const perkInk = (p) => { const k = p && p.skills && SK[p.skills[0]], a = k && ATTR[k.attr]; return (a && a.ink) || '#E7EBF3'; };
 /** One perk's row. `o.held`: 'I' | 'II' | '' (the pips); `o.ink`: the skill's ink; `o.act`: { label, click, aria } for a
  *  chooser's one button; `o.why`: the reason a chooser's row is not legal (it is dimmed); `o.on`: the row picked. */
 export function perkRow(id, o = {}) {
   const p = PERK_OF[id] || { name: id, tiers: {} }, T = p.tiers || {}, s1 = cap1((T.I && T.I.short) || ''), s2 = cap1((T.II && T.II.short) || '');
-  const held = o.held === 'II' ? 2 : o.held === 'I' ? 1 : 0, ink = o.ink || '#E7EBF3', icon = PERK_ART[id] || '', act = o.act || null;
-  return { key: id, name: p.name, icon, has: !!icon, none: !icon, alt: p.name + ' perk icon (Wick)', zoomText: cap1((T.I && T.I.text) || p.text || ''),
+  const held = o.held === 'II' ? 2 : o.held === 'I' ? 1 : 0, ink = o.ink || perkInk(p), icon = iconOr(PERK_ART[id], p.name, ink), act = o.act || null;
+  return { key: id, name: p.name, icon, has: true, none: false, alt: p.name + ' perk icon (Wick)', zoomText: cap1((T.I && T.I.text) || p.text || ''),
     s1, s2, hasS2: !!s2, held: held ? (held === 2 ? 'II' : 'I') : 'none', stateLabel: held === 2 ? 'Tier II' : held ? 'Tier I' : 'Not taken',
     pips: [0, 1].map((i) => ({ key: i, style: 'display: block; width: 9px; height: 9px; transform: rotate(45deg); box-sizing: border-box; ' + (i < held ? 'background: ' + ink : 'border: 1px solid #5A6781') })),
     why: o.why || '', hasWhy: !!o.why, hasBtn: !!act, actLabel: act ? act.label : '', act: act ? act.click : () => {}, actAria: act ? act.aria || act.label : '',
@@ -207,7 +219,7 @@ export function forkRow(op, skill, ink) {
     style: 'display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 4px 10px; border-radius: 8px; background: #0A0D13; border: 1px solid ' + (op.picked ? ink : '#232D3F') + (op.built ? '' : '; opacity: 0.7') };
 }
 /** Expand the shared template pieces exactly as design/canvas-build/build.py does. */
-const popTpl = '<span class="phc-pop" role="tooltip" style="{{X.popStyle}}">\n<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{X.hasImg}}"><img src="{{X.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: var(--fs-body); font-weight: 700">{{X.name}}</span><span style="{{X.subStyle}}">{{X.sub}}</span></span></span>\n<sc-if value="{{X.known}}"><span style="display: flex; justify-content: space-between; font-size: var(--fs-sub)"><span style="font-weight: 700; color: #F65157">{{X.hp}}</span><span style="{{X.stateStyle}}">{{X.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{X.hpFill}}"></span></span><sc-if value="{{X.hasAp}}"><span style="font-size: var(--fs-sub); color: #A3AEC2">{{X.ap}}</span></sc-if><sc-if value="{{X.hasInj}}"><span style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: #F65157">⚠ {{X.inj}}</span></sc-if><sc-if value="{{X.hasSt}}"><span data-token-status="" style="display: flex; flex-wrap: wrap; gap: 3px 8px"><sc-for list="{{X.st}}" as="sg"><span data-status-group="{{sg.side}}" style="display: inline-flex; flex-wrap: wrap; gap: 3px"><sc-for list="{{sg.chips}}" as="sc"><span data-status="{{sc.key}}" style="{{sc.style}}"><sc-if value="{{sc.hasIcon}}" hint-placeholder-val="{{false}}"><img data-zoom="{{sc.word}}" data-zoom-text="{{sc.tip}}" class="phc-cond-icon phc-pop-zoom" src="{{sc.icon}}" alt="" style="{{sc.iconStyle}}"></sc-if><sc-if value="{{sc.noIcon}}" hint-placeholder-val="{{true}}"><span data-zoom="{{sc.word}}" data-zoom-text="{{sc.tip}}" data-zoom-glyph="{{sc.glyph}}" class="phc-pop-zoom" aria-hidden="true">{{sc.glyph}}</span></sc-if><span>{{sc.word}}</span></span></sc-for><sc-if value="{{sg.hasMore}}"><span style="{{sg.moreStyle}}">{{sg.moreText}}</span></sc-if></span></sc-for></span></sc-if></sc-if>\n<sc-if value="{{X.unknown}}"><span style="{{X.stateStyle}}">{{X.state}}</span><span style="font-size: var(--fs-sub); color: #A3AEC2">{{X.hint}}</span></sc-if>\n' + SHIELDS_TPL.replace(/Y\./g, 'X.sh.') + '\n';
+const popTpl = '<span class="phc-pop" role="tooltip" style="{{X.popStyle}}">\n<span style="display: flex; gap: 8px; align-items: center"><sc-if value="{{X.hasImg}}"><img src="{{X.img}}" alt="" style="width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: #000; flex: none"></sc-if><span style="display: flex; flex-direction: column; gap: 2px; min-width: 0"><span style="font-size: var(--fs-body); font-weight: 700">{{X.name}}</span><span style="{{X.subStyle}}">{{X.sub}}</span></span></span>\n<sc-if value="{{X.known}}"><span style="display: flex; justify-content: space-between; font-size: var(--fs-sub)"><span style="font-weight: 700; color: #F65157">{{X.hp}}</span><span style="{{X.stateStyle}}">{{X.state}}</span></span><span style="display: block; height: 5px; border-radius: 99px; background: #1C2536; overflow: hidden"><span style="display: block; {{X.hpFill}}"></span></span><sc-if value="{{X.hasAp}}"><span style="font-size: var(--fs-sub); color: #A3AEC2">{{X.ap}}</span></sc-if><sc-if value="{{X.hasInj}}"><span style="font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: #F65157">⚠ {{X.inj}}</span></sc-if><sc-if value="{{X.hasTies}}"><span data-token-ties="" style="font-size: var(--fs-sub); font-weight: 700; color: #EB95B7">{{X.ties}}</span></sc-if><sc-if value="{{X.hasGuards}}"><span data-token-guards="" style="display: flex; flex-wrap: wrap; gap: 3px 8px; font-size: var(--fs-sub); color: #A3AEC2"><sc-for list="{{X.guardList}}" as="gd"><span data-token-guard="" style="display: inline-flex; align-items: center; gap: 4px"><sc-if value="{{gd.hasPic}}" hint-placeholder-val="{{false}}"><img data-guard-pic="" src="{{gd.pic}}" alt="" style="width: 20px; height: 20px; object-fit: contain; flex: none"></sc-if><span>{{gd.text}}</span></span></sc-for></span></sc-if><sc-if value="{{X.hasKit}}"><span data-token-kit="" style="font-size: var(--fs-sub); color: #A3AEC2">{{X.kit}}</span></sc-if><sc-if value="{{X.hasSt}}"><span data-token-status="" style="display: flex; flex-wrap: wrap; gap: 3px 8px"><sc-for list="{{X.st}}" as="sg"><span data-status-group="{{sg.side}}" style="display: inline-flex; flex-wrap: wrap; gap: 3px"><sc-for list="{{sg.chips}}" as="sc"><span data-status="{{sc.key}}" style="{{sc.style}}"><sc-if value="{{sc.hasIcon}}" hint-placeholder-val="{{false}}"><img data-zoom="{{sc.word}}" data-zoom-text="{{sc.tip}}" class="phc-cond-icon phc-pop-zoom" src="{{sc.icon}}" alt="" style="{{sc.iconStyle}}"></sc-if><sc-if value="{{sc.noIcon}}" hint-placeholder-val="{{true}}"><span data-zoom="{{sc.word}}" data-zoom-text="{{sc.tip}}" data-zoom-glyph="{{sc.glyph}}" class="phc-pop-zoom" aria-hidden="true">{{sc.glyph}}</span></sc-if><span>{{sc.word}}</span></span></sc-for><sc-if value="{{sg.hasMore}}"><span style="{{sg.moreStyle}}">{{sg.moreText}}</span></sc-if></span></sc-for></span></sc-if></sc-if>\n<sc-if value="{{X.unknown}}"><span style="{{X.stateStyle}}">{{X.state}}</span><span style="font-size: var(--fs-sub); color: #A3AEC2">{{X.hint}}</span></sc-if>\n' + SHIELDS_TPL.replace(/Y\./g, 'X.sh.') + '\n';
 export function expand(tpl) {
   let t = tpl.replace('<!--EPCCG-->', epTpl).replace('<!--LIGHTBOX-->', lbTpl).replace('<!--SHELL-->', shellTpl);
   t = t.replace(/<!--MASTERED:([\w.]+)-->/g, (_, p) => mastTpl.replace(/X\./g, p + '.'));
@@ -295,7 +307,7 @@ export function attrPageVals(self) {
   } };
 }
 const CALL_BLANK = { has: false, name: '', tip: '', now: '', inkStyle: '' }, FOLD_BLANK = { open: false, expanded: 'false', chev: '▸', toggle: () => {}, headStyle: '', chevStyle: '', id: '' };
-const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', slot: '', line: '', steps: [], ladderFold: FOLD_BLANK, perksFold: FOLD_BLANK, forksFold: FOLD_BLANK, call: CALL_BLANK, feed: { has: false, text: '', style: '' }, ptsLine: '', inkStyle: '', title: '', name: '', img: '', alt: '', pictured: '', speaker: '', intro: '', loreRows: [], loreStyle: '', loreHeadStyle: '', foldHeadStyle: '', quote: [], perks: [], perkHelp: '', m: {}, combos: [], hasCombos: false, forks: [], hasForks: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
+const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', slot: '', line: '', steps: [], ladderFold: FOLD_BLANK, perksFold: FOLD_BLANK, forksFold: FOLD_BLANK, call: CALL_BLANK, feed: { has: false, text: '', style: '' }, ptsLine: '', inkStyle: '', title: '', name: '', img: '', alt: '', pictured: '', speaker: '', intro: '', loreRows: [], loreStyle: '', loreHeadStyle: '', foldHeadStyle: '', quote: [], perks: [], passives: [], hasAlwaysOn: false, perkHelp: '', m: {}, combos: [], hasCombos: false, forks: [], hasForks: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
 export const epBtnStyle = (ink, extra) => 'display: grid; place-items: center; width: 28px; height: 28px; flex: none; padding: 0; border-radius: 50%; border: 1px solid ' + ink + '; background: rgba(10, 13, 19, 0.85); color: ' + ink + '; font-family: inherit; font-size: var(--fs-body); font-weight: 700; line-height: 1; cursor: pointer' + (extra ? '; ' + extra : '');
 export const epRgba = (hex, a) => 'rgba(' + [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ') + ', ' + a + ')';
 export function masteredVals(self, m, ink, skillName, pts) {
@@ -303,7 +315,7 @@ export function masteredVals(self, m, ink, skillName, pts) {
   const corner = (v, h) => ({ style: 'position: absolute; ' + v + ': -5px; ' + h + ': 26px; width: 9px; height: 9px; transform: rotate(45deg); background: ' + ink + '; box-shadow: 0 0 0 3px #0C1018' });
   return {
     name: m.name, flavour: '“' + m.flavour + '”', text: m.text, meta: m.meta + ' · Automatic at 10 points',
-    icon: m.icon, has: !!m.icon, none: !m.icon, zoom: m.icon ? zoomer(self, m.icon, m.name, 'perk', m.text) : () => {}, alt: m.name + ' Mastered perk icon (Wick)',
+    icon: iconOr(m.icon, m.name, ink), has: true, none: false, zoom: m.icon ? zoomer(self, m.icon, m.name, 'perk', m.text) : () => {}, alt: m.name + ' Mastered perk icon (Wick)',
     kicker: '◆  MASTERED PERK · ' + skillName.toUpperCase() + ' 10  ◆', locked, lockLabel: locked ? 'LOCKED · ' + skillName.toUpperCase() + ' ' + pts + ' / 10' : '',
     pips: Array.from({ length: 10 }, (_, i) => ({ style: 'width: 8px; height: 8px; transform: rotate(45deg); box-sizing: border-box; ' + (i < pts ? 'background: ' + ink : 'border: 1px solid ' + epRgba(ink, 0.45)) })),
     corners: [corner('top', 'left'), corner('top', 'right'), corner('bottom', 'left'), corner('bottom', 'right')],
@@ -405,12 +417,17 @@ export function epccgVals(self, ptsOf, who, opt) {
     loreRows: [['high', 'At high levels:', e.high], ['good', 'Good for:', e.good], ['bad', 'Bad for:', e.bad]].filter((x) => x[2]).map(([key, head, text]) => ({ key, head, text })),
     loreHeadStyle: "font-family: 'Chakra Petch', sans-serif; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: " + ink,
     perks: e.perks.map((p) => perkRow(p.id, { held: heldOf(p.id), ink })),
+    // rules 1.78 item 6609: the door's passive steps (a door verb with no action: Threads, Two Bonds), one row each, its
+    // picture by the item key (doorArt.ts moveIconOf), where it comes (at n points, a class rank)
+    passives: (e.passives || []).map((p) => { const art = moveIconOf(p.key), icon = iconOr(art, p.name, ink); return { key: p.key, name: p.name, text: p.text, at: p.at, icon, has: true, none: false,
+      zoom: art ? zoomer(self, bigOf(icon), p.name, 'icon', p.text) : () => {}, alt: p.name + ' (Wick)', atStyle: 'flex: none; font-size: var(--fs-sub); font-weight: 700; color: ' + ink }; }),
+    hasAlwaysOn: (e.passives || []).length > 0,
     // the two rules every page shared, said once at the top of the perk fold
-    perkHelp: 'A perk step at 3, 5, 7 and 9 points: a perk at I, or I raised to II. At 10: the Mastered perk.'
+    perkHelp: ((L) => 'A perk step at ' + L.perk_steps.slice(0, -1).join(', ') + ' and ' + L.perk_steps[L.perk_steps.length - 1] + ' points: a perk at I, or I raised to II. At ' + L.mastered + ': the Mastered perk.')(ladderSchedule(s.id))
       + (combos.length ? ' A combo perk: 5 points in every skill on its card, then its deed.' : ''),
     m: masteredVals(self, e.mastered, ink, s.name),
     hasCombos: combos.length > 0,
-    combos: combos.map((c) => ({ name: c.name, text: c.text, deed: c.deed, icon: c.icon, has: !!c.icon, none: !c.icon,
+    combos: combos.map((c) => ({ name: c.name, text: c.text, deed: c.deed, icon: iconOr(c.icon, c.name, (c.skills[0] && c.skills[0].ink) || ink), has: true, none: false,
       zoom: c.icon ? zoomer(self, c.icon, c.name, 'perk', c.text) : () => {}, alt: c.name + ' combo perk icon (Wick)',
       segs: c.skills.map((k) => ({ style: 'flex: 1; height: 4px; background: ' + k.ink })),
       chips: c.skills.map((k, i) => ({ plus: i > 0, label: k.name + ' ' + k.min,
@@ -489,7 +506,6 @@ export function effectsOf(u, own = false) {
   if (!own && (u.jammed || u.offJammed)) fx.push(['JAMMED', (u.jammed && u.offJammed ? 'Both guns are' : u.offJammed ? 'The off-hand gun is' : 'The gun is') + ' jammed: it won\'t fire until cleared.']);
   if (u.heat && !own) fx.push(['HEAT ' + u.heat, '−' + Math.floor(u.heat / 2) + ' to hit; drops by 2 each turn.']);
   (u.injuries || []).forEach((i) => fx.push([((i.side ? i.side + ' ' : '') + i.loc).toUpperCase(), i.loc === 'arm' ? '−2 to attacks with that arm, until treated.' : i.loc === 'leg' ? 'Half Movement, until treated.' : 'Injured.', 'injured']));
-  if (u.weakPoint) fx.push(['READ', 'It deals 15% less damage to the squad.', 'read']);
   if (u.overweight > 0) fx.push(['OVERBURDENED', u.overweight + ' kg over the carry limit: −' + Math.ceil(u.overweight / 5) + ' Movement, no Sprint.']);
   return fx;
 }
@@ -509,6 +525,16 @@ export function tokenVals(u, opt) {
     // 0.31.0 (U4): given the unit's status groups (game/statusStrip.ts, the fight screen), the card shows the strip, small;
     // the old red line stays only where no groups are given (the map outside a fight)
     st: opt.status || [], hasSt: !!(opt.status && opt.status.length),
+    // 0.32: the ties this unit holds (game/tieLayer.ts tieWords: "Bonded to Gun"), in the tie line's ink
+    ties: (opt.ties || []).join(' · '), hasTies: !!(opt.ties && opt.ties.length),
+    // rules 1.77 item 6511: the standing to-hit terms its own items put on an attack at it (the engine's standingModsFor:
+    // "Open guard −2 to hit it"), so a defence carried is seen in the fight, not only on the gear card
+    // rules 1.78 item 6613: each with its picture when it has one (opt.guards[].pic, found by the screen from the term's
+    // item: the Open Hand's stance on Open guard)
+    guardList: (opt.guards || []).map((t) => ({ text: t.label + ' ' + (t.v > 0 ? '+' : '−') + Math.abs(t.v) + ' to hit ' + (opt.ally ? 'them' : 'it'), pic: t.pic || '', hasPic: !!t.pic })),
+    hasGuards: !!(opt.guards && opt.guards.length),
+    // rules 1.77 item 6514: a Cased enemy's kit as the squad sees it (the engine's kitSeenFor: Shadow's Case)
+    kit: opt.kit ? 'Kit: ' + [opt.kit.weapon + (opt.kit.rounds ? ' (' + opt.kit.rounds + ')' : ''), 'armour ' + opt.kit.armour, ...opt.kit.throwables].join(' · ') : '', hasKit: !!opt.kit,
     inj: [...fx.map((f) => f[0]), ...(opt.extra || [])].join(' · '), hasInj: !opt.status && fx.length + (opt.extra || []).length > 0, hint: opt.ally ? '' : 'Analyze to see its HP and status.',
     // 0.30.0: the SHIELDS block (the engine's shieldsView: exact for the squad and an Analyzed foe, size words for any
     // other; game/shieldLook.ts draws it), on every card: yours, a friend's, a foe's. opt.sv: the view the screen already

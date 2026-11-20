@@ -116,11 +116,11 @@ export const HOOK_ABOUT: Record<HookName, string> = {
   save: 'a save is rolled: items may add to it, change its TN, or pass or fail it outright',
   cond_landed: 'a condition landed on a unit',
   cond_end: 'a condition ended on a unit',
-  displaced: 'a unit was moved by someone else, after it landed (where it ended, what stopped it)',
+  displaced: 'a unit was moved by someone else, after it landed, or held where it stood by what is in the way (where it ended, what stopped it; tile: the tile that stopped it)',
   heal_given: 'a heal landed (who healed whom, how much)',
   heal_in: 'a unit is about to be healed (the amount may change)',
   shield_grant: 'a shield is about to be given (the amount may change)',
-  reaction_window: 'a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it',
+  reaction_window: 'a unit may react (an opportunity strike, an Overwatch, an answer, a Call): items may cancel it (ctx.preview: asked before a roll by tactics.ts reactRefusal; a listener only sets cancel then)',
   reaction: 'a reaction is being made (tactics.ts react(), rules 1.28): {u, kind (attack, move, protect), event, payer}; it fires before the reaction resolves',
   enemy_action_start: 'an enemy is about to act (an item may open a window or make it skip)',
   sight_change: 'after a move, the units each side stopped or started seeing (only computed while someone listens)',
@@ -249,6 +249,8 @@ export interface ActionPreview { ok: boolean; why?: string; ap: number; lines: s
 /** An action an item grants (combat Perks or Class tab, the area map, the story panel). */
 export interface ActionDef {
   id: string; label: string; scope: ActionScope[];
+  /** Ids it was known by before (spec item 5608: a save, a replay or a saved turn card that names the old id still finds it). */
+  was?: string[];
   /** Its AP before items. 'data': the item's own number in data/*.json (the action's `ap` in its grant_action, else the
    * item's ap_cost): write that, not a literal that repeats the data. A function: a cost that depends on the holder. */
   ap: number | 'data' | ((h: Holder, args: ActionArgs) => number);
@@ -281,6 +283,9 @@ export interface ActionDef {
   site?: string;
   /** A data grant that is a prayer ('whisper' | 'hymn'; rules 1.31): its row goes on the Faith tab, in its prayers' group. */
   prayer?: string;
+  /** Rules 1.77 item 6501: the tab its row sits on (a data grant_action's `tab`: shadow, tend or figments, a door's own tab;
+   * default the item's: Perks, Class). */
+  tab?: 'shadow' | 'tend' | 'figments';
   /** Who it may go at, worked out by the engine (Classes 3.0 P6: a door verb's `reach`): the descriptor's pick list. */
   choices?(h: Holder): string[];
   /** Why it can't go at this unit (a door verb's `reach`: side, range, sight, its `if`), or null. */

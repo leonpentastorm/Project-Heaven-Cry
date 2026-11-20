@@ -1,10 +1,11 @@
 // Characters: the stat tree, creation legality, derived stats, XP and levels, classes and perk steps.
 // Every formula cites the spec section it comes from (docs/rules/PHC-Core-Rules-v1.0.md).
 import './datatext'; // fills the texts' {=placeholders} before any data is read
+import { numberOf } from './datatext';
 import patronsJ from '../../../data/patrons.json';
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, ladderSchedule, ELEMENTAL_CAP } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
-import { statQuery, setRankRule, setHandsRule, type HandInstance } from './effects/hooks';
+import { statQuery, setRankRule, setHandsRule, sheetSource, type HandInstance } from './effects/hooks';
 import type { StatId } from './effects/stats';
 import feelJ from '../../../data/feelings.json';
 import worldPlayJ from '../../../data/world_play.json';
@@ -15,7 +16,7 @@ import { skillRollMod } from './effects/core';
 import { allPendingDoorPicks } from './doorpicks';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
-import { feedOf, showFeedNumber } from './effects/feed';
+import { feedOf } from './effects/feed';
 
 export interface Sheet {
   name: string; portrait: string; origin: string;
@@ -98,6 +99,12 @@ export interface Character extends Sheet {
   doorKept?: Record<string, string[]>;
   /** Rules 1.56 (Figments 2.0): the stamp of the forks' save migration (figments.json migration.rev); none: made before it. */
   figRev?: number;
+  /** Rules 1.70 item 5538: per skill, the rev of its perk_remap table this sheet was made or migrated under. */
+  perkRev?: Record<string, number>;
+  /** Rules 1.70 item 5538: per skill, an old save's free re-pick still offered (the preselection it holds now). */
+  perkRepick?: Record<string, { id: string; tier: 'I' | 'II' }[]>;
+  /** Rules 1.70 item 5538: per skill, the preselection of a re-pick taken (the chooser marks it; gone when its steps are spent). */
+  perkPreselect?: Record<string, { id: string; tier: 'I' | 'II' }[]>;
   mp?: number; evoCharge?: number; learnedScene?: number;
   /** An advanced class (rules 1.2), held alongside the base class: all its moves at once (provisional; spec 14). Class
    * Roster Revision 3 shelves every advanced class: the field is kept, but gives nothing until they come back. */
@@ -122,6 +129,10 @@ export interface Character extends Sheet {
    * by dice, "<patronId>.<hymnId>" (an Atheist's, or kept from another patron under an Open rule); the vow of the
    * current fight (also on the unit); the session each rite was last kept in; the faith rules revision (16). */
   faithPieces?: Record<string, number>; hymns?: string[]; vow?: Vow | null; ritesKept?: Record<string, number>; faithRev?: number;
+  /** Rules 1.72 item 5705: the standing vow, carried between fights (faith/vow out of a fight): the vow sworn for this
+   * character at each fight's start (id), the ally it names (a character id), or id null: fighting unsworn. Absent (an
+   * old save): no choice made, the fight asks. Changed only where faith.ts vowChangeNow allows. */
+  vowStanding?: { id: string | null; allyCharId?: string } | null;
   /** Rules 1.6.1 (Faith 2.1): Devotion XP, the total (devotion is the level it reaches, kept in step; devotionXpOf);
    * the tag and Narrator caps this session, scene and fight (faith.ts FaithTally); the pact left, for the 90-day
    * cooldown (day = g.day when they left); a patron's grudge after a switch (faith.ts Grudge). */
@@ -478,7 +489,7 @@ export function newCharacter(id: string, owner: string, s: Sheet): Character {
   // its gear when play starts (loadout.ts). An old draft's or a test's kit is carried as before.
   const kit = s.kit ? KITS[s.kit] || KITS.medic : BARE_KIT;
   const c: Character = {
-    ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, figRev: (figmentsJ as any).migration.rev, perks: [],
+    ...s, attrs: d.attr, cores: d.core, id, owner, level: 1, xp: 0, xpBySource: {}, hp: 0, echo: 1, classId: null, classRev: CLASS_REV, figRev: (figmentsJ as any).migration.rev, ...perkRevNow(), perks: [],
     unspent: { skill: 0, attr: 0, core: 0 }, deeds: [], weapon: kit.weapon, armourClass: kit.armourClass, stims: kit.stims, essence: 1, weaponKills: {}, dead: false,
     injuries: [], pack: kit.pack.map((x) => ({ ...x })), offHand: kit.offHand ? { id: kit.offHand } : null, focusRev: FOCUS_REV, mpRev: 124, hpRev: HP_REV,
     ...(s.kit ? {} : { bare: true, kit: '' }),
@@ -658,6 +669,10 @@ export function servesIndex(c: Character, id: string): number {
   const pack = packOf(c), is = (x: PackItem) => x.qty > 0 && !x.mags && ((x.item || x.id) === id || ((ITEM[x.item || x.id] as any)?.serves_as || []).includes(id));
   const own = pack.findIndex((x) => x.qty > 0 && !x.mags && (x.item || x.id) === id); return own >= 0 ? own : pack.findIndex(is);
 }
+/** Rules 1.77 item 6513 (Numb): the limb injuries that hold a unit back: its arm and leg injuries after the first
+ * `ignored` (the stat `numb_limbs`: one injured limb no longer holds you back). Read by the arm's to-hit penalty
+ * (combat.ts armPenalty), a leg's halved Movement (combat.ts rollInjury) and the sheet's Movement (movement). */
+export const penalLimbs = (injuries: readonly Injury[] | undefined, ignored: number): Injury[] => (injuries || []).filter((i) => i.loc === 'arm' || i.loc === 'leg').slice(Math.max(0, ignored));
 /** Rules 1.61 addendum item 4747: the one treatment of a limb: the first arm or leg injury comes off `t`. Returns it, or
  * null when `t` has none. Field Surgery, the field kit's use (`treat`) and a run's Rest all treat through this. */
 export function treatLimb(t: Character): Injury | null {
@@ -735,7 +750,7 @@ export const initiativeBonus = (c: Character) => fx(c, 'init', (A(c, 'agility') 
 /** Overburdened (spec: Carry weight): kg over the limit; −1 Movement per started 5 kg over. */
 export const overweightKg = (c: Character) => Math.max(0, Math.round((carriedKg(c).total - carryLimit(c)) * 100) / 100);
 export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5);
-export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (c.injuries?.some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
+export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (penalLimbs(c.injuries, statQuery({ c }, 'numb_limbs').add).some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
 export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
   + (c.offHand && isShieldId(c.offHand.id) && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
 // The derived multipliers below are the Stat term of the one formula (effects/output.ts; data/rules.json output.profiles
@@ -795,7 +810,8 @@ export const elementalMult = (c: Character) => statOf('elemental', c); // 1 + 0.
 export const maxSigilWords = (c: Character) => fx(c, 'max_sigil_words', 2 + Math.floor((A(c, 'intelligence') - 1) / 2));
 export const glyphAp = (c: Character) => Math.max(0.5, Math.round(fx(c, 'glyph_ap', 1 - 0.1 * (A(c, 'expression') - 1)) * 10) / 10);
 // rules 1.13: a Sigil's reach and its saving on cores are Brain Power's (they were Rumination's and Proficiency's)
-export const sigilCoreSaving = (c: Character) => Math.floor(P(c, 'brain_power') / 3);
+/** Rules 1.74 item 6020: the core-charge cut a Sigil, one step a point listed in skills.json brain_power per_point.charge_at (3, 5, 9). */
+export const sigilCoreSaving = (c: Character) => { const pp: any = (SKILL as any).brain_power?.per_point || {}, n: any = pp.numbers || {}; return ((pp.charge_at as number[]) || []).filter((at) => P(c, 'brain_power') >= at).length * (n.charge ?? 1); };
 export const sigilRangeBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 export const sigilDurationBonus = (c: Character) => Math.floor(0.5 * P(c, 'brain_power'));
 /** Words known at most: 4 + Brain Power, plus each Mastered free word taken (rules 1.10, item 913: a free word ignores the
@@ -810,16 +826,15 @@ export const soulCastAp = (c: Character) => { void c; return 2; };
  * (magic.ts FREE_PER_TURN). */
 export const freePumps = (c: Character) => Math.max(0, Math.floor(fx(c, 'free_pumps', ((SOUL_RULES as any).cycle?.free_pumps as { will_power: number; pumps: number }[] || [{ will_power: 3, pumps: 1 }]).reduce((n, r) => (P(c, 'will_power') >= r.will_power ? Math.max(n, r.pumps) : n), 0)))); // rules 1.33: Will Power's (it was Empathy's)
 /** Rules 1.19: from Empathy 7 a held Outburst swells without Strain. */
-export const swellFree = (c: Character) => P(c, 'will_power') >= ((SOUL_RULES as any).cycle?.swell_no_strain?.will_power ?? 99); // rules 1.33: Will Power's (it was Empathy's)
+export const swellFree = (c: Character) => Object.entries(((SOUL_RULES as any).cycle?.swell_no_strain || {}) as Record<string, number>).some(([s, n]) => P(c, s) >= n); // rules 1.75 item 6202: Composure 6's (the skill and points are the data's)
 export const soulCostSaving = (c: Character) => 0.05 * (A(c, 'insight') - 1);
 export const soulRangeBonus = (c: Character) => fx(c, 'soul_range', Math.floor(0.5 * P(c, 'will_power'))); // rules 1.13: Will Power's (it was Lore Master's)
 export const syphonMult = (c: Character) => 1 + 0.1 * (A(c, 'determination') - 1) + 0.1 * P(c, 'will_power');
-/** The Strain limit: 3 + half Will Power, x the Strain limit's beta feed (rules 1.60 item 4611: Composure), rounded; then
- * what items add (stat strain_limit). */
-export const strainLimit = (c: Character) => fx(c, 'strain_limit', Math.round((3 + Math.floor(P(c, 'will_power') / 2)) * feedOf(c, 'strain_limit')));
-showFeedNumber('strain_limit', (x) => strainLimit(x));
+/** The Strain limit (rules 1.70 item 5539, Leon's ruling): the number block soul_modules.json strain.limit (3, +1 at
+ * Composure 1, 2, 4, 6 and 8; Will Power gives none), then what items add (stat strain_limit). */
+export const strainLimit = (c: Character) => fx(c, 'strain_limit', numberOf((SOUL_RULES as any).strain.limit, sheetSource(c)));
 export const moduleSlots = (c: Character) => fx(c, 'module_slots', 1 + Math.floor(P(c, 'will_power') / 3));
-export const readyDesigns = (c: Character) => fx(c, 'ready_designs', Math.max(((SOUL_RULES as any).start?.min_ready_designs ?? 3), 2 + Math.floor(P(c, 'will_power') / 2))); // rules 1.13: ready designs are Will Power's (they were Empathy's)
+export const readyDesigns = (c: Character) => fx(c, 'ready_designs', numberOf((SOUL_RULES as any).limits.ready_designs, sheetSource(c))); // rules 1.75 item 6205: Lore Master's (a number block)
 // ---------- rules 1.8: practice, module gates and picks (spec: Soul magic 12, sections 4 and 5) ----------
 const PR = (): any => (SOUL_RULES as any).practice || {};
 const GATES = (): any => (SOUL_RULES as any).gates || {};
@@ -1129,7 +1144,10 @@ const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
 export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'analysis'))); // rules 1.13: Acuity's (the skill with the id 'analysis'); it was Durability's
 /** Elemental damage taken: −10% × Pain Threshold. Below 0 it is damage taken extra (Paper, Oil in My Mind: +10% at
  * Pain Threshold 0), so only the 60% cap applies, not the floor. */
-export const elementalTakenPct = (c: Character) => Math.max(-1, Math.min(0.6, fx(c, 'elemental_taken', 0.1 * P(c, 'pain_threshold'))));
+
+/** Pain Threshold's elemental resistance a point (skills.json per_point.numbers.elemental_taken), then what items add,
+ * held under the cap. */
+export const elementalTakenPct = (c: Character) => Math.max(-1, Math.min(ELEMENTAL_CAP, fx(c, 'elemental_taken', (SKILL as any).pain_threshold.per_point.numbers.elemental_taken * P(c, 'pain_threshold'))));
 /** Ambush damage taken: −10% × Improvisation (rules 1.13; the skill with the id 'proficiency'; it was Reaction Speed). */
 export const ambushTakenPct = (c: Character) => cap60(fx(c, 'ambush_taken', 0.1 * P(c, 'proficiency')));
 /** Healing received: +10% × Camaraderie (rules 1.13; it was Sensory, and covered shields too). */
@@ -1217,12 +1235,21 @@ export function legendRoom(c: Character): number {
   const cap = attrCapAt(c.level);
   return (c.legends || 0) - ATTRS.reduce((n, a) => n + Math.max(0, A(c, a.id) - cap), 0);
 }
+/** G2 (0.32, spec item 5606): the structured need behind canRaise's refusal of a skill point, beside its text: the
+ * attribute the skill waits on and the points it needs there (null: it waits on no attribute). The level-up screen
+ * offers "Raise <Attribute>" from it, never from the sentence. */
+export function raiseNeed(c: Character, kind: 'skill' | 'attr' | 'core', id: string): { attr: string; n: number } | null {
+  if (kind !== 'skill') return null;
+  const sk = SKILL[id]; if (!sk) return null;
+  const p = P(c, id); if (p >= 10) return null;
+  return p + 1 > A(c, sk.attribute) ? { attr: sk.attribute, n: p + 1 } : null;
+}
 export function canRaise(c: Character, kind: 'skill' | 'attr' | 'core', id: string): string | null {
   if (kind === 'skill') {
     if (c.unspent.skill < 1) return 'No Skill points to spend.';
     const sk = SKILL[id]; if (!sk) return 'Unknown skill.';
     const p = P(c, id); if (p >= 10) return 'Already at 10.';
-    if (p + 1 > A(c, sk.attribute)) return 'Needs ' + sk.attribute + ' ' + (p + 1) + ': an Attribute point first.';
+    const need = raiseNeed(c, 'skill', id); if (need) return 'Needs ' + (ATTRS.find((x) => x.id === need.attr)?.name || need.attr) + ' ' + need.n + ': an Attribute point first.';
     return null;
   }
   if (kind === 'attr') {
@@ -1284,18 +1311,26 @@ export const FOCUS_REV = 1;
 /** A save from when a carried focus counted (item 77): a focus only in the pack goes to a free off hand (the Evoker
  * first, for a character with Sigil words; else the Emanator), so nobody loses their magic to the new rule. A two-handed
  * weapon or a full off hand leaves it in the pack, with a note. Runs once (c.focusRev). Returns notes. */
-/** Perks that changed id (rules 1.13: Grapple became Iron Grip, Origami Hands became Both Hands). */
-export const PERK_RENAMED: Record<string, string> = { grapple: 'iron_grip', origami_hands: 'both_hands' };
-/** A save from before a perk or trait was renamed or removed: the renamed ones follow their new id (tier kept), and an
- * id the data no longer has is taken off the sheet, so no screen meets an item it can't look up. */
+/** A save from before a perk or trait was renamed or removed: the renamed ones follow their new id (tier kept: a skill's
+ * perk_remap, rules 1.13's Grapple to Iron Grip and Origami Hands to Both Hands among them), and an id the data no
+ * longer has is taken off the sheet, so no screen meets an item it can't look up. */
+/** Rules 1.70 item 5538 (the 0.32 lanes' one fix, found by the Body, Mind and Soul lanes alike): a removed perk a skill's
+ * perk_remap table names is never dropped as unknown before the table is read. While the sheet's stamp for that skill is
+ * under the table's rev it stays as it is, for migrateCharacterPerks to map in its order (old perks, then passives, as
+ * far as the steps reach); a sheet already stamped follows the table here (tier kept; null: taken off). */
+const remapRow = (c: Character, id: string): { pending: boolean; to: string | null } | null => {
+  // (an alpha's table only renames: never pending, no stamp; migrateCharacterPerks)
+  for (const s of SKILLS as any[]) { const t = remapOf(s); if (t?.perks && id in t.perks) return { pending: s.slot !== 'alpha' && (c.perkRev?.[s.id] ?? 0) < t.rev, to: t.perks[id] ?? null }; }
+  return null;
+};
 export function migrateCharacterItems(c: Character): string[] {
   const notes: string[] = [];
   // a perk or trait added at run time (effects/hooks.ts addItems: a mode's own items) is as known as the data's
-  const known = (id: string) => !!PERK[id] || !!rawItem('perk:' + id), knownTrait = (t: string) => TRAITS.some((d) => d.id === t) || !!rawItem('trait:' + t);
+  const known = (id: string) => !!PERK[id] || !!rawItem('perk:' + id) || !!remapRow(c, id)?.pending, knownTrait = (t: string) => TRAITS.some((d) => d.id === t) || !!rawItem('trait:' + t);
   if ((c.perks || []).some((x) => !known(x.id))) {
     const out: Character['perks'] = [];
     for (const x of c.perks) {
-      const to = known(x.id) ? x.id : PERK_RENAMED[x.id];
+      const to = known(x.id) ? x.id : remapRow(c, x.id)?.to ?? undefined;
       if (!to || !known(to)) { notes.push(c.name + ': the perk "' + x.id + '" is no longer in the game and was taken off the sheet.'); continue; }
       if (to !== x.id) notes.push(c.name + ': ' + (PERK[to] || rawItem('perk:' + to)).name + ' replaces an older perk.');
       if (!out.some((y) => y.id === to)) out.push({ ...x, id: to });
@@ -1331,20 +1366,76 @@ export function migrateCharacterClass(c: Character): string[] {
 setRankRule((c) => classRank(c));
 
 // ---------- perk steps (spec: Perks) ----------
-/** Perk steps earned in a skill: one per Mastery level 1–4 (3/5/7/9 points). */
-export const stepsEarned = (p: number) => [3, 5, 7, 9].filter((t) => p >= t).length;
+/** Perk steps earned in a skill at these points: one per step of its ladder schedule (rules 1.70 item 5537,
+ * skills.json ladder: an alpha's at 3, 6, 7, 9; a beta's and a gamma's at 3, 5, 7, 9). */
+export const stepsEarned = (p: number, skill: string) => ladderSchedule(skill).perk_steps.filter((t) => p >= t).length;
 export function stepsTaken(c: Character, skill: string) {
   return c.perks.filter((x) => PERK[x.id]?.tier === 'acquired' && PERK[x.id].skills.includes(skill)).reduce((n, x) => n + (x.tier === 'II' ? 2 : 1), 0);
 }
 /** Something waits on the level-up screen: points to spend, a class to earn (level 3), a perk step to take, a fork to
- * pick (rules 1.60; outside playtest 0.31.10 row 2: a fork open at creation went unasked). */
+ * pick (rules 1.60; outside playtest 0.31.10 row 2: a fork open at creation went unasked), an old save's re-pick (rules 1.70). */
 export const levelUpDue = (c: Character | null | undefined): boolean =>
-  !!c && (c.unspent.skill + c.unspent.attr + c.unspent.core > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length > 0 || allPendingDoorPicks(c).length > 0);
+  !!c && (c.unspent.skill + c.unspent.attr + c.unspent.core > 0 || (c.level >= 3 && !c.classId) || pendingPerkSteps(c).length > 0 || allPendingDoorPicks(c).length > 0 || pendingRepicks(c).length > 0);
+
+// ---------- old saves: the perk re-pick (rules 1.70 item 5538; ruling layer section 2 item 5) ----------
+/** A skill's remap table (skills.json row `perk_remap`: rev, perks old id -> new id or null, passives unlock points ->
+ * the perk that replaces it), or null. Each attribute's step fills its skills' tables. */
+const remapOf = (s: any): { rev: number; perks?: Record<string, string | null>; passives?: Record<string, string> } | null => (s?.perk_remap && typeof s.perk_remap.rev === 'number' ? s.perk_remap : null);
+/** The stamp a sheet made now carries: every skill with a table at its rev (none: no field, a sheet is as it was). */
+function perkRevNow(): { perkRev?: Record<string, number> } {
+  const m: Record<string, number> = {}; for (const s of SKILLS as any[]) { const t = remapOf(s); if (t && s.slot !== 'alpha') m[s.id] = t.rev; } // (an alpha's table renames: no stamp)
+  return Object.keys(m).length ? { perkRev: m } : {};
+}
+/** The skills with an old save's re-pick still offered, and the preselection each holds now. */
+export const pendingRepicks = (c: Character | null | undefined): { skill: string; held: { id: string; tier: 'I' | 'II' }[] }[] =>
+  Object.entries(c?.perkRepick || {}).map(([skill, held]) => ({ skill, held }));
+/** The load door's perk migration (rules 1.70 item 5538). For each beta or gamma skill whose table is newer than the
+ * sheet's stamp, with points at its first perk step or more: its old perks become their mapped ones (tiers kept; null
+ * drops one), the named passives it had (an unlock at points it reaches) become the perks that replace them, in that
+ * order, as far as its perk steps reach (a tier II that does not fit is held at I; no passive above the step count);
+ * the sheet holds them now and is offered one free re-pick. An alpha keeps every step it holds (stepsEarned owes a new
+ * one only when its schedule owes more): its table only renames (each old id it names becomes its new one, tier kept;
+ * null takes it off), with no re-pick and no stamp (a rename is the same whenever it is read; nothing is written for a
+ * sheet that holds no old id). Nothing is written for a skill with no table. Says nothing in the story. */
+export function migrateCharacterPerks(c: Character): string[] {
+  for (const s of SKILLS as any[]) {
+    const t = remapOf(s); if (!t) continue;
+    if (s.slot === 'alpha') { // an alpha's table renames (rules 1.13: Grapple is Iron Grip), never re-picks, never stamps
+      const map = t.perks || {}; if (!c.perks.some((x) => x.id in map)) continue;
+      const out: Character['perks'] = [];
+      for (const x of c.perks) { const to = x.id in map ? map[x.id] : x.id; if (to && (PERK[to] || to === x.id) && !out.some((y) => y.id === to)) out.push(to === x.id ? x : { ...x, id: to }); }
+      c.perks = out; continue;
+    }
+    if ((c.perkRev?.[s.id] ?? 0) >= t.rev) continue;
+    c.perkRev = { ...(c.perkRev || {}), [s.id]: t.rev };
+    const p = P(c, s.id), gone = (id: string) => id in (t.perks || {}) && !PERK[id];
+    if (p < ladderSchedule(s.id).perk_steps[0]) { c.perks = c.perks.filter((x) => !gone(x.id)); continue; } // a removed id under the steps: nothing to map it into
+    const map = t.perks || {}, mine = (id: string) => id in map || (PERK[id]?.tier === 'acquired' && PERK[id].skills.includes(s.id));
+    const old = c.perks.filter((x) => mine(x.id)), pre: { id: string; tier: 'I' | 'II' }[] = [];
+    for (const x of old) { const to = x.id in map ? map[x.id] : x.id; if (to && PERK[to] && !pre.some((y) => y.id === to)) pre.push({ id: to, tier: x.tier === 'II' ? 'II' : 'I' }); }
+    for (const [pts, to] of Object.entries(t.passives || {}).sort((a, b) => +a[0] - +b[0])) if (p >= +pts && PERK[to] && !pre.some((y) => y.id === to)) pre.push({ id: to, tier: 'I' });
+    let left = stepsEarned(p, s.id); const keep: { id: string; tier: 'I' | 'II' }[] = [];
+    for (const x of pre) { if (left <= 0) break; const tier = x.tier === 'II' && left >= 2 ? 'II' : 'I'; keep.push({ id: x.id, tier }); left -= tier === 'II' ? 2 : 1; }
+    c.perks = [...c.perks.filter((x) => !old.includes(x)), ...keep.map((x) => ({ ...x }))];
+    c.perkRepick = { ...(c.perkRepick || {}), [s.id]: keep };
+  }
+  return [];
+}
+/** Answer an old save's re-pick (the reducer's levelup/perk-repick): keep what it holds, or give the skill's perk steps
+ * back to choose again (its preselection kept for the chooser to mark). Returns the refusal, or null. */
+export function answerRepick(c: Character, skill: string, keep: boolean): string | null {
+  const held = c.perkRepick?.[skill]; if (!held) return 'No re-pick waits for that skill.';
+  const rest = { ...(c.perkRepick || {}) }; delete rest[skill]; c.perkRepick = rest;
+  if (keep) return null;
+  c.perks = c.perks.filter((x) => !(PERK[x.id]?.tier === 'acquired' && PERK[x.id].skills.includes(skill)));
+  c.perkPreselect = { ...(c.perkPreselect || {}), [skill]: held };
+  return null;
+}
 /** Skills with a perk step waiting, and the choices for each (a new Tier I, or an upgrade of a held Tier I). */
 export function pendingPerkSteps(c: Character) {
   const out: { skill: string; choices: { id: string; tier: 'I' | 'II' }[]; /** Steps owed in this skill (2+ after a jump). */ free: number }[] = [];
   for (const s of SKILLS) {
-    const free = stepsEarned(P(c, s.id)) - stepsTaken(c, s.id);
+    const free = stepsEarned(P(c, s.id), s.id) - stepsTaken(c, s.id);
     if (free <= 0) continue;
     const own = PERKS.filter((p) => p.tier === 'acquired' && p.skills.includes(s.id));
     const choices = own.flatMap((p): { id: string; tier: 'I' | 'II' }[] => {
@@ -1361,7 +1452,7 @@ export function grantAutomaticPerks(c: Character): string[] {
   const granted: string[] = [];
   for (const p of PERKS) {
     if (c.perks.some((x) => x.id === p.id)) continue;
-    if (p.tier === 'mastered' && P(c, p.skills[0]) >= 10) { c.perks.push({ id: p.id, tier: 'mastered' }); granted.push(p.id); }
+    if (p.tier === 'mastered' && P(c, p.skills[0]) >= ladderSchedule(p.skills[0]).mastered) { c.perks.push({ id: p.id, tier: 'mastered' }); granted.push(p.id); }
     if (p.tier === 'ultimate') {
       const need = p.requires.filter((r: any) => r.perk).map((r: any) => r.perk);
       if (need.length && need.every((id: string) => c.perks.some((x) => x.id === id))) { c.perks.push({ id: p.id, tier: 'ultimate' }); granted.push(p.id); }

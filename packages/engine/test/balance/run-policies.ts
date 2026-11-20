@@ -16,8 +16,9 @@
 //               the nearest foe and a Wall (else a Double) when the charge allows, swap a core when the charge is short,
 //               strike with the Figment (it walks to the foe first), then the pistol with the AP left.
 // Echo stays unplayed by every policy (survival-spec 13.9.6).
-import { SIGIL, previewAttack, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit, isMelee, paths, apForTiles, objectsOf, isPile, entryPack, PICKUP_AP } from '../../src';
-import { POLICIES, sigil, sigilAfter, outburst, plain, gunner, optimised, fixOrMove, type Policy, type Ctx, type Step } from './policies';
+import { SIGIL, previewAttack, previewPerkAction, glyphApOf, groundCap, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit, isMelee, paths, apForTiles, objectsOf, isPile, entryPack, PICKUP_AP } from '../../src';
+import { POLICIES, sigil, sigilAfter, sigilLines, outburst, plain, plainCands, best, gunner, optimised, fixOrMove, type Policy, type Ctx, type Step } from './policies';
+import { pickedFork } from '../../src/doorpicks';
 import { obHeal } from './heal-measure';
 
 const W = <T>(g: any, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
@@ -39,8 +40,96 @@ function areaLine(x: Ctx, words: string[]): string[] | null {
   const el = words.find((q) => Number((SIGIL[q] as any)?.damage) > 0); if (!el) return null;
   return [el, ...Array(n - 3).fill(el), w, 'seek'];
 }
-/** The Sigil caster that never passes a turn with AP left (spec 13.6 (3)). */
+/** The Sigil caster that never passes a turn with AP left (spec 13.6 (3)), played as a player plays it (0.32 simulator
+ * lane: the 0.31.11 bot cleared stage 1 on 0 of 40 seeds; its turn logs showed why, docs/design/handoffs/0.32-MEASURES.md):
+ *   1. a foe with a blade beside it: no step (each step drew an opportunity attack from every foe beside it, 4 to 16
+ *      damage a step): the pistol at the weakest of them; with Clean Vent (the Brain Power fork) and Flux in the Evoker,
+ *      the Vent throws them back first;
+ *   2. small game (a Vermin, or a foe the pistol drops in one expected hit) is shot, not drawn for: a Line of four did
+ *      about 180 at level 1 to a rat of 15 HP and took a whole turn;
+ *   3. a new Line is as long as the target needs and as the turn pays for: the shortest that drops the target on its
+ *      estimate (the Line's number times what the last Evoke dealt for its number, LINE_K at first), else the longest
+ *      that is drawn, walked and Evoked inside this turn's AP (a Line left over a turn was scuffed and its glyphs faded);
+ *   4. the core is swapped BEFORE a Line whose charge and Evoke the Evoker can't pay (it was swapped mid-Line, or after
+ *      the last glyph with no AP left, and the Line waited a turn);
+ *   5. Overclock (Brain Power 2): with Max Sigil words under a full Line, the Line may be one glyph longer, paid in
+ *      core charge (the Overclock verb before that glyph).
+ * Each step is the engine's own preview (planEvoke, glyphCost, previewAttack, previewPerkAction); a refusal falls back
+ * to the Sigil policy (policies.ts sigil), which is unchanged. */
+const LINE_K = 3; // a measuring tool's first guess (level 1 all in: 119 to 126 dealt by STONE · SEEK, numbered 35); learned per fight after the first Evoke
+const SMALL_T = new Set(['vermin']);
+const W2 = W;
+function lineCost(x: Ctx, n: number): number { const u = x.u; return W2(x.g, () => glyphApOf(u)) * n + (n - 1) * apForTiles(1, 0, u.movement) + 1; }
+function lineCharge(x: Ctx, words: string[]): number { const m = x.u.mg; return words.reduce((t, w) => t + (Number((SIGIL[w] as any)?.charge) || 1), 0) + Math.max(1, words.length - (m.coreSave || 0)); }
+/** Measured switches of the run's Sigil policy (0.32): `along` draws every Line straight away from the target and fires it back along itself (no step off the end). */
+export const SIGIL_RUN_OPTS = { along: ((globalThis as any).process?.env || {}).SIG_ALONG !== '0' };
+export const SIGIL_RUN = { pistolSmall: 0, meleeShot: 0, cleanVent: 0, preSwap: 0, overclock: 0, short: 0 };
 export const sigilRun: Policy = (x) => {
+  const u = x.u, m = u.mg, M = x.memo;
+  if (m?.evoker && (m.words || []).length && x.foes.length && u.ap >= 1) {
+    const plan = M.plan, pistolOn = (ts: any[]) => { const p = plainCands({ ...x, foes: ts }), b = best(x, p.cands, (c) => c.value / Math.max(0.5, c.ap)); return b ? b.step : null; };
+    const adj = x.foes.filter((f) => dist(f.pos, u.pos) <= 1 && isMelee(WEAPON[f.weapon]));
+    const knows = (id: string) => pickedFork(x.c, id);
+    // 1. a blade beside it: the next glyph on its own tile is still drawn; any step is not taken
+    if (adj.length && !(plan && plan.i < plan.words.length && plan.tiles[plan.i] === u.pos) && !(plan && plan.i >= plan.words.length)) {
+      if ((m.flux || 0) > 0 && knows('fork.sigil.clean_vent') && x.memo.cleanVent !== x.cb.round) { x.memo.cleanVent = x.cb.round; const s = ok(x, { action: { type: 'combat/vent' }, kind: 'setup', label: 'Clean Vent (throws them back)' }); if (s) { SIGIL_RUN.cleanVent++; return s; } }
+      const s = pistolOn([...adj].sort((a, b) => a.hp - b.hp)); if (s) { SIGIL_RUN.meleeShot++; return s; }
+    }
+    if (!plan) {
+      // 2. small game: the pistol
+      const tgt = [...x.foes].sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos))[0];
+      const pc = plainCands({ ...x, foes: [tgt] }).cands[0];
+      if (pc && (SMALL_T.has(tgt.tier) || pc.value >= tgt.hp)) { const s = pistolOn([tgt]); if (s) { SIGIL_RUN.pistolSmall++; return s; } }
+      // 5. Overclock: one glyph past Max Sigil words (the verb is sent before the glyph that needs it, below)
+      const over = (m.maxWords || 2) < 4 && !!verbOk(x, 'skill:brain_power.2', 'overclock');
+      const cap = Math.min(4, (m.maxWords || 2) + (over ? 1 : 0), W2(x.g, () => groundCap(u, x.cb)) + (over ? 1 : 0));
+      // 3. the Line's length: the shortest that drops the target, else the longest the turn pays for
+      const K = M.lineK || LINE_K, byN: Record<number, any> = {};
+      for (const l of sigilLines(m.words, cap)) if (!byN[l.words.length] || l.est > byN[l.words.length].est) byN[l.words.length] = l;
+      const ns = Object.keys(byN).map(Number).sort((a, b) => a - b), fits = ns.filter((n) => lineCost(x, n) <= u.ap + 1e-9);
+      let n = fits.find((q) => byN[q].est * K >= tgt.hp) ?? fits[fits.length - 1];
+      if (n == null) { const s = pistolOn(x.foes); if (s) return s; n = ns[0]; }
+      if (n != null) {
+        // 4. the core swapped before the Line, when the Evoker can't pay for it
+        if (lineCharge(x, byN[n].words) > (m.charge || 0) && m.cores > 0) {
+          if (u.ap >= 2) { const s = ok(x, { action: { type: 'combat/core' }, kind: 'setup', label: 'swap the core (before the Line)' }); if (s) { SIGIL_RUN.preSwap++; return s; } }
+          const s = pistolOn(x.foes); if (s) return s;
+        }
+        if (n < (ns[ns.length - 1] || n)) SIGIL_RUN.short++;
+        const mw = m.maxWords; if (over) { u.mg.maxWords = Math.min(4, mw + 1); M.overAt = mw; }
+        try { return sigilRunBase({ ...x, opts: { ...(x.opts || {}), glyphs: n, noCover: true, along: x.opts?.along ?? SIGIL_RUN_OPTS.along } }); } finally { u.mg.maxWords = mw; }
+      }
+    }
+    // Overclock before the glyph past Max Sigil words
+    if (plan && plan.i < plan.words.length && M.overAt != null && plan.i >= M.overAt && plan.tiles[plan.i] === u.pos && M.overStamp !== plan.sid + ':' + plan.i) {
+      const v = verbOk(x, 'skill:brain_power.2', 'overclock'); M.overStamp = plan.sid + ':' + plan.i; if (v) { SIGIL_RUN.overclock++; return v; }
+    }
+  }
+  return sigilRunBase(x);
+};
+/** After each action: the Sigil policy's plan, and K learned from an Evoke (what it dealt over the Line's number). */
+function sigilRunAfter(x: Ctx, step: Step, okd: boolean) {
+  const M = x.memo;
+  if (step.action.type === 'combat/evoke' && okd && M.evoking?.est) {
+    const pre: Record<string, number> = M.preHp || {}; let dealt = 0, dropped = false;
+    for (const [id, hp] of Object.entries(pre)) { const f = x.cb.units.find((q: any) => q.id === id), now = f && !f.dead && !f.downed ? f.hp : 0; if (!now && hp > 0) dropped = true; dealt += Math.max(0, hp - now); }
+    // a foe it dropped hides the overkill: then the number only rises
+    if (dealt > 0) M.lineK = dropped ? Math.max(M.lineK || LINE_K, dealt / M.evoking.est) : Math.max(1, dealt / M.evoking.est);
+  }
+  sigilAfter(x, step, okd);
+}
+function verbOk(x: Ctx, id: string, actionId: string): Step | null {
+  let pv: any; try { pv = W(x.g, () => previewPerkAction({ u: x.u, c: x.c, cb: x.cb, g: x.g }, id, { actionId }, 'combat')); } catch { return null; }
+  if (!pv?.ok || (pv.ap ?? 0) > x.u.ap) return null;
+  return ok(x, { action: { type: 'combat/perk', id, actionId }, kind: 'other', label: actionId });
+}
+/** The run's Sigil policy as it was (0.31): the Sigil policy, the area words, and the pistol or a Vent with AP left. */
+const sigilRunBase: Policy = (x) => {
+  const s = sigilRunCore(x);
+  if (s && s.action.type === 'combat/evoke') x.memo.preHp = Object.fromEntries(x.foes.map((f) => [f.id, f.hp]));
+  return s;
+};
+const sigilRunCore: Policy = (x) => {
   const s = sigil(x), plan = x.memo.plan;
   if (s && s.action.type === 'combat/draw' && s.seq === 'start' && plan && plan.i === 0 && !plan.area) {
     plan.area = true; const a = areaLine(x, plan.words);
@@ -53,7 +142,7 @@ export const sigilRun: Policy = (x) => {
   if (m && (m.flux || 0) > 0) return ok(x, { action: { type: 'combat/vent' }, kind: 'setup', label: 'vent Flux' });
   return null;
 };
-(sigilRun as any).after = sigilAfter;
+(sigilRun as any).after = sigilRunAfter;
 
 // ---------------------------------------------------------------------------------------------- Outburst
 const SMALL = new Set(['vermin', 'minion']);

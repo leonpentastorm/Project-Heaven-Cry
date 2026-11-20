@@ -1,390 +1,382 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
-> **Taking over? Read `docs/design/handoffs/TAKEOVER-2026-11-18.md`, then `ATTACK-PLAN-2026-11-19.md` beside it.**
->
-> **18 Nov 2026 (newest): 0.31.10 IS LIVE.** Everything decided on 16 to 18 Nov, with the scouting documents, is in
-> `docs/design/handoffs/SESSION-TODO-2026-11-16.md` (read its sections Q to V first). The order Leon agreed:
->
-> 1. **The whole-game wording pass** (to-do section U): a cheap agent screenshots every screen
->    (`docs/design/handoffs/2026-11-18-screen-capture-plan.md`), the lead rewrites the words by CLAUDE.md "Say the core,
->    once, and stop". With it: Iron Heart as ruled, the ladder layout, the 27 skills' rows in card style.
-> 2. **0.32 "class UI and effects"**, first the tables for Leon's edits (ladders with unlocks spread to the empty
->    levels, the alphas' surplus moved into beta and gamma, the nine classes audited against their ladders, the 18
->    shelved forks; `docs/design/proposals/2026-11-18-scout-attribute-tables.md`), the Strain ruling (Composure only,
->    base 3), the Damage ways; then prayer effects, Figment effects, Shadow (dark maps, Douse, Prone, detect ranges,
->    Stalk, Silent), the alarm, the calm track, the vow pop-up, the level-up banner, sounds
->    (`docs/design/handoffs/2026-11-18-scout-owed-fixes.md`).
-> 3. **Items 2.0** (ask Leon before starting; `docs/design/proposals/2026-11-18-scout-items-2.0.md`): A (0.33) the
->    system on today's art: one item card, families / forms / grades, the Forge reforge, Dexterity techniques on
->    Pressure, hybrids, Heavy, armour readable; B (0.34) the content as art lands: family tables for melee, guns,
->    shields, armour, modifiers, uniques, dead items given uses; C (0.35) Weapon Arts.
-> 4. **After:** the Faith artifact and chapel; advanced classes as attribute pairs with three-tier weapons; Roguelike
->    and Campaign modes; the canvas at 1.0.
->
-> Live history since 0.29.0: 0.30.0 (shields, the follow strike, forks, beta feeds), 0.31.0 (the field as turns,
-> banners, Dexterity melee, cover, the fight panel), 0.31.1 to 0.31.10 (victory panel, reward panel, the approach,
-> the picking contract, all art in, an outside reviewer's fixes, the wording rules). What follows below is older.
+**Live: 0.32.0 (20 Nov 2026; rules 1.70 to 1.81; account `docs/design/handoffs/0.32.0-LIVE.md`).** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
 
-> **0.29.0 "Balance 2.0" is live (16 Nov 2026; rules 1.56).** **Next:** merge and ship together the fight-tab settings (`origin/wip/lane-0.29-tabs`), a shield in either hand (`origin/wip/lane-shield-either-hand`) and the follow-strike design (`origin/wip/design-follow-strike`, a draft); Leon's rulings, the known faults, the consolidation pass and the number-fitting pass are listed in `docs/design/handoffs/START-HERE.md`. Balance 2.0 (Leon, 14 Nov 2026): every weapon measured against the plain rifle, outliers refitted, and the open class lines; see `docs/design/handoffs/SURVIVAL-PICKUP.md`.
+Item format: `**Short name.** What is owed. [size S/M/L] [state: open | partly | not verified; checked in code 19 Nov 2026 | from documents only] [source]`. Sizes: S under an hour, M a few hours, L about a day.
 
-This is a list of leads, not a spec. Each item says where its design lives. Before building anything, read
-`CLAUDE.md` and `docs/HANDOFF.md`. Leon decides the order; the top section is the suggested one.
+How this list was made: the merged list of 19 Nov (`BEFORE-ITEMS-2.0`) was checked against the code, and `docs/design/handoffs/2026-11-19-code-verification.md` WINS where they differ (it also holds Leon's rulings of 19 Nov evening). Rulings that shape everything: **everything owed goes into 0.32, worked continuously, before Items 2.0 and art; 30% of the weekly usage is a target, not a cutting line; nothing is cut.** Hosting off KV and the outside code review come after 0.32, before Items 2.0.
 
-## Now (14 Nov 2026, at the close of Survival)
+Order: 0.32 (LIVE 20 Nov 2026; what is listed under it as owed is still owed) -> after 0.32 (hosting, code review) -> Items 2.0 (ask Leon) -> Later.
 
-1. **Survival mode is live** (0.27.x, 0.28.0 with rules 1.54, and 0.28.1 with rules 1.55; rules 1.39 to 1.49; `docs/design/handoffs/SURVIVAL-PICKUP.md`):
-   the mode picker, the path map as lanes with one guarded vault, generated fights and maps, rewards, the full-screen
-   shop, the Forge, trainings, shrines, the Crossroads, gives, endless stages with boons and tiles, the tally and Report
-   a run, and the curve fitted by simulated runs (`survival-steps-9-10.md`). **Live.** Open: Balance 2.0 draft (`docs/design/proposals/2026-11-balance-2.0.md`, awaiting Leon; includes heavy guns with 2+2 special rounds, the provisional 0.28 XP and stage fit since the simulator never makes or sells materials, level 3 before the first Boss on 42% of most-fights routes); the art prompt list (`art/briefs/GPT-PROMPTS-2026-11-15-everything-missing.md`, 66 images); the consolidation pass owed before the next system.
-   Leon names which of the checklist section S calls to reverse.
-2. **Classes 3.0 is live** (0.26.0; rules 1.28 to 1.38; `docs/design/handoffs/CLASSES-3.0-PICKUP.md`): nine doors,
-   nine renamed base classes, Shadow, Bonds and Tending, Figments, the Chaplain's prayers, reactions made real, the
-   enemy acting on what it sees, the level scale ×7.5 with heals in percent of HP. Its checklist is section 0 (53
-   calls).
-3. **The Forge art run** on Leon's GPU (`art/briefs/FORGE-PHC.md`): LoRAs per art mode, then the Classes 3.0 icons and
-   the Figment portraits (`art/briefs/ART-REQUESTS.md` section 5, C6).
-4. **What Classes 3.0 left:** gathered in `docs/design/handoffs/LOCAL-SESSION-START.md` section 6 item 4 (Parting Cut and
-   Case, NULL on Figments, the Figments' class-only term, Smite's chip, two Sanctuaries stacking, the enemy's squad plan
-   against reactions, enemy versions of the doors).
-5. **The advanced classes** come back as attribute pairs (squared and cross-core hybrids, in batches; they may be
-   redesigned; shelved moves: `docs/design/move-pool.md`), each with its faction's own Evoker or Emanator.
-6. **M813** is unlisted until it is rewritten for World Play (item 3 below).
+## 0.32 (live 20 Nov 2026; the owed items below carry on)
 
-The list below is the older suggested order; items marked built or done stay for the record.
+The 0.32 rulings layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (link, not copied; "proposals N" below means its numbered sections). Release branch `release/0.32`; effects on `wip/0.32-effects`.
 
-## Suggested order
+### Shared pieces (`release/0.32`; checked against the branch 19 Nov 2026)
 
-1. **A real M813 playtest of the new Narrator and World Play**, on a fresh API key.
-   - Check that the Narrator places faces, caches, hazards, triggers and talk options, and that it stops recapping
-     and skipping stages.
-   - The live harness is `apps/web/src/narrator/live-playtest.test.ts`; before/after transcripts are in
-     `docs/design/handoffs/narrator-craft-transcripts/`.
-   - Add a 14-turn run, which reaches the "carry everyone east" beat and so tests the skip-a-stage rule.
-2. ~~**Implement Leon's faith rulings**~~ **Built** as Faith 2.1, rules 1.6.1 (branch `feature/faith-2.1`, decision 107,
-   spec items 701–723; `docs/design/faith-2.1-spec.md`; hand-off `docs/design/handoffs/faith-2.1-HANDOFF.md`):
-   - leaving a patron: Devotion 0 and a 90-day cooldown on the new day counter; a direct switch has no cooldown, but the
-     patron you leave rolls to let you go (Open) or always holds a grudge (Jealous), as its `leave` data says;
-   - Devotion is now **Devotion XP** toward the same 0–10 standing, and the tag cap lives on the character (2 XP a fight,
-     2 a scene, 6 a session; the "+1 a fight" ruling was in levels and is replaced by these, see the design doc);
-   - `--faith-light` `#F2C46A` is in the web app, `colour-system.md` and `palette.json`;
-   - the art direction (patrons painted as a god appears to an NPC; the delivered set is right) is in the style guide,
-     the Blessing art brief and the Blessing 2.0 spec section 8.
+- **Call strength steps, the rest.** The steps moved to 1/4/8 (`514e66e23`); still owed: Rally and Brief re-stepped stronger, and the other seven Calls measured. [M] [partly; checked in code 19 Nov 2026] [proposals 2.1, 2.4]
+- **Strain limit: the nerf report.** The limit is built (`514e66e23` D); report the nerf to Leon before it ships, and check the Will Power 4/6 forks do not give the limit back. [S] [partly; checked in code 19 Nov 2026] [proposals 3.10]
+- **Elemental resistance: the source list.** Pain Threshold 6% a point under the 80% cap is built (`514e66e23` E, `dd62cf571`); still owed: list every other source and say plainly that no gear gives resistance today. [S] [partly; from documents only] [proposals 6]
+- **Serial group for flaky browser suites, the rest.** The serial list exists (`585d58d29`: fx-room, magic, title, resources, capture-skills, picking); add voice, shadow, tending, slate, slate-title, slate-music, turn-card-side, sigil15-growth. [S] [open; checked in groups.json 19 Nov 2026] [START-HERE 15 Nov]
 
-   ~~**Still open for Leon:** the Miracle's price.~~ **Decided** (Leon, 9 Nov 2026) and built as **Miracle 2.1**, rules
-   1.6.2 (items 724–737): the Miracle needs Devotion 10 and lowers Devotion by 5 levels; all eight Miracles are
-   stronger and engine-run. Every number in items 701–736 is provisional for playtests.
-2b. **Fight maps up to 26 × 26** (**built**, rules 1.16, 11 Nov 2026: the limits, `data/maps.json`, layouts as rows of
-   characters, open ground and the Proving Ground at 26 × 26, the M813 paintings retired; the camera is 2c. Spec:
-   Maps; open items 1039 to 1047) (Leon, 11 Nov 2026; queued right behind step 1 of the balance pass, which is in the
-   same engine files). 26 × 26 (A to Z by 1 to 26) is the largest a map can be and the size of the Proving Ground and
-   of open ground; a campaign or a later game mode may set a smaller map, chosen when the campaign is made (the
-   campaign format gets a size field with that maximum); sides deploy about 10 to 14 tiles apart with cover on the
-   approach (Sprint and range bands finally matter); the screen opens zoomed to fit and follows whoever acts. The five
-   painted maps (M813's four and the Proving Ground) go to plain colour until they are repainted (`art/briefs/ART-REQUESTS.md`,
-   maps M1 to M9). The simulator's maps follow, so the balance numbers are measured on the real ground.
-2c. **The camera** (**built**, 11 Nov 2026: `apps/web/src/game/camera.ts` and `cameraView.ts`, the effects queue in
-   `fx/play.ts`, both map screens; how it behaves: `docs/design/ui-screens.md`, The camera; its numbers: spec item
-   1048 and 1049; browser suite `camera`. What was settled while building: it follows every turn and effect the squad can
-   see; each co-op player has their own; the overview is on M and on the map's toolbar, not in the settings;
-   reduced motion cuts instead of gliding; the jump-back key is Home.) (Leon, 11 Nov 2026: on a 26 × 26 map zoomed
-   to fit, "tokens will be barely visible, let alone effects like casings"; "zoom to our current is good"). For the
-   fight and the area map alike:
-   - **The view keeps today's tile size.** The map is bigger than the window and the window is a camera on it. Fit-to-
-     window stays as an **overview** the player switches to and back from (a key and the map's zoom control), never
-     the default.
-   - **The camera follows the play:** to whoever's turn it is; to the target before an attack, a spell or a push
-     plays, so its effect is seen at full size; back to the player's own unit when their turn comes. It moves once per
-     beat, smoothly, never while the player is aiming or dragging.
-   - **The player moves it too:** drag the map, the arrow or WASD keys, the wheel; a key to jump back to their unit.
-   - **Nothing happens unseen:** an arrow at the screen's edge, in the side's colour, points at each unit or effect
-     acting off screen (a click goes there); a click on a portrait in the initiative strip moves the camera to that
-     unit. **A small map in the corner** shows the whole field: units as dots in their side's colour, the camera's
-     frame, and it takes clicks (Leon, 11 Nov 2026: "keep the mini map… I will playtest and think about it later if
-     it's unusable"; at 26 × 26 it is about 6 pixels a tile, so it is for where things are, not what they are).
-     **And the overview key:** the whole field fits the window while it is on, a click on a tile sends the camera
-     there. The M key already opens the area map outside a fight; in a fight the same key is the overview, so one key
-     means "show me the whole map" everywhere. Fog of war holds: an unseen hostile's turn moves nobody's camera and
-     draws no arrow or dot.
-   - **To settle while building** (proposed defaults in brackets): whether the camera follows hostile turns at all or
-     only shows their effects on the player's side of the field [follow what the squad can see]; whether co-op players
-     each have their own camera [yes]; the overview's place in the settings; reduced-motion players [cuts, no glides].
-3. **Rewrite M813 for World Play.** (Leon, 11 Nov 2026: "M813 is too broken now with all we have changed": its maps are plain colour until this is done.) Every area gets:
-   - an objective with a `where`;
-   - a hazard or obstacle with approaches and real failure costs;
-   - someone to talk to (`wants`, `knows`, `talk`);
-   - a cache or reward;
-   - a trigger where an ambush belongs.
+#### Built in 0.32 (live in 0.32.0)
 
-   Objective-givers speak plainly. Spec: `docs/design/world-play-spec.md`. Campaign: `data/campaigns/m813.json`.
-4. **The balance pass** (done in large part as rules 1.15 and 1.17 to 1.25: the enemy table, magic, guns, the Outburst, heals and shields, Faith, defence, MP, the fire doctrine; a full Sigil Line is 150 to 200%, the Outburst about 135% steady and 165% at its biggest, an optimised gun a bit under 150%, and there are no hard caps since rules 1.17. The simulator is `packages/engine/test/balance/`. Left: the weapon step's leftovers, Equipment 2.0, XP by level. The original brief follows; the full draft with every angle, the AP economy included, is
-   `docs/design/proposals/2026-11-balance-pass.md`), against `docs/design/balance-targets.md`:
-   - weapons are the 100% baseline;
-   - Sigil is about 150% at most;
-   - Outburst is about 125% steady;
-   - optimised physical is 150% (110% without ideal gear);
-   - caps of 350 per hit for a full build and 500 on a mega crit.
+- **Call price table.** 3 AP, 2 AP from 5 points, 1 AP from 9, once a turn; at 10 twice, and the reaction may pay. `514e66e23` A, `508402cdc` (skeleton-screens). [proposals 2.2-2.3]
+- **Perk-step schedule as data.** `skills.json ladder` (alpha 3/6/7/9, forks 4/8; beta and gamma 3/5/7/9). `514e66e23` B. [proposals 4.1]
+- **Old-save migration.** The free re-pick (`perk_remap`, `perkRev`, `migrateCharacterPerks`), the removed perks mapped, tests on the repo's old saves. `c58d03ff0`. [proposals 2.5, 3.9]
+- **Strain limit** 3, +1 at Composure 1/2/4/6/8. `514e66e23` D. [proposals 3.10]
+- **Elemental resistance** 6% a point of Pain Threshold, cap 80% in data. `514e66e23` E, `dd62cf571`. [proposals 6]
+- **`figment_forms` door** with its save migration (figRev 2). `514e66e23` F. [proposals 5]
+- **Approved primitives:** Flux as a resource row and `at: limit` (`d59d42b73`); the target-aware price, `seen_range`, `reactRefusal`, the `tech_rule:` reference (`c7338ec99`); each with its reducer test. [attribute-proposals; spec 5530]
+- **Golden tables and replays re-recorded for rules 1.70.** `fe47c3744`.
 
-   *(The targets and caps above are the brief's; rules 1.17 removed the caps and rules 1.19 set the Outburst's.)* Every number in section 14
-   is provisional.
-4a. ~~**Skeleton 2.0**~~ (rules 1.13): live as 0.19.0 on 10 Nov 2026. Plan and log `docs/design/handoffs/skeleton-2.0-PLAN.md`.
-   **Next up is item 4, the number balance pass** (Leon, 10 Nov 2026: balance first, so everything added later has a
-   ceiling to balance to). After it: effects and icons for the nine Calls, then 4b.
-4b. **Queued behind the balance pass, with the equipment pass ("Equipment 2.0"):**
-   - **Weapon Arts** (Leon, 10 Nov 2026): a weapon's own special action as a card, charged by kills, on its own row of
-     the Attack tab, movable to another weapon at drill mark III; one a weapon, two for a special martial class, one
-     for each weapon when dual wielding. Recorded in `docs/design/proposals/2026-11-weapon-arts.md`; not designed yet.
-   - **Tri-scale armour** (hybrid armour gated by two or three beta skills, with its own mechanics).
-   - The four playstyles Skeleton 2.0 leaves open (Ingenuity, Visualization, Durability, Empathy).
-   - **Heavenprint artwork for every weapon and piece of gear** (about 100 and growing; Leon, 11 Nov 2026): the
-     painted large view beside the line icons. Listed for the artist as E1 in `art/briefs/ART-REQUESTS.md`.
-5. **Advanced classes, batch 1: the 9 squared classes.** Juggernaut, Berserker, Gunslinger, Ghost, Grand Sigilist,
-   Mirage, Heartbinder, Heartfed, Saint. Roadmap: `docs/design/class-roster-rev3-proposal.md` section 7. Shelved
-   moves to bring back are listed in `docs/design/move-pool.md`. The data already carries `kind`/`pair`/`batch`, so
-   turning a batch on is mostly data.
+### Effects (`wip/0.32-effects` merged into `release/0.32` at `b290bc3a5`; report `docs/design/handoffs/0.32-EFFECTS-AUDIT.md`)
 
-6. **The roguelike mode** (Leon, 11 Nov 2026): built **after every combat style and the advanced classes are in**. It
-   becomes the main mode. Section "The roguelike mode, companions and what is sold" below; decision 115.
-   **Before anything is sold, this must be a good game for Leon and his friends to play.**
+- **Prayer effects, the rest of R1-R8.** Built: the wind-up and landing (`8b24fe818`), elements on prayer damage from the engine (`11a345ff6`), the storm's thunder (`6b18699c4`). Still owed: typed numbers moved to data; Covering Fire 3x3 and the "99 rounds" text; per-patron sounds. [M] [partly; checked in code 19 Nov 2026] [scout-owed-fixes 15a]
+- **Everyone Home: the allies' tokens.** Its heals and shields are numbered now; the touched allies' tokens do not answer (the Miracle's landing skips `landOn`; audit re-run 19 Nov: "target token still (2)"). [S] [open; checked in code 19 Nov 2026] [0.32 effects audit]
+- **Soothe has no log line.** The cleanse is drawn and named (CLEANSED, `11a345ff6`), but `tending.json tend.soothe`'s cleanse row has no `say`. [S] [open; checked in code 19 Nov 2026] [0.32 effects audit]
+- **Tug on an ally already beside you draws nothing.** It now says so in the log (`a82b2ece3`); nothing is drawn on the map. [S] [open; checked in code 19 Nov 2026] [0.32 effects audit]
+- **A Bond ending any other way has no event.** Let go is the engine's event now (`11a345ff6`); a Down, the Attuner leaving and sight still read the parting from two views (`bonds.ts noteTies`). Each needs `untie` callers in `kit.ts` to say it (a lead's call: one event in `untie` itself). [S] [open; checked in code 19 Nov 2026] [rules 1.72 item 5701]
+- **The out-of-run vow change.** Out of a Survival run the standing vow changes any time out of a fight (rules 1.72 item 5705, PROVISIONAL): Leon to confirm. [S] [open] [rules 1.72]
+- **Figment effects, the rest.** Built: the orders shown, Redraw a blink, Interpose a walk, a destroyed Figment BROKEN at once (`c8fda7784`), Husk Burst's number (`1497f7d46`). Still owed: `fieldRepair` bypasses `mend()`. [S] [partly; from documents only] [scout-owed-fixes 15b]
+- **Sounds, the rest.** Built: victory fanfare, defeat sting, level-up sting, heal shimmer, the storm's thunder (`6b18699c4`). Still owed: a divine impact; a lightning sound apart from the thunder. [S] [partly; checked in code 19 Nov 2026] [SESSION-TODO C8]
+- **Small UI.** Fork, action-row and trap icons still small; the legend's "Your trap" line; camera jump after an illegal far click (needs a browser repro); fight-panel tabs wrap to a second row with every door open. [M] [open; from documents only] [scout-owed-fixes]
 
-## Outburst 4.0 (built: rules 1.8, decision 109)
+#### Built in 0.32 (live in 0.32.0)
 
-- Built on `feature/outburst-4.0` from `docs/design/outburst-4.0-spec.md`; hand-off
-  `docs/design/handoffs/outburst-4.0-HANDOFF.md`. Waiting on Leon:
-  - the 25 feeling colours;
-  - the readings in spec items 801–818;
-  - the placeholder icons;
-  - the sounds, which nobody has listened to yet.
-- Still to do:
-  - the 10 class-gated modules' behaviours, when their classes return;
-  - a flee rule, for Contempt's "or flees";
-  - per-unit sight, for Dread's "can't see Hidden things";
-  - painted art for the COMING SOON slots the hand-off lists.
-- **Later:** the pen-and-paper conversion. Practice becomes one module pick per level-up for Soul casters.
-- **Trait idea, now that 4.0 is built:** Abandon goes off wild when you're already over the Strain limit (Leon: "sounds
-  more like a trait than a base mechanic").
+- **Bond and Tending verb effects.** The tend down a Bond, "Bonded to" on the token card (`875a5452c`); Soothe's cleanse shown (`11a345ff6`, rules 1.72 item 5700); Let go's parting from the engine's event (`11a345ff6`, item 5701); Tug's ally line (`a82b2ece3`, item 5706). Tests: `test/rules172-fx.test.ts`, `fx/bonds.test.ts`.
+- **No silent HP change.** `fx/silent.ts` (`1497f7d46`); Everyone Home's shields through the one mend (`11a345ff6`, item 5703).
+- **A state-only prayer says its name** from the engine's event (`11a345ff6`, item 5704).
+- **Vow pop-up** at the camp, changed at a rest (`5640182a1`); the standing vow carried on the character by the engine, sworn as each fight starts; the device store and the auto-swear removed (`11a345ff6`, item 5705).
+- **Status strip on the token face.** `4732369fe`.
+- **The NOW PLAYING credit never covers a panel** (a chip at the top edge, opened on hover). `a82b2ece3`, item 5707.
+- **PlaceScreen no longer imports `data/survival.json`** (the vow button asks the engine's `faithView` `vowChange`). `11a345ff6`.
 
-## Sigil 1.5 (accepted direction, 9 Nov 2026)
+### Gaps (player-facing faults and small things no lane owned; `wip/0.32-gaps` merged at `e52c9d90c`; report `docs/design/handoffs/BEFORE-ITEMS-2.0.md`)
 
-- Spec: `docs/design/sigil-1.5-spec.md` (one file to hand over). It covers:
-  - **strokes**: a Line is what you drew as one, so touching glyphs no longer poison each other (playtest fix);
-  - guaranteed new words: study, copying enemy glyphs and investigating sigils drawn in the world, Mastery;
-  - word mastery and inflections;
-  - late-game Junctions (one glyph shared by two Lines; Lines of 5 were dropped);
-  - gated power for the advanced Mind classes.
+- **Forks at camp not shown in MAGIC (TRIAGE row 10), the fork half.** The "1 spare cores" half is fixed (below); forks picked at camp not showing on the MAGIC tab was not reproduced. [M] [open; from documents only] [TRIAGE row 10]
+- **"Needs Lore Master 1 (you have 1)".** The refusal text contradicts itself; not touched by the gaps lane. [S] [open; from documents only] [TRIAGE row 13]
+- **Small test faults.** `fx-sweep`'s nine real-speed cases are refused with "no place to stand"; `tending.json` Bond card numbers are copies with no validator tie; live-site suites time out at 30 s on page load. [S] [open; from documents only] [SESSION-HANDOFF 6.4-6.5]
+- **Tests that call inner functions** (rule 5): `survival-field-actions` calls `fieldRefusal`. (`helpers/perkfight` sends forms and picks through door/pick: `ea20d6173`.) [S] [partly; from documents only] [wave2-rulings 4]
+- **The 0.30 review document for Leon's rulings** is not in the tree. Write it. [M] [open; from documents only] [SESSION-TODO D]
+- **The gaps lane's group F leftovers** (wave 3 SHOULD-FIX still open: 1 forced moves on a Boss typed per item, 7 Run and Gun's text, 8 `fx/guard.ts` `within` fallback, 11 `open-hand-2` `usable` and `shadow-2` `hideBlock` called directly, 14 `enemySearchTile` AI in code, 18 Launch's two copies of its AP; not checked 2, 10, 12, 17). [M] [open; checked by the gaps lane 19 Nov 2026] [BEFORE-ITEMS-2.0 group F]
 
-## Classes
+#### Built in 0.32 (live in 0.32.0)
 
-- **Batch 2:** the ring of 9 hybrids (Blade Scribe, Storm Hand, Spellslinger, Banner Dancer, Adamantile Knight,
-  Warden, Shade, Inquisitor, Hexer).
-- **Batch 3:** the other 18 cross-core hybrids. Collision to settle: Devoted and Twinbound both want
-  Determination + Expression.
-- **"Nutso butso" (far future):** any class with any class, which brings back the same-core pairs (45, or 81 ordered).
-  Homebrew classes as data entries keyed by attribute pair.
-- **A class-changing system** (Leon: "a different system later"). Today the class picked at level 3 is fixed.
-- **Ideas not taken up yet:**
-  - each rank as one fixed move plus a pick of three (more choice inside a class, the D&D/Pathfinder comparison);
-  - a mechanic (Proficiency) move for the Operative (was the Infiltrator);
-  - more for a Chaplain (was the Guardian) with no patron;
-  - ~~a combat capstone for the Bard (Rally Banner instead of Gift)~~: done, Rally is the Mender's (was the Bard's) rank III move (rules 1.23).
-- **Provisional numbers to confirm in play:** ranks at attribute 5 and 8 and, since rules 1.11, level 6 and 12 (spec item 930); the rules 1.11 level gains (item 924); two moves per rank at level 3.
+- **A resource price of 1 names one** ("Load the Visualizer · 1 core"). `4e010c1e4`, spec 5601.
+- **Called Out's card says what happens** ("Taunted even if its save holds"). `6bd9ca3e1`, spec 5602.
+- **The Momentum preview runs the technique as a hit** (G1). `a04d01adb`, spec 5600; test `gaps-032` (after the Body merge it reads 1 to 1: the free Charge is gone, `a046c8bfb`).
+- **Stale multiplier texts** (five feelings, the Damage school and Inverse). `62ede06b7`, spec 5603.
+- **Pick-overlay tile notes in one wording.** `1ccc52467`, spec 5604.
+- **The initiative line built per side; `fog.ts` parses no prose.** `683d87f50`, spec 5605.
+- **"Raise <Attribute>" from structure:** `raiseNeed` (`c04435ae3`, spec 5606); the level-up screen reads it and says the reason once (`8c5e68e39`, `f41f1ef01`).
+- **Barrel In has its own action id** (`barrel_in`, the old `lunge` an alias). `47bc77b9c`, spec 5608.
+- **The field reads a flag per action** (`actions.json field`, G3). `f11bdd754`, spec 5609; the merge added the new lanes' rows and a test that no row outlives its action (`5d3e35949`).
+- **The healing brake per giver.** Spec and data `a00837a90`; built at the one cost site with the price's target `d88e18704` (spec 5610; test `merge-032-review`).
+- **Keeper names match their faces.** `efb42f4fe`, spec 5611.
+- **Delivered art wired** (tone marks, XP / Devotion / credits marks, the camp's Ready sign, the Open Hand form chips). `00c51296e`, spec 5612.
+- **A focus taken out of the off hand is a focus in the pack** (reducer test for the four foci). `bc76d2f50`.
 
-## World Play gaps (from `docs/design/handoffs/world-play-A-HANDOFF.md` and `-B-HANDOFF.md`)
+### Body / Mind / Soul attribute lanes (ruling layer: the proposals file; merged into `release/0.32`: Body `a4a65ac53`, Mind `37cb8195c`, Soul `5d3e35949`; hand-offs `docs/design/handoffs/0.32-LANE-BODY.md`, `-MIND.md`, `-SOUL.md`)
 
-- Enemy paths don't avoid hazards, and neither do the Narrator's moves. Since rules 1.9, a player's click-path goes around a revealed hazard when the detour is at most 2 tiles (item 683), and the preview names what a path crosses.
-- World Play 1.1 (`docs/design/handoffs/world-play-1.1-HANDOFF.md`):
-  - an enemy killed on the area map drops nothing (item 697);
-  - enemy weapons have no rarity, so worn drops are always standard;
-  - the host-only loot-cap log isn't shown on screen;
-  - companions don't add to the party's sight of piles;
-  - the light-armour line is now 1.2 kg (item 685, provisional; the field helmet and field boots change in a fight, the ballistic helmet doesn't): Leon to confirm in playtest;
-  - no built-in campaign uses `loot_tables` or `drops` yet.
-- Allies and companions don't fight beside the party; companion hazard damage on the area map isn't saved.
-- Talk and hazard panels exist only on the area map, not in fights.
-- **Carry weight is very punishing** (item 638): a 40 kg robot overloads a starting character, and a 70 kg body
-  drops most to the slowest movement. Leon to decide the weights or the overweight rule.
-- The "Ask" buttons stay after asking. Proving Ground asks close the round with no Narrator.
-- Beasts have no avatar art, only a badge.
+- **Class audit.** Channeler first; 54 moves, 10 replaced or merged; the table goes to Leon. (The lanes changed moves one by one: Measured Blow, Retort, Reforge, Vanish, Sabotage, Backdraft, Quick Sketch, Occult Library; the audit table itself was not written.) [L] [partly; from the hand-offs 19 Nov 2026] [SESSION-TODO T]
+- **Alphas give too much.** One table for Leon of what moved to beta and gamma (the lanes moved the rows; no table). [M] [partly; from the hand-offs] [SESSION-TODO T]
+- **Mastered perks that are Narrator-only.** Established Fact and Closing Argument have engine halves (Mind); the others are listed for the next pass: Poker Face I, Old Tales, Between the Lines I, Foresight I, Rank Has Privileges. [M] [partly; from the hand-offs] [proposals 2.8]
+- **Per-sheet open items.** Agility: measure the solo Skirmisher. Endurance: the Guard cap of 4 makes "+1 plate" dead for non-Bulwarks; the solo Bulwark's rank II Second Wind fallback is not built. Insight: the solo Mender measure. Perception: free Hide may push the Operative over Shadow's 125 window (Vanish's free Hide is unused by the policy). Strength: Charge Carries +2 or +1 (Breaker 206% at level 20). [M] [open; from the hand-offs] [attribute drafts section 8]
+- **Parting Cut** (Ingenuity 9), listed but not built. [M] [open; from documents only] [perception.md; 0.31.5 notes]
+- **Playtest balance notes for the tables.** Rolling Start; Razor Beast hits 47-50 at level 2; Channeler deals 152 damage for 32 MP; the Mender's to-hit and its unexplained enemy Bond. [M] [open; from documents only] [TRIAGE balance]
+- **Field Repair stays a free unlock** (Improvisation has three perks). The engine-pieces lane did not build it (rules 1.77 item 6517 b): a new perk of two tiers, the unlock at 3 a perk step, Overhaul's added grant, old saves at Improvisation 3+ re-offered the step, and the gate (an action gated by a held item) with it as its first user. Parley's tier I talk-down is Narrator-only (a dead button under the handler). [M] [open; checked in code 19 Nov 2026] [rules 1.74, 1.77]
+- **Visualization: re-measure the level-1 Beast; measure Sharp Light and Wake of the Kill together** (the measure picked no forks; no Beast-at-1 tool). [S] [open; from the Mind hand-off] [proposals 5, 5b]
+- **Warding Word "against a supernatural effect"** read as the next Brain or Heart save (PROVISIONAL). [S] [partly; from the Soul hand-off] [rules 1.75]
 
-## The Narrator
+#### Built in 0.32 (live in 0.32.0)
 
-- Turns are still long (about 167 words) even for quick exchanges. A few recaps survive as trailing clauses.
-- Player characters must only say what their player wrote. The fix is in, but untested live.
-- What a stall costs is "small" and undefined in PACING; a robot died during a wait. Leon to define it.
-- Name detection for "named but not placed" is a heuristic; untitled first-time names can slip through.
-- Other providers (OpenRouter, OpenAI, DeepSeek, Gemini, local, third-party sites) are untested with real keys.
-- **Voice:**
-  - Kokoro now loads through the Worker (`/hf/`). Hosting the model in Cloudflare R2 would remove the Hugging Face
-    dependency entirely (Workers Paid is active).
-  - A paid text-to-speech option, bring-your-own-key, was proposed: OpenAI, ElevenLabs, or Azure AI Speech (the
-    same voices as Edge, e.g. en-US-ChristopherNeural, from any browser).
-  - Confirm Kokoro on Leon's 9070 XT reads "Kokoro · WebGPU".
+- **Strength** (rules 1.73 items 5800-5819): Raw Power's ladder (Grapple 2, Throw Down 5), Spill and Headlong, Rolling Start without its free Charge, Guts and Intimidation four perks each, Measured Blow merged. `dce438554`, re-record `2053d31cc`.
+- **Endurance** (5820-5837): Durability's ladder, Pain Threshold and Senses four perks each, Second Wind a perk, Last Plate cut, Retort and Reforge on the Bulwark. `8101214be`, re-record `747fc2ab1`.
+- **Agility** (5840-5856): Slide at 2, Flush Out one 2 AP verb at 5, Athletics (Wall Run with Vault) and Reaction Speed (Speed Load with Quick Draw) four perks each. `b6d18b890`, re-record `7d42b57cd`.
+- **Perception** (6000-6011): Ingenuity's ladder, Light Fingers, Lend the Dark, Lightkiller, Acuity and Vigilance four perks each, Vanish and Sabotage replaced, the Plant / Foul / Vault / Read Intent verbs cut. `e69aca52f`, re-record `c2737e3e3`.
+- **Intelligence** (6020-6025): Overclock at 2, the charge cut 3/5/9, four forks, Rumination and Eloquence four perks each, Backdraft. `7e550c0db`, re-record `feece135b`.
+- **Expression** (6040-6045): Cash in at 2, Hard Light / Sharp Light / Many Hands / Masterwork (tie kind `masterwork`), Improvisation and Charisma perks, Quick Sketch. `3a56c3ede`, re-record `5b318afe5`.
+- **Determination** (6200-6208): Will Power's ladder (Overdraw at 2), four forks, Composure and Lore Master four perks each, ready designs to Lore Master, the Strain-free swell to Composure 6, Rite in the Field's 0 AP half. `66bf26c65`, re-record `7bf7bb226`.
+- **Insight** (6210-6217): Empathy's ladder (Snap 2, Shield 5, Touch cut), Threads That Hold, Short and Long Thread, Camaraderie and Insinuation four perks each (the healing verbs moved into Camaraderie). `448b88a6d`, re-record `e1d0f3dd2`.
+- **Virtue** (6220-6225): Name the Sinner at 2 (Answered Prayer cut), four forks, Conscience and Authority four perks each. `a53523d02`, re-record `be2df6982`.
+- **All 36 fork options** built and offered (the Body, Mind and Soul lanes above; Spotter and the older ones were built before).
+- **Passives that never ran:** rebuilt or cut (Answered Prayer and Feel Their Pain cut; Righteous, Five Stars, Mercy, Veiled Insult rebuilt; Nobody Left Behind's carry cut; Opening Argument built). Mind and Soul lanes above.
+- **One owner per effect:** Quick Read II has Analyze at 0 AP, Index II +2 on the next Brain save, Shadow's Vault cut, Warding Word. Mind and Soul lanes above.
+- **One fix for the removed perks on old saves** (the three lanes each found `migrateCharacterItems` dropping a removed perk before `perk_remap`): `character.ts remapRow`. `37cb8195c`.
+- **The biggest all-in Release band set to what is measured** (spec 6226, PROVISIONAL). `5d3e35949`.
 
-## Faith, beyond the rulings (`docs/design/blessing-2.0-spec.md` section 11, spec items 592–629; Faith 2.1 items 701–723; Miracle 2.1 items 724–737)
+### Shadow (`wip/0.32-shadow` merged at `43d49feae`; hand-off `docs/design/handoffs/0.32-LANE-SHADOW.md`)
 
-- More patrons: the rival Thunder-Father, and the "many masks" pantheon (one Celestial playing several patrons).
-- Witnessed doesn't exist in the story (engine item 604); vow and Witnessed icons are code-drawn placeholders.
-- The Chaplain's Judgement still spends Devotion (10 Devotion XP since Faith 2.1, item 706), the only spend besides a Miracle's 5 levels (rules 1.6.2).
+- **Detect view, the hover faults.** The sightline is built (below); the wisps' hover tip, hover lifting the whole tile stack, the hover card on focus-visible and tile verbs sending no choices were not checked. [M] [not verified; from the hand-off] [scout 14f]
+- **Silent property.** The lead ruled Leon's later word (acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not); not built: it contradicts rules still standing (the body's "any attack reveals you", the Break's reveal, Vanish II's roll, Parting Cut's re-hide, the Silent module): Leon to rule each (Waiting on Leon). The `silent` property is read from data already. [M] [open; checked in code 19 Nov 2026] [rules 1.77 item 6517 a]
+- **Sight checks still asked without the looked-at unit:** an ally's eyes on an ally (combat ~1361 and ~2868, faith, tactics 129, perks/d 115, perks/e 136, 726 and 845, physical/rules 80, classes/k 1336) and tile-only checks. The lead's call whether `seen_range` applies there. [S] [open; from the hand-off] [rules 1.70 item 5545]
 
-## Magic
+#### Built in 0.32 (live in 0.32.0)
 
-- The two-glyph hook (spec item 586): nobody has it yet.
-- Grand forms (spec items 582–585) are built but shelved with the Grand Sigilist (batch 1).
-- ~~Outburst numbers awaiting the balance pass~~: Heart Surge and Empathy's free Pumps were settled in rules 1.19, the Resonance caps rewritten in rules 1.14.
+- **Dark maps** for shrine, works and rim (works and rim 1 to 2 lamps), Douse on a dark map, Prone's `seen_range`, one sight range (`eyeReach`), enemy notice and vision as tier data. `e45418996`, `9e6ebe053`, spec 6400-6408.
+- **The shadow sightline** on the map (who sees each tile, eye lines, the SIGHTLINE switch). `72e99c3e6`.
+- **Stalk** (2 AP, once a turn, from Hidden, +1 Shadow) as data. `e45418996`.
 
-## Small engine oddities (Leon: not urgent)
+#### The review of the shared step: fixes built in the merge (live in 0.32.0)
 
-- A focus taken out of the off hand goes into the pack as kind `tool` instead of `focus`.
+- **M1** forms a legacy save kept outside the count are charged against the grant. `83ea69741`.
+- **M2** the looked-at unit named everywhere eyes are asked; Chain Smoker and Lowland Born on the one sight range. `90575110d`.
+- **m1** the once-a-turn Call cap for every Call paid in AP. `36f387321`.
+- **m2** `reactRefusal`'s probe: Killzone and Iron Grip change nothing on it. `b35b12ba8`.
+- **m4** (part) `formsKnown` through the one resolver. `b0e2a6ef2`.
+- **m5** the door's own name on its pending pick. `d7282ae13`.
+- **m6** no `perk_remap` on an alpha. `70df1bd54`.
+- **m7** forks.json rows carry no `step`. `6d983e010`.
+- **m8** the Parry probe test through the reducer. `0b1870444`.
+- **m10** dead code and module-private helpers. `0f4e9523a`.
+- **The Emanator stowed** says so on the Strain row (Step 3e). `079f78e2f`.
 
-## Art
+### Simulator (`wip/0.32-sim`; results and commands `docs/design/handoffs/0.32-MEASURES.md`)
 
-- `art/_archive/` (made in the v0.0.1 clean-up) can be pruned once Leon has looked through it.
-- Patron icon exports (`exports/<size>/`) were listed but never delivered; the game builds its own sizes.
-- Still needed: icons for vows and Witnessed, beast avatars, and the Narrator's 3D Wick (brief:
-  `art/briefs/wick-narrator-3d.md`).
+Tests only (`packages/engine/test/balance/`): no engine source, no data, no game number changed.
 
-## The roguelike mode, companions and what is sold (Leon, 11 Nov 2026; decision 115)
+#### Built in 0.32 (live in 0.32.0)
 
-Brainstormed, not designed. Nothing here is built, and no number exists yet. **Order:** every combat style and the
-advanced classes first, then the roguelike. **Rule:** it must be a good game for Leon and his friends before anything
-is sold.
+- **The Sigilist's run policy** (`run-policies.ts sigilRun`): no step beside a blade (the pistol, Clean Vent first); small game shot, not drawn for; the Line as long as the target needs and the turn pays; the core swapped before a Line; Overclock when Max Sigil words is under four; the opt-in `noCover` Line placement in `policies.ts sigil` (off for the contract). [fa8b00eb3]
+- **The Operative's policy** (`door-policies.ts operative`): Shadow built to two before a Break (a Break that drops a foe at once), Tag, Stalk, Fade, a better unseen angle, the gun when it can't hide. [fa8b00eb3]
+- **The doors' 0.32 picks as data** (`door-builds.ts DOOR_PICKS`: forks at 4 and 8, the four-perk betas and gammas; the Mender buys Pull Together for Tug); Grapple and Throw Down (Breaker), Flush Out (Skirmisher), Shield (Mender), Name the Sinner and the sparing Chaplain. [fa8b00eb3]
+- **New builds and measures:** the Operative with the rack's rifle, revolver, and knife and pistol; the sparing Chaplain; the two-shield wall at ranks I to III, Drive, the follow strike and Afterword, the beta feeds, guns with mods fitted (`measures-032.ts`); the Reflex rush (`defence-measure.ts`); the Beast at level 1 and the Figment forks (`figments-measure.test.ts FIG_032`); the Shadow window in turns and HP removed a character-turn (`party-fit.ts`); `PF_TRACE=1` turn logs. [fa8b00eb3]
 
-### The roguelike: the main mode, free
+### Co-op (`wip/0.32-coop`; hand-off `docs/design/handoffs/0.32-COOP.md`; spec rules 1.80 items 6800-6802)
 
-- A full game on the existing combat and character building: dungeon diving, a world map to move on, random events.
-- **Fully engine-run:** no AI key needed, no cost, no waiting. A DM is optional (see companions).
-- Every unlock is earned by play. Nothing in it is sold.
-- **Progress between runs** needs accounts: unlocked companions and service characters, hub upgrades, a codex,
-  starting options earned by play.
+- **The Narrator's desk, the rest of the turn.** Owed: voice hooks, NPCs, objects, hazards, triggers, loot, XP and the other optional fields of `narrator/turn`; a fight made up on the spot (only the campaign's prepared fights now). [M] [partly; checked in code 19 Nov 2026] [spec 6802]
+- **The human Narrator's private view in the story.** The host sees what the players see (hidden objects and lurkers stay hidden from the host too); a Narrator needs them. Needs a ruling on what the seat sees, then `viewFor`. [M] [not built] [spec 6802]
+- **Input delay from far away.** Locally a guest's action is on the guest's screen in about 60 ms (median); Leon measures 2 to 3 s from Vietnam to a US host. The local hops are not where the time goes: measure the live room (the same stamps on the live site) before changing anything. [M] [open] [0.32-COOP.md]
+- **Co-op stall (0.21.0).** Not reproduced in 0.32's loop either (see the hand-off); `coop-loop.mjs` stays as the opt-in hunt. [S] [open; watch] [coop-stall.md]
 
-### Companions (about 10) and service characters (about 10)
+#### Built in 0.32 (live in 0.32.0)
 
-- **Companions** appear at random, a few per run, each good in a short arc. Each has a **character card** in data
-  (who they are, how they talk, sample lines), written content (a recruit scene, a short personal quest, reactions,
-  banter), **memories** the engine writes as things happen, and approval.
-- **With a key, the DM can speak for a companion** from the card and memories when the player goes off-script. Without
-  one, the written lines carry the mode.
-- **In a fight** the player chooses, per companion, to control them or let them act on their own (the enemy AI, with
-  a personality from the card).
-- **Death is permanent** unless they are revived in time.
-- **Service characters** run shops and upgrades and hand out missions: light writing, one shared pattern. The shop is
-  needed anyway.
+- **2a-2c, the room link:** a replaced link (4000) stops and says "Opened in another tab" with Take over here; ping and retry timers cleared on close; hosting or joining again closes the old link. `d2a5a6636`.
+- **"I'll narrate":** selectable; the Narrator's desk (narration, checks with a TN, rulings Yes/No, a prepared fight); the fight screen's Narrator buttons tested end to end (`narrate.mjs`). `cc18b7e79`.
+- **The co-op loop** (`coop-loop.mjs`, hop stamps) and the fight screen's way out counting only a real wait. `d2a5a6636`, `89abfaf66`.
 
-### Dialogue trees with skill checks
+### Enemy AI (`wip/0.32-ai`; hand-off `docs/design/handoffs/0.32-ENEMY-AI.md`; spec rules 1.79, items 6700 to 6714)
 
-- Conversations as data: lines, replies, checks, conditions, effects. The engine already has the parts (checks, inner
-  voices that interject, Echo, Overreach, effect ops).
-- Replies show the skill and the odds. Some checks can be retried later; some are one try with a consequence.
-- Inner voices cut in before the replies and can unlock one. Replies can be gated by class, patron, trait, origin,
-  an item or an earlier deed.
-- **Talking can replace fighting** in some situations: avoid, weaken or turn a fight; parley during one; talk a boss
-  down. Failing must cost something.
-- **Everyone talks separately** (each player's character has their own conversation, with their own skills; the
-  others can listen in).
-- Needs: the file format, a validator (no dead ends), a dialogue screen, and a simulator to see which branches builds
-  reach. Write hubs deep and everyone else shallow; Claude drafts, Leon edits; start with one character.
+- **The side's memory past the round (spec 4969 a).** Built and OFF (`rules.json combat.focus_memory.carry` 0): any carry from 0.25 moves the defence-measure guard (the idle pair's first Down 4.2 rounds at most; measured 5). Waiting on Leon 24 (lead's pick: off). [S] [built, off; 19 Nov 2026] [rules 1.79 item 6703]
+- **The Read does not foresee the Pressure moves.** The intent (Trickster's Read, `enemyIntent`) still names the attack a Broken or Suppressed enemy would make, not its cover move. [S] [not built] [rules 1.79]
+- **The bait reads Overwatch and held lanes only,** not a Retort or other Answer (no AI reads Answers before acting). [M] [not built] [rules 1.79 item 6709]
+- **Enemy door verbs:** Slam, Challenge, Retort, Last Plate, Tag, Ghost Kill, Stalk, Tug, Snap, a Figment order, prayers. Blocked: see the needs-a-primitive list. [L] [not built] [rules 1.79 item 6711]
+- **Interpose for an enemy with Durability 3** (the Heartfire elite): not checked whether the Answer is usable for a unit whose techniques are its row's. [S] [not verified] [rules 1.79 item 6710]
 
-### Voices
+#### Built in 0.32 (live in 0.32.0)
 
-- Kokoro ships 28 English voices; the game offers 7. Blending two voices makes as many as needed.
-- **Each of the 27 skills, each companion and each patron gets its own voice** (a recipe in data: two base voices, a
-  ratio, a speed). An NPC the DM invents gets a recipe derived from its name. Leon casts them by ear, later, on a
-  casting page with a play button.
-- **Each voice gets a writing style card** (about 25 words). Only the cards of the voices in play are sent to the DM.
-- **To playtest:** the DM tagging who speaks each line (needed to voice dialogue inside narration in open mode).
-- First small step when wanted: offer the other 21 voices and a preview button.
+- **Enemies act on Pressure:** a Broken enemy reaches cover or drops Prone and stays down; a Suppressed one slides into cover and walks short; log lines from data. `591270294`, spec 6700-6702.
+- **Focus memory per enemy:** keeps its target for 2 rounds, turns on whoever hurt it since. `591270294`, spec 6705-6706.
+- **The angle (spec 4969 b):** a gunner whose every target is under fire walks up to 4 tiles for a shot at one nobody attacks, cover first. `591270294`, spec 6707.
+- **The bait:** a Vermin or Minion walks into a seen held lane to draw the shot while a stronger ally holds out of it until the bait has acted. `591270294`, spec 6708.
+- **Enemy Guard:** a row's `guard` gives Durability's door (plates, soak, Pressure on Guard, the Guard technique); the Heartfire elite has 3 plates. `591270294`, spec 6710.
+- **Gating and the re-record:** no state written for a switched-off block (`a10729f25`); costs-outburst and 24 of 29 replays re-recorded on purpose, each named with the block that moved it (`cc5e74fae`, spec 6714). Survival stage 1 at 40 seeds: solo_gunner 31 to 30, four 38 to 38, mixed 30 to 31 (spec 6713).
 
-### Open mode and campaigns
+### Leftovers (`wip/0.32-leftovers`; hand-off `docs/design/handoffs/0.32-LEFTOVERS.md`; spec rules 1.78, items 6600-6611)
 
-- **Open mode with your own AI key stays free and stays an option forever.** A hosted DM comes only if the game gets
-  big, and is priced per use (it is the first thing that costs money per player).
-- **M813 is free. Extra campaigns may be sold.** The host's copy covers the room.
-- **Free roam:** a campaign you own is a world you can take your DM into, off the written path. So a campaign ships
-  its maps, cast, factions and secrets as well as its plot. The engine still owns every number.
-- In open mode, written characters use their written lines first; the DM writes only what is outside them.
+- **Hurl** (the Breaker; momentum-2.0 item 16): needs P14 (see "needs a primitive"). [M] [not built; checked in code 19 Nov 2026] [spec 6606]
+- **Pray from holy ground** (prayer-2.0 item 17): needs the seat (P3) on a `hallowed` zone. [M] [not built] [spec 6607]
+- **NULL on a Figment, the enemy's weighing** (figments-spec section 8: charge x 4); the unmaking is built. [S] [not built] [spec 6602]
+- **Breaching Strike onto Into the Wall's row** (its per-perk code retired; moves the golden tables, so a re-record on purpose). [S] [open] [spec 6605]
+- **Stand Behind Me:** two written designs disagree (Guard 2.0 item 9 against the three-layers Bulwark III ceiling): Waiting on Leon 23 (lead's pick: the second, as the Bulwark's rank III move). [S] [needs a ruling] [spec 6611]
+- **Hallow and Into the Wall icons** (ART-REQUESTS 0g) and the hallowed ground's own look on the map (drawn as any data zone today). [S] [open] [spec 6605, 6607]
 
-### What is sold, and what never is
+#### Built in 0.32 (live in 0.32.0)
 
-- **Sold:** cosmetics (dice skins, animated banners and name cards, cut-in styles, token rings and trails, portrait
-  frames, kill and crit effects, themes, music packs, Wick outfits) and extra campaigns. Some cosmetics are earned
-  only by play.
-- **Never sold:** power, progress, or anything that changes a fight.
-- **Build order:** accounts and server saves; the cosmetic locker with free and earned cosmetics; then payments
-  (a provider that handles checkout, tax and refunds); then paid campaigns.
-- **Check before any sale:** the image generator's terms for selling the portraits, saying plainly that AI was used,
-  the credits for CC BY assets staying in, and that the game's name and Wick are free to use.
-- **Size:** the built game is about 107 MB (images 78, music 27). Text, trees and voices add little; painted art is
-  the only thing that grows it. Move art and music to Cloudflare R2 if they reach several hundred MB.
+- **Two zones of one kind on a tile do not stack** (two Sanctuaries halve once). `5ff4ae85e`, spec 6601.
+- **NULL unmakes a Figment** on the tiles it covers (`sigils.json null.dispel`). `b71439891`, spec 6602.
+- **The fight joined is an fx event** (the alarm's, `joined`; CONTACT! on the map). `6048d2b07`, spec 6603.
+- **Aim marks on a Bonded ally** (Threads Reads them at the Bonder's turn start; one crosshair with the count). `9730b403f`, spec 6604.
+- **Into the Wall** (the Breaker: a foe driven into a wall, the edge or a body takes a slam, the body too). `0ab9fbc1c`, spec 6605.
+- **Hallow** (the Chaplain's hallowed ground; zone kinds are data). `7f20b1261`, spec 6607.
+- **What rides on a hit on the attack card** ("On a hit: Smite, Judged"). `6f6f796d8`, spec 6608.
+- **A door's passive steps on the skill page** (the Tending pictures placed). `5a1f6b50d`, spec 6609.
+- **The Open Hand's stance picture on the token card's standing line** (each to-hit term names its item; the picture by catalog `data_ids`). `dac6f60a6`, spec 6613.
 
-## Product and world (from `CLAUDE.md` "Next steps" and the tech plan)
+### 0.32: needs a primitive (ruled by the lead 19 Nov 2026; built by the engine-pieces lane, `docs/design/handoffs/0.32-ENGINE-PIECES.md`, rules 1.77)
 
-- ~~Leon's decisions in `docs/design/tech-plan.md` section 10~~ and ~~starter mode~~: built (decision 62; the live game).
-- Settle the open items in spec section 14 through playtests.
-- Races (after origin, in character creation).
-- Sectors beyond Earth.
-- Bring the UI design canvas back in line with the game after v1.0.
+What is left of the list (the built ones are under "Built in 0.32" below):
 
-## The roguelike: Leon's scope (13 Nov 2026; after Classes 3.0)
+- **A per-unit surprise in the approach** (Tremor I, Shoot First I/II stay Narrator-only). The per-unit sit-out exists (`Unit.waitRound`); no rule makes a character Surprised when ambushed: a balance rule, designed in the report, not built: Waiting on Leon 22. [M] [open; checked in code 19 Nov 2026] [rules 1.77 item 6517 c]
+- **An action gated by a held item** (Field Repair as Improvisation's fourth perk): see the Mind owed item above. [M] [open] [rules 1.77 item 6517 b]
+- **A class-only multiplier** (the Figments door 119 and the Rigger 123 against 130 and 150). Not in the lead's ruling list. [gaps report; Balance 2.0]
+- **Not approved, left as they are:** a story `acted` (Index II across story and fight), bare fists in the glove family and a thrown Relic property (Items 2.0). [rules 1.77 item 6516]
+- **P14, the object op's `hurl`** (lift a loose object or a held small foe next to you and throw it at a second tile: an action with two tile picks; the objects' `loose` field), for Hurl; Grenadier's Arm's per-perk throw would move onto it. [M] [open] [leftovers, spec 6606]
+- **The seat (P3) on a zone** (praying from holy ground, Hallow). [M] [open] [leftovers, spec 6607]
+- **An enemy step that weighs a held item action** by a want in its data (one general step for every door verb: Slam, Challenge, Retort, Tag, Ghost Kill, Tug, Snap, a Figment order), run through the player's action path (`runPerkAction`). APPROVED by the lead (0.32 integration); not built: the only Guard-holding row (the Heartfire elite, Durability 3) is below Slam's gate (Durability 5), so giving it Slam needs a number changed first (a balance call), and holding `skill:durability.1` also gives its melee roll with Durability, a second behaviour. An `enemyStep` registration (as `physical/ai.ts`) plus a row field is the shape. [M] [approved, open] [Enemy AI, rules 1.79 item 6711]
+- **A faith block on an enemy row** (patron and Devotion), so `faith.ts` can let an enemy pray a Whisper. [Enemy AI, 6711]
 
-Recorded as he gave it; nothing is designed or built. Decision 115 has the mode's place in the product.
+#### Built in 0.32 (live in 0.32.0; the engine-pieces lane, rules 1.77 items 6500-6515)
 
-**Stage 1**
-1. **About five map types** (five dungeons).
-2. **200 to 300 designed rooms**: each a pattern of what is in the room (what must be done there, which NPC, what is
-   gained, a treasure chest and so on), so any room can appear in any dungeon.
-3. **A shop NPC system:** an NPC that sells items the engine recognises, with rarity and a randomiser.
-4. **Random encounters in a dungeon:** a combat encounter generator in the engine that spawns objects that make
-   sense and enemies to fight.
-5. **A world map:** a big map with a random encounter at every step, like old RPGs, and points of interest that
-   lead into one of the designed rooms. The roguelike uses it to do missions for the shop NPCs and to enter the
-   five dungeons.
-6. **Meta progression:** more is unlocked each run, tracked separately for each player.
+- **`targets.if`** (predicates on each unit of an op's set): Five Stars II reaches the rank-and-file only. `9cfecf56e`, item 6500.
+- **grant_action `tab`**: the Tending verbs on Camaraderie's perks show on the TEND tab. `851dcdbd9`, item 6501.
+- **`acted` carries a Call's id**: Read Intent reads the Spot on `acted`, its marks on the price gone. `07a149588`, re-record `4b416f1b8`, item 6502.
+- **`cond_apply` carries the action and its aimed unit** (`target_aimed`): Called Out skips the Challenge's roll for the named foe, its card says no save. `648ba50cb`, item 6503.
+- **`limit.shared` and the negated resource bound** (`self_not_res`): Stalk under the door's two gains a turn, refused at a full meter. `ae59a52dd`, item 6504.
+- **Fear's refusals read a stat** (`fear_unbound`): Steady I. `b795a85ec`, item 6505.
+- **`roll_with` on a save**: Point Man I/II. `7d2c36f1a`, re-record `056bc8a59`, item 6506.
+- **Item op `two_dice`** (a roll kept from two): Untouchable I/II. `69de9af0e`, item 6507.
+- **Item op `last_turn`** (Bite the Bullet's handler retired into it): Still Standing I/II. `80d7c5895`, re-record `e815f947e`, item 6508.
+- **The sheet's one resolver** (`setSheetSource`): strainLimit and readyDesigns. `3b214dfe2`, item 6509.
+- **`onFightStart`**: Primed's Momentum at `combat_start` again; `made_after_start` and its warning gone. `7cfd70600`, item 6510.
+- **Standing to-hit terms shown** (`standingTerms`, `standingModsFor`): Open guard on the token card. `a92ef6609`, item 6511.
+- **A resource held by the fight** (`on: fight`, the air's `mana`): Crystallise's draw on the price; Rite in the Field takes nothing from the air. `0c6456f8b`, item 6512.
+- **`numb_limbs`** read by the three limb-penalty readers: Numb I/II. `f06612883`, item 6513.
+- **`reveal what: kit`** (`kitOf`, `kitSeenFor`): Shadow's Case built. `7612cdf30`, item 6514.
+- **Check fixes, golden tables and replays re-recorded.** `51675087b`, `c94b97c82`, `70f4687f7`.
+- **Approved by the lead (the leftovers lane's additions under its brief):** the trigger `displaced` (on the existing hook, also raised when a forced move is refused at its first tile) and the predicate `stopped_by`; zone kinds as data (`rules.json zones.kinds`) with the predicate `actor_in_zone`; `Combat.riders` on dry-run copies. Rules 1.78 item 6612.
 
-**Stage 2**
-1. A companion system with dialogue trees.
-2. Account progression that gives cosmetic rewards, such as dice skins.
+### Big leftovers (designed, partly or not built; each shrunk to the owed part)
 
-**Art (Leon, 13 Nov):** a batch of new art is made for the roguelike with the image generator, and combined with
-the project's own LoRAs (`art/briefs/FORGE-PHC.md`) to make new settings. The four archived map paintings may be
-used as style reference in training; **painted maps do not come back** (maps stay drawn from tiles): the scenes
-LoRA is for backgrounds and illustrations only.
+- **Bare fists in the glove family (P11).** Overlaps Items 2.0. [M] [not built; checked in code 19 Nov 2026] [CHANGELOG 0.29.0]
+- **Enemy versions of the doors.** Guard is built (0.32, rules 1.79). Owed: the door verbs and prayers (under Enemy AI above). [L] [partly; 19 Nov 2026] [rules 1.79 item 6711]
+- **Cover arc: a pillar outside the 45 degree arc counts nothing.** The arc is built (`rules.json arc_deg`); this is a design call, to rule before building. [S] [partly; checked in code 19 Nov 2026] [spec 4969(c)]
+- **Engine pieces not built:** a thrown Relic property (the fight-joined fx is built, spec 6603; no data row needs a `per_stage` scope, spec 6610). Needs the lead's approval first (CLAUDE.md, no rebuild). [M] [not built; checked in code 19 Nov 2026] [spec 5010; verification]
+- **Delivered art with no place in the game** (wiring, not new art; `move-breath` is wired). Owed (the Tending passive pictures are placed: spec 6609): `icon-resource-credits/xp/devotion` and the 7 `icon-tone-*` (`uiMarkOf('resource'/'tone')` never called); `move-sway`, `move-counter` (the Open Hand's stance, `move-open-guard`, is placed on the token card: spec 6613); `camp-step-ready` (checklist has no `ready` key); the `move-draw-fire` placeholder is not in assets.json. [M] [partly; checked in code 19 Nov 2026] [SESSION-TODO O; verification]
 
-**The lead's notes for when this is designed** (not rulings): (a) "tracked separately for each player" needs a
-player identity that outlives a room, which the game does not have today (characters are files and drafts): some
-account or profile is a stage 1 need, not only stage 2's; (b) 200 to 300 rooms is content, not code: the first
-thing to design is the room FORMAT (a data template the encounter generator, the shop and the loot tables fill),
-proven with twenty or thirty rooms before the rest are written; (c) the encounter generator needs a budget to
-spend: the balance contract and the enemy table by tier and level are that budget; (d) the shop needs prices and
-rarity for every item, which today exist only in part; (e) measure the map's rendering (a full map, many units)
-before this mode, as the performance notes say.
+### Fun and balance pass
 
-## Survival mode (Leon, 13 Nov 2026): the patch after Classes 3.0, and the roguelike's first piece
+#### Built in 0.32 (live in 0.32.0)
 
-Leon: "I just want a mode you can play with progression and combat. Our combat system is sick, but M813 is not
-written well and is very outdated now, you barely have any combat in it, and the only place to do anything in this
-game is the Proving Ground, which is a glorified tester tool." Name: **Survival** *(his: "survival mode or
-something")*. **Built and live** (14 Nov 2026, 0.27.x, rules 1.39 to 1.49; live 0.28.0 adds 1.54; the spec is
-`docs/design/survival-spec.md`, the pick-up `docs/design/handoffs/SURVIVAL-PICKUP.md`); waiting for Leon's word to go
-live. The notes below are the first proposal, kept for the record.
+- **The Operative clears.** Unseen Hand (an attack from Hidden rolls with Ingenuity when higher) and the Recommended rifle: solo 0 → 13, four 0 → 22. `bcfa7cf6a`, rules 1.81 items 6900-6901.
+- **The Outburst peak measured as one Release** (the 0.32 rise was a second, Mana Short Release in the window); the contract band set to what is measured; **the map 16 tiles up to 10 units** (four Breakers 6 → 14, four Bulwarks 11 → 17). `cf981b944`, items 6903-6904.
+- **The guard's bar** to the measured share (25 of 40, bar 55%). Item 6905, `88c73cff1`; the account `docs/design/handoffs/0.32-FIT.md`.
 
-**The shape (the lead's proposal, accepted, with Leon's map):** make or pick a character at level 1; **a simple map
-of paths you choose between** ("this path leads to a shop, that path to a boss, that one to a free rest"): each
-node is a generated fight sized to your level from the enemy table and the balance contract, a shop, a rest, or an
-Elite or Boss; after a fight, pick one of three rewards and take the XP; level up as you earn it (class at level 3
-as usual); lose and the run ends and shows how far you got. Solo or co-op, no Narrator needed. A run of ten to
-fifteen nodes takes a character to about level 6 or 7.
+- **Solo sustain: the Mender.** Every door's Recommended kit now clears stage 1 solo 10 times in 40 or more except the Sigilist (Leon's ruling); the tank kit 25, the gunner 35. Owed: the Mender solo, 10 of 40 with 16 stalled: its revolver runs dry and the Empathy sheet fists at -2; with a 40-round cap the stalls end 3 won, 13 lost (rules 1.81 item 6907). [M] [partly; measured 20 Nov 2026] [0.32-FIT.md]
+- **Simulator bot policy for the Sigilist.** Owed: the Line from cover and a stand-off under Suppress (bot); the Operative is fitted (below). [M] [open; measured 19 Nov 2026] [0.32-MEASURES.md section 4]
+- **Name the Sinner as played costs the solo Chaplain** (16 → 11 of 40, Elites and Bosses only; at +40%, a trial, 13: the price is not the cause): a better rule for when to name (rules 1.81 item 6906). [S] [open; measured 20 Nov 2026] [0.32-FIT.md]
+- **The follow strike's −2 buys nothing** (it runs; a follows item's strike is 1 to 5% of the main hand's): the lead to rule 0 or keep. Reflex and the feeds' 0.01 run (traced; the measures cannot see them: one held shot a round, defensive numbers): no fault (rules 1.81 item 6902). [S] [open; measured 20 Nov 2026] [0.32-FIT.md]
+- **Ceilings with mods fitted.** Guns reach 162-195% against the 145% line. Leon ruled 19 Nov: ceilings are a relative measure of the effort a class puts in and the fun it gives back, not a hard line; fit with that in mind. [M] [open; from documents only] [SESSION-TODO D; 0.29.0 known]
+- **Class lines.** Figments door 119 and Rigger 123 against 130 and 150 (needs a class-only multiplier primitive); Skirmisher 159 against 145; Hymn 138 against 150; the healer stall at level 20. [M] [open; from documents only] [START-HERE Balance 2.0 4]
+- **The Dexterity melee line as a whole.** Sabre and katana are over 165% all-in at level 10. [S-M] [open; from documents only] [spec 5527]
+- **Shape's free Pump** stays at +0.12; the Outburst peak band is refitted (rules 1.81 item 6903: one Release, 90): to rule whether it moves. [S-M] [open; 20 Nov 2026] [SESSION-TODO V]
+- **0.30's PROVISIONAL numbers never fitted.** Now measured (`0.32-MEASURES.md`, `measures-032.ts`): two shields at ranks I to III, Drive's −2 and plate-back, the follow strike's −2, Afterword, the feeds' 0.01. Owed: the fit. [M] [measured, not fitted; 19 Nov 2026] [CHANGELOG 0.30.0]
+- **Balance 2.0 leftovers.** The rifle contract holds 4 guns plus greatsword and sabre (guns-measure covers all guns separately); the repair rate of 10% is nearly free; the XP and stage fit is PROVISIONAL because the simulator never makes or sells materials; level 3 before the first Boss on only 42% of routes. [L] [open; checked in code 19 Nov 2026] [START-HERE; SURVIVAL-PICKUP; verification]
 
-**Why first:** it is nearly all built pieces (the Proving Ground's waves, loot tables, levelling, classes, the fire
-doctrine); the new parts are the encounter picker, the reward screen, the shop, the path map and a run counter; and
-**the path map is reused as the dungeon map of the roguelike**, the encounter generator and the shop are items 3
-and 4 of its stage 1. It is also how Classes 3.0 gets tested across many fights at rising levels.
+### End of release
 
-**Left out on purpose** (still on the roguelike's list above): designed rooms, the five dungeons, the world map,
-missions, per-player unlocks, companions.
+- **Measures against the baseline.** Done on `wip/0.32-sim` before the fit (`docs/design/handoffs/0.32-MEASURES.md`); re-run after the fit: the party fit (nine doors, solo and four) and the Outburst rows re-run (`0.32-FIT.md`); owed: the Survival cells, guns with mods, Figments and the tank table. [L] [partly; 20 Nov 2026] [proposals 2.10]
+- **Consolidation pass** over everything added since 0.29 (rule 4); leftovers still in code from waves 2 and 3 include `COUNTED_ORDER` (containers.ts) and `_OWNER_USE_TYPES` (validate.py); wave 3 SHOULD-FIX items not yet checked one by one. Report in `docs/design/proposals/`. [L] [open; from documents only] [wave2-rulings; wave3]
+- **Whole-game screenshot pass.** `capture-skills` covers only the skill pages; camp, path map, node kinds, rewards, fight tabs, victory, field, summary and settings were never read at 1600x900 (the `capture-all` draft was removed, `13cfaad7e`). Covers what nobody has seen in a browser: the field kit's Treat buttons, plate chips, shop icons, banners in motion, the field's three rounds, the status strip's group marks, the place card with its picture, the approach line in real play, the vault-chest reward, the mana forecast over the map. [M] [open; from documents only] [SESSION-TODO K, O, U, V]
+- **One full browser run.** Includes the Throw row's check, written and never run. [M] [open; from documents only] [spec 5534]
+- **Spec section 14** receives every new PROVISIONAL number. [S] [open; from documents only] [proposals 2.10]
 
-**M813 is hidden for now** (Leon, 13 Nov: "hide it for now, it wastes tokens and is broken"): the campaign is taken
-off the menu (not deleted: `data/campaigns/m813.json` and its tests stay) in the Classes 3.0 patch, until it is
-rewritten.
+### 0.32.x polish (the screenshot pass's small faults, left on purpose; pictures in `.check/capture/all/` after `python tools/e2e.py capture-all`; list from its FAULTS.md, 20 Nov 2026)
 
-**Survival, added 13 Nov (Leon): you outgrow things.** Ordinary enemies (Vermin, Minions, Soldiers) are generated
-below the party's level as a run goes on; Elites and Bosses keep pace. The same rule is for campaigns. With the
-level scale of Classes 3.0 (a hit grows about ×15 from level 1 to 20) this is what makes a level feel like power.
+- **The your-turn card off screen under 1000 px.** `turnIntro.tsx panelBox(true)` measures the side panel, which wraps below the map under 1000 px: the card from the right is drawn below the window (a key or click dismisses it). Clamp to the viewport and fall back to the window when the panel is off screen or under 200 px high. [S] [open; confirmed in code 20 Nov 2026] [0.32.0 ship review]
+- **Borrowed time on an old mid-fight save.** `migrateLoaded` gives `lastTurn` from the first perk with a `last_turn` row; a character holding both Still Standing and Bite the Bullet may get the wrong one. [S] [not verified; 20 Nov 2026] [0.32.0 ship review]
+- **`voice` passes only alone** (a timing check at about 8 s): add it to the serial group or fix the suite. [S] [open; 20 Nov 2026] [0.32.0 proof run]
+
+- **Path map:** the legend's second row clipped at the bottom (1280-021); the node card covers the neighbouring rows (1280-022). [S] [open]
+- **Run board:** cut by SQUAD at the bottom ("Report a run", "Set Feet · Camp"); GIVE says "No one to hand anything to." in a solo run (1600-042). [S] [open]
+- **Creation:** the Moves step is almost empty and says "Mastery 2 Evoker or Emanator user" (1280-010); the "-2" chip beside every skill at 0 points is unexplained (1280-007); Lock in shows "No origin yet" / "Not filled in" rows and only the checklist says why it is grey (1280-011). [S] [open]
+- **Camp:** the vow pop-up hides half the left sheet (1280-014); weapon cards say "To hit -2 (Dexterity)", "Damage -23% (Agility)" with no explanation (1280-015/017). [S] [open]
+- **Fight:** the header "ROUND 1 · THE PROVING GROUND · PROVING GROUND · W..." repeats and is cut; "Best so far: wave 0" after a first loss, the panel shot mid-fade (1280-138); the APPROACH banner caught half-faded over a white wash and VICTORY's "CLICK TO CONTINUE" runs into the small map (1280-024, 1280-037); the FREE ROAM bar covers the turn strip's second and third chips (1280-038/040); the door line "20% of the damage you take goes to it" still reads as a formula. [S] [open]
+- **Rewards and places:** a second copy of the card above the dialog (1600-042); "Pick one:" over a single card on ordinary fights; the shop's ammunition card alone in its row (1280-043/044); the LEVEL UP banner over the Forge (1280-052..055). [S] [open]
+- **Run summary:** "Keep Kade as a draft (level 5)" wraps to two lines (1600-073). [S] [open]
+- **Sheet and Proving Ground:** the bottom hint box covers the EQUIPPED section of the tools panel; the STATUS tab's foot rows overlap (1280-140); the MP row reads "100 / 100 stowed" with the word under the number. [S] [open]
+- **Level-up:** the "◇◇" marks are unexplained (1280-149); "Class: choose it from TO CHOOSE" alone in a panel and "+8 more" hides most chips (1280-146). [S] [open]
+- **Narrator's desk:** the first field is an empty unlabelled box; the left sheet shows the guest's character on the host's screen (1280-161). [S] [open]
+- **Browser suite `camera`:** four checks red on the release head before the fix pass (fight opens on your unit, drag moved the view, target in frame, camera stayed on the target): find whether the suite or the camera is wrong. [S] [open; 20 Nov 2026]
+
+## After 0.32, before Items 2.0
+
+Leon, 19 Nov: "we have the paid 5$ plan for cloudfare now so upgrade to whatever method is best in that plan. After 0.32 is done." Each measured first.
+
+- **Hosting off KV.** Move site files to the best method of the paid Workers plan (the lead's pick: Workers Static Assets; confirm limits and pricing in Cloudflare's docs first). Deploy becomes `wrangler deploy`; keep the KV namespace one release as a fallback; rooms stay on Durable Objects. [M] [open; from documents only] [ATTACK-PLAN After 0.32 (archived)]
+- **Preloader.** Wait for load, only the next screen's art. [M] [open; from documents only] [same]
+- **Connection fixes.** Close code 4000, the ping timer, the old socket on host/join. [M] [open; from documents only] [same]
+- **Server fixes.** Guest token, host token length, coalesced view writes, a room purge alarm. [M] [open; from documents only] [same]
+- **The outside code review's performance work.** Fight-screen render costs, bundle split, engine clone and migration gate (the replays are the test), file splits, types; code-only sparse worktrees (no art/audio) once the gate is shown to pass in one. The review is Leon's upload "PHC-Code-Review-and-Optimization-Brief.md"; seven claims were checked true. [L] [open; from documents only] [same]
+- **Multiplayer input delay.** Measure first; then show the click at once (optimistic feedback); a referee in the room server is the big option. [L] [open; from documents only] [lead's facts]
+
+## Items 2.0 (ask Leon before building)
+
+Nothing starts until Leon says so and 0.32 is live. Preconditions only; the contents live in the design files: `docs/design/proposals/2026-11-18-scout-items-2.0.md`, `docs/design/proposals/2026-11-19-items-2.0-families/`, `art/briefs/ART-REQUESTS-2026-11-19.md` and `art/briefs/prompts-2026-11-19/`.
+
+- **Ask Leon before starting.** [S] [open; from documents only] [SESSION-TODO M, N]
+- **First deliverable:** a design document with the family tables and a "Built from" table; one consolidated primitives list approved by the lead. [L] [open; from documents only] [SESSION-TODO N, X]
+- **Leon rules the staging** (A engine and screens, B content, C Weapon Arts). [S] [open; from documents only] [SESSION-TODO Q]
+- **Audits before design.** The armour slot audit (the lead has not verified the slot list); items with an icon and no engine use (ration pack, chalk and wax, prayer beads, cigarettes have no reader; flare and torch unverified); the Forge realign check (can per-weapon state override `scales_with`?). [M] [open; from documents only] [SESSION-TODO P, Q]
+- **Still open design inputs.** The gun family forms; shield families (Heavy's movement number is PROVISIONAL); the melee family table and in-world names for borrowed weapon words; each gun variant's second skill; the unique concepts; armour grade pictures under S1. [L] [open; from documents only] [SESSION-TODO X]
+
+## Later
+
+- **Faith artifact and chapel.** The Faith design as an artifact and the chapel screen. [L] [open; from documents only] [old roadmap "After"]
+- **Advanced classes as attribute pairs.** Three-tier weapons; batch 1 the 9 squared classes, batch 2 the ring of 9 hybrids, batch 3 the other 18; each faction's own Evoker or Emanator; shelved moves in `docs/design/move-pool.md`. [L] [open; from documents only] [class-roster-rev3-proposal section 7]
+- **Class-changing system; "nutso butso" any-with-any classes.** [L] [open; from documents only] [Classes notes]
+- **Roguelike mode and Campaign mode.** Stage 1 (five dungeons, 200-300 designed rooms, shop NPCs, encounter generator, world map, meta progression) and stage 2 (companions, dialogue trees, cosmetics); needs a player identity that outlives a room. Decision 115. [L] [open; from documents only]
+- **M813 rewritten for World Play,** hidden until then. [L] [open; from documents only] [world-play-spec.md]
+- **Weapon Arts, tri-scale armour, the open playstyles.** Belong with Items 2.0 stage C. [L] [open; from documents only] [proposals/2026-11-weapon-arts.md]
+- **Dialogue trees with skill checks; voices per skill, companion and patron.** [L] [open; from documents only] [roadmap notes above, now in decision 115]
+- **Sigil 1.5 follow-ups, Outburst 4.0 follow-ups.** Class-gated modules' behaviours, a flee rule (Contempt), per-unit sight (Dread), COMING SOON art slots; Grand forms with the Grand Sigilist. [M] [open; from documents only] [outburst-4.0-HANDOFF]
+- **World Play gaps.** Enemy paths avoiding hazards; an enemy killed on the area map drops nothing; enemy weapon rarity; allies and companions fighting beside the party; talk and hazard panels in fights. [M] [open; from documents only] [world-play-A/B-HANDOFF, 1.1]
+- **The Narrator.** Long turns, recaps, name detection, other providers untested with real keys, a live M813 playtest; Kokoro in R2 and a paid text-to-speech option. [M] [open; from documents only] [narrator-craft-HANDOFF]
+- **More patrons and Faith leftovers.** The rival Thunder-Father, the "many masks" pantheon, Witnessed in the story, vow and Witnessed icons. [M] [open; from documents only] [blessing-2.0-spec 11]
+- **Races, Sectors beyond Earth, accounts and cosmetics, selling campaigns.** [L] [open; from documents only] [decision 115]
+- **Art that needs an artist.** Weapon and gear paintings, beast avatars, the Narrator's 3D Wick, Forge LoRA run (`art/briefs/ART-REQUESTS.md`). Prune `art/_archive` (310 MiB) once Leon has looked (1.0). [L] [open; from documents only]
+- **The design canvas** brought back in line with the game at 1.0. [M] [open; from documents only] [CLAUDE.md]
+
+## Waiting on Leon
+
+Direct questions. Where the lead gave a recommendation, it is built as stated unless Leon says otherwise ("no answer means yes").
+
+1. **Rest MP.** Since 0.31.10 no Survival node gives MP back except a Rest. Is that what you meant, or only the Boss? Recommended: keep as built (built as recommended unless Leon says otherwise). [SESSION-TODO V; CHANGELOG 0.31.10]
+2. **Vow pop-up.** Is "Fight unsworn" a choice, and do Atheists get no pop-up? Lead's pick: yes to both (built as recommended unless Leon says otherwise). [SESSION-TODO F]
+3. **Names.** Keep "APPROACH" and "Stalk"? Lead's pick: yes (built as recommended unless Leon says otherwise). [TAKEOVER]
+4. **Bot names.** Rename Bot-scrambler, Bot Sense and Bot-thread, since they jam robots? Still in data (3 Bot-scrambler, 1 Bot Sense). [SESSION-TODO E5]
+5. **Head Down.** It sits under "Throw - Smoke grenade" because the grenade teaches it. Keep it there or move it? [ad919b3b5; TRIAGE 15]
+6. **Share a Hit.** A per-point ladder row? A toggle rather than automatic? [spec 5452; CLASSES-3.0-PICKUP]
+7. **Prayer range.** A prayer with no data range reaches every tile its caster sees. Intended? [spec 5525]
+8. **Last Rites.** What does a heal on a Downed ally do when it must not stand them up? [spec 4636]
+9. **Outburst "What it does" ways.** They cannot be earned beyond the starting spell. Lead: Strike free with the Damage school; Finish, Brand and Drain learned like modules; the other schools' ways checked the same (built as recommended unless Leon says otherwise). [SESSION-TODO T]
+10. **Hand's Hand stim.** It spends a stim on a full-HP ally for +0. Fix how? [START-HERE 16 Nov (c)]
+11. **0.29 rulings.** Does a held Outburst swell on a turn you gained Guard? Lead: no (built as recommended unless Leon says otherwise). Make bare-handed Outbursts harmful (+2 Strain a stage)? One row-order rule for fight tabs? [START-HERE 16 Nov (b)]
+12. **Tank kit and guns.** The tank's free Buckler against the budget (the budget stays 300, ruled 19 Nov), and 3x healing cost. Guns reach 195% with both perks: refit the perks, or accept it under your "ceilings are relative" ruling? [morning-report-0.29.0 s10]
+13. **Virtue sheet.** Hymns at Faith 3 put two things on level 3 (recommended: keep, built as recommended unless Leon says otherwise); Foresight's combat tier II; Real Power merged into Rank Has Privileges II. [virtue.md 8]
+14. **Strength sheet.** Charge Carries +2 or +1 (measure first)? Throw Down as the big verb at 5 (recommended: yes)? Raw Power 1 gating Momentum (recommended: no)? Recommendations built unless Leon says otherwise. [strength.md 8]
+15. **Shadow numbers** (the Shadow lane's three, built as stated): Prone makes enemies see you 4 tiles less far (12 to 8 lit, 6 to 2 dark)? The works and the rim get 1 to 2 lamps (were 0 to 1: a pitch-black works ran GUARD-36 dry)? Widen Douse from lamps to fires and terminals (one data word, `shadow.douse`)? [0.32-LANE-SHADOW.md]
+16. **Outburst 4.0.** The 25 feeling colours and the readings in spec items 801-818. [old ROADMAP]
+17. **The open calls listed for you** in the playtest checklist (Survival about 132, Classes 3.0 53, 0.23.0 29) and spec section 14. [PLAYTEST-CHECKLIST; HANDOFF Open 8]
+18. **Leftover branches and folders.** May I delete `phc-figments2` (`design/figments-2`) and the ~25 non-git leftover folders? [TAKEOVER State]
+19. **Athletics "Defense from 1".** Not built: it moves the enemy yardstick (`test/balance/step1-fit`). Build it and refit the yardstick, or drop it? [0.32-LANE-BODY.md]
+20. **The quad Bulwark.** Its stage-1 clears fell 10 to 4 of 40 (Reactive Plate and Last Plate gone; the solo Bulwark 22 to 24). Accept, or give the Bulwark something back? [0.32-LANE-BODY.md]
+21. **Silent against the standing rules** (rules 1.77 item 6517 a). The lead ruled your later word: a silent attack from Hidden keeps your tile unknown (acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not). That clashes with rules still standing: the Break's reveal at the action's end (item 1953), Vanish II's roll when an attack reveals you, Parting Cut's re-hide and the Silent Outburst module (and the body's "any attack reveals you unless the weapon is silent"). Which rule stands? The lead gives no pick: the two are your words against standing rules. Not built until you answer. [open; engine-pieces lane 19 Nov 2026]
+22. **Surprise.** When a fight is joined against a squad that saw no attacker, do those characters lose their first turn (the design in `docs/design/handoffs/0.32-ENGINE-PIECES.md` item 16: `waitRound` from a `rules.json combat.surprise` flag at `joinFight`; Tremor I answers it, Shoot First keeps 3 or 4 AP)? Lead's pick: yes, for both sides, built behind a data flag (not built yet). [rules 1.77 item 6517 c]
+23. **Stand Behind Me.** Two written designs disagree: half cover for allies behind a Braced or Walled Bulwark (Guard 2.0 item 9; needs a condition row that gives cover), or a ranged attack on the ally directly behind you lands on your plates (the three-layers draft's Bulwark rank III ceiling). Which? Lead's pick: the second, as the Bulwark's rank III move. [rules 1.78 item 6611]
+24. **Enemy fire memory carried into the next round** (rules 1.79 item 6703; `rules.json combat.focus_memory.carry`, built and off): any carry from 0.25 fails the idle-pair bound in `test/balance/defence-measure` (first Down at round 5 against 4.2). Keep it off? Lead's pick: off.
+
+Answered on 19 Nov (verification file): carry weight (nothing changes); camp budget (stays 300); ceilings (a relative measure, not a hard line, so "all-in 7/1/1 builds sit over every ceiling" is not a fault by itself); Operative and Sigilist 0 of 40 (the bot's policy).
+
+## Housekeeping
+
+- **Live-version lines** brought to 0.31.11 in CLAUDE, ROADMAP, HANDOFF, START-HERE, SESSION-HANDOFF and the PICKUP files (done 19 Nov in the commit that wrote this file; keep it current at each release). [S] [partly; checked 19 Nov 2026] [BEFORE-ITEMS E]
+- **`MORNING-2026-11-19.md` was never written.** Write it, or mark it moot (the archived attack plan names it). [S] [open] [ATTACK-PLAN]
+- **Saint's Shield notes are stale.** `patrons.json` notes say 12 then 16, the data uses 34 x Blessing power, other docs say 40. [S] [open; from documents only]
+- **At the 0.32 release, delete** the merged WIP branches `wip/0.31.11-words`, `wip/0.31.12-fixes`, `wip/release-0.31`, `wip/lane-0.31-art`, `wip/lane-0.31-skilltab`, `wip/lane-0.31.2-known`, `wip/lane-0.31.5-picking`, and `backup/live-0.31.10` (keep 0.31.11 and the new one, and 0.22.0 and 0.23.0 for good). [S] [open] [CLAUDE.md WIP and backup rules]
+- **Unmerged branches to list for Leon:** `design/*` (13 plus `figments-2`), `lane/0.29-l1-recoil2`, `local/0.29-merge-with-alpha`, `review/0.29-*` (3), `wip/worktree-agent-a4c26f7ceb4409c36`, `origin/feature/title-front-v6`, `origin/review/fable-first-read`. [S] [open]
+- **Worktrees and folders.** Merged worktrees on E: (int030, field030, dex031, fit030, ui031, icons030, known0312, pick0315, skill031, art031, phc-029-pressure) and ~25 leftover folders await Leon's word; drive C: was 94% full; try sparse (no art/audio) worktrees. [S] [open]
+- **Prune `art/_archive`** (310 MiB) once Leon has looked (1.0). [S] [open]
+
+## Not verified
+
+- **TRIAGE row 9 (Figment trait descriptions).** `35c6b8a42` puts each trait's line on the designer's face, but the review list still has rows 9 and 10 open. Confirm in the browser. [from documents only]
+- **SHADOW meter row clipped at 1600x900; a Chaplain getting two door tips in one fight** (0.29 faults). No commit addresses them; not checked on screen. [from documents only]
+- **0.31.0 fight-panel leftovers.** "Cut 2 AP" against "Cut - 0 AP" (never reproduced; 0.31.6's "the preview's AP is the price" may cover it), and "EMPT / Y" wrapping. [from documents only]
+- **Strain folded at the fight's start** (the outside reviewer). Pinned only while holding an Outburst; whether that is a fault needs a look. [from documents only]
+- **The mana forecast above the small map** (0.31.10 z-index): never seen on screen. [from documents only]
+- **Wave 3 SHOULD-FIX items 1, 2, 5-18.** Partly cleared (`GUARD_DOOR_LINE`, `DOOR_HEADS`, `DOOR_TOKENS`, `TECH_ROW` are gone); the rest not checked one by one. [from documents only]
+- **Keeper portraits against names.** Ids and names are mapped one to one in `survival.json` (the earlier claim of a mismatch is not confirmed); whether each face fits its name needs eyes (all are review-candidate art). [checked in code 19 Nov 2026 for the mapping; faces not verified]
+
+## Removed on 19 Nov because the code shows it built
+
+- **Shield's second swing.** `physical/core.ts` `follow()`; shield props `follows` and `mod_follow_guard`; `two_shield_mult`; test `follow-strike.test.ts`; Leon confirmed by play. (The old list called it unbuilt.)
+- **Katana `FOCUS_IDS`.** Built from data (`character.ts`, `focus.door`).
+- **The 45 degree cover arc.** `rules.json arc_deg`. (The pillar-outside-the-arc call stays above.)
+- **A focus taken out of the off hand goes to the pack as `tool`.** Fixed (`packKindOf`).
+- **The two-glyph hook (item 586).** `glyphs_per_tile`; its one holder is the shelved Stroke Gambler.
+- **Sigil 1.5** (rules 1.10: strokes, study, word mastery, inflections, marks, Junctions). Built, tests `sigil15-*`.
+- **The Operative opening its first turn on ATTACK while seen.** Not a fault: `firstTurnTab` (doorView.ts:58) falls back by design, since Shadow's verbs need Hidden.
+- **Carry weight, camp budget, "ceilings are hard lines", the Operative/Sigilist class fault.** Answered by Leon's rulings of 19 Nov (see Waiting on Leon); the bot-policy fix stays in the balance pass.
+- **Shrunk, not removed** (the built part is dropped, the owed part kept above): Breaker slams and hurling; enemies breaking under Pressure; aim marks on a Bonded ally; enemy squad plan; enemy versions of the doors; enemy focus memory; "I'll narrate"; delivered art with no place; the rifle contract's count (4 guns plus greatsword and sabre, not 3 weapons).

@@ -20,6 +20,9 @@ export function vowPromptVals(sc, g, cb, cur, mineTurn, act) {
   if (!mineTurn || !cur || !cur.charId || cb.round !== 1 || cur.vow || cb.over) return no;
   const c = g.characters[cur.charId]; if (!c || beliefOf(c).kind !== 'faithful' || (c.skills?.faith || 0) < FAITH_MIN) return no;
   const key = (g.code || '') + ':' + (cb.id || cb.name) + ':' + cur.id; if (SKIPPED.has(key)) return no;
+  // rules 1.72 item 5705: the standing vow (the engine's, c.vowStanding) is sworn as the fight starts; fighting unsworn
+  // asks nothing. A standing vow the fight refused (Mercy with no foe that can yield) leaves the prompt as before.
+  if (c.vowStanding && !c.vowStanding.id) return no;
   const v = faithView(g, c.id); if (!v) return no;
   const S = sc.state, shield = S.vowShield === key;
   const swear = (id, allyId) => { act({ type: 'faith/vow', unitId: cur.id, id, ...(allyId ? { allyId } : {}) }); sc.setState({ vowShield: null }); };

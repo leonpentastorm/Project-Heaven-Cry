@@ -17,7 +17,7 @@
 import { runCell, runFight, atYardPin, YARD } from './sim';
 import { SQUAD, FIGHTS } from './report';
 import { gunBuild, gunRow, ROTATIONS } from './guns-measure';
-import { pattern } from './magic-measure';
+import { pattern, peakPattern } from './magic-measure';
 import { faithBuild, doorFaithBuild, chaplainBuild, prayerRow } from './faith-measure';
 import { levelFactor } from '../../src';
 import { inventory, SOLDIER_TURN } from './heal-measure';
@@ -54,7 +54,7 @@ export function measure(level: number, variant: string, n: number, which: string
     if (s === 'tank') { const r = perTurn('tank', variant, level, n); out.tank = pct(r.v, yard); errors += r.errors; }
     if (/^sigil[234]$/.test(s)) { const g = Number(s.slice(5)), r = pattern(g + ' glyphs', 'sigil', variant, level, n, { glyphs: g }, /^Evoke /, y); out[s] = r.casts ? r.pctRifle : 0; errors += r.errors; }
     if (s === 'ob') { const r = pattern('steady', 'outburst', variant, level, n, { feelings: 'early' }, /^Release /, y); out.ob = r.pctRifle; errors += r.errors; }
-    if (s === 'obPeak') { let r = pattern('peak', 'outburst', variant, level, n * 2, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 1); if (!r.casts) r = pattern('peak', 'outburst', variant, level, n * 2, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 2); out.obPeak = r.pctRifle; errors += r.errors; }
+    if (s === 'obPeak') { const r = peakPattern('peak', variant, level, n * 2, { feel: true, feelings: 'all' }, y); out.obPeak = r.pctRifle; errors += r.errors; }
     if (s === 'whisper' || s === 'hymn') { if (out.whisper == null) { const r = prayerRow('faith', doorFaithBuild('old_overcast'), variant, level, n, yard); out.whisper = r.pctQuietTurn; out.hymn = r.pctHymnTurn; errors += r.errors; } }
     if (s === 'chaplain') { const r = prayerRow('chaplain', chaplainBuild('old_overcast'), variant, level, n, yard); out.chaplain = r.pctQuietTurn; (out as any).chaplainHymn = r.pctHymnTurn; errors += r.errors; }
     if (s === 'heal') { const r = inventory('outburst', variant, level, refHpAt(level)) /* rules 1.36: the Outburst heals by its own pair (Will Power): its all-in build */.find((q) => /steady \(Rage and Love/.test(q.what)); out.heal = r ? r.pctNow : 0; }

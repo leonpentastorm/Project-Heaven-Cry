@@ -321,7 +321,7 @@
       "counter_bonus": "max(0, mod(raw_power))",
       "injury_resist_pct": "10*(endurance-1)",
       "crit_damage_taken_pct": "-10*(perception-1) - 5*analysis (the skill named Acuity)",
-      "elemental_damage_taken_pct": "-10*pain_threshold",
+      "elemental_damage_taken_pct": "-6*pain_threshold (skills.json pain_threshold per_point.numbers.elemental_taken), every source together at most combat.elemental_taken_cap (rules 1.70 item 5540)",
       "ambush_damage_taken_pct": "-10*proficiency (the skill named Improvisation)",
       "healing_received_pct": "10*camaraderie",
       "saves": {
@@ -367,7 +367,6 @@
     "magic": {
       "sigil_max_words": "2 + floor((intelligence-1)/2)",
       "sigil_ap": "max(0.5, 1 - 0.1*(expression-1)) for each glyph drawn",
-      "sigil_core_saving": "floor(brain_power/3) per spell; spell cost min 1",
       "sigil_range_bonus_tiles": "0.5*brain_power",
       "sigil_duration_bonus_rounds": "0.5*brain_power",
       "max_mp": "100 + 75*(determination-1) + 25*(insight-1) (rules 1.24, provisional; it was 100 + 100*(virtue-1))",
@@ -376,9 +375,7 @@
       "soul_cost_pct": "-5*(insight-1)",
       "soul_range_bonus_tiles": "0.5*will_power",
       "syphon_bonus_pct": "10*(determination-1) + 10*will_power",
-      "strain_limit": "3 + floor(will_power/2)",
-      "prayer_cooldown_turns": "max(3, ceil(9 - 0.75*faith - 0.25*virtue)) rounds (rules 1.22; patrons.json prayer.hymn.cooldown_rule)",
-      "ready_designs": "2 + floor(will_power/2), at least 3"
+      "prayer_cooldown_turns": "max(3, ceil(9 - 0.75*faith - 0.25*virtue)) rounds (rules 1.22; patrons.json prayer.hymn.cooldown_rule)"
     },
     "social": {
       "leadership": {
@@ -419,16 +416,16 @@
       "about": "Rules 1.62 item 4900: the fight's big banners in the middle of the screen (apps/web/src/game/turnIntro.tsx draws them): `hold_ms`, the least time each is fully on screen (the combat speed never shortens it); the words of each (`approach`: the first banner of a fight that opens with no foe seeing the squad, rules item 5522, BATTLE START following at contact; `level_up`: rules item 5524, shown to the whole room on any screen when a character gains a level, `{level}` its new level, `sounds` the game's own sound names; `joined.fog`: BATTLE START's line when a hostile in the fight is out of the party's sight, rules 1.62 item 4902). The field's banner is survival.json run.after_fight.field.",
       "hold_ms": 1250,
       "approach": { "name": "APPROACH", "sub": "Unseen · moving is free", "provisional": true },
-      "level_up": { "name": "LEVEL UP", "sub": "Level {level}", "sounds": ["feel_unlock"], "provisional": true },
+      "level_up": { "name": "LEVEL UP", "sub": "Level {level}", "sounds": ["level_up"], "provisional": true },
       "joined": { "name": "BATTLE START", "fog": "Hostiles still in the fog" },
       "won": { "name": "VICTORY" },
       "lost": { "name": "DEFEAT" },
       "end": {
-        "about": "0.31.1 (Leon on live 0.31.0: \"There is still no victory ui ... that panel need to appear before the click to leave menu and have to have a victory celebration sound\"): VICTORY and DEFEAT are a panel in the middle of the screen, after the killing blow's effects; on screen `hold_ms` (or until clicked; never past it, so a co-op guest is never held), and only after it closes does a run's field (its FREE ROAM banner, its bar and its leave vote) show. `sounds`: the game's own sound names (apps/web/src/game/sfx.ts) the panel plays, the first at once and each next one `sound_gap_ms` later; a dedicated victory fanfare is still to be sourced (CC0 / CC BY). `felled` and `rounds`: the words of the panel's lines (what the engine already holds: the foes dropped and the fight's rounds).",
+        "about": "0.31.1 (Leon on live 0.31.0: \"There is still no victory ui ... that panel need to appear before the click to leave menu and have to have a victory celebration sound\"): VICTORY and DEFEAT are a panel in the middle of the screen, after the killing blow's effects; on screen `hold_ms` (or until clicked; never past it, so a co-op guest is never held), and only after it closes does a run's field (its FREE ROAM banner, its bar and its leave vote) show. `sounds`: the game's own sound names (apps/web/src/game/sfx.ts) the panel plays, the first at once and each next one `sound_gap_ms` later; 0.32: the dedicated victory fanfare and defeat sting are sourced (CC0; credits in the game's Credits). `felled` and `rounds`: the words of the panel's lines (what the engine already holds: the foes dropped and the fight's rounds).",
         "hold_ms": 3000,
         "sound_gap_ms": 180,
-        "won": { "sounds": ["miracle_sting", "soul_choir"] },
-        "lost": { "sounds": ["feel_pump_low", "soul_sigh"] },
+        "won": { "sounds": ["victory_fanfare"] },
+        "lost": { "sounds": ["defeat_sting"] },
         "felled": "Foes felled",
         "rounds": "Rounds",
         "close": "Click to continue",
@@ -891,6 +888,8 @@
       "expire": "end of combat unless stated"
     },
     "healing_cap": "max HP",
+    "elemental_taken_cap": 0.8,
+    "elemental_taken_cap_note": "PROVISIONAL. Rules 1.70 item 5540 (Leon, 19 Nov 2026): the most elemental damage taken off, from every source together (Pain Threshold's +6% a point, at most 60%, and the rest from gear and traits); one number, read by character.ts elementalCap wherever the cap applies.",
     "downed": {
       "at_hp": 0,
       "can_act": false,
@@ -919,8 +918,9 @@
     },
     "focus_memory": {
       "per_attacker": 1,
+      "carry": 0,
       "finish_share": 0.25,
-      "note": "rules 1.61 (0.30, focus memory; item 4964): the one enemy doctrine (combat.ts enemyRank, physical/ai.ts aiTechnique) counts a target its side has already attacked this round as less worth it: per_attacker (a share of max HP) added to its key for each other attacker of its side, and a technique's want x 1 / (1 + per_attacker x attackers). A tier's enemies.json `focus_memory` overrides per_attacker. No penalty against a Taunt, nor on a target at or below finish_share of its max HP. PROVISIONAL"
+      "note": "rules 1.61 (0.30, focus memory; item 4964): the one enemy doctrine (combat.ts enemyRank, physical/ai.ts aiTechnique) counts a target its side has already attacked this round as less worth it: per_attacker (a share of max HP) added to its key for each other attacker of its side, and a technique's want x 1 / (1 + per_attacker x attackers). A tier's enemies.json `focus_memory` overrides per_attacker. No penalty against a Taunt, nor on a target at or below finish_share of its max HP. Rules 1.79 item 6703 (spec 4969 a): carry, the weight of each attacker of the round before (the side's memory past the round: the first foe of a round spreads too); built and OFF (0): any carry from 0.25 moves the enemy table's guard (test/balance/defence-measure: the idle pair's first Down 4.2 rounds at most, measured 5), for the lead. PROVISIONAL"
     },
     "health_look": {
       "about": "How a creature's health reads to a side that has not Analyzed it (rules 1.3; rules 1.55 item 29): one word from this ladder and nothing else (no bar, no number). A rung holds while the creature's share of its HP is above `above`; `full` is at full HP only; a living creature below every rung takes the last. A side's own and an Analyzed creature read exactly (the bar and the number). `tone` is the colour family the screen pairs with the word: calm, or hurt (the HP red), or dire (the HP red, filled). `short` is the rung's short form (rules 1.55 item 43): the fight map's token chip shows it when the full word would run into a neighbouring token's chip; the full word everywhere else. A token at full HP shows no chip (the target card and the turn strip still say the word).",
@@ -952,9 +952,9 @@
         "keep_unless_drop": "{keep} kept back for a reaction, unless the blow would drop the unit",
         "keep_always": "{keep} always kept back"
       },
-      "absorb": "Absorbs up to {n} before HP",
-      "absorb_size": "Absorbs {word} before HP",
-      "absorb_drop": "up to {n} against a blow that would drop it",
+      "absorb": "Stops up to {n} of a blow before HP",
+      "absorb_size": "Stops a {word} amount of a blow before HP",
+      "absorb_drop": "Stops up to {n} of a blow that would take it down",
       "chip": "+{n} SHIELD",
       "chip_size": "SHIELD · {word}",
       "vs": "The damage shown is before {what}: up to {n} is taken there first",
@@ -1456,7 +1456,7 @@
       "core_slots": 1,
       "grammar": "rules 1.4: at least 1 Subject and 1 other word; 2-4 glyphs in a straight Line (the only shape); one Reach word per spell; with no Reach word the spell is Touch (1 tile deep); full grammar in sigils.json",
       "max_words": "sigil_max_words",
-      "cost": "draw: each word's charge + Glyph AP + 1 Flux; evoke: 1 AP + 1 charge per glyph - sigil_core_saving, min 1",
+      "cost": "draw: each word's charge + Glyph AP + 1 Flux; evoke: 1 AP + 1 charge per glyph - the core saving (skills.json brain_power per_point charge_at, character.ts sigilCoreSaving), min 1",
       "flux": {
         "per_word": 1,
         "safe_max": 6,
@@ -1498,7 +1498,7 @@
         "two_schools_from_will_power": 5,
         "second_school_extra_cost": 10,
         "module_slots": "1 + floor(will_power/3)",
-        "ready_designs": "2 + floor(will_power/2), at least 3",
+        "ready_designs": "soul_modules.json limits.ready_designs (a number block, read by character.ts readyDesigns)",
         "second_school": "a rider at half strength with its own option",
         "forms_per_design": 1
       },
@@ -1509,7 +1509,7 @@
         "per_begin_flooded": 2,
         "per_held_turn": 1,
         "per_held_turn_flooded": 2,
-        "limit": "strain_limit",
+        "limit": "soul_modules.json strain.limit (a number block, read by character.ts strainLimit)",
         "decay": "-1 at the start of every one of your turns, always",
         "burn": "8 true damage per point over the limit at the end of your turn",
         "mana_short": {
@@ -1578,7 +1578,12 @@
       "withdrawn": "rules 1.23 (Leon, 12 Nov 2026): there is no round limit. Rules 1.20 held spells and prayers to half of a creature's max HP a round; healing is priced in AP now, and the enemies go for whoever mends the most."
     },
     "brake": {
-      "deferred": "rules 1.60 item 4640 (Leon's ruling ii, 16 Nov 2026), not built in 0.30.0: a price that grows with the giver's Tendings on one target needs the price to see its target (a target-aware cost, spec N20 or a new grant_action field), a primitive not approved for this release. It waits on the lead's approval; no number is in force."
+      "about": "Rules 1.60 item 4640 (Leon's ruling ii, 16 Nov 2026), restated in spec item 5610: each Mend or Shield (Touch is cut, rules 1.75), and the Mender's Triage, a giver gives the same target in the same round costs its MP x `mult` for every one that giver already gave that target this round (the second x1.5, the third x2.25). Built at the one cost site (effects/cost.ts braked, with the price's target: rules 1.70 P3; the 0.32 merge). `actions` are the actions it brakes, `<item key>#<action id>`; `per` the window the gives are counted in.",
+      "built": true,
+      "mult": 1.5,
+      "per": "per_round",
+      "actions": ["verb:tend.mend#tend_mend", "verb:tend.shield#tend_shield", "class:medic.triage#triage"],
+      "provisional": true
     },
     "medic": {
       "rules": "1.23",
@@ -1718,9 +1723,12 @@
         "dial": "soul_modules.json damage.base"
       },
       "outburst_peak": {
-        "allin": 165,
-        "level_hi": 1.285,
-        "level_hi_note": "lead's ruling of 16 Nov 2026, PROVISIONAL (rules 1.56): the band's top is 212, not 165 x 1.25 = 206, because the Outburst's level-5 peak sits about 2 percent over its band: one base dial (damage.base 37) cannot put both the steady turn and the peak on their lines; to be refitted with the feelings' steps in the Balance 2.0 number pass",
+        "allin": 90, "allin_note": "rules 1.81 item 6903 (the 0.32 fit, 20 Nov 2026), PROVISIONAL: ONE Release counted (test/balance/magic-measure.ts peakPattern): the biggest Release takes two turns (Begin and four Pumps, then the Release), so it is that Release over its two turns. Before the fit the row counted a second Release in turn 2 made by Overdraw past the Strain limit (a Mana Short whose Stun falls outside the window): 165 was never met by one Release (0.31.11 measured 105 to 113% at levels 6 to 12, the fit 103 to 113%). Measured with the contract's own run: 61 / 106 / 89 / 92% at levels 1 / 5 / 10 / 20 (mean 87).",
+        "level_lo": 0.62,
+        "level_lo_note": "rules 1.75 item 6226 (the 0.32 merge, 19 Nov 2026), PROVISIONAL: the biggest all-in Release measured 123% at level 1 after the merge (the old floor 165 x 0.75 = 124); set to what is measured, for the fun-and-balance pass to judge (Leon's ruling of 19 Nov: ceilings are relative)",
+        "level_hi": 1.25,
+        "provisional": true, "fit_note": "rules 1.81 item 6903: level_lo 0.62 (level 1: 61%, the Release still walks or Pumps a turn longer there), level_hi back to 1.25 (level 5: 106%).",
+        "level_hi_note": "lead's ruling of 16 Nov 2026, PROVISIONAL (rules 1.56): the band's top is 212, not 165 x 1.25 = 206, because the Outburst's level-5 peak sits about 2 percent over its band: one base dial (damage.base 37) cannot put both the steady turn and the peak on their lines; to be refitted with the feelings' steps in the Balance 2.0 number pass. Rules 1.75 item 6226 (the 0.32 merge, 19 Nov 2026), PROVISIONAL: 1.295 (214), the level-5 peak measured 213% after the merge; set to what is measured",
         "what": "the biggest Release, one turn",
         "dial": "soul_modules.json damage.base, then cycle.stage_mult"
       },
@@ -2424,9 +2432,9 @@
   },
   "forced_movement": {
     "boss_holds": {
-      "about": "A Boss (rules.json bosses) is never moved by an opponent's forced move (a push, a pull, a throw, a teleport, a swap: any item, weapon or technique); the knockback immunity and Nailed already hold any unit the data marks so. The one exception: the items named in `except` (their own rows say how far a Boss goes: Tug's Bond moves it 1 tile on a failed save).",
+      "about": "A Boss (rules.json bosses) is never moved by an opponent's forced move (a push, a pull, a throw, a teleport, a swap: any item, weapon or technique); the knockback immunity and Nailed already hold any unit the data marks so. The one exception: the items named in `except` (their own rows say how far a Boss goes: Tug's Bond, Pull Together's since rules 1.75 item 6213, moves it 1 tile on a failed save).",
       "except": [
-        "tend.tug"
+        "pull_together"
       ],
       "why": "too big to be moved"
     },
@@ -2663,6 +2671,13 @@
     "data": "weapon_mastery.json",
     "provisional": true
   },
+  "zones": {
+    "about": "Classes 3.0 P10 and P9 (rules 1.78 item 6607): the kinds of zone data may lay (op zone; predicates self_in_zone, actor_in_zone, target_in_zone; engine: magic.ts DATA_ZONE_KINDS, makeZone, zonesAt). A row: id, the system that lays it. One side's zones of a kind on one tile never stack (rules 1.78 item 6601).",
+    "kinds": [
+      { "id": "sanctuary", "about": "the Chaplain's Sanctuary (rules 1.31)" },
+      { "id": "hallowed", "about": "the Chaplain's Hallow (rules 1.78 item 6607)" }
+    ]
+  },
   "ties": {
     "about": "Classes 3.0 P8 (engine: kit.ts tie, untie, tiesOf): the kinds of tie between two units. A row: id, max (a holder's base cap; the stat ties_max:<kind> adds to it; no max: no cap), ends_on (from_down, to_down, to_dead, unseen_round, combat_end), on_end (none, or unmake: the far end is unmade, P9), line (the map draws the tie: ink, and foe_dash, the dash pattern to a unit of another side; screenViews.ts tieLines). Each system adds its own kind.",
     "kinds": [
@@ -2679,6 +2694,16 @@
         "id": "owned",
         "about": "Classes 3.0 P9: an owned unit (owned.ts): its owner is the from end. The drone, the beast and the twin are tied so, for the whole fight; a system that needs more ends (an owner going Down, an unmake) adds its own kind.",
         "ends_on": [
+          "combat_end"
+        ],
+        "on_end": "none"
+      },
+      {
+        "id": "masterwork",
+        "about": "Rules 1.74 item 6041 (Visualization's fork Masterwork): the holder's one named Figment (from: the holder). At most one; it ends when the Figment goes down or the fight ends.",
+        "max": 1,
+        "ends_on": [
+          "to_down",
           "combat_end"
         ],
         "on_end": "none"

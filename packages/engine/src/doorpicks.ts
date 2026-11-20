@@ -7,7 +7,7 @@
 import './datatext';
 import type { Character } from './character';
 import forksJ from '../../../data/forks.json';
-import { SKILLS, RULES } from './data';
+import { SKILLS, RULES, ladderSchedule } from './data';
 
 /** One option of a grant, as the screens show it (its icon: a catalog id, '' for none). */
 export interface DoorOption { id: string; label: string; icon: string; /** its rule, as the picker shows it (rules 1.60) */ text?: string }
@@ -32,14 +32,14 @@ export const doorPicksOf = (c: Character | null | undefined, door: string): stri
 export const doorKeptOf = (c: Character | null | undefined, door: string): string[] => [...((c as any)?.doorKept?.[door] || [])];
 
 /** A grant still open: its options not yet taken, and how many picks are left of it. */
-export interface DoorPending { door: string; grant: string; left: number; options: DoorOption[]; why: string }
+export interface DoorPending { door: string; /** the door's own name (its registration's), for a screen to print */ name: string; /** the skill whose points open it (its registration's; the door itself when none) */ skill: string; grant: string; left: number; options: DoorOption[]; why: string }
 /** The grants of this door with picks left, in order. Each taken option counts against the first grant (in order)
  * that offers it and still has room; a taken option no grant offers counts against none. */
 export function pendingDoorPicks(c: Character, door: string): DoorPending[] {
   const src = DOORS[door]; if (!src) return [];
   const grants = src.grants(c).map((g) => ({ ...g, used: 0 })), picked = doorPicksOf(c, door), taken = [...picked, ...doorKeptOf(c, door)];
   for (const t of picked) { const g = grants.find((x) => x.of.includes(t) && x.used < x.n); if (g) g.used++; }
-  return grants.filter((g) => g.used < g.n).map((g) => ({ door, grant: g.id, left: g.n - g.used, why: g.why,
+  return grants.filter((g) => g.used < g.n).map((g) => ({ door, name: src.name, skill: src.skill || door, grant: g.id, left: g.n - g.used, why: g.why,
     options: g.of.filter((o) => !taken.includes(o)).map((o) => src.option(o)).filter((o): o is DoorOption => !!o) }))
     .filter((p) => p.options.length > 0);
 }
@@ -86,7 +86,8 @@ export const allDoorPicks = (c: Character | null | undefined): string[] => Objec
 export const pickedFork = (c: Character | null | undefined, id: string): boolean => allDoorPicks(c).includes(id);
 for (const sk of SKILLS as any[]) {
   if (!Array.isArray(sk.forks) || !sk.forks.length) continue;
-  const name = String(sk.door_title || sk.name), steps = (sk.forks as any[]).map((f) => ({ id: String(f.id), at: Number(f.at), of: (f.of as string[]).map(String) }));
+  // rules 1.70 item 5537: a fork step's points are the ladder schedule's (skills.json ladder.<slot>.forks, in order)
+  const name = String(sk.door_title || sk.name), steps = (sk.forks as any[]).map((f, i) => ({ id: String(f.id), at: ladderSchedule(sk.id).forks[i], of: (f.of as string[]).map(String) }));
   const offered = (of: string[]) => of.every(forkBuilt), label = (id: string) => FORK_ROWS[id]?.name || id;
   registerDoorPicks(sk.id, {
     name, skill: sk.id, runsOn: String(sk.fork_runs_on || ''),

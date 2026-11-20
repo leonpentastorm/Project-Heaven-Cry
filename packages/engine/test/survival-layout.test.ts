@@ -15,7 +15,7 @@ import { keyOf } from '../src/combat';
 declare const process: { env: Record<string, string | undefined> }; // the engine's tsconfig has no node types
 declare const console: { log(...a: unknown[]): void };
 
-const SEEDS = Number(process.env.SURVIVAL_LAYOUT_SEEDS || 1000), SIZES = [16, 20, 26];
+const SEEDS = Number(process.env.SURVIVAL_LAYOUT_SEEDS || 1000), SIZES = Object.keys((LAYOUT_DATA as any).stamp_count).map(Number); // the generated sizes: one stamp range each (survival.json layout.stamp_count; rules 1.81 item 6904 dropped 26)
 const HAZ = new Set(Object.values(OBJ).filter((k) => k.hazard).map((k) => k.id));
 type Case = { seed: number; size: number; setting: string; template: string; gen: ReturnType<typeof generateLayout>; hazardAllowed: boolean };
 const cases: Case[] = [];
@@ -44,7 +44,7 @@ describe('Survival layout generator (rules 1.45)', () => {
     expect(turnStamp(['ab', 'cd'], 0, true)).toEqual(['ba', 'dc']);
   });
 
-  it(SEEDS + ' seeds x ' + TEMPLATES.length + ' templates x sizes 16, 20, 26: every guarantee holds', () => {
+  it(SEEDS + ' seeds x ' + TEMPLATES.length + ' templates x sizes ' + SIZES.join(', ') + ': every guarantee holds', () => {
     const bad: string[] = [], fell = cases.filter((c) => !c.gen);
     for (const c of cases) {
       if (!c.gen) continue;

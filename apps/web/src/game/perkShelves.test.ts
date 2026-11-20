@@ -54,14 +54,14 @@ describe('the three shelves', () => {
   it('Rides an action: an attack, a Pump and a Begin each read in plain words', () => {
     expect(row(shelves(charWith({ traits: ['gambler'] })).sh, 'trait:gambler').line).toBe('on your attacks');
     const c = charWith({ skills: { ...charWith().skills, will_power: 10 } as any, perks: [{ id: 'the_twin_pays', tier: 'mastered' } as any] }), { sh } = shelves(c);
-    expect(row(sh, 'skill:will_power.3')).toMatchObject({ shelf: 'rides', line: 'Once a turn' }); // Overdraw: once a turn
+    expect(row(sh, 'skill:will_power.2')).toMatchObject({ shelf: 'rides', line: 'Once a turn' }); // Overdraw: once a turn
     expect(row(sh, 'perk:the_twin_pays')).toMatchObject({ shelf: 'rides' });
     expect(row(sh, 'perk:the_twin_pays').line).toBe('Once a fight');
   });
   it('Always on: a passive, with a live line', () => {
-    const { sh } = shelves(perk('used_to_the_pain'));
-    const r = row(sh, 'perk:used_to_the_pain');
-    expect(r).toMatchObject({ shelf: 'always', name: 'Used to the Pain', state: 'waiting' });
+    const { sh } = shelves(perk('breaching_strike'));
+    const r = row(sh, 'perk:breaching_strike');
+    expect(r).toMatchObject({ shelf: 'always', name: 'Keep Swinging', state: 'waiting' });
     expect(r.line).toMatch(/^Waiting: /);
   });
   it('items that only matter in the story are not on the fight\'s card', () => {
@@ -97,9 +97,10 @@ describe('the three shelves', () => {
 
 describe('a button that only shows at its moment (the audit\'s finding 8)', () => {
   // (rules 1.63, D6: Rite in the Field has no button of its own any more: it prices the engine's own Crystallise)
-  const TEN: [string, string][] = [['perk', 'catch'], ['perk', 'jury_rig'], ['perk', 'clean_draw'], ['perk', 'case_closed'], ['perk', 'twin_discipline'],
+  // (rules 1.74 item 6042: Jury-Rig is a Figment perk now, data on the downed trigger: no button of its own)
+  const TEN: [string, string][] = [['perk', 'catch'], ['perk', 'clean_draw'], ['perk', 'case_closed'], ['perk', 'twin_discipline'],
     ['trait', 'oil_in_my_mind'], ['trait', 'oil_in_my_soul'], ['trait', 'old_school']];
-  it('the eight (rules 1.56: Shadow Step is data now; rules 1.63: Rite in the Field is data) sit on Always on while the button is down, with "Its button appears when …"', () => {
+  it('the seven (rules 1.56: Shadow Step is data now; rules 1.63: Rite in the Field is data; rules 1.74: Jury-Rig is data) sit on Always on while the button is down, with "Its button appears when …"', () => {
     for (const [kind, id] of TEN) {
       const p = (PERKS as any[]).find((x) => x.id === id);
       const c = kind === 'trait' ? charWith({ traits: [id] }) : perk(id, p.tiers ? 'II' : p.tier), { sh } = shelves(c), r = row(sh, kind + ':' + id);
@@ -182,8 +183,8 @@ describe('the live line of Always on', () => {
   });
   it('a limited passive that keeps its count out of reach says the limit, never "Ready"', () => {
     const all: any = {}; for (const k of SKILLS as any[]) all[k.id] = 10;
-    const c = charWith({ skills: all }), f = fight(c), r = row(perkShelves(f.g, f.cb, f.u, c), 'skill:composure.5');
-    expect(PRIVATE_COUNT).toContain('skill:composure.5');
+    const c = charWith({ skills: all, perks: [{ id: 'stand_still', tier: 'I' }] }), f = fight(c), r = row(perkShelves(f.g, f.cb, f.u, c), 'perk:stand_still'); // rules 1.75: a Composure perk
+    expect(PRIVATE_COUNT).toContain('perk:stand_still');
     expect(r).toMatchObject({ shelf: 'always', state: 'active', line: 'Once a fight' });
   });
   // "Ready" is a promise. A passive may only make it when the rules count its use where the card reads it: this reads
@@ -210,12 +211,12 @@ describe('the live line of Always on', () => {
     expect(row(perkShelves(f.g, f.cb, f.u, c), 'perk:last_wall').line).toBe('Ready');
   });
   it('"Waiting: <its trigger>" from the perk\'s own text when it has no uses to count', () => {
-    const r = row(shelves(perk('used_to_the_pain')).sh, 'perk:used_to_the_pain');
-    expect(r.line).toBe('Waiting: the first time you are hit in each fight');
-    expect(r.text.toLowerCase()).toContain('the first time you are hit in each fight');
+    const r = row(shelves(perk('breaching_strike')).sh, 'perk:breaching_strike');
+    expect(r.line).toBe('Waiting: when one of your finishers drops an enemy');
+    expect(r.text.toLowerCase()).toContain('when one of your finishers drops an enemy');
   });
   it('the trigger is DATA (data/perk_cards.json), by item and tier; nothing reads it out of the card\'s prose', () => {
-    expect(cardTrigger('perk:used_to_the_pain', 'I')).toEqual({ trigger: 'the first time you are hit in each fight', standing: false });
+    expect(cardTrigger('perk:breaching_strike', 'I')).toEqual({ trigger: 'when one of your finishers drops an enemy', standing: false });
     expect(cardTrigger('trait:pain_eater')).toEqual({ trigger: 'while you are below half your max HP', standing: true });
     expect(cardTrigger('perk:bulwark', 'I')).toEqual({ trigger: '', standing: false }); // no entry: nothing to wait for
     // every declared trigger is in its item's own card text at that tier (the data can't drift from the card)
@@ -252,21 +253,21 @@ describe('the live line of Always on', () => {
     expect(row(shelves(charWith({ traits: ['born_performer'] })).sh, 'trait:born_performer')).toMatchObject({ state: 'active', line: 'Active all fight' });
   });
   it('when the fight\'s log names the perk since the unit\'s last turn, the line is that last log line', () => {
-    const c = perk('used_to_the_pain'), f = fight(c);
-    f.cb.log.push('Tester takes 12 (Used to the Pain: −25% on the next hit).', 'E fires at Tester.');
-    const r = row(perkShelves(f.g, f.cb, f.u, c, { since: 0 }), 'perk:used_to_the_pain');
-    expect(r).toMatchObject({ state: 'last', line: 'Last: Tester takes 12 (Used to the Pain: −25% on the next hit)' });
-    expect(r.detail).toMatch(/^Last: Tester takes 12 \(Used to the Pain: −25% on the next hit\)\. It works by itself\. /);
+    const c = perk('breaching_strike'), f = fight(c);
+    f.cb.log.push('Tester takes 12 (Keep Swinging: the next Strike is free).', 'E fires at Tester.');
+    const r = row(perkShelves(f.g, f.cb, f.u, c, { since: 0 }), 'perk:breaching_strike');
+    expect(r).toMatchObject({ state: 'last', line: 'Last: Tester takes 12 (Keep Swinging: the next Strike is free)' });
+    expect(r.detail).toMatch(/^Last: Tester takes 12 \(Keep Swinging: the next Strike is free\)\. It works by itself\. /);
   });
   it('a line from before the unit\'s last turn is not shown', () => {
-    const c = perk('used_to_the_pain'), f = fight(c);
-    f.cb.log.push('Tester takes 12 (Used to the Pain: −25% on the next hit).', 'E fires at Tester.');
-    expect(row(perkShelves(f.g, f.cb, f.u, c, { since: 1 }), 'perk:used_to_the_pain').line).toMatch(/^Waiting: /);
+    const c = perk('breaching_strike'), f = fight(c);
+    f.cb.log.push('Tester takes 12 (Keep Swinging: the next Strike is free).', 'E fires at Tester.');
+    expect(row(perkShelves(f.g, f.cb, f.u, c, { since: 1 }), 'perk:breaching_strike').line).toMatch(/^Waiting: /);
   });
   it('a line about a squadmate who holds the same perk is not shown as yours', () => {
-    const c = perk('used_to_the_pain'), mate = charWith({ perks: [{ id: 'used_to_the_pain', tier: 'I' } as any] }, 'c2', 'Brannock'), f = fight(c, mate);
-    f.cb.log.push('Brannock takes 9 (Used to the Pain: −25% on the next hit).');
-    expect(row(perkShelves(f.g, f.cb, f.u, c, { since: 0 }), 'perk:used_to_the_pain').line).toMatch(/^Waiting: /);
+    const c = perk('breaching_strike'), mate = charWith({ perks: [{ id: 'breaching_strike', tier: 'I' } as any] }, 'c2', 'Brannock'), f = fight(c, mate);
+    f.cb.log.push('Brannock takes 9 (Keep Swinging: the next Strike is free).');
+    expect(row(perkShelves(f.g, f.cb, f.u, c, { since: 0 }), 'perk:breaching_strike').line).toMatch(/^Waiting: /);
   });
   it('a perk whose name is an everyday word is not matched inside another word', () => {
     const c = perk('catch'), f = fight(c); f.cb.log.push('Tester catches their breath.');
@@ -279,9 +280,9 @@ describe('the live line of Always on', () => {
     expect(r.line).toBe('Used this fight'); expect(r.detail).toMatch(/^Used this fight\. Last: Tester will not fall \(Last Wall\)\. /);
   });
   it('without a turn mark, only the last lines of the log are read', () => {
-    const c = perk('used_to_the_pain'), f = fight(c);
-    f.cb.log.push('Tester takes 12 (Used to the Pain: −25% on the next hit).'); for (let i = 0; i < LOG_LOOKBACK; i++) f.cb.log.push('E waits.');
-    expect(row(perkShelves(f.g, f.cb, f.u, c), 'perk:used_to_the_pain').line).toMatch(/^Waiting: /);
+    const c = perk('breaching_strike'), f = fight(c);
+    f.cb.log.push('Tester takes 12 (Keep Swinging: the next Strike is free).'); for (let i = 0; i < LOG_LOOKBACK; i++) f.cb.log.push('E waits.');
+    expect(row(perkShelves(f.g, f.cb, f.u, c), 'perk:breaching_strike').line).toMatch(/^Waiting: /);
   });
 });
 
@@ -303,7 +304,7 @@ describe('where the unit\'s last turn began (turnMark)', () => {
 
 describe('the shelf comes from the registry, with no table to keep', () => {
   it('shelfOf: a button up is Use now whatever else the item has', () => {
-    const c = perk('used_to_the_pain'), f = fight(c), h = holdersOf({ u: f.u, c, cb: f.cb }).find((x) => x.key === 'perk:used_to_the_pain')!;
+    const c = perk('breaching_strike'), f = fight(c), h = holdersOf({ u: f.u, c, cb: f.cb }).find((x) => x.key === 'perk:breaching_strike')!;
     expect(shelfOf(h, true)).toBe('use'); expect(shelfOf(h, false)).toBe('always');
   });
   // The one thing the registry can't see: an item the core rules look for by id. The engine's source is read the way

@@ -6,7 +6,7 @@ import { reactionsUsed } from '../src';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, moveUnit, resolveAttack, previewAttack, attackDamage, throwItem, applyDamage, applyCond, makeObject, d20, packOf, emitStory, condOn, refOf, positionsOf, endTurn, critMult,
-  type Unit, type Combat, type Character, TRAITS, perkActionsFor,
+  type Unit, type Combat, type Character, TRAITS, perkActionsFor, PERK,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -75,23 +75,13 @@ describe('Catch', () => {
 
 // (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Sleight of Hand'
 
-describe('Jury-Rig', () => {
-  it('I: a broken gun fires once more (the shot\'s AP); then it is broken again and the use is spent until repaired', () => {
-    const f = fightWith([{ perks: { jury_rig: 'I' } }], [{ at: 'H6' }]);
-    const pc = at(f.pc, '3,5'); pc.dur = 0; const u = f.turn(pc);
-    expect(previewAttack(f.cb, u, f.foe, 'shot').why).toMatch(/Broken/);
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'jury_rig', actionId: 'one_more', targetId: f.foe.id } as any);
-    expect(logHas(f.cb, /one more go \(Jury-Rig\)/)).toBe(true); expect(logHas(f.cb, /fires at Foe 1/)).toBe(true);
-    expect(f.pc.ap).toBe(4); expect(f.pc.dur).toBe(0);
-    expect(() => f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'jury_rig', actionId: 'one_more', targetId: f.foe.id } as any)).toThrow(/Already used on this broken weapon/);
-  });
-  it('II: patches a drone at double Field Repair strength', () => {
-    const f = fightWith([{ perks: { jury_rig: 'II' }, kit: 'medic', skills: { proficiency: 5 } }], [{ at: 'O10' }]);
-    const pc = at(f.pc, '3,5'); pc.proficiency = 5; pc.parts = 2;
-    const drone: Unit = { ...JSON.parse(JSON.stringify(pc)), id: 'drone-1', name: 'Drone', charId: undefined, companion: 'drone', ctrl: pc.charId, pos: '4,5', hp: 10, maxHp: 60 };
-    f.cb.units.push(drone); const u = f.turn(f.pc);
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'jury_rig', actionId: 'repair_drone', targetId: 'drone-1' } as any);
-    expect(f.unit('drone-1').hp).toBe(10 + Math.ceil(60 * 0.2 * 2)); expect(f.pc.parts).toBe(1); expect(f.pc.ap).toBe(4);
+describe('Jury-Rig (rules 1.74 item 6042: a Figment perk now; the broken-weapon use is moot under Tuned)', () => {
+  it('its old actions are gone with its handler: no One more time, no Patch the drone; it is data on the downed trigger', () => {
+    const f = fightWith([{ perks: { jury_rig: 'II' } }], [{ at: 'H6' }]);
+    const u = f.turn(f.pc); u.dur = 0;
+    const ids = withGame(f.g, () => perkActionsFor({ u: f.unit(u.id), cb: f.cb, g: f.g }, 'combat')).map((e: any) => e.actionId || e.id);
+    expect(ids.some((x: string) => /one_more|repair_drone/.test(x))).toBe(false);
+    expect((PERK.jury_rig as any).tiers.I.effects[0]).toMatchObject({ op: 'grant_ap', when: 'downed', bank: true });
   });
 });
 

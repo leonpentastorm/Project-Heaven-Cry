@@ -28,7 +28,7 @@ const INLINE = (id: string): any => Object.values(BARD.ranks).flatMap((r: any) =
 type Spec = { skills?: Record<string, number>; attrs?: Record<string, number>; classId?: string | null; level?: number; weapon?: string; attuner?: 'hand' | 'pack' | null; name?: string };
 /** A fight: the Bonder (first spec), its squad, Soldiers at the given tiles; the Attuner in the off hand unless said. */
 function fight(specs: Spec[], foes: { at: string; tier?: string }[], o: { level?: number } = {}) {
-  const s = storyWith(specs.map((x) => ({ name: x.name, skills: { camaraderie: 0, ...(x.skills || {}) }, attrs: x.attrs, classId: x.classId ?? null, level: x.level ?? 5, weapon: x.weapon || 'service_pistol' })));
+  const s = storyWith(specs.map((x) => ({ name: x.name, skills: { camaraderie: 0, ...(x.skills || {}) }, attrs: x.attrs, classId: x.classId ?? null, level: x.level ?? 5, weapon: x.weapon || 'service_pistol', ...((x as any).perks ? { perks: (x as any).perks } : {}) })));
   for (const [i, c] of s.chars.entries()) {
     const want = specs[i]?.attuner === undefined ? (i === 0 ? 'hand' : null) : specs[i].attuner;
     const ch = s.g.characters[c.id];
@@ -173,24 +173,22 @@ describe('rules 1.33 section 3: the verbs', () => {
     const f = fight([{ skills: { empathy: 3 } }], [{ at: '12,9' }]), [u] = f.pcs(); f.turn(u); u.hp = 10;
     expect(f.act(u, 'verb:tend.mend_self')).toBeNull(); expect(f.pv(u, 'verb:tend.mend_self').ok).toBe(false);
   });
-  it('Touch: adjacent only; Shield: a shield, on a Bonded ally only; Settle: Settled; Soothe: the newest Body condition', () => {
-    const f = fight([{ skills: { empathy: 5 } }, { name: 'Ally' }], [{ at: '12,9' }]), [u, al] = f.pcs();
-    u.pos = '3,3'; al.pos = '6,3'; f.turn(u);
-    expect(f.pv(u, 'verb:tend.touch', { targetId: al.id }).ok).toBe(false); al.pos = '4,3';
-    expect(f.pv(u, 'verb:tend.touch', { targetId: al.id }).ok).toBe(true);
+  it('Shield: a shield, on a Bonded ally only; Settle: Settled; Soothe: the newest Body condition (rules 1.75: Touch is cut; Settle and Soothe are Steady Hands\'s)', () => {
+    const f = fight([{ skills: { empathy: 5, camaraderie: 5 }, perks: { steady_hands: 'II' } } as any, { name: 'Ally' }], [{ at: '12,9' }]), [u, al] = f.pcs();
+    u.pos = '3,3'; al.pos = '4,3'; f.turn(u);
     expect(f.pv(u, 'verb:tend.shield', { targetId: al.id }).ok).toBe(false); // rules 1.60 item 4638 (R20): a Bonded ally only
     f.act(u, 'verb:tend.bond', { targetId: al.id }); u.ap = 9;
     al.shield = 0; f.act(u, 'verb:tend.shield', { targetId: al.id }); expect(al.shield).toBeGreaterThan(0); u.ap = 9;
-    f.act(u, 'verb:tend.settle', { targetId: al.id }); expect(condOn(al, 'settled')).toBe(true); u.ap = 9;
+    f.act(u, 'steady_hands', { targetId: al.id, actionId: 'tend_settle' }); expect(condOn(al, 'settled')).toBe(true); u.ap = 9;
     al.conds = { ...(al.conds || {}), weakened: 2, slowed: 2 }; al.condAt = { weakened: 1, slowed: 2 };
-    f.act(u, 'verb:tend.soothe', { targetId: al.id }); expect(condOn(al, 'slowed')).toBe(false); expect(condOn(al, 'weakened')).toBe(true);
+    f.act(u, 'steady_hands', { targetId: al.id, actionId: 'tend_soothe' }); expect(condOn(al, 'slowed')).toBe(false); expect(condOn(al, 'weakened')).toBe(true);
   });
-  it('Raise: a Downed ally next to you stands; Guide: an ally steps to the tile you pick; Let go ends a Bond', () => {
-    const f = fight([{ skills: { empathy: 4 } }, { name: 'Ally' }], [{ at: '12,9' }]), [u, al] = f.pcs();
+  it('Raise: a Downed ally next to you stands; Guide: an ally steps to the tile you pick (rules 1.75: Camaraderie perks\' actions); Let go ends a Bond', () => {
+    const f = fight([{ skills: { empathy: 4, camaraderie: 5 }, perks: { nobody_left_behind: 'II', pull_together: 'II' } } as any, { name: 'Ally' }], [{ at: '12,9' }]), [u, al] = f.pcs();
     u.pos = '3,3'; al.pos = '4,3'; f.turn(u); f.W(() => setDowned(al, true)); al.hp = 0;
-    expect(f.act(u, 'verb:tend.raise', { targetId: al.id })).toBeNull(); expect(al.downed).toBe(false); expect(al.hp).toBeGreaterThanOrEqual(1);
+    expect(f.act(u, 'nobody_left_behind', { targetId: al.id, actionId: 'tend_raise' })).toBeNull(); expect(al.downed).toBe(false); expect(al.hp).toBeGreaterThanOrEqual(1);
     const to = ['5,3', '5,2', '4,2', '4,4', '5,4'].find((k) => f.W(() => canStand(f.cb(), k)))!;
-    u.ap = 9; expect(f.act(u, 'verb:tend.guide', { targetId: al.id, tile: to })).toBeNull(); expect(al.pos).toBe(to);
+    u.ap = 9; expect(f.act(u, 'pull_together', { targetId: al.id, tile: to, actionId: 'tend_guide' })).toBeNull(); expect(al.pos).toBe(to);
     u.ap = 9; f.act(u, 'verb:tend.bond', { targetId: al.id }); expect(f.act(u, 'verb:tend.let_go', { targetId: al.id })).toBeNull();
     expect(tiesOf(f.cb(), u, 'bond').length).toBe(0);
   });
@@ -213,8 +211,8 @@ describe('rules 1.33 section 3: the verbs', () => {
     expect(off.took).toBe(0); expect(off.canReact).toBe(true);
     expect(listed.took).toBe(on.took);
   });
-  it('Field Surgery is a verb at Empathy 3; Stim Throw is a row of actions.json', () => {
-    expect(VERB('tend.field_surgery').requires).toEqual([{ skill: 'empathy', min: 3 }]);
+  it('Field Surgery is the Mender\'s verb (rules 1.75 item 6217); Stim Throw is a row of actions.json', () => {
+    expect(VERB('tend.field_surgery').requires).toEqual([{ class: 'bard', rank: 1 }, { skill: 'empathy', min: 1 }]);
   });
 });
 
@@ -271,11 +269,11 @@ describe('rules 1.33 section 5: the Mender', () => {
 });
 
 describe('rules 1.33 section 4: what leaves Empathy', () => {
-  it('the free Pump and the swell without Strain are Will Power\'s', () => {
+  it('the free Pump is Will Power\'s and the swell without Strain Composure\'s (rules 1.75 item 6202); neither is Empathy\'s', () => {
     const fp = (soulJ as any).cycle.free_pumps[0], sw = (soulJ as any).cycle.swell_no_strain;
     const c: any = { skills: { empathy: 10, will_power: 0 }, attrs: { insight: 10, determination: 10 }, perks: [], traits: [] };
     expect(freePumps(c)).toBe(0); expect(swellFree(c)).toBe(false);
-    c.skills.will_power = Math.max(fp.will_power, sw.will_power);
+    c.skills.will_power = fp.will_power; c.skills.composure = sw.composure;
     expect(freePumps(c)).toBe(fp.pumps); expect(swellFree(c)).toBe(true);
   });
   it('the tend profile is Healing given (Insight and Empathy), k from data', () => {

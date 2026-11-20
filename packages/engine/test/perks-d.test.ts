@@ -8,7 +8,7 @@ import {
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
-import { hymnWait, prayerCooldown } from '../src';
+import { hymnWait, prayerCooldown, calls } from '../src';
 
 /** A seed whose next d20 is n. */
 function rngFor(n: number): { state: number } { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return { state: s }; } throw new Error('no seed'); }
@@ -68,38 +68,27 @@ describe('Resonance, the perk (rules 1.14): what the rewrite kept', () => {
   });
 });
 
-describe('Rite in the Field (rules 1.63, D6: the rituals of the heart)', () => {
-  it('I cuts Crystallise by its row value, II by its own (never below the floor); a prayer and a WARD glyph cost what they cost without it', () => {
-    const cost = (tier?: string) => { const g = soulFight(tier ? { rite_in_the_field: tier } : {}); const a = g.pc.ap;
+describe('Rite in the Field (rules 1.75 item 6206, as Leon worded it; its kill count and the free Crystallise: soul-lane-0.32.test.ts)', () => {
+  it('with no kills it cuts nothing: Crystallise, a prayer, a WARD glyph and Steady cost what they cost without it; the old Perks-tab copy of Crystallise is gone', () => {
+    const cost = (perks: Record<string, string>) => { const g = soulFight(perks); const a = g.pc.ap;
       g.act({ type: 'combat/crystallise', unitId: g.pc.id } as any); expect(logHas(g.cb, /crystallises/)).toBe(true); return a - g.pc.ap; };
-    const plain = cost(); expect(plain).toBeGreaterThan(2);
-    const row = (t: string) => (PERK as any).rite_in_the_field.tiers[t].effects[0];
-    for (const t of ['I', 'II']) expect(cost(t), t).toBe(Math.max(row(t).min, plain + row(t).value));
-    expect(cost('II')).toBeLessThan(cost('I'));
-    // the old Perks-tab copy of Crystallise is gone (one copy of the action: the engine's own, priced at its site)
+    expect(cost({ rite_in_the_field: 'II' })).toBe(cost({}));
     const g = soulFight({ rite_in_the_field: 'II' }); expect(() => g.act({ type: 'combat/perk', unitId: g.pc.id, id: 'rite_in_the_field', actionId: 'crystallise' } as any)).toThrow();
-    // the Mind's and Faith's doors are not its: a Hymn and a WARD glyph cost the same with and without it
     const other = (perks: Record<string, string>) => { const f = sigilFight(perks, { skills: { faith: 5 } });
       charOf(f.g, f.pc).patron = PATRONS[0].id; f.pc.mg!.words.push('ward');
       const ap = f.pc.ap; f.g.rng.state = rngFor(15).state; f.act({ type: 'combat/pray', unitId: f.pc.id, choice: PATRONS[0].blessings[0].id });
       const a2 = f.pc.ap; draw(f, 'ward', '3,5'); return [ap - a2, Math.round((a2 - f.pc.ap) * 10) / 10]; };
     expect(other({ rite_in_the_field: 'II' })).toEqual(other({}));
-  });
-  it('Steady is not its (review: at 1 AP and a floor of 1 a cut was never a cut): Steady costs the same with and without it', () => {
-    const steady = (perks: Record<string, string>) => { const g = soulFight(perks); const d = g.pc.mg!.designs[0];
-      g.act({ type: 'combat/outburst', unitId: g.pc.id, design: d.id, hold: true } as any); const a = g.pc.ap;
-      g.act({ type: 'combat/steady', unitId: g.pc.id } as any); return a - g.pc.ap; };
+    const steady = (perks: Record<string, string>) => { const f = soulFight(perks); const d = f.pc.mg!.designs[0];
+      f.act({ type: 'combat/outburst', unitId: f.pc.id, design: d.id, hold: true } as any); const a = f.pc.ap;
+      f.act({ type: 'combat/steady', unitId: f.pc.id } as any); return a - f.pc.ap; };
     expect(steady({ rite_in_the_field: 'II' })).toBe(steady({}));
-    for (const t of ['I', 'II']) for (const e of (PERK as any).rite_in_the_field.tiers[t].effects) expect(e.if.action, t).not.toContain('steady');
   });
-  // rules 1.64 item 5006: the price predicate action_id names one Call; Rite in the Field cuts Name It (never below 0)
-  it("cuts Lore Master's own Call Name It by its row (I and II, never below its floor), and no other Call", () => {
-    const callAp = (perks: Record<string, string>, id: string, foe = false) => { const g = soulFight(perks, { skills: { lore_master: 3, vigilant: 3 } }); const a = g.pc.ap;
-      g.act({ type: 'combat/call', unitId: g.pc.id, id, targetId: foe ? g.foe.id : g.pc.id } as any); return a - g.pc.ap; };
-    const plain = callAp({}, 'call.name_it'); expect(plain).toBe(2);
-    const row = (t: string) => (PERK as any).rite_in_the_field.tiers[t].effects.find((e: any) => (e.if.action_id || []).includes('call.name_it'));
-    for (const t of ['I', 'II']) expect(callAp({ rite_in_the_field: t }, 'call.name_it'), t).toBe(Math.max(row(t).min, plain + row(t).value));
-    expect(callAp({ rite_in_the_field: 'II' }, 'call.spot', true)).toBe(callAp({}, 'call.spot', true));
+  it('no Call is its any more (the Call ladder prices Name It: rules 1.70 item 5535)', () => {
+    const callAp = (perks: Record<string, string>, id: string) => { const g = soulFight(perks, { skills: { lore_master: 3, vigilant: 3 } }); const a = g.pc.ap;
+      g.act({ type: 'combat/call', unitId: g.pc.id, id, targetId: g.pc.id } as any); return a - g.pc.ap; };
+    expect(callAp({ rite_in_the_field: 'II' }, 'call.name_it')).toBe(callAp({}, 'call.name_it'));
+    for (const t of ['I', 'II']) for (const e of (PERK as any).rite_in_the_field.tiers[t].effects) expect(e.if?.action || [], t).not.toContain('call');
   });
 });
 
@@ -324,39 +313,7 @@ describe('Music traits', () => {
   });
 });
 
-describe('You Get Used to It', () => {
-  it('I: the first time each round an ally within 5 tiles takes a Brain or Heart condition, your next save this round is +2; no AP moves', () => {
-    const f = fightWith([{ perks: { you_get_used_to_it: 'I' } }, { name: 'Ally' }], [{ at: 'P11' }]); const [a, b] = f.pcs; a.pos = '3,3'; b.pos = '3,5';
-    const ctxOf = (t: Unit, id = 'fear') => withGame(f.g, () => emit(f.cb, 'cond_apply', { by: f.foe, t, id, fam: 'heart', rounds: 1, skipSave: false, cancel: false, saveAdd: 0, tnAdd: 0, cb: f.cb, rng: f.g.rng }));
-    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0);
-    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'ldebuff', 2, undefined, { skipSave: true }));
-    expect(logHas(f.cb, /You Get Used to It/)).toBe(true);
-    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(2);
-    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0); // one save
-    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'shaken', 2, undefined, { skipSave: true }));
-    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0); // the first time each round only
-    expect(f.turn(f.unit(a.id)).ap).toBe(6); // neither a penalty nor a gift
-    f.cb.round += 1; f.unit(b.id).pos = '3,10'; // 7 tiles away: too far
-    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'fear', 2, undefined, { skipSave: true }));
-    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0);
-  });
-  it('II: +4, and Seen worse (0 AP) gives it to that ally for their next save this round', () => {
-    const f = fightWith([{ perks: { you_get_used_to_it: 'II' } }, { name: 'Ally' }], [{ at: 'P11' }]); const [a, b] = f.pcs; a.pos = '3,3'; b.pos = '3,5';
-    const ctxOf = (t: Unit) => withGame(f.g, () => emit(f.cb, 'cond_apply', { by: f.foe, t, id: 'fear', fam: 'heart', rounds: 1, skipSave: false, cancel: false, saveAdd: 0, tnAdd: 0, cb: f.cb, rng: f.g.rng }));
-    f.turn(f.unit(a.id));
-    expect(() => f.act({ type: 'combat/perk', unitId: a.id, id: 'you_get_used_to_it', actionId: 'seen_worse' } as any)).toThrow(/Nothing to give/);
-    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, f.unit(b.id), 'ldebuff', 2, undefined, { skipSave: true }));
-    const ap = f.unit(a.id).ap;
-    f.act({ type: 'combat/perk', unitId: a.id, id: 'you_get_used_to_it', actionId: 'seen_worse' } as any);
-    expect(f.unit(a.id).ap).toBe(ap);
-    expect(ctxOf(f.unit(a.id)).saveAdd).toBe(0); expect(ctxOf(f.unit(b.id)).saveAdd).toBe(4);
-  });
-  it('II: no penalty', () => {
-    const f = fightWith([{ perks: { you_get_used_to_it: 'II' } }, { name: 'Ally' }], [{ at: 'P11' }]); const [a, b] = f.pcs;
-    withGame(f.g, () => applyCond(f.cb, f.g.rng, null, b, 'ldebuff', 2, undefined, { skipSave: true }));
-    expect(f.turn(a).ap).toBe(6);
-  });
-});
+// You Get Used to It is removed (rules 1.75 item 6203: mapped to Poker Face; its tests: soul-lane-0.32.test.ts).
 
 // (rules 1.56, Balance 2.0: removed with the old effect; docs/design/move-pool.md) describe('Shared Breath'
 

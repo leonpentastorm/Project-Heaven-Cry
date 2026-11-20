@@ -11,9 +11,10 @@
 //   Bonded unit                            plays (its +N: one number, 0.28.2's mendShown)
 //   shove by a unit to its own side's      GUIDE: the guide's small gesture and a faint thread, then the slide
 //   (Guide: a willing move)
-//   a tie of a line kind gone from the     BREAK: the line parts from its middle and both ends recoil; the word is the
-//   view between two states (Let go, a     kind's (BOND BROKEN). The engine sends no event for a tie's end, so it is
-//   Down, the Attuner leaving, sight)      read from the view (noteTies), and it plays after what is queued
+//   stance {what: untie, unit, target,     BREAK: the line parts from its middle and both ends recoil; the word is the
+//   how: the kind} (rules 1.72 item       kind's (BOND BROKEN). The engine says a tie its op ended (Let go); a tie
+//   5701: the tie op's clear)              gone otherwise (a Down, the Attuner leaving, sight) has no event yet and is
+//                                          still read from the view (noteTies), after what is queued
 // Not drawn, for want of an event (the engine emits none; listed in the 0.28.3 hand-off): the echo of a heal into a
 // Bonded enemy (the `deal` op makes no fx) and the share of damage (`redirect` makes none); and an un-Bonded Tending
 // heal can't be told from another heal (the heal event names no giver), so it keeps the plain heal. The idle breath of
@@ -22,7 +23,7 @@ import { tieKinds, tieLines, type FxEvent, type TieLine } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
 import { INSIGHT_INK } from '../bondStrip';
-import { type Pt, after, anim, floatText, fxScale, put, ring, svg, trace } from './dom';
+import { type Pt, after, anim, floatText, fxMarker, fxScale, put, ring, svg, trace } from './dom';
 import { thread, windUp } from './figments';
 
 /** The moments' lengths (ms at Fast): the wind-up, the thread's run, the line drawing in, a heal's pulse, the parting,
@@ -44,17 +45,22 @@ export interface BondKit {
 
 /** The tie kind whose mark this condition is, when that kind draws a line on the map. */
 const markKind = (id: unknown) => tieKinds().find((k) => !!k.mark && k.mark === id && !!k.line?.ink) || null;
-export interface BondMoment { what: 'tie' | 'reach' | 'heal' | 'guide'; from: string; to: string; ink: string; side: 'ally' | 'foe' | null }
+export interface BondMoment { what: 'tie' | 'reach' | 'heal' | 'tend' | 'guide'; from: string; to: string; ink: string; side: 'ally' | 'foe' | null }
 /** What a Bond or Tending event is on screen (pure, for the tests): a tie made, a reach resisted, a heal down a tie, a
  *  guide; else null (the plain handler only). lines: the view's tie lines now; actor: whose turn it is; sideOf: a
  *  unit's side (a shove between two of one side is a Guide). */
 export function bondFxOf(e: Partial<FxEvent> & { k: string }, lines: TieLine[], actor: string | null, sideOf: (id: string) => string | null = () => null): BondMoment | null {
-  if (e.k === 'cond' && e.target) {
-    const k = markKind(e.id); if (!k) return null;
+  if (e.k === 'cond' && e.target && markKind(e.id)) {
+    const k = markKind(e.id)!;
     const t = lines.find((l) => l.kind === k.id && l.to === e.target && l.from === actor) || lines.find((l) => l.kind === k.id && l.to === e.target);
     const from = t ? t.from : actor; if (!from || from === e.target) return null;
     if (e.resisted) return { what: 'reach', from, to: String(e.target), ink: k.line!.ink, side: null };
     return { what: 'tie', from, to: String(e.target), ink: k.line!.ink, side: t ? t.side : null };
+  }
+  // 0.32: Tending down a Bond to an ally that is not a heal (a shield, Settle, Soothe): the pulse runs down the line too
+  if ((e.k === 'cond' || e.k === 'boon') && e.target && actor && actor !== e.target && !e.resisted) {
+    const t = lines.find((l) => l.from === actor && l.to === e.target && l.side === 'ally');
+    if (t) return { what: 'tend', from: actor, to: String(e.target), ink: t.ink, side: t.side };
   }
   if (e.k === 'heal' && e.target && actor && actor !== e.target) {
     const t = lines.find((l) => l.from === actor && l.to === e.target);
@@ -66,7 +72,7 @@ export function bondFxOf(e: Partial<FxEvent> & { k: string }, lines: TieLine[], 
 /** The extra beat a Bond moment holds the stage before the plain effect plays (ms at Fast). */
 export function bondExtraBeat(m: BondMoment | null): number {
   if (!m || reducedMotion()) return 0;
-  return m.what === 'tie' ? BOND_MS.cast + BOND_MS.travel : m.what === 'reach' ? BOND_MS.cast + BOND_MS.travel : m.what === 'heal' ? BOND_MS.pulse : BOND_MS.guide;
+  return m.what === 'tie' ? BOND_MS.cast + BOND_MS.travel : m.what === 'reach' ? BOND_MS.cast + BOND_MS.travel : m.what === 'heal' || m.what === 'tend' ? BOND_MS.pulse : BOND_MS.guide;
 }
 
 /** The standing tie line on the map (game/tieLayer.ts), drawn in from its from end. */
@@ -111,9 +117,16 @@ function part(a: Pt, b: Pt, ink: string, dash: string, ms: number, K: BondKit) {
 /** Wrap the condition, heal and shove handlers (after every other wrapper) with the Bond moments. */
 export function wrapBonds(H: Record<string, (e: FxEvent) => void>, K: BondKit) {
   KIT = K;
-  const base = { cond: H.cond, heal: H.heal, shove: H.shove };
+  const base = { cond: H.cond, heal: H.heal, shove: H.shove, boon: H.boon, stance: H.stance };
+  // rules 1.72 item 5701: the engine says a tie its op ended (Let go): the BREAK plays from the event
+  H.stance = (e) => {
+    let l: TieLine | null = null; try { l = untieLine(e, lastLines ? [...lastLines.lines.values()] : []); } catch { l = null; }
+    if (!l) { base.stance?.(e); return; }
+    if (reducedMotion()) { const p = K.at(K.posOf(l.to) || e.at); if (p) floatText(l.kind.toUpperCase() + ' BROKEN', p, l.ink, { small: true }); return; }
+    breakTie(l, K);
+  };
   const moment = (e: FxEvent) => { try { return bondFxOf(e, K.lines(), K.actor(), sideOf); } catch { return null; } };
-  for (const k of ['cond', 'heal', 'shove'] as const) {
+  for (const k of ['cond', 'heal', 'shove', 'boon'] as const) {
     const b = base[k]; if (!b) continue;
     H[k] = (e) => {
       const m = moment(e); if (!m || reducedMotion()) { b(e); return; }
@@ -141,11 +154,19 @@ export function wrapBonds(H: Record<string, (e: FxEvent) => void>, K: BondKit) {
         }, BOND_MS.cast + BOND_MS.travel);
         return;
       }
-      if (m.what === 'heal') {
-        // the pulse runs down the line, then the plain heal (its one +N) lands
+      if (m.what === 'heal' || m.what === 'tend') {
+        // the Tender's small wind-up toward its Bonded unit, the pulse runs down the line, then the plain effect (a
+        // heal's one +N, a shield's +N, the condition's word) lands, and the tended token answers in the line's ink
+        windUp(K, m.from, K.posOf(m.from), tp, BOND_MS.pulse * 0.6, true, m.ink);
+        fxMarker(tp, 'data-phc-bond-' + m.what, m.to, BOND_MS.pulse + 700);
         pulse(fp, tp, m.ink, BOND_MS.pulse);
         K.play('sg_command', fp, { rate: 1.4, gain: 0.3 });
-        after(() => { ring(tp, m.ink, 420, { from: 0.8, to: 1.25, width: 4 }); b(e); }, BOND_MS.pulse);
+        if (m.what === 'tend' && k === 'cond') K.play('soul_hold', tp, { rate: 1.5, gain: 0.35, delay: BOND_MS.pulse });
+        after(() => {
+          ring(tp, m.ink, 420, { from: 0.8, to: 1.25, width: 4 });
+          const tt = K.tokOf(m.to, K.posOf(m.to)); if (tt) anim(tt, [{ filter: 'none', translate: '0 0' }, { filter: 'brightness(1.4) drop-shadow(0 0 7px ' + m.ink + ')', translate: '0 -3px', offset: 0.35 }, { filter: 'none', translate: '0 0' }], { duration: 520, easing: 'ease-out' });
+          b(e);
+        }, BOND_MS.pulse);
         return;
       }
       // guide: the guide's small gesture and a faint thread, then the slide
@@ -184,17 +205,32 @@ export function noteTies(fightKey: string | null, cb: any) {
   const next = new Map(now.map((l) => [l.key, { ...l, ax: K ? K.at(l.fromPos) : null, bx: K ? K.at(l.toPos) : null }]));
   lastLines = { key: fightKey, lines: next };
   if (!K || reducedMotion()) return;
+  // a tie the engine said it ended (its stance untie, played from the queue) is not read from the view again
+  const said = new Set(((cb.fx || []) as any[]).filter((x) => x && x.k === 'stance' && x.what === 'untie').map((x) => x.how + ':' + x.unit + ':' + x.target));
   for (const l of goneTies(was, now, cb.units || []) as (TieLine & { ax?: Pt | null; bx?: Pt | null })[]) {
+    if (said.has(l.key)) continue;
     const wait = Math.max(0, K.busyFor());
     // (the queue's own wait, as played; after() counts at the written pace)
-    after(() => {
-      const a = K.at(l.fromPos) || l.ax, b = K.at(l.toPos) || l.bx; if (!a || !b) return;
-      trace('bond', { what: 'break', from: l.from, to: l.to, kind: l.kind });
-      part(a, b, l.ink, l.dash, BOND_MS.part, K);
-      floatText(l.kind.toUpperCase() + ' BROKEN', { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, s: a.s }, l.ink, { small: true, delay: 80 });
-      K.play('sg_fizzle', a, { rate: 1.35, gain: 0.4 });
-      // and the two ends recoil (their tokens jolt away from each other)
-      for (const [id, p, q] of [[l.from, a, b], [l.to, b, a]] as const) { const tok = K.tokOf(id, id === l.from ? l.fromPos : l.toPos); if (tok) { const d = Math.hypot(p.x - q.x, p.y - q.y) || 1; anim(tok, [{ translate: '0 0' }, { translate: ((p.x - q.x) / d) * p.s * 0.08 + 'px ' + ((p.y - q.y) / d) * p.s * 0.08 + 'px', offset: 0.3 }, { translate: '0 0' }], { duration: 320, easing: 'ease-out' }); } }
-    }, wait / Math.max(0.01, fxScale()));
+    after(() => breakTie(l, K), wait / Math.max(0.01, fxScale()));
   }
+}
+/** The BREAK of one tie line: where its ends stand (or stood), its ink and dash. */
+function breakTie(l: TieLine & { ax?: Pt | null; bx?: Pt | null }, K: BondKit) {
+  const a = K.at(K.posOf(l.from) || l.fromPos) || l.ax, b = K.at(K.posOf(l.to) || l.toPos) || l.bx; if (!a || !b) return;
+  trace('bond', { what: 'break', from: l.from, to: l.to, kind: l.kind });
+  fxMarker(b, 'data-phc-bond-break', l.to);
+  part(a, b, l.ink, l.dash, BOND_MS.part, K);
+  floatText(l.kind.toUpperCase() + ' BROKEN', { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, s: a.s }, l.ink, { small: true, delay: 80 });
+  K.play('sg_fizzle', a, { rate: 1.35, gain: 0.4 });
+  // and the two ends recoil (their tokens jolt away from each other)
+  for (const [id, p, q] of [[l.from, a, b], [l.to, b, a]] as const) { const tok = K.tokOf(id, id === l.from ? l.fromPos : l.toPos); if (tok) { const d = Math.hypot(p.x - q.x, p.y - q.y) || 1; anim(tok, [{ translate: '0 0' }, { translate: ((p.x - q.x) / d) * p.s * 0.08 + 'px ' + ((p.y - q.y) / d) * p.s * 0.08 + 'px', offset: 0.3 }, { translate: '0 0' }], { duration: 320, easing: 'ease-out' }); } }
+}
+/** The tie line an engine `stance` untie names (rules 1.72 item 5701): the line as last seen (its ink and dash), else
+ *  built from the kind's row and the two units (pure, for the tests). */
+export function untieLine(e: any, seen: TieLine[] = []): TieLine | null {
+  if (!e || e.k !== 'stance' || e.what !== 'untie' || !e.unit || !e.target) return null;
+  const key = e.how + ':' + e.unit + ':' + e.target, l = seen.find((x) => x.key === key); if (l) return l;
+  const k = tieKinds().find((x) => x.id === e.how); if (!k?.line?.ink) return null;
+  const side = sideOf(String(e.unit)) && sideOf(String(e.unit)) === sideOf(String(e.target)) ? 'ally' : 'foe';
+  return { key, kind: String(e.how), from: String(e.unit), to: String(e.target), fromPos: String(e.at || ''), toPos: '', side, ink: k.line.ink, dash: side === 'foe' ? String((k.line as any).foe_dash || '') : '' };
 }

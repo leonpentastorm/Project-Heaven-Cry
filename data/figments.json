@@ -38,19 +38,51 @@
     "snap_ap": 1,
     "text": "Let go (verbs.let_go): unmake one; refund_share of its made charge (rounded down) goes back into the core. A Figment destroyed by damage gives nothing back and Snaps: your next turn has snap_ap AP less (at most once a turn)."
   },
+  "forms_known": {
+    "door": "figment_forms",
+    "from": 1,
+    "count": { "base": 1, "per": [{ "of": "skill:visualization", "value": 1 }], "max": 10 },
+    "provisional": true,
+    "note": "Rules 1.70 item 5541: forms are learned, never opened by a level or a fork. From the first point of Visualization, the forms you know: one more than your Visualization, at most all ten (2 at 1, all ten at 9), each chosen once (door/pick at the door figment_forms) and kept for good."
+  },
   "ladder": [
-    { "points": 1, "held": 1, "forms": ["double", "snare"], "designs": 0, "traits": 0, "text": "The door: Picture, the Double and the Snare, 1 held, range 5; Glimmer, Redraw and Cash in. The Visualizer also works out of a fight." },
-    { "points": 2, "forms": ["hand"], "text": "The Hand." },
-    { "points": 3, "designs": 2, "traits": 1, "text": "2 ready designs, one trait each." },
-    { "points": 4, "fork": { "id": "a", "of": ["eye", "wall", "ward"] }, "text": "Choose one: the Eye, the Wall or the Ward (the first fork)." },
-    { "points": 5, "held": 2, "designs": 3, "text": "2 held; 3 ready designs." },
-    { "points": 6, "fork": { "id": "b", "of": ["beast", "blade", "husk", "sentinel"] }, "text": "Choose one: the Beast, the Blade, the Husk or the Sentinel (the second fork)." },
-    { "points": 7, "held": 3, "traits": 2, "more": { "of": ["a"], "n": 1 }, "text": "3 held; two traits a design; one more form from the first choice." },
-    { "points": 8, "designs": 4, "more": { "of": ["b"], "n": 1 }, "text": "4 ready designs; one more form from the second choice." },
-    { "points": 9, "no_snap": true, "more": { "of": ["a", "b"], "n": 1 }, "text": "A destroyed Figment no longer Snaps; one more form from either choice." },
-    { "points": 10, "designs": 5, "forms": ["eye", "wall", "ward", "beast", "blade", "husk", "sentinel"], "text": "Every form; 5 ready designs; the Mastered perk." }
+    {
+      "points": 1,
+      "held": 1,
+      "designs": 0,
+      "traits": 0,
+      "text": "The door: Picture, with the forms you know; 1 held, range 5; Glimmer, Redraw and Cash in. The Visualizer also works out of a fight."
+    },
+    {
+      "points": 3,
+      "designs": 2,
+      "traits": 1,
+      "text": "2 ready designs, one trait each."
+    },
+    {
+      "points": 5,
+      "held": 2,
+      "designs": 3,
+      "text": "2 held; 3 ready designs."
+    },
+    {
+      "points": 7,
+      "held": 3,
+      "traits": 2,
+      "text": "3 held; two traits a design."
+    },
+    {
+      "points": 8,
+      "designs": 4,
+      "text": "4 ready designs."
+    },
+    {
+      "points": 10,
+      "designs": 5,
+      "text": "5 ready designs; the Mastered perk."
+    }
   ],
-  "migration": { "rev": 1, "legacy": [{ "points": 3, "forms": ["eye", "wall"] }, { "points": 5, "forms": ["beast", "blade"] }], "text": "Rules 1.56 (Figments 2.0): a character made before the forks keeps every form the old ladder opened at its Visualization (legacy); each fork it has passed counts as taken by a form it holds. Characters made since carry the stamp (rev) and choose." },
+  "migration": { "rev": 2, "legacy": [{ "points": 3, "forms": ["eye", "wall"] }, { "points": 5, "forms": ["beast", "blade"] }], "fixed_before": [{ "points": 1, "forms": ["double", "snare"] }, { "points": 2, "forms": ["hand"] }, { "points": 10, "forms": ["eye", "wall", "ward", "beast", "blade", "husk", "sentinel"] }], "old_door": "visualization", "note": "Rev 1 (rules 1.56, Figments 2.0): a character made before the forks keeps every form the old ladder opened at its Visualization (legacy). Rev 2 (rules 1.70 item 5541): forms are learned at the door figment_forms; a save keeps every form it had open (the old ladder's fixed forms by points, fixed_before; its picks and kept forms at the old door; the legacy forms when it had no stamp) and counts them against its forms known; a form over the count is kept outside it, never lost." },
   "lure": {
     "found_out_add": 5,
     "text": "A Double lures by the fire doctrine of enemies.json (double_save): a tier with none is always fooled; the others save (Brain, against 12 + your Visualization strength, plus the tier's double_save) on first sight, an Elite and a Boss again at each of their turn starts, a Boss never two rounds running. An enemy that found a Double out gets found_out_add against your later Doubles this fight."
@@ -76,7 +108,7 @@
     },
     {
       "id": "eye", "name": "Eye", "icon": "figment-eye", "owned_kind": "figment", "turn": "owner", "eyes": true,
-      "opens": { "skill": "visualization", "min": 4, "fork": "a" }, "charge": 2,
+      "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
       "hp": 15, "defense": 15, "armour": 0, "attack_bonus": 0, "movement": 4, "weapon": "fists", "flies": true, "vision": 8, "dark_sight": true,
       "actions": ["move"], "verbs": ["figment_stare", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
@@ -87,7 +119,7 @@
     },
     {
       "id": "wall", "name": "Wall", "icon": "figment-wall", "owned_kind": "figment", "turn": "owner", "eyes": false, "cover": "full",
-      "opens": { "skill": "visualization", "min": 4, "fork": "a" }, "charge": 3,
+      "opens": { "skill": "visualization", "min": 1 }, "charge": 3,
       "hp": 60, "defense": 6, "armour": 5, "attack_bonus": 0, "movement": 1, "weapon": "fists",
       "actions": ["move"], "verbs": ["figment_press", "figment_redraw", "figment_cash_in", "let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],
       "upkeep": { "res": "vcharge", "n": 1 },
@@ -98,7 +130,7 @@
     },
     {
       "id": "beast", "name": "Beast", "icon": "figment-beast", "owned_kind": "figment", "turn": "owner", "eyes": false,
-      "opens": { "skill": "visualization", "min": 6, "fork": "b" }, "charge": 4,
+      "opens": { "skill": "visualization", "min": 1 }, "charge": 4,
       "hp": 45, "defense": 12, "armour": 3, "attack_bonus": 0, "movement": 3, "weapon": "figment_claws",
       "actions": ["move"], "verbs": ["figment_strike", "figment_pounce", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
@@ -109,7 +141,7 @@
     },
     {
       "id": "blade", "name": "Blade", "icon": "figment-blade", "owned_kind": "figment", "turn": "owner", "eyes": false,
-      "opens": { "skill": "visualization", "min": 6, "fork": "b" }, "charge": 3,
+      "opens": { "skill": "visualization", "min": 1 }, "charge": 3,
       "hp": 25, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 2, "weapon": "figment_edge",
       "actions": ["move"], "verbs": ["figment_cut", "figment_redraw", "figment_cash_in", "let_go"], "hold": { "reaction": "attack" },
       "upkeep": { "res": "vcharge", "n": 1 },
@@ -128,7 +160,7 @@
       "text": "A trap of mana: {=hp} HP, Defense {=defense}, {=movement} tile an AP. Hold: the first enemy each round to enter or leave a tile next to it is Cut (one of your reactions). Trip: it Cuts an enemy next to it now. Its hit Pins the target (Body save) and the Snare is spent.", "adjudication": "engine", "provisional": true
     },
     {
-      "id": "hand", "name": "Hand", "icon": "figment-hand", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 2 }, "charge": 2,
+      "id": "hand", "name": "Hand", "icon": "figment-hand", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
       "hp": 20, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 3, "weapon": "fists",
       "flies": true,
       "actions": ["move"], "verbs": ["figment_hand_over", "figment_filch", "figment_redraw", "figment_cash_in", "let_go"],
@@ -136,7 +168,7 @@
       "text": "A courier of mana: {=hp} HP, Defense {=defense}, {=movement} tiles an AP, flying. Hand over: it gives one of your own stims to an ally next to it. Filch: it lifts a throwable (else a spare magazine) from an enemy next to it onto its tile (a Body save keeps it).", "adjudication": "engine", "provisional": true
     },
     {
-      "id": "ward", "name": "Ward", "icon": "figment-ward", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 4, "fork": "a" }, "charge": 3,
+      "id": "ward", "name": "Ward", "icon": "figment-ward", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 1 }, "charge": 3,
       "hp": 40, "defense": 12, "armour": 3, "attack_bonus": 0, "movement": 2, "weapon": "fists",
       "actions": ["move"], "verbs": ["figment_interpose", "figment_redraw", "figment_cash_in", "let_go"],
       "effects": [{ "op": "redirect", "when": "taking", "share": 0.5, "if": { "target": "ally", "target_within": 1, "by_hit": true }, "limit": { "per": "per_round", "n": 1 } }],
@@ -146,7 +178,7 @@
     },
     {
       "id": "husk", "name": "Husk", "icon": "figment-husk", "owned_kind": "figment", "turn": "owner", "eyes": false, "lure": true,
-      "opens": { "skill": "visualization", "min": 6, "fork": "b" }, "charge": 2,
+      "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
       "hp": 20, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
       "actions": ["move"], "verbs": ["figment_burst", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-husk", "glyph": "◌",
@@ -154,7 +186,7 @@
       "text": "A hollow second you: {=hp} HP, your Defense, your pace. It lures as a Double does. Burst: it bursts on everyone next to it, both sides, and is gone (no charge back, no Snap).", "adjudication": "engine", "provisional": true
     },
     {
-      "id": "sentinel", "name": "Sentinel", "icon": "figment-sentinel", "owned_kind": "figment", "turn": "auto", "eyes": true, "opens": { "skill": "visualization", "min": 6, "fork": "b" }, "charge": 4,
+      "id": "sentinel", "name": "Sentinel", "icon": "figment-sentinel", "owned_kind": "figment", "turn": "auto", "eyes": true, "opens": { "skill": "visualization", "min": 1 }, "charge": 4,
       "hp": 30, "defense": 10, "armour": 3, "attack_bonus": 0, "movement": 0, "weapon": "service_pistol",
       "infinite_ammo": true,
       "vision": 8,
@@ -189,15 +221,15 @@
     },
     {
       "id": "figment_stare", "name": "Stare", "site": "figment_stare", "reach": { "tiles": 8, "side": "foe", "eyes": true },
-      "effects": [{ "op": "condition", "condition": "watched", "target": "target", "skip_save": true }],
+      "effects": [{ "op": "condition", "condition": "watched", "target": "target", "skip_save": true, "say": "{self} stares at {target}: it stays seen.", "fx": { "k": "stance", "what": "figment_order", "word": "STARE" } }],
       "text": "One unit it sees stays seen by your side until your next turn, Hidden or not.", "provisional": true
     },
     {
-      "id": "figment_draw_fire", "name": "Draw fire", "icon": "order-draw-fire", "site": "figment_order", "effects": [{ "op": "condition", "condition": "taunted", "rounds": 1, "via": "visualization", "targets": { "of": "self", "within": 3, "side": "foe", "sees": "line" } }],
+      "id": "figment_draw_fire", "name": "Draw fire", "icon": "order-draw-fire", "site": "figment_order", "effects": [{ "op": "condition", "condition": "taunted", "rounds": 1, "via": "visualization", "targets": { "of": "self", "within": 3, "side": "foe", "sees": "line" }, "say": "{self} draws the enemies' fire.", "fx": { "k": "stance", "what": "figment_order", "word": "DRAW FIRE" } }],
       "text": "Every enemy within {=effects.0.targets.within} tiles that can see it makes a Heart save or is Taunted by it for {=effects.0.rounds} round.", "provisional": true
     },
     {
-      "id": "figment_press", "name": "Press", "icon": "order-press", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "displace", "how": "push", "tiles": 1, "target": "target" }],
+      "id": "figment_press", "name": "Press", "icon": "order-press", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "displace", "how": "push", "tiles": 1, "target": "target", "say": "{self} shoves {target}{then}.", "fx": { "k": "stance", "what": "figment_order", "word": "PRESS" } }],
       "text": "It shoves an enemy next to it {=effects.0.tiles} tile away.", "provisional": true
     },
     {
@@ -209,15 +241,15 @@
       "text": "It gives one of your own stims to an ally next to it: the stim's own heal, or a Downed ally stabilised.", "provisional": true
     },
     {
-      "id": "figment_filch", "name": "Filch", "icon": "", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "take", "save": "body", "via": "visualization", "target": "target" }],
+      "id": "figment_filch", "name": "Filch", "icon": "", "site": "figment_order", "reach": { "tiles": 1, "side": "foe" }, "effects": [{ "op": "take", "save": "body", "via": "visualization", "target": "target", "say": "{self} reaches for {target}'s kit{then}.", "fx": { "k": "stance", "what": "figment_order", "word": "FILCH" } }],
       "text": "It lifts a throwable (else a spare magazine) from an enemy next to it onto its own tile; a Body save keeps it.", "provisional": true
     },
     {
-      "id": "figment_interpose", "name": "Interpose", "icon": "order-interpose", "site": "figment_order", "reach": { "tile": true, "tiles": 3, "beside": "ally" }, "effects": [{ "op": "displace", "to": "tile", "tiles": 3 }],
+      "id": "figment_interpose", "name": "Interpose", "icon": "order-interpose", "site": "figment_order", "reach": { "tile": true, "tiles": 3, "beside": "ally" }, "effects": [{ "op": "displace", "to": "tile", "tiles": 3, "say": "{self} steps in beside an ally.", "fx": { "k": "stance", "what": "figment_step", "word": "INTERPOSE" } }],
       "text": "It steps to a free tile next to an ally, within {=reach.tiles} tiles of it.", "provisional": true
     },
     {
-      "id": "figment_burst", "name": "Burst", "icon": "order-burst", "site": "figment_order", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "figment", "type": "explosive", "provisional": true } }, "effects": [{ "op": "deal", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" } }, { "op": "unmake" }],
+      "id": "figment_burst", "name": "Burst", "icon": "order-burst", "site": "figment_order", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "figment", "type": "explosive", "provisional": true } }, "effects": [{ "op": "deal", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" }, "say": "{self} bursts.", "fx": { "k": "stance", "what": "figment_order", "word": "BURST" } }, { "op": "unmake" }],
       "text": "It bursts: {=amounts.burst.base} on every unit next to it, both sides, and it is gone (no charge back, no Snap).", "provisional": true
     },
     {
@@ -225,12 +257,24 @@
       "text": "Its shot now, at an enemy it sees within {=reach.tiles} tiles.", "provisional": true
     },
     {
-      "id": "figment_redraw", "name": "Redraw", "icon": "order-redraw", "site": "figment_order", "res": { "vcharge": 1 }, "reach": { "tile": true, "tiles": 4 }, "effects": [{ "op": "displace", "to": "tile", "tiles": 4 }],
+      "id": "figment_redraw", "name": "Redraw", "icon": "order-redraw", "site": "figment_order", "res": { "vcharge": 1 }, "reach": { "tile": true, "tiles": 4 }, "effects": [{ "op": "displace", "to": "tile", "tiles": 4, "say": "{self} comes apart and reforms.", "fx": { "k": "stance", "what": "figment_blink", "word": "REDRAW" } }],
       "text": "It comes apart and reforms on a free tile within {=reach.tiles} tiles of it ({=res.vcharge} charge).", "provisional": true
     },
     {
-      "id": "figment_cash_in", "name": "Cash in", "icon": "", "site": "figment_order", "unmake": true, "refund_share": 1,
-      "text": "Unmake it on purpose: all its made charge goes back into the core.", "provisional": true
+      "id": "figment_cash_in",
+      "name": "Cash in",
+      "icon": "",
+      "site": "figment_order",
+      "unmake": true,
+      "refund_share": 1,
+      "text": "Unmake it on purpose: all its made charge goes back into the core.",
+      "provisional": true,
+      "requires": [
+        {
+          "skill": "visualization",
+          "min": 2
+        }
+      ]
     },
     {
       "id": "let_go", "name": "Let go", "site": "let_go", "unmake": true, "refund_share": 0.5,

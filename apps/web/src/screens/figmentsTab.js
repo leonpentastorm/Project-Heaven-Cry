@@ -9,7 +9,7 @@
 //   the forks    rules 1.56 (Figments 2.0): pendingDoorPicks, the choices the ladder has opened (one form of a fork, or
 //                one more), each option a chip that sends door/pick; the engine refuses in a fight and says why
 // This file is screen glue: state (figDraft), words and styles. Icons: game/figmentIcons.ts, by each row's `icon`.
-import { figmentLadderView, figmentDesignView, figmentLookOf, pendingDoorPicks } from '@engine';
+import { figmentLadderView, figmentDesignView, figmentLookOf, pendingDoorPicks, FIG_DOOR } from '@engine';
 import { act, toast } from '../game/store';
 import { figmentIconUri, FIG_INK, FIG_LINE } from '../game/figmentIcons';
 import { groupedSection } from '../game/workshopGroups';
@@ -32,9 +32,8 @@ export function figmentSectionVals(sc, g, c, rerender) {
   // the ladder: what Visualization opens, step by step
   const steps = L.steps.map((st) => {
     const ink = st.open ? FIG_LINE : MUTED;
-    // a fork's forms (rules 1.56) beside the step's own: the ones chosen in white, the rest in the step's ink
-    const fork = st.choose ? st.choose.of.map((f) => ({ ...forms([f], st.choose.chosen.includes(f.id) ? '#FFFFFF' : MUTED)[0], name: f.name + (st.choose.chosen.includes(f.id) ? ' ✓' : '') })) : [];
-    return { key: 'v' + st.points, at: 'VISUALIZATION ' + st.points, text: st.text, forms: [...forms(st.forms, ink), ...fork], hasForms: st.forms.length + fork.length > 0,
+    // rules 1.70 item 5541: a step opens no form (forms are learned at the door figment_forms: the chips below)
+    return { key: 'v' + st.points, at: 'VISUALIZATION ' + st.points, text: st.text, forms: [], hasForms: false, ink,
       state: st.latest ? 'NEW' : st.open ? '✓ OPEN' : 'LOCKED', open: st.open, locked: !st.open,
       stateStyle: 'margin-left: auto; flex: none; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: ' + (st.latest ? '#FFFFFF' : st.open ? '#6FEA77' : MUTED),
       style: 'display: flex; flex-direction: column; gap: 4px; padding: 8px 10px; border-radius: 8px; ' + (st.latest ? 'border: 1px solid ' + FIG_LINE + '; background: rgba(83, 148, 172, 0.14)' : st.open ? 'border: 1px solid #2E3A50; background: #10151F' : 'border: 1px dashed #2E3A50; background: transparent'),
@@ -42,10 +41,10 @@ export function figmentSectionVals(sc, g, c, rerender) {
   });
   const latest = L.latest, next = L.next;
 
-  // the forks: what the ladder lets this character choose now (door/pick, kept for good)
-  const choose = pendingDoorPicks(c, L.door).map((pd) => ({ key: pd.grant, head: 'CHOOSE · ' + pd.why,
+  // the forms known: what this character may still learn now (door/pick at figment_forms, kept for good; rules 1.70 item 5541)
+  const choose = pendingDoorPicks(c, FIG_DOOR).map((pd) => ({ key: pd.grant, head: 'CHOOSE · ' + pd.why,
     opts: pd.options.map((o) => ({ key: o.id, name: o.label, icon: figmentIconUri(o.icon, FIG_LINE), title: (figmentLookOf(o.id) || { text: '' }).text + (V.fightWhy ? ' · Choose after the fight.' : ''),
-      style: chip(false, !!V.fightWhy), pick: () => (V.fightWhy ? toast('Choose after the fight.') : act({ type: 'door/pick', charId: c.id, door: L.door, option: o.id })) })) }));
+      style: chip(false, !!V.fightWhy), pick: () => (V.fightWhy ? toast('Choose after the fight.') : act({ type: 'door/pick', charId: c.id, door: FIG_DOOR, option: o.id })) })) }));
 
   // the designs kept
   const designs = V.designs.map((d) => ({ key: d.id, name: d.name, icon: figmentIconUri(d.look ? d.look.icon : '', FIG_LINE),
@@ -86,9 +85,9 @@ export function figmentSectionVals(sc, g, c, rerender) {
 
   return {
     show: true, ws, head: 'FIGMENTS · EXPRESSION · VISUALIZATION ' + p,
-    hasNew: !!latest, newHead: latest ? 'NEW · VISUALIZATION ' + latest.points : '', newForms: latest ? forms(latest.forms, FIG_LINE) : [], hasNewForms: !!latest && latest.forms.length > 0, newText: latest ? latest.text : '',
-    newLine: latest ? (latest.forms.length ? 'New: ' + latest.forms.map((f) => f.name).join(', ') : 'New: ' + latest.text) : '',
-    hasNext: !!next, nextHead: next ? 'NEXT · VISUALIZATION ' + next.points : '', nextForms: next ? forms(next.forms, MUTED) : [], hasNextForms: !!next && next.forms.length > 0, nextText: next ? next.text : '',
+    hasNew: !!latest, newHead: latest ? 'NEW · VISUALIZATION ' + latest.points : '', newForms: [], hasNewForms: false, newText: latest ? latest.text : '',
+    newLine: latest ? 'New: ' + latest.text : '',
+    hasNext: !!next, nextHead: next ? 'NEXT · VISUALIZATION ' + next.points : '', nextForms: [], hasNextForms: false, nextText: next ? next.text : '',
     hasChoose: choose.length > 0, choose,
     steps, designs, noDesigns: !designs.length, noDesignsText: V.designsMax ? 'No designs kept yet: a design is a form with its traits, named, ready to picture.' : (V.newWhy || ''),
     canNew, newWhy: canNew ? '' : V.newWhy || '', hasNewWhy: !canNew && !!V.newWhy,

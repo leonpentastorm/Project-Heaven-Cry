@@ -28,7 +28,7 @@ export interface PerkDef { id: string; name: string; tier: 'acquired' | 'mastere
 export interface TraitDef { id: string; name: string; effects: any[]; excludes: string[] }
 /** A tier's row holds its LEVEL 1 numbers (rules 1.15); enemyStats() raises them by the level table. `damage` is the
  * factor on what its weapon or spell deals. A tier missing from a table that ranks tiers (saves, notice) reads as a Minion. */
-export interface EnemyTier { id: string; name: string; hp: number; defense: number; attack_bonus: number; armour: number; damage?: number; movement: number; ap: number; kills: number; endurance?: number; spare_mags?: number; /** Physical 2.0 (rules 1.12): the techniques this tier has ready, beside what its weapon lends. */ techniques?: { melee?: string[]; ranged?: string[] }; /** Calls (rules 1.13): the Calls this tier makes, and the level that stands in for skill points. */ calls?: string[]; call_level?: number }
+export interface EnemyTier { id: string; name: string; hp: number; defense: number; attack_bonus: number; armour: number; damage?: number; movement: number; ap: number; kills: number; endurance?: number; spare_mags?: number; /** Physical 2.0 (rules 1.12): the techniques this tier has ready, beside what its weapon lends. */ techniques?: { melee?: string[]; ranged?: string[] }; /** Calls (rules 1.13): the Calls this tier makes, and the level that stands in for skill points. */ calls?: string[]; call_level?: number; /** rules 1.76: its notice (the spot roll's bonus, the story's notice range and TN) and its eyes' range in tiles */ notice: number; vision: number }
 
 export const SKILLS: SkillDef[] = (skillsJ as any).items;
 export const ATTRS: AttrDef[] = (attributesJ as any).items.map((a: any) => ({ id: a.id, name: a.name, core: a.core }));
@@ -55,10 +55,35 @@ export const PERKS: PerkDef[] = (perksJ as any).items;
 export const TRAITS: TraitDef[] = (traitsJ as any).items;
 export const ENEMIES: EnemyTier[] = (enemiesJ as any).items;
 /** Rules 1.37: how the enemy AI reads the new systems (enemies.json `ai`): behaviour only. */
-export const ENEMY_AI: { figments_last: string[]; shelter: Record<string, number>; held_risk: number; skulk_open: number; healer_tie: string | null; boss_hidden_rounds: number } = { figments_last: [], shelter: {}, held_risk: 0, skulk_open: 0, healer_tie: null, boss_hidden_rounds: Infinity, ...((enemiesJ as any).ai || {}) };
+export const ENEMY_AI: { figments_last: string[]; shelter: Record<string, number>; held_risk: number; skulk_open: number; healer_tie: string | null; boss_hidden_rounds: number;
+  // Rules 1.79 (0.32, enemies): the behaviour blocks; each has `on` (false: off) and its log lines; absent: off
+  pressure?: { on: boolean; suppressed_cover_tiles: number; suppressed_move_tiles: number; lines: Record<'broken_cover' | 'broken_prone' | 'suppressed_cover', string> };
+  focus?: { on: boolean; rounds: number; keep: number; threat: number; lines: Record<'keep' | 'threat', string> };
+  angle?: { on: boolean; max_tiles: number; cover: number; line: string };
+  bait?: { on: boolean; tiers: string[]; for: string[]; lure: number; hold: number; line: string } } = { figments_last: [], shelter: {}, held_risk: 0, skulk_open: 0, healer_tie: null, boss_hidden_rounds: Infinity, ...((enemiesJ as any).ai || {}) };
 export const ARCHETYPES: any[] = (archetypesJ as any).items;
 
 export const SKILL: Record<string, SkillDef> = Object.fromEntries(SKILLS.map((s) => [s.id, s]));
+/** Rules 1.70 item 5540 (Leon, 19 Nov 2026): the most elemental damage taken off, every source together (rules.json
+ * combat.elemental_taken_cap): the one copy, read by the sheet (character.ts elementalTakenPct), the blow
+ * (effects/damage.ts). */
+export const ELEMENTAL_CAP: number = Number((RULES as any).combat?.elemental_taken_cap);
+if (!(ELEMENTAL_CAP > 0 && ELEMENTAL_CAP <= 1)) throw new Error('data/rules.json combat.elemental_taken_cap is missing');
+/** Rules 1.70 item 5537: THE ladder schedule by a skill's slot (skills.json `ladder`): its perk steps, its fork steps, its
+ * Mastered perk, in points. Every reader of "where is a perk step / a fork" asks these. */
+export interface LadderSchedule { perk_steps: number[]; forks: number[]; mastered: number }
+const LADDER_SCHED: Record<string, LadderSchedule> = (skillsJ as any).ladder;
+for (const slot of ['alpha', 'beta', 'gamma']) if (!LADDER_SCHED?.[slot]?.perk_steps) throw new Error('data/skills.json ladder.' + slot + ' is missing');
+/** The schedule of this skill's ladder (its slot's). */
+export const ladderSchedule = (skillId: string): LadderSchedule => LADDER_SCHED[(SKILL[skillId] as any)?.slot] || LADDER_SCHED.beta;
+/** What a skill's level gives on its ladder's schedule: 'M1'..'M4' (its first to fourth perk step), 'mastered', 'fork'
+ * (an alpha's fork step) or '' (none of them). */
+export function ladderStepAt(skillId: string, points: number): 'M1' | 'M2' | 'M3' | 'M4' | 'mastered' | 'fork' | '' {
+  const L = ladderSchedule(skillId), i = L.perk_steps.indexOf(points);
+  if (points === L.mastered) return 'mastered';
+  if (i >= 0) return ('M' + (i + 1)) as 'M1';
+  return L.forks.includes(points) ? 'fork' : '';
+}
 export const ATTR: Record<string, AttrDef> = Object.fromEntries(ATTRS.map((a) => [a.id, a]));
 export const WEAPON: Record<string, WeaponDef> = Object.fromEntries(WEAPONS.map((w) => [w.id, w]));
 export const CLASS: Record<string, ClassDef> = Object.fromEntries(CLASSES.map((c) => [c.id, c]));

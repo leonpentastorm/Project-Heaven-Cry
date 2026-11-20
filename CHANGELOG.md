@@ -8,6 +8,26 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.32.0 — the nine attributes reworked (rules 1.70 to 1.81)
+
+- **The nine attributes reworked:** every alpha skill has its own ladder of perk steps; every beta and gamma skill has four perks; every fork option is open; a Call costs 3 AP, 2 AP from 5 points and 1 AP from 9 (twice a turn at 10, and the reaction may pay).
+- **The Strain limit:** 3, and one more at Composure 1, 2, 4, 6 and 8.
+- **Elemental resistance:** each point of Pain Threshold stops 6% of elemental damage (60% at most from Pain Threshold, 80% from everything).
+- **Figments:** forms are learned (two to choose at Visualization 1, on Level up; Start the run asks first), and the four Visualization forks.
+- **Shadow:** dark maps, Douse, Prone, the shadow sightline and Stalk.
+- **Effects and sounds** for prayers, Bonds and Figments; **the vow** is carried from fight to fight.
+- **Enemies react** to what the doors do to them; **Into the Wall** (the Breaker drives a foe into a wall, the edge or a body) and **Hallow** (the Chaplain's hallowed ground).
+- **The healing brake:** a second heal from the same giver on the same target in one round costs more MP, a third more again.
+- **The Operative's Unseen Hand:** an attack from Hidden rolls with Ingenuity when that is higher.
+- **"I'll narrate":** the host can take the Narrator's seat, with the Narrator's desk (narration, checks with a TN, rulings, a prepared fight).
+- **Connections:** one link per player; a room opened in a second tab says so and offers **Take over here**, instead of the two tabs taking it from each other for ever.
+- **Old saves** load: removed perks are renamed or refunded, with a free re-pick of the perks that changed (the card names the old perk).
+- **The release's last pass:** a new Rigger and a new Mender open their doors in their first fight (Picture and Bond were greyed in the approach); the path map, the boon cards, the lobby, the turn card, the small map and the run summary fit a 1280x720 window; percent and plain words instead of multipliers; a perk without art shows its initials in its attribute's colour.
+
+**Rules:** 1.70 the shared pieces of the attribute rework; 1.71 the owed player-facing faults; 1.72 the effects lane's engine events and the standing vow; 1.73 Body (Strength, Endurance, Agility); 1.74 Mind (Perception, Intelligence, Expression); 1.75 Soul (Determination, Insight, Virtue); 1.76 Shadow; 1.77 the approved engine pieces; 1.78 the leftovers; 1.79 enemies (items 6700 to 6714); 1.80 rooms (items 6800 to 6802); 1.81 the fun-and-balance fit (items 6900 to 6907, PROVISIONAL).
+
+**Known and unfinished** (each in `docs/ROADMAP.md`): Silent (clashes with standing rules; waits on a ruling); Surprise in the approach (waits on Leon); Stand Behind Me (two designs; waits on Leon); Hurl (needs the object op's throw); the enemy item-action step; Field Repair as a perk (Improvisation's fourth); the Mender's solo kit (10 of 40 on stage 1); the Sigilist's simulator bot; the follow strike's −2 (buys nothing; to rule); Case (Shadow); the 0.32.x polish list (small screen faults from the screenshot pass).
+
 ## 0.31.11 — the skill pages, the level-up choosers and the outside playtest's fixes (rules 1.69)
 
 - **The skill "?" page leads with the lore:** the voice's quote, its paragraph, At high levels, Good for and Bad for open on the face; what each level gives, the perks and the forks fold below (closed by default; each fold kind remembered for all 27 skills). The level ladder is one row a level; perks are rows (tier I, then what II changes); a capped per-point gain stops where it stops adding and says "(max)".

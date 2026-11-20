@@ -78,20 +78,19 @@ describe('5 Beast Handler: the bite grapples without a chip', () => {
 });
 
 describe('6 Weak Point became Read Them (it reached spells)', () => {
-  it('rules 1.13 (Read Them): no +15% against an analysed foe, by weapon or spell; the analysed foe deals 15% less to the squad', () => {
-    const f = fightWith([{}], [{ at: 'H6' }]); const foe = f.foe; foe.hp = foe.maxHp = 1000; foe.armour = 0;
+  it('rules 1.13 (Read Them; a condition row since rules 1.74 item 6004): no +15% against an analysed foe, by weapon or spell; the analysed foe deals less to the squad', () => {
+    const f = fightWith([{ perks: { read_them: 'I' } }], [{ at: 'H6' }]); const foe = f.foe; foe.hp = foe.maxHp = 1000; foe.armour = 0; f.unit(f.pc.id).pos = '6,6'; f.turn(f.pc);
     withGame(f.g, () => harm(f.cb, f.g.rng, f.pc, foe, 100, 'soul')); const plain = 1000 - foe.hp;
-    foe.weakPoint = true; const was = foe.hp;
-    withGame(f.g, () => harm(f.cb, f.g.rng, f.pc, foe, 100, 'soul'));
-    expect(plain).toBe(100); expect(was - foe.hp).toBe(100);
-    const d = withGame(f.g, () => attackDamage(f.cb, f.pc, foe, 'shot', null, { preview: true }));
-    expect(d.mults.some((m: any) => /Weak Point/.test(m.label))).toBe(false);
-    const pc = f.pc; pc.hp = pc.maxHp = 1000;
-    withGame(f.g, () => applyDamage(f.cb, pc, 100, { by: foe, type: 'weapon', ranged: true }));
-    expect(1000 - pc.hp).toBe(85);
-    foe.weakPoint = false; pc.hp = 1000;
-    withGame(f.g, () => applyDamage(f.cb, pc, 100, { by: foe, type: 'weapon', ranged: true }));
-    expect(1000 - pc.hp).toBe(100);
+    const before = withGame(f.g, () => attackDamage(f.cb, foe, f.pc, 'shot', null, { preview: true }));
+    expect(before.mults.some((m: any) => m.label === 'Read Them')).toBe(false);
+    f.act({ type: 'combat/analyze', unitId: f.pc.id, targetId: foe.id } as any);
+    expect(condOn(f.unit(foe.id), 'read_them')).toBe(true); const was = f.unit(foe.id).hp;
+    withGame(f.g, () => harm(f.cb, f.g.rng, f.pc, f.unit(foe.id), 100, 'soul'));
+    expect(plain).toBe(100); expect(was - f.unit(foe.id).hp).toBe(100);
+    const d = withGame(f.g, () => attackDamage(f.cb, f.pc, f.unit(foe.id), 'shot', null, { preview: true }));
+    expect(d.mults.some((m: any) => /Weak Point|Read Them/.test(m.label))).toBe(false);
+    const back = withGame(f.g, () => attackDamage(f.cb, f.unit(foe.id), f.unit(f.pc.id), 'shot', null, { preview: true }));
+    expect(back.mults.filter((m: any) => m.label === 'Read Them').length).toBe(1);
   });
 });
 

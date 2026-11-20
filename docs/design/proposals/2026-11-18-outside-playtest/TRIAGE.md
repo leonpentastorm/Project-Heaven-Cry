@@ -3,7 +3,7 @@
 The reviewer's nine files are in this folder (`00_MASTER_REVIEW_ALL_9_SKILLS.md` is the summary). He played every
 alpha skill in Survival; the furthest run was a Breaker to stage 3, stop 12. Scores: seven doors at four stars or
 more; Mender three and a half solo. This file sorts his findings: fixed already, to fix (with the lane of
-`docs/design/handoffs/ATTACK-PLAN-2026-11-19.md` that takes it), and what it says about balance. **None of it is
+`docs/design/handoffs/_archive/ATTACK-PLAN-2026-11-19.md` that takes it), and what it says about balance. **None of it is
 verified by the lead in code yet**: each row is a lead, the builder reproduces it first.
 
 ## Probably fixed already (his Dexterity and first Faith runs were on the older build)

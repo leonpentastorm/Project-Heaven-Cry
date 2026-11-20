@@ -59,7 +59,7 @@ All in, in percent of a rifle-turn (a healer: of a Soldier-turn). The guard hold
 | Melee (the damage dealer) | 165; the Defender lower | 132 | `rules.json output.factors.melee` | 156 / 150 / 133 / 178 (the Tank 77 / 55 / 78 / 124) |
 | Sigil, a full Line over its turns | 150 to 200 | 120 to 160 | `sigils.json grammar.line_mult` | 155 / 147 / 176 / 189 |
 | Outburst, steady | 135 | 108 | `soul_modules.json damage.base` | 139 / 155 / 136 / 137 |
-| Outburst, the biggest Release | 165 | 132 | `soul_modules.json damage.base`, then `cycle.stage_mult` | 150 / 173 / 152 / 158 |
+| Outburst, the biggest Release (ONE Release over the two turns it takes; rules 1.81 item 6903, PROVISIONAL) | 90 (was 165, which counted a second Release made by a Mana Short) | 72 | `soul_modules.json damage.base`, then `cycle.stage_mult` | 61 / 106 / 89 / 92 (the fit, 20 Nov 2026) |
 | Faith, a Whisper turn (the door) | 80 | 64 | the Whispers' values in `patrons.json`; `output.profiles.blessing.k` | 92 / 75 / 62 / 100 (mean 82) |
 | Faith, a Hymn turn (the door) | 150 (low end 55% at Devotion 3) | 120 | the Hymns' values in `patrons.json`; `output.profiles.blessing.k` | 119 / 104 / 156 / 173 (mean 138) |
 | The Chaplain's turn (rules 1.31) | 125 | 100 | `classes.json guardian.smite` (held equal to Rebuke's 20 by the validator) | 117 / 131 / 117 / 138 (mean 126) |

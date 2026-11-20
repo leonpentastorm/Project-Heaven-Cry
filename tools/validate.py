@@ -103,7 +103,7 @@ for s in items("skills"):
 # rules 1.54 item 4119 (the road map): what a point gives is per_point.rows, the one copy: each {at, text}, `at` one of
 # each, each from n, every 2, every 3, from n, at n (n 1 to 10); no row twice; no prose per_point.text, no epccg.effect.
 # Numbers are placeholders into per_point.numbers; where the engine reads the same number from data, it must be equal.
-_AT = re.compile(r"^(each|every 2|every 3|(each from|from|at) (\d+))$")
+_AT = re.compile(r"^(each|every 2|every 3|(each from|from|at) (\d+)|at (\d+(?:, \d+)+))$")  # rules 1.75 item 6202: "at n, m, ..." lands on each point listed
 _ld = lambda stem: data.get(stem) if isinstance(data.get(stem), dict) else {}
 _calls_r, _tech_r, _fig_r = (_ld("calls").get("rules") or {}), ((_ld("techniques").get("rules") or {}).get("guard") or {}), ((_ld("figments").get("visualizer") or {}).get("range") or {})
 _hymn_r, _cyc_r = (((_ld("patrons").get("prayer") or {}).get("hymn") or {}).get("cooldown_rule") or {}), (_ld("soul_modules").get("cycle") or {})
@@ -119,8 +119,14 @@ _SAME = {  # (skill, per_point.numbers key) -> (the engine's data value, where i
     ("faith", "hymn_cut"): (_hymn_r.get("per_faith"), "patrons.json prayer.hymn.cooldown_rule.per_faith"),
     ("faith", "hymn_floor"): (_hymn_r.get("floor"), "patrons.json prayer.hymn.cooldown_rule.floor"),
     ("will_power", "pumps"): (((_cyc_r.get("free_pumps") or [{}])[0]).get("pumps"), "soul_modules.json cycle.free_pumps.0.pumps"),
+    # rules 1.70 item 5539: each Strain-limit step's size, as Composure's row says it
+    ("composure", "strain_step"): ((((_ld("soul_modules").get("strain") or {}).get("limit") or {}).get("steps") or [{}])[0].get("value"), "soul_modules.json strain.limit.steps.0.value"),
 }
-_LADDER_GROWS = {"elemental_taken", "guard_pool", "hymn_wait"}  # packages/engine/src/ladder.ts LADDER_GROWS
+_SOUL_ROWS = {  # rules 1.75: (skill, a row's words): (the number block whose steps the row's points are, where)
+    ("composure", "Strain limit"): ((_ld("soul_modules").get("strain") or {}).get("limit"), "soul_modules.json strain.limit"),
+    ("lore_master", "design ready"): ((_ld("soul_modules").get("limits") or {}).get("ready_designs"), "soul_modules.json limits.ready_designs"),
+}
+_LADDER_GROWS = {"elemental_taken", "guard_pool", "hymn_wait", "strain_limit", "forms_known"}  # packages/engine/src/ladder.ts LADDER_GROWS (strain_limit, forms_known: rules 1.70 items 5539, 5541)
 for s in items("skills"):
     if not isinstance(s, dict):
         continue
@@ -137,11 +143,11 @@ for s in items("skills"):
             errors.append(f"{w}: a row is {{at, text}} with a text (and a capped row's grows)"); continue
         # 0.31.11: a capped per-point row names the engine value it grows (packages/engine/src/ladder.ts LADDER_GROWS), so
         # the ladder shows it only on the levels where it still adds
-        if "grows" in r and (r["grows"] not in _LADDER_GROWS or r["at"] != "each"):
-            errors.append(f"{w}: grows {r['grows']!r} is not one of {sorted(_LADDER_GROWS)} on an each row")
+        if "grows" in r and (r["grows"] not in _LADDER_GROWS or not (r["at"] == "each" or str(r["at"]).startswith("each from "))):
+            errors.append(f"{w}: grows {r['grows']!r} is not one of {sorted(_LADDER_GROWS)} on an each (or each from n) row")
         m = _AT.match(str(r["at"]))
-        if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10):
-            errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n or at n (n 1 to 10)")
+        if not m or (m.group(3) and not 1 <= int(m.group(3)) <= 10) or (m.group(4) and not all(1 <= int(x) <= 10 for x in m.group(4).split(", "))):
+            errors.append(f"{w}: at {r['at']!r} is not each, each from n, every 2, every 3, from n, at n or at n, m, ... (n 1 to 10)")
         if r["text"] in seen: errors.append(f"{w}: the row {r['text'][:40]!r} is there twice")
         seen.add(r["text"])
         for ref in re.findall(r"\{=([^}|]+)", r["text"]):
@@ -155,9 +161,17 @@ for s in items("skills"):
     for (k_sid, k), (want, where) in _SAME.items():
         if k_sid == sid and nums.get(k) != want: errors.append(f"skills:{sid}: per_point.numbers.{k} {nums.get(k)} is not {where} {want}")
     if sid == "will_power":
-        _fp, _sw = ((_cyc_r.get("free_pumps") or [{}])[0]).get("will_power"), (_cyc_r.get("swell_no_strain") or {}).get("will_power")
+        _fp = ((_cyc_r.get("free_pumps") or [{}])[0]).get("will_power")
         if not any("{=per_point.numbers.pumps}" in r.get("text", "") and r.get("at") == f"from {_fp}" for r in rows): errors.append(f"skills:will_power: the free Pump's row is at 'from {_fp}' (soul_modules.json cycle.free_pumps.0.will_power)")
-        if not any(r.get("at") == f"from {_sw}" for r in rows): errors.append(f"skills:will_power: a row at 'from {_sw}' says the held Outburst swells without Strain (soul_modules.json cycle.swell_no_strain.will_power)")
+    # rules 1.75 items 6202, 6205: a row that names where a number block of soul_modules.json moves lands on its steps
+    for _sk, _at, (_blk, _where) in [(k[0], k[1], v) for k, v in _SOUL_ROWS.items()]:
+        if _sk != sid: continue
+        _want = "at " + ", ".join(str(x.get("at")) for x in (_blk or {}).get("steps", []) if x.get("of") == "skill:" + sid)
+        if not any(_at in r.get("text", "") and r.get("at") == _want for r in rows): errors.append(f"skills:{sid}: the row with {_at!r} is at {_want!r} ({_where})")
+    _sw = (_cyc_r.get("swell_no_strain") or {})
+    for _sk, _n in _sw.items():
+        if _sk == sid and not any("swells" in r.get("text", "") and r.get("at") in (f"from {_n}", f"at {_n}") for r in rows):
+            errors.append(f"skills:{sid}: a row at 'at {_n}' says the held Outburst swells without Strain (soul_modules.json cycle.swell_no_strain)")
 
 new_ops = collections.Counter()
 
@@ -670,7 +684,7 @@ _OWNED_TS = (pathlib.Path(__file__).resolve().parent.parent / "packages/engine/s
 _OWNER_USES_M = re.search(r"const OWNER_USES\b[^\n]*\{\n(.*?)\n\};", _OWNED_TS, re.S)
 _OWNER_USE_TYPES = tuple(re.findall(r"^\s*'([a-z]+/[a-z_]+)'\s*:", _OWNER_USES_M.group(1), re.M)) if _OWNER_USES_M else ()
 if not _OWNER_USE_TYPES: errors.append("tools/validate.py: owned.ts OWNER_USES not found (the item uses an owned unit runs)")
-_DV_KEYS = {"id", "name", "icon", "site", "text", "provisional", "reach", "effects", "attack", "on_hit", "dash", "unmake", "refund_share", "use", "res", "amounts"}
+_DV_KEYS = {"id", "name", "icon", "site", "text", "provisional", "reach", "effects", "attack", "on_hit", "dash", "unmake", "refund_share", "use", "res", "amounts", "requires"}  # requires: rules 1.74 item 6040 (read by figments.ts on the owner's sheet)
 _DV_REACH = {"tiles", "side", "eyes", "tile", "beside"}
 _DVIDS = set()
 for _v in _FJ.get("verbs") or []:
@@ -1051,17 +1065,21 @@ if "actions" in data:
             elif isinstance(_rule_acts[r].get("ap"), int) and c.get("ap") != _rule_acts[r].get("ap"):
                 errors.append(f"actions: costs.{cid} costs {c.get('ap')} AP but rules.json {r} says {_rule_acts[r].get('ap')}")
     for rid, r in (_acts_root.get("resources") or {}).items():
-        if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character") or not isinstance(r.get("path"), str) or not r.get("path"):
-            errors.append(f"actions: resources.{rid} needs a name, on (unit or character) and a path")
+        if not isinstance(r, dict) or not r.get("name") or r.get("on") not in ("unit", "character", "fight") or not isinstance(r.get("path"), str) or not r.get("path"):
+            errors.append(f"actions: resources.{rid} needs a name, on (unit, character or fight: rules 1.77 item 6512) and a path")
         # Classes 3.0 batch row: the item op `resource` gives any row through effects/cost.ts resGive
-        for _k in (set(r) - {"name", "on", "path", "whole", "max", "needs", "setter"}) if isinstance(r, dict) else []:
-            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, on, path, whole, max, needs, setter)")
+        for _k in (set(r) - {"name", "one", "on", "path", "whole", "max", "needs", "setter", "short"}) if isinstance(r, dict) else []:
+            errors.append(f"actions: resources.{rid} has an unknown field '{_k}' (name, one, on, path, whole, max, needs, setter, short)")
+        if isinstance(r, dict) and "short" in r and not (isinstance(r["short"], str) and "{n}" in r["short"]): errors.append(f"actions: resources.{rid}.short is the refusal, with {{n}} (and {{have}}) in it (rules 1.77 item 6512)")
+        if isinstance(r, dict) and r.get("on") == "fight" and not r.get("setter"): errors.append(f"actions: resources.{rid}: a fight-held meter changes through its setter (rules 1.77 item 6512)")
+        if isinstance(r, dict) and "one" in r and not (isinstance(r["one"], str) and r["one"]):
+            errors.append(f"actions: resources.{rid}.one must be the name of one (a cost of 1: '1 core', never '1 cores')")
         for _k in ("max", "needs", "setter"):
             if isinstance(r, dict) and _k == "needs" and isinstance(r.get(_k), list) and r[_k] and all(isinstance(x, str) and x for x in r[_k]): continue # rules 1.33: one of several paths (an MP focus: mg.emanator, mg.attuner)
             if isinstance(r, dict) and _k in r and not (isinstance(r[_k], str) and r[_k]):
                 errors.append(f"actions: resources.{rid}.{_k} must be a path (a setter: its name)")
-        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down)
-            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain)")
+        if isinstance(r, dict) and r.get("setter") not in (None, "pressure", "devotion", "strain", "flux", "mana"): # rules 1.44: devotion (faith.ts: Devotion XP inside the session's cap); rules 1.69 item 5453: strain (magic.ts: addStrain up, easeStrain down); rules 1.70 item 5542: flux (magic.ts: flux() up, down to 0)
+            errors.append(f"actions: resources.{rid}.setter '{r.get('setter')}' is not a setter the engine registers (pressure, devotion, strain, flux, mana)")
 
 # Truth pass 3: Witnessed's card reads conditions.json witnessed effects[0]; the engine reads patrons.json
 # prayer.witnessed.like_bonus (WITNESS_BONUS). One number in two places: they must agree.
@@ -1560,9 +1578,14 @@ if isinstance(cq, dict):
     cdefs = {c.get("id"): c for c in items("calls") if isinstance(c, dict)}
     if len(cdefs) != len(items("calls")):
         errors.append("calls: ids must be present and unique")
-    for k in ("ap", "cheap_at", "cheap_ap", "free_at", "free_per_turn", "range_base", "range_per_point", "reaction_at", "reactions_per_round", "reaction_ap", "save_tn", "helping_per_round", "hindering_per_round", "mark_rounds"):
+    for k in ("range_base", "range_per_point", "reactions_per_round", "reaction_ap", "save_tn", "helping_per_round", "hindering_per_round", "mark_rounds"):
         if not isinstance(crules.get(k), int) or isinstance(crules.get(k), bool):
             errors.append(f"calls: rules.{k} must be a whole number")
+    # rules 1.70 item 5535: the one price table, rising rows {from, ap, per_turn, reaction?}, the first from 1
+    _pr = crules.get("price")
+    if not (isinstance(_pr, list) and _pr and all(isinstance(x, dict) and set(x) <= {"from", "ap", "per_turn", "reaction"} and all(isinstance(x.get(k), int) and not isinstance(x.get(k), bool) for k in ("from", "ap", "per_turn")) for x in _pr)
+            and [x["from"] for x in _pr] == sorted({x["from"] for x in _pr}) and _pr[0]["from"] == 1 and all(x["ap"] >= 0 and x["per_turn"] >= 1 for x in _pr)):
+        errors.append("calls: rules.price is rising rows {from, ap, per_turn, reaction?}, the first from 1 (rules 1.70 item 5535)")
     steps_at = crules.get("steps_at")
     if not (isinstance(steps_at, list) and len(steps_at) == 3 and steps_at == sorted(steps_at) and steps_at[0] == 1):
         errors.append("calls: rules.steps_at must be three rising point values, the first 1")
@@ -2023,7 +2046,7 @@ COND_READS = {
     "fear": ["attack_mod:not_vs_source"], "shaken": ["stat_mod:save_heart"], "marked": ["attack_mod:marker_squad_vs_self"], "grappled": ["attack_mod:not_vs_source"], "taunted": ["attack_mod:not_vs_source"],
     "suppressed": ["stat_mod:ap"], "withdrawing": ["stat_mod:defense"], "corroded": ["stat_mod:defense"], "quickened": ["stat_mod:ap"],
     "sharpened": ["attack_mod:next_attack", "damage_mult:next_attack"], "hopeful": ["attack_mod:next_attack"], "scorned": ["attack_mod:vs_source"],
-    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"], "read": ["reveal:intent"],
+    "guarded": ["stat_mod:defense"], "inspired": ["attack_mod:own_attacks"], "read": ["reveal:intent"], "cased": ["reveal:kit"],
     "exposed": ["stat_mod:defense"], "off_balance": ["stat_mod:ap"],  # Classes 3.0 step 6 (Shadow, rules 1.32)
     # rules 1.33: the feelings given along a Bond (bonds-spec.md 5.1)
     "given_rage": ["stat_mod:defense"], "foe_rage": ["stat_mod:defense"], "given_fear": ["attack_mod:own_attacks", "stat_mod:defense"],
@@ -2051,6 +2074,7 @@ def cond_reads(c):
         if e.get("op") == "skill_mod_tag" and isinstance(e.get("value"), (int, float)): out.append("skill_mod_tag:" + str(e.get("tag")))
         if e.get("op") == "damage_mult" and e.get("context") == "next_attack": out.append("damage_mult:next_attack")
         if e.get("op") == "reveal" and e.get("what") == "intent": out.append("reveal:intent")
+        if e.get("op") == "reveal" and e.get("what") == "kit": out.append("reveal:kit")
     return sorted(out)
 cond_names = set()
 for c in items("conditions"):
@@ -2146,8 +2170,8 @@ def check_pred(k, v, w):
     elif a == "tie" and not ((isinstance(v, str) and v in (p.get("values") or [])) or (isinstance(v, dict) and v.get("kind") in (p.get("values") or []) and v.get("as", "any") in ("from", "to", "any") and v.get("side", "any") in ("foe", "ally", "any") and set(v) <= {"kind", "as", "side"})): errors.append(f"{w}: `if.{k}` is a tie kind ({p.get('values')}) or {{kind, as: from or to, side}}")
     elif a == "hold" and not _hold_ok(v, p): errors.append(f"{w}: `if.{k}` is {{slot: hand or person, door: {p.get('values')}}} or {{slot, item: <id>}}, and / or {{hands: {{props: [weapon properties], only: bool}}, body: {{armour_at_most: {_ARMOUR_NAMES} or a class number}}}}")
     elif a == "skill" and not (isinstance(v, dict) and v and all(sk in known["skill"] and isinstance(n, int) for sk, n in v.items())): errors.append(f"{w}: `if.{k}` maps skills to points ({{empathy: 5}})")
-    elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, each?}} or {{cooldown}})")
-    elif a == "res" and not (isinstance(v, dict) and v and all(isinstance(b, dict) and b and set(b) <= {"at_least", "at_most", "at"} and all(isinstance(b[x], (int, float)) and not isinstance(b[x], bool) for x in ("at_least", "at_most") if x in b) and b.get("at", "max") == "max" and r in (p.get("values") or []) for r, b in v.items())): errors.append(f"{w}: `if.{k}` maps resources ({p.get('values')}) to bounds {{at_least: n, at_most: n, at: max}} (rules 1.60, N10)")
+    elif a == "limit" and not (isinstance(v, dict) and (v.get("per") in LIMIT_SCOPES or isinstance(v.get("cooldown"), (int, float))) and set(v) <= {"per", "n", "key", "shared", "each", "cooldown"}): errors.append(f"{w}: `if.{k}` is a limit ({{per, n?, key?, shared?, each?}} or {{cooldown}})")
+    elif a == "res" and not (isinstance(v, dict) and v and all(isinstance(b, dict) and b and set(b) <= {"at_least", "at_most", "at"} and all(isinstance(b[x], (int, float)) and not isinstance(b[x], bool) for x in ("at_least", "at_most") if x in b) and b.get("at", "max") in ("max", "limit") and r in (p.get("values") or []) for r, b in v.items())): errors.append(f"{w}: `if.{k}` maps resources ({p.get('values')}) to bounds {{at_least: n, at_most: n, at: max | limit}} (rules 1.60, N10; rules 1.70 P2)")
     elif a in ("zone", "tie", "hold", "skill", "limit", "res"): pass
     elif p.get("values") and not all(x in p["values"] for x in vals): errors.append(f"{w}: `if.{k}` takes only {p['values']}")
 # rules 1.57 (A2): the swell's condition slot (soul_modules.json cycle.swell.unless) is an `if` block of the item ops'
@@ -2160,7 +2184,13 @@ if _swell is not None:
         for k, v in _swell["unless"].items(): check_pred(k, v, "soul_modules:cycle.swell.unless")
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
-SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed", "pick"]  # feed: rules 1.60 (N3), a door's beta feed; pick: rules 1.60 (N2), 1 when the holder picked that fork option
+def _data_ref(of):
+    """Rules 1.70 item 5547 (P6): a data reference's value (datatext.ts dataRef: tech_rule:, rule:, cond:), or None."""
+    import text_numbers as _tn
+    for ns, stem in (("tech_rule", "techniques"), ("rule", "rules"), ("cond", "conditions")):
+        if isinstance(data.get(stem), dict): _tn.REF_DATA[ns] = _tn._ref_of(ns, data[stem])
+    return _tn.data_ref(of)
+SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed", "pick", "tech_rule", "rule", "cond"]  # feed: rules 1.60 (N3), a door's beta feed; pick: rules 1.60 (N2), 1 when the holder picked that fork option; tech_rule: rules 1.70 item 5547 (P6), a value of techniques.json rules; rule / cond (0.32 consolidation): a value of rules.json, of a conditions.json row (datatext.ts dataRef)
 # Rules 1.60 (Doors 3.0, N3): a beta's `feed` names the carrier of its alpha door's number (effects/feed.ts); its step is
 # per_point.numbers.feed (> 0), each carrier is fed by one beta only, and a `feed:<door>` source names an alpha skill fed so.
 FEED_DOORS = set()
@@ -2196,6 +2226,8 @@ def check_number_block(b, w, item_op=True):
             errors.append(f"{w}: an item op's number block counts '{pp['of']}': name a source ({', '.join(s + ':' for s in SOURCE_SPACES)})")
         elif item_op and pp["of"].startswith("feed:") and pp["of"].split(":", 1)[1] not in FEED_DOORS:
             errors.append(f"{w}: '{pp['of']}' names no door a beta feeds (skills.json <beta>.feed)")
+        elif pp["of"].split(":", 1)[0] in ("tech_rule", "rule", "cond") and not isinstance(_data_ref(pp["of"]), (int, float)):
+            errors.append(f"{w}: '{pp['of']}' names no number of the data (tech_rule: techniques.json rules, rule: rules.json, cond: a conditions.json row by id; rules 1.70 item 5547)")
 # Classes 3.0 P5: `targets` on any op (the unit set it runs on): its fields and words are item_ops.targets.fields.
 def check_targets(t, w):
     fields = (IOPS.get("targets") or {}).get("fields") or {}
@@ -2207,6 +2239,11 @@ def check_targets(t, w):
         elif f == "bool" and not isinstance(v, bool): errors.append(f"{w}: targets.{k} is true or false")
         elif isinstance(f, list) and v not in f: errors.append(f"{w}: targets.{k} takes {f}")
         elif f == "string" and not isinstance(v, str): errors.append(f"{w}: targets.{k} is a word")
+        elif f == "predicates":  # rules 1.77 item 6500: each unit of the set passes these predicates as the target
+            if not isinstance(v, dict): errors.append(f"{w}: targets.if is an object of predicates")
+            else:
+                for pk in v:
+                    if pk not in PRED: errors.append(f"{w}: unknown predicate '{pk}' in targets.if")
     _tk = {k.get("id") for k in (((data.get("rules") or {}).get("ties") or {}).get("kinds") or [])}
     if "tied" in t and t["tied"] not in _tk: errors.append(f"{w}: targets.tied names a tie kind (rules.json ties.kinds: {sorted(_tk)})")
     if "aims_at" in t and not (t["aims_at"] == "self" or (isinstance(t["aims_at"], str) and t["aims_at"].startswith("tied:") and t["aims_at"][5:] in _tk)): errors.append(f"{w}: targets.aims_at is self or tied:<a tie kind>")
@@ -2268,8 +2305,10 @@ def check_trigger_effect(e, w):
         else:
             for k, v in cond.items(): check_pred(k, v, w)
     lim = e.get("limit")
-    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and isinstance(lim.get("n", 1), int)))):
+    if isinstance(lim, dict) and isinstance(lim.get("n"), dict): check_number_block(lim["n"], f"{w}.limit.n")  # a limit's n may read one number of the data (rule:, tech_rule:, cond:)
+    if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and (isinstance(lim.get("n", 1), int) or isinstance(lim.get("n"), dict))))):
         errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }}, {{ cooldown: rounds }} or {{ reaction: 1 or 2, kind }}")
+    if isinstance(lim, dict) and "shared" in lim and not (isinstance(lim["shared"], str) and lim["shared"] and "key" not in lim): errors.append(f"{w}: a limit's shared is a counter name, in place of key (rules 1.77 item 6504)")
 # Classes 3.0 P5, the standing aura: a stat_mod with `targets` and no `when` (statQuery answers it for every unit of the
 # set while its holder stands): a well-formed set centred on the holder, a numeric value.
 def check_aura(o, w):
@@ -2285,11 +2324,16 @@ def walk_triggers(o, w):
         for v in o.values(): walk_triggers(v, w)
     elif isinstance(o, list):
         for v in o: walk_triggers(v, w)
-# an item's own `numbers` (effects/num.ts num(h, key): what a handler that is not data yet reads) are numbers
+# an item's own `numbers` (effects/num.ts num(h, key): what a handler that is not data yet reads) are numbers, or blocks
+# that read one number of the data (text_numbers.block_of_refs: Read Them's tiers read their conditions' rows)
+def text_numbers_block(v):
+    _data_ref("rule:")  # (loads the pack's data into the resolver)
+    import text_numbers as _tn
+    return _tn.block_of_refs(v)
 def check_numbers(o, w):
     n = o.get("numbers") if isinstance(o, dict) else None
-    if n is not None and (not isinstance(n, dict) or not all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in n.values())):
-        errors.append(f"{w}: `numbers` must map names to numbers (effects/num.ts)")
+    if n is not None and (not isinstance(n, dict) or not all((isinstance(v, (int, float)) and not isinstance(v, bool)) or isinstance(text_numbers_block(v), (int, float)) for v in n.values())):
+        errors.append(f"{w}: `numbers` must map names to numbers, or to number blocks of data references (tech_rule:, rule:, cond:; effects/num.ts)")
 for _n in ("perks", "traits"):
     for _x in items(_n):
         check_numbers(_x, f"{_n}:{_x.get('id')}")
@@ -2351,6 +2395,7 @@ if TRIG:
                     for k, v in r["if"].items(): check_pred(k, v, w)
                 if "tied" in r: check_pred("target_tied", r["tied"], w) if "target_tied" in PRED else errors.append(f"{w}: reach.tied needs ties (P8)")
         if "prayer" in g and g["prayer"] not in ("whisper", "hymn"): errors.append(f"{w}: a grant_action's prayer is whisper or hymn")
+        if "tab" in g and g["tab"] not in ("shadow", "tend", "figments"): errors.append(f"{w}: a grant_action's tab is a door's tab: shadow, tend or figments (rules 1.77 item 6501)")
         if "tier" in g and g["tier"] not in (1, 2, 3): errors.append(f"{w}: a prayer's tier is 1, 2 or 3")
         lim = g.get("limit")
         if lim is not None and not (isinstance(lim, dict) and lim.get("per") in LIMIT_SCOPES | {"per_turn", "per_round", "per_combat", "per_scene", "per_session", "per_rest"} and isinstance(lim.get("n", 1), int)): errors.append(f"{w}: a grant_action's limit is {{per, n}}")
@@ -2440,8 +2485,12 @@ if TRIG:
         return max([v for k, v in (_SHR.get("cap_by_points") or {}).items() if n >= int(k)] or [0])
     for _x in (data.get("shadow") or {}).get("items") or []:
         _g = next((e for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action"), {})
-        _need = ((_x.get("requires") or [{}])[0] or {}).get("min", 0)
-        if ((_g.get("res") or {}).get("shadow") or 0) > _sh_cap(_need): errors.append(f"shadow:{_x.get('id')}: costs more Shadow than the cap at Ingenuity {_need}")
+        # rules 1.74 item 6011: a verb may be gated by a class (the Operative's: its cap adds operative_cap_add) as well as
+        # by Ingenuity points (the skill entry's min, wherever it stands in the list)
+        _req = [r for r in _x.get("requires") or [] if isinstance(r, dict)]
+        _need = next((r.get("min", 0) for r in _req if r.get("skill") == "ingenuity"), 0)
+        _add = (_SHR.get("operative_cap_add") or 0) if any(r.get("class") == "infiltrator" for r in _req) else 0
+        if ((_g.get("res") or {}).get("shadow") or 0) > _sh_cap(_need) + _add: errors.append(f"shadow:{_x.get('id')}: costs more Shadow than the cap at Ingenuity {_need}")
     def _walk_res(o, w):
         if isinstance(o, dict):
             if isinstance(o.get("of"), str) and o["of"].startswith("res:") and o["of"][4:] not in _RESIDS: errors.append(f"{w}: number block source {o['of']} names no actions.json resource")
@@ -2458,7 +2507,13 @@ if TRIG:
     if _SHR and _brk:
         _per = {p.get("of"): p.get("value") for e in _brk.get("effects") or [] if isinstance(e.get("value"), dict) for p in e["value"].get("per") or []}
         if _per != {"res:shadow": _SHR.get("per_point"), "event:ambush": _SHR.get("ambush_bonus"), "target:marked": _SHR.get("marked_bonus")}: errors.append("skills:ingenuity.1: the Break's term must read rules.json shadow per_point, ambush_bonus, marked_bonus")
-        if any((e.get("limit") or {}).get("key") == "gain" and (e["limit"].get("n") != _SHR.get("door_gains_per_turn")) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit is rules.json shadow.door_gains_per_turn")
+        _GAINS = {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]}  # the one number, read (0.32 consolidation)
+        if any((e.get("limit") or {}).get("shared") == "shadow_gain" and (e["limit"].get("n") != _GAINS) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit reads rules.json shadow.door_gains_per_turn (n: {base: 0, per: [{of: rule:shadow.door_gains_per_turn, value: 1}]})")
+        # rules 1.77 item 6504: Stalk's gain counts under the same shared limit, of the same size
+        _stk = next((x for x in (data.get("shadow") or {}).get("items") or [] if x.get("id") == "shadow.stalk"), None)
+        for _g in (_stk or {}).get("effects") or []:
+            for _e in _g.get("effects") or []:
+                if _e.get("op") == "resource" and ((_e.get("limit") or {}).get("shared") != "shadow_gain" or _e["limit"].get("n") != _GAINS): errors.append("shadow:shadow.stalk: its gain counts under the door's shared limit shadow_gain, n rules.json shadow.door_gains_per_turn (rules 1.77 item 6504)")
     _op = next((m for b in base if b.get("id") == "infiltrator" for m in b.get("gain") or [] if m.get("id") == "tradecraft"), None)
     if _SHR and _op and not any(e.get("op") == "resource" and e.get("when") == "combat_start" and e.get("value") == _SHR.get("operative_start") for e in _op.get("effects") or []): errors.append("classes:infiltrator.tradecraft: its combat_start Shadow is rules.json shadow.operative_start")
     # skills.json unlocks marked `item` are run as items (effects/collect.ts SKILL_ITEMS)
@@ -2841,6 +2896,9 @@ if _sv is not None:
             if _hz is not None and not ((_ok_ids.get(_hz.get("kind")) or {}).get("hazard") and _num(_hz.get("chance")) and 0 <= _hz["chance"] <= 1): errors.append(f"{_w2}.hazard: a hazard kind of objects.json and a chance 0 to 1 (or null)")
             for _k in (_sl.get("props") or {}):
                 if _k not in _ok_ids: errors.append(f"{_w2}.props: {_k!r} is not an object kind")
+            # rules 1.76 item 6400: a dark setting's fights are dark maps (lit only by its props' `light` and carried light)
+            if _sl.get("dark") not in (None, True, False): errors.append(f"{_w2}.dark: true or false")
+            if _sl.get("dark") and not any((_ok_ids.get(_k) or {}).get("light") for _k in (_sl.get("props") or {})): errors.append(f"{_w2}.dark: a dark setting has a light among its props")
             if _sl.get("kit") != "pending" and not (pathlib.Path(__file__).resolve().parent.parent / "art/sprites/kit" / str(_sl.get("kit"))).is_dir(): errors.append(f"{_w2}.kit: {_sl.get('kit')!r} is not a folder of art/sprites/kit (or \"pending\")")
         for _tp in _sv.get("templates") or []:
             if _tp.get("hazard") not in (None, True, False): errors.append(f"survival:templates.{_tp.get('id')}.hazard: true or false")
@@ -2863,6 +2921,9 @@ if _sv is not None:
     if "nodes" in _sv:
         for _k in ("shop", "forge", "training", "shrine", "event", "cache", "rest", "vault"):
             if not isinstance(_sv["nodes"].get(_k), str) or not _sv["nodes"][_k].strip(): errors.append(f"survival:nodes.{_k}: the panel's text")
+    if "vow_change_nodes" in _sv:  # 0.32 consolidation: where a standing vow changes in a run (faith.ts vowChangeNow)
+        _vk = (_sv["vow_change_nodes"] or {}).get("kinds")
+        if not isinstance(_vk, list) or not _vk or any(_k not in (_sv.get("nodes") or {}) or _k in ("about", "provisional") for _k in _vk): errors.append("survival:vow_change_nodes.kinds: a list of node kinds (keys of survival.json nodes)")
     for _k in ("run", "stage", "rounds", "tiers", "share", "map_size", "xp", "credits", "ammo_pack", "rewards", "nodes", "tips", "pools", "names", "shop", "sell_rate"):
         if _k in _sv and _sv[_k].get("provisional") is not True: errors.append(f"survival:{_k}: every number is provisional (provisional: true)")
     # Rules 1.43 (build step 4a, in-run progression): the grade ladder, the Forge, the run's cap, the Relic properties
@@ -3139,11 +3200,23 @@ if _sv is not None:
     # Rules 1.55 items 35 and 64 (0.28.3): what the field refuses (item ops of effect_ops.json)
     _fd = _sv.get("field")
     if _fd is not None:
-        _opids = set((((data.get("effect_ops") or {}).get("item_ops") or {}).get("ops") or {}).keys())
-        if not _fd.get("lasting_ops"): errors.append("survival:field: lasting_ops, a list")
         if "carried_res" in _fd: errors.append("survival:field.carried_res: gone in rules 1.55 item 64 (the field's units pay what they spend)")
-        for _x in _fd.get("lasting_ops") or []:
-            if _x not in _opids: errors.append(f"survival:field.lasting_ops: {_x!r} is not an item op")
+        if "lasting_ops" in _fd: errors.append("survival:field.lasting_ops: gone in spec item 5609 (G3: each action's row in actions.json field)")
+    # G3 (spec item 5609): each item action's field row: allowed, or a refusal kind that has its words
+    _fa = (data.get("actions") or {}).get("field")
+    if not isinstance(_fa, dict) or not isinstance(_fa.get("actions"), dict) or not isinstance(_fa.get("texts"), dict) or "unflagged" not in _fa["texts"]:
+        errors.append("actions:field: texts (with unflagged) and actions (<item key>#<action id>: allowed or a text kind)")
+    else:
+        for _k, _v in _fa["actions"].items():
+            if "#" not in _k: errors.append(f"actions:field.actions: {_k!r} is <item key>#<action id>")
+            if _v != "allowed" and _v not in _fa["texts"]: errors.append(f"actions:field.actions.{_k}: {_v!r} is allowed or one of texts {sorted(_fa['texts'])}")
+        for _t, _w in _fa["texts"].items():
+            if "{label}" not in _w: errors.append(f"actions:field.texts.{_t}: names the action ({{label}})")
+        # spec item 5610: the healing brake names real item actions (every one has its field row)
+        _bk = (((data.get("rules") or {}).get("mending") or {}).get("brake") or {})
+        for _k in _bk.get("actions") or []:
+            if _k not in _fa["actions"]: errors.append(f"rules:mending.brake.actions: {_k!r} is no item action (actions.json field.actions)")
+        if _bk and not (isinstance(_bk.get("mult"), (int, float)) and _bk["mult"] > 1): errors.append("rules:mending.brake.mult: a number over 1")
         if _fd.get("provisional") is not True: errors.append("survival:field: provisional: true")
 
 # Rules 1.54 (survival-spec 14.2, 14.3): items' pack_kind and plural, the recipes (one converter, recipes.ts) and the
@@ -3486,6 +3559,36 @@ def _pressure_steps_check():
             if ats and ats != want: errors.append(f"perks:both_hands{('@' + tier) if tier else ''}: Pressure Point steps at {ats}, but techniques.json rules.pressure's pressed / suppressed are {want}")
 _pressure_steps_check()
 
+# ---------- rules 1.70 item 5537: the ladder schedule (skills.json ladder) ----------
+_LSCH = _ld("skills").get("ladder") or {}
+for _slot in ("alpha", "beta", "gamma"):
+    _l = _LSCH.get(_slot) or {}
+    if not (isinstance(_l.get("perk_steps"), list) and len(_l["perk_steps"]) == 4 and _l["perk_steps"] == sorted(set(_l["perk_steps"])) and isinstance(_l.get("forks"), list) and isinstance(_l.get("mastered"), int) and all(1 <= x < _l["mastered"] for x in _l["perk_steps"] + _l["forks"]) and not set(_l["perk_steps"]) & set(_l["forks"])):
+        errors.append(f"skills: ladder.{_slot} is {{perk_steps: four rising points, forks: [points], mastered: n}}, no point both a perk step and a fork (rules 1.70 item 5537)")
+for _s in items("skills"):
+    _l = _LSCH.get(_s.get("slot")) or {}
+    for _pts, _u in (_s.get("unlocks") or {}).items():
+        _m = _u.get("mastery") if isinstance(_u, dict) else None
+        if isinstance(_m, int) and 1 <= _m <= 4 and (_l.get("perk_steps") or [None] * 4)[_m - 1] != int(_pts): errors.append(f"skills:{_s.get('id')}.unlocks.{_pts}: mastery {_m} says a perk step, and the {_s.get('slot')} schedule has its step {_m} at {(_l.get('perk_steps') or [None] * 4)[_m - 1]} (set mastery 0: rules 1.70 item 5537)")
+        if _m == 5 and _l.get("mastered") != int(_pts): errors.append(f"skills:{_s.get('id')}.unlocks.{_pts}: the Mastered row is at the schedule's mastered ({_l.get('mastered')})")
+# rules 1.70 item 5538: a skill's perk_remap (old saves' re-pick): {rev: n >= 1, perks: {old perk id: a perk of this skill
+# or null}, passives: {unlock points: a perk of this skill}, names: {removed old id: its old name}}; the targets are acquired perks of the same skill
+_PK = {x.get("id"): x for x in items("perks") if isinstance(x, dict)}
+for _s in items("skills"):
+    _t = _s.get("perk_remap")
+    if _t is None: continue
+    _w = f"skills:{_s.get('id')}.perk_remap"
+    # an alpha's table only renames (character.ts migrateCharacterPerks: no re-pick), so it has no passives (0.32 consolidation)
+    if _s.get("slot") == "alpha" and isinstance(_t, dict) and "passives" in _t: errors.append(f"{_w}: an alpha skill's perk_remap only renames perks (no passives: the old-save re-pick skips alphas)")
+    _own = lambda pid: pid in _PK and _PK[pid].get("tier") == "acquired" and _s.get("id") in (_PK[pid].get("skills") or [])
+    if not (isinstance(_t, dict) and isinstance(_t.get("rev"), int) and _t["rev"] >= 1 and set(_t) <= {"rev", "perks", "passives", "names", "note"}): errors.append(f"{_w}: {{rev: n >= 1, perks?, passives?, names?, note?}}"); continue
+    # 0.32 B12: names {old perk id: its old name}: a removed perk's name, for an old save's re-pick to say what it held
+    for _o, _nm in (_t.get("names") or {}).items():
+        if _o not in (_t.get("perks") or {}) or _o in _PK or not (isinstance(_nm, str) and _nm): errors.append(f"{_w}.names.{_o}: a removed perk of this table's perks, with its old name")
+    for _o, _n in (_t.get("perks") or {}).items():
+        if _n is not None and not _own(_n): errors.append(f"{_w}.perks.{_o}: maps to {_n!r}, not an acquired perk of {_s.get('id')} (or null)")
+    for _pts, _n in (_t.get("passives") or {}).items():
+        if not (str(_pts).isdigit() and _own(_n)): errors.append(f"{_w}.passives.{_pts}: unlock points to an acquired perk of {_s.get('id')}")
 # ---------- rules 1.60 slice C (Doors 3.0, the forks: N1, N2) ----------
 # data/forks.json: one row per fork option, a door verb held only by a sheet that picked it (`requires: [{door_pick:
 # <its own id>}]`). Each alpha skill names its two steps in skills.json `forks` ([{id, at, of: [two option ids]}]) at 4
@@ -3501,7 +3604,10 @@ if _FK is not None:
         _fs = _s.get("forks")
         if _fs is None: continue
         _w = f"skills:{_sid}.forks"
-        if not (isinstance(_fs, list) and [f.get("at") for f in _fs if isinstance(f, dict)] == [4, 6]): errors.append(f"{_w}: two steps, at 4 and 6 ({{id, at, of}}: rules 1.60)"); continue
+        # rules 1.70 item 5537: a fork step's points are the ladder schedule's (skills.json ladder.alpha.forks), never its own
+        _fat = ((_ld("skills").get("ladder") or {}).get("alpha") or {}).get("forks") or []
+        if not (isinstance(_fs, list) and len(_fs) == len(_fat) and all(isinstance(f, dict) and "at" not in f for f in _fs)): errors.append(f"{_w}: one step for each of the schedule's fork points {_fat} ({{id, of}}; its points are skills.json ladder.alpha.forks: rules 1.70 item 5537)"); continue
+        _fs = [dict(f, at=_fat[i]) for i, f in enumerate(_fs)]
         if not isinstance(_s.get("fork_runs_on"), str) or not _s["fork_runs_on"]: errors.append(f"skills:{_sid}: fork_runs_on names the door's own resource (words)")
         for _f in _fs:
             if not (isinstance(_f.get("of"), list) and len(_f["of"]) == 2): errors.append(f"{_w}.{_f.get('id')}: two options"); continue
@@ -3510,7 +3616,9 @@ if _FK is not None:
                 if not _r: errors.append(f"{_w}.{_f.get('id')}: '{_o}' is no forks.json row"); continue
                 if _o in _named: errors.append(f"{_w}: '{_o}' is in two steps")
                 _named[_o] = (_sid, _f.get("at"))
-                if _r.get("door") != _sid or _r.get("step") != _f.get("at"): errors.append(f"forks:{_o}: its door and step are {_sid} and {_f.get('at')} (skills.json forks)")
+                if _r.get("door") != _sid: errors.append(f"forks:{_o}: its door is {_sid} (skills.json forks)")
+                # its step is derived (skills.json ladder.alpha.forks by the step's place in skills.json forks): no copy here (m7)
+                if "step" in _r: errors.append(f"forks:{_o}: no `step` field: a fork's points are skills.json ladder.alpha.forks (rules 1.70 item 5537)")
             if str(_f.get("at")) not in (_s.get("unlocks") or {}): errors.append(f"skills:{_sid}.unlocks: a row at {_f.get('at')} says the fork (its text is the choice)")
     for _id, _r in _rows.items():
         _w = f"forks:{_id}"
@@ -3551,7 +3659,8 @@ if _FK is not None:
     _tend = {x.get("id"): x for x in (data.get("tending") or {}).get("items") or []}
     for _need in ("fork.tend.keep_the_thread", "fork.tend.short_thread", "fork.tend.shared_pulse", "fork.shadow.spotter", "fork.guard.cover_them"):
         if _need not in _rows: errors.append(f"forks: the held-equal check names '{_need}', no forks.json row (rename the check with the row)")
-    _tug = ((((_tend.get("tend.tug") or {}).get("effects") or [{}])[0]).get("res") or {}).get("mp")
+    _pt = next((x for x in (data.get("perks") or {}).get("items") or [] if x.get("id") == "pull_together"), {})  # rules 1.75 item 6213: Tug is Pull Together's
+    _tug = (((((_pt.get("tiers") or {}).get("I") or {}).get("effects") or [{}])[0]).get("res") or {}).get("mp")
     if "fork.tend.keep_the_thread" in _rows and not _rows["fork.tend.keep_the_thread"].get("shelved") and _fe("fork.tend.keep_the_thread").get("value") != _tug: errors.append(f"forks:fork.tend.keep_the_thread: the kept Snap's MP is Tug's price ({_tug}), one number")
     _st = _rows.get("fork.tend.short_thread") or {}
     if _st and not _st.get("shelved"):
@@ -3572,7 +3681,8 @@ if _FK is not None:
     _ct = _rows.get("fork.guard.cover_them") or {}
     if _ct and not _ct.get("shelved"):
         _ic = (((data.get("techniques") or {}).get("rules") or {}).get("guard") or {}).get("interpose_cost")
-        if ((_fe("fork.guard.cover_them").get("and") or [{}])[0]).get("value") != -(_ic or 0): errors.append(f"forks:fork.guard.cover_them: its Guard is techniques.json rules.guard.interpose_cost ({_ic})")
+        # rules 1.70 item 5547 (P6): it READS the interpose cost (one copy), never a number held equal to it
+        if ((_fe("fork.guard.cover_them").get("and") or [{}])[0]).get("value") != {"base": 0, "per": [{"of": "tech_rule:guard.interpose_cost", "value": -1}]}: errors.append(f"forks:fork.guard.cover_them: its Guard reads techniques.json rules.guard.interpose_cost ({_ic}): value {{base: 0, per: [{{of: tech_rule:guard.interpose_cost, value: -1}}]}}")
 
 
 # No rule references or dev words in player text (rules 1.68 item 5406; CLAUDE.md "Player text never explains a formula").

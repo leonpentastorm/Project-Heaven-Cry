@@ -299,7 +299,7 @@
       "family": "body",
       "save": false,
       "engine": "flag",
-      "text": "You are on the ground. Melee attacks against you have +{=effects.0.value} to hit and ranged attacks against you have −2. Standing up costs 1 AP.",
+      "text": "You are on the ground. Melee attacks against you have +{=effects.0.value} to hit and ranged attacks against you have −2. Enemies see you from {=effects.2.value|abs} tiles less far. Standing up costs 1 AP.",
       "effects": [
         {
           "op": "attack_mod",
@@ -310,6 +310,13 @@
           "op": "attack_mod",
           "value": -2,
           "context": "ranged_vs_self"
+        },
+        {
+          "op": "stat_mod",
+          "stat": "seen_range",
+          "value": -4,
+          "provisional": true,
+          "about": "rules 1.76 item 6402: enemies' eyes reach a Prone unit 4 tiles less far (the number is Leon's to set)"
         }
       ],
       "duration": {
@@ -567,6 +574,139 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "Classes 3.0 (rev4-primitives.md batch row read): Shadow's Read Intent, the Operative's Analyze, Bonds' aim read"
+    },
+    {
+      "id": "cased",
+      "name": "Cased",
+      "kind": "state",
+      "side": "hurts",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "Whoever Cased you, and their side, see your weapon, your rounds, your armour and what you carry. A Lift on you costs {=effects.1.value|abs} AP less.",
+      "effects": [
+        {
+          "op": "reveal",
+          "what": "kit",
+          "shared_with": "source_side"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "actor": "foe",
+            "target": "self",
+            "action": [
+              "verb:shadow.lift#lift"
+            ]
+          },
+          "value": -1,
+          "min": 0,
+          "label": "Cased"
+        }
+      ],
+      "duration": {
+        "until": "source"
+      },
+      "ends_on": [
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.77 item 6514 (the lead's ruling 5): Shadow's Case"
+    },
+    {
+      "id": "read_them",
+      "name": "Read Them",
+      "kind": "state",
+      "side": "hurts",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "Read: it deals {=effects.0.value|less}% less damage to the other side for the rest of the fight.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true
+          },
+          "value": 0.85,
+          "label": "Read Them"
+        }
+      ],
+      "duration": {
+        "until": "fight_end"
+      },
+      "ends_on": [
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6004 (Acuity's Read Them: was Unit.weakPoint and effects/damage.ts READ_THEM)"
+    },
+    {
+      "id": "read_them_ii",
+      "name": "Read Them",
+      "kind": "state",
+      "side": "hurts",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "Read through: it deals {=effects.0.value|less}% less damage to the other side for the rest of the fight.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true
+          },
+          "value": 0.75,
+          "label": "Read Them"
+        }
+      ],
+      "duration": {
+        "until": "fight_end"
+      },
+      "ends_on": [
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6004 (Acuity's Read Them: was Unit.weakPoint and effects/damage.ts READ_THEM)"
+    },
+    {
+      "id": "dimmed",
+      "name": "Dimmed",
+      "kind": "state",
+      "side": "helps",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "The dark closes in around you: enemies' eyes reach you from {=effects.0.value|abs} tiles less. Lasts {=duration.rounds} rounds.",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "seen_range",
+          "value": -3
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6003 (Ingenuity's fork Lightkiller; stat seen_range, rules 1.70 item 5545)"
     },
     {
       "id": "judged",
@@ -1531,6 +1671,81 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "rules 1.33 section 3 (Settle)"
+    },
+    {
+      "id": "warding_word",
+      "name": "Warding Word",
+      "label": "Warded (next save)",
+      "kind": "state",
+      "side": "helps",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "Your next Brain or Heart save is at +{=effects.0.value}. It lasts until that save, or {=duration.rounds} rounds.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "save",
+          "if": {
+            "cond_family": [
+              "brain",
+              "heart"
+            ]
+          },
+          "value": 3,
+          "and": [
+            {
+              "op": "cleanse",
+              "condition": [
+                "warding_word"
+              ]
+            }
+          ]
+        }
+      ],
+      "duration": {
+        "rounds": 3
+      },
+      "ends_on": [
+        "duration",
+        "a next-attack part ends with that attack",
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6206 (Lore Master's Warding Word)"
+    },
+    {
+      "id": "blessed_aim",
+      "name": "Blessed Aim",
+      "label": "Blessed Aim (to hit)",
+      "kind": "state",
+      "side": "helps",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "boon": true,
+      "text": "An answered Hymn steadies your hand: {=effects.0.value|signed} to hit. It lasts {=duration.rounds} rounds.",
+      "effects": [
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "value": 1
+        }
+      ],
+      "duration": {
+        "rounds": 2
+      },
+      "ends_on": [
+        "duration",
+        "end of fight"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222 (Faith's Benediction; Rising's numbers, apart from the song)"
     },
     {
       "id": "given_mark",
@@ -3708,6 +3923,34 @@
       "adjudication": "engine",
       "provisional": true,
       "source": "rules 1.60 slice C: the Momentum fork Grindstone (its mark)"
+    },
+    {
+      "id": "headlong_paid",
+      "name": "Headlong",
+      "label": "Headlong (this Charge was paid in Momentum)",
+      "kind": "state",
+      "side": "state",
+      "family": null,
+      "save": false,
+      "engine": "table",
+      "text": "This Charge was paid for in Momentum (Headlong): it builds none. It ends when the action does.",
+      "effects": [
+        {
+          "op": "cleanse",
+          "when": "acted",
+          "condition": "headlong_paid"
+        }
+      ],
+      "duration": {
+        "rounds": 1
+      },
+      "ends_on": [
+        "duration"
+      ],
+      "stacks": false,
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.73 (Body), 0.32: the Strength step (item 5807): the Momentum fork Headlong (its mark)"
     },
     {
       "id": "in_your_sights",

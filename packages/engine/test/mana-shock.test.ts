@@ -15,13 +15,13 @@ const BARE: number = SR.cycle.no_emanator_strain;
 const BEGIN: number = SR.cycle.begin_strain ?? 1;
 const share = (u: Unit) => Math.floor(MANA_SHOCK.hp_share * u.maxHp);
 
-/** A fight with one Soul caster (Will Power `wp`: no Pure Heart below 5) and a friend, against one soldier far away (or
+/** A fight with one Soul caster (Will Power `wp`; Pure Heart only with its perk, rules 1.75) and a friend, against one soldier far away (or
  * a foe Soul caster). */
 function fight(o: { wp?: number; traits?: string[]; skills?: Record<string, number>; armourClass?: number; foes?: any[]; /** the caster's Survival boons (Character.relics) */ relics?: string[]; /** the friend holds Soulmate and bonds the caster before the fight */ soulmate?: boolean; /** the caster's own sheet (a class) */ heart?: CharSpec } = {}) {
   const s = storyWith([{ name: 'Heart', kit: 'soul', ...(o.heart || {}), skills: { will_power: o.wp ?? 3, ...(o.heart?.skills || {}), ...(o.skills || {}) }, traits: o.traits, armourClass: o.armourClass }, { name: 'Friend', kit: 'soldier', ...(o.soulmate ? { perks: { soulmate: 'I' }, skills: { camaraderie: 9 } } : {}) }]);
   const [a, b] = s.chars.map((c) => s.g.characters[c.id]);
   if (o.relics) s.g.characters[a.id].relics = [...o.relics];
-  if (o.soulmate) s.act({ type: 'story/perk', charId: b.id, id: 'soulmate', actionId: 'bond', choice: a.id } as any);
+  if (o.soulmate) s.g.characters[b.id].skills.camaraderie = 5; // rules 1.75: Soulmate is removed; the friend shares hits (Share a Hit, a redirect) instead
   if (o.heart?.classId === 'bard') s.act({ type: 'story/perk', charId: a.id, id: 'class:bard.gift', text: 'For you, ' + b.name } as any);
   s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Shock test', map: 'yard16', difficulty: 'standard', enemies: o.foes || [{ name: 'Target', tier: 'soldier', weapon: 'service_pistol', at: 'P10' }] } } } as any);
   const api = {
@@ -168,7 +168,7 @@ describe('nothing softens it or raises it, it Downs and never kills, and a Down 
 });
 
 describe('no item softens it either: a boon, a floor and a redirect stand aside (the damage gate, effects/damage.ts)', () => {
-  it('Hardened (taking x0.9) and Lifeline (a floor at 1 HP) on the caster, a Soulmate bondmate beside it: the share and the burn land whole, the friend takes none, and it Downs', () => {
+  it('Hardened (taking x0.9) and Lifeline (a floor at 1 HP) on the caster, a friend who shares hits beside it: the share and the burn land whole, the friend takes none, and it Downs', () => {
     const f = fight({ relics: ['boon.hardened', 'boon.lifeline'], soulmate: true }); let u = shortNow(f);
     expect(u.held?.relics).toEqual(expect.arrayContaining(['boon.hardened', 'boon.lifeline']));
     const fhp = f.friend.hp; let from = at(f); f.end(); u = f.u;
@@ -228,8 +228,8 @@ describe('it ends with the fight, and is never charged outside one (item 4508)',
 });
 
 describe('Pure Heart and enemies', () => {
-  it('Pure Heart (Will Power 5) turns away the first Short of the fight: no Stun, no Mana Shock', () => {
-    const f = fight({ wp: 5 }); const u = shortNow(f);
+  it('Pure Heart (a Composure perk, rules 1.75 item 6203) turns away the first Short of the fight: no Stun, no Mana Shock', () => {
+    const f = fight({ wp: 5, heart: { perks: { pure_heart: 'I' } } as any }); const u = shortNow(f);
     expect(u.conds?.stunned ?? 0).toBe(0); expect(u.mg!.shock).toBeFalsy(); expect(u.mg!.strain).toBe(u.mg!.strainLimit);
     expect(f.g.combat!.log.join(' ')).toMatch(/Pure Heart/);
   });

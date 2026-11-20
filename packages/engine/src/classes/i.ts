@@ -255,6 +255,7 @@ register({
     reaction_window: (ctx, h) => {
       const kz = kzOf(h); if (!kz || ctx.reactor !== h.u || ctx.kind !== 'overwatch') return;
       if (kz.hit.includes(ctx.mover.id) || kz.left <= 0) { ctx.cancel = true; return; }
+      if (ctx.preview) return; // asked before a roll (tactics.ts reactRefusal): nothing is marked
       kz.hit.push(ctx.mover.id); kz.left--; kz.firing = ctx.mover.id; kz.both = (ctx.spend || 1) >= num(h, 'spend'); h.u!.owShots = 1;
     },
     attack_preview: (ctx, h) => { const kz = kzOf(h); if (kz?.firing && ctx.att === h.u && ctx.tgt?.id === kz.firing) ctx.terms.push({ v: num(h, 'hit'), label: 'Killzone' }); },
@@ -288,7 +289,8 @@ let lunging: Unit | null = null;
 register({
   id: 'fighter.lunge', claims: (e: any) => e?.when !== 'hit', // Momentum on a Shaken or Frightened enemy (Classes 3.0) is an item op: the runner runs it
   actions: [{
-    id: 'lunge', label: 'Barrel In', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
+    // spec item 5608: its own id (it shared the Lunge technique's before; the old id still finds it)
+    id: 'barrel_in', was: ['lunge'], label: 'Barrel In', scope: ['combat'], target: 'enemy', ap: (h) => (h.u ? meleeAp(h.u) : 2),
     text: 'Costs 1 Momentum and the AP of a strike. Move up to 2 tiles and strike, as one action. The move draws no opportunity attacks.',
     available: (h) => { const u = h.u; if (!u) return false; if (resOf(u, 'momentum') < 1) return 'Needs 1 Momentum. You earn it with melee hits and by closing in.'; return true; },
     preview: (h, args) => {
@@ -795,7 +797,7 @@ const wardDef = (n: number, self: boolean): ActionDef => ({
   id: 'ward' + n + (self ? '_self' : ''), label: 'Ward ×' + n + (self ? ' (yourself)' : ''), scope: ['combat'], target: self ? 'none' : 'ally', ap: (h) => (h.u ? price({ cb: h.cb, u: h.u }, 'ward', 2).ap : 2), res: { charge: n }, range: 6,
   text: 'Spend ' + n + ' charge to put a shield of ' + itemAmount('class:warden.ward', 'shield', [], { charge: n }) + ' × your Healing given on ' + (self ? 'yourself' : 'an ally within 6 tiles') + '. Adds ' + n + ' Flux.',
   available: (h) => evokerReady(h) || true,
-  preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (t && !unitSees(h.cb!, h.u!, t.pos)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
+  preview: (h, args) => { if (self) return {}; const t = unitById(h.cb!, args.targetId); if (t && !unitSees(h.cb!, h.u!, t.pos, undefined, t)) return { ok: false, why: 'You can\'t see them.' }; return {}; },
   run: (h, args) => {
     const cb = h.cb!, u = h.u!, t = self ? u : unitById(cb, args.targetId)!; u.mg!.cast = true;
     const v = grantShield(cb, t, itemAmount('class:warden.ward', 'shield', [term(healMultOf(h), 'stat: healing given')], { charge: n }), u); emitFx(cb, 'shield', { target: t.id, at: t.pos, absorbed: 0, gained: v });

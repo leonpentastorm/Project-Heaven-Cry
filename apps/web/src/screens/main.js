@@ -23,7 +23,7 @@ import { pickerFor, buildArgs, draftsOf, designSlotView, pickInDraft, cleanDesig
 import { previewPerkAction, phys, sheetPack, gearLockWhy, gearPreview, plateChoices, plateLesson, plateLessonWhy, GEAR, carriesMpFocus, inHands } from '@engine';
 import { SHEET_LINE_KEYS } from '../game/previewLines';
 import { weaponActions, verdictFor, markFor, ADVANCED, collectionOf, COMPANION_KINDS, REST_INFO } from '@engine';
-import { doorEmblemOf, classPortraitOf, moveIconOf } from '../game/doorArt';
+import { doorEmblemOf, classPortraitOf, moveIconOf, uiMarkOf } from '../game/doorArt';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
 import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, hasMpFocus, carriesEvoker, carriesEmanator, focusHand, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
@@ -63,6 +63,7 @@ import { forkSheetCard } from '../game/forkView'; // rules 1.60: each door's for
 import { fromSkillsOf } from '../game/skillUnlocks'; // 0.31.9: the PERKS menu's FROM YOUR SKILLS
 import { foldVals } from '../game/fold'; // 0.31.x: the fork card folds to one line (the shared fold, remembered)
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
+import { powerPct } from '../game/power'; // 0.32 B6: an Outburst's strength in percent
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
@@ -244,7 +245,7 @@ function magicVals(self, g, c) {
     hasOptions: opts.length > 0, options: opts.map((o) => { const v = optValue(o), on = B.option === v; return { key: o, label: OPT_LABEL[o] || o, text: wayText(B.school, o), pressed: on ? 'true' : 'false', pick: () => set({ option: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
     hasOptions2: opts2.length > 0, options2: opts2.map((o) => { const v = optValue(o), on = B.option2 === v; return { key: o, label: OPT_LABEL[o] || o, text: wayText(B.school2, o), pressed: on ? 'true' : 'false', pick: () => set({ option2: v }), style: chipStyle(SOUL_VIOLET, on) }; }),
     tones: toneChips(kTones, vis).map((t) => { const on = (B.tone || 'raw') === t.id, can = t.known || t.free;
-      return { key: t.id, label: t.name + (t.free ? ' · free' : ''), pressed: on ? 'true' : 'false', locked: !can, title: t.text + (can ? '' : ' Not learned yet (a teacher or a plate).') + (t.free ? ' Your first tone is free at Lore Master 1: learned with this design.' : ''),
+      return { key: t.id, label: t.name + (t.free ? ' · free' : ''), ...((m) => ({ mark: m, hasMark: !!m }))(uiMarkOf('tone', t.id)), pressed: on ? 'true' : 'false', locked: !can, title: t.text + (can ? '' : ' Not learned yet (a teacher or a plate).') + (t.free ? ' Your first tone is free at Lore Master 1: learned with this design.' : ''),
         pick: () => { if (can) set({ tone: t.id }); }, style: chipStyle(t.ink, on) + (can ? '' : '; opacity: 0.4; cursor: default') }; }),
     shapes: [{ id: '', name: 'Bolt' }, ...known.modules.filter((x) => isShape(x)).map((x) => ({ id: x, name: MODULE[x]?.name || x }))].map((x) => { const on = (shapeOn || '') === x.id, full = !on && !!x.id && !shapeOn && B.modules.length >= slots;
       return { key: x.id || 'bolt', label: x.name + (x.id ? ' ' + signed(MODULE[x.id]?.cost || 0) : ''), icon: formIconUri(x.id || 'bolt', toneInk(B.tone)), pressed: on ? 'true' : 'false', locked: full, title: x.id ? MODULE[x.id]?.text || '' : 'One target (the default; no module).',
@@ -254,7 +255,7 @@ function magicVals(self, g, c) {
       return { key: x, label: (MODULE[x]?.name || x) + ' ' + signed(MODULE[x]?.cost || 0), title: (MODULE[x]?.text || '') + (noShape ? ' Size needs a shape.' : ''), pressed: on ? 'true' : 'false', locked: lock,
         pick: () => set({ modules: on ? self.state.mgDraft.modules.filter((y) => y !== x) : [...self.state.mgDraft.modules, x] }), style: chipStyle(SOUL_VIOLET, on) + (lock ? '; opacity: 0.45; cursor: default' : '') }; }),
     verdictEffects: verdict ? verdict.effects : '', verdictRider: verdict ? verdict.rider : '', verdictLine: verdict ? verdict.line : '', verdictIcon: draftD ? designInfo(m, draftD, mana).icon : formIconUri('bolt'),
-    cost: draftD ? designCost(m, draftD, mana) + ' MP · Begin ' + designAp(m, draftD) + ' AP, Pump 1 AP a stage, Release 1 AP (Snap: 3 AP ×' + STAGE_MULT[0] + ') · in ' + bandName(N.band) + ' air' : 'Pick a school.',
+    cost: draftD ? designCost(m, draftD, mana) + ' MP · Begin ' + designAp(m, draftD) + ' AP, Pump 1 AP a stage, Release 1 AP (Snap: 3 AP at ' + powerPct(STAGE_MULT[0]) + ') · in ' + bandName(N.band) + ' air' : 'Pick a school.',
     cantSave: !draftD || fight, save: () => { if (!draftD) return; self.setState({ mgSaved: JSON.stringify(c.outbursts || []), mgSavedGame: getState().game, mgSavedAt: Date.now() }); act({ type: 'magic/design', charId: c.id, design: draftD }); },
     cancel: () => self.setState({ mgDraft: null, mgSaved: null }), saveLabel: B.id ? 'Save changes' : 'Save design',
   } : none.b;
@@ -360,6 +361,46 @@ function mpFocusLine(c) {
   return '';
 }
 
+/** "I'll narrate" (rules 1.80 item 6801): the Narrator's desk, on the host's own screen only, when the story waits for
+ *  the Narrator. The host writes the turn the AI Narrator would send (narrator/turn): the narration, the checks it
+ *  calls (who, which skill, the TN, the stakes), and an answer to each pending ruling (a perk or trait the story must
+ *  judge). The engine applies it as it applies the AI's: it rolls nothing here, and it checks every field. */
+const WORK_HEAD = { opening: 'the opening', round: 'the round', results: 'the results', combat_end: 'after the fight', epilogue: 'the epilogue' };
+function gmDeskVals(self, g, label) {
+  const st = self.state.gm || {}, set = (p) => self.setState({ gm: { ...(self.state.gm || {}), ...p } });
+  const chars = Object.values(g.characters).filter((x) => !x.dead);
+  const checks = st.checks || [], rulings = g.story.rulings || [], said = st.rulings || {};
+  const skills = Object.values(SK).map((k) => ({ value: k.id, label: k.name })).sort((a, b) => a.label.localeCompare(b.label));
+  const setCheck = (i, p) => set({ checks: checks.map((x, k) => (k === i ? { ...x, ...p } : x)) });
+  const text = String(st.text || '').trim();
+  // the campaign's prepared fights (its file's encounters), this zone's first: one starts with the turn
+  const encs = ((g.campaign && g.campaign.encounters) || []).filter((e) => e && e.enemies && e.enemies.length), zone = g.story.zone;
+  const enc = encs.find((e) => e.name === st.fight) || null;
+  const turn = () => ({ narration: text, ...(String(st.title || '').trim() ? { sceneTitle: String(st.title).trim().slice(0, 80) } : {}),
+    checks: checks.filter((x) => x.charId && x.skill).map((x) => ({ charId: x.charId, skills: [x.skill], tn: Number(x.tn), stakes: String(x.stakes || '').trim() || 'The Narrator asks for a check.' })),
+    perkRulings: rulings.map((r) => ({ id: r.id, accepted: said[r.id] !== 'no' })),
+    ...(enc ? { combat: { name: enc.name, difficulty: enc.difficulty, enemies: enc.enemies.map((f) => ({ ...f })) } } : {}) });
+  const w = g.story.work || {};
+  return { show: true, head: 'YOUR TURN, NARRATOR · ' + (WORK_HEAD[w.kind] || 'the story').toUpperCase(), note: w.redo ? 'The room asked for it again: ' + w.redo : w.note || '',
+    hint: 'Write what happens. Call a check when the outcome is in doubt: the engine rolls it, and the players see the TN and the sum.',
+    ooc: (g.story.oocAsk || []).map((q, i) => ({ key: 'q' + i, text: q.name + ' asks: ' + q.text })), hasOoc: !!(g.story.oocAsk || []).length,
+    title: st.title || '', onTitle: (e) => set({ title: e.target.value }), sceneTitle: g.story.scene.title || '',
+    text: st.text || '', onText: (e) => set({ text: e.target.value }),
+    rulings: rulings.map((r) => { const who = g.characters[r.charId], no = said[r.id] === 'no';
+      return { key: r.id, text: (who ? who.name + ': ' : '') + r.text, yesPressed: no ? 'false' : 'true', noPressed: no ? 'true' : 'false',
+        yes: () => set({ rulings: { ...said, [r.id]: 'yes' } }), no: () => set({ rulings: { ...said, [r.id]: 'no' } }) }; }),
+    hasRulings: rulings.length > 0,
+    checks: checks.map((x, i) => ({ key: 'c' + i, charId: x.charId, onChar: (e) => setCheck(i, { charId: e.target.value }), skill: x.skill, onSkill: (e) => setCheck(i, { skill: e.target.value }),
+      tn: String(x.tn), onTn: (e) => setCheck(i, { tn: Number(e.target.value) }), stakes: x.stakes || '', onStakes: (e) => setCheck(i, { stakes: e.target.value }),
+      remove: () => set({ checks: checks.filter((_, k) => k !== i) }) })),
+    chars: chars.map((x) => ({ value: x.id, label: x.name })), skills, tns: TN_LADDER.map((n) => ({ value: String(n), label: 'TN ' + n + ' · ' + label(n) })),
+    canAdd: chars.length > 0, addCheck: () => set({ checks: [...checks, { charId: chars[0] ? chars[0].id : '', skill: skills[0] ? skills[0].value : '', tn: TN_LADDER[1] ?? TN_LADDER[0], stakes: '' }] }),
+    hasFights: encs.length > 0, fight: st.fight || '', onFight: (e) => set({ fight: e.target.value }),
+    fights: [{ value: '', label: 'No fight' }, ...[...encs].sort((a, b) => (b.zone === zone) - (a.zone === zone)).map((e) => ({ value: e.name, label: 'Start the fight: ' + e.name + (e.zone === zone ? '' : ' (another zone)') }))],
+    sendOff: !text, sendTitle: text ? 'Send your turn: the story goes on' : 'Write the narration first',
+    send: () => { if (!text) return; act({ type: 'narrator/turn', turn: turn() }); self.setState({ gm: null }); } };
+}
+
 export class MainLogic extends DCLogic {
   constructor(props) {
     super(props);
@@ -441,7 +482,9 @@ export class MainLogic extends DCLogic {
     if (!g) return { ...lightboxVals(this), ...epccgVals(this), stream: [], order: [], tabs: [], coreTabs: [], sheetSkills: [], bars: [], barsA: [], barsB: [], echoV: { has: false, pips: [], sections: [] }, qb: { has: false, groups: [] }, sfc: { has: false, gauge: [], effects: [], movers: [] }, rp: { o: {}, on: {}, grip: {}, gripKey: {}, slots: [] }, pc: {} };
     // Rules 1.54 item 11: the right panel's modules and what the sheet hides are the mode's (data/modes.json, game/panels.ts).
     const PL = panelsOf(g), HIDES = new Set(PL.hides), RUN = !!g.run;
-    const mine = Object.values(g.characters).filter((c) => c.owner === me);
+    // "I'll narrate" (rules 1.80 item 6801): the Narrator's seat with no character of its own reads every character's sheet
+    const own = Object.values(g.characters).filter((c) => c.owner === me), gmSeat = isHost && g.settings.mode === 'human' && !RUN && !g.sandbox;
+    const mine = gmSeat && !own.length ? Object.values(g.characters) : own;
     const c = mine.find((x) => x.id === S.sel) || mine[0] || null;
     const P = (id) => (c ? c.skills[id] || 0 : 0), A = (id) => (c ? c.attrs[id] || 1 : 1);
     const playerOf = (pid) => g.players.find((p) => p.id === pid) || { name: '?', initials: '?', color: '#A3AEC2' };
@@ -471,7 +514,7 @@ export class MainLogic extends DCLogic {
     const hpMax = c ? maxHp(c) : 1, mpMax = c ? maxMp(c) : 1, mpNowV = c ? magicNow(g, c).mp : 0, ema = !!c && carriesMpFocus(c), mpHeld = c ? mpFocusLine(c) : '', next = c ? xpForLevel(c.level + 1) : 1, prevXp = c ? xpForLevel(c.level) : 0;
     const bars = c ? [['HP', '#F65157', Math.round(c.hp / hpMax * 100), fmtNum(c.hp) + ' / ' + fmtNum(hpMax)], ['MP', '#5C9EFF', ema ? Math.round(mpNowV / Math.max(1, mpMax) * 100) : 0, ema ? mpNowV + ' / ' + mpMax + (mpHeld ? ' · ' + mpHeld : ' · stowed') : c && ((c.skills || {}).will_power > 0 || (c.outbursts || []).length) ? 'no Emanator' : '—'],
       ['XP', '#A3AEC2', c.level >= 20 ? 100 : Math.round((c.xp - prevXp) / Math.max(1, next - prevXp) * 100), c.xp.toLocaleString() + ' / ' + next.toLocaleString()]]
-      .map(([label, col, pct, text]) => ({ label, text, labelStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
+      .map(([label, col, pct, text]) => ({ label, text, ...((m) => ({ mark: m, hasMark: !!m }))(label === 'XP' ? uiMarkOf('resource', 'xp') : ''), labelStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + col, fill: 'width: ' + Math.max(0, Math.min(100, pct)) + '%; height: 100%; background: ' + col })) : [];
     const barsA = bars.filter((b) => b.label !== 'XP'), barsB = bars.filter((b) => b.label === 'XP');
     const TAB_IDS = ['skills', 'status', 'perks', 'gear', 'arms', 'magic', 'faith'], tabDir = (to, from) => (TAB_IDS.indexOf(to) < TAB_IDS.indexOf(from) ? 'l' : 'r');
     // The sheet's tabs wrap onto a second line when the seven don't fit (never squeezed, never scrolled sideways); each
@@ -738,8 +781,8 @@ export class MainLogic extends DCLogic {
     const bio = c ? [['Origin', c.origin], ...(kit ? [['Kit', kit]] : []), ['Gender', I.gender], ['Blood type', I.blood], ['Main hand', I.hand], ['Association', I.association], ['Favourite song', I.songTitle ? I.songTitle + (I.songArtist ? ' · ' + I.songArtist : '') : I.song], ['Last dream', I.dream], ['History', I.history]]
       .filter(([, v]) => v).map(([k, v]) => ({ k, v })) : [];
     const lvlUp = levelUpDue(c);
-    const pc = c ? { name: c.name, img: c.portrait, line1: [I.association, c.origin].filter(Boolean).join(' · ') || c.origin,
-      line2: 'Level ' + c.level + ' · ' + (c.classId ? classLabel(c) : 'No class yet') + (c.dead ? ' · DEAD' : ''), hasCls: !!c.classId, clsIcon: emblemOf(heldClassId(c)).icon } : { name: 'Spectating', img: IMG['wick-welcome'], line1: 'You have no character in this session.', line2: '', hasCls: false, clsIcon: '' };
+    const pc = c ? { name: c.name, img: c.portrait, hasImg: !!c.portrait, noImg: !c.portrait, line1: [I.association, c.origin].filter(Boolean).join(' · ') || c.origin,
+      line2: 'Level ' + c.level + ' · ' + (c.classId ? classLabel(c) : 'No class yet') + (c.dead ? ' · DEAD' : ''), hasCls: !!c.classId, clsIcon: emblemOf(heldClassId(c)).icon } : { name: 'Spectating', img: IMG['wick-welcome'], hasImg: true, noImg: false, line1: 'You have no character in this session.', line2: '', hasCls: false, clsIcon: '' };
     const myChars = mine.map((x) => ({ key: x.id, name: x.name, pick: () => this.setState({ sel: x.id }), pressed: x.id === (c && c.id) ? 'true' : 'false',
       style: 'min-height: 32px; padding: 0 10px; border-radius: 8px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; ' + (x.id === (c && c.id) ? 'border: 1px solid #E7EBF3; background: #1C2536; color: #E7EBF3' : 'border: 1px solid #232D3F; background: transparent; color: #A3AEC2') }));
 
@@ -875,8 +918,8 @@ export class MainLogic extends DCLogic {
       ...(SB ? [] : [{ key: 'narrator', img: IMG['wick-narrator-placeholder'], name: 'Narrator', player: 'AI', playerStyle: 'font-size: var(--fs-sub); letter-spacing: 0.12em; color: #A3AEC2', imgStyle: 'width: 36px; height: 36px; border-radius: 50%; object-fit: cover; background: #000; border: 2px solid #232D3F',
         state: busy ? 'THINKING…' : err ? 'STUCK' : 'AFTER ALL', stateStyle: 'font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.1em; color: ' + (busy ? '#FFFFFF' : err ? '#F65157' : '#A3AEC2'), zoom: zoomer(this, IMG['wick-narrator-placeholder'], 'The Narrator', 'portrait') }])];
     const iSpoke = g.story.spoken[me] != null;
-    const cantSpeak = !c || c.dead || g.phase !== 'story' || g.story.await !== 'players' || iSpoke || !!g.sandbox;
-    const why = !c ? 'You have no character in this session.' : g.phase !== 'story' ? 'A fight is on: go to Combat.' : g.sandbox ? 'The Proving Ground has no Narrator: gear up with the tools, move freely on the map, then start the fight.' : busy ? 'The Narrator is answering…' : err ? 'The Narrator is stuck; the host can retry.'
+    const cantSpeak = !c || (gmSeat && !own.length) || c.dead || g.phase !== 'story' || g.story.await !== 'players' || iSpoke || !!g.sandbox;
+    const why = !c ? 'You have no character in this session.' : gmSeat && !own.length ? 'You are the Narrator: you write at the desk when the story waits for you.' : g.phase !== 'story' ? 'A fight is on: go to Combat.' : g.sandbox ? 'The Proving Ground has no Narrator: gear up with the tools, move freely on the map, then start the fight.' : busy ? 'The Narrator is answering…' : err ? 'The Narrator is stuck; the host can retry.'
       : g.story.await === 'rolls' ? 'Waiting for the checks to be rolled.' : g.story.await === 'choices' ? 'Waiting for an Overreach choice.' : g.story.await === 'narrator' ? 'The Narrator is about to answer…'
       : c && (g.story.ended || {})[c.id] ? 'Turn ended. Waiting for the others.' : iSpoke ? apLeft(g, c) + ' AP left · End turn when done' : (c ? apLeft(g, c) : 0) + ' AP · one Say';
 
@@ -1005,7 +1048,7 @@ export class MainLogic extends DCLogic {
           pick: () => this.setState({ wWord: w }), style: 'display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 66px; max-width: 100%; padding: 4px 6px; border-radius: 8px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.04em; cursor: pointer; color: ' + (off ? '#A3AEC2' : on ? '#E7EBF3' : SIG_CYAN) + '; border: 1px ' + (off && !on ? 'dashed #2A3A48' : 'solid ' + (on ? SIG_CYAN : '#232D3F')) + '; background: ' + (on ? epRgba(SIG_CYAN, 0.16) : '#10151F') + (off ? '; opacity: 0.8' : '') }; }),
       designs: wCards.map((d) => { const on = designSel && d.id === designSel.id; return { key: d.id, name: d.name, sub: d.line, icon: d.icon, title: d.title + ' ' + d.costText + '.', subStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + d.ink,
         pressed: on ? 'true' : 'false', pick: () => this.setState({ wDesign: d.id, wAim: null }), style: 'display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 0 8px; align-items: center; width: 100%; padding: 6px 10px; border-radius: 8px; text-align: left; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; color: #E7EBF3; border: 1px solid ' + (on ? d.ink : '#232D3F') + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.14) : '#10151F') + (d.canBegin ? '' : '; opacity: 0.6') }; }),
-      modes: [['begin', '♥ Begin and hold'], ['snap', 'Snap it now (×' + STAGE_MULT[0] + ')']].map(([id, label]) => { const on = (S.wObMode === 'snap' ? 'snap' : 'begin') === id; return { key: id, label, pressed: on ? 'true' : 'false', pick: () => this.setState({ wObMode: id, wAim: null }),
+      modes: [['begin', '♥ Begin and hold'], ['snap', 'Snap it now (' + powerPct(STAGE_MULT[0]) + ')']].map(([id, label]) => { const on = (S.wObMode === 'snap' ? 'snap' : 'begin') === id; return { key: id, label, pressed: on ? 'true' : 'false', pick: () => this.setState({ wObMode: id, wAim: null }),
         style: 'flex: 1; min-height: 32px; border-radius: 8px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; color: ' + (on ? '#E7EBF3' : SOUL_VIOLET) + '; border: 1px solid ' + SOUL_VIOLET + '; background: ' + (on ? epRgba(SOUL_VIOLET, 0.2) : 'transparent') }; }),
       showHeart: !!(mOpen && wHp && (W === 'release' || HEART_W.includes(W))),
       hv: heartVals(wHp, (id) => { if (id === 'release') return this.setState({ wAct: 'release', wAim: null });
@@ -1520,7 +1563,9 @@ export class MainLogic extends DCLogic {
       ...shellVals(this, 'main'), ...narratorVals(this, g, { openArea: () => this.toggleArea(true) }),
       isHost, toCombat: () => { if (g.combat) go('combat'); }, noCombat: !g.combat,
       narrError: !!err, narrErrorText: (err || '') + (isHost ? '' : ' Ask ' + host.name + ' to retry.'),
-      thinking: busy, thinkingText: 'The Narrator is writing…', narratorImg: IMG['wick-narrator-placeholder'],
+      // a human Narrator: the host writes at the desk below; everyone else sees the Narrator writing
+      thinking: busy || (g.settings.mode === 'human' && !!g.story.work && g.phase !== 'combat' && !gmSeat), thinkingText: g.settings.mode === 'human' ? host.name + ', the Narrator, is writing…' : 'The Narrator is writing…',
+      gm: gmSeat && !!g.story.work && g.phase !== 'combat' ? gmDeskVals(this, g, label) : { show: false, ooc: [], rulings: [], checks: [], chars: [], skills: [], tns: [] }, narratorImg: IMG['wick-narrator-placeholder'],
       echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : c && c.unspent && c.unspent.skill + c.unspent.attr + c.unspent.core === 0 && pendingPerkSteps(c).length ? 'Level up' : 'Level up', // what is due (levelUpDue): points, or only a perk step (a skill at Mastery 1 from creation)

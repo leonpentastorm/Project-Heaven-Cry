@@ -219,6 +219,14 @@ export const setHandsRule = (f: (c: Character) => HandInstance[]) => { handsHook
 let rankHook: ((c: Character) => number) | null = null;
 /** character.ts gives the runtime its class-rank rule (kept there to avoid an import cycle). */
 export const setRankRule = (f: (c: Character) => number) => { rankHook = f; };
+/** Rules 1.77 item 6509: THE resolver of a number block's `of` (effects/triggers.ts sourceOf) for a sheet with no unit
+ * (character.ts strainLimit, readyDesigns). effects/triggers.ts registers it as it loads (character.ts can't import
+ * that file: a load cycle). */
+let SHEET_SOURCE: ((c: Character, of: string) => number) | null = null;
+/** Register THE resolver of a number block's `of` for a sheet (effects/triggers.ts does, as it loads). */
+export const setSheetSource = (f: (c: Character, of: string) => number): void => { SHEET_SOURCE = f; };
+/** A number block's reader for this sheet (datatext.ts numberOf's `of`), through the one resolver. */
+export const sheetSource = (c: Character) => (of: string): number => { if (!SHEET_SOURCE) throw new Error('the sheet resolver is not registered (effects/triggers.ts)'); return SHEET_SOURCE(c, of); };
 
 /** The effect op that lays a Grand form (a Sigil word's `grand`; rules 1.4; effect_ops.json). Which move carries it is
  *  the data's (classes.json: today the Grand Sigilist's Enlarge), never a name typed here. */
@@ -265,12 +273,13 @@ export function emit(cb: Combat | null | undefined, name: HookName, ctx: any): a
   const gl = GLOBAL_HOOKS[name]; if (gl) for (const f of gl) { f(ctx, cb); if (ctx && ctx.stop) return ctx; }
   return ctx;
 }
-/** Fire a hook for ONE unit's own items, with no fight in reach (a price asked for a row before a fight is known). */
-export function emitOwn(u: Unit, name: HookName, ctx: any): any {
+/** Fire a hook for ONE unit's own items, with no fight in reach (a price asked for a row before a fight is known), or in
+ * the fight given. */
+export function emitOwn(u: Unit, name: HookName, ctx: any, cb: Combat | null = null): any { // cb (rules 1.77 item 6511): the fight it stands in, for a reader of one unit's own items
   const held = heldOfUnit(u); if (!heldAny(held)) return ctx;
   const list = buildIndex(held)[name]; if (!list) return ctx;
   const c = charOfUnit(u);
-  for (const s of list) { s.fn(ctx, holder(s.info, c, u, null)); if (ctx && ctx.stop) return ctx; }
+  for (const s of list) { s.fn(ctx, holder(s.info, c, u, cb)); if (ctx && ctx.stop) return ctx; }
   return ctx;
 }
 // ---------- engine systems that aren't items (rules 1.6: faith.ts) ----------

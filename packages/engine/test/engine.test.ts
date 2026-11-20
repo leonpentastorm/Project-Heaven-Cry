@@ -78,7 +78,7 @@ describe('classes and perk steps', () => {
   it('one perk step per Mastery level', () => {
     const c = newCharacter('c1', 'p1', sheetFrom(ARCHETYPES[0].id));
     c.skills = { camaraderie: 5 };
-    expect(pendingPerkSteps(c)[0].choices.length).toBe(2);
+    expect(pendingPerkSteps(c)[0].choices.length).toBe(4); // rules 1.75 item 6213: Camaraderie has four perks
   });
 });
 
@@ -363,7 +363,7 @@ describe('combat', () => {
     const u = cb.units.find((x) => x.side === 'pc')!, e = cb.units.find((x) => x.side === 'foe')!;
     u.ap = 6; u.analysis = 0; u.pos = '1,5'; e.pos = '9,5';
     expect(analyze(cb, u, e)).toMatch(/range/);
-    e.pos = '4,5'; expect(analyze(cb, u, e)).toBeNull(); expect(u.ap).toBe(4); expect(e.analyzedBy).toBe(u.name); expect(e.weakPoint).toBe(false);
+    e.pos = '4,5'; expect(analyze(cb, u, e)).toBeNull(); expect(u.ap).toBe(4); expect(e.analyzedBy).toBe(u.name); expect(Object.keys(e.conds || {}).filter((k) => k.startsWith('read_them'))).toEqual([]);
     expect(analyze(cb, u, e)).toMatch(/already/);
   });
 });

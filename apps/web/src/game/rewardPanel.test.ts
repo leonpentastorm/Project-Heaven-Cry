@@ -7,7 +7,7 @@ import { creditsOf, runMoveProblem, survivalRun } from '@engine';
 import { Rec } from '../../../../packages/engine/test/helpers/replay';
 import { survivalRoom, chooseNode, ownerOf } from '../../../../packages/engine/test/helpers/survival';
 import { runView } from './runView';
-import { rewardPanelView } from './rewardPanelView';
+import { rewardPanelView, payPieces } from './rewardPanelView';
 
 const DUO = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 function afterOneFight() {
@@ -66,5 +66,23 @@ describe('the map never eats a click (rules 1.64 R2)', () => {
     expect(v.nodes.filter((n) => n.state === 'reachable')).toEqual([]);
     expect(v.nodes.filter((n) => next.includes(n.id)).every((n) => n.why === 'Take your pick first. The squad moves on when everyone has.')).toBe(true);
     expect(v.links.filter((l) => l.lit)).toEqual([]);
+  });
+});
+
+describe('the reward panel heading and pay line (0.32 B9)', () => {
+  const W = survivalRun.reward_panel;
+  it('a pay line says only what was paid: the vault\'s credits alone, never "– · +702 credits"', () => {
+    expect(payPieces({ xp: null, credits: 702 }).map((x) => x.text)).toEqual(['+702 ' + W.credits.toLowerCase()]);
+    expect(payPieces({ xp: 35, credits: 100 }).map((x) => x.text)).toEqual(['+35 ' + W.xp, '+100 ' + W.credits.toLowerCase()]);
+    expect(payPieces({ xp: null, credits: null }).map((x) => x.text)).toEqual(['–']);
+  });
+  it('a cache or vault title that is only its kind is not repeated after the kicker', () => {
+    const r = afterOneFight(), me = ownerOf(0), v = runView(r.g, me)!;
+    const p = rewardPanelView(r.g, me, { ...v, note: { ...v.note!, kicker: 'VAULT · STOP 9 OF 15', title: 'Vault' } } as any)!;
+    // a won fight's panel is headed by the fight's name; with no fight here the note's kicker heads it
+    const g2 = { ...r.g, run: { ...r.g.run, stats: { ...r.g.run.stats, fights: [] } } };
+    const q = rewardPanelView(g2, me, { ...v, note: { ...v.note!, kicker: 'VAULT · STOP 9 OF 15', title: 'Vault' } } as any)!;
+    expect(q.kicker).toBe('VAULT · STOP 9 OF 15'); expect(q.title).toBe('');
+    expect(p.title).toBe('Vault'); // under a fight's own name the kind still says something
   });
 });

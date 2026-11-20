@@ -116,10 +116,11 @@ function listFor(cb: any, cur: any, ch: any, g: any): ActionDescriptor[] {
 }
 /** Hide's help (rules 1.56 Shadow 2.0 items 11 and 12), as the engine's Hide row carries it: the tiles to go to (nearest
  *  first; empty: none in reach), who sees you, and the refusal in words. Null: no Hide row for this unit. */
-export function hideHelp(cb: any, cur: any, ch: any, g: any): { spots: string[] | null; eyes: string[]; why: string | null } | null {
+export function hideHelp(cb: any, cur: any, ch: any, g: any): { spots: string[] | null; eyes: string[]; why: string | null; watch: Record<string, string[]> } | null {
   if (!cb || !cur) return null;
   const d = listFor(cb, cur, ch, g).find((x) => x.id === 'hide');
-  return d ? { spots: d.spots || null, eyes: d.eyes || [], why: d.why } : null;
+  // watch: the shadow sightline (rules 1.76 item 6404), the engine's tiles from which you would be seen, and by whom
+  return d ? { spots: d.spots || null, eyes: d.eyes || [], why: d.why, watch: d.watch || {} } : null;
 }
 export function descriptorGroups(cb: any, cur: any, ch: any, opts: ActionOpts = {}): ActionGroup[] {
   if (!cb || !cur) return [];

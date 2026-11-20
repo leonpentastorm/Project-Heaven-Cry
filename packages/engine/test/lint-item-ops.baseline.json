@@ -103,7 +103,6 @@
    "defender.shrug_it_off",
    "fighter.unstoppable",
    "infiltrator.field_fix",
-   "infiltrator.sabotage",
    "mage.bleed_the_flux",
    "marksman.duck_and_roll",
    "trickster.false_image",
@@ -115,17 +114,14 @@
   ],
   "perks/a.ts": [
    "augmented",
-   "bite_the_bullet",
    "crawler_blooded",
    "earthbreaker",
    "factory_made",
    "glass_runner",
    "heavyworlder",
-   "iron_stomach",
    "nothing_left_to_fear",
    "old_timer",
    "raised_by_orks",
-   "scar_tissue",
    "southern_fist",
    "squad_anchor",
    "the_brightest_light",
@@ -163,7 +159,6 @@
    "demolitionist",
    "grenadiers_arm",
    "gun_nut",
-   "jury_rig",
    "nothing_gets_past",
    "old_school",
    "one_shot",
@@ -187,8 +182,7 @@
    "twin_discipline",
    "twin_souls",
    "upper_touched",
-   "verse_of_war",
-   "you_get_used_to_it"
+   "verse_of_war"
   ],
   "perks/e.ts": [
    "angel_of_the_trenches",
@@ -197,18 +191,14 @@
    "field_medic",
    "field_surgeon",
    "flat_line",
-   "grim_reaper",
    "many_hands",
    "on_my_mark",
    "outclassed",
    "overruled",
    "pattern_lock",
-   "rally_cry",
    "rival",
-   "soulmate",
    "spoon_feed",
    "supreme_command",
-   "sweet_talker",
    "sworn_sibling",
    "talks_broke_down",
    "the_voice"
@@ -239,7 +229,6 @@
   "perks/g.ts": [
    "bedside_manner",
    "born_performer",
-   "burden_of_proof",
    "closing_argument",
    "cold_case",
    "cold_read",
@@ -248,7 +237,6 @@
    "crowded_head",
    "cultured",
    "detectives_eye",
-   "double_meaning",
    "established_fact",
    "every_lie_is_a_door",
    "everyones_friend",
@@ -257,8 +245,8 @@
    "gambler",
    "holo_drama_addict",
    "interrogator",
-   "old_tongue",
-   "real_power",
+   "old_tales",
+   "rank_has_privileges",
    "their_own_idea",
    "what_could_be"
   ],
@@ -281,20 +269,17 @@
    "worldline_fracture"
   ],
   "perks/skeleton.ts": [
-   "camaraderie.3",
-   "composure.5",
-   "dexterity.5",
+   "hand_off",
    "iron_grip",
-   "proficiency.5",
-   "raw_power.3",
-   "raw_power.5"
+   "stand_still",
+   "tuned"
   ],
   "perks/skills.ts": [
-   "skill:brain_power.3",
+   "proven_formula",
+   "pure_heart",
+   "skill:brain_power.2",
    "skill:brain_power.5",
-   "skill:rumination.5",
-   "skill:will_power.3",
-   "skill:will_power.5"
+   "skill:will_power.2"
   ]
  },
  "literals": {
@@ -302,15 +287,15 @@
   "classes/j.ts": 102,
   "classes/k.ts": 110,
   "classes/rev3.ts": 8,
-  "perks/a.ts": 44,
-  "perks/b.ts": 45,
-  "perks/c.ts": 53,
-  "perks/d.ts": 49,
-  "perks/e.ts": 48,
-  "perks/f.ts": 101,
-  "perks/g.ts": 50,
+  "perks/a.ts": 36,
+  "perks/b.ts": 44,
+  "perks/c.ts": 45,
+  "perks/d.ts": 47,
+  "perks/e.ts": 40,
+  "perks/f.ts": 94,
+  "perks/g.ts": 45,
   "perks/h.ts": 22,
-  "perks/skeleton.ts": 2,
+  "perks/skeleton.ts": 1,
   "perks/skills.ts": 2
  }
 }

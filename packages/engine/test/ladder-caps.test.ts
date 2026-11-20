@@ -2,7 +2,7 @@
 // the last point where the engine's own value still moves; one test per capped row, on characters made through the
 // reducer (char/add), so the value read is the one the game plays.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, apply, newGame, ladderCaps, SKILL, elementalTakenPct, guardPool, prayerCooldown, classResources, type GameState, type Sheet } from '../src';
+import { ARCHETYPES, apply, newGame, ladderCaps, SKILL, elementalTakenPct, ELEMENTAL_CAP, guardPool, prayerCooldown, classResources, type GameState, type Sheet } from '../src';
 
 const rowOf = (skill: string, grows: string) => (SKILL[skill] as any).per_point.rows.findIndex((r: any) => r.grows === grows);
 function made(edit: (c: any) => void = () => {}) {
@@ -15,13 +15,19 @@ function made(edit: (c: any) => void = () => {}) {
 const at = (c: any, skill: string, n: number) => ({ ...c, skills: { ...c.skills, [skill]: n } });
 
 describe('ladderCaps: a capped per-point row shows only where it still adds', () => {
-  it('Pain Threshold: elemental resistance stops where the engine caps it (60%: level 6 is the last)', () => {
+  it('Pain Threshold: elemental resistance adds on every level to 10 (rules 1.70 item 5540: +6% a point, under the 80% cap)', () => {
     const i = rowOf('pain_threshold', 'elemental_taken'); expect(i).toBeGreaterThanOrEqual(0);
+    const per = (SKILL as any).pain_threshold.per_point.numbers.elemental_taken;
+    expect(per).toBeCloseTo(0.06);
+    expect(ELEMENTAL_CAP).toBeCloseTo(0.8);
     const c = made(), last = ladderCaps('pain_threshold', c)[i];
-    expect(last).toBe(6);
-    expect(elementalTakenPct(at(c, 'pain_threshold', last))).toBeCloseTo(0.6);
-    expect(elementalTakenPct(at(c, 'pain_threshold', last + 1))).toBeCloseTo(elementalTakenPct(at(c, 'pain_threshold', last)));
-    expect(ladderCaps('pain_threshold', null)[i]).toBe(6); // no character: the same cap
+    expect(last).toBe(10);
+    for (let n = 1; n <= last; n++) expect(elementalTakenPct(at(c, 'pain_threshold', n))).toBeGreaterThan(elementalTakenPct(at(c, 'pain_threshold', n - 1)));
+    expect(elementalTakenPct(at(c, 'pain_threshold', last))).toBeCloseTo(per * last);
+    expect(elementalTakenPct(at(c, 'pain_threshold', last))).toBeLessThanOrEqual(ELEMENTAL_CAP);
+    // the engine's cap still holds: a value past it (a point count the ladder never reaches) is held at the cap
+    expect(elementalTakenPct(at(c, 'pain_threshold', Math.ceil(ELEMENTAL_CAP / per) + 5))).toBeCloseTo(ELEMENTAL_CAP);
+    expect(ladderCaps('pain_threshold', null)[i]).toBe(10);
   });
   it('Durability: Guard plates held stop at the pool\'s cap for a non-Bulwark; a Bulwark\'s own pool moves it', () => {
     const i = rowOf('durability', 'guard_pool'); expect(i).toBeGreaterThanOrEqual(0);

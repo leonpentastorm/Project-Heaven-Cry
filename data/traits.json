@@ -1220,7 +1220,7 @@
         {"op": "skill_mod", "skill": "intimidation", "value": 2},
         {"op": "skill_mod", "skill": "athletics", "value": -3},
         {"op": "stat_mod", "stat": "move", "value": -0.5},
-        {"op": "roll_mod", "value": 2, "when": "attack", "if": {"actor": "any", "target": "self"}, "label": "big target (Heavyworlder)"},
+        {"op": "roll_mod", "value": 2, "when": "to_hit", "if": {"actor": "any", "target": "self", "damage": ["weapon"]}, "label": "big target (Heavyworlder)"},
         {"op": "narrator", "note": "can't hide in light, double rations; vents, crawlspaces, small doors, lifts and light vehicles can't take you"}
       ],
       "adjudication": "hybrid",
@@ -2457,7 +2457,8 @@
           "value": -1
         },
         {
-          "op": "detection_against_self",
+          "op": "stat_mod",
+          "stat": "seen_range",
           "value": 2
         }
       ],

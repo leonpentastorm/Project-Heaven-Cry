@@ -52,7 +52,7 @@ function chap(o: Opt = {}) {
 
 describe('the data', () => {
   it('the Chaplain\'s gains: the presence, the Canticle, Amen, Holy Dread, Last Rites; eleven verse rows (Rising, the second verse), every one a boon', () => {
-    expect(Object.keys(GAIN)).toEqual(['at_your_side', 'canticle', 'amen', 'holy_dread', 'last_rites']);
+    expect(Object.keys(GAIN)).toEqual(['at_your_side', 'canticle', 'amen', 'holy_dread', 'last_rites', 'hallow']); // rules 1.78 item 6607: Hallow
     const rows = (CONDITION_ROWS as any[]).filter((r) => r.id.startsWith('canticle_'));
     expect(rows.length).toBe(11); for (const r of rows) { expect(r.boon).toBe(true); expect(r.adjudication).toBe('engine'); }
     for (const g of Object.values(GAIN)) expect((g as any).adjudication).toBe('engine');

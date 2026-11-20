@@ -217,6 +217,12 @@ export function clearShift(list: FloatBox[], x: number, y: number, hw: number, h
 }
 /** Floating text over a point: damage numbers, MISS, a condition. rise: how far it drifts up over its life (in tiles;
  *  0.5 by default, so it fades before it reaches the unit in the tile above). */
+/** A DOM marker for an effect (the browser suites watch for it; nothing is drawn): an empty box on the layer, named by
+ *  one data attribute, for ms. */
+export function fxMarker(p: { x: number; y: number }, attr: string, val: string, ms = 900) {
+  const d = document.createElement('div'); d.setAttribute(attr, val); d.style.cssText = 'width:100%;height:100%';
+  put(d, p, 2, 2, ms);
+}
 export function floatText(text: string, p0: { x: number; y: number; s: number }, color: string, o: { big?: boolean; delay?: number; ms?: number; small?: boolean; rise?: number } = {}) {
   const run = () => {
     const p = liveAt(p0);

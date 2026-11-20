@@ -16,16 +16,17 @@
 // perkActionsFor, previewDraw, previewOutburst…): no rule is worked out again. The ids are the ones the screens and the
 // turn card always used ('shove', 'tq:main:cut', 'cl:call.order', 'pr:hymn:x.y', 'pk:<item>#<action>', 'draw'…), so a
 // player's saved turn-card picks and the two-key hotkeys keep working.
-import type { Combat, Unit, AttackMode } from './combat';
+import type { Combat, Unit, AttackMode, KitView } from './combat';
 import { WEAPON, SOUL_RULES } from './data';
-import { isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, analyzeRange, pairs } from './combat';
+import { kitOf, isMelee, attackApCost, weaponActions, previewAttack, objectsOf, dist, ROUNDS_PER_AP, heatLimit, refOf, visibility, twoJammingGuns, stimThrowRange, analyzeRange, pairs, sightBlockers } from './combat';
 import { kindOf } from './objects';
 import { apFor, canPay, RESOURCES, resGive, price, whyNot } from './effects/cost';
 import { eyesOn, seenByFoes, HIDE_WHY, throwRangeOf, radiusOf } from './tactics';
 import { basicActions, reloadOffRows, offHandRows, loadPlan, moveOptions, pullFreeTargets, reachTiles, type BasicAction } from './actions';
+import { standingTerms } from './rolls';
 import { previewAction, fightSeenBy, previewSeenBy, withGame, dryRun, fightWith, preview as previewOnCopy } from './preview';
 import type { Action, GameState } from './game';
-import { techniquePad, packPad, pairedPad, previewTechnique, shieldOf, physView, followOf } from './physical/core';
+import { techniquePad, packPad, pairedPad, previewTechnique, useTechnique, momentumOf, shieldOf, physView, followOf } from './physical/core';
 import { TECHNIQUE, weaponSystem, propText } from './physical/data';
 import { callPad, previewCall } from './calls/core';
 import { faithView, previewPrayer, beliefOf, FAITH_MIN, DEVOTION_XP, MIRACLE_COST_LEVELS, GATE, MIRACLE_FAITH, prayerChoices, prayerAim, prayerAnswerOn, prayerEntry } from './faith';
@@ -117,6 +118,10 @@ export interface ActionDescriptor {
   spots?: string[];
   /** Hide: the enemies, of those the viewer sees, whose eyes reach the unit's tile now (who sees you). */
   eyes?: string[];
+  /** Hide (rules 1.76 item 6404, the shadow sightline): each tile of the map from which the unit, standing there, would be
+   * seen, with the enemies (of those the viewer sees) whose eyes reach it there (eyesOn, Hide's own test). A tile not
+   * listed is watched by none. Presentation only. */
+  watch?: Record<string, string[]>;
 }
 export type Picks = Record<string, any>;
 /** One line of a descriptor preview (odds, a note, a meter, a save, the cost, an ask). */
@@ -365,7 +370,7 @@ export const PK = 'pk:';
 export const perkId = (e: { id: string; actionId: string }) => PK + e.id + '#' + e.actionId;
 export function parsePerkId(id: string | null | undefined): { id: string; actionId: string } | null { if (!id || !id.startsWith(PK)) return null; const [k, a] = id.slice(PK.length).split('#'); return { id: k, actionId: a }; }
 /** What an entry costs besides AP, from the cost site's figures (0.28.3, rules 1.55 item 46: "24 MP"). */
-const perkResText = (e: PerkActionEntry): string[] => Object.entries(e.res || {}).map(([k, n]) => n + ' ' + (RESOURCES[k]?.name || k));
+const perkResText = (e: PerkActionEntry): string[] => Object.entries(e.res || {}).map(([k, n]) => n + ' ' + ((n === 1 && RESOURCES[k]?.one) || RESOURCES[k]?.name || k)); // a cost of 1 names one ("1 core")
 export const perkCost = (e: PerkActionEntry) => (e.arm ? (e.armed ? 'ARMED' : 'arm') : [priceOf(e) + ' AP', ...perkResText(e)].join(' · ')) + (e.uses.label ? ' · ' + e.uses.label : '');
 /** An on/off policy pair names the one in force; Eye of the Storm reads ARMED once armed. */
 export function perkState(e: PerkActionEntry): { tag: string; why: string | null } {
@@ -609,13 +614,27 @@ function basicPreview(x: DescCtx, d: ActionDescriptor, p: Picks, action: Action 
 function hideHelp(x: DescCtx, d: ActionDescriptor): ActionDescriptor {
   if (x.u.side !== 'pc') return d;
   const me = x.seen.units.find((v) => v.id === x.u.id) || x.u, eyes = safe(() => eyesOn(x.seen, me).map((v) => v.id), [] as string[]);
-  if (d.why !== HIDE_WHY.seen || !eyes.length) return { ...d, eyes };
+  const watch = safe(() => sightline(x.seen, me), {} as Record<string, string[]>);
+  if (d.why !== HIDE_WHY.seen || !eyes.length) return { ...d, eyes, watch };
   const mo = safe(() => moveOptions(x.g, x.cb, x.u.id, 'move'), { tiles: {} } as any) as { tiles: Record<string, { ap: number; tiles: number }> };
   const spots = Object.entries(mo.tiles).filter(([k, o]) => canPay(x.cb, x.u, o.ap + d.cost.ap) && !seenByFoes(x.seen, me, k))
     .sort(([a, p], [b, q]) => p.ap - q.ap || dist(me.pos, a) - dist(me.pos, b) || (a < b ? -1 : 1)).map(([k]) => k);
   const who = eyes.length + (eyes.length === 1 ? ' enemy' : ' enemies');
   const why = (spots.length ? HIDE_WHY.seen_to : HIDE_WHY.seen_none).replace('{who}', who).replace('{tile}', spots.length ? refOf(spots[0]) : '');
-  return { ...d, why, eyes, spots };
+  return { ...d, why, eyes, spots, watch };
+}
+/** The shadow sightline (rules 1.76 item 6404): every tile of the map from which this unit, standing there, is in the
+ * eyes of an enemy, with those enemies, asked of Hide's own test (eyesOn: range, light, the unit's own seen_range, line of
+ * sight) on the fight as the viewer's side sees it (cb: x.seen; an enemy it does not see is not there). Pure. */
+function sightline(cb: Combat, me: Unit): Record<string, string[]> {
+  const out: Record<string, string[]> = {};
+  if (cb.over || !cb.units.some((v) => v.side !== me.side && !v.dead && !v.downed && !v.hidden)) return out;
+  const walls = sightBlockers(cb);
+  for (let y = 0; y < cb.map.h; y++) for (let xx = 0; xx < cb.map.w; xx++) {
+    const k = xx + ',' + y, ids = eyesOn(cb, me, k, walls).map((v) => v.id);
+    if (ids.length) out[k] = ids;
+  }
+  return out;
 }
 /** What Confirm will do, in words, for a basic action with these picks (the panel's line under the name). */
 function basicSay(x: DescCtx, d: ActionDescriptor, p: Picks): string | null {
@@ -715,6 +734,13 @@ function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string 
     if (a.follow) lines.push({ k: 'odds', text: 'then ' + (WEAPON[a.item]?.name || 'the off hand') + ' · ' + (q.ok ? q.pct + '%' + dmgOf(q) : /reach/i.test(q.why || '') ? 'out of reach' : q.why || 'can\'t follow') });
     else lines.push({ k: 'odds', text: name(a.target) + ': ' + (q.ok ? 'hit ' + q.pct + '% · need ' + q.need + dmgOf(q) : q.why || 'can\'t attack') }); }
   for (const n of pv.notes || []) lines.push({ k: 'note', text: n });
+  // G1 (0.32, spec item 5600): the Momentum it leaves is the technique itself run on a copy as a hit (preview.ts dryRun
+  // asHit): every hit-time op (Rolling Start, the Breaker's +2, Charge's run) counts as the action counts it
+  // rules 1.78 item 6608: the same run lists what rides on a hit (Smite's blow): every item whose hit-time op ran (cb.riders)
+  const dr = whole.ok && (pv.momentum || (pv.attacks || []).length) ? safe(() => dryRun(x.g, fcb, x.u.id, (c, u, rng) => useTechnique(c, u, t.id, args, rng), { asHit: true }), null as any) : null;
+  if (pv.momentum && dr && !dr.err && dr.u) pv.momentum = { ...pv.momentum, after: momentumOf(dr.u) };
+  const riders: string[] = dr && !dr.err ? dr.cb.riders || [] : [];
+  if (riders.length) lines.push({ k: 'note', text: 'On a hit: ' + riders.join(', ') });
   if (pv.momentum) lines.push({ k: 'meter', text: 'Momentum ' + pv.momentum.now + ' → ' + pv.momentum.after + (pv.ends ? ' · ends your chain' : '') });
   if (pv.guard) lines.push({ k: 'meter', text: 'Guard ' + pv.guard.now + ' → ' + pv.guard.after });
   for (const q of pv.pressure || []) lines.push({ k: 'meter', text: name(q.unit) + ': Pressure ' + (q.add >= 0 ? '+' : '') + q.add + ' → ' + q.after + (q.state ? ' (' + (PRESS_STATE[q.state] ?? q.state) + ')' : '') + (q.onHit ? ' on a hit' : '') });
@@ -797,12 +823,14 @@ const CALLS: ActionSystem = {
       const why = e.ok ? null : (e.why || 'Not now.').replace(/\.+$/, '') + '.';
       const save = e.save ? SAVE_NAME[e.save.family] + ' save, TN ' + e.save.tn : '', reach = e.range + (e.range === 1 ? ' tile' : ' tiles');
       const picks: PickStep[] = [];
-      if (e.id === 'call.order') picks.push({ key: 'opt', kind: 'option', prompt: 'Pick what to order below.', max: orderMax(e.step), options: ORDER_THINGS.map(([id, label, text, at]) => ({ id, label, text, why: e.step < at ? 'From 3 points of ' + e.skillName + '.' : null })) });
+      if (e.id === 'call.order') picks.push({ key: 'opt', kind: 'option', prompt: 'Pick what to order below.', max: orderMax(e.step), options: ORDER_THINGS.map(([id, label, text, at]) => ({ id, label, text, why: e.step < at ? 'From ' + (e.steps[at - 1]?.at ?? at) + ' points of ' + e.skillName + '.' : null })) });
       const aimW = e.aim === 'enemy' ? 'an enemy' : 'an ally';
       picks.push({ key: 'targetId', kind: e.aim === 'enemy' ? 'enemy' : 'ally', prompt: 'Click ' + aimW + ' within ' + reach + '.', optional: e.aim === 'self-or-ally',
         choices: e.aim === 'enemy' ? foeIds(x) : allyIds(x, e.aim === 'self-or-ally') });
       if (e.id === 'call.order') picks.push({ key: 'tile', kind: 'tile', prompt: 'Now click the tile they move to.', when: { key: 'opt', has: 'move' } });
       else if (e.id === 'call.warn' || (e.id === 'call.cue' && e.step >= 2)) picks.push({ key: 'tile', kind: 'tile', prompt: e.id === 'call.cue' ? 'You may also click a free tile next to them: they step there.' : 'You may also click the tile they step to.', optional: true });
+      // rules 1.70 item 5535: on your own turn, from the price table's reaction row, the reaction may pay in place of the AP
+      if (e.payReaction) picks.push({ key: 'pay', kind: 'option', prompt: 'Pay with your AP, or choose REACTION to spend your reaction instead.', optional: true, max: 1, options: [{ id: 'reaction', label: 'REACTION', text: 'Spend your reaction this round in place of the AP.', why: null }] });
       const apText = e.free ? 'free' : priceOf(e) + ' AP';
       return D('cl:' + e.id, 'calls', e.name, priceOf(e), apText + ' · ' + reach, e.text + (save ? ' ' + save + '.' : ''), why, { picks, preview: 'call' });
     });
@@ -811,7 +839,8 @@ const CALLS: ActionSystem = {
     const id = d.id.slice(3), tgt = p.targetId || (d.picks.find((s) => s.key === 'targetId')?.optional ? x.u.id : null);
     if (!tgt) return null;
     const opt = Array.isArray(p.opt) ? p.opt.join('+') : p.opt || '';
-    return { type: 'combat/call', unitId: x.u.id, id, targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}) } as any;
+    const pay = Array.isArray(p.pay) ? p.pay.includes('reaction') : p.pay === 'reaction';
+    return { type: 'combat/call', unitId: x.u.id, id, targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}), ...(pay ? { react: true } : {}) } as any;
   },
   choices(x, d, step, p) {
     // rules 1.65: each candidate through previewCall (useCall's own gate)
@@ -822,7 +851,8 @@ const CALLS: ActionSystem = {
   },
   preview(x, d, p) {
     const id = d.id.slice(3), opt = Array.isArray(p.opt) ? p.opt.join('+') : p.opt || '', tgt = p.targetId || x.u.id;
-    const pv: any = safe(() => previewCall(x.cb, x.u, id, { targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}) }, x.g), null);
+    const payR = Array.isArray(p.pay) ? p.pay.includes('reaction') : p.pay === 'reaction'; // rules 1.70 item 5535
+    const pv: any = safe(() => previewCall(x.cb, x.u, id, { targetId: tgt, ...(p.tile ? { tile: p.tile } : {}), ...(opt ? { opt } : {}), ...(payR ? { react: true } : {}) }, x.g), null);
     if (!pv) return null;
     const name = (uid: string) => x.cb.units.find((v) => v.id === uid)?.name || uid;
     const lines: PreviewLine[] = (pv.notes || []).map((t: string) => ({ k: 'note' as const, text: t }));
@@ -1038,6 +1068,16 @@ const systems = () => [...BUILT_IN, ...SYSTEMS];
 const SYS_OF = new WeakMap<ActionDescriptor, ActionSystem>();
 
 // ---------- the three functions ----------
+/** Rules 1.77 item 6514: a unit's kit as a side sees it (combat.ts kitOf: Shadow's Case), with the game bound. */
+export function kitSeenFor(g: GameState, unitId: string, side: string): KitView | null {
+  const u = g.combat?.units.find((x) => x.id === unitId); if (!u || !g.combat) return null;
+  return withGame(g, () => kitOf(g.combat!, u, side));
+}
+/** Rules 1.77 item 6511: a unit's standing to-hit terms for its token card (rolls.ts standingTerms), with the game bound. */
+export function standingModsFor(g: GameState, unitId: string): { v: number; label: string; src?: string }[] {
+  const u = g.combat?.units.find((x) => x.id === unitId); if (!u) return [];
+  return withGame(g, () => standingTerms(g.combat, u));
+}
 /** Every action this unit could take now, in list order: grouped by tab (GROUP_ORDER), each system's rows in its own
  * order within a group. A unit with a fixed action list (the drone) gets only those. viewer: the player asking (its
  * side's fog rules the choices; the reducer's `by`). */

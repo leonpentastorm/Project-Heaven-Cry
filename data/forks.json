@@ -9,7 +9,6 @@
       "name": "Provoke",
       "kind": "verb",
       "door": "durability",
-      "step": 4,
       "icon": "fork.guard.provoke",
       "requires": [
         {
@@ -84,14 +83,14 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "First foe to hit your plates each round is Taunted for {=effects.1.rounds} round, no save"
     },
     {
       "id": "fork.guard.cover_them",
       "name": "Cover Them",
       "kind": "verb",
       "door": "durability",
-      "step": 4,
       "icon": "fork.guard.cover_them",
       "requires": [
         {
@@ -132,7 +131,15 @@
             {
               "op": "resource",
               "resource": "guard",
-              "value": -1
+              "value": {
+                "base": 0,
+                "per": [
+                  {
+                    "of": "tech_rule:guard.interpose_cost",
+                    "value": -1
+                  }
+                ]
+              }
             },
             {
               "op": "use",
@@ -152,14 +159,14 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "{=effects.0.and.0.value|abs} Guard and your reaction: the first ranged hit each round on an ally within {=effects.0.if.target_within} tiles lands on you"
     },
     {
       "id": "fork.guard.stand_fast",
       "name": "Stand Fast",
       "kind": "verb",
       "door": "durability",
-      "step": 6,
       "icon": "fork.guard.stand_fast",
       "requires": [
         {
@@ -174,14 +181,14 @@
       "effects": [],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Slam pushes nobody: every foe within {=numbers.within} tiles is Taunted for {=numbers.rounds} round and saves or is Off Balance"
     },
     {
       "id": "fork.guard.drive",
       "name": "Drive",
       "kind": "verb",
       "door": "durability",
-      "step": 6,
       "icon": "fork.guard.drive",
       "requires": [
         {
@@ -229,94 +236,165 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Slam pushes {=numbers.tiles} tiles · Off Balance save {=effects.0.value|signed} · each foe floored gives a plate (max {=effects.1.limit.n} a turn)"
     },
     {
       "id": "fork.shadow.light_fingers",
       "name": "Light Fingers",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 4,
       "icon": "fork.shadow.light_fingers",
       "requires": [
         {
           "door_pick": "fork.shadow.light_fingers"
         }
       ],
-      "text": "Lift costs {=numbers.shadow} Shadow and takes anything the foe carries, straight to your pack",
-      "numbers": {
-        "shadow": 1
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N12"
+      "text": "Lift costs {=effects.0.value|abs} AP less · a Lift the foe can't see gives +{=effects.1.value} Shadow (once a turn)",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:shadow.lift#lift"
+            ]
+          },
+          "value": -1,
+          "min": 1,
+          "label": "Light Fingers"
+        },
+        {
+          "op": "resource",
+          "when": "acted",
+          "if": {
+            "action": [
+              "lift"
+            ],
+            "target": "foe",
+            "target_sees_self": false
+          },
+          "resource": "shadow",
+          "value": 1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "fingers"
+          },
+          "label": "Light Fingers",
+          "fx": {
+            "k": "stance",
+            "what": "shadow_gain"
+          },
+          "say": "{self} lifts it clean: Shadow {res:shadow}."
+        }
       ],
-      "why": "The take op takes a throwable or a magazine to the pile; taking anything carried into the pack needs its fields what and to (N12, not approved). The spec gives no cheaper wording that keeps the point.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6003 (the Mind lane of 0.32; Perception sheet section 3)"
     },
     {
       "id": "fork.shadow.lend_the_dark",
       "name": "Lend the Dark",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 4,
       "icon": "fork.shadow.lend_the_dark",
       "requires": [
         {
           "door_pick": "fork.shadow.lend_the_dark"
         }
       ],
-      "text": "{=numbers.ap} AP · {=numbers.shadow} Shadow · once a turn: an unseen ally within {=numbers.reach} tiles becomes Hidden",
-      "numbers": {
-        "ap": 1,
-        "shadow": 1,
-        "reach": 4
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Light Fingers waits on N12), so it is not built in this slice; it needs only existing pieces (grant_action with reach, condition hidden on the target) once Light Fingers comes.",
+      "text": "{=effects.0.ap} AP · {=effects.0.res.shadow} Shadow · once a turn: an ally within {=effects.0.reach.tiles} tiles that no enemy sees becomes Hidden",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "lend_the_dark",
+          "ap": 1,
+          "res": {
+            "shadow": 1
+          },
+          "uses": "per_turn",
+          "reach": {
+            "tiles": 4,
+            "side": "ally",
+            "if": {
+              "target_sight": [
+                "out_of_view"
+              ],
+              "target_lacks": [
+                "hidden",
+                "marked"
+              ]
+            },
+            "why": {
+              "target_sight": "An enemy can see {target}.",
+              "target_lacks": "{target} is already Hidden, or Marked."
+            }
+          },
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "hidden",
+              "target": "target",
+              "skip_save": true,
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} lends {target} the dark{then}."
+            }
+          ]
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6003 (the Mind lane of 0.32; Perception sheet section 3)"
     },
     {
       "id": "fork.shadow.lightkiller",
       "name": "Lightkiller",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 6,
       "icon": "fork.shadow.lightkiller",
       "requires": [
         {
           "door_pick": "fork.shadow.lightkiller"
         }
       ],
-      "text": "Once a fight · {=numbers.ap} AP · {=numbers.shadow} Shadow: you and adjacent tiles go dark for {=numbers.rounds} rounds",
-      "numbers": {
-        "ap": 1,
-        "shadow": 2,
-        "rounds": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N9"
+      "text": "Once a fight · {=effects.0.ap} AP · {=effects.0.res.shadow} Shadow: you are Dimmed for {=effects.0.effects.0.rounds} rounds (foes must stand closer to see you)",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "lightkiller",
+          "ap": 1,
+          "res": {
+            "shadow": 2
+          },
+          "uses": "per_combat",
+          "effects": [
+            {
+              "op": "condition",
+              "condition": "dimmed",
+              "rounds": 2,
+              "skip_save": true,
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} kills the light around them{then}."
+            }
+          ]
+        }
       ],
-      "why": "The zone op may not lay the smoke kind (N9, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6003 (the Mind lane of 0.32; Perception sheet section 3); seen_range, rules 1.70 item 5545"
     },
     {
       "id": "fork.shadow.spotter",
       "name": "Spotter",
       "kind": "verb",
       "door": "ingenuity",
-      "step": 6,
       "icon": "fork.shadow.spotter",
       "requires": [
         {
@@ -370,7 +448,6 @@
       "name": "Keep the Thread",
       "kind": "verb",
       "door": "empathy",
-      "step": 4,
       "icon": "fork.tend.keep_the_thread",
       "requires": [
         {
@@ -401,18 +478,17 @@
       "name": "Short Thread",
       "kind": "verb",
       "door": "empathy",
-      "step": 4,
       "icon": "fork.tend.short_thread",
       "requires": [
         {
           "door_pick": "fork.tend.short_thread"
         }
       ],
-      "text": "Tending a Bonded ally within {=effects.0.if.target_within} tiles: +{=numbers.near|more}% healing, not +{=numbers.through|more}% · Touch reach {=numbers.touch} tiles",
+      "text": "Tending a Bonded ally within {=effects.0.if.target_within} tiles: +{=numbers.near|more}% healing, not +{=numbers.through|more}% · Triage reaches {=numbers.triage} tiles",
       "numbers": {
         "near": 1.4,
         "through": 1.2,
-        "touch": 2
+        "triage": 2
       },
       "effects": [
         {
@@ -448,14 +524,13 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6212"
     },
     {
       "id": "fork.tend.shared_pulse",
       "name": "Shared Pulse",
       "kind": "verb",
       "door": "empathy",
-      "step": 6,
       "icon": "fork.tend.shared_pulse",
       "requires": [
         {
@@ -504,157 +579,245 @@
       "name": "Long Thread",
       "kind": "verb",
       "door": "empathy",
-      "step": 6,
       "icon": "fork.tend.long_thread",
       "requires": [
         {
           "door_pick": "fork.tend.long_thread"
         }
       ],
-      "text": "Bond reach +{=numbers.reach} tiles · first Mend or Shield on each Bonded ally each round costs {=numbers.ap|abs} AP less (min {=numbers.min})",
+      "text": "Bond reach +{=numbers.reach} tiles · the first Mend or Shield on each Bonded ally each round costs {=effects.0.value|abs} AP less (min {=effects.0.min})",
       "numbers": {
-        "reach": 3,
-        "ap": -1,
-        "min": 1
+        "reach": 3
       },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N20"
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:tend.mend#tend_mend",
+              "verb:tend.shield#tend_shield"
+            ],
+            "target": "ally",
+            "target_tied": "bond"
+          },
+          "value": -1,
+          "min": 1,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "each": "target",
+            "key": "first",
+            "peek": true
+          },
+          "label": "Long Thread"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "tend_mend",
+              "tend_shield"
+            ],
+            "target": "ally",
+            "target_tied": "bond"
+          },
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "each": "target",
+            "key": "first"
+          }
+        }
       ],
-      "why": "A price cannot see its target (the cost trigger resolves no target: N20, not approved), so once per Bonded ally per round cannot be counted; the spec's cheaper wording (uncapped) is the one it rejects.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6212"
     },
     {
       "id": "fork.prayer.round_of_blessings",
       "name": "Round of Blessings",
       "kind": "verb",
       "door": "faith",
-      "step": 4,
       "icon": "fork.prayer.round_of_blessings",
       "requires": [
         {
           "door_pick": "fork.prayer.round_of_blessings"
         }
       ],
-      "text": "Whisper an ally unblessed last round: Hymn wait {=numbers.cut} round shorter, or next prayer roll {=numbers.roll|signed}",
-      "numbers": {
-        "cut": 1,
-        "roll": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N7"
+      "text": "Your first prayer each turn: its heal or shield +{=effects.0.value|more}%",
+      "effects": [
+        {
+          "op": "mend_mult",
+          "when": "heal",
+          "if": {
+            "actor": "self",
+            "target": "any",
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.25,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "first",
+            "peek": true
+          },
+          "label": "Round of Blessings"
+        },
+        {
+          "op": "mend_mult",
+          "when": "shield",
+          "if": {
+            "actor": "self",
+            "target": "any",
+            "how": [
+              "blessing"
+            ]
+          },
+          "value": 1.25,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "first",
+            "peek": true
+          },
+          "label": "Round of Blessings"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "whisper",
+              "pray"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "first"
+          }
+        }
       ],
-      "why": "The Hymn's wait is not a count an op can move and the prayer roll is on no hook (N7, not approved). The cheaper wording (the next Hymn's heal or shield ×1.25) needs a predicate that tells a Hymn's heal from a Whisper's: both reach heal_in as kind blessing.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.prayer.steadfast",
       "name": "Steadfast",
       "kind": "verb",
       "door": "faith",
-      "step": 4,
       "icon": "fork.prayer.steadfast",
       "requires": [
         {
           "door_pick": "fork.prayer.steadfast"
         }
       ],
-      "text": "Once a round, off your turn: say a Whisper as a reaction when a foe attacks an ally you see",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N6"
+      "text": "A Whisper or Ward on an ally at half HP or less: {=effects.0.value|abs} AP less",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "whisper",
+              "ward"
+            ],
+            "target": "ally",
+            "target_hp_at_most": 0.5
+          },
+          "value": -1,
+          "min": 0,
+          "label": "Steadfast"
+        }
       ],
-      "why": "A prayer as a reaction needs N6 (not approved). The cheaper wording (Health or Protection held on an ally, landing at its first hit) needs the Whisper's amount on a condition row, and a Whisper's heal and shield are faith.ts code (prayerAmount), not an amount block a row can deal.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.prayer.benediction",
       "name": "Benediction",
       "kind": "verb",
       "door": "faith",
-      "step": 6,
       "icon": "fork.prayer.benediction",
       "requires": [
         {
           "door_pick": "fork.prayer.benediction"
         }
       ],
-      "text": "A Whisper on an ally may go wide: +{=numbers.ap} AP · allies within {=numbers.within} tile get {=numbers.share|pct}% · +{=numbers.wait} round Hymn wait",
+      "text": "An answered Hymn: you and allies within {=effects.0.targets.within} tiles {=numbers.hit|signed} to hit for {=numbers.rounds} rounds",
       "numbers": {
-        "ap": 1,
-        "within": 1,
-        "share": 0.7,
-        "wait": 1
+        "hit": 1,
+        "rounds": 2
       },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N5",
-        "N7"
+      "effects": [
+        {
+          "op": "condition",
+          "when": "acted",
+          "if": {
+            "action": [
+              "pray"
+            ]
+          },
+          "condition": "blessed_aim",
+          "skip_save": true,
+          "targets": {
+            "of": "self",
+            "within": 2,
+            "side": "side"
+          },
+          "label": "Benediction",
+          "say": "{self}'s Hymn steadies every hand near it (Benediction)."
+        }
       ],
-      "why": "The blessing runner reads no targets and the Hymn's wait is no count (N5, N7, not approved); the spec's cheaper wording (Intercession) is the one it rejects.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.prayer.held_breath",
-      "name": "Held Breath",
+      "name": "Swift Psalm",
       "kind": "verb",
       "door": "faith",
-      "step": 6,
       "icon": "fork.prayer.held_breath",
       "requires": [
         {
           "door_pick": "fork.prayer.held_breath"
         }
       ],
-      "text": "A turn with no Whisper is held (max {=numbers.held}): say it later as well as that turn's Whisper",
-      "numbers": {
-        "held": 1
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N7"
+      "text": "Hymn wait {=effects.0.value} round (never under its floor)",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "hymn_wait",
+          "value": -1
+        }
       ],
-      "why": "Whispers a turn are a literal, not a stat (N7, not approved); the spec's cheaper wording is to drop it.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6222"
     },
     {
       "id": "fork.momentum.rolling_start",
       "name": "Rolling Start",
       "kind": "verb",
       "door": "raw_power",
-      "step": 4,
       "icon": "fork.momentum.rolling_start",
       "requires": [
         {
           "door_pick": "fork.momentum.rolling_start"
         }
       ],
-      "text": "Charge: {=effects.0.value|abs} tile shorter run · costs no Momentum · a hit builds {=effects.2.value} Momentum",
+      "text": "Charge: {=effects.0.value|abs} tile shorter run · a hit builds {=effects.1.value} Momentum",
       "effects": [
         {
           "op": "stat_mod",
           "stat": "tech_num:charge.min_run",
-          "value": -1
-        },
-        {
-          "op": "stat_mod",
-          "stat": "momentum_cost:charge",
           "value": -1
         },
         {
@@ -665,6 +828,9 @@
             "target": "foe",
             "mode": [
               "charge"
+            ],
+            "self_lacks": [
+              "headlong_paid"
             ]
           },
           "resource": "momentum",
@@ -674,14 +840,14 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward); rules 1.73 (Body), 0.32: the Strength step (item 5805): the free Charge is gone",
+      "short": "Charge: {=effects.0.value|abs} tile shorter run · a hit builds {=effects.1.value} Momentum"
     },
     {
       "id": "fork.momentum.grindstone",
       "name": "Grindstone",
       "kind": "verb",
       "door": "raw_power",
-      "step": 4,
       "icon": "fork.momentum.grindstone",
       "requires": [
         {
@@ -722,61 +888,137 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Melee hit on a foe meleed in the last {=effects.1.rounds} rounds (by you or a Grindstone holder): +{=effects.0.value} Momentum"
     },
     {
       "id": "fork.momentum.spill",
       "name": "Spill",
       "kind": "verb",
       "door": "raw_power",
-      "step": 6,
       "icon": "fork.momentum.spill",
       "requires": [
         {
           "door_pick": "fork.momentum.spill"
         }
       ],
-      "text": "A Finisher kill sends the overkill into the nearest other foe beside it, no roll",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N21"
+      "text": "A Finisher that drops a foe carries on into one foe beside it, no roll (a blow that grows with your level)",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "kill",
+          "amount": "spill",
+          "via": "raw_power",
+          "if": {
+            "actor": "self",
+            "tech_group": [
+              "finisher"
+            ]
+          },
+          "targets": {
+            "of": "target",
+            "within": 1,
+            "side": "foe",
+            "max": 1
+          },
+          "label": "Spill",
+          "say": "The blow carries on into {target} (Spill){then}."
+        }
       ],
-      "why": "A kill carries no overkill (on_kill has no `over`: N21, not approved). The cheaper wording (the Momentum spent × k to the foe behind) needs the Momentum a Finisher spent as a number, which no source carries (rules 1.60 item 4623).",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward); rules 1.73 (Body), 0.32: the Strength step (item 5806): built from kill, deal and targets (the overkill wording needed N21)",
+      "amounts": {
+        "spill": {
+          "kind": "damage",
+          "base": 22,
+          "profile": "melee",
+          "provisional": true
+        }
+      },
+      "short": "A Finisher kill: the blow carries into a foe beside it"
     },
     {
       "id": "fork.momentum.headlong",
       "name": "Headlong",
       "kind": "verb",
       "door": "raw_power",
-      "step": 6,
       "icon": "fork.momentum.headlong",
       "requires": [
         {
           "door_pick": "fork.momentum.headlong"
         }
       ],
-      "text": "Once a turn: pay a Charge with {=numbers.momentum} Momentum instead of AP · builds no Momentum",
-      "numbers": {
-        "momentum": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Spill waits on N21), so it is not built in this slice; it needs only approved pieces (N10, N23) and an optional price, built with Spill.",
+      "text": "Once a turn: a Charge costs no AP but {=effects.1.and.0.value|abs} more Momentum (you need {=effects.0.if.self_res.momentum.at_least}), and builds none",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "attack",
+          "set": 0,
+          "if": {
+            "own_turn": true,
+            "mode": [
+              "charge"
+            ],
+            "self_res": {
+              "momentum": {
+                "at_least": 2
+              }
+            }
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "headlong",
+            "peek": true
+          },
+          "label": "Headlong"
+        },
+        {
+          "op": "condition",
+          "when": "attack_roll",
+          "condition": "headlong_paid",
+          "skip_save": true,
+          "if": {
+            "own_turn": true,
+            "mode": [
+              "charge"
+            ],
+            "self_res": {
+              "momentum": {
+                "at_least": 1
+              }
+            },
+            "self_lacks": [
+              "headlong_paid"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "headlong"
+          },
+          "label": "Headlong",
+          "and": [
+            {
+              "op": "resource",
+              "resource": "momentum",
+              "value": -2
+            }
+          ],
+          "say": "{self} pays for the Charge in Momentum (Headlong)."
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward); rules 1.73 (Body), 0.32: the Strength step (item 5807)",
+      "short": "Once a turn: a Charge costs Momentum, not AP, and builds none"
     },
     {
       "id": "fork.pressure.converging_fire",
       "name": "Converging Fire",
       "kind": "verb",
       "door": "dexterity",
-      "step": 4,
       "icon": "fork.pressure.converging_fire",
       "requires": [
         {
@@ -826,14 +1068,14 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Allies' Dexterity hits on a foe already hit that way this round: +{=effects.0.value} Pressure, once a round a foe"
     },
     {
       "id": "fork.pressure.walk_it_in",
       "name": "Walk It In",
       "kind": "verb",
       "door": "dexterity",
-      "step": 4,
       "icon": "fork.pressure.walk_it_in",
       "requires": [
         {
@@ -865,14 +1107,14 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "A Dexterity attack that misses still lays +{=effects.0.value} Pressure (once a turn per foe)"
     },
     {
       "id": "fork.pressure.through_the_gap",
       "name": "Through the Gap",
       "kind": "verb",
       "door": "dexterity",
-      "step": 6,
       "icon": "fork.pressure.through_the_gap",
       "requires": [
         {
@@ -956,14 +1198,14 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "Once a turn, a Dexterity hit that caps a foe's Pressure: next move {=effects.3.value|abs} AP less, no opportunity attacks"
     },
     {
       "id": "fork.pressure.lockdown",
       "name": "Lockdown",
       "kind": "verb",
       "door": "dexterity",
-      "step": 6,
       "icon": "fork.pressure.lockdown",
       "requires": [
         {
@@ -1015,208 +1257,749 @@
       ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)",
+      "short": "A Dexterity hit that leaves a foe at its Pressure cap also Slows it for {=effects.1.rounds} round, no save"
     },
     {
       "id": "fork.sigil.overflux",
       "name": "Overflux",
       "kind": "verb",
       "door": "brain_power",
-      "step": 4,
       "icon": "fork.sigil.overflux",
       "requires": [
         {
           "door_pick": "fork.sigil.overflux"
         }
       ],
-      "text": "Past your Flux limit: no Overload · each glyph over costs the Overload's damage a Flux",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N15"
+      "text": "Your Sigil spells deal +{=effects.0.value|more}% damage while your Flux is at its limit",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "damage": [
+              "sigil_spell"
+            ],
+            "self_res": {
+              "flux": {
+                "at": "limit"
+              }
+            }
+          },
+          "value": 1.25,
+          "label": "Overflux"
+        }
       ],
-      "why": "The Overload's lock is code, not a stat (N15, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
     },
     {
       "id": "fork.sigil.clean_vent",
       "name": "Clean Vent",
       "kind": "verb",
       "door": "brain_power",
-      "step": 4,
       "icon": "fork.sigil.clean_vent",
       "requires": [
         {
           "door_pick": "fork.sigil.clean_vent"
         }
       ],
-      "text": "Once a turn: a Vent of {=numbers.min}+ Flux shoves adjacent foes {=numbers.push} tile, {=numbers.base} damage a Flux vented",
-      "numbers": {
-        "min": 2,
-        "push": 1,
-        "base": 4
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N22"
+      "text": "Once a turn your Vent deals every foe next to you {=amounts.scorch.base} Sigil scorch, more as you level, and pushes them {=effects.1.tiles} tile",
+      "effects": [
+        {
+          "op": "deal",
+          "when": "acted",
+          "if": {
+            "action": [
+              "vent"
+            ]
+          },
+          "amount": "scorch",
+          "targets": {
+            "of": "self",
+            "side": "foe",
+            "within": 1,
+            "shape": "aura"
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "vent_burn"
+          },
+          "label": "Clean Vent",
+          "say": "{self}'s Vent scorches {target}{then}."
+        },
+        {
+          "op": "displace",
+          "when": "acted",
+          "if": {
+            "action": [
+              "vent"
+            ]
+          },
+          "how": "push",
+          "tiles": 1,
+          "targets": {
+            "of": "self",
+            "side": "foe",
+            "within": 1,
+            "shape": "aura"
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "vent_push"
+          },
+          "label": "Clean Vent"
+        }
       ],
-      "why": "The Vent is a hook, not a trigger (N22, not approved), so no row hears the Flux vented. Its step is not offered (Overflux waits on N15) either.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)",
+      "amounts": {
+        "scorch": {
+          "kind": "damage",
+          "base": 6,
+          "profile": "flat",
+          "type": "sigil",
+          "provisional": true
+        }
+      }
     },
     {
       "id": "fork.sigil.written_in_advance",
       "name": "Written in Advance",
       "kind": "verb",
       "door": "brain_power",
-      "step": 6,
       "icon": "fork.sigil.written_in_advance",
       "requires": [
         {
           "door_pick": "fork.sigil.written_in_advance"
         }
       ],
-      "text": "A Line that stood since before your last turn ended Evokes with +{=numbers.mult|more}% damage",
-      "numbers": {
-        "mult": 1.2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N14"
+      "text": "Your first Evoke after a turn you ended with glyphs drawn deals +{=effects.2.value|more}% damage",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "draw"
+            ]
+          },
+          "flag": "inked"
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "if": {
+            "actor": "self",
+            "flag": "inked"
+          },
+          "flag": "aged"
+        },
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "damage": [
+              "sigil_spell"
+            ],
+            "flag": "aged"
+          },
+          "value": 1.2,
+          "label": "Written in Advance"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "evoke"
+            ]
+          },
+          "flag": "aged",
+          "clear": true,
+          "and": [
+            {
+              "op": "mark",
+              "flag": "inked",
+              "clear": true
+            }
+          ]
+        }
       ],
-      "why": "A glyph carries no age (N14, not approved). Its step is not offered (Running Script waits on N14 too).",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
     },
     {
       "id": "fork.sigil.running_script",
       "name": "Running Script",
       "kind": "verb",
       "door": "brain_power",
-      "step": 6,
       "icon": "fork.sigil.running_script",
       "requires": [
         {
           "door_pick": "fork.sigil.running_script"
         }
       ],
-      "text": "The glyph you Evoke from stays drawn: your next Line may start there",
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N14"
+      "text": "After an Evoke, your next glyph this turn costs {=effects.1.set} AP and adds no Flux",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "evoke"
+            ]
+          },
+          "flag": "run"
+        },
+        {
+          "op": "cost_mod",
+          "when": "glyph_cost",
+          "if": {
+            "flag": "run"
+          },
+          "set": 0,
+          "label": "Running Script"
+        },
+        {
+          "op": "cost_mod",
+          "when": "glyph_cost",
+          "if": {
+            "flag": "run"
+          },
+          "res": "flux",
+          "set": 0,
+          "label": "Running Script"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "draw"
+            ]
+          },
+          "flag": "run",
+          "clear": true,
+          "priority": 120
+        },
+        {
+          "op": "mark",
+          "when": "turn_end",
+          "if": {
+            "actor": "self"
+          },
+          "flag": "run",
+          "clear": true
+        }
       ],
-      "why": "An Evoke clears its glyphs (N14, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.74 item 6021 (the Mind lane of 0.32; Intelligence sheet section 3)"
     },
     {
       "id": "fork.soul.ride_the_edge",
       "name": "Ride the Edge",
       "kind": "verb",
       "door": "will_power",
-      "step": 4,
       "icon": "fork.soul.ride_the_edge",
       "requires": [
         {
           "door_pick": "fork.soul.ride_the_edge"
         }
       ],
-      "text": "A Release at exactly your Strain limit: +{=numbers.mult|more}% damage",
-      "numbers": {
-        "mult": 1.15
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Slow Burn waits on N22), so it is not built in this slice; it needs N3b and N10's `at: limit` (approved), built with Slow Burn.",
+      "text": "Release at or over your Strain limit: {=effects.0.value|more}% damage",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "outburst"
+            ],
+            "self_res": {
+              "strain": {
+                "at": "limit"
+              }
+            }
+          },
+          "value": 1.15,
+          "label": "Ride the Edge"
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.soul.slow_burn",
       "name": "Slow Burn",
       "kind": "verb",
       "door": "will_power",
-      "step": 4,
       "icon": "fork.soul.slow_burn",
       "requires": [
         {
           "door_pick": "fork.soul.slow_burn"
         }
       ],
-      "text": "Each turn you start holding an Outburst, Strain falls {=numbers.calm} more",
-      "numbers": {
-        "calm": 1
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N22"
+      "text": "Once a turn: Steady costs {=effects.0.set} AP and calms {=effects.2.value|abs} more Strain",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "steady"
+            ]
+          },
+          "set": 0,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "free",
+            "peek": true
+          },
+          "label": "Slow Burn"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "steady"
+            ]
+          },
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "free"
+          }
+        },
+        {
+          "op": "resource",
+          "when": "acted",
+          "if": {
+            "action": [
+              "steady"
+            ]
+          },
+          "resource": "strain",
+          "value": -1,
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "key": "calm"
+          },
+          "label": "Slow Burn",
+          "say": "Slow Burn: {self}'s heart cools further ({gain} Strain)."
+        }
       ],
-      "why": "The held turn's start is a hook, not a trigger (N22, not approved); the spec gives no cheaper wording.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.soul.blood_price",
       "name": "Blood Price",
       "kind": "verb",
       "door": "will_power",
-      "step": 6,
       "icon": "fork.soul.blood_price",
       "requires": [
         {
           "door_pick": "fork.soul.blood_price"
         }
       ],
-      "text": "A Pump may be paid in HP: {=numbers.hp_per_mp} HP per MP · never down to Downed",
-      "numbers": {
-        "hp_per_mp": 0.5
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [
-        "N18"
+      "text": "Your heart burns you: your next Release {=effects.1.value|more}% damage",
+      "effects": [
+        {
+          "op": "mark",
+          "when": "damaged",
+          "if": {
+            "target": "self",
+            "self_harm": true
+          },
+          "flag": "burned",
+          "label": "Blood Price"
+        },
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "hostile": true,
+            "damage": [
+              "outburst"
+            ],
+            "flag": "burned"
+          },
+          "value": 1.25,
+          "label": "Blood Price"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "release"
+            ]
+          },
+          "flag": "burned",
+          "clear": true
+        }
       ],
-      "why": "The Pump is not on the cost hook and a price cannot be paid in HP (N18, not approved); the spec's cheaper wording still needs the Pump on a hook.",
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
     },
     {
       "id": "fork.soul.clean_break",
       "name": "Clean Break",
       "kind": "verb",
       "door": "will_power",
-      "step": 6,
       "icon": "fork.soul.clean_break",
       "requires": [
         {
           "door_pick": "fork.soul.clean_break"
         }
       ],
-      "text": "A Release at stage {=numbers.stage} lowers Strain by {=numbers.calm}",
-      "numbers": {
-        "stage": 4,
-        "calm": 2
-      },
-      "effects": [],
-      "shelved": true,
-      "waits_for": [],
-      "why": "Its step is not offered (Blood Price waits on N18), so it is not built in this slice; it needs N3b (approved), built with Blood Price.",
+      "text": "An Outburst drops a foe: {=effects.0.value} Strain, once a turn",
+      "effects": [
+        {
+          "op": "resource",
+          "when": "kill",
+          "if": {
+            "actor": "self",
+            "damage": [
+              "outburst"
+            ]
+          },
+          "resource": "strain",
+          "value": -2,
+          "limit": {
+            "per": "per_turn",
+            "n": 1
+          },
+          "label": "Clean Break",
+          "say": "Clean Break: {self}'s heart eases ({gain} Strain)."
+        }
+      ],
       "adjudication": "engine",
       "provisional": true,
-      "source": "docs/design/proposals/2026-11-doors-3.0-spec.md section 2 (rules 1.60 slice C, items 4645 onward)"
+      "source": "rules 1.75 (Soul lane, 0.32) item 6201"
+    },
+    {
+      "id": "fork.figment.hard_light",
+      "name": "Hard Light",
+      "kind": "verb",
+      "door": "visualization",
+      "icon": "fork.figment.hard_light",
+      "requires": [
+        {
+          "door_pick": "fork.figment.hard_light"
+        }
+      ],
+      "text": "Your Figments take {=effects.0.value|less}% less damage · one destroyed gives you +{=effects.1.value} AP next turn (once a round)",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_kind": [
+              "figment"
+            ],
+            "target_tied": {
+              "kind": "owned",
+              "as": "to"
+            }
+          },
+          "value": 0.7,
+          "label": "Hard Light"
+        },
+        {
+          "op": "grant_ap",
+          "when": "downed",
+          "if": {
+            "target": "ally",
+            "target_kind": [
+              "figment"
+            ],
+            "target_tied": {
+              "kind": "owned",
+              "as": "to"
+            }
+          },
+          "value": 1,
+          "bank": true,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "hard"
+          },
+          "label": "Hard Light",
+          "say": "{self}'s light holds its shape as it breaks: +1 AP next turn (Hard Light)."
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
+    },
+    {
+      "id": "fork.figment.sharp_light",
+      "name": "Sharp Light",
+      "kind": "verb",
+      "door": "visualization",
+      "icon": "fork.figment.sharp_light",
+      "requires": [
+        {
+          "door_pick": "fork.figment.sharp_light"
+        }
+      ],
+      "text": "Your Figments' strikes deal +{=effects.0.value|more}% damage · after one drops a foe, your next Figment order costs {=effects.2.set} AP",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "hostile": true
+          },
+          "value": 1.2,
+          "label": "Sharp Light"
+        },
+        {
+          "op": "mark",
+          "when": "downed",
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "target": "foe"
+          },
+          "flag": "encore",
+          "label": "Sharp Light"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "flag": "encore"
+          },
+          "set": 0,
+          "label": "Sharp Light"
+        },
+        {
+          "op": "mark",
+          "when": "acted",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "flag": "encore"
+          },
+          "flag": "encore",
+          "clear": true,
+          "priority": 120
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
+    },
+    {
+      "id": "fork.figment.many_hands",
+      "name": "Many Hands",
+      "kind": "verb",
+      "door": "visualization",
+      "icon": "fork.figment.many_hands",
+      "requires": [
+        {
+          "door_pick": "fork.figment.many_hands"
+        }
+      ],
+      "text": "+{=effects.0.value} Figment held · Picture costs {=effects.1.value|abs} charge less (never under {=effects.1.min})",
+      "effects": [
+        {
+          "op": "stat_mod",
+          "stat": "ties_max:owned",
+          "value": 1
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "verb:picture#picture"
+            ]
+          },
+          "res": "vcharge",
+          "value": -1,
+          "min": 1,
+          "label": "Many Hands"
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
+    },
+    {
+      "id": "fork.figment.masterwork",
+      "name": "Masterwork",
+      "kind": "verb",
+      "door": "visualization",
+      "icon": "fork.figment.masterwork",
+      "requires": [
+        {
+          "door_pick": "fork.figment.masterwork"
+        }
+      ],
+      "text": "Name your Masterwork ({=effects.0.ap} AP): +{=effects.1.value} to hit, {=effects.2.value|less}% less damage, a free order a round",
+      "effects": [
+        {
+          "op": "grant_action",
+          "action": "masterwork",
+          "ap": 0,
+          "uses": "per_turn",
+          "reach": {
+            "tiles": 99,
+            "side": "ally",
+            "if": {
+              "target_kind": [
+                "figment"
+              ],
+              "target_tied": {
+                "kind": "owned",
+                "as": "to"
+              }
+            },
+            "why": {
+              "target_kind": "Only a Figment of yours.",
+              "target_tied": "Only a Figment of yours."
+            }
+          },
+          "effects": [
+            {
+              "op": "tie",
+              "kind": "masterwork",
+              "clear": "all"
+            },
+            {
+              "op": "tie",
+              "kind": "masterwork",
+              "target": "target",
+              "say": "{self} names {target} the Masterwork."
+            }
+          ]
+        },
+        {
+          "op": "roll_mod",
+          "when": "to_hit",
+          "if": {
+            "actor": "ally",
+            "actor_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "value": 2,
+          "label": "Masterwork"
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "target": "ally",
+            "target_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "value": 0.75,
+          "label": "Masterwork"
+        },
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "target_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "set": 0,
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "master",
+            "peek": true
+          },
+          "label": "Masterwork"
+        },
+        {
+          "op": "use",
+          "when": "acted",
+          "if": {
+            "action": [
+              "figment_strike",
+              "figment_pounce",
+              "figment_cut",
+              "figment_stare",
+              "figment_order"
+            ],
+            "target_tied": {
+              "kind": "masterwork",
+              "as": "to"
+            }
+          },
+          "limit": {
+            "per": "per_round",
+            "n": 1,
+            "key": "master"
+          }
+        }
+      ],
+      "adjudication": "engine",
+      "provisional": true,
+      "source": "rules 1.74 item 6041 (ruling layer section 5b: forms are learned, forks upgrade every form you know)"
     }
   ]
 }

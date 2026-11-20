@@ -68,7 +68,7 @@ describe('D: the preview price (item 5203)', () => {
     const pv = previewDescriptor(f.g, f.pc.id, 'tq:main:shot', { targetId: f.foe.id })!;
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(2); expect(pv.cost).toBe('2 AP');
     const before = f.unit(f.pc.id).ap; f.act({ unitId: f.pc.id, ...pv.action } as any);
-    expect(f.unit(f.foe.id).dead).toBe(true); expect(f.unit(f.pc.id).ap).toBe(before - 2 + 2); // charged 2, then the kill's +2
+    expect(f.unit(f.foe.id).dead).toBe(true); expect(f.unit(f.pc.id).ap).toBe(before - 2); // charged 2; the kill gives no AP back (rules 1.73 item 5817: Grim Reaper's AP rows cut)
   });
   // the review of D: a price the aimed action really brings to 0 reads 0, not the row's 1 (the preview is the charge)
   const caster = (spec: any = {}) => {

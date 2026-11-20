@@ -394,7 +394,7 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'perk-shelves');
     doAct({ type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
     const c = Object.values(G.characters)[0];
-    (G.characters[c.id] as any).perks = [{ id: 'vanishing_act', tier: 'mastered' }, { id: 'used_to_the_pain', tier: 'I' }, { id: 'cultured', tier: 'achieved' }];
+    (G.characters[c.id] as any).perks = [{ id: 'vanishing_act', tier: 'mastered' }, { id: 'breaching_strike', tier: 'I' }, { id: 'cultured', tier: 'achieved' }];
     (G.characters[c.id] as any).traits = [...((G.characters[c.id] as any).traits || []), 'gambler']; // rules 1.56: Running Reload's switch is gone; Gambler rides the attacks
     doAct({ type: 'narrator/turn', turn: { narration: 'Brace.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol', at: 'P11' }] } } } as any);
     for (let i = 0; i < 4 && active(G.combat!)!.side !== 'pc'; i++) doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id } as any);
@@ -417,22 +417,22 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     const rides = panel.querySelector('[data-shelf="rides"] ul[role="list"]') as HTMLElement, always = panel.querySelector('[data-shelf="always"] ul[role="list"]') as HTMLElement;
     expect(rides.getAttribute('aria-labelledby')).toBe('phc-shelf-rides'); expect(panel.querySelector('#phc-shelf-rides')!.textContent).toBe('RIDES AN ACTION');
     expect(Array.from(rides.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:trait:gambler']);
-    expect(Array.from(always.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:used_to_the_pain']);
+    expect(Array.from(always.querySelectorAll('li')).map((li) => li.getAttribute('data-perk-row'))).toEqual(['pki:perk:breaching_strike']);
     expect(panel.querySelectorAll('li .phc-cb-act').length).toBe(0); expect(panel.querySelectorAll('li [aria-pressed]').length).toBe(0);
     // a perk that rides a move is listed with where its switch is; a passive shows a live line
     expect(rides.querySelector('[data-perk-line]')!.textContent).toBe('on your attacks');
     expect(always.querySelector('li')!.getAttribute('data-state')).toBe('waiting');
-    expect(always.querySelector('[data-perk-line]')!.textContent).toBe('Waiting: the first time you are hit in each fight');
+    expect(always.querySelector('[data-perk-line]')!.textContent).toBe('Waiting: when one of your finishers drops an enemy');
     // a story-only perk is not on the fight's card
     expect(panel.textContent).not.toMatch(/Cultured/);
     // picking a row opens its whole card to read, in the row and in the selection box, with no Confirm
     const rowBtn = always.querySelector('li button') as HTMLButtonElement; expect(rowBtn.getAttribute('aria-expanded')).toBe('false');
     await React.act(async () => { rowBtn.click(); });
-    const open = el.querySelector('[data-perk-row="pki:perk:used_to_the_pain"]') as HTMLElement;
+    const open = el.querySelector('[data-perk-row="pki:perk:breaching_strike"]') as HTMLElement;
     expect(open.querySelector('button')!.getAttribute('aria-expanded')).toBe('true');
-    expect(open.querySelector('[data-perk-text]')!.textContent).toMatch(/^Waiting: the first time you are hit in each fight\. It works by itself\. /);
+    expect(open.querySelector('[data-perk-text]')!.textContent).toMatch(/^Waiting: when one of your finishers drops an enemy\. It works by itself\. /);
     expect(el.querySelector('.phc-cb-seltext')!.textContent).toBe(open.querySelector('[data-perk-text]')!.textContent);
-    expect(el.querySelector('.phc-cb-foot')!.textContent).toMatch(/Used to the Pain · ALWAYS ON/);
+    expect(el.querySelector('.phc-cb-foot')!.textContent).toMatch(/Keep Swinging · ALWAYS ON/);
     const conf = Array.from(el.querySelectorAll('.phc-cb-foot button')).find((b) => /^Confirm$/.test(b.textContent || '')) as HTMLButtonElement;
     expect(conf.hidden).toBe(true);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
@@ -460,18 +460,18 @@ describe('the Perks tab on the combat screen (plan 3)', () => {
     const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
     snap = null; G = newGame('ROOM', { id: 'host', name: 'Leon' }, 'perk-shelf-read');
     doAct({ type: 'char/add', sheet: sheetFrom(ARCHETYPES[0].id, 'MPAT') }); doAct({ type: 'session/start' }); doAct({ type: 'narrator/begin' });
-    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).perks = [{ id: 'used_to_the_pain', tier: 'I' }];
+    const c = Object.values(G.characters)[0]; (G.characters[c.id] as any).perks = [{ id: 'breaching_strike', tier: 'I' }];
     doAct({ type: 'narrator/turn', turn: { narration: 'Brace.', combat: { name: 'Pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol', at: 'P11' }] } } } as any);
     for (let i = 0; i < 4 && active(G.combat!)!.side !== 'pc'; i++) doAct({ type: 'combat/end-turn', unitId: active(G.combat!)!.id } as any);
-    G.combat!.log.push(active(G.combat!)!.name + ' takes 12 (Used to the Pain: −25% on the next hit).');
+    G.combat!.log.push(active(G.combat!)!.name + ' takes 12 (Keep Swinging: the next Strike is free).');
     await React.act(async () => { root.render(React.createElement(App)); });
     await React.act(async () => { vi.advanceTimersByTime(15000); });
     const tab = el.querySelector('#phc-tab-perks') as HTMLElement; expect(tab.textContent).toMatch(/Perks\s*2$/); // the Durability door's Challenge and Slam (rules 1.56 Guard 2.0)
     await React.act(async () => { tab.click(); });
     expect(Array.from(el.querySelectorAll('#phc-tabpanel [data-shelf]')).map((x) => x.getAttribute('data-shelf'))).toEqual(['use', 'always']);
     // the passive's line follows the fight: the log named it since this unit's last turn, so the row shows that line
-    const live = el.querySelector('[data-perk-row="pki:perk:used_to_the_pain"]') as HTMLElement;
-    expect(live.getAttribute('data-state')).toBe('last'); expect(live.querySelector('[data-perk-line]')!.textContent).toMatch(/^Last: .* \(Used to the Pain: −25% on the next hit\)$/);
+    const live = el.querySelector('[data-perk-row="pki:perk:breaching_strike"]') as HTMLElement;
+    expect(live.getAttribute('data-state')).toBe('last'); expect(live.querySelector('[data-perk-line]')!.textContent).toMatch(/^Last: .* \(Keep Swinging: the next Strike is free\)$/);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   });
 

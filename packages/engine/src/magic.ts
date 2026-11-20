@@ -29,7 +29,7 @@ import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
 import { grantGoods, lootToPack } from './containers';
 import { itemWords, wordCostMods, immune, mendShown } from './effects/core';
-import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive, setResSetter } from './effects/cost';
+import { price, priced, costOf, whyNot, canPay, pay, refund, apFor, resGive, setResSetter, setResLimit } from './effects/cost';
 import { masteredWords } from './sigilgrowth';
 import { tilesIn, rngOf } from './kit';
 import { feedOf, showFeedNumber } from './effects/feed';
@@ -56,10 +56,11 @@ export interface Zone { id: string; kind: 'field' | 'trap' | 'turret' | 'wall' |
   /** field: the Burst multiplier per tile; trap/turret: hidden, the sides that spotted it, triggers left, hp, def; element. */
   tileMult?: Record<string, number>; hidden?: boolean; spotted?: string[]; triggers?: number; hp?: number; def?: number; element?: string | null; kin?: boolean; dir?: [number, number]; reachMult?: number }
 // ---------- zones from data (Classes 3.0 P10) ----------
-/** The kinds of zone data may lay (op `zone`; predicates self_in_zone, target_in_zone): a closed list, one a user. */
-export const DATA_ZONE_KINDS = ['sanctuary'] as const;
-/** A kind of zone data may lay. */
-export type DataZoneKind = (typeof DATA_ZONE_KINDS)[number];
+/** The kinds of zone data may lay (op `zone`; predicates self_in_zone, actor_in_zone, target_in_zone): read from
+ * `rules.json zones.kinds` (rules 1.78 item 6607, P9: a new kind is a data row). */
+export const DATA_ZONE_KINDS: readonly string[] = (((RULES as any).zones?.kinds || []) as { id: string }[]).map((k) => k.id);
+/** A kind of zone data may lay (one of DATA_ZONE_KINDS). */
+export type DataZoneKind = string;
 /** THE door that lays a zone a unit owns on the fight (the op `zone`, a class move's own action): its id is the fight's
  * next glyph serial; it runs down with the others (sigilRoundTick: `rounds`) and ends at 0 or when its pool is spent. */
 export function makeZone(cb: Combat, by: Unit, o: { kind: Zone['kind']; tiles: string[]; rounds: number; mult?: number; words?: string[]; pool?: number }): Zone {
@@ -69,7 +70,13 @@ export function makeZone(cb: Combat, by: Unit, o: { kind: Zone['kind']; tiles: s
 }
 /** The zones of a kind a tile lies in, by their owner's relation to a unit (self: its own; side: its side's; any). */
 export function zonesAt(cb: Combat, tile: string, kind: string, owner: 'self' | 'side' | 'any' = 'any', to?: Unit | null): Zone[] {
-  return (cb.zones || []).filter((z) => z.kind === kind && z.tiles.includes(tile) && (owner === 'any' || !to ? true : owner === 'self' ? z.by === to.id : z.side === to.side));
+  const here = (cb.zones || []).filter((z) => z.kind === kind && z.tiles.includes(tile));
+  if (owner === 'any' || !to) return here;
+  if (owner === 'side') return here.filter((z) => z.side === to.side);
+  // self: rules 1.78 item 6601 (spec item 1908): one side's zones of a kind on a tile never stack: the first laid is the
+  // one that acts there (its owner's rows read it); a later one of the same kind acts only where the first does not lie
+  const first = here.find((z) => z.side === to.side);
+  return first && first.by === to.id ? [first] : [];
 }
 /** End zones (a holder's of a kind): returns how many ended. */
 export function endZones(cb: Combat, pick: (z: Zone) => boolean): number { const was = (cb.zones || []).length; cb.zones = (cb.zones || []).filter((z) => !pick(z)); return was - cb.zones.length; }
@@ -158,6 +165,8 @@ export const CONDITION_IDS = Object.keys(CONDS).filter((k) => CONDS[k].engine !=
 // ---------- the meter ----------
 export const manaBand = (m: number) => MANA_BANDS.find((b) => m >= b.min && m <= b.max) || MANA_BANDS[1];
 export const manaOf = (cb: Combat) => (cb.mana ??= MANA_START);
+// rules 1.77 item 6512: the air's mana as a resource of the fight (data/actions.json resources.mana) changes here
+setResSetter('mana', (cb, _u, n) => { if (!cb) return 0; const was = manaOf(cb); shiftMana(cb, n); return manaOf(cb) - was; });
 export function shiftMana(cb: Combat, by: number, why?: string) {
   const was = manaOf(cb), now = Math.max(0, Math.min(40, was + by)); cb.mana = now;
   const a = manaBand(was).id, b = manaBand(now).id;
@@ -336,6 +345,8 @@ export const bodyDebuffs = (u: Unit) => debuffsOf(u, 'body');
 export interface CondOpts { /** No save (a hit's rider, a perk that says so). */ skipSave?: boolean; tnAdd?: number; /** Commanded's order, a variant. */ arg?: string;
   /** The skill that delivered it (rules 1.13: its strength sets the TN). */ via?: string; /** A strength fixed earlier (residue, a zone, a stored spell): used as it is. */ str?: number;
   /** Hidden only: the same Hidden entry as before (no new ambush). */ sameEntry?: boolean;
+  /** Rules 1.77 item 6503: the action that puts it on (its acted name) and the unit that action was aimed at, told to
+   * 'cond_apply' (ctx.action, ctx.aim) so an item can tell the named foe from the rest of an area. */ action?: string; aim?: Unit | null;
   /** Called once the condition has taken hold, just before 'cond_landed' is told (a move logs its own line here, so
    * that what reacts to the landing (Shrug It Off) reads after it). Never stored. */ onLand?: () => void }
 /** The second door of an immunity (the first is the 'cond_apply' hook): the `immune:<id>` query, and for Bleeding the
@@ -347,6 +358,8 @@ function askImmune(ca: any, t: Unit, id: string, fam?: Fam) {
   const im = immune({ u: t }, id, fam) || (id === 'bleeding' ? immune({ u: t }, 'bleed') : null);
   if (im) { ca.cancel = true; if (!ca.why && im !== 'perk') ca.why = im; }
 }
+/** The action and its aimed unit on 'cond_apply' (rules 1.77 item 6503), when the opts carry them. */
+const aimOf = (o: CondOpts) => ({ ...(o.action ? { action: o.action } : {}), ...(o.aim ? { aim: o.aim } : {}) });
 /** Apply a condition: the target saves (d20 + its save) against 12 + the source's strength with the skill that delivered it (opts.via, or the call it runs inside: withVia; rules 1.13) (spec: Conditions
  * and saves). Boons (Guarded, Inspired…) and states need no save. No stacking: a second dose resets to the longer
  * duration. The source is kept (u.condBy) for Fear, Taunted, Grappled, Marked and kill credit. */
@@ -358,7 +371,7 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
   // Items first: 'cond_apply' {by, t, id, fam, rounds, skipSave, cancel, why, tnAdd, saveAdd} (an immunity cancels it,
   // a perk may skip the save, change the rounds or the save's TN).
   const via = viaOf(by, opts.via);
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, arg: opts.arg, via, cb, rng });
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam: fam || def.fam, rounds: rounds || def.rounds, skipSave: !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, arg: opts.arg, via, ...aimOf(opts), cb, rng });
   askImmune(ca, t, id, ca.fam);
   if (ca.cancel) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : ''); }
   const f: Fam = ca.fam || fam || def.fam || 'body';
@@ -406,7 +419,7 @@ function condNumbers(u: Unit, def: CondDef, on: boolean) {
 function flagCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, def: CondDef, rounds: number | undefined, opts: CondOpts): string {
   const id = def.key, fam: Fam = def.fam || 'body';
   const via = viaOf(by, opts.via);
-  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || (def.noTick ? 1 : def.rounds), skipSave: !!def.noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, cb, rng });
+  const ca: any = emit(cb, 'cond_apply', { by, t, id, fam, rounds: rounds || (def.noTick ? 1 : def.rounds), skipSave: !!def.noSave || !!opts.skipSave, cancel: false, why: '', tnAdd: opts.tnAdd || 0, saveAdd: 0, via, ...aimOf(opts), cb, rng });
   askImmune(ca, t, id, def.fam);
   if (ca.cancel) return ' · ' + t.name + ' is untouched' + (ca.why ? ' (' + ca.why + ')' : '');
   let saved = '';
@@ -960,6 +973,17 @@ setResSetter('strain', (cb, u, n, _by, why) => {
   if (n > 0) addStrain(cb, rngOf(), u, n, why || 'an item'); else easeStrain(cb, u, -n, why || 'an item');
   return m.strain - was;
 });
+/** Rules 1.70 item 5543 (P2): Strain's limit is the heart's (`at: "limit"`). */
+setResLimit('strain', (u) => u.mg?.strainLimit ?? Infinity);
+/** Rules 1.70 item 5542 (P1): Flux is a resource row (data/actions.json resources.flux, setter "flux"): a gain goes
+ * through the one Flux function (flux(): the overload past the limit), a loss takes it down, never under 0. Returns what
+ * really changed (an overload empties the Evoker). A unit with no Evoker has no Flux to change. */
+setResSetter('flux', (cb, u, n) => {
+  const m = u.mg; if (!cb || !m || !n) return 0; const was = m.flux || 0;
+  if (n > 0) { const out = flux(cb, rngOf(), u, n); if (out) say(cb, u.name + ':' + out + '.'); } else m.flux = Math.max(0, was + n);
+  return m.flux - was;
+});
+setResLimit('flux', (u) => (u.mg ? fluxMaxOf(u) : Infinity));
 /** Rules 1.56 (the Mana Shock): it lasts while Strain is over the limit (MagicUnit.shock); asked wherever Strain falls
  * and at the turn's end (a limit that rose). */
 function shockEnds(cb: Combat, u: Unit): boolean {
@@ -1958,9 +1982,11 @@ export function syphon(cb: Combat, u: Unit): string | null {
 /** Crystallise (3 AP, the meter at 10+): the meter drops 10 and you make one standard core. */
 export function crystallise(cb: Combat, u: Unit): string | null {
   const m = u.mg; if (!m || !m.emanator) return NEEDS_EMANATOR;
-  const cap = price({ cb, u }, 'crystallise').ap; // items price it (hooks gap D8)
-  { const no = whyNot(cb, u, cap); if (no) return no; } if (manaOf(cb) < 10) return 'The air is too thin (mana ' + manaOf(cb) + ', needs 10).';
-  pay(cb, u, cap); m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); shiftMana(cb, -10); say(cb, u.name + ' crystallises a mana core from the air.');
+  // items price it (hooks gap D8); rules 1.77 item 6512: its draw on the air is on the price (the resource `mana`, held by
+  // the fight), so an item may make it free (Rite in the Field) and the one pay takes it through shiftMana
+  const cap = price({ cb, u }, 'crystallise', { ap: costOf('crystallise'), res: { mana: costOf('crystallise', 'mana') } });
+  { const no = whyNot(cb, u, cap); if (no) return no; }
+  pay(cb, u, cap); m.coresMade++; emitFx(cb, 'crystallise', { unit: u.id, at: u.pos, dur: 1400 }); say(cb, u.name + ' crystallises a mana core from the air.');
   return null;
 }
 /** Who a spell would affect, hit or miss (used to decide whether a spell on the story map starts a fight). */

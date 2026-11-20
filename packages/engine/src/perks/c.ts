@@ -123,50 +123,7 @@ register({
 
 // ---------- Long Dark (Ingenuity α; `sleight_of_hand`): data only since rules 1.56 (the plant: move-pool.md) ----------
 
-// ---------- Jury-Rig (Proficiency β) ----------
-// I: a broken weapon (durability 0) works one more time per breakage: one more shot, or one full-damage strike
-// ("One more time", the weapon's attack AP). Afterwards it is simply Broken again (repairable; plan 6b; PROVISIONAL).
-// The use comes back once the weapon is repaired. II: Field Repair at double strength on drones (vehicles don't exist
-// yet): "Patch the drone", 2 AP, Proficiency 3, one spare-parts charge, (10% + 5% per Proficiency above 3) × 2 of its
-// max HP (PROVISIONAL: the engine had no drone repair). Story: a broken device works once more when it counts (brief).
-const broken = (u: Unit) => !!u.maxDur && (u.dur ?? 1) <= 0;
-register({
-  id: 'jury_rig', claims: 'all',
-  actions: [
-    { id: 'one_more', label: 'One more time', scope: ['combat'], ap: (h) => (h.u ? attackApCost(WEAPON[h.u.weapon], isMelee(WEAPON[h.u.weapon]) ? 'melee' : 'shot') : 2), target: 'enemy',
-      text: 'Your broken weapon works one more time: one shot or one full-damage strike, at the attack\'s normal AP cost. Then it is broken again.',
-      available: (h) => (!h.u || !broken(h.u) ? false : cs(h.c).juryUsed || stateOf(h).juryUsed ? 'Already used on this broken weapon. Repair it first.' : true),
-      preview: (h, args) => {
-        const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId); if (!t) return {};
-        const keep = u.dur; u.dur = u.maxDur; try { const pv = previewAttack(cb, u, t, isMelee(WEAPON[u.weapon]) ? 'melee' : args.choice === 'aimed' ? 'aimed' : 'shot'); return pv.ok ? { ap: pv.ap, lines: ['One more ' + (isMelee(WEAPON[u.weapon]) ? 'strike' : 'shot') + ': ' + pv.pct + '% to hit.'] } : { ok: false, why: pv.why }; } finally { u.dur = keep; }
-      },
-      run: (h, args, rng) => {
-        const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId); if (!t) return 'Pick a target.';
-        const mode = isMelee(WEAPON[u.weapon]) ? 'melee' : args.choice === 'aimed' ? 'aimed' : 'shot';
-        u.dur = u.maxDur; // works as new, once
-        const pv = previewAttack(cb, u, t, mode, { free: true }); if (!pv.ok) { u.dur = 0; return pv.why!; }
-        say(cb, u.name + ' coaxes the broken ' + (WEAPON[u.weapon]?.name || 'weapon').toLowerCase() + ' into one more go (Jury-Rig).');
-        resolveAttack(cb, rng, u, t, mode, null, { free: true, noWear: true }); // the AP was the action's
-        u.dur = 0; if (h.c) charState(h.c).juryUsed = true; else stateOf(h).juryUsed = true;
-        checkOver(cb); return null;
-      } },
-    { id: 'repair_drone', label: 'Patch the drone', scope: ['combat', 'world'], ap: (h) => (h.u ? price({ cb: h.cb, u: h.u }, 'field_repair').ap : costOf('field_repair')), target: 'ally', range: 1,
-      text: 'Repair a drone next to you at double strength: it regains 20% of its max HP, plus 10% for each Improvisation point above 3. Uses one spare-parts charge. Needs Improvisation 3.',
-      available: (h) => { if (!tierII(h) || !h.u || !h.cb) return false; if (!h.cb.units.some((v) => v.companion === 'drone' && !v.dead && v.side === h.u!.side)) return false; return (h.u.proficiency || 0) < 3 ? 'Needs Improvisation 3.' : !(h.u.parts || 0) ? 'No spare parts.' : true; },
-      preview: (h, args) => { const t = unitById(h.cb!, args.targetId); return !t || t.companion !== 'drone' ? { ok: false, why: 'Pick a drone next to you.' } : t.hp >= t.maxHp ? { ok: false, why: 'Already in full repair.' } : {}; },
-      run: (h, args) => {
-        const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId)!; if (!t || t.companion !== 'drone') return 'Pick a drone.';
-        const n = Math.ceil(t.maxHp * (0.1 + 0.05 * ((u.proficiency || 3) - 3)) * 2 * statQuery({ u }, 'field_repair_amount').mult);
-        u.parts = (u.parts || 0) - 1; const r = healUnit(cb, t, n, u, 'repair'); emitFx(cb, 'repair', { unit: u.id, at: t.pos, dur: 1400 });
-        say(cb, u.name + ' patches ' + t.name + ' (Jury-Rig II): +' + r.restored + ' HP (' + t.hp + '/' + t.maxHp + ').'); return null;
-      } },
-  ],
-  on: {
-    combat_start: (ctx, h) => { if (h.u && !broken(h.u) && cs(h.c).juryUsed) delete charState(h.c).juryUsed; },
-    turn_start: (ctx, h) => { if (ctx.u === h.u && h.u && !broken(h.u)) { if (cs(h.c).juryUsed) delete charState(h.c).juryUsed; delete stateOf(h).juryUsed; } },
-  },
-  brief: () => 'story: a broken device works one more time when it counts (once per breakage)',
-});
+// ---------- Jury-Rig (Improvisation β): data only since rules 1.74 item 6042 (a Figment of yours destroyed: banked AP; II: charge) ----------
 
 // ---------- Hot-Swap (Proficiency β): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
@@ -296,7 +253,7 @@ register({
   on: {
     move_step: (ctx, h) => {
       const u = h.u, cb = h.cb, m: Unit = ctx.u; if (!u || !cb || overworld(cb) || !m || m.side === u.side || !alive(u) || !alive(m)) return;
-      if (condOn(u, 'silenced') || condOn(u, 'stunned') || !unitSees(cb, u, ctx.at || m.pos)) return;
+      if (condOn(u, 'silenced') || condOn(u, 'stunned') || !unitSees(cb, u, ctx.at || m.pos, undefined, m)) return;
       if (m.hidden && !sideSees(cb, u.side as 'pc' | 'foe', m)) return;
       const st = stateOf(h); if (st.r !== cb.round) { st.r = cb.round; st.ids = []; }
       if (st.ids.includes(m.id) || callMarks(m).spot) return;

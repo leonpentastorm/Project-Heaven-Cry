@@ -34,7 +34,7 @@ describe('step 10: the TEND tab and its groups (bonds-spec.md section 9)', () =>
     const mend = rows.find((d) => d.id.includes('verb:tend.mend#') || d.id.endsWith('verb:tend.mend'));
     expect(mend?.sub).toBe(subOf(TJ, 'tend.mend'));
     expect(rows.find((d) => d.id.includes('tend.bond'))?.sub).toBe(subOf(TJ, 'tend.bond'));
-    expect(rows.find((d) => d.id.includes('tend.settle'))?.sub).toBe(subOf(TJ, 'tend.settle'));
+    expect(rows.find((d) => d.id.includes('tend.shield'))?.sub).toBe(subOf(TJ, 'tend.shield')); // rules 1.75: Settle is Steady Hands's (a perk), Shield the door's from Empathy 5
     expect(rows.some((d) => d.id.includes('tend.threads'))).toBe(false);
   });
   it('without an Attuner in hand, a verb is refused in its data\'s words', () => {
@@ -51,8 +51,8 @@ describe('step 10: Shadow\'s groups (shadow-spec.md section 9)', () => {
     const rows = s.list().filter((d) => d.group === 'shadow');
     expect(rows.length).toBeGreaterThan(3);
     for (const d of rows) { const id = d.id.match(/verb:(shadow\.[a-z_]+)/)?.[1]; expect(d.sub).toBe(subOf(SJ, id)); }
-    const fade = rows.find((d) => d.id.includes('shadow.read_intent'));
-    expect(fade.why).toBe(grantOf(SJ, 'shadow.read_intent').why.self_has); // not Hidden yet: the spec's words
+    const tag = rows.find((d) => d.id.includes('shadow.tag')); // rules 1.74 item 6009: Read Intent is a Vigilance perk now; Tag needs Hidden too
+    expect(tag.why).toBe(grantOf(SJ, 'shadow.tag').why.self_has); // not Hidden yet: the spec's words
     for (const d of rows) expect(d.text).not.toMatch(/\{=/); // the hover card's text has its numbers filled (datatext.ts)
   });
 });
@@ -67,7 +67,8 @@ describe('step 10: the Chaplain\'s prayers on the Faith tab (chaplain-spec.md se
     expect(ward.group).toBe('faith'); expect(sanct.group).toBe('faith');
     expect(ward.sub).toBe(whisper.sub); expect(sanct.sub).toBe(hymn.sub);
     expect(whisper.sub).not.toBe(hymn.sub);
-    expect(rows.filter((d) => d.id.includes('class:guardian') && !d.id.includes('ward') && !d.id.includes('sanctuary')).every((d) => d.group === 'class')).toBe(true); // not a prayer: a class move
+    const hallow = rows.find((d) => d.id.includes('guardian.hallow')); expect(hallow.group).toBe('faith'); expect(hallow.sub).toBe(hymn.sub); // rules 1.78 item 6607: a Hymn of its own
+    expect(rows.filter((d) => d.id.includes('class:guardian') && !d.id.includes('ward') && !d.id.includes('sanctuary') && !d.id.includes('hallow')).every((d) => d.group === 'class')).toBe(true); // not a prayer: a class move
   });
 });
 

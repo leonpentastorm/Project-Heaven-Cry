@@ -2,7 +2,7 @@
 //  · the tools' new Perks and Traits sections (sandbox/perk, sandbox/trait) give the Recruit Breaching Strike and Used
 //    to the Pain; the PERKS tab shows Breaching Strike; it hits a drill unit, knocks it back a tile, and the log says so;
 //  · a class from the tools (Fighter): the CLASS tab carries the emblem, the You card too, and Lunge (a class move) runs;
-//  · a passive: Used to the Pain's AP line in the fight log after a drill unit's hit;
+//  · a passive: Grim Reaper's line in the fight log after a Shaken drill unit's hit (rules 1.73: Used to the Pain is removed);
 //  · weapon-granted actions: the gun shows its reload (Swap magazine…), the sabre shows none;
 //  · the level-up screen's class panel (emblem, rank, the class attribute's progress, moves by rank);
 //  · a story check in a room with the scripted Narrator: a trait's +1 is named in the dice table's roll math.
@@ -76,7 +76,8 @@ await snap(p, '01-tools');
 await act({ type: 'sandbox/perk', charId: cid, perk: 'no_such_perk' });
 const toast = await p.evaluate(() => { const t = window.__phc.getState().toast; return t ? (t.text || String(t)) : ''; });
 ok('a perk that does not exist is refused: ' + toast, /No such perk/.test(toast));
-await act({ type: 'sandbox/perk', charId: cid, perk: 'used_to_the_pain', tier: 'I' });
+await act({ type: 'sandbox/perk', charId: cid, perk: 'grim_reaper', tier: 'I' }); await act({ type: 'sandbox/perk', charId: cid, perk: 'marrow_talk', tier: 'II' });
+await act({ type: 'sandbox/skill', charId: cid, skill: 'intimidation', points: 5 });
 await act({ type: 'sandbox/perk', charId: cid, perk: 'fire_sermon' }); // (0.29: Litany is a passive Hymn discount now; Fire Sermon's Preach is the 2 AP perk action)
 await act({ type: 'sandbox/class', charId: cid, classId: 'fighter', rank: 1 });
 await act({ type: 'sandbox/ai', on: false });
@@ -153,7 +154,7 @@ if (foe) {
 ok('Lunge (class move) spent its Momentum and struck', lunged);
 await snap(p, '04-lunge');
 
-// ---------- 5. A passive: Used to the Pain after a drill unit's hit ----------
+// ---------- 5. A passive: Grim Reaper after a Shaken drill unit's hit (rules 1.73 item 5817) ----------
 // Physical 2.0: a melee fighter answers misses (Riposte), so a lone drill unit can fall before it lands a hit and the
 // wave ends. A champion next to the Recruit lasts the six rounds and hits.
 { const gg = await G(), m = gg.combat.units.find((u) => u.side === 'pc'), [mx, my] = xy(m.pos);
@@ -165,16 +166,18 @@ let pain = false;
 for (let i = 0; i < 6 && !pain; i++) {
   if ((await G()).combat.over) break;
   await dismissCut();
+  { const gg = await G(), u = gg.combat.units.find((x) => x.side === 'pc'), b = gg.combat.units.find((x) => x.side === 'foe' && !x.dead && !(x.conds || {}).shaken);
+    if (u && b && gg.combat.order[gg.combat.turn] === u.id) { await act({ type: 'combat/call', unitId: u.id, id: 'call.threaten', targetId: b.id }); await settle(p, 300); } } // Threaten: Marrow Talk II shakes it even on a save
   await p.getByRole('button', { name: 'End turn', exact: true }).click().catch(() => {});
   await p.waitForFunction(() => { const cb = window.__phc.getState().game.combat; const u = cb.units.find((x) => x.id === cb.order[cb.turn]); return cb.over || (u && u.side === 'pc'); }, null, { timeout: 20000 }).catch(() => {});
   await settle(p, 400);
-  pain = /Used to the Pain/.test(await log());
+  pain = /Grim Reaper/.test(await log());
   if (!pain) { const u = await me(); if (u.hp < u.maxHp * 0.5) await act({ type: 'sandbox/refill', charId: cid }); }
 }
-const painLine = (await log()).split('\n').filter((l) => /Used to the Pain/.test(l)).slice(-1)[0] || '';
-ok('Used to the Pain shows in the log: ' + painLine, pain);
+const painLine = (await log()).split('\n').filter((l) => /Grim Reaper/.test(l)).slice(-1)[0] || '';
+ok('Grim Reaper shows in the log: ' + painLine, pain);
 await act({ type: 'sandbox/ai', on: false });
-await snap(p, '05-used-to-the-pain');
+await snap(p, '05-grim-reaper');
 
 // ---------- 6. The level-up screen's class panel ----------
 await act({ type: 'sandbox/stop' }).catch(() => {});

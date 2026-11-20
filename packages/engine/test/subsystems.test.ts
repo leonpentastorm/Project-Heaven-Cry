@@ -7,7 +7,7 @@ import './helpers/yard16'; // the 16 × 11 practice square these tests name tile
 import {
   applyCond, condOn, condSource, condTurnEnd, unitSave, previewAttack, resolveAttack, attackDamage, stackDamage, moveUnit, endTurn, beginTurn, active, checkOver,
   hideAction, hide, spotHidden, canReact, maxReactions, react, trySurrender, parley, throwItem, applyDamage, register, holderOf, statQuery,
-  WEAPON, d20, validateSheet, newCharacter, enemyTurn, weaponActions, COMPANION_KINDS, type Unit, type Combat, type Character,
+  WEAPON, SKILL, d20, validateSheet, newCharacter, enemyTurn, weaponActions, COMPANION_KINDS, type Unit, type Combat, type Character,
 } from '../src';
 import { fightWith, storyWith, withGame, onlyHandlers, rng, sheetOf } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
@@ -83,13 +83,15 @@ describe('the damage chain (spec: Attacks, damage and armour; rules 1.3)', () =>
       expect(d.armour).toBe(20); expect(d.mults.some((m) => m.v === 1.3)).toBe(true);
     });
   });
-  it('Elemental damage taken: −10% per Pain Threshold point; a non-lethal blow subdues a foe', () => {
+  it('Elemental damage taken: −6% per Pain Threshold point (rules 1.70 item 5540); a non-lethal blow subdues a foe', () => {
+    const per = (SKILL as any).pain_threshold.per_point.numbers.elemental_taken;
+    expect(per).toBeCloseTo(0.06);
     const f = fightWith([{ skills: { pain_threshold: 4 } }], [{ at: 'F6' }]);
     const pc = f.pc, foe = f.foe;
-    expect(pc.elemTaken).toBeCloseTo(0.4);
+    expect(pc.elemTaken).toBeCloseTo(4 * per);
     withGame(f.g, () => {
       const hp = pc.hp; applyDamage(f.cb, pc, 50, { type: 'elemental', dmgType: 'elemental', by: foe });
-      expect(hp - pc.hp).toBe(30);
+      expect(hp - pc.hp).toBe(Math.round(50 * (1 - 4 * per)));
       applyDamage(f.cb, foe, 999, { type: 'weapon', by: pc, nonlethal: true });
       expect(foe.dead).toBe(false); expect(foe.surrendered).toBe(true);
     });

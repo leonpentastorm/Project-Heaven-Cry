@@ -13,8 +13,9 @@
 // waiting: one click takes it), locked (until the next step), and the Mastered perk. Every number is the engine's
 // (canRaise, pendingPerkSteps, the character's perks); one click is one engine action, as before.
 import { DCLogic } from '../dc/runtime';
-import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, epRgba, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, perkRow } from './shared';
-import { CLASS, PERKS, attrCapAt, attrCapLevel, canRaise, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, ADVANCED_SHELVED, doorForkView } from '@engine';
+import { D, ATTR, SK, IMG, epccgVals, lightboxVals, zoomer, epBtnStyle, epRgba, ensureStyle, checkMod, ATTR_GIVES, SLOT_WORD, SLOT_ORDER, roadMap, nextLine, ceilingLine, perkRow, perkNameOf } from './shared';
+import { iconOr } from '../game/markIcon';
+import { CLASS, PERKS, attrCapAt, attrCapLevel, canRaise, raiseNeed, canRevertLevelUp, legendRoom, classRank, eligibleClasses, maxHp, pendingPerkSteps, SKILL, ADVANCED_SHELVED, doorForkView, allPendingDoorPicks, pendingRepicks, PERK as ENGINE_PERK } from '@engine';
 import { act, getState, go, homeScreen } from '../game/store';
 import { emblemOf, classRanks, attributeProgress, closestClasses, classCard, advancedLive, ROMAN_RANK } from '../game/classView';
 import { figmentLadderView } from '@engine';
@@ -26,7 +27,6 @@ import { foldVals } from '../game/fold';
 const ACQUIRED = {};
 for (const p of PERKS) { const sk = p.skills && p.skills[0]; if (sk && p.tier === 'acquired') (ACQUIRED[sk] ||= []).push(p); }
 /** The engine's refusal, with the attribute's name ("Needs agility 5" → "Needs Agility 5"). */
-const nice = (why) => (why ? why.replace(/Needs (\w+) (\d+)/, (m, a, n) => 'Needs ' + (ATTR[a] ? ATTR[a].name : a) + ' ' + n) : '');
 const LOCKED = '#7F8BA1';
 /** Rules 1.34, 0.28.2: the Figments door's card (the skill figments.json visualizer.door names) says what its points
  *  open (the engine's ladder view): "New" with the forms' icons when these points reached a step, else the next step,
@@ -36,8 +36,9 @@ export function figLevelUp(skillId, p) {
   const just = L.latest && L.latest.points === p ? L.latest : null, nx = L.next;
   const look = (st, ink) => st.forms.map((f) => ({ key: f.id, name: f.name, icon: figmentIconUri(f.icon, ink), title: f.name + ': ' + f.text }));
   if (!just && !nx) return { has: false, forms: [] };
-  const st = just || nx, shown = [...st.forms, ...(st.choose ? st.choose.of : [])]; // rules 1.56: a fork's forms too
-  return { has: true, state: just ? 'new' : 'next', head: just ? 'NEW · FIGMENTS AT VISUALIZATION ' + p + (st.forms.length ? ': ' + st.forms.map((f) => f.name).join(', ') : '') : 'LOCKED · FIGMENTS AT VISUALIZATION ' + nx.points,
+  // rules 1.70 item 5541: a ladder step opens no form (forms are learned: the door figment_forms' choice, in TO CHOOSE)
+  const st = just || nx, shown = [];
+  return { has: true, state: just ? 'new' : 'next', head: just ? 'NEW · FIGMENTS AT VISUALIZATION ' + p : 'LOCKED · FIGMENTS AT VISUALIZATION ' + nx.points,
     headInk: just ? '#FFFFFF' : '#A3AEC2', forms: look({ forms: shown }, just ? FIG_LINE : '#7F8BA1'), hasForms: shown.length > 0, text: st.text,
     hasNext: !!(just && nx), next: just && nx ? 'Next, at Visualization ' + nx.points + ': ' + nx.text : '',
     style: 'display: flex; flex-direction: column; gap: 4px; padding: 6px 8px; border-radius: 8px; ' + (just ? 'border: 1px solid ' + FIG_LINE + '; background: rgba(83, 148, 172, 0.18)' : 'border: 1px dashed #2E3A50') };
@@ -132,11 +133,12 @@ export class LevelUpLogic extends DCLogic {
       const p = c.skills[s.id] || 0, a = ATTR[s.attr], ink = a.ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], fp = forkPend(s.id);
       const nxt = nextLine(s.id, p, c), [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
       // a refused +1: its reason on this row only, with a way to fix it when an Attribute point would ("Raise Agility")
-      const needAttr = !!why && /^Needs \w+ \d+/.test(why) && !!c.unspent.attr && !canRaise(c, 'attr', a.id);
+      // the need is the engine's structure (raiseNeed, rules 1.71 item 5606), never its sentence read back
+      const needAttr = !!raiseNeed(c, 'skill', s.id) && !!c.unspent.attr && !canRaise(c, 'attr', a.id);
       const waits = (x ? x.free || 1 : 0) + fp.length, fl = this.state.flash && this.state.flash.id === s.id ? this.state.flash.text : '';
       return { key: s.id, img: s.img, name: s.name, pts: p, tag, tagTitle: slotWords, mod: (checkMod(s.id, p) >= 0 ? '+' : '') + checkMod(s.id, p),
         cls: 'phc-lu-skill' + (x ? ' phc-lu-step' : '') + (fp.length ? ' phc-lu-forkwait' : ''), help: () => this.setState({ epccg: s.id }), helpStyle: epBtnStyle(ink),
-        canRaise: !!c.unspent.skill, blocked: !!why, why: nice(why), hasWhy: !!(why && c.unspent.skill && p < 10), raiseLabel: 'Raise ' + s.name,
+        canRaise: !!c.unspent.skill, blocked: !!why, why: needAttr ? '' : (why || ''), hasWhy: !!(why && c.unspent.skill && p < 10), raiseLabel: 'Raise ' + s.name, // the reason once: the Raise <Attribute> button, or the line
         raise: () => { const gain = nextLine(s.id, c.skills[s.id] || 0, c); act({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: s.id }); this.flash(s.id, gain); }, raiseStyle: raiseStyle(!why, ink, true),
         hasFix: needAttr, fixLabel: 'Raise ' + a.name, fix: () => act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }),
         fixStyle: 'flex: none; min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; border: 1px solid ' + a.ink + '; background: transparent; color: ' + a.ink,
@@ -164,7 +166,7 @@ export class LevelUpLogic extends DCLogic {
           return { key: a.id, name: a.name.toUpperCase(), val: v, cap: 'Skills up to ' + v,
             next: v >= 10 ? 'Top' : ATTR_GIVES[a.id],
             open: () => this.setState({ epccg: null, attrPage: a.id }), openLabel: a.name + ': what it gives', openStyle: 'padding: 0; border: 0; background: none; font-family: inherit; cursor: pointer; text-decoration: underline dotted; text-underline-offset: 3px; font-size: var(--fs-body); font-weight: 700; letter-spacing: 0.1em; color: ' + a.ink,
-            canRaise: !!c.unspent.attr, blocked: !!aw, why: nice(aw), hasWhy: !!(aw && c.unspent.attr && v < 10), raise: () => { act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }); this.flash('attr:' + a.id, ATTR_GIVES[a.id]); }, raiseStyle: raiseStyle(!aw, a.ink, true), raiseLabel: 'Raise ' + a.name,
+            canRaise: !!c.unspent.attr, blocked: !!aw, why: aw || '', hasWhy: !!(aw && c.unspent.attr && v < 10), raise: () => { act({ type: 'levelup/raise', charId: c.id, kind: 'attr', id: a.id }); this.flash('attr:' + a.id, ATTR_GIVES[a.id]); }, raiseStyle: raiseStyle(!aw, a.ink, true), raiseLabel: 'Raise ' + a.name,
             hasFlash: !!(this.state.flash && this.state.flash.id === 'attr:' + a.id), flash: this.state.flash && this.state.flash.id === 'attr:' + a.id ? this.state.flash.text : '',
             valStyle: 'font-size: 22px; font-weight: 700; line-height: 1; min-width: 26px; text-align: center; color: ' + a.ink,
             skills: D.skills.filter((sk) => sk.attr === a.id).sort((x, y) => SLOT_ORDER[x.slot] - SLOT_ORDER[y.slot]).map(skillRow) }; }) };
@@ -206,6 +208,10 @@ export class LevelUpLogic extends DCLogic {
     const queue = [
       ...(choosing ? [{ key: 'class', kind: 'class', text: 'Class' }] : []),
       ...D.skills.flatMap((s) => forkPend(s.id).map((f) => ({ key: 'fork:' + s.id + ':' + f.at, kind: 'fork', skill: s.id, at: f.at, text: 'Fork · ' + s.name }))),
+      // rules 1.70 item 5541: a door's choice that is no fork step (Figment forms known: figment_forms), one chip a door
+      ...allPendingDoorPicks(c).filter((pd) => !String(pd.grant).startsWith('fork:')).map((pd) => ({ key: 'door:' + pd.door + ':' + pd.grant, kind: 'door', door: pd.door, pd, text: (pd.left > 1 ? pd.left + ' choices' : 'Choice') + ' · ' + (pd.name || pd.door) })), // the door's own name, from the pending pick (m5)
+      // rules 1.70 item 5538: an old save's free re-pick of a skill's perk steps
+      ...pendingRepicks(c).map((x) => ({ key: 'repick:' + x.skill, kind: 'repick', skill: x.skill, held: x.held, text: 'Re-pick · ' + nameOf(x.skill) })),
       ...pendingPerkSteps(c).map((x) => ({ key: 'perk:' + x.skill, kind: 'perk', skill: x.skill, text: (x.free > 1 ? x.free + ' perk steps' : 'Perk step') + ' · ' + nameOf(x.skill) })),
     ];
     if (this.state.chooser && !queue.some((q) => q.key === this.state.chooser)) queueMicrotask(() => this.setState({ chooser: null, armPerk: null }));
@@ -221,8 +227,8 @@ export class LevelUpLogic extends DCLogic {
     this.tcFit(queue.length);
     const after = cur ? queue.find((q) => q.key !== cur.key) : null;
     const chBtn = 'min-height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer';
-    const ch = { open: !!cur, kind: cur ? cur.kind : '', isPerk: !!cur && cur.kind === 'perk', isFork: !!cur && cur.kind === 'fork', isClass: !!cur && cur.kind === 'class',
-      title: !cur ? '' : cur.kind === 'class' ? 'Your class has found you' : cur.kind === 'fork' ? 'Fork at ' + cur.at + ' · ' + nameOf(cur.skill) : 'Perk step · ' + nameOf(cur.skill),
+    const ch = { open: !!cur, kind: cur ? cur.kind : '', isPerk: !!cur && cur.kind === 'perk', isFork: !!cur && ['fork', 'door', 'repick'].includes(cur.kind), isClass: !!cur && cur.kind === 'class',
+      title: !cur ? '' : cur.kind === 'class' ? 'Your class has found you' : cur.kind === 'fork' ? 'Fork at ' + cur.at + ' · ' + nameOf(cur.skill) : cur.kind === 'door' ? cur.pd.why : cur.kind === 'repick' ? 'Re-pick · ' + nameOf(cur.skill) : 'Perk step · ' + nameOf(cur.skill),
       hasNext: !!after, next: () => (after ? openCh(after.key) : null), close: () => this.setState({ chooser: null, armPerk: null }), btnStyle: chBtn,
       perks: [], armed: false, confirmText: '', confirm: () => {}, back: () => this.setState({ armPerk: null }), forkOpts: [],
       okStyle: 'min-height: 36px; padding: 0 16px; border-radius: 10px; border: 0; background: #FFFFFF; color: #0A0D13; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer' };
@@ -231,12 +237,27 @@ export class LevelUpLogic extends DCLogic {
       const x = pend[cur.skill], ink = ATTR[SK[cur.skill].attr].ink, armed = this.state.armPerk;
       ch.perks = (ACQUIRED[cur.skill] || []).map((pk) => { const h = held(pk.id), legal = x && x.choices.find((y) => y.id === pk.id);
         return perkRow(pk.id, { held: h ? h.tier : '', ink, on: armed === pk.id, why: legal ? '' : h && h.tier === 'II' ? 'Tier II' : 'Not now',
-          act: legal ? { label: legal.tier === 'I' ? 'Take' : 'Upgrade', aria: (legal.tier === 'I' ? 'Take ' : 'Upgrade ') + pk.name, click: () => this.setState({ armPerk: pk.id }) } : null }); });
+          // rules 1.70 item 5538: a re-pick marks what the save held ('Take again')
+          act: legal ? { label: (legal.tier === 'I' ? 'Take' : 'Upgrade') + (((c.perkPreselect || {})[cur.skill] || []).some((q) => q.id === pk.id) ? ' again' : ''), aria: (legal.tier === 'I' ? 'Take ' : 'Upgrade ') + pk.name, click: () => this.setState({ armPerk: pk.id }) } : null }); });
       const a = armed && x && x.choices.find((y) => y.id === armed), pk = a ? PERKS.find((q) => q.id === armed) : null;
       if (a && pk) { ch.armed = true; ch.confirmText = (a.tier === 'I' ? 'Take ' + pk.name : 'Upgrade ' + pk.name + ' to II') + '? Kept for good.';
         ch.confirm = () => { act({ type: 'levelup/perk', charId: c.id, perkId: pk.id }); this.setState({ armPerk: null }); }; }
     }
-    if (ch.isFork) {
+    if (ch.isFork && cur.kind === 'door') {
+      // a door's choice (Figment forms known): its options as cards, Choose sends door/pick (the engine's verdict)
+      ch.forkOpts = cur.pd.options.map((o) => ({ key: o.id, name: o.label, text: o.text || '', icon: figmentIconUri(o.icon, FIG_LINE), cost: '', hasCost: false, canPick: true, label: 'Choose', btnStyle: chBtn,
+        pick: () => act({ type: 'door/pick', charId: c.id, door: cur.door, option: o.id }) }));
+    } else if (ch.isFork && cur.kind === 'repick') {
+      // rules 1.70 item 5538: keep what the save holds now, or choose the skill's perk steps again (the old ones marked)
+      const names = cur.held.map((h) => perkNameOf(h.id) + ' ' + h.tier).join(', ') || 'none';
+      // 0.32 B12: never an empty picture: the first perk held (its art or its mark), and the skill's own portrait
+      const keepIcon = cur.held.length ? perkRow(cur.held[0].id, { ink: ATTR[SK[cur.skill].attr].ink }).icon : iconOr(SK[cur.skill].img, nameOf(cur.skill), ATTR[SK[cur.skill].attr].ink);
+      const againIcon = iconOr(SK[cur.skill].img, nameOf(cur.skill), ATTR[SK[cur.skill].attr].ink);
+      ch.forkOpts = [
+        { key: 'keep', name: 'Keep', text: 'Keep these perks: ' + names + '.', icon: keepIcon, cost: '', hasCost: false, canPick: true, label: 'Keep', btnStyle: chBtn, pick: () => act({ type: 'levelup/perk-repick', charId: c.id, skill: cur.skill, keep: true }) },
+        { key: 'again', name: 'Choose again', text: 'Give these perk steps back and choose them again (what you hold now is marked).', icon: againIcon, cost: '', hasCost: false, canPick: true, label: 'Choose again', btnStyle: chBtn, pick: () => act({ type: 'levelup/perk-repick', charId: c.id, skill: cur.skill }) },
+      ];
+    } else if (ch.isFork) {
       // two columns: icon, name, the one line, the cost line if any, Choose (the fork view arms, then confirms)
       const fk = forkCard(c, cur.skill, { inFight, only: [cur.at], rerender: () => this.setState({ forkArm: Date.now() }) });
       ch.forkOpts = fk && fk.steps[0] ? fk.steps[0].opts.map((o) => ({ ...o, cost: '', hasCost: false })) : [];
@@ -256,7 +277,7 @@ export class LevelUpLogic extends DCLogic {
       tcHasMore: more > 0, tcMoreText: '+' + more + ' more', tcMoreAria: more + ' more to choose: open the next', tcMoreOpen: () => (queue[shown] ? openCh(queue[shown].key) : null),
       tcMoreStyle: 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px dashed #FFFFFF; background: transparent; color: #FFFFFF',
       ceil: 'Attributes: ' + ceil + (cap < 10 ? ' (' + [8, 9, 10].filter((n) => n > cap).map((n) => n + ' from level ' + attrCapLevel(n)).join(', ') + ')' : '') + (cap < 10 && legendRoom(c) > 0 ? ' · your Legendary Deed lets one Attribute go 1 above it' : ''),
-      rules: "A skill can't be higher than the attribute above it, and an attribute can't pass the ceiling for your level; 10 is the top. At 3, 5, 7 and 9 points in a skill: one perk step. Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Unspent points keep.",
+      rules: "A skill can't be higher than the attribute above it, and an attribute can't pass the ceiling for your level; 10 is the top. At each perk step of a skill (its ladder shows where): one perk step. Odd levels: +2 Skill points. Even levels: +1 Skill point and +1 Attribute point. Unspent points keep.",
       // Take back what this visit spent (points and perk steps), until a fight or a class settles it.
       canRevert: !canRevertLevelUp(g, c), revert: () => act({ type: 'levelup/revert', charId: c.id }),
       revertStyle: 'min-height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #A3AEC2; background: transparent; color: #E7EBF3; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer',

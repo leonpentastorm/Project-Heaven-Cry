@@ -76,9 +76,11 @@ describe('row 3: Evoke never arms yourself with a Line that would only hit you',
 });
 
 import { actionsFor } from '../src';
-describe('row 4: Second Wind (Durability 5) is on the combat bar and heals', () => {
-  it('a Durability 5 tank has Second Wind; it heals a quarter of max HP through the reducer, once a fight; the boon of the same name is apart', () => {
-    const f = fightWith([{ skills: { durability: 5 } } as any], [{ at: 'O10' }]); const u = f.turn(f.pc);
+describe('row 4: Second Wind (a Pain Threshold perk since rules 1.73 item 5829) is on the combat bar and heals', () => {
+  it('a tank with Second Wind has it on the bar; it heals a quarter of max HP through the reducer, once a fight; the boon of the same name is apart; Durability 5 alone gives none', () => {
+    const none = fightWith([{ skills: { durability: 5 } } as any], [{ at: 'O10' }]); const n0 = none.turn(none.pc);
+    expect(withGame(none.g, () => actionsFor(none.g, n0.id, 'host')).some((x) => x.name === 'Second Wind')).toBe(false);
+    const f = fightWith([{ skills: { durability: 5, pain_threshold: 3 }, perks: { second_wind: 'I' } } as any], [{ at: 'O10' }]); const u = f.turn(f.pc);
     const ds = withGame(f.g, () => actionsFor(f.g, u.id, 'host'));
     const d = ds.find((x) => x.name === 'Second Wind')!;
     expect(d).toBeTruthy(); expect(d.available).toBe(true); expect(d.id).not.toMatch(/boon/);
@@ -97,7 +99,7 @@ import { physFight, rig } from './helpers/physfight';
 describe('row 5: Parry while holding Guard', () => {
   /** A Durability 7 tank (Dexterity 1) with Parry, a maul-wielding Soldier next to it; the foe's blow through resolveAttack. */
   function fight(answers?: string[], attack?: number) {
-    const f = physFight([{ weapon: 'hand_wraps', known: ['parry'], skills: { durability: 7, dexterity: 1, athletics: 0, raw_power: 0 } }], [{ tier: 'soldier', weapon: 'maul' }]);
+    const f = physFight([{ weapon: 'hand_wraps', known: ['parry'], skills: { durability: 7, dexterity: 1, athletics: 0, raw_power: 0 }, classId: 'defender', level: 6, attrs: { endurance: 5 } } as any], [{ tier: 'soldier', weapon: 'maul' }]); // rules 1.73 item 5836: Retort is the Bulwark's rank II
     f.cb.objects = []; f.put(f.pcs[0], 'C5'); const a = f.cb.units.find((u) => u.side === 'foe')!; f.put(a, 'D5'); a.hp = a.maxHp = 900; if (attack != null) a.attack = attack;
     const t = f.unit(f.pcs[0].id); t.hp = t.maxHp; t.armour = 0; t.res!.guard = 3;
     if (answers) (f.char(f.pcs[0]) as any).phys.answers = answers;
@@ -155,10 +157,12 @@ describe('row 7: the Break toggle is never shown on when it can\'t be used', () 
 });
 
 import { chooseNode, upTurn } from './helpers/survival';
+import { FIG_DOOR } from '../src';
 describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s blast is in the log', () => {
   it('in a Survival fight a Volatile Figment pictured through the reducer is destroyed by a foe and bursts: logged, and the run\'s kept tally credits the owner', () => {
     let g: any = startRun(survivalRoom('PHC-R8', [{ build: 'plain_gun', level: 1 }], { test: true }), 'PHC-R8');
     const c = g.characters.c1; c.skills.visualization = 5; c.weapon = 'service_pistol'; c.offHand = { id: 'visualizer' };
+    c.doorPicks = { ...(c.doorPicks || {}), [FIG_DOOR]: ['double'] }; // rules 1.70 item 5541: the form is learned at figment_forms
     c.pack = [...(c.pack || []), { id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: 3, kind: 'ammo' }];
     g = apply(g, { type: 'figments/design', charId: 'c1', design: { id: 'v', name: 'Bomb', form: 'double', traits: ['volatile'] } } as any, 'host');
     g = apply(g, { type: 'run/move', node: chooseNode(g, ['fight'])!.id } as any, 'host');

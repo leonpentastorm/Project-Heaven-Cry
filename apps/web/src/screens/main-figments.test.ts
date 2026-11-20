@@ -3,7 +3,7 @@
 // summon". Everything shown comes from the engine's views (figmentLadderView, figmentDesignView); the editor sends the
 // real figments/design action through the store, and the engine's refusals are what the screen says.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, FORM, FIG, figmentLadderView, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, FORM, FIG, FIG_DOOR, figmentLadderView, figmentDesignView, formsKnown, type GameState, type Sheet } from '@engine';
 
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, location: { search: '', hash: '' }, innerWidth: 1400, innerHeight: 900 });
 vi.stubGlobal('location', { search: '', hash: '' });
@@ -52,25 +52,34 @@ describe('figment line icons (figmentIcons.ts)', () => {
 
 describe('the FIGMENTS section on the MAGIC tab', () => {
   it('no Visualization, no designs: not shown', () => { const { L } = story(0); expect(fig(L).show).toBe(false); });
-  it('the ladder: every step, open or locked with its Visualization; NEW names the forms just opened with their icons; the next is shown locked', () => {
-    const at = F.ladder.find((r: any) => (r.forms || []).length > 1).points;
+  it('the ladder: every step, open or locked with its Visualization; NEW is the step just reached, in its own words (no forms: rules 1.70 learns them); the next is shown locked', () => {
+    const at = F.ladder.find((r: any) => (r.designs || 0) > 0).points;
     const { L } = story(at); const v = fig(L), lv = figmentLadderView(at);
     expect(v.show).toBe(true);
     expect(v.steps.map((s: any) => s.state)).toEqual(lv.steps.map((s) => (s.latest ? 'NEW' : s.open ? '✓ OPEN' : 'LOCKED')));
     expect(v.steps.map((s: any) => s.at)).toEqual(F.ladder.map((r: any) => 'VISUALIZATION ' + r.points));
-    expect(v.newHead).toBe('NEW · VISUALIZATION ' + at); expect(v.newForms.map((f: any) => f.name)).toEqual(lv.latest!.forms.map((f) => f.name));
-    expect(v.newLine).toBe('New: ' + lv.latest!.forms.map((f) => f.name).join(', '));
-    for (const f of v.newForms) expect(f.icon).toMatch(/^data:image\/svg/);
+    expect(v.steps.map((s: any) => s.text)).toEqual(F.ladder.map((r: any) => r.text));
+    // rules 1.70 item 5541: a ladder step opens no form; the forms are learned at the door figment_forms
+    for (const st of lv.steps) expect(Object.keys(st)).not.toContain('forms');
+    for (const s of v.steps) { expect(s.forms).toEqual([]); expect(s.hasForms).toBe(false); }
+    expect(v.newHead).toBe('NEW · VISUALIZATION ' + at); expect(v.newForms).toEqual([]); expect(v.hasNewForms).toBe(false);
+    expect(v.newText).toBe(lv.latest!.text); expect(v.newLine).toBe('New: ' + lv.latest!.text);
     expect(v.nextHead).toBe('NEXT · VISUALIZATION ' + lv.next!.points); expect(v.nextText).toBe(lv.next!.text);
+    // the forms known at these points: the engine's count, all of them still to choose
+    expect(lv.known.n).toBe(formsKnown({ skills: { visualization: at } } as any)); expect(lv.known.chosen).toEqual([]);
+    expect(v.hasChoose).toBe(true); expect(v.choose[0].head).toContain(lv.known.n + ' forms known');
   });
   it('the design editor: pick a form and a trait from the view, name it, keep it (figments/design); then edit and drop it', () => {
     const at = F.ladder.find((r: any) => (r.designs || 0) > 0).points;
     const { id, L } = story(at);
-    let v = fig(L); expect(v.canNew).toBe(true); expect(v.noDesigns).toBe(true);
+    // rules 1.70 item 5541: no form is open before one is learned; learn one through the chooser first
+    let v = fig(L); expect(v.canNew).toBe(false);
+    v.choose[0].opts[v.choose[0].opts.length - 1].pick(); expect((G.characters[id] as any).doorPicks[FIG_DOOR]).toHaveLength(1);
+    v = fig(L); expect(v.canNew).toBe(true); expect(v.noDesigns).toBe(true);
     v.newDesign(); v = fig(L); expect(v.ed.open).toBe(true);
     // locked forms are greyed with the engine's words; an open one is picked
     const locked = v.ed.forms.find((f: any) => f.off), open = v.ed.forms.filter((f: any) => !f.off);
-    expect(locked.title).toMatch(/Visualization|chosen forms/); locked.pick(); expect(toasts.pop()).toBe(locked.title); // the engine's words (formWhy)
+    expect(locked.title).toMatch(/Visualization|forms you know/); locked.pick(); expect(toasts.pop()).toBe(locked.title); // the engine's words (formWhy)
     open[open.length - 1].pick(); v = fig(L); const form = open[open.length - 1].key; expect(v.ed.forms.find((f: any) => f.key === form).pressed).toBe('true');
     expect(v.ed.verdict).toBe('Name the design.'); expect(v.ed.cantSave).toBe(true);
     v.ed.onName({ target: { value: 'Lookout' } }); v = fig(L);
@@ -89,14 +98,27 @@ describe('the FIGMENTS section on the MAGIC tab', () => {
     expect(G.characters[id].figments!.map((d) => d.name)).toEqual(['Watcher']);
     fig(L).designs[0].drop(); expect(G.characters[id].figments).toEqual([]);
   });
-  it('rules 1.56, the forks: a choice the ladder opened is a row of chips; a click sends door/pick and the form is open', () => {
-    const fork = F.ladder.find((r: any) => r.fork);
-    const { id, L } = story(fork.points); let v = fig(L);
-    expect(v.hasChoose).toBe(true); expect(v.choose[0].opts.map((o: any) => o.key)).toEqual(fork.fork.of);
+  it('rules 1.70 item 5541, the forms known: a row of chips, every form; a click sends door/pick at figment_forms and the form is open; none past the count', () => {
+    const at = F.forms_known.from;
+    const { id, L } = story(at); let v = fig(L);
+    const n = figmentLadderView(at).known.n;
+    expect(n).toBe(formsKnown({ skills: { visualization: at } } as any)); expect(n).toBeGreaterThan(1);
+    expect(v.hasChoose).toBe(true); expect(v.choose[0].opts.map((o: any) => o.key)).toEqual(F.forms.map((f: any) => f.id));
     for (const o of v.choose[0].opts) expect(o.icon).toMatch(/^data:image\/svg/);
-    v.choose[0].opts[0].pick(); expect((G.characters[id] as any).doorPicks.visualization).toEqual([fork.fork.of[0]]);
-    v = fig(L); expect(v.hasChoose).toBe(false);
-    expect(v.steps.find((s: any) => s.key === 'v' + fork.points).forms.map((f: any) => f.name)).toContain(FORM[fork.fork.of[0]].name + ' ✓');
+    const chosen: string[] = [];
+    for (let i = 0; i < n; i++) {
+      expect(v.hasChoose, 'pick ' + (i + 1)).toBe(true);
+      const o = v.choose[0].opts[0]; chosen.push(o.key); o.pick();
+      expect((G.characters[id] as any).doorPicks[FIG_DOOR]).toEqual(chosen);
+      v = fig(L);
+      expect(v.choose.flatMap((c: any) => c.opts.map((x: any) => x.key))).not.toContain(o.key);
+    }
+    expect(v.hasChoose).toBe(false);
+    expect(figmentLadderView(at, G.characters[id]).known.chosen.map((f: any) => f.name)).toEqual(chosen.map((k) => FORM[k].name));
+    // the forms learned are open in the design editor; every other form is greyed with the engine's words
+    const dv = figmentDesignView(G.characters[id]);
+    expect(dv.forms.filter((f: any) => f.open).map((f: any) => f.id)).toEqual(chosen);
+    expect(dv.forms.filter((f: any) => !f.open).every((f: any) => /forms you know/.test(f.why))).toBe(true);
   });
   it('below the first design step, + NEW DESIGN is replaced by the engine\'s reason', () => {
     const { L } = story(1); const v = fig(L);
@@ -105,14 +127,16 @@ describe('the FIGMENTS section on the MAGIC tab', () => {
 });
 
 describe('the level-up card (the moment)', () => {
-  it('the door skill\'s card: NEW with the forms\' icons when its points just reached a step, else the next step locked; other skills none', () => {
-    const at = F.ladder.find((r: any) => (r.forms || []).length > 1).points, lv = figmentLadderView(at);
+  it('the door skill\'s card: NEW with the step\'s own words when its points just reached a step (no forms: rules 1.70 learns them), else the next step locked; other skills none', () => {
+    const at = F.ladder.find((r: any) => (r.designs || 0) > 0).points, lv = figmentLadderView(at);
     const v = figLevelUp(F.visualizer.door, at);
-    expect(v).toMatchObject({ has: true, state: 'new', hasForms: true }); expect(v.head).toContain(lv.latest!.forms.map((f) => f.name).join(', '));
-    expect(v.forms.map((f: any) => f.key)).toEqual(lv.latest!.forms.map((f) => f.id)); expect(v.next).toContain(String(lv.next!.points));
+    expect(v).toMatchObject({ has: true, state: 'new', hasForms: false, forms: [] });
+    expect(v.head).toBe('NEW · FIGMENTS AT VISUALIZATION ' + at); expect(v.text).toBe(lv.latest!.text);
+    expect(v.next).toContain(String(lv.next!.points)); expect(v.next).toContain(lv.next!.text);
     const gap = Array.from({ length: 10 }, (_, i) => i + 1).find((q) => q > at && !F.ladder.some((r: any) => r.points === q))!;
     const between = figLevelUp(F.visualizer.door, gap); // past a step and short of the next: the next, locked
     expect(between.state).toBe('next'); expect(between.head).toContain('LOCKED');
+    expect(between.head).toContain(String(figmentLadderView(gap).next!.points)); expect(between.hasForms).toBe(false);
     expect(figLevelUp('composure', at).has).toBe(false);
   });
 });

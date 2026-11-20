@@ -2,18 +2,18 @@
 import { tilesN } from './log';
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
-import { setLogMarker, remarkOpening, say, type LogMark, type LogSideMark } from './log';
+import { setLogMarker, remark, say, type LogMark, type LogSideMark } from './log';
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
-import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk } from './ai-sigil';
-import { armHeart, aiSoulStep } from './ai-soul';
+import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk, CASTER } from './ai-sigil';
+import { armHeart, aiSoulStep, HEART_CASTER } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
 import { emit, anyOn, heldOfChar, boundGame as boundGameRef, onHook, statHeard, harmHeld } from './effects/hooks';
 import { type FalseImage, perceivedFoes, isGhost, strikeImage } from './illusion';
@@ -35,6 +35,7 @@ import { windowStep } from './effects/actions';
 import { type Hazard, hazardStep, spotHazards, hazardLiveAt, HAZARD } from './hazards';
 import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PILE } from './containers';
 import { canStand, standBlocker, unitsIn, inBounds, work, tiedTo } from './kit';
+import { uses } from './effects/uses';
 import { setBraced, setDowned, setNailed, stagger, clearStagger, rawDazed, rawBleed, setSideSees } from './unitstate';
 import { setProne, bleedTick, dazeSpent } from './magic';
 import { condMods, condDef } from './condtable';
@@ -111,9 +112,9 @@ export interface Unit {
   mags?: number[]; loose?: number;
   /** Magazines picked up for a different weapon: carried back to the pack after the fight. */
   extra?: { weapon: string; rounds: number; type?: string | null }[];
-  /** Analyzed (spec: Analyze): the squad sees this enemy's numbers; weakPoint is Read Them's mark (rules 1.13): an
-   * enemy carrying it deals 15% less damage to the other side (effects/damage.ts). It adds no damage any more. */
-  analyzedBy?: string; weakPoint?: boolean; analysis?: number; vigilant?: number; overweight?: number;
+  /** Analyzed (spec: Analyze): the squad sees this enemy's numbers. Read Them's mark is a condition row now (rules 1.74
+   * item 6004: read_them, read_them_ii), put on by the perk, Case Closed and The Tell. */
+  analyzedBy?: string; analysis?: number; vigilant?: number; overweight?: number;
   /** Stances and reactions (spec: Prone; Brace; Overwatch; reactions). */
   prone?: boolean; braced?: boolean; overwatch?: 'shot' | 'aimed' | 'melee' | null; reactedRound?: number; vision?: number; sensory?: number; noSprint?: boolean; strength?: number;
   /** Weapons v2 (spec): the weapon's condition and mods, gear effects, and per-turn flags. */
@@ -131,6 +132,10 @@ export interface Unit {
   apNext?: number; apDebt?: number; apGained?: number; apTurnTotal?: number;
   /** Who hit this unit last, and everyone who has (kill attribution: bleed from your crits, barrels you broke). */
   lastHitBy?: string; damagedBy?: string[];
+  /** Rules 1.77 item 6508: borrowed time (op `last_turn`): the unit stands at 1 HP until the end of its next turn (this
+   * one when it dropped on it: began), then falls Downed unless healed; turnAp: that turn's AP; hits: death_save, each hit
+   * on it is a failed death save instead of damage; label: the item that gave it. */
+  lastTurn?: { began: boolean; turnAp?: number; hits?: 'death_save'; label: string; /** the unit whose blow was put off (its credit when the fall lands) */ by?: string };
   // ---------- shared subsystems (rules 1.3, lane 0B; every field optional so old saves load) ----------
   /** PC saves by family, debuff strength by delivering skill (rules 1.13), and item modifiers to d20 rolls by skill (the global ruling: item skill
    * mods reach every d20 that uses the skill), fixed when the unit is built. */
@@ -275,6 +280,12 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
   reacting?: { unit: string; kind: string };
   /** The toggles the player set on the action being resolved (combat/attack mods…); set and cleared by the reducer. */
   mods?: string[];
+  /** A dry run's copy only (preview.ts PreviewOpts.asHit, G1 of 0.32): this unit's own attacks hit, so the preview reads what
+   * a hit gives (the Momentum a Charge really reaches). Never set on a live fight. */
+  asHit?: string;
+  /** The same copy only (rules 1.78 item 6608): the items whose hit-time ops ran for the asHit unit's attack (their names,
+   * in order), what the attack preview lists as riding on a hit (Smite). Never set on a live fight. */
+  riders?: string[];
   /** The overworld's throwaway fight state (storyCb): per-turn item counters live in the story instead. */
   overworld?: boolean;
   /** Each side's sight at the last check, for the sight_change hook (only kept while someone listens). */
@@ -289,7 +300,7 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
   sightWhy?: Record<string, 'hide' | 'reveal'>;
   /** Rules 1.25, the fire doctrine: who of each side's AI has attacked whom this round (target id -> attacker ids), and
    * the doctrine lines the log has already said this fight. */
-  fire?: { round: number; on: Record<string, string[]> }; doctrineSaid?: Record<string, true>;
+  fire?: { round: number; on: Record<string, string[]>; /** rules 1.79 item 6703: the previous round */ prev?: Record<string, string[]> }; doctrineSaid?: Record<string, true>;
   /** Where each side last saw a Hidden unit (a known position: shown, not targetable), by unit id: the tile it was on
    * when this side last saw it (seenAt), or a known position an item gave. The enemy AI searches there (enemySearchTile). */
   lastSeen?: Record<string, Record<string, string>>;
@@ -372,7 +383,7 @@ export function stampFxHp(cb: Combat) {
 // ------------------------------------------------------------------------------------------------- the fight's log
 // The log's writers (say, sayOf, sayAt, unsay) are in log.ts, a leaf module; this is the part that needs the fight's
 // rules: which units a line names and whether each side sees them now (registered with log.ts as its marker).
-export { say, sayOf, sayAt, unsay, logQuietly, remarkOpening, type LogMark, type LogSideMark } from './log';
+export { say, sayOf, sayAt, unsay, logQuietly, type LogMark, type LogSideMark } from './log';
 const escRe = (x: string) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 /** The units a line names, by name (the longest names first, so 'Raider 2' is not also 'Raider'). */
 export function unitsNamedIn(cb: Combat, text: string): Unit[] {
@@ -605,11 +616,20 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
     pos, hp: n.hp, maxHp: n.hp, def: n.defense, armour: n.armour, attack: n.attack_bonus, weapon: w.id, movement: t.movement,
     init: rollD20(rng).die + n.attack_bonus, agility: 1, ap: 0, bank: 0, ammo: w.magazine ?? 0, heat: 0, jammed: false, shotsThisTurn: 0,
     downed: false, dead: false, saves: { ok: 0, fail: 0 }, stunnedNext: 0, kills: 0,
-    injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: 12, sensory: 0, strength: n.attack_bonus,
+    injuries: [], bleed: 0, dazedNext: 0, injResist: 10 * ((t.endurance || 1) - 1), hand: 'right', vision: t.vision, sensory: 0, strength: n.attack_bonus,
     mags: w.magazine == null ? undefined : w.reload === 'loose' ? [] : Array(t.spare_mags ?? 2).fill(w.magazine), loose: w.reload === 'loose' ? (t.spare_mags ?? 2) * (w.magazine || 0) : 0,
     ...(t.techniques && (t.techniques.melee?.length || t.techniques.ranged?.length) ? { techs: [...(t.techniques.melee || []), ...(t.techniques.ranged || [])] } : {}),
     ...(t.calls?.length ? { calls: [...t.calls], callLevel: t.call_level || 1 } : {}), // rules 1.13: an officer's Calls
   };
+}
+/** Rules 1.79 item 6710, Durability's door on an enemy: a row's `guard` (enemies.json: a tier's, or a caster archetype's)
+ * gives the unit its Guard pool, full, the Durability points the door reads (physical/core.ts unitSkill), and the Guard
+ * technique the door gives anyone with Durability. Then the door's own code runs for it as for a character: the plates
+ * soak, Pressure comes off them first, the Guard technique and Brace raise them, Interpose at Durability 3. */
+function armGuard(u: Unit, row: any) {
+  const n = Number(row?.guard?.plates); if (!(n > 0)) return;
+  u.res = { ...(u.res || {}), guard: n }; u.resMax = { ...(u.resMax || {}), guard: n }; (u as any).durability = Math.max(1, Number(row.guard.durability) || 1);
+  if (!(u.techs || []).includes('guard')) u.techs = [...(u.techs || []), 'guard'];
 }
 /** Rules 1.15: a companion is its owner's level. Its own stat block (enemies.json companions) is the level 1 block; the
  * level table raises its HP, armour, Defense, attack bonus and damage. hpNow: the HP it carries from before (null: full).
@@ -708,7 +728,7 @@ onHook('damage_in', (ctx: any) => {
 });
 
 /** −2 to attacks when an injured arm holds the weapon: the main-hand arm, or either arm for a two-handed weapon. */
-export const armPenalty = (u: Unit, w: WeaponDef) => ((u.injuries || []).some((i) => i.loc === 'arm' && (!ONE_HANDED.includes(w.category) || i.side === (u.hand || 'right'))) ? -2 : 0);
+export const armPenalty = (u: Unit, w: WeaponDef) => (penalLimbs(u.injuries, statQuery({ u }, 'numb_limbs').add).some((i) => i.loc === 'arm' && (!ONE_HANDED.includes(w.category) || i.side === (u.hand || 'right'))) ? -2 : 0); // rules 1.77 item 6513: Numb's ignored limb gives none
 
 export const alive = (u: Unit) => !u.dead && !u.downed && !u.surrendered;
 export const active = (cb: Combat) => cb.units.find((u) => u.id === (cb.window?.queue[0]?.unitId ?? cb.order[cb.turn]));
@@ -1084,12 +1104,23 @@ export function litAt(cb: Combat, k: string): boolean {
   return objectsOf(cb).some((o) => lightOf(o) > 0 && dist(o.pos, k) <= lightOf(o)) || cb.units.some((u) => !u.dead && (u.light || 0) > 0 && dist(u.pos, k) <= (u.light || 0));
 }
 /** Can this unit see that tile (range, darkness, line of sight)? */
-/** walls: sightBlockers(cb), from a caller that asks about many eyes or many tiles at once (building it is four times the cost of walking one line). */
-export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>): boolean {
+/** walls: sightBlockers(cb), from a caller that asks about many eyes or many tiles at once (building it is four times the cost of walking one line).
+ * t: the unit looked at, when the question is "does u see t" (rules 1.70 item 5545, P4: its stat `seen_range` widens or
+ * narrows the range at which it is seen; asked only when something in the fight answers it). */
+export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>, t?: Unit | null): boolean {
   if (u.dead || u.downed || u.eyes === false) return false; // Classes 3.0 P7: a unit with no eyes of its own sees nothing
-  const range = litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2);
-  return dist(u.pos, k) <= range && (k === u.pos || lineOfSight(cb, u.pos, k, false, walls));
+  return dist(u.pos, k) <= eyeReach(cb, u, k, t) && (k === u.pos || lineOfSight(cb, u.pos, k, false, walls));
 }
+/** THE one sight range (rules 1.76 item 6403): how far u's eyes reach to tile k: its vision, halved off a lit tile on a
+ * dark map without dark sight, plus the looked-at unit's `seen_range` (Prone's, rules 1.76 item 6402); never below 0.
+ * unitSees and the enemy's own aim (enemyHuntTile, the firing-position score) read it, and the items that stretch or
+ * shrink a sight (Wind on the Skin, Lowland Born: the 0.32 merge, M2; Chain Smoker is a seen_range row); no second copy. */
+export function eyeReach(cb: Combat, u: Unit, k: string, t?: Unit | null): number {
+  return Math.max(0, (litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2)) + seenRangeOf(cb, t));
+}
+/** Rules 1.70 item 5545 (P4): the tiles a unit's stat `seen_range` adds to the range at which others' eyes see it (0 when
+ * nothing in the fight answers the stat: the sight test stays as fast as it was). */
+const seenRangeOf = (cb: Combat, t: Unit | null | undefined): number => (t && statHeard(cb, 'seen_range') ? statQuery({ u: t, cb }, 'seen_range').add : 0);
 /** What one side sees, shared by the squad: tiles in sight, units seen, units only sensed (Sensory). */
 export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
   const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), tiles = new Set<string>(), walls = sightBlockers(cb);
@@ -1097,13 +1128,14 @@ export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
   const seen = new Set<string>(), sensed = new Set<string>();
   for (const t of cb.units) if (t.side !== side && !t.dead) {
     // A Hidden unit isn't seen (spec: Helpful states): at most sensed, by Sensory range.
-    let isSeen = (tiles.has(t.pos) || t.shownTo === side) && !t.hidden, isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3));
+    // rules 1.70 P4: a unit with a seen_range of its own is looked at by each eye (the tile set holds plain sight)
+    let isSeen = (t.shownTo === side || (seenRangeOf(cb, t) ? eyes.some((u) => unitSees(cb, u, t.pos, walls, t)) : tiles.has(t.pos))) && !t.hidden, isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3));
     if (sightHooked(cb)) { const r = seesHook(cb, side, t, null, isSeen, isSensed); isSeen = r.seen; isSensed = !isSeen && r.sensed; }
     if (isSeen) seen.add(t.id); else if (isSensed) sensed.add(t.id);
   }
   return { tiles, seen, sensed };
 }
-/** Items that change who is seen (Sixth Sense, Skin Map, Sworn Sibling, Upper-Touched, Chain Smoker): the 'sees' hook
+/** Items that change who is seen (Sixth Sense, Skin Map, Sworn Sibling, Upper-Touched): the 'sees' hook
  * {cb, side, t, by, seen, sensed}. side is the side looking; by is the one unit looking (an attack, a reaction) or null
  * for the side's shared sight (the fog of war). Handlers may set seen or sensed. Allies count too (a sibling). */
 const sightHooked = (cb: Combat) => anyOn(cb, 'sees') || cb.units.some((u) => u.hidden && !!u.call?.spot?.unhide) || statHeard(cb, 'always_seen'); // rules 1.13: a Spotted unit isn't Hidden to the allies it was pointed out to (calls/rules.ts); Classes 3.0 P7: someone may be always seen
@@ -1128,7 +1160,7 @@ export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly 
   if (t.side === side) return true;
   if (t.dead) return false;
   const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !inBounds(cb, t.pos), walls = t.hidden || off ? undefined : walls0 || sightBlockers(cb);
-  let isSeen = !t.hidden && !off && ((readShown && t.shownTo === side) || eyes.some((u) => unitSees(cb, u, t.pos, walls)));
+  let isSeen = !t.hidden && !off && ((readShown && t.shownTo === side) || eyes.some((u) => unitSees(cb, u, t.pos, walls, t)));
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
@@ -1232,7 +1264,7 @@ function noteSeen(cb: Combat, side: string, id: string, at: string) {
 /** Does anyone on the attacker's side see the target? */
 export function sideSees(cb: Combat, side: 'pc' | 'foe', tgt: Unit, by?: Unit | null): boolean {
   // rules 1.61 item 4963: a unit whose attack showed it to this side is seen wherever it stands (unless Hidden)
-  const hid = tgt.hidden && tgt.side !== side, walls = hid || tgt.shownTo === side ? undefined : sightBlockers(cb), base = !hid && (tgt.shownTo === side || cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos, walls)));
+  const hid = tgt.hidden && tgt.side !== side, walls = hid || tgt.shownTo === side ? undefined : sightBlockers(cb), base = !hid && (tgt.shownTo === side || cb.units.some((u) => u.side === side && unitSees(cb, u, tgt.pos, walls, tgt)));
   return sightHooked(cb) ? seesHook(cb, side, tgt, by || null, base, false).seen : base;
 }
 
@@ -1337,7 +1369,7 @@ export function previewAttack(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode
   if (hk.fail) return fail(hk.fail);
   // Conditions on the attacker (spec: Conditions): Afraid can't attack its source; Taunted must attack the taunter while
   // it can see them; Disarmed or a lowered weapon attacks with nothing but fists.
-  { const fs = condSource(att, 'fear'); if (fs && fs === tgt.id) return fail('Afraid of ' + tgt.name + ': you can\'t attack them.'); }
+  { const fs = condSource(att, 'fear'); if (fs && fs === tgt.id && fearHolds(cb, att)) return fail('Afraid of ' + tgt.name + ': you can\'t attack them.'); }
   { const ts = tauntedBy(att), tu = ts ? cb.units.find((x) => x.id === ts) : null; if (tu && tu.id !== tgt.id && !hk.ignoreTaunt && alive(tu) && sideSees(cb, att.side, tu)) return fail('Taunted: your attack must go at ' + tu.name + '.'); }
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && useW !== WEAPON.fists && !isMelee(useW)) return fail(condOn(att, 'disarmed') ? 'Disarmed: recover your weapon (2 AP), or strike with your fists.' : 'Your weapon is lowered: raise it (1 AP).');
   if ((condOn(att, 'disarmed') || condOn(att, 'lowered')) && isMelee(useW) && useW !== WEAPON.fists && mode !== 'melee') return fail('Disarmed: recover your weapon first.');
@@ -1530,7 +1562,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   emit(cb, 'attack_roll', rc);
   const roll = rc.die, total = roll + pv.toHit;
   const crit = roll === 20 || roll >= rc.critMin, fumble = roll === 1 && !rc.noFumble;
-  const hit = rc.hit ?? (!fumble && (crit || total >= pv.need));
+  const hit = rc.hit ?? (cb.asHit === att.id || (!fumble && (crit || total >= pv.need))); // a dry run asked as a hit (preview.ts asHit)
   // Tuned (Improvisation 5): the main hand's gun never jams, so its natural 1 is only a miss and its Heat only Heat
   const tuned = !melee && mode !== 'thrown' && canJam(w) && neverJams(cb, att);
   if (mode === 'thrown') { if (fumble) stagger(att); } // a thrown weapon: no round, no Heat, no Recoil for the next shot
@@ -1607,7 +1639,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   else if (!stopped) emit(cb, 'on_miss', { att, tgt, mode, die: roll, fumble, melee, via: pv.via, volley: VOLLEY, stopped: false, cb, rng, mods: cb.mods || [] });
   // Rules 1.32 (shadow-spec 2.6): the target of a silent attack from Hidden that is still up, and whose eyes reach the
   // attacker's tile, rolls to spot it at once (the one spotting roll, for that one looker); no reaction is spent.
-  if (spotBack && att.hidden && alive(tgt) && unitSees(cb, tgt, att.pos)) spotHidden(cb, rng, tgt, att);
+  if (spotBack && att.hidden && alive(tgt) && unitSees(cb, tgt, att.pos, undefined, att)) spotHidden(cb, rng, tgt, att);
   // The flamer's cone (cone_3): everyone else in a 3-tile cone toward the target gets the same attack, each its own roll.
   if ((useW.properties || []).includes('cone_3') && !opts.noCone) for (const v of unitsIn(cb, { shape: 'cone', from: att.pos, toward: tgtAt, n: 3 }, { downed: true, not: [tgt, att] })) if (previewAttack(cb, att, v, mode, { free: true }).ok) chained(() => resolveAttack(cb, rng, att, v, mode, who, { noAp: true, noWear: true, noCone: true, ...(opts.fx ? { fx: opts.fx } : {}) }), 'cone');
   return { roll, total, vs: pv.need, hit, crit, fumble, damage, line, killed };
@@ -1646,8 +1678,8 @@ export function rollInjury(rng: Rng, t: Unit, cb?: Combat | null, by?: Unit | nu
   if (d === 1) { if (!ij.noDaze) { if (cb) applyCond(cb, rng, by || null, t, 'dazed', undefined, undefined, { skipSave: true }); else rawDazed(t, 1); } return lead + 'head' + (ij.noDaze || !t.dazedNext ? '' : ', Dazed'); }
   if (d <= 3) { if (cb) applyCond(cb, rng, by || null, t, 'bleeding', undefined, undefined, { skipSave: true }); else if (!immune({ u: t }, 'bleed')) rawBleed(t, 3); return lead + 'torso, ' + (t.bleed ? 'Bleeding' : 'no bleeding'); }
   if (d === 4) { inj.push({ loc: 'arm', side }); return lead + side + ' arm, −2 to attacks with it'; }
-  if (!ij.noHalve && !inj.some((i) => i.loc === 'leg')) t.movement = Math.max(0.5, t.movement / 2);
-  inj.push({ loc: 'leg', side });
+  // rules 1.77 item 6513: a leg injury Numb ignores (the stat numb_limbs) halves nothing; the first leg that holds it back does
+  { const was = penalLimbs(inj, statQuery({ u: t }, 'numb_limbs').add).some((i) => i.loc === 'leg'); inj.push({ loc: 'leg', side }); const now = penalLimbs(inj, statQuery({ u: t }, 'numb_limbs').add).some((i) => i.loc === 'leg'); if (!ij.noHalve && !was && now) t.movement = Math.max(0.5, t.movement / 2); }
   return lead + side + ' leg, half Movement';
 }
 
@@ -1695,6 +1727,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
     if (f.hp != null && f.hp > 0) u.hp = Math.min(u.maxHp, Math.round(f.hp)); // wounded in a fight it walked away from
     armFoe(u, f); // an Evoker: its own words, or its caster archetype's (ai-sigil.ts)
     armHeart(u, f); // a Soul caster archetype (enemies.json soul_casters): an Emanator and its designs (ai-soul.ts)
+    armGuard(u, ENEMY[f.tier]); armGuard(u, f.caster ? CASTER[f.caster] || HEART_CASTER[f.caster] : null); // rules 1.79: a row's Guard
     levelFoeMagic(u); // rules 1.15: its spells grow as its weapon does
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
     if (f.drops && typeof f.drops === 'object') u.drops = JSON.parse(JSON.stringify(f.drops)); // rules 1.9 drop tables
@@ -1704,7 +1737,8 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   const cb: Combat = { name, map, units, order, turn: 0, round: 1, difficulty: COMBAT_XP[difficulty] ? difficulty : 'standard', log: [], over: null, level, ...(extra.fear ? { fear: true } : {}), ...(typeof extra.fromTalk === 'boolean' ? { fromTalk: extra.fromTalk } : {}) };
   cb.objects = objs; cb.sigilV = SIGIL_REV; // a fresh fight: rules 1.4 glyphs only
   tieCompanions(cb); // Classes 3.0 P9: each companion is tied to its owner (the owned-unit record)
-  say(cb, 'Initiative: ' + order.map((id) => { const u = units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · ')); // (re-marked by sightQuietly when the set-up hides someone)
+  sayInitiative(cb, ''); // (re-marked by sightQuietly when the set-up hides someone)
+  for (const f of FIGHT_START) f(cb); // rules 1.77 item 6510: the systems' meters exist before the items' combat_start ops
   // Items at the start of a fight: 'combat_start' {cb, order, rng} (order mutable: act in the surprise round, swap places).
   const cs: any = emit(cb, 'combat_start', { cb, order: [...cb.order], rng });
   if (Array.isArray(cs.order) && cs.order.length === cb.order.length && cs.order.every((id: string) => cb.order.includes(id))) cb.order = cs.order;
@@ -1715,6 +1749,11 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
   return cb;
 }
 
+/** Rules 1.77 item 6510: what a system sets up on every unit as a fight starts, BEFORE the items' 'combat_start' ops run
+ * (a door's meter and its starting value: physical/rules.ts Momentum), so an item's op at the start finds it. A system
+ * registers once at load (it can't be called from here: combat.ts can't import it, a load cycle). */
+const FIGHT_START: ((cb: Combat) => void)[] = [];
+export const onFightStart = (f: (cb: Combat) => void): void => { FIGHT_START.push(f); };
 /** Start the active unit's turn: AP, heat cooldown, Downed death saves (spec: Downed and dying). */
 export function beginTurn(cb: Combat, rng: Rng) {
   const u = active(cb);
@@ -1818,15 +1857,41 @@ export function contactCheck(cb: Combat, rng: Rng, o: { acting?: boolean } = {})
   if (!seen && !hit) return false;
   joinFight(cb, rng); return true;
 }
+/** The initiative line (spec item 5605): every unit in the order by name and Initiative. A side that does not see some of
+ * them reads them as one count ("2 unseen"): each side's line is built here, where it is written, and kept on the
+ * line's mark (fog.ts sends it as it is). The fight's opening one is marked again whenever the set-up changes who is
+ * seen (sightQuietly: who starts Hidden), as the fight opens. */
+const INIT_HEAD = 'Initiative: ', INIT_SEP = ' · ';
+function initiativeEntries(cb: Combat): { u: Unit; text: string }[] { return cb.order.map((id) => cb.units.find((x) => x.id === id)).filter((u): u is Unit => !!u).map((u) => ({ u, text: u.name + ' ' + u.init })); }
+function initiativeMark(cb: Combat, at: number): LogMark {
+  const m = logMark(cb, cb.log[at]); if (!m) return m;
+  const lead = cb.log[at].slice(0, cb.log[at].indexOf(INIT_HEAD)), all = initiativeEntries(cb), out: { pc?: LogSideMark; foe?: LogSideMark } = { ...m };
+  for (const side of ['pc', 'foe'] as const) {
+    const s = out[side]; if (!s) continue; // 0: the side sees none of it (not sent); undefined: it sees all (sent whole)
+    const unseen = all.filter((e) => e.u.side !== side && !e.u.dead && !sideSeesUnit(cb, side, e.u));
+    out[side] = { ...s, line: lead + INIT_HEAD + [...all.filter((e) => !unseen.includes(e)).map((e) => e.text), ...(unseen.length ? [unseen.length + ' unseen'] : [])].join(INIT_SEP) };
+  }
+  return out;
+}
+function sayInitiative(cb: Combat, lead: string) {
+  const at = say(cb, lead + INIT_HEAD + initiativeEntries(cb).map((e) => e.text).join(INIT_SEP)) - 1;
+  remark(cb, at, initiativeMark(cb, at));
+}
+function remarkOpening(cb: Combat) { const at = cb.log.findIndex((l, i) => i < 4 && l.startsWith(INIT_HEAD)); if (at >= 0) remark(cb, at, initiativeMark(cb, at)); }
 /** Rules 1.64 item 5008: contact. The fight is joined: round 1 from the top of the initiative order (rolled as the fight
  * began, read out now), every unit's first turn on full AP (beginTurn). */
 function joinFight(cb: Combat, rng: Rng) {
   delete cb.approach; cb.round = 1;
-  say(cb, APPROACH.joined_log + ' Initiative: ' + cb.order.map((id) => { const u = cb.units.find((x) => x.id === id)!; return u.name + ' ' + u.init; }).join(' · '));
-  raiseAlarm(cb);
+  sayInitiative(cb, APPROACH.joined_log + ' ');
+  const told = raiseAlarm(cb);
+  // rules 1.78 item 6603 (spec item 5010 c): the fight joined is an effects event (the alarm's, `joined`), over the first
+  // character the foes learned of (no tile: nobody was told; the screen still sounds it)
+  emitFx(cb, 'alarm', { joined: true, ...(told ? { at: told } : {}) });
   for (let i = 0; i < cb.order.length; i++) {
-    cb.turn = i; const u = active(cb)!;
-    if (u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
+    // (a player's view of the fight keeps an unseen foe's place in the order with no unit: fog.ts; the preview of an
+    // action that joins the fight runs there, so a place with no unit is passed over, never read: 0.32 B8)
+    cb.turn = i; const u = active(cb);
+    if (!u || u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
     beginTurn(cb, rng); return;
   }
 }
@@ -1834,14 +1899,15 @@ function joinFight(cb: Combat, rng: Rng) {
  * foe group on the map learns where each character not Hidden stands now (the foe side's seenAt, read by knownTile), so
  * a group that never saw the squad comes for it (enemySearchTile) instead of searching where the squad started. A Hidden
  * character stays unknown; the foes' own Hidden (ambushers) keep their rule. The log says it once (rules.json
- * combat.approach.alarm_log), when it told the foes anything. */
-function raiseAlarm(cb: Combat) {
-  let told = false;
+ * combat.approach.alarm_log), when it told the foes anything. Returns the first told character's tile (null: none). */
+function raiseAlarm(cb: Combat): string | null {
+  let told: string | null = null;
   for (const p of cb.units) {
     if (p.side !== 'pc' || !alive(p) || p.hidden) continue;
-    if (cb.seenAt?.foe?.[p.id] !== p.pos) { noteSeen(cb, 'foe', p.id, p.pos); told = true; }
+    if (cb.seenAt?.foe?.[p.id] !== p.pos) { noteSeen(cb, 'foe', p.id, p.pos); told ??= p.pos; }
   }
   if (told && APPROACH.alarm_log) say(cb, APPROACH.alarm_log);
+  return told;
 }
 /** Pass the turn to the next unit that can act; Downed PCs still get turns (death saves). o.newRound: the round ends with
  * this turn (rules 1.62 item 4906: a field opens on a new round). On a field (rules 1.62 item 4906) the round that would
@@ -1952,7 +2018,7 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   const P = o.via || (o.shortest ? o.base || paths(cb, u.pos, u.id) : movePaths(cb, u, to, how, o.base)); // rules 1.9: a player's click-path goes around revealed hazards (item 683)
   const tiles = P.dist[to];
   if (tiles === undefined || to === u.pos) return 'Can\'t reach that tile.';
-  { const fs = condSource(u, 'fear'), f = fs ? cb.units.find((x) => x.id === fs) : null; if (f && !f.dead && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Afraid of ' + f.name + ': you can\'t move toward them.'; }
+  { const fs = condSource(u, 'fear'), f = fs ? cb.units.find((x) => x.id === fs) : null; if (f && !f.dead && dist(to, f.pos) < dist(u.pos, f.pos) && fearHolds(cb, u)) return 'Afraid of ' + f.name + ': you can\'t move toward them.'; }
   // Threatened (a Call, rules 1.13): on its next turn it can't move toward the one who threatened it.
   { const cw = u.call?.cowed, f = cw ? cb.units.find((x) => x.id === cw.by) : null; if (f && alive(f) && dist(to, f.pos) < dist(u.pos, f.pos)) return 'Threatened by ' + f.name + ': you can\'t move toward them this turn.'; }
   let ap: number;
@@ -2066,7 +2132,7 @@ function reactionStrike(cb: Combat, rng: Rng, h: Unit, t: Unit, mode: AttackMode
 /** Overwatch (spec): a unit holding a shot fires at the first enemy that moves in its sight and range, as its reaction
  * (checked at every step of a walk). A unit may hold more than one shot (u.owShots, class moves), all on one reaction. */
 export function triggerOverwatch(cb: Combat, rng: Rng, mover: Unit, seg?: string[], walked?: string[]) {
-  for (const h of cb.units) if (h.overwatch && h.side !== mover.side && alive(h) && !mover.dead && !mover.downed && !mover.hidden && unitSees(cb, h, mover.pos)) {
+  for (const h of cb.units) if (h.overwatch && h.side !== mover.side && alive(h) && !mover.dead && !mover.downed && !mover.hidden && unitSees(cb, h, mover.pos, undefined, mover)) {
     const pv = previewAttack(cb, h, mover, h.overwatch, { free: true }); if (!pv.ok) continue;
     const paid = heldShotPaid(cb, h); // Killzone's second shot: the reactions its first shot spent cover it
     // Killzone's first shot spends both reactions (owSpend, rules 1.30); with fewer left, one (and only it fires)
@@ -2261,7 +2327,12 @@ export function displace(cb: Combat, rng0: Rng | null | undefined, u: Unit, to: 
       path.push(k); at = k;
     }
   }
-  if (o.preview || !path.length) { res.path = path; res.moved = path.length; if (path.length) res.to = path[path.length - 1]; return res; }
+  if (o.preview || !path.length) {
+    res.path = path; res.moved = path.length; if (path.length) res.to = path[path.length - 1];
+    // rules 1.78 item 6605: driven into what stands next to it, it was still moved against it ('displaced', held where it stood)
+    if (!o.preview && res.blockedAt) emit(cb, 'displaced', { u, by: o.by, from, to: from, path: [], how: o.source, kind: o.how, stoppedBy: res.stoppedBy, blockedAt: res.blockedAt, tile: res.blockedAt, cb, rng });
+    return res;
+  }
   // 2. It goes. The effect first (the screen slides it there), then the tiles act on it.
   const last = path[path.length - 1];
   const ev: any = o.fx === false ? null : emitFx(cb, 'shove', { ...(o.by && !(o.fx && o.fx.magic) ? { unit: o.by.id } : {}), target: u.id, from, to: last, ok: true, ...(path.length > 1 ? { path: [from, ...path] } : {}), ...(o.how === 'pull' ? { pull: true } : {}), ...(o.source ? { source: o.source } : {}), ...(o.fx || {}) }); // source: what did it (a screen draws a Launch's flight only for the Launch)
@@ -2286,7 +2357,7 @@ export function displace(cb: Combat, rng0: Rng | null | undefined, u: Unit, to: 
   res.path = path.slice(0, entered); res.moved = entered; res.to = u.pos;
   if (ev && entered < path.length) { ev.to = path[entered - 1]; if (ev.path) ev.path = [from, ...res.path]; } // a trap or a hazard ended it short
   // 'displaced' {u, by, from, to, path, how, kind, stoppedBy, blockedAt}: after it was moved (Breaching Strike reads where it ended).
-  emit(cb, 'displaced', { u, by: o.by, from, to: res.to, path: res.path, how: o.source, kind: o.how, stoppedBy: res.stoppedBy, blockedAt: res.blockedAt, cb, rng });
+  emit(cb, 'displaced', { u, by: o.by, from, to: res.to, path: res.path, how: o.source, kind: o.how, stoppedBy: res.stoppedBy, blockedAt: res.blockedAt, ...(res.blockedAt ? { tile: res.blockedAt } : {}), cb, rng });
   sightCheck(cb);
   return res;
 }
@@ -2742,13 +2813,15 @@ export function shootCover(cb: Combat, u: Unit, tile: string, who: Character | n
   say(cb, u.name + (melee ? ' smashes' : ' shoots') + ' the ' + c.name.toLowerCase() + ' at ' + refOf(tile) + damageObject(cb, tile, weaponDamage(w, r, who?.skills.raw_power || 0) * (who ? weaponMult(who, w.id) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1)) + '.');
   return null;
 }
-/** Analyze (spec: Analyze): 2 AP, 1 with Quick Read (Analysis 3); range 4 + Analysis; line of sight; no roll. */
-export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', (u.analysis || 0) >= costOf('analyze', 'quick_at') ? 'ap_quick' : 'ap')).ap;
+/** Analyze (spec: Analyze): its data AP (rules 1.74 item 6004: the same for everyone; Acuity's perk Quick Read cuts it
+ * through the price); range 4 + Analysis; line of sight; no roll. */
+export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'analyze', costOf('analyze', 'ap')).ap;
 /** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
- * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, tile, toggles, mode, ap, choice}
+ * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, id, tile, toggles, mode, ap, choice}
  * (choice, rules 1.33: the action's pick, as a felt feeling given by Inspire). */
-export function acted(cb: Combat, u: Unit, o: { action: string; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
-  emit(cb, 'acted', { u, t: o.t || null, action: o.action, tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
+export function acted(cb: Combat, u: Unit, o: { action: string; id?: string | null; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
+  // id (rules 1.77 item 6502): the action's own id when its name is a family (a Call: call.spot), read by `action_id`
+  emit(cb, 'acted', { u, t: o.t || null, action: o.action, ...(o.id ? { id: o.id } : {}), tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
 }
 /** How a unit's health reads on screen (rules 1.3; rules 1.55 item 29; `rules.json combat.health_look`): the one place
  * it is worked out. The squad's own and an Analyzed foe read exactly (`known`: the bar, `pct` 0 to 100, and the HP
@@ -2772,9 +2845,9 @@ export function analyze(cb: Combat, u: Unit, t: Unit): string | null {
   { const no = whyNot(cb, u, cost); if (no) return no; }
   if (dist(u.pos, t.pos) > range) return 'Out of Analyze range (' + tilesN(range) + ').';
   if (!lineOfSight(cb, u.pos, t.pos)) return 'No line of sight.';
-  pay(cb, u, cost); t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos }); t.weakPoint = (u.analysis || 0) >= 5;
+  pay(cb, u, cost); t.analyzedBy = u.name; emitFx(cb, 'analyze', { unit: u.id, target: t.id, from: u.pos, to: t.pos });
   acted(cb, u, { action: 'analyze', t, ap: cost }); // P2: Analyze is a verb that fires its own `acted` (in the reducer's action, inside another one, on the area map)
-  say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + (t.weakPoint ? ' · Read Them: it deals 15% less damage to the squad' : '') + '.');
+  say(cb, u.name + ' analyzes ' + t.name + ': HP ' + t.hp + '/' + t.maxHp + ', Defense ' + t.def + ', armour ' + t.armour + '.');
   return null;
 }
 /** Two guns that can jam, one in each hand: then there is ONE Clear jam (Leon's ruling, 13 Nov 2026; Hands 5d). */
@@ -2875,6 +2948,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
   const stood = new Set<string>([u.pos]); // the tiles it has stood on this turn: it doesn't pace between them
   let hunted = false; // rules 1.23: it repositions for a line on the healer at most once a turn
+  let angled = false; // rules 1.79 item 6707: it walks for an angle on an unattacked character at most once a turn
   // Classes 3.0 P2 (the review's finding 14): an enemy's own action fires `acted` as a player's does (the reducer's), named
   // as the reducer names it (a cost site, a move's kind, 'attack' with its mode). Its magic, technique and clearing steps
   // (ai-sigil.ts, ai-soul.ts, ENEMY_STEPS, aiClearBlock), whose own verbs the AI does not report, are named by their
@@ -2891,7 +2965,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (condOn(u, 'grappled') && affords(cb, u, 'escape')) { escapeHold(cb, rng, u); did('escape'); continue; }
     if (u.nailed && canPay(cb, u, price({ cb, u }, 'pull_free', u.nailed.ap))) { pullFree(cb, u); did('pull_free'); continue; } // rules 1.12
     if ((condOn(u, 'disarmed') && affords(cb, u, 'recover')) || (condOn(u, 'lowered') && affords(cb, u, 'recover', 'ap_lowered'))) { recoverHeld(cb, u); did('recover'); continue; }
-    if (u.prone && affords(cb, u, 'prone') && order !== 'kneel') { toggleProne(cb, u); did('prone'); continue; }
+    if (u.prone && affords(cb, u, 'prone') && order !== 'kneel' && !aiUses(cb, u).used('per_turn', 'ai:down')) { toggleProne(cb, u); did('prone'); continue; } // (rules 1.79: a Broken enemy that dropped stays down this turn)
     if (u.jammed && affords(cb, u, 'clear_jam')) { clearJam(cb, u); did('clear_jam'); continue; }
     if (enemyScuff(cb, u)) { did('scuff'); continue; }
     // Sigil casters (rules 1.4): step out of a hostile field, scuff a turret underfoot, then weigh a spell against the weapon.
@@ -2905,20 +2979,33 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { did('technique'); checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
     const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
     const targets = enemyTargets(cb, u, mode, order, pcs);
+    // rules 1.79 item 6701: a Suppressed or Broken enemy walks short this turn (physical/ai.ts sets the cap); it neither
+    // hunts, nor walks for an angle, nor searches; a cap of 0 holds it where it is
+    const short = aiShortOf(cb, u);
     // Rules 1.23, the hunt: an Elite or a Boss with a gun and no shot at the squad's healer steps to where it has one.
-    if (!order && !hunted) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; did('move', { tile: hunt.tile }); checkOver(cb); continue; } }
+    if (!order && !hunted && short == null) { const hunt = enemyHuntTile(cb, u, mode, pcs, targets, stood); if (hunt) { hunted = true; noteHealerHunt(cb, u, hunt.mark); if (moveUnit(cb, u, hunt.tile, rng)) break; did('move', { tile: hunt.tile }); checkOver(cb); continue; } }
+    // Rules 1.79 item 6707 (spec 4969 b): every target in reach is already under its side's fire: a short walk for a shot
+    // at a character nobody is attacking, from cover where it can.
+    if (!order && !angled && short == null) { const ang = enemyAngleTile(cb, u, mode, pcs, targets, stood); if (ang) { angled = true; noteAngle(cb, u, ang.mark); if (moveUnit(cb, u, ang.tile, rng)) break; did('move', { tile: ang.tile }); checkOver(cb); continue; } }
     if (targets.length) { const t = targets[0].t; noteEnemyAim(cb, u, t, targets[0].why); if (isGhost(t)) strikeImage(cb, u, t, mode, rng); else resolveAttack(cb, rng, u, t, mode, null); did('attack', { t, mode }); checkOver(cb); continue; }
     if (!order && aiClearBlock(cb, rng, u)) { did('clear_block'); checkOver(cb); continue; } // a turret of yours that threatens it, a RAISE wall in its way
     // Rules 1.32 (shadow-spec 8.1): a skulker (tag skulk: a Vermin, Minion or Soldier) with no shot goes to ground when no
     // enemy has it in view, and ambushes from there (the flat Ambush multiplier); it carries no Shadow meter.
     if (!order && skulks(u) && !hideBlock(cb, u) && affords(cb, u, 'hide')) { hideAction(cb, u); did('hide'); continue; }
-    if (order === 'halt' || order === 'kneel' || moveBlock(u)) break;
+    if (order === 'halt' || order === 'kneel' || moveBlock(u) || short === 0) break;
+    if (!pcs.length && short != null) break;
     if (!pcs.length) { const go = enemySearchTile(cb, u, stood); if (!go || moveUnit(cb, u, go.tile, rng)) break; did('move', { tile: go.tile }); continue; } // nobody it perceives: it searches where its side last saw one
     const best = enemyCloseTile(cb, u, mode, order, pcs, w, stood);
+    if (best?.lure) noteBait(cb, u);
     if (!best || moveUnit(cb, u, best.tile, rng)) break;
     did('move', { tile: best.tile });
   }
 }
+/** Rules 1.79: the enemy AI's own counters on a unit (effects/uses.ts, the one door): its turn's walk cap and Prone
+ * hold (physical/ai.ts sets them), who it last fought and when, and its once-a-fight and once-a-round log lines. */
+const aiUses = (cb: Combat, u: Unit) => uses({ key: 'ai', u, c: null, cb, g: undefined } as any);
+/** The walk cap this turn (physical/ai.ts: Suppressed or Broken), or null. */
+const aiShortOf = (cb: Combat, u: Unit): number | null => (aiUses(cb, u).used('per_turn', 'ai:short') > 0 ? Number((u as any).aiShort) : null);
 const enemyDry = (u: Unit) => { const w = WEAPON[u.weapon]; return w.magazine != null && u.ammo <= 0 && !(u.mags || []).some((n) => n > 0); };
 const enemyNeedsReload = (u: Unit) => { const w = WEAPON[u.weapon]; return w.magazine != null && u.ammo <= 0 && !enemyDry(u) && !condOn(u, 'disarmed'); };
 const enemyMode = (u: Unit): 'melee' | 'shot' => (isMelee(WEAPON[u.weapon]) || enemyDry(u) || condOn(u, 'disarmed') ? 'melee' : 'shot');
@@ -2998,18 +3085,33 @@ export type AimWhy = 'healer' | 'spread' | 'wounded' | 'nearest';
 const aimOwner = (t: Unit): string => (t as any).ghostOf || t.id;
 /** How many other units of u's side have attacked this target this round (rules 1.25). */
 export function alliesOn(cb: Combat, u: Unit, t: Unit): number {
-  const f = cb.fire; if (!f || f.round !== cb.round) return 0;
-  return (f.on[aimOwner(t)] || []).filter((id) => id !== u.id && cb.units.find((x) => x.id === id)?.side === u.side).length;
+  const f = cb.fire; if (!f) return 0;
+  const id = aimOwner(t), of = (on: Record<string, string[]> | null | undefined) => (on?.[id] || []).filter((a) => a !== u.id && cb.units.find((x) => x.id === a)?.side === u.side).length;
+  // rules 1.79 item 6703 (spec 4969 a): the side's memory carries past the round: each attacker of the round before
+  // counts `carry` (rules.json combat.focus_memory), so the first foe of a round spreads its fire too
+  const age = cb.round - f.round, now = age === 0 ? f.on : null, before = age === 0 ? f.prev : age === 1 ? f.on : null, carry = Math.max(0, Number(FOCUS_MEMORY.carry) || 0);
+  return of(now) + (carry && before ? carry * of(before) : 0);
 }
 /** An enemy has aimed an attack (a plain one, a technique) at t: its side's fire this round remembers it (the spread
  * doctrine reads it), and the fight log says why it chose, once a fight for each doctrine reason and once a round for
  * each healer turned on (rules 1.23 and 1.25: the player is told why). */
 export function noteEnemyAim(cb: Combat, u: Unit, t: Unit, why?: AimWhy) {
-  if (!cb.fire || cb.fire.round !== cb.round) cb.fire = { round: cb.round, on: {} };
-  const on = (cb.fire.on[aimOwner(t)] ||= []); if (!on.includes(u.id)) on.push(u.id);
+  const age = cb.fire ? cb.round - cb.fire.round : -1;
+  if (age !== 0) { const was = cb.fire; cb.fire = { round: cb.round, on: {}, ...(was && age === 1 && Number(FOCUS_MEMORY.carry) > 0 ? { prev: was.on } : {}) }; } // (the round before is kept only while carry reads it)
+  const on = (cb.fire!.on[aimOwner(t)] ||= []); if (!on.includes(u.id)) on.push(u.id);
+  if (u.side === 'foe' && !u.charId && ENEMY_AI.focus && ENEMY_AI.focus.on !== false) { noteFocus(cb, u, aimOwner(t)); const A = aiUses(cb, u); A.uncool('ai:aim'); A.cool(1, 'ai:aim'); (u as any).aimMem = aimOwner(t); } // rules 1.79 item 6705: who it is fighting, and since when
   if (why === 'healer') { noteHealerHunt(cb, u, t); return; }
   if (!why || (cb.doctrineSaid ||= {})[why]) return; cb.doctrineSaid[why] = true;
   say(cb, u.name + (why === 'spread' ? ' takes a target nobody else is shooting at: the enemy spreads its fire.' : why === 'wounded' ? ' picks out ' + t.name + ': the enemy goes for the wounded.' : ' goes at ' + t.name + ': it takes whoever is nearest.'));
+}
+/** Rules 1.79: the fight log says once a fight for each enemy that it stayed on the one it fought in an earlier round
+ * (within ai.focus.rounds), or turned from it on whoever hurt it since. */
+function noteFocus(cb: Combat, u: Unit, id: string) {
+  const F = ENEMY_AI.focus, A = aiUses(cb, u), mem: string | undefined = (u as any).aimMem, at = A.cooledAt('ai:aim');
+  // (an earlier round than this one, within `rounds`: the cooldown's own reads)
+  if (!F || F.on === false || !mem || at == null || A.coolLeft(1, 'ai:aim') > 0 || !(A.coolLeft(F.rounds + 1, 'ai:aim') > 0)) return;
+  const kept = mem === id ? 'keep' : (u.hitRound?.[id] ?? -1) >= at ? 'threat' : null; if (!kept || !A.take('per_combat', 1, 'ai:said-' + kept)) return;
+  say(cb, F.lines[kept].replace(/\{name\}/g, u.name).replace(/\{target\}/g, cb.units.find((x) => x.id === id)?.name || id));
 }
 /** The one choice of target behind an enemy's plain attack (enemyTargets) and anything else it aims (enemyPreference:
  * a technique): the given enemies of it, best first, by its Taunter, standing before Downed, its doctrine (rules 1.25),
@@ -3032,8 +3134,16 @@ function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], rea
   if (mark) for (const x of list) if (aimOwner(x.t) === mark.id && !x.t.downed && (!x.pv.ok || x.pv.pct * 2 >= bestPct)) x.healer = true;
   const near0 = d.near ? Math.min(...list.filter((x) => !x.t.downed).map((x) => x.far), Infinity) : 0;
   const lateOf = (x: Aim) => (late.length && late.includes(x.t) ? 1 : 0);
+  // Rules 1.79 items 6705 and 6706 (enemies.json ai.focus): it keeps the one it was fighting for `rounds` rounds (that one
+  // counts as more hurt by `keep`), unless someone else has hurt it since: then that one counts as more hurt by `threat`.
+  // Never against a Taunt (the Taunter comes first anyway).
+  const F = ENEMY_AI.focus, fo = F && F.on !== false && u.side === 'foe' && !u.charId && !tauntBy ? F : null, mem: string | undefined = fo ? (u as any).aimMem : undefined, AU = aiUses(cb, u), at = mem ? AU.cooledAt('ai:aim') : null;
+  const keepId = fo && mem && at != null && AU.coolLeft(fo.rounds + 1, 'ai:aim') > 0 && list.some((x) => aimOwner(x.t) === mem) ? mem : null;
+  let threatId: string | null = null, tr = -1;
+  if (keepId && u.hitRound) for (const [id, r] of Object.entries(u.hitRound)) if (id !== keepId && r >= at! && r > tr && list.some((x) => aimOwner(x.t) === id && !x.t.downed)) { tr = r; threatId = id; }
+  const held = (x: Aim) => (!fo || x.t.downed ? 0 : threatId ? (aimOwner(x.t) === threatId ? fo.threat : 0) : keepId && aimOwner(x.t) === keepId ? fo.keep : 0);
   // focus memory (rules 1.61 item 4964): each other attacker of its side this round makes the target less worth it, unless it is nearly finished
-  const key = (x: Aim) => hurtShare(cb, x.t) + d.spread * x.fire + (finishing(x.t) ? 0 : d.memory * x.fire) + ownedWeight(u, x.t) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
+  const key = (x: Aim) => hurtShare(cb, x.t) + d.spread * x.fire + (finishing(x.t) ? 0 : d.memory * x.fire) + ownedWeight(u, x.t) - held(x) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
   list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || lateOf(a) - lateOf(b) || key(a) - key(b) || pct(b) - pct(a));
   const top = list[0];
   if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {
@@ -3057,13 +3167,17 @@ export function enemyPreference(cb: Combat, u: Unit, pcs: Unit[]): { order: Unit
  * shot at the healer from where it stands takes the shortest walk to a tile that has one, if it can still fire this
  * turn after it. Never a melee enemy (it does not run through the squad), never when Taunted, ordered or afraid of
  * the healer, once a turn. Pure: the tile, or null. */
+/** How far an enemy's shot may reach for its eyes at a target (rules 1.76 item 6403): without limit when a friend of its
+ * side already sees the target (the squad's shared sight), else its own sight range to the target's tile (eyeReach).
+ * The firing-position searches (enemyHuntTile, enemyCloseTile, enemyAngleTile) read it. */
+const aimEyes = (cb: Combat, u: Unit, t: Unit): number => (cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, t.pos, undefined, t)) ? Infinity : eyeReach(cb, u, t.pos, t));
 function enemyHuntTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], targets: { t: Unit; healer: boolean }[], stood?: Set<string>): { tile: string; mark: Unit } | null {
   if (mode !== 'shot' || healerFocus(u) < 1 || tauntedBy(u) || moveBlock(u)) return null;
   const mark = healerMark(cb, u); if (!mark || !pcs.includes(mark)) return null; // (a False Image it was fooled by stands in pcs in the healer's place: it shoots that)
   if (targets.some((x) => x.t === mark)) return null; // it has the shot already (or the healer is too well covered to be worth it: then it stays on its target)
   if (condSource(u, 'fear') === mark.id || u.call?.cowed?.by === mark.id) return null;
   const w = WEAPON[u.weapon], P = paths(cb, u.pos, u.id), walls = sightBlockers(cb), left = u.ap - attackApCost(w, 'shot');
-  const eyes = cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, mark.pos)) ? Infinity : (litAt(cb, mark.pos) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2));
+  const eyes = aimEyes(cb, u, mark); // rules 1.76 item 6403: the one sight range
   const reach = Math.min(effectiveRange(w), eyes), taken = new Set(pcs.map((t) => t.pos));
   let best: string | null = null, bs = Infinity;
   for (const [k, tiles] of Object.entries(P.dist)) {
@@ -3082,8 +3196,10 @@ function noteHealerHunt(cb: Combat, u: Unit, t: Unit) {
 /** Where an enemy closes in: the reachable tile that is nearest a living PC and has line of sight to one (Afraid: never
  * nearer the source; fleeing: the tile farthest from every PC). 'ai_move_risk' {u, from, to, risk} lets items add to a
  * tile's cost (Anchor: walking away from a Defender who will strike), only while someone listens. Pure. */
-function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon], stood?: Set<string>): { tile: string; near: Unit | null } | null {
+function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: string | null, pcs: Unit[], w = WEAPON[u.weapon], stood?: Set<string>): { tile: string; near: Unit | null; lure?: true } | null {
   const P = paths(cb, u.pos, u.id);
+  // rules 1.79 item 6701: a Suppressed or Broken enemy walks short (physical/ai.ts sets the cap for its turn)
+  const short = aiShortOf(cb, u);
   const fearOf = condSource(u, 'fear'), fu0 = fearOf ? cb.units.find((x) => x.id === fearOf) : null;
   // Threatened (a Call, rules 1.13): it doesn't close on the one who threatened it this turn (as with what it fears).
   const cowBy = u.call?.cowed ? cb.units.find((x) => x.id === u.call!.cowed!.by && alive(x)) : null, fu = fu0 && !fu0.dead ? fu0 : cowBy || fu0, fu2 = fu === cowBy ? null : cowBy;
@@ -3098,32 +3214,72 @@ function enemyCloseTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', order: stri
   // A shot needs eyes on the target as well as a weapon that reaches (the attack is refused otherwise): from a tile, its
   // own sight (halved into the dark), unless someone else on its side already sees the target. Without this an enemy
   // 13 or 14 tiles off with a long gun counted its own tile as a firing position, was refused the shot, and never moved.
-  const eyes = new Map(pcs.map((t) => [t.id, cb.units.some((a) => a.side === u.side && a !== u && unitSees(cb, a, t.pos)) ? Infinity : (litAt(cb, t.pos) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2))] as [string, number]));
+  const eyes = new Map(pcs.map((t) => [t.id, aimEyes(cb, u, t)] as [string, number])); // rules 1.76 item 6403
   const score0 = (k: string, tiles: number) => { const near = Math.min(...pcs.map((t) => dist(k, t.pos)));
     const sees = pcs.some((t) => dist(k, t.pos) <= Math.min(reach, eyes.get(t.id)!) && lineOfSight(cb, k, t.pos, false, walls));
     // (a tile with a line on someone is as good as any other such tile: a shooter doesn't creep closer with its spare AP)
     return order === 'flee' ? -near + tiles * 0.01 : (sees ? 0 : 100 + near) + tiles * 0.1; };
-  let best: string | null = null, bestScore = score0(u.pos, 0) - 0.05;
+  let best: string | null = null, bestScore = score0(u.pos, 0) - 0.05, bestRisk = 0;
   for (const [k, tiles] of Object.entries(P.dist)) {
-    if (k === u.pos || imaged.has(k) || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement) + (u.ap > 2 ? 2 : 0))) continue;
+    if (k === u.pos || imaged.has(k) || stood?.has(k) || (short != null && tiles > short) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement) + (u.ap > 2 ? 2 : 0))) continue;
     if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue;
     if (fu2 && dist(k, fu2.pos) < dist(u.pos, fu2.pos)) continue;
-    let score = score0(k, tiles) + aiRouteRisk(cb, u, P, k); // around known fields, spotted traps and held attacks it sees
-    if (sneak && sneak.some((t) => unitSees(cb, t, k, walls))) score += ENEMY_AI.skulk_open; // rules 1.37: a skulker flanks through what the other side can't see
+    const risk = aiRouteRisk(cb, u, P, k); // around known fields, spotted traps and held attacks it sees (a bait walks into a held lane: rules 1.79)
+    let score = score0(k, tiles) + risk;
+    if (sneak && sneak.some((t) => unitSees(cb, t, k, walls, u))) score += ENEMY_AI.skulk_open; // rules 1.37: a skulker flanks through what the other side can't see
     if (risky) score += (emit(cb, 'ai_move_risk', { u, from: u.pos, to: k, risk: 0, cb }) as any).risk || 0;
-    if (score < bestScore) { bestScore = score; best = k; }
+    if (score < bestScore) { bestScore = score; best = k; bestRisk = risk; }
   }
   // Nothing nearer or in sight within this turn's reach, and it sees nobody from here: head for the nearest tile anywhere
   // that has a line on someone (around a wall, not up against it), one turn's walk at a time.
-  if (!best && order !== 'flee' && !risky && score0(u.pos, 0) >= 100) { // (not when an item prices the walk: Anchor's blow is weighed tile by tile above)
+  if (!best && order !== 'flee' && !risky && short == null && score0(u.pos, 0) >= 100) { // (not when an item prices the walk: Anchor's blow is weighed tile by tile above)
     let goal: string | null = null, gd = Infinity;
     for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || tiles >= gd || score0(k, 0) >= 100) continue; if (fu && !fu.dead && dist(k, fu.pos) < dist(u.pos, fu.pos)) continue; gd = tiles; goal = k; }
     if (goal) { const G = paths(cb, goal, u.id); let bd = G.dist[u.pos] ?? Infinity;
-      for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement))) continue; const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd) { bd = d; best = k; } } }
+      // (rules 1.79 item 6708: a unit holding back for its bait does not walk into the held lane this way either)
+      const B = ENEMY_AI.bait, holdAt = B && B.on !== false ? ENEMY_AI.held_risk + B.hold : Infinity;
+      for (const [k, tiles] of Object.entries(P.dist)) { if (k === u.pos || imaged.has(k) || stood?.has(k) || !canPay(cb, u, apForTiles(tiles, u.bank, u.movement))) continue; const d = k === goal ? 0 : G.dist[k]; if (d != null && d < bd && !(holdAt < Infinity && aiRouteRisk(cb, u, P, k) >= holdAt)) { bd = d; best = k; } } }
   }
   if (!best) return null;
   const b = best;
-  return { tile: b, near: [...pcs].sort((a, c) => dist(b, a.pos) - dist(b, c.pos))[0] || null };
+  return { tile: b, near: [...pcs].sort((a, c) => dist(b, a.pos) - dist(b, c.pos))[0] || null, ...(bestRisk < 0 ? { lure: true as const } : {}) };
+}
+/** Rules 1.79 item 6708: the fight log says once a round for each enemy that walks into a held lane to draw the shot. */
+function noteBait(cb: Combat, u: Unit) {
+  const B = ENEMY_AI.bait; if (!B) return;
+  if (!aiUses(cb, u).take('per_round', 1, 'ai:said-bait')) return;
+  say(cb, B.line.replace(/\{name\}/g, u.name));
+}
+/** Rules 1.79 item 6707 (spec 4969 b), the angle: an enemy with a gun whose every target in reach is already under its
+ * side's fire (this round or, by the carried memory, the round before) walks at most `ai.angle.max_tiles` to a tile
+ * with a shot at a perceived character nobody of its side is attacking, if it can still fire after the walk: the
+ * fewest tiles, around the held lanes and fields it knows of (aiRouteRisk), a tile with cover from that character
+ * worth `cover` tiles less. Never when Taunted, ordered or unable to move, never on what it fears. Pure. */
+function enemyAngleTile(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], targets: Aim[], stood?: Set<string>): { tile: string; mark: Unit } | null {
+  const A = ENEMY_AI.angle; if (!A || A.on === false || mode !== 'shot' || u.side !== 'foe' || u.charId || tauntedBy(u) || moveBlock(u)) return null;
+  const live = targets.filter((x) => x.pv.ok && !x.t.downed); if (!live.length || live.some((x) => alliesOn(cb, u, x.t) <= 0)) return null;
+  const inReach = new Set(live.map((x) => aimOwner(x.t))), fearOf = condSource(u, 'fear');
+  const marks = pcs.filter((t) => !isGhost(t) && alive(t) && !t.downed && !inReach.has(t.id) && t.id !== fearOf && u.call?.cowed?.by !== t.id && alliesOn(cb, u, t) <= 0);
+  if (!marks.length) return null;
+  const w = WEAPON[u.weapon], P = paths(cb, u.pos, u.id), walls = sightBlockers(cb), left = apFor(cb, u) - attackApCost(w, 'shot'), taken = new Set(pcs.map((t) => t.pos));
+  let best: { tile: string; mark: Unit } | null = null, bs = Infinity;
+  for (const mark of marks) {
+    const eyes = aimEyes(cb, u, mark); // rules 1.76 item 6403: the one sight range
+    const reach = Math.min(effectiveRange(w), eyes);
+    for (const [k, tiles] of Object.entries(P.dist)) {
+      if (k === u.pos || taken.has(k) || stood?.has(k) || tiles <= 0 || tiles > A.max_tiles || apForTiles(tiles, u.bank, u.movement) > left) continue;
+      if (dist(k, mark.pos) > reach || !lineOfSight(cb, k, mark.pos, false, walls)) continue;
+      const sc = tiles + aiRouteRisk(cb, u, P, k) - (coverFor(cb, mark.pos, k) ? A.cover : 0);
+      if (sc < bs || (sc === bs && best != null && k < best.tile)) { bs = sc; best = { tile: k, mark }; }
+    }
+  }
+  return best;
+}
+/** The fight log says once a fight for each enemy that it walked for an angle (rules 1.79: the player is told why). */
+function noteAngle(cb: Combat, u: Unit, t: Unit) {
+  const A = ENEMY_AI.angle; if (!A) return;
+  if (!aiUses(cb, u).take('per_combat', 1, 'ai:said-angle')) return;
+  say(cb, A.line.replace(/\{name\}/g, u.name).replace(/\{target\}/g, t.name));
 }
 /** An enemy that perceives nobody (every hostile Hidden, or out of the fight) heads for where its side last saw one
  * (cb.lastSeen[its side]: the tile a hostile was on when this side saw it hide, or a known position an item gave),
@@ -3189,6 +3345,18 @@ onHook('on_hit', (ctx: any, cb: Combat) => {
   if (att.hidden) cb.lastSeen = { ...cb.lastSeen, [t.side]: { ...cb.lastSeen?.[t.side], [att.id]: att.pos } };
 });
 onHook('cond_end', (ctx: any) => { const u: Unit = ctx.u; if (u?.readIntent?.cond && u.readIntent.cond === ctx.id) delete u.readIntent; });
+/** Rules 1.77 item 6514: THE read-out of a unit's kit for a side (Shadow's Case): its weapon, its rounds (in the weapon,
+ * spare magazines), its armour and what it carries to throw, while it bears a condition whose row reveals `kit` (the row
+ * `cased`) given by a unit of that side. null otherwise. (Its loot is rolled only as it falls: nothing to show before.) */
+export interface KitView { weapon: string; rounds: string | null; armour: number; throwables: string[] }
+export function kitOf(cb: Combat, u: Unit, side: string): KitView | null {
+  const id = Object.keys(u.conds || {}).find((k) => (u.conds![k] || 0) > 0 && condDef(k)?.mods.kit), by = id ? cb.units.find((x) => x.id === u.condBy?.[id]) : null;
+  if (!id || !by || by.side !== side) return null;
+  const w = WEAPON[u.weapon], mag = w?.magazine;
+  const rounds = mag != null ? u.ammo + '/' + mag + ((u.mags || []).length ? ' and ' + (u.mags || []).length + ' spare' : '') : null;
+  const throwables = Object.entries(u.throwables || {}).filter(([, n]) => n > 0).map(([t, n]) => (WEAPON[t]?.name || ITEM[t]?.name || t) + (n > 1 ? ' x' + n : ''));
+  return { weapon: w?.name || u.weapon, rounds, armour: u.armour || 0, throwables };
+}
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
 export const HEALER_WHY = ': it goes for whoever is mending the squad';
 /** Rules 1.25: the reason an intent gives for each way an enemy chooses its target. */
@@ -3211,8 +3379,10 @@ function intentInner(cb: Combat, u: Unit): Intent {
   let out: Intent;
   const step = ENEMY_STEPS.map((s) => s.plan(cb, u)).find(Boolean);
   const hunt = step ? null : enemyHuntTile(cb, u, mode, pcs, targets);
+  const ang = step || hunt ? null : enemyAngleTile(cb, u, mode, pcs, targets);
   if (step) out = { kind: 'attack', text: step.text + (step.why ? AIM_WHY[step.why] : ''), ...(step.targetId ? { targetId: step.targetId } : {}), ...(step.why ? { why: step.why } : {}) };
   else if (hunt) out = { kind: 'move', text: 'move to ' + refOf(hunt.tile) + ' for a shot at ' + hunt.mark.name + HEALER_WHY, to: hunt.tile, targetId: hunt.mark.id, why: 'healer' };
+  else if (ang) out = { kind: 'move', text: 'move to ' + refOf(ang.tile) + ' for an angle on ' + ang.mark.name + AIM_WHY.spread, to: ang.tile, targetId: ang.mark.id, why: 'spread' };
   else if (targets.length) {
     const t = targets[0].t, ghost = isGhost(t), owner = ghost ? cb.units.find((x) => x.id === (t as any).ghostOf) : t;
     out = { kind: 'attack', text: (mode === 'melee' ? 'strike ' : 'shoot ') + (ghost ? owner!.name + "'s False Image at " + refOf(t.pos) + ' (it takes the image for ' + owner!.name + ')' : t.name) + (targets[0].why ? AIM_WHY[targets[0].why] : ''), targetId: owner!.id, ...(ghost ? { image: t.id } : {}), ...(targets[0].why ? { why: targets[0].why } : {}) };
@@ -3237,6 +3407,9 @@ export const die6 = (rng: Rng) => die(rng, 6);
 // ---------- weapon-granted actions (plan 2.9) ----------
 /** Can this weapon jam? Guns with a Heat limit can; bows, crossbows, the flamer, the breacher tube and the core rifle
  * can't (a natural 1 fumbles instead). A weapons.json `handling.deny: ['clear']` or `grant: ['clear']` overrides. */
+/** Do Fear's two refusals (no attack on its source, no step toward it) hold this unit? Not when an item answers
+ * 'fear_unbound' (rules 1.77 item 6505: Steady I); Fear's to-hit penalty is the condition row's and always stays. */
+export const fearHolds = (cb: Combat | null, u: Unit): boolean => !(statQuery({ u, cb }, 'fear_unbound').add > 0);
 /** Does nothing jam this unit's main-hand weapon (Tuned, Improvisation 5: the 'never_jams' query)? */
 export const neverJams = (cb: Combat | null, u: Unit): boolean => statQuery({ u, cb }, 'never_jams').add > 0;
 export function canJam(w: WeaponDef | undefined): boolean {

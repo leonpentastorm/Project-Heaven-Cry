@@ -1,4 +1,4 @@
-// Lane A: Body, melee, damage taken. Perks: Stonewall, Shrug It Off, Used to the Pain, Scar Tissue, Iron Stomach,
+// Lane A: Body, melee, damage taken. Perks: Stonewall, Shrug It Off, Used to the Pain, Iron Stomach,
 // Grapple, Breaching Strike, Earthbreaker, Last Wall, Walking Wounded, Nothing Left to Fear, Bite the Bullet, Siege
 // Engine. Traits: Pain Eater, Factory Made, Glass Runner, Right of Way, Heavyworlder, Crawler-Blooded, Old Timer, The
 // Brightest Light, Squad Anchor, Augmented, Southern Fist, Raised by Orks.
@@ -30,10 +30,6 @@ const tierII = (h: Holder) => h.tier === 'II';
 /** A tile from a grid reference ("F6") or a key ("5,5"). */
 /** Melee reach of the unit's melee option (fists when it holds a gun): 1, or 2 with a reach weapon. */
 const reachOf = (u: Unit) => { const w: any = WEAPON[u.weapon]; if (!w || !isMelee(w)) return 1; return (w.properties || []).includes('reach_2') || w.id === 'lance' || w.grants?.effect?.op === 'reach' ? (w.grants?.effect?.op === 'reach' ? w.grants.effect.value : 2) : 1; };
-/** A hit by someone (not a hazard, a trap's tick, bleeding or burning): what "a hit" and "a wound" mean here. */
-const isHit = (src: any) => !!src?.by && !['bleed', 'burn', 'hazard', 'trap'].includes(src.type);
-/** Self-inflicted damage (Mana Short, an Evoker's overload, Strain) never triggers the drop-to-0 savers (plan 6, Last Wall 1). */
-const selfHarm = (ctx: any) => !!ctx.self || ['short', 'overload', 'strain', 'flux'].includes(ctx.src?.type);
 const magicSrc = (src: any) => ['sigil', 'soul', 'elemental'].includes(src?.type);
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read a character's item state without creating it (stat queries and previews must not change state). */
@@ -51,50 +47,12 @@ const baseMove = (c: Character) => 1 + 0.5 * ((c.attrs.agility || 1) - 1) + (ARM
 
 // ---------- Used to the Pain (Pain Threshold β): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
-// ---------- Scar Tissue (Pain Threshold β) ----------
-// Each wound (a hit that takes HP) this combat: +5% Elemental damage reduction, up to 25% (II: 40%). The total with the
-// derived Elemental damage taken stays within the 60% cap (spec: Derived stats). II, PROVISIONAL (plan 6, Scar Tissue 2):
-// "limb damage" is Injury resistance: each stack adds +5 points to the d100 injury resistance, up to +40.
-// Its numbers are its data's (engine foundations 3): each stack is effects[0].value, up to effects[0].max (the count of
-// stacks is max / value); II's Injury resistance per stack is effects[1].value in points of the d100.
-const scarStack = (h: Holder) => h.info.effects[0] as { value: number; max: number };
-register({
-  id: 'scar_tissue', claims: 'all',
-  on: {
-    on_damaged: (ctx, h) => {
-      if (ctx.t !== h.u || !isHit(ctx.src) || !inFight(h)) return;
-      const { value, max } = scarStack(h), st = stateOf(h), cap = Math.round(max / value); if ((st.n || 0) >= cap) return;
-      st.n = (st.n || 0) + 1;
-      const inj = h.info.effects[1]; if (inj?.type === 'limb') { st.base ??= h.u!.injResist || 0; h.u!.injResist = st.base + Math.round(inj.value * 100) * st.n; }
-    },
-    damage_in: (ctx, h) => {
-      if (ctx.phase !== 'reduce' || ctx.t !== h.u || !ELEMENTAL_TYPES.has(ctx.src?.dmgType || '')) return;
-      const n = stateOf(h).n || 0; if (!n) return;
-      const { value, max } = scarStack(h);
-      const e = Math.min(0.6, h.u!.elemTaken || 0), room = Math.max(0, 1 - 0.4 / (1 - e)), s = Math.min(n * value, max, room); // 0.6 and 0.4: the 60% cap of the spec's Derived stats
-      ctx.dmg = ctx.dmg * (1 - s);
-    },
-  },
-  brief: () => null,
-});
+// Scar Tissue (Pain Threshold) is removed (rules 1.73 item 5826: it repeated the per-point elemental row); a save holding it
+// gets Numb at the same tier (skills.json pain_threshold.perk_remap).
 
-// ---------- Iron Stomach (Guts β) ----------
-// I: Nausea and Fear last at most 1 round on you. II: immune (the generic immunity op cancels them before the save).
-// Story: II auto-passes checks the Narrator tags fear, nausea, gore or horror, and a story Fear or Nausea on you ends at
-// once; I: they end at the next scene or check.
-const FEARISH = ['fear', 'nausea', 'gore', 'horror', 'disgust'];
+// Iron Stomach (Guts) is folded into Steady II (rules 1.73 item 5811): its one round is data (cond_rounds); its story half
+// and its Tier II immunity are gone (the Mastered perk is the Fear immunity; item ops run in a fight).
 const storyShake = (h: Holder, ids: string[]) => { if (!h.c || !h.g) return; for (const id of storyConds(h.g, h.c)) if (ids.includes(id)) setStoryCond(h.g, h.c, id, 'scene', true); };
-register({
-  id: 'iron_stomach', // Tier I's one round is data (engine foundations 3); the story's checks stay here
-  on: {
-    check_build: (ctx, h) => { if (ctx.c === h.c && tierII(h)) storyShake(h, ['fear', 'nausea']); },
-    check_post: (ctx, h) => { if (ctx.c !== h.c || !tierII(h)) return; const tg: string[] = ctx.ck.tags || []; if (tg.some((x) => FEARISH.includes(x)) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('Iron Stomach'); } },
-    check_result: (ctx, h) => { if (ctx.c === h.c) storyShake(h, ['fear', 'nausea']); },
-    scene_change: (_ctx, h) => storyShake(h, ['fear', 'nausea']),
-    story_cond_apply: (ctx, h) => { if (ctx.c === h.c && tierII(h) && (ctx.id === 'fear' || ctx.id === 'nausea')) { ctx.cancel = true; ctx.why = 'Iron Stomach'; } },
-  },
-  brief: (h) => (tierII(h) ? 'never nauseated or frightened (tag fear checks: auto-pass)' : 'shakes off nausea and fear at once'),
-});
 
 // Grapple became Iron Grip and Breaching Strike became a passive (rules 1.13): both are in perks/skeleton.ts.
 
@@ -182,43 +140,7 @@ register({
   brief: () => 'can\'t be frightened; allies near them neither (story: you judge "near")',
 });
 
-// ---------- Bite the Bullet (Guts + Pain Threshold, Achieved) ----------
-// Once per combat, when you would drop to 0 HP (and no other saver held you up), you stay up in a Last Turn state
-// (at 1 HP, PROVISIONAL: the engine has no "up at 0 HP"; see the notes) and act normally to the end of your next turn
-// (this turn, if it is yours now). Then you go Downed unless someone healed you. Each hit you take meanwhile is a
-// death-save failure (two on a critical) instead of damage; at 3 you die (PROVISIONAL, plan 6 Bite the Bullet 2).
-// Ordering: after Angel of the Trenches and Last Wall (priority 20).
-const btbEnd = (h: Holder, why: string) => { const st = stateOf(h); st.lt = null; if (h.u) endCond(h.u, 'last_turn'); say(h.cb, why); };
-register({
-  id: 'bite_the_bullet', claims: 'all', priority: 20,
-  on: {
-    damage_in: (ctx, h) => {
-      if (ctx.t !== h.u) return;
-      const u = h.u!, st = stateOf(h);
-      if (ctx.phase === 'reduce' && st.lt && ctx.dmg > 0) {
-        ctx.dmg = 0; if (!isHit(ctx.src)) return;
-        u.saves.fail += ctx.src.crit ? 2 : 1;
-        say(h.cb, u.name + ' takes the hit on borrowed time: death-save failure ' + Math.min(3, u.saves.fail) + '/3 (Bite the Bullet).');
-        if (u.saves.fail >= 3) { u.hp = 0; u.dead = true; btbEnd(h, u.name + ' dies on their feet.'); if (h.cb) { fxFell(h.cb, u); checkOver(h.cb); } }
-        return;
-      }
-      if (ctx.phase !== 'would_drop_to_0' || ctx.floor != null || u.side !== 'pc' || selfHarm(ctx) || u.hp <= 0) return;
-      if (!uses(h).take('per_combat', 1)) return;
-      const own = !!h.cb && h.cb.order[h.cb.turn] === u.id && !h.cb.window;
-      ctx.floor = 1; st.lt = { began: own };
-      restoreConds(u, { last_turn: 99 }); // the perk's own marker: nobody is asked
-      say(h.cb, u.name + ' bites the bullet: still standing for ' + (own ? 'the rest of this turn' : 'one more turn') + '.');
-    },
-    turn_start: (ctx, h) => { if (ctx.u === h.u && stateOf(h).lt) stateOf(h).lt.began = true; },
-    turn_end: (ctx, h) => {
-      const st = stateOf(h); if (ctx.u !== h.u || !st.lt || !st.lt.began) return;
-      const u = h.u!; u.hp = 0; setDowned(u, true); setBraced(u, false); dropHeldShot(h.cb, u, 'down');
-      btbEnd(h, u.name + '\'s Last Turn is over: Downed.'); if (h.cb) fxFell(h.cb, u);
-    },
-    heal_given: (ctx, h) => { if (ctx.t === h.u && stateOf(h).lt && ctx.n > 0) btbEnd(h, h.u!.name + ' is patched up in time: the Last Turn ends, still standing.'); },
-  },
-  brief: () => null,
-});
+// ---------- Bite the Bullet (Guts + Pain Threshold, Achieved): written in data only (data/perks.json; the op last_turn, rules 1.77 item 6508) ----------
 
 // ---------- Siege Engine (Raw Power + Durability, Achieved): written in data only (data/perks.json; run by effects/triggers.ts, engine foundations 3) ----------
 
@@ -427,7 +349,7 @@ const anchored = (h: Holder, t: Unit) => { const u = h.u; if (!u || !h.cb || t =
 register({
   id: 'squad_anchor', claims: 'all',
   on: {
-    attack_preview: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.tgt)) { ctx._anchor = true; ctx.terms.push({ v: -1, label: 'Squad Anchor (+1 Dodge)' }); } },
+    to_hit: (ctx, h) => { if (ctx.type === 'weapon' && !ctx._anchor && anchored(h, ctx.tgt)) { ctx._anchor = true; ctx.terms.push({ v: -1, label: 'Squad Anchor (+1 Dodge)' }); } },
     cond_apply: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.t)) { ctx._anchor = true; ctx.saveAdd = (ctx.saveAdd || 0) + 1; } },
     death_save: (ctx, h) => { if (!ctx._anchor && anchored(h, ctx.u)) { ctx._anchor = true; ctx.add += 1; } },
     moved: (ctx, h) => {

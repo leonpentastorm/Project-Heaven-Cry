@@ -10,7 +10,7 @@ type F = ReturnType<typeof fightWith>;
 const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 const fxOf = (cb: Combat, k: string) => (cb.fx || []).filter((e: any) => e.k === k) as any[];
-const OD = 'skill:will_power.3#overdraw', AGAIN = 'perk:heart_overload#again', BLOOD = 'perk:heart_overload#pay_hp';
+const OD = 'skill:will_power.2#overdraw', AGAIN = 'perk:heart_overload#again', BLOOD = 'perk:heart_overload#pay_hp';
 /** Clear the yard; every unit 999 HP, no armour, easy to hit; the casters' numbers fixed: Soul multiplier 1, Strain
  * limit 20, 500 MP, an Emanator in hand, and the fight's free first Pump already spent (so a Pump costs its 1 AP). */
 function clean(f: F) {
@@ -72,7 +72,7 @@ describe('Overdraw (Will Power 3; rules 1.14, item 1010)', () => {
     const f = start(); f.pc.mg!.held!.stage = 3;
     expect(toggles(f, f.pc, 'combat/pump').find((t) => t.id === OD)).toMatchObject({ why: 'Stage 2 or lower.' });
     A(f, f.pc, { type: 'combat/pump', mods: [OD] });
-    expect(f.pc.mg!.held!.stage).toBe(4); expect(f.pc.uses?.['skill:will_power.3|per_turn']).toBeUndefined();
+    expect(f.pc.mg!.held!.stage).toBe(4); expect(f.pc.uses?.['skill:will_power.2|per_turn']).toBeUndefined();
   });
   it('the Pump\'s card shows it before the click: the stage it reaches, and its Strain', () => {
     const f = start();
@@ -83,7 +83,7 @@ describe('Overdraw (Will Power 3; rules 1.14, item 1010)', () => {
     expect(pv([OD]).note).toMatch(/1 Strain after it/);
   });
   it('a save from before 1.14 that had spent its once-a-fight Overdraw is not locked out', () => {
-    const f = start(); f.pc.uses = { ...(f.pc.uses || {}), 'skill:will_power.3|per_combat': { s: 'c', n: 1 } } as any;
+    const f = start(); f.pc.uses = { ...(f.pc.uses || {}), 'skill:will_power.2|per_combat': { s: 'c', n: 1 } } as any;
     expect(toggles(f, f.pc, 'combat/pump').find((t) => t.id === OD)).toMatchObject({ why: null });
     A(f, f.pc, { type: 'combat/pump', mods: [OD] }); expect(f.pc.mg!.held!.stage).toBe(2);
   });

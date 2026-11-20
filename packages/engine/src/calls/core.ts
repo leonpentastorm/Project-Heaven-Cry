@@ -3,8 +3,9 @@
 // it. previewCall and useCall are one code path: a preview builds the same Call with `preview: true`, and a handler
 // then describes what it would do and changes nothing.
 //
-// The shared ladder, by the speaker's points in the Call's skill (calls.json `rules`): 2 AP and 5 tiles + 1 a point;
-// step 2 at 3 points; 1 AP from 5; step 3 at 7; as a reaction once a round from 9; the first Call of a turn free at 10.
+// The shared ladder, by the speaker's points in the Call's skill (calls.json `rules`; rules 1.70 items 5535, 5536): the one
+// price table (`price`: 3 AP, 2 from 5, 1 from 9; each Call once a turn, twice at 10; from 10 the reaction may pay, on
+// your own turn for any Call, off it for a helping Call once a round); its reach 4 tiles + 1 a point; steps at 1, 4, 8.
 import { tilesN } from '../log';
 import { say, unsay, type Combat, type Unit, alive, emitFx, checkOver, active, dist, sideSees } from '../combat';
 import { charOfUnit, emit, bindGame } from '../effects/hooks';
@@ -14,7 +15,7 @@ import { canReact, react, refundReaction } from '../tactics';
 import type { Rng } from '../rng';
 import { turnStamp, ownSideOnly } from '../physical/core';
 import type { Call, CallArgs, CallDef, CallHandler, CallMarks, CallPadEntry, CallPreview } from './types';
-import { CALL, CALLS, CALL_RULES, callBaseAp, callRangeAt, callSkillName, callStepAt } from './data';
+import { CALL, CALLS, CALL_RULES, CALL_REACT_AT, callBaseAp, callsPerTurn, callRangeAt, callSkillName, callStepAt } from './data';
 import { priced, whyNot, pay, refund } from '../effects/cost';
 import { uses } from '../effects/uses';
 
@@ -34,17 +35,20 @@ export function callLevel(u: Unit, def: CallDef): number {
   if (u.charId) { const c = charOfUnit(u); return Math.max(0, Math.min(10, Math.floor(((c?.skills as any)?.[def.skill] as number) || 0))); }
   return (u.calls || []).includes(def.id) ? Math.max(0, Math.min(10, u.callLevel || 0)) : 0;
 }
-/** Calls this unit has made on this turn (its own turn only; a reaction isn't counted). */
+/** Calls this unit has made on this turn (its own turn only; a Call made off its turn as a reaction isn't counted). */
 export const callsThisTurn = (cb: Combat, u: Unit): number => spoken(cb, u).used('per_turn', TURN_KEY);
-// The speaker's own counters are cells of effects/uses.ts (review 1, F8): its Calls this turn, its one Call as a reaction a round.
-const TURN_KEY = 'calls#turn', REACT_KEY = 'calls#react';
+// The speaker's own counters are cells of effects/uses.ts (review 1, F8): its Calls this turn, each Call's own this turn
+// (rules 1.70 item 5535: once a turn, twice at 10), its one Call as a reaction a round off its turn.
+const TURN_KEY = 'calls#turn', REACT_KEY = 'calls#react', idKey = (id: string) => 'calls#turn:' + id;
+/** Is this Call made on the speaker's own turn (the reaction then pays in place of the AP, rules 1.70 item 5535)? */
+const ownTurn = (cb: Combat, u: Unit): boolean => active(cb) === u && !cb.window;
 const spoken = (cb: Combat, u: Unit) => uses({ key: 'calls', u, cb });
-/** What a Call costs this unit now: 2 AP, 1 from 5 points, nothing for the first Call of a turn at 10; a reaction
- * costs the reaction and no AP. 'call_cost' {u, id, ap, react, preview} lets an item change it (never state). */
+/** What a Call costs this unit now: the price table's AP at its points (calls.json rules.price); paid with the reaction
+ * (from the table's reaction row: on its own turn, or off it as a helping Call), the reaction and no AP. 'call_cost'
+ * {u, id, ap, react, preview} lets an item change it (never state); then the one cost site. */
 export function callAp(cb: Combat, u: Unit, def: CallDef, react = false): number {
   const level = callLevel(u, def);
-  let ap = react ? CALL_RULES.reaction_ap : callBaseAp(level);
-  if (!react && level >= CALL_RULES.free_at && callsThisTurn(cb, u) < CALL_RULES.free_per_turn) ap = 0;
+  const ap = react ? CALL_RULES.reaction_ap : callBaseAp(level);
   const hk: any = emit(cb, 'call_cost', { u, id: def.id, ap, react, preview: true, cb });
   return priced({ cb, u }, 'call', Math.max(0, hk.ap), undefined, { id: def.id, react }).ap;
 }
@@ -64,11 +68,17 @@ function gate(cb: Combat, u: Unit, def: CallDef, args: CallArgs): string | null 
   const level = callLevel(u, def);
   if (level < 1) return 'Needs a point of ' + callSkillName(def) + '.';
   if (condOn(u, 'silenced')) return 'You are Silenced and can\'t Call.';
+  const own = ownTurn(cb, u);
+  // rules 1.70 item 5535: each Call once a turn (twice at the table's top row), for every Call paid in AP (on the speaker's
+  // own turn, and in an ally's window: On My Mark, Supreme Command; the review of the 0.32 shared step, m1); a Call paid
+  // with the reaction off the speaker's turn has its own once-a-round count below
+  if ((own || !args.react) && spoken(cb, u).left('per_turn', callsPerTurn(level), idKey(def.id)) <= 0) return def.name + (callsPerTurn(level) > 1 ? ' is made at most ' + callsPerTurn(level) + ' times a turn.' : ' is made once a turn.');
   if (args.react) {
-    { const no = callReactWhy(def); if (no) return no; }
-    if (level < CALL_RULES.reaction_at) return 'A Call as a reaction needs ' + CALL_RULES.reaction_at + ' points of ' + callSkillName(def) + '.';
-    if (active(cb) === u) return 'It is your turn. Make the Call as an action.';
-    if (spoken(cb, u).left('reaction', 1, REACT_KEY) <= 0) return 'One Call as a reaction a round.';
+    if (level < CALL_REACT_AT) return 'Paying for a Call with your reaction needs ' + CALL_REACT_AT + ' points of ' + callSkillName(def) + '.';
+    if (!own) { // off your turn: a helping Call only, once a round, where it works today
+      { const no = callReactWhy(def); if (no) return no; }
+      if (spoken(cb, u).left('reaction', 1, REACT_KEY) <= 0) return 'One Call as a reaction a round.';
+    }
     if (!canReact(cb, u, callReactKind(def))) return 'No reaction left this round.'; // a helping Call protects (Suppressed does not stop it)
   }
   const ap = callAp(cb, u, def, !!args.react);
@@ -152,7 +162,8 @@ function speak(cb: Combat, u: Unit, def: CallDef, args: CallArgs, p: any, t: any
   const id = def.id;
   const key = def.kind === 'helping' ? 'helped' : 'hindered', limit0 = tgt.call?.[key];
   pay(cb, u, ap);
-  if (t.react) spoken(cb, u).take('reaction', 1, REACT_KEY); else spoken(cb, u).take('per_turn', Infinity, TURN_KEY);
+  const own = ownTurn(cb, u);
+  if (t.react && !own) spoken(cb, u).take('reaction', 1, REACT_KEY); else { spoken(cb, u).take('per_turn', Infinity, TURN_KEY); spoken(cb, u).take('per_turn', Infinity, idKey(id)); }
   callMarks(tgt)[key] = { r: cb.round, id, side: u.side };
   const ev = emitFx(cb, 'call', { unit: u.id, id, target: tgt.id, at: u.pos, step: t.step, kind: def.kind, ...(t.react ? { reaction: true } : {}), ...ownSideOnly(cb, u) });
   const said = args.text ? ' "' + String(args.text).slice(0, 200) + '"' : '';
@@ -160,7 +171,8 @@ function speak(cb: Combat, u: Unit, def: CallDef, args: CallArgs, p: any, t: any
   const err = withVia(u, def.skill, () => p.h!.run(t));
   if (err) { // a handler must refuse before it changes anything: the cost and the marks come back
     refund(cb, u, ap); unsay(cb, logAt); (ev as any).refused = true;
-    if (t.react) { refundReaction(cb, u); spoken(cb, u).refund('reaction', REACT_KEY); } else spoken(cb, u).refund('per_turn', TURN_KEY);
+    if (t.react) refundReaction(cb, u);
+    if (t.react && !own) spoken(cb, u).refund('reaction', REACT_KEY); else { spoken(cb, u).refund('per_turn', TURN_KEY); spoken(cb, u).refund('per_turn', idKey(id)); }
     if (limit0) callMarks(tgt)[key] = limit0; else delete callMarks(tgt)[key];
     return err;
   }
@@ -188,7 +200,9 @@ export function callPad(cb: Combat, u: Unit, g?: any): CallPadEntry[] {
       id: def.id, name: def.name, skill: def.skill, skillName: callSkillName(def), kind: def.kind, aim: def.aim, ap, range: callRangeAt(level), level, step, ok: !why, why,
       text: def.steps[step - 1]?.text || def.text, summary: def.text, steps: def.steps.map((s) => ({ at: s.at, text: s.text, has: level >= s.at })),
       ...(def.save ? { save: { family: def.save, tn: callTn(u, def) } } : {}),
-      reaction: level >= CALL_RULES.reaction_at && alive(u) && !condOn(u, 'silenced') && spoken(cb, u).left('reaction', 1, REACT_KEY) > 0 && canReact(cb, u),
+      reaction: level >= CALL_REACT_AT && !callReactWhy(def) && alive(u) && !condOn(u, 'silenced') && spoken(cb, u).left('reaction', 1, REACT_KEY) > 0 && canReact(cb, u),
+      // rules 1.70 item 5535: on its own turn, from the table's reaction row, the reaction may pay for this Call
+      payReaction: level >= CALL_REACT_AT && ownTurn(cb, u) && !why && canReact(cb, u, callReactKind(def)),
       free: ap === 0,
     });
   }

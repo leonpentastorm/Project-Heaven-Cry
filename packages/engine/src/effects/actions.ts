@@ -25,7 +25,7 @@ import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
 import { overworld } from '../kit';
-import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, type Priced } from './cost';
+import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, brakeGiven, type Priced } from './cost';
 import { isNumberBlock, numberOf } from './amounts';
 import { doorFeed } from './feed';
 import { pickedFork } from '../doorpicks';
@@ -49,7 +49,7 @@ const TARGETING = (e: any): ActionDef['target'] => {
 // A grant_action may carry, besides `ap` and `uses`: `res` (resources it costs, by id), `if` (the holder's predicates:
 // the action is greyed while one fails), `reach` {tiles, sight, side, self, if} (who it may go at: it builds the pick
 // list and the refusal), `pick` (a closed list, or 'words', 'squad', 'designs', 'gamma'), `pick_label`, `limit` {per, n}
-// (its use window), `prayer` ('whisper' | 'hymn': prayed through faith.ts, its slot, wait, dice and Witnessed; `tier`
+// (its use window), `tab` (rules 1.77: a door's tab its row sits on: shadow, tend, figments), `prayer` ('whisper' | 'hymn': prayed through faith.ts, its slot, wait, dice and Witnessed; `tier`
 // for a Hymn's gate) and nested `effects`. A door verb's (item kind `verb`) nested item ops run as the action's own
 // effects when it succeeds (on a ctx shaped as `acted`'s); another item's nested `when: "acted"` effects are lifted
 // onto the item (collect.ts liftActed).
@@ -73,7 +73,7 @@ export function holderNumber(h: Holder, x: unknown): number | null {
   if (typeof x === 'number') return x;
   if (!isNumberBlock(x)) return null;
   const c = h.c || charOfUnit(h.u);
-  return numberOf(x, (of) => { const i = of.indexOf(':'), ns = of.slice(0, i), f = of.slice(i + 1); return ns === 'skill' ? Number((c as any)?.skills?.[f] || 0) : ns === 'res' && h.u ? resLeft(h.u, f, c) : ns === 'feed' ? doorFeed(h.u || c, f) : ns === 'pick' ? (pickedFork(c, f) ? 1 : 0) : 0; }); // feed: rules 1.60 (N3), the holder's beta feed of a door; pick: rules 1.60 (N2), 1 when the holder picked that fork option
+  return numberOf(x, (of) => { const i = of.indexOf(':'), ns = of.slice(0, i), f = of.slice(i + 1); return ns === 'skill' ? Number((c as any)?.skills?.[f] || 0) : ns === 'res' && h.u ? resLeft(h.u, f, c, h.cb) : ns === 'feed' ? doorFeed(h.u || c, f) : ns === 'pick' ? (pickedFork(c, f) ? 1 : 0) : 0; }); // feed: rules 1.60 (N3), the holder's beta feed of a door; pick: rules 1.60 (N2), 1 when the holder picked that fork option
 }
 /** Why this holder can't aim its action at this unit by its `reach` (null: it can). */
 export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): string | null {
@@ -85,7 +85,7 @@ export function reachWhy(h: Holder, reach: any, t: Unit | null | undefined): str
   if ((side === 'ally' || side === 'side') && t.side !== u.side) return 'Pick an ally.';
   // rules 1.33: reach.beyond (a tie kind): a unit tied to the holder by it is in reach at any range the holder itself sees
   const far = !!reach.beyond && !ifFails(h, { target_tied: reach.beyond }, t);
-  if (far && !unitSees(cb, u, t.pos)) return 'Not in sight: a Bond carries it only where you can see.';
+  if (far && !unitSees(cb, u, t.pos, undefined, t)) return 'Not in sight: a Bond carries it only where you can see.';
   const tiles = holderNumber(h, reach.tiles);
   if (!far && tiles != null && distK(u.pos, t.pos) > tiles) return 'Out of range (' + tiles + (tiles === 1 ? ' tile).' : ' tiles).');
   if (reach.sight && t.side !== u.side && ifFails(h, { target_sight: ['seen'] }, t)) return 'You can\'t see them.'; // the holder's side sees it (P7)
@@ -165,6 +165,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
     if (typeof g.site === 'string') d.site = g.site;
     if (g.prayer) d.prayer = g.prayer;
+    if (typeof g.tab === 'string' && (VERB_TABS as string[]).includes(g.tab)) d.tab = g.tab; // rules 1.77 item 6501: a door's tab (Tending verbs on Camaraderie's perks: TEND)
     if (g.if || g.prayer) d.available = (h) => {
       // the refusal: the grant's own sentence for the failing predicate (`why`: {predicate: sentence}), else its name
       if (g.if && h.u && h.cb) { const k = ifFails(h, g.if); if (k) return (g.why && typeof g.why[k] === 'string' ? g.why[k] : 'Not now (' + human(k) + ').'); }
@@ -177,7 +178,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
       // 0.28.3 (rules 1.55 item 45): a unit-aimed verb whose own op moves the target to the event's tile (Guide's
       // displace to: "tile") takes that tile as a second pick: the legal tiles are shown, and a missing or wrong one is
       // refused in words before anything is paid (it was sent with no tile: the AP and MP went, nobody moved)
-      const step = mine.find((e) => e?.op === 'displace' && e.to === 'tile' && e.target === 'target');
+      const step = [...mine, ...(g.effects || [])].find((e: any) => e?.op === 'displace' && e.to === 'tile' && e.target === 'target'); // rules 1.75 item 6213: any item's grant (Guide on a perk: its ops lifted to acted) takes the tile too
       if (step) { d.thenTile = true; d.preview = (h, args) => stepTileWhy(h, reach, step, args); }
     }
     return d;
@@ -229,7 +230,7 @@ export function dataAp(info: ItemInfo, actionId: string): number | string {
 function costOf(h: Holder, d: ActionDef, args: ActionArgs): Priced {
   const ap = typeof d.ap === 'function' ? d.ap(h, args) : d.ap === 'data' ? apFromData(dataAp(h.info, d.id), h.u) : d.ap, res = typeof d.res === 'function' ? d.res(h, args) : d.res;
   const site = d.site ?? h.key + '#' + d.id; // rules 1.33: a data action may name its cost site (Triage's 'triage': what items answer as ap_cost:triage)
-  return price({ cb: h.cb, u: h.u, c: h.c }, site, { ap, res: res || undefined }, { item: h.key });
+  return price({ cb: h.cb, u: h.u, c: h.c }, site, { ap, res: res || undefined }, { item: h.key, actionId: d.id, ...(args.targetId ? { targetId: args.targetId } : {}) }); // rules 1.70 P3: the id it is priced with (Long Thread's once a Bonded friend, rules 1.75 item 6212; the healing brake, spec 5610)
 }
 /** The tab an item's actions go on: class moves on the class's, a door verb on its system's tab (its data file's `tab`:
  * Shadow's verbs on 'shadow', rules 1.32), the rest on the perks'. */
@@ -239,6 +240,7 @@ export const VERB_TABS: ItemTab[] = ['shadow', 'tend', 'figments'];
 /** A prayer granted by any item (rules 1.31: the Chaplain's Ward and Sanctuary) goes on the Faith tab, among the prayers. */
 const tabOf = (h: Holder, d?: ActionDef): ItemTab => {
   if (d?.prayer) return 'faith';
+  if (d?.tab) return d.tab; // rules 1.77 item 6501: the grant's own tab
   if (h.kind === 'class') return 'class';
   const t = h.kind === 'verb' ? rawItem(h.key)?.tab : null;
   return VERB_TABS.includes(t) ? t : 'perks';
@@ -366,7 +368,7 @@ function resolve(x: Who, id: string, actionId?: string): { h: Holder; d: ActionD
   const key = keyOf(id), h = holdersOf(x).find((y) => y.key === key);
   if (!h) return 'You don\'t have that.';
   h.g = x.g ?? boundGame();
-  const defs = actionDefs(h.info), d = actionId ? defs.find((a) => a.id === actionId) : defs[0];
+  const defs = actionDefs(h.info), d = actionId ? defs.find((a) => a.id === actionId) || defs.find((a) => a.was?.includes(actionId)) : defs[0];
   if (!d) return h.info.name + ' isn\'t an action.';
   return { h, d };
 }
@@ -378,7 +380,7 @@ export function previewPerkAction(x: Who, id: string, args: ActionArgs & { actio
   const r = resolve(x, id, args.actionId); if (typeof r === 'string') return { ok: false, why: r, ap: 0, lines: [] };
   const { h, d } = r, e = entryOf(h, d, scope);
   if (!e) return { ok: false, why: d.scope.includes(scope) ? 'Not now.' : 'Not here.', ap: 0, lines: [] };
-  const base: ActionPreview = { ok: !e.why, why: e.why || undefined, ap: e.ap, lines: [] };
+  const base: ActionPreview = { ok: !e.why, why: e.why || undefined, ap: args.targetId ? costOf(h, d, args).ap : e.ap, lines: [] }; // rules 1.70 P3: aimed, it is priced with its target (rules 1.75 item 6212)
   if (base.ok) { const why = aimWhy(h, d, e, args); if (why) { base.ok = false; base.why = why; } }
   const p = d.preview ? d.preview(h, args) || {} : {};
   const out: ActionPreview = { ...base, ...p, lines: [...(p.lines || [])] };
@@ -431,6 +433,7 @@ export function runPerkAction(x: Who, id: string, args: ActionArgs & { actionId?
   const g = h.g ?? boundGame(), had = g?.story?.rulings?.length || 0;
   const wasActing = actingAs(d.label); let err: string | null | void;
   try { err = d.run(h, args, rng); } finally { actingAs(wasActing); }
+  if (!err && h.u && sc !== 'story') brakeGiven({ cb: h.cb, u: h.u, c: h.c }, { item: h.key, actionId: d.id, ...(args.targetId ? { targetId: args.targetId } : {}) }); // the healing brake counts the give (spec 5610)
   // Rulings this use opened carry it, so a refusal gives it back.
   for (const r of (g?.story?.rulings || []).slice(had)) if (!r.use && r.charId === (h.c?.id || h.u?.charId)) r.use = { per, key: h.key + '#' + d.id };
   return err || null;

@@ -30,13 +30,13 @@ const DOOR: Record<string, Allow> = {
   'class:fighter.read_the_swing': { words: ['melee'], modes: ['melee'], why: 'Read the Swing (rules 1.60 item 4624): the door of Momentum, and the incoming attack: a melee attack that misses you (as Riposte answers one)' },
   'class:defender.anchor': { words: ['melee'], why: 'every opportunity attack is a melee strike (base rule), not the class\'s choice' },
   'class:defender.brace': { words: ['weapon attack'], why: 'Interpose answers an enemy\'s weapon attack (the incoming attack)' },
+  'class:defender.retort': { words: ['melee'], modes: ['melee'], why: 'Retort (rules 1.73 item 5836): the incoming attack, a foe\'s melee blow on the Bulwark (as Read the Swing reads the miss)' },
   // The Skirmisher's step (rules 1.30): neutral in rule; what stays is a door or a branch, never a lock.
   'class:marksman.fire_discipline': { modes: ['aimed'], why: 'the lead\'s ruling (13 Nov 2026): Aimed is the technique\'s own mode (+1 to hit); the 3-AP discount is any family\'s; Heat (the gun\'s door) is read from the weapon\'s heat_limit, not its family' },
   'class:marksman.special_ammo': { words: ['magazine', 'quiver'], code: 1, why: 'any weapon takes a load; the text says the form it takes (a magazine, a quiver, else a load of attacks); the one code read is the reload effect\'s art (fx cat)' },
   'class:marksman.killzone': { code: 2, why: 'any weapon holds: a melee weapon holds strikes at its reach (a branch, not a refusal); an aimed hold needs a weapon that aims (the Aimed technique)' },
   'class:gunslinger.called_shot': { code: 2, why: 'any weapon (rules 1.32): it reads the family only to make the weapon\'s plain attack (a strike in reach, a throw, else a shot): a branch, never a refusal' },
   'class:marksman.duck_and_roll': { words: ['ranged'], code: 1, why: 'it answers an enemy\'s ranged attack at you (the incoming attack)' },
-  'class:infiltrator.field_fix': { words: ['jammed weapon', 'gun'], why: 'support: it clears an ally\'s jam (a gun\'s own state), not a hit' },
   // The Rigger's step (rules 1.34): the Scrap Turret makes ANY weapon's plain attack; the one family read picks which
   // (a strike for a melee weapon, else a shot): a branch, never a lock (audit 4.6).
   'class:trickster.scrap_turret': { why: 'Scrap Sentinel (rules 1.60 item 4633): it stands the Sentinel form, whatever the wreck or pile held; no family read left' },

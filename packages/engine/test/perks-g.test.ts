@@ -4,7 +4,7 @@
 // directly (notice, the enemy AI).
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
-import { votesOf, rerollFrom, d20, emitStory, enemyTurn, holderOf, briefOf, perkActionsFor, previewAttack, coverageReport, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
+import { PERK, votesOf, rerollFrom, d20, emitStory, enemyTurn, holderOf, briefOf, perkActionsFor, previewAttack, coverageReport, condOn, type Unit, type Combat, type GameState, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
 type F = ReturnType<typeof fightWith>;
@@ -35,7 +35,7 @@ const notes = (f: F) => (f.cb.notes || []).join('\n');
 
 describe('lane G coverage', () => {
   it('no effect of a lane G item is a gap', () => {
-    const ids = 'bedside_manner footnote burden_of_proof detectives_eye crowd_pleaser double_meaning old_tongue real_power established_fact closing_argument everyones_friend their_own_idea foreseen cultured cold_read what_could_be every_lie_is_a_door gambler crowded_head cover_story cold_case interrogator holo_drama_addict born_performer'.split(' ');
+    const ids = 'bedside_manner footnote burden_of_proof detectives_eye crowd_pleaser double_meaning old_tales rank_has_privileges established_fact closing_argument everyones_friend their_own_idea foreseen cultured cold_read what_could_be every_lie_is_a_door gambler crowded_head cover_story cold_case interrogator holo_drama_addict born_performer'.split(' ');
     const gaps = coverageReport().filter((r) => ids.includes(r.key.split(':')[1]) && r.owner === 'gap');
     expect(gaps).toEqual([]);
   });
@@ -85,13 +85,12 @@ describe('Footnote', () => {
   });
 });
 
-describe('Burden of Proof', () => {
-  it('I: a demand for evidence: no evidence, no check; II: onlookers shift', () => {
-    const s = storyWith([{ perks: { burden_of_proof: 'I' } }, { perks: { burden_of_proof: 'II' } }]);
-    perk(s, s.chars[0], 'burden_of_proof', { text: 'Show me the ledger, then.' });
-    expect(rulings(s.g, 'perk:burden_of_proof')[0].text).toMatch(/call no check/);
-    perk(s, s.chars[1], 'burden_of_proof', { text: 'Proof?' });
-    expect(rulings(s.g, 'perk:burden_of_proof')[1].text).toMatch(/onlooker shifts/);
+describe('Burden of Proof (folded into Objection! II: rules 1.74 item 6023)', () => {
+  it('no perk of that id; Objection! II carries the demand for evidence to the Narrator', () => {
+    expect((PERK as any).burden_of_proof).toBeUndefined();
+    const ob: any = (PERK as any).objection; expect(ob.skills).toEqual(['eloquence']);
+    expect(ob.tiers.II.effects.find((e: any) => e.op === 'narrator').note).toMatch(/demands evidence/);
+    expect(ob.tiers.II.text).toMatch(/demand their evidence/);
   });
 });
 
@@ -108,12 +107,12 @@ describe('Detective\'s Eye', () => {
     const s = storyWith([{ perks: { detectives_eye: 'II' } }]);
     expect(brief(s.g, s.chars[0], 'perk:detectives_eye')).toMatch(/two out-of-place details/);
     const f = fightWith([{ perks: { detectives_eye: 'II' } }], [{ at: 'H6' }, { at: 'H8' }]);
-    expect(f.foes.filter((u) => u.weakPoint && u.analyzedBy).length).toBe(2);
-    expect(logHas(f.cb, /Detective's Eye.*(not connected|connected)/)).toBe(true);
+    expect(f.foes.filter((u) => condOn(u, 'read_them') && u.analyzedBy).length).toBe(2);
+    expect(logHas(f.cb, /The Tell.*(not connected|connected)/)).toBe(true);
   });
   it('I in combat: one enemy\'s weak point', () => {
     const f = fightWith([{ perks: { detectives_eye: 'I' } }], [{ at: 'H6' }, { at: 'H8' }]);
-    expect(f.foes.filter((u) => u.weakPoint).length).toBe(1);
+    expect(f.foes.filter((u) => condOn(u, 'read_them')).length).toBe(1);
   });
 });
 
@@ -136,64 +135,42 @@ describe('Crowd Pleaser', () => {
   });
 });
 
-describe('Double Meaning', () => {
-  it('I story: after the sentence, a squad check tagged hinted gets +2 (any squad member); none without it', () => {
-    const s = storyWith([{ perks: { double_meaning: 'I' } }, {}]); const [a, b] = s.chars;
-    expect(storyCheck(s, b.id, ['dexterity'], { tags: ['hinted'] }).roll(10)).not.toMatch(/Double Meaning/);
-    perk(s, a, 'double_meaning', { text: 'Lovely weather for a picnic by the generator.' });
-    expect(rulings(s.g, 'perk:double_meaning')[0].text).toMatch(/hidden instruction/);
-    expect(storyCheck(s, b.id, ['dexterity'], { tags: ['hinted'] }).roll(10)).toMatch(/\+2 Double Meaning/);
-  });
-  it('I combat: once a round, each squad member\'s next attack on the named enemy gets +2', () => {
-    const f = fight([{ perks: { double_meaning: 'I' } }]); f.pc.attack = 60;
-    pcAct(f, { type: 'combat/perk', id: 'double_meaning', actionId: 'hint_fight', targetId: f.foe.id });
-    expect(withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'shot')).terms!.some((t) => t.label === 'Double Meaning' && t.v === 2)).toBe(true);
-    pcAct(f, { type: 'combat/attack', targetId: f.foe.id, mode: 'shot' });
-    expect(withGame(f.g, () => previewAttack(f.cb, f.pc, f.foe, 'shot')).terms!.some((t) => t.label === 'Double Meaning')).toBe(false);
-    expect(() => pcAct(f, { type: 'combat/perk', id: 'double_meaning', actionId: 'hint_fight', targetId: f.foe.id })).toThrow();
-  });
-  it('II combat: another enemy who heard it acts on the false meaning and loses its first action', () => {
-    const f = fight([{ perks: { double_meaning: 'II' } }], [{}, {}]);
-    pcAct(f, { type: 'combat/perk', id: 'double_meaning', actionId: 'hint_fight', targetId: f.foes[0].id });
-    const other = f.foes[1]; f.cb.turn = f.cb.order.indexOf(other.id); other.ap = 6;
-    withGame(f.g, () => enemyTurn(f.cb, f.g.rng));
-    expect(logHas(f.cb, new RegExp(other.name + ' acts on the false meaning'))).toBe(true);
-  });
-});
+// Double Meaning is removed (rules 1.75 item 6215: mapped to Between the Lines).
 
-describe('Old Tongue', () => {
-  it('I: an ancient-script check is an automatic success; no speaking yet', () => {
-    const s = storyWith([{ perks: { old_tongue: 'I' } }]); const c = s.chars[0];
+describe('Old Tales (Old Tongue folded into tier II, rules 1.75 item 6206)', () => {
+  it('I: no script reading and no speaking yet; II: an ancient-script check is an automatic success', () => {
+    const s0 = storyWith([{ perks: { old_tales: 'I' } }]); const c0 = s0.chars[0];
+    const k0 = storyCheck(s0, c0.id, ['lore_master'], { tags: ['ancient_script'] }); expect(k0.roll(1)).not.toMatch(/OLD TALES/);
+    expect(perkActionsFor({ c: live(s0, c0), g: s0.g }, 'story').some((x) => x.actionId === 'speak')).toBe(false);
+    const s = storyWith([{ perks: { old_tales: 'II' } }]); const c = s.chars[0];
     const k = storyCheck(s, c.id, ['lore_master'], { tags: ['ancient_script'] }); const head = k.roll(1);
-    expect(head).toMatch(/OLD TONGUE/); expect(k.now().roll!.ok).toBe(true);
-    expect(perkActionsFor({ c: live(s, c), g: s.g }, 'story').some((x) => x.actionId === 'speak')).toBe(false);
+    expect(head).toMatch(/OLD TALES/); expect(k.now().roll!.ok).toBe(true);
   });
   it('II story: speak it, once per being', () => {
-    const s = storyWith([{ perks: { old_tongue: 'II' } }]); const c = s.chars[0];
-    perk(s, c, 'old_tongue', { actionId: 'speak', npc: 'The Pale Arbiter' });
-    expect(rulings(s.g, 'perk:old_tongue')[0].text).toMatch(/parleys/);
-    expect(() => perk(s, c, 'old_tongue', { actionId: 'speak', npc: 'The Pale Arbiter' })).toThrow(/once already/);
+    const s = storyWith([{ perks: { old_tales: 'II' } }]); const c = s.chars[0];
+    perk(s, c, 'old_tales', { actionId: 'speak', npc: 'The Pale Arbiter' });
+    expect(rulings(s.g, 'perk:old_tales')[0].text).toMatch(/parleys/);
+    expect(() => perk(s, c, 'old_tales', { actionId: 'speak', npc: 'The Pale Arbiter' })).toThrow(/once already/);
   });
   it('II combat: an upper-realm being holds its attacks on its next turn while it listens', () => {
-    const f = fight([{ perks: { old_tongue: 'II' } }]); const t = f.foe;
-    expect(() => pcAct(f, { type: 'combat/perk', id: 'old_tongue', actionId: 'speak_fight', targetId: t.id })).toThrow(/no upper-realm/);
+    const f = fight([{ perks: { old_tales: 'II' } }]); const t = f.foe;
+    expect(() => pcAct(f, { type: 'combat/perk', id: 'old_tales', actionId: 'speak_fight', targetId: t.id })).toThrow(/no upper-realm/);
     f.foe.kind = 'upper_realm';
-    pcAct(f, { type: 'combat/perk', id: 'old_tongue', actionId: 'speak_fight', targetId: t.id, text: 'We come by cause.' });
+    pcAct(f, { type: 'combat/perk', id: 'old_tales', actionId: 'speak_fight', targetId: t.id, text: 'We come by cause.' });
     const foe = f.foe; f.cb.turn = f.cb.order.indexOf(foe.id); foe.ap = 6; const hp = f.pc.hp;
     withGame(f.g, () => enemyTurn(f.cb, f.g.rng));
-    expect(logHas(f.cb, /listens \(Old Tongue\)/)).toBe(true); expect(f.pc.hp).toBe(hp);
+    expect(logHas(f.cb, /listens \(Old Tales\)/)).toBe(true); expect(f.pc.hp).toBe(hp);
     expect(notes(f)).toMatch(/parleys/);
   });
 });
 
-describe('Real Power', () => {
-  it('I: who really runs it, once per organisation; II: and they agree to see you', () => {
-    const s = storyWith([{ perks: { real_power: 'I' } }, { perks: { real_power: 'II' } }]);
-    perk(s, s.chars[0], 'real_power', { text: 'The Dock Guild' });
-    expect(rulings(s.g, 'perk:real_power')[0].text).not.toMatch(/agrees to see/);
-    expect(() => perk(s, s.chars[0], 'real_power', { text: 'the dock guild' })).toThrow(/already know/);
-    perk(s, s.chars[1], 'real_power', { text: 'The Dock Guild' });
-    expect(rulings(s.g, 'perk:real_power')[1].text).toMatch(/agrees to see them/);
+describe('Rank Has Privileges II (Real Power folded in, rules 1.75 item 6224)', () => {
+  it('I: no organisation read; II: who really runs it, once per organisation, and they agree to see you', () => {
+    const s = storyWith([{ perks: { rank_has_privileges: 'I' } }, { perks: { rank_has_privileges: 'II' } }]);
+    expect(() => perk(s, s.chars[0], 'rank_has_privileges', { text: 'The Dock Guild' })).toThrow();
+    perk(s, s.chars[1], 'rank_has_privileges', { text: 'The Dock Guild' });
+    expect(rulings(s.g, 'perk:rank_has_privileges')[0].text).toMatch(/agrees to see them/);
+    expect(() => perk(s, s.chars[1], 'rank_has_privileges', { text: 'the dock guild' })).toThrow(/already know/);
   });
 });
 
@@ -491,8 +468,8 @@ describe('Born Performer', () => {
 
 describe('briefs', () => {
   it('every lane G item with a Narrator part has a short brief; other lanes\' items without one get the fallback', () => {
-    const s = storyWith([{ perks: { bedside_manner: 'I', real_power: 'II' }, traits: ['gambler', 'wanted'] }]); const c = s.chars[0];
-    for (const k of ['perk:bedside_manner', 'perk:real_power', 'trait:gambler', 'trait:wanted']) {
+    const s = storyWith([{ perks: { bedside_manner: 'I', rank_has_privileges: 'II' }, traits: ['gambler', 'wanted'] }]); const c = s.chars[0];
+    for (const k of ['perk:bedside_manner', 'perk:rank_has_privileges', 'trait:gambler', 'trait:wanted']) {
       const b = brief(s.g, c, k)!; expect(b.length).toBeGreaterThan(5); expect(b.split(/\s+/).length).toBeLessThanOrEqual(18);
     }
   });

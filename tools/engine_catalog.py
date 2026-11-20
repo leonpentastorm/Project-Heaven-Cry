@@ -158,6 +158,9 @@ def ret_type(code, i, until):
 def interface_fields(text, start):
     """The fields of the interface whose `export interface` starts at `start`: [{name, type, doc}]."""
     b = text.find('{', start); e = match_close(blank_comments(text), b); body = text[b + 1:e]
+    # the extent of a field is read with its comments blanked (same length): an apostrophe in an inline type comment
+    # (`/** it's ... */`) once opened a "string" that swallowed the fields after it, with no error
+    bb = blank_comments(body)
     out, i, n, doc = [], 0, len(body), ''
     while i < n:
         if body.startswith('/*', i):
@@ -173,16 +176,18 @@ def interface_fields(text, start):
         # the field runs to the next ; or newline at depth 0
         j = m.end(); depth = 0
         while j < n:
-            c = body[j]
-            if c == '=' and body.startswith('=>', j): j += 2; continue
+            c = bb[j]
+            if c == '=' and bb.startswith('=>', j): j += 2; continue
             if c in '({[<': depth += 1
             elif c in ')}]>' and depth: depth -= 1
             elif c in ';\n,' and depth == 0: break
             elif c in '\'"`':
                 q = c; j += 1
-                while j < n and body[j] != q: j += 1
+                while j < n and bb[j] != q:
+                    if bb[j] == '\n' and q != '`': raise SystemExit(f"engine_catalog.py: the field {m.group(2)!r} of an interface opens a {q} string that does not close on its line (the catalogue would drop the fields after it)")
+                    j += 1
             j += 1
-        out.append({'name': m.group(2), 'type': squash(body[m.end() - 1:j].lstrip(':').strip(), 90), 'doc': doc})
+        out.append({'name': m.group(2), 'type': squash(bb[m.end() - 1:j].lstrip(':').strip(), 90), 'doc': doc})
         doc = ''; i = j + 1
     return out
 

@@ -10,7 +10,7 @@
 import { register, stateOf, uses, has, note, postStory, grantPerkAp, bankAp, pushAp, grantShield, boundGame, skillRollMod, type Holder } from '../effects';
 import { itemAmount } from '../effects/amounts';
 import { SKILL, WEAPON, ITEM } from '../data';
-import { say, type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
+import { say, type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, eyeReach, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE, HIDE_WHY } from '../tactics';
 import { applyCond, condOn } from '../magic';
 import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod, holdsShield } from '../character';
@@ -229,7 +229,7 @@ function gotYou(h: Holder, cb: Combat, foe: Unit, at: string) {
   const mine = cb.order.indexOf(u.id);
   if (mine > cb.turn && cdFire(h, 'gain', cb.round)) { uses(h).take('per_round'); bankAp(u, 2, 'Got You in My Sight: ' + foe.name, cb); }
 }
-function sightSnap(h: Holder, cb: Combat): Record<string, string> { const out: Record<string, string> = {}; for (const f of foesOf(cb, h.u!, { companions: false })) if (!f.hidden && unitSees(cb, h.u!, f.pos)) out[f.id] = f.pos; return out; }
+function sightSnap(h: Holder, cb: Combat): Record<string, string> { const out: Record<string, string> = {}; for (const f of foesOf(cb, h.u!, { companions: false })) if (!f.hidden && unitSees(cb, h.u!, f.pos, undefined, f)) out[f.id] = f.pos; return out; }
 register({
   id: 'got_you_in_my_sight', claims: 'all',
   on: {
@@ -243,7 +243,7 @@ register({
     },
     hide: (ctx, h) => {
       const cb: Combat = ctx.cb; if (!h.u || ow(cb) || !alive(h.u) || ctx.u.side === h.u.side) return;
-      if (unitSees(cb, h.u, ctx.u.pos)) gotYou(h, cb, ctx.u, ctx.u.pos);
+      if (unitSees(cb, h.u, ctx.u.pos, undefined, ctx.u)) gotYou(h, cb, ctx.u, ctx.u.pos);
     },
     attack_roll: (ctx, h) => { if (ctx.tgt === h.u && ctx.ambush && h.tier !== 'II') stateOf(h).sneak = true; },
     on_hit: (ctx, h) => { if (ctx.tgt === h.u) { const s = stateOf(h); if (s.sneak) { s.sneak = false; if (!s.pen && cdFire(h, 'pen', landsNext(ctx.cb, h.u!))) { s.pen = 2; log(ctx.cb, h.u!.name + ' is caught by a sneak attack: −2 AP next turn (Got You in My Sight).'); } } } },
@@ -298,7 +298,7 @@ register({
   on: {
     combat_start: (ctx, h) => {
       const cb: Combat = ctx.cb, u = h.u; if (!u || ow(cb) || !alive(u)) return;
-      const seen = visibility(cb, u.side).seen, range = u.vision || 12;
+      const seen = visibility(cb, u.side).seen, range = u.vision || 12; // the Vision number, not sight: the air is felt in the dark too (not the sight range, eyeReach)
       const cand = foesOf(cb, u, { companions: false }).filter((f) => !seen.has(f.id) && dist(u.pos, f.pos) <= range).sort((a, b) => dist(u.pos, a.pos) - dist(u.pos, b.pos));
       const pick = h.tier === 'II' ? cand : cand.slice(0, 1); if (!pick.length) return;
       const ls = ((cb.lastSeen ||= {})[u.side] ||= {}); for (const f of pick) ls[f.id] = f.pos;
@@ -887,7 +887,7 @@ register({
   on: {
     spot: (ctx, h) => {
       if (ctx.by !== h.u || !openSky(gameOf(h))) return;
-      if (dist(ctx.by.pos, ctx.u.pos) > Math.floor((h.u!.vision || 12) / 2)) ctx.cancel = true;
+      if (dist(ctx.by.pos, ctx.u.pos) > Math.floor(eyeReach(ctx.cb, ctx.by, ctx.u.pos, ctx.u) / 2)) ctx.cancel = true; // half the one sight range (M2)
     },
   },
   brief: () => 'Always knows one way out of ruins and dense city.',

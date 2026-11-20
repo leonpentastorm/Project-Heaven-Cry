@@ -3,7 +3,8 @@
 import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
-import { resolveAttack, itemInfo, CLASS, SKILL, condOn, type Unit } from '../src';
+import { resolveAttack, itemInfo, CLASS, SKILL, PERK, condOn, type Unit } from '../src';
+import actionsJ from '../../../data/actions.json';
 import { resOf, FOE_TAGS } from '../src/tactics';
 import { skulks } from '../src/combat';
 import { applyCond } from '../src/magic';
@@ -35,11 +36,11 @@ describe('the verbs at work', () => {
     use(f, u, 'shadow.lift', t.id);
     expect((f.unit(t.id).mags || []).length).toBe(Math.max(0, before - 1));
   });
-  it('Read Intent needs you Hidden; then its target is Read', () => {
-    const { f, u, t } = setup(3, '6,4');
-    expect(() => use(f, u, 'shadow.read_intent', t.id)).toThrow(esc(grantOf('shadow.read_intent').why.self_has));
-    hideNow(f, u); use(f, u, 'shadow.read_intent', t.id);
-    expect(condOn(f.unit(t.id), 'read')).toBe(true);
+  it('Read Intent is a Vigilance perk now (rules 1.74 item 6009): no Shadow verb of that name; your Spot Reads its target', () => {
+    expect(VERB('shadow.read_intent')).toBeUndefined();
+    const spot = (perks: any) => { const f = fightWith([{ skills: { vigilant: 3 }, perks }], [{}]); const t = foeAt(f, '6,4'); const u = f.turn(f.pc); at(f, u, '1,4');
+      f.act({ type: 'combat/call', unitId: u.id, id: 'call.spot', targetId: t.id } as any); return condOn(f.unit(t.id), 'read'); };
+    expect(spot({ read_intent: 'I' })).toBe(true); expect(spot({})).toBe(false);
   });
   it('Fade: from Seen to Hidden next to cover, a fresh entry, for its Shadow', () => {
     const { f, u } = setup(5, '8,4'); setShadow(f, u, 2); at(f, u, '3,4');
@@ -50,17 +51,18 @@ describe('the verbs at work', () => {
     expect(shadow(f, u)).toBe(2 - g.res.shadow);
   });
   it('Timing: Off Balance; a target already Off Balance can\'t be picked', () => {
-    const { f, u, t } = setup(7, '6,4'); hideNow(f, u); setShadow(f, u, 3);
+    const { f, u, t } = setup(VERB('shadow.timing').requires[0].min, '6,4'); hideNow(f, u); setShadow(f, u, 3);
     use(f, u, 'shadow.timing', t.id);
     expect(condOn(f.unit(t.id), 'off_balance')).toBe(true);
     expect(() => use(f, u, 'shadow.timing', t.id)).toThrow();
   });
   it('Disable refuses a target that is not a machine', () => {
-    const { f, u, t } = setup(7); hideNow(f, u); setShadow(f, u, 3);
+    const f = fightWith([operative(7)], [{}]); const t = foeAt(f, '2,4'); const u = f.unit(f.turn(f.pc).id); at(f, u, '1,4'); hideNow(f, u); setShadow(f, u, 3);
     expect(() => use(f, u, 'shadow.disable', t.id)).toThrow(esc(grantOf('shadow.disable').reach.why.target_kind));
   });
-  it('Still Breath (Ingenuity 5): spot rolls against you lower by cover', () => {
-    const e = (SKILL.ingenuity as any).unlocks['5'].effects[0];
+  it('Still Breath (an Acuity perk since rules 1.74 item 6005; was Ingenuity 5): spot rolls against you lower by cover', () => {
+    expect((SKILL.ingenuity as any).unlocks['5'].effects).toEqual([]);
+    const e = (PERK.still_breath as any).tiers.I.effects[0];
     expect(e).toMatchObject({ op: 'roll_mod', when: 'spot', if: { by_cover: ['here'] } });
     expect(e.value).toBeLessThan(0);
   });
@@ -90,18 +92,22 @@ describe('the Operative', () => {
     const u = f.turn(f.pc); at(f, u, '1,4'); hideNow(f, u);
     const ap = f.unit(u.id).ap, s0 = shadow(f, u);
     f.act({ type: 'combat/analyze', unitId: u.id, targetId: a.id } as any);
-    expect(ap - f.unit(u.id).ap).toBe(tc.numbers.analyze_ap);
+    expect(ap - f.unit(u.id).ap).toBe((actionsJ as any).items.find((x: any) => x.id === 'analyze').ap); // rules 1.74 item 6011: the plain price (Quick Read owns the cut)
     expect(condOn(f.unit(a.id), 'read')).toBe(true);
     expect(shadow(f, u)).toBe(s0 + tc.numbers.gain);
     f.act({ type: 'combat/analyze', unitId: u.id, targetId: b.id } as any);
     expect(shadow(f, u)).toBe(s0 + tc.numbers.gain); // once a turn
   });
-  // Rules 1.60 item 4628 (R10): Vanish re-pointed onto the door: the Operative's Fade takes no Shadow.
-  it('Vanish is data: the Fade of the Operative, seen, for no Shadow', () => {
-    const f = fightWith([operative(7)], [{}]); foeAt(f, '8,4');
-    const u = f.turn(f.pc); at(f, u, '3,4'); setShadow(f, u, 0);
-    use(f, u, 'shadow.fade');
-    expect(f.unit(u.id).hidden).toBe(true); expect(shadow(f, u)).toBe(0);
+  // Rules 1.74 item 6011: Vanish is the Operative's free Hide, once a turn (it was Fade at no Shadow).
+  it('Vanish is data: the first Hide of an Operative each turn costs 0 AP; Fade takes its Shadow again', () => {
+    const f = fightWith([operative(7)], [{}]); foeAt(f, '14,9', true);
+    const u = f.turn(f.pc); at(f, u, '1,4'); const ap = f.unit(u.id).ap;
+    f.act({ type: 'combat/hide', unitId: u.id } as any);
+    expect(f.unit(u.id).hidden).toBe(true); expect(f.unit(u.id).ap).toBe(ap);
+    const g = fightWith([operative(7)], [{}]); foeAt(g, '8,4');
+    const v = g.turn(g.pc); at(g, v, '3,4'); setShadow(g, v, 2);
+    use(g, v, 'shadow.fade');
+    expect(g.unit(v.id).hidden).toBe(true); expect(shadow(g, v)).toBe(2 - VERB('shadow.fade').effects[0].res.shadow);
   });
   it('Toxin coats a gun (weapon-neutral)', () => {
     const f = fightWith([operative(7, { weapon: 'hellraiser_service_rifle' })], [{}]);
@@ -115,9 +121,11 @@ describe('the Operative', () => {
     f.act({ type: 'combat/perk', unitId: u.id, id: 'gunslinger.called_shot', targetId: t.id, choice: 'leg' } as any);
     expect(f.cb.log.some((l) => /strikes/.test(l))).toBe(true);
   });
-  it('Sabotage Stuns a machine for numbers.rounds', () => {
-    const sab: any = (CLASS.infiltrator as any).ranks.II.moves.find((m: any) => m.id === 'sabotage');
-    expect(sab.effects[1].duration_rounds).toBe(sab.numbers.rounds);
+  it('Sabotage (rules 1.74 item 6011): an Operative Disable Stuns a machine and costs it no Shadow', () => {
+    const f = fightWith([operative(7)], [{ name: 'Drill drone' }]); const t = foeAt(f, '2,4');
+    const u = f.turn(f.pc); at(f, u, '1,4'); hideNow(f, u); setShadow(f, u, 1); f.unit(t.id).sv = { body: -50, brain: -50, heart: -50 } as any;
+    use(f, u, 'shadow.disable', t.id);
+    expect(condOn(f.unit(t.id), 'stunned')).toBe(true); expect(shadow(f, u)).toBe(1);
   });
 });
 

@@ -3,7 +3,7 @@
 // panel on the right (emblem, name, rank, attribute progress, moves by rank with who runs them, advanced classes
 // shelved in Class Roster Revision 3); the class choice at level 3 with emblems.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, CLASS, SKILL, canRaise, pendingPerkSteps, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, CLASS, SKILL, canRaise, pendingPerkSteps, ladderSchedule, type GameState, type Sheet } from '@engine';
 
 let G: GameState; const ME = 'host';
 const listeners = new Set<() => void>();
@@ -120,7 +120,10 @@ describe('level-up screen', () => {
     root.unmount();
   });
   it('spend first (the redesign): three family tabs, the family with a step waiting opens, one row a skill, the TO CHOOSE strip opens one chooser panel', async () => {
-    const c0 = setup((c) => { c.level = 4; c.classId = 'marksman'; c.attrs.agility = Math.max(c.attrs.agility, 5); c.cores.body = Math.max(c.cores.body, 5); c.skills.dexterity = 5; c.perks = []; c.unspent = { skill: 1, attr: 1, core: 1 } as any; });
+    // Dexterity at its ladder's second perk step (rules 1.70 item 5537: an alpha's 6), short of its second fork
+    const dx = ladderSchedule('dexterity').perk_steps[1];
+    expect(dx).toBeLessThan(ladderSchedule('dexterity').forks[1]); expect(dx).toBeGreaterThanOrEqual(ladderSchedule('dexterity').forks[0]);
+    const c0 = setup((c) => { c.level = 4; c.classId = 'marksman'; c.attrs.agility = Math.max(c.attrs.agility, dx); c.cores.body = Math.max(c.cores.body, dx); c.skills.dexterity = dx; c.perks = []; c.unspent = { skill: 1, attr: 1, core: 1 } as any; });
     const { el, root } = await mount();
     // three tabs; one family on screen: the one with something waiting (Dexterity, under Agility, is Body)
     expect([...el.querySelectorAll('[role="tablist"][aria-label="Families"] [role="tab"]')].map((x) => x.textContent!.replace(/◆.*/, ''))).toEqual(['BODY', 'MIND', 'SOUL']);
@@ -138,7 +141,7 @@ describe('level-up screen', () => {
       else expect(r.querySelector('.phc-lu-next')!.textContent).toBe(nextLine(id, p, G.characters[c0.id]));
       expect((r.querySelector('button[data-raise="skill"]') as HTMLElement).style.minHeight).toBe('40px');
     }
-    // Dexterity 5 with no perks: a white chip, two steps waiting; nothing to choose until it is opened
+    // Dexterity at its second perk step with no perks: a white chip, two steps waiting; nothing to choose until it is opened
     const dex = () => el.querySelector('.phc-lu-skill[data-skill="dexterity"]')!;
     expect(dex().classList.contains('phc-lu-step')).toBe(true);
     expect(dex().querySelector('.phc-lu-chip')!.textContent).toBe('◆ 2 perk steps · Fork');
@@ -226,10 +229,11 @@ describe('level-up screen', () => {
     expect(agi.querySelector('.phc-lu-attr-why')!.textContent).toBe(canRaise(G.characters[c0.id], 'attr', 'agility'));
     expect(agi.querySelector('.phc-lu-attr-why')!.textContent).toMatch(/^Agility 9 opens at level 6/);
     expect([...agi.querySelectorAll('.phc-lu-slot')].map((x) => x.textContent)).toEqual(['FIGHT', 'SURVIVE', 'TALK · NOTICE']);
-    // Durability 2 under Endurance 2: its +1 is refused with the reason on the row, and "Raise Endurance" beside it
+    // Durability 2 under Endurance 2: its +1 is refused, and the reason is said once: the "Raise Endurance" button (the
+    // need read from the engine's raiseNeed, never its sentence: the 0.32 merge, Step 3c)
     const dur = () => el.querySelector('.phc-lu-skill[data-skill="durability"]')!;
     expect((dur().querySelector('button[data-raise="skill"]') as HTMLButtonElement).disabled).toBe(true);
-    expect(dur().querySelector('.phc-lu-why')!.textContent).toMatch(/^Needs Endurance 3/);
+    expect(dur().querySelector('.phc-lu-why')!.textContent).toBe('Raise Endurance');
     expect(el.querySelectorAll('.phc-lu-why .phc-lu-fix').length).toBeGreaterThan(0);
     await React.act(async () => { (dur().querySelector('.phc-lu-fix') as HTMLButtonElement).click(); });
     expect(G.characters[c0.id].attrs.endurance).toBe(3);
@@ -274,5 +278,66 @@ describe('level-up screen', () => {
     expect(Array.from(m.el.querySelectorAll('.phc-lu-rank-state')).map((x) => x.textContent)).toEqual(['✓ UNLOCKED', '✓ UNLOCKED', '✓ UNLOCKED']);
     expect(m.el.querySelectorAll('.phc-lu-move').length).toBe(6); // the base class's 6 moves only
     m.root.unmount();
+  });
+});
+
+describe('rules 1.70: the TO CHOOSE strip carries an old save\'s re-pick (item 5538) and the Figment forms known (item 5541)', () => {
+  it('a re-pick chip opens Keep / Choose again; Choose again gives the steps back as a perk-step chip', async () => {
+    const c = setup((x) => { x.skills.pain_threshold = 3; x.perks = [{ id: 'scar_tissue', tier: 'I' }]; x.perkRepick = { pain_threshold: [{ id: 'scar_tissue', tier: 'I' }] }; });
+    const { el, root } = await mount();
+    const chip = el.querySelector('.phc-lu-tc[data-kind="repick"]') as HTMLButtonElement; expect(chip).toBeTruthy();
+    await React.act(async () => { chip.click(); });
+    const again = el.querySelector('[data-fork-pick="again"]') as HTMLButtonElement; expect(again).toBeTruthy(); expect(el.querySelector('[data-fork-pick="keep"]')).toBeTruthy();
+    await React.act(async () => { again.click(); });
+    expect(G.characters[c.id].perkRepick?.pain_threshold).toBeUndefined();
+    expect(el.querySelector('.phc-lu-tc[data-kind="repick"]')).toBeNull();
+    expect(el.querySelector('.phc-lu-tc[data-choose="perk:pain_threshold"]')).toBeTruthy();
+    await React.act(async () => { root.unmount(); });
+  });
+  it('Visualization 1: a forms-known chip; each Choose learns one form (door/pick at figment_forms)', async () => {
+    const c = setup((x) => { x.skills.visualization = 1; });
+    const { el, root } = await mount();
+    const chip = el.querySelector('.phc-lu-tc[data-kind="door"]') as HTMLButtonElement; expect(chip).toBeTruthy();
+    await React.act(async () => { chip.click(); });
+    const pick = el.querySelector('[data-fork-pick]') as HTMLButtonElement; expect(pick).toBeTruthy();
+    const form = pick.getAttribute('data-fork-pick');
+    await React.act(async () => { pick.click(); });
+    expect((G.characters[c.id] as any).doorPicks.figment_forms).toEqual([form]);
+    await React.act(async () => { root.unmount(); });
+  });
+  it('Step 3b (the 0.32 merge): a point of Visualization raised on this screen above 1 puts its one more form in TO CHOOSE, not only on the MAGIC tab', async () => {
+    const c = setup((x) => { x.skills.visualization = 2; x.attrs.expression = Math.max(x.attrs.expression || 1, 4); x.doorPicks = { ...(x.doorPicks || {}), figment_forms: ['double', 'snare', 'hand'] }; x.unspent = { ...(x.unspent || {}), skill: 1 }; });
+    const { el, root } = await mount();
+    expect(el.querySelector('.phc-lu-tc[data-kind="door"]')).toBeNull(); // 3 known at 2, 3 held: nothing to choose
+    await React.act(async () => { doAct({ type: 'levelup/raise', charId: c.id, kind: 'skill', id: 'visualization' }); });
+    expect(G.characters[c.id].skills.visualization).toBe(3);
+    const chip = el.querySelector('.phc-lu-tc[data-kind="door"]') as HTMLButtonElement; expect(chip, 'the one more form is a TO CHOOSE chip').toBeTruthy();
+    await React.act(async () => { root.unmount(); });
+  });
+});
+
+describe('0.32 B12: no empty icon box, no raw perk id', () => {
+  it('the perk chooser: every row has a picture (its art, else its initials mark in the attribute ink); the dashed "?" box is gone', async () => {
+    setup((c) => { c.level = 3; c.xp = 250; c.skills.pain_threshold = ladderSchedule('pain_threshold').perk_steps[0]; c.perks = []; });
+    const { el, root } = await mount();
+    const chip = el.querySelector('.phc-lu-tc[data-kind="perk"]') as HTMLButtonElement | null;
+    expect(chip).toBeTruthy();
+    await React.act(async () => { chip!.click(); });
+    const rows = [...el.querySelectorAll('.phc-lu-chooser .phc-perk-row')];
+    expect(rows.length).toBeGreaterThan(0);
+    for (const r of rows) { const img = r.querySelector('img.phc-icon'); expect(img, r.getAttribute('data-perk')!).toBeTruthy(); expect(img!.getAttribute('src')).toBeTruthy(); }
+    expect(el.querySelector('.phc-lu-chooser .phc-perk-row span[aria-hidden="true"][style*="dashed"]')).toBeNull();
+    root.unmount();
+  });
+  it('an old save\'s re-pick names a removed perk by its old name (skills.json perk_remap.names) and shows pictures on both cards', async () => {
+    setup((c) => { c.level = 3; c.xp = 250; c.skills.pain_threshold = 3; c.perks = [{ id: 'scar_tissue', tier: 'I' }]; c.perkRepick = { pain_threshold: [{ id: 'scar_tissue', tier: 'I' }] }; });
+    const { el, root } = await mount();
+    const chip = el.querySelector('.phc-lu-tc[data-kind="repick"]') as HTMLButtonElement;
+    await React.act(async () => { chip.click(); });
+    const keep = el.querySelector('[data-fork-opt="keep"]')!, again = el.querySelector('[data-fork-opt="again"]')!;
+    expect(keep.textContent).toContain('Keep these perks: ' + (SKILL as any).pain_threshold.perk_remap.names.scar_tissue + ' I.');
+    expect(keep.textContent).not.toContain('scar_tissue');
+    for (const x of [keep, again]) expect(x.querySelector('img')!.getAttribute('src')).toBeTruthy();
+    root.unmount();
   });
 });

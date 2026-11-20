@@ -20,8 +20,9 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import rulesJ from '../../../data/rules.json';
 import type { Combat, Unit } from './combat';
 import { emitFx } from './combat';
-import { emit, hookUsed, charOfUnit } from './effects/hooks';
-import { RARITY, focusRarity } from './character';
+import { emit, emitOwn, hookUsed, charOfUnit } from './effects/hooks';
+import { RARITY, focusRarity, mod } from './character';
+import { SKILL } from './data';
 import { d20, type Rng } from './rng';
 
 const R: any = (rulesJ as any).rolls || {}, LADDER: any = (rulesJ as any).resolution?.tn_ladder || {};
@@ -149,13 +150,30 @@ export function rollSave(cb: Combat, rng: Rng, s: SaveSpec): RollResult {
   if ((t as any).feelSaveNext && !sv.fail) { delete (t as any).feelSaveNext; return skip('auto', true, 'Defiance'); }
   if (sv.pass) return skip('auto', true, sv.why || '');
   if (sv.fail) return skip('no_save', false, sv.why || '');
-  const parts: RollPart[] = [{ add: s.mod, label: s.fam + ' save' }, ...(sv.saveAdd ? [{ add: sv.saveAdd, label: 'items' }] : [])];
+  // rules 1.77 item 6506: a roll_with on the save (Point Man: your Guts in place of an ally's own save) gives the best
+  // offered holder's skill modifier in place of the save's own, never on top of it (if_higher: only when it is higher)
+  const rw = saveRollWith(sv.rollWith, s.mod);
+  const parts: RollPart[] = [rw ? { add: rw.mod, label: rw.label } : { add: s.mod, label: s.fam + ' save' }, ...(sv.saveAdd ? [{ add: sv.saveAdd, label: 'items' }] : [])];
   const fa = s.via ? focusAccTerm(s.by, s.via) : null; // rules 1.43: a graded focus makes its door's forced saves harder
   const res = judge('save', rollD20(rng, { adv: s.adv }), parts, s.tn + (sv.tnAdd || 0) + (fa?.v || 0), { fam: s.fam, ...(s.lead ? { lead: s.lead } : {}) });
   if (s.fx !== false) rollFx(cb, res, t, { by: s.by, why: s.id });
   return res;
 }
 
+/** The best roll_with offer on a save (rules 1.77 item 6506): each offer names a skill (or a list) of its holder
+ * (`from`); its modifier stands in place of the save's own `own`. null: none offered, or none higher where it must be. */
+function saveRollWith(offers: { skill: string | string[]; ifHigher: boolean; label: string; from?: Unit }[] | undefined, own: number): { mod: number; label: string } | null {
+  let best: { mod: number; label: string } | null = null;
+  for (const o of offers || []) {
+    const c = charOfUnit(o.from); if (!c) continue;
+    for (const k of ([] as string[]).concat(o.skill || [])) {
+      if (!SKILL[k]) continue;
+      const m = mod(c.skills[k] || 0);
+      if ((!o.ifHigher || m > own) && (!best || m > best.mod)) best = { mod: m, label: SKILL[k].name + (o.label ? ' (' + o.label + ')' : '') };
+    }
+  }
+  return best;
+}
 /** Two rollers against each other: each a d20 + modifier, `a` first. `a` wins on the higher total; a tie goes to `b`
  * (the defender: data/rules.json resolution.opposed_check). No natural 1 or 20. Two dice are drawn, a's then b's. */
 export function contest(cb: Combat | null | undefined, rng: Rng, a: { by?: Unit | null; mod: number }, b: { by?: Unit | null; mod: number }, why = ''): { a: RollResult; b: RollResult; won: boolean; text: string } {
@@ -178,6 +196,20 @@ export function toHitTerms(cb: Combat | null | undefined, att: Unit | null | und
   const ctx: any = emit(cb, 'to_hit', { att, tgt, type, ...(HIT_DOOR_WORD[type] ? { door: HIT_DOOR_WORD[type] } : {}), mode: o.mode ?? null, ...(o.via ? { via: o.via } : {}), terms: [] as { v: number; label: string }[], preview: o.preview !== false, cb });
   return [...(fa ? [fa] : []), ...(ctx.terms as { v: number; label: string }[]).filter((t) => t && t.v)];
 }
+/** Rules 1.77 item 6511: THE reader of a unit's standing to-hit terms, what its own items and its side's put on a
+ * hostile's roll to hit it as things stand (Open guard: -2, Stand Still, a friend's Hand-Off or Case Closed, Heavyworlder's
+ * +2), each with its source label, for its token card. Asked as the first hostile on the field would make a weapon
+ * attack at it (a preview: nothing changes), on the one hook every roll to hit is sized up on (`to_hit`, toHitTerms),
+ * the units of its side asked in the fight's order: the attack's own preview reads the same listeners (previewAttack).
+ * The attacker's own items are not asked (its bonuses are its attack's, not this unit's standing). Empty with no
+ * hostile on the field or no item that answers. A data row's term names its item (`src`, the holder's key), so a
+ * screen finds its picture (rules 1.78 item 6613). */
+export function standingTerms(cb: Combat | null | undefined, u: Unit): { v: number; label: string; src?: string }[] {
+  const by = cb?.units.find((x) => x.side !== u.side && !x.dead && !x.downed); if (!cb || !by) return [];
+  const ctx: any = { att: by, tgt: u, type: 'weapon', mode: null, terms: [] as { v: number; label: string }[], preview: true, cb };
+  for (const x of cb.units) if (x.side === u.side) { emitOwn(x, 'to_hit', ctx, cb); if (ctx.stop) break; }
+  return (ctx.terms as { v: number; label: string; src?: string }[]).filter((t) => t && t.v);
+}
 /** The door each kind of roll to hit is made through (a weapon's own rarity is in its attack already). */
 const HIT_DOOR: Record<HitKind, string> = { weapon: '', sigil: 'brain_power', soul: 'will_power' };
 /** Rules 1.56 P1: the door word a roll to hit carries (ctx.door: the item-op damage words outburst and sigil_spell read it). */
@@ -198,6 +230,13 @@ export const passFaces = (mod: number, tn: number): number => { let n = 0; for (
 /** Does this attack roll hit, by the attack's own rule (a natural 1 misses, the critical range hits, else the total
  * against the Defense)? For an item inside the 'attack_roll' hook, before resolveAttack settles it. */
 export const attackHits = (rc: { die: number; hit?: boolean; critMin: number; toHit: number; need: number }): boolean => rc.hit ?? (rc.die !== 1 && (rc.die >= rc.critMin || rc.die + rc.toHit >= rc.need));
+/** Rules 1.77 item 6507: a second die for an attack's roll inside the 'attack_roll' hook, the worse (or the better) of
+ * the two standing (the item op two_dice: Untouchable); the hit is settled by resolveAttack from the die that stands.
+ * Returns the second die. */
+export function keepOfTwo(rc: { die: number; hit?: boolean }, rng: Rng, keep: 'worse' | 'better'): number {
+  const b = rollD20(rng).die; rc.die = keep === 'worse' ? Math.min(rc.die, b) : Math.max(rc.die, b); delete rc.hit;
+  return b;
+}
 /** Reroll an attack's die inside the 'attack_roll' hook (Lucky Break, Lucky Foot): the new die replaces the old one.
  * With a `bonus` the hit is settled here, by the attack's own rule with the bonus added (a natural 1 misses, the
  * critical range hits); without one resolveAttack settles it from the new die. Returns the new die. */

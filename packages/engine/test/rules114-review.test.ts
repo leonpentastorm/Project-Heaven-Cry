@@ -39,16 +39,16 @@ function playRounds(s: S, charId: string, rounds: number, each?: (round: number,
 // ============================================================================================ the cooldown, attacked
 describe('the AP perks\' cooldown holds through real turns', () => {
   it('Talks Broke Down: +2 AP on turns 1, 4 and 7 over eight real rounds, a squadmate\'s talk counts, and a save and reload in the middle changes nothing', () => {
-    const s = storyWith([{ perks: { talks_broke_down: 'I' } }, {}]), me = s.chars[0].id;
+    const s = storyWith([{ perks: { talks_broke_down: 'II' } }, {}]), me = s.chars[0].id;
     storyCheck(s, s.chars[1].id, ['charisma'], { auto: 'success' }); // the squadmate talks, not the holder
     startFight(s, [{ at: 'P6' }]);
     const aps = playRounds(s, me, 8, (round) => { if (round === 2 || round === 5) s.g = JSON.parse(JSON.stringify(s.g)); });
     expect(aps).toEqual([8, 6, 6, 8, 6, 6, 8, 6]);
   });
-  it('a lost talk (Tier I): 2 AP less on turns 1, 4 and 7, not on the turns between', () => {
-    const s = storyWith([{ perks: { talks_broke_down: 'I' } }]), me = s.chars[0].id;
+  it('a lost talk costs nothing (rules 1.74 item 6043: Parley dropped the penalty), at either tier', () => {
+    const s = storyWith([{ perks: { talks_broke_down: 'II' } }]), me = s.chars[0].id;
     storyCheck(s, me, ['charisma'], { auto: 'fail' }); startFight(s, [{ at: 'P6' }]);
-    expect(playRounds(s, me, 7)).toEqual([4, 6, 6, 4, 6, 6, 4]);
+    expect(playRounds(s, me, 7)).toEqual([6, 6, 6, 6, 6, 6, 6]);
   });
   it('a new fight starts with the cooldown ready; inside one fight it never comes back early', () => {
     const s = storyWith([{ traits: ['forlorn_hope'] }]), me = s.chars[0].id;
@@ -67,7 +67,7 @@ describe('the AP perks\' cooldown holds through real turns', () => {
     expect(playRounds(s, me, 3, closeIn)).toEqual([6, 8, 6]);
   });
   it('two holders in one squad: each has its own cooldown, and neither lends the other a turn', () => {
-    const s = storyWith([{ perks: { talks_broke_down: 'I' } }, { perks: { talks_broke_down: 'I' } }]), [a, b] = s.chars.map((c) => c.id);
+    const s = storyWith([{ perks: { talks_broke_down: 'II' } }, { perks: { talks_broke_down: 'II' } }]), [a, b] = s.chars.map((c) => c.id);
     storyCheck(s, a, ['charisma'], { auto: 'success' }); startFight(s, [{ at: 'P6' }]);
     const seen: Record<string, number[]> = { [a]: [], [b]: [] };
     for (let guard = 0; guard < 40 && cbOf(s).round <= 4; guard++) { const u = active(s); seen[u.charId!].push(u.ap); endTurn(s); }
@@ -112,7 +112,7 @@ describe('the AP perks\' cooldown holds through real turns', () => {
     expect(pc().uses?.['trait:rabbits_foot#ap-gain|cooldown']?.n).toBe(g.combat!.round); // the cooldown cell holds the round the AP landed in
   });
   it('an old save (a fight saved before the cooldown existed): the perk is simply ready, then cools down', () => {
-    const s = storyWith([{ perks: { talks_broke_down: 'I' } }]), me = s.chars[0].id;
+    const s = storyWith([{ perks: { talks_broke_down: 'II' } }]), me = s.chars[0].id;
     storyCheck(s, me, ['charisma'], { auto: 'success' }); startFight(s, [{ at: 'P6' }]);
     const aps = playRounds(s, me, 5, (round, u) => { if (round === 2) { delete u.uses?.['perk:talks_broke_down#ap-gain|cooldown']; s.g = JSON.parse(JSON.stringify(s.g)); } });
     // Turn 1 +2 (as every turn was, before). The save is opened on turn 2 with no cooldown stored: turn 3 pays, then 4 and 5 wait.
@@ -122,19 +122,19 @@ describe('the AP perks\' cooldown holds through real turns', () => {
 
 // ============================================================================================ the cards, checked again
 describe('the cards say what the game does', () => {
-  it('Grim Reaper II: the Fear comes with a kill on your own turn, every time, and the card says so', () => {
-    expect(perkOf('grim_reaper').tiers.II.text).toMatch(/on your own turn, you gain 2 AP\. Once every 3 turns\. Each time you do, every enemy who sees it makes a Heart save/);
+  it('Grim Reaper II: the Fear comes with a kill on your own turn, every time, and the card says so (rules 1.73 item 5817: no AP)', () => {
+    expect(perkOf('grim_reaper').tiers.II.text).toMatch(/When you drop an enemy on your own turn, every enemy within \d+ tiles that sees it makes a Heart save or is Afraid of you/);
     expect(perkOf('grim_reaper').text).not.toMatch(/a kill of yours/);
     const f = fightWith([{ perks: { grim_reaper: 'II' }, skills: { intimidation: 10 } }], [{ at: 'F4', classic: true }, { at: 'F5', classic: true }, { at: 'F6', classic: true }]); open(f.cb);
     f.turn(f.pc); f.pc.attack = 60; f.pc.ammo = 9;
     for (const v of f.foes) v.sv = { body: -50, brain: -50, heart: -50 } as any;
     const [a, b, c] = f.foes; a.hp = 1; b.hp = 1;
     f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: a.id, mode: 'shot' } as any);
-    f.unit(c.id).conds = {};
-    f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: b.id, mode: 'shot' } as any); // the second kill: no AP (the cooldown), the Fear all the same
+    f.unit(c.id).conds = {}; f.unit(c.id).pos = '12,4'; // rules 1.73 item 5817: within the card's reach of the kill
+    f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: b.id, mode: 'shot' } as any); // the second kill: the Fear all the same
     expect(f.unit(a.id).dead && f.unit(b.id).dead).toBe(true);
     expect(condOn(f.unit(c.id), 'fear')).toBe(true);
-    expect(f.cb.log.filter((l) => /\+2 AP \(Grim Reaper\)/.test(l)).length).toBe(1);
+    expect(f.cb.log.filter((l) => /\+2 AP \(Grim Reaper\)/.test(l)).length).toBe(0);
   });
   it('The Name They Whisper: a hybrid card names the judgement that is left (who is a stranger)', () => {
     expect(perkOf('the_name_they_whisper').adjudication).toBe('hybrid');
@@ -160,7 +160,7 @@ describe('the cards say what the game does', () => {
     expect(perkOf('true_name').adjudication).toBe('hybrid');
   });
   it('no card of this step uses a word a player does not know', () => {
-    for (const id of ['grim_reaper', 'got_you_in_my_sight', 'overruled', 'talks_broke_down', 'sweet_talker', 'war_footing', 'crowd_pleaser', 'old_tongue', 'the_name_they_whisper', 'true_name', 'verse_of_war'])
+    for (const id of ['grim_reaper', 'got_you_in_my_sight', 'overruled', 'talks_broke_down', 'war_footing', 'crowd_pleaser', 'old_tales', 'the_name_they_whisper', 'true_name', 'verse_of_war'])
       expect(perkOf(id).text, id).not.toMatch(/provisional|engine|revision|cooldown|item \d|\.json|\.ts\b|label|traitState/i);
   });
 });

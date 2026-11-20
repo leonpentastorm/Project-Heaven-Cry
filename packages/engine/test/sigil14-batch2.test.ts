@@ -5,7 +5,7 @@
 // combat/perk, combat/attack).
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
-import { d20, emit, applyCond, previewEvoke, previewDraw, previewPerkAction, drawGlyph, evoke as evokeSpell, condOn, CLASS, allItems, itemsOf, heldOfChar, type Combat, type Unit } from '../src';
+import { PERK, d20, emit, applyCond, previewEvoke, previewDraw, previewPerkAction, drawGlyph, evoke as evokeSpell, condOn, CLASS, allItems, itemsOf, heldOfChar, type Combat, type Unit } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
 useRevision2Classes(); // Revision 2 classes and advanced classes for this file's handler tests (Class Roster Rev 3)
@@ -94,25 +94,25 @@ describe('gap 16: a Stack fires all around its caster, not around the Stack (ite
 describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-485)', () => {
   it('skill unlocks become items once the points reach them, and are in the coverage report', () => {
     const keys = allItems().filter((i) => i.kind === 'skill').map((i) => i.key);
-    expect([...keys].sort()).toEqual(['skill:brain_power.3', 'skill:brain_power.5', 'skill:rumination.5', 'skill:will_power.3', 'skill:will_power.5', // rules 1.5: Will Power's two (items 539, 540)
-      'skill:raw_power.3', 'skill:raw_power.5', 'skill:dexterity.1', 'skill:dexterity.5', 'skill:proficiency.5', 'skill:camaraderie.1', 'skill:camaraderie.3', 'skill:composure.5', 'skill:ingenuity.1', 'skill:ingenuity.3', 'skill:ingenuity.5', 'skill:ingenuity.7', 'skill:durability.1', 'skill:durability.5', 'skill:conscience.1', 'skill:faith.5'].sort()); // faith.5: rules 1.60 item 4635, Deliver the Sinner a data row; ingenuity: Shadow's door, Close Quarters, Still Breath and Shadow Run (rules 1.32) // rules 1.13 (perks/skeleton.ts); the list is the data's (skills.json unlocks marked `item`: Classes 3.0 P6), in its order; conscience.1: rules 1.60 item 4612, the prayers' shields fed by Conscience
+    expect([...keys].sort()).toEqual(['skill:brain_power.2', 'skill:brain_power.5', 'skill:will_power.2', // rules 1.75 item 6200: Overdraw at Will Power 2 (Pure Heart is a Composure perk)
+      'skill:raw_power.2', 'skill:raw_power.5', 'skill:dexterity.1', 'skill:camaraderie.1', 'skill:ingenuity.1', 'skill:ingenuity.3', 'skill:durability.1', 'skill:conscience.1', 'skill:faith.2'].sort()); // rules 1.75: Hand-Off (camaraderie.3) and Stand Still (composure.5) are perks, Name the Sinner is faith.2 // faith.5: rules 1.60 item 4635, Deliver the Sinner a data row; ingenuity: Shadow's door and Ghost Kill (rules 1.32; Close Quarters and Still Breath went to Acuity's perk Still Breath, Shadow Run to Shadow Step II: rules 1.74 items 6002, 6005) // rules 1.13 (perks/skeleton.ts); the list is the data's (skills.json unlocks marked `item`: Classes 3.0 P6), in its order; conscience.1: rules 1.60 item 4612, the prayers' shields fed by Conscience
     const f = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 3, rumination: 4, visualization: 0 } });
     const held = itemsOf(heldOfChar(f.g.characters[f.pc.charId!])).filter((i) => i.kind === 'skill' && !i.key.startsWith('skill:dexterity.')).map((i) => i.key); // (Dexterity's own door, rules 1.56, is held from its first point)
-    expect(held).toEqual(['skill:brain_power.3']);
+    expect(held).toEqual(['skill:brain_power.2']);
   });
   it('Overclock: the next glyph may make the spell one word past Max Sigil words, for +2 charge; gone with that glyph; refused at 4', () => {
     const plain = rig(['fire', 'seek', 'condense'], ['8,5'], { skills: { brain_power: 3 }, maxWords: 2 });
     line(plain, ['fire', 'seek'], L2.map((k) => k.replace(',5', ',7')));
     plain.pc.pos = '2,7'; expect(withGame(plain.g, () => previewDraw(plain.cb, plain.pc, 'condense')).why).toMatch(/Past your cap/);
     const f = rig(['fire', 'seek', 'condense'], ['8,5'], { skills: { brain_power: 3 }, maxWords: 2 });
-    perk(f, 'skill:brain_power.3', 'overclock'); expect(f.pc.mg!.maxWords).toBe(3);
+    perk(f, 'skill:brain_power.2', 'overclock'); expect(f.pc.mg!.maxWords).toBe(3);
     const c0 = f.pc.mg!.charge; line(f, ['condense'], ['5,5']); expect(c0 - f.pc.mg!.charge).toBe(1 + 2); // CONDENSE 1 + Overclock 2
     const c1 = f.pc.mg!.charge; line(f, ['fire', 'seek'], ['4,5', '3,5']); expect(c1 - f.pc.mg!.charge).toBe(4); // no more +2
     expect(logHas(f.cb, /Overclock: \+2 charge on CONDENSE/)).toBe(true);
     const pv = plan(f, '3,5', '8,5'); expect(pv.ok).toBe(true); expect(pv.pattern!.words).toEqual(['condense', 'fire', 'seek']);
     evoke(f, '3,5', '8,5'); expect(500 - f.foe.hp).toBe(45); expect(f.pc.mg!.maxWords).toBe(2); // the glyph left the ground
     const four = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 3 }, maxWords: 4 });
-    expect(() => perk(four, 'skill:brain_power.3', 'overclock')).toThrow(/already 4/);
+    expect(() => perk(four, 'skill:brain_power.2', 'overclock')).toThrow(/already 4/);
   });
   it('Twin Draw: once a fight, the second spell\'s glyphs cost no Glyph AP until it is as long as the first', () => {
     const f = rig(['fire', 'seek', 'bind', 'condense'], ['14,9'], { skills: { brain_power: 5 } });
@@ -124,8 +124,8 @@ describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-4
     const no = rig(['fire', 'seek'], ['14,9'], { skills: { brain_power: 4 } });
     expect(() => perk(no, 'skill:brain_power.5', 'twin_draw')).toThrow(); // needs Mastery 2
   });
-  it('Proven Formula (rules 1.13): no Sigil discount any more; +3 on the save against a condition that has already hit you this fight', () => {
-    const f = rig(['spark', 'seek', 'fire'], ['8,5'], { skills: { rumination: 5 } });
+  it('Proven Formula (rules 1.13; a Rumination perk since rules 1.74 item 6022): no Sigil discount; +3 (II +5) on the save against a condition that has already hit you this fight', () => {
+    const f = rig(['spark', 'seek', 'fire'], ['8,5'], { skills: { rumination: 5 }, spec: { perks: { proven_formula: 'I' } } });
     line(f, ['spark', 'seek'], L2); expect(plan(f, '3,5', '8,5').ap).toBe(1);
     evoke(f, '3,5', '8,5');
     line(f, ['spark', 'seek'], L2); expect(plan(f, '3,5', '8,5').ap).toBe(1); // the same spell again: full price
@@ -134,7 +134,10 @@ describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-4
     withGame(f.g, () => applyCond(f.cb, f.g.rng, f.foe, f.pc, 'confused', 1, undefined, { skipSave: true }));
     expect(ask('confused')).toBe(3); expect(ask('fear')).toBe(0); // only what has already hit you
     expect(logHas(f.cb, /Proven Formula/)).toBe(true);
-    const no = rig(['spark', 'seek'], ['8,5'], { skills: { rumination: 4 } });
+    const two = rig(['spark', 'seek'], ['8,5'], { skills: { rumination: 5 }, spec: { perks: { proven_formula: 'II' } } });
+    withGame(two.g, () => applyCond(two.cb, two.g.rng, two.foe, two.pc, 'confused', 1, undefined, { skipSave: true }));
+    expect(withGame(two.g, () => emit(two.cb, 'cond_apply', { by: two.foe, t: two.pc, id: 'confused', fam: 'brain', rounds: 1, skipSave: false, cancel: false, saveAdd: 0, tnAdd: 0, cb: two.cb, rng: two.g.rng })).saveAdd).toBe((PERK.proven_formula as any).tiers.II.numbers.save);
+    const no = rig(['spark', 'seek'], ['8,5'], { skills: { rumination: 9 } }); // the points alone give nothing now
     withGame(no.g, () => applyCond(no.cb, no.g.rng, no.foe, no.pc, 'confused', 1, undefined, { skipSave: true }));
     expect(withGame(no.g, () => emit(no.cb, 'cond_apply', { by: no.foe, t: no.pc, id: 'confused', fam: 'brain', rounds: 1, skipSave: false, cancel: false, saveAdd: 0, tnAdd: 0, cb: no.cb, rng: no.g.rng })).saveAdd).toBe(0);
   });

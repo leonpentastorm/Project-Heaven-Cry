@@ -71,23 +71,20 @@ describe('Grim Reaper from the area map (item 19)', () => {
     s.act({ type: 'world/act', charId: c.id, act: 'attack', targetId: n.id, mode: 'melee' } as any);
     return { s, c };
   };
-  it('a kill on the ambush that opens the fight is on your own turn: +2 AP (I and II)', () => {
+  it('a kill on the ambush that opens the fight gives no AP and takes none (rules 1.73 item 5817: the AP rows cut; I and II)', () => {
     const plain = ambush({});
     expect(plain.s.g.phase).toBe('combat');
     const ap0 = plain.s.g.combat!.units.find((u) => u.charId === plain.c.id)!.ap;
     for (const tier of ['I', 'II']) {
       const r = ambush({ perks: { grim_reaper: tier } }); const cb = r.s.g.combat!;
       expect(cb.units.find((u) => u.name === 'Sentry')?.dead).toBe(true);
-      expect(logHas(cb, /Grim Reaper/)).toBe(true);
-      // rules 1.62 item 4902: the ambush is the attacker's first turn of the fight (its own turn AP), so tier I's
-      // "1 AP less on your first turn of each fight" is taken there too
-      expect(cb.units.find((u) => u.charId === r.c.id)!.ap).toBe(ap0 + 2 - (tier === 'I' ? 1 : 0));
+      expect(cb.units.find((u) => u.charId === r.c.id)!.ap).toBe(ap0);
     }
   });
 });
 
 describe('Grim Reaper on a Shade\'s silent takedown (item 19)', () => {
-  it('no fight opens, and the +2 AP comes back to the area map with the AP left', () => {
+  it('no fight opens, and no AP comes back to the area map any more (rules 1.73 item 5817)', () => {
     const run = (perks: any) => {
       const s = storyWith([{ advancedClass: 'shade', level: 5, perks, weapon: 'combat_knife' }]); const c = s.chars[0], here = positionsOf(s.g)[c.id];
       const n = place(s, freeNear(s.g, here, 1), { name: 'Lone guard' }), t = npcsOf(s.g).find((x) => x.id === n.id)!;
@@ -104,7 +101,7 @@ describe('Grim Reaper on a Shade\'s silent takedown (item 19)', () => {
     const plain = run({}), reaper = run({ grim_reaper: 'I' });
     expect(plain.s.g.phase).toBe('story'); expect(storyHas(reaper.s.g, /Silent Kill/)).toBe(true);
     expect(reaper.s.g.phase).toBe('story');
-    expect(apLeft(reaper.s.g, reaper.s.g.characters[reaper.c.id])).toBe(apLeft(plain.s.g, plain.s.g.characters[plain.c.id]) + 2);
+    expect(apLeft(reaper.s.g, reaper.s.g.characters[reaper.c.id])).toBe(apLeft(plain.s.g, plain.s.g.characters[plain.c.id]));
   });
 });
 
@@ -130,23 +127,7 @@ describe('triggers from a reducer action or an enemy\'s turn (item 20)', () => {
     f.turn(ally); f.act({ type: 'combat/end-turn', unitId: ally.id });
     expect(f.unit(ally.id).downed).toBe(true); expect(logHas(f.cb, /First casualty \(Outclassed\)/)).toBe(true);
   });
-  it('Sweet Talker: charm in the story, then a debuff through the reducer (the Taunt call, combat/call) that lands on the charmed NPC gives +2 AP (II +3) (rules 1.56: Lay Down Arms, the plea this used, is gone)', () => {
-    for (const [tier, n] of [['I', 2], ['II', 3]] as const) {
-      const s = storyWith([{ perks: { sweet_talker: tier }, skills: { implication: 3 } }]); const c = s.chars[0];
-      s.act({ type: 'narrator/turn', turn: { narration: 'Talk.', checks: [{ charId: c.id, skills: ['implication'], tn: 12, stakes: 'Charm Vel', target: 'Vel', auto: 'success' }] } } as any);
-      const ck = s.g.checks.find((k: any) => !k.done); if (ck) s.act({ type: 'check/roll', checkId: ck.id } as any);
-      s.act({ type: 'narrator/turn', turn: { narration: 'Vel turns.', combat: { name: 'Fight', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Vel', tier: 'soldier', weapon: 'service_pistol', at: 'F6' }] } } } as any);
-      const box: any = s, cb: Combat = box.g.combat; open(cb);
-      const me = cb.units.find((u) => u.side === 'pc')!, vel = cb.units.find((u) => u.name === 'Vel')!;
-      me.pos = '2,5'; vel.pos = '4,5'; vel.sv = { body: -50, brain: -50, heart: -50 } as any;
-      cb.turn = cb.order.indexOf(me.id); me.ap = 6; delete (cb as any).window;
-      const cost = withGame(box.g, () => previewCall(cb, me, 'call.taunt', { targetId: vel.id } as any)).ap;
-      s.act({ type: 'combat/call', unitId: me.id, id: 'call.taunt', targetId: vel.id } as any);
-      const after = box.g.combat.units.find((u: Unit) => u.id === me.id), v2 = box.g.combat.units.find((u: Unit) => u.id === vel.id);
-      expect(condOn(v2, 'taunted')).toBe(true);
-      expect(after.ap).toBe(6 - cost + n); expect(logHas(box.g.combat, /Sweet Talker/)).toBe(true);
-    }
-  });
+  // Sweet Talker is removed (rules 1.75 item 6215).
 });
 
 describe('Sixth Sense through the reducer (item 21)', () => {

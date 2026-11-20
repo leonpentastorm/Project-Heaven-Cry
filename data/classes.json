@@ -101,7 +101,79 @@
           "threshold": 5,
           "moves": [
             {
-              "ref": "adamantile_knight.unbroken"
+              "id": "retort",
+              "name": "Retort",
+              "ap_cost": 0,
+              "uses": "reaction",
+              "text": "An Answer: a foe hits you in melee while you hold Guard: {=effects.0.and.0.value|abs} Guard and your reaction throw {=amounts.retort.per.0.value|pct}% of the blow back at it (its armour applies)",
+              "short": "Answer: a melee hit on your Guard: throw {=amounts.retort.per.0.value|pct}% of it back",
+              "amounts": {
+                "retort": {
+                  "kind": "damage",
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "event:amount",
+                      "value": 0.5
+                    }
+                  ],
+                  "type": "physical",
+                  "armour": "full",
+                  "provisional": true
+                }
+              },
+              "effects": [
+                {
+                  "op": "deal",
+                  "when": "damaged",
+                  "if": {
+                    "actor": "foe",
+                    "by_hit": true,
+                    "self_has_res": [
+                      "guard"
+                    ],
+                    "self_alive": true,
+                    "answer_on": "retort",
+                    "mode": [
+                      "melee"
+                    ]
+                  },
+                  "amount": "retort",
+                  "target": "actor",
+                  "limit": {
+                    "reaction": 1,
+                    "kind": "attack"
+                  },
+                  "label": "Retort",
+                  "and": [
+                    {
+                      "op": "resource",
+                      "resource": "guard",
+                      "value": -1
+                    }
+                  ],
+                  "fx": {
+                    "k": "guard_move",
+                    "move": "retort"
+                  },
+                  "say": "{self} throws the blow back at {actor}{then} (Retort)."
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "defender",
+              "new": true,
+              "fantasy_tags": [
+                "guard",
+                "tank",
+                "counter"
+              ],
+              "attributes": [
+                "endurance"
+              ],
+              "status": "active",
+              "surface": "combat",
+              "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5836): replaces Unbroken; Retort left Durability's door"
             },
             {
               "id": "shrug_it_off",
@@ -157,7 +229,45 @@
           "threshold": 8,
           "moves": [
             {
-              "ref": "defender.reactive_plate"
+              "id": "reforge",
+              "name": "Reforge",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "At the start of your turn, if you hold {=effects.0.if.self_res.guard.at_most} Guard or none, gain {=effects.0.value} Guard",
+              "short": "Turn start with {=effects.0.if.self_res.guard.at_most} Guard or none: +{=effects.0.value} Guard",
+              "effects": [
+                {
+                  "op": "resource",
+                  "when": "turn_start",
+                  "resource": "guard",
+                  "value": 2,
+                  "if": {
+                    "self_res": {
+                      "guard": {
+                        "at_most": 1
+                      }
+                    },
+                    "self_alive": true
+                  },
+                  "label": "Reforge",
+                  "say": "{self} hammers the plates back into place: +{gain} Guard (Reforge)."
+                }
+              ],
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "defender",
+              "new": true,
+              "fantasy_tags": [
+                "guard",
+                "tank",
+                "sustain"
+              ],
+              "attributes": [
+                "endurance"
+              ],
+              "status": "active",
+              "surface": "combat",
+              "source": "rules 1.73 (Body), 0.32: the Endurance step (item 5837): replaces Reactive Plate"
             },
             {
               "id": "anchor",
@@ -391,6 +501,9 @@
                 "actor": "self",
                 "mode": [
                   "charge"
+                ],
+                "self_lacks": [
+                  "headlong_paid"
                 ]
               }
             },
@@ -760,6 +873,73 @@
           "status": "active",
           "surface": "combat",
           "source": "rules 1.56, the Momentum chain 2.0 (docs/design/proposals/2026-11-momentum-2.0.md)"
+        },
+        {
+          "id": "into_the_wall",
+          "name": "Into the Wall",
+          "ap_cost": 0,
+          "uses": "at_will",
+          "amounts": {
+            "slam": {
+              "kind": "damage",
+              "base": 12,
+              "profile": "melee",
+              "provisional": true
+            }
+          },
+          "text": "An enemy you move by force into a wall, cover, the map's edge or another body takes a slam where it stops; the body it is driven into takes the slam too, whoever it is.",
+          "effects": [
+            {
+              "op": "deal",
+              "when": "displaced",
+              "amount": "slam",
+              "target": "target",
+              "via": "raw_power",
+              "if": {
+                "hostile": true,
+                "target_alive": true,
+                "stopped_by": [
+                  "edge",
+                  "object",
+                  "unit"
+                ]
+              },
+              "say": "{target} is driven into what stands in the way (Into the Wall){then}."
+            },
+            {
+              "op": "deal",
+              "when": "displaced",
+              "amount": "slam",
+              "via": "raw_power",
+              "targets": {
+                "of": "tile",
+                "within": 0,
+                "side": "any"
+              },
+              "if": {
+                "hostile": true,
+                "stopped_by": [
+                  "unit"
+                ]
+              },
+              "say": "The body {target} is driven into takes the slam too{then}."
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "fighter",
+          "new": true,
+          "fantasy_tags": [
+            "melee",
+            "push",
+            "demolition"
+          ],
+          "attributes": [
+            "strength"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.78 item 6605 (docs/design/proposals/2026-11-momentum-2.0.md item 15, P13)"
         }
       ]
     },
@@ -984,7 +1164,7 @@
           "name": "Break Them",
           "ap_cost": 0,
           "uses": "at_will",
-          "text": "Rout costs you {=effects.0.value|abs} AP less on your turn (never under {=effects.0.min}).",
+          "text": "Rout costs you {=effects.0.value|abs} AP less on your turn (never under {=effects.0.min}), and every save a foe makes against you is harder by {=effects.1.value.per.0.value} for each Pressure on it (at most {=effects.1.value.max}).",
           "effects": [
             {
               "op": "cost_mod",
@@ -996,6 +1176,26 @@
                   "rout"
                 ],
                 "own_turn": true
+              }
+            },
+            {
+              "op": "roll_mod",
+              "when": "save",
+              "roll": "tn",
+              "label": "Break Them",
+              "value": {
+                "base": 0,
+                "per": [
+                  {
+                    "of": "target:pressure",
+                    "value": 1
+                  }
+                ],
+                "max": 2
+              },
+              "if": {
+                "actor": "self",
+                "target": "foe"
               }
             }
           ],
@@ -1010,7 +1210,9 @@
             "agility"
           ],
           "status": "active",
-          "surface": "combat"
+          "surface": "combat",
+          "short": "Rout {=effects.0.value|abs} AP less · foes save harder for each Pressure on them",
+          "source": "rules 1.73 (Body), 0.32: the Agility step (item 5856): Shaken Nerves moved in from Dexterity 3"
         }
       ],
       "ranks": {
@@ -1025,7 +1227,7 @@
               "name": "Hold the Lane",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Held shots cost {=effects.0.value|abs} AP less (min {=effects.0.min})",
+              "text": "Held shots cost {=effects.0.value|abs} AP less (min {=effects.0.min}) · a held shot that misses still adds {=effects.1.value} Pressure (once a turn a foe)",
               "effects": [
                 {
                   "op": "cost_mod",
@@ -1037,9 +1239,31 @@
                       "watch"
                     ]
                   }
+                },
+                {
+                  "op": "resource",
+                  "when": "miss",
+                  "label": "Hold the Lane",
+                  "resource": "pressure",
+                  "value": 1,
+                  "target": "target",
+                  "if": {
+                    "actor": "self",
+                    "rolled_with": [
+                      "dexterity"
+                    ],
+                    "hostile": true,
+                    "own_turn": false
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "each": "target"
+                  },
+                  "say": "{self}'s near miss keeps {target}'s head down."
                 }
               ],
-              "source": "rules 1.60 item 4626 (R8): was Speed Loader, which repeated Speed Load (Dexterity 3); the id is kept so saves load",
+              "source": "rules 1.60 item 4626 (R8): was Speed Loader, which repeated Speed Load (Dexterity 3); the id is kept so saves load; rules 1.73 (Body), 0.32: the Agility step (item 5855): Near Miss moved in from Dexterity 3",
               "adjudication": "engine",
               "provisional": true,
               "origin": "marksman",
@@ -1052,7 +1276,8 @@
                 "agility"
               ],
               "status": "active",
-              "surface": "combat"
+              "surface": "combat",
+              "short": "Held shots {=effects.0.value|abs} AP less · a held miss still presses"
             }
           ]
         },
@@ -1245,21 +1470,41 @@
               "name": "Vanish",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "Fade costs no Shadow",
+              "text": "Once a turn your Hide costs {=effects.0.set} AP",
               "effects": [
                 {
                   "op": "cost_mod",
                   "when": "cost",
-                  "res": "shadow",
-                  "value": -2,
                   "if": {
                     "action": [
-                      "verb:shadow.fade#fade"
+                      "hide"
                     ]
+                  },
+                  "set": 0,
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "vanish",
+                    "peek": true
+                  },
+                  "label": "Vanish"
+                },
+                {
+                  "op": "use",
+                  "when": "acted",
+                  "if": {
+                    "action": [
+                      "hide"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "vanish"
                   }
                 }
               ],
-              "source": "rules 1.60 item 4628 (R10): was its own Hide out of view, which repeated Fade; the id is kept so saves load",
+              "source": "rules 1.74 item 6011: once a turn Hide costs 0 AP (it was Fade at no Shadow, which did nothing before Ingenuity 5); the id is kept so saves load",
               "adjudication": "engine",
               "provisional": true,
               "origin": "infiltrator",
@@ -1284,45 +1529,26 @@
             },
             {
               "id": "sabotage",
-              "amounts": {
-                "damage": {
-                  "kind": "damage",
-                  "base": 30,
-                  "profile": "flat",
-                  "type": "physical",
-                  "provisional": true
-                }
-              },
               "name": "Sabotage",
-              "ap_cost": 2,
+              "ap_cost": 0,
               "uses": "at_will",
-              "text": "{=ap_cost} AP: Stun a machine beside you for {=numbers.rounds} round, no save · or break a barricade · or rig your tile ({=effects.2.damage} damage, Pinned on a failed Body save)",
+              "text": "Pick, Disable and Rig are yours (Hijack too at rank III) · Disable and Rig cost you no Shadow",
               "effects": [
                 {
-                  "op": "grant_action",
-                  "action": "sabotage",
-                  "ap": 2,
-                  "uses": "at_will",
-                  "range": 1
-                },
-                {
-                  "op": "disable_machine",
-                  "duration_rounds": 1,
-                  "targets": [
-                    "machine",
-                    "turret",
-                    "drone",
-                    "barricade"
-                  ]
-                },
-                {
-                  "op": "rig_tile",
-                  "damage": 30,
-                  "condition": "pinned",
-                  "save": "body"
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "if": {
+                    "action": [
+                      "verb:shadow.disable#disable",
+                      "verb:shadow.rig#rig"
+                    ]
+                  },
+                  "res": "shadow",
+                  "set": 0,
+                  "label": "Sabotage"
                 }
               ],
-              "adjudication": "hybrid",
+              "adjudication": "engine",
               "provisional": true,
               "origin": "infiltrator",
               "new": true,
@@ -1336,9 +1562,7 @@
               ],
               "status": "active",
               "surface": "combat",
-              "numbers": {
-                "rounds": 1
-              }
+              "source": "rules 1.74 item 6011: Pick, Disable, Rig (rank II) and Hijack (rank III) are the Operative's verbs (shadow.json requires the class); this move makes Disable and Rig cost no Shadow. The old Sabotage actions (stun, break, rig with a Pin) are gone: one copy, the verbs"
             }
           ]
         },
@@ -1362,26 +1586,15 @@
           "uses": "at_will",
           "numbers": {
             "start": 1,
-            "analyze_ap": 1,
             "gain": 1
           },
-          "text": "You start each fight with {=numbers.start} Shadow, and your Shadow holds one more than your Ingenuity gives. Your Analyze costs {=numbers.analyze_ap} AP and Reads its target: your side sees its next action. Once a turn, Analyzing an enemy that can't see you gives {=numbers.gain} Shadow.",
+          "text": "You start each fight with {=numbers.start} Shadow, and your Shadow holds one more than your Ingenuity gives. Your Analyze Reads its target: your side sees its next action. Once a turn, Analyzing an enemy that can't see you gives {=numbers.gain} Shadow.",
           "effects": [
             {
               "op": "resource",
               "resource": "shadow",
               "value": 1,
               "when": "combat_start"
-            },
-            {
-              "op": "cost_mod",
-              "when": "cost",
-              "set": 1,
-              "if": {
-                "action": [
-                  "analyze"
-                ]
-              }
             },
             {
               "op": "condition",
@@ -1426,7 +1639,8 @@
             "perception"
           ],
           "status": "active",
-          "surface": "combat"
+          "surface": "combat",
+          "source": "rules 1.74 item 6011: its Analyze price goes (Acuity's Quick Read owns it)"
         }
       ]
     },
@@ -1503,7 +1717,63 @@
           "threshold": 5,
           "moves": [
             {
-              "ref": "mage.overcharge"
+              "id": "backdraft",
+              "name": "Backdraft",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "When your Evoker overloads, every foe next to you takes its damage too, more as you level",
+              "amounts": {
+                "backdraft": {
+                  "kind": "damage",
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "event:amount",
+                      "value": 1
+                    }
+                  ],
+                  "profile": "flat",
+                  "type": "true",
+                  "provisional": true
+                }
+              },
+              "effects": [
+                {
+                  "op": "deal",
+                  "when": "damaged",
+                  "if": {
+                    "target": "self",
+                    "self_harm": true,
+                    "not_damage": [
+                      "strain",
+                      "short"
+                    ]
+                  },
+                  "amount": "backdraft",
+                  "targets": {
+                    "of": "self",
+                    "side": "foe",
+                    "within": 1,
+                    "shape": "aura"
+                  },
+                  "label": "Backdraft",
+                  "say": "{self}'s overload bursts into {target}{then}."
+                }
+              ],
+              "source": "rules 1.74 item 6025: replaces Overcharge (the ladder gives Overclock at Brain Power 2)",
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "mage",
+              "new": true,
+              "fantasy_tags": [
+                "sigil",
+                "flux"
+              ],
+              "attributes": [
+                "intelligence"
+              ],
+              "status": "active",
+              "surface": "combat"
             },
             {
               "id": "bleed_the_flux",
@@ -1665,7 +1935,59 @@
               "surface": "combat"
             },
             {
-              "ref": "infiltrator.field_fix"
+              "id": "quick_sketch",
+              "name": "Quick Sketch",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "Once a turn, Picture costs {=effects.0.value|abs} AP less (never under {=effects.0.min})",
+              "effects": [
+                {
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "if": {
+                    "action": [
+                      "picture"
+                    ]
+                  },
+                  "value": -1,
+                  "min": 1,
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "sketch",
+                    "peek": true
+                  },
+                  "label": "Quick Sketch"
+                },
+                {
+                  "op": "use",
+                  "when": "acted",
+                  "if": {
+                    "action": [
+                      "picture"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "sketch"
+                  }
+                }
+              ],
+              "source": "rules 1.74 item 6045: replaces Field Fix (Improvisation's Field Repair does its work; Field Fix goes back to the move pool, its key kept)",
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "trickster",
+              "new": true,
+              "fantasy_tags": [
+                "figment",
+                "tempo"
+              ],
+              "attributes": [
+                "expression"
+              ],
+              "status": "active",
+              "surface": "combat"
             }
           ]
         },
@@ -1681,16 +2003,7 @@
                 "charge": 2,
                 "reach": 1
               },
-              "amounts": {
-                "repair": {
-                  "kind": "heal",
-                  "base": 15,
-                  "profile": "repair",
-                  "text": "a repair, not a heal",
-                  "provisional": true
-                }
-              },
-              "text": "{=ap_cost} AP, beside a wreck: +{=numbers.charge} Visualizer charge, once a wreck · or release a Figment, charge back · or repair a machine or Figment for {=amounts.repair.base}",
+              "text": "{=ap_cost} AP, beside a wreck: +{=numbers.charge} Visualizer charge, once a wreck",
               "effects": [
                 {
                   "op": "grant_action",
@@ -1698,9 +2011,7 @@
                   "ap": 1,
                   "uses": "at_will",
                   "pick": [
-                    "wreck",
-                    "reclaim",
-                    "repair"
+                    "wreck"
                   ],
                   "pick_label": "What to salvage"
                 }
@@ -1718,7 +2029,8 @@
                 "expression"
               ],
               "status": "active",
-              "surface": "combat"
+              "surface": "combat",
+              "source": "rules 1.74 item 6045: trimmed to the wreck (Cash in does Reclaim, Field Repair the repair)"
             },
             {
               "id": "overclock",
@@ -2191,8 +2503,8 @@
       "tagline": "An iron will and a storm in the heart.",
       "resource": {
         "id": "strain",
-        "max": "strain_limit (3 + floor(will_power / 2))",
-        "shared_rule": "Each Begin or cast adds 1 Strain (2 where the ambient mana is Flooded), and each turn you keep holding an Outburst adds 1 more. Strain falls by 1 at the start of each of your turns, and again when you calm your heart: a turn spent still, your first weapon attack of the turn, the first heal, stim, shield or cleanse you give someone each turn, letting a held Outburst go, or Steady the heart. Your Strain limit is 3, +1 for every 2 points of Will Power. At the end of your turn each point over the limit burns you for 8 damage that ignores armour. At 3 over the limit you suffer a Mana Short with no roll: you are Stunned and a held Outburst goes off wild. Strain is cleared when the fight ends. Crystallise (3 AP, needs ambient mana of 10 or more) lowers the ambient mana by 10 and makes one standard mana core.",
+        "max": "strain_limit (soul_modules.json strain.limit: 3, +1 at Composure 1, 2, 4, 6 and 8; rules 1.70 item 5539)",
+        "shared_rule": "Each Begin or cast adds 1 Strain (2 where the ambient mana is Flooded), and each turn you keep holding an Outburst adds 1 more. Strain falls by 1 at the start of each of your turns, and again when you calm your heart: a turn spent still, your first weapon attack of the turn, the first heal, stim, shield or cleanse you give someone each turn, letting a held Outburst go, or Steady the heart. Your Strain limit is 3, and grows with Composure. At the end of your turn each point over the limit burns you for 8 damage that ignores armour. At 3 over the limit you suffer a Mana Short with no roll: you are Stunned and a held Outburst goes off wild. Strain is cleared when the fight ends. Crystallise (3 AP, needs ambient mana of 10 or more) lowers the ambient mana by 10 and makes one standard mana core.",
         "also_uses": [
           "mp"
         ]
@@ -2259,7 +2571,7 @@
               "name": "Occult Library",
               "ap_cost": 0,
               "uses": "at_will",
-              "text": "One more design ready · once, out of a fight: learn one more tone",
+              "text": "Once a turn, Syphon costs {=effects.1.set} AP · once, out of a fight: learn one more tone",
               "effects": [
                 {
                   "op": "stat_mod",
@@ -2267,9 +2579,35 @@
                   "value": 1
                 },
                 {
-                  "op": "stat_mod",
-                  "stat": "ready_designs",
-                  "value": 1
+                  "op": "cost_mod",
+                  "when": "cost",
+                  "if": {
+                    "action": [
+                      "syphon"
+                    ]
+                  },
+                  "set": 0,
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "free",
+                    "peek": true
+                  },
+                  "label": "Occult Library"
+                },
+                {
+                  "op": "use",
+                  "when": "acted",
+                  "if": {
+                    "action": [
+                      "syphon"
+                    ]
+                  },
+                  "limit": {
+                    "per": "per_turn",
+                    "n": 1,
+                    "key": "free"
+                  }
                 }
               ],
               "adjudication": "engine",
@@ -2285,7 +2623,8 @@
                 "determination"
               ],
               "status": "active",
-              "surface": "always"
+              "surface": "always",
+              "source": "rules 1.75 (Soul lane, 0.32) item 6208"
             }
           ]
         },
@@ -2533,6 +2872,7 @@
                 {
                   "op": "condition",
                   "when": "hit",
+                  "label": "Judged",
                   "condition": "judged",
                   "rounds": 1,
                   "skip_save": true,
@@ -3260,6 +3600,243 @@
           "status": "active",
           "surface": "combat",
           "source": "rules 1.56 (Balance 2.0), prayer 2.0 (docs/design/proposals/2026-11-prayer-2.0.md)"
+        },
+        {
+          "id": "hallow",
+          "name": "Hallow",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "text": "A Hymn of your own ({=effects.0.ap} AP; no MP, no Strain): it starts your one Hymn wait. Pick a tile you can see within {=effects.0.reach.tiles} tiles: it and every tile within {=effects.0.effects.0.within} of it are hallowed ground for {=effects.0.effects.0.rounds} rounds. You and every ally who starts a turn on it carry your patron's verse for that round, without the song (an Atheist rolls the Whisper's TN for it). Every enemy standing on it is at {=effects.1.value|signed} to hit.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "hallow",
+              "label": "Hallow",
+              "prayer": "hymn",
+              "ap": 2,
+              "uses": "at_will",
+              "reach": {
+                "tile": true,
+                "tiles": 6,
+                "sight": true
+              },
+              "effects": [
+                {
+                  "op": "zone",
+                  "kind": "hallowed",
+                  "at": "tile",
+                  "within": 1,
+                  "rounds": 3,
+                  "say": "{self} hallows the ground."
+                }
+              ]
+            },
+            {
+              "op": "roll_mod",
+              "when": "to_hit",
+              "value": -1,
+              "if": {
+                "actor": "foe",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                }
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_nerukhan",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "nerukhan"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_the_quartermaster",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "the_quartermaster"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_the_laughing_mask",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "the_laughing_mask"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_toll_keeper",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "toll_keeper"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_mother_ember",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "mother_ember"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_old_overcast",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "old_overcast"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_the_matchmaker",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "the_matchmaker"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_counting_weaver",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "patron": [
+                  "counting_weaver"
+                ],
+                "answered": true
+              }
+            },
+            {
+              "op": "condition",
+              "when": "turn_start",
+              "condition": "canticle_plain",
+              "target": "actor",
+              "rounds": 1,
+              "skip_save": true,
+              "if": {
+                "actor": "side",
+                "actor_in_zone": {
+                  "kind": "hallowed",
+                  "owner": "self"
+                },
+                "not_patron": [
+                  "nerukhan",
+                  "the_quartermaster",
+                  "the_laughing_mask",
+                  "toll_keeper",
+                  "mother_ember",
+                  "old_overcast",
+                  "the_matchmaker",
+                  "counting_weaver"
+                ],
+                "answered": true
+              }
+            }
+          ],
+          "adjudication": "engine",
+          "provisional": true,
+          "origin": "guardian",
+          "new": true,
+          "fantasy_tags": [
+            "faith",
+            "prayer",
+            "zone"
+          ],
+          "attributes": [
+            "virtue"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "source": "rules 1.78 item 6607 (docs/design/proposals/2026-11-prayer-2.0.md item 16, P9)"
         }
       ]
     }
@@ -3532,9 +4109,20 @@
         "id": "finisher",
         "name": "Measured Blow",
         "ap_cost": 0,
-        "uses": "per_combat",
-        "text": "Once a fight: a Finisher returns {=effects.0.value} of the Momentum it spent",
+        "uses": "at_will",
+        "text": "A Finisher that drops its target leaves you {=effects.1.value} Momentum. Once a fight, any Finisher does.",
         "effects": [
+          {
+            "op": "mark",
+            "when": "kill",
+            "flag": "dropped",
+            "if": {
+              "actor": "self",
+              "tech_group": [
+                "finisher"
+              ]
+            }
+          },
           {
             "op": "resource",
             "when": "acted",
@@ -3543,17 +4131,48 @@
             "if": {
               "tech_group": [
                 "finisher"
-              ]
+              ],
+              "flag": "dropped"
+            },
+            "priority": 150,
+            "and": [
+              {
+                "op": "mark",
+                "flag": "dropped",
+                "clear": true
+              }
+            ],
+            "say": "{self} follows through (Measured Blow): +{gain} Momentum."
+          },
+          {
+            "op": "resource",
+            "when": "acted",
+            "resource": "momentum",
+            "value": 1,
+            "if": {
+              "tech_group": [
+                "finisher"
+              ],
+              "no_flag": "dropped"
             },
             "limit": {
               "per": "per_combat",
               "n": 1
             },
-            "priority": 150,
+            "priority": 140,
             "say": "{self} holds something back (Measured Blow): +{gain} Momentum."
+          },
+          {
+            "op": "mark",
+            "when": "turn_end",
+            "flag": "dropped",
+            "clear": true,
+            "if": {
+              "flag": "dropped"
+            }
           }
         ],
-        "source": "rules 1.60 item 4623 (R5): was the Breaker's own Finisher action; the door's Finishers are Cleave, Break, Coup and Launch",
+        "source": "rules 1.60 item 4623 (R5): was the Breaker's own Finisher action; the door's Finishers are Cleave, Break, Coup and Launch; rules 1.73 (Body), 0.32: the Strength step (item 5808): Follow Through (Raw Power 5) merged in",
         "adjudication": "engine",
         "provisional": true,
         "origin": "fighter",
@@ -3566,7 +4185,8 @@
         "attributes": [
           "strength"
         ],
-        "status": "active"
+        "status": "active",
+        "short": "A Finisher kill leaves you x{=effects.1.value} · once a fight, any Finisher"
       },
       {
         "id": "brace",
@@ -3624,7 +4244,7 @@
         "name": "Called Out",
         "ap_cost": 0,
         "uses": "at_will",
-        "text": "Challenge costs no Guard · the foe you name is Taunted, no save",
+        "text": "Challenge costs no Guard · the foe you name is Taunted with no save",
         "effects": [
           {
             "op": "cost_mod",
@@ -3638,20 +4258,20 @@
             }
           },
           {
-            "op": "condition",
-            "when": "acted",
-            "condition": "taunted",
-            "target": "target",
-            "skip_save": true,
-            "via": "durability",
+            "op": "skip_save",
+            "when": "cond_incoming",
             "if": {
+              "actor": "self",
+              "target": "foe",
               "action": [
                 "guard_challenge"
               ],
-              "target": "foe",
-              "target_alive": true
+              "cond": [
+                "taunted"
+              ],
+              "target_aimed": true
             },
-            "say": "{self} calls out {target}{then}."
+            "say": "{self} calls out {target}: no save."
           }
         ],
         "source": "rules 1.60 item 4619 (R1): Draw Fire merged into Challenge; the id is kept so saves load",
@@ -3700,7 +4320,8 @@
         "attributes": [
           "endurance"
         ],
-        "status": "active"
+        "status": "shelved",
+        "shelved_by": "rules 1.73 item 5837: replaced on the Bulwark by Reforge (shelved, kept for saves and the move pool)"
       },
       {
         "adjudication": "engine",
@@ -3747,7 +4368,16 @@
               }
             },
             "reach": {
-              "tiles": 1,
+              "tiles": {
+                "base": 1,
+                "steps": [
+                  {
+                    "of": "pick:fork.tend.short_thread",
+                    "at": 1,
+                    "value": 1
+                  }
+                ]
+              },
               "sight": true,
               "side": "ally",
               "beyond": "bond",
@@ -3803,7 +4433,8 @@
           "heal",
           "support"
         ],
-        "surface": "combat"
+        "surface": "combat",
+        "source": "rules 1.75 (Soul lane, 0.32) items 6212, 6217"
       },
       {
         "id": "mark",
@@ -3972,7 +4603,8 @@
         "attributes": [
           "intelligence"
         ],
-        "status": "active"
+        "status": "shelved",
+        "shelved_by": "rules 1.74 item 6025: the Sigilist rank II move is Backdraft (Brain Power 2 gives Overclock)"
       },
       {
         "id": "payload",
@@ -5046,10 +5678,11 @@
         "attributes": [
           "expression"
         ],
-        "status": "active",
+        "status": "shelved",
         "surface": "combat",
         "origin_rank": "II",
-        "future_home": "Rigger (Classes 3.0 step 8; figments-spec.md 4): it left the Operative in rules 1.32, its key stays"
+        "future_home": "Rigger (Classes 3.0 step 8; figments-spec.md 4): it left the Operative in rules 1.32, its key stays",
+        "shelved_by": "rules 1.74 item 6045: the Rigger rank I move is Quick Sketch (Improvisation 3 gives Field Repair)"
       }
     ],
     "revision_2_classes": [
@@ -6708,7 +7341,8 @@
           "attributes": [
             "endurance"
           ],
-          "status": "active"
+          "status": "shelved",
+          "shelved_by": "rules 1.73 item 5836: replaced on the Bulwark by Retort (shelved; the Adamantile Knight keeps its row)"
         }
       ],
       "shelved": true,

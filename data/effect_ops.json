@@ -7,7 +7,7 @@
       "id": "stat_mod",
       "tier": "core",
       "summary": "Add to a derived stat (hp, ap, move, armor, init, mp_max, ...).",
-      "count": 189,
+      "count": 190,
       "params": [
         "basis",
         "context",
@@ -1623,18 +1623,18 @@
       "id": "detection_against_self",
       "tier": "bespoke",
       "summary": "",
-      "count": 2,
+      "count": 1,
       "params": [
         "context",
         "value"
       ],
       "used_by": [
-        "traits:chain_smoker",
         "traits:slicer"
       ],
       "example": {
         "op": "detection_against_self",
-        "value": 2
+        "value": 2,
+        "context": "machines"
       }
     },
     {
@@ -2264,22 +2264,6 @@
       "example": {
         "op": "debuff_duration",
         "value": 1
-      }
-    },
-    {
-      "id": "disadvantage",
-      "tier": "core",
-      "summary": "Roll twice, keep the lower.",
-      "count": 1,
-      "params": [
-        "context"
-      ],
-      "used_by": [
-        "skills:athletics"
-      ],
-      "example": {
-        "op": "disadvantage",
-        "context": "attacks_against_self:armor_class_0"
       }
     },
     {
@@ -4320,6 +4304,61 @@
       }
     },
     {
+      "id": "two_dice",
+      "tier": "core",
+      "summary": "Item op (rules 1.77 item 6507): on the attack's roll, a second d20 is drawn and the worse (keep: worse) or the better (keep: better) of the two stands; once an attack. Runs on the trigger attack_roll.",
+      "count": 0,
+      "params": [
+        "and",
+        "if",
+        "keep",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "two_dice",
+        "when": "attack_roll",
+        "keep": "worse",
+        "if": {
+          "actor": "foe",
+          "target": "self"
+        }
+      }
+    },
+    {
+      "id": "last_turn",
+      "tier": "core",
+      "summary": "Item op (rules 1.77 item 6508): on would_drop, the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own), with turn_ap AP if given, then falls Downed unless healed first; hits: death_save, every hit meanwhile is a failed death save instead of damage. Bite the Bullet's handler made general.",
+      "count": 0,
+      "params": [
+        "and",
+        "hits",
+        "if",
+        "label",
+        "limit",
+        "priority",
+        "say",
+        "target",
+        "turn_ap",
+        "when"
+      ],
+      "used_by": [],
+      "example": {
+        "op": "last_turn",
+        "when": "would_drop",
+        "turn_ap": 3,
+        "limit": {
+          "per": "per_combat",
+          "n": 1
+        }
+      }
+    },
+    {
       "id": "mend_mult",
       "tier": "core",
       "summary": "Item op (Classes 3.0 step 1b): multiply the heal or shield being given (before it is rounded down and capped); its kind is `how` (tending, blessing (prayers), perk...). Runs on the triggers heal and shield.",
@@ -4463,6 +4502,11 @@
         "self": "target",
         "about": "a unit is about to be pushed, pulled, thrown or teleported"
       },
+      "displaced": {
+        "hook": "displaced",
+        "self": "actor",
+        "about": "a unit the holder moved by force has landed, or was held where it stood by what is in the way (test it with stopped_by; the tile that stopped it is the tile of the event)"
+      },
       "heal": {
         "hook": "heal_in",
         "self": "target",
@@ -4481,7 +4525,7 @@
       "cost": {
         "hook": "cost",
         "self": "actor",
-        "about": "an action is priced (every priced action)"
+        "about": "an action is priced (every priced action); its target (rules 1.70 P3): the attack's or the action's target, else the owned unit an order is given to (a Figment's order), else the target id it was priced with"
       },
       "reload": {
         "hook": "reload",
@@ -4774,9 +4818,13 @@
         "arg": "words",
         "about": "the priced action (its cost site) is one of these"
       },
+      "target_aimed": {
+        "arg": "bool",
+        "about": "on cond_incoming: the target is (or is not) the unit the action that puts the condition on was aimed at (rules 1.77 item 6503: the named foe of an area verb)"
+      },
       "action_id": {
         "arg": "words",
-        "about": "the own id of the priced action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price)"
+        "about": "the own id of the priced or done action is one of these (a Call: its Calls id, call.name_it; any priced action that passes its id on the context of its price; on acted, rules 1.77: the id the reducer passes: a Call)"
       },
       "word": {
         "arg": "words",
@@ -4818,6 +4866,15 @@
         "arg": "bool",
         "about": "the target is (or is not) up: not Downed, dead or surrendered"
       },
+      "stopped_by": {
+        "arg": "words",
+        "about": "a forced move was stopped short by one of these: edge (the edge of the map), object (a wall, cover or a thing on the tile), unit (another unit, standing there)",
+        "values": [
+          "edge",
+          "object",
+          "unit"
+        ]
+      },
       "open": {
         "arg": "bool",
         "about": "nothing has stopped it yet: not cancelled, and (would_drop) not floored"
@@ -4843,14 +4900,24 @@
         "arg": "zone",
         "about": "self stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
         "values": [
-          "sanctuary"
+          "sanctuary",
+          "hallowed"
+        ]
+      },
+      "actor_in_zone": {
+        "arg": "zone",
+        "about": "actor stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
+        "values": [
+          "sanctuary",
+          "hallowed"
         ]
       },
       "target_in_zone": {
         "arg": "zone",
         "about": "target stands in a zone of this kind (a kind, or {kind, owner: self, side or any})",
         "values": [
-          "sanctuary"
+          "sanctuary",
+          "hallowed"
         ]
       },
       "actor_tied": {
@@ -4859,6 +4926,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4868,6 +4936,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4917,6 +4986,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4930,6 +5000,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4939,6 +5010,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4948,6 +5020,7 @@
         "values": [
           "verse",
           "owned",
+          "masterwork",
           "bond"
         ]
       },
@@ -4988,9 +5061,9 @@
         "arg": "number",
         "about": "the move (its priced walk: ctx.tiles) is at most this many tiles"
       },
-      "self_res": {
+      "self_not_res": {
         "arg": "res",
-        "about": "self has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most)",
+        "about": "self does not have resources within these bounds (the negation of self_res, rules 1.77 item 6504: {shadow: {at: \"limit\"}} is a meter not yet full)",
         "values": [
           "mp",
           "charge",
@@ -5007,12 +5080,38 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux",
+          "mana"
+        ]
+      },
+      "self_res": {
+        "arg": "res",
+        "about": "self has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\" | \"limit\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)",
+        "values": [
+          "mp",
+          "charge",
+          "cores",
+          "momentum",
+          "guard",
+          "supplies",
+          "toxins",
+          "parts",
+          "stims",
+          "echo",
+          "pressure",
+          "vcharge",
+          "shadow",
+          "ledger",
+          "devotion_xp",
+          "strain",
+          "flux",
+          "mana"
         ]
       },
       "actor_res": {
         "arg": "res",
-        "about": "actor has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most)",
+        "about": "actor has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\" | \"limit\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)",
         "values": [
           "mp",
           "charge",
@@ -5029,12 +5128,14 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux",
+          "mana"
         ]
       },
       "target_res": {
         "arg": "res",
-        "about": "target has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most)",
+        "about": "target has resources within these bounds: {<resource>: {at_least: n, at_most: n, at: \"max\" | \"limit\"}} (rules 1.60, N10; max: the Pressure cap by tier, a meter's most; rules 1.70 P2, limit: at or over its limit, the Strain limit or the Flux limit)",
         "values": [
           "mp",
           "charge",
@@ -5051,7 +5152,9 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux",
+          "mana"
         ]
       },
       "self_has_res": {
@@ -5073,7 +5176,9 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux",
+          "mana"
         ]
       },
       "self_lacks_res": {
@@ -5095,7 +5200,9 @@
           "shadow",
           "ledger",
           "devotion_xp",
-          "strain"
+          "strain",
+          "flux",
+          "mana"
         ]
       },
       "patron": {
@@ -5165,7 +5272,11 @@
           "fork.soul.ride_the_edge",
           "fork.soul.slow_burn",
           "fork.soul.blood_price",
-          "fork.soul.clean_break"
+          "fork.soul.clean_break",
+          "fork.figment.hard_light",
+          "fork.figment.sharp_light",
+          "fork.figment.many_hands",
+          "fork.figment.masterwork"
         ]
       },
       "no_door_pick": {
@@ -5203,7 +5314,11 @@
           "fork.soul.ride_the_edge",
           "fork.soul.slow_burn",
           "fork.soul.blood_price",
-          "fork.soul.clean_break"
+          "fork.soul.clean_break",
+          "fork.figment.hard_light",
+          "fork.figment.sharp_light",
+          "fork.figment.many_hands",
+          "fork.figment.masterwork"
         ]
       },
       "answer_on": {
@@ -5265,14 +5380,15 @@
       },
       "roll_with": {
         "on": [
-          "attack"
+          "attack",
+          "save"
         ],
         "fields": [
           "skill",
           "if_higher"
         ],
         "changes_state": false,
-        "about": "the attack rolls with this skill's modifier (skill: a skill id, or a list: the best of them) in place of the weapon's own skill modifier, never on top of it; if_higher: only when it is higher (combat.ts rollWithPick: the one place the roll's skill is chosen, read by the roll, the attack's preview and the gear card)"
+        "about": "the attack rolls with this skill's modifier (skill: a skill id, or a list: the best of them) in place of the weapon's own skill modifier, never on top of it; if_higher: only when it is higher (combat.ts rollWithPick: the one place the roll's skill is chosen, read by the roll, the attack's preview and the gear card); on a save (rules 1.77 item 6506) the save rolls with the HOLDER's modifier in that skill in place of the saver's own save (rolls.ts rollSave)"
       },
       "cost_mod": {
         "on": [
@@ -5316,6 +5432,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5362,6 +5479,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5408,6 +5526,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5458,6 +5577,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5560,6 +5680,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5608,6 +5729,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5655,6 +5777,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5703,6 +5826,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5753,6 +5877,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5799,6 +5924,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5845,6 +5971,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5902,6 +6029,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5945,6 +6073,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -5991,6 +6120,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -6037,6 +6167,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -6080,6 +6211,7 @@
           "save",
           "moved",
           "forced_move",
+          "displaced",
           "heal",
           "heal_given",
           "shield",
@@ -6113,6 +6245,27 @@
         ],
         "changes_state": false,
         "about": "an enemy next to the holder rolls to spot it (value added to its modifier) instead of finding it outright (Shadow's Close Quarters, rules 1.32)"
+      },
+      "two_dice": {
+        "on": [
+          "attack_roll"
+        ],
+        "fields": [
+          "keep"
+        ],
+        "changes_state": true,
+        "about": "the attack rolls a second d20 and keeps the worse (keep: worse) or the better (keep: better) of the two (once an attack: the first item that asks)"
+      },
+      "last_turn": {
+        "on": [
+          "would_drop"
+        ],
+        "fields": [
+          "turn_ap",
+          "hits"
+        ],
+        "changes_state": true,
+        "about": "the blow leaves the holder on 1 HP and on borrowed time: it acts to the end of its next turn (the rest of this one, if it is its own) with turn_ap AP if given, then falls Downed unless healed first; hits: death_save, each hit meanwhile is a failed death save instead of damage"
       }
     },
     "limit_scopes": [
@@ -6155,7 +6308,8 @@
         ],
         "tied": "string",
         "aims_at": "string",
-        "beyond": "string"
+        "beyond": "string",
+        "if": "predicates"
       }
     }
   }

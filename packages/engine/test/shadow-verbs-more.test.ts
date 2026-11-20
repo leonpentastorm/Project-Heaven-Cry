@@ -4,7 +4,7 @@
 import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
-import { SKILL, type Unit } from '../src';
+import { SKILL, PERK, type Unit } from '../src';
 import { resOf, spotHidden } from '../src/tactics';
 import { applyCond } from '../src/magic';
 import { objectsOf, displace } from '../src/combat';
@@ -23,20 +23,27 @@ const setShadow = (f: F, u: Unit, n: number) => { (f.unit(u.id).res ||= {}).shad
 const foeAt = (f: F, pos: string, blind = false) => { const t = f.unit(f.foe.id); t.pos = pos; if (blind) t.vision = 1; return t; };
 const use = (f: F, u: Unit, id: string, tile: string) => f.act({ type: 'combat/perk', unitId: u.id, id: 'verb:' + id, tile } as any);
 const put = (f: F, kind: string, pos: string, extra: any = {}) => { objectsOf(f.cb).push(makeObject('t' + kind + pos, kind, pos, extra)); };
-const setup = (ing: number, pos = '1,4', foePos = '14,5') => {
-  const f = fightWith([door(ing)], [{}]); foeAt(f, foePos, true);
+// rules 1.74 item 6011: Pick, Disable, Rig and Hijack are the Operative's (rank II; Hijack III): its sheet for those
+const OP: CharSpec = { classId: 'infiltrator', level: 12, attrs: { perception: 8 } };
+const setup = (ing: number, pos = '1,4', foePos = '14,5', extra: CharSpec = {}) => {
+  const f = fightWith([door(ing, extra)], [{}]); foeAt(f, foePos, true);
   const u = f.turn(f.pc); at(f, u, pos); hideNow(f, u); setShadow(f, u, 3); return { f, u: f.unit(f.pc.id) };
 };
 
 describe('the verbs aimed at a tile (reach.tile)', () => {
   it('each shows on the SHADOW tab at its Ingenuity, from data', () => {
-    for (const id of ['shadow.decoy', 'shadow.vault', 'shadow.pick', 'shadow.douse', 'shadow.rig']) {
+    const tabOf = (id: string, spec: CharSpec) => { const f = fightWith([spec], [{}]); return withGame(f.g, () => perkActionsFor({ u: f.unit(f.pc.id), cb: f.cb, g: f.g }, 'combat').find((e) => e.itemId === id || e.id === 'verb:' + id)); };
+    for (const id of ['shadow.decoy', 'shadow.douse']) {
       const min = VERB(id).requires[0].min;
-      const tabOf = (pts: number) => { const f = fightWith([door(pts)], [{}]); return withGame(f.g, () => perkActionsFor({ u: f.unit(f.pc.id), cb: f.cb, g: f.g }, 'combat').find((e) => e.itemId === id || e.id === 'verb:' + id)); };
-      expect(tabOf(min)?.tab, id).toBe('shadow');
-      expect(tabOf(min)?.target, id).toBe('tile');
-      expect(tabOf(min - 1), id).toBeUndefined();
+      expect(tabOf(id, door(min))?.tab, id).toBe('shadow');
+      expect(tabOf(id, door(min))?.target, id).toBe('tile');
+      expect(tabOf(id, door(min - 1)), id).toBeUndefined();
     }
+    for (const id of ['shadow.pick', 'shadow.rig']) { // the Operative's (rules 1.74 item 6011): its class, not Ingenuity points
+      expect(tabOf(id, door(0, OP))?.tab, id).toBe('shadow'); expect(tabOf(id, door(0, OP))?.target, id).toBe('tile');
+      expect(tabOf(id, door(10)), id).toBeUndefined();
+    }
+    expect(VERB('shadow.vault')).toBeUndefined(); // cut (rules 1.74 item 6001: Athletics owns Vault)
   });
   it('Decoy: every enemy side now places you on the tile (its searchers go there); refused past its reach', () => {
     const { f, u } = setup(3);
@@ -46,16 +53,8 @@ describe('the verbs aimed at a tile (reach.tile)', () => {
     const far = '1,' + (4 + G('shadow.decoy').reach.tiles + 1);
     expect(() => use(f, u, 'shadow.decoy', far)).toThrow(/Out of range/);
   });
-  it('Vault: across a tile of half cover to the free tile beyond; refused with nothing to cross', () => {
-    const { f, u } = setup(5, '4,3'); // the crate at 5,3 (yard16 half cover)
-    expect(() => use(f, u, 'shadow.vault', '4,5')).toThrow(/Nothing to cross/);
-    const ap = f.unit(u.id).ap;
-    use(f, u, 'shadow.vault', '6,3');
-    expect(f.unit(u.id).pos).toBe('6,3');
-    expect(f.unit(u.id).ap).toBe(ap - G('shadow.vault').ap);
-  });
   it('Pick: a closed door next to you opens; picked again it shuts and locks; no door, refused', () => {
-    const { f, u } = setup(5); put(f, 'door', '2,4');
+    const { f, u } = setup(0, '1,4', '14,5', OP); put(f, 'door', '2,4');
     expect(() => use(f, u, 'shadow.pick', '1,5')).toThrow(/No door/);
     const door = (): any => objectsOf(f.cb).find((o) => o.pos === '2,4');
     use(f, u, 'shadow.pick', '2,4');
@@ -70,7 +69,7 @@ describe('the verbs aimed at a tile (reach.tile)', () => {
     expect(() => use(f, u, 'shadow.douse', '2,4')).toThrow(/No lamp/);
   });
   it('Rig: a trap of your side next to you, its damage the amount block; one at a time; an enemy that steps on it is hurt', () => {
-    const { f, u } = setup(7);
+    const { f, u } = setup(0, '1,4', '14,5', OP);
     use(f, u, 'shadow.rig', '2,4');
     const traps = () => objectsOf(f.cb).filter((o: any) => o.kind === 'trap' && o.owner === u.id) as any[];
     expect(traps().length).toBe(1);
@@ -85,14 +84,15 @@ describe('the verbs aimed at a tile (reach.tile)', () => {
   });
 });
 
-describe('the passives on Ingenuity\'s unlocks', () => {
-  it('Close Quarters (Ingenuity 3): an enemy next to you rolls to spot you instead of finding you outright', () => {
-    const cq = UNLOCK['3'].effects.find((e: any) => e.op === 'close_roll');
+describe('the passives that left the Ingenuity unlocks (rules 1.74 items 6002, 6005)', () => {
+  it('Close Quarters (Still Breath II, an Acuity perk; was Ingenuity 3): an enemy next to you rolls to spot you instead of finding you outright', () => {
+    expect(UNLOCK['3'].effects.some((e: any) => e.op === 'close_roll')).toBe(false);
+    const cq = (PERK.still_breath as any).tiers.II.effects.find((e: any) => e.op === 'close_roll');
     expect(cq.value).toBeGreaterThan(0);
     let found3 = 0, found1 = 0;
     for (let i = 0; i < 40; i++) {
-      for (const [ing, inc] of [[3, () => found3++], [1, () => found1++]] as const) {
-        const f = fightWith([door(ing)], [{}], { seed: 'CQ' + i }); const t = foeAt(f, '2,4');
+      for (const [spec, inc] of [[door(3, { skills: { analysis: 5 }, perks: { still_breath: 'II' } }), () => found3++], [door(3), () => found1++]] as const) {
+        const f = fightWith([spec], [{}], { seed: 'CQ' + i }); const t = foeAt(f, '2,4');
         at(f, f.pc, '1,4'); hideNow(f, f.pc);
         withGame(f.g, () => spotHidden(f.cb, f.g.rng, f.unit(t.id)));
         if (!f.unit(f.pc.id).hidden) inc();
@@ -101,16 +101,17 @@ describe('the passives on Ingenuity\'s unlocks', () => {
     expect(found1).toBe(40); // without it: found outright, every time
     expect(found3).toBeLessThan(40); // with it: a roll, which sometimes fails
   });
-  it('Shadow Run (Ingenuity 7): once a turn a Hidden move from cover to cover costs less, at least its floor', () => {
-    const sr = UNLOCK['7'].effects.find((e: any) => e.op === 'cost_mod');
-    const run = (ing: number) => {
-      const f = fightWith([door(ing, { attrs: { agility: 1 } })], [{}]); foeAt(f, '15,10', true); // Agility 1: a tile an AP
+  it('Shadow Run (Shadow Step II; was Ingenuity 7): once a turn a Hidden move from cover to cover costs less, at least its floor', () => {
+    expect(UNLOCK['7'].effects.some((e: any) => e.op === 'cost_mod')).toBe(false);
+    const sr = (PERK.shadow_step as any).tiers.II.effects.find((e: any) => e.label === 'Shadow Run');
+    const run = (perks: any) => {
+      const f = fightWith([door(7, { attrs: { agility: 1 }, perks })], [{}]); foeAt(f, '15,10', true); // Agility 1: a tile an AP
       const u = f.turn(f.pc); at(f, u, '4,3'); hideNow(f, u); // 4,3 is next to the crate at 5,3; 4,5 next to 5,4: two tiles
       const ap0 = f.unit(u.id).ap; f.act({ type: 'combat/move', unitId: u.id, to: '4,5' } as any);
       const ap1 = f.unit(u.id).ap; f.unit(u.id).ap = ap0; f.act({ type: 'combat/move', unitId: u.id, to: '4,3' } as any);
       return [ap0 - ap1, ap0 - f.unit(u.id).ap];
     };
-    const [plain] = run(5), [first, second] = run(7);
+    const [plain] = run({ shadow_step: 'I' }), [first, second] = run({ shadow_step: 'II' });
     expect(plain).toBeGreaterThan(sr.min);
     expect(first).toBe(Math.max(sr.min, plain + sr.value));
     expect(second).toBe(plain); // once a turn

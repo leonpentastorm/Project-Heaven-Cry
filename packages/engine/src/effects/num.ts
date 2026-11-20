@@ -7,9 +7,11 @@
 //   num(h, 'cut')        the number for the tier the holder has; THROWS when the data has none (never a silent 0)
 //
 // test/lint-item-ops.test.ts checks that every num(h, '<key>') a handler asks for is in its item's data (at some tier),
-// and tools/validate.py that every `numbers` value is a number. A number that is an amount of damage, healing or a
+// and tools/validate.py that every `numbers` value is a number, or a number block of data references (datatext.ts dataRef:
+// Read Them's tiers read their conditions' rows, cond:read_them.effects.0.value), worked out here. A number that is an amount of damage, healing or a
 // shield is an amount block (effects/amounts.ts itemAmount), not a `numbers` entry.
 import '../datatext';
+import { dataRef } from '../datatext';
 import { rawItem } from './collect';
 import { numberOf } from './amounts';
 
@@ -24,7 +26,7 @@ export function effNum(h: { key: string; info?: { effects: any[] } | null }, op:
 /** The item's number `key` at the holder's tier (a perk's tier block first, then the item's own). */
 export function num(h: { key: string; tier?: string | null }, key: string): number {
   const it = rawItem(h.key);
-  const v = (h.tier && it?.tiers?.[h.tier]?.numbers?.[key]) ?? it?.numbers?.[key];
+  const raw = (h.tier && it?.tiers?.[h.tier]?.numbers?.[key]) ?? it?.numbers?.[key], v = raw && typeof raw === 'object' ? numberOf(raw, dataRef) : raw;
   if (typeof v !== 'number' || !Number.isFinite(v)) throw new Error(h.key + (h.tier ? '@' + h.tier : '') + ': num("' + key + '") is not in its data (add it to the item\'s `numbers`)');
   return v;
 }

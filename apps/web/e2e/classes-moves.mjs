@@ -3,7 +3,7 @@
 //    everyone's Shove stays on the attack tab) and Unstoppable (+2 Momentum);
 //  · Chaplain (was Guardian; rules 1.31): Ward (click the squadmate: a shield on its own layer, the turn's Whisper);
 //  · Infiltrator (the Operative): Vanish (rules 1.60 item 4628: its Fade, the SHADOW tab, costs no Shadow),
-//    Sabotage on a drone, and Rig (the rigged tile marked on the grid);
+//    the Operative's Disable on a drone and Rig (the rigged tile marked on the grid: rules 1.74 item 6011);
 //  · Trickster: Read (Analyze names the enemy's next move: a marker on the enemy and its target), False Image (a
 //    translucent copy of the caster on the grid), Silver Tongue, Sleight (swap with the squadmate);
 //  · Bard: Rally; Marksman: Duck and Roll off and on (the one in force ticked); Channeler: Eye of the Storm (ARMED);
@@ -24,7 +24,8 @@ const MOMENTUM_AT_START = Math.min(TECH.rules.momentum.fighter_max, TECH.rules.m
 const SHOVE_AP = DATA('actions.json').items.find((a) => a.id === 'shove').ap;
 const FADE = DATA('shadow.json').items.find((x) => x.id === 'shadow.fade'), FADE_GRANT = FADE.effects[0];
 const FADE_INGENUITY = FADE.requires.find((q) => q.skill === 'ingenuity').min;
-const VANISH_OFF = moveOf('infiltrator', 'vanish').effects.find((e) => e.res === 'shadow').value;
+const ANALYZE_AP = DATA('actions.json').items.find((x) => x.id === 'analyze').ap;
+const VANISH = moveOf('infiltrator', 'vanish').effects[0]; // rules 1.74 item 6011: a price on Hide (set 0, once a turn), no more on Fade
 const browser = await chromium.launch();
 const host = await player(browser, 'host'), mai = await player(browser, 'mai');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
@@ -193,48 +194,43 @@ m = await mate(); u = await me();
 ok('Ward at Faith 1: ' + (r || 'confirmed') + '; the squadmate carries a Ward (' + JSON.stringify(m.shields || []) + ')', !r && (m.shields || []).some((l) => l.layer === 'ward' && l.by === u.id && l.n > 0));
 ok('Ward was the turn\'s Whisper (its slot is spent: ' + JSON.stringify(Object.keys(u.uses || {}).filter((k) => k.startsWith('faith#'))) + ')', Object.keys(u.uses || {}).some((k) => k.startsWith('faith#whisper')));
 
-// ---------- 3. Infiltrator: Vanish (a free Fade), Rig, Sabotage (and the Rigger's Field Fix between them) ----------
+// ---------- 3. Infiltrator: Vanish (a free Hide, rules 1.74 item 6011), Fade at its price, and the Operative's Rig and Disable ----------
 await setClass('infiltrator', 3, () => act(host, { type: 'sandbox/skill', charId: hostChar, skill: 'ingenuity', points: FADE_INGENUITY }));
 ok('host turn', await newTurn());
-// Vanish (rules 1.60 item 4628) is no action of its own now: it takes the Shadow off the Operative's Fade.
 await host.locator('#phc-tab-class').click(); await settle(host, 120);
-ok('Vanish is no button on the CLASS tab', (await host.locator('[role="tabpanel"]').getByRole('button', { name: /^Vanish/ }).count()) === 0);
+ok('Vanish is no button on the CLASS tab (a price on Hide: ' + JSON.stringify(VANISH.if.action) + ' set ' + VANISH.set + ')', (await host.locator('[role="tabpanel"]').getByRole('button', { name: /^Vanish/ }).count()) === 0 && VANISH.set === 0);
+await host.evaluate(([id, n]) => { const cb = window.__phc.getState().game.combat; const x = cb.units.find((v) => v.charId === id); (x.res ||= {}).shadow = n; }, [hostChar, FADE_GRANT.res.shadow]); // the Shadow Fade costs, set by hand
 u = await me(); ap0 = u.ap; const sh0 = u.res?.shadow ?? 0;
 r = await useMove(/^Fade/, { tab: 'shadow' });
 u = await me();
-ok('Fade with Vanish: Hidden for ' + FADE_GRANT.ap + ' AP (' + ap0 + ' → ' + u.ap + ') and no Shadow (' + sh0 + ' → ' + (u.res?.shadow ?? 0) + "; Fade's " + FADE_GRANT.res.shadow + ' less ' + Math.abs(VANISH_OFF) + '): ' + (r || 'confirmed'),
-  !r && !!u.hidden && u.ap === ap0 - FADE_GRANT.ap && (u.res?.shadow ?? 0) === Math.max(0, sh0 - Math.max(0, FADE_GRANT.res.shadow + VANISH_OFF)));
+ok('Fade: Hidden for ' + FADE_GRANT.ap + ' AP (' + ap0 + ' → ' + u.ap + ') and its Shadow (' + sh0 + ' → ' + (u.res?.shadow ?? 0) + '): ' + (r || 'confirmed'),
+  !r && !!u.hidden && u.ap === ap0 - FADE_GRANT.ap && (u.res?.shadow ?? 0) === Math.max(0, sh0 - FADE_GRANT.res.shadow));
 ok('next to the squadmate', await mateNear(1));
-// Field Fix (rules 1.34: the Rigger's now, rank I): the squadmate's gun jams (set up by hand), the chip clears it.
+// the Rigger: Field Fix went back to the move pool (rules 1.74 item 6045; Quick Sketch in its place)
 await setClass('trickster', 1);
 ok('host turn (the Rigger)', await newTurn());
-await host.evaluate((id) => { const cb = window.__phc.getState().game.combat; const x = cb.units.find((v) => v.charId === id); x.jammed = true; }, maiChar);
-m = await mate();
-await dismissCut(); await pickClass(/^Field Fix/); await tok(m.pos).click(); await settle(host, 200);
-const chips = await host.locator('.phc-cb-pick button').allTextContents();
-ok('Field Fix offers its three jobs, the ones that don\'t apply greyed with a reason: ' + chips.join(' | '), chips.length === 3 && /Restore durability · /.test(chips.join('|')) && !/Clear the jam ·/.test(chips.join('|')));
-const greyed = await host.locator('.phc-cb-pick button[disabled]').count();
-ok('the greyed chips are disabled (' + greyed + ')', greyed >= 1);
-await snap('04-field-fix-picker');
-r = await useMove(/^Field Fix/, { target: m.pos, chip: /^Clear the jam/ });
-m = await mate();
-ok('Field Fix cleared the jam: ' + (r || 'confirmed'), !r && !m.jammed);
+await host.locator('#phc-tab-class').click(); await settle(host, 120);
+ok('Field Fix is no button on the Rigger\'s CLASS tab', (await host.locator('[role="tabpanel"]').getByRole('button', { name: /^Field Fix/ }).count()) === 0);
+await snap('04-rigger-class-tab');
+// the Operative at rank II: Rig and Disable are its Shadow verbs (no Shadow spent: Sabotage), from Hidden
 await setClass('infiltrator', 3);
 ok('host turn', await newTurn());
+await host.evaluate((id) => { const cb = window.__phc.getState().game.combat; const x = cb.units.find((v) => v.charId === id); x.hidden = true; x.conds = { ...(x.conds || {}), hidden: 99 }; (x.res ||= {}).shadow = 0; }, hostChar); // set up by hand, as the jam was
 n0 = await fxN();
-r = await useMove(/^Sabotage: rig your tile/);
+u = await me();
+r = await useMove(/^Rig/, { tab: 'shadow', tile: u.pos });
 u = await me(); g = await G();
-const rig = (g.combat.objects || []).find((o) => o.rig && o.pos === u.pos);
-ok('Rig: a rigged tile under the Infiltrator (' + (r || 'confirmed') + ')', !r && !!rig && rig.side === 'pc');
+const rig = (g.combat.objects || []).find((o) => (o.rig || o.laidBy) && o.pos === u.pos);
+ok('Rig: a rigged tile under the Operative, no Shadow spent (' + (r || 'confirmed') + ')', !r && !!rig && rig.side === 'pc' && (u.res?.shadow ?? 0) === 0);
 fx = await fxSince(n0); ok('the rig event', fx.some((e) => e.k === 'rig'));
 await settle(host, 300);
 ok('the grid marks it: ✱ RIG on ' + ref(u.pos), (await tok(u.pos).locator('span', { hasText: '✱ RIG' }).count()) > 0);
 const drone = await spawnNear('soldier', 'fists', 'Drone 1');
-ok('a drone stands next to the Infiltrator', !!drone);
-n0 = await fxN();
-r = await useMove(/^Sabotage: disable a machine/, { target: drone.pos });
-g = await G(); const dr = g.combat.units.find((x) => x.id === drone.id); fx = await fxSince(n0);
-ok('Sabotage: the drone is disabled (stunned ' + (dr.conds?.stunned || 0) + '): ' + (r || 'confirmed'), !r && (dr.conds?.stunned || 0) > 0 && fx.some((e) => e.k === 'sabotage'));
+ok('a drone stands next to the Operative', !!drone);
+await host.evaluate(([d, id]) => { const cb = window.__phc.getState().game.combat; const x = cb.units.find((v) => v.id === d); x.kind = 'drone'; x.sv = { body: -99, brain: -99, heart: -99 }; const me = cb.units.find((v) => v.charId === id); me.hidden = true; me.conds = { ...(me.conds || {}), hidden: 99 }; }, [drone.id, hostChar]); await settle(host, 150);
+u = await me(); r = await act(host, { type: 'combat/perk', unitId: u.id, id: 'verb:shadow.disable', targetId: drone.id }); // through the reducer (the button's own action), so a refusal says its reason
+g = await G(); const dr = g.combat.units.find((x) => x.id === drone.id); u = await me();
+ok('Disable: the drone is Stunned (' + (dr.conds?.stunned || 0) + '), no Shadow spent: ' + (r || 'confirmed'), !r && (dr.conds?.stunned || 0) > 0 && (u.res?.shadow ?? 0) === 0);
 await settle(host, 250);
 await snap('05-sabotage');
 
@@ -251,7 +247,7 @@ n0 = await fxN(); ap0 = (await me()).ap;
 await dismissCut(); await pickAction(host, /^Analyze/); await tok(foe.pos).click(); await settle(host, 150);
 await host.getByRole('button', { name: /^Confirm/ }).first().click(); await settle(host, 600);
 g = await G(); foe = g.combat.units.find((x) => x.id === foe.id); u = await me();
-ok('Read: Analyze cost 1 AP (' + ap0 + ' → ' + u.ap + ') and named its next move: ' + (foe.readIntent && foe.readIntent.text), u.ap === ap0 - 1 && !!foe.readIntent);
+ok('Read: Analyze at its price (' + ap0 + ' → ' + u.ap + '; rules 1.74 item 6011: Quick Read owns the cut) and named its next move: ' + (foe.readIntent && foe.readIntent.text), u.ap === ap0 - ANALYZE_AP && !!foe.readIntent);
 fx = await fxSince(n0); ok('the intent event', fx.some((e) => e.k === 'intent'));
 const intentMark = tok(foe.pos).locator('span[data-tip-text^="Read: "]');
 ok('the enemy wears its intent marker: ' + (await intentMark.first().textContent().catch(() => '')), (await intentMark.count()) > 0);
@@ -333,7 +329,7 @@ ok('Shrug It Off: off is in force (' + (r || 'confirmed') + ')', !r && (await ho
 await snap('13-defender');
 
 const seen = new Set(await fxSeenSince(0));
-ok('the fx played: ' + [...seen].filter((k) => ['shove', 'unstoppable', 'stance', 'rig', 'sabotage', 'intent', 'swap', 'rally', 'eye_storm'].includes(k)).join(', '),
-  ['shove', 'unstoppable', 'rig', 'sabotage', 'intent', 'swap', 'rally', 'eye_storm'].every((k) => seen.has(k)));
+ok('the fx played: ' + [...seen].filter((k) => ['shove', 'unstoppable', 'stance', 'rig', 'intent', 'swap', 'rally', 'eye_storm'].includes(k)).join(', '),
+  ['shove', 'unstoppable', 'rig', 'intent', 'swap', 'rally', 'eye_storm'].every((k) => seen.has(k))); // rules 1.74 item 6011: the old Sabotage actions (and their fx) are gone
 ok('no page errors: ' + [...host.errors, ...mai.errors].join(' | '), ![...host.errors, ...mai.errors].length);
 await browser.close();

@@ -21,6 +21,7 @@ import { AMMO_TYPES, ammoId } from '../../tactics';
 import { TECHNIQUE, weaponProps } from '../data';
 import { foesOf, alliesOf } from '../../kit';
 import { setBraced } from '../../unitstate';
+import { coverWalk } from '../ai';
 
 /** A technique's number outside a Tech (the hooks): the same key its handler's t.num reads. */
 function num(id: string, k: string, fb: number): number { const v = TECHNIQUE[id]?.numbers?.[k]; return typeof v === 'number' ? v : fb; }
@@ -50,7 +51,7 @@ technique({
     const v = t.tgt; if (!v) return 'Pick a target.';
     if (v.side === t.u.side) return 'Bead an enemy.';
     if (!alive(v)) return v.name + ' is out of the fight.';
-    if (!unitSees(t.cb, t.u, v.pos)) return 'You can\'t see ' + v.name + '.';
+    if (!unitSees(t.cb, t.u, v.pos, undefined, v)) return 'You can\'t see ' + v.name + '.';
     if (techStateOf(t.u, 'bead').targetId === v.id) return 'You already have a bead on ' + v.name + '.';
     return null;
   },
@@ -71,7 +72,7 @@ technique({
   // every action, 1 AP each, and never fired)
   ai(t) {
     const v = t.tgt, held = t.cb.units.find((x) => x.id === techStateOf(t.u, 'bead').targetId);
-    if (!v || (held && alive(held)) || !unitSees(t.cb, t.u, v.pos)) return 0;
+    if (!v || (held && alive(held)) || !unitSees(t.cb, t.u, v.pos, undefined, v)) return 0;
     return dist(t.u.pos, v.pos) > effectiveRange(t.w) || pressureOf(v) ? 6 : 3;
   },
 });
@@ -99,7 +100,7 @@ onHook('move_step', (ctx: any, cb) => {
   if (st.moved > (st.free || 0)) endBead(cb, u, 'moved');
 });
 // Its Pressure doesn't fall while a holder sees it.
-pressureDecay((cb, u, fall) => (beadOn(cb, u).some((h) => unitSees(cb, h, u.pos)) ? 0 : fall));
+pressureDecay((cb, u, fall) => (beadOn(cb, u).some((h) => unitSees(cb, h, u.pos, undefined, u)) ? 0 : fall));
 
 // ---------- 15. Spot ----------
 technique({
@@ -108,7 +109,7 @@ technique({
     const v = t.tgt; if (!v) return 'Pick a target.';
     if (v.side === t.u.side) return 'Spot an enemy.';
     if (!alive(v)) return v.name + ' is out of the fight.';
-    if (!unitSees(t.cb, t.u, v.pos)) return 'You can\'t see ' + v.name + '.';
+    if (!unitSees(t.cb, t.u, v.pos, undefined, v)) return 'You can\'t see ' + v.name + '.';
     if (!alliesOf(t.cb, t.u).length) return 'No one to spot for.';
     return null;
   },
@@ -127,8 +128,8 @@ technique({
   // worth it when others on the side have a gun on the target; one Spot a turn (completeness pass: an enemy spotted
   // each player in turn instead of shooting)
   ai(t) {
-    const v = t.tgt; if (!v || t.cb.units.some((x) => techStateOf(x, 'spotted').by === t.u.id) || !unitSees(t.cb, t.u, v.pos)) return 0;
-    const shooters = alliesOf(t.cb, t.u).filter((a) => WEAPON[a.weapon]?.magazine != null && unitSees(t.cb, a, v.pos)).length;
+    const v = t.tgt; if (!v || t.cb.units.some((x) => techStateOf(x, 'spotted').by === t.u.id) || !unitSees(t.cb, t.u, v.pos, undefined, v)) return 0;
+    const shooters = alliesOf(t.cb, t.u).filter((a) => WEAPON[a.weapon]?.magazine != null && unitSees(t.cb, a, v.pos, undefined, v)).length;
     return shooters >= 2 ? 6 : shooters ? 4 : 0;
   },
 });
@@ -278,9 +279,10 @@ technique({
   // under fire, slide to the covered tile the fewest enemies can see
   ai(t) {
     if (!pressureOf(t.u) || !atCover(t.cb, t.u) || moveBlock(t.u)) return 0;
-    const seen = (k: string) => foesOf(t.cb, t.u).filter((v) => unitSees(t.cb, v, k)).length, now = seen(t.u.pos);
-    const best = stepsWithin(t, shiftTiles(t)).filter((x) => coveredAt(t, x.to)).map((x) => ({ to: x.to, n: seen(x.to) })).sort((a, b) => a.n - b.n || (a.to < b.to ? -1 : 1))[0];
-    return best && best.n < now ? { score: 6, args: { tile: best.to } } : 0;
+    // the one walk to cover (physical/ai.ts coverWalk): Shift's tiles, its walk free of AP, onto a tile nobody stands on
+    const now = foesOf(t.cb, t.u).filter((v) => unitSees(t.cb, v, t.u.pos, undefined, t.u)).length;
+    const best = coverWalk(t.cb, t.u, shiftTiles(t), Infinity, (k) => !t.cb.units.some((v) => v !== t.u && !v.dead && v.pos === k), { near: false });
+    return best && best.eyes < now ? { score: 6, args: { tile: best.to } } : 0;
   },
 });
 

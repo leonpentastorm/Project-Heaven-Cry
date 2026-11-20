@@ -1,3 +1,5 @@
+ARCHIVED 19 Nov 2026. Owed work is in docs/ROADMAP.md only. Kept as the record of rulings and of what happened.
+
 # Session to-do, 16 Nov 2026 (after 0.30.0 went live)
 
 Leon's word (16 Nov, later the same day): **0.30.1 is NOT deployed on its own.** Its work is saved on

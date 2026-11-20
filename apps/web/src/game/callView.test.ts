@@ -1,7 +1,7 @@
 // The Calls pad (game/callView.ts, the Calls tab of game/commands.ts): built on real fights through the engine. The
 // screen works out no number: every cost, reach, step text, save TN and refusal is the engine's.
 import { describe, expect, it } from 'vitest';
-import { CALL, callPad, callRangeAt, actionsFor, previewDescriptor, stepOn, ORDER_THINGS, orderMax } from '@engine';
+import { CALL, callPad, callRangeAt, actionsFor, previewDescriptor, stepOn, ORDER_THINGS, orderMax, calls } from '@engine';
 import { physFight } from '../../../../packages/engine/test/helpers/physfight';
 import { callChips } from './callView';
 import { actionGroups, TAB_NAME } from './commands';
@@ -25,7 +25,7 @@ describe('the Calls tab', () => {
     expect(tabs(f).some((gr: any) => gr[3] === 'calls')).toBe(false);
   });
   it('three talking skills: the tab comes last, one row per Call, with the engine\'s cost, reach and step text', () => {
-    const f = fight({ charisma: 3, intimidation: 5, authority: 7 }, { ally: true });
+    const f = fight({ charisma: 3, intimidation: 5, authority: CALL['call.order'].steps[2].at }, { ally: true });
     const G = tabs(f), last = G[G.length - 1];
     expect(last[3]).toBe('calls');
     const pad = f.bound(() => callPad(f.cb, f.unit(f.pc.id)));
@@ -41,20 +41,21 @@ describe('the Calls tab', () => {
       const row = last[1].find((r: any) => r[0] === c.action)!;
       expect(row[2]).toBe(c.apText + ' · ' + c.reach); expect(row[3]).toContain(c.text);
     }
-    // 5 points: 1 AP; a hindering Call shows its save and the TN from this speaker
+    // 5 points: the price table's AP at 5 (rules 1.70); a hindering Call shows its save and the TN from this speaker
     const th = C.find((c: any) => c.id === 'call.threaten')!, e = pad.find((x: any) => x.id === 'call.threaten')!;
-    expect(th.ap).toBe(1); expect(th.save).toBe('Heart save, TN ' + e.save!.tn); expect(th.aimWord).toBe('an enemy');
+    expect(th.ap).toBe(calls.callBaseAp(5)); expect(th.ap).toBe(2); expect(th.save).toBe('Heart save, TN ' + e.save!.tn); expect(th.aimWord).toBe('an enemy');
     expect(C.find((c: any) => c.id === 'call.rally')!.save).toBe('');
     // the next step is named with the points it opens at
-    expect(C.find((c: any) => c.id === 'call.rally')!.next).toMatch(/^At 7 Charisma: /);
+    expect(C.find((c: any) => c.id === 'call.rally')!.next).toMatch(new RegExp('^At ' + CALL['call.rally'].steps[1].at + ' Charisma: '));
     expect(C.find((c: any) => c.id === 'call.order')!.next).toBe('');
   });
   it('refused by the engine: greyed with its reason (Silenced; AP short)', () => {
     const f = fight({ charisma: 3 }, { ally: true });
     f.unit(f.pc.id).ap = 1;
+    const short = 'Needs ' + calls.callBaseAp(3) + ' AP.';
     let c = chips(f)[0];
-    expect(c.ok).toBe(false); expect(c.why).toBe('Needs 2 AP.');
-    expect(tabs(f).find((gr: any) => gr[3] === 'calls')[1][0][4]).toBe('Needs 2 AP.');
+    expect(c.ok).toBe(false); expect(c.why).toBe(short);
+    expect(tabs(f).find((gr: any) => gr[3] === 'calls')[1][0][4]).toBe(short);
     f.unit(f.pc.id).ap = 6; (f.unit(f.pc.id).conds ||= {} as any).silenced = 2;
     c = chips(f)[0];
     expect(c.ok).toBe(false); expect(c.why).toMatch(/Silenced/);
@@ -104,7 +105,8 @@ describe('a picked Call', () => {
   it('Order: one thing (two at step 3), move from step 2, and a tile for a move', () => {
     expect(ORDER_THINGS.map((t) => t[0])).toEqual(['reload', 'stand', 'pickup', 'move']);
     expect(orderMax(1)).toBe(1); expect(orderMax(3)).toBe(2);
-    const f = fight({ authority: 7 }, { ally: true });
+    const ORD = CALL['call.order'].steps;
+    const f = fight({ authority: ORD[2].at }, { ally: true });
     const me = f.unit(f.pc.id), ally = f.unit(f.pcs[1].id), d = desc(f, 'call.order'), opt = d.picks.find((s) => s.key === 'opt')!;
     expect(opt.max).toBe(2); expect(opt.options!.every((o) => !o.why)).toBe(true);
     const tile = d.picks.find((s) => s.key === 'tile')!;
@@ -113,7 +115,7 @@ describe('a picked Call', () => {
     expect(pv(f, 'call.order', { targetId: ally.id, opt: ['move'] }).ask).toBe('Now click the tile they move to.');
     // a speaker at step 1: MOVE is greyed with when it opens
     const f1 = fight({ authority: 1 }, { ally: true });
-    expect(desc(f1, 'call.order').picks.find((s) => s.key === 'opt')!.options!.find((o) => o.id === 'move')!.why).toMatch(/^From 3 points of /);
+    expect(desc(f1, 'call.order').picks.find((s) => s.key === 'opt')!.options!.find((o) => o.id === 'move')!.why).toMatch(new RegExp('^From ' + ORD[1].at + ' points of '));
     // through the engine: an ally told to stand up and move
     ally.prone = true;
     const [ax, ay] = ally.pos.split(',').map(Number), to = ax + ',' + (ay + 1);

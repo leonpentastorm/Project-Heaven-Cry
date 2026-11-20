@@ -150,8 +150,8 @@
         "watch"
       ]
     },
-    "group_actions": {"breaker_launch": "finisher"},
-    "group_actions_text": "An action that is no technique row but counts as one of a group, for what reads a technique's group (the item-op predicate tech_group) and for the chain (a Finisher locks it: item 5531): the Breaker's Launch is a Finisher (rules 1.56).",
+    "group_actions": {"breaker_launch": "finisher", "barrel_in": "opener"},
+    "group_actions_text": "An action that is no technique row but counts as one of a group, for what reads a technique's group (the item-op predicate tech_group) and for the chain (a Finisher locks it: item 5531): the Breaker's Launch is a Finisher (rules 1.56); Barrel In is an Opener (spec item 5608: it shared the Lunge technique's id before).",
     "chain_ended": "Your chain has ended: a Finisher is the last melee technique of a turn.",
     "group_names": {
       "opener": "Openers",
@@ -2895,20 +2895,26 @@
       },
       "rounds": 0,
       "needs": {},
-      "text": "Grab an enemy next to you: it saves (Body) or is Grappled until it breaks free. No damage. Given by the perk Iron Grip.",
+      "text": "Grab an enemy next to you: it saves (Body) or is Grappled until it breaks free. No damage. Raw Power gives it with any melee weapon or bare hands.",
       "lines": [],
       "free": false,
       "comes_with": [
         "open_hand"
       ],
-      "comes_while": {"hands": {"props": ["open_hand"], "only": true}},
+      "comes_while": {
+        "hands": {
+          "props": [
+            "open_hand"
+          ],
+          "only": true
+        }
+      },
       "home": [],
       "particular": false,
       "numbers": {},
       "adjudication": "engine",
       "provisional": true,
-      "aim": "enemy",
-      "perk": "iron_grip"
+      "aim": "enemy"
     },
     {
       "id": "shield_wall",

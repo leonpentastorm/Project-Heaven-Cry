@@ -116,7 +116,8 @@ export class Room extends DurableObject<Env> {
     if (a.role === 'host') {
       if (m.t === 'view' && typeof m.pid === 'string') {
         // resync: the host's answer to a guest's check-in (below), marked so the guest can count them
-        const s = JSON.stringify(m.resync ? { t: 'view', state: m.state, resync: true } : { t: 'view', state: m.state });
+        // rt: when the room passed it on (its clock), for the co-op loop suite's hop timings (coop-loop.mjs)
+        const s = JSON.stringify(m.resync ? { t: 'view', state: m.state, resync: true, rt: Date.now() } : { t: 'view', state: m.state, rt: Date.now() });
         for (const g of this.ctx.getWebSockets(m.pid)) post(g, s);
         await this.ctx.storage.put('view:' + m.pid, m.state);
       } else if (m.t === 'save') {
@@ -126,7 +127,7 @@ export class Room extends DurableObject<Env> {
       }
     } else if (m.t === 'act') {
       if (!this.live('host').length) { post(ws, JSON.stringify({ t: 'err', message: 'The host is offline. Your action wasn\'t sent.' })); return; }
-      this.toHost({ t: 'act', from: a.pid, action: m.action, nonce: m.nonce });
+      this.toHost({ t: 'act', from: a.pid, action: m.action, nonce: m.nonce, rt: Date.now() });
     } else if (m.t === 'sync') {
       // A guest's check-in: the version of the game it has (m.v). The host answers with the view if that isn't its
       // own (apps/web/src/game/store.ts answerSync); with the host away, the last view the room kept goes out instead.

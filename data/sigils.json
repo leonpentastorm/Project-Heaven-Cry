@@ -1057,7 +1057,7 @@
       "class": "subject_working",
       "charge": 3,
       "flux": 1,
-      "text": "Dispels the Sigil magic placed on the tiles the spell covers: anyone's glyphs, fields, traps and turrets, and the smoke, light and walls of other spells. Keystones, Grand forms and class zones stay.",
+      "text": "Dispels the Sigil magic placed on the tiles the spell covers: anyone's glyphs, fields, traps and turrets, and the smoke, light and walls of other spells. It unmakes every Figment standing there too, anyone's. Keystones, Grand forms and class zones stay.",
       "dispel": [
         "glyph",
         "field",
@@ -1065,7 +1065,8 @@
         "turret",
         "veil",
         "light",
-        "raise"
+        "raise",
+        "figment"
       ],
       "dispel_spares": [
         "keystone",

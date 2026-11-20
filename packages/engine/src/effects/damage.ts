@@ -17,6 +17,7 @@ import { emit, harmHeld } from './hooks';
 import { noteTended } from './mending';
 import { rawHidden, setDowned } from '../unitstate';
 import { canYield, YIELD } from '../yielding';
+import { ELEMENTAL_CAP } from '../data';
 
 /** Tending others (rules 1.5, calming the heart): magic.ts sets f; a heal, stim, shield or cleanse given calls it. */
 export const tendHook: { f: ((cb: Combat | null, by: Unit | null, t: Unit) => void) | null } = { f: null };
@@ -50,8 +51,6 @@ export interface DamageResult { dealt: number; shielded: number; killed: boolean
   /** The damage after reductions and the shield (it may be more than the HP it took): what the log reports. */
   amount: number }
 
-/** Read Them: the share of its damage an analysed enemy loses against the other side. */
-export const READ_THEM = 0.15;
 /** Is the damage from someone on the other side of the unit it hits? */
 export const hostileSrc = (t: Unit, src: DamageSrc) => !!src.by && src.by.side !== t.side;
 
@@ -67,7 +66,7 @@ export const pastShields = (src: { type?: string; dmgType?: string }): boolean =
  * or Guard reduces, raises (Pain Eater's +50% taken: Leon, 16 Nov 2026, "do all 4"), redirects, shares or floors it;
  * 'after', on_damaged and on_downed still speak (Hollow Heart, the Down that ends the Shock). One gate here, for every
  * listener there is and every one to come, lowering or raising. */
-const UNSOFTENED = new Set(['strain']);
+const UNSOFTENED = new Set(['strain', /* borrowed time running out (effects/triggers.ts last_turn): the blow put off lands as it was */ 'last_turn']);
 /** Take damage (already past armour) off a unit's HP. */
 export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: DamageSrc): DamageResult {
   const res: DamageResult = { dealt: 0, shielded: 0, killed: false, downedHit: false, prevented: false, amount: 0 };
@@ -78,13 +77,10 @@ export function applyDamage(cb: Combat | null, t: Unit, dmg: number, src: Damage
     /** the Guard points the unit had as the hit arrived, before any soak spends them (physical/rules.ts: a guard keeps Momentum) */ guard0: t.res?.guard || 0 };
   const soft = !UNSOFTENED.has(src.type); // the one gate (UNSOFTENED): below it, nothing lowers or raises the heart's own harm
   if (soft) {
-    // Derived reductions (spec: Derived stats): Elemental damage taken (−10% × Pain Threshold) and Ambush damage taken
-    // (−10% × Reaction Speed), each capped at 60%, before items.
-    if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.elemTaken));
+    // Derived reductions (spec: Derived stats), before items: Elemental damage taken (the sheet's elementalTakenPct, at most
+    // rules.json combat.elemental_taken_cap: ELEMENTAL_CAP) and Ambush damage taken (the sheet's ambushTakenPct, at most 60%).
+    if (ELEMENTAL_TYPES.has(src.dmgType || '') && t.elemTaken) ctx.dmg = ctx.dmg * (1 - Math.min(ELEMENTAL_CAP, t.elemTaken)); // rules 1.70 item 5540: the one cap
     if (src.ambush && t.ambushTaken) ctx.dmg = ctx.dmg * (1 - Math.min(0.6, t.ambushTaken));
-    // Read Them (Acuity 5, rules 1.13; was Weak Point): an enemy the squad has analysed deals 15% less damage to it. The
-    // mark is Unit.weakPoint (Analyze at 5 points, Case Closed, Detective's Eye), whichever side holds it.
-    if (src.by && src.by.weakPoint && src.by.side !== t.side) ctx.dmg = ctx.dmg * (1 - READ_THEM);
     if (cb) emit(cb, 'damage_in', ctx);
   }
   ctx.dmg = Math.max(0, Math.floor(ctx.dmg));

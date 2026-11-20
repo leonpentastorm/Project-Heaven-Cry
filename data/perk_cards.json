@@ -4,23 +4,12 @@
   "source": "PHC Core Rules v1.0, rules 1.14: the perk card in a fight. Engine review 4, finding 9 (12 Nov 2026): what the Perks tab says about a held item is declared here, not read out of its card text.",
   "adjudication": "engine",
   "notes": "One entry per perk (at each tier), trait or skill perk that names the moment it works. `trigger` is that moment in the card's own words, lower case, with no full stop (\"when combat starts\"); the Perks tab shows it as \"Waiting: <trigger>\". `standing: true` marks a trigger that is a state or the fight's own start (\"while your song plays\"): the tab says \"Works <trigger>\", since there is nothing to wait for. An item with no entry has no moment to wait for (\"Active all fight\"). `core_wired` lists items the core rules look for by id, with no handler of their own for a fight: passives all the same. `private_count` lists limited passives that keep their count where the card cannot read it: they show their limit, never \"Ready\". The validator checks every id is a real item; packages/engine/test/perkcard.test.ts checks each trigger is in its card's text and that the two lists are complete.",
-  "core_wired": [
-    "many_hands"
-  ],
+  "core_wired": [],
   "private_count": [
-    "skill:composure.5"
+    "perk:stand_still",
+    "perk:pure_heart"
   ],
   "items": [
-    {
-      "id": "perk:used_to_the_pain",
-      "tier": "I",
-      "trigger": "the first time you are hit in each fight"
-    },
-    {
-      "id": "perk:used_to_the_pain",
-      "tier": "II",
-      "trigger": "the first time you are hit in each fight"
-    },
     {
       "id": "perk:wind_on_the_skin",
       "tier": "I",
@@ -56,7 +45,7 @@
     {
       "id": "perk:grim_reaper",
       "tier": "II",
-      "trigger": "when you kill or knock out an enemy on your own turn"
+      "trigger": "when you drop an enemy on your own turn"
     },
     {
       "id": "perk:roll_with_it",
@@ -133,16 +122,6 @@
       "standing": true
     },
     {
-      "id": "perk:burden_of_proof",
-      "tier": "I",
-      "trigger": "when someone accuses you or your squad"
-    },
-    {
-      "id": "perk:burden_of_proof",
-      "tier": "II",
-      "trigger": "when someone accuses you or your squad"
-    },
-    {
       "id": "perk:talks_broke_down",
       "tier": "I",
       "trigger": "when a fight breaks out of a talk your squad won"
@@ -161,26 +140,6 @@
       "id": "perk:crowd_pleaser",
       "tier": "II",
       "trigger": "when you talk to a crowd"
-    },
-    {
-      "id": "perk:rally_cry",
-      "tier": "I",
-      "trigger": "when an enemy or a hazard drops an ally to 0 HP"
-    },
-    {
-      "id": "perk:rally_cry",
-      "tier": "II",
-      "trigger": "when an enemy or a hazard drops an ally to 0 HP"
-    },
-    {
-      "id": "perk:you_get_used_to_it",
-      "tier": "I",
-      "trigger": "the first time each round an ally within 5 tiles takes a Brain or Heart condition"
-    },
-    {
-      "id": "perk:you_get_used_to_it",
-      "tier": "II",
-      "trigger": "the first time each round an ally within 5 tiles takes a Brain or Heart condition"
     },
     {
       "id": "perk:flat_line",
@@ -212,8 +171,8 @@
     },
     {
       "id": "perk:open_hand",
-      "tier": "mastered",
-      "trigger": "when an enemy you can see drops to a quarter of its HP or less"
+      "tier": "II",
+      "trigger": "the moment the foe drops"
     },
     {
       "id": "perk:the_twin_pays",
@@ -327,12 +286,9 @@
       "standing": true
     },
     {
-      "id": "skill:raw_power.5",
-      "trigger": "when a Finisher of yours takes its target out"
-    },
-    {
-      "id": "skill:camaraderie.3",
-      "trigger": "when an ally next to you is attacked"
+      "id": "perk:hand_off",
+      "trigger": "who is attacked",
+      "tier": "I"
     }
   ]
 }

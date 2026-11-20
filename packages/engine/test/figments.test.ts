@@ -1,5 +1,6 @@
 // Classes 3.0 step 8 (rules 1.34; docs/design/figments-spec.md): Figments and the Visualizer, Expression's door, one test
 // per rule of the spec's section 2, the forms' verbs, designs and the ladder. Every number is read from the data.
+import { formsKnown } from '../src/figments';
 import { describe, it, expect } from 'vitest';
 import { figFight } from './helpers/figfight';
 import { withGame, storyWith } from './helpers/perkfight';
@@ -27,16 +28,16 @@ describe('figments: the data', () => {
     expect(R.balance.ceilings.figments.allin).toBeGreaterThan(R.balance.ceilings.figments.door_allin);
     for (const t of (ENEMIESJ as any).items) expect('owned_weight' in t && 'double_save' in t).toBe(true);
   });
-  it('the ladder (rules 1.56; rules 1.60 moves the forks to 4 and 6): the Double and the Snare at Visualization 1, the Hand at 2, a fork at 4 and at 6, two held at 5, three at 7, every form at 10', () => {
-    expect(ladderAt(0)).toMatchObject({ held: 0, forms: [] });
-    expect(ladderAt(1)).toMatchObject({ held: 1, forms: ['double', 'snare'], designs: 0, traits: 0 });
-    expect(ladderAt(3).forms).toEqual(['double', 'snare', 'hand']); expect(ladderAt(3)).toMatchObject({ designs: 2, traits: 1 });
-    expect(ladderAt(3).forks).toEqual([]);
-    expect(ladderAt(4).forks.map((k) => k.of)).toEqual([F.ladder.find((r: any) => r.points === 4).fork.of]);
-    expect(ladderAt(5)).toMatchObject({ held: 2, designs: 3 }); expect(ladderAt(5).forks.length).toBe(1); expect(ladderAt(6).forks.length).toBe(2);
-    expect(ladderAt(7)).toMatchObject({ held: 3, traits: 2 }); expect(ladderAt(9).noSnap).toBe(true); expect(ladderAt(10).designs).toBe(5);
-    for (const f of F.forms) if (!f.opens.fork) expect(ladderAt(f.opens.min).forms).toContain(f.id); else expect(ladderAt(f.opens.min).forks.some((k) => k.of.includes(f.id))).toBe(true);
-    for (const f of F.forms) expect(ladderAt(10).forms).toContain(f.id);
+  it('the ladder (rules 1.56; rules 1.70 item 5541: forms are learned, never opened by a level): held 1 at 1, 2 at 5, 3 at 7; forms known 2 at 1, +1 a point, all ten at 9', () => {
+    expect(ladderAt(0)).toMatchObject({ held: 0 });
+    expect(ladderAt(1)).toMatchObject({ held: 1, designs: 0, traits: 0 });
+    expect(ladderAt(3)).toMatchObject({ designs: 2, traits: 1 });
+    expect(ladderAt(5)).toMatchObject({ held: 2, designs: 3 });
+    expect(ladderAt(7)).toMatchObject({ held: 3, traits: 2 }); expect(ladderAt(9).noSnap).toBe(false); expect(ladderAt(10).designs).toBe(5); // rules 1.74 item 6040: No Snap at 9 is gone
+    expect(F.forms.length).toBe(10);
+    const known = (p: number) => formsKnown({ skills: { visualization: p } } as any);
+    expect([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(known)).toEqual([0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10]);
+    for (const f of F.forms) expect(f.opens).toEqual({ skill: 'visualization', min: F.forms_known.from });
   });
 });
 

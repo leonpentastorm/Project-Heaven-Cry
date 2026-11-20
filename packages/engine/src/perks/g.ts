@@ -17,15 +17,16 @@ import { alive, dist, isMelee, canJam, objectsOf, trapKnown } from '../combat';
 import { isTrap } from '../objects';
 import { HEARING } from '../tactics';
 import { applyCond } from '../magic';
-import { SKILL, WEAPON } from '../data';
+import { SKILL, WEAPON, PERK } from '../data';
 import { npcsOf, sideRollMod } from '../game';
 import { foreseeVote } from '../game';
 import './briefs';
-import { overworld, say } from '../kit';
+import { overworld, say, rngOf } from '../kit';
 import { rollVs, tierSave, TN, SAVE_TN } from '../rolls';
 import { loseAp } from '../effects/cost';
 import { stagger } from '../unitstate';
 import { restoreConds } from '../magic';
+import { readThem } from './f';
 
 // ---------- small helpers ----------
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
@@ -102,6 +103,8 @@ register({
 // Combat (PROVISIONAL, a new combat form): once per fight, 0 AP, cite a fact about one enemy: allies' attacks on it get
 // +1 (II +2) for the rest of the round; the citation goes into the fight notes.
 const footBonus = (h: Holder) => (tierII(h) ? 2 : 1);
+/** Is this unit the enemy the holder cited this round (the fight's citation)? */
+const citedNow = (h: Holder, t: Unit | null | undefined): boolean => { const st = (h.u?.ps?.[h.key] as any)?.cite; return !!st && !!h.cb && !!t && t.id === st.target && h.cb.round === st.round; };
 register({
   id: 'footnote',
   claims: ['skill_mod_tag'], narrator: ['narrator'],
@@ -133,37 +136,21 @@ register({
       const rec = sro(h).cite; if (!rec || rec.scene !== sceneN(h) || !h.c || ctx.c === h.c || ctx.c?.id === h.c.id) return;
       if (ctx.ck?.footnote === h.c.id || appliesTo(ctx.ck, 'footnote') || tagsOf(ctx).includes('footnote')) addOnce(ctx, footBonus(h), 'Footnote');
     },
-    attack_preview: (ctx, h) => {
-      const st = (h.u?.ps?.[h.key] as any)?.cite; if (!st || !h.u || !h.cb) return;
-      if (ctx.att.side === h.u.side && ctx.att !== h.u && ctx.tgt?.id === st.target && h.cb.round === st.round) ctx.terms.push({ v: footBonus(h), label: 'Footnote' });
-    },
+    // Rules 1.74 item 6022: at tier II the citer's own Sigils count the cited fact too (its roll to hit).
+    to_hit: (ctx, h) => { if (tierII(h) && ctx.type === 'sigil' && ctx.att === h.u && citedNow(h, ctx.tgt)) ctx.terms.push({ v: footBonus(h), label: 'Footnote' }); },
+    attack_preview: (ctx, h) => { if (h.u && ctx.att.side === h.u.side && ctx.att !== h.u && citedNow(h, ctx.tgt)) ctx.terms.push({ v: footBonus(h), label: 'Footnote' }); },
   },
   brief: (h) => 'judge ally checks acting on the cited fact: set footnote "' + (h.c?.id || 'charId') + '"',
 });
 
-// ---------- Burden of Proof (Eloquence 3/5): demand evidence; an accuser with none loses outright ----------
-register({
-  id: 'burden_of_proof',
-  narrator: 'all',
-  actions: [{
-    id: 'demand', label: 'Demand evidence (Burden of Proof)', scope: ['story'], target: 'text', ap: 0,
-    text: 'When someone accuses you or the squad: demand their evidence. Without it, they lose the argument outright. II: the onlookers also shift to your side.',
-    run: (h, a) => {
-      const eid = postStory(h, 'demands evidence: "' + textArg(a) + '"');
-      ruling(h, 'Burden of Proof: if the accuser has no evidence, they lose the argument outright: call no check' + (tierII(h) ? '; every onlooker shifts one attitude step toward the squad' : '') + '. If they have evidence, refuse (the demand fails on its merits).', eid);
-    },
-  }],
-  brief: (h) => 'a demand for evidence: an accuser without any loses outright, no check' + (tierII(h) ? '; onlookers shift' : ''),
-});
-
-// ---------- Detective's Eye (Analysis 3/5): one out-of-place detail every scene (II: two, and whether connected) ----------
+// ---------- The Tell (id detectives_eye; Vigilance 3/5 since rules 1.74 item 6008): one out-of-place detail every scene (II: two, and whether connected) ----------
 // Story: owed every scene through perkLines (key perk:detectives_eye); the brief says when it is still owed.
 // Combat (PROVISIONAL, a new combat form): at the start of a fight the holder sees one hidden trap or one enemy's weak
 // point (as if Analyzed, without the AP); II: two, and the log says whether they're connected (same owner).
 function servedThisScene(h: Holder): number {
   const g = gOf(h); if (!g?.story || !h.c) return 0;
   const es: any[] = g.story.entries || []; let i = es.length - 1; while (i >= 0 && es[i].kind !== 'scene') i--;
-  return es.slice(i + 1).filter((e) => e.kind === 'voice' && e.charId === h.c!.id && /^DETECTIVE.S EYE/i.test(e.head || '')).length;
+  return es.slice(i + 1).filter((e) => e.kind === 'voice' && e.charId === h.c!.id && String(e.head || '').startsWith(String(PERK[h.itemId]?.name || '').toUpperCase() + ' ')).length;
 }
 register({
   id: 'detectives_eye',
@@ -174,10 +161,10 @@ register({
       const n = tierII(h) ? 2 : 1, found: { what: string; owner?: string }[] = [];
       for (const o of objectsOf(cb)) { if (found.length >= n) break; if (isTrap(o) && !trapKnown(o, 'pc')) { const k: any = o; if (k.side) (k.knownBy ||= []).push('pc'); else o.hidden = false; found.push({ what: 'a trap at ' + o.pos, owner: k.owner }); } }
       const foes = cb.units.filter((t) => t.side !== u.side && alive(t) && !t.analyzedBy && !t.companion).sort((a, b) => b.hp - a.hp || (a.id < b.id ? -1 : 1));
-      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; t.weakPoint = true; found.push({ what: 'how ' + t.name + ' fights (read: it deals 15% less to the squad)', owner: t.id }); }
+      for (const t of foes) { if (found.length >= n) break; t.analyzedBy = u.name; readThem(cb, rngOf(h, ctx), u, t); found.push({ what: 'how ' + t.name + ' fights (Read Them)', owner: t.id }); }
       if (!found.length) return;
       const linked = found.length === 2 && !!found[0].owner && found[0].owner === found[1].owner;
-      say(cb, u.name + '\'s eye catches what doesn\'t fit (Detective\'s Eye): ' + found.map((f) => f.what).join('; ') + (found.length === 2 ? (linked ? ' · connected' : ' · not connected') : '') + '.');
+      say(cb, u.name + '\'s eye catches what doesn\'t fit (' + (PERK[h.itemId]?.name || '') + '): ' + found.map((f) => f.what).join('; ') + (found.length === 2 ? (linked ? ' · connected' : ' · not connected') : '') + '.');
     },
   },
   brief: (h) => {
@@ -225,74 +212,21 @@ function crowdHit(cb: Combat, rng: { state: number }, u: Unit, t: Unit, kind: st
   if (r) say(cb, t.name + ' hears it too' + r + '.');
 }
 
-// ---------- Double Meaning (Implication 3/5): one sentence, two meanings; the squad gets +2 on the hinted action ----------
-// Story: the sentence is a story action; the Narrator tags the hinted check 'hinted' (or applies double_meaning): +2 to
-// any squad member's roll this scene. II: the Narrator plays the enemy acting on the false meaning.
-// Combat (PROVISIONAL, a new combat form; once per round, not at will: plan 6): 0 AP, name the enemy the hint is
-// about: each squad member's next attack on it gets +2 until the holder's next turn. II: the nearest other enemy who
-// heard it (8 tiles) acts on the false meaning and loses its first action next turn (2 AP).
-const hintOn = (h: Holder) => { const r = sro(h).hint; return !!r && r.scene === sceneN(h); };
-register({
-  id: 'double_meaning',
-  claims: ['skill_mod_tag'], narrator: ['narrator'],
-  actions: [
-    {
-      id: 'hint', label: 'Double Meaning', scope: ['story'], target: 'text', ap: 0,
-      text: 'Say one sentence that means one thing to them and another to your squad. The squad gets +2 on the action you hinted at.',
-      run: (h, a) => {
-        sst(h).hint = { scene: sceneN(h), text: textArg(a) };
-        const eid = postStory(h, 'says: "' + textArg(a) + '"');
-        ruling(h, 'Double Meaning: does "' + clip(a.text, 160) + '" carry a hidden instruction to the squad? If so, tag the hinted check hinted (+2 for any squad member)' + (tierII(h) ? '; the enemy acts on the false meaning' : '') + '. Refuse if it carries none.', eid);
-      },
-    },
-    {
-      id: 'hint_fight', label: 'Double Meaning', scope: ['combat'], target: 'enemy', ap: 0, uses: { per: 'per_round', n: 1 }, range: HEARING,
-      text: 'Once a round: hint at an attack on one enemy in earshot. Each squad member\'s next attack on it gets +2 to hit, until your next turn. II: the nearest other enemy who heard it loses its first action.',
-      preview: (h) => ({ lines: ['+2 to each squad member\'s next attack on it, until your next turn.' + (tierII(h) ? ' The nearest other enemy within 8 tiles loses its first action.' : '')] }),
-      run: (h, a) => {
-        const cb = h.cb!, u = h.u!, t = cb.units.find((x) => x.id === a.targetId)!, st = stateOf(h);
-        st.hint = { target: t.id, used: [] as string[] };
-        let fooled = '';
-        if (tierII(h)) {
-          const o = cb.units.filter((x) => x.side !== u.side && x !== t && alive(x) && !x.surrendered && dist(u.pos, x.pos) <= HEARING).sort((x, y) => dist(u.pos, x.pos) - dist(u.pos, y.pos) || (x.id < y.id ? -1 : 1))[0];
-          if (o) { st.fooled = o.id; fooled = '; ' + o.name + ' takes the false meaning'; }
-        }
-        say(cb, u.name + ' says one thing and means another (Double Meaning): the squad +2 on its next attack on ' + t.name + fooled + '.');
-        if (a.text) note(h, 'the sentence: "' + clip(a.text, 160) + '"');
-      },
-    },
-  ],
-  on: {
-    ruling_answered: (ctx, h) => { if (refused(ctx, h)) delete sst(h).hint; },
-    check_mod: (ctx, h) => { if (ctx.c && !ctx.c.dead && hintOn(h) && (tagsOf(ctx).includes('hinted') || appliesTo(ctx.ck, 'double_meaning'))) addOnce(ctx, 2, 'Double Meaning'); },
-    attack_preview: (ctx, h) => {
-      const st = (h.u?.ps?.[h.key] as any)?.hint; if (!st || !h.u) return;
-      if (ctx.att.side === h.u.side && ctx.tgt?.id === st.target && !st.used.includes(ctx.att.id)) ctx.terms.push({ v: 2, label: 'Double Meaning' });
-    },
-    attack_roll: (ctx, h) => { const st = (h.u?.ps?.[h.key] as any)?.hint; if (st && h.u && ctx.att.side === h.u.side && ctx.tgt?.id === st.target && !st.used.includes(ctx.att.id)) st.used.push(ctx.att.id); },
-    turn_start: (ctx, h) => { if (ctx.u === h.u && h.u?.ps?.[h.key]) delete (h.u.ps[h.key] as any).hint; },
-    enemy_action_start: (ctx, h) => {
-      const st = h.u?.ps?.[h.key] as any; if (!st?.fooled || ctx.u.id !== st.fooled) return;
-      delete st.fooled; ctx.skip = true; loseAp(ctx.u, 2);
-      say(h.cb, ctx.u.name + ' acts on the false meaning and loses its first action (Double Meaning).');
-    },
-  },
-  brief: (h) => 'tag the check the sentence hinted at: hinted' + (tierII(h) ? '; the enemy acts on the false meaning' : ''),
-});
+// Double Meaning is removed (rules 1.75 item 6215: mapped to Between the Lines at the same tier).
 
-// ---------- Old Tongue (Lore Master 3/5): read any ancient or upper-realm script; II: speak it, one parley per being ----------
-// Story: a check tagged ancient_script (or applies old_tongue) is an automatic success for the holder: they read it.
-// II: 'Speak the Old Tongue' (story, and in a fight against an upper-realm being): once per being, it parleys. In a
+// ---------- Old Tales II (Old Tongue folded in, rules 1.75 item 6206): read and speak any ancient or upper-realm script, one parley per being ----------
+// Story: at tier II a check tagged ancient_script (or applies old_tales) is an automatic success for the holder: they read it.
+// II: 'Speak the old tongue' (story, and in a fight against an upper-realm being): once per being, it parleys. In a
 // fight (PROVISIONAL) it holds its next turn's attacks while it listens (rules 1.14, spec item 1109: no attack, spell
 // or technique on that turn, but it may move; it used to lose the whole turn); the words go to the Narrator. It gives parley
 // when met, never summons a Celestial (the Accords), and what scripts reveal stays inside the Veil.
 const parleyed = (h: Holder): string[] => (sro(h).beings || []);
 register({
-  id: 'old_tongue',
+  id: 'old_tales',
   narrator: 'all',
   actions: [
     {
-      id: 'speak', label: 'Speak the Old Tongue', scope: ['story'], target: 'npc', ap: 0,
+      id: 'speak', label: 'Speak the old tongue', scope: ['story'], target: 'npc', ap: 0,
       text: 'Speak to an upper-realm being in its own tongue: it will parley with you, once.',
       available: (h) => (tierII(h) ? true : false),
       preview: (h, a) => { const who = npcRef(h, a).name || clip(a.text, 60); if (!who) return { ok: false, why: 'Name the being.' }; if (parleyed(h).some((b) => nameMatch(b, who))) return { ok: false, why: who + ' has parleyed with you once already.' }; return {}; },
@@ -303,7 +237,7 @@ register({
       },
     },
     {
-      id: 'speak_fight', label: 'Speak the Old Tongue', scope: ['combat'], target: 'enemy', ap: 0, range: HEARING,
+      id: 'speak_fight', label: 'Speak the old tongue', scope: ['combat'], target: 'enemy', ap: 0, range: HEARING,
       text: 'Speak to an upper-realm being in earshot. It parleys with you and makes no attacks on its next turn. Once per being.',
       available: (h) => (tierII(h) ? true : false),
       preview: (h, a) => {
@@ -318,7 +252,7 @@ register({
         // move), put on with no save and by nobody's Heart magic, so nothing that stops a condition stops the parley.
         restoreConds(t, { commanded: Math.max(t.conds?.commanded || 0, 1) }, undefined, undefined, { commanded: 'hold' });
         stateOf(h).listening = t.id;
-        say(h.cb, h.u!.name + ' speaks to ' + t.name + ' in the old tongue (Old Tongue): it holds its attacks on its next turn and listens.');
+        say(h.cb, h.u!.name + ' speaks to ' + t.name + ' in the old tongue (Old Tales): it holds its attacks on its next turn and listens.');
         note(h, t.name + ' (upper-realm) parleys with ' + h.u!.name + (a.text ? ': "' + clip(a.text, 160) + '"' : '') + '. Rule what it agrees to.');
       },
     },
@@ -326,28 +260,29 @@ register({
   on: {
     // A refusal (not upper-realm) gives the being back: it never parleyed.
     ruling_answered: (ctx, h) => { if (!refused(ctx, h)) return; const st = sst(h), i = (st.beings || []).map((b: string) => String(ctx.r.text).includes('if ' + b + ' is')).lastIndexOf(true); if (i >= 0) st.beings.splice(i, 1); },
-    check_post: (ctx, h) => { if (ctx.c === h.c && (tagsOf(ctx).includes('ancient_script') || appliesTo(ctx.ck, 'old_tongue')) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('OLD TONGUE'); } },
+    check_post: (ctx, h) => { if (tierII(h) && ctx.c === h.c && (tagsOf(ctx).includes('ancient_script') || appliesTo(ctx.ck, 'old_tales')) && ctx.auto !== 'fail') { ctx.auto = 'success'; ctx.labels.push('OLD TALES'); } },
     enemy_action_start: (ctx, h) => {
       const st = h.u?.ps?.[h.key] as any; if (!st?.listening || ctx.u.id !== st.listening) return;
-      delete st.listening; say(h.cb, ctx.u.name + ' holds its attacks and listens (Old Tongue).');
+      delete st.listening; say(h.cb, ctx.u.name + ' holds its attacks and listens (Old Tales).');
     },
   },
   brief: (h) => 'reads any ancient or upper-realm script (tag such checks ancient_script)' + (tierII(h) ? '; speaks it: one parley per being' : '') + '; within the Veil',
 });
 
-// ---------- Real Power (Authority 3/5): who actually holds the power in an organisation; II: and they agree to see you ----------
+// ---------- Rank Has Privileges II (Real Power folded in, rules 1.75 item 6224): who actually holds the power in an organisation, and they agree to see you ----------
 // PROVISIONAL (plan 6): once per organisation; "agrees to see you" is not "agrees to anything"; Celestials only by cause.
 register({
-  id: 'real_power',
+  id: 'rank_has_privileges',
   narrator: 'all',
   actions: [{
-    id: 'read_org', label: 'Who really runs this? (Real Power)', scope: ['story'], target: 'text', ap: 0,
-    text: 'Name an organisation: the Narrator tells you who really holds the power there. II: that person also agrees to see you. Once per organisation.',
+    id: 'read_org', label: 'Who really runs this? (Rank Has Privileges)', scope: ['story'], target: 'text', ap: 0,
+    text: 'Name an organisation: the Narrator tells you who really holds the power there, and that person agrees to see you. Once per organisation.',
+    available: (h) => (tierII(h) ? true : false),
     preview: (h, a) => (sro(h).orgs || []).some((o: string) => nameMatch(o, textArg(a))) ? { ok: false, why: 'You already know who runs ' + clip(a.text, 40) + '.' } : {},
     run: (h, a) => {
       const org = clip(a.text, 80); (sst(h).orgs ||= []).push(org);
       const eid = postStory(h, 'looks past the titles in ' + org + '.');
-      ruling(h, 'Real Power: tell ' + h.c!.name + ' (perkLines, key perk:real_power) who really holds the power in ' + org + ', and keep it consistent (pin it in memory)' + (tierII(h) ? '; that person agrees to see them (a meeting, not a yes; Celestials only by cause)' : '') + '.', eid);
+      ruling(h, 'Rank Has Privileges: tell ' + h.c!.name + ' (perkLines, key perk:rank_has_privileges) who really holds the power in ' + org + ', and keep it consistent (pin it in memory)' + (tierII(h) ? '; that person agrees to see them (a meeting, not a yes; Celestials only by cause)' : '') + '.', eid);
     },
   }],
   on: { ruling_answered: (ctx, h) => { if (!refused(ctx, h)) return; const st = sst(h), i = (st.orgs || []).map((o: string) => String(ctx.r.text).includes('power in ' + o)).lastIndexOf(true); if (i >= 0) st.orgs.splice(i, 1); } },
@@ -361,7 +296,7 @@ register({
 const factRule = 'Make it true (pin it in memory) unless it contradicts something already shown, decides a check, creates items, money or allies, or touches the Veil or Celestial truth: then refuse (the use comes back).';
 register({
   id: 'established_fact',
-  narrator: 'all',
+  narrator: ['narrator'], // rules 1.74 item 6022: its engine half (a taking row) is the runner's
   actions: [{
     id: 'fact', label: 'Established Fact', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_session', n: 1 },
     text: 'Once a session: state a fact about the technology, biology or history in the scene. It is true from now on, unless it contradicts what has already been shown. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',
@@ -380,7 +315,7 @@ register({
 // NPCs do about it stays the Narrator's.
 register({
   id: 'closing_argument',
-  narrator: 'all',
+  narrator: ['narrator'], // rules 1.74 item 6023: its engine half (a skip_save row) is the runner's
   actions: [{
     id: 'close', label: 'Closing Argument', scope: ['story', 'combat'], target: 'text', ap: 0, uses: { per: 'per_scene', n: 1 },
     text: 'Once a scene: make your closing argument. Every listener who isn\'t ruled by fear or faith accepts its logic. An Eloquence check waiting on that point succeeds. In a fight it is your attempt for the turn: the Narrator answers at once, and a no gives the use back.',

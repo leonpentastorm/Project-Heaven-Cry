@@ -79,16 +79,21 @@ describe('shieldsView: the shields a blow meets, in its order', () => {
     const s = scene(); const a = s.ally(); a.resMax = { ...(a.resMax || {}), guard: 5 }; a.res = { ...(a.res || {}), guard: 3 }; a.shield = 20;
     const v = shieldsView(s.f.cb, s.ally(), s.chap(), String);
     expect(v.guard).toMatchObject({ first: false, keep: 1 }); expect(v.guard!.how.startsWith(L.guard.after)).toBe(true);
-    expect(v.absorb).toBe('Absorbs up to ' + (20 + 2 * v.guard!.soak) + ' before HP');
-    expect(v.absorbDrop).toBe('up to ' + (20 + 3 * v.guard!.soak) + ' against a blow that would drop it');
+    expect(v.absorb).toBe('Stops up to ' + (20 + 2 * v.guard!.soak) + ' of a blow before HP');
+    expect(v.absorbDrop).toBe('Stops up to ' + (20 + 3 * v.guard!.soak) + ' of a blow that would take it down');
     expect(v.chip).toBe('+20 SHIELD'); expect(v.vs).toContain(String(20 + 2 * v.guard!.soak));
+  });
+  it('0.32 B7: one plate, kept back, no shield: the ordinary blow\'s line (a 0) is not said, only what it stops of a blow that would take it down', () => {
+    const s = scene(); const a = s.ally(); a.resMax = { ...(a.resMax || {}), guard: 5 }; a.res = { ...(a.res || {}), guard: 1 }; a.shield = 0;
+    const v = shieldsView(s.f.cb, s.ally(), s.chap(), String);
+    expect(v.blow).toBe(0); expect(v.absorb).toBe(''); expect(v.vs).toBe('');
+    expect(v.absorbDrop).toBe('Stops up to ' + v.guard!.soak + ' of a blow that would take it down');
   });
 });
 
-// The Defender's Reactive Plate (the Bulwark's rank III): its Guard is spent first, in the 'reduce' phase, before every
-// shield, at the plate's own number a plate (its stat_mod), nothing kept by default. The view reads the same plan
-// (physical/guard.ts guardSoakOf) the plate spends by.
-describe('shieldsView: the Reactive Plate is met before the shields', () => {
+// Rules 1.73 item 5837: the Bulwark's rank III is Reforge, not the Reactive Plate (shelved): its plates are the door's,
+// met after the shields like anyone's (the plan guardSoakOf reads), and the plate's own spend-first policy is gone.
+describe('shieldsView: a rank III Bulwark\'s plates are the door\'s (the Reactive Plate is shelved)', () => {
   const PLATE = 'class:defender.reactive_plate';
   function bulwark() {
     rig(null);
@@ -97,43 +102,26 @@ describe('shieldsView: the Reactive Plate is met before the shields', () => {
     const u = f.unit(f.pc.id); u.hp = u.maxHp; u.armour = 0; u.resMax = { ...(u.resMax || {}), guard: 5 }; u.res = { ...(u.res || {}), guard: 3 }; u.shield = 30;
     return { f, u: () => f.unit(f.pc.id) };
   }
-  const perPlate = (): number => (Object.values(CLASS_MOVE_POOL) as any[]).find((m) => m.id === 'reactive_plate' && m.origin === 'defender').effects.find((e: any) => e.op === 'stat_mod').value;
-  it("the view: Guard first, the plate's own number a plate, nothing kept, so a blow meets every plate", () => {
-    const { f, u } = bulwark(); expect(f.bound(() => phys.holds(u(), PLATE))).toBe(true);
-    const v = shieldsView(f.cb, u(), null, String);
-    expect(v.guard).toMatchObject({ plates: 3, soak: perPlate(), keep: 0, first: true, line: 'Guard 3 plates, each soaks ' + perPlate() });
-    expect(v.guard!.how).toBe(L.guard.before);
-    expect(v.blow).toBe(30 + 3 * perPlate()); expect(v.all).toBe(v.blow); expect(v.absorbDrop).toBe('');
+  it('the view: no plate of its own, Reforge held; the Guard line is the door\'s, met after the shields, as the plan says', () => {
+    const { f, u } = bulwark(); expect(f.bound(() => phys.holds(u(), PLATE))).toBe(false); expect(f.bound(() => phys.holds(u(), 'class:defender.reforge'))).toBe(true);
+    const v = shieldsView(f.cb, u(), null, String), plan = f.bound(() => guardSoakOf(u()));
+    expect(v.guard).toMatchObject({ plates: 3, first: false }); expect(v.guard!.how.startsWith(L.guard.after)).toBe(true);
+    expect(plan!.phase).not.toBe('before'); expect(v.guard!.soak).toBe(plan!.per);
   });
-  it('a 40-damage blow spends every plate first, then the shield takes the rest: what the view said', () => {
-    const { f, u } = bulwark(); const v = shieldsView(f.cb, u(), null);
-    f.bound(() => applyDamage(f.cb, u(), 40, { type: 'weapon', by: f.unit(f.foe.id) } as any));
-    expect(u().res!.guard).toBe(0); expect(u().shield).toBe(30 - (40 - 3 * perPlate())); expect(u().hp).toBe(u().maxHp);
-    expect(f.cb.log.some((l) => /plate hardens/.test(l))).toBe(true); expect(f.cb.log.some((l) => /Guard takes/.test(l))).toBe(false);
-    expect(40).toBeLessThanOrEqual(v.blow!);
-  });
-  it("a real attack: the plates go before the shield, the shield before HP, and no more than the view's figure is stopped", () => {
-    const { f, u } = bulwark(); const v = shieldsView(f.cb, u(), null); const hp = u().hp;
-    rig({ hit: true, die: 12 }); f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), u(), 'melee', null, { noAp: true })); rig(null);
-    const plates = 3 - (u().res!.guard || 0), shieldLost = 30 - (u().shield || 0), hpLost = hp - u().hp;
-    expect(plates).toBeGreaterThan(0);
-    if (shieldLost > 0) expect(plates).toBe(3);
-    if (hpLost > 0) expect(shieldLost).toBe(30);
-    expect(plates * perPlate() + shieldLost).toBeLessThanOrEqual(v.blow!);
-  });
-  it('its policy is read by the view too: "keep 1" keeps a plate back from every blow', () => {
+  it('a 40-damage blow meets the shield first, and no plate line of the Reactive Plate is said', () => {
     const { f, u } = bulwark();
-    f.act({ type: 'combat/perk', unitId: u().id, id: PLATE, actionId: 'plate_keep1' } as Action, 'host');
-    const v = shieldsView(f.cb, u(), null, String);
-    expect(v.guard).toMatchObject({ keep: 1, first: true }); expect(v.blow).toBe(30 + 2 * perPlate()); expect(v.all).toBe(v.blow);
-    f.bound(() => applyDamage(f.cb, u(), 200, { type: 'weapon', by: f.unit(f.foe.id) } as any));
-    expect(u().res!.guard).toBe(1);
+    f.bound(() => applyDamage(f.cb, u(), 40, { type: 'weapon', by: f.unit(f.foe.id) } as any));
+    expect(u().shield).toBe(0); expect(f.cb.log.some((l) => /plate hardens/.test(l))).toBe(false);
+  });
+  it('the plate\'s keep policy is no action any more', () => {
+    const { f, u } = bulwark();
+    expect(() => f.act({ type: 'combat/perk', unitId: u().id, id: PLATE, actionId: 'plate_keep1' } as Action, 'host')).toThrow();
   });
 });
 
 // 0.30.0 (the release merge of the tank rulings and the shield display): a rank III Bulwark (the pool by rank, rules
-// 1.59 T5) with the Reactive Plate, a shield in each hand (T4: gains doubled, the soak per plate unchanged) and a
-// Chaplain's Ward on top. The Guard line of the view is what a real blow, through the reducer, spends.
+// 1.59 T5) with a shield in each hand (T4: gains doubled, the soak per plate unchanged) and a Chaplain's Ward on top.
+// Rules 1.73 item 5837: no Reactive Plate any more: the Ward is met first, then the door's plates.
 describe('shieldsView: a rank III Bulwark with two shields and a Ward, through the reducer', () => {
   const PLATE = 'class:defender.reactive_plate';
   const R = (CLASS as any).defender.resource.max_by_rank as Record<string, number>;
@@ -153,9 +141,9 @@ describe('shieldsView: a rank III Bulwark with two shields and a Ward, through t
     u().armour = 0; u().def = -40; u().hp = u().maxHp = 5000;
     return { f, u, c, me, chap };
   }
-  it('the pool is the rank III one, Brace with two shields fills it as the view counts it, and a shot spends the plates first, then the Ward, as the view said', () => {
+  it('the pool is the rank III one, Brace with two shields fills it as the view counts it, and a shot meets the Ward before the plates', () => {
     const { f, u, c, me, chap } = tank();
-    expect(f.bound(() => phys.holds(u(), PLATE))).toBe(true);
+    expect(f.bound(() => phys.holds(u(), PLATE))).toBe(false);
     expect(u().resMax!.guard).toBe(R['3']);
     // Brace through the reducer, two shields in hand: the view counts the plates the engine gave
     f.turn(me); u().res!.guard = 0; f.act({ type: 'combat/brace', unitId: me.id } as Action, 'host');
@@ -165,22 +153,13 @@ describe('shieldsView: a rank III Bulwark with two shields and a Ward, through t
     u().res!.guard = u().resMax!.guard!;
     f.turn(chap); f.act({ type: 'combat/perk', unitId: chap.id, id: 'class:guardian.ward', actionId: 'ward', targetId: me.id } as Action, 'host'); clearPrayerLimits(c());
     expect(u().shields?.length).toBe(1); u().shields![0].n = 5;
-    const v = shieldsView(f.cb, u(), null, String), per = perPlate(), full = R['3'];
-    expect(v.guard).toMatchObject({ plates: full, soak: per, keep: 0, first: true, line: 'Guard ' + full + ' plates, each soaks ' + per });
-    expect(v.guard!.how).toBe(L.guard.before);
+    const v = shieldsView(f.cb, u(), null, String), full = R['3'];
+    expect(v.guard).toMatchObject({ plates: full, first: false });
     expect(v.entries.map((e) => [e.kind, e.name])).toEqual([['layer', 'Ward']]);
-    expect(v.blow).toBe(5 + full * per); expect(v.all).toBe(v.blow);
-    // a shot through the reducer: the plates go first (the plate's plan), the Ward only once every plate is gone
     const hp = u().hp; f.g.rng.state = rngFor(15, 10, 10, 10); c().ap = 6;
     f.act({ type: 'combat/attack', unitId: chap.id, targetId: me.id, mode: 'shot' } as Action, 'host');
-    const plates = full - (u().res!.guard || 0), wardLost = 5 - (u().shields?.[0]?.n ?? 0), hpLost = hp - u().hp;
-    expect(plates).toBeGreaterThan(0);
-    expect(f.cb.log.some((l) => /plate hardens/.test(l))).toBe(true); expect(f.cb.log.some((l) => /Guard takes/.test(l))).toBe(false);
-    if (wardLost > 0) expect(plates).toBe(full);
-    if (hpLost > 0) expect(wardLost).toBe(5);
-    expect(plates * per + wardLost).toBeLessThanOrEqual(v.blow!);
-    // what the plan the view reads says this many plates take off, the blow lost
-    const plan = f.bound(() => guardSoakOf(u()));
-    expect(plan).toMatchObject({ phase: 'before', per, keep: 0 });
+    const plates = full - (u().res!.guard || 0), wardLost = 5 - (u().shields?.[0]?.n ?? 0);
+    if (plates > 0) expect(wardLost).toBe(5); // the Ward goes before any plate
+    expect(f.cb.log.some((l) => /plate hardens/.test(l))).toBe(false); void hp;
   });
 });

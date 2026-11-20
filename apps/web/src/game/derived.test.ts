@@ -21,7 +21,7 @@ describe('derivedLines', () => {
     expect(from.crit_taken).toBe('Perception and ' + SKILL.analysis.name); expect(SKILL.analysis.name).toBe('Acuity');
     expect(from.ambush_taken).toBe(SKILL.proficiency.name); expect(SKILL.proficiency.name).toBe('Improvisation');
     expect(from.sigil_range).toBe('Brain Power'); expect(from.sigil_cores).toBe('Brain Power');
-    expect(from.soul_range).toBe('Will Power'); expect(from.ready_designs).toBe('Will Power');
+    expect(from.soul_range).toBe('Will Power'); expect(from.ready_designs).toBe('Lore Master');
   });
   it('each number moves with its own skill and with no other (read from the engine)', () => {
     const cases: [string, string, (c: any) => string][] = [
@@ -29,7 +29,7 @@ describe('derivedLines', () => {
       ['heal_received', 'camaraderie', (c) => '×' + Math.round(healReceivedMult(c) * 100) / 100], ['shield_received', 'conscience', (c) => '×' + Math.round(shieldReceivedMult(c) * 100) / 100],
       ['save_brain', 'rumination', (c) => '+' + saveBonus(c, 'brain')], ['crit_taken', 'analysis', (c) => '−' + Math.round(critTakenPct(c) * 100) + '%'],
       ['ambush_taken', 'proficiency', (c) => '−' + Math.round(ambushTakenPct(c) * 100) + '%'], ['sigil_range', 'brain_power', (c) => '+' + sigilRangeBonus(c) + ' tiles'],
-      ['sigil_cores', 'brain_power', (c) => sigilCoreSaving(c) + ' a Sigil'], ['soul_range', 'will_power', (c) => '+' + soulRangeBonus(c) + ' tiles'], ['ready_designs', 'will_power', (c) => String(readyDesigns(c))],
+      ['sigil_cores', 'brain_power', (c) => sigilCoreSaving(c) + ' a Sigil'], ['soul_range', 'will_power', (c) => '+' + soulRangeBonus(c) + ' tiles'], ['ready_designs', 'lore_master', (c) => String(readyDesigns(c))],
     ];
     const zero = make({});
     for (const [key, skill, want] of cases) {

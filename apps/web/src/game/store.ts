@@ -6,7 +6,7 @@ import { FIGHT_TIMEOUT_MS } from '../narrator/fight';
 import { newRoomPlay, testRoom } from './modes';
 import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
 import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
-import { connect, type Conn } from './net';
+import { connect, hop, type Conn } from './net';
 import { DEFAULT_START, shownStart } from './starts';
 import { battlePace } from './combatSpeed';
 
@@ -15,7 +15,8 @@ export type Screen = 'home' | 'create' | 'room' | 'main' | 'combat' | 'levelup' 
 export interface Me { id: string; name: string }
 export interface ClientState {
   me: Me; role: 'host' | 'guest' | null; code: string | null; game: GameState | null;
-  conn: 'offline' | 'connecting' | 'online' | 'host-away' | 'error'; connNote: string;
+  /** replaced: this player opened the room in another tab or browser, and that link has it now (net.ts). */
+  conn: 'offline' | 'connecting' | 'online' | 'host-away' | 'error' | 'replaced'; connNote: string;
   library: (Sheet & { savedAt: number })[]; draft: Partial<Sheet> | null;
   screen: Screen; levelupChar: string | null; toast: { text: string; at: number; ok?: boolean } | null; savedAt?: number;
   /** The room screen opens scrolled to this part (the Narrator chip's Change key). */ roomFocus?: 'narrator' | null;
@@ -105,6 +106,7 @@ export function hostRoom(code = roomCode()) {
   });
   write(LS.room, { code, role: 'host' });
   set({ role: 'host', code, game: viewFor(hostState, S.me.id), screen: screenFor(hostState), conn: 'connecting' });
+  conn?.close(); // a page that hosts or joins again ends its old link first (it kept running beside the new one)
   conn = connect({ code, pid: S.me.id, name: S.me.name, role: 'host', token: hostToken(code) }, onMessage, onConn);
   persist();
   fightAsked = null; queueMicrotask(maybeFightRule); // rules 1.14: a fight saved while an attempt waited asks the Narrator again
@@ -115,6 +117,7 @@ export function joinRoom(code: string) {
   if (!/^[A-Z0-9]{6}$/.test(code)) return toast('Room codes are 6 letters and numbers.');
   write(LS.room, { code, role: 'guest' });
   set({ role: 'guest', code, game: null, screen: 'room', conn: 'connecting' });
+  conn?.close();
   conn = connect({ code, pid: S.me.id, name: S.me.name, role: 'guest' }, onMessage, onConn);
 }
 // ---------- saved games (the title screen's list) ----------
@@ -152,9 +155,14 @@ export function resumeRoom() { const r = read(LS.room, null); if (r?.code && S.m
 export const lastRoom = () => read(LS.room, null) as { code: string; role: string } | null;
 function hostToken(code: string) { const k = 'phc.hosttoken.' + code; let t = read(k, null); if (!t) { t = rid(24); write(k, t); } return t; }
 
+/** The room was opened in another tab (net.ts, close 4000): take it back here. The other tab's link is replaced in
+ *  turn and stops there; a host reloads the save this browser keeps (the other tab wrote it), a guest joins again. */
+export function takeOver() {
+  const code = S.code, role = S.role; if (!code || !role) return;
+  if (role === 'host') hostRoom(code); else joinRoom(code);
+}
 function onConn(state: Conn['state'], note = '') {
-  if (S.role === 'host') set({ conn: state === 'open' ? 'online' : state === 'closed' ? 'connecting' : 'error', connNote: note });
-  else set({ conn: state === 'open' ? 'online' : state === 'closed' ? 'connecting' : 'error', connNote: note });
+  set({ conn: state === 'open' ? 'online' : state === 'closed' ? 'connecting' : state === 'replaced' ? 'replaced' : 'error', connNote: note });
   // The link is back: everyone gets the state as it is now. A beat later, so it goes out after whatever the link kept
   // while it was down (net.ts sends that as soon as this returns): the newest view must be the last to arrive.
   if (state === 'open' && S.role === 'host' && hostState) setTimeout(() => broadcast(true), 0);
@@ -171,10 +179,16 @@ function onMessage(m: any) {
     if (m.t === 'act') runHost(m.action, m.from, m.nonce);
     if (m.t === 'sync') answerSync(String(m.from || ''), Number(m.v));
   } else {
-    if (m.t === 'view') { if (m.resync) net.resyncs++; const prev = S.game; set({ game: migrateLoaded(m.state), conn: 'online' }); followPhase(prev, m.state); noteSession(m.state, 'guest'); provingClosed(prev, m.state); }
+    if (m.t === 'view') { if (m.resync) net.resyncs++; const prev = S.game; set({ game: migrateLoaded(m.state), conn: 'online' }); drawn(m.state?.v); followPhase(prev, m.state); noteSession(m.state, 'guest'); provingClosed(prev, m.state); }
     if (m.t === 'err') toast(m.message);
     if (m.t === 'host') set({ conn: m.online ? 'online' : 'host-away' });
   }
+}
+
+/** The co-op loop suite's last hop (net.ts hop): the frame after a view was set, the screen has drawn it. */
+function drawn(v: number) {
+  if (!Array.isArray((globalThis as any).__phcHops) || typeof requestAnimationFrame === 'undefined') return;
+  requestAnimationFrame(() => setTimeout(() => hop('drawn', { t: 'view', v }), 0));
 }
 
 // ---------- keeping a guest in step (docs/design/handoffs/coop-stall.md) ----------
@@ -230,6 +244,8 @@ function followPhase(prev: GameState | null, g: GameState) {
 // ---------- actions ----------
 /** Every click goes here: the host applies it, a guest sends it to the host. */
 export function act(a: Action) {
+  // B14, 0.32: a refusal's toast ("Can't reach that tile.", "Needs 7 AP.") is about the last try: the next action clears it
+  if (S.toast && !S.toast.ok && Date.now() - S.toast.at > 250) set({ toast: null });
   if (S.role === 'host') runHost(a, S.me.id, null);
   else if (S.role === 'guest') { if (!conn) return toast('Not connected.'); conn.send({ t: 'act', action: a, nonce: rid(6) }); }
 }
@@ -238,6 +254,7 @@ function runHost(a: Action, by: string, nonce: string | null) {
   if (!hostState) return;
   try {
     hostState = apply(hostState, a, by);
+    if (nonce) hop('applied', { t: 'act', nonce, v: hostState.v, from: by });
   } catch (e) {
     const msg = e instanceof RuleError ? e.message : 'Something went wrong: ' + String((e as Error)?.message || e);
     if (!(e instanceof RuleError)) console.error(e);

@@ -32,7 +32,7 @@ export interface EncounterTemplate { id: string; name: string; nodes: string[]; 
   hazard?: boolean }
 /** A setting's map recipe (rules 1.45): its stamps (ids in `layout.stamps`), its cover kinds, its hazard and chance (or
  * none), its props by object kind (a count range each), and its kit (the art folder `art/sprites/kit/<kit>`). */
-export interface SettingLayout { stamps: string[]; cover: { half: string[]; full: string[] }; hazard: { kind: string; chance: number } | null; props: Record<string, [number, number]>; kit: string }
+export interface SettingLayout { stamps: string[]; cover: { half: string[]; full: string[] }; hazard: { kind: string; chance: number } | null; props: Record<string, [number, number]>; kit: string; /** rules 1.76 item 6400: its fights are dark maps */ dark?: boolean }
 /** A setting, one tile of the world (spec section 3.3, `survival.json settings`). */
 export interface SettingDef { id: string; name: string; kinds: Record<string, number>; boss: { name: string; kind: string; weapon: string; casters: string[]; portrait: string | null }; /** rules 1.48: the vault's named guard (an Elite) */ vault_guard?: { name: string; kind: string; weapon: string; portrait?: string }; pool: string; pools?: Record<string, Record<string, string[]>>; layout: SettingLayout }
 /** The kind of fight a node holds (the gate is an Elite node every path passes; rules 1.48: the vault's guard). */
@@ -267,6 +267,7 @@ export function encounterMap(id: string, units: number, foes: EncounterFoe[], rn
   const setting = SETTING[how.setting || ''] || null, tpl = TEMPLATES.find((t) => t.id === how.template) || null;
   const gen = LAYOUT_DATA.use === 'generated' && setting ? generateLayout(layoutRecipe(size, setting, tpl, rng), rng, setting.layout.kit) : null;
   const map = gen ? { ...layoutMap('survival-' + id, { name: setting!.name + ' (' + size + ' × ' + size + ')', w: size, h: size, rows: gen.rows, legend: gen.legend, notes: [] }), skin: gen.skin } : cropped(id, size);
+  if (setting?.layout.dark) map.dark = true; // rules 1.76 item 6400: the setting's dark (its props are its lights)
   const mid = (size - 1) / 2, cols: number[] = MS.squad_cols;
   // A start is never on a blocker (a wall, cover, a closed door, a terminal…), a hazard, a trap or a hole.
   const bad = new Set<string>((map.objects || []).filter((o) => { const k = OBJ[o.kind]; return !!k && ((k.blocks_move && !(k.door && o.open)) || !!k.hazard || !!k.trap || o.kind === 'hole'); }).map((o) => keyOf(o.at, map)!).filter(Boolean));

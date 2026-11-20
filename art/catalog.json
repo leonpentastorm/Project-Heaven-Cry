@@ -7017,7 +7017,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "used_to_the_pain",
+      "data_id": "second_wind",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
@@ -7041,7 +7041,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "scar_tissue",
+      "data_id": "numb",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
@@ -7243,7 +7243,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "iron_stomach",
+      "data_id": "steady",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
@@ -8285,7 +8285,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "double_meaning",
+      "data_id": "between_the_lines",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "E",
@@ -8411,7 +8411,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "old_tongue",
+      "data_id": "old_tales",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "E",
@@ -8683,7 +8683,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "real_power",
+      "data_id": "rank_has_privileges",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "E",
@@ -38872,9 +38872,7 @@
         "24": "art/icons/moves/exports/24/follow-through.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-follow-through/follow-through.svg",
-      "data_ids": [
-        "skill:raw_power.5"
-      ]
+      "data_ids": []
     },
     "move-heavy-hands": {
       "label": "Wick — Heavy Hands",
@@ -38909,9 +38907,7 @@
         "24": "art/icons/moves/exports/24/heavy-hands.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-heavy-hands/heavy-hands.svg",
-      "data_ids": [
-        "skill:raw_power.3"
-      ]
+      "data_ids": []
     },
     "move-the-charge-carries": {
       "label": "Wick — The Charge Carries",
@@ -39365,9 +39361,7 @@
         "24": "art/icons/moves/exports/24/quick-draw.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-quick-draw/quick-draw.svg",
-      "data_ids": [
-        "skill:dexterity.5"
-      ]
+      "data_ids": []
     },
     "move-speed-load": {
       "label": "Speed Load",
@@ -40391,7 +40385,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-overclock-sigil/overclock-sigil.svg",
       "data_ids": [
-        "skill:brain_power.3"
+        "skill:brain_power.2"
       ]
     },
     "move-twin-draw": {
@@ -41327,7 +41321,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-overdraw/overdraw.svg",
       "data_ids": [
-        "skill:will_power.3"
+        "skill:will_power.2"
       ]
     },
     "move-pure-heart": {
@@ -41364,7 +41358,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-pure-heart/pure-heart.svg",
       "data_ids": [
-        "skill:will_power.5"
+        "perk:pure_heart"
       ]
     },
     "move-shape": {
@@ -41663,7 +41657,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-deliver-the-sinner/deliver-the-sinner.svg",
       "data_ids": [
-        "skill:faith.5"
+        "skill:faith.2"
       ]
     },
     "move-at-your-side": {
@@ -42035,7 +42029,10 @@
         "32": "art/icons/moves/exports/32/open-guard.png",
         "24": "art/icons/moves/exports/24/open-guard.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-open-guard/open-guard.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-open-guard/open-guard.svg",
+      "data_ids": [
+        "relic:open_hand#open_guard"
+      ]
     },
     "move-jab": {
       "label": "Wick — Jab",
@@ -42069,7 +42066,10 @@
         "32": "art/icons/moves/exports/32/jab.png",
         "24": "art/icons/moves/exports/24/jab.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-jab/jab.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-jab/jab.svg",
+      "data_ids": [
+        "relic:open_hand#jab"
+      ]
     },
     "move-palm": {
       "label": "Wick — Palm",
@@ -42103,7 +42103,10 @@
         "32": "art/icons/moves/exports/32/palm.png",
         "24": "art/icons/moves/exports/24/palm.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-palm/palm.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-palm/palm.svg",
+      "data_ids": [
+        "relic:open_hand#palm"
+      ]
     },
     "move-sweep-form": {
       "label": "Wick — Sweep (form)",
@@ -42137,7 +42140,10 @@
         "32": "art/icons/moves/exports/32/sweep-form.png",
         "24": "art/icons/moves/exports/24/sweep-form.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-sweep-form/sweep-form.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-sweep-form/sweep-form.svg",
+      "data_ids": [
+        "relic:open_hand#sweep"
+      ]
     },
     "move-snatch": {
       "label": "Wick — Snatch",
@@ -42171,7 +42177,10 @@
         "32": "art/icons/moves/exports/32/snatch.png",
         "24": "art/icons/moves/exports/24/snatch.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-snatch/snatch.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-snatch/snatch.svg",
+      "data_ids": [
+        "relic:open_hand#snatch"
+      ]
     },
     "move-breath": {
       "label": "Wick — Breath",
@@ -45222,7 +45231,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-read-intent/read-intent.svg",
       "data_ids": [
-        "verb:shadow.read_intent"
+        "perk:read_intent"
       ]
     },
     "shadow-open-seam": {
@@ -45369,9 +45378,7 @@
         "24": "art/icons/shadow/exports/24/foul.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-foul/foul.svg",
-      "data_ids": [
-        "verb:shadow.foul"
-      ]
+      "data_ids": []
     },
     "shadow-plant": {
       "label": "Wick — Plant",
@@ -45406,9 +45413,7 @@
         "24": "art/icons/shadow/exports/24/plant.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-plant/plant.svg",
-      "data_ids": [
-        "verb:shadow.plant"
-      ]
+      "data_ids": []
     },
     "shadow-disable": {
       "label": "Disable",
@@ -45554,9 +45559,7 @@
         "24": "art/icons/shadow/exports/24/vault.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-vault/vault.svg",
-      "data_ids": [
-        "verb:shadow.vault"
-      ]
+      "data_ids": []
     },
     "shadow-pick": {
       "label": "Pick",
@@ -45701,7 +45704,10 @@
         "32": "art/icons/shadow/exports/32/slip.png",
         "24": "art/icons/shadow/exports/24/slip.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-slip/slip.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-slip/slip.svg",
+      "data_ids": [
+        "verb:shadow.stalk"
+      ]
     },
     "shadow-mark": {
       "label": "Wick — Mark (group mark and Operative rank I move)",
@@ -45737,7 +45743,8 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-mark/mark.svg",
       "data_ids": [
-        "class:assassin.mark"
+        "class:assassin.mark",
+        "verb:shadow.case"
       ]
     },
     "shadow-work": {
@@ -45956,7 +45963,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-tug/tug.svg",
       "data_ids": [
-        "verb:tend.tug"
+        "perk:pull_together#tend_tug"
       ]
     },
     "tend-mend": {
@@ -46066,9 +46073,7 @@
         "24": "art/icons/tending/exports/24/touch.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-touch/touch.svg",
-      "data_ids": [
-        "verb:tend.touch"
-      ]
+      "data_ids": []
     },
     "tend-settle": {
       "label": "Settle",
@@ -46104,7 +46109,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-settle/settle.svg",
       "data_ids": [
-        "verb:tend.settle"
+        "perk:steady_hands#tend_settle"
       ]
     },
     "tend-soothe": {
@@ -46141,7 +46146,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-soothe/soothe.svg",
       "data_ids": [
-        "verb:tend.soothe"
+        "perk:steady_hands#tend_soothe"
       ]
     },
     "tend-shield": {
@@ -46215,7 +46220,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-raise/raise.svg",
       "data_ids": [
-        "verb:tend.raise"
+        "perk:nobody_left_behind#tend_raise"
       ]
     },
     "tend-guide": {
@@ -46252,7 +46257,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-guide/guide.svg",
       "data_ids": [
-        "verb:tend.guide"
+        "perk:pull_together#tend_guide"
       ]
     },
     "tend-field-surgery": {
@@ -46326,7 +46331,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-last-thread/last-thread.svg",
       "data_ids": [
-        "verb:tend.last_thread"
+        "perk:nobody_left_behind"
       ]
     },
     "tend-syphon": {
@@ -46449,7 +46454,10 @@
         "32": "art/icons/tending/exports/32/threads.png",
         "24": "art/icons/tending/exports/24/threads.png",
         "16": "art/icons/tending/exports/16/threads.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.threads"
+      ]
     },
     "tend-hold-down": {
       "label": "Threads That Hold",
@@ -46477,7 +46485,10 @@
         "32": "art/icons/tending/exports/32/hold-down.png",
         "24": "art/icons/tending/exports/24/hold-down.png",
         "16": "art/icons/tending/exports/16/hold-down.png"
-      }
+      },
+      "data_ids": [
+        "perk:threads_that_hold"
+      ]
     },
     "tend-bonds-5": {
       "label": "Two Bonds",
@@ -46505,7 +46516,10 @@
         "32": "art/icons/tending/exports/32/bonds-5.png",
         "24": "art/icons/tending/exports/24/bonds-5.png",
         "16": "art/icons/tending/exports/16/bonds-5.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.bonds_5"
+      ]
     },
     "tend-bonds-8": {
       "label": "Three Bonds",
@@ -46533,7 +46547,10 @@
         "32": "art/icons/tending/exports/32/bonds-8.png",
         "24": "art/icons/tending/exports/24/bonds-8.png",
         "16": "art/icons/tending/exports/16/bonds-8.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.bonds_8"
+      ]
     },
     "tend-mender-bonds": {
       "label": "One More Bond",
@@ -46561,7 +46578,10 @@
         "32": "art/icons/tending/exports/32/mender-bonds.png",
         "24": "art/icons/tending/exports/24/mender-bonds.png",
         "16": "art/icons/tending/exports/16/mender-bonds.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.mender_bonds"
+      ]
     }
   },
   "condition_icons": {

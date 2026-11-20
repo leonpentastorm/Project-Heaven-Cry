@@ -84,6 +84,42 @@ def lookup(root, path):
             raise KeyError(path)
     return node
 
+# Rules 1.70 item 5547 (P6): the data a number block of data references reads (datatext.ts dataRef): techniques.json
+# `rules` (tech_rule:), rules.json (rule:) and conditions.json's rows by id (cond:<id>.<path>); set by resolve_pack from the
+# pack it is given (or loaded from data/ when a caller renders one text alone)
+REF_DATA = {}
+REF_SPACES = ("tech_rule", "rule", "cond")
+def _ref_root(ns):
+    if ns not in REF_DATA:
+        import json, os
+        stem = {"tech_rule": "techniques", "rule": "rules", "cond": "conditions"}[ns]
+        REF_DATA[ns] = _ref_of(ns, json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", stem + ".json"), encoding="utf-8")))
+    return REF_DATA[ns]
+def _ref_of(ns, obj):
+    if ns == "tech_rule": return (obj or {}).get("rules") or {}
+    if ns == "cond": return {c.get("id"): c for c in (obj or {}).get("items") or [] if isinstance(c, dict)}
+    return obj or {}
+def data_ref(of):
+    """A data reference's value (datatext.ts dataRef): tech_rule:<path> reads techniques.json rules, rule:<path> rules.json,
+    cond:<id>.<path> a conditions.json row; None otherwise."""
+    ns, _, path = of.partition(":")
+    if ns not in REF_SPACES: return None
+    node = _ref_root(ns)
+    for part in path.split("."):
+        node = (node[int(part)] if part.isdigit() and int(part) < len(node) else None) if isinstance(node, list) else node.get(part) if isinstance(node, dict) else None
+    return node if isinstance(node, (int, float)) and not isinstance(node, bool) else None
+def block_of_refs(v):
+    """A number block whose parts are all data references, worked out (datatext.ts blockOfRefs); None otherwise."""
+    if not (isinstance(v, dict) and isinstance(v.get("base"), (int, float)) and "kind" not in v and not v.get("steps")): return None
+    total = v["base"]
+    for p in v.get("per") or []:
+        r = data_ref(str(p.get("of", ""))) if isinstance(p, dict) else None
+        if r is None or not isinstance(p.get("value"), (int, float)): return None
+        total += p["value"] * r
+    if isinstance(v.get("min"), (int, float)): total = max(v["min"], total)
+    if isinstance(v.get("max"), (int, float)): total = min(v["max"], total)
+    return total
+
 def render(text, item, holder, errors=None, where=""):
     """The text with every placeholder filled from the item (a leading dot: from the object that holds the text)."""
     def one(m):
@@ -91,6 +127,7 @@ def render(text, item, holder, errors=None, where=""):
         try:
             if how not in FORMATS: raise KeyError("format " + how)
             v = lookup(holder, path[1:]) if path.startswith(".") else lookup(item, path)
+            if block_of_refs(v) is not None: v = block_of_refs(v)  # rules 1.70 item 5547: a block of data references
             if isinstance(v, bool) or not isinstance(v, (int, float)): raise KeyError("not a number")
         except (KeyError, IndexError, ValueError, TypeError) as e:
             if errors is not None: errors.append(f"text numbers: {where} placeholder {m.group(0)} does not resolve ({e})")
@@ -126,6 +163,8 @@ def is_text(path):
 
 def resolve_pack(data, errors=None):
     """Fill every placeholder of the pack in place ({file stem: parsed JSON}). Returns how many were filled."""
+    for ns, stem in (("tech_rule", "techniques"), ("rule", "rules"), ("cond", "conditions")):
+        if isinstance(data.get(stem), dict): REF_DATA[ns] = _ref_of(ns, data[stem])
     n = 0
     for stem in sorted(data):
         for chain, item in items(data[stem]):
@@ -276,7 +315,7 @@ def mutation(data):
                 for m in PH.finditer(s):
                     ref = m.group(1)
                     if ref.startswith("."): continue  # relative paths: none in the pack today; the absolute form is tested
-                    twin = copy.deepcopy(item); set_at(twin, ref, lambda v: v + 1)
+                    twin = copy.deepcopy(item); set_at(twin, ref, lambda v: dict(v, base=v["base"] + 1) if isinstance(v, dict) else v + 1)  # (a block of data references: its base, rules 1.70 item 5547)
                     th = twin
                     for part in path.split(".")[:-1]: th = th[int(part)] if isinstance(th, list) else th[part]
                     out["bound_fields"] += 1

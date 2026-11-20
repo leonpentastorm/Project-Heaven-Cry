@@ -478,7 +478,7 @@ Shooting any object with HP works like shooting cover. Hidden objects (unspotted
 - **Analyze on NPCs**: out of combat it is an Acuity check the Narrator calls (TN by how guarded they are). On a success you learn what Analyze reveals in a fight, in words.
 - **Wards and rituals** belong to Sigil and Soul magic; until that pass, the Narrator rules them from the perk's text.
 
-**Prone** (1 AP to drop or stand): ranged attacks against you are at −2 and melee attacks at +2, and you can't move until you stand. **Opportunity attacks** need a free reaction (one per round). **Overwatch** spends the shot's AP now and holds the shot until your next turn: the first enemy that moves while in your line of sight and range takes it, as your reaction.
+**Prone** (1 AP to drop or stand): ranged attacks against you are at −2 and melee attacks at +2, and you can't move until you stand. *(Rules 1.76 item 6402: enemies' eyes also reach you 4 tiles less far while Prone.)* **Opportunity attacks** need a free reaction (one per round). **Overwatch** spends the shot's AP now and holds the shot until your next turn: the first enemy that moves while in your line of sight and range takes it, as your reaction.
 
 **Vision** (written 7 Nov 2026, Leon: vision, fog of war and darkness are one stat; provisional):
 - **Vision range** = 12 + 2 × (Perception − 1) + Vigilant tiles.
@@ -2750,8 +2750,8 @@ Leon's rulings of 10 Nov 2026. Where an older line in this spec says otherwise (
 
 | Was | Is now | Skill | What it does |
 |---|---|---|---|
-| Shove (unlock at 3) | **Heavy Hands** | Raw Power | A melee technique of yours that pushes its target moves it 1 tile further. |
-| Break (unlock at 5) | **Follow Through** | Raw Power | When a Finisher of yours takes its target out, you are left with 1 Momentum. |
+| Shove (unlock at 3) | **Heavy Hands** | Raw Power | A melee technique of yours that pushes its target moves it 1 tile further. *Superseded by rules 1.73 item 5804: Iron Grip's Tier II.* |
+| Break (unlock at 5) | **Follow Through** | Raw Power | When a Finisher of yours takes its target out, you are left with 1 Momentum. *Superseded by rules 1.73 item 5808: the Breaker's Measured Blow.* |
 | Grapple (perk) | **Iron Grip** (`iron_grip`) | Raw Power | **I:** a target you have Bound or Grappled can't use Answers or reactions; attacks aimed at you have a 50% chance to hit it instead; when you move, it comes with you, into the tile you leave. **II:** each of your melee techniques that hits a target you hold gives you 1 Momentum (once a technique, never a Finisher), and Throw Down on it needs no Momentum. |
 | Origami Hands (perk) | **Both Hands** (`both_hands`) | Dexterity | **I:** after one of your melee techniques hits, your next shot that turn has no Recoil. **II:** and after one of your shots hits, you gain 1 Momentum, once a turn. |
 
@@ -12392,7 +12392,7 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     stood at the start only). The fix is the alarm (item 5521). Proof: `test/fog-victory.test.ts` (a run fight joined
     from the approach, unexplored tiles on the map, the last foe dropped by a `combat/attack`: the field is open in that
     same action).
-5521. **The alarm** (owed fix; ATTACK-PLAN-2026-11-19 lane 2): when a fight opened in the approach (item 5008) is
+5521. **The alarm** (owed fix; archived ATTACK-PLAN-2026-11-19 lane 2): when a fight opened in the approach (item 5008) is
     joined, every foe group on the map learns where each character not Hidden stands now (`combat.ts joinFight` →
     `raiseAlarm`, writing the foe side's `seenAt`, which `knownTile` and `enemySearchTile` already read), so a group that
     never saw the squad comes for it, where before it searched the tiles the squad started on. A Hidden character stays
@@ -12485,3 +12485,1015 @@ do not meet a parallel lane's; the lead renumbers at the merge if needed.
     enlarge request (its name and text) and the lightbox shows the glyph large where a picture would be.
 5534. **The Throw row's browser check** is a step of `apps/web/e2e/picking.mjs` (a frag grenade from the pack: the
     Throw row on the Attack tab, its reach, its blast under the pointer, a tile past its range refused). Not yet run.
+
+### Rules 1.70 (0.32 step 1), the shared pieces of the attribute rework (19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (sections 1, 2, 5, 6 and section 3 item
+10). These items build what all nine attributes stand on; each attribute's own content is its own step. Every number
+here is PROVISIONAL.
+
+5535. **The Call's price is one table** (`calls.json rules.price`; ruling layer section 2 items 2 and 3). By the
+    speaker's points in the Call's gamma skill: **3 AP** from 1 point, **2 AP** from 5, **1 AP** from 9. **Each Call
+    once a turn**; at **10 points twice a turn**, and **on your own turn a Call may be paid with your reaction** (the
+    reaction is spent in place of the AP, through `react()`). Off your turn a Call as a reaction works where it works
+    today (helping Calls only), now **from 10 points** (it was 9), for no AP, once a round. The old free first Call at
+    10 and the 0-AP reaction at 9 are gone. The price goes through the one cost site (`call_cost`, then `price` at the
+    site `call`). PROVISIONAL.
+5536. **The Call's strength steps are at 1, 4 and 8 points** (they were 1, 3 and 7), for all nine Calls (ruling layer
+    section 2 item 1). Each Call's step numbers are unchanged here (Rally's and Brief's re-step is their attributes'
+    step). PROVISIONAL.
+5537. **The ladder schedule is one table** (`skills.json ladder`, by the skill's slot; ruling layer section 1). Alpha:
+    perk steps at **3, 6, 7 and 9** points, forks at **4 and 8**, the Mastered perk at 10. Beta and gamma: perk steps at
+    **3, 5, 7 and 9**, the Mastered perk at 10; a beta or gamma will have four perks of two tiers (its four steps keep
+    four of the eight tiers). The engine (`stepsEarned`, the fork steps of `doorpicks.ts`), the level-up screen and the
+    "?" page read this one table; the code works for a skill with two perks or four. Mastery levels (M1 to M4 at 3, 5,
+    7, 9: Overreach and the skills' named unlocks) are unchanged. A save keeps every perk step it holds: an alpha that
+    took a step at 5 under the old schedule keeps it, and a new one is owed only when 3, 6, 7, 9 owes more than it holds.
+    Each alpha's second fork moves from 6 to 8 points (its unlock row moves with it; a save keeps a fork it picked).
+5538. **Old saves: one free re-pick of a beta's or gamma's perk steps** (ruling layer section 2 item 5). Each skill whose
+    perks or named passives change carries a table in data (`skills.json` row `perk_remap`: `rev`, `perks` old id to new
+    id or null, `passives` unlock points to the perk that replaces it); a character carries a stamp per skill
+    (`Character.perkRev`). On load, a character whose stamp is under the table's rev, with 3 or more points in that skill,
+    holds the mapped perks (its old perks, then the old passives it had, in that order, as far as its perk steps reach:
+    no passive is grandfathered above the step count) and is offered one free re-pick of that skill's steps in the
+    level-up screen's TO CHOOSE strip. Taking the re-pick gives the steps back to choose again, the preselection marked;
+    keeping it closes it. A character made after the table carries the stamp and is offered nothing. Nothing is written
+    for a skill with no table (a save loads as it was).
+5539. **The Strain limit** (Leon's ruling, ruling layer section 3 item 10): **3, +1 at Composure 1, 2, 4, 6 and 8** (8
+    at Composure 8 and over); Will Power gives none (it was 3 + half of Will Power, times Composure's feed). One number
+    block, `soul_modules.json strain.limit`, read by `character.ts strainLimit`; items still add (stat `strain_limit`).
+    PROVISIONAL; to be measured (the Outburst's steady and peak) before 0.32 ships.
+5540. **Elemental resistance** (Leon's ruling of 19 Nov, ruling layer section 6): **Pain Threshold gives +6% a point**
+    (60% at 10); the cap on elemental damage taken off is **80%** (it was 60%), one number in data
+    (`rules.json combat.elemental_taken_cap`), read by one function wherever the cap applies (the sheet, the blow, the
+    Scar-share perk). Pain Threshold alone never passes 60%; today no armour or gear gives elemental resistance (the
+    other sources are two traits, 10% each), so nobody passes 70% until Items 2.0's armour work. The "?" page's
+    `(max)` follows the engine's value. PROVISIONAL. *Open for the lead:* the 0.32 brief says gear may take it to 100%;
+    Leon's words and the ruling layer say the cap is 80% in all; built as 80% in all.
+5541. **Forms known** (ruling layer section 5): Visualization's forms are learned, under their own door id
+    `figment_forms`: **2 forms of your choice at Visualization 1, +1 at each of 2 to 9** (all ten at 9), chosen on the
+    level-up screen and kept for good. No form is opened by a level or a fork any more; Visualization's forks (Hard
+    Light and the rest) are Expression's step. A save keeps every form it had open (the old ladder's fixed forms, its
+    fork picks and kept forms) and counts them against its forms known; a form over the count is kept outside it, never
+    lost (stamp `figRev` 2). PROVISIONAL.
+5542. **Flux is a resource row** (P1): `actions.json resources.flux` (`mg.flux`, setter `flux`): a gain goes through the
+    one Flux function (`magic.ts flux`: the overload at the limit), a loss takes it down to 0. Its limit is the Evoker's
+    (`fluxMaxOf`).
+5543. **`at: "limit"`** (P2): the resource predicate's bound `{<resource>: {at: "limit"}}` holds when the resource is at
+    or over its limit: Strain's limit (`mg.strainLimit`), Flux's (`fluxMaxOf`), else the resource's most (`at: "max"`).
+5544. **The target-aware price** (P3): the `cost` trigger names a target: the action's target unit, else the owned unit
+    an order is given to (a Figment's order), else the target id the price was asked with. `target` predicates read it.
+5545. **Stat `seen_range`** (P4): tiles added to (or, negative, taken from) the range at which other units' eyes see
+    this unit. Asked only when something in the fight answers it.
+5546. **A reaction's refusals are read before a roll** (P5; completes item 5530's "Not built"): `tactics.ts
+    reactRefusal` is the one read-only form of `react()`'s refusals (the event already answered, the last reaction kept
+    for a held shot, a `reaction_window` cancel, no reaction to spend); `react()` calls it. Parry asks it before its d20:
+    a Parry `react()` would refuse is not rolled, said or counted against its one try a round.
+5547. **A data reference to a technique rule** (P6): a number block's `of` may name `tech_rule:<path>`, a value of
+    `techniques.json rules` (one resolver, `datatext.ts dataRef`, also used to fill a text that binds such a block).
+    Cover Them's Guard cost reads `tech_rule:guard.interpose_cost` (one copy of the interpose cost).
+5548. **Browser suites that fail only beside others** run one at a time (`apps/web/e2e/groups.json serial`: fx-room,
+    magic, title, resources, capture-skills, picking).
+
+### Rules 1.72 (0.32 step 2), the effects lane's engine events and the standing vow (19 Nov 2026)
+
+The effects lane (`docs/design/handoffs/0.32-EFFECTS-AUDIT.md`, "Still open") drew six moments from view diffs or
+from data because the engine sent no event; the lead approved one engine event each. Every one goes through the one
+fx path (`emitFx`) with an existing kind: no new hook, op, trigger or export. No number changes; item 5705 is
+PROVISIONAL (where a vow changes out of a Survival run).
+
+5700. **A cleanse says what it removed.** The `cleanse` op (`effects/triggers.ts`; Soothe, the class moves' and the
+    conditions' cleanses) sends, for each condition it ends, the existing `boon` effect with word `cleanse` and the
+    condition (`cond`), as the Sigil's CLEANSE and Clear Water already do.
+5701. **A Bond the tie op ends is an event.** The `tie` op with `clear` (Let go, Snap, the Canticle's verses that end
+    their ties) sends the existing `stance` effect with what `untie`: the holder (`unit`), the far end (`target`) and the kind
+    (`how`). The client parts the line from it; a tie that ends any other way (a Down, the Attuner leaving, sight) is
+    still read from the view until it has an event of its own.
+5702. **A prayer's hurt carries its element.** A prayer's damage of an element (the storm prayers' lightning, an
+    intervention's) runs inside `withElement` with its damage type, so its `hurt` names it, as a Sigil's does; the
+    client no longer reads the prayer's data for it.
+5703. **Everyone Home's shields are numbered like any other.** Each ally's shield from the Miracle goes through the
+    one mend's effect (`mendShown`): the ward's number over the token.
+5704. **A prayer that only changes a state says its name.** When a prayer's own effects hurt, heal, ward, cleanse,
+    move or put a condition on no one but the one who prays (Luck, Resupply, Dig In, Hearthlight, Foreknowing...), the
+    engine sends the existing `stance` effect with what `prayer` and the prayer's data name as its `word`, on the unit
+    it landed on, else its tile, else the one who prays.
+5705. **The standing vow.** A Faithful character's vow is carried between fights (`Character.vowStanding`: the vow, the
+    ally it names, or fighting unsworn). It is set by the real action, `faith/vow` out of a fight (unitId the
+    character; an empty id: fighting unsworn), and sworn for the character as each fight starts, under the action's own
+    rule (one copy, `vowRefusal`: an ally to shield must be in the fight, Mercy needs a foe that can yield; refused, the
+    fight asks as before). The first choice may be made anywhere out of a fight; in a Survival run it is changed only at
+    a node whose kind's row in `survival.json` says `vow_change` (the rest); out of a run, any time out of a fight
+    (PROVISIONAL: the lead's call for Leon). An old save has no standing vow: the fight asks, as before. The device's
+    own store and the client's auto-swear are gone.
+5706. **Tug on an ally already at your side says so** (data only, `tending.json tend.tug`): the ally branch's pull goes
+    nowhere when the ally stands next to the Mender, and a `use` row (if the target is an ally within 1 tile) says
+    "{self} draws on the Bond; {target} is already at their side." No number changes.
+5707. **The NOW PLAYING credit never covers a panel** (web, every screen): a one-line chip at the top edge's middle,
+    opened by the pointer to the artist and the reason (it was a card over the bottom of the left panel).
+### Rules 1.71 (0.32), the gaps lane: owed player-facing faults (19 Nov 2026)
+
+5600. **A melee preview's Momentum is the technique run as a hit** (piece G1, approved by the lead; answers item 5503's
+    "not built"): the Momentum line of a technique's preview ("Momentum a → b") is read from the technique itself, run
+    on the dry run's copy of the fight with the acting unit's own attacks hitting (`preview.ts dryRun`, option `asHit`;
+    the copy's `Combat.asHit`, read at the one hit decision in `combat.ts resolveAttack`). Every hit-time op counts as
+    the action counts it (Rolling Start's +1, the Breaker's +2 against the Shaken, Charge's run), with no second
+    formula. Only the fight screen's descriptor preview reads it (`descriptors.ts techPreviewOf`); the enemy's choice
+    keeps `previewTechnique`'s own line. Proof: `packages/engine/test/gaps-032.test.ts` (the preview's line equals the
+    reducer's Momentum after the same Charge hits).
+5601. **A price of 1 names one** (TRIAGE row 10's "1 spare cores with 5 held"): a resource row may give the name of one
+    (`data/actions.json resources.<id>.one`); a price or a need of 1 reads it ("Load the Visualizer · 1 AP · 1 core";
+    "Needs 1 core (you have 0)."). The cores row reads "cores" / "core": the count of spare cores is the meter's and
+    the sheet's, never a price's. The forks picked at the camp's Level up show on the MAGIC tab (checked in the browser
+    on 0.31.11). Proof: `packages/engine/test/gaps-032.test.ts`.
+5602. **Called Out's card says the rule as it runs** (TRIAGE row 13): Challenge taunts every foe within 2 with its save,
+    the named foe included; Called Out then puts Taunted on the named foe with no save, so it is Taunted even when its
+    save holds (`doors3-reshape.test.ts`, every save passing). The card reads "the foe you name is Taunted even if its
+    save holds". Sparing the named foe the Challenge's own roll needs the action's target on the `cond_apply` event (an
+    addition to the closed lists; not built).
+5603. **No feeling or module says "multiplier" in its card** (the lead's review list): Rage, Shame, Pride and Abandon say
+    what their step adds ("+0.5: it adds 50% of the Outburst's base damage to the Release"), Awe that its Pump adds a
+    stage but no damage, each number read from the row's `step.base`; the Damage school and Inverse say their amount
+    grows with the Soul skills and with each stage pumped. No rule changes; five bare numbers left the text baseline.
+5604. **The pick overlay's tile notes have one wording** (the lead's review list): a tile in reach says "in reach", a
+    tile to choose "in reach: click to choose it", a unit to choose "<name>: click to choose them", a tile the area
+    covers "in the area" (it said nothing), a unit it touches "<name>: <its tag>" (`apps/web/src/game/pickOverlay.ts`
+    `PICK_NOTE`). Proof: `pickOverlay.test.ts`; `apps/web/e2e/picking.mjs` reads the unit note.
+5605. **The initiative line is written once for each side** (the lead's review list: `fog.ts` rewrote it with a regular
+    expression on the sentence): where the line is written (`combat.ts sayInitiative`, at the fight's opening and when it
+    is joined), each side that does not see every unit gets its own reading on the line's mark (the seen in order, then
+    "n unseen"; `log.ts LogSideMark.line`), and `fog.ts` sends that reading as it is. The opening line is marked again
+    as the set-up's sight changes, as before. Replays re-recorded on purpose (their log marks only).
+5606. **A skill point refused for its attribute carries the need as structure** (piece G2, approved by the lead):
+    `character.ts raiseNeed(c, kind, id)` gives `{attr, n}` (the attribute the skill waits on and the points it needs);
+    `canRaise`'s sentence is made from it and names the attribute ("Needs Endurance 4: an Attribute point first.").
+    The level-up screen's "Raise <Attribute>" and its one reason are to read `raiseNeed`, not the sentence (the screen is
+    the shared lane's file: a hand-off note). Proof: `packages/engine/test/gaps-032.test.ts` (the reducer's refusal).
+5607. **A Momentum op at the fight's start is warned of** (the Primed boon's workaround, item 5506): the Momentum meter
+    is made by the fight's start after the items' `combat_start` ops (a global listener runs after the items), so a
+    `combat_start` op on it would be lost. The real fix, making the meters before the items' ops, needs the fight's
+    start to call the physical lane (`combat.ts` cannot import `physical/core.ts` at load: a cycle) through a new
+    registration export, not approved: left for the lead. Meanwhile `data/actions.json resources.momentum` is marked
+    `made_after_start`, and the validator warns of any `combat_start` `resource` op on such a meter. Primed keeps its
+    `turn_start`, once a fight.
+5608. **Barrel In has its own action id** (item 5531's finding): the Breaker's Barrel In is the action `barrel_in` of
+    `class:fighter.lunge` (the move's id stays, so saves load), an Opener by `techniques.json rules.group_actions` (a
+    Finisher locks it as before; the chain counts it as before). An item action may name the ids it was known by
+    (`ActionDef.was`): a save, a replay or a saved turn card that sends the old `lunge` still finds it. Golden costs
+    re-recorded on purpose: the keys `...fighter.lunge#lunge` read `#barrel_in` (`costs-credit`, `costs-items-*`; the
+    same values). Proof: `test/momentum-2.test.ts` (item 5531's lock through both ids).
+5609. **The field reads a flag per action** (piece G3, approved by the lead; rules 1.55 items 35 and 64): on the field
+    after a won fight, an item's own action (`combat/perk`) is allowed or refused by its row in `data/actions.json
+    field.actions` (`<item key>#<action id>`: "allowed", or the kind of refusal, worded in `field.texts`); an action
+    with no row is refused ("<action> waits for a fight."). `game.ts fieldRefusal` reads only the row; the guess from an
+    action's limit, its cost and its ops (`survival.json field.lasting_ops`) is gone. The rows were seeded from the
+    guess's answers (198 actions: 103 allowed, 94 "free", 1 "lasting"; nothing changed for a player): the lead rules
+    each "free" one by changing its row. A new item action needs its row (`test/gaps-032.test.ts` fails on one without).
+5610. **The healing brake per giver, written down for building** (item 4640, Leon's ruling ii; the lead's list: no lane
+    built it): each Mend, Touch or Shield, and the Mender's Triage, a giver gives the same target in the same round
+    costs its MP × 1.5 for every one that giver already gave that target this round (the second ×1.5, the third ×2.25).
+    Data: `rules.json mending.brake` (`mult`, `per`, and the four actions by `<item key>#<action id>`, checked by the
+    validator), marked `built: false`, PROVISIONAL. Not built here: the cost site's context (`effects/cost.ts price`,
+    the `cost` hook) carries no target, so no data row can count a giver's gives on one target; it needs the
+    target-aware price (N20, on the shared lane's branch). With it, the build is one general reader at the cost site:
+    the action's key in `brake.actions`, the count from `uses(h).on(target)` in `brake.per`, the MP price × `mult` to
+    that count. Touch is to be cut by the attribute lanes (Camaraderie takes the healing verbs): its row goes with it.
+    **Built in the 0.32 merge** (`built: true`): `effects/cost.ts braked` reads the list at the one cost site with the
+    price's target (P3); a give is counted after its action runs (`effects/actions.ts runPerkAction`), one counter for all
+    the braked actions of a giver on a target in `per`. Touch's row is gone (cut, rules 1.75).
+5611. **The two keepers' names match their faces** (item 2914; the recommendation of 15 Nov 2026, built under "no answer
+    means yes", Leon may reverse it): the Smetanita trader (`survival-keeper-works`, painted as a woman automaton) is
+    Corra Vell; the rim chandler (`survival-keeper-rim`, a man) is Ivo Smetanin (`survival.json faces`). Names only.
+5612. **Delivered art is drawn where it has a place** (the lead's list; wiring only, every picture by its catalog id
+    through `apps/web/src/game/doorArt.ts`): the seven tone marks on the MAGIC tab's tone chips (`uiMarkOf('tone')`);
+    the XP mark on the sheet's XP bar, the Devotion mark on the FAITH tab, the credits mark in a run's squad panel
+    (`uiMarkOf('resource')`); the camp's Ready sign on the camp's Ready / Start the run button (`campStepIconOf`); the
+    Open Hand's four forms on the attack's form chips (catalog `data_ids` `relic:open_hand#<form>`, read by
+    `moveIconOf`). No place yet: the Open Hand's stance and every standing defensive modifier (the fight has no reader
+    of them: a to-hit term carries no source, and an item's own hooks cannot be asked inside a fight for one unit; a
+    general reader needs one of those, not built), the five Tending passives (their `data_ids` name their items; no
+    screen lists a door's passive steps), Stand Behind Me (Guard 2.0's Bastion path, never built: no move carries it).
+    `move-draw-fire` is Called Out's placeholder. `art/briefs/ART-REQUESTS.md` says so.
+### Rules 1.76 (Shadow), dark maps, Douse, Prone's seen range, the shadow sightline, Stalk (19 Nov 2026)
+
+The banked Shadow work of 0.32 (the to-do of 16 Nov, section C item 6; `docs/design/handoffs/2026-11-18-scout-owed-fixes.md`
+item 14). A later revision overrides the body and the earlier ones. Every number here is PROVISIONAL and a data field;
+every item is `adjudication: engine`.
+
+6400. **Dark maps in Survival** (the lead's ruling, to-do F): a setting's layout may be dark (`survival.json
+      settings[].layout.dark`); a fight generated for it is a dark map (`MapDef.dark`). The shrine, the works and the rim
+      are dark; the AHOC base, the city and the field are lit. On a dark map sight off a lit tile is halved (rules body,
+      Vision: the one `litAt`); the lights are the setting's props (`layout.props`: lamps, terminals) and the objects'
+      own `light` radius (`objects.json`: a lamp 3, a fire 2, a terminal 1), a unit's carried light and magic light.
+      Every dark setting holds at least one lamp: the works' and the rim's lamps are **1 to 2** (they were 0 to 1; the
+      shrine's stay 1 to 2), so no fight is pitch black (a gunner that walked the works with no light ran dry before the
+      shop: the Survival guard, GUARD-36). PROVISIONAL: the clears are measured before and after (the lane's report).
+6401. **Douse on a dark map** (item 1973 stands: a lamp): Douse's reach and its effect name an object word read by the
+      one `objects.ts objectIs` (a kind id or a field of the kind's row): today `lamp`, the kind. Widening Douse to every
+      light (a fire, a terminal's glow) is one data change, Leon's call (a terminal would break): the word `light` (the
+      field every light-giving object row holds) in `shadow.douse`'s reach and effect, and its text. On a dark map a
+      doused lamp's tiles go dark at once (the one `litAt`); on a lit map Douse changes nothing to sight.
+6402. **Prone lowers the range you are seen at** (approved in to-do F as the stat `seen_range`, rules 1.70 item 5545):
+      Prone carries `seen_range` **−4 tiles** (`conditions.json prone`; PROVISIONAL, the number is Leon's to set). An
+      enemy's eyes reach a Prone unit 4 tiles less far (12 becomes 8 in the light; 6 becomes 2 in the dark); never below
+      0. Prone's other rules are unchanged.
+6403. **One sight range** (rules 1.70 item 5545 completed): the range at which a unit's eyes see a tile is one function
+      (`combat.ts unitSees`, its private `eyeReach`): its vision, halved off a lit tile without dark sight, plus the
+      looked-at unit's `seen_range`. Every test of whether an enemy sees a unit names that unit (the fog, Hide, the
+      spot roll, the enemy's own aim and its hunt, the sight words, the perks and techniques that ask whether a foe
+      sees someone), so Prone and any later `seen_range` reach all of them. A check of a tile with nobody on it, or of
+      an ally looking at an ally, names no target (Prone hides you from enemies' eyes, not from your squad's).
+6404. **The shadow sightline** (Leon's name for the detect view; also spec item 5107, a sight view per enemy): in a
+      fight, on your turn, the map can show who can see you and from where, from the engine's own sight (one copy, the
+      Hide test `eyesOn`), on the fight as your side sees it (an enemy you don't see is never counted, named or drawn):
+      (a) each tile your eyes see is marked by how many of those enemies' eyes would reach you standing there, watched
+      tiles shaded in the hurting ink by the count, unwatched ones clear; (b) dark tiles keep the dark's own shade; (c)
+      a line from each enemy that sees you where you stand; (d) each seen enemy's eyeline: its reach toward you drawn as
+      the edge of the tiles it watches; (e) hovering a tile says "seen here by" and names them, or "unseen here". It
+      rides Hide's row in the action list (`watch`), shown with the SIGHTLINE switch on the map (saved per player), on
+      by default while you are Hidden or the SHADOW tab is open. Presentation only: no rule reads it.
+6405. **Stalk** (the journal's shape; to-do F): a Shadow verb at Ingenuity 1 (group Slip, `shadow.json shadow.stalk`):
+      **2 AP, once a turn, from Hidden: +1 Shadow** (the meter's cap binds). 2 AP keeps the Operative's 1-AP Tradecraft
+      the better buy. PROVISIONAL. *Not built:* Stalk's gain is not yet counted under the door's two gains a turn
+      (the limit's key is the item's own; a key shared by the door's items is a new primitive, listed for the lead),
+      and it is not refused at a full meter (no "below its most" bound on the resource predicate).
+6406. **Silent** (to-do F) is not built here: its rule needs a ruling first (the standing rule, shadow-spec 2.6, a silent
+      attack lets its target roll to spot you; to-do F, acting from Hidden gives your tile away while you stay Hidden).
+6407. **Case** (`shadow.json pending`) is not built: it needs a read-out of a unit's kit and rolled loot for a side.
+6408. **An enemy's notice and its eyes are its tier's numbers** (one copy; the scout's audit, item 14c): each tier row of
+      `enemies.json` carries `notice` (minion 0, soldier 2, elite 4, boss 6: the spot roll's bonus, the story's notice
+      range and its TN, the Sigil pattern's passive) and `vision` (12 tiles for every tier). Nothing changes in play.
+### Rules 1.73 (Body), 0.32: Strength, Endurance and Agility reshaped (the Body lane, 19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (sections 1, 2, 3 and 6); the sheets are
+`docs/design/proposals/2026-11-19-attribute-drafts/strength.md`, `endurance.md` and `agility.md`. Each skill takes the
+shape of rules 1.70 item 5537 (alpha: 1 door, 2 small verb, 3 perk step, 4 fork one, 5 big verb, 6 and 7 perk steps,
+8 fork two, 9 perk step, 10 Mastered; beta and gamma: the per-point gain on every level, four perks of two tiers, perk
+steps at 3, 5, 7 and 9, Mastered at 10). Every new number here is PROVISIONAL. Items 5800 to 5819 are Strength,
+5820 to 5839 Endurance, 5840 to 5859 Agility.
+
+**Strength (Raw Power, Guts, Intimidation; the Breaker)**
+
+5800. **Raw Power's ladder:** 1 the door (Momentum, shown on its level; any melee weapon still carries the meter: Raw
+    Power 1 does not gate it, the sheet's open item 2), 2 **Grapple**, 3 perk step, 4 fork one (Rolling Start or
+    Grindstone), 5 **Throw Down**, 6 and 7 perk steps, 8 fork two (Spill or Headlong, offered now), 9 perk step, 10
+    Earthbreaker. Its two perks (Keep Swinging, Iron Grip) fill the four steps. PROVISIONAL.
+5801. **The door's row at 1** (`skills.json raw_power.unlocks.1`): a named row with no effect of its own; the meter is
+    still `techniques.json rules.momentum`.
+5802. **Grapple is Raw Power 2's** with any melee weapon in the main hand or bare hands: the unlock is an item answering
+    the stat `technique:grapple` (the gloves still bring it below 2 points). It was Iron Grip's (no perk's technique any
+    more: `techniques.json grapple` has no `perk`). A gun in the main hand gives no Grapple. PROVISIONAL.
+5803. **Throw Down is Raw Power 5's** big verb with any melee weapon or bare hands (stat `technique:throw_down` from the
+    unlock; its rules unchanged: a held target, a Finisher). Launch stays the Breaker's (the sheet's open item 1).
+5804. **Heavy Hands moves into Iron Grip's Tier II** (its own number, `iron_grip.tiers.II.numbers.push_tiles`: a melee
+    technique's push goes 1 tile further). Iron Grip I: a held target can't use Answers or reactions, +6% melee damage
+    on a Grappled or Prone foe; II: +12% and also on Shaken or Afraid, and the longer push. Below Iron Grip II no push
+    is lengthened. PROVISIONAL.
+5805. **Rolling Start loses its free Charge** (ruling layer section 3 item 4): a Charge costs its Momentum again (the
+    fight's first Opener is still free); it keeps the 2-tile run and +1 Momentum on a Charge hit. A Breaker at x0 can't
+    Charge; the "Finisher, free Charge, Finisher" loop now runs only on kills (Measured Blow). Charge Carries stays +2 and
+    is measured (the sheet's open item 5).
+5806. **Spill** (fork two): a Finisher of yours that drops a foe carries the blow into one foe beside the fallen one, no
+    roll: an amount block `spill` (damage, melee profile, base 22, PROVISIONAL: Launch's base), dealt through `deal` on the
+    `kill` trigger to `targets {of: target, within: 1, side: foe, max: 1}`. Spill's own blow is no technique, so it never
+    spills again. (The overkill wording needed N21, not approved.)
+5807. **Headlong** (fork two): once a turn, while you hold 2 Momentum or more, a Charge's strike costs no AP (the run is
+    paid as usual) and takes 2 more Momentum (on top of the Opener's own price); a Charge paid so builds no Momentum of its
+    own (Charge Carries, Rolling Start: the content condition `headlong_paid`, on from the roll to the end of the action).
+    Built from `cost_mod` on `attack` (a peeked per-turn limit), `condition` and `resource` on `attack_roll` (the limit
+    taken). A Breaker's closing in (Barrel In's rule for any first melee attack after moving toward the foe) is not the
+    Charge's own build and still counts (for the lead). PROVISIONAL.
+5808. **Measured Blow** (the Breaker, rank III; Follow Through merged in, ruling layer section 3, the sheet's REPLACE): a
+    Finisher of yours that drops its target leaves you 1 Momentum, every time; once a fight, a Finisher that drops nobody
+    does too. Follow Through left Raw Power 5. PROVISIONAL.
+5809. **The Breaker's other moves** are kept as they were (Barrel In, Wind-up, Riposte, Read the Swing, Unstoppable; the
+    gains Charge Carries, Four Ways to Finish, Launch, Wrecker, Breach).
+5810. **Guts:** +1 Body save and its Momentum feed every point (unchanged); four perks: **Steady** (was the passive at 3;
+    Iron Stomach folded in), **Point Man** (the passive at 5), **Into the Dark** (kept), **Unflinching** (new); Mastered
+    Nothing Left to Fear. Old saves: `perk_remap` (Iron Stomach to Steady at its tier; Steady and Point Man as the passives
+    at 3 and 5) and one free re-pick (rules 1.70 item 5538).
+5811. **Steady:** I, Fear can't stop you moving or acting (you keep its penalty to hit); II, and Fear and Nausea last at
+    most 1 round on you (Iron Stomach I's row). Tier I's rule has no engine half yet (Fear's two refusals, its move toward
+    and its attack on the source, are typed in `combat.ts` and ask no stat): it is the Narrator's, op `narrator`. Iron
+    Stomach's immunity (its old Tier II) is gone: the Mastered perk is the Fear immunity. Its story half (a Fear ending at
+    the next check) went with its handler: item ops run in a fight.
+5812. **Point Man:** I, allies within 3 tiles roll Fear saves with your Guts (the Narrator's: a save's skill swap has no
+    piece); II, and +2 on their Heart saves (engine: `roll_mod` on `cond_incoming`, an ally within 3, a Heart condition).
+    PROVISIONAL 2.
+5813. **Unflinching:** I, while you hold 3 Momentum or more, melee attacks on you are at -1 to hit; II, every weapon
+    attack (shots too). `roll_mod` on `to_hit`. PROVISIONAL.
+5814. **Intimidation:** +1 Threaten reach and harder to shake off every point (unchanged); the Call as rules 1.70 (3 AP;
+    2 from 5; 1 from 9; steps at 1, 4, 8). Four perks: **Marrow Talk** (the passive at 3), **Stare Down** (the passive at
+    5), **Bone Talk** (kept, story only), **Grim Reaper** (reworked); Mastered The Name They Whisper. Old saves: Marrow
+    Talk and Stare Down as the passives at 3 and 5, one free re-pick.
+5815. **Marrow Talk:** I, a threat that fails in talk still leaves the target Shaken (-2 on their next roll against you;
+    the Narrator's); II, in a fight a foe that saves against your Threaten is still Shaken for 1 round (engine: a mark when
+    your Shaken is about to land on a foe on your turn, then `condition` on the Call's `acted` if it did not land).
+5816. **Stare Down:** I, when a fight starts the nearest enemy that can see you saves against your Intimidation or is
+    Stunned (it loses its first turn); II, and it is Shaken for 3 rounds whatever it rolls. Built on `combat_start` with
+    `targets {of: self, side: foe, sees: eyes, max: 1}` (the old grant_action never ran). The save is the condition's own
+    family (Stunned: Body). PROVISIONAL 3.
+5817. **Grim Reaper** (removes the door's tax): I, a hit from a Shaken or Afraid foe costs you no Momentum (the Momentum
+    the blow wore off is given back, when you held some and no plate took it); II, and when you drop an enemy on your own
+    turn, every enemy within 8 tiles whose eyes reach the fallen one saves (Heart) or is Afraid of you. The +2 AP on a
+    kill and the -1 AP on the first turn are cut (rule 15.7: no AP inside a turn). Data only (its handler went).
+    PROVISIONAL 8.
+5818. **Bone Talk** is story only: its 2 AP fight version (a copy of Threaten) is cut.
+5819. **Measures** (the Breaker, solo and in a squad, before and after) and the Breaker's blade line are reported in the
+    lane's hand-off (`docs/design/handoffs/0.32-LANE-BODY.md`); no number was fitted to a ceiling.
+
+**Endurance (Durability, Pain Threshold, Senses; the Bulwark)**
+
+5820. **Durability's ladder:** 1 the door (Guard: the technique with any weapon, Brace, melee rolling with Durability
+    while you hold Guard when it is higher), 2 **Challenge**, 3 perk step, 4 fork one (Provoke or Cover Them), 5
+    **Slam**, 6 and 7 perk steps, 8 fork two (Stand Fast or Drive), 9 perk step, 10 Last Wall. Its two perks (Weight of
+    the Wall, Answer in Kind) fill the four steps. Per point: +1 plate held (to the pool's cap), the Guard technique +1
+    plate from 2, and melee rolling with Durability while holding Guard.
+5821. **The door's surplus left it:** Set Against the Blow to Numb II (item 5827), Close Guard to a Pain Threshold perk
+    (item 5829), Retort to the Bulwark's rank II (item 5836), Second Wind to a Pain Threshold perk (item 5829); **Last
+    Plate is cut** (ruling layer section 3 item 3: the fourth "survive at 0" in one attribute). The shield's rule (a
+    shield adds a plate to each gain) stays a per-point row of the door for now (its numbers are `techniques.json
+    rules.guard`'s; moving it into the shields' item text is left).
+5822. **Challenge opens at Durability 2** (was 3); Slam stays at 5. Both stay effects of `durability.unlocks.1` (Called
+    Out's key `skill:durability.1#guard_challenge` still matches); rows at 2 and 5 name them on the ladder.
+5823. **Durability's forks** are unchanged (built in 0.30); fork two is at 8 (rules 1.70 item 5537).
+5824. **Last Plate is gone.** A blow that would drop a tank drops it (Still Standing, Last Wall and Bite the Bullet stay).
+5825. **Pain Threshold:** per point +1% plate soak (its feed), **+6% elemental resistance** (rules 1.70 item 5540; 60% at
+    10, the cap 80% with gear), +2 max HP a level. Four perks: **Numb**, **Still Standing**, **Second Wind**, **Close
+    Guard**; Mastered Walking Wounded.
+5826. **Removed:** Used to the Pain (to Second Wind at its tier) and Scar Tissue (to Numb at its tier); Numb and Still
+    Standing were the passives at 3 and 5. Old saves: `perk_remap` and one free re-pick. A removed id named by a remap
+    table is kept on the sheet at load until the remap maps it (it was dropped first: the lane's finding, fixed in
+    `character.ts migrateCharacterItems`); under the skill's first step it is taken off.
+5827. **Numb:** I, one injured limb no longer holds you back (the Narrator's: injuries carry no limb penalty the engine
+    reads); II, and while you hold Guard a critical on you lands as an ordinary hit, with no injury (Set Against the
+    Blow's rows; its Durability 3 gate is gone: the perk is the gate).
+5828. **Still Standing:** I, when your HP runs out, one more turn with 3 AP before you fall Downed (once a fight); II, 5
+    AP (PROVISIONAL 5). No engine half yet: a "last turn" has no general piece (Bite the Bullet's is its own handler); the
+    Narrator's until one is approved.
+5829. **Second Wind:** I, 2 AP once a fight, heal 25% of your max HP; II, and +2 Guard (PROVISIONAL 2). **Close Guard:**
+    I, an Answer: while you hold Guard, 25% of a foe's blow on an ally next to you comes to you and your plates soak it;
+    II, 50% (PROVISIONAL). The answer key `close_guard` is kept.
+5830. **Second Wind as a perk** (ruling layer section 3 item 3): the solo Bulwark is measured before and after; the
+    fallback (Second Wind as the Bulwark's rank II) is not built.
+5831. **Senses:** per point +1 to sense the unseen and +1 Warn reach; the Call as rules 1.70. Four perks: **Read the
+    Air**, **Bedside Manner** (kept), **Wind on the Skin** (kept), **Tremor**; Mastered Skin Map.
+5832. **Read the Air** (the passive at 3): I, a physical tell of someone close: +2 on your next social roll against them;
+    II, +4 (PROVISIONAL). The Narrator's. Old saves: Read the Air and Tremor as the passives at 3 and 5.
+5833. **Tremor** (the passive at 5): I, nothing moving on the ground in your Vision surprises you (the Narrator's: the
+    approach has no per-unit surprise piece); II, and +2 Guard when a fight starts (engine, PROVISIONAL 2).
+5834. **The Bulwark:** Brace, Called Out, Shrug It Off and Anchor are kept.
+5835. *(reserved)*
+5836. **Retort** replaces Unbroken at rank II (`class:defender.retort`; Unbroken is shelved, the Adamantile Knight's):
+    an Answer, a foe's melee blow on you while you hold Guard: 1 Guard and your reaction throw 50% of it back (its
+    armour applies). Its answer key `retort` is kept; it no longer needs Durability 3.
+5837. **Reforge** replaces the Reactive Plate at rank III (`class:defender.reforge`; the Reactive Plate is shelved): at
+    the start of your turn, holding 1 Guard or none, +2 Guard (PROVISIONAL 2). A rank III Bulwark's plates are the
+    door's (its soak a plate, met after the shields).
+
+**Agility (Dexterity, Athletics, Reaction Speed; the Skirmisher)**
+
+5840. **Dexterity's ladder:** 1 the door (Pressure: each hit rolled with Dexterity presses), 2 **Slide**, 3 perk step, 4
+    fork one (Converging Fire or Walk It In), 5 **Flush Out**, 6 and 7 perk steps, 8 fork two (Through the Gap or
+    Lockdown), 9 perk step, 10 Trick Shot. Its two perks (Pressure Point, Keep Their Heads Down) fill the four steps. Per
+    point unchanged (+1 to hit with guns, light blades and throws, +2% critical damage, the throw's reach, harder saves).
+5841. **The door's surplus left it:** Near Miss to Hold the Lane (item 5855), Shaken Nerves to Break Them (item 5856),
+    the Flush rider and its blade twin into Flush Out (item 5843), Speed Load and Quick Draw to Reaction Speed's Speed
+    Load (item 5852; ruling layer section 3 item 6).
+5842. **Slide opens at Dexterity 2** (was 1; `pressure.json pressure.slide` requires).
+5843. **Flush Out** (`pressure.json pressure.flush_out`, Dexterity 5): 2 AP, once a turn: a Pressed foe (Pressure 2 or
+    more) you see within 8 tiles saves or is Afraid of you for 1 round, and loses the Take's Pressure
+    (`tech_rule:pressure.take_cost`). Soldiers and below only (never an Elite or a Boss). The Flush technique's own rider
+    and the blade twin are cut. PROVISIONAL 2 AP, 8 tiles.
+5844. **Dexterity's forks** are unchanged; fork two at 8 (rules 1.70 item 5537).
+5845. **Athletics:** per point +1 Defense (from 2, unchanged) and its Pressure feed. The sheet's "Defense from 1"
+    (PROVISIONAL) is **not built**: it moves the enemy table's yardstick (`test/balance/step1-fit`), a balance call for the
+    lead.
+5846. **Athletics' four perks:** **Wall Run** (Vault, the passive at 3, is its Tier I), **Untouchable** (the passive at
+    5), **Roll With It** (kept), **Catch** (moved from Reaction Speed); Mastered Never There. Old saves: Wall Run and
+    Untouchable as the passives at 3 and 5, one free re-pick; a Catch taken with a Reaction Speed step counts on Athletics
+    now (the Reaction Speed step comes back).
+5847. **Wall Run:** I (Vault), run over cover, low obstacles and gaps, and along walls, up to 2 such tiles in a row at no
+    extra movement; II, 4 tiles, and one attack mid-run (the old Tiers, its handler unchanged). Shadow's Vault is cut
+    (ruling layer section 2 item 7).
+5848. **Catch** is Athletics' (its tiers unchanged).
+5849. **Untouchable:** I, with no torso armour attacks on you roll twice and take the worse; II, in Light armour too
+    (PROVISIONAL). No engine half yet (a roll kept from two has no piece); the Narrator's until one is approved.
+5850. **Reaction Speed:** per point +1 Initiative and +1 Cue reach; the Call as rules 1.70. Four perks: **Shoot First**
+    (the passive at 3), **Cut In** (the passive at 5), **Speed Load** (new), **Rounding Up** (kept); Mastered Before the
+    Blink. Old saves: Shoot First and Cut In as the passives at 3 and 5, one free re-pick.
+5851. **Shoot First:** I, you act in the surprise round even when surprised, with 3 AP; II, 4 AP (PROVISIONAL). The
+    Narrator's (the approach has no per-unit surprise piece). **Cut In:** I, once a scene, cut in and act first; II,
+    twice a scene. The Narrator's.
+5852. **Speed Load:** I, a reload costs 1 AP less (`ap_cost:reload`); II, and once a fight your first attack with a
+    weapon you draw for it (Draw Cut, Snap Shot) costs no AP (Quick Draw, data now: a `cost_mod` on the attack's preview
+    with a peeked per-fight limit, its use taken on the roll). Dexterity no longer cheapens reloads or draws.
+5853. *(reserved)*
+5854. **The Skirmisher:** Fire Discipline, Special Ammo, Duck and Roll, Killzone and Run and Gun are kept; the gains
+    Reflex, Fire and Move, Relocated and Break Them stay.
+5855. **Hold the Lane** takes Near Miss: held shots cost 1 AP less (at least 1), and a held shot that misses still adds 1
+    Pressure (once a turn a foe; no Dexterity gate).
+5856. **Break Them** takes Shaken Nerves: Rout 1 AP less on your turn, and every save a foe makes against you is harder
+    by 1 for each Pressure on it (at most 2; no Dexterity gate).
+### Rules 1.74 (Mind), the Mind lane of 0.32: Perception, Intelligence, Expression (19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md` (it wins over the sheets); the sheets are
+`docs/design/proposals/2026-11-19-attribute-drafts/perception.md`, `intelligence.md` and `expression.md` (Expression's
+sections 2 and 3 are void: the ruling layer's section 5 and 5b stand in their place). The shape (rules 1.70 item 5537):
+an alpha gives its door at 1, a small verb at 2, perk steps at 3, 6, 7 and 9, a fork at 4 and 8, a big verb at 5 and
+its Mastered perk at 10; a beta or gamma gives its per-point gain on every level, four perks of two tiers (steps at 3,
+5, 7, 9) and its Mastered perk at 10. Every new number is PROVISIONAL.
+
+**Perception (Ingenuity, Acuity, Vigilance; the Operative)**
+
+6000. **Ingenuity's ladder** (alpha, the door Shadow): **1** Shadow (Hide, Break, Go to Ground, First Shade, Tagged) and
+    Tag · **2** Lift and Decoy · **3** a perk step and Ghost Kill · **4** fork one (Light Fingers or Lend the Dark) ·
+    **5** Fade, and Shadow holds 2 · **6** a perk step and Cut the Strap · **7** a perk step and Open Seam, and Shadow
+    holds 3 · **8** fork two (Lightkiller or Spotter) · **9** a perk step and Timing · **10** Vanishing Act. The
+    per-point rows are unchanged (harder saves against your traps, poisons and Shadow verbs; +1 to be spotted every
+    2 points). PROVISIONAL.
+6001. **What leaves Ingenuity:** Still Breath and Close Quarters become Acuity's perk Still Breath (item 6005); Shadow
+    Run becomes Shadow Step's tier II (item 6002); Read Intent becomes a Vigilance perk (item 6009); Plant, Foul the
+    Action and Vault are cut (Tag, Cut the Strap and Athletics' Vault do their work; Lowered stays for other users);
+    Pick, Disable, Rig and Hijack become the Operative's (item 6011). Douse stays as the Shadow lane builds it.
+6002. **Shadow Step tier II:** once a turn a Hidden attack holding Shadow costs 1 AP less (as tier I), **and Shadow
+    Run**: once a turn, a move you make Hidden from beside cover to beside cover costs 1 AP less (at least 1).
+    PROVISIONAL.
+6003. **Ingenuity's forks** (both steps offered). **Light Fingers** (4): Lift costs 1 AP less, and a Lift the target
+    can't see gives +1 Shadow (once a turn). **Lend the Dark** (4): 1 AP and 1 Shadow, once a turn: an ally within 4
+    tiles that no enemy can see becomes Hidden (a fresh ambush). **Lightkiller** (8): once a fight, 1 AP and 2 Shadow:
+    you are Dimmed for 2 rounds (foes' eyes reach you from 3 tiles less: stat `seen_range` −3). **Spotter** (8): as
+    built. PROVISIONAL.
+6004. **Acuity** (beta): every level +1 tile Analyze reach, −5% critical damage taken, and its feed (foes need more to
+    find you while Hidden). Four perks: **Quick Read** (I: Analyze costs 1 AP less; II: and your first Analyze each
+    fight costs 0 AP), **Read Them** (I: a foe you Analyze is Read Them: it deals 15% less damage to your side for the
+    fight; II: 25%), **Still Breath** (item 6005), **Pattern Lock** (kept). Mastered: Case Closed (kept). Analyze is 2 AP
+    for everyone (its points gate at 3 is gone; Quick Read owns the cut), and the Read Them mark is a condition row
+    (`read_them`, `read_them_ii`), also put on by Case Closed and Detective's Eye's fight-start find. PROVISIONAL.
+6005. **Still Breath** (Acuity perk): I: foes' spot rolls against you are −2 while you stand next to cover; II: and an
+    enemy that ends next to you while you are Hidden rolls to spot you (at +4) instead of finding you outright.
+6006. **Vigilance** (gamma): every level +1 to notice, +1 tile notice range, +1 tile Spot reach (and the gamma's +1 on
+    checks). The Call Spot keeps its steps (1, 4, 8: rules 1.70) and the one price table. Four perks: **Cold Spine**
+    (item 6007), **The Tell** (item 6008), **Got You in My Sight** (kept), **Read Intent** (item 6009). Mastered:
+    Nothing Gets Past (kept).
+6007. **Cold Spine** (was Eyes in the Back; the passive Cold Spine folded in): I: you learn which way a hidden foe that
+    aims at you is, and you can't be flanked (half cover and a carried shield guard every side); II: allies next to
+    you can't be flanked either.
+6008. **The Tell** (was Detective's Eye, now Vigilance's; the passive The Tell folded in): I: in talk you notice hidden
+    weapons and hostile intent; one out-of-place detail a scene; a fight starts with one trap or weak point found
+    (Read Them on one foe); II: two details and whether they connect; two finds at a fight's start.
+6009. **Read Intent** (Vigilance perk; the verb leaves Ingenuity): I: your Spot also Reads its target (your side sees
+    its next action until its turn ends); II: and a Spot on an enemy that can't see you gives +1 Shadow (once a turn).
+    PROVISIONAL.
+6010. **Old saves** (rules 1.70 item 5538): Acuity's free Quick Read (3) and Read Them (5), and Vigilance's Cold Spine
+    (3) and The Tell (5), are preselected perks in the one re-pick. A Detective's Eye held under Acuity moves with the
+    perk to Vigilance (its Acuity step is owed again).
+6011. **The Operative's moves.** Rank I: Mark (kept); **Vanish** (id kept): once a turn your Hide costs 0 AP. Rank II:
+    Toxin (kept); **Sabotage** (id kept): Pick, Disable and Rig are yours (they need the Operative at rank II, and
+    Hijack the Operative at rank III: they leave the Ingenuity ladder), and Disable and Rig cost you no Shadow; the
+    old Sabotage actions and their Pin are gone (one copy: the verbs). Rank III: Execution and Called Shot (kept). The
+    gain Tradecraft keeps its start Shadow, its Read and its unseen Shadow; its Analyze price goes (Quick Read owns it).
+    PROVISIONAL.
+
+**Intelligence (Brain Power, Rumination, Eloquence; the Sigilist)**
+
+6020. **Brain Power's ladder** (alpha, the door Sigils): **1** Sigils (Draw, Evoke, Vent, Swap core, Scuff) · **2**
+    Overclock (moved from 3) · **3** a perk step · **4** fork one (Overflux or Clean Vent) · **5** Twin Draw · **6** a
+    perk step · **7** a perk step · **8** fork two (Written in Advance or Running Script) · **9** a perk step · **10**
+    Clean Draw (Junctions with it). Per point as before (+10% Sigil power, +1 word, harder Sigil saves; +1 reach and +1
+    round every 2). **The core-charge cut a Sigil comes at 3, 5 and 9** (it was 3, 6, 9): one step list in data
+    (`skills.json brain_power per_point.numbers.charge_at`), read by the one `sigilCoreSaving`. PROVISIONAL.
+6021. **Brain Power's forks** (both steps offered). **Overflux** (4): your Sigil spells deal +25% damage while your
+    Flux is at its limit. **Clean Vent** (4): once a turn, your Vent pushes every foe next to you 1 tile and deals
+    them 6 Sigil scorch (a flat amount, more as you level). **Written in Advance** (8): your first Evoke after a turn
+    you ended with glyphs drawn deals +20% damage. **Running Script** (8): after an Evoke, your next glyph this turn
+    costs 0 AP and adds no Flux. PROVISIONAL.
+6022. **Rumination** (beta): every level +1 on Brain saves and its feed (the Flux limit). Four perks: **Index** (I: once
+    a scene a true answer to one factual question; II: and your next Brain save after an Index answer in a fight is at
+    +2), **Proven Formula** (I: +3 on saves against a condition that already took hold on you this fight; II: +5),
+    **Footnote** (II: +2, and your own Sigils count the cited fact too), **Lab Coat** (kept). Mastered: **Established
+    Fact** (the story part kept) with an engine half: once a fight, your own Overload deals you no damage. PROVISIONAL.
+6023. **Eloquence** (gamma): every level +1 on Eloquence checks and Asks, +1 tile Brief reach (Persuasion in a fight
+    harder to resist). The Call **Brief** is re-stepped stronger (ruling layer section 2 item 4): **1** their next two
+    actions cost 1 AP less each · **4** the next 2 AP less and the one after 1 less · **8** the next two 2 AP less each.
+    Four perks: **Objection!** (I: expose a claim before listeners; II: and Burden of Proof's demand for evidence:
+    Burden of Proof is removed and maps to it), **Opening Argument** (I: the pre-fight debate as before; II: your first
+    Persuade, Threaten or Parley each fight costs 0 AP), **Overruled!** (kept), **Thinking Aloud** (I: after a Call,
+    your next Evoke this turn costs 0 AP, once a turn; II: and your next glyph this turn adds no Flux). Mastered:
+    **Closing Argument** (the story part kept) with an engine half: once a fight, your Persuade gets no save.
+    PROVISIONAL.
+6024. **Old saves:** Rumination's free Index (3) and Proven Formula (5), and Eloquence's Objection! (3) and Opening
+    Argument (5), are preselected perks in the one re-pick; a held Burden of Proof becomes Objection! at its tier.
+6025. **The Sigilist's moves.** Rank I: Barrage and Core Change (kept). Rank II: **Backdraft** replaces Overcharge (the
+    ladder gives Overclock at 2): when your Evoker overloads, every foe next to you takes its damage too (true damage, a flat amount block on the overload's amount, so it grows with your level as every character's flat damage does);
+    Bleed the Flux (kept). Rank III: Payload and Stored Spell (kept). PROVISIONAL.
+
+**Expression (Visualization, Improvisation, Charisma; the Rigger)** (the ruling layer's section 5 and 5b stand in
+place of the Expression sheet's sections 2 and 3)
+
+6040. **Visualization's ladder** (alpha, the door Figments; forms are learned, rules 1.70 item 5541): **1** Figments
+    (Picture, Redraw, Let go; Glimmer; 2 forms known; 1 held) · **2** Cash in (moved from 1: the verb row's `requires`,
+    read on the owner's sheet) · **3** a perk step · **4** fork one (Hard Light or Sharp Light) · **5** a second
+    Figment held · **6** a perk step · **7** a perk step and a third held · **8** fork two (Many Hands or Masterwork) ·
+    **9** a perk step · **10** Solid Image. Per point: +1 form known (2 to 9), +1 tile reach, +1 Figment to hit. The
+    old No Snap at 9 is gone (no fork takes it: ruling layer 5b). PROVISIONAL.
+6041. **Visualization's forks** (they upgrade every form you know; ruling layer 5b). **Hard Light** (4): your Figments
+    take 30% less damage; one destroyed gives you +1 AP next turn (once a round). **Sharp Light** (4): your Figments'
+    strikes deal +20% damage; after one drops a foe, your next Figment order costs 0 AP. **Many Hands** (8): +1 Figment
+    held; Picture costs 1 charge less (never under 1). **Masterwork** (8): 0 AP, once a turn, name one Figment you hold
+    your Masterwork (a tie kind `masterwork`, one at a time; naming another moves it): it has +2 to hit and takes 25%
+    less damage, and once a round one order to it costs 0 AP. PROVISIONAL.
+6042. **Improvisation** (beta): every level −10% ambush damage taken and its feed (Figment HP). Perks: **Tuned** (I: the
+    main-hand weapon never jams or breaks, as the old passive; II: and a core swap costs 1 AP less), **Jury-Rig** (I: a
+    Figment of yours destroyed gives +1 AP next turn, once a round, none with Hard Light, whose own AP stands; II: and +1
+    Visualizer charge; the old broken-weapon use is moot under Tuned and goes), **Hot-Swap** (kept). **Field Repair
+    stays the free unlock at 3** (its perk form, gated by holding it, waits on a primitive: the lane's hand-off), so
+    Improvisation has three perks for now. Mastered: Overhaul (kept). PROVISIONAL.
+6043. **Charisma** (gamma): every level +1 on Charisma checks, +1 tile Rally reach. The Call **Rally** is re-stepped
+    stronger (ruling layer section 2 item 4): **1** +2 AP to an ally · **4** +2 AP and 1 Pressure less · **8** +3 AP and
+    1 Pressure less. Perks: **Smooth** (I: a failed lie only raises suspicion; II: and once a scene a lie found out can
+    be walked back with a second check), **Parley** (id `talks_broke_down`; I: before a fight, one attempt to talk the
+    enemy down; II: a fight out of a talk won gives +2 AP on your first turn and every third after, and the first enemy
+    to act hesitates in round 1; the lost-talk penalty is gone), **Crowd Pleaser** (kept), **Showman** (I: Picture costs
+    1 charge less, never under 1; II: and once a turn one Figment order costs 0 AP). Mastered: Everyone's Friend (kept).
+    PROVISIONAL.
+6044. **Old saves:** Improvisation's free Tuned (5), and Charisma's Smooth (3) and Parley (5), are preselected perks in
+    the one re-pick; a held Talks Broke Down is Parley at its tier.
+6045. **The Rigger's moves.** Rank I: the Double (kept); **Quick Sketch** replaces Field Fix (once a turn, Picture costs
+    1 AP less, never under 1; Field Fix goes back to the move pool, its key kept). Rank II: **Salvage** trimmed to the
+    wreck (+2 Visualizer charge beside a wreck, once a wreck; Cash in and Field Repair do the rest); Redline (kept).
+    Rank III: Sleight and Scrap Sentinel (kept). The Rigger's Hands kept. PROVISIONAL.
+### Rules 1.75 (Soul), the Soul lane of the attribute rework: Determination, Insight, Virtue (0.32, 19 Nov 2026)
+
+The ruling layer is `docs/design/proposals/2026-11-19-attribute-proposals.md`; the sheets are
+`docs/design/proposals/2026-11-19-attribute-drafts/` determination.md, insight.md and virtue.md. Each skill takes the
+shape of rules 1.70 item 5537 (alpha: 1 the door, 2 a small verb, 3 perk step, 4 fork one, 5 a big verb, 6 and 7 perk
+steps, 8 fork two, 9 perk step, 10 Mastered; beta and gamma: the per-point gain on every level, four perks of two
+tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each sheet's MIGRATION says
+(`skills.json perk_remap`, rules 1.70 item 5538). **Every new number here is PROVISIONAL.**
+
+**Determination (Will Power, Composure, Lore Master; the Channeler)**
+
+6200. **Will Power's ladder.** 1 the door (Outbursts) · 2 **Overdraw** (moved from 3; once a turn a Pump adds two
+    stages, the first of a fight costs no Strain, each after it 1) · 3 perk step · 4 fork one · 5 **Two Schools** (a
+    design may carry a second school at half strength for more MP: `soul_modules.json second_school`, now shown on
+    the ladder) · 6, 7 perk steps · 8 fork two · 9 perk step · 10 Mastered (The Twin Pays). Per point it keeps
+    Soul power, mana syphoned, the save strength, reach every 2 and a module slot every 3, and one free Pump a round
+    from 3; it shows the modules it opens at 2 (Size, Quiet) and 4 (Bloom, Volley). **It gives no Strain limit**
+    (rules 1.70 item 5539). Its "+1 design ready every 2 points" moves to Lore Master (item 6205), Pure Heart to
+    Composure (item 6203), the Strain-free swell to Composure 6 (item 6202).
+6201. **Will Power's forks** (all four offered; ids kept). Fork one, at 4: **Ride the Edge** (a Release while your
+    Strain is at or over your limit deals +15% damage) or **Slow Burn** (REPLACED: once a turn, Steady costs 0 AP and
+    calms 1 more Strain). Fork two, at 8: **Blood Price** (REPLACED: each time your own heart burns you, your next
+    Release deals +25% damage) or **Clean Break** (REPLACED: an Outburst that drops a foe calms 2 Strain, once a
+    turn). Ride the Edge reads the resource predicate's `at: "limit"` (rules 1.70 P2), which is "at or over", so the
+    card says "at or over your limit". PROVISIONAL: 1.15, 1, 1.25, 2.
+6202. **Composure's ladder.** Every point: +1 on Heart saves. **+1 Strain limit at 1, 2, 4, 6 and 8 only** (the levels
+    where the limit moves: rules 1.70 item 5539; the page no longer shows it on 3, 5, 7). 2: learns the modules Homing,
+    Swift, Left, Right and Silent (the existing gate). 6: **a held Outburst swells with no Strain** (moved from Will
+    Power 7: `soul_modules.json cycle.swell_no_strain {composure: 6}`; PROVISIONAL level). Perk steps 3 / 5 / 7 / 9;
+    Mastered Still Water.
+6203. **Composure's four perks.** **Poker Face** (`poker_face`, from the old free unlock at 3): I anyone questioning
+    you or reading your lies takes -3 (the Narrator's); II adds +2 on Brain saves. **Stand Still** (`stand_still`,
+    from the unlock at 5): I until you first act in a fight, foes are -2 to hit you and the first to miss gives you a
+    free attack (once a fight); II Begin, Pump and Steady do not count as acting either (the not-acting list is the
+    tier's data). **Pure Heart** (`pure_heart`, from Will Power 5): I once a fight the Strain that would Mana Short you
+    is refused and your Strain falls to your limit; II twice a fight. **Flat Line** (kept). You Get Used to It is
+    removed (maps to Poker Face at the same tier). PROVISIONAL: Poker Face II's +2, Pure Heart II's two.
+6204. **Lore Master's ladder.** Every point: +1 tile Name It reach. 1: Name It (the Call) and the first Outburst tone ·
+    2: learns the forms Wave, Burst, Aura and Lance and the modules Time, Ether and Phantom · 4: learns Ricochet, Fuse
+    and Return · **+1 design ready at 4, 6, 8 and 10** (item 6205) · perk steps 3 / 5 / 7 / 9 · Mastered True Name.
+    The Call's steps and price are rules 1.70's (steps 1 / 4 / 8, 3 / 2 / 1 AP from 1 / 5 / 9).
+6205. **Ready designs are Lore Master's**: 3, and +1 at Lore Master 4, 6, 8 and 10 (a number block,
+    `soul_modules.json limits.ready_designs`, read by the one `character.ts readyDesigns`; the same numbers the old
+    `2 + floor(Will Power / 2), at least 3` gave, now on Lore Master). Readied designs over the new count are kept on
+    the sheet; a new one cannot be readied until there is room.
+6206. **Lore Master's four perks.** **Old Tales** (`old_tales`, from the unlock at 3): I once a scene one true answer
+    about a supernatural creature, curse or relic; II adds: you read and speak any ancient or upper-realm script, and
+    an upper-realm being parleys with you once (Old Tongue folded in; Narrator). **Warding Word** (`lore_ward`, from
+    the unlock at 5; named so beside the Chaplain's Ward): I 1 AP, you or an ally you see within 5 tiles gets +3 on its
+    next Brain or Heart save (the condition `warding_word`, until the end of the fight or that save); II the first
+    each turn costs 0 AP. **Rite in the Field** (changed, Leon's wording): every fifth foe you drop yourself in a fight
+    (every third at tier II), your next Crystallise costs 0 AP. **Recitation** (new): once a turn, a Call you make calms
+    1 Strain (2 at tier II). Old Tongue is removed (maps to Old Tales). PROVISIONAL: Warding Word's 5 tiles, +3 and its
+    Brain-or-Heart reading of "a supernatural effect"; Recitation's 1 and 2.
+6207. **Rite in the Field's other half is handed back.** "Takes nothing from the air" is not built: Crystallise's draw on
+    the air (`magic.ts crystallise`: the meter at 10 or more, then -10) is not on the price, so no `cost_mod` reaches
+    it (ruling layer section 2 item 6). The 0 AP half is built; the air half waits for the lead's ruling.
+6208. **The Channeler.** Shape, Iron Heart (once a fight, on Mana Shock: -2 Strain; already data on the `mana_shock`
+    trigger), Storm Front, Heart Surge and Eye of the Storm are kept. **Occult Library**: its "+1 design ready" (now
+    Lore Master's ladder) is replaced by **once a turn, Syphon costs 0 AP**; the extra tone is kept.
+
+**Insight (Empathy, Camaraderie, Insinuation; the Mender)**
+
+6210. **Empathy's ladder.** 1 the door: Bond (ally or foe; Let Go free) and Mend (a friend, or yourself once a turn),
+    one Bond held · 2 **Snap** (moved from 1) · 3 perk step · 4 fork one · 5 **Shield** (moved from 2) and a second
+    Bond held · 6 perk step and +3 Bond reach · 7 perk step · 8 fork two and a third Bond held · 9 perk step and Mend
+    and Shield cost less MP · 10 Mastered **Threads That Hold**. Every point: +6% Healing given (`rules.json
+    output.profiles.tend.skill`). The door's help says what an enemy Bond does (its numbers are `tending.json
+    tend.threads`). Leaving Empathy (ruling layer section 3 item 1): **Touch is cut** (Triage is the beside-you heal);
+    Settle, Soothe, Raise with Last Thread, Tug and Guide become Camaraderie's perks (item 6213); Field Surgery is the
+    Mender's (item 6217); Feel Their Pain is cut (nothing read it); Mercy goes to Insinuation's Open Hand (item 6216).
+6211. **Empathy's perks.** **Taut Thread** (`shared_breath`): I +6% damage on a Bonded foe (kept); II +12%, and your
+    attacks on a Bonded foe roll with Empathy when it is higher (`roll_with`, if_higher). **Bitter Balm**
+    (`lay_down_arms`): the echo on Bonded foes is 10% of your heal at I, 20% at II (it was 4% and 8%). **Mastered:
+    Threads That Hold** (`threads_that_hold`, new; Open Hand leaves Empathy): your Tending through a Bond is +50% (not
+    +20%), and your Bonds to allies hold while you are Downed (`tend.hold_down` folded in). PROVISIONAL: 10%, 20%, +50%.
+6212. **Empathy's forks.** Keep the Thread and Shared Pulse as built; **Short Thread**'s second half is Triage reaching
+    2 tiles (Touch is gone: a `pick:` step on Triage's reach); **Long Thread** is built (rules 1.70 P3, the
+    target-aware price): +3 Bond reach, and the first Mend or Shield on each Bonded friend each round costs 1 AP less
+    (never under 1; a use counted per target, `limit.each: target`).
+6213. **Camaraderie's four perks** (every point: +10% healing received, +5% of a shared hit to 50% at 5, the Bond
+    heal-back; Share a Hit at 1, and at 5 it covers a Bonded friend in sight). **Hand-Off** (`hand_off`, from the
+    unlock at 3): I once a round a friend beside you who is attacked uses your Defense if higher; II reaches 3 tiles.
+    **Nobody Left Behind** (`nobody_left_behind`, from the unlock at 5): I Stabilise costs 1 AP less and a Downed
+    friend beside you takes 50% less damage; II adds **Raise** (1 AP, 36 MP, once a turn) and **Last Thread** (after a
+    Bonded friend falls, your next Raise costs 0 AP); its carry half is cut. **Steady Hands** (`steady_hands`): I
+    **Settle**; II adds **Soothe**. **Pull Together** (`pull_together`): I **Tug**; II adds **Guide**. Each verb keeps
+    its numbers and its Attuner requirement; on a perk it is that perk's own action. Soulmate is removed (maps to Pull
+    Together), Rally Cry is removed (maps to Steady Hands). **Mastered: Many Hands** (changed): Share a Hit reaches any
+    friend within 3 tiles, and a friend in sight who has used its reaction may use yours. PROVISIONAL: 50%.
+6214. **Insinuation's ladder.** Every point: +1 Taunt reach, Taunt harder to shake off, +1 on its checks. Taunt's steps
+    and price are rules 1.70's. Perk steps 3 / 5 / 7 / 9; Mastered Their Own Idea.
+6215. **Insinuation's perks (1 of 2).** **Between the Lines** (`between_the_lines`, from the unlock at 3): I the
+    Narrator tells you what coded speech really means; II your Bond on a foe is at +2 TN. **Veiled Insult**
+    (`veiled_insult`, from the unlock at 5; rebuilt, it never ran): I 0 AP, once a fight, a foe you see makes a Heart
+    save against your Insinuation or is Taunted for 2 rounds; II twice a fight. Its old "-2 to hit you" is cut. Sweet
+    Talker is removed (maps to Veiled Insult), Double Meaning is removed (maps to Between the Lines). PROVISIONAL: +2,
+    2 rounds.
+6216. **Insinuation's perks (2 of 2).** **Quiet Thread** (`quiet_thread`, new; it removes the door's tax): I you are
+    never Traced; II nor are your Bonded friends, and a Bonded friend going Down costs you no MP. **Open Hand**
+    (`open_hand`, moved from Empathy's Mastered, Mercy folded in): I 2 AP, a humanoid foe you see below half its HP
+    makes a Heart save against your Insinuation or surrenders (never a Boss or a machine); II 0 AP, once a foe, and it
+    may be offered the moment the foe drops (the old setting always / ask / never). PROVISIONAL: half HP, 2 AP.
+6217. **The Mender.** All six moves kept. Triage is the only beside-you heal (its text loses "less than a Touch"; Short
+    Thread lets it reach 2 tiles). **Field Surgery** joins the Mender's extras (it needs the Mender, rank I).
+
+**Virtue (Faith, Conscience, Authority; the Chaplain)**
+
+6220. **Faith's ladder.** 1 the door (Whisper, once a turn; Devotion) · 2 **Name the Sinner** (a Whisper: a foe you see is
+    Judged for 2 rounds, no save; your patron's blows, your prayers' damage, are +20% on a Judged or Marked foe: Deliver
+    the Sinner moved from 5 and given a verb) · 3 perk step, Hymns open (kept at 3: the sheet's open item 1, recommended
+    no) · 4 fork one · 5 Witnessed · 6, 7 perk steps (the Miracle at 7 with Devotion 10) · 8 fork two · 9 perk step · 10
+    Mastered Judgement Day. Every point: +10% Blessing power, saves against your prayers harder; the Hymn-wait row only on
+    the levels where it still moves (rules 1.70 item 5540). **Answered Prayer is cut** (it never ran). PROVISIONAL: 2
+    rounds.
+6221. **Faith's perks.** Unbroken Litany: I the first Hymn or Miracle each fight 1 AP less; **II the first two** (its old
+    -1 Hymn wait moves to Swift Psalm). Sinner's Due unchanged.
+6222. **Faith's forks.** Fork one, at 4: **Steadfast** (a Whisper or Ward on an ally at half HP or less costs 1 AP less;
+    the target-aware price, rules 1.70 P3: a prayer is priced with its target) or **Round of Blessings** (your first
+    prayer heal or shield each turn is +25%). Fork two, at 8: **Swift Psalm** (`fork.prayer.held_breath`, id kept: -1
+    round Hymn wait, never under its floor; `faith.ts hymnWait` now asks the stat of any sheet with a pick) or
+    **Benediction** (an answered Hymn gives you and allies within 2 tiles +1 to hit for 2 rounds: the condition
+    `blessed_aim`, Rising's numbers, apart from the song). PROVISIONAL: -1 AP, +25%, -1 round, +1 and 2 rounds.
+6223. **Conscience's four perks** (every point: shields on you, your prayer shields by Faith; Prayer shields at 1).
+    **Clean Hands** and **Red Line** kept. **Righteous** (`righteous`, rebuilt: the old AP cut never ran): I your prayer
+    heals and shields on an ally at half HP or less are +20%; II +40%. **Foresight** (`foresight`, from the unlock at 3): I
+    before a big decision the Narrator tells you its worst likely result, honestly; II once a fight, the first blow that
+    would drop an ally within 4 tiles leaves them on 1 HP. PROVISIONAL: 20%, 40%, 4 tiles.
+6224. **Authority's four perks** (every point: +1 tile Order reach, Karma; Order's steps and price are rules 1.70's).
+    **Outclassed** kept. **Rank Has Privileges** (`rank_has_privileges`, from the unlock at 3): I lower-ranked people
+    follow reasonable orders without a roll; II once per organisation the Narrator names who really holds power and they
+    agree to see you (Real Power folded in: removed, mapped to Rank Has Privileges II). **Five Stars** (`five_stars`, from
+    the unlock at 5, rebuilt: it never ran): I when the fight starts, every friend banks +1 AP for its first turn; II and
+    each rank-and-file foe makes a Heart save against your Authority or is Shaken for 1 round. **Commanding Voice**
+    (`commanding_voice`, new: it removes the door's tax, Silenced): I +3 on saves against Silenced, Shaken and Fear; II
+    immune to Silenced. PROVISIONAL: +1 AP, +3.
+6225. **The Chaplain.** All six moves kept (Ward, Smite, Under the Eye, Blessed Arms, Sanctuary, Verdict) and its five
+    gains. Smite's Judged is what Name the Sinner reads.
+6226. **The biggest all-in Release rose; its band is widened to what is measured** (the 0.32 merge, 19 Nov 2026; Leon's
+    ruling of 19 Nov: ceilings are a relative measure of effort against fun, not a hard line). The Soul lane's feelings,
+    forks and Strain limit move the biggest all-in Release to 137 / 152 / 215 / 206 / 226 / 191% of the plain rifle at
+    levels 1 / 3 / 6 / 9 / 12 / 20 (the Soul branch's measure). The balance contract's own measure after the whole 0.32
+    merge reads obPeak 123 / 213 / 178 / 183% at levels 1 / 5 / 10 / 20, outside the old band (124 to 212%) at levels 1
+    and 5. No class is refitted: the contract's `outburst_peak` row is set to what is measured (`level_lo` 0.74,
+    `level_hi` 1.295: 122 to 214%). PROVISIONAL: the fun-and-balance pass judges it.
+
+### Rules 1.77 (engine pieces), the pieces the lead approved from 0.32's "needs a primitive" list (19 Nov 2026)
+
+The lead's rulings on the lanes' hand-backs (`docs/ROADMAP.md` "0.32: needs a primitive"): each piece is general, added
+to the engine's closed lists or surface by name, and each unlocks a rule a lane skipped. A later revision overrides the
+body and the earlier ones. Every new number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
+The builder's report: `docs/design/handoffs/0.32-ENGINE-PIECES.md`.
+
+6500. **A filter on an op's unit set** (`targets.if`): the same predicates as an `if` and a verb's `reach.if`, tested on
+      each unit of the set as the event's target. Five Stars II's Shaken reaches rank-and-file foes only (`targets.if
+      {target_not_tier: [elite, boss]}`, as Flush Out's reach): an Elite or a Boss is never in its set (rules 1.75 item
+      6224 completed). Its card says "each rank-and-file foe (never an Elite or a Boss)".
+6501. **A grant's tab** (`grant_action tab`: a door's tab, `shadow`, `tend` or `figments`): an item's action may sit on a
+      door's tab instead of its item's (Perks, Class). The Tending verbs that moved onto Camaraderie's perks (rules 1.75
+      item 6213: Raise, Settle, Soothe, Tug, Guide) carry `tab: tend` and show on the TEND tab again.
+6502. **`acted` carries the action's own id** when its name is a family (a Call: `call.spot`), so `action_id` reads it
+      on `acted` as on `cost`. Read Intent (rules 1.74 item 6009) reads "your Spot" from the action itself; its two
+      marks on the price (a flag set while prices were listed) are gone. Nothing a player sees changes.
+6503. **An action's condition tells `cond_apply` the action and the unit it was aimed at** (`ctx.action`, `ctx.aim`;
+      the predicate `target_aimed` on `cond_incoming`). Called Out (rules 1.60 item 4619; item 5602 completed): the foe
+      you name with Challenge is Taunted with no save (no roll at all); every other foe in reach still saves. Its card
+      reads "the foe you name is Taunted with no save" again.
+6504. **A limit shared across items** (`limit.shared`: one counter of the holder's, named, that every item naming it
+      counts under; in place of `key`) and **the negation of the resource bound** (the predicates `self_not_res`,
+      `actor_not_res`, `target_not_res`: the bounds of `self_res` not met; no new bound). Stalk (item 6405 completed):
+      its +1 Shadow counts toward the Shadow door's two gains a turn (`shared: shadow_gain`, the door's three gains
+      too); it is refused, before anything is paid, when your Shadow is full (`self_not_res {shadow: {at: limit}}`) and
+      when the turn's two gains are already made (`uses_left`), each in words.
+6505. **Fear's two refusals read a stat** (`fear_unbound`, >0: the unit is not held by them; `combat.ts fearHolds`).
+      Steady I (rules 1.73 item 5811 completed): Fear can't stop you attacking its source or moving toward it; Fear's
+      to-hit penalty stays (the condition row's own). Steady is `adjudication: engine` now (its tier II keeps its
+      Fear-and-Nausea cap).
+6506. **A save may roll with another skill** (op `roll_with` on the trigger `save`, the attack's ask: one place picks
+      the skill, `rolls.ts rollSave`): the save rolls with the HOLDER's modifier in that skill in place of the saver's
+      own save, never on top of it. Point Man I and II (rules 1.73 item 5812 completed): an ally within 3 tiles rolls its
+      Fear saves with your Guts in place of its own, when yours is better (`if_higher`; PROVISIONAL: "in place of" read
+      as never worse). The roll's read-out names it ("Guts (Point Man)"). Point Man is `adjudication: engine`.
+6507. **A roll kept from two dice** (item op `two_dice` on the attack's own roll hook `attack_roll`, `keep: worse` or
+      `better`): a second d20 is drawn from the fight's dice and the worse (or better) of the two stands; once an attack,
+      the log says both dice. No existing piece did it (Echo and the Lucky rerolls replace the die; the registry's
+      `disadvantage` op has no reader). Untouchable (rules 1.73 item 5849 completed): I, with no torso armour, attacks on
+      you roll twice and keep the worse; II, in Light armour or none (`self_holds body.armour_at_most`). Engine now.
+6508. **One more turn at 0 HP** (item op `last_turn` on `would_drop`, Bite the Bullet's handler made general and
+      retired; `Unit.lastTurn`, the condition row `last_turn` its marker): the blow leaves the holder on 1 HP; it acts
+      to the end of its next turn (the rest of this one if it dropped on its own turn), with `turn_ap` AP when the item gives
+      a number, then falls Downed unless a heal reached it first; `hits: death_save`, each hit meanwhile is a failed death
+      save instead of damage (two on a critical; three and it dies on its feet). Bite the Bullet keeps its rule exactly
+      (its golden rows did not move). Still Standing (rules 1.73 item 5828 completed): once a fight, I: that turn has 3
+      AP; II: 5 AP. A hit before that turn drops it as any blow does (PROVISIONAL: the sheet says nothing of it). Dropped
+      on its own turn, the rest of that turn is the last one, its AP cut to the number (PROVISIONAL). Engine now.
+6509. **The sheet reads its number blocks through the one resolver** (`effects/hooks.ts setSheetSource`, registered by
+      `effects/triggers.ts` with `sourceOf`; `sheetSource(c)` for a character with no unit): `strainLimit` and
+      `readyDesigns` no longer resolve `skill:` themselves. No number changes.
+6510. **A fight-start registration** (`combat.ts onFightStart`): what a system sets up on every unit as a fight starts
+      runs before the items' `combat_start` ops (the Momentum meter and its starting value, `physical/rules.ts`). The
+      Primed boon's Momentum is a `combat_start` op again (item 5506's real fix); item 5607's workaround is gone (the
+      `made_after_start` mark on `actions.json resources.momentum` and the validator's warning). No number changes.
+6511. **Standing defensive modifiers are shown in the fight** (the lead's ruling 14): a to-hit term already carries its
+      source label (an item op's `label`: "Open guard"); one general reader, `rolls.ts standingTerms` (the terms a
+      unit's own items put on a hostile's roll to hit it as things stand; `effects/hooks.ts emitOwn` takes the fight),
+      read by the client through `standingModsFor(g, unitId)`. The token card lists them ("Open guard −2 to hit them");
+      the attack preview at that unit names the same term (it always listed every to-hit term by label). The gaps
+      lane's "Open guard's −2 shown in the fight" is done.
+6512. **A resource held by the fight** (`data/actions.json resources` row `on: fight`; `effects/cost.ts` resLeft, resPay,
+      resWhyNot and resGive take the fight the price is asked in, and a fight-held meter changes through its setter; a
+      row's `short` is its refusal): the air's mana is the resource `mana` (`Combat.mana`, setter `mana`: `magic.ts
+      shiftMana`, its clamp and band words unchanged). Crystallise's draw on the air is on its price (`actions.json
+      costs.crystallise.mana`, 10, the number it always took), so the one pay takes it and an item may change it. Rite in
+      the Field (rules 1.75 item 6207 completed): the Crystallise its kills make free costs 0 AP and takes nothing from
+      the air (`cost_mod res: mana, set: 0`), even when the air is too thin. Thin air still refuses a plain Crystallise
+      in its own words.
+6513. **Injuries carry their limb penalties where the engine reads them** (they always did: an injured arm −2 to hit with
+      it, `combat.ts armPenalty`; a leg halves Movement, `rollInjury` and the sheet's `movement`); no injury system was
+      built. The stat `numb_limbs` (how many of a unit's first limb injuries carry no penalty; `character.ts penalLimbs`)
+      is read by all three. Numb I and II (rules 1.73 item 5827 completed): one injured limb, the first, no longer holds
+      you back; a second still does. Numb is `adjudication: engine` (its tier II keeps its critical rule).
+6514. **`reveal what: "kit"`** (the condition table's `kit` mod; the one read-out `combat.ts kitOf(cb, unit, side)`,
+      the client's `kitSeenFor(g, unitId, side)`): while a unit bears a condition whose row reveals `kit`, given by a
+      unit of a side, that side sees its weapon, its rounds (in the weapon and spare), its armour and what it carries to
+      throw. Its loot is rolled only as it falls (rules 1.54): there is nothing to show before. **Case** (item 1966 and
+      6407 completed; `shadow.json shadow.case`, group Mark, Ingenuity 3): 1 AP, an enemy within 8 tiles you see that
+      can't see you is Cased (condition row `cased`, until the fight ends): your side reads its kit on its token card,
+      and a Lift on it by your side costs 1 AP less (the row's `cost_mod` at Lift's site; any of your side's Lifts,
+      PROVISIONAL). Every number PROVISIONAL.
+6515. **Added by the integrator, approved by the lead and recorded here:** the exports `brakeGiven` (`effects/cost.ts`,
+      the healing brake's count after the action runs: item 5610) and `eyeReach` (`combat.ts`, the one sight range:
+      item 6403), and the field `DoorPending.name` (a door's own name on its pending pick: the merge's m5).
+6516. **Not approved, left as they are:** a story-side `acted` (Index II across story and fight; story mode is later),
+      bare fists in the glove family and a thrown Relic property (Items 2.0).
+6517. **Not built here, each for a reason (the builder's report, `docs/design/handoffs/0.32-ENGINE-PIECES.md`):**
+      (a) **Silent** (item 6406; the lead's ruling: acting from Hidden gives your tile away while you stay Hidden; a
+      Silent attack does not) contradicts rules still standing: the body's "any attack reveals you unless the weapon is
+      silent", the Break's "spent and revealed when the action ends" (item 1953), Vanish II's roll "when an attack reveals
+      you", Parting Cut's re-hide after the Break's reveal (item 1966) and the Silent module's "Begin, Pump and Release
+      don't reveal you". Each needs Leon's word before the reveal on attack is changed; the `silent` property is read
+      from data already (weapons, mods, bows, the technique lines). (b) **Field Repair as Improvisation's fourth perk**
+      (item 6042) needs a new perk with two tiers, the unlock at 3 turned into a perk step, Overhaul's added grant, and
+      the old saves at Improvisation 3+ re-offered the step (pendingRepicks): larger than this lane; the gate piece (an
+      action gated by a held item) is not added without its first user. (c) **Per-unit surprise** (Tremor I, Shoot
+      First I/II): the engine has the per-unit sit-out (`Unit.waitRound`: an unaware foe, an attacker in the open), but
+      no rule makes a character Surprised when it is ambushed; making one is a balance rule (who loses round 1), so it
+      is written as a design in the report and not built. (d) **Athletics "Defense from 1"** stays from 2 (Waiting on
+      Leon).
+
+### Rules 1.78 (leftovers), things designed before and never built (0.32, 19 Nov 2026)
+
+The leftovers lane of 0.32: items designed in earlier revisions and checked in code on 19 Nov
+(`docs/design/handoffs/2026-11-19-code-verification.md`). A later revision overrides the body and the earlier ones.
+Every new number here is PROVISIONAL and a data field.
+
+6600. **What this revision builds and leaves** (the lane's hand-off: `docs/design/handoffs/0.32-LEFTOVERS.md`).
+6601. **Two zones of one kind on a tile do not stack (closes item 1908):** where one side's zones of the same kind lie on
+    the same tile (two Chaplains' Sanctuaries), only the first laid acts there: its owner's rows read it and spend its
+    pool; a later one acts only on the tiles the first does not cover, and takes over when the first ends. Two sides'
+    zones never cancel each other. The rule is the one zone reader's (`magic.ts zonesAt`, owner `self`), for every zone
+    kind data lays.
+6602. **NULL unmakes a Figment (figments-spec rule 12; closes rules 1.34 section 7's first leftover):** a NULL Evoke
+    unmakes every Figment standing on the tiles it covers, anyone's (its maker's side too), with no refund, by the one
+    door that unmakes an owned unit (`owned.ts unmakeOwned`). What a word unmakes is its `dispel` list in data
+    (`sigils.json null.dispel` gains `figment`: an owned unit whose record kind is listed); the preview marks each
+    Figment as the rest ("⊘ FIGMENT"), and a NULL that only unmakes a Figment does not fizzle. The enemy caster's weighing
+    of NULL on a Figment (figments-spec section 8: its charge x 4) is not built; the enemy AI's weights are unchanged.
+6603. **The fight joined is an effects event (closes item 5010 c):** when contact joins a fight opened unseen (rules 1.64
+    item 5008), the engine emits the alarm's effects event with `joined` (no new kind), on the tile of the first
+    character the foes learned of (item 5521). The screen draws CONTACT! there with the alarm's rings and sound; it
+    shows no toast, since the BATTLE START card says the same.
+6604. **Aim marks on a Bonded ally (bonds-spec section 2 rule 8, closes rules 1.33's open aim read):** at the start of
+    each of a Bonder's turns, every enemy its side sees whose next action aims at an ally Bonded to it is Read (the
+    condition `read`: its intent is shown to the Bonder's side until that enemy's turn ends). A row of `tend.threads`
+    (`condition read`, `targets {side: foe, seen: true, aims_at: "tied:bond"}`), no new piece. The screen draws the
+    enemies a side has read aiming at one unit as one red crosshair on that unit's tile with their count ("◎ 2"); the
+    arrow on each enemy is unchanged. The text of Threads says so.
+6605. **Into the Wall (the Breaker; momentum-2.0 item 15; closes item 4409's P13):** a Breaker's gain. An enemy the
+    Breaker moves by force (a Shove, Launch, any push of its own) into the map's edge, a wall or cover, or another unit
+    takes a slam where it stops (`amounts.slam` base **12**, the melee profile, PROVISIONAL: the draft's 0.5 of the
+    plain blow); the unit it is driven into takes the same slam, whoever it is. A Shove that is blocked still drives it
+    into what stands behind it (the forced move is refused where it stands; the slam lands and it falls Prone as before).
+    One collision rule: what stopped a forced move is `displace`'s own result (`stoppedBy`, `blockedAt`), read by the item
+    ops through the trigger `displaced` (the hook that existed, now also raised when the move is refused at the first
+    tile) and the predicate `stopped_by` (edge, object, unit); the body hit is the event's tile (`targets {of: tile}`).
+    Breaching Strike keeps its own code (moving it onto this row moves the golden tables: not this revision).
+6606. **Hurl (the Breaker; momentum-2.0 item 16, P14) is not built:** it needs the object op's `hurl` (a lift and a throw
+    to a second tile: one action with two tile picks), the objects' `loose` field and Throw Down's landing for a held
+    small foe; none is an existing piece. Listed for the lead.
+6607. **Hallow (the Chaplain; prayer-2.0 item 16; closes item 4488's Hallow):** a Chaplain's gain, a Hymn of its own
+    (**2** AP, no MP or Strain; it starts the one Hymn wait, as Sanctuary does): a tile in sight within **6**, and every
+    tile within **1** of it, is hallowed ground for **3** rounds. The Chaplain and each ally who starts a turn on it carry
+    the patron's verse (the Canticle's verse rows, `canticle_<patron>`, an Atheist's `canticle_plain` by the Whisper's
+    roll) for **1** round, without the song; every enemy standing on it is at **-1** to hit. Built from the zone op (the
+    kind `hallowed`) and its predicates: zone kinds are data now (`rules.json zones.kinds`, the draft's P9: a new kind is
+    a row) and the zone predicates read the actor too (`actor_in_zone`, beside `self_in_zone` and `target_in_zone`).
+    Numbers PROVISIONAL (the draft's). Not built: praying a Whisper from holy ground (item 17: needs the seat, P3).
+6608. **What rides on a hit is on the attack card (Smite's chip; closes rules 1.71's open "riders in the attack
+    preview"):** a technique's preview runs the technique once more on a throwaway copy as a hit (the gaps lane's dry
+    run, `asHit`, already run for the Momentum it leaves) and lists, in one line "On a hit: ...", every item whose
+    hit-time effect ran for the attacker on that copy, by the row's label or the item's name (Smite's blow; Smite's
+    Judged row is labelled "Judged"). One general reader, no item named in code: a rider spent for the turn (Smite once
+    a turn) drops off the line. A rider that rolls (an Atheist's Smite) is rolled on the copy: the line can differ from
+    what the real attack's roll gives.
+6609. **A door's passive steps are on its skill's page (closes item 5612's "five Tending passives"):** a skill's "?" page
+    lists, inside its Perks fold under the perks, the door's passive steps ("ALWAYS ON"): every door verb of that skill
+    with no action of its own (today Empathy's Threads, Two Bonds, Three Bonds and the Mender's One More Bond), one row
+    each with its picture (by its item key, the catalog's `data_ids`), where it comes (at n points, a class rank) and
+    its text. The list is read from the door verb files by the screen data (`design/canvas-build/build.py
+    skill_passives`), so a new passive verb shows with no code. The Open Hand's stance picture keeps no place: it waits
+    for a reader of standing modifiers in a fight (item 5612; the engine pieces lane's). Placed by item 6613.
+6610. **No `per_stage` uses scope (item 5010 a):** no data row asks for one; the only stage-keyed count is the Mender's story
+    Triage in a run, kept in code under a `per_campaign` key carrying the run and the stage (item 5001). The scope is
+    added when a data row needs it.
+6611. **Stand Behind Me is not built (its icon has no move):** the written design is Guard 2.0's item 9 (Durability 3,
+    on the Bastion path of item 18: "while you are Braced or Walled, allies next to you on the side away from the
+    shooter have half cover from you"; it needs a condition row that gives its unit cover, the draft's P10) and, in the
+    three-layers draft, the Bulwark's rank III ceiling ("a ranged attack on one ally directly behind you lands on your
+    plates"). The two disagree; the lead rules which, and the paths fork, before it is built.
+6612. **The lead approves the lane's four additions** (19 Nov 2026, the 0.32 integration): the trigger `displaced` on the
+      existing hook (also raised when a forced move is refused at its first tile) and the predicate `stopped_by` (item
+      6605); zone kinds as data (`rules.json zones.kinds`) and the predicate `actor_in_zone` (item 6607); `Combat.riders`,
+      a field set on dry-run copies only, beside `asHit` (item 6608). Each is now part of the engine's closed lists.
+6613. **The Open Hand's stance picture is placed** (item 6609's last one, with rules 1.77 item 6511's reader): a to-hit
+      term an item adds names its item (`src`, the holder's key), and the token card's standing line shows each term's
+      picture beside its words when the item has one for it (catalog `data_ids` `<item key>#<the term's name as an
+      id>`: `move-open-guard` is `relic:open_hand#open_guard`). Nothing a rule reads changes.
+
+### Rules 1.79 (enemies), 0.32: enemies react to what the doors do to them (19 Nov 2026)
+
+The enemy AI lane of 0.32. Behaviour is data: `enemies.json ai` holds four blocks (`pressure`, `focus`, `angle`,
+`bait`), each with `on` (false switches it off, for a measure) and its log lines; a row's `guard` gives an enemy
+Durability's door. No trigger, op, hook or export was added: the behaviours live in the enemy turn (`combat.ts`), its
+technique step (`physical/ai.ts`, on the existing `enemy_action_start` hook) and its route risk (`ai-sigil.ts
+aiRouteRisk`); their per-turn marks are `uses()` cells on the unit. **Every number here is PROVISIONAL.**
+
+6700. **Broken acts (item 1).** Before its first action of a turn a Broken enemy reaches cover: the tile against cover
+      (Pressure's own test, `atCover`) that the fewest of its foes can see, the fewest tiles first, within this turn's
+      AP. With no such tile in reach it drops Prone and stays down that turn (it does not stand back up). Already
+      against cover, it holds there that turn. The log says "X breaks and runs for cover." / "X throws itself flat and
+      stays down." (`ai.pressure.lines`). Never an enemy under a Command.
+6701. **Suppressed acts (item 1).** A Suppressed enemy not against cover first takes a covered tile within
+      `suppressed_cover_tiles` **3** that keeps a line on someone its side sees, if it can still attack after the walk
+      ("X keeps its head down and slides into cover."). Suppressed or Broken, it walks at most
+      `suppressed_move_tiles` **3** a move that turn (Broken: 0 after its cover move), and neither hunts the healer,
+      walks for an angle nor searches.
+6702. **Flee and cower are as they were.** Rout's failed save runs it its full move; Afraid keeps it from closing or
+      attacking; Surrender stays the player-made save. The Pressure table says neither flee nor cower, so no new
+      fleeing was built.
+6703. **The side's memory past the round (spec 4969 a).** `rules.json combat.focus_memory.carry`: each attacker of the
+      round before counts this share of an attacker in the doctrine's spread (`alliesOn`), so the first foe of a round
+      spreads its fire too. **Built and OFF (0):** any carry from 0.25 to 0.5 moved the enemy table's guard
+      (`test/balance/defence-measure`: the idle pair's first Down, 4.2 rounds at most, measured 5). For the lead.
+6704. *(Not used.)*
+6705. **Focus memory per enemy (item 2).** An enemy remembers the one it last attacked (a plain attack or a technique)
+      and keeps it for `ai.focus.rounds` **2** rounds: that target counts as more hurt by `keep` **0.3** of its max HP,
+      in the one doctrine (`enemyRank`; a technique takes it among targets it wants equally). Never against a Taunt, never on a Downed one.
+      The log says once a fight for each enemy "X stays on Y: it finishes what it started."
+6706. **A bigger threat breaks it.** When another character has hurt it since that attack, the keep goes, and the one
+      who hurt it counts as more hurt by `threat` **0.3** ("X turns on Y, who hurt it.", once a fight).
+6707. **The angle (item 3, spec 4969 b).** An enemy with a gun whose every target in reach is already under its side's
+      fire walks at most `ai.angle.max_tiles` **4** to a tile with a shot at a character its side perceives and nobody of
+      its side is attacking, if it can still fire after: the fewest tiles, plus the route's risk (held lanes and
+      fields it knows of), less `cover` **1** for a tile with cover from that character. Once a turn; never Taunted,
+      ordered, Afraid of that character, Suppressed or Broken. The intent says "move to X for an angle on Y: it spreads
+      its fire"; the log says "X moves for an angle on Y, whom nobody is shooting." once a fight for each enemy.
+6708. **The bait (item 4).** A held shot its side sees (an Overwatch: `aiRouteRisk`'s held lanes) is baited: a unit of a
+      `bait.tiers` tier (**vermin, minion**) counts crossing the lane as `lure` **12** better while an ally of a
+      `bait.for` tier (**soldier, elite, boss**) stands, so it walks in and draws the shot; that stronger ally counts the
+      lane `hold` **20** worse (on top of `held_risk` 10) while a bait has still to act this round (later in the turn
+      order, which both sides see), so it waits and commits once the shot is spent. "X breaks into the held lane to draw
+      the shot." once a round for each bait. Only what its side sees: a held shot it can't see is no lane.
+6709. **What the bait does not read:** a Retort, Parry or any other Answer (no AI reads them before acting); a held
+      blade (Blade's Hold) and a Figment's hold count as lanes as before (`held_risk`), never as bait.
+6710. **Enemy doors (item 5): Guard.** A row's `guard` (`{plates, durability}`, a tier's or a caster archetype's) gives
+      the unit its Guard pool full, the Durability points the door reads and the Guard technique. Then the door's code
+      runs for it as for a character: the plates soak hits (keeping one back), Pressure comes off them first, the Guard
+      technique raises them with its last AP (its AI want is 6 while plates are missing, else 4 as before). Given to
+      the **Heartfire elite** (`soul_casters heartfire_elite`: the sabre-and-heart elite that walks into you): plates
+      **3**, Durability **3**. No tier has `guard`.
+6711. **Doors an enemy cannot use yet (item 5, not built):** Slam, Challenge, Retort, Last Plate (Guard's verbs), Tag,
+      Ghost Kill and Stalk (Shadow 2.0), Tug and Snap (Bonds), a Figment order, and prayers. The door verbs are item
+      actions (`skills.json` unlocks, `effects/actions.ts`): a unit can hold them (`u.held`, as a Figment holds its
+      verbs) but the enemy AI has no step that weighs or runs an item action. Prayers read the character's patron and
+      Devotion (`faith.ts`, `charOfUnit`): an enemy has neither. Shadow's old half is an enemy's already (rules 1.32:
+      a skulker Hides and ambushes; `skulks`). Needs a new primitive (for the lead): an enemy step that weighs a held
+      item action by a want in its data, general for every door verb; a faith block on an enemy row.
+6712. **Speed (item 6).** The behaviours add no search loop over the whole map: the angle walks one path table for at
+      most the perceived targets nobody attacks; Broken and Suppressed one path table each, once a turn. Measured on a
+      4 v 12 fight (6 seeds, 432 enemy turns), best of four interleaved runs on a loaded machine: before 3.1 ms a turn
+      (worst 37), after 2.9 ms (worst 34).
+6713. **Survival (the balance check).** The simulator (`test/balance/survival-run.ts`, stage 1, 40 seeds, route gear),
+      before and after this revision: solo_gunner **31 → 30** of 40, four **38 → 38**, mixed **30 → 31**. No party fell
+      by more than a quarter; the encounter budget is untouched.
+6714. **Tables re-recorded on purpose.** The golden damage, rules and conditions tables did not move. Moved: the costs
+      table `costs-outburst` (4 lines: the Heartfire elite now starts with `res.guard 3`, item 6710), and 24 of the 29
+      whole-game replays. With every block of `enemies.json ai` off and no `guard` row, all 29 play as recorded
+      (measured). One block on at a time: `focus` moves all 24 (it keeps who each enemy fought, on every enemy
+      attack); `pressure` 11 (cover-4v6-guns-blades, proving-4v10-boss, proving-waves, open-4v6-blades-walk-away,
+      open-4v6-guns-blades, cover-4v6-level3, open-4v3-level3, cover-4v7-line, proving-waves-low,
+      proving-doors-hiding-watches-wave6, cover-4v7-blades-walk-away); `angle` 9 (cover-4v7-casters, proving-4v10-boss,
+      proving-doors-hiding-watches, cover-4v7-magic-boss, proving-4v12-guns, proving-4v12-magic,
+      story-fight-story-magic, proving-doors-hiding-watches-wave6, cover-4v7-blades-walk-away); `bait` 1
+      (proving-doors-hiding-watches-wave6); the Heartfire elite's `guard` 4 (cover-4v7-casters, open-4v7-casters,
+      cover-4v7-level20-allin, proving-4v12-magic). Unmoved: the five others.
+
+### Rules 1.80 (rooms), the co-op lane of 0.32 (19 Nov 2026)
+
+6800. **One link per player.** A player who opens the room again (another tab, another browser) takes it over: the
+    room closes the older link (`4000`), and the older one now stops for good instead of trying again. It says
+    "Opened in another tab" and offers **Take over here**, which takes the room back the same way (the other tab then
+    stops). Before, the two tabs took the room from each other every few seconds for ever. A closed link leaves no
+    keep-alive or retry running, and hosting or joining again closes the page's old link first. Nothing changes in the
+    room server's storage, its host check or its hosting. Proof: `apps/web/src/game/net.test.ts`,
+    `apps/web/e2e/reconnect.mjs` (the second tab).
+6801. **"I'll narrate" can be picked.** The host takes the Narrator's seat; no key is needed and the engine still
+    rolls every die and owns every number. When the story waits for the Narrator (the opening, a round that needs
+    judgement, the results of the checks, after a fight), a **Narrator's desk** opens in the middle column of the host's
+    screen only, both side panels kept (rules 1.54 item 11): the narration, an optional scene title, the checks to call
+    (who, which skill, the TN, the stakes), a Yes or No on each ruling the story owes (No gives the use back), and one
+    of the campaign's prepared fights to start. It sends the same turn the AI Narrator sends (`narrator/turn`), checked
+    by the engine the same way. A Narrator with no character of their own reads every character's sheet in the left
+    panel and does not speak in the rounds; the players see "<name>, the Narrator, is writing…". In a fight the host
+    answers each attempt with the fight screen's Narrator buttons (rules 1.14). Proof: `apps/web/e2e/narrate.mjs`.
+6802. **Not in the desk yet** (owed, `docs/ROADMAP.md`): voice hooks, NPCs, objects, hazards, triggers, loot, XP and
+    the other optional fields of the Narrator's turn; the Narrator's private view of hidden things in the story
+    (traps, hidden NPCs: the host sees what the players see); a fight made up on the spot (only the campaign's
+    prepared fights). The AI Narrator's turn has them all; the desk sends only what it shows.
+
+### Rules 1.81 (fit), the fun-and-balance fit of 0.32 (20 Nov 2026)
+
+Every number here is PROVISIONAL, measured with the party fit (`test/balance/party-fit.ts`, 40 seeds a cell, stage 1 of
+Survival) and the range measures; the account is `docs/design/handoffs/0.32-FIT.md`.
+
+6900. **Unseen Hand** (the Shadow door, Ingenuity 1; the lead's ruling, for Leon to reverse). An attack you make from
+    Hidden rolls with Ingenuity when that is higher than the weapon's own skill, never added on top (the existing
+    `roll_with` piece, as Guard rolls a holder's blows with Durability). Cause: an all-in Operative (Ingenuity 7,
+    Dexterity 0) landed its Breaks 52 to 55% and removed 13.6 HP a turn against the Skirmisher's 125. Measured: Breaks
+    land about 90% (the rifle, solo), the Operative removes 51 HP a turn solo.
+6901. **The Operative's Recommended weapon is the rack's free rifle** (was the pistol; `survival.json
+    loadout.recommended.weapon`, the `top: ingenuity` row; the `shadow` buys unchanged). With Unseen Hand, of 40: the
+    pistol 0 solo / 0 in four, the revolver 3 / 11, the knife and pistol 2 solo, the rifle 13 / 26. Stage-1 clears
+    with the fit: solo 0 -> 13, four 0 -> 22 (inside the other doors' band, under the Skirmisher's 35).
+6902. Not changed (measured, no fault): Reflex runs (two reactions from the Skirmisher's class, one without; traced
+    through the reducer) but an Overwatch gunner holds one shot a round, so nothing of its spends the second; the beta
+    feeds' 0.01 run (the switch reaches every feed) but each raises a defensive number (plate soak, Flux limit, Pressure
+    shed, spot TN, Figment HP, heal back, prayer shields), none of which the contract's damage lines read; the follow
+    strike's -2 runs (+9 against the main hand's +11 in the log) but a follows item's strike deals 1 to 5% of the
+    main hand's, so its to-hit moves under 1%. Proposal for the lead: the follow strike's -2 to 0 (it buys nothing).
+6903. **The Outburst's biggest Release is ONE Release over the two turns it takes** (the measures' definition:
+    `magic-measure.ts peakPattern`, one copy read by the Outburst measure and the contract). Cause of the 0.32 rise (191
+    to 226% from level 6, was 96 to 113): no Release grew (the same Release deals the same: level 12 all in 493 against
+    492 in 0.31.11, x3.12 both); since rules 1.70 the Strain limit is Composure's (8 at most, was up to 16), so the
+    measure's policy no longer carried the Outburst and fired a second Release in turn 2 by Overdraw past the limit, a
+    Mana Short whose Stun falls in turn 3, outside the two-turn window. Measured, all in, levels 1/3/6/9/12/20: 69 /
+    76 / 108 / 103 / 113 / 96% of the rifle (0.31.11: 105 at 6, 113 at 12). One big Release is 1.18 (level 6) to 1.25
+    (level 12) times one steady Release. The contract's `outburst_peak` ceiling is set to what is measured: 90, low end
+    x0.62 (level 1 61%), top x1.25.
+6904. **The fight's map:** 16 tiles up to 10 units, 20 beyond (was 16 up to 6, 20 up to 10, 26 beyond;
+    `survival.json map_size`, the 26-tile stamp row dropped). Cause: four melee fighters walked a 20-tile map under the
+    foes' guns (every fight on 16 tiles gave four Breakers 14, four Bulwarks 19; the encounter budget per head was not
+    it: the solo's budget per head gave 1 and 0). Measured, four of a door, stage-1 clears of 40, before -> after:
+    Breaker 6 -> 14, Bulwark 11 -> 17, Chaplain 28 -> 31, Mender 28 -> 30, Rigger 38 -> 39, Skirmisher 39 -> 40,
+    Channeler 21 -> 16, Sigilist 1 -> 0, Operative 26 -> 22 (the last three within the noise of 40 seeds, about 3).
+    Solo fights never reach 11 units: every solo cell is unchanged.
+6905. The simulator's guard (`survival-run.test.ts`): the solo gunner clears stage 1 on 25 of GUARD-1 to 40 (2 clear
+    stage 4); its bar is the measured share less one standard error, 55% (was 37%).
+6906. Not changed: Name the Sinner. Played on Elites and Bosses only it costs the solo Chaplain 16 -> 11 clears (four
+    34 -> 31); at +40% (twice the bonus, a trial) 13 and 33, so the price is not the cause: the AP and the Whisper the
+    bot spends before the Hymn are. A policy question (when to name), not a number.
+6907. Not changed: the Mender solo (10 of 40, 16 stalled). Its revolver runs dry in long fights and the Empathy sheet
+    has no weapon skill (-2 to hit with the fists); with a 40-round cap the stalls end 3 won, 13 lost: not slow wins.
+    Every door's Recommended kit clears stage 1 solo 10 times in 40 or more but the Sigilist's (2; Leon's ruling: the
+    bot's limit).

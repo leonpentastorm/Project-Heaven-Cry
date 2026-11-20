@@ -15,7 +15,7 @@
 import { FORM, figmentLookOf, type FxEvent } from '@engine';
 import type { Sfx } from '../sfx';
 import { reducedMotion } from '../sfx';
-import { type Pt, after, anim, floatText, put, ring, svg, trace, lunge, angle } from './dom';
+import { type Pt, after, anim, floatText, fxMarker, put, ring, svg, trace, lunge, angle } from './dom';
 import { figmentIcon } from '../figmentIcons';
 
 export const FIG_INK = '#5394AC';
@@ -34,7 +34,8 @@ export function figLook(form: string | null | undefined): { name: string; glyph:
 // Figments seen in this fight: id → its form and its maker (kept after it leaves the board, so its unmaking plays).
 const FIGS = new Map<string, FigInfo>();
 const lastCommand = new Map<string, number>();
-export function resetFigments() { FIGS.clear(); lastCommand.clear(); }
+const BROKEN = new Set<string>();
+export function resetFigments() { FIGS.clear(); lastCommand.clear(); BROKEN.clear(); }
 /** Called with the fight's units on every context: each Figment's form and its maker's unit id. */
 export function noteFigments(units: readonly any[]) {
   for (const u of units) {
@@ -72,6 +73,14 @@ export function figmentBeat(e: Partial<FxEvent> & { k: string }): number | undef
 }
 export const figmentExtraBeat = (e: Partial<FxEvent> & { k: string }): number => (figmentFxOf(e) === 'act' ? FIG_MS.command : 0);
 
+/** A Figment's move by an order (pure; the queue calls it as a batch arrives): a shove of a Figment followed by its own
+ *  data fx (a stance, what figment_blink or figment_step) is that order's move, marked with it (_how). */
+export function figmentBatch(evs: any[]): void {
+  for (let i = 0; i < evs.length; i++) {
+    const e = evs[i]; if (!e || e.k !== 'shove' || !e.target) continue;
+    for (let j = i + 1; j < Math.min(evs.length, i + 4); j++) { const x = evs[j]; if (x && x.k === 'stance' && x.target === e.target && /^figment_(blink|step)$/.test(String(x.what || ''))) { e._how = x.what; break; } }
+  }
+}
 /** What play.ts lends these handlers. */
 export interface FigKit {
   at: (k: string | null | undefined) => Pt | null;
@@ -143,8 +152,8 @@ function glyphMark(p: Pt, f: Pick<FigInfo, 'icon' | 'glyph'>, on: boolean, ms: n
 
 // ---------- the handlers ----------
 /** The command: the maker's small pulse and a faint thread to its Figment (once for a walk and the strike after it). */
-function command(K: FigKit, id: string, f: FigInfo, from: string | undefined) {
-  const now = typeof performance !== 'undefined' ? performance.now() : 0; if (now - (lastCommand.get(id) ?? -1e9) < 700) return false; lastCommand.set(id, now);
+function command(K: FigKit, id: string, f: FigInfo, from: string | undefined, force = false) {
+  const now = typeof performance !== 'undefined' ? performance.now() : 0; if (!force && now - (lastCommand.get(id) ?? -1e9) < 700) return false; lastCommand.set(id, now);
   const op = f.owner ? K.posOf(f.owner) : undefined, q = K.at(from || K.posOf(id));
   const p = windUp(K, f.owner, op, q, FIG_MS.command * 0.7, true); trace('figment', { what: 'command', unit: id, owner: f.owner });
   if (p && q) thread(p, q, FIG_MS.command, { faint: true });
@@ -153,7 +162,7 @@ function command(K: FigKit, id: string, f: FigInfo, from: string | undefined) {
 }
 /** Wrap the attack and walk handlers (run after every other wrapper), and add the summon and the unmaking. */
 export function wrapFigments(H: Record<string, (e: FxEvent) => void>, K: FigKit) {
-  const base = { melee: H.melee, shot: H.shot, move: H.move };
+  const base = { melee: H.melee, shot: H.shot, move: H.move, stance: H.stance, shove: H.shove, down: H.down };
   H.spawn = (e) => {
     const id = String(e.unit || ''), f = noteSpawn(e), p = K.at(e.at);
     if (!f) { // another owned unit (a Scrap Turret): it stands up out of a ring
@@ -182,7 +191,13 @@ export function wrapFigments(H: Record<string, (e: FxEvent) => void>, K: FigKit)
   H.unmake = (e) => {
     const id = String(e.unit || ''), f = figOf(id), p = K.at(e.at);
     if (!f) { if (p) K.squares(p, MUTED, 5, 0.5, 400); K.play('sg_turret_break', p, { gain: 0.5 }); return; }
+    if (BROKEN.has(id)) return; // its fall already played the unmaking (H.down below)
+    unmakeAt(e, f, id, p, 'COMES APART');
+  };
+  const unmakeAt = (e: FxEvent, f: FigInfo, id: string, p: Pt | null, word: string) => {
     trace('figment', { what: 'unmake', unit: id, form: f.form });
+    // the maker's small gesture as it lets go (0.32: no unmaking without its maker's hand)
+    if (f.owner && p) windUp(K, f.owner, K.posOf(f.owner), p, FIG_MS.command, true);
     if (!p) return;
     const g = K.ghost(id, String(e.at), FIG_MS.unmake + 400);
     if (g) anim(g, reducedMotion() ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 1, filter: 'none', transform: 'scale(1)' }, { opacity: 0.4, filter: 'brightness(2) drop-shadow(0 0 8px ' + FIG_INK + ')', offset: 0.2 }, { opacity: 0.85, offset: 0.32 }, { opacity: 0.2, filter: 'brightness(2.4) saturate(0) blur(1px)', transform: 'scale(1.06)', offset: 0.55 }, { opacity: 0, filter: 'blur(3px)', transform: 'scale(.8)' }], { duration: FIG_MS.unmake, easing: 'steps(9, end)', fill: 'forwards' });
@@ -190,8 +205,49 @@ export function wrapFigments(H: Record<string, (e: FxEvent) => void>, K: FigKit)
     K.squares(p, FIG_INK, 8, 0.9, FIG_MS.unmake);
     // the bots stream back to its maker
     const op = f.owner ? K.at(K.posOf(f.owner)) : null; if (op) thread(p, op, FIG_MS.travel, { faint: true, delay: FIG_MS.unmake * 0.35 });
-    floatText('COMES APART', p, MUTED, { small: true, delay: 120 });
+    floatText(word, p, MUTED, { small: true, delay: 120 });
     K.play('sg_fizzle', p, { rate: 0.9, gain: 0.7 });
+  };
+  // A Figment destroyed: the engine sends the body's fall (down, dead) and the unmaking a turn later; it comes apart at
+  // once, BROKEN, and the later unmake is silent.
+  H.down = (e) => {
+    const id = String(e.unit || ''), f = figOf(id);
+    if (!f || !e.dead) { base.down?.(e); return; }
+    BROKEN.add(id); unmakeAt(e, f, id, K.at(e.at), 'BROKEN');
+  };
+  // An order from data (figments.json verbs' fx: a stance, what figment_*): the maker's command and thread to its
+  // Figment, the Figment's own reach toward the unit it acts on (the event's other), and the row's word.
+  H.stance = (e) => {
+    const id = String(e.target || e.unit || ''), f = figOf(id), what = String(e.what || '');
+    if (!f || !what.startsWith('figment_')) { base.stance?.(e); return; }
+    trace('figment', { what: 'order', unit: id, order: what });
+    const at = e.at || K.posOf(id), p = K.at(at); if (p) fxMarker(p, 'data-phc-fig-order', what);
+    command(K, id, f, at, true);
+    if (what === 'figment_order' && p) {
+      const q = e.other ? K.at(e.from || K.posOf(String(e.other))) : null;
+      const tok = K.tokOf(id, at); if (tok && q) { const a = angle(p, q); lunge(tok, Math.cos(a) * p.s * 0.12, Math.sin(a) * p.s * 0.12, 260); }
+      if (q) { thread(p, q, 160, { delay: FIG_MS.command }); after(() => { glyphMark(q, f, false, 380); K.squares(q, FIG_INK, 5, 0.6, 360); }, FIG_MS.command + 160); }
+      else ring(p, FIG_INK, 520, { from: 0.9, to: 1.9, width: 3, delay: FIG_MS.command });
+    }
+    if (p && e.word) floatText(String(e.word), { ...p, y: p.y - p.s * 0.55 }, FIG_INK, { small: true, delay: FIG_MS.command });
+    K.play('sg_blink', p, { rate: 1.3, gain: 0.45, delay: FIG_MS.command });
+  };
+  // A Figment moved by its maker's order (Redraw, Interpose: figmentBatch marked the shove with the row's what): a
+  // Redraw comes apart where it stood and forms on its tile (a blink); an Interpose walks there. Never a shove's thud.
+  H.shove = (e) => {
+    const id = String(e.target || ''), f = figOf(id), how = (e as any)._how;
+    if (!f || !how || !e.ok || e.from === e.to) { base.shove?.(e); return; }
+    const a = K.at(e.from), b = K.at(e.to);
+    if (how === 'figment_blink') {
+      trace('figment', { what: 'blink', unit: id }); if (b) fxMarker(b, 'data-phc-fig-order', 'figment_blink');
+      if (a) { lines(a, false, FIG_MS.unmake * 0.6); ring(a, FIG_INK, 360, { from: 0.8, to: 1.5, width: 2 }); }
+      if (a && b) thread(a, b, FIG_MS.travel, { faint: true });
+      K.release(id);
+      after(() => { if (!b) return; lines(b, true, FIG_MS.form); glyphMark(b, f, true, FIG_MS.form); const tok = K.tokOf(id, e.to); if (tok) anim(tok, [{ opacity: 0 }, { opacity: 0.5, offset: 0.4 }, { opacity: 0.2, offset: 0.55 }, { opacity: 1 }], { duration: FIG_MS.form, easing: 'steps(6, end)' }); K.play('sg_blink', b, { rate: 0.9, gain: 0.7 }); }, FIG_MS.travel);
+      return;
+    }
+    trace('figment', { what: 'step', unit: id });
+    base.move ? base.move({ ...e, k: 'move', unit: id, path: [e.from, e.to] } as any) : base.shove?.(e);
   };
   H.move = (e) => { const f = figOf(e.unit); if (f) command(K, String(e.unit), f, e.from); base.move?.(e); };
   for (const k of ['melee', 'shot'] as const) {

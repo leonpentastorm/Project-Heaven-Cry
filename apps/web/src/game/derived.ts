@@ -38,7 +38,7 @@ export function derivedLines(c: Character): DerivedLine[] {
     { key: 'sigil_range', k: 'Sigil range', v: '+' + tilesN(sigilRangeBonus(c)), from: sk('brain_power') },
     { key: 'sigil_cores', k: 'Core charge saved', v: sigilCoreSaving(c) + ' a Sigil', from: sk('brain_power') },
     { key: 'soul_range', k: 'Soul range', v: '+' + tilesN(soulRangeBonus(c)), from: sk('will_power') },
-    { key: 'ready_designs', k: 'Designs ready', v: String(readyDesigns(c)), from: sk('will_power') },
+    { key: 'ready_designs', k: 'Designs ready', v: String(readyDesigns(c)), from: sk('lore_master') },
   ];
 }
 

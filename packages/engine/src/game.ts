@@ -9,6 +9,7 @@ import {
   packOf, magsOf, roundsOf, loadAll, specialRoundsFor, takeSpecialRounds, plainRounds, equip, unequip, fitMod, carryQuiver, stowQuiver, fitQuiverMod, swapQuivers, drawnWeapon, handEntry, emptyHand, type Rarity, type PackItem, magazineSize, modsOn, maxDurOf, hasEvoker, carriesEvoker, carriesVisualizer, mpNow, coresCarried, carriesEmanator, carriesMpFocus, focusHand, inHands, twoHands, FOCUS_IDS, xpForLevel, classRank, passive, pendingPerkSteps, validateSheet, plotItem, plotId, type OutburstDesign, type FigmentDesign, maxMp, wordsKnownCap, moduleSlots, readyDesigns, hasEmanator, traitGainError, armourCap, collectGuns, partError, startCollection,
 } from './character';
 import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT, migrateCharacterFigments } from './figments';
+import { migrateCharacterPerks, answerRepick } from './character';
 import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
@@ -42,7 +43,7 @@ import { instanceMods, advancedActive, bindGame, boundGame, heldOfChar, emit as 
 import { surrender as yieldUnit, canYield } from './tactics';
 import { deedGrant } from './deeds';
 import { condSkillMod, STORY_CARRY, CORE_ITEM } from './magic';
-import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, type FoeTraits } from './tactics';
+import { throwItem, parley, hideAction, extinguish, escapeGrapple, recoverWeapon, hide as hideUnit, AMMO_TYPES, ammoId, KINDS, FOE_TAGS, companionUnits, TIER_NOTICE, type FoeTraits } from './tactics';
 import { condSource, applyCond as applyCondition, isCondition, condOn, endCond, revertPump } from './magic';
 import { FEELING, feelChar, feelOverreach, feelNewZone, setFeelStoryNote } from './feelings';
 import { soulPickError, moduleGateError, moduleShelved, secondWeaponWhy, armourGateWhy, packKindOf, shieldLineNow, isShieldId, treatLimb } from './character';
@@ -72,6 +73,7 @@ import { openCamp, loadoutAction, campReady, campBoon, LOADOUT, type LoadoutActi
 import { gearIfBare, campaignLoadout } from './loadout';
 import { type GiveAction, type UseAction, giveNow, setUseDoor, useOf, useNow, useProblem, registerUseOp } from './give';
 import survivalFieldJ from '../../../data/survival.json';
+import actionsJ from '../../../data/actions.json';
 import { type MakeAction, makeNow } from './recipes';
 import { earnCredits, creditsOf } from './credits';
 
@@ -313,7 +315,7 @@ export type NarratorTurn = {
   /** Arm and leg injuries the story treated (a long rest with a Medic, surgery, a field hospital). */
   treat?: { charId: string; loc: 'arm' | 'leg' | 'all' }[];
   /** HP the story takes out of a fight (a fall, a beating, fire): the engine applies it through damage taken, so items
-   * that change damage (Soulmate, Scar Tissue) count. type: physical, fire, elemental, true. */
+   * that change damage (Soulmate, Last Wall) count. type: physical, fire, elemental, true. */
   harm?: { charId: string; amount: number; type?: string; why?: string }[];
   // ---------- OOC and missions (missions.ts; all optional) ----------
   /** A plain out-of-character answer to the players' OOC questions ("" when there is none). */
@@ -358,6 +360,7 @@ export type Action =
   | { type: 'voice/ask'; charId: string; skill: string } | { type: 'overreach/choose'; id: string; choice: 'indulge' | 'resist' }
   | { type: 'levelup/raise'; charId: string; kind: 'skill' | 'attr' | 'core'; id: string } | { type: 'levelup/class'; charId: string; classId: string }
   | { type: 'levelup/perk'; charId: string; perkId: string }
+  | { type: 'levelup/perk-repick'; charId: string; skill: string; keep?: boolean }
   | { type: 'combat/move'; unitId: string; to: string; how?: 'move' | 'sprint' | 'disengage'; mods?: string[] } | { type: 'combat/attack'; unitId: string; targetId: string; mode: AttackMode; mods?: string[] }
   | { type: 'combat/shove'; unitId: string; targetId: string } | { type: 'combat/prone'; unitId: string } | { type: 'combat/brace'; unitId: string } | { type: 'combat/overwatch'; unitId: string; mode: 'shot' | 'aimed' | 'melee' }
   | { type: 'combat/gift'; unitId: string; aim: string }
@@ -467,7 +470,7 @@ const charsOf = (g: GameState, pid: string) => Object.values(g.characters).filte
 const isHost = (g: GameState, by: string) => by === g.hostId;
 // The faith rules (faith.ts) take these from here rather than importing game.ts (rules 1.6).
 bindFaith({ push: (g, e) => push(g, e), rollMod: (g, c, skill, roll) => sideRollMod(g, c, skill, roll), isHost, apLeft: (g, c) => apLeft(g, c), spendAp: (g, c, n) => spendAp(g, c, n), afterStory: (g) => closeRoundIfDone(g) });
-bindFaithSight((cb, u, t) => unitSees(cb, u, t.pos));
+bindFaithSight((cb, u, t) => unitSees(cb, u, t.pos, undefined, t));
 /** Players taking part in the round: everyone with a living character. */
 export const speakers = (g: GameState) => g.players.filter((p) => charsOf(g, p.id).length > 0);
 
@@ -517,6 +520,8 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   // rules 1.56 (Figments 2.0; 0.29 wave-2 review MF3): a sheet from before the forks keeps the old ladder's forms here,
   // at the load door, so the first view (the Figments tab, the level-up card, Picture) is right before any action
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterFigments(c as any); } catch { /* a save this old is handled by apply */ }
+  // rules 1.70 item 5538: an old save's beta and gamma perks under a skill's newer remap table (nothing for a skill with none)
+  try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterPerks(c as any); } catch { /* a save this old is handled by apply */ }
   // rules 1.56 (consolidation 0.29 M5): a fight saved before fitted mods were held (0.28) keeps a held snapshot with no
   // mod relics, and a mod acts only as a held item now: each PC unit holding a snapshot takes the modifiers on its own
   // weapon instances (instanceMods of u.weapon with u.mods, u.offWeapon with u.offMods) that it lacks. Nothing is
@@ -539,6 +544,22 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
     for (const p of Object.values((g as any)?.run?.loadout || {}) as any[]) packs(p?.base?.pack);
     for (const objs of [(g as any)?.combat?.objects, (g as any)?.story?.objects]) for (const o of (objs || []) as any[]) for (const e of (o?.items || []) as any[]) if (e?.pack) { const n = shieldLineNow(e.pack); if (n !== e.pack) e.pack = n; }
   } catch { /* a save this old is handled by apply */ }
+  // rules 1.77 item 6508: a fight saved under the old Bite the Bullet handler holds a unit on borrowed time as the
+  // condition last_turn alone (its marker, 99 rounds), with no Unit.lastTurn: the op that took it over (effects/triggers.ts
+  // last_turn) reads the unit's state, so the unit would stand on 1 HP for good. It takes the state from the last_turn row
+  // of an item its character holds (hits, turn_ap, label), began as the old handler's own state said (else: is it its
+  // turn now), and the blow's dealer as the last unit that hit it. Nothing is written for a fight with no such unit.
+  try {
+    const cb: any = (g as any)?.combat;
+    for (const u of (cb?.units || []) as any[]) {
+      if (u.lastTurn || u.dead || !condOn(u, 'last_turn')) continue;
+      const c: any = (g as any).characters?.[u.charId]; let row: any = null, key = '';
+      for (const p of (c?.perks || []) as any[]) { const it: any = (PERK as any)[p.id]; const fx: any[] = it?.tiers?.[p.tier]?.effects ?? it?.effects ?? []; const r = fx.find((e) => e?.op === 'last_turn'); if (r) { row = { ...r, label: r.label || it.name }; key = 'perk:' + p.id; break; } }
+      if (!row) continue;
+      const began = u.ps?.[key]?.lt?.began ?? (cb.order?.[cb.turn] === u.id && !cb.window);
+      u.lastTurn = { began: !!began, ...(typeof row.turn_ap === 'number' ? { turnAp: row.turn_ap } : {}), ...(row.hits === 'death_save' ? { hits: 'death_save' } : {}), label: row.label, ...(u.lastHitBy ? { by: u.lastHitBy } : {}) };
+    }
+  } catch { /* a fight this old is handled by apply */ }
   // rules 1.39: a save from before modes played a campaign; playOf reads the missing field so, and nothing is written
   // here (a load must leave the state as it was: the replay guard's save-and-load case)
   return g;
@@ -577,7 +598,7 @@ export function apply(state: GameState, action: Action, by: string): GameState {
   // Items' handlers see this game (h.g, h.c) for the length of the action: one synchronous step, so deterministic.
   const was = bindGame(g);
   for (const c of Object.values(g.characters || {})) {
-    const cls0 = c.classId, mpRev0 = c.mpRev, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c), ...migrateCharacterItems(c), ...migrateCharacterMp(c), ...migrateCharacterFigments(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
+    const cls0 = c.classId, mpRev0 = c.mpRev, notes = [...migrateCharacterSigils(c), ...migrateCharacterSoul(c), ...migrateCharacterClass(c), ...migrateCharacterFocus(c), ...migrateCharacterFaith(c), ...migrateCharacterItems(c), ...migrateCharacterMp(c), ...migrateCharacterFigments(c), ...migrateCharacterPerks(c)]; // rules 1.4 words (item 441), rules 1.5 designs, Revision 3 classes, a focus in hand (item 630), Devotion XP (item 715)
     // rules 1.24 (item 1348): Max MP left Virtue; a fight saved before it holds the old pool in its units: the same share of the new one
     // rules 1.36 (the level scale): HP in the new units, the same share of the bar; a fight saved before it moves with it
     if (migrateCharacterHp(c)) migrateCombatHp(g);
@@ -919,12 +940,22 @@ function reduce(g: GameState, a: Action, by: string) {
       const took = takeSpecialRounds(packOf(c!), w!.ammo, type, magazineSize(c!.weapon, c!.weaponState?.mods) ?? w!.magazine!), n = took.took; c!.loaded = n; c!.loadedType = type; c!.pack = took.pack;
       push(g, { kind: 'system', text: c!.name + ' loads ' + n + ' ' + type.replace(/_/g, '-') + ' rounds.' }); return;
     }
+    case 'levelup/perk-repick': { // rules 1.70 item 5538: an old save's free re-pick of a skill's perk steps
+      const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
+      lvlBefore(c!);
+      { const no = answerRepick(c!, String(a.skill), !!a.keep); if (no) fail(no); }
+      push(g, { kind: 'system', text: c!.name + (a.keep ? ' keeps the ' : ' chooses again the ') + (SKILL[a.skill]?.name || a.skill) + ' perks.' });
+      lvlAfter(c!);
+      return;
+    }
     case 'levelup/perk': {
       const c = g.characters[a.charId]; if (!c || c.owner !== by) fail('Not your character.');
       const step = pendingPerkSteps(c!).flatMap((s) => s.choices).find((x) => x.id === a.perkId); if (!step) fail('No perk step for that perk.');
       lvlBefore(c!);
       const held = c!.perks.find((x) => x.id === a.perkId);
       if (held) held.tier = 'II'; else c!.perks.push({ id: a.perkId, tier: 'I' });
+      // rules 1.70 item 5538: a re-pick's preselection goes once its skill's steps are all taken again
+      for (const sk of Object.keys(c!.perkPreselect || {})) if (!pendingPerkSteps(c!).some((x) => x.skill === sk)) { const r = { ...c!.perkPreselect }; delete r[sk]; c!.perkPreselect = Object.keys(r).length ? r : undefined; }
       push(g, { kind: 'system', text: c!.name + ' takes ' + PERK[a.perkId].name + ' (Tier ' + step!.tier + ').' });
       lvlAfter(c!);
       return;
@@ -994,7 +1025,7 @@ function reduce(g: GameState, a: Action, by: string) {
       if (at >= 0 && g.story.magic?.[c!.id]?.held?.design === d.id) fail('You are holding that Outburst: release it or let it go first.');
       const r = checkOutburstDesign(c!, d, moduleSlots(c!), at >= 0 ? d.id : 'o' + (g.seq + 1)); if (typeof r === 'string') fail(r);
       const { design: clean, learnTone } = r as Exclude<typeof r, string>;
-      if (at < 0 && list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Will Power): forget one first.');
+      if (at < 0 && list.length >= readyDesigns(c!)) fail('You keep ' + readyDesigns(c!) + ' designs ready (Lore Master): forget one first.');
       if (at < 0) g.seq++;
       if (learnTone) { const k = (c!.soulKnown ||= { schools: [], modules: [] }); (k.tones ||= []).push(learnTone); }
       if (at >= 0) list[at] = clean; else list.push(clean);
@@ -1768,7 +1799,7 @@ function combatAction(g: GameState, a: Action, by: string) {
   if (err) { unlend(cb); fail(err); }
   if (fld) { const fh = (cb as any).fieldHarm; delete (cb as any).fieldHarm; if (fh && fh.by === u.id) fail(fh.text); } // rules 1.55 item 64: harm to a friend on the field refuses the action (effects/hooks.ts harmHeld)
   // Classes 3.0 P2: the trigger `acted`, once, after the unit's own action succeeded (Analyze fires its own: analyze()).
-  { const name = actedName(g, cb!, u, c, a); if (name) acted(cb!, u, { action: name, t: 'targetId' in a && a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null, tile: tileOfAction(g, a), toggles, mode: a.type === 'combat/attack' ? a.mode || 'shot' : null, ...('choice' in a && (a as any).choice != null ? { choice: String((a as any).choice) } : {}) }); }
+  { const name = actedName(g, cb!, u, c, a); if (name) acted(cb!, u, { action: name, ...(a.type === 'combat/call' ? { id: a.id } : {}), t: 'targetId' in a && a.targetId ? cb!.units.find((x) => x.id === a.targetId) || null : null, tile: tileOfAction(g, a), toggles, mode: a.type === 'combat/attack' ? a.mode || 'shot' : null, ...('choice' in a && (a as any).choice != null ? { choice: String((a as any).choice) } : {}) }); }
   { const used = settleCredit(cb!, loan); if (used) { briefUsed(cb!, u, used.brief); if (used.hadEncore) encoreUsed(cb!, u, used.spent - used.brief, loan!.encore); } }
   // An off-turn window counts the action (its unit is done after its limit; then the next, then the turn resumes).
   if (inWindow && cb!.window && a.type !== 'combat/decline' && a.type !== 'combat/end-turn') windowStep(cb!);
@@ -2213,7 +2244,7 @@ export function combatReport(cb: Combat): string {
 
 // ---------- damage out of a fight (perk-runtime H6) ----------
 /** HP lost in the story (a trap, the Narrator's harm[]) goes through the engine's damage chokepoint on the area map's
- * throwaway fight, so items that change damage taken (Soulmate's share, Scar Tissue, Last Wall) work out of a fight too.
+ * throwaway fight, so items that change damage taken (Soulmate's share, Last Wall) work out of a fight too.
  * floor: never below 1 HP (a story trap); else a character can be Downed (an ally's stim, or the Narrator, gets them up).
  * Returns the HP the character lost. 'story_harm' {g, c, dmg, type} lets a story-only item change it first. */
 export function storyHarm(g: GameState, c: Character, dmg: number, o: { type?: string; dmgType?: string; why?: string; floor?: boolean } = {}): number {
@@ -2348,7 +2379,7 @@ export function viewFor(g: GameState, playerId: string): GameState {
   const me: 'pc' | 'foe' = g.sandbox?.mode === 'teams' && sandboxTeam(g.sandbox, playerId) === 'B' ? 'foe' : 'pc';
   // Hidden objects (unspotted traps) stay hidden from every player, the host included.
   if (g.story.objects) v.story.objects = g.story.objects.filter((o) => !o.hidden);
-  if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden && !((o as any).rig && (o as any).side && (o as any).side !== me)) }; // another side's rigged tile (Sabotage) too
+  if (g.combat?.objects) v.combat = { ...g.combat, objects: g.combat.objects.filter((o) => !o.hidden && !(((o as any).rig || (o as any).laidBy) && (o as any).side && (o as any).side !== me)) }; // another side's rigged tile too (a laid trap: the Rig verb, the Operative's since rules 1.74 item 6011)
   // Sigil traps and hidden turrets (rules 1.4) show to their own side only, until spotted; so do their fx.
   if (v.combat) v.combat = { ...v.combat, zones: (v.combat.zones || []).filter((z) => !secretFrom(z, me)), fx: (v.combat.fx || []).filter((e) => !e.only || e.only === me).map((e) => sightOwn(e, me)) };
   // Each side's sight records are presentation the engine keeps for itself: never sent (they say where the other side
@@ -2447,7 +2478,6 @@ function unitToCharacter(g: GameState, u: Combat['units'][number], afterFight: b
 
 // ---------- overworld rounds (spec: Overworld rounds) ----------
 /** How hard an enemy is to slip past: its notice bonus (Vigilant) and the TN of the Ingenuity check to stay hidden. */
-export const NOTICE: Record<string, number> = { minion: 0, soldier: 2, elite: 4, boss: 6 };
 export const ROUND_AP = 6;
 export const apLeft = (g: GameState, c: Character) => g.story.ap?.[c.id] ?? ROUND_AP;
 function spendAp(g: GameState, c: Character, n: number) { (g.story.ap ||= {})[c.id] = Math.max(0, Math.round((apLeft(g, c) - n) * 10) / 10); } // Glyph AP comes in tenths
@@ -2726,7 +2756,7 @@ function noticeFor(g: GameState, c: Character, cb?: Combat) {
   for (const n of npcsOf(g)) {
     if (n.side !== 'hostile') continue;
     const d = dist(n.pos, at), dark = !!cb.map.dark && !litAt(cb, at);
-    let range = Math.max(1, 4 + (NOTICE[n.tier] ?? 0) - mod(c.skills.dexterity || 0)); if (dark) range = Math.max(1, Math.floor(range / 2));
+    let range = Math.max(1, 4 + (TIER_NOTICE[n.tier] ?? 0) - mod(c.skills.dexterity || 0)); if (dark) range = Math.max(1, Math.floor(range / 2));
     // 'notice' {c, npc, range, dark, ignore}: ignore = this NPC doesn't treat them as an intruder, even next to them (hooks gap G2).
     const nc: any = emitStory(g, 'notice', { c, npc: n, range, dark, ignore: false, g }); range = Math.max(0, nc.range);
     if (nc.ignore) continue;
@@ -2739,7 +2769,7 @@ function noticeFor(g: GameState, c: Character, cb?: Combat) {
 }
 /** The Ingenuity check to stay hidden (spec: Overworld rounds): d20 + Ingenuity vs 10 + the enemy's notice. */
 function stayHidden(g: GameState, c: Character, n: Npc, why: string): boolean {
-  const sh: any = emitStory(g, 'stay_hidden', { c, npc: n, mod: mod(c.skills.ingenuity || 0) + songMod(g, c, 'ingenuity') + skillRollMod({ c }, 'ingenuity', { roll: 'stealth', tags: zoneTags(g) }).add, tn: 10 + (NOTICE[n.tier] ?? 0), g });
+  const sh: any = emitStory(g, 'stay_hidden', { c, npc: n, mod: mod(c.skills.ingenuity || 0) + songMod(g, c, 'ingenuity') + skillRollMod({ c }, 'ingenuity', { roll: 'stealth', tags: zoneTags(g) }).add, tn: 10 + (TIER_NOTICE[n.tier] ?? 0), g });
   // sh.auto 'success' | 'fail' settles it with no roll; 'stay_hidden_result' {c, npc, ok, die} may then change ok
   // (Every Lie Is a Door, Just the Repairman, Silent Partner: hooks gap B5/B6/G2).
   const auto = sh.auto as 'success' | 'fail' | undefined;
@@ -2992,7 +3022,7 @@ function silentTakedown(g: GameState, cbx: Combat, c: Character, att: Combat['un
   if (!tgt?.dead || !att.hidden || att.dead) return false;
   if (!holdersOf({ c }).some((h) => h.key === 'class:shade.silent_kill')) return false;
   const others = cbx.units.filter((v) => v.side === 'foe' && !v.dead && !v.downed && !v.surrendered);
-  if (!others.length || others.some((v) => unitSees(cbx, v, att.pos))) return false;
+  if (!others.length || others.some((v) => unitSees(cbx, v, att.pos, undefined, att))) return false;
   // Rules 1.9 (item 699): the death sweep still runs, so the body's drops lie in the pile on its tile on the area map
   // (searching the body is picking up that pile).
   noteDeaths(cbx, g.rng);
@@ -3702,8 +3732,8 @@ const sbOf = (g: GameState): Sandbox => g.sandbox || fail('The Proving Ground is
 const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.combat && !g.combat.over ? g.combat : null);
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
-  'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'weakPoint', 'song', 'init',
-  'condBy', 'condVia', 'condArg', 'condFresh', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
+  'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'song', 'init',
+  'condBy', 'condVia', 'condArg', 'condFresh', 'lastTurn', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
   'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed',
   // Calls (rules 1.13): the marks Calls left and the unit's own Call counters
@@ -3985,23 +4015,18 @@ function freshRound(g: GameState, charId: string | undefined) {
 }
 /** After a free-movement action: AP full again, nothing waits for a Narrator, the map open to everyone. */
 function freeAgain(g: GameState) { g.story.ap = {}; g.story.ended = {}; g.story.spoken = {}; g.story.needs = false; g.story.work = null; g.story.await = 'players'; }
-/** Rules 1.55 item 35 (`survival.json field`): what the area map carries back to the character, and the ops that give
- * something lasting. */
-const FIELD: { lasting_ops: string[]; rounds: number } = (survivalFieldJ as any).field;
-/** Why an item's action is refused on the field (rules 1.55 item 35), or null: at will (no limit that holds on the
- * field), every cost besides AP a resource the area map rebuilds, and something lasting (or nothing the data states:
- * an item's own handler, doubtful). Prayers are left to their own slots and waits. */
+/** Rules 1.55 item 35 (`survival.json field`): the field's rounds. */
+const FIELD: { rounds: number } = (survivalFieldJ as any).field;
+/** G3 (0.32, spec item 5609): each item action's row for the field (data/actions.json field.actions: "allowed", or the
+ * kind of its refusal, worded in field.texts); an action with no row is refused (texts.unflagged). */
+const FIELD_ACTIONS: { texts: Record<string, string>; actions: Record<string, string> } = (actionsJ as any).field;
+/** Why an item's action is refused on the field (rules 1.55 item 35), or null: its row in data/actions.json field.actions
+ * (G3: data, never a guess from its ops; no row, refused). */
 export function fieldRefusal(g: GameState, c: Character, id: string, actionId?: string): string | null {
-  const h = holdersOf({ c }).find((y) => y.key === itemKey(id)); if (!h) return null; // the action itself refuses
-  const defs = actionDefs(h.info), d = actionId ? defs.find((x) => x.id === actionId) : defs[0]; if (!d) return null;
-  const grants = (h.info.effects || []).filter((e: any) => e?.op === 'grant_action'), row: any = grants.find((e: any) => e.action === d.id) || (grants.length === 1 ? grants[0] : null);
-  if (row?.prayer || row?.limit) return null;
-  const per = d.uses?.per || 'at_will'; if (per !== 'at_will' && per !== 'out_of_combat') return null;
-  let res: Record<string, number> = {}; try { res = (typeof d.res === 'function' ? d.res({ ...h, c, g }, {}) : d.res) || {}; } catch { res = {}; }
-  if (Object.values(res).some((n) => Number(n) > 0)) return null; // rules 1.55 item 64: the fight's units pay what they spend
-  const ops: string[] = (row?.effects || []).map((e: any) => e?.op).filter(Boolean);
-  if (ops.length && !ops.some((o) => FIELD.lasting_ops.includes(o))) return null;
-  return (d.label || h.info.name) + ' waits for a fight: on the field it would ' + (ops.length ? 'give something lasting for AP alone, again and again.' : 'cost nothing the field counts (the lead rules on it).');
+  void g; const h = holdersOf({ c }).find((y) => y.key === itemKey(id)); if (!h) return null; // the action itself refuses
+  const defs = actionDefs(h.info), d = actionId ? defs.find((x) => x.id === actionId) || defs.find((x) => x.was?.includes(actionId)) : defs[0]; if (!d) return null;
+  const v = FIELD_ACTIONS.actions[h.key + '#' + d.id]; if (v === 'allowed') return null;
+  return (FIELD_ACTIONS.texts[v] || FIELD_ACTIONS.texts.unflagged).replace('{label}', d.label || h.info.name);
 }
 /** Rules 1.55 item 32: a stim used out of a fight with no map under the squad (the path map, a place, the camp, the
  * rewards): the fight's own stim (combat.ts useStim: its stabilise, its heal, its AP and its count) on a strip of two

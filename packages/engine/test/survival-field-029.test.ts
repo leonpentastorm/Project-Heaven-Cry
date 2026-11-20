@@ -4,7 +4,7 @@
 // Tug on a willing ally moves it (forcedRefusal: willing first); Slam beside a friend moves no friend (it reaches foes
 // only, and forcedRefusal's field rule holds any friend); an order to a Figment runs; Hide is the fight's own Hide.
 import { describe, it, expect } from 'vitest';
-import { apply, newGame, ARCHETYPES, reachable, RuleError, paths, dist } from '../src';
+import { PERK, apply, newGame, ARCHETYPES, reachable, RuleError, paths, dist, FIG_DOOR } from '../src';
 import tendingJ from '../../../data/tending.json';
 import { upTurn } from './helpers/survival';
 
@@ -41,15 +41,15 @@ const grant = (verb: string) => (tendingJ as any).items.find((x: any) => x.id ==
 
 describe("the 0.28.3 merge: 0.29's pieces on the field, by the same single gates", () => {
   it('Tug on a willing ally (Bonds 2.0) moves it toward the Bonder, at 12 MP', () => {
-    let g = up(toField(inFight()), 'mu'); const { mu, gu } = ids(g);
+    let g = up(toField(inFight((x) => { const c: any = Object.values(x.characters).find((c: any) => c.name === 'Medic'); c.skills.camaraderie = 3; c.perks = [...(c.perks || []), { id: 'pull_together', tier: 'I' }]; })), 'mu'); const { mu, gu } = ids(g);
     g = apply(g, { type: 'combat/perk', unitId: mu, id: 'verb:tend.bond', targetId: gu }, 'host');
     // the gunner some tiles off, in sight
     const m = U(g, mu), P = paths(g.combat, m.pos, m.id), taken = new Set(g.combat.units.filter((u: any) => !u.dead).map((u: any) => u.pos));
     U(g, gu).pos = Object.keys(P.dist).filter((k) => !taken.has(k) && P.dist[k] >= 4 && P.dist[k] <= 6).sort((a, b) => P.dist[a] - P.dist[b])[0];
     U(g, mu).mg.mp = 200; const before = dist(U(g, mu).pos, U(g, gu).pos), mp = U(g, mu).mg.mp;
-    const t = apply(g, { type: 'combat/perk', unitId: mu, id: 'verb:tend.tug', targetId: gu }, 'host');
+    const t = apply(g, { type: 'combat/perk', unitId: mu, id: 'pull_together', actionId: 'tend_tug', targetId: gu }, 'host'); // rules 1.75 item 6213: Pull Together's
     expect(dist(U(t, mu).pos, U(t, gu).pos)).toBeLessThan(before);
-    expect(mp - U(t, mu).mg.mp).toBe(grant('tend.tug').res.mp); expect(grant('tend.tug').res.mp).toBe(12);
+    const tug = (PERK as any).pull_together.tiers.I.effects[0]; expect(mp - U(t, mu).mg.mp).toBe(tug.res.mp); expect(tug.res.mp).toBe(12);
     expect(t.combat.field).toBeTruthy();
   });
   it('Slam (Guard 2.0) beside a friend: the friend is not moved', () => {
@@ -61,7 +61,7 @@ describe("the 0.28.3 merge: 0.29's pieces on the field, by the same single gates
     expect(U(after, mu).pos).toBe(was); expect(U(after, mu).hp).toBe(U(g, mu).hp);
   });
   it('an order to a Figment runs on the field (the owned-unit order site)', () => {
-    let g = toField(inFight((x) => { const c = Object.values(x.characters).find((c: any) => c.name === 'Gun'); c.skills.visualization = 1; c.weapon = 'service_pistol'; c.offHand = { id: 'visualizer' }; })); g = up(g, 'gu');
+    let g = toField(inFight((x) => { const c = Object.values(x.characters).find((c: any) => c.name === 'Gun'); c.skills.visualization = 1; c.weapon = 'service_pistol'; c.offHand = { id: 'visualizer' }; c.doorPicks = { ...(c.doorPicks || {}), [FIG_DOOR]: ['double'] }; })); g = up(g, 'gu');
     const { gu } = ids(g), me = U(g, gu), P = paths(g.combat, me.pos, me.id), taken = new Set(g.combat.units.filter((u: any) => !u.dead).map((u: any) => u.pos));
     const free = Object.keys(P.dist).filter((k) => !taken.has(k) && P.dist[k] === 1);
     g = apply(g, { type: 'combat/perk', unitId: gu, id: 'verb:picture', choice: 'double', tile: free[0] }, 'p2');

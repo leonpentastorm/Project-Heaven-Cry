@@ -15,11 +15,12 @@ import { doorLineOf, feedLineOf } from './doorView';
 import { forkChipsLine } from './forkLine';
 import { enchantMark } from './quiverView';
 import { proseTip } from './actionTip';
+import { powerPct } from './power';
 import { WEAPON, CORE_CHARGE, CLASS, ADVANCED, ammoId, heatLimit, classResources, loadedOf, packOf, spareMags, magazineSize, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, NEEDS_EVOKER, NEEDS_EMANATOR,
   coresCarried, evoChargeNow, mpNow, maxMp, strainLimit, COMPANION_KINDS, MODULE, isMelee, canJam, wearState } from '@engine';
 
 export type ResKind = 'bar' | 'pips' | 'text';
-export type ResWarn = 'EMPTY' | 'RELOAD' | 'LOW' | 'JAMMED' | 'JAM SOON' | 'RELOAD CORE' | 'LOCKED' | 'OVERLOAD SOON' | 'OVERLOAD NEXT' | 'NEAR THE LIMIT' | 'AT THE LIMIT' | 'OVER THE LIMIT' | 'MANA SHORT NEXT' | 'MANA SHOCK' | 'BROKEN' | 'WORN' | 'DOWN' | 'FULL' | 'READY' | 'STOWED';
+export type ResWarn = 'EMPTY' | 'RELOAD' | 'LOW' | 'JAMMED' | 'JAM SOON' | 'RELOAD CORE' | 'LOCKED' | 'OVERLOAD SOON' | 'OVERLOAD NEXT' | 'NEAR THE LIMIT' | 'EMANATOR STOWED' | 'AT THE LIMIT' | 'OVER THE LIMIT' | 'MANA SHORT NEXT' | 'MANA SHOCK' | 'BROKEN' | 'WORN' | 'DOWN' | 'FULL' | 'READY' | 'STOWED';
 export interface ResRow {
   key: string; label: string; value: string; now?: number; max?: number; kind: ResKind; colour: string;
   warn?: ResWarn; /** alert: act now (red chip); caution: soon (white chip); ready: something good to spend (green). */ level?: 'alert' | 'caution' | 'ready';
@@ -170,13 +171,17 @@ export function strainRows(hh: HeldHeart): ResRow[] {
   const row: ResRow = { key: 'strain', label: 'Strain', value: s + ' / ' + L, now: s, max: L, kind: 'pips', colour: RES_INK.soul, ...(held ? { pin: true } : {}),
     hint: 'A Begin adds ' + b + ' Strain' + why + '. A held Outburst swells at your turn start (+' + hh.swell + ' after the turn start\'s −1, so an idle held turn nets ' + sgn(hh.swell - 1) + '). Over ' + L + ', every point burns ' + burn + ' at your turn end; ' + shortAt + ' over is a Mana Short, and then ' + (SOUL().strain?.shock?.name || 'Mana Shock') + ' until Strain is back at the limit or the fight ends: from your next turn, it costs ' + Math.round((SOUL().strain?.shock?.hp_share || 0) * 100) + '% of your max HP at each of your turn ends in it. ' + calm };
   const SH = SOUL().strain?.shock || {};
+  // the Emanator stowed: when only the air's Strain of a Begin without one (cycle.no_emanator_strain) takes the peak over,
+  // the row says why in the data's own words (cycle.no_emanator_warn) in place of NEAR THE LIMIT (the 0.32 merge, Step 3e)
+  const noEm = Number(SOUL().cycle?.no_emanator_strain) || 0, stowedWord = String(SOUL().cycle?.no_emanator_warn || 'NEAR THE LIMIT').toUpperCase() as ResWarn;
+  const stowedOnly = !held && !hh.emanator && hh.canBegin !== false && peak - noEm <= L;
   // Rules 1.56: in Mana Shock the row says so first (the share of max HP a turn, until Strain is back at the limit).
   if (hh.shock) Object.assign(row, { warn: 'MANA SHOCK', level: 'alert', hint: (SH.name || 'Mana Shock') + ': ' + (s - L) + ' over the limit. ' + (SH.text || '') + ' ' + calm });
   else if (peak - L >= shortAt) Object.assign(row, { warn: 'MANA SHORT NEXT', level: 'alert', hint: nextTxt + peakTxt + ': your heart shorts out (Stunned; a held Outburst goes off wild). ' + (held ? 'Release it, Steady (1 AP) or let it go this turn.' : 'Don\'t Begin until the heart calms.') + ' ' + calm });
   else if (s > L) {
     const dmg = burn * Math.max(0, burnOver);
     Object.assign(row, { warn: 'OVER THE LIMIT', level: 'alert', hint: (s - L) + ' over the limit: ' + (dmg > 0 ? dmg + ' damage to you at your ' + (hh.onTurn ? '' : 'next ') + 'turn end' + (!hh.onTurn && burnOver < s - L ? ' (after the turn start\'s −1)' : '') : 'your turn start\'s −1 brings it back to the limit, so no burn unless you add more') + '. ' + nextTxt + peakTxt + '. ' + calm });
-  } else if (peak > L) Object.assign(row, { warn: s === L ? 'AT THE LIMIT' : 'NEAR THE LIMIT', level: 'caution', hint: (s === L ? 'At your limit. ' : 'Close to your limit. ') + nextTxt + peakTxt + ' (' + burn + ' damage a point at your turn end). ' + calm });
+  } else if (peak > L) Object.assign(row, { warn: s === L ? 'AT THE LIMIT' : stowedOnly ? stowedWord : 'NEAR THE LIMIT', level: 'caution', hint: (s === L ? 'At your limit. ' : 'Close to your limit. ') + nextTxt + peakTxt + ' (' + burn + ' damage a point at your turn end). ' + calm });
   else if (s === L && s > 0) Object.assign(row, { warn: 'AT THE LIMIT', level: 'caution', hint: 'At your limit. ' + nextTxt + peakTxt + ': no burn. ' + calm });
   // one below: holding, a Pump with a feeling that adds Strain (Rage, Abandon) reaches the limit; not holding, only when
   // there is a Begin to make (peak counts it)
@@ -187,7 +192,7 @@ export function strainRows(hh: HeldHeart): ResRow[] {
     // The form only when the design's name doesn't already say it ('Soul Bolt' is a Bolt).
     const form = h.form && !h.name.toLowerCase().includes(h.form.toLowerCase()) ? ' · ' + h.form : '';
     out.push({ key: 'held', label: 'Holding', value: h.name + ' · stage ' + h.stage + ' / ' + h.maxStage, short: h.name + ' · ' + h.stage + ' / ' + h.maxStage, now: h.stage, max: h.maxStage, kind: 'pips', colour: RES_INK.soul,
-      sub: h.toneName + form + (mult ? ' · ×' + mult : '') + (h.freePumps != null ? ' · ' + plural(h.freePumps, 'free pump') + ' left' : '') + (h.steady ? ' · steadied' : ''),
+      sub: h.toneName + form + (mult ? ' · ' + powerPct(mult) + ' power' : '') + (h.freePumps != null ? ' · ' + plural(h.freePumps, 'free pump') + ' left' : '') + (h.steady ? ' · steadied' : ''),
       ...(h.stage >= h.maxStage ? { warn: 'FULL' as ResWarn, level: 'ready' as const } : {}),
       hint: 'A held Outburst: Pump (1 AP and some MP) +1 stage, Release (1 AP) fires it. Held past your turn it swells +1 stage at your turn start (+' + hh.swell + ' Strain after that turn start\'s −1); Steady (1 AP) stops the swell.' });
   }

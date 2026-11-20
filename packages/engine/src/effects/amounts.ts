@@ -94,22 +94,9 @@ export function itemAmount(key: string, name: string, own: Term[] = [], counts?:
  * = base + Σ value × source(of), held between min and max. What `of` names (effects/triggers.ts sourceOf): res:<id> (the
  * holder's resource now), event:<field> (the trigger's payload: amount, over, ambush…), self:<field> / actor:<field> /
  * target:<field> (a unit's field such as max_hp, or 1 / 0 for a condition id), or a plain name the caller counts. */
-export interface NumberBlock { base: number; per?: { of: string; value: number }[]; min?: number; max?: number;
-  /** Rules 1.33 (a door's ladder): each step adds its value once its source reaches `at` ({of: "skill:empathy", at: 6,
-   * value: 3}: Bond's reach 6, 9 from Empathy 6). */ steps?: { of: string; at: number; value: number }[] }
-/** Is this a number block (and not an amount block, which has a `kind`)? */
-export const isNumberBlock = (x: any): x is NumberBlock => !!x && typeof x === 'object' && !Array.isArray(x) && typeof x.base === 'number' && !('kind' in x);
-/** A number block's value (a plain number is itself): base + Σ value × source(of), between min and max. `src` answers
- * each `of` (a handler: its counts; the item-op runner: sourceOf). Anything else (null, a word) is NaN: the caller's bug. */
-export function numberOf(x: number | NumberBlock, src: (of: string) => number = () => 0): number {
-  if (typeof x === 'number') return x;
-  if (!isNumberBlock(x)) return NaN;
-  let v = (x.per || []).reduce((t, p) => t + p.value * (src(p.of) || 0), x.base);
-  for (const st of x.steps || []) if ((src(st.of) || 0) >= st.at) v += st.value;
-  if (typeof x.min === 'number') v = Math.max(x.min, v);
-  if (typeof x.max === 'number') v = Math.min(x.max, v);
-  return v;
-}
+// (the block's type and its one evaluation live in datatext.ts since rules 1.70 item 5547: a text that binds a block
+// fills from the same function, with the one data-reference resolver, dataRef)
+export { isNumberBlock, numberOf, type NumberBlock } from '../datatext';
 /** One of a block's own named multipliers (data `mults`). Throws when the data has none. */
 export function amountMult(key: string, name: string, mult: string): number {
   const v = amountBlock(key, name).mults?.[mult];

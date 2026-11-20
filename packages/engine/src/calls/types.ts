@@ -49,8 +49,9 @@ export interface CallPadEntry {
   /** the text of the step the unit has, and the Call's own line */ text: string; summary: string;
   /** every step, with the points it opens at and whether the unit has it */ steps: { at: number; text: string; has: boolean }[];
   /** the save an enemy makes, and its TN from this speaker */ save?: { family: CallSave; tn: number };
-  /** it can be made as a reaction this round */ reaction: boolean;
-  /** this one costs nothing (the first Call of the turn at 10 points) */ free: boolean;
+  /** it can be made as a reaction this round (off your turn: a helping Call) */ reaction: boolean;
+  /** rules 1.70 item 5535: on your own turn the reaction may pay for it (in place of the AP) */ payReaction?: boolean;
+  /** this one costs no AP now (its price is 0: the reaction pays, or an item makes it free) */ free: boolean;
 }
 /** What Calls leave on a unit (plain JSON, saved with the fight; u.call). Every mark carries the side that made it:
  * a view shows a mark only to that side (callView). */

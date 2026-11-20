@@ -30,7 +30,7 @@ await act({ type: 'sandbox/give', charId: cid, item: 'service_pistol', equip: tr
 ok('the Visualizer in the off hand', (await act({ type: 'sandbox/give', charId: cid, item: 'visualizer', equip: true })) === null);
 await act({ type: 'sandbox/give', charId: cid, item: 'standard_core', qty: 3 });
 // rules 1.56 (Figments 2.0), 1.60 (the forks at 4 and 6): the Wall and the Beast are fork forms: chosen through door/pick
-ok('the forks: the Wall (Visualization 4) and the Beast (Visualization 6) chosen', (await act({ type: 'door/pick', charId: cid, door: 'visualization', option: 'wall' })) === null && (await act({ type: 'door/pick', charId: cid, door: 'visualization', option: 'beast' })) === null);
+ok('the forms known: the Wall and the Beast chosen (door figment_forms: rules 1.70 item 5541; the door visualization holds the forks since rules 1.74)', (await act({ type: 'door/pick', charId: cid, door: 'figment_forms', option: 'wall' })) === null && (await act({ type: 'door/pick', charId: cid, door: 'figment_forms', option: 'beast' })) === null);
 ok('the design Hound (Beast + Swift) kept out of the fight',(await act({ type: 'figments/design', charId: cid, design: { id: 'hound', name: 'Hound', form: 'beast', traits: ['swift'] } })) === null);
 await act({ type: 'sandbox/ai', on: false });
 await act({ type: 'sandbox/fight' });
@@ -57,10 +57,10 @@ const t2 = await free(u.pos);
 const e2 = await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'wall', tile: t2 });
 u = await me(); F = await figs();
 ok('Picture a bare Wall: 3 charge (' + (e2 || 'done') + ')', !e2 && F.length === 2 && u.mg.vcharge === 2);
-await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'double', tile: await free(u.pos) });
+const e3 = await act({ type: 'combat/perk', unitId: u.id, id: 'verb:picture', choice: 'wall', tile: await free(u.pos) }); // a learned form (rules 1.70: an unlearned one is refused before the hold)
 await settle(p, 300);
 const body = (await p.locator('body').textContent()) || '';
-ok('a third Picture is refused in words (' + ((body.match(/Hold is full[^.]*\./) || [])[0] || 'no words') + '; ' + (await figs()).length + ' held)', (await figs()).length === 2 && /Hold is full/.test(body));
+ok('a third Picture is refused in words (' + (e3 || '') + ' | ' + ((body.match(/Hold is full[^.]*\./) || [])[0] || 'no words') + '; ' + (await figs()).length + ' held)', (await figs()).length === 2 && /Hold is full/.test(body));
 const rowVal = (label) => p.evaluate((label) => { const l = [...document.querySelectorAll('.phc-res-line')].find((e) => (e.firstElementChild?.textContent || '').trim().toLowerCase() === label); return l ? [...l.children].map((c) => c.textContent.trim()).filter(Boolean).slice(1).join(' ') : ''; }, label);
 const vis = (body.match(/VISUALIZER[^0-9A-Za-z]{0,40}(\d+ ?\/ ?\d+|EMPTY)/) || [])[1] || '';
 const meter = ('FIGMENTS ' + (await rowVal('figments')) + ' · VISUALIZER ' + vis).replace(/ \/ /g, '/'); // the row's label and its value, once each
@@ -93,6 +93,17 @@ ok('the Visualizer row names the focus (' + (vRow || 'none') + ')', /Visualizer 
 const tokLabel = await p.evaluate((name) => { const b = [...document.querySelectorAll('button.phc-tok')].find((e) => (e.getAttribute('aria-label') || '').includes(' · ' + name + ' · ')); return b ? b.getAttribute('aria-label') : ''; }, hound.name);
 ok('a Figment\'s token reads as ' + meName + '\'s (' + tokLabel.slice(0, 90) + ')', tokLabel.includes(meName + '\'s Figment'));
 
+// ---------- 0.32: an order shown (Redraw: the maker's command, the Figment comes apart and reforms; never a shove's thud) ----------
+let redrawSpent = 0;
+{ const tR = await free(wall.pos), cR = (await me()).mg.vcharge;
+  await p.evaluate(() => { const W = (window.__e2eWatch ||= {}); W.order = { up: null }; const mo = new MutationObserver(() => { if (W.order.up == null && document.querySelector('[data-phc-fig-order]')) W.order.up = performance.now(); }); mo.observe(document.documentElement, { childList: true, subtree: true }); });
+  const er = await act({ type: 'combat/owned', unitId: u.id, owned: wall.id, verb: 'figment_redraw', tile: tR });
+  const seen = await p.waitForFunction(() => window.__e2eWatch.order.up != null, null, { timeout: 8000 }).catch(() => false).then((x) => x !== false);
+  if (seen) { await pause(p, 150); await p.screenshot({ path: OUT + 'figments-redraw.png' }).catch(() => {}); }
+  const logT = (await G()).combat.log.join(' ');
+  ok('0.32: Redraw is shown (the order mark on the map) and said in the log (' + (er || 'done') + ')', !er && seen && /comes apart and reforms/.test(logT));
+  u = await me(); redrawSpent = cR - u.mg.vcharge; }
+
 // ---------- Let go: half its charge back ----------
 const c0 = u.mg.vcharge, eg = await act({ type: 'combat/owned', unitId: u.id, owned: hound.id, verb: 'let_go' });
 u = await me();
@@ -102,6 +113,6 @@ ok('Let go: the Hound is unmade and half its charge comes back (' + c0 + ' → '
 await act({ type: 'sandbox/stop' }).catch(() => {});
 await p.waitForFunction(() => window.__phc.getState().screen !== 'combat', null, { timeout: 30000 }).catch(() => {});
 const g2 = await G();
-ok('the fight\'s end: no Figment stands; the spent charge stays spent (' + g2.characters[cid].visCharge + ')', !(g2.combat?.units || []).some((x) => x.owned?.kind === 'figment' && !x.dead) && g2.characters[cid].visCharge === 4);
+ok('the fight\'s end: no Figment stands; the spent charge stays spent (' + g2.characters[cid].visCharge + ')', !(g2.combat?.units || []).some((x) => x.owned?.kind === 'figment' && !x.dead) && g2.characters[cid].visCharge === 4 - redrawSpent); // (0.32: less the Redraw's own charge, spent above)
 ok('no page errors (' + errors.join(' | ').slice(0, 200) + ')', errors.length === 0);
 await browser.close();

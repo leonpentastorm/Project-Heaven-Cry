@@ -3,7 +3,7 @@
 // hostile's id, name, tile and HP, the other side's glyphs, field and False Images out of sight, and fx that named and
 // located the unseen; the browser hid them. Now the view holds only what the viewer's side sees.
 import { describe, expect, it } from 'vitest';
-import { viewFor, emitFx, visibility, fightSight, isUnseenId, active, UNSEEN, musicFor, say, sayAt, unsay, fogFight, type Unit } from '../src';
+import { viewFor, sightQuietly, emitFx, visibility, fightSight, isUnseenId, active, UNSEEN, musicFor, say, sayAt, unsay, fogFight, type Unit } from '../src';
 import { fightWith } from './helpers/perkfight';
 
 const H = 'host', GUEST = 'p2';
@@ -26,9 +26,11 @@ export function fogScene() {
   a.vision = 1; a.sensory = 6; b.vision = 2; c.vision = 2; b.sensory = 0; c.sensory = 0;
   seen.pos = '4,5'; lurker.pos = '4,6'; lurker.hidden = true; creeper.pos = '3,0'; far.pos = '12,5'; body.pos = '12,7'; body.dead = true; body.hp = 0;
   const cb = f.cb;
+  // the scene's log opens with the fight's own initiative line (its writer builds each side's reading, combat.ts
+  // initiativeMark), marked again for the scene's eyes as the set-up's sight is (sightQuietly); its other lines go
+  while (cb.log.length > 1) unsay(cb, cb.log.length - 1);
+  sightQuietly(cb, () => 0);
   cb.fx = []; // the opening's effects were seen with the old eyes: the scene's own start here
-  cb.log.length = 0; delete cb.logSee; // and its log lines: the scene's log opens with the initiative line, as a fight's does
-  say(cb, 'Initiative: ' + cb.order.map((id) => cb.units.find((u) => u.id === id)!.name).join(' · '));
   cb.glyphs = [
     { id: 'gFar', word: 'FIRE', pos: '12,4', by: far.id, side: 'foe', left: 3, who: far.name },
     { id: 'gNear', word: 'MEND', pos: '4,4', by: seen.id, side: 'foe', left: 3, who: seen.name },

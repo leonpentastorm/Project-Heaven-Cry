@@ -6,7 +6,8 @@
 // blank one), and says the last point where it still moves. The ladder shows the row on the levels up to that point
 // and marks that level as the most; the page never types a cap.
 import { SKILL } from './data';
-import { classResources, elementalTakenPct, guardPool, prayerCooldown, type Character } from './character';
+import { classResources, elementalTakenPct, guardPool, prayerCooldown, strainLimit, type Character } from './character';
+import { formsKnown } from './figments';
 
 /** The engine values a ladder row may name (data/skills.json per_point.rows[].grows; tools/validate.py mirrors the
  *  keys). Each reads the engine's own function, so the cap is the one the game plays. */
@@ -17,6 +18,10 @@ export const LADDER_GROWS: Record<string, (c: Character) => number> = {
   guard_pool: (c) => Math.max(guardPool(c), ...classResources(c).filter((r) => r.id === 'guard').map((r) => r.max)),
   /** Rounds between Hymns (character.ts prayerCooldown, never under its floor). */
   hymn_wait: (c) => prayerCooldown(c),
+  /** The Strain limit (character.ts strainLimit; rules 1.70 item 5539: Composure's steps). */
+  strain_limit: (c) => strainLimit(c),
+  /** Figment forms known (figments.ts formsKnown; rules 1.70 item 5541). */
+  forms_known: (c) => formsKnown(c),
 };
 
 /** A blank character for a ladder read with no character (the "?" page from the title or creation's start). */

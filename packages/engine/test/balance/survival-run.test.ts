@@ -33,7 +33,10 @@ describe('Survival, simulated runs (rules 1.49): the guard', () => {
   // before G1). Re-measured with R2 and the dry-gun fallback (R4) on GUARD-1 to GUARD-40: 18 of 40 clear stage 1 (45%,
   // one standard error 7.9 points), none clears stage 4, none stalls; GUARD-1 to 8: 4 of 8. NEW bar: the measured share
   // less one standard error, 37%, of the eight seeds rounded down (2 of 8).
-  const BAR = 0.37;
+  // Rules 1.81 item 6905 (the 0.32 fit, 20 Nov 2026, PROVISIONAL): re-measured on GUARD-1 to GUARD-40 after the 0.32
+  // lanes and the fit: 25 of 40 clear stage 1 (62%, one standard error 7.7 points), 2 clear stage 4. OLD bar: 37% (14 of
+  // 40), which no longer told a real loss from the noise. NEW bar: the measured share less one standard error, 55% (22).
+  const BAR = 0.55;
   it('a solo gunner clears stage 1 on at least the measured share less its noise (rules 1.61 R3) and at most a quarter clear stage 4', () => {
     const runs = SEEDS.map((seed) => simRun({ party: 'solo_gunner', route: 'gear', seed, maxStages: 4 }));
     // a fight that stalls past stage 1 is a simulator limit, listed not failed (8 seeds: develop's GUARD-4 stalls at stage 3

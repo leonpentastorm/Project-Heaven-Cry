@@ -52,10 +52,11 @@ const now = () => {
 };
 
 /** The items written in data only by engine foundations 3 (no handler; the runner owns every effect). */
-export const DATA_ONLY = ['trait:pain_eater', 'trait:right_of_way', 'perk:siege_engine', 'perk:hot_swap', 'perk:last_wall', 'perk:used_to_the_pain',
+export const DATA_ONLY = ['trait:pain_eater', 'trait:right_of_way', 'perk:siege_engine', 'perk:hot_swap', 'perk:last_wall',
   'class:adamantile_knight.unbroken', 'class:mage.core_change', 'class:marksman.speed_loader', 'class:mage.barrage', 'class:trickster.blind_and_slow',
   'class:marksman.run_and_gun', 'class:marksman.reflex', 'class:fighter.riposte', // rules 1.30
-  'class:infiltrator.tradecraft']; // rules 1.32 (Shadow; Vanish is a data action, its grant_action owned by the action door)
+  'class:infiltrator.tradecraft', // rules 1.32 (Shadow; Vanish is a data action, its grant_action owned by the action door)
+  'perk:bite_the_bullet']; // rules 1.77 item 6508: the op last_turn
 
 describe('item ops: the ratchet on lane handlers', () => {
   const cur = now();
@@ -87,7 +88,7 @@ describe('item ops: the ratchet on lane handlers', () => {
   it('every num(h, key) a handler asks for is in its item\'s data', () => {
     const bad: string[] = [];
     for (const f of FILES) for (const b of blocks(f)) for (const m of b.text.matchAll(/\bnum\(\s*\w+\s*,\s*'([a-z_0-9]+)'/g)) {
-      const kind = b.id.includes('.') ? 'class' : undefined, key = (kind ? 'class:' : '') + b.id, it0 = rawItem(key.includes(':') ? key : (splitKey(key)[0] + ':' + b.id));
+      const kind = !b.id.includes(':') && b.id.includes('.') ? 'class' : undefined, key = (kind ? 'class:' : '') + b.id, it0 = rawItem(key.includes(':') ? key : (splitKey(key)[0] + ':' + b.id));
       const has = it0 && (typeof it0.numbers?.[m[1]] === 'number' || Object.values(it0.tiers || {}).some((t: any) => typeof t?.numbers?.[m[1]] === 'number'));
       if (!has) bad.push(f + ': ' + b.id + ' asks num(h, \'' + m[1] + '\'), which is not in its data');
     }
