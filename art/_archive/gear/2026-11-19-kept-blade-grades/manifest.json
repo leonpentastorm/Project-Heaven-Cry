@@ -11924,6 +11924,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_darts--fine",
+      "path": "art/icons/gear/weapon-throwing_darts--fine.png",
+      "sha256": "67e73d5a2efea36b05d7acf03df6fca43aef0c4111b26c9ae5b6ca94ca1f6110",
+      "label": "Throwing darts — Fine",
+      "family": "weapon-throwing_darts",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--fine.png",
+        "sha256": "5e5653e8c8254faa62c0c7284b4c86c83b085a6d1a41eba366f7561a55485f14"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_darts--fine.png",
+        "sha256": "67e73d5a2efea36b05d7acf03df6fca43aef0c4111b26c9ae5b6ca94ca1f6110"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_darts--fine.txt",
+        "sha256": "f7e911b5b39348a34f63c30b45d110967b604864abc7fb790edcd4f33fae7ab1"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-throwing_darts.png",
+          "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_darts--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_darts--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_darts--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_darts--fine.png"
+      },
+      "export_hashes": {
+        "256": "82274f950f470eb56f4320e24f27c693ff573140c16879e2d4e4003d86b46647",
+        "128": "e174c218eb5786e5415a155f2a965f8b3207b1e8341f05d1f5e0ad0228a06e45",
+        "64": "e0d8f968c69f730a35b1ef2579d574eb0f6b1fcdce9925ccaa4da7dbb234811f",
+        "32": "8d36466dd13439eb9f6207cdaa1d87eef74c98f998712fe14dd2c66a7f66e589"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-throwing_darts",
+      "outline": {
+        "solid_alpha_iou": 0.989506651725426,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 9
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
