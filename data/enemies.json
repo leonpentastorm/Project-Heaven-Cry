@@ -713,7 +713,7 @@
       "hold": 20,
       "line": "{name} breaks into the held lane to draw the shot.",
       "answer_lure": 0.3,
-      "answer_hold": 0.5,
+      "answer_hold": 0.15,
       "answer_line": "{name} goes at {target} first, to draw the answer.",
       "provisional": true
     },

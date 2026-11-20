@@ -13532,7 +13532,8 @@ new engine pieces"); each is listed in item 7110. **Every number here is PROVISI
       (Devotion **3**, Faith **1**). The **Heart adept** keeps Mother Ember (Devotion **3**, Faith **1**); the **Heart
       sovereign** Mother Ember (Devotion **6**, Faith **3**).
 7103. **Not given to any row (built, data only to add):** Retort (a class move held by key works, `class:defender.retort`;
-      on the Heartfire elite it cost four Bulwarks 17 to 12 clears of 40 at stage 1, so it was taken off), Slam (no
+      taken off the Heartfire elite: an Answer thrown back at every melee hit is a ruling on that elite's weight, not
+      this lane's), Slam (no
       Guard-holding row reaches Durability 5: raising the Heartfire elite's 3 is a balance call, and its plates soak by
       the same points), Stalk (it builds a Shadow meter
       no enemy spends), Last Plate (no such verb since 0.32: it left the door). Not built: Tug, Bond and Snap (the
@@ -13558,8 +13559,10 @@ new engine pieces"); each is listed in item 7110. **Every number here is PROVISI
       holder predicates holding, such as Retort while holding Guard) with a reaction left, seen by the enemy's side:
       a bait-tier unit with a melee weapon counts it as `ai.bait.answer_lure` (**0.3**) of its max HP more hurt while a
       stronger ally stands (it goes there first, to draw the answer; the log says so once a fight, "goes at X first, to
-      draw the answer"); the stronger melee ally counts it as `answer_hold` (**0.5**) less while a bait has still to act
-      this round. The roles are the bait's (`ai-sigil.ts baitRole`). Never against a Taunt.
+      draw the answer"); the stronger melee ally counts it as `answer_hold` (**0.15**) less while a bait has still to act
+      this round. The roles are the bait's (`ai-sigil.ts baitRole`). Never against a Taunt. (`answer_hold` was 0.5 in the
+      first build: four Bulwarks fell 17 to 12 clears of 40 at stage 1, the hold making a line of melee foes finish
+      the Bulwark whose reaction or Guard was spent; at 0.15, 15.)
 7108. **NULL on a Figment, the enemy's weighing (figments-spec section 8).** An enemy Sigil caster counts a Figment NULL
       would unmake as worth its charge (`figment.made`) x `ai.null_figment` (**4**), its own side's a loss, and a
       Figment its side sees is a tile it aims NULL at. A plan whose only catch is a Figment now counts (the preview's
