@@ -4806,6 +4806,10 @@
         "arg": "bool",
         "about": "the target stands on the tile directly behind the holder as seen from the actor (the holder between them: Stand Behind Me)"
       },
+      "target_held": {
+        "arg": "bool",
+        "about": "the target is (or is not) held by the holder: Grappled or Bound by it (Throw Down and Hurl lift what you hold)"
+      },
       "hostile": {
         "arg": "bool",
         "about": "the actor and the target are (or are not) on different sides"
@@ -6235,10 +6239,16 @@
           "do",
           "has",
           "kind",
-          "amount"
+          "amount",
+          "range",
+          "kg_per_tile",
+          "carry",
+          "units",
+          "objects",
+          "why"
         ],
         "changes_state": true,
-        "about": "work the object on the event's tile that is `has` (a kind id, a kind field or a cover grade: objects.ts objectIs): do \"pick\" (a door: locked or closed, it opens; open, it closes and locks, not while someone stands in it), \"break\" (its HP to 0 through the object damage; one with no HP is put out and gone); or do \"lay\": make an object of `kind` (a trap) there, the holder's side's, its damage the item's amount block `amount`, one at a time (the holder's last one from this item goes). Nothing there: nothing happens (Shadow's Pick, Douse and Rig, rules 1.32)"
+        "about": "do \"hurl\" (rules 1.82 item 7010, P14: hurl.ts): lift what the action's choice names (a loose object, or a unit the row's `units` takes) next to the holder and throw it at the event's tile within `range` (tiles, or \"throw\") less a tile a `kg_per_tile`, under the carry weight if `carry`; it and whoever is there take the `amount` by weight. Else work the object on the event's tile that is `has` (a kind id, a kind field or a cover grade: objects.ts objectIs): do \"pick\" (a door: locked or closed, it opens; open, it closes and locks, not while someone stands in it), \"break\" (its HP to 0 through the object damage; one with no HP is put out and gone); or do \"lay\": make an object of `kind` (a trap) there, the holder's side's, its damage the item's amount block `amount`, one at a time (the holder's last one from this item goes). Nothing there: nothing happens (Shadow's Pick, Douse and Rig, rules 1.32)"
       },
       "close_roll": {
         "on": [

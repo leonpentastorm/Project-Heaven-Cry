@@ -49,8 +49,8 @@ describe('Grenadier\'s Arm: objects', () => {
     const f = fightWith([{ traits: ['grenadiers_arm'], attrs: { strength: 5 } }], [{ at: 'O10' }]);
     const u = f.turn(f.pc); u.pos = '3,3'; f.foe.pos = '6,3'; f.cb.objects = [makeObject('cr', 'crate', '4,3')];
     const hp = f.foe.hp;
-    f.act({ type: 'combat/perk', unitId: u.id, id: 'grenadiers_arm', actionId: 'hurl_object', tile: '4,3', choice: '6,3' } as any);
-    expect(f.foe.hp).toBeLessThan(hp); expect(logHas(f.cb, /hurls the crate/)).toBe(true);
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'trait:grenadiers_arm', actionId: 'hurl', choice: 'o:cr', tile: '6,3' } as any); // rules 1.82 item 7010: the object op's hurl (choice: what is lifted, tile: where it lands)
+    expect(f.foe.hp).toBeLessThan(hp); expect(logHas(f.cb, /hurls the crate/), f.cb.log.slice(-3).join(' | ')).toBe(true);
     expect(f.cb.objects!.find((o) => o.id === 'cr')!.pos).not.toBe('4,3');
   });
 });

@@ -287,7 +287,7 @@ describe('Grenadier\'s Arm', () => {
     f.act({ type: 'combat/throw', unitId: u.id, item: 'frag_grenade', tile: refOf(f.foes[0].pos) } as any);
     expect(f.pc.ap).toBe(3);
     const [a, b] = f.foes; at(a, '4,5'); at(b, '6,5'); a.hp = a.maxHp = b.hp = b.maxHp = 999; f.pc.ap = 6;
-    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'grenadiers_arm', actionId: 'hurl', targetId: a.id, tile: '6,5' } as any);
+    f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'trait:grenadiers_arm', actionId: 'hurl', choice: 'u:' + a.id, tile: '6,5' } as any); // rules 1.82 item 7010: the object op's hurl
     expect(f.pc.ap).toBe(3); expect(f.foes[0].pos).not.toBe('4,5'); expect(f.foes[0].hp).toBeLessThan(999); expect(f.foes[1].hp).toBeLessThan(999);
     expect(logHas(f.cb, /throws Foe 1/)).toBe(true);
   });

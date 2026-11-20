@@ -986,6 +986,81 @@
           "status": "active",
           "surface": "combat",
           "source": "rules 1.78 item 6605 (docs/design/proposals/2026-11-momentum-2.0.md item 15, P13)"
+        },
+        {
+          "id": "hurl",
+          "name": "Hurl",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "amounts": {
+            "hurl": {
+              "kind": "damage",
+              "base": 10,
+              "per": [
+                {
+                  "of": "kg",
+                  "value": 0.25
+                }
+              ],
+              "profile": "physical",
+              "type": "physical",
+              "provisional": true
+            }
+          },
+          "text": "{=effects.0.ap} AP: lift a loose crate, barrel or lamp next to you, or a small foe you hold (Grappled or Bound), and throw it at a tile within {=effects.0.effects.0.range} tiles: it and whoever it lands on take {=amounts.hurl.base} damage and more by its weight. A barrel goes off where it lands.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "hurl",
+              "ap": 2,
+              "site": "throw",
+              "uses": "at_will",
+              "pick": "hurlable",
+              "pick_label": "What to throw",
+              "reach": {
+                "tile": true,
+                "tiles": 4,
+                "sight": true
+              },
+              "label": "Hurl",
+              "effects": [
+                {
+                  "op": "object",
+                  "do": "hurl",
+                  "when": "acted",
+                  "range": 4,
+                  "units": {
+                    "target_tier": [
+                      "vermin",
+                      "minion"
+                    ],
+                    "target_held": true
+                  },
+                  "amount": "hurl",
+                  "label": "Hurl",
+                  "why": {
+                    "target_held": "Grapple or Bind {target} first.",
+                    "target_tier": "{target} is too big to hurl: a Soldier is Throw Down's."
+                  }
+                }
+              ]
+            }
+          ],
+          "origin": "fighter",
+          "new": true,
+          "fantasy_tags": [
+            "melee",
+            "momentum",
+            "demolition"
+          ],
+          "attributes": [
+            "strength"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.82 item 7010 (momentum-2.0 item 16; P14): the Breaker's gain; small foes are vermin and minions (the draft's recommendation 4: a Soldier is Throw Down's)"
         }
       ]
     },

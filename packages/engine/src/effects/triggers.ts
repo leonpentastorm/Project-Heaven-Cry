@@ -52,6 +52,8 @@ import { resOf } from '../tactics';
 import { patronIdOf } from '../belief'; // (no global hooks: faith.ts's load order stays as it was)
 import { resLeft } from './cost';
 import { dmgIs, DAMAGE_WORDS } from './dmgwords';
+import { hurlRun } from '../hurl';
+import { heldBy } from '../held';
 
 // ============================================================================================== the triggers
 /** A trigger: the hook it listens on (and the hook's phase), who the event's ACTOR and TARGET are, and whose event it
@@ -194,6 +196,8 @@ P('target_behind', 'bool', 'the target stands on the tile directly behind the ho
   const [ax, ay] = a.pos.split(',').map(Number), [hx, hy] = h.pos.split(',').map(Number), sx = Math.sign(hx - ax), sy = Math.sign(hy - ay);
   return (t.pos === (hx + sx) + ',' + (hy + sy) && (sx !== 0 || sy !== 0)) === v;
 });
+// rules 1.82 item 7010 (Hurl; new engine piece): the holder holds the target (Grappled or Bound by it: held.ts heldBy)
+P('target_held', 'bool', 'the target is (or is not) held by the holder: Grappled or Bound by it (Throw Down and Hurl lift what you hold)', (ev, v) => (!!ev.target && heldBy(ev.self, ev.target)) === v);
 P('hostile', 'bool', 'the actor and the target are (or are not) on different sides', (ev, v) => (!!ev.actor && !!ev.target && ev.actor.side !== ev.target.side) === v);
 P('cond', 'ids', 'the condition is one of these', (ev, v) => list(v).map(condId).includes(condId(ev.ctx.id)));
 P('cond_family', 'words', 'the condition\'s family is one of these (body, brain, heart)', (ev, v) => list(v).includes(ev.ctx.fam));
@@ -579,8 +583,9 @@ O('last_seen', ANY, true, [], 'every other side now places the holder on the eve
   const k = ev.ctx.tile ?? null; if (!k) return false;
   for (const side of new Set(ev.cb.units.filter((v) => v.side !== ev.self.side && !v.dead).map((v) => v.side))) ((ev.cb.lastSeen ||= {})[side] ||= {})[ev.self.id] = k;
 });
-O('object', ANY, true, ['do', 'has', 'kind', 'amount'], 'work the object on the event\'s tile that is `has` (a kind id, a kind field or a cover grade: objects.ts objectIs): do "pick" (a door: locked or closed, it opens; open, it closes and locks, not while someone stands in it), "break" (its HP to 0 through the object damage; one with no HP is put out and gone); or do "lay": make an object of `kind` (a trap) there, the holder\'s side\'s, its damage the item\'s amount block `amount`, one at a time (the holder\'s last one from this item goes). Nothing there: nothing happens (Shadow\'s Pick, Douse and Rig, rules 1.32)', (ev, e) => {
+O('object', ANY, true, ['do', 'has', 'kind', 'amount', 'range', 'kg_per_tile', 'carry', 'units', 'objects', 'why'], 'do "hurl" (rules 1.82 item 7010, P14: hurl.ts): lift what the action\'s choice names (a loose object, or a unit the row\'s `units` takes) next to the holder and throw it at the event\'s tile within `range` (tiles, or "throw") less a tile a `kg_per_tile`, under the carry weight if `carry`; it and whoever is there take the `amount` by weight. Else work the object on the event\'s tile that is `has` (a kind id, a kind field or a cover grade: objects.ts objectIs): do "pick" (a door: locked or closed, it opens; open, it closes and locks, not while someone stands in it), "break" (its HP to 0 through the object damage; one with no HP is put out and gone); or do "lay": make an object of `kind` (a trap) there, the holder\'s side\'s, its damage the item\'s amount block `amount`, one at a time (the holder\'s last one from this item goes). Nothing there: nothing happens (Shadow\'s Pick, Douse and Rig, rules 1.32)', (ev, e) => {
   const cb = ev.cb, u = ev.self, k = ev.ctx.tile ?? null; if (!k) return false;
+  if (e.do === 'hurl') return hurlRun(ev.h, e, ev.ctx.choice, k); // rules 1.82 item 7010 (P14): lift what the choice names, throw it at the tile
   if (e.do === 'lay') {
     if (objectsAt(cb, k).some((o) => objectIs(o, 'trap') && !o.resolved)) return false;
     const b = typeof e.amount === 'string' ? blockOf(ev.h, { amount: e.amount }) : null;

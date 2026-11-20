@@ -13572,3 +13572,25 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       at rev 2 (`perk_remap passives 3: field_repair`): a sheet at Improvisation 3 or more is offered the one re-pick
       again, Field Repair preselected as far as its perk steps reach (its old perks first). The shelved Field Fix keeps
       its own call (no gate, no part). Numbers unchanged (PROVISIONAL as before).
+7009. **Breaching Strike onto Into the Wall's row: nothing left to move.** The perk id `breaching_strike` has been Keep
+      Swinging (data only) since rules 1.56; its old wall-slam lives only in `docs/design/move-pool.md`, and no per-perk
+      code of it is left in `perks/skeleton.ts` (only a comment). Into the Wall's row (item 6605) is the one collision
+      rule; when the wall-slam comes back it is that row. No code, no golden line moved. Rules 1.78 item 6605's "Breaching
+      Strike keeps its own code" is withdrawn.
+7010. **Hurl, and P14, the object op's `hurl`** (momentum-2.0 item 16 and section 8.3; closes rules 1.78 item 6606; new
+      engine pieces, approved by Leon 20 Nov 2026): **`object {do: "hurl"}`** lifts what the action's choice names, a
+      loose object next to the holder (a kind with `loose.kg`, `objects.json`: crate **25**, barrel **30**, lamp **5**,
+      camera **3**, alarm **3**, terminal **20**, container **60** kg: Grenadier's Arm's weights, moved from code) or a
+      unit next to it that the row's `units` takes, and throws it at the action's tile within the row's `range` (tiles, or
+      `throw`: the thrower's throwing range) less a tile per `kg_per_tile`, under the carry weight when `carry`; it and
+      whoever is there take the row's `amount` by weight (the block's `kg` part, x the thrower's physical Stat term), a
+      unit by the one forced move (`displace`, how `throw`), an object moved and then struck (a barrel goes off as
+      barrels do). What a unit weighs is `rules.json combat.hurl` (person **80**, Elite **100**, drone **15**, companion
+      **40**; a Boss never). The pick list `hurlable` offers what is next to you (a unit it can't take greyed with the
+      row's own words, `why`); the action's preview refuses before anything is paid. One more predicate, **`target_held`**
+      (Grappled or Bound by the holder; `held.ts heldBy`, Throw Down's one copy). **The Breaker's Hurl** (a gain): **2** AP
+      at the throw's cost site, a loose object or a small foe it holds (**vermin and minions**: the draft's
+      recommendation, a Soldier is Throw Down's; **call made for Leon**) thrown within **4** tiles for **10** + **0.25** a
+      kg (PROVISIONAL). **Grenadier's Arm** is moved onto the op (its own two throws in `perks/c.ts` are gone: one action,
+      "Throw it", any unit but a Boss or a loose object, under the carry weight, the throwing range less a tile a 20 kg;
+      its numbers unchanged).

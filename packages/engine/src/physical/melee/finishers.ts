@@ -179,8 +179,9 @@ technique({
 // 24. Throw Down: only on a target you have Grappled or Bound: slam it into a tile next to you. Damage ×1 + 25% per
 //     Momentum, Prone, and the grapple ends. Anyone on that tile is struck at half and must save or fall Prone.
 //     Bare: no roll needed. Heavy: you may throw it 2 tiles.
-/** Is `tgt` held by `u`: Grappled by it (today's grapple), or Bound by it (Bind: u.tech.bind.target). */
-export const heldBy = (u: Unit, tgt: Unit): boolean => condSource(tgt, 'grappled') === u.id || u.tech?.bind?.target === tgt.id;
+/** Is `tgt` held by `u`: Grappled by it (today's grapple), or Bound by it (Bind: u.tech.bind.target). One copy: held.ts. */
+export { heldBy } from '../../held';
+import { heldBy } from '../../held';
 /** The slam's tile: args.tile, else the target's own; with the reason it can't be used. */
 function slamTile(t: Tech): { at: string; why: string | null } {
   const tgt = t.tgt!, at = tileArg(t) || tgt.pos, max = t.line('bare', 'heavy') === 'heavy' ? t.num('heavy_tiles', 2) : t.num('tiles', 1);

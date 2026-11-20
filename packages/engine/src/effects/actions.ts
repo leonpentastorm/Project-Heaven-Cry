@@ -29,6 +29,7 @@ import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, brakeGiven, type
 import { isNumberBlock, numberOf } from './amounts';
 import { doorFeed } from './feed';
 import { pickedFork } from '../doorpicks';
+import { hurlWhy, hurlables } from '../hurl';
 import { techSystemOf, PHYS_RULES, chainOf } from '../physical/data';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
@@ -172,7 +173,9 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
       if (g.prayer && h.u && h.cb && PRAYER) return PRAYER.why(h.cb, h.u, g.prayer) || true;
       return true;
     };
-    if (reach?.tile) d.preview = (h, args) => { const why = tileReachWhy(h, reach, args.tile); return why ? { ok: false, why } : {}; }; // a tile: in range and in sight
+    const hurl = (g.effects || []).find((e: any) => e?.op === 'object' && e.do === 'hurl'); // rules 1.82 item 7010 (P14): the throw's own refusals, before anything is paid
+    if (hurl) d.preview = (h, args) => { const r = hurlWhy(h, hurl, args.choice, args.tile); return r.why ? { ok: false, why: r.why } : { lines: r.line ? [r.line] : [], ...(args.tile ? { tiles: [args.tile] } : {}) }; };
+    else if (reach?.tile) d.preview = (h, args) => { const why = tileReachWhy(h, reach, args.tile); return why ? { ok: false, why } : {}; }; // a tile: in range and in sight
     else if (reach) {
       d.reach = (h, t) => reachWhy(h, reach, t); d.choices = (h) => (h.cb ? h.cb.units.filter((t) => !reachWhy(h, reach, t)).map((t) => t.id) : []);
       // 0.28.3 (rules 1.55 item 45): a unit-aimed verb whose own op moves the target to the event's tile (Guide's
@@ -354,6 +357,8 @@ const PICK_LISTS: Record<string, (h: Holder) => PickOption[]> = {};
 /** Register a system's pick list (see PICK_LISTS). */
 export const registerPickList = (name: string, fn: (h: Holder) => PickOption[]) => { PICK_LISTS[name] = fn; };
 // Rules 1.33: Inspire's feelings: every feeling, the felt first, the unfelt greyed with why (Classes 3.0 step 10: the picker).
+// Rules 1.82 item 7010 (P14): what a hurl can lift next to the holder (loose objects, the units its row takes)
+registerPickList('hurlable', (h) => hurlables(h));
 registerPickList('felt', (h) => { const felt: string[] = (h.c || charOfUnit(h.u))?.feelings || []; return [...felt.filter((x) => FEEL_NAME[x]), ...Object.keys(FEEL_NAME).filter((x) => !felt.includes(x))].map((x: string) => ({ id: x, label: FEEL_NAME[x], ...(felt.includes(x) ? {} : { off: UNFELT }) })); });
 /** The choices an action's pick offers this holder (ids are what args.choice takes; `off`: shown greyed, with why). */
 function pickOptions(h: Holder, d: ActionDef): PickOption[] {

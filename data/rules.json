@@ -454,6 +454,19 @@
       "diagonal_move_cost": null,
       "difficult_terrain_move_multiplier": 2
     },
+    "hurl": {
+      "unit_kg": {
+        "default": 80,
+        "elite": 100,
+        "drone": 15,
+        "companion": 40
+      },
+      "never": [
+        "boss"
+      ],
+      "provisional": true,
+      "note": "rules 1.82 item 7010 (P14, hurl.ts): what a unit weighs when lifted and thrown (Grenadier's Arm's numbers, moved from perks/c.ts); a loose object's weight is its objects.json row's loose.kg"
+    },
     "initiative": {
       "roll": "d20 + initiative_bonus",
       "order": "high first",
