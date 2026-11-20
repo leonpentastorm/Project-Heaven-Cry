@@ -1873,8 +1873,8 @@
     "single"
    ],
    "ap_cost": {
-    "single": 2,
-    "aimed": 3
+    "single": 3,
+    "aimed": 4
    },
    "ammo": "rifle",
    "weight_kg": 6.5,
@@ -1910,6 +1910,7 @@
     "rate": 0.9,
     "mag": "box_mag"
    },
+   "cycle_ap": 1,
    "grants": {
     "name": "Armour-Breaker",
     "text": "Shots ignore {=grants.effect.value} points of the target's armour.",
@@ -2383,7 +2384,7 @@
    "form": "long",
    "line": "adcorp",
    "weapon_art": null,
-   "damage": 34,
+   "damage": 33,
    "damage_type": "physical",
    "range_tiles": 22,
    "recoil": 1,
@@ -2573,8 +2574,8 @@
     "single"
    ],
    "ap_cost": {
-    "single": 2,
-    "aimed": 3
+    "single": 3,
+    "aimed": 4
    },
    "ammo": "rifle",
    "weight_kg": 5,
@@ -2608,6 +2609,7 @@
     "sound": "gun_sniper",
     "mag": "box_mag"
    },
+   "cycle_ap": 1,
    "second_skill": "ingenuity",
    "text": "",
    "lore": "",
@@ -2755,8 +2757,8 @@
     "single"
    ],
    "ap_cost": {
-    "single": 2,
-    "aimed": 3
+    "single": 3,
+    "aimed": 4
    },
    "ammo": ".50 frontier",
    "weight_kg": 6,
@@ -2792,6 +2794,7 @@
     "rate": 0.9,
     "mag": "box_mag"
    },
+   "cycle_ap": 1,
    "second_skill": "brain_power",
    "text": "",
    "lore": "",
@@ -3027,11 +3030,6 @@
     "load": "rounds",
     "cycle": 170
    },
-   "second_skill": "raw_power",
-   "provisional": true,
-   "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
-   "lore": "",
-   "_copy_from": "lever_carbine",
    "grants": {
     "name": "Still Turn",
     "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
@@ -3039,7 +3037,12 @@
      "op": "aimed_still_bonus",
      "value": 1
     }
-   }
+   },
+   "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
+   "second_skill": "raw_power",
+   "provisional": true,
+   "lore": "",
+   "_copy_from": "lever_carbine"
   },
   {
    "id": "albert_town_service_rifle",
@@ -3097,10 +3100,6 @@
     "load": "rounds",
     "cycle": 170
    },
-   "provisional": true,
-   "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
-   "lore": "",
-   "_copy_from": "lever_carbine",
    "grants": {
     "name": "Still Turn",
     "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
@@ -3108,7 +3107,11 @@
      "op": "aimed_still_bonus",
      "value": 1
     }
-   }
+   },
+   "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
+   "provisional": true,
+   "lore": "",
+   "_copy_from": "lever_carbine"
   },
   {
    "id": "albert_town_stalking_rifle",
@@ -3165,10 +3168,6 @@
     "load": "rounds",
     "cycle": 260
    },
-   "second_skill": "ingenuity",
-   "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
-   "lore": "",
-   "_copy_from": "long_rifle",
    "grants": {
     "name": "Still Turn",
     "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
@@ -3176,7 +3175,11 @@
      "op": "aimed_still_bonus",
      "value": 1
     }
-   }
+   },
+   "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
+   "second_skill": "ingenuity",
+   "lore": "",
+   "_copy_from": "long_rifle"
   },
   {
    "id": "short_bow",

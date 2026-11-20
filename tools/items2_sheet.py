@@ -203,6 +203,10 @@ def base_row(src):
         r.pop(k, None)
     r["properties"] = keep_props(r.get("properties"))
     if "phys" in r: r["phys"].pop("teaches", None)
+    # rules 1.93 item 8100: the camp's issue tag is never copied (no rules 1.92 row carries it)
+    if "tags" in r:
+        r["tags"] = [t for t in r["tags"] if t != "issue"]
+        if not r["tags"]: r.pop("tags")
     return r
 
 def family_base(fam):
@@ -346,7 +350,8 @@ def build():
         if "no Raw Power term" in d: notes.append("a plain number: no Raw Power term (the bows' others carry one)")
         r["range_tiles"] = n(row["range"]); r["magazine"] = n(row["magazine"]); r["heat_limit"] = None if row["heat"] == "none" else n(row["heat"])
         r["modes"], r["ap_cost"] = copy.deepcopy(MODES[row["modes"]][0]), copy.deepcopy(MODES[row["modes"]][1])
-        if row["modes"] == "bolt" and src.get("cycle_ap"): r["cycle_ap"] = src["cycle_ap"]
+        # the bolt's own cycle (rules 1.18: single = 2 + the bolt); rules 1.93 item 8101 gives it to rows copied from an S row
+        if row["modes"] == "bolt" and (src.get("cycle_ap") or row["category"] == "rifle"): r["cycle_ap"] = src.get("cycle_ap") or MODES["bolt"][1]["single"] - MODES["S"][1]["single"]
         r["weight_kg"] = n(row["kg"]); r["price_credits"] = n(row["cr"])
         props = r["phys"]["props"]
         if "(silent)" in copy_cell and "silent" not in props: props.append("silent")

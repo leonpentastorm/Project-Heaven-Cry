@@ -811,14 +811,14 @@ Weapon skills and lore:
 | Legion marksman rifle † | 32 | 20 | 15 | 6 | single | 4.2 | 1,500 | optic, muzzle, magazine |
 | Hellraiser trench carbine † | 28 | 11 | 20 | 8 | single, burst, auto | 3.2 | 800 | optic, muzzle, magazine, underbarrel |
 | Adamantile carbine † | 28 | 13 | 15 | 6 | single, burst | 3.8 | 1,000 | optic, muzzle, magazine, underbarrel |
-| Adamantile heavy rifle † | 36 | 22 | 8 | 5 | single | 6.5 | 2,000 | optic, muzzle, magazine, underbarrel |
+| Adamantile heavy rifle † | 36 (Shot 3 AP, Aimed Shot 4 AP; rules 1.93 item 8101) | 22 | 8 | 5 | single | 6.5 | 2,000 | optic, muzzle, magazine, underbarrel |
 | ADCorp short carbine † | 27 | 12 | 30 | 8 | single, burst, auto | 3 | 1,000 | optic, muzzle, magazine |
 | ADCorp line rifle † | 30 | 16 | 30 | 8 | single, burst, auto | 3.8 | 1,300 | optic, muzzle, magazine, underbarrel |
-| ADCorp designated rifle † | 34 | 22 | 15 | 6 | single | 4.6 | 1,800 | optic, muzzle, magazine |
+| ADCorp designated rifle † | 33 (rules 1.93 item 8101; was 34) | 22 | 15 | 6 | single | 4.6 | 1,800 | optic, muzzle, magazine |
 | Chezknov battle rifle † | 31 | 17 | 20 | 7 | single, burst | 4.4 | 1,400 | optic, muzzle, magazine, underbarrel |
-| Chezknov precision rifle † | 35 | 24 | 5 | 5 | single | 5 | 1,900 | optic, muzzle, magazine |
+| Chezknov precision rifle † | 35 (Shot 3 AP, Aimed Shot 4 AP; rules 1.93 item 8101) | 24 | 5 | 5 | single | 5 | 1,900 | optic, muzzle, magazine |
 | Arsenal piston rifle † | 30 | 16 | 30 | 8 | single, burst, auto | 3.6 | 1,250 | optic, muzzle, magazine, underbarrel |
-| Arsenal heavy rifle † | 38 | 20 | 10 | 5 | single | 6 | 2,100 | optic, muzzle, magazine, underbarrel |
+| Arsenal heavy rifle † | 38 (Shot 3 AP, Aimed Shot 4 AP; rules 1.93 item 8101) | 20 | 10 | 5 | single | 6 | 2,100 | optic, muzzle, magazine, underbarrel |
 | Albert Town brush carbine † | 31 | 12 | 6 (loose) | 6 | single | 3.2 | 650 | optic, muzzle |
 | Albert Town service rifle † | 32 | 18 | 8 (loose) | 6 | single | 4 | 950 | optic, muzzle |
 | Albert Town stalking rifle † | 44 (Shot 3 AP, Aimed Shot 4 AP) | 28 | 4 (loose) | 6 | single | 5.5 | 1,500 | optic, muzzle |
@@ -14673,3 +14673,8 @@ The integration of Items 2.0 stage B (lane B1's 72 weapon rows) and the consolid
       `hellraiser_service_rifle`; `sawn_off`, `coach_gun`; `recurve_bow`, `longbow`), so no camp list moves when new
       rows join the pools; no rules 1.92 row carries it. The shop, the reward pick, loot and the Forge do not read the
       tag (rules 1.91 item 7920 stands for them).
+8101. **Rules 1.18's guard stands for the new rows** (a rifle whose single shot costs 2 AP deals at most 33): the three new
+      rifles over it take the **bolt cycle** and keep their damage (`cycle_ap` 1, Shot 3 AP, Aimed Shot 4 AP, as the long
+      rifle): `adamantile_heavy_rifle` (36), `arsenal_heavy_rifle` (38), `chezknov_precision_rifle` (35);
+      `adcorp_designated_rifle` is **33** (was 34) and keeps Shot 2 / Aimed Shot 3. Section 7's † rows and the numbers
+      file (`-numbers.md`) say the same. No other new row is over the guard. PROVISIONAL with the other rules 1.92 numbers.
