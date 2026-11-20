@@ -14,7 +14,7 @@ const doAct = (a: any, by = 'host') => { G = apply(G, a, by); };
 vi.mock('../game/store', () => ({ getState: () => view(), act: (a: any) => doAct(a), go: () => {}, toast: (t: string) => { toasts.push(t); }, polishText: async () => '', retryNarrator: () => {}, saveNow: () => {} }));
 const { MainLogic } = await import('./main.js');
 const { figLevelUp } = await import('./levelup.js');
-const { figmentIcon, figmentIconUri, figmentFaceOf, figmentIconOfUnit, figmentLogIcon, FIGMENT_ICON_IDS } = await import('../game/figmentIcons');
+const { figmentIcon, figmentIconUri, figmentFaceOf, figmentIconOfUnit, figmentLogIcon, FIGMENT_ICON_IDS, figmentPng } = await import('../game/figmentIcons');
 const { faceOf } = await import('./shared.js');
 
 const F: any = FIG;
@@ -29,6 +29,16 @@ function story(vis: number) {
   return { id: c.id, L };
 }
 const fig = (L: any) => L.renderVals().mg.fig;
+
+describe('figment order and trait pictures (Items 2.0 item 21)', () => {
+  it('every order slot data names a picture for, and every trait, resolves to a built asset; no icon is named in code', () => {
+    const named = (F.verbs as any[]).filter((i) => String(i.icon || '').startsWith('order-'));
+    expect(named.length).toBeGreaterThanOrEqual(8);
+    for (const row of named) expect(figmentPng(row.icon), row.id).toMatch(/^\/assets\/order-.*\.webp/);
+    for (const t of F.traits as any[]) expect(figmentPng(t.id, true), t.id).toMatch(/^\/assets\/trait-.*\.webp/);
+    expect(figmentPng('')).toBe(''); expect(figmentPng('figment-eye')).toBe(''); expect(figmentPng('nope', true)).toBe('');
+  });
+});
 
 describe('figment line icons (figmentIcons.ts)', () => {
   it('every form, the Scrap Turret and Picture name an icon that has a file; the URIs are inked (no currentColor)', () => {

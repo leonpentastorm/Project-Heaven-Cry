@@ -178,6 +178,11 @@ for src in sorted((ROOT / "art/emblems/patrons").glob("*.png")):
     emit("patron-mark-" + src.stem, src, (128, 128), (512, 512), 90)
 for src in sorted((ROOT / "art/icons/prayers").glob("*.png")):
     emit("prayer-" + src.stem, src, (128, 128), (512, 512), 90)
+# Figment order and trait icons (Items 2.0 item 21; art/icons/figments/{order,trait}-<id>.png, Wick flat ink): built under their file
+# stem, which is the `icon` id data/figments.json names (order-draw-fire) or the trait id with trait- in front (trait-kindling);
+# game/figmentIcons.ts figmentPng() reads them. The form icons (figment-*) stay the line SVGs.
+for src in sorted((ROOT / "art/icons/figments").glob("*.png")):
+    emit(src.stem, src, (128, 128), None, 90, versioned=True)
 # Calls are delivered in the catalog; the Calls tab can use call-<kebab-case id>.
 for iid, a in C.get("calls", {}).items():
     emit("call-" + iid, ROOT / a["path"], (128, 128), (512, 512), 90)
