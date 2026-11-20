@@ -86,6 +86,16 @@ def reviews(queue, manifest):
 
 
 def update_handoff(queue,progress):
+    if BASE.name == '2026-11-20-sole-uniques':
+        (BASE/'HANDOFF.md').write_text('# Sole artist unique shields\n\n'
+            f'{len(progress["delivered"])}/{len(queue)} selected candidates; project {508 + len(progress["delivered"])}/871. '
+            'Branch art/2026-11-20-reset-continuation; run sole-20261120-1615; issue3 claim7045298880. '
+            'All review-candidate, production_approved:false, implementation_ready:false. '
+            'Native bytes, prompt/reference hashes, versioned master and exports retained. '
+            'Remaining: '+(', '.join(progress['remaining']) or 'none')+'. '
+            'Read live issue3/all comments and current remote deliveries before every render; push each picture before next. '
+            'No prior moderation retry, no develop mutation. Imports/exports/attempts count0.\n')
+        return
     (BASE/'HANDOFF.md').write_text('# Unique melee and bow delivery\n\n'
         f'**{len(progress["delivered"])}/8 unique paintings delivered** on `art/2026-11-19-unique-melee-bow`. '
         'File08 sectionD entries1–7 and15 only. Review candidates, production_approved:false; no grade variants.\n\n'
@@ -136,6 +146,7 @@ def export(asset_id, source):
         'label': job['label'], 'path': rel(target), 'sha256': sha(target),
         'width': 1024, 'height': 1024, 'background': 'transparent',
         'status': 'review-candidate', 'production_approved': False,
+        'implementation_ready': False,
         'exports': exports, 'source_path': rel(source_target),
         'native_dimensions': list(Image.open(source_target).size),
         'brief': job['brief'], 'brief_number': job['brief_number'],
@@ -154,6 +165,7 @@ def export(asset_id, source):
         'native_dimensions': asset['native_dimensions'], 'exports': exports,
         'export_hashes': {size: sha(ROOT / p) for size, p in exports.items()},
         'grade': 'unique', 'status': 'review-candidate', 'production_approved': False,
+        'implementation_ready': False,
     })
     dump(BASE / 'manifest.json', manifest)
     job['status'] = 'delivered'
@@ -168,12 +180,16 @@ def export(asset_id, source):
     sys.path.insert(0, str(ROOT / 'tools'))
     from rehash_art_checksums import main
     main()
-    print(f'Exported {asset_id}: {len(progress["delivered"])}/8')
+    print(f'Exported {asset_id}: {len(progress["delivered"])}/{len(queue)}')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--id', required=True)
     parser.add_argument('--source', type=Path, required=True)
+    parser.add_argument('--delivery-root', type=Path)
     args = parser.parse_args()
+    if args.delivery_root:
+        BASE = (ROOT / args.delivery_root).resolve()
+        BASE.relative_to(ROOT / 'art/_archive/gear')
     export(args.id, args.source)

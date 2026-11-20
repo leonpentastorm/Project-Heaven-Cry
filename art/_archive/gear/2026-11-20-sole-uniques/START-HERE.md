@@ -1,0 +1,5 @@
+# Two unique shields: sole artist
+
+Exact new claim7045298880, run sole-20261120-1615, branch art/2026-11-20-reset-continuation. Return Clause #16 then Grudge Plate #18. Current source Standard candidates exist; no rejection, prior claim or delivery for these uniques in shared issue3. Leon explicitly authorizes continuous candidate production; all source and new artistic approvals remain false.
+
+Before EVERY imagegen read live issue3+all comments and current owner branch deliveries; verify destination absent in remote tree/catalog and source hashes unchanged. One image/prompt, inspect/show/native+prompt/reference hashes+1024RGBA+256/128/64/32 exports, validate and normal commit/push before the next. Develop untouched, all prior work preserved. Current total508/871 before new drawings; add only selected distinct unique paintings. Old pixel-exact Running Script and Rim corner revisions remain pending, all9 unsuccessful attempts retained in their separate archive; do not count attempts. No actual new quota yet; stop on actual usage_limit_reached and preserve exact reset. No retry of recorded moderation rejection.

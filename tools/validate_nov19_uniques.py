@@ -23,7 +23,8 @@ def validate(selected=None, complete=False):
     text=(ROOT/'art/briefs/prompts-2026-11-19/08-grades-and-uniques.md').read_text()
     assert (BASE/'source-brief.md').read_text()==text, 'Brief changed; reconcile claim'
     expected=set(json.loads((BASE/'claim.json').read_text())['ids'])
-    assert len(queue)==len(expected)==8
+    assert len(queue)==len(expected)
+    assert len(expected)==(2 if BASE.name=='2026-11-20-sole-uniques' else 8)
     assert expected <= {Path(p).stem for p in re.findall(r'\*\*Save as:\*\* `([^`]+)`',text)}
     assert {j['id'] for j in queue} == expected
     delivered = {j['id'] for j in queue if j['status']=='delivered'}
@@ -39,6 +40,8 @@ def validate(selected=None, complete=False):
         assert a['id'] in expected and entry['path'] == a['path'] == f'art/icons/gear/{a["id"]}.png'
         assert entry['status'] == a['status'] == 'review-candidate'
         assert entry['production_approved'] is a['production_approved'] is False
+        if BASE.name=='2026-11-20-sole-uniques':
+            assert entry['implementation_ready'] is a['implementation_ready'] is False
         assert entry['grade'] == a['grade'] == 'unique'
         assert entry['source_path'] == a['source']['path'] and entry['native_dimensions'] == a['native_dimensions']
         assert entry['exports'] == a['exports'] and set(a['exports']) == {'256','128','64','32'}
@@ -68,7 +71,7 @@ def validate(selected=None, complete=False):
         for size in (64,32):
             with Image.open(BASE/f'reviews/{family}-{size}px.png') as sheet:
                 assert sheet.mode == 'RGB' and sheet.width >= 220
-    print(f'PASS: Nov19 unique melee/bow {len(delivered)}/8; exact brief paths, catalog, source/master/prompt/reference/export hashes, candidate status and progress; pixel checks: {selected or "all delivered"}.')
+    print(f'PASS: Nov19 uniques {len(delivered)}/{len(expected)}; exact brief paths, catalog, source/master/prompt/reference/export hashes, candidate status and progress; pixel checks: {selected or "all delivered"}.')
     print('Scope: omitted historical art is not pixel-validated by this targeted check.')
 
 
@@ -76,5 +79,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--asset')
     parser.add_argument('--complete', action='store_true')
+    parser.add_argument('--delivery-root', type=Path)
     args = parser.parse_args()
+    if args.delivery_root:
+        BASE = (ROOT / args.delivery_root).resolve()
+        BASE.relative_to(ROOT / 'art/_archive/gear')
     validate(args.asset, args.complete)

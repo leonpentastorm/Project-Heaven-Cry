@@ -1,0 +1,91 @@
+{
+  "id": "kit-rim-wall-corner",
+  "src": "/workspace/generated_images/exec-edeaccc8-baf4-4de9-a090-a6c4301bf49d.png",
+  "job": {
+    "id": "kit-rim-wall-corner",
+    "number": 13,
+    "file": 1,
+    "path": "art/sprites/kit/rim/wall-corner.png",
+    "references": [
+      "art/sprites/kit/rim/wall-corner.png",
+      "art/sprites/kit/rim/wall-straight.png"
+    ],
+    "prompt": "Repaint the FIRST attached L-shaped wall CORNER tile, keeping its EXACT transparent footprint and canvas placement. The SECOND image is the wall material reference. This is a fictional RPG overhead map tile,256square. Replace the old corners different lighter panel-grid material with exactly the straight tiles blue-grey brushed steel. Remove every old panel-grid line, hazard stripe and extra corner bolt. Preserve the exact L silhouette. Same thin ivory caps on exposed boundaries as straight, running continuously around both corners. Add one fine cyan centreline: start at left edge exactly halfway through the horizontal arm, go right to the centre of the vertical arm, bend90degrees, continue straight DOWN centred through the vertical arm, ending at bottom edge. Exactly halfway between vertical edgecaps, equal steel width on both sides of cyan. No endcap/outline across either opening. Transparent background, no shadow, no added grid/seams/bolts. Both opening cross-sections must butt seamlessly to the straight tile. One square PNG.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/sprites/kit/rim/wall-corner.png": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c",
+      "art/sprites/kit/rim/wall-straight.png": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4"
+    },
+    "original_sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c",
+    "previous_prompt": "This is fictional RPG game art for Project Heaven Cry. Edit the supplied existing PNG for a specific unfinished art correction. Preserve the supplied image's composition and canvas. Deliver one image only, PNG with genuine transparent alpha, no background or checkerboard. Create the corrected 256x256 Rim wall CORNER tile using the first reference's straight wall as the exact paint/material authority and the second reference only for L geometry. Strict top-down orthographic, no perspective. A 128px-thick L joins LEFT edge centred y64..191 to BOTTOM edge centred x64..191. Outer elbow is square at x192,y64; inner elbow at x64,y192. Transparent empty above y64 and right of x192, with empty lower-left notch x0..63,y192..255. Both arms have completely flat cut ends at the cell border with no end outline or end cap: left end exactly y64 through191 inclusive, bottom end exactly x64 through191 inclusive. No opaque pixels on top or right cell edge. Match the attached STRAIGHT exactly: same blue-grey bulkhead value and brushed, worn plate texture, same ivory cap-band width, same thin cyan #8BDEEE light strip through the centre. Carry cap and cyan strip in continuous clean right-angle bends around the corner, meeting the straight reference at each opening's same centreline/height. Top-left light; no cast shadow. Remove the old corner's panel grid, hazard stripes, corner fittings and extra bolts. No new seams, panel grid, rivets, lettering, rounded corners or lighter cap. Transparent canvas right to flat-cut openings. Output one square tile, preserve full canvas and exact half-tile dimensions."
+  },
+  "preflight": {
+    "id": "kit-rim-wall-corner",
+    "own": "bf89297dd17f431b2c212cea51b111b4b86d63a8",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "run": "sole-20261120-1615",
+    "latest_comment": 7044738722
+  },
+  "clock": {
+    "current_time": "2026-11-20 16:48:50 UTC"
+  },
+  "attempt": "013-sole-v6",
+  "review": "Reject: left and bottom openings have ivory endcaps, cyan offset right, horizontal band thinner than requested. No valid seamless join. All originals unchanged. Retained as unsuccessful attempt, count0. Continuing newly eligible unique shields instead of repeating this unchanged failure.",
+  "source_sha256": "696f7a2cfd92268d04f4eb5a6b91bb834e9a46dca0e311a14cd0218c3b049520",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "native_mode": "RGBA",
+  "native_alpha_bbox": [
+    0,
+    0,
+    1253,
+    1254
+  ],
+  "references": [
+    {
+      "original_path": "art/sprites/kit/rim/wall-corner.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v6/references/00-wall-corner.png",
+      "sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c"
+    },
+    {
+      "original_path": "art/sprites/kit/rim/wall-straight.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v6/references/01-wall-straight.png",
+      "sha256": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4"
+    }
+  ],
+  "technical_previews": {
+    "1024": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v6/preview-1024.png",
+      "sha256": "a08d4ba21612206214d31e53ef2b12b99c064a91fe7e123e39b141b809c2d230"
+    },
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v6/preview-256.png",
+      "sha256": "d63b71386cb9293d2894c70e6b8c5c80551b50157aa3653ed52373918a397287"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v6/preview-128.png",
+      "sha256": "1a439bfeadf0a71704c41a6cfbd9f87174635205d9c6392084e505a0cbae55b9"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v6/preview-64.png",
+      "sha256": "9fe1c29cc05af6664a6094854306b5454f8f6d9e9c53e6ab196ff1fd3355d1a6"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v6/preview-32.png",
+      "sha256": "93dd8bd5de4f217b5cb2122e62a2ae4e92c1880e21f10ad55250d348d588bfd5"
+    }
+  },
+  "selected": false,
+  "count_contribution": 0,
+  "status": "quality-rejected",
+  "production_approved": false,
+  "implementation_ready": false
+}
