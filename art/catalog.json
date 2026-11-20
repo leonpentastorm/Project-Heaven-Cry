@@ -27113,6 +27113,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 8
       }
+    },
+    "weapon-legion_leaf_dagger--fine": {
+      "label": "Legion Leaf Dagger — Fine",
+      "path": "art/icons/gear/weapon-legion_leaf_dagger--fine.png",
+      "sha256": "30dff0ce6f1183f56ecf9be77e65e0bd9f7c92bb767638316d393e6364878301",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_leaf_dagger--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_leaf_dagger--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_leaf_dagger--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_leaf_dagger--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_leaf_dagger--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-legion_leaf_dagger",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9668794668401979,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 23
+      }
     }
   },
   "survival_art": {
