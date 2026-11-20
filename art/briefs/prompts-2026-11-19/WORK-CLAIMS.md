@@ -1,5 +1,7 @@
 # Scheduled restart claim — 20 November 2026
 
+**Live coordination is mandatory:** read the current issue 3 opening ledger and all newer comments at startup and immediately before each image request. Check actual remote deliveries; a missing local file does not establish availability. Publish a START/RESUME with run identifier; do not start a second producer on an unreleased active queue. Exact claims must be posted and pushed before drawing, then reread; earliest unreleased nonconflicting ownership wins. Skip conflicting or already delivered IDs and choose other eligible work. Announce releases and quota handoffs explicitly.
+
 This worker claims 22 pictures on `art/2026-11-20-reset-continuation`: Ballistic Helmet Relic/Celestial; all four grades for Throwing Knives, Ork Rip Saw, Hellraiser Servo Fist, Hellraiser Rotary and Purifier Flamer. Exact IDs and prompts: `art/_archive/gear/2026-11-20-reset-continuation/queue.json`. Shared reservation: issue 3 comment 7026736883. Automation is enabled for **20 November 2026 at 09:45:39 Vietnam time** and will generate and push each picture, then claim more eligible work until actual usage runs out again.
 
 Read [the ready-to-run handoff](../../_archive/gear/2026-11-20-reset-continuation/START-HERE.md). The other agent retains Gas Mask Relic/Celestial; their later reset is 10:19:14. Night Goggles all four and Gas Mask Fine/Masterwork are delivered. Earlier blade/axe and Drifter/Crossbow service-blocked jobs stay separate from quota and are not free repeated retries.

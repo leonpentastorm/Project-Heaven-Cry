@@ -8,6 +8,14 @@ Workspace: `/workspace/work/phc-reset-2026-11-20`. Branch: `art/2026-11-20-reset
 
 Our reservation is issue 3 comment 7026736883. Read the latest comments at https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 before rendering or extending the queue.
 
+### Mandatory duplicate prevention
+
+The issue's current opening ledger and all newer comments are the shared authority; historical branch snapshots can be stale. At startup, read the issue body and every comment page, fetch the owner branches, and check their actual delivered IDs. Post START/RESUME with a unique run identifier, branch, reservation and first job. Do not start a second producer on a queue with an unreleased START from another run.
+
+Immediately before **every** image_gen call, reread live claims and latest remote deliveries. A missing local destination does not mean it is free. Skip an ID already owned or delivered elsewhere, update this queue and continue other eligible work. For new reservations, post exact stem--grade IDs, push the claim and reread the shared channel before rendering; the earliest unreleased nonconflicting claim wins.
+
+Publish changes, completions, releases and STOP/QUOTA handoffs explicitly. A quota stop, timer or inactive timestamp does not itself release ownership. A START is a coordination record rather than proof of present liveness; resolve ambiguous ownership in the channel while continuing other clear work.
+
 | Standard | Claimed grades |
 | --- | --- |
 | `armour-ballistic_helmet` | Relic, Celestial |

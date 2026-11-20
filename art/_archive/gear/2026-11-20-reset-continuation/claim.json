@@ -38,5 +38,14 @@
   "reservation_comment": 7026736883,
   "baseline_commit": "7038c238175b7f224f9c0b72e7ea951e4ab73f67",
   "reset_epoch": 1795142739,
-  "reset_vietnam": "2026-11-20T09:45:39+07:00"
+  "reset_vietnam": "2026-11-20T09:45:39+07:00",
+  "coordination": {
+    "ledger": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
+    "read_all_comment_pages_at_start": true,
+    "publish_start_with_unique_run_id": true,
+    "check_live_claims_and_remote_deliveries_before_every_image": true,
+    "claim_winner": "earliest unreleased nonconflicting exact-ID reservation",
+    "conflicting_or_delivered_job": "skip and update queue; continue other eligible work",
+    "release_requires_explicit_channel_update": true
+  }
 }
