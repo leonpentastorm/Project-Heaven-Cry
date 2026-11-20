@@ -3049,7 +3049,7 @@ bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/g
 f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/gear/2026-11-19-unique-melee-bow/web-build-check.json
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
-1ab66f40bc2c91a894298c970cc1cfa57bec8431b941dbe9dc6b038c0bd227fe  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
+1c23860bb2798975c015d48a2c2ea6290c2887763fa05fb7add8c704691553f2  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
 4af37da8e63953193726b7b9d81516260d26a544a64fffe7bd54b4dc27ded54e  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
@@ -3125,6 +3125,7 @@ e4c5b9784b6444b4c52503010cda1cdcd0d9df195980381a189ff25a513582da  art/_archive/g
 2999330cbaa663b251233bac0c1d1cf8c47d761f63114e094fe256ac9b95aa43  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-dock_cutter--masterwork.json
 1d20b77054e5ac7326d126cebf353f98412aeafa2b62cb32ffc2e1f785fb289c  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-hellraiser_rotary--celestial.json
 b02754d15bfca27e004d2481c99034a693be29331d1f645af5dec4527a910917  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-kemizuchi_side_sword--masterwork.json
+5e6cb2f6b0c0881fa7b076711696745272bcf6f4ba74390166290cb87ae8bb87  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-legion_spear--masterwork.json
 4539a422f89b173b79fc509303d36d1f49327d82626972f0cfbb5b440c06f424  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-long_draw--fine.json
 50b097a5b74b92a7580c8911218269f41fdf0ab8892f49284181bdc54280532a  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-ork_cleaver_glaive--masterwork.json
 54ad9bce4afff6e1e35f06e8acb90ddda1571c52c43ba74c7821632647c53190  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-purifier_flamer--masterwork.json
@@ -3218,7 +3219,7 @@ d121a712b19ad19c1bdfbb6bf653f55176dbd3a56e0a99190b2533688fc84479  art/_archive/g
 145a23a2ec6b8dea6474d736972d06dafdea4e30be22c14a5d2fd418b9a96d85  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--fine.png
 6b51800311c1abac3fb5097aa49424a95050f411f3fe963aaa6021f5c0642fdc  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--masterwork.png
 c3fc0ebb999523ac0afd624fac8d5eca85cb384799daef091806f0d4cc6998a3  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--relic.png
-4a9e55404eceac560847ceda81fdc0c307ae27a0fb850ffba14dcde30ee8c912  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+ecdb3d98cb91538c16ee5a435d4d929f7efce3de033fbfbfe83fc7b0425cfbd1  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
 d66561bf70f8db762cd400558efdc502b276e286665d0f14b9ecb72c4ec2c656  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-barrier_wall--celestial.txt
@@ -3307,7 +3308,7 @@ e1bc7c413228e96e8b8a18f020877fc4c13148685df6dc504fe722424fad81b3  art/_archive/g
 9174c6e15a67c3c78f24e7b4fb123888dc8fae9ce69d3b0e3ad5a9688bf84991  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--fine.txt
 ac8e6168ef1fde91952487d1cd6969b201e75ced9cd6f87120efee07ba679490  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--masterwork.txt
 f4470e6fdb2db8949aa5fd2588f1dea7e8e52be8350916c4779be099c8ff68e8  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--relic.txt
-4fb86611e081bb56f64671cf034dd637a225c2757d60d38b7e7e06be45623dae  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+447d6ba2adcac9c3669eb716e7b9fbe7c29ae54a0bf26bb53f2b963aa48285e9  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 60f24b976b5768dae5427466160ef27b4d9f21567ccfb47e570241deaf938fc8  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-barrier_wall-32px.png

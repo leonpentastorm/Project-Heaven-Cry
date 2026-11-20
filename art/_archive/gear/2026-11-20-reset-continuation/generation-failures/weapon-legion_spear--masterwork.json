@@ -1,0 +1,47 @@
+{
+  "id": "weapon-legion_spear--masterwork",
+  "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 4efdd4cb-2dbf-4686-b733-77d67671885a. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+  "type": "moderation_blocked",
+  "run": "sole-20261120-1615",
+  "job": {
+    "id": "weapon-legion_spear--masterwork",
+    "standard_id": "weapon-legion_spear",
+    "grade": "masterwork",
+    "label": "Legion Spear \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-legion_spear--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/icons/gear/weapon-legion_spear--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_spear",
+    "family_references": [
+      "art/icons/gear/weapon-legion_spear.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line on the head with the item's accent colour (bright brass if it has no accent), so the head carries one clear coloured stripe. The haft becomes a finer, darker, straight-grained wood (or a finer steel tube where it is metal), with two flat metal strips laid along it below the head, flush with its surface; the butt cap and the socket are re-made in the same shapes with crisp edges. Exact edges, no wear.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades. The TWO new flat metal strips are THIN FLUSH inlays running lengthwise on the exposed haft just below the socket, never attached rails, braces, straps or projecting parts. They stay entirely inside the original shaft outline.",
+    "keep_line": "the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png"
+    ],
+    "depends_on": "weapon-legion_spear--fine"
+  },
+  "preflight": {
+    "id": "weapon-legion_spear--masterwork",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "own": "99bc810e35bd12016a7e402332778685195389b6",
+    "latest_comment": 7044666096,
+    "run": "sole-20261120-1615"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-legion_spear.png": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287",
+    "art/icons/gear/weapon-legion_spear--fine.png": "a9b30c3f4852e20cde6fca0ddef63dc8c3ebb0ee39af36feec0cd8275fa93b71",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "recorded_utc": "2026-11-20T16:25:07.357948+00:00"
+}

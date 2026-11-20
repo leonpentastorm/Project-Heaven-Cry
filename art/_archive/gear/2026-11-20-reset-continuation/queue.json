@@ -3205,7 +3205,12 @@
     "reference_sources": [
       "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png"
     ],
-    "depends_on": "weapon-legion_spear--fine"
+    "depends_on": "weapon-legion_spear--fine",
+    "generation_error": {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-legion_spear--masterwork.json",
+      "id": "weapon-legion_spear--masterwork"
+    }
   },
   {
     "id": "weapon-legion_spear--relic",

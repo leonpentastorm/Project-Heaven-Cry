@@ -166,6 +166,11 @@
       "type": "moderation_blocked",
       "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-ork_cleaver_glaive--masterwork.json",
       "id": "weapon-ork_cleaver_glaive--masterwork"
+    },
+    {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-legion_spear--masterwork.json",
+      "id": "weapon-legion_spear--masterwork"
     }
   ],
   "integrated_peer_commit": "3f50be29283f413056b49024914c1b12cda9f359",
