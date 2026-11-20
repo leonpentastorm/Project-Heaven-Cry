@@ -7646,7 +7646,13 @@
     "standard_sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
     "standard_status": "review-candidate",
     "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
-    "current_data_item_present": true
+    "current_data_item_present": true,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-decrkm_autopistol--masterwork--1795161719657.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-decrkm_autopistol--masterwork--1795161719657.json",
+      "request_id": "d5fcff27-9849-4e19-ac3d-8fcc72c208c5"
+    }
   },
   {
     "id": "weapon-decrkm_autopistol--relic",
