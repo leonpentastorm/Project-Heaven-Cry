@@ -34,6 +34,7 @@
 //                                         to come up instead of estimating the effects' timing.
 // Sounds go through cue() (exported: App.tsx uses it for the combat transition). It plays the wished file names below
 // when sfx.ts has a file for them, else stand-ins from the existing set plus a small synthesised hit.
+import { visibleBox, windowBox } from './viewBox';
 import React from 'react';
 import { type GameState, WEAPON, CLASS, isUnseenId, SETTING, runSetting, survivalRun, RULES } from '@engine';
 import { roundLabel } from './fieldView';
@@ -730,16 +731,11 @@ function CutIn({ c, img, out, rm, onPick, onCustomise, onHover }: { c: Cut; img:
 /** The box a your-turn card is drawn in (B4, 0.32): the fight's action panel (from the right) or the board's column
  * (from the left), a few pixels in; the window when neither is on screen. */
 function panelBox(right: boolean): { left: number; top: number; width: number; height: number } {
-  const win = { left: 0, top: 0, width: typeof innerWidth === 'number' ? innerWidth : 1280, height: typeof innerHeight === 'number' ? innerHeight : 720 };
-  if (typeof document === 'undefined') return win;
-  const el = document.querySelector(right ? '#phc-cb-aside' : '.phc-cb-left') as HTMLElement | null, r = el?.getBoundingClientRect();
-  if (!r) return win;
-  // 0.33 polish: the box is clamped to the viewport; under 1000 px the side panel wraps below the map, so a panel
-  // whose visible part is under 200 px high or wide (or wholly off screen) falls back to the window.
-  const top = Math.max(0, r.top), bottom = Math.min(win.height, r.bottom);
-  const left = Math.max(0, r.left), right2 = Math.min(win.width, r.right);
-  if (right2 - left < 200 || bottom - top < 200) return win;
-  return { left: left + 4, top, width: right2 - left - 8, height: bottom - top };
+  if (typeof document === 'undefined') return windowBox();
+  const el = document.querySelector(right ? '#phc-cb-aside' : '.phc-cb-left') as HTMLElement | null;
+  // 0.33 polish: clamped to the viewport; a panel with too little in sight gives the window (viewBox.ts, the one rule)
+  const b = visibleBox(el?.getBoundingClientRect());
+  return b.left === 0 && b.top === 0 && b.width === windowBox().width && b.height === windowBox().height ? b : { left: b.left + 4, top: b.top, width: b.width - 8, height: b.height };
 }
 
 /** For tests: what a banner and a cut-in would show for a unit. */

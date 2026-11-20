@@ -12,27 +12,27 @@ import { isFolded, setFolded } from './tabPrefs';
 import { go } from './store';
 import { Offer, Choices } from './rewardCards';
 import { type RewardPanelV, payPieces } from './rewardPanelView';
+import { visibleBox, type Box } from './viewBox';
+import { nextFrame } from './frames';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', white: '#FFFFFF' };
 const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
 const W = () => survivalRun.reward_panel;
 
-/** The middle column's visible box (the play screen's centre slot), clipped to the window: what the panel covers. */
-export function useCentreBox(): { left: number; top: number; width: number; height: number } {
-  const read = () => {
-    const el = document.querySelector('[data-phc-centre]') as HTMLElement | null, b = el?.getBoundingClientRect();
-    if (!b || !b.width) return { left: 0, top: 0, width: innerWidth, height: innerHeight };
-    const top = Math.max(0, b.top), bottom = Math.min(innerHeight, b.bottom);
-    return { left: b.left, top, width: b.width, height: Math.max(0, bottom - top) };
-  };
+/** The middle column's visible box (the play screen's centre slot), clipped to the window: what the panel covers. When
+ *  too little of the middle shows (a narrow window stacks the columns, and the middle starts below the fold), the
+ *  window (viewBox.ts, the one rule): the panel and its bar were drawn off the screen there, past any scroll. */
+export function useCentreBox(): Box {
+  const read = (): Box => { const el = document.querySelector('[data-phc-centre]') as HTMLElement | null, b = el?.getBoundingClientRect(); return visibleBox(b && b.width ? b : null); };
   const [box, setBox] = React.useState(read);
   React.useLayoutEffect(() => {
-    let raf = 0;
-    const on = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => setBox((o) => { const n = read(); return o.left === n.left && o.top === n.top && o.width === n.width && o.height === n.height ? o : n; })); };
+    let cancel = () => {};
+    // (the next frame, or a timer when the page draws none: frames.ts)
+    const on = () => { cancel(); cancel = nextFrame(() => setBox((o) => { const n = read(); return o.left === n.left && o.top === n.top && o.width === n.width && o.height === n.height ? o : n; })); };
     // (a screen's entrance slides the middle in: read again when an animation ends, a transform moves no ResizeObserver)
     on(); addEventListener('resize', on); addEventListener('scroll', on, true); addEventListener('animationend', on, true);
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(on) : null; const el = document.querySelector('[data-phc-centre]'); if (ro && el) ro.observe(el);
-    return () => { cancelAnimationFrame(raf); removeEventListener('resize', on); removeEventListener('scroll', on, true); removeEventListener('animationend', on, true); ro?.disconnect(); };
+    return () => { cancel(); removeEventListener('resize', on); removeEventListener('scroll', on, true); removeEventListener('animationend', on, true); ro?.disconnect(); };
   }, []);
   return box;
 }
