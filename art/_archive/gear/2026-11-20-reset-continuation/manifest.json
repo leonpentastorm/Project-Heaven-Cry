@@ -4044,6 +4044,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-deflector--fine",
+      "path": "art/icons/gear/shield-deflector--fine.png",
+      "sha256": "128620648fa275adeb30a843927adbdee18d76616eac7a62daba3decc9abf38d",
+      "label": "Deflector — Fine",
+      "family": "shield-deflector",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-deflector--fine.png",
+        "sha256": "cb25617e0e0826634ce77a92269a8d1f036765d44c1b5db7fd51e237ac5c4368"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-deflector--fine.png",
+        "sha256": "128620648fa275adeb30a843927adbdee18d76616eac7a62daba3decc9abf38d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-deflector--fine.txt",
+        "sha256": "62a40dfe3ca3d55819cee508ba58e04d1bdcf2f580ff178d2ac95812e5fe6dfe"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-deflector.png",
+          "sha256": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png",
+          "sha256": "981d7ba5269c8a312538f46ac4bfc41098a1537ca27a533a18dd4c9a2e5c3c69"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-deflector--fine.png",
+        "128": "art/icons/gear/exports/128/shield-deflector--fine.png",
+        "64": "art/icons/gear/exports/64/shield-deflector--fine.png",
+        "32": "art/icons/gear/exports/32/shield-deflector--fine.png"
+      },
+      "export_hashes": {
+        "256": "b80217f22f321aa38985b22b47eb4a1b6a7a3011b07e731b2820fac81f72ed4d",
+        "128": "40dbab02d3dd27687ff9dc9b6729484ce237d484fd6e413742ee313fe7b1b45f",
+        "64": "e99fd2481cb89dd2d04c228ef2d4f197d24a5256f5f3931fc5f5e9734a72efe9",
+        "32": "2279b5e85d8e26483884e1715d1f1fa464e71ff96cd9070a1bf21e43faa440c8"
+      },
+      "grade": "fine",
+      "standard_id": "shield-deflector",
+      "outline": {
+        "solid_alpha_iou": 0.9790213107900144,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
