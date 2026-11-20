@@ -1549,7 +1549,11 @@
     "reference_sources": [
       "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png"
     ],
-    "depends_on": "weapon-kemizuchi_side_sword--fine"
+    "depends_on": "weapon-kemizuchi_side_sword--fine",
+    "generation_error": {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-kemizuchi_side_sword--masterwork.json"
+    }
   },
   {
     "id": "weapon-kemizuchi_side_sword--relic",
