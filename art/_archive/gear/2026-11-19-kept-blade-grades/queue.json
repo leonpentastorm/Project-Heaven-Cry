@@ -5852,7 +5852,13 @@
     "standard_sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f",
     "standard_status": "review-candidate",
     "current_data_item_present": false,
-    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00"
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json",
+      "request_id": "1ce25817-1d39-4828-a9cb-f558f3673032"
+    }
   },
   {
     "id": "weapon-war_hammer--masterwork",
