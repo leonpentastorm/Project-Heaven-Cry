@@ -9572,6 +9572,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-breacher_plate--relic",
+      "path": "art/icons/gear/armour-breacher_plate--relic.png",
+      "sha256": "392eaa7883fc05450b0c64a1b2700beb70520d968fd5510607b588cfc758c4ce",
+      "label": "Breacher plate — Relic",
+      "family": "armour-breacher_plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breacher_plate--relic.png",
+        "sha256": "87a91636a26955e1195fbdbe7b932f16980e50b6beced3596a6286683d39953a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-breacher_plate--relic.png",
+        "sha256": "392eaa7883fc05450b0c64a1b2700beb70520d968fd5510607b588cfc758c4ce"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-breacher_plate--relic.txt",
+        "sha256": "d031162a3d86f824f26bded0745d3b732455241766a270607e5e26a189d98dba"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-breacher_plate--relic/v1/source.png",
+          "sha256": "c87940843e2a6161debfe93ef9c8107b6e6fc825b8faba361396dbaa5661420a"
+        },
+        {
+          "path": "art/icons/gear/armour-breacher_plate.png",
+          "sha256": "b5478d1d99942caa91c505c71a679b6a331f3b5f5c791148ff5641acc87edcb7"
+        },
+        {
+          "path": "art/icons/gear/armour-breacher_plate--masterwork.png",
+          "sha256": "27cdc67929746abed7838aca9d3dc66385396e1894a4c7ac7b9b32099815e873"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breacher_plate--relic.png",
+        "128": "art/icons/gear/exports/128/armour-breacher_plate--relic.png",
+        "64": "art/icons/gear/exports/64/armour-breacher_plate--relic.png",
+        "32": "art/icons/gear/exports/32/armour-breacher_plate--relic.png"
+      },
+      "export_hashes": {
+        "256": "de0d01c61acf69bb6c0a6932b3bb95822171ce087635241e91e7534c6621e458",
+        "128": "46610a5b73b5e59a625d87271bd6569bfdf72dc08ce67342b109644696ea92fb",
+        "64": "b495802864a7af5457bae22f2564da742346a0cad35921db6143f85f003deee7",
+        "32": "a553688dfa2856e6e492804427236348cc5b16aa6e0314a5e09f3ce14018718b"
+      },
+      "grade": "relic",
+      "standard_id": "armour-breacher_plate",
+      "outline": {
+        "solid_alpha_iou": 0.9765204288587432,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 41
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
