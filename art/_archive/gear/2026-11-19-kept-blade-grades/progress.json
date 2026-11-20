@@ -210,7 +210,8 @@
     "weapon-lumeri_cathedral_burner--fine",
     "weapon-lumeri_cathedral_burner--masterwork",
     "weapon-lumeri_cathedral_burner--relic",
-    "weapon-lumeri_cathedral_burner--celestial"
+    "weapon-lumeri_cathedral_burner--celestial",
+    "weapon-whisper_pistol--fine"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -256,7 +257,6 @@
     "weapon-short_bow--masterwork",
     "weapon-short_bow--relic",
     "weapon-short_bow--celestial",
-    "weapon-whisper_pistol--fine",
     "weapon-whisper_pistol--masterwork",
     "weapon-whisper_pistol--relic",
     "weapon-whisper_pistol--celestial",
@@ -267,7 +267,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-20T07:44:11.466770+00:00",
+  "updated_utc": "2026-11-20T07:46:14.839240+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3,
   "quota_history": [

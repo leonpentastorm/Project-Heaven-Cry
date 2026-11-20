@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-f7aeee6b531b0e40097af7529a1649fcfd2200d55d1b14cad08d9d4208f3dbaf  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+bdef9775c82b8ba6910e74716b68df6394d5e3ef5a8c8904566dcb6102b4249e  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 cfe0b7165b9763268d0236c6c4e2d3115516495eb909f41cfb8621beee42e813  art/_archive/gear/2026-11-19-kept-blade-grades/START-HERE-2026-11-20.md
 8ee34c72311bf68773c6853ab0bb7d25b31c2b57e8143486cfbd5f27578d9e64  art/_archive/gear/2026-11-19-kept-blade-grades/TOMORROW.md
 dc45fc3c9fb69cc8ef2a2ab30aaefdfe979447725ab1cf53391fc2ffe47c8ca4  art/_archive/gear/2026-11-19-kept-blade-grades/VALIDATION.md
@@ -1869,7 +1869,7 @@ f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/g
 413b2adf894497a56b98375b72437e60d2a8805d53727e3441070c247e265c32  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json
 e49b88c1c8e8faccd29fab4de73c1d9e3b9d656d510539f826076b68a6323021  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_pick--fine--1795155670059.json
 63fe7ac88a5e6ac611b6d1d7336d6104cec11fa77f81d5d1b786da46672b42b9  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json
-adb19186f13f2efdb137851392c7402871cf2069c60901b9f139086d292729ef  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+ffe9a6330b28dd146ab7c37e4c32d015841a3372d08751bb8205c7ff89fd122f  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
 31b9266c8a923ce1e84e1237e45494829d72265679afc370a72675e70d85c156  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--celestial.png
 f93411441905437355171c2f6a64045a0cfe2099aaf24cf694d5dd7da311afa6  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--fine.png
 fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--masterwork.png
@@ -2082,7 +2082,8 @@ d0f76e0f414e62eba16e0f9bf623517ec9be508f512fc3952035ec982a2d8752  art/_archive/g
 5c56e147e3e347452f5e2a3c3afade5819646e609057fe3bac345bf7415e9d0d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--fine.png
 3aca2654a89d6600486e7aa7b1e1c7c2a5f746997a6f5832f71981d3448a8240  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--masterwork.png
 45107d90d1ec0390fc1eaeda10161fe47b3155eafe4506e6a528f67b80bcb57d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--relic.png
-893012be959540164bb2a91072acfefd34f5aaadf7b3c323a4396c8e891ec13f  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+17722607226048cca599ce81a3b96b9b8329661cd75b34287e22de95bde44e5a  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-whisper_pistol--fine.png
+495c267c682aedb433968d9723b96248af0410a22783e60948926e6bbf14cd66  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 7072283c256a7cd34d750cfe09118d83631509ed58760961580028abc78f6bf8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt
 048ccfc688b5412dd99ae31c3119eaae6f4126ba06c421f73ccb095a68e03315  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--fine.txt
 109c7d7ccd649f9b5ca60c47fa35ef9a7c9308c47c1c903dba426028fbf7b521  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt
@@ -2355,7 +2356,7 @@ fd37b998c897b03710a1fe720be0d2b87c5f29352574b60a0097368b26bd4cc5  art/_archive/g
 3dea41ecea9988023656c2dbfa4e527fcb8194d71b6aea386f1ed9f9e6294d0b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--fine.txt
 684d47c91ba4301ee4c3f08b30bcf0f4e1883952dbc341a5852a161ae3effafd  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--masterwork.txt
 50a61f4ac3a7e5f5690ba802260fb911300852923bddd0fd2e750b56d2123871  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--relic.txt
-52409ab3e82a7cd812e7cb4332474ef6ae7aef887fe4ce756daa51d6dbcab59e  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+d0ccd7eb515d6b97532f57c72f880472b0da9d84ebf05e6434a96ecbe5310a24  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 40590eb9b576e9d16899ba703041c16e3244a5a4fd689355e53adc4dd536d2fb  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-32px.png
 9b9c6401e3920bb264df0cc7aad2ea9bf468b2b079f3eeb7efd87a219275fa67  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-64px.png
 ac788bb44b1e1e9dfaf3afe95f2b8facc30a95c3eeb2e07876760fb7c46cc2bc  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-assault_helm-32px.png
@@ -2467,6 +2468,8 @@ ec27867383d47f60f54771504e2943438395a1c7a056372217dca2ef6cf9dfc5  art/_archive/g
 48631ba484ffa79bcf6510c989bcbd166bc75eb864b6aeb65e8e088026822b7c  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-throwing_darts-64px.png
 ac389bfb52bf3f2b2a3a10ae6ca9c08c1b0e91576742e009d4c0c4e5b6fed138  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-throwing_javelins-32px.png
 5f5b4c4748e53a91b8aef05867eb83141393828a5b4386fe1a5cedff08fc7331  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-throwing_javelins-64px.png
+4bff8d08f726b6aecab96b5d6cbb7e5e4dbee6300cbfc90bc35bfb9b96ce3bc5  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-whisper_pistol-32px.png
+1fba0963a04a1adf6a278a0988e82d69d84966a2ff8397e0136b413d4544e8f6  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-whisper_pistol-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-19-kept-blade-grades/source-brief.md
 bf52369a08fc551424cf9f6527d8768f65d7f39d756a6bf14e9dcca3ff359e74  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-armoured_greaves--celestial.png
 289366e9db13c63abd7ec4ca0c14a151c9db036c66a96e54e6d0af05846e0c30  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-armoured_greaves--fine.png
@@ -2680,6 +2683,7 @@ a60b6ce97f2deb2b1683cea9913129d752bbf8a0fcd138352bc38a8662b2040d  art/_archive/g
 b890d1d6241d7486a31038ae3b485c9acd3c7930752366e767e6314c2543b8f8  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--fine.png
 a932292e46a152120f743a018af1d26b2e74a3091ff2230eb35251e125a2ade4  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--masterwork.png
 9950249c3c3b17be2c3fc789c13a78c1d9c9b7701b699d4633d6dc9be8dd0aaa  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--relic.png
+f52ae43c15f719485a340b2cfd560a6a330cead29a7535fe4e13d5aa5df6c96b  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-whisper_pistol--fine.png
 0ed4456fdb4c3eacb205a819eaadde137b48bb300c92fcc96496f93354b8993f  art/_archive/gear/2026-11-19-melee-armour/HANDOFF.md
 b5bb66bcdca6a9d4dee1993a5453e25a7a2ac36d6ffb627058362728227cb278  art/_archive/gear/2026-11-19-melee-armour/VALIDATION.md
 ae45631caca92edfa24e281ed068ccc6cfa50a2212227ef623c950a394079fae  art/_archive/gear/2026-11-19-melee-armour/attempts/armour-tactical_gloves/v1/prompt.txt
@@ -6635,7 +6639,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-ed73581cd49c90e96672d559992defd0f565aa1e2795f5dd88fa0b10602a0efa  art/catalog.json
+bdc26f65e010214e927ecee7c99a37a99b54599a7e6e42ebac6d7eaa045ce434  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8858,6 +8862,7 @@ d70fd206edcab39bd7d0b829510b66f6196d5afb093d587b68edacb0293ac5b4  art/icons/gear
 01ddd209d50fa6433f92d3699a0ec2507835a272f59e5ce7fc9a1ef2b977bd7d  art/icons/gear/exports/128/weapon-war_pick.png
 4140008361b8e36984a2d8fd5b0e529954c7ed185d998b680644469455167557  art/icons/gear/exports/128/weapon-weighted_gloves.png
 46257e88824fc9f648e9a8776f2609890fea173e66504c9c27c9f0ece0f1ba87  art/icons/gear/exports/128/weapon-whisper_carbine.png
+61f2844386b7e0d3d19716762f3812376ed039ee632033e3386ed82e3eec4637  art/icons/gear/exports/128/weapon-whisper_pistol--fine.png
 40779a216d99a754007d50bda72bed0dd731caae31dba8c192134e003421f8d9  art/icons/gear/exports/128/weapon-whisper_pistol.png
 8fc9649e9c7b19a87a937764f18197d853c58ec69f5ea01c77ccc0c1a117fb9f  art/icons/gear/exports/128/weapon-whisper_smg.png
 f52a076e499dc1e215dbf966f3318c25b12ed635991654b8005318c6bc252947  art/icons/gear/exports/128/weapon-windfall.png
@@ -9353,6 +9358,7 @@ d56cfe7a45b64cd0bcce3fc13e5f1f44a1fc3251219fb14a5bd16e28079ec9d3  art/icons/gear
 e39d252c2ced127dbc25760de284fe14c71d0844f81667020e08327e35606c89  art/icons/gear/exports/256/weapon-war_pick.png
 3a03f9bb561e05696b2dfb0b04381ffc5983a8d6abb1f4ae453a90469867052c  art/icons/gear/exports/256/weapon-weighted_gloves.png
 d26ba24a4877d6964334beade0e53ace4e15899663a9dc76541659283abb92ad  art/icons/gear/exports/256/weapon-whisper_carbine.png
+11b99e90848c926ee228b41939d60c4116f005997febbfc79ed03a491fdc5a76  art/icons/gear/exports/256/weapon-whisper_pistol--fine.png
 5723fe0d2d93e2e34a1b6f748ae999830dd7d6579334921cbbf1c4c16067f1d0  art/icons/gear/exports/256/weapon-whisper_pistol.png
 3f97138a567c5ef903b21df3d619e2b311d7c39ddb254efe533efa016d605260  art/icons/gear/exports/256/weapon-whisper_smg.png
 9f8e063f6847d15c6dc5a213a50061c72ddf0e0d2e11f496117e8b49c2bbd53b  art/icons/gear/exports/256/weapon-windfall.png
@@ -9848,6 +9854,7 @@ ba1ac4fd51eccb2b8c800573824d3d839032eedc607085afaa545e5e66062a32  art/icons/gear
 d76f286c44eab0f7a0f2fc6bef2b33bbebfde19cc6c60efbcb1a9e8f23e2717c  art/icons/gear/exports/32/weapon-war_pick.png
 57a1614702ef9396069438a843ad6bee66941e9738fb5fde085c261ba4ada075  art/icons/gear/exports/32/weapon-weighted_gloves.png
 e244d58f99dfccf457c0dda49c9b22760f64b2bd9b0cfb171bc70d0a50a4d479  art/icons/gear/exports/32/weapon-whisper_carbine.png
+521f5258d7e35872c3fc81e7f7ab8a82c1d11d0353e2120bfdcb4cd215e7424b  art/icons/gear/exports/32/weapon-whisper_pistol--fine.png
 0bbee1a450106489c506c3b94f422ca2a44f74b039a546ea6cd95e67fdf26c18  art/icons/gear/exports/32/weapon-whisper_pistol.png
 b01e2de349193db50b07df281bbec8d8907532f8ef053c4d3eaed8f3f35f7931  art/icons/gear/exports/32/weapon-whisper_smg.png
 4d262db4aef4082c5afa25b5c167c3da30ac7acf532ec0ea93d78e288252db9b  art/icons/gear/exports/32/weapon-windfall.png
@@ -10343,6 +10350,7 @@ e5a7a2216741f498ac853be4e2cf540960aeb4ef6e74bb4b30542429472a9629  art/icons/gear
 73b6e7786c1a7c0cc7f9f33b68c8ae3602c86a75cedebe696f4ce567365d97af  art/icons/gear/exports/64/weapon-war_pick.png
 6a371f69334481951d74a757d7f443a07d0f246a393e53d91fe16d8623fdb9ad  art/icons/gear/exports/64/weapon-weighted_gloves.png
 4c97b4bcab027c602d06fd49918cf89e865b2d5a28eb226171e54fd51b2c3ebb  art/icons/gear/exports/64/weapon-whisper_carbine.png
+6734b374d14ffff702868a7a45b72db50349dd0af4e74eb75a58405de2c7648b  art/icons/gear/exports/64/weapon-whisper_pistol--fine.png
 6d99268f2fedd51955d37d6fa2cb5d9ac2e4f3b51586fd455c3ab31e9771578a  art/icons/gear/exports/64/weapon-whisper_pistol.png
 7aa1e3d6702ba2dfe5b3685b7e8d5a1817cad08a67e7a86bb6a3d4463622b6bf  art/icons/gear/exports/64/weapon-whisper_smg.png
 316b3e33f5866d7a7324c20c621c5347b773484c6744ab7e0fac4010bee37029  art/icons/gear/exports/64/weapon-windfall.png
@@ -10658,6 +10666,7 @@ c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f  art/icons/gear
 bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7  art/icons/gear/weapon-war_pick.png
 a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a  art/icons/gear/weapon-weighted_gloves.png
 23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664  art/icons/gear/weapon-whisper_carbine.png
+17722607226048cca599ce81a3b96b9b8329661cd75b34287e22de95bde44e5a  art/icons/gear/weapon-whisper_pistol--fine.png
 e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323  art/icons/gear/weapon-whisper_pistol.png
 b916756013c04cb3db56a413db970873a054e1964531142606f77e5a26138765  art/icons/gear/weapon-whisper_smg.png
 0c8c2c0a6ca5b9326d8ca6010eb7e4bff6e495741d64596ad89abe005a018042  art/icons/gear/weapon-windfall.png

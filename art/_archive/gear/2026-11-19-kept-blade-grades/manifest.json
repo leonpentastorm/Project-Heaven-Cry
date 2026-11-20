@@ -12912,6 +12912,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-whisper_pistol--fine",
+      "path": "art/icons/gear/weapon-whisper_pistol--fine.png",
+      "sha256": "17722607226048cca599ce81a3b96b9b8329661cd75b34287e22de95bde44e5a",
+      "label": "Whisper pistol — Fine",
+      "family": "weapon-whisper_pistol",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-whisper_pistol--fine.png",
+        "sha256": "f52ae43c15f719485a340b2cfd560a6a330cead29a7535fe4e13d5aa5df6c96b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-whisper_pistol--fine.png",
+        "sha256": "17722607226048cca599ce81a3b96b9b8329661cd75b34287e22de95bde44e5a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_pistol--fine.txt",
+        "sha256": "d930ac5531258cbba4f1e889f4e9ce4098bea3e0a938069d119098b21a7046bc"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-whisper_pistol.png",
+          "sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-whisper_pistol--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-whisper_pistol--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-whisper_pistol--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-whisper_pistol--fine.png"
+      },
+      "export_hashes": {
+        "256": "11b99e90848c926ee228b41939d60c4116f005997febbfc79ed03a491fdc5a76",
+        "128": "61f2844386b7e0d3d19716762f3812376ed039ee632033e3386ed82e3eec4637",
+        "64": "6734b374d14ffff702868a7a45b72db50349dd0af4e74eb75a58405de2c7648b",
+        "32": "521f5258d7e35872c3fc81e7f7ab8a82c1d11d0353e2120bfdcb4cd215e7424b"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-whisper_pistol",
+      "outline": {
+        "solid_alpha_iou": 0.948164080972648,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 5
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
