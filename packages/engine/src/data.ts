@@ -34,6 +34,9 @@ export const SKILLS: SkillDef[] = (skillsJ as any).items;
 export const ATTRS: AttrDef[] = (attributesJ as any).items.map((a: any) => ({ id: a.id, name: a.name, core: a.core }));
 export const RULES: any = rulesJ;
 export const WEAPONS: WeaponDef[] = (weaponsJ as any).items;
+// Rules 1.91 item 7904: the hit skill is one key, phys.hits_with; a row with no `skill` gets it from there for the old
+// readers (the validator refuses a row where both are written and differ).
+for (const w of WEAPONS as any[]) if (!w.skill && w.phys?.hits_with) w.skill = w.phys.hits_with;
 /** The move pool (Revision 2 base moves under their old class ids) and the advanced classes' moves, by "<origin>.<moveId>". */
 export const CLASS_MOVE_POOL: Record<string, any> = Object.fromEntries([
   ...(((classesJ as any).move_pool?.moves || []) as any[]).map((m) => [m.origin + '.' + m.id, m]),

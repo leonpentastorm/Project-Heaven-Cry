@@ -524,7 +524,9 @@ function flashback(h: Holder, why: string, rng: Rng | null) {
   else line += ' · lost in it' + applyCond(cb, rng, null, u, 'stunned', 1, 'body', { skipSave: true }) + ', loses the next turn';
   say(cb, line + '.');
 }
-const EXPLOSIVE_THROWS = new Set(['frag_grenade', 'incendiary_grenade', 'satchel_charge', 'satchel']);
+/** Rules 1.91 item 7916: an explosive charge is a row with `explosive: true` and category thrown (the launchers are
+ * explosive and not thrown), in data order. */
+const EXPLOSIVE_THROWS = new Set(Object.keys(WEAPON).filter((id) => !!(WEAPON[id] as any).explosive && WEAPON[id].category === 'thrown'));
 function foresee(h: Holder, rng: Rng): string[] {
   const g2 = JSON.parse(JSON.stringify(h.g)), cb2: Combat = g2.combat; if (!cb2) return [];
   const out: string[] = [], was = bindGame(g2), r = { state: rng.state };
