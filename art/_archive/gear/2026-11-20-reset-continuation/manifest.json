@@ -5234,6 +5234,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-weighted_gloves--masterwork",
+      "path": "art/icons/gear/weapon-weighted_gloves--masterwork.png",
+      "sha256": "6b51800311c1abac3fb5097aa49424a95050f411f3fe963aaa6021f5c0642fdc",
+      "label": "Weighted Gloves — Masterwork",
+      "family": "weapon-weighted_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-weighted_gloves--masterwork.png",
+        "sha256": "d154636bff1fa34effb8a7aa33ca7e65326cf1649287a4f69e6ff047210b1c27"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--masterwork.png",
+        "sha256": "6b51800311c1abac3fb5097aa49424a95050f411f3fe963aaa6021f5c0642fdc"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--masterwork.txt",
+        "sha256": "ac8e6168ef1fde91952487d1cd6969b201e75ced9cd6f87120efee07ba679490"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-weighted_gloves.png",
+          "sha256": "a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a"
+        },
+        {
+          "path": "art/icons/gear/weapon-weighted_gloves--fine.png",
+          "sha256": "145a23a2ec6b8dea6474d736972d06dafdea4e30be22c14a5d2fd418b9a96d85"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png",
+          "sha256": "0189245e4f1c2eeff8998b07ae9f383745a1d2c2e6fe1127c9f34c301b2fa623"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-weighted_gloves--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-weighted_gloves--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-weighted_gloves--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-weighted_gloves--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "7425f558a6a09f218ea468acab8701f68559d01b29f6e6c7099a65d2fdbb52d9",
+        "128": "63a6cb203e9860df48c4fde4e78a456aa6dfeb6e9b4a3a3e4761dbdd906add1e",
+        "64": "b6320e1bb9791c2ea6454b9dabc08931a1e839d23bb6ca6c3be7619e3d1d41ca",
+        "32": "617f4474a31a294f9ccf50a4e206813fafa4ac83874f30e40eabce1593b13aba"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-weighted_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9892425615899207,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 13
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
