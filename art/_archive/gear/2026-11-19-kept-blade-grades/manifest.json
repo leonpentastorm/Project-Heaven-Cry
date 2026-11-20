@@ -9146,6 +9146,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-breather--celestial",
+      "path": "art/icons/gear/armour-breather--celestial.png",
+      "sha256": "dcb007a5dcb8fd91a3b6fd7ca84105aaabcec73486e576014699232a93cb90c1",
+      "label": "Breather — Celestial",
+      "family": "armour-breather",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--celestial.png",
+        "sha256": "51c3fc320cceba3806945c5310ac732fff8e9965b8ea8555f05f9d581081039d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-breather--celestial.png",
+        "sha256": "dcb007a5dcb8fd91a3b6fd7ca84105aaabcec73486e576014699232a93cb90c1"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-breather--celestial.txt",
+        "sha256": "8f8964b03f3a15e541b68db2bed7ed6616d74e6d265c6fbc0b58dc42f4921822"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-breather.png",
+          "sha256": "122ce61995e1f39338eafa5d03b36c19766c9fac17fa0eb3a441b2390e9d45ce"
+        },
+        {
+          "path": "art/icons/gear/armour-breather--relic.png",
+          "sha256": "b985954bb66bbaee116e56b1214b16b29735f1d88481d55c05a88c5c00ba5007"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-breather--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-breather--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-breather--celestial.png"
+      },
+      "export_hashes": {
+        "256": "65279604489426b0da1a9954bab8b81ed8718801fdfc8e4c951bff9a4139e59a",
+        "128": "09900c300ba64be727b9e569a3ea79d2407eb826026309fda99541c396e8975d",
+        "64": "8715f93869d6c693fcf73b4ef4496c9643cd255b312f50bb30f33ba8eb30aa32",
+        "32": "95fb72d8d95d93239bee6acbc11a2686af67993a6402e75871437c1ddbcf2577"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-breather",
+      "outline": {
+        "solid_alpha_iou": 0.9793219202903487,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
