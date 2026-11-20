@@ -7472,6 +7472,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-assault_helm--fine",
+      "path": "art/icons/gear/armour-assault_helm--fine.png",
+      "sha256": "fb653c2ee0b33577df115de18c4225d2c29932385f03c48e670be820583df86a",
+      "label": "Assault Helm — Fine",
+      "family": "armour-assault_helm",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-assault_helm--fine.png",
+        "sha256": "1530b3467951921e450b6d45dc08eaf06a87b5d16445faf704525fe5f6bcb3df"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-assault_helm--fine.png",
+        "sha256": "fb653c2ee0b33577df115de18c4225d2c29932385f03c48e670be820583df86a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-assault_helm--fine.txt",
+        "sha256": "186cd203275713a323f6f3d93fd76ff84b5c7f2e04376f22c3b51407b0bd3ad6"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-assault_helm--fine/v1/source.png",
+          "sha256": "a82198dc26c0effe30788724418ad235fcb82fb763fd4fb6dc598faf40cf1a45"
+        },
+        {
+          "path": "art/icons/gear/armour-assault_helm.png",
+          "sha256": "c171a27223a1bf4a108f774695087d2fc3d2074789e196f0661a740013f20e0a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm--fine.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm--fine.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm--fine.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm--fine.png"
+      },
+      "export_hashes": {
+        "256": "0f7d94daf926d902beccd569faa7a9704c08a4267d71c85044f5ba516da778cc",
+        "128": "ac7d83527a1bdf6c4d866e510b47ae10bc9d0cf50fa306b20c2d5fd263f272ce",
+        "64": "e719cd10c984ba5e93af555235b6db97b4b1083dfcf63e912e48bd310a4abf9f",
+        "32": "1e62da2b46db852afce4503aa9d43ad2eb41f9d4c67306340de6e74eabc45246"
+      },
+      "grade": "fine",
+      "standard_id": "armour-assault_helm",
+      "outline": {
+        "solid_alpha_iou": 0.9850699542274808,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 25
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
