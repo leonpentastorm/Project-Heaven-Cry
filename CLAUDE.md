@@ -119,7 +119,7 @@ The **engine owns numbers**: rolls, AP, damage, caps, resources, conditions, the
 - **Characters are locked in before a session starts** (or saved as drafts and brought into any room).
 - Stack (built, decision 62): TypeScript monorepo; React + Vite client rendering the prototype templates; Cloudflare Worker + Durable Objects; host-authoritative rooms. **Live: https://project-heaven-cry.leonpentastorm.workers.dev**
 - Run locally: `npm install`, `npm run assets` (web images from art/), `python3 design/canvas-build/build.py --web` (screen data), `npm run build`, then `npm run dev -w @phc/server` (http://127.0.0.1:8787). Tests: `npm test -w @phc/engine`, `npm test -w @phc/web`, `node apps/web/e2e/two-players.mjs`.
-- Deploy: `python tools/deploy_site.py --build` (one command: builds, then `npx wrangler deploy` in apps/server; the site is served by Workers Static Assets; needs a Cloudflare login with Workers edit rights). The old KV namespace is kept until 0.34 is live (a rollback to 0.32 serves the site from it). The script deploys for real: never run it to read its options.
+- Deploy: `python tools/deploy_site.py --deploy --build` (one command: builds, then `npx wrangler deploy` in apps/server; the site is served by Workers Static Assets; needs a Cloudflare login with Workers edit rights). The old KV namespace is kept until 0.34 is live (a rollback to 0.32 serves the site from it). The script deploys for real: never run it to read its options.
 
 ## UI direction (see `docs/design/ui-screens.md` and the canvas)
 

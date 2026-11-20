@@ -193,5 +193,5 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 
 `docs/HANDOFF.md` has the steps. In short: `npm run check`, `npm run e2e -- all`, bump the version in the four
 `package.json` files and `package-lock.json`, a `CHANGELOG.md` entry, merge to `develop` then `main`, `npm run assets`,
-`python3 design/canvas-build/build.py --web`, `python tools/deploy_site.py --build` (0.33: builds, checks the
+`python3 design/canvas-build/build.py --web`, `python tools/deploy_site.py --deploy --build` (0.33: builds, checks the
 limits and runs `wrangler deploy`, the site's files going up as Workers Static Assets), a `backup/live-<version>` branch, then the smoke suites against the live site. Leon decides when.
