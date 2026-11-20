@@ -7130,7 +7130,13 @@
     "standard_sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
     "standard_status": "review-candidate",
     "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
-    "current_data_item_present": false
+    "current_data_item_present": false,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_pistol--masterwork--1795160881940.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_pistol--masterwork--1795160881940.json",
+      "request_id": "0a6d30b5-4c8b-440b-af31-dde22c317b72"
+    }
   },
   {
     "id": "weapon-whisper_pistol--relic",
