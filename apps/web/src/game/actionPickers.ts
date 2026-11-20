@@ -9,7 +9,7 @@
 // In a fight (ctx.how 'combat') the action's own target is still a click on the grid (a token or a tile); a second
 // pick on the grid (where a run ends, where a thrown crate lands, the enemy an ally attacks) is a 'unit' or 'tile'
 // field the next grid click fills (combat.js).
-import { SCHOOL, MODULE, ITEM, PATRON, PATRONS, SIGIL, WEAPON, TONE, TONES, packOf, moduleSlots, maxSigilWords, itemWords, debuffsOf, condName, isMelee, schoolSide, type PerkActionEntry } from '@engine';
+import { SCHOOL, MODULE, ITEM, PATRON, PATRONS, SIGIL, WEAPON, TONE, TONES, packOf, moduleSlots, maxSigilWords, itemWords, debuffsOf, condName, isMelee, schoolSide, hasTag, type PerkActionEntry } from '@engine';
 
 export interface Opt { id: string; label: string; title?: string; off?: string }
 /** A design being built in the picker (as the MAGIC tab's Outburst workshop holds it): rules 1.5, a school and its
@@ -208,8 +208,9 @@ const condOpts = (ids: string[]): Opt[] => [...new Set(ids)].map((id) => ({ id, 
 /** The grenades and charges a unit carries (a thrown weapon's id is what the engine takes). */
 const throwOpts = (u: any, only?: string[]): Opt[] => Object.entries(u?.throwables || {}).filter(([id, n]) => (n as number) > 0 && (WEAPON as any)[id] && (!only || only.includes(id)))
   .map(([id, n]) => ({ id, label: (WEAPON as any)[id].name + ((n as number) > 1 ? ' ×' + n : '') }));
-/** The demolitionist's charges (engine perks/c.ts EXPLOSIVES). */
-const EXPLOSIVES = ['satchel_charge', 'frag_grenade', 'incendiary_grenade'];
+/** The demolitionist's charges (rules 1.91 item 7916; engine perks/c.ts EXPLOSIVES): the rows' own fields, an explosive
+ * thrown row (`explosive` and the `kind:thrown` tag), never a list of ids (Items 2.0 lane A3). */
+const EXPLOSIVES = Object.keys(WEAPON).filter((id) => !!(WEAPON as any)[id].explosive && hasTag(id, 'kind:thrown'));
 const SHOT_OPTS: Opt[] = [{ id: 'shot', label: 'Shot' }, { id: 'aimed', label: 'Aimed shot' }];
 const all = (v: Values, k: string): string[] => (Array.isArray(v[k]) ? v[k] : v[k] ? [v[k]] : []);
 const COMBAT: Record<string, Maker> = {

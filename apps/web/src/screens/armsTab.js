@@ -7,7 +7,7 @@ import { techIconOf } from '../game/doorArt';
 import { WEAPON, phys, packOf, quiverCards } from '@engine';
 import { enchantMark } from '../game/quiverView';
 import { act, toast } from '../game/store';
-import { gearIconUri } from '../game/gearIcons';
+import { cardOf, cardHoles, gradeText } from '../game/itemCardView';
 
 const { TECHNIQUE, TECHNIQUES, physOf, readyCap, readyTechniques, drillOf, drillMarks, picksOwed, pickable, weaponProps, weaponSystem, weaponTeaches, groupName, groupsOf, propText, PHYS_RULES } = phys;
 const SYS = [['melee', 'MELEE'], ['ranged', 'RANGED']];
@@ -67,7 +67,9 @@ export function armsTabVals(sc, g, c) {
     const marks = M.map((m, i) => ({ key: 'm' + i, label: 'MARK ' + ['I', 'II', 'III'][i] + ' · ' + m.at, gives: m.gives === 'signature' ? (TECHNIQUE[m.id]?.name || m.id) + ' (its signature)' : 'a pick of any ' + weaponSystem(wid) + ' technique', reached: m.reached,
       style: 'display: flex; justify-content: space-between; gap: 8px; font-size: var(--fs-sub); ' + (m.reached ? 'color: #E7EBF3' : 'color: #7F8BA1'), mark: m.reached ? '✓' : '○' }));
     const picks = open ? pickable(c, wid).map((id) => ({ key: id, label: TECHNIQUE[id].name, title: TECHNIQUE[id].text, style: chip(false, false, INK[weaponSystem(wid)]), pick: () => { run({ type: 'phys/pick', charId: c.id, weaponId: wid, id }); sc.setState({ arPick: null }); } })) : [];
-    return { key: wid, name: w.name, icon: gearIconUri(wid), hasIcon: !!gearIconUri(wid), total: d + ' drill', next: next ? (next.at - d) + ' drill to mark ' + ['I', 'II', 'III'][M.indexOf(next)] : 'All three marks reached',
+    // Items 2.0 lane A3: the one item card's picture (game/itemCardView.ts: the picture chain, else the placeholder)
+    const heldSt = wid === c.weapon ? c.weaponState : wid === c.offHand?.id ? c.offHand : null, pic = cardHoles(cardOf(wid, heldSt?.rarity)).img;
+    return { key: wid, name: w.name, icon: pic, hasIcon: !!pic, total: d + ' drill', next: next ? (next.at - d) + ' drill to mark ' + ['I', 'II', 'III'][M.indexOf(next)] : 'All three marks reached',
       props: weaponProps(wid).map((p) => p.toUpperCase()).join(' · '), held: held.includes(wid) ? 'IN HAND' : '', hasHeld: held.includes(wid),
       fill: 'height: 100%; border-radius: 99px; background: ' + INK[weaponSystem(wid)] + '; width: ' + fill + '%', ticks: marksAt.map((at, i) => ({ key: 't' + i, style: 'position: absolute; top: -2px; bottom: -2px; width: 2px; background: #0A0D13; left: ' + Math.round((at / top) * 100) + '%' })),
       marks, owed, hasOwed: owed > 0, owedText: owed + (owed === 1 ? ' pick waiting' : ' picks waiting'), open, picks, noPicks: open && !picks.length,
@@ -83,7 +85,8 @@ export function armsTabVals(sc, g, c) {
     const total = types.reduce((n, t) => n + (draft[t] || 0), 0);
     const set = (t, n) => sc.setState({ arQuiver: { ...(sc.state.arQuiver || {}), [q.i]: { ...draft, [t]: Math.max(0, n) } } });
     const mark = enchantMark(q.ench);
-    return { key: 'q' + q.i, name: q.name + ' · ' + q.rarity.toUpperCase() + (q.worn ? ' · WORN' : ' · READY'), icon: gearIconUri(bow), hasIcon: !!gearIconUri(bow), cap: 'Holds ' + cap, total: total + ' / ' + cap + ' loaded', over: total > cap, totalStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + (total > cap ? '#F65157' : '#E7EBF3'),
+    const qk = cardOf(q.id || bow, q.rarity), qpic = cardHoles(qk).img; // Items 2.0 lane A3: the quiver's own card (its grade's word)
+    return { key: 'q' + q.i, name: q.name + ' · ' + (gradeText(qk) || q.rarity.toUpperCase()) + (q.worn ? ' · WORN' : ' · READY'), icon: qpic, hasIcon: !!qpic, cap: 'Holds ' + cap, total: total + ' / ' + cap + ' loaded', over: total > cap, totalStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + (total > cap ? '#F65157' : '#E7EBF3'),
       hasEnch: !!mark, enchText: mark ? mark.text : '', enchStyle: mark ? mark.style : '',
       rows: types.map((t) => { const n = draft[t] || 0, have = (arrows[t] || 0) + (saved[t] || 0);
         return { key: t, label: (t === 'standard' ? 'Standard' : t.replace(/_/g, ' ')) + ' arrows', have: have + ' to hand', n: String(n), dec: () => set(t, n - 1), inc: () => set(t, n + 1), decOff: fight || n <= 0, incOff: fight || n >= have || total >= cap }; }),

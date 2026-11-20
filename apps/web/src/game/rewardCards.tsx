@@ -5,22 +5,19 @@
 import React from 'react';
 import { act } from './store';
 import { type OfferV, type ChoiceCharV } from './runView';
-import { gearIconUri } from './gearIcons';
 import { tipProps, openTipOn } from './actionTip';
 import { ICON } from './runIconSizes';
+import { ItemPicture, ItemHead } from './ItemCard';
+import { cardOf } from './itemCardView';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2', ok: '#6FEA77', hp: '#F65157', white: '#FFFFFF' };
 const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: ink.muted };
 const btn = (on = true): React.CSSProperties => ({ minHeight: 40, padding: '0 16px', borderRadius: 10, border: on ? 0 : '1px solid ' + ink.line, background: on ? ink.text : 'transparent', color: on ? ink.ground : ink.text, fontFamily: 'inherit', fontWeight: 700, cursor: 'pointer' });
-const marks = (n: number) => '◆'.repeat(n);
 
-/** Rules 1.54 item 2: a material's picture (the painted icon once its art lands, ART-REQUESTS E2d), else a lettered
- * tile from its own name (no item is named here). */
+/** Rules 1.54 item 2: a material's picture: the one item card's (ItemCard.tsx; the general placeholder until its art lands,
+ * ART-REQUESTS E2d). */
 function MaterialIcon({ item, name }: { item: string; name: string }) {
-  const src = gearIconUri(item, undefined, { large: true });
-  return <span aria-hidden="true" style={{ flex: 'none', display: 'grid', placeItems: 'center', width: ICON.material, height: ICON.material, borderRadius: 10, background: ink.panel, border: '1px solid ' + ink.line, overflow: 'hidden', fontSize: 16, fontWeight: 700, color: ink.muted }}>
-    {src ? <img data-zoom={name} src={src} alt="" width={ICON.material} height={ICON.material} style={{ objectFit: 'contain' }} /> : (name.replace(/[^A-Za-z]/g, '').slice(0, 2) || '·')}
-  </span>;
+  return <ItemPicture card={cardOf(item)} size={ICON.material} zoom="" name={name} round={10} />;
 }
 const bigCard = (on: boolean): React.CSSProperties => ({ display: 'flex', flexDirection: 'column', gap: 8, padding: '16px 14px', minHeight: 300, borderRadius: 14, border: '1px solid ' + (on ? ink.text : ink.line), background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', color: ink.text, fontFamily: 'inherit', cursor: 'pointer', textAlign: 'left' });
 const takeBtn: React.CSSProperties = { marginTop: 'auto', alignSelf: 'stretch', minHeight: 40, display: 'grid', placeItems: 'center', borderRadius: 10, background: ink.text, color: ink.ground, fontWeight: 700, fontSize: 15 };
@@ -49,10 +46,10 @@ export function Offer({ o, minH, inPanel }: { o: OfferV; minH?: number; inPanel?
             <button key={c.i} type="button" data-phc-pick={c.i} {...tipProps(c.tip)} onClick={() => act({ type: 'run/pick', charId: o.charId, choice: c.i })}
               style={{ ...bigCard(c.rarity !== 'standard'), alignItems: 'center', textAlign: 'center', minHeight: minH || (m ? 300 : 240) }}>
               {m ? <span style={{ ...kick, alignSelf: 'flex-start' }}>{c.kick}</span> : null}
-              <img data-zoom={c.name} data-zoom-text={c.tip || ''} src={gearIconUri(c.id, undefined, { large: true })} alt="" width={ICON.reward} height={ICON.reward} style={{ display: 'block', objectFit: 'contain' }} />
-              <span style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.2 }}>{c.name}</span>
-              <span style={{ fontSize: 'var(--fs-sub)', letterSpacing: '0.1em', color: c.rarity === 'standard' ? ink.muted : ink.white }}>{c.rarityWord.toUpperCase()} {marks(c.marks)}</span>
-              <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{c.category}</span>
+              {/* Items 2.0 lane A3: the one item card's picture and head (ItemCard.tsx): the picture chain on its grade's frame,
+                  the name, the grade's word and marks, the family line */}
+              <ItemPicture card={cardOf(c.id, c.rarity)} size={ICON.reward + 8} zoom={c.tip || ''} />
+              <ItemHead card={cardOf(c.id, c.rarity)} name={c.name} nameSize={18} align="center" extra={<span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{c.category}</span>} />
               {c.lines.map((l) => <span key={l.key} data-phc-pick-line={l.key} style={{ fontSize: 'var(--fs-sub)', color: ink.text }}>{l.label}: <b>{l.value}</b></span>)}
               <span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>Worth {c.price} credits</span>
               {m ? <span data-phc-pick-take="" style={takeBtn}>{c.take}</span> : null}

@@ -20,6 +20,7 @@ import upgradeSrc from './UpgradeCard.tsx?raw';
 import runSrc from './rewardCards.tsx?raw';
 import loadoutSrc from './LoadoutScreen.tsx?raw';
 import placeSrc from './PlaceScreen.tsx?raw';
+import itemCardSrc from './ItemCard.tsx?raw';
 
 const C = CATALOG as any, A = ASSETS as Record<string, string>;
 const FAMILIES: [string, string][] = [['move_icons', 'move-'], ['technique_icons', 'tech-'], ['shadow_icons', 'shadow-'], ['tending_icons', 'tend-'],
@@ -141,8 +142,13 @@ describe('click to enlarge reaches every icon slot', () => {
     expect(lightboxT).toContain('{{lb.text}}');
   });
   it("the Survival screens' pictures (Give, shop, Sell, Forge and upgrade cards, rewards, materials, camp, place cards)", () => {
-    for (const [name, src, n] of [['GiveTab', giveSrc, 1], ['ShopScreen', shopSrc, 2], ['UpgradeCard', upgradeSrc, 1], ['rewardCards', runSrc, 2], ['LoadoutScreen', loadoutSrc, 1], ['PlaceScreen', placeSrc, 1]] as [string, string, number][])
+    // Items 2.0 lane A3: an item's picture is the one item card's (ItemCard.tsx ItemPicture, whose picture enlarges); a
+    // screen's own pictures (a place's option icon) still carry their zoom
+    expect((itemCardSrc.match(/<img data-zoom=[{]/g) || []).length, 'ItemCard').toBe(1);
+    for (const [name, src, n, pics] of [['GiveTab', giveSrc, 0, 1], ['ShopScreen', shopSrc, 0, 3], ['UpgradeCard', upgradeSrc, 0, 1], ['rewardCards', runSrc, 0, 2], ['LoadoutScreen', loadoutSrc, 0, 1], ['PlaceScreen', placeSrc, 1, 1]] as [string, string, number, number][]) {
       expect((src.match(/<img data-zoom=[{]/g) || []).length, name).toBe(n);
+      expect((src.match(/<ItemPicture /g) || []).length, name + ' item pictures').toBe(pics);
+    }
   });
   it("bigOf gives a built picture's large copy, else the picture", () => {
     expect(bigOf(A['tech-cleave'])).toBe(A['tech-cleave-lg']);

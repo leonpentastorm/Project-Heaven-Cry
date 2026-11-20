@@ -8,7 +8,6 @@
 import React from 'react';
 import { act, getState } from './store';
 import { shopView, compareGear, type ShopCardV, type ShopViewV, type Rarity } from '@engine';
-import { gearIconUri } from './gearIcons';
 import { tipProps } from './actionTip';
 import { MoveOn } from './runPanels';
 import { FullScreenFrame, FRAME_INK as I, type FrameTab, useKeeperLine } from './FullScreenFrame';
@@ -16,16 +15,13 @@ import ASSETS from './assets.json';
 import { GiveTab } from './GiveTab';
 import { AmountField } from './AmountField';
 import { UpgradeCard } from './UpgradeCard';
-import { shownLines } from './previewLines';
+import { ItemCard, ItemPicture } from './ItemCard';
+import { cardOf } from './itemCardView';
 
 const A = ASSETS as Record<string, string>;
 const art = (k: string) => (k ? A[k + '-lg'] || A[k] || '' : '');
 /** The attribute inks of the colour system (CLAUDE.md), for a focus card's door word only. */
 const ATTR_INK: Record<string, string> = { endurance: '#F65157', strength: '#F68A38', agility: '#E3BF51', perception: '#40BAA0', intelligence: '#8BDEEE', expression: '#5394AC', insight: '#EB95B7', determination: '#9D7ADC', virtue: '#D36A90' };
-const MARK = '◆';
-/** A card's picture: the one resolver (gearIcons.ts), which reads the engine's ids as they come (rounds, magazines,
- *  body armour of a class), the same picture the sheet's GEAR tab shows. */
-const iconOf = (id: string): string => gearIconUri(id, undefined, { large: true });
 const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.16em', color: I.muted };
 const shelfHead = (name: string, note?: string) => (
   <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, margin: '6px 0 12px' }}>
@@ -39,27 +35,14 @@ const BIG_CSS = '.phc-shop-big{grid-column:span 2}@media (max-width:640px){.phc-
 const GRID: React.CSSProperties = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(260px, 100%), 1fr))', gridAutoFlow: 'row dense', gap: 16, marginBottom: 28 };
 
 function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: number; setQty: (n: number) => void; onFocus: () => void; onBuy: () => void; big?: boolean }) {
-  const why = c.whys[qty - 1] ?? c.why, total = c.totals[qty - 1] ?? c.price, sold = !!c.sold, graded = c.rarity !== 'standard';
-  const icon = iconOf(c.id);
+  const why = c.whys[qty - 1] ?? c.why, total = c.totals[qty - 1] ?? c.price, sold = !!c.sold;
+  // Items 2.0 lane A3: the one item card (ItemCard.tsx): the picture chain on its grade's frame, the name, the grade's word
+  // and marks, the family line, the engine's lines; the shop adds what it is for, the price, the amount and Buy
+  const forLine = <span style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{c.doorWord && c.attr ? <>{c.forLine.split(' · ')[0]} · <span style={{ color: ATTR_INK[c.attr] || I.text }}>{c.doorWord}</span>{c.forLine.includes(' · yours') ? ' · yours' : ''}</> : c.forLine}{c.rare ? <b style={{ color: I.white, letterSpacing: '0.14em' }}> · RARE</b> : null}</span>;
   return (
-    <article data-phc-card={c.key} data-phc-card-id={c.id} tabIndex={0} onMouseEnter={onFocus} onFocus={onFocus} {...tipProps(c.name + '. ' + c.text)} className={big ? 'phc-shop-big' : undefined}
-      style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 236, padding: 18, borderRadius: 16, background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', border: '1px solid ' + (graded ? '#7A879E' : I.line), boxShadow: graded ? 'inset 0 0 0 1px rgba(255,255,255,0.06)' : 'none', opacity: sold ? 0.55 : 1, position: 'relative' }}>
-      {graded ? <span aria-hidden="true" style={{ position: 'absolute', top: 10, right: 14, fontSize: 'var(--fs-sub)', letterSpacing: '0.3em', color: I.white }}>{MARK.repeat(c.marks)}</span> : null}
-      <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-        <div style={{ flexShrink: 0, width: big ? 112 : 88, height: big ? 112 : 88, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
-          {icon ? <img data-zoom={c.name} data-zoom-text={c.text} src={icon} alt="" width={big ? 104 : 80} height={big ? 104 : 80} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 28, color: I.muted }}>+</span>}
-        </div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
-          <span data-phc-card-name="" style={{ fontFamily: "'Spectral', serif", fontSize: big ? 24 : 19, fontWeight: 600, lineHeight: 1.15 }}>{c.name}</span>
-          {graded || ['weapon', 'focus', 'armour'].includes(c.preview.kind) || c.rare ? <span data-phc-grade="" style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: graded ? I.white : I.muted }}>{c.rarityWord.toUpperCase()}{graded ? ' ' + MARK.repeat(c.marks) : ''}{c.rare ? ' · RARE' : ''}</span> : null}
-          <span style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{c.doorWord && c.attr ? <>{c.forLine.split(' · ')[0]} · <span style={{ color: ATTR_INK[c.attr] || I.text }}>{c.doorWord}</span>{c.forLine.includes(' · yours') ? ' · yours' : ''}</> : c.forLine}</span>
-        </div>
-      </div>
-      {c.preview.lines.length ? (
-        <dl style={{ margin: 0, display: 'grid', gridTemplateColumns: '1fr auto', gap: '4px 12px', fontSize: 'var(--fs-sub)' }}>
-          {shownLines(c.preview.lines, 5).map((l) => <React.Fragment key={l.key}><dt style={{ color: I.muted }}>{l.label}</dt><dd data-phc-num={l.key} style={{ margin: 0, textAlign: 'right', fontWeight: 700, fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>{l.value}</dd></React.Fragment>)}
-        </dl>
-      ) : null}
+    <ItemCard card={c.preview.card} name={c.name} lines={c.preview.lines} pic={big ? 112 : 88} nameSize={big ? 24 : 19} headExtra={forLine}
+      data-phc-card={c.key} data-phc-card-id={c.id} tabIndex={0} onMouseEnter={onFocus} onFocus={onFocus} {...tipProps(c.name + '. ' + c.text)} className={big ? 'phc-shop-big' : undefined}
+      style={{ minHeight: 236, opacity: sold ? 0.55 : 1 }}>
       <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'flex-end', gap: 8, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           <span data-phc-price="" style={{ fontSize: 26, fontWeight: 700, color: I.white, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{total.toLocaleString('en')}</span>
@@ -76,7 +59,7 @@ function Card({ c, qty, setQty, onFocus, onBuy, big }: { c: ShopCardV; qty: numb
           style={{ marginLeft: 'auto', minHeight: 42, padding: '0 16px', borderRadius: 10, border: 0, background: sold ? I.raised : why ? 'transparent' : I.text, outline: why && !sold ? '1px solid #3B475D' : 'none', color: sold ? I.muted : why ? I.muted : I.ground, fontFamily: 'inherit', fontSize: 15, fontWeight: 700, cursor: sold ? 'default' : 'pointer' }}>Buy</button>
       </div>
       <span data-phc-status="" style={{ minHeight: 18, fontSize: 'var(--fs-sub)', fontWeight: sold ? 700 : 500, color: sold ? I.white : why ? I.muted : I.ok }}>{sold ? 'Sold to ' + c.sold : why ? why : ''}</span>
-    </article>
+    </ItemCard>
   );
 }
 
@@ -91,7 +74,9 @@ function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rari
         <span>{(cmp.slot || '').toUpperCase()}</span><span>HOLDING</span><span>THIS</span>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 'var(--fs-sub)', fontWeight: 600 }}>
-        <span style={{ color: I.muted }}>Item</span><span>{cmp.held.name}</span><span>{cmp.next.name}</span>
+        <span style={{ color: I.muted }}>Item</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}><ItemPicture card={cmp.held.card} size={32} round={6} />{cmp.held.name}</span>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}><ItemPicture card={cmp.next.card} size={32} round={6} />{cmp.next.name}</span>
       </div>
       {cmp.rows.map((r) => (
         <div key={r.key} data-phc-cmp={r.key} style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 'var(--fs-sub)', alignItems: 'baseline', paddingTop: 6, borderTop: '1px solid ' + I.line }}>
@@ -144,7 +129,7 @@ export function ShopScreen() {
     const sellIt = () => { setConfirm(null); setQ(k)(1); act({ type: 'run/sell', charId, ...(r.count ? { count: r.count } : { idx: r.idx }), qty: n }); };
     return (
     <div key={id} data-phc-sell={id} onMouseEnter={() => setFocus({ id: r.id, rarity: r.rarity })} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 14px', borderRadius: 12, background: I.raised, border: '1px solid ' + I.line, opacity: r.why && r.totals.length <= 1 ? 0.6 : 1 }}>
-      <img data-zoom={r.label} src={iconOf(r.id)} alt="" width={40} height={40} style={{ objectFit: 'contain', visibility: iconOf(r.id) ? 'visible' : 'hidden' }} />
+      <ItemPicture card={cardOf(r.id, r.rarity)} size={44} zoom={r.label} round={8} />
       <span style={{ flex: 1, minWidth: 0, fontSize: 'var(--fs-body)' }}>{r.label}</span>
       {r.totals.length > 1 ? <AmountField value={n} max={r.totals.length} min={1} onChange={setQ(k)} onEnter={() => { if (!why && !r.ask) sellIt(); }} label={'How many ' + r.label + ' to sell'} /> : null}
       {why ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{why}</span> : <>

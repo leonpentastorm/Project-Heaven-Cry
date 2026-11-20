@@ -493,7 +493,8 @@ const BODY = {
   rFoot: 'M32,214 h26 v11 h-26 z', lFoot: 'M62,214 h26 v11 h-26 z',
 };
 /** Which parts of the figure each equipment slot covers (spec: Equipment slots). */
-export const SLOT_PARTS = { main: [], off: [], head: ['head'], headAcc: ['eyes'], outer: ['torso'], inner: ['torso'], lower: ['pelvis'], legs: ['rLeg', 'lLeg'], hands: ['rHand', 'lHand'], feet: ['rFoot', 'lFoot'], veil: [], pack: [] };
+// the body figure's parts each slot lights, by the slot table's saved key (rules.json equipment_slots.table; Items 2.0 lane A3)
+export const SLOT_PARTS = { main_hand: [], off_hand: [], head: ['head'], head_accessory: ['eyes'], torso_outer: ['torso'], inner_torso: ['torso'], lower_torso: ['pelvis'], legs: ['rLeg', 'lLeg'], hands: ['rHand', 'lHand'], footwear: ['rFoot', 'lFoot'], veil: [], backpack: [] };
 const INJ_PARTS = { head: ['head'], torso: ['torso'], arm: { left: ['lArm', 'lHand'], right: ['rArm', 'rHand'] }, leg: { left: ['lLeg', 'lFoot'], right: ['rLeg', 'rFoot'] } };
 export function bodyFigure({ worn = [], injuries = [], hot = [], mainSide = 'right', weapon = false, veil = false }) {
   const hurt = new Set(); injuries.forEach((i) => { const p = INJ_PARTS[i.loc]; (Array.isArray(p) ? p : p[i.side || 'right']).forEach((x) => hurt.add(x)); });

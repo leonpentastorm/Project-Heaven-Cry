@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 37 triggers, 102 predicates, 31 ops, 102 effect ops, 126 hooks, 3 never emitted, 18 profiles, 42 cost sites, 18 resources, 71 stats, 25 condition fields, 683 primitive exports, 2235 other exports, 128 fx kinds, 12 data fx kinds, 18 op-written context fields, 186 Unit fields, 63 Combat fields, 41 guards.
+Counts: 37 triggers, 102 predicates, 31 ops, 102 effect ops, 126 hooks, 3 never emitted, 18 profiles, 42 cost sites, 18 resources, 71 stats, 25 condition fields, 685 primitive exports, 2235 other exports, 128 fx kinds, 12 data fx kinds, 18 op-written context fields, 186 Unit fields, 63 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -1319,13 +1319,15 @@ Families: `body`, `brain`, `heart`.
 | --- | --- | --- |
 | `GearInstance` | `interface GearInstance { id, rarity, mods }` | One gear instance: an item id with its grade and fitted mods (a pack entry's or a shop card's). |
 | `PreviewLine` | `interface PreviewLine { key, label, value, num, better }` | One number of a preview: `num` for comparing (null: a word, not a number); `better`: which way is better. |
-| `GearPreview` | `interface GearPreview { id, name, kind, rarity, category, lines, traits, text }` | What a card shows for an instance in this character's hands (all from the engine). |
+| `GearPreview` | `interface GearPreview { id, name, kind, rarity, category, lines, traits, text, card }` | What a card shows for an instance in this character's hands (all from the engine). |
 | `GearCompare` | `interface GearCompare { held, next, rows, slot }` | The compare panel: the instance against what the character would hold instead (`held`; null when nothing compares). |
 | `gearPreview` | `gearPreview(c: Character, inst: GearInstance): GearPreview` | The numbers a card shows for `inst` in `c`'s hands (rules 1.42, spec item 14): for a weapon, to hit against the reference foe of the character's level, damage per hit, the AP of each mode, magazine, range, tra… |
 | `heldAgainst` | `heldAgainst(c: Character, inst: GearInstance): { inst: GearInstance; slot: string } \| null` | What the instance would replace or sit beside in `c`'s hands (the same hand's weapon, the same worn slot, the focus of the same door), as an instance, and the slot's name; null when nothing compares. |
 | `compareGear` | `compareGear(c: Character, inst: GearInstance): GearCompare` | The compare panel (rules 1.42, spec 8.3): `inst` against what `c` holds in its place, each number on a row with the difference as a word ("better", "worse", "same"); the client draws it with a glyph beside the… |
-| `rarityWord` | `rarityWord(r: Rarity \| null \| undefined): string` | A rarity's word ("Fine"), for a card. |
+| `rarityWord` | `rarityWord(r: Rarity \| null \| undefined): string` | A rarity's word ("Fine"), for a card: the grade row's own word (rules 1.91 item 7905, `rules.json rarity.<r>.name`). |
 | `rarityMarks` | `rarityMarks(r: Rarity \| null \| undefined): number` | How many ornament marks a rarity carries on a card (`rules.json rarity.<r>.marks`). |
+| `ItemCardV` | `interface ItemCardV { id, name, pictures, kind, grade, gradeWord, marks, graded, family, familyName, form, formWord, familyLine, line, lineWord, tags, secondSkill, uniqu…` | What one item card says about an instance, the same on every screen that draws an item (the shop, the camp, the Forge, the rewards, the pack, the sheet's GEAR and ARMS tabs, the compare panel): what it is, whe… |
+| `itemCard` | `itemCard(inst: { id: string; rarity?: Rarity \| null }): ItemCardV` | The item card's view-model for an instance (design section 6). |
 
 #### The Survival shop: the counter, stock, selling and the services shelf (rules 1.46) (`run/shop.ts`)
 
