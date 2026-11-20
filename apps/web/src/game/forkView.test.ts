@@ -59,11 +59,15 @@ describe('the fork card (game/forkView.ts)', () => {
     expect(unbuilt.length).toBeGreaterThan(0);
     for (const o of unbuilt) { expect(o.text.length).toBeGreaterThan(20); expect(o.text).not.toMatch(/[a-z]_[a-z]|rules \d|\bN\d+\b|\{=|`/); }
   });
-  it('the sheet lists the doors reached, the ones with a pick to make first; an option\'s icon falls back to its door\'s skill', () => {
+  it('the sheet lists the doors reached, the ones with a pick to make first; an option\'s icon with no art is its mark, never its door\'s skill portrait (0.33)', () => {
     const cards = forkCards(ch({ durability: F[1], dexterity: F[0], empathy: F[0], visualization: F[0] }, { durability: ['fork.guard.provoke', 'fork.guard.drive'] }));
     // rules 1.74 item 6041: Visualization's forks (Hard Light or Sharp Light at 4) have a card again; its forms are a door of their own
     expect(cards.map((x) => x.door)).toEqual(['dexterity', 'visualization', 'empathy', 'durability']);
     expect(forkIconOf('fork.none.such', 'durability')).toBeTruthy();
+    // 0.33 (Leon: "the forks reuse the skill face icon instead of a set of wick"): the mark, the option's initials in its door's ink
+    const mk = forkIconOf('fork.figment.hard_light', 'visualization', 'Hard Light');
+    expect(mk).toMatch(/^data:image\/svg\+xml/); expect(decodeURIComponent(mk)).toContain('>HL<'); expect(decodeURIComponent(mk)).toContain('#5394AC');
+    expect(mk).not.toBe(forkIconOf('fork.none.such', 'visualization'));
   });
 });
 
