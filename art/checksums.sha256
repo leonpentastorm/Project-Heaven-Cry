@@ -2630,6 +2630,7 @@ fa9b0574d0860c6ec4f1c061021928cbf0f221b3c2073eff49ea225816f5bff8  art/_archive/g
 2999330cbaa663b251233bac0c1d1cf8c47d761f63114e094fe256ac9b95aa43  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-dock_cutter--masterwork.json
 1d20b77054e5ac7326d126cebf353f98412aeafa2b62cb32ffc2e1f785fb289c  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-hellraiser_rotary--celestial.json
 54ad9bce4afff6e1e35f06e8acb90ddda1571c52c43ba74c7821632647c53190  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-purifier_flamer--masterwork.json
+5a106830d33315e571ea8b79ba48686d9723d512e7c26ae4c20fffc1091ad5b7  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-short_draw--fine.json
 d2e4be3831868815a4779e2fb3da6b7bb44edfdc31fb1b7078321499ce8c8a0a  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
 7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--celestial.png
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png
@@ -2668,7 +2669,7 @@ a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921  art/_archive/g
 0ade2a5a847a28f800c042112b7ab0be26ee6641929d9a0e924f39990bc4ba10  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--fine.png
 96c9588f2420f194bf05621dd6fa72ad02c0b340f3dd3822996fd35a604f3a1f  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--masterwork.png
 c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--relic.png
-b51a250a99d0b091b21e468fbe761c5fe70c94daa767f1ae6d9a5da753378969  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+3af70683b42972ca3cbd35927b1e702fe2c0311bbc4ec717d687e95c05246b01  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
 7f2013ecf274cfe3c25bb6ea6a28ece6fd0a7e46ecb91aab7de71ace2120fadb  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-broadback_sabre--fine.txt
@@ -2706,7 +2707,7 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-ef47f1de382770193caf6da916a653b8d55f29c68fe6bfb9d2fc484db3375320  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+0894035e27118b2cf84664dea9d156532ef7f3829064eb2ac6b31423f75ee9e8  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 deaf4e20e3843235790df048073620b0e76bfe152a29a7968d3c1860de696192  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-broadback_sabre-32px.png

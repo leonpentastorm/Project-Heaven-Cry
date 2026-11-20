@@ -102,6 +102,11 @@
       "type": "moderation_blocked",
       "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-broadback_sabre--relic.json",
       "id": "weapon-broadback_sabre--relic"
+    },
+    {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-short_draw--fine.json",
+      "id": "weapon-short_draw--fine"
     }
   ]
 }
