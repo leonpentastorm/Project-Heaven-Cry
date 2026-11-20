@@ -4844,6 +4844,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_skinner--fine",
+      "path": "art/icons/gear/weapon-ork_skinner--fine.png",
+      "sha256": "c0161af4660ed187cf46db1308d1b50b7684119224de4ae4458732611e121c29",
+      "label": "Ork Skinner — Fine",
+      "family": "weapon-ork_skinner",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_skinner--fine.png",
+        "sha256": "bac86801b8ab5fc9b578d758170ebd34944fcc4aa9516f1d99391ab57f9459e0"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-ork_skinner--fine.png",
+        "sha256": "c0161af4660ed187cf46db1308d1b50b7684119224de4ae4458732611e121c29"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-ork_skinner--fine.txt",
+        "sha256": "b40745f413b8709dcff1a98f0a21a8def0b6c431b85b6083b32f040b656ab115"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_skinner.png",
+          "sha256": "780bde15cfd66b073d80dd8087e1a4f204af717f4392a4c6522bd46dc71f9886"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_skinner.png",
+          "sha256": "569382b3a98782be292324aea7f73823628cbcb572ce026ff63b9db2ad7cc59b"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_skinner--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_skinner--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_skinner--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_skinner--fine.png"
+      },
+      "export_hashes": {
+        "256": "9b6df7e42a63239f40d7fac6008c9cfbff11b9d24795a4014ac7f467fbc8f0e0",
+        "128": "581684135ecbd6ddc382fdaf3f410f2b6b8c0de328d44057fa011a3471dc5396",
+        "64": "a7d4001b5077505f97a4dde22ba67695f970fa9306aeaa7d85468f6b8bf726e7",
+        "32": "d57bfa9f1516f0e4a967366510376f2995d257099653edd5676b842ad758c5ab"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-ork_skinner",
+      "outline": {
+        "solid_alpha_iou": 0.9706969573664513,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
