@@ -1,13 +1,13 @@
 # Reset continuation progress
 
-Branch: `art/2026-11-20-reset-continuation`. New deliveries: 84/114.
+Branch: `art/2026-11-20-reset-continuation`. New deliveries: 85/114.
 
 Shared coordination: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Read START-HERE.md before extending this queue.
 
 All new entries remain review-candidate; production_approved:false and implementation_ready:false. Exact-outline review remains pending.
 
-Ready jobs: weapon-pitch_axe--masterwork, weapon-legion_spear--fine.
+Ready jobs: weapon-pitch_axe--relic, weapon-legion_spear--fine.
 
-Pending jobs: weapon-hellraiser_rotary--celestial, weapon-purifier_flamer--masterwork, weapon-purifier_flamer--relic, weapon-purifier_flamer--celestial, weapon-dock_cutter--masterwork, weapon-dock_cutter--relic, weapon-dock_cutter--celestial, weapon-broadback_sabre--relic, weapon-broadback_sabre--celestial, weapon-short_draw--fine, weapon-short_draw--masterwork, weapon-short_draw--relic, weapon-short_draw--celestial, weapon-long_draw--fine, weapon-long_draw--masterwork, weapon-long_draw--relic, weapon-long_draw--celestial, weapon-kemizuchi_side_sword--masterwork, weapon-kemizuchi_side_sword--relic, weapon-kemizuchi_side_sword--celestial, weapon-ork_cleaver_glaive--masterwork, weapon-ork_cleaver_glaive--relic, weapon-ork_cleaver_glaive--celestial, weapon-pitch_axe--masterwork, weapon-pitch_axe--relic, weapon-pitch_axe--celestial, weapon-legion_spear--fine, weapon-legion_spear--masterwork, weapon-legion_spear--relic, weapon-legion_spear--celestial.
+Pending jobs: weapon-hellraiser_rotary--celestial, weapon-purifier_flamer--masterwork, weapon-purifier_flamer--relic, weapon-purifier_flamer--celestial, weapon-dock_cutter--masterwork, weapon-dock_cutter--relic, weapon-dock_cutter--celestial, weapon-broadback_sabre--relic, weapon-broadback_sabre--celestial, weapon-short_draw--fine, weapon-short_draw--masterwork, weapon-short_draw--relic, weapon-short_draw--celestial, weapon-long_draw--fine, weapon-long_draw--masterwork, weapon-long_draw--relic, weapon-long_draw--celestial, weapon-kemizuchi_side_sword--masterwork, weapon-kemizuchi_side_sword--relic, weapon-kemizuchi_side_sword--celestial, weapon-ork_cleaver_glaive--masterwork, weapon-ork_cleaver_glaive--relic, weapon-ork_cleaver_glaive--celestial, weapon-pitch_axe--relic, weapon-pitch_axe--celestial, weapon-legion_spear--fine, weapon-legion_spear--masterwork, weapon-legion_spear--relic, weapon-legion_spear--celestial.
 
 Quota state: null.

@@ -5498,6 +5498,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-pitch_axe--masterwork",
+      "path": "art/icons/gear/weapon-pitch_axe--masterwork.png",
+      "sha256": "81527455654aa025bce0e219096658a87d2f76e023221acc66ddc03707ac14c8",
+      "label": "Pitch Axe — Masterwork",
+      "family": "weapon-pitch_axe",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-pitch_axe--masterwork.png",
+        "sha256": "1b16c587652339bf0745a46982320d18af2492b1d46779faa3eeff0859401402"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-pitch_axe--masterwork.png",
+        "sha256": "81527455654aa025bce0e219096658a87d2f76e023221acc66ddc03707ac14c8"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-pitch_axe--masterwork.txt",
+        "sha256": "3e431d911f36c816620f92b3beb0b001b256a59327059f1eee5287538edff606"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-pitch_axe.png",
+          "sha256": "764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b"
+        },
+        {
+          "path": "art/icons/gear/weapon-pitch_axe--fine.png",
+          "sha256": "65a83d9ec4bfad972b3b338607b8c0c427b3cc95548e6a0bc59ef0aa4fcc582b"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png",
+          "sha256": "22b4dc28c0c3d3f7945546bd3a752c11fcce29798618561b279ad238784a078c"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-pitch_axe--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-pitch_axe--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-pitch_axe--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-pitch_axe--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "8ad01fff708ebab7f1ab557c2c93c36c83f75df211cb8ea7b1de004e0599a1f5",
+        "128": "dfc118f9669d740f23ffdefb4165d09d1a1c56ea90a9667b13b964c03015478d",
+        "64": "92f9ee57ce5f39509bf6a0543bf45c2561b266790e619a2563dc68ec001682af",
+        "32": "992908381e8a29bd4f52fc527abb20ccc7cb827cf693ff6b34207a10d67e8217"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-pitch_axe",
+      "outline": {
+        "solid_alpha_iou": 0.9572437796037847,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 17
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
