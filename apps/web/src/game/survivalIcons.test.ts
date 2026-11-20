@@ -4,10 +4,17 @@
 // sheet's GEAR tab draws for what that id puts in the pack; a magazine or rounds never draw their gun; and the Sell and
 // Give rows, made by the engine's views through the reducer, name a magazine as a magazine.
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import { WEAPON, ITEM, priceOf, lineGoods, SHOP_DATA, LOADOUT, RACK, shopView, giveView, apply, type GameState, type RunNode } from '@engine';
 import { survivalRoom, startRun, ownerOf } from '../../../../packages/engine/test/helpers/survival';
 import type { Pc } from '../../../../packages/engine/test/helpers/replay';
 import { gearIconUri, packGearId, torsoGearId } from './gearIcons';
+
+// Items 2.0 (rulings of 20 Nov 2026: new rows ship on a placeholder): an id the typing sheet adds has no picture until the
+// artist's is taken in (art/briefs/ART-REQUESTS.md); the item card draws its marked placeholder (itemCardView). It is exempt
+// from `none` only while it has none, so the day its picture lands the guard binds it again.
+const SHEET = JSON.parse(readFileSync(new URL('../../../../docs/design/proposals/2026-11-20-items-2.0-rows.json', import.meta.url), 'utf8'));
+const ON_PLACEHOLDER = new Set<string>([...SHEET.weapons, ...SHEET.items].map((r: any) => r.id));
 
 const big = (id: string) => gearIconUri(id, undefined, { large: true });
 /** What the GEAR tab draws for what an id puts in the pack (body armour of a class: the outer slot's torso). */
@@ -35,7 +42,7 @@ describe('Survival icons: the shop, the camp and the rewards draw what the GEAR 
     const differ: string[] = [], none: string[] = [];
     for (const id of SHOWN) {
       const shop = big(id), inv = inventoryIcons(id);
-      if (!shop) none.push(id);
+      if (!shop && !ON_PLACEHOLDER.has(id)) none.push(id);
       if (inv.length && inv.some((x) => x !== shop)) differ.push(id);
     }
     expect(differ).toEqual([]);

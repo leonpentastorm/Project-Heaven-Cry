@@ -1,6 +1,7 @@
 // Weapon and armour icons (game/gearIcons.ts): every weapon in data/weapons.json and every armour piece and shield in
 // data/items.json has one, and each follows the monoline rule (art/icons/weapons/README.md).
 import { describe, expect, it } from 'vitest';
+import { readFileSync } from 'node:fs';
 import weapons from '../../../../data/weapons.json';
 import items from '../../../../data/items.json';
 import { gearIcon, hasGearIcon, GEAR_ICON_IDS } from './gearIcons';
@@ -8,15 +9,22 @@ import { gearIcon, hasGearIcon, GEAR_ICON_IDS } from './gearIcons';
 const weaponIds = (weapons as { items: { id: string }[] }).items.map((w) => w.id);
 const armourIds = (items as { items: { id: string; category?: string }[] }).items.filter((i) => i.category === 'armour' || i.category === 'shield' || i.category === 'focus').map((i) => i.id);
 
+// Items 2.0 (20 Nov 2026: new rows ship on a placeholder): an id the typing sheet adds is exempt only while it has no icon
+// (the item card draws its marked placeholder); the day its icon lands this binds it again.
+const SHEET = JSON.parse(readFileSync(new URL('../../../../docs/design/proposals/2026-11-20-items-2.0-rows.json', import.meta.url), 'utf8'));
+const ON_PLACEHOLDER = new Set<string>([...SHEET.weapons, ...SHEET.items].map((r: any) => r.id));
+const owed = (id: string) => ON_PLACEHOLDER.has(id) && !hasGearIcon(id);
+
 describe('gear icons', () => {
   it('every weapon, armour piece, shield and magic focus has an icon', () => {
     expect(armourIds).toEqual(expect.arrayContaining(['evoker', 'emanator']));
     expect(weaponIds.length).toBeGreaterThan(0);
     expect(armourIds.length).toBeGreaterThan(0);
-    for (const id of [...weaponIds, ...armourIds]) expect(hasGearIcon(id), id).toBe(true);
+    for (const id of [...weaponIds, ...armourIds]) if (!owed(id)) expect(hasGearIcon(id), id).toBe(true);
   });
   it('each is a 64-box monoline svg in currentColor', () => {
     for (const id of [...weaponIds, ...armourIds]) {
+      if (owed(id)) continue;
       const svg = gearIcon(id)!;
       const root = svg.match(/^<svg\b[^>]*>/)?.[0] ?? '';
       expect(root, id).toMatch(/viewBox="0 0 64 64"/);
