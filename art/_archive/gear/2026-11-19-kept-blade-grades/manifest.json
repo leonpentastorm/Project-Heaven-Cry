@@ -12354,6 +12354,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_javelins--celestial",
+      "path": "art/icons/gear/weapon-throwing_javelins--celestial.png",
+      "sha256": "d0f76e0f414e62eba16e0f9bf623517ec9be508f512fc3952035ec982a2d8752",
+      "label": "Throwing javelins — Celestial",
+      "family": "weapon-throwing_javelins",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--celestial.png",
+        "sha256": "a60b6ce97f2deb2b1683cea9913129d752bbf8a0fcd138352bc38a8662b2040d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--celestial.png",
+        "sha256": "d0f76e0f414e62eba16e0f9bf623517ec9be508f512fc3952035ec982a2d8752"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_javelins--celestial.txt",
+        "sha256": "112aef8140e45937c763156fc9047bf7bb964ce545fcf79c836b4e31e76c5916"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-throwing_javelins--celestial/v1/source.png",
+          "sha256": "ea1d5ecaf05c01f6092824bfe97ec0e135783947d4f8a10a03691e41c52c6bca"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_javelins.png",
+          "sha256": "50f55c624c9d5e0e72a60eeb623182329ebe0a3f4f5c6000872e87cc6af53621"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_javelins--relic.png",
+          "sha256": "45107d90d1ec0390fc1eaeda10161fe47b3155eafe4506e6a528f67b80bcb57d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_javelins--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_javelins--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_javelins--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_javelins--celestial.png"
+      },
+      "export_hashes": {
+        "256": "8efd8ebcd38e989f537372eb0904d175010d88f317615dbb0124b74f8024b54b",
+        "128": "ec132c8f0917dbeef1eb55cd815d96443ebe7fafb652f9c114fed8169cfeab9e",
+        "64": "3b91f3c9675d62bdcb56e3ece66a72fecbe4460f7525a89452418dff88a7ba3d",
+        "32": "4d1912722dacbad75f0a445272dcdebd3926d124d01cad0547564909cd7c5bc6"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-throwing_javelins",
+      "outline": {
+        "solid_alpha_iou": 0.9568353021742853,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 38
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

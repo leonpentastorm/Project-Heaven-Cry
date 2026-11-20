@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-b456da4144439fc798c3ddb3d2badb7dce6aa52c08e013de94872ed7105e0455  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+d464ee538cd239771639b8fdfbad4f88552dd0cf053dd8ae79e98da974df4fff  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 cfe0b7165b9763268d0236c6c4e2d3115516495eb909f41cfb8621beee42e813  art/_archive/gear/2026-11-19-kept-blade-grades/START-HERE-2026-11-20.md
 8ee34c72311bf68773c6853ab0bb7d25b31c2b57e8143486cfbd5f27578d9e64  art/_archive/gear/2026-11-19-kept-blade-grades/TOMORROW.md
 dc45fc3c9fb69cc8ef2a2ab30aaefdfe979447725ab1cf53391fc2ffe47c8ca4  art/_archive/gear/2026-11-19-kept-blade-grades/VALIDATION.md
@@ -1298,6 +1298,8 @@ fc0015df7842df8bc7bb64e546b7ce8b9626c55a00e82191aa89fcfe24553913  art/_archive/g
 a52cebff9f5f9779f6f6679850d2fc25298d6575170f3ea9fc0731d7c075e2d4  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-ork_snarl_knife--celestial/v1/source.png
 077f2049483d81fa8ff5d0fe711e13f6ab407de9a89bf94fa1b8fc7013c0ba8f  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-ork_wreck_saw--relic/v1/prompt.txt
 e6573d82da5ae1321ca4f50aa6bc42c1ef4a9241eb63697e957680d79c8a941b  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-ork_wreck_saw--relic/v1/source.png
+78cf6cc616ca751183a6f2e23d20c5b897df3fcd7ed9fe61c85a844212a05638  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-throwing_javelins--celestial/v1/prompt.txt
+ea1d5ecaf05c01f6092824bfe97ec0e135783947d4f8a10a03691e41c52c6bca  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-throwing_javelins--celestial/v1/source.png
 ed7c3d47ef77a34adfb2f1bb4355cb850a8569c94c0756bdca902d3d32c1fcd0  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-throwing_javelins--relic/v1/prompt.txt
 8e6ddc9fc97c53ab78fe94c70aab768acb56b7991d21329380770954e3d3b8bc  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-throwing_javelins--relic/v1/source.png
 c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/_archive/gear/2026-11-19-kept-blade-grades/briefs/07-shields-armour.md
@@ -1863,7 +1865,7 @@ f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/g
 413b2adf894497a56b98375b72437e60d2a8805d53727e3441070c247e265c32  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json
 e49b88c1c8e8faccd29fab4de73c1d9e3b9d656d510539f826076b68a6323021  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_pick--fine--1795155670059.json
 63fe7ac88a5e6ac611b6d1d7336d6104cec11fa77f81d5d1b786da46672b42b9  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json
-fb68dbdf2cfc16f415970a54146c622cff321fd2b50e404f8fae5d3883af6617  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+64b5e72748b5a360e700c0d1d47336d6a9461cf69483570a9379f1aa9e971e6d  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
 31b9266c8a923ce1e84e1237e45494829d72265679afc370a72675e70d85c156  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--celestial.png
 f93411441905437355171c2f6a64045a0cfe2099aaf24cf694d5dd7da311afa6  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--fine.png
 fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--masterwork.png
@@ -2064,10 +2066,11 @@ ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/_archive/g
 67e73d5a2efea36b05d7acf03df6fca43aef0c4111b26c9ae5b6ca94ca1f6110  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_darts--fine.png
 4117155ac790c69b11737ffcde76ca014016b1002c7c487c03b5c84466538182  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_darts--masterwork.png
 b17911d2a1662f9f7c69c72545ef361cb3f56cd92b01da0ad324e80d13f01826  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_darts--relic.png
+d0f76e0f414e62eba16e0f9bf623517ec9be508f512fc3952035ec982a2d8752  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--celestial.png
 5c56e147e3e347452f5e2a3c3afade5819646e609057fe3bac345bf7415e9d0d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--fine.png
 3aca2654a89d6600486e7aa7b1e1c7c2a5f746997a6f5832f71981d3448a8240  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--masterwork.png
 45107d90d1ec0390fc1eaeda10161fe47b3155eafe4506e6a528f67b80bcb57d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--relic.png
-97a08ecb70e3c616e90890559bcad107e7d4b0605ddc32b0f1f45ca4e038cec9  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+382781fe92c452acc82f93afe9e5b1b2c039bec4a6e7c5c7eb6eb22ad155ee02  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 7072283c256a7cd34d750cfe09118d83631509ed58760961580028abc78f6bf8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt
 048ccfc688b5412dd99ae31c3119eaae6f4126ba06c421f73ccb095a68e03315  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--fine.txt
 109c7d7ccd649f9b5ca60c47fa35ef9a7c9308c47c1c903dba426028fbf7b521  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt
@@ -2304,7 +2307,7 @@ ac03a1544653c9f10419c3b67424d4883dd55fd5cbf228e53abf1a4f7d3c1dac  art/_archive/g
 f7e911b5b39348a34f63c30b45d110967b604864abc7fb790edcd4f33fae7ab1  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_darts--fine.txt
 1b1f18e2c4662816ba1cd323e02929674f6ed28c01b231d5c77bea75b9b9eefc  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_darts--masterwork.txt
 c89d6cc45c748c2f89f451ee39433d2257cb6bdaa463af258f967bd84be48cba  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_darts--relic.txt
-9a73cc1d73cbc735fe8ef39ea3429774ee95627f11053ffdf1a535d6c7418ffb  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_javelins--celestial.txt
+112aef8140e45937c763156fc9047bf7bb964ce545fcf79c836b4e31e76c5916  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_javelins--celestial.txt
 b94dbdcc16c97cca4ede9ae0b6640728e987f3c3516ca2a5d9d23e8bf0bbc515  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_javelins--fine.txt
 eecc8d83055ab98a4548018f8b40851a399f09885b2618ddc4feac10fa7d38f2  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_javelins--masterwork.txt
 896808a919a175c00c7b4921acafead92b68cd8493574c32b068cdb669d058d1  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_javelins--relic.txt
@@ -2324,7 +2327,7 @@ bc68a83c56a8024aa509dbc18cd09734ffcdd82548d35c4442ec53dc05ea409f  art/_archive/g
 3dea41ecea9988023656c2dbfa4e527fcb8194d71b6aea386f1ed9f9e6294d0b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--fine.txt
 684d47c91ba4301ee4c3f08b30bcf0f4e1883952dbc341a5852a161ae3effafd  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--masterwork.txt
 50a61f4ac3a7e5f5690ba802260fb911300852923bddd0fd2e750b56d2123871  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--relic.txt
-bb2eb5e65a409cb70a05e449b048502a42eeedff428e3e3dfb46f3934ad9ee5c  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+ed01f1288d0d3582d91cf713816cfc215eeec8c66f3f14ab9c06a90c3a37429a  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 40590eb9b576e9d16899ba703041c16e3244a5a4fd689355e53adc4dd536d2fb  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-32px.png
 9b9c6401e3920bb264df0cc7aad2ea9bf468b2b079f3eeb7efd87a219275fa67  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-64px.png
 ac788bb44b1e1e9dfaf3afe95f2b8facc30a95c3eeb2e07876760fb7c46cc2bc  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-assault_helm-32px.png
@@ -2430,8 +2433,8 @@ ec27867383d47f60f54771504e2943438395a1c7a056372217dca2ef6cf9dfc5  art/_archive/g
 32d9a9d6198c7840cf58ff9ea7046bfe9c78760bb30b92b117266a6ea844f007  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-striking_gloves-64px.png
 3a2867ef5cfe2728ec952435232d5f152043c2c6b1ede2e28de216adae292913  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-throwing_darts-32px.png
 48631ba484ffa79bcf6510c989bcbd166bc75eb864b6aeb65e8e088026822b7c  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-throwing_darts-64px.png
-b41e85264b00b8f87bfb82402c9739306adbb006b362e5efc58e4cc766dcb7f7  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-throwing_javelins-32px.png
-31911e706f080046961401abc5fe5123004eb34231205c487049a70caf2195cc  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-throwing_javelins-64px.png
+ac389bfb52bf3f2b2a3a10ae6ca9c08c1b0e91576742e009d4c0c4e5b6fed138  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-throwing_javelins-32px.png
+5f5b4c4748e53a91b8aef05867eb83141393828a5b4386fe1a5cedff08fc7331  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-throwing_javelins-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-19-kept-blade-grades/source-brief.md
 bf52369a08fc551424cf9f6527d8768f65d7f39d756a6bf14e9dcca3ff359e74  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-armoured_greaves--celestial.png
 289366e9db13c63abd7ec4ca0c14a151c9db036c66a96e54e6d0af05846e0c30  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-armoured_greaves--fine.png
@@ -2633,6 +2636,7 @@ e381d2db4265fcbd1bf4adfc11921d98cc3be88c53a99e67f87c9381d1b59ab8  art/_archive/g
 5e5653e8c8254faa62c0c7284b4c86c83b085a6d1a41eba366f7561a55485f14  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--fine.png
 f922abde77079670e277a486fc5bf70cdb65af1877ab9f0362f164ee780634ac  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--masterwork.png
 c4a5c03f770f517530a8f38cb74c7cc12fa18bbffae527f8925c25e4938d78f5  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--relic.png
+a60b6ce97f2deb2b1683cea9913129d752bbf8a0fcd138352bc38a8662b2040d  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--celestial.png
 b890d1d6241d7486a31038ae3b485c9acd3c7930752366e767e6314c2543b8f8  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--fine.png
 a932292e46a152120f743a018af1d26b2e74a3091ff2230eb35251e125a2ade4  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--masterwork.png
 9950249c3c3b17be2c3fc789c13a78c1d9c9b7701b699d4633d6dc9be8dd0aaa  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--relic.png
@@ -6583,7 +6587,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-b8543bf1367fd0b7546a774d351c01a3981cdc183720a7801adba39903b3511d  art/catalog.json
+3e23e3f31faa8e538a89185e4ef90c9dd1992294524eab5dfcfe6c21f4448f1c  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8784,6 +8788,7 @@ e174c218eb5786e5415a155f2a965f8b3207b1e8341f05d1f5e0ad0228a06e45  art/icons/gear
 c7dc9b2af05e5b519cc7d24e38f189a5e6e55b4871c565e2aaa5d9b9bf78cd6c  art/icons/gear/exports/128/weapon-throwing_darts--masterwork.png
 a89f71a47ab1b13e8d46f1e572b699842beb97785888ace3867d0c53f5b57b5a  art/icons/gear/exports/128/weapon-throwing_darts--relic.png
 e650fcc637868b45907ae3a8483440ae5988dd9987d642cd4152733f7952339a  art/icons/gear/exports/128/weapon-throwing_darts.png
+ec132c8f0917dbeef1eb55cd815d96443ebe7fafb652f9c114fed8169cfeab9e  art/icons/gear/exports/128/weapon-throwing_javelins--celestial.png
 7a6ea3f0a8387d268b04e5439297e1802ecc7816b83a296e3c4a9db4a81b8c32  art/icons/gear/exports/128/weapon-throwing_javelins--fine.png
 ec5aede0faa552177d1221e94758cf408f1106d661e95b004fd78a24ee8b8db4  art/icons/gear/exports/128/weapon-throwing_javelins--masterwork.png
 e9fee045d512a0a99c6b01200aeca2c1bbf21ffb2fe0b6434a1b53daf3dc3bb7  art/icons/gear/exports/128/weapon-throwing_javelins--relic.png
@@ -9266,6 +9271,7 @@ f82e5f001b2a9ef0ca82c5c9aa6d508a26355bdee4a9ab9dcad7d0d798ad1486  art/icons/gear
 c0ad123a3bb17f583cc14d49329fbcf61d2bd38e5c98983504fd691dd3d0a0d3  art/icons/gear/exports/256/weapon-throwing_darts--masterwork.png
 3fa88184448d0cecb1d0fe2faab7be498caa21c97befee0a3881f5d452a2cb26  art/icons/gear/exports/256/weapon-throwing_darts--relic.png
 51a06ddcb10a8409c91c8b1c0be83dcdd55ec191bc0266baab2474553496b336  art/icons/gear/exports/256/weapon-throwing_darts.png
+8efd8ebcd38e989f537372eb0904d175010d88f317615dbb0124b74f8024b54b  art/icons/gear/exports/256/weapon-throwing_javelins--celestial.png
 e5b00af88a82ffca02c82ee7f2f3ccb4a1f710f7f61b4dfa1f472670f591f9c4  art/icons/gear/exports/256/weapon-throwing_javelins--fine.png
 c27188f10cfb8bc85428a0e4394639c83d90599d388194c89bad5c8a506fda03  art/icons/gear/exports/256/weapon-throwing_javelins--masterwork.png
 64bde8ce33a965d5ecdd1f7f05e03049d4d7a9e1f4ffe55b3e1cca0cad598411  art/icons/gear/exports/256/weapon-throwing_javelins--relic.png
@@ -9748,6 +9754,7 @@ c920f53e34f71dbff1a4c5cbffde98241ffc55c73f719a5665dd79a03e8dd7d6  art/icons/gear
 dfcb593bf398ab11acce6b07820f7b02fc14523df50e1f8a31e0231e932a1d36  art/icons/gear/exports/32/weapon-throwing_darts--masterwork.png
 c06d8cf7bd957816dbf287548aa95eaae98a7b13a59f9f6b89ba3a5d1797e97e  art/icons/gear/exports/32/weapon-throwing_darts--relic.png
 4956eb88ac0aa330ee58880b5f9adac800b4f4fb897b8305d64d3a4bb81d0ea5  art/icons/gear/exports/32/weapon-throwing_darts.png
+4d1912722dacbad75f0a445272dcdebd3926d124d01cad0547564909cd7c5bc6  art/icons/gear/exports/32/weapon-throwing_javelins--celestial.png
 0082125d2d1b96e844c47d1a78db62cea45fa2b04eed256763ecd4744cc68c4c  art/icons/gear/exports/32/weapon-throwing_javelins--fine.png
 314d49e970fc50d118e5a9608f4d5a940138324172543d00a79d5233d5caf07a  art/icons/gear/exports/32/weapon-throwing_javelins--masterwork.png
 ccb8f262b4ea8d147a3a335ad63ed58feb43dbd4e41fff5662b11f598775782f  art/icons/gear/exports/32/weapon-throwing_javelins--relic.png
@@ -10230,6 +10237,7 @@ e0d8f968c69f730a35b1ef2579d574eb0f6b1fcdce9925ccaa4da7dbb234811f  art/icons/gear
 eff96c2cf7b8811ff13a616ffa11de31420f0e164f7b05d406a7a52e4a8ee35b  art/icons/gear/exports/64/weapon-throwing_darts--masterwork.png
 fd9dbdda52a162b8affbe0c1376dc68d9c48908328df70c830c7c607d0bad7fe  art/icons/gear/exports/64/weapon-throwing_darts--relic.png
 1c8cc0003db1bd85bdae3e509f555a3aeba743c79609d52fdc9e5bb67b493a3c  art/icons/gear/exports/64/weapon-throwing_darts.png
+3b91f3c9675d62bdcb56e3ece66a72fecbe4460f7525a89452418dff88a7ba3d  art/icons/gear/exports/64/weapon-throwing_javelins--celestial.png
 a2232c41e297dce22c0e6a2b5c1d5fb520709c3b87c318eec3c999d745a58183  art/icons/gear/exports/64/weapon-throwing_javelins--fine.png
 765f1cb70354e0516a1047b6c9626afb875c6ce0f1eaf1d4cb4408989c1b2a68  art/icons/gear/exports/64/weapon-throwing_javelins--masterwork.png
 c058d2e70fb5c7688d7027f3a4d3238de237324f5ccc8500d51a5f39f96d1edc  art/icons/gear/exports/64/weapon-throwing_javelins--relic.png
@@ -10532,6 +10540,7 @@ ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/icons/gear
 4117155ac790c69b11737ffcde76ca014016b1002c7c487c03b5c84466538182  art/icons/gear/weapon-throwing_darts--masterwork.png
 b17911d2a1662f9f7c69c72545ef361cb3f56cd92b01da0ad324e80d13f01826  art/icons/gear/weapon-throwing_darts--relic.png
 7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2  art/icons/gear/weapon-throwing_darts.png
+d0f76e0f414e62eba16e0f9bf623517ec9be508f512fc3952035ec982a2d8752  art/icons/gear/weapon-throwing_javelins--celestial.png
 5c56e147e3e347452f5e2a3c3afade5819646e609057fe3bac345bf7415e9d0d  art/icons/gear/weapon-throwing_javelins--fine.png
 3aca2654a89d6600486e7aa7b1e1c7c2a5f746997a6f5832f71981d3448a8240  art/icons/gear/weapon-throwing_javelins--masterwork.png
 45107d90d1ec0390fc1eaeda10161fe47b3155eafe4506e6a528f67b80bcb57d  art/icons/gear/weapon-throwing_javelins--relic.png
