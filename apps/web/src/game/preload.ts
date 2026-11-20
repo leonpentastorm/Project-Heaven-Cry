@@ -4,14 +4,15 @@
 //  · Nothing else starts before the page has loaded (the window's load event, and the title's art or TITLE_WAIT_MS):
 //    the page's own code, fonts and title art never compete with art the player may not see for minutes.
 //  · Then only the next screens' code and art: on every screen the player reaches (App.tsx calls warmNext), the code
-//    chunks of the screens they can reach from it (screenLoad.ts; from the load event on: a screen waits for its chunk)
+//    chunks of the screens they can reach from it (screenLoad.ts; from the load event on: a screen waits for its chunk;
+//    the engine and the room overlays first, from any screen: store.ts loadEngine, screenLoad.ts ROOM_LAYER)
 //    and their art (NEXT, SCREEN_ART; once the title's art is in too), a few files at a time at low priority, small
 //    sizes only. A screen change replaces what was still waiting: the player has
 //    moved on. Art no screen names here loads when a screen shows it, as every <img> does.
 // Nothing waits on it: an <img> whose file is not in yet shows its usual fallback and swaps in when it lands.
 import ASSETS from './assets.json';
-import type { Screen } from './store';
-import { loadScreen, loadSandbox } from '../screenLoad';
+import { type Screen, loadEngine } from './store';
+import { loadScreen, loadSandbox, ROOM_LAYER } from '../screenLoad';
 
 /** The screens a player can reach from each one (where the art and code are warmed ahead). */
 export const NEXT: Record<Screen, Screen[]> = {
@@ -82,6 +83,10 @@ function pump() {
 /** The next screens' code chunks, once the page has loaded (small, and a screen waits for its chunk: never held for art). */
 function warmCode(screen: Screen) {
   if (!P.loaded) return;
+  // The engine, the game's data and the room's overlays (the client load lane, 0.33: none of them is in the boot chunk;
+  // every room, Continue and the Proving Ground included, waits for them, so they are warmed first, from any screen).
+  loadEngine().catch(() => { /* loaded again when a room opens */ });
+  ROOM_LAYER.load().catch(() => { /* loaded again when a room's screen is shown */ });
   for (const s of [...(NEXT[screen] || []), ...(CODE_NEXT[screen] || [])]) loadScreen(s).catch(() => { /* loaded again when the screen is reached */ });
   if (screen === 'home' || screen === 'room') loadSandbox().catch(() => { /* the Proving Ground opens from both */ });
 }

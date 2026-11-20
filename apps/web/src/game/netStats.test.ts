@@ -20,7 +20,7 @@ vi.mock('./net', () => ({
 
 async function fresh() {
   vi.resetModules(); links.length = 0; localStorage.clear();
-  const store = await import('./store'), stats = await import('./netStats');
+  const store = await import('./store'), stats = await import('./netStats'); await store.loadEngine(); // (the engine loads on demand since 0.33: in before the room is opened, as on a page that has warmed it)
   await new Promise((r) => setTimeout(r, 5));
   return { store, stats };
 }

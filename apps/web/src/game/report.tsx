@@ -2,15 +2,14 @@
 // needed to reproduce a problem, and the Narrator's spend for the room.
 import React from 'react';
 import { zipSync, strToU8 } from 'fflate';
-import { getState, reportState, reportBefores, toast } from './store';
+import { getState, reportState, reportBefores, toast, loadedEngine } from './store';
 import { recentLogs, recentExchanges, scrub } from './debug';
 import { voiceState, voicePrefs } from './voice';
 import { usePresence, presenceCls } from './presence';
-import { callEstimate, COST_CEILING_USD, MODELS } from '../narrator/anthropic';
-import { isPriced, providerInfo } from '../narrator/providers';
+import { COST_CEILING_USD, MODELS } from '../narrator/models';
+import { isPriced, providerInfo } from '../narrator/providerList';
 import { GAME_VERSION } from '../version';
 import { tipProps } from './actionTip';
-import { runReport } from './runReport';
 import { netReport } from './netStats';
 
 // ---------- open from anywhere (the screens' buttons) ----------
@@ -35,7 +34,7 @@ export function buildReport(what: string, withSave: boolean) {
     narrator: { provider: st.narrator.provider, baseUrl: st.narrator.baseUrl, model: st.narrator.model, effort: st.narrator.effort, scripted: st.narrator.scripted, hasKey: !!st.narrator.key },
     voice: { ...voiceState(), prefs: voicePrefs() }, rerollCopies: reportBefores(),
     game: withSave ? g : g && { code: g.code, v: g.v, phase: g.phase, players: g.players, scene: g.story?.scene, await: g.story?.await, work: g.story?.work, narrator: g.narrator, lastLines: g.story?.entries.slice(-12) },
-    run: g?.run ? runReport(g as any) : undefined, // rules 1.47: a Survival room's run (seed, stages, fights' tallies, builds)
+    run: g?.run ? loadedEngine()?.runReport(g as any) : undefined, // rules 1.47: a Survival room's run (seed, stages, fights' tallies, builds)
     net: netReport(), // 0.33: the room link's delay, each action's parts (netStats.ts)
     narratorCalls: recentExchanges(), log: recentLogs(),
   };
@@ -97,7 +96,8 @@ function SpendDialog({ close }: { close: () => void }) {
   // knows the service; a guest's copy of the settings is the default, so a guest sees whatever the host's turns cost).
   const priced = !host || isPriced(st.narrator);
   const full = host ? reportState() : null;
-  let est: ReturnType<typeof callEstimate> | null = null; try { if (priced && full && full.phase !== 'lobby') est = callEstimate(full, model.id); } catch { /* */ }
+  const E = loadedEngine(); // (a room's state: the engine is in whenever there is one)
+  let est: ReturnType<NonNullable<typeof E>['callEstimate']> | null = null; try { if (priced && full && E && full.phase !== 'lobby') est = E.callEstimate(full, model.id); } catch { /* */ }
   const tokens = (n: number) => (n >= 1e6 ? (n / 1e6).toFixed(2) + ' M' : n >= 1e3 ? Math.round(n / 1e3) + ' k' : String(n)) + ' tokens';
   const recent = u?.recent || [], peak = Math.max(COST_CEILING_USD, ...recent);
   const cacheShare = u && u.input + u.cacheRead > 0 ? Math.round((u.cacheRead / (u.input + u.cacheRead)) * 100) : 0;

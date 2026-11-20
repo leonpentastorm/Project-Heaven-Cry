@@ -9,7 +9,7 @@ const kept = new Map<string, string>(); let gameWrites = 0; const hooks: Record<
 (globalThis as any).addEventListener = (name: string, fn: () => void) => { hooks[name] = fn; }; // the page's own events (pagehide)
 const page = { visibilityState: 'visible', addEventListener: (name: string, fn: () => void) => { hooks['document.' + name] = fn; } }; (globalThis as any).document = page; // the tab shown or hidden
 vi.mock('./net', () => ({ connect: () => ({ send: () => {}, close: () => {}, state: 'open' }) }));
-const store = await import('./store');
+const store = await import('./store'); await store.loadEngine(); // (the engine loads on demand since 0.33: in before the room is opened, as on a page that has warmed it)
 const tick = async (n = 2) => { for (let i = 0; i < n; i++) await new Promise((r) => setTimeout(r, 0)); };
 const saved = () => JSON.parse(kept.get('phc.game.PSTEST') || 'null');
 const sheet = (name: string) => { const a = ARCHETYPES[0]; return { name, portrait: '', origin: 'Thousand-Planet frontier', kit: 'soldier', traits: [], skills: { ...a.preset }, attrs: { ...a.attributes }, cores: { ...a.cores }, identity: {} } as any; };

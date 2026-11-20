@@ -13,7 +13,7 @@ const usage = { input: 0, output: 0, cacheRead: 0, costUsd: 0 };
 const turn = vi.fn(async () => ({ usage, turn: { narration: 'Guns.', sceneTitle: 'The rear pad', combat: { name: 'The rear pad', difficulty: 'easy', enemies: [{ name: 'Engineer', tier: 'minion', weapon: 'service_pistol' }] } } }));
 const fight = vi.fn();
 vi.mock('../narrator/anthropic', () => ({ anthropicProvider: () => ({ turn, fight }), scriptedProvider: () => ({ turn, fight }), polish: async () => '', MODELS: [{ id: 'claude-opus-5-5', label: 'Opus', input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 }] }));
-const store = await import('./store');
+const store = await import('./store'); await store.loadEngine(); // (the engine loads on demand since 0.33: in before the room is opened, as on a page that has warmed it)
 const tick = async (n = 4) => { for (let i = 0; i < n; i++) await new Promise((r) => setTimeout(r, 0)); };
 const host = () => store.reportState()!;
 const cb = () => host().combat!;

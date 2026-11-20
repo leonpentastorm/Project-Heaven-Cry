@@ -2,31 +2,21 @@
 // Design Component runtime (src/dc/runtime.tsx). A thin bar shows the connection and any rule message.
 import React from 'react';
 import { getState, subscribe, takeOver, toast, type ClientState, type Screen } from './game/store';
-import { loadedScreen, loadScreen, loadedSandbox, loadSandbox } from './screenLoad';
+import { loadedScreen, loadScreen, loadedSandbox, loadSandbox, ROOM_LAYER } from './screenLoad';
 import { warmNext } from './game/preload';
-import { Music } from './game/music';
 import { Title } from './title/Title';
 import { installButtonSounds, sfx, sfxForLine, hasSfx, reducedMotion, onUiPrefs } from './game/sfx';
-import { MemoryPanel } from './game/memory';
-import { VotePanel } from './game/vote';
-import { NarratorVoice } from './game/narratorVoice';
 import { onVoice } from './game/voice';
 import { poke } from './game/store';
 import { PlaytestTools } from './game/report';
-import { NetLine } from './game/NetLine';
-import { Tips } from './game/tips';
-import { StoryScroll } from './game/storyScroll';
-import { FxLayer } from './game/fx/FxLayer';
-import { TurnIntro, cue } from './game/turnIntro';
-import { CutInLayer } from './game/spotlight/CutInLayer';
 import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
-import { MissionLayer } from './game/missionBoard';
 import { DialogHost } from './game/dialog';
 import { SettingsHost } from './game/settings';
-import { leaveFlow } from './screens/shell';
-import { ModeCentre } from './game/modeCentre';
-import { NarratorSeat } from './narrator/desk';
+import { counted, tally } from './game/renderCount';
+// The client load lane (0.33): the room's overlays read the engine, so they are their own chunk (game/roomLayer.tsx,
+// screenLoad.ts ROOM_LAYER); App and the title are in the boot chunk without the engine. A room's screen waits for the
+// overlays as for its own chunk (useShownScreen), so they are always there when a room is on show.
 
 /** The screen on show and the state it was drawn with. Each screen's code is its own chunk (screenLoad.ts): until the
  *  next screen's chunk is in, the one on show stays, drawn from the state it last had (never a state meant for
@@ -42,18 +32,18 @@ function onlyToast(a: ClientState, b: ClientState): boolean {
 function useShownScreen(st: ClientState): Shown | null {
   const [, bump] = React.useReducer((x: number) => x + 1, 0);
   const shown = React.useRef<Shown | null>(null);
-  const C = loadedScreen(st.screen), sb = !!st.game?.sandbox;
-  const ready = C !== undefined && (!sb || !!loadedSandbox());
+  const C = loadedScreen(st.screen), sb = !!st.game?.sandbox, room = !!st.role;
+  const ready = C !== undefined && (!sb || !!loadedSandbox()) && (!room || !!ROOM_LAYER.now());
   if (ready) {
     // (Every store change renders the screen, a toast alone included: the screen decides things on the render it is
     // given, such as the tab a turn opens on. Only the overlays skip a toast alone, below.)
     shown.current = { screen: st.screen, tick: st, C: C || (Title as any) };
   }
-  const want = ready ? null : st.screen + (sb ? '+sandbox' : '');
+  const want = ready ? null : st.screen + (sb ? '+sandbox' : '') + (room ? '+room' : '');
   React.useEffect(() => {
     if (!want) return;
     let live = true, tries = 0;
-    const go = () => Promise.all([loadScreen(st.screen), sb ? loadSandbox() : null]).then(() => { if (live) bump(); }, (e) => {
+    const go = () => Promise.all([loadScreen(st.screen), sb ? loadSandbox() : null, room ? ROOM_LAYER.load() : null]).then(() => { if (live) bump(); }, (e) => {
       if (!live) return;
       if (++tries < 3) { setTimeout(go, 1500); return; }
       console.error(e); toast('This screen could not load. Check the connection and reload the page.');
@@ -64,29 +54,8 @@ function useShownScreen(st: ClientState): Shown | null {
   return shown.current;
 }
 
-// ---------- render counts (the outside code review's performance work) ----------
-// How many times each part of the page has rendered: window.__phcRenders (App, every overlay below, the Proving
-// Ground's panel); the screens count their own (window.__phcRenderCount, dc/runtime.tsx). tools/perf/fight_render_probe.mjs
-// reads them.
-const RENDERS_BY: Record<string, number> = {};
-if (typeof window !== 'undefined') (window as any).__phcRenders = RENDERS_BY;
-const tally = (name: string) => { RENDERS_BY[name] = (RENDERS_BY[name] || 0) + 1; };
-/** An overlay with its renders counted. */
-function counted<P extends object>(name: string, Comp: React.ComponentType<P>): React.ComponentType<P & { v: number }> {
-  const W = ({ v: _v, ...p }: P & { v: number }) => { tally(name); return React.createElement(Comp, p as P); };
-  W.displayName = name;
-  // Memoised: an overlay renders again when its props change or App rendered for anything but a toast alone (v): never
-  // for a toast alone (the outside code review's performance work).
-  return React.memo(W) as any;
-}
-const C = {
-  Music: counted('Music', Music), NarratorVoice: counted('NarratorVoice', NarratorVoice), VotePanel: counted('VotePanel', VotePanel),
-  MemoryPanel: counted('MemoryPanel', MemoryPanel), StoryScroll: counted('StoryScroll', StoryScroll), FxLayer: counted('FxLayer', FxLayer),
-  TurnIntro: counted('TurnIntro', TurnIntro), CutInLayer: counted('CutInLayer', CutInLayer), ModeCentre: counted('ModeCentre', ModeCentre),
-  MissionLayer: counted('MissionLayer', MissionLayer), PlaytestTools: counted('PlaytestTools', PlaytestTools), Tips: counted('Tips', Tips),
-  SettingsHost: counted('SettingsHost', SettingsHost), DialogHost: counted('DialogHost', DialogHost),
-};
-const CSandbox = React.memo(function CSandbox({ C: Panel, v: _v, ...p }: { C: React.ComponentType<any>; v: number } & Record<string, any>) { tally('Sandbox'); return <Panel {...p} />; });
+// ---------- render counts (the outside code review's performance work; game/renderCount.ts) ----------
+const C = { PlaytestTools: counted('PlaytestTools', PlaytestTools), SettingsHost: counted('SettingsHost', SettingsHost), DialogHost: counted('DialogHost', DialogHost) };
 
 onVoice(poke);
 installButtonSounds();
@@ -101,6 +70,7 @@ export function App() {
   const v = seen.current.v;
   const tr = useScreenTransition(screen, st.game?.phase);
   const Sandbox = st.game?.sandbox ? loadedSandbox() : null; // (the Proving Ground's tools: their own chunk, screenLoad.ts)
+  const Layer = ROOM_LAYER.now(); // (the room's overlays: their own chunk, in whenever a room's screen is on show)
   React.useEffect(() => { warmNext(screen); }, [screen]);
   // --- SOUNDS FROM LOG LINES (owned by the FX pass) ---
   // Combat and area-map sounds now come from the engine's presentation events, played by the effects layer (game/fx)
@@ -150,22 +120,9 @@ export function App() {
         <div style={{ position: 'absolute', top: '-20%', bottom: '-20%', left: '30%', width: '22%', background: 'linear-gradient(90deg, transparent, rgba(246, 81, 87, 0.85) 40%, #FFFFFF 50%, rgba(246, 81, 87, 0.85) 60%, transparent)', animation: 'phcSlash .5s cubic-bezier(.5,0,.3,1) .22s both' }} />
         {/* (The fight's title is the FIGHT card of the turn banners, game/turnIntro.tsx: one card, not two.) */}
       </div>}
-      {st.role && <C.Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} v={v} />}
-      {st.role && <C.NarratorVoice game={st.game || null} v={v} />}
-      {st.role && <C.VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} v={v} />}
-      {st.role === 'host' && <C.MemoryPanel game={st.game || null} isHost side="left" compact v={v} />}
-      {screen === 'main' && <C.StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} v={v} />}
-      {st.role && <C.FxLayer game={st.game || null} screen={screen} v={v} />}
-      {st.role && <C.TurnIntro game={st.game || null} meId={st.me.id} screen={screen} v={v} />}
-      {/* Spotlight cut-ins (decision 113): torn eye strips over a blurred screen, z-index 64. */}
-      {st.role && <C.CutInLayer game={st.game || null} screen={screen} v={v} />}
-      {st.role && Sandbox && <CSandbox C={Sandbox} v={v} game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={screen} />}
-      {st.role && <C.ModeCentre game={st.game || null} screen={screen} v={v} />}
-      {st.role === 'host' && screen === 'main' && <NarratorSeat game={st.game || null} meId={st.me.id} />}
-      {st.role && <C.MissionLayer game={st.game || null} screen={screen} v={v} />}
+      {Layer && <Layer.RoomOverlays st={st} screen={screen} v={v} Sandbox={Sandbox} n={n} lastId={lastId} />}
       <C.PlaytestTools v={v} />
-      {st.role && <NetLine game={st.game || null} role={st.role} />}
-      <C.Tips v={v} />
+      {Layer && <Layer.RoomTail st={st} v={v} />}
       {/* The settings cog (every header's ⚙) and the in-game dialogs (never the browser's confirm/prompt/alert). */}
       <C.SettingsHost v={v} />
       <C.DialogHost v={v} />
@@ -173,7 +130,7 @@ export function App() {
         <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 12px', maxWidth: 'min(680px, 100%)', padding: '8px 14px', borderRadius: 10, background: '#1C2536', border: '1px solid #2E3A50', boxShadow: '0 8px 30px rgba(0,0,0,.45)', color: '#E7EBF3', fontSize: 'var(--fs-sub)', textAlign: 'center' }}>
           <span>{barP.shown}</span>
           {st.conn === 'replaced' && <button type="button" data-phc-conn-takeover="" onClick={() => takeOver()} style={{ minHeight: 30, padding: '0 12px', borderRadius: 8, border: 0, background: '#FFFFFF', color: '#0A0D13', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>Take over here</button>}
-          {guestAway && <button type="button" data-phc-conn-leave="" onClick={() => { leaveFlow(); }} style={{ minHeight: 30, padding: '0 12px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>Leave the room</button>}
+          {guestAway && <button type="button" data-phc-conn-leave="" onClick={() => { ROOM_LAYER.load().then((m) => m.leaveFlow()); }} style={{ minHeight: 30, padding: '0 12px', borderRadius: 8, border: '1px solid #3B475D', background: 'transparent', color: '#E7EBF3', fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap' }}>Leave the room</button>}
         </div>
       </div>}
       {toastP.shown && <div style={{ position: 'fixed', bottom: 20, left: 0, right: 0, zIndex: 70, display: 'flex', justifyContent: 'center', pointerEvents: 'none' }}>
@@ -265,8 +222,8 @@ function useScreenTransition(screen: Screen, phase: string | undefined) {
     const k = kind.current; if (!k) return; kind.current = null;
     const holder = ghostHolder.current, s = snap.current; snap.current = null;
     const rm = reducedMotion();
-    if (k === 'combat-in') { cue('combat_in'); }
-    if (k === 'combat-out') { cue('combat_out'); }
+    if (k === 'combat-in') { ROOM_LAYER.now()?.cue('combat_in'); }
+    if (k === 'combat-out') { ROOM_LAYER.now()?.cue('combat_out'); }
     setInCls(IN_CLS[k]);
     const tIn = setTimeout(() => setInCls(''), (rm ? 200 : IN_MS[k]) + 60);
     let tG: ReturnType<typeof setTimeout> | undefined;

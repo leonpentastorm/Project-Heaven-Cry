@@ -1,7 +1,6 @@
 // Shared screen helpers: the prototypes' D data, the EPCCG "?" pop-up, the lightbox and the Mastered card,
 // ported from design/canvas-build/{epccg,lightbox}.logic.js. Screens import what they need.
 import PD from '../game/protodata.json';
-import ASSETS from '../game/assets.json';
 import epTpl from '../templates/epccg.template.html?raw';
 import lbTpl from '../templates/lightbox.template.html?raw';
 import shellTpl from '../templates/shell.template.html?raw';
@@ -160,9 +159,9 @@ export const perPoint = (id) => roadMap(id).head.join(' · ') || (SK[id] && SK[i
 export const ceilingLine = (level) => 'ceiling ' + attrCapAt(level) + ' at this level';
 export const fmt = (m) => (m > 0 ? '+' + m : m < 0 ? '−' + Math.abs(m) : '0');
 export const IMG = D.img;
-/** Any built asset by name (tools/build_web_assets.py): campaign maps, sprites, banners, portraits. URLs pass through. */
-export const ART = (n) => (!n ? '' : ASSETS[n] || (/^(\/|https?:|data:|blob:)/.test(n) ? n : ''));
-export const ART_BIG = (n) => ASSETS[n + '-lg'] || ART(n);
+/** Any built asset by name: game/art.ts (its own module, so the title reads it without this one). */
+import { ART, ART_BIG } from '../game/art';
+export { ART, ART_BIG };
 /** A unit's face as its token draws it: the portrait or avatar resolved through the art library (an asset name like
  *  'char-m813-scavenger-drone', a built URL, an upload). '' when nothing resolves (an archived or unknown id): the
  *  token, the target card and the HUD then show the unit's initials, never a broken black square. A Figment or a Scrap

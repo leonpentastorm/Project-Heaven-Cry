@@ -4,6 +4,7 @@
 // App.tsx keeps the screen it shows until the next one's chunk is in, so a screen change never flashes an empty page.
 import type React from 'react';
 import type { Screen } from './game/store';
+import { lazyModule } from './game/lazy';
 
 type Comp = React.ComponentType<any>;
 export type ChunkScreen = Exclude<Screen, 'home' | 'run'>;
@@ -47,3 +48,8 @@ export function loadSandbox(): Promise<PanelComp> {
   if (sandboxPanel) return Promise.resolve(sandboxPanel);
   return (sandboxP ||= import('./game/sandbox').then((m) => (sandboxPanel = m.SandboxPanel), (e) => { sandboxP = null; throw e; }));
 }
+
+// The room's overlays (game/roomLayer.tsx: the music, the effects layer, the turn banners and the rest App draws over a
+// room's screens) are their own chunk too (the client load lane, 0.33: they read the engine, the boot chunk does not).
+// App waits for them before it shows a room's screen, as for a screen's chunk.
+export const ROOM_LAYER = lazyModule(() => import('./game/roomLayer'));
