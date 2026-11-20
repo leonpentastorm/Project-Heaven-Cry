@@ -2968,6 +2968,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-adamantile_longsword--fine",
+      "path": "art/icons/gear/weapon-adamantile_longsword--fine.png",
+      "sha256": "1a8ef784a6c0a141940987c9d11737e9b343bbf736a482ef4a988a5272eb5f6c",
+      "label": "Adamantile Brigade Longsword — Fine",
+      "family": "weapon-adamantile_longsword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-adamantile_longsword--fine.png",
+        "sha256": "eb50bcfaf8c057792debda138cc538eaa68b0149a5ceff031a35378aef243800"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-adamantile_longsword--fine.png",
+        "sha256": "1a8ef784a6c0a141940987c9d11737e9b343bbf736a482ef4a988a5272eb5f6c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-adamantile_longsword--fine.txt",
+        "sha256": "33c6bd3baeead569ee341ac2794ae833649af4d10fe478a8e77e889180c82094"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-adamantile_longsword.png",
+          "sha256": "ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png",
+          "sha256": "bb86956b8cc82b894caeebe5fcd4452c8369e8a27a51cab46c9b1cd73661a678"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_longsword--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_longsword--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_longsword--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_longsword--fine.png"
+      },
+      "export_hashes": {
+        "256": "d75188f9272fc131570666f538dc3df0bc696552e3fceeb4394c2f42b77846ae",
+        "128": "304d82bdea05ff4360f60a5cc0baf3c4ef7580c1bc152dd0bee7d547ef8604eb",
+        "64": "6e1b82be662f7ad1cec83c91f7e807f8d840165d4fcc0771cc4e63997dcf8466",
+        "32": "9c626d21375ec7dc593b31dd1375a3450993dea5fa809cdd44d15d180c2a6d04"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-adamantile_longsword",
+      "outline": {
+        "solid_alpha_iou": 0.9560931738465689,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 33
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

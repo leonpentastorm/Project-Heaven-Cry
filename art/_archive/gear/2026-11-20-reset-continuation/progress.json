@@ -47,7 +47,8 @@
     "weapon-adamantile_plate_needle--fine",
     "weapon-adamantile_plate_needle--masterwork",
     "weapon-adamantile_plate_needle--relic",
-    "weapon-adamantile_plate_needle--celestial"
+    "weapon-adamantile_plate_needle--celestial",
+    "weapon-adamantile_longsword--fine"
   ],
   "remaining": [
     "weapon-hellraiser_rotary--celestial",
@@ -70,14 +71,13 @@
     "weapon-kemizuchi_side_sword--masterwork",
     "weapon-kemizuchi_side_sword--relic",
     "weapon-kemizuchi_side_sword--celestial",
-    "weapon-adamantile_longsword--fine",
     "weapon-adamantile_longsword--masterwork",
     "weapon-adamantile_longsword--relic",
     "weapon-adamantile_longsword--celestial"
   ],
   "baseline_project_pictures": 327,
   "project_total": 871,
-  "updated_utc": "2026-11-20T04:33:52.237694+00:00",
+  "updated_utc": "2026-11-20T04:36:26.929478+00:00",
   "active_run_id": "reset-20261120-165ac7984341",
   "started_utc": "2026-11-20T02:44:45.333049+00:00",
   "successful_generation_attempts": 1,
