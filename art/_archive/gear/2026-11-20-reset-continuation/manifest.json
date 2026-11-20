@@ -810,6 +810,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hellraiser_servo_fist--celestial",
+      "path": "art/icons/gear/weapon-hellraiser_servo_fist--celestial.png",
+      "sha256": "dfa655b606115eddeda239a6377238d7b5be67ef11db1c662fa3932faf77ddcc",
+      "label": "Hellraiser Servo Fist — Celestial",
+      "family": "weapon-hellraiser_servo_fist",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_servo_fist--celestial.png",
+        "sha256": "97aaf159368d84cca50a8620f86034bdd24484f9ebd4d1093289a30a7b6c3445"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-hellraiser_servo_fist--celestial.png",
+        "sha256": "dfa655b606115eddeda239a6377238d7b5be67ef11db1c662fa3932faf77ddcc"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-hellraiser_servo_fist--celestial.txt",
+        "sha256": "5795d4caa5117f48e91a95a7620cda11689a54537c84df0e181d8c9dd42bea53"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hellraiser_servo_fist.png",
+          "sha256": "194e053129041c6456b705be701992e72d6ec8420a7901f10fe8cf0bf92bec00"
+        },
+        {
+          "path": "art/icons/gear/weapon-hellraiser_servo_fist--relic.png",
+          "sha256": "a3645baabb1f18c0bb48f31476a0e4779c8932a868395a41a3044ce4aa2c6bd3"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_servo_fist--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_servo_fist--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_servo_fist--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_servo_fist--celestial.png"
+      },
+      "export_hashes": {
+        "256": "fef1e9b289a6ab91c4f7b82e9b463d20d0786f2320778a2481fe78e3139e3430",
+        "128": "3c2d07ee220f053c0137da64e5bb38748a13a6e164a38d986e127132470a1c1f",
+        "64": "0ef4be941c5d47625667edd66fdfac1ee7365a3b5f440e342fc720e23386708d",
+        "32": "574a0c68083a7ae7f6258d917e705a14866120dcb006f619e0e32761cb873be1"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-hellraiser_servo_fist",
+      "outline": {
+        "solid_alpha_iou": 0.9313601599022086,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 18,
+        "different_pixels_64": 60
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
