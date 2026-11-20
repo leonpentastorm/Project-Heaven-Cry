@@ -186,6 +186,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_knives--masterwork",
+      "path": "art/icons/gear/weapon-throwing_knives--masterwork.png",
+      "sha256": "b0646dcbfff751036340e788efee12908cd2d6b413741704a13fe4dbe96173c6",
+      "label": "Throwing Knives — Masterwork",
+      "family": "weapon-throwing_knives",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-throwing_knives--masterwork.png",
+        "sha256": "495e6d8006519a091b98c4f83e3470b9cc18176fbdaf897e9014dfb374e19ba1"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-throwing_knives--masterwork.png",
+        "sha256": "b0646dcbfff751036340e788efee12908cd2d6b413741704a13fe4dbe96173c6"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-throwing_knives--masterwork.txt",
+        "sha256": "e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-throwing_knives.png",
+          "sha256": "8e36e35a0a48efd17166fe67d9ed3e47343497619dc16b865d1a9c41ca88e71e"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_knives--fine.png",
+          "sha256": "cd04352a1bec2ab1b8a6576aae274b0e4fced87defa5fc71ff3fb24d72943881"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_knives--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_knives--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_knives--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_knives--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "2f817d817081d8550be77e362666e7f9cad0ab04ee8a322dc5f9b7307aae9d4f",
+        "128": "908344f0f5bd73eb68c7066ef62243a8c3dd04a7f7c5d58bfb4756de5484ad44",
+        "64": "fdb00d22d34c91e30a154af2d24e7d386731d56150d48d00924e96a7453fedb2",
+        "32": "ecfd2149976c3c3baa3c99cfe463b24687f595e651526552678d10a814251f55"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-throwing_knives",
+      "outline": {
+        "solid_alpha_iou": 0.9265346385217448,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 51
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
