@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-03943efe7c5909facee235adacf181e44b6dd810c7a087e62a9e026db6a1f519  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+18dfdc5801b7e94496ff7e7411a90fe8fc19996b655b534fe6ebb4b955be5bab  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 cfe0b7165b9763268d0236c6c4e2d3115516495eb909f41cfb8621beee42e813  art/_archive/gear/2026-11-19-kept-blade-grades/START-HERE-2026-11-20.md
 8ee34c72311bf68773c6853ab0bb7d25b31c2b57e8143486cfbd5f27578d9e64  art/_archive/gear/2026-11-19-kept-blade-grades/TOMORROW.md
 dc45fc3c9fb69cc8ef2a2ab30aaefdfe979447725ab1cf53391fc2ffe47c8ca4  art/_archive/gear/2026-11-19-kept-blade-grades/VALIDATION.md
@@ -1867,7 +1867,7 @@ f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/g
 413b2adf894497a56b98375b72437e60d2a8805d53727e3441070c247e265c32  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json
 e49b88c1c8e8faccd29fab4de73c1d9e3b9d656d510539f826076b68a6323021  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_pick--fine--1795155670059.json
 63fe7ac88a5e6ac611b6d1d7336d6104cec11fa77f81d5d1b786da46672b42b9  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json
-1af0e4dc1a26a6c7dc42968272fae3e44daec0e1a36c0e36b2ba4c67fd8220b4  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+17722a48f50d0aacac1ae34f579cef9187a0bd4eb5a68f1e418a684eb0f0223e  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
 31b9266c8a923ce1e84e1237e45494829d72265679afc370a72675e70d85c156  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--celestial.png
 f93411441905437355171c2f6a64045a0cfe2099aaf24cf694d5dd7da311afa6  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--fine.png
 fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--masterwork.png
@@ -2047,6 +2047,7 @@ c54d3b8bef1fe98bfecdb3acc4ab5cefd3a8537102d60ead859be93a57660bc4  art/_archive/g
 e05eec12c0fcff034c3e28928a45621a2f7e9ca2b840c7ddef60f4f2072a4e2d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lance--relic.png
 0526866522450e260e5859dd8569dc1e460f85607075f6568d005c0afb336fa0  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-legion_gladius--fine.png
 b12143083cdfe3c5ceee491749c91166b76383cf92fafa2bb4789d5e336f14f7  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-legion_gladius--masterwork.png
+b4d4333e74974a8d8e460b55478d07001b86d253b3088e77da8976ef8989f1d2  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lumeri_votive_torch--celestial.png
 853be208abe301f170823534fbc02b88947a6be9f86979760d98c72b1fa48f9b  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lumeri_votive_torch--fine.png
 76f459c3ba49996ce56d9a9b9f4e587e1e2b95bd9bf7b98fdf1ec9660ed8a862  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lumeri_votive_torch--masterwork.png
 1a443d3e865ae5c1ab1af16f19a651d7282c7fd5ee6e7f1cfc53c338f1577ef6  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lumeri_votive_torch--relic.png
@@ -2075,7 +2076,7 @@ d0f76e0f414e62eba16e0f9bf623517ec9be508f512fc3952035ec982a2d8752  art/_archive/g
 5c56e147e3e347452f5e2a3c3afade5819646e609057fe3bac345bf7415e9d0d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--fine.png
 3aca2654a89d6600486e7aa7b1e1c7c2a5f746997a6f5832f71981d3448a8240  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--masterwork.png
 45107d90d1ec0390fc1eaeda10161fe47b3155eafe4506e6a528f67b80bcb57d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--relic.png
-30592be1d028264faadee5baf06abe5ab3103a2ff617d72c848426374d3ccf3a  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+906d898b4f86ce0db534a857803a561dfde5e8f809f8a1255eff31e7f67de555  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 7072283c256a7cd34d750cfe09118d83631509ed58760961580028abc78f6bf8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt
 048ccfc688b5412dd99ae31c3119eaae6f4126ba06c421f73ccb095a68e03315  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--fine.txt
 109c7d7ccd649f9b5ca60c47fa35ef9a7c9308c47c1c903dba426028fbf7b521  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt
@@ -2276,7 +2277,7 @@ ff3ec3780ea2bc2531ba7a3c4b13433cfaf566ecbc860a521919bfeb2fa69e65  art/_archive/g
 607eee49c67f395d2048084871a984be41d838239ab89810a21a4b16e84d667a  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_cathedral_burner--fine.txt
 9655c9370995ae794b86b29ab33371067f71dfa34445efaf9170f05e41e6ec80  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_cathedral_burner--masterwork.txt
 7104c140bcb3c205e6a04c99c567f0f9d47aa73cd8841b1e0807d782dd36bc22  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_cathedral_burner--relic.txt
-420a021c35955af9c509a6ba902b18cc3dad6091c97b27024b8c73c05778dc6c  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_votive_torch--celestial.txt
+bfe719ade3ad7d165ceb239d450b94df800c7ee478c25e87e3990ff06b598cfd  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_votive_torch--celestial.txt
 657e6be22bbf4cd08b84b2f27344c4fbae844ca54b3aa98751fafd3df18bf7f5  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_votive_torch--fine.txt
 b973a1bb661b19ea154a5afa932e504165322dbac61f4219400d8f7eed5a76ed  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_votive_torch--masterwork.txt
 eb2150741e34ba7c4b806e93f9195c55581e4c9db9a6d5cfaa1ae58baed53351  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_votive_torch--relic.txt
@@ -2348,7 +2349,7 @@ fd37b998c897b03710a1fe720be0d2b87c5f29352574b60a0097368b26bd4cc5  art/_archive/g
 3dea41ecea9988023656c2dbfa4e527fcb8194d71b6aea386f1ed9f9e6294d0b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--fine.txt
 684d47c91ba4301ee4c3f08b30bcf0f4e1883952dbc341a5852a161ae3effafd  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--masterwork.txt
 50a61f4ac3a7e5f5690ba802260fb911300852923bddd0fd2e750b56d2123871  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--relic.txt
-68f11d814c63e7c63975480f53cb9656220cad7b392be83b8097328fc1e5830c  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+88ece364632074a788b6180aadc8d0860221a5fdeab60d50fd661ac5f6f95b73  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 40590eb9b576e9d16899ba703041c16e3244a5a4fd689355e53adc4dd536d2fb  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-32px.png
 9b9c6401e3920bb264df0cc7aad2ea9bf468b2b079f3eeb7efd87a219275fa67  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-64px.png
 ac788bb44b1e1e9dfaf3afe95f2b8facc30a95c3eeb2e07876760fb7c46cc2bc  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-assault_helm-32px.png
@@ -2442,8 +2443,8 @@ aa15c89c977eb92925f02b4c9dce6ef0e9a75b0b1149257d81cf58fba8085354  art/_archive/g
 d540fd543ea0ff258ec1f3dee4219f8c22b549f23a8c5f3d826fffa92eca60a7  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-lance-64px.png
 d149bb2079e6173b3ea4b78de5632bd45da70b3e9859a367a8cb1db19ac10f78  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-legion_gladius-32px.png
 ae82e698e01ceb7bf11435c35862408002bf4d9fbbc6dea54fde151471826912  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-legion_gladius-64px.png
-351ecf1a289bbbb0f04553127572ba2e1a5d0efc9edce16aaea495961912f7f8  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-lumeri_votive_torch-32px.png
-46b909727957d5bbc8d73a45268443891e094f2f4ce79048839e3ec606d9e4a1  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-lumeri_votive_torch-64px.png
+787c2f58417b0253d3847836fd9bbcb256019d4ac038237a68922f95b21941f9  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-lumeri_votive_torch-32px.png
+69701f3f14026592da983a49e6d3ac7c295c3895c23c373ae101a13b74b5269a  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-lumeri_votive_torch-64px.png
 4c860e90584209f4b42788fca751daba4f39dbbbeede7be7f291543acbe030b8  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-maul-32px.png
 023ae46f1a2fbbcad4e1f5a5dc12a09269e810df367a6d8d64c689a0784aa664  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-maul-64px.png
 ec27867383d47f60f54771504e2943438395a1c7a056372217dca2ef6cf9dfc5  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-ork_machete-32px.png
@@ -2638,6 +2639,7 @@ a1808e296bbc5a53f2ac9ea59bd0471e5ea7d90b63cd70771b402098a8b4506f  art/_archive/g
 c3a6cf74791a150a85c15d5c508d288b2bbbd363c19a812a44921eb08ea6c37a  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lance--relic.png
 311c91c10613e9c5dd271814f606bc2b4dcb2929e6606dd3aa26d9892a3b4c3c  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-legion_gladius--fine.png
 a12c5417e1e948d5ba910582aafc9e3b38d6c8df67654da1c1cf737b4a73e431  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-legion_gladius--masterwork.png
+ffc5d0116bd73165e548a12aa7a29e8f34f619af5f75ce9b3cfb6d84e7164e31  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--celestial.png
 6f944d28a7b6c429a9174ccd84120bed5e4bf4a54d88c1ebdfdfc120d96a0b72  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--fine.png
 801383271b5936dfe708da0e70a9694728d8d9de7119812ffe62888f0fceb887  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--masterwork.png
 7c3904e64dfb851f5a3cc5333543e4cfae029cce731337ad4e9882f15b31e65a  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--relic.png
@@ -6621,7 +6623,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-1efc44ebe7246671ac90732559db1174c4a42b1e44b3dc627695ebf4442960c2  art/catalog.json
+bca3792537b80214cffa0cb0384e62591cd1e81837eedd7df2bb13b729f9eceb  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8765,6 +8767,7 @@ e3b92f63757d75e6f6d85f4f79b00c8c5222116079ea8d4fd05e1936caaec2df  art/icons/gear
 78fed6bf5077e5ba9fbbfd60a5c35339e6285828f54750e008a2f334f3b5ba94  art/icons/gear/exports/128/weapon-lumeri_cathedral_burner.png
 01d918bad760195846447a9cb82ce86fe660ff824cf6abe4ac4bfc51f2657115  art/icons/gear/exports/128/weapon-lumeri_censer_gun.png
 bc7265fb854752274a50a55d4d960d473444d2b6b56d90b24379336e1e30e56a  art/icons/gear/exports/128/weapon-lumeri_scattergun.png
+1f958da07ea4be9b378f5372c60e328dc61a3ce9df848f7af037ad72932f64e8  art/icons/gear/exports/128/weapon-lumeri_votive_torch--celestial.png
 08c24986c9d7c8c148903b3ef0c5ba72a397d3ee252a5a48a7c8a798890482a8  art/icons/gear/exports/128/weapon-lumeri_votive_torch--fine.png
 753aeaab07d9610ba40bec8516c1138322ae78e591d1244b349da0b28db7eb46  art/icons/gear/exports/128/weapon-lumeri_votive_torch--masterwork.png
 4013b5e512e649c4df35a6b3fc20ad325eac49786be6a617d46538ac48d0bfe3  art/icons/gear/exports/128/weapon-lumeri_votive_torch--relic.png
@@ -9255,6 +9258,7 @@ e4ebd727b35523073d4bdbcb0e002c009c45ede48c6dd98d954517f2a461bba4  art/icons/gear
 6bc6063c30092b730936b907582431837320f274548e1d73746b25ffeca8a039  art/icons/gear/exports/256/weapon-lumeri_cathedral_burner.png
 cf16702e018e240f9bec7c36586854e517382688012739331be4d17e69d27a99  art/icons/gear/exports/256/weapon-lumeri_censer_gun.png
 78a69694e195ee6da326bc9b327aca9baff2529f5af0ce04434dbb966ecbb781  art/icons/gear/exports/256/weapon-lumeri_scattergun.png
+87d4436b448e4e0f253679d49e6e02e91a81096b06a511bfb29781649f323f48  art/icons/gear/exports/256/weapon-lumeri_votive_torch--celestial.png
 979a162663f876c6194292b4de044a3a3d7202d547507bbf9ebe0e31be3f9c41  art/icons/gear/exports/256/weapon-lumeri_votive_torch--fine.png
 eb3d62c5ea3cbc3fb3f0ce1d98321fd50e15049af05a148604990418b398f37f  art/icons/gear/exports/256/weapon-lumeri_votive_torch--masterwork.png
 575a7b0006c64c65efc475da1cc3617f5a4a67b97e0e6425731bd352184da616  art/icons/gear/exports/256/weapon-lumeri_votive_torch--relic.png
@@ -9745,6 +9749,7 @@ f0540222b0d411d52f11a67bcbfdd3c7f6616a07fe147d11bc20879127cf2959  art/icons/gear
 a11c2c9967ce0d8ac18b7508d271d1ffe2868e80e34be078383455d930ad436d  art/icons/gear/exports/32/weapon-lumeri_cathedral_burner.png
 35f3348ce727335c85440eef5d000d4271171468b8031dc4e42f71a04c9cca34  art/icons/gear/exports/32/weapon-lumeri_censer_gun.png
 e0975ab701e4107dcd22ffbfcd5c7ae7049533cded9eb60306ec54355a70c163  art/icons/gear/exports/32/weapon-lumeri_scattergun.png
+8e5caf0274a781f991e39f9fd216f074f505e09348f768c7b98ea20f173b8dd2  art/icons/gear/exports/32/weapon-lumeri_votive_torch--celestial.png
 41c446451dbd59c5f42bbf76a5284107e3b6310ef5e025e0901a388028421b47  art/icons/gear/exports/32/weapon-lumeri_votive_torch--fine.png
 3aa139f6d57b1df510654d6f513983a3cce83ba40290d7a77c87990fac5d73e8  art/icons/gear/exports/32/weapon-lumeri_votive_torch--masterwork.png
 4fbd93e93f2b50ec19dba2e9151e5a91e7065fb73ae14b77e972cb0fdea4960b  art/icons/gear/exports/32/weapon-lumeri_votive_torch--relic.png
@@ -10235,6 +10240,7 @@ daa571ba8715b88bb652d3c9145e9e42f66b94fe0e60754783995c784ef12027  art/icons/gear
 1c88f8839cb8252e31cad9d7c1b4bf8bd0eb4b30f3e3f8764acd46c4165dcfdf  art/icons/gear/exports/64/weapon-lumeri_cathedral_burner.png
 803672171b46a9914d2877b61e442978ef18601eb6dcf021e07a776b2fe82511  art/icons/gear/exports/64/weapon-lumeri_censer_gun.png
 0924beaf8b38525fa4dc2cdfa33ee7366812903779c86eed9989dad5eb350c7f  art/icons/gear/exports/64/weapon-lumeri_scattergun.png
+1159370bcfef10aff11fedd682df95b25196e52aad2bbeb806a28e51c2663005  art/icons/gear/exports/64/weapon-lumeri_votive_torch--celestial.png
 a7c08c6f61b3b4699fd0e3a6f6bd37d555856e04cfe0d79480386a5f32296cbe  art/icons/gear/exports/64/weapon-lumeri_votive_torch--fine.png
 81c85ea24c16fa029ed9b79c51f5ed0d146f4bab78c1ac66a4c1263c05be228a  art/icons/gear/exports/64/weapon-lumeri_votive_torch--masterwork.png
 1a413b4c2c024f33b138b22d805b2687c48f60a66abb4ba253dd927690b3c1f8  art/icons/gear/exports/64/weapon-lumeri_votive_torch--relic.png
@@ -10545,6 +10551,7 @@ b68135ecd329fb3224c639e5fe4ba53942269a26105d85e31b7f18965a30a1b7  art/icons/gear
 217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338  art/icons/gear/weapon-lumeri_cathedral_burner.png
 6a1fe04b004d8a6f951a0da65888ed6c95eac0b4d020dc1b60c1b49163956a68  art/icons/gear/weapon-lumeri_censer_gun.png
 1bc03bc277797f589a6d56cdeb00d488a046e14e120c783dfc59940bed80692b  art/icons/gear/weapon-lumeri_scattergun.png
+b4d4333e74974a8d8e460b55478d07001b86d253b3088e77da8976ef8989f1d2  art/icons/gear/weapon-lumeri_votive_torch--celestial.png
 853be208abe301f170823534fbc02b88947a6be9f86979760d98c72b1fa48f9b  art/icons/gear/weapon-lumeri_votive_torch--fine.png
 76f459c3ba49996ce56d9a9b9f4e587e1e2b95bd9bf7b98fdf1ec9660ed8a862  art/icons/gear/weapon-lumeri_votive_torch--masterwork.png
 1a443d3e865ae5c1ab1af16f19a651d7282c7fd5ee6e7f1cfc53c338f1577ef6  art/icons/gear/weapon-lumeri_votive_torch--relic.png

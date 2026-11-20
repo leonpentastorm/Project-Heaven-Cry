@@ -12602,6 +12602,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lumeri_votive_torch--celestial",
+      "path": "art/icons/gear/weapon-lumeri_votive_torch--celestial.png",
+      "sha256": "b4d4333e74974a8d8e460b55478d07001b86d253b3088e77da8976ef8989f1d2",
+      "label": "Lumeri votive torch — Celestial",
+      "family": "weapon-lumeri_votive_torch",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--celestial.png",
+        "sha256": "ffc5d0116bd73165e548a12aa7a29e8f34f619af5f75ce9b3cfb6d84e7164e31"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lumeri_votive_torch--celestial.png",
+        "sha256": "b4d4333e74974a8d8e460b55478d07001b86d253b3088e77da8976ef8989f1d2"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_votive_torch--celestial.txt",
+        "sha256": "bfe719ade3ad7d165ceb239d450b94df800c7ee478c25e87e3990ff06b598cfd"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lumeri_votive_torch.png",
+          "sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122"
+        },
+        {
+          "path": "art/icons/gear/weapon-lumeri_votive_torch--relic.png",
+          "sha256": "1a443d3e865ae5c1ab1af16f19a651d7282c7fd5ee6e7f1cfc53c338f1577ef6"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch--celestial.png"
+      },
+      "export_hashes": {
+        "256": "87d4436b448e4e0f253679d49e6e02e91a81096b06a511bfb29781649f323f48",
+        "128": "1f958da07ea4be9b378f5372c60e328dc61a3ce9df848f7af037ad72932f64e8",
+        "64": "1159370bcfef10aff11fedd682df95b25196e52aad2bbeb806a28e51c2663005",
+        "32": "8e5caf0274a781f991e39f9fd216f074f505e09348f768c7b98ea20f173b8dd2"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-lumeri_votive_torch",
+      "outline": {
+        "solid_alpha_iou": 0.9537566912866412,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 32
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
