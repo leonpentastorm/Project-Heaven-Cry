@@ -1,6 +1,6 @@
 {
   "branch": "art/2026-11-19-kept-blade-grades",
-  "updated_utc": "2026-11-19T14:17:24.948744+00:00",
+  "updated_utc": "2026-11-20T01:02:18.665866+00:00",
   "ids": [
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
@@ -129,7 +129,31 @@
     "armour-gas_mask--fine",
     "armour-gas_mask--masterwork",
     "armour-gas_mask--relic",
-    "armour-gas_mask--celestial"
+    "armour-gas_mask--celestial",
+    "weapon-parlour_pistol--fine",
+    "weapon-parlour_pistol--masterwork",
+    "weapon-parlour_pistol--relic",
+    "weapon-parlour_pistol--celestial",
+    "weapon-lever_carbine--fine",
+    "weapon-lever_carbine--masterwork",
+    "weapon-lever_carbine--relic",
+    "weapon-lever_carbine--celestial",
+    "weapon-sawn_off--fine",
+    "weapon-sawn_off--masterwork",
+    "weapon-sawn_off--relic",
+    "weapon-sawn_off--celestial",
+    "weapon-coach_gun--fine",
+    "weapon-coach_gun--masterwork",
+    "weapon-coach_gun--relic",
+    "weapon-coach_gun--celestial",
+    "weapon-legion_bullpup--fine",
+    "weapon-legion_bullpup--masterwork",
+    "weapon-legion_bullpup--relic",
+    "weapon-legion_bullpup--celestial",
+    "weapon-whisper_smg--fine",
+    "weapon-whisper_smg--masterwork",
+    "weapon-whisper_smg--relic",
+    "weapon-whisper_smg--celestial"
   ],
   "standards": [
     "weapon-kemizuchi_duelling_blade",
@@ -163,7 +187,13 @@
     "armour-field_boots",
     "armour-heavy_boots",
     "armour-night_goggles",
-    "armour-gas_mask"
+    "armour-gas_mask",
+    "weapon-parlour_pistol",
+    "weapon-lever_carbine",
+    "weapon-sawn_off",
+    "weapon-coach_gun",
+    "weapon-legion_bullpup",
+    "weapon-whisper_smg"
   ],
   "other_agent_proof_standards": [
     "weapon-katana",
@@ -178,9 +208,9 @@
     "weapon-legion_gladius"
   ],
   "peer_canonical_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
-  "target": 128,
-  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7011687307",
-  "latest_implementer_commit": "c22cc8f7bd27fb73fb99cebea7b3ef2b57748454",
-  "handoff_status": "paused at actual usage limit; Gas Mask Relic/Celestial remain reserved for continuation after reset; all119 delivered IDs must be skipped",
+  "target": 152,
+  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7027017190",
+  "latest_implementer_commit": "7e1f6bd065b47ce6f9d9325629abdeaffba7b0e9",
+  "handoff_status": "reserved-waiting-quota-reset;26 eligible jobs (GasMask2+guns24),7 earlier rejected/dependent; no active production START",
   "next_reset_utc": "2026-11-20T03:19:14Z"
 }

@@ -1,3 +1,12 @@
+# Current26-picture reservation —20November2026
+
+Owner kept-grades-20261120-031914Z on `art/2026-11-19-kept-blade-grades` reserves Gas MaskRelic/Celestial2 and all four grades each of `weapon-parlour_pistol`, `weapon-lever_carbine`, `weapon-sawn_off`, `weapon-coach_gun`, `weapon-legion_bullpup`, `weapon-whisper_smg`24. These gun24 are NO LONGER FREE. Claim7027017190 at https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Exact committed IDs and peer22 exclusion: `art/_archive/gear/2026-11-19-kept-blade-grades/coordination/resume-2026-11-20.json`. Restart03:19:14UTC /10:19:14Asia/Saigon; no early image calls. Read START-HERE-2026-11-20.md, current issue and allcomments, post unique START and recheck remote deliveries before every render.
+
+Other worker owns22 on art/2026-11-20-reset-continuation; do not duplicate. No independent kept-Standard free lane remains in the former46 list; new-Standard grades and latest ART-REQUESTS require prerequisite/current-claim checks.119own and58peer delivered remain unchanged; this is reservation/preparation only.
+
+---
+Historical snapshots below; current live channel takes precedence.
+
 # Usage-limit handoff — 19 November 2026
 
 Current branch: `art/2026-11-19-kept-blade-grades`. Own119/128 selected grade candidates are pushed; peer58 are imported with originals/versioned alpha cleanup. Combined pinned count327/871 (150 previously audited base/unique +119 exclusive own grades +58 peer grades). Exports/shared imports/alternatives never count again.

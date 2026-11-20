@@ -1,3 +1,12 @@
+# Current26-picture reservation —20November2026
+
+Owner kept-grades-20261120-031914Z on `art/2026-11-19-kept-blade-grades` retains Gas MaskRelic/Celestial2 and now reserves all four grades each of `weapon-parlour_pistol`, `weapon-lever_carbine`, `weapon-sawn_off`, `weapon-coach_gun`, `weapon-legion_bullpup`, `weapon-whisper_smg`24. The former free gun24 are NO LONGER FREE. Claim https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7027017190 . Reset03:19:14UTC /10:19:14Asia/Saigon; no early image requests. Current startup: `art/_archive/gear/2026-11-19-kept-blade-grades/START-HERE-2026-11-20.md`; exact reservation and peer22 exclusion in coordination/resume-2026-11-20.json.
+
+The other worker owns22 on art/2026-11-20-reset-continuation. Check live issue3 and all comments plus actual remote deliveries before every request; earliest unreleased nonconflicting claim wins.119own and58peer deliveries remain unchanged; preparation adds0 images.
+
+---
+Historical snapshots below; current live channel takes precedence.
+
 # November19 prompt pack — current handoff
 
 Updated19 November2026 on `art/2026-11-19-kept-blade-grades`. Live communication: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . The older status on `art/prompt-pack-01-04-2026-11-19` at550f80c7d is preserved under `art/_archive/gear/2026-11-19-kept-blade-grades/coordination/original-file-status-550f80c7d.md` and is superseded for these later claims/counts. Source developc22cc8f7b is integrated on this art branch; develop is untouched.

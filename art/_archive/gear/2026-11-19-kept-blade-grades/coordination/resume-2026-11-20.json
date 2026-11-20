@@ -1,0 +1,101 @@
+{
+  "owner": "kept-grades-20261120-031914Z",
+  "branch": "art/2026-11-19-kept-blade-grades",
+  "status": "reserved-waiting-reset",
+  "reset_epoch": 1795144754,
+  "reset_utc": "2026-11-20T03:19:14Z",
+  "reset_local": "2026-11-20T10:19:14+07:00",
+  "timezone": "Asia/Saigon",
+  "reservation_comment": 7027017190,
+  "ids": [
+    "armour-gas_mask--relic",
+    "armour-gas_mask--celestial",
+    "weapon-parlour_pistol--fine",
+    "weapon-parlour_pistol--masterwork",
+    "weapon-parlour_pistol--relic",
+    "weapon-parlour_pistol--celestial",
+    "weapon-lever_carbine--fine",
+    "weapon-lever_carbine--masterwork",
+    "weapon-lever_carbine--relic",
+    "weapon-lever_carbine--celestial",
+    "weapon-sawn_off--fine",
+    "weapon-sawn_off--masterwork",
+    "weapon-sawn_off--relic",
+    "weapon-sawn_off--celestial",
+    "weapon-coach_gun--fine",
+    "weapon-coach_gun--masterwork",
+    "weapon-coach_gun--relic",
+    "weapon-coach_gun--celestial",
+    "weapon-legion_bullpup--fine",
+    "weapon-legion_bullpup--masterwork",
+    "weapon-legion_bullpup--relic",
+    "weapon-legion_bullpup--celestial",
+    "weapon-whisper_smg--fine",
+    "weapon-whisper_smg--masterwork",
+    "weapon-whisper_smg--relic",
+    "weapon-whisper_smg--celestial"
+  ],
+  "peer_branch": "art/2026-11-20-reset-continuation",
+  "peer_ids": [
+    "armour-ballistic_helmet--relic",
+    "armour-ballistic_helmet--celestial",
+    "weapon-throwing_knives--fine",
+    "weapon-throwing_knives--masterwork",
+    "weapon-throwing_knives--relic",
+    "weapon-throwing_knives--celestial",
+    "weapon-ork_rip_saw--fine",
+    "weapon-ork_rip_saw--masterwork",
+    "weapon-ork_rip_saw--relic",
+    "weapon-ork_rip_saw--celestial",
+    "weapon-hellraiser_servo_fist--fine",
+    "weapon-hellraiser_servo_fist--masterwork",
+    "weapon-hellraiser_servo_fist--relic",
+    "weapon-hellraiser_servo_fist--celestial",
+    "weapon-hellraiser_rotary--fine",
+    "weapon-hellraiser_rotary--masterwork",
+    "weapon-hellraiser_rotary--relic",
+    "weapon-hellraiser_rotary--celestial",
+    "weapon-purifier_flamer--fine",
+    "weapon-purifier_flamer--masterwork",
+    "weapon-purifier_flamer--relic",
+    "weapon-purifier_flamer--celestial"
+  ],
+  "protocol": {
+    "read_current_issue_and_all_comments_at_start": true,
+    "post_start_with_unique_invocation_id": true,
+    "reject_second_producer_on_unreleased_start": true,
+    "reread_live_claims_and_remote_deliveries_before_every_render": true,
+    "earliest_unreleased_nonconflicting_claim_wins": true,
+    "push_and_reread_new_claim_before_render": true,
+    "one_render_at_a_time": true,
+    "show_validate_commit_push_each_before_next": true,
+    "quota_does_not_release_ownership": true,
+    "publish_release_stop_quota_and_new_claims": true
+  },
+  "standard_references": [
+    {
+      "path": "art/icons/gear/weapon-parlour_pistol.png",
+      "sha256": "0c1368d1206cd634f28b22e78a67d53a5d540dbcb26739b7c98cd7e804eaefd0"
+    },
+    {
+      "path": "art/icons/gear/weapon-lever_carbine.png",
+      "sha256": "240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07"
+    },
+    {
+      "path": "art/icons/gear/weapon-sawn_off.png",
+      "sha256": "182449097f5759e63b764a0c3e22615aec2f9f69cf7967c48f7045a92765aabc"
+    },
+    {
+      "path": "art/icons/gear/weapon-coach_gun.png",
+      "sha256": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5"
+    },
+    {
+      "path": "art/icons/gear/weapon-legion_bullpup.png",
+      "sha256": "3dc7d695c6eb6c2698fa797c62cb8e81159f117c8cbfca317632d8cdc62581a1"
+    },
+    {
+      "path": "art/icons/gear/weapon-whisper_smg.png",
+      "sha256": "b916756013c04cb3db56a413db970873a054e1964531142606f77e5a26138765"
+    }
+  ]
+}
