@@ -13601,3 +13601,21 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       chance to hit the plain rifleman falls from 65% to 60% at every reference level (`test/balance/step1-fit`, which now
       reads the switch). **Owed to the balance lane:** the enemy table's refit back to 65 (not done here: no balance number
       is fitted in this lane). Setting `defense_from` back to 2 restores the old rule exactly.
+7012. **Silent, by Leon's later word** (Waiting on Leon 21; closes rules 1.77 item 6517 a; every line below a **call made
+      for Leon**, reversible by one switch, `rules.json combat.hidden_attack.gives`: `tile` ON, `reveal` the rule before):
+      **acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not.** One function,
+      `tactics.ts attackFromHidden`, at every site where an attack used to reveal its maker (the shot and the strike,
+      the throw, the launcher's shot, Pressure's suppressing fire, the bare-handed opener, an Outburst's Release): the
+      attacker stays Hidden, and every side hostile to it learns its tile (`noteSeen`, the side's `seenAt`: its searchers
+      and hunters go there; a foe that ends its turn next to it still finds it outright, and the spot rolls stand); the
+      log says once "X gives its position away, still unseen.". The standing lines, resolved closest to his word:
+      (a) the body's "any attack reveals you unless the weapon is silent" now reads "any attack gives your tile away
+      unless it is silent; it never reveals you by itself"; (b) **the Break keeps its reveal** (item 1953: "spent and
+      revealed when the action ends"): it is the door's own spend, a choice to break from the shadows, not an act made
+      from them; (c) **Vanish II's roll**: Vanish is gone (rules 1.73 replaced it with Fade), so nothing is left to change;
+      Vanishing Act (Mastered) keeps its own rule (any attack reveals you, even a silent one: the perk wins); (d) **Parting
+      Cut** (item 7007) re-hides after the Break's reveal, so it stands as built; Ghost Kill stands too and matters only
+      after a reveal (a Break, a hit taken); (e) **the Silent Outburst module** ("Begin, Pump and Release don't reveal you")
+      now means a Release gives nothing away, not even your tile. A silent attack's target still rolls to spot you when its
+      eyes reach your tile (shadow-spec 2.6, unchanged). Balance: an Operative that keeps shooting from Hidden is not
+      revealed by it; its measure is owed to the balance lane.

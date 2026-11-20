@@ -11,7 +11,7 @@ import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isSh
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
-import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
+import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, attackFromHidden, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk, CASTER } from './ai-sigil';
 import { armHeart, aiSoulStep, HEART_CASTER } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
@@ -1266,7 +1266,8 @@ export function knownTile(cb: Combat, side: string, t: Unit): string | null {
   if (t.hidden) return cb.lastSeen?.[side]?.[t.id] ?? null;
   return cb.seenAt?.[side] ? cb.seenAt[side][t.id] ?? cb.lastSeen?.[side]?.[t.id] ?? null : t.pos;
 }
-function noteSeen(cb: Combat, side: string, id: string, at: string) {
+/** A side learns where a unit stands (its seenAt: where its eyes last had it, read by knownTile): the one writer. */
+export function noteSeen(cb: Combat, side: string, id: string, at: string) {
   const m = cb.seenAt?.[side]; if (!m || m[id] !== at) cb.seenAt = { ...cb.seenAt, [side]: { ...m, [id]: at } }; // replaced, never written into (a copied fight shares it)
 }
 /** Does anyone on the attacker's side see the target? */
@@ -1626,7 +1627,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // technique's strike gives none (opts.noMomentum, from physical/core.ts): Strikes and Openers spend it.
   if (hit && melee && !opts.noMomentum && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
   if (ambush) injury += ' · AMBUSH';
-  if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked', { how: 'attack' }); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
+  if (att.hidden && !isSilent(att) && !opts.quiet) injury += attackFromHidden(cb, att, 'attacked'); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights); rules 1.82 item 7012: the tile, not the unit
   showAttacker(cb, att, tgt); // rules 1.61 item 4963: the shot that shows (a still-Hidden attacker is untouched)
   const spotBack = att.hidden && !opts.quiet && tgt.side !== att.side && alive(tgt) && !tgt.hidden; // rules 1.32 (2.6): a silent attack from Hidden; rolled after the line
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);

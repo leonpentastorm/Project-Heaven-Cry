@@ -454,6 +454,11 @@
       "diagonal_move_cost": null,
       "difficult_terrain_move_multiplier": 2
     },
+    "hidden_attack": {
+      "gives": "tile",
+      "line": "{unit} gives its position away, still unseen.",
+      "note": "rules 1.82 item 7012 (Silent; Leon's later word, a call made for him): an attack made from Hidden that is not silent gives the attacker's tile away to its foes and it stays Hidden (gives: tile, ON); reveal: it is revealed (the rule before). A silent attack gives nothing away. The Break keeps its own reveal (its toggle row). tactics.ts attackFromHidden"
+    },
     "hurl": {
       "unit_kg": {
         "default": 80,

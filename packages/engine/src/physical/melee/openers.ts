@@ -4,7 +4,7 @@ import { technique, strike, approach, stepUser, stepBlock, standingAt, stop, sav
 import { canStrike } from '../core';
 import { PHYS_RULES } from '../data';
 import { say, moveUnit, paths, apForTiles, xy, key, alive, emitFx, type Unit } from '../../combat';
-import { ambushReady, reveal } from '../../tactics';
+import { ambushReady, reveal, attackFromHidden } from '../../tactics';
 import type { Tech } from './shared';
 import { canPay } from '../../effects/cost';
 
@@ -207,7 +207,7 @@ technique({
       meleeFx(t, 'ambush', { target: tgt.id, to: tgt.pos, fromHidden: !!t.u.hidden, bare: true });
       emitFx(t.cb, 'melee', { unit: t.u.id, target: tgt.id, from: t.u.pos, to: tgt.pos, weapon: t.weaponId, cat: 'unarmed', mode: 'grapple', hit: true, crit: false, fumble: false, dmg: 0, killed: false });
       cond(t, tgt, 'grappled', t.num('bare_rounds', 1)); cond(t, tgt, 'silenced', t.num('bare_rounds', 1));
-      const rv = reveal(t.cb, t.u, 'attacked', { how: 'attack' }); if (rv) say(t.cb, t.u.name + rv.replace(/^ · /, ': ') + '.');
+      const rv = attackFromHidden(t.cb, t.u, 'attacked'); if (rv) say(t.cb, t.u.name + rv.replace(/^ · /, ': ') + '.'); // rules 1.82 item 7012
       return null;
     }
     const fx = meleeFx(t, 'ambush', { target: tgt.id, to: tgt.pos, fromHidden: !!t.u.hidden, bare: false });

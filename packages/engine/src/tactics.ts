@@ -10,7 +10,7 @@ import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import actionsJ from '../../../data/actions.json';
 import { type Character, mod, prayerCooldown, gearNum } from './character';
-import { say, type Combat, type Unit, type Term, alwaysSeen, bossInTheOpen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
+import { say, noteSeen, type Combat, type Unit, type Term, alwaysSeen, bossInTheOpen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
 import { applyCond, condOn, condSource, endCond, harm, withDoor, heal, shiftMana, manaOf, isCondition, unitSave, unitStrength, saveAgainst, condName } from './magic';
@@ -254,6 +254,20 @@ export function reveal(cb: Combat, u: Unit, why: string, o: { how?: FoundHow; by
   foundFx(cb, u, o.how || 'other', o.by);
   return ' · revealed';
 }
+/** Rules 1.82 item 7012 (Silent; Leon's later word, a call made for him): an attack made from Hidden that is not silent
+ * (the callers test isSilent). With rules.json combat.hidden_attack.gives "tile" (ON) the attacker stays Hidden and its
+ * tile is given away: every side it is hostile to learns where it stands (noteSeen; their searchers and hunters go
+ * there), and the log says so once. With "reveal" it is revealed, the rule before. A silent attack gives nothing away. */
+const HIDDEN_ATTACK: { gives: 'tile' | 'reveal'; line: string } = { gives: 'reveal', line: '', ...((RULES as any).combat.hidden_attack || {}) };
+/** Does an attack from Hidden give only the tile away (rules 1.82 item 7012's switch)? */
+export const hiddenAttackTileOnly = (): boolean => HIDDEN_ATTACK.gives === 'tile';
+export function attackFromHidden(cb: Combat, u: Unit, why: string): string {
+  if (!u.hidden) return '';
+  if (HIDDEN_ATTACK.gives !== 'tile') return reveal(cb, u, why, { how: 'attack' });
+  for (const side of ['pc', 'foe'] as const) if (side !== u.side) noteSeen(cb, side, u.id, u.pos);
+  if (HIDDEN_ATTACK.line) say(cb, HIDDEN_ATTACK.line.replace(/\{unit\}/g, u.name));
+  return '';
+}
 // A hit that lands on a Hidden unit reveals it (effects/damage.ts marks the hook's ctx): its side sees it found (HIT).
 onHook('damage_in', (ctx: any, cb: Combat) => { if (ctx.phase === 'after' && ctx.revealed && cb) foundFx(cb, ctx.t, 'hit', ctx.src?.by || null); });
 // Rules 1.37 (shadow-spec 8.1): a Boss still Hidden when its first round is over (placed Hidden by the Narrator) is
@@ -393,7 +407,7 @@ export function throwItem(cb: Combat, rng: Rng, u: Unit, item: string, tile: str
   pay(cb, u, ctx.ap); u.throwables![item]--;
   emitFx(cb, 'shot', { unit: u.id, target: null, from: u.pos, to: tile, weapon: item, cat: 'thrown', mode: 'shot', hit: true, crit: false, fumble: false, dmg: 0, killed: false, object: true });
   say(cb, u.name + (placed ? ' places a ' : ' throws a ') + w.name.toLowerCase() + ' at ' + refOf(tile) + (ctx.cancel ? (ctx.caughtBy ? ' · ' + ctx.caughtBy.name + ' catches it' : ' · it never goes off') : blast(cb, rng, u, tile, item, ctx.radius)) + '.');
-  if (u.hidden && !isSilent(u)) reveal(cb, u, 'threw ' + w.name.toLowerCase(), { how: 'attack' });
+  if (u.hidden && !isSilent(u)) attackFromHidden(cb, u, 'threw ' + w.name.toLowerCase()); // rules 1.82 item 7012
   return null;
 }
 /** A thrown item goes off on a tile (credited to the thrower: kills, bleed, the barrels it sets off). */
