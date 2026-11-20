@@ -10696,6 +10696,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-jump_boots--fine",
+      "path": "art/icons/gear/armour-jump_boots--fine.png",
+      "sha256": "21bd97b78647cce8ab697213d2e4c80afc7e2cc5887689276b4a64d7da78834e",
+      "label": "Jump boots — Fine",
+      "family": "armour-jump_boots",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--fine.png",
+        "sha256": "27b2bcb16fb9b5e7fdd1beb4189f307c55cc5f7cff6bd283a8fa0b178e882936"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-jump_boots--fine.png",
+        "sha256": "21bd97b78647cce8ab697213d2e4c80afc7e2cc5887689276b4a64d7da78834e"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-jump_boots--fine.txt",
+        "sha256": "ac6a4fb5dbcd084794d811cdb670611f24d68ee51280cf6f398771689da205bf"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-jump_boots.png",
+          "sha256": "a7fecba2c9d8dd2c3b03bf96e33358197a3737b6d93bae98b0b32a520213c6cb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-jump_boots--fine.png",
+        "128": "art/icons/gear/exports/128/armour-jump_boots--fine.png",
+        "64": "art/icons/gear/exports/64/armour-jump_boots--fine.png",
+        "32": "art/icons/gear/exports/32/armour-jump_boots--fine.png"
+      },
+      "export_hashes": {
+        "256": "81d456ee5782d61f3ed0bedf45db6196c0c5eae4b1094efa8efa9c2d1714df5c",
+        "128": "371570fe4a90fccf3f90ec235eef72fc45400e9496a6b2200b80b545a9582ccd",
+        "64": "85425569f8c24db7b9efb8e994403610c8c832e444536cc85eaec7ba5a72ee09",
+        "32": "9ee28064036c07670c76c1e7d8d4bbf741ada75b124d7736f1976da7110741f2"
+      },
+      "grade": "fine",
+      "standard_id": "armour-jump_boots",
+      "outline": {
+        "solid_alpha_iou": 0.9892376953156842,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
