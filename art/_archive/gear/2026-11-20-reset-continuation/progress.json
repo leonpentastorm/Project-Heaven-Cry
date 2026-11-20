@@ -107,6 +107,11 @@
       "type": "moderation_blocked",
       "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-short_draw--fine.json",
       "id": "weapon-short_draw--fine"
+    },
+    {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-long_draw--fine.json",
+      "id": "weapon-long_draw--fine"
     }
   ]
 }

@@ -1,0 +1,38 @@
+{
+  "id": "weapon-long_draw--fine",
+  "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID d9dd1724-8e29-4b05-82f2-1ad30a89d743. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+  "type": "moderation_blocked",
+  "run": "reset-20261120-165ac7984341",
+  "job": {
+    "id": "weapon-long_draw--fine",
+    "standard_id": "weapon-long_draw",
+    "grade": "fine",
+    "label": "Long Draw \u2014 Fine",
+    "path": "art/icons/gear/weapon-long_draw--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-long_draw.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-long_draw",
+    "family_references": [
+      "art/icons/gear/weapon-long_draw.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay is bright brass. Keep the pale temper wave distinct from the new thin spine inlay. No sheath, strap or new guard arms.",
+    "keep_line": "the same long broad curved single-edged steel blade, deep curve near the hilt, angular pointed tip and pale wavy temper line along the edge, broad round aged-brass guard disc, dark diamond-lattice two-hand cord grip and brass end cap. Preserve the large blade-to-grip ratio, exact curve and all fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png"
+    ]
+  },
+  "preflight": {
+    "id": "weapon-long_draw--fine",
+    "peer": "ef3c7237c22fbda45a69e097b4175b909e0307d0",
+    "latest_comment": 7030174916,
+    "run": "reset-20261120-165ac7984341"
+  }
+}

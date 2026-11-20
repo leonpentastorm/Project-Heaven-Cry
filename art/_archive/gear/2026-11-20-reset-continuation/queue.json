@@ -1407,7 +1407,11 @@
     "collection": "2026-11-20-reset-continuation",
     "reference_sources": [
       "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-long_draw.png"
-    ]
+    ],
+    "generation_error": {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-long_draw--fine.json"
+    }
   },
   {
     "id": "weapon-long_draw--masterwork",
