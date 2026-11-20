@@ -30,7 +30,7 @@ export function buildReport(what: string, withSave: boolean) {
   const report = {
     format: 'phc-report', version: 1, at: new Date().toISOString(), what: what.trim(),
     gameVersion: GAME_VERSION, build, url: location.origin + location.pathname, userAgent: navigator.userAgent, viewport: innerWidth + '×' + innerHeight,
-    me: { id: st.me.id, name: st.me.name }, role: st.role, // never the seat secret (store.ts seatToken) room: st.code, screen: st.screen, connection: st.conn, connNote: st.connNote,
+    me: { id: st.me.id, name: st.me.name }, /* never the seat secret (store.ts seatToken) */ role: st.role, room: st.code, screen: st.screen, connection: st.conn, connNote: st.connNote,
     narrator: { provider: st.narrator.provider, baseUrl: st.narrator.baseUrl, model: st.narrator.model, effort: st.narrator.effort, scripted: st.narrator.scripted, hasKey: !!st.narrator.key },
     voice: { ...voiceState(), prefs: voicePrefs() }, rerollCopies: reportBefores(),
     game: withSave ? g : g && { code: g.code, v: g.v, phase: g.phase, players: g.players, scene: g.story?.scene, await: g.story?.await, work: g.story?.work, narrator: g.narrator, lastLines: g.story?.entries.slice(-12) },
