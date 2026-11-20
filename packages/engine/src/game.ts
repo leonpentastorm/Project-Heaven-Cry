@@ -1,7 +1,7 @@
 // The game: one state, one reducer. Every change is an action the engine checks against the rules (CLAUDE.md:
 // "the engine owns numbers"). Players' clicks, the Narrator's tool calls and the host's buttons all come here.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
-import { ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS, levelGiven, fightLevelOf, isCarriedModifier } from './data';
+import { RULES, ARCHETYPES, ATTRS, CLASS, CLASSES, PERK, TRAITS, SKILL, TN_LADDER, WEAPON, XP_SOURCES, ITEM, SIGIL, SCHOOL, MODULE, TONE, ENEMY, MANA_BANDS, levelGiven, fightLevelOf, isCarriedModifier } from './data';
 import provingJ from '../../../data/campaigns/proving.json';
 import classesJ from '../../../data/classes.json';
 import {
@@ -522,6 +522,12 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterFigments(c as any); } catch { /* a save this old is handled by apply */ }
   // rules 1.70 item 5538: an old save's beta and gamma perks under a skill's newer remap table (nothing for a skill with none)
   try { for (const c of Object.values((g as any)?.characters || {})) migrateCharacterPerks(c as any); } catch { /* a save this old is handled by apply */ }
+  // rules 1.86 item 7407 (group F item 17): what removed handlers left on old sheets (rules.json stale_state), deleted
+  try {
+    const ST: any = (RULES as any).stale_state || {};
+    for (const c of Object.values((g as any)?.characters || {}) as any[]) { const st = c?.state; if (st) for (const k of ST.character || []) if (k in st) delete st[k]; }
+    for (const ps of Object.values(((g as any)?.story?.ps || {}) as Record<string, any>)) for (const [key, ks] of Object.entries(ST.story_items || {})) { const it = ps?.items?.[key]; if (it) for (const k of ks as string[]) if (k in it) delete it[k]; }
+  } catch { /* a save this old is handled by apply */ }
   // rules 1.56 (consolidation 0.29 M5): a fight saved before fitted mods were held (0.28) keeps a held snapshot with no
   // mod relics, and a mod acts only as a held item now: each PC unit holding a snapshot takes the modifiers on its own
   // weapon instances (instanceMods of u.weapon with u.mods, u.offWeapon with u.offMods) that it lacks. Nothing is

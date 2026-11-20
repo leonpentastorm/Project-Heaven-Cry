@@ -2361,6 +2361,8 @@ export interface DisplaceOpts {
   how: DisplaceHow;
   /** What did it, for the 'forced_move' hook's `how` and for items that read it: 'shove', 'magic', 'knockback', 'drag', 'throw', a technique's id. */ source: string;
   /** The unit itself chose this move (its own teleport or swap): it is not forced, so Nailed, immunity and the hook don't stop it. */ willing?: boolean;
+  /** Rules 1.86 item 7405: how far an opponent's Boss goes by this move (the displace row's `boss_tiles`); absent, a Boss
+   *  holds (forced_movement.boss_holds). */ bossTiles?: number;
   /** Change nothing and fire nothing: say where it would end (a card's preview). */ preview?: boolean;
   /** false: no 'shove' effect event (the caller draws its own: a blink, a swap). An object: fields added to the event
    * (`magic: true`: no pusher is named, the screen draws no shoving arm). */ fx?: false | Record<string, any>;
@@ -2384,17 +2386,18 @@ export const isBoss = (u: Unit): boolean => BOSSES.tiers.includes(u.tier as stri
  *  the Taunted row's penalty to hit anyone else (conditions.json taunted, attack_mod not_vs_source). THE reading of Taunted
  *  for every target choice: the attack's refusal, the enemy AI and the healer focus. */
 export const tauntedBy = (u: Unit): string | null => (isBoss(u) ? null : condSource(u, 'taunted'));
-/** A Boss holds against an opponent's forced move (rules.json forced_movement.boss_holds), but for the items it names
- *  (Tug: its own row says how far a Boss goes). THE rule for every push, pull, throw, teleport and swap of a player's item. */
-const BOSS_HOLDS: { except: string[]; why: string } = (RULES as any).forced_movement.boss_holds;
-const bossHolds = (u: Unit, o: DisplaceOpts): boolean => isBoss(u) && !!o.by && o.by.side !== u.side && !BOSS_HOLDS.except.some((id) => o.source === id || o.source?.endsWith(':' + id));
+/** A Boss holds against an opponent's forced move (rules.json forced_movement.boss_holds): THE rule for every push, pull,
+ *  throw, teleport and swap of a player's item. Rules 1.86 item 7405: the one exception is the move's own `bossTiles`
+ *  (the displace row's `boss_tiles`: Tug's Bond), how far a Boss goes, read here and nowhere else. */
+const BOSS_HOLDS: { why: string } = (RULES as any).forced_movement.boss_holds;
+const bossHolds = (u: Unit, o: DisplaceOpts): boolean => isBoss(u) && !!o.by && o.by.side !== u.side;
 /** May this unit be moved against its will? null: yes. Otherwise why not (and `tiles`, which an item may have changed). */
 function forcedRefusal(cb: Combat, rng: Rng | null | undefined, u: Unit, o: DisplaceOpts, tiles: number, to?: string): { stoppedBy: 'nailed' | 'immune' | 'held' | null; why?: string; tiles: number } {
   if (o.willing) return { stoppedBy: null, tiles };
   if (harmHeld(cb, o.by, u, !o.preview)) return { stoppedBy: 'held', why: 'on the field', tiles }; // rules 1.55 item 68: on the field nobody moves a friend or a surrendered unit by force (the one harm gate, effects/hooks.ts)
   if (!FORCED[o.how].immunity) return { stoppedBy: null, tiles };
   if (u.nailed) return { stoppedBy: 'nailed', why: 'nailed in place', tiles };
-  if (bossHolds(u, o)) return { stoppedBy: 'immune', why: BOSS_HOLDS.why, tiles };
+  if (bossHolds(u, o)) { if (o.bossTiles == null) return { stoppedBy: 'immune', why: BOSS_HOLDS.why, tiles }; tiles = Math.min(tiles, Math.max(0, o.bossTiles)); }
   const im = immune({ u }, 'knockback'); if (im) return { stoppedBy: 'immune', why: im, tiles };
   // 'forced_move' {u, by, tiles, to, how, kind, pull, cancel}: an item may stop it (cancel) or change the distance (tiles).
   const fm: any = o.preview ? { cancel: false, tiles } : emit(cb, 'forced_move', { u, by: o.by, tiles, ...(to ? { to } : {}), how: o.source, kind: o.how, pull: o.how === 'pull', cancel: false, cb, rng });
@@ -2628,8 +2631,10 @@ export function fieldRepair(cb: Combat, u: Unit, o: { target?: Unit | null; way?
     say(cb, u.name + (t === u ? ' patches the weapon' : ' fixes ' + t.name + '\'s weapon') + ': +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return null;
   }
   if (!rp) return 'Needs the Field Repair perk.';
-  const n = Math.floor(amountOf(amountSpecOf(rp.key, 'repair'), u, { level: u.charId ? u.level : null }).raw);
-  const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + n); if (up) setDowned(t, false);
+  // rules 1.86 item 7403: the one mend path (output.ts mend), its profile `repair` not a heal (rules 1.34: no receiver
+  // multiplier, no cap, no heal hooks); the amount is the block's own, at the repairer's level
+  const was = t.downed ? 0 : t.hp, up = !!t.downed;
+  mend(cb, u, t, { ...amountSpecOf(rp.key, 'repair'), kind: 'heal' }, { level: u.charId ? u.level : null });
   emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
   say(cb, u.name + ' repairs ' + t.name + ' (' + label + '): +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
   return null;

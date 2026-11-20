@@ -1246,7 +1246,7 @@
         "effects": [
           {
             "op": "heal",
-            "value": "half",
+            "share": 0.5,
             "revive": true,
             "revive_dead": true,
             "scope": "allies_fallen"

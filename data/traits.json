@@ -308,7 +308,7 @@
         },
         {
           "op": "grant_action", "action": "hurl", "ap": 2, "site": "throw", "uses": "at_will", "pick": "hurlable", "pick_label": "What to throw", "reach": {"tile": true, "sight": true}, "label": "Throw it",
-          "effects": [{"op": "object", "do": "hurl", "when": "acted", "range": "throw", "kg_per_tile": 20, "carry": true, "units": {"target_not_tier": ["boss"]}, "why": {"target_not_tier": "Nobody throws a boss."}, "amount": "damage", "label": "Grenadier's Arm"}],
+          "effects": [{"op": "object", "do": "hurl", "when": "acted", "range": "throw", "kg_per_tile": 20, "carry": true, "units": {}, "amount": "damage", "label": "Grenadier's Arm"}],
           "note": "rules 1.82 item 7010 (P14): a person, a drone or an object next to you, under your carry weight, to a tile within your throwing range less one a 20 kg (hurl.ts)"
         },
         {

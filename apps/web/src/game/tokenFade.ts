@@ -9,6 +9,7 @@
 // own solid, an ally's dashed), a shadow pools under it, and the Shadow it holds shows as wisps under it, one a point
 // (u.res.shadow against its cap u.resMax.shadow, the engine's numbers). Pure CSS and SVG; the HIDDEN chip and the
 // resource row say it in words.
+import { slotStyle, CHIP_SLOTS } from './tokenSlots';
 
 /** The token opacity for this unit (1: drawn plainly). */
 export function tokenOpacity(u: { downed?: boolean; dead?: boolean; hidden?: boolean } | null | undefined, o: { held?: boolean } = {}): number {
@@ -51,4 +52,4 @@ export function wispsUri(n: number, max: number): string {
 /** Where the wisps sit: above the token's top-left corner, wholly over the tile's top edge, so they never touch the
  *  Pressure pips and state word (top centre), the Momentum chip (left edge), the Sigil chip (right edge), the kind badge
  *  (centre) or the health word (bottom edge). */
-export const wispStyle = (max: number): string => 'position: absolute; left: 2px; top: -13px; z-index: 4; height: 12px; width: ' + (max * 10 + 4) + 'px; pointer-events: auto; cursor: help; filter: drop-shadow(0 0 2px rgba(5, 7, 11, 0.9))';
+export const wispStyle = (max: number): string => slotStyle(CHIP_SLOTS.wisps) + '; z-index: 4; height: 12px; width: ' + (max * 10 + 4) + 'px; pointer-events: auto; cursor: help; filter: drop-shadow(0 0 2px rgba(5, 7, 11, 0.9))';

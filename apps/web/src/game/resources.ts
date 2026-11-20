@@ -9,6 +9,7 @@
 //
 // The held Outburst and Strain are read ONLY through heldOutburstOf() below: the Soul engine is changing shape
 // (Outburst 2.0: a held heart with design, stage 0–4, tone, form, free pumps left), so that is the one place to update.
+import { slotStyle, CHIP_SLOTS } from './tokenSlots';
 import * as E from '@engine';
 import { unitQuiverCards, quiverCards } from '@engine';
 import { doorLineOf, feedLineOf } from './doorView';
@@ -499,4 +500,4 @@ export function sigilChip(rows: ResRow[]): SigilChip | null {
 }
 /** The chip's style on a 48 px map token: on the right edge, just below centre (clear of Pressure's pips and word on the top
  *  edge and the health word chip on the bottom edge; characters only, so never under a hostile's kind badge). */
-export const sigilChipStyle = (c: SigilChip) => 'position: absolute; right: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 5; padding: 0 3px; border-radius: 4px; font-size: var(--fs-sub); line-height: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + c.ink + '; border: 1px solid ' + c.ink;
+export const sigilChipStyle = (c: SigilChip) => slotStyle(CHIP_SLOTS.sigil) + '; z-index: 5; padding: 0 3px; border-radius: 4px; font-size: var(--fs-sub); line-height: 15px; font-weight: 700; letter-spacing: 0.02em; white-space: nowrap; pointer-events: none; background: #0A0D13; color: ' + c.ink + '; border: 1px solid ' + c.ink;

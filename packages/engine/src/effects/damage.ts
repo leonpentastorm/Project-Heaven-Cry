@@ -134,10 +134,13 @@ function dropped(cb: Combat | null, t: Unit, src: DamageSrc, res: DamageResult, 
   void res;
 }
 
+/** A finite number, else 0 (a repair's amount: healUnit). */
+const n0 = (x: number) => (Number.isFinite(x) ? x : 0);
 /** Healing a unit through the hooks: 'heal_in' {t, by, n, kind} may change n, then HP; 'heal_given' after. Returns HP
  * actually restored (a Downed unit is brought back up at max(1, n)). */
-export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string, _o: { /** (rules 1.20's round limit is withdrawn, rules 1.23: nothing reads this) */ noLimit?: boolean; /** the most one heal restores (effects/output.ts mend: the percent cap), after the received bonuses */ cap?: number; /** the share is already the whole heal: the healing-received bonus (healRecv) is not applied (Camaraderie's heal back, rules 1.60 item 4610: the share it shows is the share it heals) */ plain?: boolean } = {}): { restored: number; revived: boolean; /** always false since rules 1.23 (there is no round limit) */ limited?: boolean } {
+export function healUnit(cb: Combat | null, t: Unit, n: number, by: Unit | null, kind: string, _o: { /** (rules 1.20's round limit is withdrawn, rules 1.23: nothing reads this) */ noLimit?: boolean; /** the most one heal restores (effects/output.ts mend: the percent cap), after the received bonuses */ cap?: number; /** the share is already the whole heal: the healing-received bonus (healRecv) is not applied (Camaraderie's heal back, rules 1.60 item 4610: the share it shows is the share it heals) */ plain?: boolean; /** rules 1.86 item 7403: a repair (a profile that is not a heal: output.ts mend), not a heal (rules 1.34): HP restored with no healing-received bonus, no hooks ('heal_in', 'heal_given', the tend hook) and no healer noted */ repair?: boolean } = {}): { restored: number; revived: boolean; /** always false since rules 1.23 (there is no round limit) */ limited?: boolean } {
   if (t.dead) return { restored: 0, revived: false };
+  if (_o.repair) { const m = Math.max(0, Math.floor(n0(n))); if (t.downed) { setDowned(t, false); t.hp = Math.min(t.maxHp, Math.max(1, m)); return { restored: t.hp, revived: true }; } const was = t.hp; t.hp = Math.min(t.maxHp, t.hp + m); return { restored: t.hp - was, revived: false }; }
   // Healing received: +10% × Camaraderie (rules 1.13).
   const ctx: any = { t, by, n: Math.floor(n * (_o.plain ? 1 : t.healRecv || 1)), kind, cb };
   if (cb) { emit(cb, 'heal_in', ctx); ctx.n = Math.max(0, Math.floor(ctx.n)); }

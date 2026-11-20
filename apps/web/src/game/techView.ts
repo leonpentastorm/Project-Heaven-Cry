@@ -6,6 +6,7 @@
 //   tq:<hand>:<id>   a technique to use (the plain attack row, or a chip picked from a pad)
 //   tpad:<hand>      a weapon's Techniques row (selecting it opens the pad)
 //   twatch           Hold a shot (selecting it opens the Watches)
+import { slotStyle, CHIP_SLOTS } from './tokenSlots';
 import { WEAPON, ITEM, phys, parseTechId, techParts, pairs } from '@engine';
 import { tipAttrs } from './actionTip';
 type PadEntry = phys.PadEntry; type PadGroup = phys.PadGroup;
@@ -236,7 +237,7 @@ export function pressureLook(v: PhysView | null): { has: boolean; pips: { key: s
   return { has: true, pips, word, state: p.state || '', pose: poseOf(p.state), tag,
     tagStyle: 'position: absolute; left: 50%; top: 8px; transform: translateX(-50%); font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; line-height: 1; white-space: nowrap; padding: 1px 2px; border-radius: 3px; background: rgba(5, 7, 11, 0.8); color: ' + ink,
     title: 'Pressure ' + p.now + ' / ' + p.max + ' · ' + word + (p.cost ? ': ' + p.cost : ''),
-    style: 'position: absolute; left: 50%; top: 0; transform: translateX(-50%); z-index: 4; display: flex; gap: 2px; padding: 1px 2px; border-radius: 4px; pointer-events: none; background: rgba(5, 7, 11, 0.6)' };
+    style: slotStyle(CHIP_SLOTS.pressure) + '; z-index: 4; display: flex; gap: 2px; padding: 1px 2px; border-radius: 4px; pointer-events: none; background: rgba(5, 7, 11, 0.6)' };
 }
 /** Rules 1.56 (the Momentum chain 2.0): the counter on a token, "x3", in Strength's ink, from the engine's physView
  *  (its now and max) and the data's `techniques.json rules.momentum.show.counter_min`. Full: a double ring and "MAX" in
@@ -249,7 +250,7 @@ export function momentumLook(v: PhysView | null): { has: boolean; text: string; 
   if (!m || m.now < min) return { has: false, text: '', title: '', style: '', full: false };
   const full = m.now >= m.max;
   return { has: true, full, text: 'x' + m.now, title: 'Momentum ' + m.now + ' / ' + m.max + (full ? ' · MAX' : '') + (m.hint ? ' · ' + m.hint : ''),
-    style: 'position: absolute; left: -6px; top: calc(50% + 4px); transform: translateY(-50%); z-index: 4; min-width: 18px; padding: 0 3px; border-radius: 7px; box-sizing: border-box; pointer-events: none; font: 700 var(--fs-sub)/13px Chakra Petch, sans-serif; text-align: center; color: ' + STRENGTH_INK + '; background: rgba(5, 7, 11, 0.85); '
+    style: slotStyle(CHIP_SLOTS.momentum) + '; z-index: 4; min-width: 18px; padding: 0 3px; border-radius: 7px; box-sizing: border-box; pointer-events: none; font: 700 var(--fs-sub)/13px Chakra Petch, sans-serif; text-align: center; color: ' + STRENGTH_INK + '; background: rgba(5, 7, 11, 0.85); '
       + (full ? 'border: 3px double ' + STRENGTH_INK : 'border: 1px solid ' + STRENGTH_INK) };
 }
 /** The hover card's lines for a unit: its Pressure and state, and that it can't be stopped again this round. */

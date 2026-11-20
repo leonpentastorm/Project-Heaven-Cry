@@ -680,11 +680,10 @@ _FJ = data.get("figments") if isinstance(data.get("figments"), dict) else {}
 _COSTS = ((data.get("actions") or {}).get("costs") or {})
 _RESN = set(((data.get("actions") or {}).get("resources") or {}).keys())
 _AROWS = {r.get("id"): r for r in ((data.get("actions") or {}).get("items") or []) if isinstance(r, dict)}
-# owned.ts OWNER_USES: the item uses an owned unit runs for its owner, read from the engine's own table (one copy)
-_OWNED_TS = (pathlib.Path(__file__).resolve().parent.parent / "packages/engine/src/owned.ts").read_text(encoding="utf-8")
-_OWNER_USES_M = re.search(r"const OWNER_USES\b[^\n]*\{\n(.*?)\n\};", _OWNED_TS, re.S)
-_OWNER_USE_TYPES = tuple(re.findall(r"^\s*'([a-z]+/[a-z_]+)'\s*:", _OWNER_USES_M.group(1), re.M)) if _OWNER_USES_M else ()
-if not _OWNER_USE_TYPES: errors.append("tools/validate.py: owned.ts OWNER_USES not found (the item uses an owned unit runs)")
+# figments.json owner_uses.types: the item uses an owned unit runs for its owner (rules 1.86 item 7410: data, the one
+# list; owned.ts checks its handlers against it as the engine loads)
+_OWNER_USE_TYPES = tuple(((_FJ.get("owner_uses") or {}).get("types")) or ())
+if not _OWNER_USE_TYPES or not all(isinstance(x, str) and "/" in x for x in _OWNER_USE_TYPES): errors.append("figments: owner_uses.types lists the reducer types an owned unit's `use` may run (combat/stim)")
 _DV_KEYS = {"id", "name", "icon", "site", "text", "provisional", "reach", "effects", "attack", "on_hit", "dash", "unmake", "refund_share", "use", "res", "amounts", "requires"}  # requires: rules 1.74 item 6040 (read by figments.ts on the owner's sheet)
 _DV_REACH = {"tiles", "side", "eyes", "tile", "beside"}
 _DVIDS = set()

@@ -156,7 +156,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
         if (g.prayer && h.cb && h.u && PRAYER && !PRAYER.pray(h.cb, rng, h.u, g.prayer, info.name, g.tier)) return null; // no answer: the AP and the slot are spent
         const t = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) || null : null;
         if (rest.length || (!mine.length && !acts)) defaultRun(h, rest, args, rng); // rules 1.33: a grant whose effects are all `when: acted` (lifted onto the item) is the engine's: no Narrator note
-        if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null, ...(args.choice != null ? { choice: args.choice } : {}) });
+        if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null, ...(args.choice != null ? { choice: args.choice } : {}), ...(rng ? { rng } : {}) }); // the action's own rng (rules 1.86: an enemy's door verb runs outside a bound game in a bare fight)
         return null;
       },
     };

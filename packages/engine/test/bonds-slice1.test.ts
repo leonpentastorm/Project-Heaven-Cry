@@ -63,12 +63,12 @@ describe('Bonds 2.0 slice 1: Tug', () => {
     expect(r.cb().fx.some((e: any) => e.k === 'shove' && e.target === r.f1.id && e.pull)).toBe(true); // the forced move is drawn as any pull (combat.ts displace)
   });
   // The 0.29 consolidation (SF1): a Boss holds against every forced move of a player's item but for the items
-  // rules.json forced_movement.boss_holds names: Tug, whose own row pulls a Boss its own tiles (effects 2).
+  // rules.json forced_movement.boss_holds names: Tug, whose own row pulls a Boss its own tiles (the pull row's boss_tiles, rules 1.86 item 7405).
   it('a Boss that fails its save is pulled the row\'s Boss tiles: Tug is the one exception to the Boss rule', () => {
     const r = rig({ seed: 'S2', foeTier: 'boss' }); r.bond(r.f1); r.U(r.f1.id).sv = { body: -99 };
     const before = dist(r.U(r.me.id).pos, r.U(r.f1.id).pos);
     expect(r.act('pull_together', r.f1, 'tend_tug').err).toBeNull();
-    expect(before - dist(r.U(r.me.id).pos, r.U(r.f1.id).pos)).toBe(nested('tend.tug', 2).tiles);
+    expect(before - dist(r.U(r.me.id).pos, r.U(r.f1.id).pos)).toBe(nested('tend.tug', 1).boss_tiles);
   });
   it('an enemy that makes its save stays where it is', () => {
     const r = rig(); r.bond(r.f1); r.U(r.f1.id).sv = { body: 99 };
@@ -80,7 +80,7 @@ describe('Bonds 2.0 slice 1: Tug', () => {
     const r = rig(); r.bond(r.al);
     const before = dist(r.U(r.me.id).pos, r.U(r.al.id).pos);
     expect(r.act('pull_together', r.al, 'tend_tug').err).toBeNull();
-    expect(before - dist(r.U(r.me.id).pos, r.U(r.al.id).pos)).toBe(nested('tend.tug', 4).tiles);
+    expect(before - dist(r.U(r.me.id).pos, r.U(r.al.id).pos)).toBe(nested('tend.tug', 3).tiles);
   });
   it('refusals in plain words: no Bond, no Attuner', () => {
     const r = rig();

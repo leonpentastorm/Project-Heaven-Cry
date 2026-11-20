@@ -85,8 +85,11 @@ describe('Bonds (bonds-spec 8)', () => {
   it('a Minion (healer_focus 0) does not look', () => {
     const { cb, e } = bonded('minion'); expect(healerMark(cb, e)).toBeNull();
   });
-  it('enemies do not Bond or Tend: no tier, caster or companion carries a door of the new systems, and an enemy unit holds no Attuner, Visualizer or Shadow', () => {
-    const txt = JSON.stringify({ items: (ENEMIESJ as any).items, casters: (ENEMIESJ as any).casters, soul: (ENEMIESJ as any).soul_casters, comp: (ENEMIESJ as any).companions });
+  // rules 1.33 item 2038 (enemies do not Bond or Tend) is superseded by rules 1.86 item 7401: a row's `doors` block may
+  // give an enemy an Attuner and the Bond verbs (the Heart adept's); nothing else of a row carries them
+  it('enemies do not Bond or Tend but by a doors block: no tier, caster or companion carries a door of the new systems outside it, and a plain enemy unit holds no Attuner, Visualizer or Shadow', () => {
+    const noDoors = (rows: any[]) => (rows || []).map(({ doors: _d, ...r }: any) => r);
+    const txt = JSON.stringify({ items: noDoors((ENEMIESJ as any).items), casters: noDoors((ENEMIESJ as any).casters), soul: noDoors((ENEMIESJ as any).soul_casters), comp: (ENEMIESJ as any).companions }).replace(/"text":"[^"]*"/g, '');
     for (const w of ['attuner', 'visualizer', '"shadow"', 'tend.', 'empathy', 'visualization']) expect(txt.includes(w), w).toBe(false);
     const { cb, e } = fight(['4,5'], [{ at: '12,5', tier: 'elite' }]);
     expect(e.mg?.attuner).toBeFalsy(); expect(e.mg?.visualizer).toBeFalsy(); expect(e.res?.shadow).toBeUndefined();
