@@ -1,0 +1,91 @@
+{
+  "id": "fork.sigil.running_script",
+  "src": "/workspace/generated_images/exec-c24d8563-060f-4d5d-8910-fccd674bf782.png",
+  "job": {
+    "id": "fork.sigil.running_script",
+    "number": 66,
+    "file": 3,
+    "path": "art/icons/forks/sigil-running-script.png",
+    "references": [
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-on-white.png",
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-ink.png"
+    ],
+    "prompt": "Edit this exact bitmap IN PLACE. Fictional RPG mascot icon. Image1 is the source shown black onwhite so the cutouts are visible; image2 has the same source alpha ontransparency. DO NOT redraw or recreate the existing robot or glyphs. Preserve every existing pose/face/cape/chestcross/hand/leg/stylus/glyph mark and its placement, lineweight and proportion. Add ONLY one small half-finished three-straight-stroke invented rune beside the existing square-in-oval glyph on the side nearest the drawing hand; its unfinished last stroke trails toward the stylus. Keep the original square glyph and chain fragments untouched. Confine this addition to the empty area near x620..690,y590..680 on the1024square source. All pixels elsewhere stay as source. Render ink black with every background/interior cutout fully transparent, zero white underfill, no texture/spatter/shading/glow. Same1024square canvas, no crop/scale/reposition. One PNG; exporter will normalize only inkRGB towhite while preserving alpha.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-on-white.png": "f52a57e66fdf4eef8eceb05d507abee9479fad1cc928f08e64fe47b13d8b6517",
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-ink.png": "a83653b3bd73ad0b27f259b4b4c348beed7c0b171859b9ca25b616006bae7618"
+    },
+    "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+    "technical_export_note": "Intermediate flat black ink requested to preserve negative-space alpha; if faithful, exporter may normalize visible RGB to purewhite without modifying alpha or geometry. No code-created drawing or compositing."
+  },
+  "preflight": {
+    "id": "fork.sigil.running_script",
+    "own": "b550a4d3d5085cbabcb6c5815406a47212780ad7",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "run": "sole-20261120-1615",
+    "latest_comment": 7045450156
+  },
+  "clock": {
+    "current_time": "2026-11-20 17:02:09 UTC"
+  },
+  "attempt": "066-sole-v4",
+  "review": "Very close original pose and clean alpha, but added marks read as speed-line fan: two parallel bars and one curve, not the requested half-finished angular rune of three straight strokes. Outside ROIx605..699,y585..689 alpha>=127 IoU0.9750958255660516,2378 XORpixels; exact source pixels not retained. Original unchanged, count0.",
+  "source_sha256": "f497dd7990773515c76869e41fce07b357d79ce9ea6260309422e1c6f9161d0d",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "native_mode": "RGBA",
+  "native_alpha_bbox": [
+    208,
+    69,
+    1214,
+    1176
+  ],
+  "references": [
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-on-white.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v4/references/00-running-original-black-on-white.png",
+      "sha256": "f52a57e66fdf4eef8eceb05d507abee9479fad1cc928f08e64fe47b13d8b6517"
+    },
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-ink.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v4/references/01-running-original-black-ink.png",
+      "sha256": "a83653b3bd73ad0b27f259b4b4c348beed7c0b171859b9ca25b616006bae7618"
+    }
+  ],
+  "technical_previews": {
+    "1024": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v4/preview-1024.png",
+      "sha256": "8ec450e1191d26913fa21a7e02fc42d48e109f179d87953b88517f573499a773"
+    },
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v4/preview-256.png",
+      "sha256": "690b4a2625b95550e0099eb99ede03aae7c7924447fa9e09b8bf0c8b95d05540"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v4/preview-128.png",
+      "sha256": "a2af9e8441c8976a7677d0756b3a98cd0e1d113b5aa65a50431c513a5508858a"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v4/preview-64.png",
+      "sha256": "92b1c39186dc2ef53db9387f9f3060142d25a439c822bbc17abfd15d82a5b7a2"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v4/preview-32.png",
+      "sha256": "a863c07135b41d4907273b6117e4e49f1571a03cbdcc328e6deb4927bdb78954"
+    }
+  },
+  "selected": false,
+  "count_contribution": 0,
+  "status": "quality-rejected",
+  "production_approved": false,
+  "implementation_ready": false
+}
