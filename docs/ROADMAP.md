@@ -1,6 +1,6 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
-**Live: 0.33.0 (20 Nov 2026; rules 1.82 to 1.90; account `docs/design/handoffs/0.33.0-LIVE.md`). Next: Items 2.0 (`docs/design/proposals/2026-11-20-items-2.0-plan.md`): 0.34.0 stages A and B (less B1) are BUILT on `wip/release-0.34`, NOT LIVE without Leon's word (section "0.34" below).** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
+**Live: 0.33.0 (20 Nov 2026; rules 1.82 to 1.90; account `docs/design/handoffs/0.33.0-LIVE.md`). Next: Items 2.0 (`docs/design/proposals/2026-11-20-items-2.0-plan.md`): 0.34.0 stages A and B (B1 included; the rules 1.93 integration) are BUILT on `wip/release-0.34`, NOT LIVE without Leon's word (section "0.34" below).** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
 
 Item format: `**Short name.** What is owed. [size S/M/L] [state: open | partly | not verified; checked in code 19 Nov 2026 | from documents only] [source]`. Sizes: S under an hour, M a few hours, L about a day.
 
@@ -255,7 +255,7 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 
 ## 0.34: Items 2.0 (built, NOT LIVE: waits for Leon's word)
 
-On `wip/release-0.34` (rules 1.91 to 1.92; hand-offs `docs/design/handoffs/0.34-LANE-*.md`; the class measure `docs/design/handoffs/0.34-MEASURES.md`). Nothing of it is live; it goes live only on Leon's word for this release.
+On `wip/release-0.34` (rules 1.91 to 1.93; hand-offs `docs/design/handoffs/0.34-LANE-*.md`; the class measure `docs/design/handoffs/0.34-MEASURES.md`). Nothing of it is live; it goes live only on Leon's word for this release.
 
 Built (merged from `wip/0.34-b0`, which holds lanes A1 to A5 and B0, and `wip/0.34-b2`):
 
@@ -267,18 +267,39 @@ Built (merged from `wip/0.34-b0`, which holds lanes A1 to A5 and B0, and `wip/0.
 - **B0, rules 1.92 (items 8000-8046) and the seams:** the stage B spec (12 melee, 3 shield, 11 armour-by-slot, 17 gun, 2 bow, 8 heavy families; 72 new weapon rows and 12 new pieces), the Heavy word, Strike/Ward, Arsenal, the siege reload, the typing sheet `docs/design/proposals/2026-11-20-items-2.0-rows.json` (`2a7694a67`, `50b88a2e1`, `e0c4def98`).
 - **B2/B3/X:** the 12 new worn pieces typed (data only), ART-REQUESTS lists the 84 new ids on a placeholder, the 41 Figment order and trait pictures built and read by `figmentPng` (`5cf7904d8`, `587a0572c`, `bb7bbb34d`).
 
-Owed (what the lanes left):
+- **The integration (rules 1.93, items 8100-8112), on `release/0.34-final` pushed to `wip/release-0.34`:**
+  - step 1, the camp is the issue rack: role tag `issue` on exactly the 18 rows the camp offered on 0.33.0 (computed by
+    running the camp's own `RACK` on `origin/main`), read by `archetypeWeapons` through `survival.json
+    loadout.archetypes.tag`; no camp list moved (`camp-issue.test.ts`) (`ab3d383d3`);
+  - step 2, **B1 merged** (the 72 new weapon rows and the pavise) with the guard ruled: `adamantile_heavy_rifle`,
+    `arsenal_heavy_rifle`, `chezknov_precision_rifle` take the bolt cycle at their damage, `adcorp_designated_rifle` 33;
+    one truth in data, the numbers file, section 7 and the typing sheet (`5ed540b26`);
+  - step 3, the rulings: Smetanita's hit lays 1 Pressure once a turn for each target (`mod_line_smetanita`); the
+    `vests` (issue line) and `plate` (Adamantile Brigade) family rows, each class row with its line; Last Charge's shield
+    3 x the class row's armour value (the breacher plate 54); Albert Town's grant "Settled Shot"; no grade colour
+    (`5c2cc30aa`);
+  - step 4, what B1 moved: the golden tables' NEW lines recorded on purpose (0 GONE, 0 CHANGED); `mods` and the
+    survival-loadout tests unmoved; `brass.test` by family; the icon guards' placeholder covers the new magazines; the
+    Narrator names weapon families (wiki `family:<id>`), caps unchanged (`022f025a1`);
+  - step 5, consolidation: one explosive-charge helper; `graded: false` on a weapon row refused by the grade step
+    (`ungradedWhy`); `itemCard` and `form_words` approved; CONVENTIONS.md describes tags and families; `phys.teaches`
+    moved onto 46 family forms (goldens unmoved); class VI on the sheet, the Proving Ground's buttons from the class
+    rows, body armour's family line, `figmentPng` on the Figment order rows and trait chips (`55ee7a78f`);
+  - step 6, the measure: `docs/design/handoffs/0.34-MEASURES.md` column "0.34 final" (measured, not fitted).
 
-- **B1, the 72 new weapon rows: NOT MERGED** (`wip/0.34-b1`, `1e2e600ce`; its gate was red, and the integrator re-records nothing). Merged on a trial branch it moves: four golden tables by NEW lines only (`weapons`, `costs-weapons`, `rules-weapons` 406 each, `costs-foes` 738; 0 GONE, 0 CHANGED: safe to record on purpose); `mods` 11 CHANGED (the Survival camp's free rifle for the gunner becomes `albert_town_brush_carbine`, 6 rounds, not `lever_carbine`, 8); the camp rack's better pistol becomes `smetanita_pocket_pistol` (loose reload, so no magazine shelf) because `archetypeWeapons` sorts cheapest first and the new cheap rows displace the old rack (a design ruling: do new rows enter the camp rack?); the survival-run gunner guard (GUARD-32 enters a fight dry at 1.10); `rules118-guns` (`adamantile_heavy_rifle` 36 over the 33 ceiling: Leon's number against the guard); 72 ids with no icon (B2's exemption covers them once B1 sits on top); `fx/brass.test.ts` decides crossbow by id (`arbalest` is a crossbow by family: the test, not the code, is wrong); the Narrator cost caps (faith-context 26,528 over 26,200, longcampaign 45,130 over 45,000). [M] [open; 20 Nov 2026] [0.34 integration]
-- **Signatures that ship plain (no carrier yet):** G2 revolvers' best critical, G4 Legion, G11 split burst, G13 ADCorp cheaper Forge mods, G14 Chezknov recoil on Bursts, G16 Smetanita Pressure, H3 burning ground, H5 line hit, H8 two targets, the door knocker's x3 to cover, the throwaway tube's single use (ships reloadable, reload 3). [M] [open; 20 Nov 2026] [0.34-LANE-B0.md]
-- **Second-skill effects owed:** the drum launcher's Lob AP, the cathedral burner's wall tiles, the waived restrictions on the twin rotary and the Blackpoint carbine, skill-scaled numbers (throwaway tube, snarl knife, piston knuckles, javelins), the darts' Toxin, every gun and bow second-skill effect; only the siege tube's Raw Power 5 reload is carried. [L] [open; 20 Nov 2026] [0.34-LANE-B0.md]
+Owed:
+
+- **Signatures that ship plain (no carrier yet; their texts promise nothing):** G2 revolvers' best critical, G4 Legion, G11 split burst, G13 ADCorp cheaper Forge mods, G14 Chezknov recoil on Bursts, H3 burning ground, H5 line hit, H8 two targets, the door knocker's x3 to cover, the throwaway tube's single use (ships reloadable, reload 3). Not in this pass by the lead's ruling (rules 1.93 item 8104). [M] [open; 20 Nov 2026] [0.34-LANE-B0.md]
+- **Second-skill effects owed** (rules 1.93 item 8104): the drum launcher's Lob AP, the cathedral burner's wall tiles, the waived restrictions on the twin rotary and the Blackpoint carbine, skill-scaled numbers (throwaway tube, snarl knife, piston knuckles, javelins), the darts' Toxin, every gun and bow second-skill effect and its size; only the siege tube's Raw Power 5 reload is carried. [L] [open; 20 Nov 2026] [0.34-LANE-B0.md]
 - **Owed primitives (design item 10; the lead approves each):** a `crit_min` gear field; a mod-fitting price factor; mode-limited recoil on a weapon row (or row modifiers in `gearNum`); a split burst; burning ground; a line hit; two grants a row; single use; prone only; a skill waiving a restriction; weapon numbers from skill points; a Toxin condition; a technique's AP as a cost site (Lob). [L] [open; 20 Nov 2026] [0.34-LANE-B0.md]
-- **Numbers handed back to the lead:** Smetanita Pressure on a hit; Chezknov Recoil cut on Bursts; the revolvers' critical range; the size of every gun and bow second-skill effect; the breather's effect (smoke harms nobody in the engine: `hazard_immune gas`?); maker lines for the Vests and Plate families and the breacher plate (and their `families.json` rows); Last Charge's `shield_by_armour` reads the class NUMBER, so class 6 gives 90, over Juggernaut's 75 (rules 1.91 item 7959); Albert Town's grant name ("Still Turn" is a placeholder); the `line` words (A4 wrote `frontier`/`issue`/`mixed`; the card shows them through a generic formatter, e.g. "Decrkm"); a grade colour (five values; none in the palette). [M] [open; 20 Nov 2026] [0.34-LANE-A2.md, -A3.md, -A4.md, -B0.md]
-- **Held rows:** `breather` (no carrier for "immune to smoke") and `blackpoint_wall_gun` (no piece makes a weapon prone-only). [S] [open; 20 Nov 2026] [0.34-LANE-B0.md]
-- **Client leftovers:** class 6 on the sheet (`main.js ROMAN` has no VI) and in the Proving Ground's armour buttons (`sandbox.tsx` typed [0..5]); body armour shows no family line; the second skill and the Weapon Art line are in the view-model, not drawn; the sheet's 28 px pack rows draw no grade frame; wire `figmentPng` to the Figment order slots and trait chips (item 21's display half). [M] [open; 20 Nov 2026] [0.34-LANE-A2.md, -A3.md, -B2.md]
-- **Survival placement:** where the breacher plate (class 6) is found; re-run the hood's `seen_range` with `npm run try` (the hoods are typed now). [S] [open; 20 Nov 2026] [0.34-LANE-A2.md]
-- **Debt for the consolidation pass (rule 4):** the explosive-thrown-row rule has three copies (`perks/c.ts`, `perks/f.ts`, `actionPickers.ts`): one exported predicate; A4's `graded:false` on weapon rows is not read by the grade step; the shop faces' bias words as tag queries in data (a data ruling); `power.ts` FITS stays row fields unless a gun tag is ruled; `data/CONVENTIONS.md` does not describe `families.json` or the tag kinds; `itemCard`/`ItemCardV` and `form_words` wait for the lead's approval as added exports; party-fit's `sur` lever and survival-run's `SIM_SUR` are no-ops since 0.33; `tools/items2_sheet.py --check` is not in `check.py`; the written consolidation report in `docs/design/proposals/`. [M] [open; 20 Nov 2026] [0.34 hand-offs]
-- **Stage C: the lead's balance fit** over the new rows, with the class measure in `0.34-MEASURES.md`. [L] [open; 20 Nov 2026] [items 2.0 plan]
+- **Held rows (not shipped):** `breather` (no carrier for "immune to smoke") and `blackpoint_wall_gun` (no piece makes a weapon prone-only). [S] [open; 20 Nov 2026] [rules 1.93 item 8104]
+- **No new row joins the camp** until the lead gives it `issue` (rules 1.93 item 8100). [S] [open; 20 Nov 2026] [rules 1.93]
+- **The line words** (A4 wrote `frontier`/`issue`/`mixed`; the card shows them through a generic formatter, e.g. "Decrkm"): a `line_words` map is the lead's ruling. [S] [open; 20 Nov 2026] [0.34-LANE-A3.md]
+- **Client leftovers:** the second skill and the Weapon Art line are in the view-model, not drawn; the sheet's 28 px pack rows draw no grade frame. [S] [open; 20 Nov 2026] [0.34-LANE-A3.md]
+- **Survival placement:** where the breacher plate (class 6) is found; re-run the hood's `seen_range` with `npm run try`. [S] [open; 20 Nov 2026] [0.34-LANE-A2.md]
+- **Debt:** the shop faces' bias words as tag queries in data (a data ruling); `power.ts` FITS stays row fields unless a gun tag is ruled; party-fit's `sur` lever and survival-run's `SIM_SUR` are no-ops since 0.33; `tools/items2_sheet.py --check` is not in `check.py` (the sheet is a record now); `tools/technique_fx_inventory.py` reads `phys.teaches` only (not the family forms); the written consolidation report in `docs/design/proposals/`. [M] [open; 20 Nov 2026] [0.34 hand-offs]
+- **The Narrator's weapon list is families now** (rules 1.93 item 8108): it looks a family up before it names an enemy's weapon in it; watch the AI's first fights for a wrong id. [S] [open; 20 Nov 2026] [rules 1.93]
+- **Stage C: the lead's balance fit** over the new rows, with the class measure in `0.34-MEASURES.md` (column "0.34 final"). [L] [open; 20 Nov 2026] [items 2.0 plan]
 
 ## After 0.32, before Items 2.0
 

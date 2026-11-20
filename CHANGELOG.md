@@ -8,20 +8,24 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
-## 0.34.0 — Items 2.0, stages A and B (rules 1.91 to 1.92). BUILT, NOT LIVE: waits for Leon's word
+## 0.34.0 — Items 2.0, stages A and B (rules 1.91 to 1.93). BUILT, NOT LIVE: waits for Leon's word
 
 **This version is not live.** It is built on `wip/release-0.34` and goes live only when Leon says so for this release.
 
 - **Every item is tagged:** kind, family, form, maker line and role tags on the rows; families of weapons and worn pieces (`data/families.json`) with their forms' techniques; one hit skill a weapon; grades as one ladder; one rolled-gear rule for the shop and the rewards. A weapon is one-handed when its row says so (seven weapons no longer suffer an injured off arm), and every reach is read one way (Earthbreaker and the Breaker's Lunge now reach 2 with the grand staff and the bot-thread banner).
 - **Armour 2.0:** the body armour classes live in one table, and there is a class VI, the breacher plate (armour 18, 14 kg, Pain Threshold 2; provisional). Worn pieces keep their grade; the Forge grades them and body armour at the same fees and fits Juggernaut (class V) at 4,000 cr; a worn piece's own effects work while it is worn. Old saves load (the inner torso slot is renamed and mapped once).
 - **One item card on every screen** that draws an item (shop, sell, compare, upgrade, Forge, rewards, camp, Give, the sheet's GEAR and ARMS tabs): its picture (or its mark, never an empty box), its grade word and marks, family, form and maker. The GEAR tab shows body armour level-scaled at its grade, and STATUS shows Armour.
-- **Rules 1.92, stage B on paper:** the families and forms of the new weapons and armour (72 new weapon rows and 12 new pieces), the Heavy word (-0.5 Movement each), Strike and Ward shields, the hoods' sight, the optics' vision, the second-skill threshold. In data now: the seams (Heavy, the Strike and Ward modifiers, Arsenal, the siege reload) and the **12 new worn pieces** (helms, hoods, visors, the monocle, the undersuit, the rig belt, trousers, gloves, jump boots). The 72 new weapon rows are typed on `wip/0.34-b1` and are **not in this version** (their tables and the camp rack wait on the lead).
+- **72 new weapons** (rules 1.92, 1.93): melee forms of twelve families, Strike and Ward shields, five new gun lines (ADCorp, Chezknov Works, Central Command Arsenal, Smetanita, Albert Town), crossbow and bow forms, launchers, rocket tubes, flamers, rotaries, anti-materiel guns, powered blades and gauntlets, darts and javelins; and the **12 new worn pieces** (helms, hoods, visors, the monocle, the undersuit, the rig belt, trousers, gloves, jump boots). The pavise can be bought. Heavy things cost 0.5 Movement each. A Smetanita sidearm's hit lays 1 Pressure (once a turn on each target); an Arsenal gun reloads for 1 AP less; Albert Town's rifles take **Settled Shot** (+1 to an Aimed Shot after a still turn). The three heaviest new rifles work a bolt (Shot 3 AP, Aimed Shot 4 AP), as rules 1.18's guard asks. Every new number is provisional (the lead fits them next). They ship on placeholder pictures.
+- **The camp does not change:** its rack and free weapon are the issue rack, the same 18 weapons as 0.33.0.
+- **Body armour families:** Vests (classes I to III, the issue line) and Plate (IV, V and the breacher plate, the Adamantile Brigade's); the sheet shows class VI and the family line. **Last Charge** gives 3 x your body armour's value (the breacher plate 54).
+- **The Forge refuses what takes no grade** (fists, grenades, the mana weapons, the bot items).
+- **The Narrator** sees the weapon families and looks a family up for its weapons.
 - **Figment orders and traits** have their own pictures (41).
 - **The simulator** reads tags, not ids.
 
-**Rules:** 1.91 items 7900-7921 and 7950-7959 (the item model, armour); 1.92 items 8000-8046 (stage B). Hand-offs `docs/design/handoffs/0.34-LANE-*.md`; the class measure `docs/design/handoffs/0.34-MEASURES.md`.
+**Rules:** 1.91 items 7900-7921 and 7950-7959 (the item model, armour); 1.92 items 8000-8046 (stage B); 1.93 items 8100-8112 (the integration and the lead's rulings). Hand-offs `docs/design/handoffs/0.34-LANE-*.md`; the class measure `docs/design/handoffs/0.34-MEASURES.md`.
 
-**Known and unfinished** (each in `docs/ROADMAP.md`, section "0.34"): the 72 new weapons (B1, not merged); signatures that ship plain and second-skill effects owed; numbers handed back (Smetanita Pressure, Chezknov recoil, the revolvers' critical range, the breather, maker lines, Last Charge against class VI); class VI on the sheet's numerals and the Proving Ground's buttons; Stage C, the lead's balance fit.
+**Known and unfinished** (each in `docs/ROADMAP.md`, section "0.34"): signatures that ship plain and second-skill effects owed (Chezknov recoil, the revolvers' critical range, and the rest); `breather` and `blackpoint_wall_gun` held; Stage C, the lead's balance fit.
 
 ## 0.33.0 — the ambush, the rules owed from 0.32, enemy doors, I'll narrate from the desk, the outside playtest's fixes (rules 1.82 to 1.90)
 
