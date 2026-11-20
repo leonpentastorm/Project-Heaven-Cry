@@ -29526,6 +29526,42 @@
         "different_pixels_32": 4,
         "different_pixels_64": 42
       }
+    },
+    "weapon-lumeri_cathedral_burner--celestial": {
+      "label": "Lumeri cathedral burner — Celestial",
+      "path": "art/icons/gear/weapon-lumeri_cathedral_burner--celestial.png",
+      "sha256": "10643b46d025aae619733ed3a6782d5a2ae32312f9b1340f7944616a37552aa6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_cathedral_burner--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lumeri_cathedral_burner",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9740647710907934,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 30
+      }
     }
   },
   "survival_art": {

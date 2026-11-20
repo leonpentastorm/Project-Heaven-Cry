@@ -12850,6 +12850,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lumeri_cathedral_burner--celestial",
+      "path": "art/icons/gear/weapon-lumeri_cathedral_burner--celestial.png",
+      "sha256": "10643b46d025aae619733ed3a6782d5a2ae32312f9b1340f7944616a37552aa6",
+      "label": "Lumeri cathedral burner — Celestial",
+      "family": "weapon-lumeri_cathedral_burner",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_cathedral_burner--celestial.png",
+        "sha256": "04e88bccf586a8aea3e3b30bea85eadc42c7baf34e70e1166fb38b1c3071acf4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lumeri_cathedral_burner--celestial.png",
+        "sha256": "10643b46d025aae619733ed3a6782d5a2ae32312f9b1340f7944616a37552aa6"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_cathedral_burner--celestial.txt",
+        "sha256": "9c309f2e3d05b785c51b7dab69be44f73b6d3756c4fb44119ad34698892e0465"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+          "sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338"
+        },
+        {
+          "path": "art/icons/gear/weapon-lumeri_cathedral_burner--relic.png",
+          "sha256": "e2625bbaa4f973425d5c56b1bdf7aebebb3823b00c6a85361fb2f355225a711e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner--celestial.png"
+      },
+      "export_hashes": {
+        "256": "6e69f4efe67fd9dc77a8e4d484018149143113b9405573ac9918a85191f095bf",
+        "128": "37bb9ced400c3db1aeb12b0b19afe878e7948e089aaa2f66990457abdce484cc",
+        "64": "4974059996eb9ea6af08e687587f46e7080a5ad304081f68622bc1c3d84246cf",
+        "32": "5447236290cabee66af5d19c141202a0496d0789e3348306ef2c3870f8dd2742"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-lumeri_cathedral_burner",
+      "outline": {
+        "solid_alpha_iou": 0.9740647710907934,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 30
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
