@@ -9882,6 +9882,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-mesh_undersuit--celestial",
+      "path": "art/icons/gear/armour-mesh_undersuit--celestial.png",
+      "sha256": "5d8b1a936720f27095617e9ded350f07292f85249853267339978343e749fcf8",
+      "label": "Mesh undersuit — Celestial",
+      "family": "armour-mesh_undersuit",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-mesh_undersuit--celestial.png",
+        "sha256": "0782081fab28e2bd6b30361053c25fa2cae76029fa982ddf38b761034f73b2af"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-mesh_undersuit--celestial.png",
+        "sha256": "5d8b1a936720f27095617e9ded350f07292f85249853267339978343e749fcf8"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-mesh_undersuit--celestial.txt",
+        "sha256": "3b40555e23d262bbdc224cc12f770bc7e94a3ba2721678865c9e498f4ff91e0c"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-mesh_undersuit.png",
+          "sha256": "5a36c6129138e8b7b640bf3a216b8bab73b604f9701396f6a054913f74fca1a9"
+        },
+        {
+          "path": "art/icons/gear/armour-mesh_undersuit--relic.png",
+          "sha256": "962ad8c2499b1eca9abc7567f2c6e5e7e34fbb6396272127cbc022678fc77bf0"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit--celestial.png"
+      },
+      "export_hashes": {
+        "256": "074b3a618f0d5b6173b4c1fbfb0661e9a2463593e5187f851123751132e9f078",
+        "128": "b9979224a774d5cf343283a8be231ac947b30eebef9f1ba805d5dc358a63ca73",
+        "64": "e8dc4d1d72b791cdc2804f4942dd2249e961d40f925155a312869145699a3ced",
+        "32": "7d58fe8fd56d28ece6dc172e60505c09c07ca475ca77a5ec06094c39e07fc952"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-mesh_undersuit",
+      "outline": {
+        "solid_alpha_iou": 0.9737924025290855,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 16,
+        "different_pixels_64": 30
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
