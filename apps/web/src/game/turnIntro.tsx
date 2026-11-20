@@ -386,7 +386,7 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     if (newFight) resetClock(stream);
     if (stream && !cb.over) liveFights.current.add(stream);
     // FIGHT: at once (it plays over the combat-in), before the first turn's banner, which waits for it.
-    if (newFight && stream && begun.current === stream && cb.round === 1 && carded(game!, cb)) {
+    if (newFight && stream && begun.current === stream && (cb.round === 1 || cb.opening?.ambush) && carded(game!, cb)) { // rules 1.87 item 7507: after the hostiles' free turn the page first sees round 2
       begun.current = null; showCard(fightCard(game!, cb, meId));
     }
     // Joining or reloading in the middle of a fight: just the banner for whoever is up now.
