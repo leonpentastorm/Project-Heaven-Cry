@@ -12226,6 +12226,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_javelins--masterwork",
+      "path": "art/icons/gear/weapon-throwing_javelins--masterwork.png",
+      "sha256": "3aca2654a89d6600486e7aa7b1e1c7c2a5f746997a6f5832f71981d3448a8240",
+      "label": "Throwing javelins — Masterwork",
+      "family": "weapon-throwing_javelins",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--masterwork.png",
+        "sha256": "a932292e46a152120f743a018af1d26b2e74a3091ff2230eb35251e125a2ade4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--masterwork.png",
+        "sha256": "3aca2654a89d6600486e7aa7b1e1c7c2a5f746997a6f5832f71981d3448a8240"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_javelins--masterwork.txt",
+        "sha256": "eecc8d83055ab98a4548018f8b40851a399f09885b2618ddc4feac10fa7d38f2"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-throwing_javelins.png",
+          "sha256": "50f55c624c9d5e0e72a60eeb623182329ebe0a3f4f5c6000872e87cc6af53621"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_javelins--fine.png",
+          "sha256": "5c56e147e3e347452f5e2a3c3afade5819646e609057fe3bac345bf7415e9d0d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_javelins--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_javelins--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_javelins--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_javelins--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "c27188f10cfb8bc85428a0e4394639c83d90599d388194c89bad5c8a506fda03",
+        "128": "ec5aede0faa552177d1221e94758cf408f1106d661e95b004fd78a24ee8b8db4",
+        "64": "765f1cb70354e0516a1047b6c9626afb875c6ce0f1eaf1d4cb4408989c1b2a68",
+        "32": "314d49e970fc50d118e5a9608f4d5a940138324172543d00a79d5233d5caf07a"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-throwing_javelins",
+      "outline": {
+        "solid_alpha_iou": 0.9690921951134319,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 19
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
