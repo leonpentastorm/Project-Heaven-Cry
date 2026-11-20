@@ -28481,6 +28481,42 @@
         "different_pixels_32": 16,
         "different_pixels_64": 19
       }
+    },
+    "shield-bulwark_screen--masterwork": {
+      "label": "Bulwark Screen — Masterwork",
+      "path": "art/icons/gear/shield-bulwark_screen--masterwork.png",
+      "sha256": "bca8d0f71eac243d57721b68062a7b2fa383db81fa16bcc9d0a2a272384086d5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-bulwark_screen--masterwork.png",
+        "128": "art/icons/gear/exports/128/shield-bulwark_screen--masterwork.png",
+        "64": "art/icons/gear/exports/64/shield-bulwark_screen--masterwork.png",
+        "32": "art/icons/gear/exports/32/shield-bulwark_screen--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-bulwark_screen--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.6",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "shield-bulwark_screen",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9797128094589026,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 16,
+        "different_pixels_64": 22
+      }
     }
   },
   "survival_art": {
