@@ -1,0 +1,1 @@
+Technical reference only: existing art/sprites/kit/rim/wall-straight.png rotated90degrees using exact pixel transpose. No new artwork or shape edits; not a production asset and contributes0 to picture count.

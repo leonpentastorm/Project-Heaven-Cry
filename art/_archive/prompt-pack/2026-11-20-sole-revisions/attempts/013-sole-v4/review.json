@@ -1,0 +1,91 @@
+{
+  "id": "kit-rim-wall-corner",
+  "src": "/workspace/generated_images/exec-4461ad6a-e871-4c5d-a220-4f6446425b85.png",
+  "job": {
+    "id": "kit-rim-wall-corner",
+    "number": 13,
+    "file": 1,
+    "path": "art/sprites/kit/rim/wall-corner.png",
+    "references": [
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v2/native.png",
+      "art/sprites/kit/rim/wall-straight.png"
+    ],
+    "prompt": "Edit this fictional RPG L-shaped wall tile. FIRST attached image is the draft to edit. SECOND is its matching straight tile. Keep first images outline, paint and transparent background. Make ONE SMALL correction: move the vertical cyan stripe SLIGHTLY LEFT so it runs exactly halfway between the inner and outer ivory edges of the downward arm. It is currently a little too far right. Both blue-grey halves of that vertical arm must be equal width, with cyan centred in the middle. Its horizontal part stays at its existing height, shortening slightly to meet the newly centred vertical part at a clean right angle. The bottom end remains OPEN, with blue-grey and cyan continuing flush to the canvas edge; no cap across bottom. Canvas256square equivalents: correct cyan is atx128, fromelbowy128 tobottomy256. Keep128px thick L, leftopeningy64..191 and bottomopeningx64..191, top/right transparent. Match straight tiles exact blue-grey shade, cyan width, ivoryedge width and brushed paint, with flat cuts and no added seams. Genuine transparent alpha, single square PNG game tile.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v2/native.png": "cee6bf2f882465cdfbbf48e29905fbe43c4c00a70d606e628ed7306ed94db34b",
+      "art/sprites/kit/rim/wall-straight.png": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4"
+    },
+    "original_sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c",
+    "previous_prompt": "This is fictional RPG game art for Project Heaven Cry. Edit the supplied existing PNG for a specific unfinished art correction. Preserve the supplied image's composition and canvas. Deliver one image only, PNG with genuine transparent alpha, no background or checkerboard. Create the corrected 256x256 Rim wall CORNER tile using the first reference's straight wall as the exact paint/material authority and the second reference only for L geometry. Strict top-down orthographic, no perspective. A 128px-thick L joins LEFT edge centred y64..191 to BOTTOM edge centred x64..191. Outer elbow is square at x192,y64; inner elbow at x64,y192. Transparent empty above y64 and right of x192, with empty lower-left notch x0..63,y192..255. Both arms have completely flat cut ends at the cell border with no end outline or end cap: left end exactly y64 through191 inclusive, bottom end exactly x64 through191 inclusive. No opaque pixels on top or right cell edge. Match the attached STRAIGHT exactly: same blue-grey bulkhead value and brushed, worn plate texture, same ivory cap-band width, same thin cyan #8BDEEE light strip through the centre. Carry cap and cyan strip in continuous clean right-angle bends around the corner, meeting the straight reference at each opening's same centreline/height. Top-left light; no cast shadow. Remove the old corner's panel grid, hazard stripes, corner fittings and extra bolts. No new seams, panel grid, rivets, lettering, rounded corners or lighter cap. Transparent canvas right to flat-cut openings. Output one square tile, preserve full canvas and exact half-tile dimensions."
+  },
+  "preflight": {
+    "id": "kit-rim-wall-corner",
+    "own": "758b00282b89eca5b22471bcc9963b7ada81f330",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "run": "sole-20261120-1615",
+    "latest_comment": 7044738722
+  },
+  "clock": {
+    "current_time": "2026-11-20 16:45:14 UTC"
+  },
+  "attempt": "013-sole-v4",
+  "review": "Inspected. Bottom open, paint family close, but vertical cyan remains visibly right of arm centre (~x135/256). Not a valid join to straight. Original unchanged; count0.",
+  "source_sha256": "9d193a9dbf2686785817dca563db24b9d9f2f905a98ebf7f00846dbf65b3175c",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "native_mode": "RGBA",
+  "native_alpha_bbox": [
+    0,
+    170,
+    1087,
+    1254
+  ],
+  "references": [
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v2/native.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v4/references/00-native.png",
+      "sha256": "cee6bf2f882465cdfbbf48e29905fbe43c4c00a70d606e628ed7306ed94db34b"
+    },
+    {
+      "original_path": "art/sprites/kit/rim/wall-straight.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v4/references/01-wall-straight.png",
+      "sha256": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4"
+    }
+  ],
+  "technical_previews": {
+    "1024": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v4/preview-1024.png",
+      "sha256": "d30d9283075e2fbdede0773ee305678e1a654c46b50c44956d1315b02b5d62cc"
+    },
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v4/preview-256.png",
+      "sha256": "5eca638e90e04732f7714d65d1c9cf50fe0e1edfc574f5f40db333d3f692f7f3"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v4/preview-128.png",
+      "sha256": "d1d3fd3c49c9f394363125a6843f5dc7421f4512ebb32289291acb8a520ebcef"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v4/preview-64.png",
+      "sha256": "7c1565c6268794e077a16fd25f96bc3ab40ce92a88507f934c5041f6e0d4e1b2"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/013-sole-v4/preview-32.png",
+      "sha256": "267ae25cafae311f0a175f91ab6ab0992856a9757a0a1ee5caf73e360ad251ee"
+    }
+  },
+  "selected": false,
+  "count_contribution": 0,
+  "status": "quality-rejected",
+  "production_approved": false,
+  "implementation_ready": false
+}
