@@ -12784,6 +12784,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lumeri_cathedral_burner--relic",
+      "path": "art/icons/gear/weapon-lumeri_cathedral_burner--relic.png",
+      "sha256": "e2625bbaa4f973425d5c56b1bdf7aebebb3823b00c6a85361fb2f355225a711e",
+      "label": "Lumeri cathedral burner — Relic",
+      "family": "weapon-lumeri_cathedral_burner",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_cathedral_burner--relic.png",
+        "sha256": "876c196462b679875182988949b423fba290e717b4a62310aa2bb562618e2199"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lumeri_cathedral_burner--relic.png",
+        "sha256": "e2625bbaa4f973425d5c56b1bdf7aebebb3823b00c6a85361fb2f355225a711e"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_cathedral_burner--relic.txt",
+        "sha256": "4060e380920c54df129966380b506163bb2f1c1c18c4af94f493d7be902590fd"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-lumeri_cathedral_burner--relic/v1/source.png",
+          "sha256": "84b713bcd67a865fe73d20c957a2d7fe4796bdf1b281174fcfbc7a998189d85f"
+        },
+        {
+          "path": "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+          "sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338"
+        },
+        {
+          "path": "art/icons/gear/weapon-lumeri_cathedral_burner--masterwork.png",
+          "sha256": "5cfb1a5ae198860c70a7e597ea56d894de8b3ed44e6abe15081b97e5fb72ab5d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner--relic.png"
+      },
+      "export_hashes": {
+        "256": "1afd5f3cdf7963b3d6624c2151050753aca98f451bcf843112e08a969f6ee865",
+        "128": "19a10d456359b98809bd5fe0ee82ecde2ffc9829bac658b066df469ca1494e97",
+        "64": "eee352a564a32f5c859354919f92410451edc4b45d333ac4cdebce5386b315ff",
+        "32": "3590aa3a8e3d94b78573bb5807ef756baffb9d8515cbed544626909076baa81f"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-lumeri_cathedral_burner",
+      "outline": {
+        "solid_alpha_iou": 0.9719443766772383,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 42
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
