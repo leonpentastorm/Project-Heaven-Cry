@@ -39,6 +39,11 @@
       "type": "moderation_blocked",
       "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-hellraiser_rotary--celestial.json",
       "id": "weapon-hellraiser_rotary--celestial"
+    },
+    {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-purifier_flamer--masterwork.json",
+      "id": "weapon-purifier_flamer--masterwork"
     }
   ]
 }

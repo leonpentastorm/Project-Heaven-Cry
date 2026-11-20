@@ -530,7 +530,11 @@
     "status": "pending",
     "production_approved": false,
     "collection": "2026-11-20-reset-continuation",
-    "depends_on": "weapon-purifier_flamer--fine"
+    "depends_on": "weapon-purifier_flamer--fine",
+    "generation_error": {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-purifier_flamer--masterwork.json"
+    }
   },
   {
     "id": "weapon-purifier_flamer--relic",
