@@ -4,6 +4,7 @@
 // printed, logged or written anywhere). PHC_LIVE_OUT names the JSON transcript to write (no key in it).
 //   PHC_LIVE_KEY_FILE=/path/to/key PHC_LIVE_OUT=/tmp/run.json npx vitest run src/narrator/live-playtest.test.ts
 import { describe, it } from 'vitest';
+await (await import('./anthropic')).loadSdk(); // the SDK loads on first use (the bundle split): here, outside the tests' time limits
 import { readFileSync, writeFileSync } from 'node:fs';
 import { apply, newGame, ARCHETYPES, npcsOf, positionsOf, refOf, missionBoard, active, type GameState, type NarratorTurn } from '@engine';
 import { anthropicProvider, scriptedProvider, callEstimate } from './anthropic';

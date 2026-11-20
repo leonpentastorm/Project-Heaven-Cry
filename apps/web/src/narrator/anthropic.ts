@@ -4,7 +4,7 @@
 // The SDK loads on first use (the bundle split: a game without the AI Narrator never downloads it).
 type AnthropicSdk = typeof import('@anthropic-ai/sdk').default;
 let sdk: AnthropicSdk | null = null;
-const loadSdk = async (): Promise<AnthropicSdk> => sdk || (sdk = (await import('@anthropic-ai/sdk')).default);
+export const loadSdk = async (): Promise<AnthropicSdk> => sdk || (sdk = (await import('@anthropic-ai/sdk')).default);
 import type { GameState, NarratorTurn, FightRuling } from '@engine';
 import { missionBoard } from '@engine';
 import { noteExchange } from '../game/debug';

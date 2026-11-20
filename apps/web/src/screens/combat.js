@@ -44,6 +44,7 @@ const act = (a) => {
 import { readZoom, saveZoom, normaliseZoom, zoomAction, zoomLabel, ZOOM_MIN, ZOOM_MAX, ZOOM_CSS } from '../game/mapZoom';
 import { CameraView, CAMERA_CSS } from '../game/cameraView';
 import { hoverFor, hoverMemo } from '../game/mapHover';
+import '../game/GiveTab'; // the 'give-inline' mount the Backpack's Give draws (registered there; the screen is its own chunk)
 import { kitLayout, kitFloorBg, kitArt, kitSprite, KIT_LINE, FLOOR_REACH } from '../game/kitMap';
 import { usualScale, overviewScale, naturalSize, fitsWhole, panKey, REF_W } from '../game/camera';
 import { readLayout, saveLayout, normalise, placement, isDefault, startPanelDrag, keyMovePanel, startSplit, splitKey, clampWidth, LAYOUT_CSS, DEFAULT_LAYOUT } from '../game/combatLayout';

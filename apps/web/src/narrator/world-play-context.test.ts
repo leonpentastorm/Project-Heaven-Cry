@@ -3,6 +3,7 @@
 // checklist and the two new rules, and the turn prompt tells the Narrator what fired, what was hit, what was tried and
 // who carries whom.
 import { describe, expect, it } from 'vitest';
+await (await import('./anthropic')).loadSdk(); // the SDK loads on first use (the bundle split): here, outside the tests' time limits
 import { apply, newGame, ARCHETYPES, keyOf, zoneMap, npcsOf, storyObjects, missionsOf, positionsOf, type GameState, type NarratorTurn } from '@engine';
 import { anthropicProvider } from './anthropic';
 import { RULES_PROMPT, MAP_TRUTH, PACING, CRAFT, submitTool, turnPrompt } from './context';
