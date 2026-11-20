@@ -173,7 +173,7 @@ const COMBAT_CSS = [
   '.phc-cb-act{transition:transform .12s ease-out,box-shadow .12s ease-out,background-color .12s}',
   // The Space key's hint on Confirm: drawn by CSS so the button's text stays "Confirm" (suites and readers find it by its text);
   // only where a keyboard is likely (a fine pointer).
-  '@media (pointer:fine){.phc-cb-confirm button.phc-cb-act:first-child::after{content:"SPACE";margin-left:8px;padding:1px 6px;border:1px solid currentColor;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.08em;opacity:.6;vertical-align:middle}}',
+  '@media (pointer:fine){.phc-cb-confirm button.phc-cb-act:first-child::after{content:"SPACE";margin-left:8px;padding:1px 6px;border:1px solid currentColor;border-radius:5px;font-size:var(--fs-sub);font-weight:700;letter-spacing:.08em;opacity:.6;vertical-align:middle}}',
 
   '.phc-key-code::before{content:attr(data-code)}', // (the two-key code is drawn, not text: a button's name stays its name)
   '.phc-cb-act:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.18)}',
