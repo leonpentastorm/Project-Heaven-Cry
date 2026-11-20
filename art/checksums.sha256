@@ -2601,7 +2601,7 @@ bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/g
 f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/gear/2026-11-19-unique-melee-bow/web-build-check.json
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
-faaba2f537255440547ba179b4178f450225d033f649b629c6a0a9243fffc007  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
+c014169c1ab687a5753bd6cf9f156c4b4a0f352f17e9de8d70f21ac0ddc9190d  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
 1006204c5e813723abfb237b9be15ccb822febfcdcff4f3180aba731f6e9d711  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
@@ -2673,7 +2673,7 @@ b02754d15bfca27e004d2481c99034a693be29331d1f645af5dec4527a910917  art/_archive/g
 50b097a5b74b92a7580c8911218269f41fdf0ab8892f49284181bdc54280532a  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-ork_cleaver_glaive--masterwork.json
 54ad9bce4afff6e1e35f06e8acb90ddda1571c52c43ba74c7821632647c53190  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-purifier_flamer--masterwork.json
 5a106830d33315e571ea8b79ba48686d9723d512e7c26ae4c20fffc1091ad5b7  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-short_draw--fine.json
-3f3bb9a9b8fd208ac96301623601f0ea862986541b61d9d20e4ee22226284a55  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
+faeba9cdc36d0120219bd6f36207dd2bb60ac3eed86a65f255868784cfd859af  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
 7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--celestial.png
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png
 a1f4788783466f3e2bb7bc9293a74dd22e08afe0bb0583ee52e9e191eae7afa4  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-barrier_wall--celestial.png
@@ -2753,10 +2753,11 @@ a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921  art/_archive/g
 0ade2a5a847a28f800c042112b7ab0be26ee6641929d9a0e924f39990bc4ba10  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--fine.png
 96c9588f2420f194bf05621dd6fa72ad02c0b340f3dd3822996fd35a604f3a1f  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--masterwork.png
 c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--relic.png
+d121a712b19ad19c1bdfbb6bf653f55176dbd3a56e0a99190b2533688fc84479  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--celestial.png
 145a23a2ec6b8dea6474d736972d06dafdea4e30be22c14a5d2fd418b9a96d85  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--fine.png
 6b51800311c1abac3fb5097aa49424a95050f411f3fe963aaa6021f5c0642fdc  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--masterwork.png
 c3fc0ebb999523ac0afd624fac8d5eca85cb384799daef091806f0d4cc6998a3  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--relic.png
-e9f2bfd7ea4310cf76ed8f33a9b55788f4738e3f5c8d899e2c64238e33c57777  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+89357b54a4397772b8f81840257cdffc92064b3a9b3ee1fc28fa38690ba34748  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
 d66561bf70f8db762cd400558efdc502b276e286665d0f14b9ecb72c4ec2c656  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-barrier_wall--celestial.txt
@@ -2836,10 +2837,11 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
+e1bc7c413228e96e8b8a18f020877fc4c13148685df6dc504fe722424fad81b3  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--celestial.txt
 9174c6e15a67c3c78f24e7b4fb123888dc8fae9ce69d3b0e3ad5a9688bf84991  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--fine.txt
 ac8e6168ef1fde91952487d1cd6969b201e75ced9cd6f87120efee07ba679490  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--masterwork.txt
 f4470e6fdb2db8949aa5fd2588f1dea7e8e52be8350916c4779be099c8ff68e8  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--relic.txt
-77d0ea8e585378b686f079b363d4eae90f091d4893e31b509fc276842e0680eb  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+5f447d7e2d23c06e0446c27b4e31d0f9d8d34e44a237a318bceb1430339a2c70  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 60f24b976b5768dae5427466160ef27b4d9f21567ccfb47e570241deaf938fc8  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-barrier_wall-32px.png
@@ -2888,8 +2890,8 @@ a816f696b05265e3ab59d1bea9253fff2813d35ac76823c7a1039b2821cea162  art/_archive/g
 b44f1f308953edb78b86e56763d6d5dbb2a0933268a8aa25856ca9cb03908be2  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-throwing_knives-64px.png
 f95b212927a47888edc1462302638454cc9cda7c3fcdedc496bb6b7aeb61abc5  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-trench_knife-32px.png
 72138a5ebf3c2e036b72fda71fd4c38fb6164aa97883c4a1fcb4c9d60b230f17  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-trench_knife-64px.png
-a22b1e7037efdc931459dc0ba0358681d35d400bcbcbf75bf1ddc4239fadd6f9  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-weighted_gloves-32px.png
-20b9a6605fcd0e51ad1c9574d69a94cc393d89b1c62912d5ab4f011fe5f7de5b  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-weighted_gloves-64px.png
+5f880b3c7bb38638bc5cb089a64ec8774c726833bd764babea6a7c9d5e67824a  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-weighted_gloves-32px.png
+1099b71e7fcdee5e4aac0aa4797d40542f35f37c78d10689b3abccf6ca999ff8  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-weighted_gloves-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-20-reset-continuation/source-brief.md
 0d05f58b44ec65030dbf330cad1d517c758fffaa9ed19d0ff59e24548e4d5f3f  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/armour-ballistic_helmet--celestial.png
 68a55e5cd15f7b8ce6323d6e3686ce906a281b75fb107ae8dc205d93a01c4a41  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/armour-ballistic_helmet--relic.png
@@ -2970,6 +2972,7 @@ a95d493366bd428f7668a4742bbffac44a865fd9cdb983eb8cde7b9c90f5d6ba  art/_archive/g
 b1b3a2fd8333c4807cc1e18293cf3073ea0482240986414e33f8a8ca4b7f47a7  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-trench_knife--fine.png
 123f70ca001098833ae78ebf1a03d0dbdaaef7c9db65849ae7be3ed23e9348aa  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-trench_knife--masterwork.png
 d59f0ea404dfcabb50edad83167091dc09419759da99c3a720a62ef6c59dba3e  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-trench_knife--relic.png
+5d2cce9a1613a26ed31866c47882ebc2c13a5318ce02cb67f730f3b5f3c00e0f  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-weighted_gloves--celestial.png
 def8ecb32a60c639fa4ab6f0361a790360dca0c2038723d147af473f434dc7e2  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-weighted_gloves--fine.png
 d154636bff1fa34effb8a7aa33ca7e65326cf1649287a4f69e6ff047210b1c27  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-weighted_gloves--masterwork.png
 477c47b390a7beb8db7670d507727514bc5488d56246324f8d7b6855010e3450  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-weighted_gloves--relic.png
@@ -6570,7 +6573,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-ecc2ec3ed6d5a5da7a275c34249ba368d812754738b076b5b9ae1505e1c3172a  art/catalog.json
+409b00aeb919d4c4721ad58e119b740479c90848e154146493fd552f71b2fd59  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8715,6 +8718,7 @@ d8165ae2c5d20a5b286ffbe956e15b984b7c74f446dfd23ecc11b107f59b64de  art/icons/gear
 d70fd206edcab39bd7d0b829510b66f6196d5afb093d587b68edacb0293ac5b4  art/icons/gear/exports/128/weapon-war_axe.png
 94209be994400058c0a516e6332870910b5968267ae5358362010ad9c15d9b25  art/icons/gear/exports/128/weapon-war_hammer.png
 01ddd209d50fa6433f92d3699a0ec2507835a272f59e5ce7fc9a1ef2b977bd7d  art/icons/gear/exports/128/weapon-war_pick.png
+8afa305d78a02bff40d1e707e560950457810eb25ca53c44978a4a8ab8a3c273  art/icons/gear/exports/128/weapon-weighted_gloves--celestial.png
 5b2685af474e601fbd9344838905a8f0b3fb436dc88d9f5f4f4712389839e66c  art/icons/gear/exports/128/weapon-weighted_gloves--fine.png
 63a6cb203e9860df48c4fde4e78a456aa6dfeb6e9b4a3a3e4761dbdd906add1e  art/icons/gear/exports/128/weapon-weighted_gloves--masterwork.png
 a1cd1b813f802e1f58f5b988b3ea1fea60d0aa2af3ab6dccb43c4eb20210d1e8  art/icons/gear/exports/128/weapon-weighted_gloves--relic.png
@@ -9191,6 +9195,7 @@ abf014c1e06415e3aaf6944f830b7d99637686c7e167babac02de376b4d785c1  art/icons/gear
 d56cfe7a45b64cd0bcce3fc13e5f1f44a1fc3251219fb14a5bd16e28079ec9d3  art/icons/gear/exports/256/weapon-war_axe.png
 5b9530a94d9b89d199714b7a35b1f95fb6704a53073ba12cf4e0d6f7ab68c2ee  art/icons/gear/exports/256/weapon-war_hammer.png
 e39d252c2ced127dbc25760de284fe14c71d0844f81667020e08327e35606c89  art/icons/gear/exports/256/weapon-war_pick.png
+9486cc6db5f945aa4614be2089faaa81ac464e843253b9767a9fee6a49c60a45  art/icons/gear/exports/256/weapon-weighted_gloves--celestial.png
 f76c773edb53c880dbbb9b1516364c8919ae22c204e1b7d62b03e585e20a1476  art/icons/gear/exports/256/weapon-weighted_gloves--fine.png
 7425f558a6a09f218ea468acab8701f68559d01b29f6e6c7099a65d2fdbb52d9  art/icons/gear/exports/256/weapon-weighted_gloves--masterwork.png
 e61347a49dc6c4bdee2d15c2c2deca1cdc267db34014a25047ff1c524e9ae4c2  art/icons/gear/exports/256/weapon-weighted_gloves--relic.png
@@ -9667,6 +9672,7 @@ ffe98a89d67e48d67ed80bfb9b55d73b8cdb4aa8c6cf5d49d11ba5597c5c9fbe  art/icons/gear
 78e5988645dff2c552298ce3c90db0702d737c8aee4d1c283d434f37a8a52d59  art/icons/gear/exports/32/weapon-war_axe.png
 22e08666e8a059fcad2c2a28a697b6a40464a03adedaa6d092572ee96150d9b4  art/icons/gear/exports/32/weapon-war_hammer.png
 d76f286c44eab0f7a0f2fc6bef2b33bbebfde19cc6c60efbcb1a9e8f23e2717c  art/icons/gear/exports/32/weapon-war_pick.png
+a2ea05d87cdb8186f866f06565971f7b4928ede9175ade6857bb636b54ae6fff  art/icons/gear/exports/32/weapon-weighted_gloves--celestial.png
 38a53f662fa25e59143107ddde0f506cc32ddd58c30b2298728edf8c24cf2001  art/icons/gear/exports/32/weapon-weighted_gloves--fine.png
 617f4474a31a294f9ccf50a4e206813fafa4ac83874f30e40eabce1593b13aba  art/icons/gear/exports/32/weapon-weighted_gloves--masterwork.png
 5d9f47dd31fe626ce34b2f4419ee3abab2c966333e7c8415ee6e4b070d946707  art/icons/gear/exports/32/weapon-weighted_gloves--relic.png
@@ -10143,6 +10149,7 @@ faf8a48b055240ef6ae2d0082a9002eb8725e3d5c21992238b1c9d84d908c5df  art/icons/gear
 8572d0465e0fa68d1454b6a5a0e9b9f0108d4a2bbf720898e2284e67342d646e  art/icons/gear/exports/64/weapon-war_axe.png
 92a46d62ae41fd49590c0dfa1b95c3dec3d189c0ef3456ce431149fe707de911  art/icons/gear/exports/64/weapon-war_hammer.png
 73b6e7786c1a7c0cc7f9f33b68c8ae3602c86a75cedebe696f4ce567365d97af  art/icons/gear/exports/64/weapon-war_pick.png
+84db66d1e3a04abbcaa074e41ce75ddc7673afc696f15dff74a00bbebe87ff8d  art/icons/gear/exports/64/weapon-weighted_gloves--celestial.png
 173655691a7cc66629c7f6858b46cb38b7bc3dbdc5bf2fba295e491f427b813e  art/icons/gear/exports/64/weapon-weighted_gloves--fine.png
 b6320e1bb9791c2ea6454b9dabc08931a1e839d23bb6ca6c3be7619e3d1d41ca  art/icons/gear/exports/64/weapon-weighted_gloves--masterwork.png
 6a1fadfc6bb9ad54a7e080d3aa3411192013c3e45c034ad477eee997c6f3670e  art/icons/gear/exports/64/weapon-weighted_gloves--relic.png
@@ -10495,6 +10502,7 @@ c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/icons/gear
 ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770  art/icons/gear/weapon-war_axe.png
 c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f  art/icons/gear/weapon-war_hammer.png
 bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7  art/icons/gear/weapon-war_pick.png
+d121a712b19ad19c1bdfbb6bf653f55176dbd3a56e0a99190b2533688fc84479  art/icons/gear/weapon-weighted_gloves--celestial.png
 145a23a2ec6b8dea6474d736972d06dafdea4e30be22c14a5d2fd418b9a96d85  art/icons/gear/weapon-weighted_gloves--fine.png
 6b51800311c1abac3fb5097aa49424a95050f411f3fe963aaa6021f5c0642fdc  art/icons/gear/weapon-weighted_gloves--masterwork.png
 c3fc0ebb999523ac0afd624fac8d5eca85cb384799daef091806f0d4cc6998a3  art/icons/gear/weapon-weighted_gloves--relic.png

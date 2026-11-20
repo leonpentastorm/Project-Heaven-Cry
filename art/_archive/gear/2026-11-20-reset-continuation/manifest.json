@@ -5368,6 +5368,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-weighted_gloves--celestial",
+      "path": "art/icons/gear/weapon-weighted_gloves--celestial.png",
+      "sha256": "d121a712b19ad19c1bdfbb6bf653f55176dbd3a56e0a99190b2533688fc84479",
+      "label": "Weighted Gloves — Celestial",
+      "family": "weapon-weighted_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-weighted_gloves--celestial.png",
+        "sha256": "5d2cce9a1613a26ed31866c47882ebc2c13a5318ce02cb67f730f3b5f3c00e0f"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--celestial.png",
+        "sha256": "d121a712b19ad19c1bdfbb6bf653f55176dbd3a56e0a99190b2533688fc84479"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--celestial.txt",
+        "sha256": "e1bc7c413228e96e8b8a18f020877fc4c13148685df6dc504fe722424fad81b3"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-weighted_gloves.png",
+          "sha256": "a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a"
+        },
+        {
+          "path": "art/icons/gear/weapon-weighted_gloves--relic.png",
+          "sha256": "c3fc0ebb999523ac0afd624fac8d5eca85cb384799daef091806f0d4cc6998a3"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png",
+          "sha256": "0189245e4f1c2eeff8998b07ae9f383745a1d2c2e6fe1127c9f34c301b2fa623"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-weighted_gloves--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-weighted_gloves--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-weighted_gloves--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-weighted_gloves--celestial.png"
+      },
+      "export_hashes": {
+        "256": "9486cc6db5f945aa4614be2089faaa81ac464e843253b9767a9fee6a49c60a45",
+        "128": "8afa305d78a02bff40d1e707e560950457810eb25ca53c44978a4a8ab8a3c273",
+        "64": "84db66d1e3a04abbcaa074e41ce75ddc7673afc696f15dff74a00bbebe87ff8d",
+        "32": "a2ea05d87cdb8186f866f06565971f7b4928ede9175ade6857bb636b54ae6fff"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-weighted_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9786199078790662,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 28
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
