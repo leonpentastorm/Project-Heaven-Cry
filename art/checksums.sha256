@@ -2601,7 +2601,7 @@ bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/g
 f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/gear/2026-11-19-unique-melee-bow/web-build-check.json
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
-9dc33c0b2200fa65d53affde7010ebf5ce2c7630aee07a257ae5f96f099528d3  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
+d1da0edfd7cca8777f7b2d978bfa14f6bf1eec34986d9965b96774ce09148843  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
 1006204c5e813723abfb237b9be15ccb822febfcdcff4f3180aba731f6e9d711  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
@@ -2669,13 +2669,14 @@ b02754d15bfca27e004d2481c99034a693be29331d1f645af5dec4527a910917  art/_archive/g
 4539a422f89b173b79fc509303d36d1f49327d82626972f0cfbb5b440c06f424  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-long_draw--fine.json
 54ad9bce4afff6e1e35f06e8acb90ddda1571c52c43ba74c7821632647c53190  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-purifier_flamer--masterwork.json
 5a106830d33315e571ea8b79ba48686d9723d512e7c26ae4c20fffc1091ad5b7  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-short_draw--fine.json
-2cca9fc23c7b58e0eb6d69734c7cf22bd396edc2f89ad4b53de2ee6e82a82a59  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
+123bc304292cf614ef2f73c33c3515101ed97c9ee216a40b143d478b5d2f154b  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
 7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--celestial.png
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png
 3c18cca07924c8fc5a5432d1fc9fdb987145619526490ba967a70e6cb485b962  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-boss_shield--celestial.png
 5625072bf943cf318f57891ca7d5a2be0ee6f2cb83809ff37f8b54c6e021eea9  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-boss_shield--fine.png
 74958d034b6a2b864df8eabc9e481d60eeb9671fdf17cd24f640eca0db8f5f12  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-boss_shield--masterwork.png
 9af1111d93c1ee9239cc3ebecb79a43c73f128d2604af681cf152528a6ad4174  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-boss_shield--relic.png
+c823bd8b833554d2870460571c159bda531679cf8daa02b4169b541312ebf735  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-bulwark_screen--celestial.png
 b9754138bee842889f43e62e1ef4db29435651ea52cf4142a43c187b58f7d48b  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-bulwark_screen--fine.png
 bca8d0f71eac243d57721b68062a7b2fa383db81fa16bcc9d0a2a272384086d5  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-bulwark_screen--masterwork.png
 08f04cf30c92679a1176a9fecb5c370d1f966a2222bc316b1c0369c877e75a83  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-bulwark_screen--relic.png
@@ -2739,13 +2740,14 @@ a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921  art/_archive/g
 0ade2a5a847a28f800c042112b7ab0be26ee6641929d9a0e924f39990bc4ba10  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--fine.png
 96c9588f2420f194bf05621dd6fa72ad02c0b340f3dd3822996fd35a604f3a1f  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--masterwork.png
 c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--relic.png
-0031dd438ab40e1723665b9b256425b568689a34ae4ae9e399f6e2c2a6376f41  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+32f62f5e046b60172b43ae496bcee25aa1f986fa7fff8777f4388abd30ff2818  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
 d461fb6cd98cb9fa46fcaaf66af9019ef178e9feef0cc37698a0f250da293802  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-boss_shield--celestial.txt
 4e19fb67bd0b1e494ebdafa46a14e29403f0e8387d0771e5f10d646a606a5c4b  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-boss_shield--fine.txt
 9ba5fdbb37f131e840d91c1b7e9efcd8aac3907e29b5c98a168e017f3bb4a0eb  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-boss_shield--masterwork.txt
 746c3ff8bd5c805676c7966750cf76e0a9d520f023850d7b26776b701eda6c9c  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-boss_shield--relic.txt
+a2cb2e33fd6d6995d339c47bb1c9ed2eb9d9ccd077856e862f1e7ed0288ed4d8  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-bulwark_screen--celestial.txt
 e295a5fecf295867f3efd0e49554e0cb55ad4b380478c09319be40ac99366ed7  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-bulwark_screen--fine.txt
 431772a56a5fdee21bb16d11c1cb5d416184b8514e6ab242be0439173bf0e830  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-bulwark_screen--masterwork.txt
 14b680faa06a097f6c2aad4a84085afe8182a8845334b60353a07845f38563b9  art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-bulwark_screen--relic.txt
@@ -2809,13 +2811,13 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-800bcf25693de14edb12a7e291039f203c524d10d9d3fe43c8ea58371ba72f79  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+03377be76c6056af53664cfd95fb0b88abf8f642dade8d6b0f0b2b9b3d730f09  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 99de7d9f167e8a7e581e3465bc632e4ce7326e7ecf3e5a833f38e37cf4ad9318  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-boss_shield-32px.png
 0d7dc9e61abe66ee629b850e5a79f03274bb906a466d9bbc164c672e15a1c060  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-boss_shield-64px.png
-dd8f9c1257b6b572eb63ad01e4768e2c336d25bc3b587cbca2880a9be11fb0d0  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-bulwark_screen-32px.png
-c26fa9f9365b5b160f358c7e0ab76c3a1e3a561a0c076b379e758a91c145e9d7  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-bulwark_screen-64px.png
+77471e3a834761dc9ef8b7497645d78691071100e25939c58d7bd66c56e32202  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-bulwark_screen-32px.png
+5d7c037ef09231ed8035dd58ef55b26652b4defe314558ab1a9fb9d21f7087ba  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-bulwark_screen-64px.png
 db5a0fc6efa7f0d159e75fb6ab401c23c896ba762db76b75b6a27d94de88cf83  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-deflector-32px.png
 542f9e1cb5d3948d8e72ea72175a0119f27667c737cf3e352400cf8312de78bd  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-deflector-64px.png
 fecc9270e184a99c7ff2f343b6a046785e940a208d1c93a972ab28b0d5be1089  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-ram_plate-32px.png
@@ -2859,6 +2861,7 @@ a4a893632b043f2d7ccf8e6110dc615035de9a7ba9921c75ab666c72939cce3d  art/_archive/g
 1a98a9da5e651b0421d44b61fcb1992f44230ca76a0c0d96c1e56a8af3dcbf23  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-boss_shield--fine.png
 17a317487235ec7150157d15824d709181788280f79c77d86b2e516dfa74184c  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-boss_shield--masterwork.png
 d50118fa894b968e9acedf1bb83ff71adfa6b3c03b180398681f74c797f30ebc  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-boss_shield--relic.png
+3059c575cd3f4c6030f514147bb2eb7a23b4a9f97d7ec19bde85e9729e123ded  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-bulwark_screen--celestial.png
 7c743c29cc6b93f8db158509ebc02110c9c0e37bf50d14e2db1cd1a19e9164df  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-bulwark_screen--fine.png
 d19972070f5cf17b1882d58a4513dd23cb40e82ca72cd40408ca52b4fc9d0f3a  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-bulwark_screen--masterwork.png
 693c0c30181b709d491357e32191da44d8f54dfa0170a925b341bd25f4d8df7a  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-bulwark_screen--relic.png
@@ -6519,7 +6522,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-5e9ad3e5696486c6994a45768ec65a5300cca8007fa84440679d19c92958c009  art/catalog.json
+f3f859534fc228f28e7342b1434511c96aca863085dc40e793dedd9d0fbf7778  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8407,6 +8410,7 @@ a7516e521d894a2ded91ae7e2698b802526d91acd346e804ab53591cf08a2f3c  art/icons/gear
 a5a4a1fc332cb6dc94c5f01de9f35dfca174349788b439a4dd2c9f2a8581386c  art/icons/gear/exports/128/shield-buckler--masterwork.png
 14761af1e35d88af8753365672fdf298867c3a042af284488fd9e5f3b7a577e9  art/icons/gear/exports/128/shield-buckler--relic.png
 5da29b430a2cbcff6d3259072c5cc2f7692bdf92617305e116190621816d2f68  art/icons/gear/exports/128/shield-buckler.png
+693b41659f74357592d56f6c3a321ce15ae0dd78a7a1fb9a6af061abc5589d28  art/icons/gear/exports/128/shield-bulwark_screen--celestial.png
 87dc7ec1734aeb469b22a16578608dab34e5783fc820a8d86c16bae8bf924a28  art/icons/gear/exports/128/shield-bulwark_screen--fine.png
 4888399b0147757c16f7d2e4632d71af6702f99f0726c35f4d591012239cde75  art/icons/gear/exports/128/shield-bulwark_screen--masterwork.png
 490f73fca4492d2b156094ac9a4618edc204ad419ee0b9a92a81a98f2832539e  art/icons/gear/exports/128/shield-bulwark_screen--relic.png
@@ -8870,6 +8874,7 @@ a377b2ce501ef15e4e76efc9a299297009fd267d557e828fb8256a41e38dcb3a  art/icons/gear
 f00f41fcc55a1f4b651c98b6bb58f1fe982c8041578566a9627afccb8ad6b5ef  art/icons/gear/exports/256/shield-buckler--masterwork.png
 bc5f33759193b30458223b790f19b918070500e2cd2e26d70445a66612f8613e  art/icons/gear/exports/256/shield-buckler--relic.png
 3ac68d6e10db2fcb55a712ffb6cb348289c649e41fd953f44b7f824a47c5ff52  art/icons/gear/exports/256/shield-buckler.png
+1a633f03e66752569836a7a1005b619d3c60fb59981e1cbf47780b7e7466ca14  art/icons/gear/exports/256/shield-bulwark_screen--celestial.png
 f3d670f8b00541df5a390a5ccd652249fdef0a1af8b79ab7bbf8b70aa0ea7150  art/icons/gear/exports/256/shield-bulwark_screen--fine.png
 21a0beb5afafcf278976cca1b15e594c142448b79ef5e8def8c9de25647200ce  art/icons/gear/exports/256/shield-bulwark_screen--masterwork.png
 8b12bfe141bfdb697f816c70a6e4ee84319397f43bc715485a856bc9b38ab335  art/icons/gear/exports/256/shield-bulwark_screen--relic.png
@@ -9333,6 +9338,7 @@ b2ec60ba2e9188a9798cefdf1d6834112d22ccbf9265a5572978b9142a21b449  art/icons/gear
 b5598f9c7de60a26aba49c2a01aba3fc30818b32ae411e7723e21ee2f6680713  art/icons/gear/exports/32/shield-buckler--masterwork.png
 bebe813533f2325229ff986e96ca7e9243b7722b4180960712e9c8179bf27630  art/icons/gear/exports/32/shield-buckler--relic.png
 cb79e42fc5bf19a28158992fe3ea808e88af7a7cd327e2f1e568563438890e92  art/icons/gear/exports/32/shield-buckler.png
+d383f66e1c4e9c0b8b3d7e0c7063b9a5fdd2d81a680dbe2022c1f0100febe058  art/icons/gear/exports/32/shield-bulwark_screen--celestial.png
 d8f1b912df4e9f20d797059bf6e2c85357dc9faffc0a323ee6e5d2f46c2c8faa  art/icons/gear/exports/32/shield-bulwark_screen--fine.png
 2e1db957fa949925d55df5fee0c6f66816022f2900862e159886ae0501498d59  art/icons/gear/exports/32/shield-bulwark_screen--masterwork.png
 4a1d1b3bbb1ba017220b68c353a836d7b5b33ae9d67a9c94d24c7b2f0ddc4a9e  art/icons/gear/exports/32/shield-bulwark_screen--relic.png
@@ -9796,6 +9802,7 @@ c7195c961ab7cd6845a2382eacc08fc88447ae9cd3b517991b6371de18956bc1  art/icons/gear
 bd67f3ab5f07be845bfd36a79361d6da2efc6989101184c277ec33bb558c94b1  art/icons/gear/exports/64/shield-buckler--masterwork.png
 bcf0c74cb8ac6a6a18908e71dce9e13389935c47e4b6aac904952c8514d8f6e0  art/icons/gear/exports/64/shield-buckler--relic.png
 84df09148172bfe9d931ee6612398798f5bf1e2e57aea7c4d5ed98ef83dffac9  art/icons/gear/exports/64/shield-buckler.png
+b0c9b3af26a084ee4ef4384cabb175f028cb38a004537c8209d984fd2ee957fe  art/icons/gear/exports/64/shield-bulwark_screen--celestial.png
 c14948940999750441e4189c7fdbe53ce138b943a14da219bfb0fe4179be5d07  art/icons/gear/exports/64/shield-bulwark_screen--fine.png
 c2576dd06f05b90b99246a6f6376ee1cda42a341ee3d44eac95ef39efdd1acc1  art/icons/gear/exports/64/shield-bulwark_screen--masterwork.png
 1a82eef453105ee797e8f65737431bf17ecad7bf33cb1e331786b42c65bf2477  art/icons/gear/exports/64/shield-bulwark_screen--relic.png
@@ -10135,6 +10142,7 @@ a96c7fb9105e64c51cb74549ef4a24d6e9e02dc817bc9307a8e5e3825fbd07ae  art/icons/gear
 c5a47034d0afabe5ba7f03a8daea1945b2f33454cdde96259e46dd5ed19f78de  art/icons/gear/shield-buckler--masterwork.png
 c1ff3dc6a692366965ecc8423869f0f2c5966f2c30075b0a9218dd1a64666ac6  art/icons/gear/shield-buckler--relic.png
 1aeb92d2b419c48978476f314468c35639a89abe0732b5edf8cdbcc4d8510b9b  art/icons/gear/shield-buckler.png
+c823bd8b833554d2870460571c159bda531679cf8daa02b4169b541312ebf735  art/icons/gear/shield-bulwark_screen--celestial.png
 b9754138bee842889f43e62e1ef4db29435651ea52cf4142a43c187b58f7d48b  art/icons/gear/shield-bulwark_screen--fine.png
 bca8d0f71eac243d57721b68062a7b2fa383db81fa16bcc9d0a2a272384086d5  art/icons/gear/shield-bulwark_screen--masterwork.png
 08f04cf30c92679a1176a9fecb5c370d1f966a2222bc316b1c0369c877e75a83  art/icons/gear/shield-bulwark_screen--relic.png
