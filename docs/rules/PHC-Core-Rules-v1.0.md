@@ -556,6 +556,20 @@ Spells that inflict a condition instead of damage call for a save from the targe
 | Hands | Combat gloves | +1 armour. | 0.4 kg | 220 |
 | Footwear | Field boots | rough ground costs no extra. | 1.2 kg | 120 |
 | Footwear | Heavy boots | +1 armour; +10% Injury resistance. | 2 kg | 200 |
+| Head | Assault helm † | +3 armour; +10% Injury resistance. Graded. | 2 kg | 700 |
+| Head | Cowl † | others see you from 1 tile less far. | 0.2 kg | 150 |
+| Head | Hood † | others see you from 2 tiles less far. | 0.3 kg | 350 |
+| Head | Blackout hood † | others see you from 3 tiles less far. | 0.4 kg | 700 |
+| Head accessory | Spotter's monocle † | +2 Vision. | 0.1 kg | 250 |
+| Head accessory | Sight visor † | +4 Vision. | 0.4 kg | 800 |
+| Head accessory | Sealed visor † | toxic spills don't hurt you. | 0.6 kg | 400 |
+| Inner torso | Mesh undersuit † | +2 armour. Graded. | 0.8 kg | 220 |
+| Lower torso | Rig belt † | +5 kg carry limit. | 0.5 kg | 180 |
+| Legs | Field trousers † | +1 armour. Graded. | 1 kg | 250 |
+| Hands | Tactical gloves † | +1 armour. Graded. | 0.2 kg | 130 |
+| Footwear | Jump boots † | +0.5 Movement; rough ground costs no extra. | 0.8 kg | 350 |
+
+*(Rules 1.92, Items 2.0 stage B: a piece marked † is new, every number the lead's and PROVISIONAL (item 8009), its family and form in item 8005; "Graded" pieces take a grade, item 7907. Lane B2 types them into `data/items.json` from the typing sheet, item 8040. The breather waits, item 8031.)*
 
 **The Veil** is a special equipment type with its own slot. Its rules aren't written yet: the engine records what's worn there and applies nothing, and the Narrator reads the item's text.
 
@@ -738,6 +752,8 @@ Ammo types multiply the price: armour-piercing ×3, hollow-point ×2, incendiary
 
 Range is in tiles. Mag is the magazine (or "loose", for loading round by round). Heat is the heat limit. Weight is in kg; price is in credits at Standard.
 
+*(Rules 1.92, Items 2.0 stage B: a row marked † is one of the 72 new Standard rows, every number on it the lead's and PROVISIONAL (item 8009), its family, form and maker line in rules 1.92's tables (items 8001 to 8008). A table's heading count is the 0.33 count; the † rows come on top. Lane B1 types them into `data/weapons.json` from the typing sheet, item 8040.)*
+
 ##### 7.1 Sidearms: 6 types (1H, Dexterity)
 
 | Type | Dmg | Range | Mag | Heat | Modes | Kg | Price | Mods |
@@ -748,6 +764,12 @@ Range is in tiles. Mag is the magazine (or "loose", for loading round by round).
 | ✓ Drifter revolver | 28 | 10 | 6 (speedloader) | 6 | single | 1.5 | 350 | optic |
 | Magistrate heavy pistol (revolver) | 26 | 8 | 7 | 5 | single | 1.4 | 450 | optic, muzzle, magazine |
 | Frontier hand cannon (.50) | 38 (rules 1.18; was 40) | 8 | 5 (speedloader) | 4 | single | 2.2 | 800 | optic |
+| Snub revolver † | 26 | 6 | 5 | 5 | single | 1 | 300 | optic |
+| Whisper pistol † | 15 | 6 | 10 (loose) | 6 | single | 0.9 | 600 | none |
+| Mandestra drum pistol † | 18 | 6 | 40 | 9 | single, burst | 2 | 800 | optic, muzzle, magazine |
+| Smetanita pocket pistol † | 15 | 4 | 6 (loose) | 5 | single | 0.4 | 200 | none |
+| Smetanita service pistol † | 21 | 8 | 10 | 6 | single | 1 | 350 | optic, muzzle, magazine |
+| Smetanita hand cannon † | 36 | 8 | 6 | 4 | single | 2 | 850 | optic |
 
 Weapon skills and lore:
 - **Service pistol · Snap Shot:** swap to it and fire in one action for 2 AP. *"Issued to everyone, trusted by no one, carried by all of them."*
@@ -765,6 +787,11 @@ Weapon skills and lore:
 | Legion PDW | 1H | 20 (rules 1.18; was 16) | 8 | 25 | 9 | burst, auto | 2.2 | 750 | optic, muzzle, magazine |
 | Whisper SMG | 2H | 16 (rules 1.18; was 13) | 7 | 30 | 12 | single, burst, auto | 3.2 | 900 | optic, magazine (built-in suppressor) |
 | Mandestra drum-gun | 2H | 19 (rules 1.18; was 15) | 7 | 70 (drum) | 10 | auto | 4.5 | 1,100 | optic, underbarrel |
+| Decrkm carbine † | 2H | 21 | 12 | 30 | 10 | single, burst, auto | 3.6 | 800 | optic, muzzle, magazine, underbarrel |
+| Whisper carbine † | 2H | 19 | 11 | 30 | 12 | single, burst, auto | 3.8 | 1,400 | optic, magazine |
+| Mandestra drum rifle † | 2H | 21 | 11 | 90 | 12 | single, burst, auto | 6 | 1,700 | optic, underbarrel |
+| Chezknov machine carbine † | 2H | 20 | 9 | 30 | 10 | single, burst, auto | 3 | 850 | optic, muzzle, magazine, underbarrel |
+| Arsenal courier PDW † | 1H | 19 | 8 | 20 | 9 | single, burst, auto | 2 | 800 | optic, muzzle, magazine |
 
 - **Decrkm SMG · Spray and Pray:** full auto costs 3 AP instead of 4. *"Thirty rounds of opinion."*
 - **Legion PDW · Clear the Room:** bursts get +2 to hit within 3 tiles. *"The Thousand World Legion's door-kicker."*
@@ -781,6 +808,20 @@ Weapon skills and lore:
 | CCEC marksman rifle | 33 (rules 1.18; was 40) | 22 | 10 | 6 | single | 4.5 | 1,600 | optic, muzzle, magazine |
 | ✓ Long rifle | 47 (rules 1.60 item 4644; was 48, and 50 before rules 1.18); Shot 3 AP, Aimed Shot 4 AP | 30 | 5 (loose) | 6 | single | 6 | 1,400 | optic, muzzle |
 | Legion bullpup | 28 | 14 | 30 | 8 | single, burst, auto | 3.4 | 1,100 | optic, muzzle, magazine |
+| Legion marksman rifle † | 32 | 20 | 15 | 6 | single | 4.2 | 1,500 | optic, muzzle, magazine |
+| Hellraiser trench carbine † | 28 | 11 | 20 | 8 | single, burst, auto | 3.2 | 800 | optic, muzzle, magazine, underbarrel |
+| Adamantile carbine † | 28 | 13 | 15 | 6 | single, burst | 3.8 | 1,000 | optic, muzzle, magazine, underbarrel |
+| Adamantile heavy rifle † | 36 | 22 | 8 | 5 | single | 6.5 | 2,000 | optic, muzzle, magazine, underbarrel |
+| ADCorp short carbine † | 27 | 12 | 30 | 8 | single, burst, auto | 3 | 1,000 | optic, muzzle, magazine |
+| ADCorp line rifle † | 30 | 16 | 30 | 8 | single, burst, auto | 3.8 | 1,300 | optic, muzzle, magazine, underbarrel |
+| ADCorp designated rifle † | 34 | 22 | 15 | 6 | single | 4.6 | 1,800 | optic, muzzle, magazine |
+| Chezknov battle rifle † | 31 | 17 | 20 | 7 | single, burst | 4.4 | 1,400 | optic, muzzle, magazine, underbarrel |
+| Chezknov precision rifle † | 35 | 24 | 5 | 5 | single | 5 | 1,900 | optic, muzzle, magazine |
+| Arsenal piston rifle † | 30 | 16 | 30 | 8 | single, burst, auto | 3.6 | 1,250 | optic, muzzle, magazine, underbarrel |
+| Arsenal heavy rifle † | 38 | 20 | 10 | 5 | single | 6 | 2,100 | optic, muzzle, magazine, underbarrel |
+| Albert Town brush carbine † | 31 | 12 | 6 (loose) | 6 | single | 3.2 | 650 | optic, muzzle |
+| Albert Town service rifle † | 32 | 18 | 8 (loose) | 6 | single | 4 | 950 | optic, muzzle |
+| Albert Town stalking rifle † | 44 (Shot 3 AP, Aimed Shot 4 AP) | 28 | 4 (loose) | 6 | single | 5.5 | 1,500 | optic, muzzle |
 
 - **Service rifle · Suppressing Fire:** 3 AP; mark a 3-tile line until your next turn. Enemies shooting from or moving through it are at −2, and the first one to move through it takes a shot from you. *"The Hellraisers' answer to every frontier."*
 - **Lever carbine · Work the Lever:** after a hit, your next shot this turn costs 1 AP less. *"Old, honest, and never needs a battery."*
@@ -797,6 +838,11 @@ Weapon skills and lore:
 | Coach gun | 2H | 45 / 25 | 6 | 2 (loose) | 4 | single, both barrels | 3.5 | 400 | none |
 | Sawn-off | 1H | 42 / 15 | 6 | 2 (loose) | 4 | single, both barrels | 2 | 300 | none |
 | Brigade auto-shotgun | 2H | 40 / 24 (rules 1.18; was 35 / 20) | 8 | 12 | 9 | single, burst | 5 | 1,500 | optic, magazine, underbarrel |
+| Fowling gun † | 2H | 40 / 30 | 10 | 2 (loose) | 4 | single | 4 | 600 | none |
+| Brigade shot pistol † | 1H | 38 / 14 | 5 | 5 (loose) | 6 | single | 1.8 | 900 | none |
+| Brigade drum shotgun † | 2H | 40 / 24 | 8 | 20 | 11 | single, burst | 6.5 | 2,400 | optic, magazine, underbarrel |
+| Lumeri hand scatter † | 1H | 36 / 15 | 5 | 3 (loose) | 4 | single | 1.8 | 450 | none |
+| Lumeri long scatter † | 2H | 40 / 30 | 10 | 6 (loose) | 6 | single | 4.8 | 950 | optic, underbarrel |
 
 - **Scattergun · Door Key:** 2 AP; breaks a door, or deals double damage to cover. *"The Church calls it a key."*
 - **Coach gun · Both Barrels:** 3 AP; both shells in one attack, +50% damage. *"Two arguments, one conclusion."*
@@ -814,6 +860,15 @@ Weapon skills and lore:
 | Breacher tube (rocket launcher) | 110 on the tile, 60 radius 1 | 16 | 1 rocket (loose) | none | 8 | 3,000 | 3 AP to reload |
 | Purifier flamer | 20 + Burning, 3-tile cone | 3 | fuel canister (10 bursts) | none | 12 | 2,200 | flame ignores half cover |
 | Satchel charge | 120, radius 2 | placed adjacent | consumable | none | 3 | 600 | 2 AP to place; 1 AP to detonate (or a 1–3 round timer) *(Superseded by rules 1.3 (item 95) as built: placing it sets it off at once)* |
+| Smetanita snub launcher † | 36, radius 2 | 10 | 1 40 mm grenade (loose) | 3 | 2.5 | 1,100 | PROVISIONAL (rules 1.92) |
+| Smetanita drum launcher † | 40, radius 2 | 14 | 12 40 mm grenade (loose) | 6 | 8 | 3,200 | PROVISIONAL (rules 1.92) |
+| Legion throwaway tube † | 90 on the tile, 60 radius 1 | 12 | 1 rocket (loose) | none | 4 | 700 | PROVISIONAL (rules 1.92); 3 AP to reload; reloadable (single use is owed, item 8033) |
+| Legion siege tube † | 130 on the tile, 60 radius 1 | 20 | 1 rocket (loose) | none | 12 | 4,500 | PROVISIONAL (rules 1.92); 3 AP to reload |
+| Lumeri votive torch † | 16 + Burning, 3-tile cone | 2 | 6 fuel canister (loose) | none | 6 | 1,200 | PROVISIONAL (rules 1.92) |
+| Lumeri cathedral burner † | 24 + Burning, 3-tile cone | 4 | 16 fuel canister (loose) | none | 18 | 3,800 | PROVISIONAL (rules 1.92) |
+| Hellraiser spinner † | 20 | 12 | 100 rifle | 16 | 11 | 3,000 | PROVISIONAL (rules 1.92); no Spin Up, no emplacement penalty |
+| Hellraiser twin rotary † | 22 | 16 | 400 rifle | 28 | 30 | 8,000 | PROVISIONAL (rules 1.92); −2 unless emplaced |
+| Blackpoint carbine † | 54, ignores 10 armour | 28 | 1 .700 | 3 | 9 | 2,600 | PROVISIONAL (rules 1.92); braced or prone |
 
 - **LMG · Emplace:** 1 AP to set up: no −2, +1 to hit, and you can't move until you pack up (1 AP). *"The Hellraisers' favourite sentence: 'hold here.'"*
 - **Rotary · Spin Up:** the first full auto each fight costs +1 AP; after that, full auto costs 3. *"Ground near it stops being ground."*
@@ -831,6 +886,8 @@ Weapon skills and lore:
 | Longbow | 25 + 6 × Raw Power | 20 | quiver of 40 | 2 | 450 | Raw Power 3 |
 | ✓ Crossbow | 55 | 16 | 1 bolt | 4 | 500 | |
 | Repeating crossbow | 22 | 10 | 6 bolts | 3.5 | 700 | |
+| Short bow † | 24 (no Raw Power term) | 10 | quiver of 40 | 1 | 200 |  |
+| Arbalest † | 72; Shot 3 AP, Aimed Shot 4 AP | 20 | 1 bolt | 6 | 900 | Raw Power 3 |
 
 - **Recurve · Nock and Loose:** if you haven't moved this turn, your second arrow costs 1 AP. *"Quiet, cheap, and it never jams."*
 - **Longbow · Arc:** indirect shot at −2, like Lob. *"Over the wall and through the roof."*
@@ -849,6 +906,21 @@ Weapon skills and lore:
 | Kemizuchi duelling blade | 19, +1 accuracy | 1.2 | 550 | item 5527 (was 24) |
 | Katana (rules 1.32) | 20 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
 | Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4534) |
+| Trench knife † | 18 | 0.7 | 150 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Dock cutter † | 21 | 1.6 | 350 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Legion leaf-dagger † | 16 | 0.6 | 200 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| Short draw † | 18 | 1 | 400 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| Kemizuchi side-sword † | 21 | 1.4 | 600 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Pitch axe † | 17 | 0.8 | 100 | Dexterity / Agility; thrown; PROVISIONAL (rules 1.92) |
+| Legion spear † | 22 | 2.5 | 450 | Dexterity / Agility; 2H; reach 2; PROVISIONAL (rules 1.92) |
+| War pick † | 18 | 1.2 | 300 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| War hammer † | 23 | 2.5 | 400 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Plate needle † | 24 | 2 | 800 | Dexterity / Agility; 2H; PROVISIONAL (rules 1.92) |
+| Adamantile longsword † | 23 | 1.8 | 750 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Ork skinner † | 17 | 0.8 | 120 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| Ork snarl knife † | 22 | 1.5 | 900 | Dexterity / Agility; ignores 5 armour; PROVISIONAL (rules 1.92) |
+| Throwing darts † | 9 | 0.3 | 60 | Dexterity / Agility; thrown; PROVISIONAL (rules 1.92) |
+| Throwing javelins † | 24 | 2 | 200 | Dexterity / Agility; thrown; PROVISIONAL (rules 1.92) |
 
 - **Combat knife · Finish It:** +50% damage against a target that is Dazed, Stunned, Bleeding or Downed. *"Every kit has one. Every story ends with one."*
 - **Throwing knives · Fan of Knives:** 3 AP; one throw each at up to two targets. *"Four problems, four solutions."*
@@ -869,6 +941,13 @@ Weapon skills and lore:
 | ✓ Lance | 2H | 32 | 2 | 3 | 500 |
 | Glaive | 2H | 36 | 2 | 3.5 | 650 |
 | Ork rip-saw | 2H | 38, ignores 5 armour | 1 | 6 | 1,400 (fuel) |
+| Lowland chopper † | 1H | 33 | 1 | 2.2 | 220 |
+| Broadback sabre † | 1H | 36 | 1 | 2.4 | 450 |
+| Legion rank sword † | 1H | 34 | 1 | 2.2 | 400 |
+| Long draw † | 2H | 41 | 1 | 3 | 800 |
+| Kemizuchi sword-breaker † | 1H | 33 | 1 | 2 | 650 |
+| Ork cleaver-glaive † | 2H | 37 | 2 | 4.5 | 700 |
+| Ork wreck saw † | 2H | 46, ignores 5 armour | 1 | 9 | 2,400 |
 
 - **Machete · Chop Through:** after a kill, a free strike at another adjacent enemy. *"Orks don't make tools. They make machetes."*
 - **War axe · Bite the Plate:** a hit lowers the target's armour by 5 for the fight (to −10 at most). *"Plate is just a slower kind of skin."*
@@ -892,6 +971,9 @@ Weapon skills and lore:
 | Bite and claws | 18 | 0 | none | a beast companion's own weapon: never carried, bought or dropped (not one of the 3 types) |
 | Figment claws | 30 | 0 | none | a Beast Figment's own weapon (rules 1.34): never carried, bought or dropped |
 | Figment edge | 25 | 0 | none | a Blade Figment's own weapon (rules 1.34): never carried, bought or dropped |
+| Weighted gloves † | 22 | 0.8 | 300 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Hellraiser piston knuckles † | 24 | 1.5 | 900 | Raw Power 3; Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| Hellraiser door knocker † | 34 | 5 | 2,200 | Raw Power 3; Raw Power / Strength; PROVISIONAL (rules 1.92) |
 
 - **Fists · Grapple:** 2 AP; the target can't move until it breaks free (its Athletics or Raw Power check against your Raw Power check). *"Everyone's first weapon."*
 - **Knuckledusters · Rabbit Punch:** 1 AP jab for half damage. *"A bar argument that brought friends."* *(Superseded by rules 1.56, the unarmed fighter: Rabbit Punch and the fists' Grapple are retired; the Open Hand's Jab and the Grapple technique replace them.)*
@@ -946,7 +1028,13 @@ from either hand, and in the off hand is not a second weapon. Its Defense and Mo
 |---|---|---|---|---|---|
 | Buckler | 15 | 2 | 200 | 1H | *(PROVISIONAL, rules 1.60 item 4616: the main hand's blow; its follow ×0.4, 6 as before)* |
 | Legion riot shield | 20 | 7 | 700 | 1H | *(PROVISIONAL, rules 1.60 item 4616: its follow ×0.4, 8 as before)* |
-| Pavise | 20 | 10 | 1,200 | 1H | *(PROVISIONAL, rules 1.57: the lead's ruling; rules 1.60 item 4616: its follow ×0.4, 8 as before)* |
+| Pavise | 20 | 10 | 1,200 | 1H | *(PROVISIONAL, rules 1.57: the lead's ruling; rules 1.60 item 4616: its follow ×0.4, 8 as before; rules 1.92 item 8011: Heavy, and buyable; its Plant is cut)* |
+| Spiked buckler † | 20 | 2.5 | 350 | 1H | Strike family, light; +1 Defense; PROVISIONAL (rules 1.92) |
+| Boss shield † | 25 | 6 | 800 | 1H | Strike family, standard; +1 Defense; PROVISIONAL (rules 1.92) |
+| Ram plate † | 30 | 11 | 1,300 | 1H | Strike family, heavy; Heavy; +1 Defense; PROVISIONAL (rules 1.92) |
+| Deflector † | 12 | 2 | 450 | 1H | Ward family, light; +1 Defense; PROVISIONAL (rules 1.92) |
+| Bulwark screen † | 15 | 6 | 950 | 1H | Ward family, standard; +2 Defense; PROVISIONAL (rules 1.92) |
+| Barrier wall † | 15 | 11 | 1,500 | 1H | Ward family, heavy; Heavy; +2 Defense; PROVISIONAL (rules 1.92) |
 
 ##### 7.12 Off-hand items: 7 types
 
@@ -956,7 +1044,7 @@ from either hand, and in the off hand is not a second weapon. Its Defense and Mo
 |---|---|---|---|---|
 | Buckler | +1 Defense. **Parry** (reaction): +3 Defense against one melee attack *(Not built: the Parry technique of rules 1.12 gives a shield +2 on the parry roll instead; needs a ruling, item 1506)* | 2 | 200 | 150 |
 | Legion riot shield | +2 Defense. You count as behind half cover against shots from the front three directions. −0.5 Movement. **Shield Wall:** an adjacent ally behind you counts as behind half cover *(Superseded by rules 1.12 (item 1001): the Raise Shield and Shield Wall techniques replace the frontal cover and the old Shield Wall; the shield's HP is not used)* | 7 | 700 | HP 60: shots stopped by its −5 hit the shield (like cover) |
-| Pavise | Carried, it does nothing. **Plant** (2 AP): becomes a full-cover tile in front of you (80 HP). Picking it back up is 2 AP | 10 | 1,200 | HP 80 |
+| Pavise | Carried, it does nothing. **Plant** (2 AP): becomes a full-cover tile in front of you (80 HP). Picking it back up is 2 AP *(Superseded by rules 1.92 item 8011: the pavise is a plain Heavy Guard shield, buyable; the Plant is cut and owed to the uniques patch)* | 10 | 1,200 | HP 80 |
 | Torch | Light radius 4 (see Vision). Melee 12 Elemental (Unarmed). **Ignite:** a hit on 15+ sets the target Burning; 1 AP to light something flammable | 0.6 | 10 | burns 30 minutes |
 | Flare | Light radius 6 for 3 rounds; reveals Hidden in it. Can be thrown | 0.3 | 25 | consumable |
 | Evoker (held) | Needed in a hand to cast Sigils (section 3) | 1.2 | 1,000 | 250 |
@@ -14287,3 +14375,285 @@ the recorded replays prove it.
 7959. **Open, for the lead:** Last Charge's shield by armour (`perks.json last_charge amounts.shield_by_armour`, 15 a
       class) reads the class NUMBER, so the breacher plate (class 6, armour 18) would give 90, more than Juggernaut's 75.
       Not changed here (no number is this lane's); a row field for it, or a reading by value, is the lead's ruling.
+
+### Rules 1.92 (the new rows), 0.34: Items 2.0 stage B, the families, forms and numbers of the new Standard rows (20 Nov 2026)
+
+Items 2.0, stage B's one spec revision (step B0; lanes B1 and B2 do not touch this file). Sources: the design
+(`docs/design/proposals/2026-11-20-items-2.0-design.md`, section 1's answers are the rulings), its tables (`-tables.md`)
+and **the lead's numbers** (`-numbers.md`). Items 8000 to 8049 are rules 1.92's. **Every number this revision adds is
+PROVISIONAL** (stage C fits them by simulated runs against the 0.33 walk-in baseline) and is listed in item 8045. No id
+of 0.33 is renamed or removed.
+
+8000. **What stage B adds.** 72 new weapon rows (19 melee, 6 shields, 32 guns and bows, 15 heavy, powered and thrown), 12
+      new worn pieces, and the pavise made buyable; the breacher plate (body armour class 6) is rules 1.91 item 7951's.
+      Two rows the lead's numbers name wait and are not shipped: `blackpoint_wall_gun` (item 8034) and `breather` (item
+      8031). The rows' numbers are in section 7's roster tables (rows marked †) and the Slot armour table (pieces marked
+      †); their families, forms and maker lines are the tables below.
+8001. **Melee: 12 families of 3 forms** (Dex = hits with Dexterity, grows with Agility; Str = Raw Power and Strength;
+      Dex/Str = hits with Dexterity, grows with Strength, the hatchet's pattern; NEW rows are rules 1.92's):
+
+| # | Family (`family`, maker line) | Dexterity form | Hybrid form | Strength form |
+| --- | --- | --- | --- | --- |
+| 1 | Service knives (`service_knives`, issue) | `combat_knife` Dex | `trench_knife` NEW Dex/Str (line hellraiser) | `lowland_chopper` NEW Str (line black_scavenger) |
+| 2 | Cavalry blades (`cavalry_blades`, officers) | `sabre` Dex | `dock_cutter` NEW Dex/Str | `broadback_sabre` NEW Str |
+| 3 | Legion blades (`legion_blades`, legion) | `legion_leaf_dagger` NEW Dex | `legion_gladius` Dex | `legion_rank_sword` NEW Str |
+| 4 | Draw blades (`draw_blades`, kemizuchi) | `short_draw` NEW Dex | `katana` Dex | `long_draw` NEW Str, 2H |
+| 5 | Kemizuchi duelling (`kemizuchi_duelling`, kemizuchi) | `kemizuchi_duelling_blade` Dex | `kemizuchi_side_sword` NEW Dex/Str | `kemizuchi_sword_breaker` NEW Str |
+| 6 | Axes (`axes`, frontier) | `pitch_axe` NEW Dex | `hatchet` Dex/Str | `war_axe` Str, 2H |
+| 7 | Polearms (`polearms`, mixed) | `legion_spear` NEW Dex, 2H (line legion) | `glaive` Str, 2H | `lance` Str, 2H |
+| 8 | Hammers (`hammers`, frontier) | `war_pick` NEW Dex | `war_hammer` NEW Dex/Str | `maul` Str, 2H |
+| 9 | Great blades (`great_blades`, adamantile_brigade) | `adamantile_plate_needle` NEW Dex, 2H | `adamantile_longsword` NEW Dex/Str | `adamantile_greatsword` Str, 2H |
+| 10 | Ork cutters (`ork_cutters`, ork) | `ork_skinner` NEW Dex | `ork_machete` Str | `ork_cleaver_glaive` NEW Str, 2H |
+| 11 | Hand-to-hand (`hand_to_hand`, frontier) | `striking_gloves` Dex | `hand_wraps` Str | `knuckledusters` Str |
+| 12 | Heavy fists (`heavy_fists`, mixed) | `kemizuchi_strikers` Dex | `weighted_gloves` NEW Dex/Str (line smetanita) | `iron_mitts` Str |
+
+      The Dexterity and hybrid forms are `light_melee` (2 AP) and the Strength forms `heavy_melee` (3 AP), one-handed
+      ones included; gloves are `unarmed` (design item 8). The two-handed Dexterity forms (`legion_spear`,
+      `adamantile_plate_needle`) are `light_melee` two-handed; `war_hammer` and `adamantile_longsword` ship one-handed
+      (versatile grip waits, design item 9). A family's maker line is the family's unless the table names the row's own.
+8002. **Shields: 3 families of 3 forms.** Every shield is one-handed and a weapon row (rules 1.57).
+
+| Family (`family`, maker line) | Purpose | Light | Standard | Heavy |
+| --- | --- | --- | --- | --- |
+| Guard (`guard_shields`, frontier) | most plates, best ally cover | `buckler` | `riot_shield` (its own −0.5 Movement; not Heavy) | `pavise`, Heavy (item 8011) |
+| Strike (`strike_shields`, frontier; ram plate adamantile_brigade) | a real follow strike, fewer plates | `spiked_buckler` NEW | `boss_shield` NEW | `ram_plate` NEW, Heavy |
+| Ward (`ward_shields`, science_team) | soaks ranged and elemental hits, nothing from melee | `deflector` NEW | `bulwark_screen` NEW | `barrier_wall` NEW, Heavy |
+
+8003. **The new family rows** (`data/families.json`, written by B0): `strike_shields`, `ward_shields`, `hoods` (line
+      `shadow`, the tables' "Shadow line"), `adcorp`, `chezknov_works` (line `chezknov`), `central_command_arsenal` (line
+      `arsenal`), `smetanita_sidearms` (line `smetanita`) and `albert_town`. Not written: the body armour families
+      `vests` and `plate` (rules 1.91 item 7950), whose maker line no design file gives (item 8037).
+8004. **The techniques of the new forms live on the families** (rules 1.91 item 7902): each form a new row fills lends
+      the technique of the row it is copied from (its own `phys.teaches`, else its family form's), written once on the
+      family; the new rows carry no `phys.teaches`. A new family copies its techniques the same way, from each form's
+      copy-from row (65 forms in all; the list is the typing sheet's `family_teaches`, and `data/families.json` holds
+      it). Nothing an existing row lends changes.
+8005. **Armour by slot: 11 families of 3 forms** (light, standard, heavy; the slot is the saved key of `c.worn`):
+
+| Slot | Family (`family`) | Light | Standard | Heavy |
+| --- | --- | --- | --- | --- |
+| head | Helmets (`helmets`) | `field_helmet` | `ballistic_helmet` | `assault_helm` NEW |
+| head | Hoods (`hoods`, line shadow) | `cowl` NEW | `hood` NEW | `blackout_hood` NEW |
+| head_accessory | Optics (`optics`) | `spotters_monocle` NEW | `night_goggles` | `sight_visor` NEW |
+| head_accessory | Respirators (`respirators`) | `breather` NEW (waits, item 8031) | `gas_mask` | `sealed_visor` NEW |
+| torso_outer | Plate (`plate`, class rows) | breacher plate (class 6) | Assault (class 4) | Juggernaut (class 5) |
+| torso_outer | Vests (`vests`, class rows) | Light (class 1) | Medium (class 2) | Heavy (class 3) |
+| inner_torso | Undershirts (`undershirts`) | `padded_undershirt` | `mesh_undersuit` NEW | `trauma_plate` |
+| lower_torso | Belts (`belts`) | `utility_belt` | `rig_belt` NEW | `armoured_belt` |
+| legs | Legwear (`legwear`) | `runner_trousers` | `field_trousers` NEW | `armoured_greaves` |
+| hands | Worn gloves (`worn_gloves`) | `work_gloves` | `tactical_gloves` NEW | `combat_gloves` |
+| footwear | Boots (`boots`) | `field_boots` | `jump_boots` NEW | `heavy_boots` |
+
+      A piece with an armour value is graded (`assault_helm`, `mesh_undersuit`, `field_trousers`, `tactical_gloves`);
+      the rest carry `graded: false` (rules 1.91 item 7907).
+8006. **What a new row copies** (the numbers file's rule): every field the lead's numbers do not give is its "copy from"
+      row's (durability, mod slots, recoil, reload, magazine weight, mastery family, accuracy, damage type, the older
+      `properties` that a rule reads: a blast radius, a falloff, Burning, a cone, armour ignored, braced or prone,
+      silent, no heat, a quiver, autoload). Never copied: the older debt entries `throwable_N_tiles`, `reach_2` and
+      `polearm` (a new row says thrown and reach in `phys.props` only, rules 1.91 item 7913), the copy-from row's lore,
+      its `skill`, its `phys.teaches` (item 8004), and its grant except by item 8020. `phys.props` are the tables'
+      proposed props within the closed melee list: `drawn` (a ranged property) and `polearm` (debt) are dropped from
+      the draw blades, the spear and the cleaver-glaive. A row's own words in the lead's table win over the copy:
+      "no throw" (no thrown property, no throw cost), "keeps the throw", "accuracy 0", "(silent)", "(not silent)",
+      `legion_spear` (reach 2 from the lance, the rest from the sabre).
+8007. **Guns and bows: 17 lines and 2 bow families of 3 forms.** Dexterity rolls every shot; the second skill is in
+      brackets.
+
+| Line (`family`, maker line) | Close | Standard | Long |
+| --- | --- | --- | --- |
+| G1 Service sidearms (`service_sidearms`, issue) | `parlour_pistol` (Ingenuity) | `service_pistol` | `magistrate_pistol` (Raw Power) |
+| G2 Revolvers (`revolvers`, frontier) | `snub_revolver` NEW (Ingenuity) | `drifter_revolver` | `frontier_hand_cannon` (Raw Power) |
+| G3 DECRKM automatics (`decrkm_automatics`, decrkm) | `decrkm_autopistol` (Raw Power) | `decrkm_smg` | `decrkm_carbine` NEW |
+| G4 Legion automatics (`legion_automatics`, legion) | `legion_pdw` (Durability) | `legion_bullpup` | `legion_marksman_rifle` NEW (Empathy) |
+| G5 Whisper (`whisper`, whisper) | `whisper_pistol` NEW (Ingenuity) | `whisper_smg` | `whisper_carbine` NEW (Ingenuity) |
+| G6 Mandestra drum guns (`mandestra_drum_guns`, mandestra) | `mandestra_drum_pistol` NEW (Raw Power) | `mandestra_drum_gun` | `mandestra_drum_rifle` NEW |
+| G7 Hellraiser line (`hellraiser_line`, hellraiser) | `hellraiser_trench_carbine` NEW (Raw Power) | `hellraiser_service_rifle` | `hellraiser_lmg` (Durability) |
+| G8 Adamantile battle rifles (`adamantile_battle_rifles`, adamantile_brigade) | `adamantile_carbine` NEW | `adamantile_battle_rifle` | `adamantile_heavy_rifle` NEW (Raw Power) |
+| G9 Precision rifles (`precision_rifles`, frontier) | `lever_carbine` | `ccec_marksman_rifle` | `long_rifle` |
+| G10 Break-action shotguns (`break_action_shotguns`, frontier) | `sawn_off` (Raw Power) | `coach_gun` | `fowling_gun` NEW |
+| G11 Brigade auto shotguns (`brigade_auto_shotguns`, adamantile_brigade) | `brigade_shot_pistol` NEW (Raw Power) | `brigade_auto_shotgun` | `brigade_drum_shotgun` NEW (Durability) |
+| G12 Lumeri scatterguns (`lumeri_scatterguns`, lumeri) | `lumeri_hand_scatter` NEW (Raw Power) | `lumeri_scattergun` | `lumeri_long_scatter` NEW (Faith) |
+| G13 ADCorp (`adcorp`, adcorp) | `adcorp_short_carbine` NEW | `adcorp_line_rifle` NEW | `adcorp_designated_rifle` NEW (Ingenuity) |
+| G14 Chezknov Works (`chezknov_works`, chezknov) | `chezknov_machine_carbine` NEW (Raw Power) | `chezknov_battle_rifle` NEW | `chezknov_precision_rifle` NEW (Ingenuity) |
+| G15 Central Command Arsenal (`central_command_arsenal`, arsenal) | `arsenal_courier_pdw` NEW | `arsenal_piston_rifle` NEW | `arsenal_heavy_rifle` NEW (Brain Power) |
+| G16 Smetanita sidearms (`smetanita_sidearms`, smetanita) | `smetanita_pocket_pistol` NEW (Ingenuity) | `smetanita_service_pistol` NEW | `smetanita_hand_cannon` NEW (Raw Power) |
+| G17 Albert Town (`albert_town`, albert_town) | `albert_town_brush_carbine` NEW (Raw Power) | `albert_town_service_rifle` NEW | `albert_town_stalking_rifle` NEW (Ingenuity) |
+| B1 Bows (`bows`, frontier) | `short_bow` NEW (no Raw Power term) | `recurve_bow` | `longbow` (needs Raw Power 3) |
+| B2 Crossbows (`crossbows`, frontier) | `repeating_crossbow` | `crossbow` | `arbalest` NEW (Raw Power; needs Raw Power 3) |
+
+      Modes (the lead's): S single 2 AP and aimed 3; B adds burst 3; A adds burst 3 and auto 4; bolt single 3 and aimed
+      4 (as `long_rifle`, whose bolt also costs each round +1 AP, `cycle_ap`, copied to the stalking rifle).
+8008. **Heavy and strange: 8 families of 3 forms** (the light form, the base, the heavy form; the second skill is in
+      brackets):
+
+| Family (`family`, maker line) | Light | Base | Heavy |
+| --- | --- | --- | --- |
+| H1 Launchers (`launchers`, smetanita) | `smetanita_snub_launcher` NEW | `smetanita_thumper` | `smetanita_drum_launcher` NEW (Raw Power) |
+| H2 Rocket tubes (`rocket_tubes`, legion) | `legion_throwaway_tube` NEW (Ingenuity) | `breacher_tube` | `legion_siege_tube` NEW (Raw Power) |
+| H3 Flamers (`flamers`, lumeri) | `lumeri_votive_torch` NEW | `purifier_flamer` | `lumeri_cathedral_burner` NEW (Raw Power) |
+| H4 Rotary and belt-fed (`rotary_and_belt_fed`, hellraiser) | `hellraiser_spinner` NEW | `hellraiser_rotary` | `hellraiser_twin_rotary` NEW (Raw Power) |
+| H5 Anti-materiel (`anti_materiel`, frontier) | `blackpoint_carbine` NEW (Raw Power) | `blackpoint_700` | `blackpoint_wall_gun` NEW, waits (item 8034) |
+| H6 Powered blades (`powered_blades`, ork) | `ork_snarl_knife` NEW (Raw Power; rolls Dexterity) | `ork_rip_saw` | `ork_wreck_saw` NEW |
+| H7 Power gauntlets (`power_gauntlets`, hellraiser) | `hellraiser_piston_knuckles` NEW (Raw Power; rolls Dexterity) | `hellraiser_servo_fist` | `hellraiser_door_knocker` NEW |
+| H8 Thrown (`thrown`, frontier) | `throwing_darts` NEW (Ingenuity) | `throwing_knives` | `throwing_javelins` NEW (Raw Power) |
+
+8009. **The numbers** of every new row are the lead's (`2026-11-20-items-2.0-numbers.md`), PROVISIONAL, as section 7's
+      † rows and the Slot armour table's † pieces give them; what those tables do not show (durability, mod slots,
+      reload, the AP of each mode) is in the typing sheet, item 8040, copied by item 8006.
+8010. **The Heavy word** (`rules.json weapons_rules.heavy`): a piece in a hand whose row carries the role tag `heavy`
+      (`tags`, rules 1.91 item 7900) gives **−0.5 Movement** while held, and **two Heavy pieces stack** (−1 with one in
+      each hand). It is added where held and worn gear is summed (`gearEffects`), which the one Movement reader reads;
+      nothing else reads it. Heavy rows: `ram_plate`, `barrier_wall`, `pavise`. The riot shield keeps its own −0.5 and
+      is not Heavy. Both numbers PROVISIONAL (design item 13).
+8011. **The pavise** becomes a plain Heavy Guard shield and buyable (it loses `built: false`), at its row's 1,200 cr and
+      every number of its row; its Plant (a planted full-cover tile, its 80 HP) is cut and owed to the uniques patch,
+      which needs a map-object primitive the Outpost Wall unique needs too (design item 13).
+8012. **The Strike and Ward family numbers** (the lead's, PROVISIONAL; carried by modifier rows the shields name in
+      `variant_mods`, the way the Guard shields name `mod_follow_guard`; no new primitive):
+      - **Strike** (`mod_follow_strike`): the follow strike deals **×0.6** of the shield's blow (Guard family ×0.4) and
+        gives **no Guard** on a hit.
+      - **Ward** (`mod_ward_light`, `mod_ward_standard`, `mod_ward_heavy`): each ranged or elemental hit on the holder
+        while the shield is in a hand is **3 / 5 / 7** less (light / standard / heavy), taken after armour (the `taking`
+        trigger's `damage_mod`, with `damage: [ranged, elemental]`, `melee: false`, `by_hit: true`, `with_this`);
+        nothing from a melee blow. Its follow gives Guard as the Guard family's does (it also names `mod_follow_guard`).
+      - Each shield's Defense, blow and weight are its row's (section 7, table 7.11a). `boss_shield` and
+        `bulwark_screen` copy the riot shield with no Movement penalty; `spiked_buckler` and `deflector` copy the
+        buckler; `ram_plate` and `barrier_wall`, for which the lead names no copy-from row, copy the Guard family's heavy
+        form, the pavise, without its Plant. Plates and the numbers of follow and soak are fitted in stage C.
+8013. **`ork_snarl_knife`** is the rip-saw's effects in the combat knife's shape (the lead's words): from the knife, its
+      category, hand, AP, durability, mod slots and drill family; from the rip-saw, its properties (ignores 5 armour), its
+      Rip (a plain hit leaves the target Bleeding), its damage type and its technique (Hamstring); its props `light`,
+      `edge`; it rolls Dexterity and grows with Agility (the lead's); it is not thrown.
+8014. **Hoods and optics** are built on stats that exist, through primitive N4 (rules 1.91 item 7956): the cowl, hood
+      and blackout hood carry `stat_mod` `seen_range` **−1 / −2 / −3** (others see the wearer from that many tiles
+      less), the spotter's monocle and the sight visor `stat_mod` `vision` **+2 / +4**. The other new pieces use the
+      gear ops that exist (`armour_bonus`, `injury_resist_bonus`, `carry_bonus`, `movement_bonus`, `ignore_difficult`,
+      `hazard_immune`).
+8015. **The new pieces' texts** name only what is built; a number in a text is a placeholder of the row's own field.
+8016. **The second skill's threshold**: where the family files give no threshold (all 34 gun and bow variants of files
+      06 and 10), a form's second-skill effect starts at **5 points** of its second skill (file 09's commonest; design
+      item 10). PROVISIONAL. No gun or bow second-skill effect is built in this pass (item 8035), so nothing reads it
+      yet.
+8017. **`second_skill`** is typed on every new row the tables name one for (items 8007, 8008); it is an alpha skill and
+      feeds the family signature, never the hit (rules 1.91 item 7903).
+8018. **Names.** The in-world names ruled on 19 Nov (Lowland chopper, Dock cutter, Broadback sabre, Legion leaf-dagger,
+      Legion rank sword, Short draw, Long draw, Plate needle, Pitch axe); every other new row's name is its id in words
+      (`Snub revolver`, `ADCorp line rifle`), the tables' hyphens kept (`Kemizuchi side-sword`). The lead may rename any
+      before stage B ends; a name is not saved state.
+8019. (Reserved.)
+8020. **A new row's grant (a row's named signature)** is copied only when the engine runs its op (the `weapon` ops of
+      `data/effect_ops.json`; a `narrator` grant is never copied: a text with no reader), and only from the row's own
+      family: a gun, bow or heavy row takes its family's base row's grant; a melee row takes its copy-from row's when that
+      row is of the same family. A grant that needs a mode the row lacks (`auto_ap`, `auto_width` without full auto), or
+      that contradicts a number the lead gives (the crossbow's Aimed 3 AP against the arbalest's bolt mode), is not
+      copied. So: `snub_revolver` Fan the Hammer; `decrkm_carbine` Spray and Pray; `mandestra_drum_rifle` Wide Spray;
+      `adamantile_carbine` and `adamantile_heavy_rifle` Armour-Breaker; `fowling_gun` Both Barrels;
+      `lumeri_hand_scatter` and `lumeri_long_scatter` Door Key; both new rocket tubes Bunker Buster; `ork_snarl_knife`
+      and `ork_wreck_saw` Rip; `hellraiser_piston_knuckles` Haymaker; `trench_knife` Finish It; `legion_leaf_dagger`
+      Shield Partner; `kemizuchi_side_sword` Lunge; `pitch_axe` Splitter. Every other new row has no grant.
+8021. **The gun and bow lines' signatures** (tables section 5), each carried by an existing piece or shipped plain
+      (design item 10; a row that ships plain promises nothing in its text):
+
+| Line | Signature | Carried by | New rows |
+| --- | --- | --- | --- |
+| G1 | draw and fire in one action | the Snap Shot technique (the standard form) and `quick` | none new |
+| G2 | few rounds, best critical | not carried: no row-level critical range a revolver reads (owed: a `crit_min` gear field) | `snub_revolver` takes Fan the Hammer (item 8020) |
+| G3 | full auto for less AP | `auto_ap` (Spray and Pray) | `decrkm_carbine` carries it |
+| G4 | shoot, then move | the Shift technique (the standard form); no family piece | `legion_marksman_rifle` plain |
+| G5 | firing never reveals a Hidden shooter | `phys.props` `silent` (`ranged/press.ts`) | both carry it |
+| G6 | biggest magazines | the rows' own magazines | both carry it |
+| G7 | suppresses | the Suppress technique (`hellraiser_trench_carbine`'s family form) | carried |
+| G8 | pierces armour and plates | `ignore_armour` (Armour-Breaker) | both carry it |
+| G9 | rewards Aimed fire | `aimed_still_bonus`, `aimed_crit_min` | none new |
+| G10 | two shells at once | `multi_shot` (Both Barrels) | `fowling_gun` carries it |
+| G11 | a burst split between neighbours | not carried (the auto-shotgun's is a narrator grant; owed: a split-burst attack) | both plain |
+| G12 | breaks doors and cover | `cover_damage_mult` (Door Key) | both carry it |
+| G13 ADCorp | the Forge fits and swaps its mods for less | not carried (owed: a mod-fitting price factor a row or family gives the Forge) | all three plain |
+| G14 Chezknov | less Recoil on Bursts | not carried: a gun's own `recoil` has no mode limit and a row's modifiers do not reach `gearNum` (owed: `recoil_modes` on a weapon row, or modifiers read by `gearNum`); its number is not given either | all three plain |
+| G15 Arsenal | a reload costs 1 AP less | `cost_mod` on the `cost` trigger (`action: reload`, `with_this`), on the modifier row `mod_line_arsenal`, named in the rows' `variant_mods` (item 8022) | all three carry it |
+| G16 Smetanita | a hit adds Pressure | the `resource` op on `hit` (Pressure) would carry it, but the lead gives no amount: not built (item 8046) | all three plain |
+| G17 Albert Town | an Aimed Shot after a still turn is +1 to hit | `aimed_still_bonus` +1 (a grant, as the long rifle's One Breath: "if you haven't moved this turn") | all three carry it (item 8023) |
+| B1 Bows | silent, no heat, quiver | the rows' `silent`, `no_heat`, `quiver` | `short_bow` carries them |
+| B2 Crossbows | silent, cranked | the rows' `silent`, `no_heat`, `autoload` | `arbalest` carries them |
+
+8022. **Central Command Arsenal's reload** (`items.json mod_line_arsenal`, PROVISIONAL): reloading the gun that carries it
+      costs **1 AP less** (`cost_mod` on the `cost` trigger, `action: reload`, `with_this`: only that gun's reload). The
+      rows name it in `variant_mods` (held while the gun is in a hand, rules 1.56 L4).
+8023. **Albert Town's grant** (named "Still Turn"; the name is a placeholder the lead may change): `aimed_still_bonus`
+      **+1**: if you haven't moved this turn, an Aimed Shot gets +1 more to hit.
+8024. **The heavy and strange families' signatures** (tables section 6):
+
+| Family | Signature | Carried by |
+| --- | --- | --- |
+| H1 Launchers | arc, blast, Pressure | the Lob technique (both new forms lend it), `area_radius_2`, `explosive` |
+| H2 Rocket tubes | 3x cover damage, splash | `cover_damage_mult` 3 (Bunker Buster), `splash_damage`, `area_radius_1` |
+| H3 Flamers | burning ground, ignores half cover | `cone_3`, `applies_burning`, `ignores_half_cover` are read; burning ground is not built (owed, item 8030) |
+| H4 Rotary and belt-fed | area suppression | the Suppress technique; Spin Up is a narrator grant, not copied |
+| H5 Anti-materiel | through armour, line, cover | `armor_ignore_10` is read; the line hit (Through and Through) is a narrator grant: owed (item 8030) |
+| H6 Powered blades | armour ignore, Bleeding | `armor_ignore_5`, Rip (`on_hit` bleed) |
+| H7 Power gauntlets | forced movement | Haymaker (`on_hit` push 2); the door knocker's push 3 (item 8032) |
+| H8 Thrown | no ammo, silent, two targets | `phys.props` thrown; two targets (Fan of Knives) is a narrator grant: owed |
+
+8025. (Reserved.)
+8030. **File 09's nine requests** (design item 10: each carried by an existing piece, or left unbuilt and owed with the
+      primitive it would need; none is built for one row):
+      1. burning ground (the flamers' wall): **owed**, a burning-ground zone a weapon lays (`zone` op exists, no burning
+         zone kind and no attack that lays one).
+      2. a line hit (the anti-materiel's Through and Through): **owed**, an attack that carries on along its line.
+      3. Spin Up (the rotary): **owed** (a narrator grant today); the spinner has none by the lead's words.
+      4. a dart dose (the darts' Ingenuity 3 Toxin): **owed**, there is no Toxin condition (`data/conditions.json`).
+      5. a skill waiving a restriction (the twin rotary's Raw Power 5 with no unemplaced penalty, the Blackpoint
+         carbine's Raw Power 5 unbraced): **owed**, the restrictions are fixed `properties` with no skill gate.
+      6. a weapon number read from skill points (the throwaway tube's Ingenuity 5 cover ×3 to ×4, the snarl knife's Raw
+         Power 5 armour ignore 5 to 8, the piston knuckles' Raw Power 5 push +1, the javelins' Raw Power 5 +2 range and a
+         hit costs 1 AP): **owed**, a grant's value and a property's number do not read skill points (design: refused as
+         a stage A primitive).
+      7. single use (the throwaway tube): **not carried**, item 8033.
+      8. `cone_3` on a gun: **carried**, `combat.ts` reads the property on any row (the flamers keep it).
+      9. prone only (the wall gun): **not carried**, item 8034.
+8031. **The respirators and smoke.** No smoke harm exists in the engine (a smoke cloud only blocks sight), so "immune to
+      smoke" has no carrier. `sealed_visor` ships with `hazard_immune` toxic (which also covers gas and radiation) and
+      its text does not promise smoke. **`breather`**, whose one effect is immunity to smoke, **waits** (not typed) for
+      the lead's ruling (for example: gas only, `hazard_immune` gas).
+8032. **The door knocker** pushes **3** tiles on a plain hit (the servo-fist's Haymaker op, `on_hit` push, the lead's
+      number); its "×3 to cover" is **owed**: a row has one grant, and `cover_damage_mult` is a grant op.
+8033. **`legion_throwaway_tube`**: no existing piece makes a launcher single use, so by the lead's rule it ships
+      reloadable at reload 3 AP (`reload_ap`) and its text does not promise single use. Owed.
+8034. **`blackpoint_wall_gun`**: no existing piece makes a weapon fire only while Prone (`requires_braced_or_prone` is
+      braced or prone), so by the lead's rule the row **waits** and is not shipped; it is in no table of section 7. Owed.
+8035. **Second-skill effects** (the lead's thresholds of file 09): `legion_siege_tube`, **Raw Power 5: a reload costs 1 AP
+      less** (3 to 2) is **carried** by the modifier row `mod_siege_reload` (`cost_mod` on `cost`, `action: reload`,
+      `self_skill: {raw_power: 5}`, `with_this`), named in its `variant_mods`. **Owed** (no piece): the drum launcher's
+      Raw Power 5 Lob 3 to 2 AP (Lob is no cost site an item can cut by its technique), the cathedral burner's Raw
+      Power 3 / 6 / 9 wall +1 tile (item 8030.1), and item 8030's 4, 5 and 6. Every gun and bow second-skill effect
+      (files 06 and 10 name no effect) is owed with its family signature; `second_skill` is typed on the rows (item
+      8017).
+8036. **The breacher plate's armour value** is 18 (rules 1.91 item 7951, the lead's numbers); its maker line is not
+      decided.
+8037. **Handed back to the lead:** the maker lines of the Vests and Plate families (their `families.json` rows wait,
+      item 8003); the breather (item 8031); the Smetanita Pressure amount (item 8046); Chezknov's Recoil cut (item 8021).
+8038. (Reserved.)
+8040. **The typing sheet** (`docs/design/proposals/2026-11-20-items-2.0-rows.json`, written by `tools/items2_sheet.py`
+      from the lead's numbers, the copy-from rows and these tables; `--check` says when it is stale, `--validate` types it
+      into a scratch copy of `data/` and runs the validator): every new row with its full field list, the copy-from rows
+      resolved (a typist copies, never derives). Lane B1 types its `weapons` and `edits` (the pavise) into
+      `data/weapons.json`, lane B2 its `items` into `data/items.json`, each less the keys that begin with an underscore.
+      Section 7's † rows are on `tools/spec_tables_known.json` as "missing in data" until B1 types them and prunes the
+      list (`python tools/check_spec_tables.py --prune`).
+8041. **Survival's seeded pools move on purpose** when the new priced rows join them (rules 1.91 item 7920: the shop's
+      rolled gear, the reward pick, the Forge's stock read families and tags): lane B1 re-records the seeded shop and
+      reward tests and the `survival-run.ts` baselines once, named in its commit. Enemies keep their weapon pools (design
+      item 16).
+8042. **The simulator reads tags** (lane A5): `test/balance/survival-run.ts` and `run-policies.ts` ask item tags and the
+      run's own data (the round recipe's tool, the material and core rows) where they asked an id or a category; the
+      builds keep their ids; no measured number moves.
+8045. **Section 14's provisional numbers of rules 1.92** (each stage C's to fit): every number of the 72 new weapon rows
+      and the 12 new pieces (section 7 † rows, the Slot armour table, the typing sheet); the pavise's 1,200 cr as
+      buyable; the Heavy word's −0.5 Movement and that two stack (item 8010); the Strike follow ×0.6 and no Guard (item
+      8012); the Ward soak 3 / 5 / 7 (item 8012); the hoods' −1 / −2 / −3 seen range and the optics' +2 / +4 Vision
+      (item 8014); the 5-point second-skill threshold (item 8016); Arsenal's 1 AP off a reload (item 8022); Albert
+      Town's +1 (item 8023); the siege tube's Raw Power 5 and 1 AP (item 8035); the door knocker's 3-tile push (item
+      8032); the throwaway tube's reload 3 (item 8033).
+8046. **Numbers needed and not given** (handed back, never invented): the Smetanita sidearms' Pressure a hit adds (G16);
+      Chezknov's Recoil cut on Bursts (G14); the revolvers' critical range (G2); every gun and bow second-skill effect's
+      size (item 8035).
