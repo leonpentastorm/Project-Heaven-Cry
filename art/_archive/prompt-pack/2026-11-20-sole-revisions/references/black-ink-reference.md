@@ -1,0 +1,1 @@
+Both black reference variants use exactly the unchanged original source alpha. RGB replaced with black only for intermediate ink/alpha visibility; white-background version is a technical preview. No creative pixels added or deleted; sourceoriginal sha256 38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca. Never count references/previews as pictures.
