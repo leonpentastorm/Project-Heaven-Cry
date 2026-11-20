@@ -1,5 +1,13 @@
-# Waiting for the scheduled reset
+# Reset continuation progress
 
-Actual production restart is scheduled and enabled for 20 November 2026 at 09:45:39 Asia/Saigon. No early image request has been made. This lane has 22 claimed pending jobs, zero new images, and an integrated 327/871 project baseline.
+Branch: `art/2026-11-20-reset-continuation`. New deliveries: 1/22.
 
-Read [START-HERE.md](START-HERE.md) for exact claims, complete prompts, reference images, delivery commands, continuous-work instructions, quota behavior and available work for another agent. Shared channel: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 .
+Shared coordination: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Read START-HERE.md before extending this queue.
+
+All new entries remain review-candidate; production_approved:false and implementation_ready:false. Exact-outline review remains pending.
+
+Ready jobs: armour-ballistic_helmet--celestial, weapon-throwing_knives--fine, weapon-ork_rip_saw--fine, weapon-hellraiser_servo_fist--fine, weapon-hellraiser_rotary--fine, weapon-purifier_flamer--fine.
+
+Pending jobs: armour-ballistic_helmet--celestial, weapon-throwing_knives--fine, weapon-throwing_knives--masterwork, weapon-throwing_knives--relic, weapon-throwing_knives--celestial, weapon-ork_rip_saw--fine, weapon-ork_rip_saw--masterwork, weapon-ork_rip_saw--relic, weapon-ork_rip_saw--celestial, weapon-hellraiser_servo_fist--fine, weapon-hellraiser_servo_fist--masterwork, weapon-hellraiser_servo_fist--relic, weapon-hellraiser_servo_fist--celestial, weapon-hellraiser_rotary--fine, weapon-hellraiser_rotary--masterwork, weapon-hellraiser_rotary--relic, weapon-hellraiser_rotary--celestial, weapon-purifier_flamer--fine, weapon-purifier_flamer--masterwork, weapon-purifier_flamer--relic, weapon-purifier_flamer--celestial.
+
+Quota state: null.

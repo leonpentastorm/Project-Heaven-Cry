@@ -1,4 +1,67 @@
 {
   "collection": "2026-11-20-reset-continuation",
-  "assets": []
+  "assets": [
+    {
+      "id": "armour-ballistic_helmet--relic",
+      "path": "art/icons/gear/armour-ballistic_helmet--relic.png",
+      "sha256": "cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7",
+      "label": "Ballistic Helmet — Relic",
+      "family": "armour-ballistic_helmet",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/armour-ballistic_helmet--relic.png",
+        "sha256": "68a55e5cd15f7b8ce6323d6e3686ce906a281b75fb107ae8dc205d93a01c4a41"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png",
+        "sha256": "cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt",
+        "sha256": "0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-ballistic_helmet.png",
+          "sha256": "7358ee39e955f8f5362faee1f96608313272f0cc164d0c7ca6b22c5755460d2f"
+        },
+        {
+          "path": "art/icons/gear/armour-ballistic_helmet--masterwork.png",
+          "sha256": "7d0b4e1842a954e689e6a3ebe9c3a50f47f3ec573b5fc0ba7a7bfb8797019a53"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-ballistic_helmet--relic.png",
+        "128": "art/icons/gear/exports/128/armour-ballistic_helmet--relic.png",
+        "64": "art/icons/gear/exports/64/armour-ballistic_helmet--relic.png",
+        "32": "art/icons/gear/exports/32/armour-ballistic_helmet--relic.png"
+      },
+      "export_hashes": {
+        "256": "eb99d89e80575cde2cd59b2f165c998dfd582f52be8ca2cfed8a642a2609cd58",
+        "128": "c1cbd3264fda3eaa44a8167b0b0e3a4ec8b898f479792d33af106bd78bf48c07",
+        "64": "5bcc24c7b011ebec51d23cedaab6c0ef2988538f1188c9112bd7654d5e6c65eb",
+        "32": "cadc70e44deecc66e5e7c6707f10fa6bad668b9e4c8c2e330aa4d1a7e93f0715"
+      },
+      "grade": "relic",
+      "standard_id": "armour-ballistic_helmet",
+      "outline": {
+        "solid_alpha_iou": 0.9811680208167384,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 17
+      },
+      "status": "review-candidate",
+      "production_approved": false
+    }
+  ]
 }
