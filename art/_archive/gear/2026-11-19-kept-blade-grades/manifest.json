@@ -10568,6 +10568,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-tactical_gloves--relic",
+      "path": "art/icons/gear/armour-tactical_gloves--relic.png",
+      "sha256": "16f62eaf2993e794087dc41ee32967aefcdca91a704da89064abbd90aa630c51",
+      "label": "Tactical gloves — Relic",
+      "family": "armour-tactical_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-tactical_gloves--relic.png",
+        "sha256": "fc43d43fbf81f7c846820ff1c0ec6620c60977abfcac53801befe0e30fdc2159"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-tactical_gloves--relic.png",
+        "sha256": "16f62eaf2993e794087dc41ee32967aefcdca91a704da89064abbd90aa630c51"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-tactical_gloves--relic.txt",
+        "sha256": "5bb2627bcf2e1fdb1e0a940c3c383784bbc016257ed8256506bd1e8a3be9a2f0"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-tactical_gloves--relic/v1/source.png",
+          "sha256": "6351618fdb033ad9834fb7bb4e13c0ddf7ac5539d7d0333970a474fc8694d583"
+        },
+        {
+          "path": "art/icons/gear/armour-tactical_gloves.png",
+          "sha256": "694555171cd0bc70dd47e3fb1c2f33283f84790423e9eb464977fc37e4a4c265"
+        },
+        {
+          "path": "art/icons/gear/armour-tactical_gloves--masterwork.png",
+          "sha256": "7a131859769c515323a11db4457978b114d6f432e1435d57cb4e07aaec635645"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-tactical_gloves--relic.png",
+        "128": "art/icons/gear/exports/128/armour-tactical_gloves--relic.png",
+        "64": "art/icons/gear/exports/64/armour-tactical_gloves--relic.png",
+        "32": "art/icons/gear/exports/32/armour-tactical_gloves--relic.png"
+      },
+      "export_hashes": {
+        "256": "5b04f0ea3661a88ff507c4544153c7b0fa59fb8f93d7a9d2683c1a0ba57bd5e7",
+        "128": "3b1ec770ab4117d8cc86961ae2cbf0778cbafc45368c25f7f87ae7bf024e1cc4",
+        "64": "bf352cd39617a0e164b244dafecb78f02f01b1cbd7fc78abe5ecc99535879af4",
+        "32": "38aeaac002e77250efe429756938daa327c331ed2334847102621b8b46327693"
+      },
+      "grade": "relic",
+      "standard_id": "armour-tactical_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9576579715333203,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 43
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
