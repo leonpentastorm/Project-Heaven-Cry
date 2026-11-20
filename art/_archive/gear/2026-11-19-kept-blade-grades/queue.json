@@ -3495,7 +3495,13 @@
     "keep_line": "the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.",
     "status": "pending",
     "production_approved": false,
-    "depends_on": null
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-legion_bullpup--fine--1795145475884.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-legion_bullpup--fine--1795145475884.json",
+      "request_id": "b72d3dbe-fa10-4d75-8d8b-0d7aff5364b6"
+    }
   },
   {
     "id": "weapon-legion_bullpup--masterwork",
