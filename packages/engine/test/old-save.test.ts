@@ -33,6 +33,11 @@
 //       `field`, the story phase, the squad and the piles in g.story, no live fight), c1 moved, the host marked Leave.
 //       From 0.28.3 the field is the fight still running (rules 1.55 item 61): this save need not gain that, only leave
 //       (save-live-0.28.2-field.how.ts.txt wrote it).
+//   save-live-0.33.0-armour-mid-fight.json     written by the LIVE build's engine: origin/main at 547c4f92c, version
+//       0.33.0 (the script beside it): two characters, c1 with a Fine sabre in hand, a Fine combat knife and a variant
+//       in the pack, a ballistic helmet and a trauma plate worn, Heavy body armour; c3 with an undershirt and greaves
+//       worn and Medium body armour; a fight in its first round. The shape before Items 2.0 armour (rules 1.91 lane A2):
+//       worn pieces are ids only, no wornState.
 //
 // Each is loaded the way the client loads a save (parsed, migrateLoaded) and played on. NEVER regenerate these files:
 // they are what an old save looks like. When the saved shape changes, add a NEW fixture beside them (written by the
@@ -41,6 +46,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { formsOf, pendingDoorPicks, pictureOptions, FIG_REV } from '../src';
+import { setGrade, armourOf, gearBonus, statQuery } from '../src';
 import { migrateLoaded, apply, viewFor, withGame, previewAttack, CLASSES, CLASS, CLASS_REV, itemsOf, heldOfChar, scaleOf, maxHp, HP_REV, playOf, quiversOf, packOf, legacySpecialId, specialRoundsFor, SPECIAL_REF_CALIBRE, priceOf, sellValue, WEAPON } from '../src';
 import { Rec, fightTurn, type Pc } from './helpers/replay';
 
@@ -404,4 +410,38 @@ describe('the reshape (rules 1.60, slice B) on old saves', () => {
     c.level = was.level; c.attrs = was.attrs;
     const r = new Rec(g, GUNS); r.fight(6); expect(r.errors).toEqual([]);
   }, 60_000);
+});
+
+// Rules 1.91 lane A2 (Items 2.0 armour): a save written by the LIVE 0.33.0 engine (save-live-0.33.0-armour-mid-fight)
+// loads as it was (no wornState is written, no held list changes, every unit's armour is what 0.33 wrote), plays its
+// fight on to its end, and afterwards its worn pieces take a grade and come off with it.
+describe('rules 1.91 lane A2: a 0.33.0 save with worn armour loads unchanged and plays on', () => {
+  const NAME = 'save-live-0.33.0-armour-mid-fight';
+  const raw = () => JSON.parse(readFileSync(fileURLToPath(new URL('./fixtures/' + NAME + '.json', import.meta.url)), 'utf8'));
+  it('loaded: the characters and the fight are as saved; the armour and the held lists are what 0.33 made', () => {
+    const old = raw(), g0 = load(NAME);
+    expect(g0.characters).toEqual(old.characters);
+    for (const c of Object.values(g0.characters) as any[]) {
+      expect(c.wornState).toBeUndefined();
+      const u = g0.combat.units.find((x: any) => x.charId === c.id && !x.companion);
+      expect(u.armour).toBe(withGame(g0, () => armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor' as any).add)));
+      expect(withGame(g0, () => heldOfChar(c))).toEqual(u.held ?? withGame(g0, () => heldOfChar(c)));
+    }
+    expect(g0.characters.c1.worn).toEqual({ head: 'ballistic_helmet', inner_torso: 'trauma_plate' });
+  });
+  it('the fight plays on; then a worn piece takes a grade, comes off with it, and goes back on with it', () => {
+    const r = new Rec(load(NAME), [{ build: 'plain_blade', level: 1 }, { build: 'plain_gun', level: 1 }]), round = r.g.combat.round;
+    r.fight(12);
+    expect(r.errors).toEqual([]);
+    expect(r.g.combat.round > round || !!r.g.combat.over).toBe(true);
+    const g = JSON.parse(JSON.stringify(r.g)), c = g.characters.c1;
+    expect(setGrade(c, 'worn:inner_torso', 'fine')).toBeNull();
+    expect(c.wornState).toEqual({ inner_torso: { rarity: 'fine' } });
+    expect(setGrade(c, 'worn:torso_outer', 'masterwork')).toBeNull();
+    expect(c.wornState.torso_outer).toEqual({ rarity: 'masterwork' });
+    expect(g.phase).toBe('story'); // the fight is won by then (round 7 on this seed): the gear changes below are a story's
+    const g2 = apply(g, { type: 'gear/unequip', charId: 'c1', slot: 'inner_torso' }, 'host');
+    expect(packOf(g2.characters.c1).find((x: any) => x.id === 'trauma_plate').rarity).toBe('fine');
+    expect(g2.characters.c1.wornState).toEqual({ torso_outer: { rarity: 'masterwork' } });
+  });
 });

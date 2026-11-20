@@ -213,9 +213,9 @@ export function gearEffects(c: Character): { op: string; value?: number; hazard?
 export const ARMOUR_SLOT: string = (RULES as any).equipment_slots?.armour_class_from || 'torso_outer';
 /** Rules 1.91 item 7953: the grade of the instance worn at a slot's saved key (body armour: ARMOUR_SLOT); Standard
  * when none is recorded. */
-export const wornGrade = (c: Pick<Character, 'wornState'>, slot: string): Rarity => c.wornState?.[slot]?.rarity || 'standard';
+const wornGrade = (c: Pick<Character, 'wornState'>, slot: string): Rarity => c.wornState?.[slot]?.rarity || 'standard';
 /** Rules 1.91 items 7906, 7954: what a grade multiplies an armour value by (its rarity row's `arm`). */
-export const armOf = (r: Rarity): number => RARITY[r]?.arm ?? 1;
+const armOf = (r: Rarity): number => RARITY[r]?.arm ?? 1;
 /** Rules 1.91 item 7907: does this worn piece or body armour take a grade? A body armour class (`armour:<n>`, n > 0),
  * or a worn armour row (an items row of the armour kind with a slot) whose `graded` is not false. */
 export function gradedArmour(id: string | null | undefined): boolean {
@@ -1108,7 +1108,7 @@ const quiverAt = (where: GearWhere): number | null => (typeof where === 'string'
 /** Rules 1.91 item 7953: a worn instance's slot (`worn:<saved key>`; body armour at `worn:torso_outer`), or null. */
 const wornAt = (where: GearWhere): string | null => (typeof where === 'string' && where.startsWith('worn:') ? where.slice(5) : null);
 /** Rules 1.91 item 7953: the id worn at a slot: the piece, or body armour's class (`armour:<n>`) at ARMOUR_SLOT; null when bare. */
-export const wornIdAt = (c: Pick<Character, 'worn' | 'armourClass'>, slot: string): string | null => (slot === ARMOUR_SLOT ? (c.armourClass ? 'armour:' + c.armourClass : null) : c.worn?.[slot] || null);
+const wornIdAt = (c: Pick<Character, 'worn' | 'armourClass'>, slot: string): string | null => (slot === ARMOUR_SLOT ? (c.armourClass ? 'armour:' + c.armourClass : null) : c.worn?.[slot] || null);
 /** The one focus test: is this id a focus of any kind (an item or a weapon in FOCUS_IDS)? */
 export const isFocusId = (id: string) => ALL_FOCUS_IDS.includes(id);
 /** The weapon or focus instance at `where`: its id, rarity and property, or null (an empty hand, fists, a line that is
