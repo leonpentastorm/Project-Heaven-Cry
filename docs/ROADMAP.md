@@ -394,7 +394,7 @@ Direct questions. Where the lead gave a recommendation, it is built as stated un
 
 Answered on 19 Nov (verification file): carry weight (nothing changes); camp budget (stays 300); ceilings (a relative measure, not a hard line, so "all-in 7/1/1 builds sit over every ceiling" is not a fault by itself); Operative and Sigilist 0 of 40 (the bot's policy).
 
-- **`fight-panel` fails about 3 runs in 7:** the compact You card's mini meters collapse into one overlapping line at 1280x720 and the charge row covers the "+N" chip. Not reproduced on demand. [S] [open; seen in the 0.33.0 full run, 20 Nov 2026]
+- **`fight-panel` failed at 1280x720 (the mini meters overlapping, the charge row covering the "+N" chip):** the cause was the resource panel's `.phc-res-urgent>.phc-res-mini{display:grid; grid-template-columns:subgrid; min-width:0}` winning over the compact card's flex row, so every mini was 0 px wide; the compact card's rule now holds (`combat.js YOU_URGENT`, !important on display, flex, min-width, grid-column). Red alone twice in the 0.34 full run, green after the fix (55 checks; fight-cards and ui-shell green). [S] [done; 21 Nov 2026]
 - **Settings' Fight tabs page is the only React.lazy with no error boundary:** a failed chunk blanks the page. [S] [open; 0.33.0 ship review]
 - **Builders report anything that touches live at once** (the 20 Nov accidental deploy was seen three hours late); `tools/deploy_site.py` deploys only with `--deploy`. [done, `9b09ff463`; keep the rule in every brief]
 
