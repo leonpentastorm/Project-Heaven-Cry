@@ -472,6 +472,20 @@ export const lookWord = (hv) => hv.word.toUpperCase();
 const TOKEN_LOOK_POS = 'position: absolute; left: 50%; bottom: -7px; transform: translateX(-50%); z-index: 5; padding: 0 5px; line-height: 12px';
 /** The kind badge keeps its bottom-right corner, lifted off the bottom edge so the health chip never runs under it. */
 const TOKEN_KIND_POS = '; bottom: 9px; z-index: 6';
+// ---------- stable map items (the client load lane, 0.33) ----------
+// The map's 676 items are compared with last render's, field by field (dc/runtime.tsx <sc-for memo>): a value built the
+// same way every render is handed over as the same object, so the comparison ends at once. Same values, same drawing.
+/** Guard pips on a token (1 to 5), one list per count. */
+const GUARD_PIPS = Array.from({ length: 6 }, (_, n) => Array.from({ length: n }, (_, i) => ({ key: 'g' + i, style: 'width: 5px; height: 5px; border-radius: 1px 1px 3px 3px; background: #E7EBF3; box-shadow: 0 0 0 1px rgba(5, 7, 11, 0.9)' })));
+const guardPipsOf = (gd) => GUARD_PIPS[Math.max(0, Math.min(5, gd))];
+/** A tile's kit layers dimmed for the fog or the dark: one list per layers and dim (the layers are kitLayout's, kept per map). */
+const DIMMED = new WeakMap();
+function dimmedKit(layers, dim) {
+  if (!dim) return layers;
+  let m = DIMMED.get(layers); if (!m) DIMMED.set(layers, (m = new Map()));
+  let out = m.get(dim); if (!out) m.set(dim, (out = layers.map((l) => ({ ...l, style: l.style + '; filter: brightness(' + dim + ')' }))));
+  return out;
+}
 /** The map grid's tile pitch (46 px tiles, 2 px gap: gridStyle below), the room a token's chip has before a neighbour's. */
 const TILE_PITCH = 48;
 let measureCtx;
@@ -1337,7 +1351,7 @@ export class CombatLogic extends DCLogic {
         // hpShieldBar), the bar rescaled when HP and shield pass max HP; Guard stays the plates and these pips.
         ...(() => { const gd = u && !isHeld ? Math.max(0, (u.res && u.res.guard) || 0) : 0;
           return { hasGuard: gd > 0, guardBox: 'position: absolute; left: 5px; bottom: 6px; z-index: 3; display: flex; gap: 2px; pointer-events: none',
-            guardPips: Array.from({ length: Math.min(5, gd) }, (_, i) => ({ key: 'g' + i, style: 'width: 5px; height: 5px; border-radius: 1px 1px 3px 3px; background: #E7EBF3; box-shadow: 0 0 0 1px rgba(5, 7, 11, 0.9)' })) }; })(),
+            guardPips: guardPipsOf(gd) }; })(),
         hasLook: !!u && !isHeld && tokWords.has(u.id), lookText: u && tokWords.has(u.id) ? tokWords.get(u.id).text : '', lookStyle: u && tokWords.has(u.id) ? tokWords.get(u.id).style : '',
         ...(() => { const hb = hpShieldBar(known && u ? u.hp : 0, u ? u.maxHp : 1, u && !isHeld ? svOf(u) : null), w = known ? hb.hpW : 0;
           return { hasHp: !!u && !isHeld && (known || hb.has), hasHpSh: hb.has, hpSeg: hb.segStyle, hpBox: 'position: absolute; left: 5px; right: 5px; bottom: 1px; height: 4px; z-index: 3; border-radius: 2px; overflow: hidden; pointer-events: none; background: rgba(5, 7, 11, 0.85)' + (known ? '' : '; outline: 1px dashed rgba(246, 81, 87, 0.5)'),
@@ -1359,7 +1373,7 @@ export class CombatLogic extends DCLogic {
         // a kit's broken piece is drawn whole (not faded); a door's sprite turns with its doorway (kitMap.ts)
         spriteStyle: spr ? spriteStyle(kitKey && spr.hp != null && spr.hp <= 0 && kitArt(kitKey, spr.kind + '-broken') ? { ...spr, hp: 1 } : spr) + (KL && spr.kind === 'door' && (KL.get(k) || {}).doorTurn ? '; transform: rotate(90deg)' : '') : '',
         // the fog and the dark stay above the kit: a tile out of sight (or unlit) dims its kit layers as its own shade does
-        hasKit: !!(KL && KL.get(k) && KL.get(k).layers.length), kit: KL && KL.get(k) ? ((dim) => (dim ? KL.get(k).layers.map((l) => ({ ...l, style: l.style + '; filter: brightness(' + dim + ')' })) : KL.get(k).layers))(!vis.tiles.has(k) ? (cb.map.dark && !litAt(cb, k) ? 0.28 : 0.5) : cb.map.dark && !litAt(cb, k) ? 0.75 : 0) : [],
+        hasKit: !!(KL && KL.get(k) && KL.get(k).layers.length), kit: KL && KL.get(k) ? dimmedKit(KL.get(k).layers, !vis.tiles.has(k) ? (cb.map.dark && !litAt(cb, k) ? 0.28 : 0.5) : cb.map.dark && !litAt(cb, k) ? 0.75 : 0) : [],
         hasImg: !!faceOf(u), img: faceOf(u),
         // Rules 1.56, Shadow 2.0 (game/tokenFade.ts): a Hidden token darkens to its outline over a pool of shadow (an
         // ally's dashed), and the Shadow it holds shows as wisps on its corner (the engine's u.res and u.resMax)

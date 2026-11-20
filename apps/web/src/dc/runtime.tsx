@@ -218,9 +218,11 @@ function same(a: any, b: any, depth: number): boolean {
   if (ta !== 'object' || a === null || b === null || depth > 6) return false;
   if (Array.isArray(a)) { if (!Array.isArray(b) || a.length !== b.length) return false; for (let i = 0; i < a.length; i++) if (!same(a[i], b[i], depth + 1)) return false; return true; }
   if (Array.isArray(b) || Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) return false;
-  const ka = Object.keys(a); if (ka.length !== Object.keys(b).length) return false;
-  for (const k of ka) if (!(k in b) || !same(a[k], b[k], depth + 1)) return false;
-  return true;
+  // (No key arrays: a map item has about 150 fields and 676 of them are compared a render; the client load lane, 0.33.)
+  let n = 0;
+  for (const k in a) { if (!Object.prototype.hasOwnProperty.call(a, k)) continue; n++; if (!(k in b) || !same(a[k], b[k], depth + 1)) return false; }
+  for (const k in b) if (Object.prototype.hasOwnProperty.call(b, k) && --n < 0) return false;
+  return n === 0;
 }
 type ItemProps = { kids: Node[]; scope: any; as: string; index: number; item: any; box: Box; deps: any[] };
 const MemoItem = React.memo(function MemoItem({ kids, scope, as, index, item, box }: ItemProps) {
