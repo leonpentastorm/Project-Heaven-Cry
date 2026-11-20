@@ -153,6 +153,11 @@
       "type": "moderation_blocked",
       "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-kemizuchi_side_sword--masterwork.json",
       "id": "weapon-kemizuchi_side_sword--masterwork"
+    },
+    {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-ork_cleaver_glaive--masterwork.json",
+      "id": "weapon-ork_cleaver_glaive--masterwork"
     }
   ]
 }
