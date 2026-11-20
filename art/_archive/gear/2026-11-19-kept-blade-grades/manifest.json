@@ -10320,6 +10320,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-field_trousers--relic",
+      "path": "art/icons/gear/armour-field_trousers--relic.png",
+      "sha256": "0577c47bd90282a9ab34fe5ef895bb2b254358c6e0cd950c708e8f02a59c4e2c",
+      "label": "Field trousers — Relic",
+      "family": "armour-field_trousers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_trousers--relic.png",
+        "sha256": "e885679b71a66e97dbb3e39cbf1d1a94fd64d954d701964f67553c6c1d6b20ee"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-field_trousers--relic.png",
+        "sha256": "0577c47bd90282a9ab34fe5ef895bb2b254358c6e0cd950c708e8f02a59c4e2c"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-field_trousers--relic.txt",
+        "sha256": "bf350ff6ac66eb6c0cd4a5210317806db6111201a2c745732155f3cb2e1c1464"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-field_trousers--relic/v1/source.png",
+          "sha256": "35ba36514b4dfda239bf0943a37de29082646ba48ac9cbe0d68052e2fbfc0813"
+        },
+        {
+          "path": "art/icons/gear/armour-field_trousers.png",
+          "sha256": "644b0fbc3da4c8259b5e88aceb8f7b140573ab63a3679b6cf1439c0f0ed573ab"
+        },
+        {
+          "path": "art/icons/gear/armour-field_trousers--masterwork.png",
+          "sha256": "35f12cca65d409c638f791630ec3784bf8b76ec6ce1f59aabef7cc187efefda1"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_trousers--relic.png",
+        "128": "art/icons/gear/exports/128/armour-field_trousers--relic.png",
+        "64": "art/icons/gear/exports/64/armour-field_trousers--relic.png",
+        "32": "art/icons/gear/exports/32/armour-field_trousers--relic.png"
+      },
+      "export_hashes": {
+        "256": "fce2c625cecbd736303d5eb693c1500ddb059ab59c62b54dc82b51b65742335a",
+        "128": "f535978a692c3e2bdb538c010eab7e60233088e2b3fed96835307a08adf4804b",
+        "64": "706c246b243e638aa795ca24286864b4d8d025a7cf9047cbb0c2bec30f8b095f",
+        "32": "8010467c9b779703395e58285cc2ed9134e659addb5702d07940c040140ead76"
+      },
+      "grade": "relic",
+      "standard_id": "armour-field_trousers",
+      "outline": {
+        "solid_alpha_iou": 0.9546139562420948,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 51
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
