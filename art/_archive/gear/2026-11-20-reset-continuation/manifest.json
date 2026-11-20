@@ -3835,6 +3835,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-ram_plate--masterwork",
+      "path": "art/icons/gear/shield-ram_plate--masterwork.png",
+      "sha256": "ccadda5d6551dd068915e5bb622b7d3429a3dbfb39fe336a0b1c782309149b4b",
+      "label": "Ram Plate — Masterwork",
+      "family": "shield-ram_plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-ram_plate--masterwork.png",
+        "sha256": "2c6d9a1d9078dfcf96fab71c9b17aaae697b9e46f6066b67aadbdc03e6d1cd8d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-ram_plate--masterwork.png",
+        "sha256": "ccadda5d6551dd068915e5bb622b7d3429a3dbfb39fe336a0b1c782309149b4b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-ram_plate--masterwork.txt",
+        "sha256": "926f0db906ccf94ef85e716dd129a73ef3a5a5ee72b972eb007d0d6748e4d96a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-ram_plate.png",
+          "sha256": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599"
+        },
+        {
+          "path": "art/icons/gear/shield-ram_plate--fine.png",
+          "sha256": "bf20b38fcdac948ad4323d33c30d91095c5da9cec5c30eab0e5af45db8a7b633"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png",
+          "sha256": "267861bafac742616f7674fb1f0a1707952beb4490b4ddfa657a6b45cde8e846"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-ram_plate--masterwork.png",
+        "128": "art/icons/gear/exports/128/shield-ram_plate--masterwork.png",
+        "64": "art/icons/gear/exports/64/shield-ram_plate--masterwork.png",
+        "32": "art/icons/gear/exports/32/shield-ram_plate--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "3971cd0a3fac6763740b211958055ca03d9a11fb4a2787a17d1643896a6f85f5",
+        "128": "c12ee99cf1d1831c90744b15c7e947f8e16043d7f2aadac53dd1a8c61bb519d2",
+        "64": "122f5ebbd1670aaa9068614297360f5e2302a97359385f8e6f10a58317b1bfae",
+        "32": "3f497e0b0bfeb5a65a94f23a0c8ff0e57fd771980d4908e8beef893e295ec8ca"
+      },
+      "grade": "masterwork",
+      "standard_id": "shield-ram_plate",
+      "outline": {
+        "solid_alpha_iou": 0.9919431742075127,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 12
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
