@@ -4107,6 +4107,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-deflector--masterwork",
+      "path": "art/icons/gear/shield-deflector--masterwork.png",
+      "sha256": "3ea23e5d50a13fcbeaa1e920dca3cdca3c4560104d671baa1d1b7a666da84dea",
+      "label": "Deflector — Masterwork",
+      "family": "shield-deflector",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-deflector--masterwork.png",
+        "sha256": "4749d74c9a1dbba8dc74127578ffea0d789742a2edc2c94426cc84ec2e160c3c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-deflector--masterwork.png",
+        "sha256": "3ea23e5d50a13fcbeaa1e920dca3cdca3c4560104d671baa1d1b7a666da84dea"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-deflector--masterwork.txt",
+        "sha256": "81f16a99f28914513715fd59a57cc8c0000aee23c5cd9be1cc15c4152a055e1e"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-deflector.png",
+          "sha256": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4"
+        },
+        {
+          "path": "art/icons/gear/shield-deflector--fine.png",
+          "sha256": "128620648fa275adeb30a843927adbdee18d76616eac7a62daba3decc9abf38d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png",
+          "sha256": "981d7ba5269c8a312538f46ac4bfc41098a1537ca27a533a18dd4c9a2e5c3c69"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-deflector--masterwork.png",
+        "128": "art/icons/gear/exports/128/shield-deflector--masterwork.png",
+        "64": "art/icons/gear/exports/64/shield-deflector--masterwork.png",
+        "32": "art/icons/gear/exports/32/shield-deflector--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "8e09790d3bf8c8224edb7c763a3b34386745b2b5fe82fa5d1b1360f4e9148d64",
+        "128": "f9b6403ed6368af37e3f6f0406d0a7c1261d309289f6056fe1f8a0df3bd2d336",
+        "64": "34ce1882c722c2df87dc51ac719c9823d2ad1842265943cbeb8fb03abe1912ea",
+        "32": "962801e8bb8fcb1ff1528a771b4d4f4a639ece802b506cbf32cd55402d94c21f"
+      },
+      "grade": "masterwork",
+      "standard_id": "shield-deflector",
+      "outline": {
+        "solid_alpha_iou": 0.9755013838935512,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 32
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
