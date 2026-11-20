@@ -10998,6 +10998,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_snarl_knife--masterwork",
+      "path": "art/icons/gear/weapon-ork_snarl_knife--masterwork.png",
+      "sha256": "e60a8f9bfac24f0da82bbb57ce5af2f0d4b3c1fdc17f0cd61d112c62609f0afa",
+      "label": "Snarl knife — Masterwork",
+      "family": "weapon-ork_snarl_knife",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--masterwork.png",
+        "sha256": "62f748d0d401bf28d20e022f2cb91e9b64381597d8a45355143f4c36821d3521"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_snarl_knife--masterwork.png",
+        "sha256": "e60a8f9bfac24f0da82bbb57ce5af2f0d4b3c1fdc17f0cd61d112c62609f0afa"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_snarl_knife--masterwork.txt",
+        "sha256": "64cbaa0420b84ba698fea6bd8454d5e4867895fb90a12355ab286bd781d71e7f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+          "sha256": "4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_snarl_knife--fine.png",
+          "sha256": "36bb6f5d0d9e641ec58e27107f37c5be3b98eb6a0559a25e9cceb2a4b0478b73"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "c49681d9b00bea3d029d689eb8b524742b3e3d87976cf6790c1f72dfdfafb929",
+        "128": "a463fecc156d211bae36e50c9e41ac708ba9a632cf7dc57ba3b04d67965bf8a7",
+        "64": "f7243ccbc645135b9a5b9c5c18b79a260b5b95a5bf4aecaf679f83c2232f7443",
+        "32": "7c7b9efdfe1f2e45c170e600794df1ba1d8e31c4c28e0fecc157e9479b979835"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-ork_snarl_knife",
+      "outline": {
+        "solid_alpha_iou": 0.9595085926533032,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 12
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

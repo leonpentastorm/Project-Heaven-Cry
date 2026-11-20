@@ -28354,6 +28354,42 @@
         "different_pixels_32": 1,
         "different_pixels_64": 11
       }
+    },
+    "weapon-ork_snarl_knife--masterwork": {
+      "label": "Snarl knife — Masterwork",
+      "path": "art/icons/gear/weapon-ork_snarl_knife--masterwork.png",
+      "sha256": "e60a8f9bfac24f0da82bbb57ce5af2f0d4b3c1fdc17f0cd61d112c62609f0afa",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_snarl_knife",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9595085926533032,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 12
+      }
     }
   },
   "survival_art": {
