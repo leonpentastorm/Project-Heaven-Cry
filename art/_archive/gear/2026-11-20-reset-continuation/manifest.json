@@ -2101,6 +2101,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_rank_sword--fine",
+      "path": "art/icons/gear/weapon-legion_rank_sword--fine.png",
+      "sha256": "c1bf4af12324ecc89373718ea918c8d389b3299391b5e63b93e982123a8e24e0",
+      "label": "Legion Rank Sword — Fine",
+      "family": "weapon-legion_rank_sword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_rank_sword--fine.png",
+        "sha256": "56eed6aaf483a5f167407232a8fbb997b8b055e38a6aec8aba0095719c396903"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_rank_sword--fine.png",
+        "sha256": "c1bf4af12324ecc89373718ea918c8d389b3299391b5e63b93e982123a8e24e0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_rank_sword--fine.txt",
+        "sha256": "bd02db6873d5970aa1ca8d378fc6c558010ad1df2076d15b8913e1a85f054cb7"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_rank_sword.png",
+          "sha256": "6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_rank_sword.png",
+          "sha256": "bc0c3ef3c706c75c3e483efb0ae0a4b65997f708ccd83fb52bbc8cbd008c5cd3"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_rank_sword--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_rank_sword--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_rank_sword--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_rank_sword--fine.png"
+      },
+      "export_hashes": {
+        "256": "0e87aaa6915e6a84b19c1027eab15c84e9e68b326eb807a54d8010bd8998e198",
+        "128": "b5e3ae1f3352aab34c433e2bbfe7a604e837c2092ca28920b52a695d29a3b141",
+        "64": "a69cc1d1c894184e93489cc86e6a86c45fafc7507a839c83b40fad480835f8ba",
+        "32": "2a58cf0199824b5a93719c8ba2681307d3f952a7cfb7105b4e5f9855e2834508"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-legion_rank_sword",
+      "outline": {
+        "solid_alpha_iou": 0.972609022259123,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 6
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
