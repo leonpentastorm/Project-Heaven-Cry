@@ -1,6 +1,6 @@
 // Physical 2.0: where the melee lane, the ranged lane and the core meet (the pre-release review's findings).
 import { describe, it, expect, beforeEach } from 'vitest';
-import { applyCond, objectsOf, heatLimit, WEAPON, phys, secondWeaponWhy } from '../src';
+import { applyCond, objectsOf, heatLimit, WEAPON, phys, secondWeaponWhy, weaponTeaches } from '../src';
 const heatLimitOf = (u: any) => heatLimit(u, WEAPON[u.weapon]);
 import { physFight, rig } from './helpers/physfight';
 beforeEach(() => rig(null));
@@ -93,7 +93,7 @@ describe('the crossbow (0.18.1)', () => {
     expect(f.unit(f.pc.id).ammo).toBe(0); // the last one: nothing left to load
   });
   it('Heavy Bolt is its signature: 4 AP, +40% damage (rules 1.18; it was +50%) through 10 armour', () => {
-    expect(WEAPON.crossbow.damage).toBe(55); expect((WEAPON.crossbow as any).phys.teaches).toBe('heavy_bolt');
+    expect(WEAPON.crossbow.damage).toBe(55); expect(weaponTeaches('crossbow')).toBe('heavy_bolt'); // its family's form (rules 1.93 item 8112)
     const f = physFight([{ weapon: 'crossbow', known: ['heavy_bolt'], skills: SK }], [{ tier: 'soldier' }], { seed: 'X2' });
     f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'H5'); foe.hp = foe.maxHp = 9000; foe.armour = 10;
     f.turn(f.pc); const u = f.unit(f.pc.id); u.maxDur = 100; u.dur = 100; u.ammo = 1;

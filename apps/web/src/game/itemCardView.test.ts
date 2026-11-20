@@ -36,6 +36,8 @@ describe('the item card (client half)', () => {
   it('the family line is the engine\'s words (family, form, maker line)', () => {
     expect(familyText(cardOf('sabre'))).toBe('Cavalry blades, Dexterity · Officers');
     expect(familyText(cardOf('afterword'))).toBe('');
+    // rules 1.93 item 8103: body armour's class rows are in the Vests and Plate families, with their lines
+    expect(familyText(cardOf('armour:2'))).toMatch(/^Vests, .* · Issue$/); expect(familyText(cardOf('armour:6'))).toMatch(/^Plate, /);
     const h = cardHoles(cardOf('sabre', 'fine'));
     expect(h).toMatchObject({ hasImg: true, grade: gradeText(cardOf('sabre', 'fine')), family: 'Cavalry blades, Dexterity · Officers' });
   });

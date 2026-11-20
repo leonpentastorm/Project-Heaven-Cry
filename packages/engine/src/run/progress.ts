@@ -30,7 +30,7 @@ import { nextPools } from './stage';
 import type { GameState } from '../game';
 import { registerShopService, type ServiceCard } from './shop';
 import { gearPreview } from '../gearpreview';
-import { GRADES, SOLD_GRADES, gradeWord, gradedArmour, setArmourClass, ARMOUR_SLOT } from '../character';
+import { GRADES, SOLD_GRADES, gradeWord, gradedArmour, setArmourClass, ARMOUR_SLOT, ungradedWhy } from '../character';
 import { fixedGradeOf, itemsWith } from '../itemtags';
 import { useProblem, useNow } from '../give';
 
@@ -136,7 +136,7 @@ export function upgradeProblem(g: GameState, c: Character, a: { where: GearWhere
   if (!(a.place in GRADE_UP.places)) return 'Upgrades are bought at a shop or a Forge.';
   if (h.n.kind !== a.place) return 'This is not a ' + (a.place === 'forge' ? 'Forge' : 'shop') + '.';
   const it = gearAt(c, a.where); if (!it) return 'There is no weapon or focus there to upgrade.';
-  if ((WEAPON[it.id] as any)?.category === 'thrown') return 'Thrown weapons can\'t be upgraded.';
+  { const u = ungradedWhy(it.id); if (u) return u; } // rules 1.93 item 8111: the one copy (thrown, graded: false)
   { const f = fixedWhy(it.id); if (f) return f; }
   const to = nextGrade(it.rarity); if (!to) return 'The ' + GRADE_WORD[it.rarity] + ' ' + nameOf(it.id) + ' is as good as any armourer can make it.';
   // rules 1.91 item 7955: armour takes the Forge's grade step only, and no Relic step in this pass
@@ -523,7 +523,7 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
   const wheres: GearWhere[] = ['main', 'off', ...packOf(c).map((_, i) => i), ...quiversOf(c).map((_, i) => ('quiver:' + i) as GearWhere)]; // rules 1.53: the carried quivers too
   // rules 1.91 item 7955: the Forge grades armour too (worn, body armour, and a graded piece in the pack); a shop does not
   if (k === 'shop' || k === 'forge') for (const where of [...wheres, ...(k === 'forge' ? wornWheres(c) : [])]) {
-    const it = gearAt(c, where); if (!it || (WEAPON[it.id] as any)?.category === 'thrown' || (k !== 'forge' && gradedArmour(it.id))) continue;
+    const it = gearAt(c, where); if (!it || ungradedWhy(it.id) || (k !== 'forge' && gradedArmour(it.id))) continue;
     const to = nextGrade(it.rarity), at = whereWord(where);
     const base = { where, place: k as GradePlace };
     if (to === 'relic' && k === GRADE_UP.relic_at && !isQuiverItem(it.id)) {

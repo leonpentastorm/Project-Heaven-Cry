@@ -11,7 +11,7 @@
 // This file is screen glue: state (figDraft), words and styles. Icons: game/figmentIcons.ts, by each row's `icon`.
 import { figmentLadderView, figmentDesignView, figmentLookOf, pendingDoorPicks, FIG_DOOR } from '@engine';
 import { act, toast } from '../game/store';
-import { figmentIconUri, FIG_INK, FIG_LINE } from '../game/figmentIcons';
+import { figmentIconUri, figmentPng, FIG_INK, FIG_LINE } from '../game/figmentIcons';
 import { groupedSection } from '../game/workshopGroups';
 import { doorLineOf } from '../game/doorView';
 import { forkChipsLine } from '../game/forkLine';
@@ -76,7 +76,9 @@ export function figmentSectionVals(sc, g, c, rerender) {
       traitsHead: 'TRAITS · ' + draft.traits.length + ' / ' + V.traitsMax + ' · +' + V.traitCharge + ' charge each',
       traits: V.traits.map((t) => { const on = draft.traits.includes(t.id), nextTraits = on ? draft.traits.filter((x) => x !== t.id) : [...draft.traits, t.id];
         const tWhy = on ? null : V.draftWhy(withName({ ...draft, traits: nextTraits }));
-        return { key: t.id, label: t.name + (t.charge !== V.traitCharge ? ' (' + (t.charge > 0 ? '+' : '') + t.charge + ')' : ''), pressed: on ? 'true' : 'false', off: !!tWhy, text: t.text, title: tWhy || '', // the trait's line on the face; the hover only says why it can't be added
+        // its delivered white-ink picture (Items 2.0 item 21: art/icons/figments/trait-<id>), '' while it has none
+        const icon = figmentPng(t.id, true);
+        return { key: t.id, label: t.name + (t.charge !== V.traitCharge ? ' (' + (t.charge > 0 ? '+' : '') + t.charge + ')' : ''), pressed: on ? 'true' : 'false', off: !!tWhy, text: t.text, title: tWhy || '', icon, hasIcon: !!icon, // the trait's line on the face; the hover only says why it can't be added
           style: chip(on, !!tWhy).replace('padding: 0 10px 0 6px', 'padding: 0 10px'), pick: () => { if (tWhy) return toast(tWhy); set({ traits: nextTraits }); } }; }),
       verdict: why || 'Ready: ' + V.chargeOf(draft.form, draft.traits) + ' charge from the Visualizer to picture it.',
       verdictStyle: 'font-size: var(--fs-sub); line-height: 1.4; font-weight: 700; color: ' + (why ? MUTED : '#6FEA77'),

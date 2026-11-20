@@ -16,6 +16,7 @@ import { dist, alive, unitSees, previewAttack, resolveAttack, enemyTurn, sideSee
 import { applyCond, endCond, condOn, condSource, debuffsOf, condFamily, isBoon, isCondition, unitSave, unitStrength, saveAgainst , saveTn } from '../magic';
 import { tendHook } from '../effects/damage';
 import { WEAPON, PERK } from '../data';
+import { isExplosiveCharge } from '../itemtags';
 /** Case Closed's two numbers, read from its card (perks.json effects[1] and [2]): the Defense and the damage. */
 const CASE_CLOSED: any[] = (PERK.case_closed as any)?.effects || [];
 import { setStoryCond, storyConds, npcsOf, npcConds } from '../game';
@@ -524,9 +525,7 @@ function flashback(h: Holder, why: string, rng: Rng | null) {
   else line += ' · lost in it' + applyCond(cb, rng, null, u, 'stunned', 1, 'body', { skipSave: true }) + ', loses the next turn';
   say(cb, line + '.');
 }
-/** Rules 1.91 item 7916: an explosive charge is a row with `explosive: true` and category thrown (the launchers are
- * explosive and not thrown), in data order. */
-const EXPLOSIVE_THROWS = new Set(Object.keys(WEAPON).filter((id) => !!(WEAPON[id] as any).explosive && WEAPON[id].category === 'thrown'));
+
 function foresee(h: Holder, rng: Rng): string[] {
   const g2 = JSON.parse(JSON.stringify(h.g)), cb2: Combat = g2.combat; if (!cb2) return [];
   const out: string[] = [], was = bindGame(g2), r = { state: rng.state };
@@ -547,7 +546,7 @@ register({
   on: {
     cond_apply: (ctx, h) => { if (ctx.t === h.u && ctx.fam === 'heart' && (ctx.by?.tags || []).includes('military')) ctx.saveAdd += 2; },
     cond_landed: (ctx, h) => { if (ctx.t === h.u && ctx.id === 'burning') flashback(h, 'fire', rngOf(h, ctx)); },
-    throw: (ctx, h) => { if (!ctx.preview && h.u && EXPLOSIVE_THROWS.has(ctx.item) && dist(ctx.tile, h.u.pos) <= 3) flashback(h, 'shelling', rngOf(h, ctx)); },
+    throw: (ctx, h) => { if (!ctx.preview && h.u && isExplosiveCharge(ctx.item) && dist(ctx.tile, h.u.pos) <= 3) flashback(h, 'shelling', rngOf(h, ctx)); },
     object_destroyed: (ctx, h) => { const o = ctx.obj; if (h.u && o && /barrel|explosive|fuel|gas/.test(o.kind || '') && dist(o.pos, h.u.pos) <= 3) flashback(h, 'an explosion', rngOf(h)); },
     on_damaged: (ctx, h) => { if (h.u && (ctx.src?.explosive || ctx.src?.type === 'explosion') && dist(ctx.t.pos, h.u.pos) <= 3) flashback(h, 'shelling', rngOf(h)); },
     // A launcher shell that misses still lands (at its target's tile: the engine has no scatter): shelling within 3.

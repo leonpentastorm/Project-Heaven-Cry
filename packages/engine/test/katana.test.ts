@@ -2,7 +2,7 @@
 // light-blade family's ranges next to its comparable (the sabre), equips, strikes with the family's plain attack (Cut),
 // offers what its properties give, and lends Draw Cut from the pack. Every number is read from data.
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, WEAPON, WEAPONS, gearEntry, equip } from '../src';
+import { phys, WEAPON, WEAPONS, gearEntry, equip, weaponTeaches } from '../src';
 import { FOCUS_IDS } from '../src/character';
 import { physFight, rig } from './helpers/physfight';
 
@@ -21,7 +21,7 @@ describe('the katana (rules 1.35): data alone', () => {
     expect(K.ap_cost).toEqual(S.ap_cost); expect(K.durability).toBe(S.durability);
     expect(K.requires).toBeUndefined(); // no light blade needs a skill
     expect(K.phys.props).toEqual(S.phys.props);
-    expect(phys.TECHNIQUE[K.phys.teaches]).toBeTruthy(); // an existing technique, no new one
+    expect(phys.TECHNIQUE[weaponTeaches('katana')!]).toBeTruthy(); // an existing technique, no new one (its family's form, rules 1.93 item 8112)
   });
   it('equips from the pack into the main hand', () => {
     const f = physFight([{ weapon: 'service_pistol' }], [{ at: 'D5' }]);

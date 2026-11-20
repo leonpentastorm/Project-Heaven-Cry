@@ -61,8 +61,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "snap_shot"
+        ]
       }
     },
     {
@@ -124,8 +123,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "mag_dump"
+        ]
       }
     },
     {
@@ -192,8 +190,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "rake"
+        ]
       },
       "provisional": true
     },
@@ -260,8 +257,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "suppress"
+        ]
       }
     },
     {
@@ -322,8 +318,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "walking_fire"
+        ]
       },
       "fx": {
         "sound": "gun_lever",
@@ -392,8 +387,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "flush"
+        ]
       }
     },
     {
@@ -451,8 +445,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "bead"
+        ]
       },
       "cycle_ap": 1,
       "provisional": true,
@@ -522,8 +515,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "dead_centre"
+        ]
       },
       "provisional": true,
       "fx": {
@@ -591,8 +583,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "brace"
+        ]
       },
       "fx": {
         "sound": "gun_rifle",
@@ -657,8 +648,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "pin_down"
+        ]
       }
     },
     {
@@ -718,8 +708,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "heavy_bolt"
+        ]
       },
       "provisional": true
     },
@@ -785,8 +774,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "coup"
+        ]
       }
     },
     {
@@ -892,8 +880,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "cleave"
+        ]
       }
     },
     {
@@ -947,8 +934,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "break"
+        ]
       }
     },
     {
@@ -1003,8 +989,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "charge"
+        ]
       }
     },
     {
@@ -1277,8 +1262,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "burst"
+        ]
       }
     },
     {
@@ -1336,8 +1320,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "crossfire"
+        ]
       },
       "fx": {
         "rate": 1.15,
@@ -1406,8 +1389,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "stopping_shot"
+        ]
       },
       "fx": {
         "rate": 1.05
@@ -1473,8 +1455,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "last_round"
+        ]
       },
       "fx": {
         "sound": "gun_magnum",
@@ -1546,8 +1527,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "storm"
+        ]
       }
     },
     {
@@ -1612,8 +1592,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "spot"
+        ]
       }
     },
     {
@@ -1675,8 +1654,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "rake"
+        ]
       },
       "fx": {
         "mag": "drum"
@@ -1743,8 +1721,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "punch_through"
+        ]
       },
       "fx": {
         "rate": 0.9,
@@ -1808,8 +1785,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "called_shot"
+        ]
       },
       "fx": {
         "sound": "gun_sniper",
@@ -1877,8 +1853,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "shift"
+        ]
       }
     },
     {
@@ -1944,8 +1919,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "mag_dump"
+        ]
       },
       "fx": {
         "eject": "reload",
@@ -2012,8 +1986,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "storm"
+        ]
       },
       "fx": {
         "rate": 1.05,
@@ -2086,8 +2059,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "burst"
+        ]
       },
       "fx": {
         "mag": "shotgun_mag",
@@ -2155,8 +2127,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "suppress"
+        ]
       },
       "fx": {
         "sound": "gun_rifle",
@@ -2222,8 +2193,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "lob"
+        ]
       }
     },
     {
@@ -2286,8 +2256,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "flush"
+        ]
       },
       "splash_damage": 60
     },
@@ -2465,8 +2434,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "dead_to_rights"
+        ]
       }
     },
     {
@@ -2529,8 +2497,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "burst"
+        ]
       },
       "fx": {
         "mag": "bolt_box"
@@ -2590,8 +2557,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "flurry"
+        ]
       }
     },
     {
@@ -2705,8 +2671,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "parry"
+        ]
       }
     },
     {
@@ -2760,8 +2725,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "lunge"
+        ]
       }
     },
     {
@@ -2807,8 +2771,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "draw_cut"
+        ]
       }
     },
     {
@@ -2919,8 +2882,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "sweep"
+        ]
       }
     },
     {
@@ -2978,8 +2940,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "keep_back"
+        ]
       }
     },
     {
@@ -3034,8 +2995,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "hamstring"
+        ]
       }
     },
     {
@@ -3081,8 +3041,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "bash"
+        ]
       },
       "variant_mods": [
         "open_hand"
@@ -3130,8 +3089,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "bind"
+        ]
       },
       "variant_mods": [
         "open_hand"
@@ -3178,8 +3136,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "sidestep"
+        ]
       },
       "variant_mods": [
         "open_hand"
@@ -3227,8 +3184,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "throw_down"
+        ]
       },
       "variant_mods": [
         "open_hand"
@@ -3276,8 +3232,7 @@
         "hits_with": "dexterity",
         "scales_with": [
           "agility"
-        ],
-        "teaches": "feint"
+        ]
       },
       "variant_mods": [
         "open_hand"
@@ -3340,8 +3295,7 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "teaches": "throw_down"
+        ]
       },
       "variant_mods": [
         "open_hand"

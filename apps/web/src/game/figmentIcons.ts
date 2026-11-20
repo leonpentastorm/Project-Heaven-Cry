@@ -5,7 +5,7 @@
 //
 // Which icon a thing shows is always its data row's field, looked up through the engine (figmentLookOf: a form, the
 // turret, an item); no id is named here. Adding a form with an icon needs no code: the file and the row's field.
-import { figmentLookOf } from '@engine';
+import { figmentLookOf, FIG } from '@engine';
 import ASSETS from './assets.json';
 
 const FILES = import.meta.glob('../../../../art/icons/figments/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
@@ -59,4 +59,13 @@ export function figmentLogIcon(text: string, figs: readonly { name: string; icon
 export const figmentPng = (icon: string | null | undefined, trait = false): string => {
   const key = trait && icon ? 'trait-' + icon : icon || '', A = ASSETS as Record<string, string>;
   return /^(order|trait)-/.test(key) && Object.prototype.hasOwnProperty.call(A, key) ? A[key] : '';
+};
+
+/** A Figment order row's picture by its action key (`ow:<unit id>:<verb>`, the engine's owned-unit rows): the verb's
+ *  row in data/figments.json `verbs` names its `icon` (order-draw-fire), drawn through figmentPng; '' for any other
+ *  key or a verb with no picture. No verb id is named here. */
+export const figmentOrderIcon = (actionKey: string | null | undefined): string => {
+  const m = /^ow:[^:]+:(.+)$/.exec(actionKey || ''); if (!m) return '';
+  const row = ((FIG as any).verbs as any[] || []).find((v) => v.id === m[1]);
+  return row?.icon ? figmentPng(row.icon) : '';
 };

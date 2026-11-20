@@ -262,3 +262,28 @@ English, in-universe where the doc is in-universe. No pop-culture references. Ke
 ## Variants (variants.json, rules 1.56 L4)
 
 - Mode-neutral. `kinds` is the closed list of modifier kinds: each has `neutral` and `forms` (`id`, `fits`: guns, magazine_guns, heat_guns, recoil_guns, melee, foci or a focus id; `worth_per`; `sentence`, a template filled per variant with `{value}` / `{value|more}`; and either `field` + `sign`, the base row's number field it changes, or `effects` with `puts`, the paths in them the value is written to; `value_fixed` for a form with no number). `items` are the variants: `id`, `name`, `base` (a weapon or a focus), `rarity` (its grade), `mods` (one or two `{kind, form?, value?}`). `worth_cap` caps a variant's worth. Read by `packages/engine/src/variants.ts` at load (data.ts); checked by `tools/validate.py`.
+
+## Item tags and families (rules 1.91, 1.92, 1.93)
+
+- **Tags** are `kind:value` strings of the closed list `rules.json item_tag_kinds` (each kind has its `about`): `kind`
+  (the row's raw category), `family`, `form`, `line` (maker line), `pattern` (art only), `grade` (the instance's),
+  `slot` (the slot table's id), `role` (words general code asks for, from the row's `tags`: `lever`, `electronic`,
+  `evoker_linked`, `natural`, `heavy`, `issue`) and `unique`. General code asks for tags (`itemtags.ts` `itemTags`,
+  `itemsWith`, `hasTag`, `tagOf`), never for an id. There is no `explosive` tag (the row field `explosive`; an
+  explosive charge is `explosive` and `kind:thrown`, `isExplosiveCharge`) and no rarity tag (the grade is the one value).
+- **`issue`** (rules 1.93 item 8100): the camp's rack and free weapon offer only rows with this role tag
+  (`survival.json loadout.archetypes.tag`); a new row joins the camp only when it is given the tag on purpose.
+- **Families** (`data/families.json`): a row's `family` is one of its `items` (`id`, `name`, `line`, `form_kind`,
+  `forms`, `weapon_art: null`). `form_kinds` names the forms of each kind (melee `dex` / `hybrid` / `str`; gun `close` /
+  `standard` / `long`; gear `light` / `standard` / `heavy`), `form_words` the card's word for each form, `form_rules` the
+  melee forms' hit pattern. A row's `form` is a form of its family. A family form may carry `teaches` (the technique
+  every row of that form lends and teaches); a row's own `phys.teaches` only overrides it, and never repeats it (the
+  validator refuses a row that repeats its family's). A row with no family is its own family; a variant is its base's.
+  Body armour's class rows (`rules.json combat.armor.classes`) carry `family` (`vests`, `plate`), `form` and their
+  family's `line`.
+- **`graded: false`** on a row: it holds no grade. Armour: the Forge never grades it; a weapon row: the grade step
+  refuses it (`character.ts ungradedWhy`, read by `setGrade` and the shop's and Forge's offers).
+- **Maker lines** in use: `issue`, `frontier`, `adamantile_brigade`, `hellraiser`, `legion`, `smetanita`, `kemizuchi`,
+  `lumeri`, `ork`, `decrkm`, `officers`, `whisper`, `mandestra`, `science_team`, `adcorp`, `chezknov`, `arsenal`,
+  `albert_town`, `shadow`, `foundry`, `black_scavenger`, `mixed` (a family's line may be any of them; the card shows it
+  through a generic formatter).

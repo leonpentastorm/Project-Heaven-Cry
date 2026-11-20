@@ -1128,6 +1128,15 @@ export function gearAt(c: Character, where: GearWhere): { id: string; rarity: Ra
   const it = packOf(c)[where as number]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
   return of(it.weapon || it.item || it.id, it);
 }
+/** Why a weapon row takes no grade, in words, or null (the one copy, read by setGrade and the grade step's offers and
+ * refusals): a thrown thing; a row whose `graded` is false (rules 1.93 item 8111: the mana weapons, fists, the bot
+ * items the data marks). An item row (armour, a focus, a quiver) answers through its own readers. */
+export function ungradedWhy(id: string | null | undefined): string | null {
+  const w: any = id ? WEAPON[id] : null; if (!w) return null;
+  if (w.category === 'thrown') return 'A thrown thing is not graded.';
+  if (w.graded === false) return 'The ' + w.name + ' takes no grade.';
+  return null;
+}
 /** Rules 1.43 (survival-spec 4.2 item 10): set the rarity of ONE carried weapon or focus instance (a hand, or a pack
  * line: one of a stack is split off), keeping its mods, name, property and identity (drill is per weapon id, so it is
  * kept too). Its durability is restored to the new grade's full (`maxDurOf`; a focus has none; `o.durShare` leaves a
@@ -1139,7 +1148,7 @@ export function setGrade(c: Character, where: GearWhere, rarity: Rarity, prop?: 
   if (!GRADES.includes(rarity)) return 'There is no grade "' + rarity + '": the grades are ' + GRADES.slice(0, -1).map(gradeWord).join(', ') + ' and ' + gradeWord(GRADES[GRADES.length - 1]) + '.';
   if (typeof where === 'number' && isPlotItem(packOf(c)[where])) return 'A plot item has no grade.';
   const g = gearAt(c, where); if (!g) return 'There is no weapon or focus there to grade.';
-  if ((WEAPON[g.id] as any)?.category === 'thrown') return 'A thrown thing is not graded.';
+  { const u = ungradedWhy(g.id); if (u) return u; }
   // rules 1.91 item 7917: a unique's grade is fixed (itemtags.ts fixedGradeOf); nothing grades it to another
   { const f = fixedGradeOf(g.id); if (f && f !== rarity) return 'Its grade is its own: ' + gradeWord(f) + '.'; }
   const dur = Math.round(maxDurOf(g.id, rarity) * Math.max(0, Math.min(1, o.durShare ?? 1))), keepProp = prop === undefined ? g.prop : prop || undefined;

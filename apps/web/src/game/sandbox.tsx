@@ -41,7 +41,7 @@ import { sfx, reducedMotion } from './sfx';
 import { usePresence, presenceCls } from './presence';
 import { emblemOf } from './classView';
 import { WORLD_KIND_IDS, avatarChoices, SUCCESSES, FAILS, type ApproachForm, blankNpc, npcAction, blankCache, cacheAction, blankPile, pileAction, pileChoices, isAmmoId, blankHazard, hazardAction, blankTrigger, triggerAction, blankObjective, objectiveAction } from './sandboxWorld';
-import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys, isUnseenId, ADVANCED_SHELVED } from '@engine';
+import { HAZARD_KINDS, HAZARD, TN_LADDER, CONDITION_IDS, condName, phys, isUnseenId, ADVANCED_SHELVED, ARMOUR_CLASSES } from '@engine';
 const ITEMS = Object.values(ITEM).filter((it: any) => !isCarriedModifier(it.id)); // rules 1.56: a weapon's own rule (the Open Hand) is no item
 import { ART, zoneOf } from '../screens/shared';
 import { tipProps } from './actionTip';
@@ -572,7 +572,7 @@ function SquadTab({ game, c, isHost }: { game: GameState; c: Character; isHost: 
       {!!(c.traits || []).length && <div style={row}>{(c.traits || []).map((t) => <button key={t} type="button" {...tipProps("Take it away")} style={btn} onClick={() => act({ type: 'sandbox/trait', charId: c.id, trait: t, on: false })}>{(TRAITS.find((x: any) => x.id === t) as any)?.name || t} ✕</button>)}</div>}
     </Section>
     <Section title="BODY ARMOUR CLASS">
-      <div style={row}>{[0, 1, 2, 3, 4, 5].map((n) => <button key={n} type="button" aria-pressed={c.armourClass === n} style={{ ...btn, border: '1px solid ' + (c.armourClass === n ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/armour', charId: c.id, armourClass: n })}>{n}</button>)}</div>
+      <div style={row}>{ARMOUR_CLASSES.map((_: any, n: number) => n).map((n: number) => <button key={n} type="button" aria-pressed={c.armourClass === n} style={{ ...btn, border: '1px solid ' + (c.armourClass === n ? C.text : C.line) }} onClick={() => act({ type: 'sandbox/armour', charId: c.id, armourClass: n })}>{n}</button>)}</div>
     </Section>
   </>;
 }

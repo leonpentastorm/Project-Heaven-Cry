@@ -14708,3 +14708,21 @@ The integration of Items 2.0 stage B (lane B1's 72 weapon rows) and the consolid
 8109. **The new rows ship on the placeholder** (rules 1.92): the 72 weapon ids, the 12 worn pieces and the new guns'
       magazines have no picture until the artist's lands (`art/briefs/ART-REQUESTS.md`, the Items 2.0 section); the icon
       guards exempt an id the typing sheet adds only while it has no picture.
+8110. **One copy of the explosive charge** (consolidation): `itemtags.ts isExplosiveCharge` (a weapon row with
+      `explosive: true` and the `kind:thrown` tag) and `EXPLOSIVE_CHARGES` (in data order); the demolitionist's charges
+      (`perks/c.ts`), the shelling flashback (`perks/f.ts`) and the client's charge picker (`actionPickers.ts`) read it.
+      The three copies of rules 1.91 item 7916's predicate are gone.
+8111. **`graded: false` on a weapon row is read by the grade step:** `character.ts ungradedWhy` (a thrown thing; a row
+      whose `graded` is false) is the one refusal, read by `setGrade` and by the shop's and the Forge's grade offers and
+      refusals (`run/progress.ts upgradeProblem`, `runOptions`): the Forge refuses an ungraded row ("The <name> takes no
+      grade.") and offers no step for it. The rows the data marks: fists, the grenades and charges, the bot items, the
+      beast's bite and the seven mana weapons. The item card's `graded` reads the same.
+8112. **Consolidation, the rest:** the exports `itemCard` and `ItemCardV` (gearpreview.ts) and `families.json
+      form_words` are approved; the families and tag kinds are written into `data/CONVENTIONS.md`; `phys.teaches` moved
+      onto the families' forms wherever every row of a form taught the same technique (46 rows, each the one row of its
+      form): a row keeps `teaches` only to override its form's (the validator's "repeats its family" rule holds for every
+      row; no weapon lends or teaches another technique: the golden tables do not move). The client reads the class rows:
+      the sheet's class in Roman numerals for any class (class VI the breacher plate), the Proving Ground's armour buttons
+      one a class row, and the body armour line on the sheet carries the family line; the Figment order rows (the action
+      bar's `ow:` rows) and the trait chips draw their delivered pictures (`figmentPng`, by the row's `icon` and the
+      trait's id in `data/figments.json`).

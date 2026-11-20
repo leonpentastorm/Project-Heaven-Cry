@@ -14,7 +14,8 @@ const doAct = (a: any, by = 'host') => { G = apply(G, a, by); };
 vi.mock('../game/store', () => ({ getState: () => view(), act: (a: any) => doAct(a), go: () => {}, toast: (t: string) => { toasts.push(t); }, polishText: async () => '', retryNarrator: () => {}, saveNow: () => {} }));
 const { MainLogic } = await import('./main.js');
 const { figLevelUp } = await import('./levelup.js');
-const { figmentIcon, figmentIconUri, figmentFaceOf, figmentIconOfUnit, figmentLogIcon, FIGMENT_ICON_IDS, figmentPng } = await import('../game/figmentIcons');
+const { figmentIcon, figmentIconUri, figmentFaceOf, figmentIconOfUnit, figmentLogIcon, FIGMENT_ICON_IDS, figmentPng, figmentOrderIcon } = await import('../game/figmentIcons');
+const { actionIconOf } = await import('../game/doorArt');
 const { faceOf } = await import('./shared.js');
 
 const F: any = FIG;
@@ -37,6 +38,12 @@ describe('figment order and trait pictures (Items 2.0 item 21)', () => {
     for (const row of named) expect(figmentPng(row.icon), row.id).toMatch(/^\/assets\/order-.*\.webp/);
     for (const t of F.traits as any[]) expect(figmentPng(t.id, true), t.id).toMatch(/^\/assets\/trait-.*\.webp/);
     expect(figmentPng('')).toBe(''); expect(figmentPng('figment-eye')).toBe(''); expect(figmentPng('nope', true)).toBe('');
+  });
+  it('a Figment order row (ow:<unit>:<verb>) draws the picture its verb row names through the action icon reader; other rows do not', () => {
+    const named = (F.verbs as any[]).filter((i) => String(i.icon || '').startsWith('order-'));
+    for (const row of named) { expect(figmentOrderIcon('ow:fig-1:' + row.id), row.id).toBe(figmentPng(row.icon)); expect(actionIconOf('ow:fig-1:' + row.id)).toBe(figmentPng(row.icon)); }
+    const plain = (F.verbs as any[]).find((i) => !i.icon); expect(figmentOrderIcon('ow:fig-1:' + plain.id)).toBe('');
+    expect(figmentOrderIcon('shot')).toBe('');
   });
 });
 
@@ -95,6 +102,8 @@ describe('the FIGMENTS section on the MAGIC tab', () => {
     v.ed.onName({ target: { value: 'Lookout' } }); v = fig(L);
     // every trait says what it does on its face (figments.json's one line), its hover only why it can't be added
     for (const x of v.ed.traits) { expect(x.text, x.key).toMatch(/\S/); if (!x.off) expect(x.title).toBe(''); }
+    // Items 2.0 item 21 (rules 1.93 item 8112): every trait chip draws its delivered picture (figmentPng, by the trait's id)
+    for (const x of v.ed.traits) { expect(x.hasIcon, x.key).toBe(true); expect(x.icon).toBe(figmentPng(x.key, true)); }
     const t = v.ed.traits.find((x: any) => !x.off); t.pick(); v = fig(L);
     expect(v.ed.traits.find((x: any) => x.key === t.key).pressed).toBe('true');
     // past the traits a design may carry, the others are refused with the engine's words

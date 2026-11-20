@@ -6,6 +6,7 @@
 // '' (the screen then draws what it drew before: the text, the glyph). White ink on transparency: never tinted.
 import ASSETS from './assets.json';
 import { parseTechId, parsePerkId } from '@engine';
+import { figmentOrderIcon } from './figmentIcons';
 
 let A: Record<string, string> = ASSETS as Record<string, string>;
 /** Tests only: use this asset map instead of assets.json (null restores it). */
@@ -55,5 +56,6 @@ export function actionIconOf(actionId: string | null | undefined): string {
   if (!actionId) return '';
   const t = parseTechId(actionId); if (t) return techIconOf(t.id);
   const p = parsePerkId(actionId); if (p) return moveIconOf(p.id, p.actionId);
+  const o = figmentOrderIcon(actionId); if (o) return o; // a Figment order row: its verb's picture (Items 2.0 item 21)
   return own('move-' + actionId); // a core action a door's tab also lists (Hide on SHADOW: its catalog id's stem)
 }

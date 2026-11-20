@@ -18,6 +18,7 @@ import {
   weaponActions, anyJammed, canJam, isMelee, hurtUnit, damageObject, emitFx, checkOver, attackApCost, moveBlockers, moveUnit, sideSees, unitSees, displace
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
+import { EXPLOSIVE_CHARGES } from '../itemtags';
 import { factorOf } from '../effects/output';
 import { mod, maxDurOf, packOf, physicalMult, carryLimit, collectionOf, isGunId, carriedGuns, gunAt, setGunMods, type GunWhere } from '../character';
 import { applyCond, condOn } from '../magic';
@@ -466,9 +467,8 @@ register({
 // its blast shaped as a circle (its radius), a line or a 90° cone (2 × radius + 1 tiles, away from you) (PROVISIONAL);
 // detonate now, or on a trigger ("Detonate", 1 AP, PROVISIONAL). Ringing Ears: −2 Vigilant (the data's skill_mod);
 // checks the Narrator tags 'hearing' fail.
-/** Rules 1.91 item 7916: an explosive charge is a row with `explosive: true` and category thrown (the launchers are
- * explosive and not thrown), in data order. */
-const EXPLOSIVES: string[] = Object.keys(WEAPON).filter((id) => !!(WEAPON[id] as any).explosive && WEAPON[id].category === 'thrown');
+/** Rules 1.91 item 7916: the explosive charges, in data order (itemtags.ts, the one copy: rules 1.93 item 8110). */
+const EXPLOSIVES: readonly string[] = EXPLOSIVE_CHARGES;
 const DEMO = 1.3;
 function shapeTiles(cb: Combat, from: string, at: string, shape: string, r: number): string[] {
   const out: string[] = [], [ax, ay] = xy(at), [fx, fy] = xy(from), dx = Math.sign(ax - fx), dy = Math.sign(ay - fy), n = 2 * r + 1;

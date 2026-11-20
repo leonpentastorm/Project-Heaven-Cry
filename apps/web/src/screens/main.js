@@ -123,7 +123,8 @@ const TABLES = [['felt', 'Field felt', '#1F4D3A', '#123526'], ['oak', 'Mess-hall
   ['slate', 'Outpost slate', '#2B3138', '#1B2026'], ['hull', 'Ship hull', '#3A3F47', '#5B6270'], ['void', 'Black-hole glass', '#0B0F1E', '#AE9BFF']];
 const SKINS = [['ivory', 'Ivory', '#EFE6D2', '#8C7B5A', '#1A1A1A'], ['obsidian', 'Obsidian', '#15171C', '#6B7280', '#E7EBF3'], ['brass', 'Brass', '#C9A25A', '#6B4F1F', '#1A1208'],
   ['glass', 'Sigil glass', '#173640', '#8BDEEE', '#E7EBF3'], ['bone', 'Bone', '#D9CBB0', '#7A6A4F', '#3A2E20'], ['blood', 'Oil-red', '#7A1121', '#F65157', '#FFFFFF']];
-const ROMAN = ['0', 'I', 'II', 'III', 'IV', 'V'];
+/** A class number in Roman numerals (rules 1.93 item 8112: any class row, class VI the breacher plate; no typed list). */
+const roman = (n) => { if (!n) return '0'; let s = '', x = n; for (const [v, r] of [[10, 'X'], [9, 'IX'], [5, 'V'], [4, 'IV'], [1, 'I']]) while (x >= v) { s += r; x -= v; } return s; };
 const KIND = { weapon: 'WEAPON', ammo: 'AMMO', med: 'MED', tool: 'TOOL', focus: 'FOCUS', food: 'FOOD', loot: 'LOOT', plot: 'PLOT ITEM' };
 const REGIONS = [['OUTPOST-813', 'Barracks, infirmary, comms', 6, 8, 30, 30], ['SHIELD LINE', 'Where the five squads held', 40, 6, 40, 22], ['WRECK FIELD', '100 infantry robots, most still', 6, 44, 34, 40],
   ['ENGINEERS’ SHIP', 'Platinum hold, sealed hatch', 74, 34, 22, 20], ['B813', 'The black hole, overhead', 72, 76, 24, 18]];
@@ -624,7 +625,7 @@ export class MainLogic extends DCLogic {
           (ws.mods || []).map((m) => ITEM[m]?.name).filter(Boolean).join(', '), armsLine(c.weapon), skillLine(c, { id: c.weapon, rarity: ws.rarity, mods: ws.mods })].filter(Boolean).join(' · ')],
       // Items 2.0 lane A3 (design section 5, a screen fault): the body armour's Armour as the fight reads it (armourOf: the
       // class row's value at its grade, scaled by level), with its grade's word
-      [ARMOUR_SLOT]: c.armourClass ? [(KITS[c.kit] && KITS[c.kit].armourClass === c.armourClass ? kitDef.armourName : (ARMOUR[c.armourClass]?.name || 'Body') + ' armour') + ' (Class ' + ROMAN[c.armourClass] + ')', ['Armour ' + armourOf(c), gradeText(cardOf('armour:' + c.armourClass, c.wornState?.[ARMOUR_SLOT]?.rarity))].filter(Boolean).join(' · ')] : null,
+      [ARMOUR_SLOT]: c.armourClass ? [(KITS[c.kit] && KITS[c.kit].armourClass === c.armourClass ? kitDef.armourName : (ARMOUR[c.armourClass]?.name || 'Body') + ' armour') + ' (Class ' + roman(c.armourClass) + ')', ['Armour ' + armourOf(c), gradeText(cardOf('armour:' + c.armourClass, c.wornState?.[ARMOUR_SLOT]?.rarity)), familyText(cardOf('armour:' + c.armourClass))].filter(Boolean).join(' · ')] : null,
       [HAND_SLOT.off]: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] && !isShieldId(c.offHand.id) ? ['Paired attacks', armsLine(c.offHand.id), skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity })].filter(Boolean).join(' · ') : [skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity }), ((WEAPON[c.offHand.id] || ITEM[c.offHand.id])?.text || '').slice(0, 80)].filter(Boolean).join(' · ')] : null } : {};
     if (c) for (const [slot, id] of Object.entries(c.worn || {})) if (wornKey(slot)) worn[slot] = [ITEM[id]?.name || id, [gradeText(cardOf(id, c.wornState?.[slot]?.rarity)), (ITEM[id]?.text || '').replace(/^[^:]+: /, '')].filter(Boolean).join(' · ')];
     const pack = c ? sheetPack(c) : []; // the engine's list: the counted things (a stim, an Essence) flagged `counted`, with their sell note

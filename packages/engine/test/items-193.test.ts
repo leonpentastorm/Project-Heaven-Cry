@@ -1,7 +1,9 @@
 // Rules 1.93 (0.34, the integration): the lead's rulings on what stage B handed back, through the real paths (the
 // reducer's combat/attack, the item tags, the data's own rows).
 import { describe, it, expect } from 'vitest';
-import { WEAPON, ITEM, ARMOUR_CLASSES, FAMILY, itemTags, wikiLookup } from '../src';
+import { WEAPON, ITEM, ARMOUR_CLASSES, FAMILY, itemTags, wikiLookup, apply, itemCard, RuleError, runOptions, type GameState } from '../src';
+import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+import type { Pc } from './helpers/replay';
 import { physFight, rig } from './helpers/physfight';
 
 describe('rules 1.93 item 8102: a Smetanita sidearm\'s hit lays 1 Pressure, once a turn for each target', () => {
@@ -58,5 +60,32 @@ describe('rules 1.93 item 8108: the wiki lists a family\'s rows (the Narrator\'s
       const e = wikiLookup('family:' + fam)!; expect(e, fam).toBeTruthy();
       for (const w of (Object.values(WEAPON) as any[]).filter((x) => x.family === fam && !x.variant_of)) expect(e.text, w.id).toContain(w.id + ' (' + w.form + ')');
     }
+  });
+});
+
+describe('rules 1.93 item 8111: a weapon row with graded: false takes no grade (the grade step reads it)', () => {
+  const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
+  function atForge(): GameState {
+    const g0 = JSON.parse(JSON.stringify(startRun(survivalRoom('PHC-0001', DUO, { test: true }), 'PHC-0001'))) as GameState, r = g0.run!;
+    const n = r.nodes.find((x) => x.depth === 5 && !x.gate)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;
+    n.kind = 'forge' as any; r.at = prev.id; r.state = 'map';
+    for (const c of Object.values(g0.characters)) c.credits = 20000;
+    let g = g0; for (let i = 0; i < DUO.length && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
+    expect(g.run!.at).toBe(n.id);
+    return g;
+  }
+  it('the Forge refuses an ungraded row in the hand, offers no step for it, and still grades a graded one', () => {
+    const ungraded = (Object.values(WEAPON) as any[]).find((w) => w.graded === false && w.category !== 'thrown' && w.id !== 'fists')!;
+    expect(ungraded).toBeTruthy();
+    let g = atForge();
+    const graded = g.characters.c1.weapon;
+    expect((WEAPON[graded] as any).graded).not.toBe(false);
+    const ok = apply(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' }, 'host');
+    expect(ok.characters.c1.weaponState?.rarity).toBe('fine');
+    g.characters.c1.weapon = ungraded.id; delete (g.characters.c1 as any).weaponState;
+    expect(() => apply(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' }, 'host')).toThrow(RuleError);
+    try { apply(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' }, 'host'); } catch (e) { expect((e as Error).message).toContain('takes no grade'); }
+    expect(runOptions(g, 'c1').filter((o) => (o.group === 'grade' || o.group === 'relic') && (o.action as any).where === 'main')).toEqual([]);
+    expect(itemCard({ id: ungraded.id }).graded).toBe(false);
   });
 });

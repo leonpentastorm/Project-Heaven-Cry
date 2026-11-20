@@ -66,6 +66,10 @@ export function itemTags(id: string | null | undefined, inst?: { rarity?: Rarity
   const r = id ? rowOf(id) : null; if (!r) return [];
   return [...rowTags(id!, r), 'grade:' + gradeFor(id!, inst?.rarity)];
 }
+/** Rules 1.91 item 7916, rules 1.93 item 8110 (the one copy): an explosive charge is a weapon row with `explosive: true`
+ * and the `kind:thrown` tag (the launchers are explosive and not thrown); `EXPLOSIVE_CHARGES` lists them in data order. */
+export const isExplosiveCharge = (id: string | null | undefined): boolean => !!id && !!(WEAPON[id] as any)?.explosive && itemTags(id).includes('kind:thrown');
+export const EXPLOSIVE_CHARGES: readonly string[] = Object.keys(WEAPON).filter((id) => isExplosiveCharge(id));
 /** Does the item (or instance) carry this tag? */
 export const hasTag = (id: string | null | undefined, tag: string, inst?: { rarity?: Rarity | null } | null): boolean => itemTags(id, inst).includes(tag);
 /** The value of one tag kind on an item (its first), or null: `tagOf('sabre', 'kind')` is 'light_melee'. */
