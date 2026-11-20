@@ -148,7 +148,8 @@
     "armour-sight_visor--relic",
     "armour-sight_visor--celestial",
     "armour-breather--fine",
-    "armour-breather--masterwork"
+    "armour-breather--masterwork",
+    "armour-breather--relic"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -182,7 +183,6 @@
     "weapon-whisper_smg--masterwork",
     "weapon-whisper_smg--relic",
     "weapon-whisper_smg--celestial",
-    "armour-breather--relic",
     "armour-breather--celestial",
     "armour-sealed_visor--fine",
     "armour-sealed_visor--masterwork",
@@ -215,7 +215,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-20T04:33:30.371667+00:00",
+  "updated_utc": "2026-11-20T04:35:26.563583+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3,
   "quota_history": [

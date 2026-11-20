@@ -9084,6 +9084,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-breather--relic",
+      "path": "art/icons/gear/armour-breather--relic.png",
+      "sha256": "b985954bb66bbaee116e56b1214b16b29735f1d88481d55c05a88c5c00ba5007",
+      "label": "Breather — Relic",
+      "family": "armour-breather",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--relic.png",
+        "sha256": "c0ad34ca79eae31e7bbfeb32e6b144d124b1711e48012b34535b27136708e1ab"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-breather--relic.png",
+        "sha256": "b985954bb66bbaee116e56b1214b16b29735f1d88481d55c05a88c5c00ba5007"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-breather--relic.txt",
+        "sha256": "34ad8f1d5dd5055f0530be48e66f5e64e9adbaacb3eaf997e95c1afd5082b08e"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-breather.png",
+          "sha256": "122ce61995e1f39338eafa5d03b36c19766c9fac17fa0eb3a441b2390e9d45ce"
+        },
+        {
+          "path": "art/icons/gear/armour-breather--masterwork.png",
+          "sha256": "94a935d094642e6f8b310896996eb8954585281c558bebacc79f523a19a8363d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--relic.png",
+        "128": "art/icons/gear/exports/128/armour-breather--relic.png",
+        "64": "art/icons/gear/exports/64/armour-breather--relic.png",
+        "32": "art/icons/gear/exports/32/armour-breather--relic.png"
+      },
+      "export_hashes": {
+        "256": "0ce0fc19ac0a58df66d76140450ee7ac7fa83079063682cb4cb34821cf7e313b",
+        "128": "bb4b02fa6605a25b5a3c26c4f6523f9b5824e079b7bc475d4ae0f1f23035f403",
+        "64": "ce60994824b5b87aa280606bfb3f780d6318bb2197a86f0c4a1fd4f3fb42f467",
+        "32": "d612e939c10a10a536a743a68dc98aad76dee64efd95360dc7301100224dcb8a"
+      },
+      "grade": "relic",
+      "standard_id": "armour-breather",
+      "outline": {
+        "solid_alpha_iou": 0.9768565920181248,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 27
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

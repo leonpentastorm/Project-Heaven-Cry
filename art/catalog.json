@@ -27077,6 +27077,42 @@
         "different_pixels_32": 11,
         "different_pixels_64": 19
       }
+    },
+    "armour-breather--relic": {
+      "label": "Breather — Relic",
+      "path": "art/icons/gear/armour-breather--relic.png",
+      "sha256": "b985954bb66bbaee116e56b1214b16b29735f1d88481d55c05a88c5c00ba5007",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--relic.png",
+        "128": "art/icons/gear/exports/128/armour-breather--relic.png",
+        "64": "art/icons/gear/exports/64/armour-breather--relic.png",
+        "32": "art/icons/gear/exports/32/armour-breather--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breather",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9768565920181248,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 27
+      }
     }
   },
   "survival_art": {
