@@ -7073,7 +7073,10 @@
       },
       "second_skill": "ingenuity",
       "text": "",
-      "lore": ""
+      "lore": "",
+      "variant_mods": [
+        "mod_line_smetanita"
+      ]
     },
     {
       "id": "smetanita_service_pistol",
@@ -7126,7 +7129,10 @@
       },
       "provisional": true,
       "text": "",
-      "lore": ""
+      "lore": "",
+      "variant_mods": [
+        "mod_line_smetanita"
+      ]
     },
     {
       "id": "smetanita_hand_cannon",
@@ -7184,7 +7190,10 @@
       },
       "second_skill": "raw_power",
       "text": "",
-      "lore": ""
+      "lore": "",
+      "variant_mods": [
+        "mod_line_smetanita"
+      ]
     },
     {
       "id": "albert_town_brush_carbine",
@@ -7247,7 +7256,7 @@
       "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
       "lore": "",
       "grants": {
-        "name": "Still Turn",
+        "name": "Settled Shot",
         "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
         "effect": {
           "op": "aimed_still_bonus",
@@ -7315,7 +7324,7 @@
       "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
       "lore": "",
       "grants": {
-        "name": "Still Turn",
+        "name": "Settled Shot",
         "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
         "effect": {
           "op": "aimed_still_bonus",
@@ -7382,7 +7391,7 @@
       "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
       "lore": "",
       "grants": {
-        "name": "Still Turn",
+        "name": "Settled Shot",
         "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
         "effect": {
           "op": "aimed_still_bonus",

@@ -127,6 +127,10 @@
     { "id": "smetanita_sidearms", "name": "Smetanita sidearms", "line": "smetanita", "form_kind": "gun", "weapon_art": null,
       "forms": [ { "id": "close", "teaches": "crossfire" }, { "id": "standard", "teaches": "snap_shot" }, { "id": "long", "teaches": "last_round" } ] },
     { "id": "albert_town", "name": "Albert Town", "line": "albert_town", "form_kind": "gun", "weapon_art": null,
-      "forms": [ { "id": "close", "teaches": "walking_fire" }, { "id": "standard", "teaches": "walking_fire" }, { "id": "long", "teaches": "bead" } ] }
+      "forms": [ { "id": "close", "teaches": "walking_fire" }, { "id": "standard", "teaches": "walking_fire" }, { "id": "long", "teaches": "bead" } ] },
+    { "id": "vests", "name": "Vests", "line": "issue", "form_kind": "gear", "weapon_art": null,
+      "forms": [ { "id": "light" }, { "id": "standard" }, { "id": "heavy" } ] },
+    { "id": "plate", "name": "Plate", "line": "adamantile_brigade", "form_kind": "gear", "weapon_art": null,
+      "forms": [ { "id": "light" }, { "id": "standard" }, { "id": "heavy" } ] }
   ]
 }

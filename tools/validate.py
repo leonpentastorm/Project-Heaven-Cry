@@ -3600,6 +3600,10 @@ for _n, _c in enumerate(_ACLS):
     if _n > 0 and ("family" not in _c or "form" not in _c): errors.append(f"{_w}: a class row carries its tag fields family and form (rules 1.91 item 7950)")
     if "form" in _c and _gear_forms and _c["form"] not in _gear_forms: errors.append(f"{_w}: form '{_c['form']}' is one of the gear forms {sorted(_gear_forms)}")
     if _c.get("family") in _FAM and _c.get("form") not in [x.get("id") for x in _FAM[_c["family"]].get("forms") or []]: errors.append(f"{_w}: form '{_c.get('form')}' is not a form of {_c['family']}")
+    # rules 1.93 item 8103: the Vests and Plate rows are in families.json, so a class row's family must be there, and its
+    # maker line is its family's
+    if _n > 0 and _c.get("family") not in _FAM: errors.append(f"{_w}: family '{_c.get('family')}' is not a families.json row")
+    if _n > 0 and _c.get("family") in _FAM and _c.get("line") != _FAM[_c["family"]].get("line"): errors.append(f"{_w}: line '{_c.get('line')}' is not its family's ('{_FAM[_c['family']].get('line')}', rules 1.93 item 8103)")
 if _ACLS and sum(1 for _c in _ACLS if _c.get("light_cap")) != 1: errors.append("rules.json combat.armor.classes: one row is the light_cap (Forlorn Hope's 'at most Class I's')")
 if _ACLS and not any(_c.get("armoured") for _c in _ACLS): errors.append("rules.json combat.armor.classes: some row is armoured")
 _ffit = [_c.get("class") for _c in _ACLS if _c.get("forge_fit")]

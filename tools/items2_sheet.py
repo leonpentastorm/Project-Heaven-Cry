@@ -400,7 +400,7 @@ def build():
     # signature carriers (rules 1.92 items 8020 to 8023): written into the rows the sheet makes
     for r in weapons:
         if r["family"] == "albert_town":
-            r["grants"] = {"name": "Still Turn", "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.", "effect": {"op": "aimed_still_bonus", "value": 1}}
+            r["grants"] = {"name": "Settled Shot", "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.", "effect": {"op": "aimed_still_bonus", "value": 1}}
             r["text"] = r["grants"]["text"]
         if r["family"] == "central_command_arsenal":
             r["variant_mods"] = ["mod_line_arsenal"]

@@ -9,7 +9,7 @@
 // item's brief() remainder in the character brief.
 import { register, stateOf, uses, has, note, postStory, grantPerkAp, bankAp, pushAp, grantShield, boundGame, skillRollMod, type Holder } from '../effects';
 import { itemAmount } from '../effects/amounts';
-import { SKILL, WEAPON, ITEM } from '../data';
+import { SKILL, WEAPON, ITEM, ARMOUR_CLASSES } from '../data';
 import { say, type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, eyeReach, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE, HIDE_WHY } from '../tactics';
 import { applyCond, condOn } from '../magic';
@@ -518,7 +518,7 @@ register({
 
 // =====================================================================================================================
 // Last Charge (Ultimate: Charge! + Cultured). A straight charge (Charge!'s rule) of 5+ tiles at an enemy: a shield of
-// max(15, 15 × Armour Class) until your next turn starts, once a fight (the fix for the per-turn loop; provisional),
+// max(15, 3 × the class row's armour value: rules 1.93 item 8105) until your next turn starts, once a fight (the fix for the per-turn loop; provisional),
 // and melee hits for the rest of that turn deal ×1.5.
 // =====================================================================================================================
 register({
@@ -530,7 +530,8 @@ register({
       const s = stateOf(h), cb: Combat = ctx.cb; s.melee = turnKey(cb);
       let line = h.u!.name + ' hits the line at full tilt (Last Charge: ×1.5 melee this turn';
       if (uses(h).take('per_combat', 1, h.key + '#shield')) {
-        const ac = h.c?.armourClass || 0, n = Math.max(itemAmount('perk:last_charge', 'shield'), itemAmount('perk:last_charge', 'shield_by_armour', [], { armour_class: ac })), before = h.u!.shield || 0;
+        // rules 1.93 item 8105: by the class row's armour value (the row's `value`; the breacher plate 18 gives 54), not its number
+        const av = ARMOUR_CLASSES[h.c?.armourClass || 0]?.value || 0, n = Math.max(itemAmount('perk:last_charge', 'shield'), itemAmount('perk:last_charge', 'shield_by_armour', [], { armour_value: av })), before = h.u!.shield || 0;
         grantShield(cb, h.u!, n, h.u!); s.shield = Math.max(0, (h.u!.shield || 0) - before); line += ', a ' + s.shield + ' shield until next turn';
       }
       log(cb, line + ').');

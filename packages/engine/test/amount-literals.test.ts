@@ -43,7 +43,7 @@ const LEDGER: [string, string, Record<string, number>][] = [
   ['class:heartbinder.through', 'mirror', { 'mults.share': 0.5 }],                                    // floor(n / 2)
   ['class:vessel.inner_charge', 'heartbeat', { base: 0, 'per.forms': 10 }], ['class:vessel.release_strike', 'damage', { base: 15 }],
   ['class:infiltrator.field_fix', 'repair', { base: 15 }], // class:infiltrator.sabotage's damage block went with its rig (rules 1.74 item 6011: the Rig verb is the one copy)
-  ['perk:last_charge', 'shield', { base: 15 }], ['perk:last_charge', 'shield_by_armour', { base: 0, 'per.armour_class': 15 }],
+  ['perk:last_charge', 'shield', { base: 15 }], ['perk:last_charge', 'shield_by_armour', { base: 0, 'per.armour_value': 3 }], // rules 1.93 item 8105: 3 x the class row's value (15 x the class for 1 to 5)
   ['perk:trick_shot', 'ricochet', { 'mults.share': 0.5 }],
   ['perk:field_surgeon', 'patch', { base: 0, 'per.max_hp': 0.5 }],
   ['perk:clean_hands', 'shield', { 'mults.pct_of_max_hp_I': 15, 'mults.pct_of_max_hp_II': 25 }],

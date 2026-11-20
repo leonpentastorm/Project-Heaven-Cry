@@ -13384,8 +13384,8 @@
           "base": 0,
           "per": [
             {
-              "of": "armour_class",
-              "value": 15
+              "of": "armour_value",
+              "value": 3
             }
           ],
           "profile": "flat",
@@ -13408,7 +13408,7 @@
       "ap_cost": null,
       "uses": "at_will",
       "flavour": "Every army has a song for running at guns. You know all of them.",
-      "text": "When you charge 5 or more tiles in a straight line at an enemy, your melee hits deal ×{=effects.1.value} damage for the rest of that turn. Once per fight, that charge also gives you a shield of 15 × your Armour Class (at least 15) until your next turn starts.",
+      "text": "When you charge 5 or more tiles in a straight line at an enemy, your melee hits deal ×{=effects.1.value} damage for the rest of that turn. Once per fight, that charge also gives you a shield of {=amounts.shield_by_armour.per.0.value} × your body armour's armour value (at least {=amounts.shield.base}) until your next turn starts.",
       "effects": [
         {
           "op": "shield",

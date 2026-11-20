@@ -14372,7 +14372,7 @@ the recorded replays prove it.
       and the slots list say `inner_torso`, the saved key. A save that holds `worn.torso_inner` has it moved once, on load,
       to `worn.inner_torso` (if that slot is already filled, the older piece goes to the pack); nothing is written when the
       old key is not there. The Dark Steward's bare torso reads the one key.
-7959. **Open, for the lead:** Last Charge's shield by armour (`perks.json last_charge amounts.shield_by_armour`, 15 a
+7959. **Settled by rules 1.93 item 8105.** Was open, for the lead: Last Charge's shield by armour (`perks.json last_charge amounts.shield_by_armour`, 15 a
       class) reads the class NUMBER, so the breacher plate (class 6, armour 18) would give 90, more than Juggernaut's 75.
       Not changed here (no number is this lane's); a row field for it, or a reading by value, is the lead's ruling.
 
@@ -14571,7 +14571,7 @@ of 0.33 is renamed or removed.
 | G13 ADCorp | the Forge fits and swaps its mods for less | not carried (owed: a mod-fitting price factor a row or family gives the Forge) | all three plain |
 | G14 Chezknov | less Recoil on Bursts | not carried: a gun's own `recoil` has no mode limit and a row's modifiers do not reach `gearNum` (owed: `recoil_modes` on a weapon row, or modifiers read by `gearNum`); its number is not given either | all three plain |
 | G15 Arsenal | a reload costs 1 AP less | `cost_mod` on the `cost` trigger (`action: reload`, `with_this`), on the modifier row `mod_line_arsenal`, named in the rows' `variant_mods` (item 8022) | all three carry it |
-| G16 Smetanita | a hit adds Pressure | the `resource` op on `hit` (Pressure) would carry it, but the lead gives no amount: not built (item 8046) | all three plain |
+| G16 Smetanita | a hit adds Pressure | the `resource` op on `hit` (Pressure): 1, once a turn for each target, on the modifier row `mod_line_smetanita` (rules 1.93 item 8102) | all three carry it |
 | G17 Albert Town | an Aimed Shot after a still turn is +1 to hit | `aimed_still_bonus` +1 (a grant, as the long rifle's One Breath: "if you haven't moved this turn") | all three carry it (item 8023) |
 | B1 Bows | silent, no heat, quiver | the rows' `silent`, `no_heat`, `quiver` | `short_bow` carries them |
 | B2 Crossbows | silent, cranked | the rows' `silent`, `no_heat`, `autoload` | `arbalest` carries them |
@@ -14579,7 +14579,7 @@ of 0.33 is renamed or removed.
 8022. **Central Command Arsenal's reload** (`items.json mod_line_arsenal`, PROVISIONAL): reloading the gun that carries it
       costs **1 AP less** (`cost_mod` on the `cost` trigger, `action: reload`, `with_this`: only that gun's reload). The
       rows name it in `variant_mods` (held while the gun is in a hand, rules 1.56 L4).
-8023. **Albert Town's grant** (named "Still Turn"; the name is a placeholder the lead may change): `aimed_still_bonus`
+8023. **Albert Town's grant** (named "Settled Shot": rules 1.93 item 8106; it was the placeholder "Still Turn"): `aimed_still_bonus`
       **+1**: if you haven't moved this turn, an Aimed Shot gets +1 more to hit.
 8024. **The heavy and strange families' signatures** (tables section 6):
 
@@ -14630,7 +14630,7 @@ of 0.33 is renamed or removed.
       8017).
 8036. **The breacher plate's armour value** is 18 (rules 1.91 item 7951, the lead's numbers); its maker line is not
       decided.
-8037. **Handed back to the lead:** the maker lines of the Vests and Plate families (their `families.json` rows wait,
+8037. **Handed back to the lead** (answered by rules 1.93 items 8102 to 8106): the maker lines of the Vests and Plate families (their `families.json` rows wait,
       item 8003); the breather (item 8031); the Smetanita Pressure amount (item 8046); Chezknov's Recoil cut (item 8021).
 8038. (Reserved.)
 8040. **The typing sheet** (`docs/design/proposals/2026-11-20-items-2.0-rows.json`, written by `tools/items2_sheet.py`
@@ -14654,7 +14654,7 @@ of 0.33 is renamed or removed.
       (item 8014); the 5-point second-skill threshold (item 8016); Arsenal's 1 AP off a reload (item 8022); Albert
       Town's +1 (item 8023); the siege tube's Raw Power 5 and 1 AP (item 8035); the door knocker's 3-tile push (item
       8032); the throwaway tube's reload 3 (item 8033).
-8046. **Numbers needed and not given** (handed back, never invented): the Smetanita sidearms' Pressure a hit adds (G16);
+8046. **Numbers needed and not given** (handed back, never invented; the Smetanita number is given by rules 1.93 item 8102, the rest stay unbuilt by item 8104): the Smetanita sidearms' Pressure a hit adds (G16);
       Chezknov's Recoil cut on Bursts (G14); the revolvers' critical range (G2); every gun and bow second-skill effect's
       size (item 8035).
 
@@ -14678,3 +14678,25 @@ The integration of Items 2.0 stage B (lane B1's 72 weapon rows) and the consolid
       rifle): `adamantile_heavy_rifle` (36), `arsenal_heavy_rifle` (38), `chezknov_precision_rifle` (35);
       `adcorp_designated_rifle` is **33** (was 34) and keeps Shot 2 / Aimed Shot 3. Section 7's † rows and the numbers
       file (`-numbers.md`) say the same. No other new row is over the guard. PROVISIONAL with the other rules 1.92 numbers.
+8102. **Smetanita's signature (G16, the lead's number):** a hit with a Smetanita sidearm (`smetanita_pocket_pistol`,
+      `smetanita_service_pistol`, `smetanita_hand_cannon`) lays **1 Pressure** on its target, **once a turn for each
+      target**, on top of what the hit's own fire lays (the meter's cap and its filters apply). Carried by the step B0
+      named: the `resource` op on the `hit` trigger, with `with_this` (the hit made with that gun) and the `limit`
+      `{per: per_turn, each: target}` Pressure Point uses, on the modifier row `items.json mod_line_smetanita`, named in
+      the three rows' `variant_mods` (the Arsenal pattern, item 8022). PROVISIONAL.
+8103. **The Vests and Plate families' maker lines:** the Vests family (body armour classes 1 to 3) takes the plain
+      issue line (`issue`, the line of the service sidearms and the service knives); the Plate family (classes 4, 5 and
+      the breacher plate, class 6) takes the Adamantile Brigade's (`adamantile_brigade`). Their rows are in
+      `data/families.json` (forms light, standard, heavy), and each class row carries its family's `line` (the `line:`
+      tag of `armour:<n>`). The validator now asks a class row's family to be a `families.json` row and its line to be
+      its family's (supersedes item 7950's "a class row's maker line is not decided" and item 8037's first point).
+8104. **Signatures and effects not built in this pass** (each ships plain; its row's text promises nothing): Chezknov's
+      Recoil cut on Bursts (G14), the revolvers' critical range (G2), every second-skill effect size (item 8035), and the
+      owed pieces of items 8021, 8024 and 8030. **`breather` and `blackpoint_wall_gun` stay held** (not shipped; items
+      8031, 8034).
+8105. **Last Charge's shield by armour** (`perks.json last_charge amounts.shield_by_armour`) reads the class row's
+      **armour value × 3** (the row's `value`), not the class number × 15: the same for classes 1 to 5 (5, 10, 15, 20,
+      25 give 15 to 75), and the breacher plate (class 6, value 18) gives **54** (at least 15, as before). One data
+      number (`per: [{of: armour_value, value: 3}]`); the perk's text reads it. PROVISIONAL. Settles item 7959.
+8106. **Albert Town's grant is named "Settled Shot"** (item 8023's placeholder "Still Turn" retired).
+8107. **No colour per grade in this pass:** a grade shows by its frame and its word (rules 1.91), nothing more.

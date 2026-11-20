@@ -797,12 +797,12 @@
       "classes_about": "Rules 1.91 items 7950, 7951: the one copy of body armour (the typed table in code is gone). A save stores the class number: a class is appended, never inserted. penalty.no_sprint: no Sprint; armoured: counts as armour where a target's armour is asked (a unit with no sheet: at least the smallest armoured value); light_cap: the row whose value caps 'armour counts as at most Class I's' (Forlorn Hope); forge_fit: the Forge fits it (rules 1.91 item 7952); family, form: the tag fields (item 7900).",
       "classes": [
           { "class": 0, "name": "None", "value": 0, "penalty": {}, "weight_kg": 0, "price_credits": 0 },
-          { "class": 1, "name": "Light", "value": 5, "penalty": {}, "weight_kg": 4, "price_credits": 150, "light_cap": true, "forge_fit": true, "family": "vests", "form": "light" },
-          { "class": 2, "name": "Medium", "value": 10, "penalty": {}, "weight_kg": 8, "price_credits": 400, "armoured": true, "forge_fit": true, "family": "vests", "form": "standard" },
-          { "class": 3, "name": "Heavy", "value": 15, "penalty": { "movement": -0.5 }, "weight_kg": 12, "price_credits": 900, "armoured": true, "forge_fit": true, "family": "vests", "form": "heavy" },
-          { "class": 4, "name": "Assault", "value": 20, "penalty": { "movement": -0.5, "dodge": -1 }, "weight_kg": 18, "price_credits": 1800, "armoured": true, "forge_fit": true, "family": "plate", "form": "standard" },
-          { "class": 5, "name": "Juggernaut", "value": 25, "penalty": { "movement": -1, "no_sprint": true }, "weight_kg": 28, "price_credits": 4000, "armoured": true, "forge_fit": true, "family": "plate", "form": "heavy" },
-          { "class": 6, "name": "Breacher plate", "value": 18, "penalty": { "movement": -0.5 }, "weight_kg": 14, "price_credits": 1400, "armoured": true, "family": "plate", "form": "light", "provisional": true }
+          { "class": 1, "name": "Light", "value": 5, "penalty": {}, "weight_kg": 4, "price_credits": 150, "light_cap": true, "forge_fit": true, "family": "vests", "form": "light", "line": "issue" },
+          { "class": 2, "name": "Medium", "value": 10, "penalty": {}, "weight_kg": 8, "price_credits": 400, "armoured": true, "forge_fit": true, "family": "vests", "form": "standard", "line": "issue" },
+          { "class": 3, "name": "Heavy", "value": 15, "penalty": { "movement": -0.5 }, "weight_kg": 12, "price_credits": 900, "armoured": true, "forge_fit": true, "family": "vests", "form": "heavy", "line": "issue" },
+          { "class": 4, "name": "Assault", "value": 20, "penalty": { "movement": -0.5, "dodge": -1 }, "weight_kg": 18, "price_credits": 1800, "armoured": true, "forge_fit": true, "family": "plate", "form": "standard", "line": "adamantile_brigade" },
+          { "class": 5, "name": "Juggernaut", "value": 25, "penalty": { "movement": -1, "no_sprint": true }, "weight_kg": 28, "price_credits": 4000, "armoured": true, "forge_fit": true, "family": "plate", "form": "heavy", "line": "adamantile_brigade" },
+          { "class": 6, "name": "Breacher plate", "value": 18, "penalty": { "movement": -0.5 }, "weight_kg": 14, "price_credits": 1400, "armoured": true, "family": "plate", "form": "light", "provisional": true, "line": "adamantile_brigade" }
       ],
       "other_slots": "head, hands, footwear etc. carry per-item effects",
       "other_slot_items": null,

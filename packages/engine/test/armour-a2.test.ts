@@ -42,7 +42,7 @@ describe('rules 1.91 items 7950, 7951: the class rows are the one copy', () => {
     expect([bp.name, bp.value, bp.weight_kg, bp.price_credits, bp.penalty.movement, !!bp.penalty.no_sprint]).toEqual(['Breacher plate', 18, 14, 1400, -0.5, false]);
     expect((techJ as any).rules.gear_gates.heavy_armour.classes['6']).toBe(2);
     expect(priceOf('armour:6')).toBe(1400);
-    expect(itemTags('armour:6')).toEqual(['kind:armour', 'family:plate', 'form:light', 'slot:torso_outer', 'grade:standard']);
+    expect(itemTags('armour:6')).toEqual(['kind:armour', 'family:plate', 'form:light', 'line:adamantile_brigade', 'slot:torso_outer', 'grade:standard']); // its line: rules 1.93 item 8103
   });
   it('the fields code reads in place of a class number: no Sprint (5 only), armoured (2 on), the light cap (Class I\'s 5)', () => {
     expect([0, 1, 2, 3, 4, 5, 6].map(noSprintClass)).toEqual([false, false, false, false, false, true, false]);

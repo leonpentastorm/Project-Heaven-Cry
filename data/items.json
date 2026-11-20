@@ -1832,6 +1832,35 @@
       ]
     },
     {
+      "id": "mod_line_smetanita",
+      "name": "Smetanita action",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Smetanita: a hit with this gun lays {=effects.0.value} Pressure on its target, once a turn for each target.",
+      "effects": [
+        {
+          "op": "resource",
+          "when": "hit",
+          "if": {
+            "actor": "self",
+            "hostile": true,
+            "with_this": true,
+            "target_alive": true
+          },
+          "resource": "pressure",
+          "value": 1,
+          "target": "target",
+          "limit": {
+            "per": "per_turn",
+            "n": 1,
+            "each": "target"
+          }
+        }
+      ]
+    },
+    {
       "id": "mod_siege_reload",
       "name": "Siege loader",
       "category": "mod",

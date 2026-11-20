@@ -3031,7 +3031,7 @@
     "cycle": 170
    },
    "grants": {
-    "name": "Still Turn",
+    "name": "Settled Shot",
     "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
     "effect": {
      "op": "aimed_still_bonus",
@@ -3101,7 +3101,7 @@
     "cycle": 170
    },
    "grants": {
-    "name": "Still Turn",
+    "name": "Settled Shot",
     "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
     "effect": {
      "op": "aimed_still_bonus",
@@ -3169,7 +3169,7 @@
     "cycle": 260
    },
    "grants": {
-    "name": "Still Turn",
+    "name": "Settled Shot",
     "text": "If you haven't moved this turn, an Aimed Shot gets +{=grants.effect.value} more to hit.",
     "effect": {
      "op": "aimed_still_bonus",
