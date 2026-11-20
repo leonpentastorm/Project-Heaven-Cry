@@ -182,6 +182,62 @@ is the one to match). Until drawn, each shows the fallback the UI already uses f
 
 The Faith forks (`fork.prayer.steadfast`, `fork.prayer.round_of_blessings`, `fork.prayer.held_breath` now named **Swift Psalm**, `fork.prayer.benediction`) are built in 0.32 (rules 1.75 item 6222); their placeholders stand. Swift Psalm's icon should read as a quicker hymn (Wick singing on the move), no longer a held breath.
 
+### 0h. Every perk and fork option still on the initials mark (the full list, 0.33; requested 20 Nov 2026)
+
+The UI shows these with the fallback mark (the name's initials in the skill's attribute ink; `apps/web/src/game/markIcon.ts`,
+`forkIcon.ts`) because no icon file exists for the id: 45 in all (41 perks, 4 fork options), read from the build's screen
+data and `assets.json` on 20 Nov 2026. Perk icons go to `art/icons/perks/` (Wick, white flat ink, the STYLE-LOCK), fork
+icons to `art/icons/forks/` (catalog `fork_icons`, built as `wick-fork-<id>`). "Also asked in" names the row of an earlier
+section that names the id and gives a direction; "new": no earlier row names the id (an older section may still name it in words), so draw what the line says.
+
+| Id | Name | What | What it does (one line) | Also asked in |
+| --- | --- | --- | --- | --- |
+| `still_standing` | **Still Standing** | Pain Threshold perk | HP out: one more turn with 3 AP, once a fight | new |
+| `close_guard` | **Close Guard** | Pain Threshold perk | Answer: 25% of a blow on an ally beside you comes to you | new |
+| `read_the_air` | **Read the Air** | Senses perk | A tell: +2 on your next social roll against them | new |
+| `tremor` | **Tremor** | Senses perk | You act in the surprise round against anything on the ground | new |
+| `point_man` | **Point Man** | Guts perk | Allies within 3 tiles save against Fear with your Guts | new |
+| `unflinching` | **Unflinching** | Guts perk | At x3+ Momentum: −1 to hit you in melee | new |
+| `marrow_talk` | **Marrow Talk** | Intimidation perk | A failed threat still leaves them Shaken | new |
+| `stare_down` | **Stare Down** | Intimidation perk | Fight start: one foe that sees you saves or loses its first turn | new |
+| `untouchable` | **Untouchable** | Athletics perk | No torso armour: attacks on you roll twice, take the worse | new |
+| `shoot_first` | **Shoot First** | Reaction Speed perk | Act in the surprise round, even when surprised | new |
+| `cut_in` | **Cut In** | Reaction Speed perk | Once a scene: cut in and act first | new |
+| `speed_load` | **Speed Load** | Reaction Speed perk | Reload costs 1 AP less | new |
+| `quick_read` | **Quick Read** | Acuity perk | Analyze costs 1 AP less | MD1 |
+| `read_them` | **Read Them** | Acuity perk | A foe you Analyze deals 15% less damage to your side | MD2 |
+| `still_breath` | **Still Breath** | Acuity perk | −2 to foes' spot rolls while you stand by cover | MD3 |
+| `read_intent` | **Read Intent** | Vigilance perk | Your Spot also Reads its target (its next action shown) | MD4 |
+| `index` | **Index** | Rumination perk | Once a scene: one true fact about technology, biology or history | MD5 |
+| `proven_formula` | **Proven Formula** | Rumination perk | +3 on saves against what already hit you this fight | MD6 |
+| `objection` | **Objection!** | Eloquence perk | Expose a claim: listeners trust the speaker less | MD7 |
+| `opening_argument` | **Opening Argument** | Eloquence perk | Before a fight: out-argue their leader | MD8 |
+| `thinking_aloud` | **Thinking Aloud** | Eloquence perk | After a Call: your next Evoke this turn costs 0 AP | MD9 |
+| `field_repair` | **Field Repair** | Improvisation perk | 2 AP and a spare part: clear a jam, mend a weapon, repair a machine or Figment | new |
+| `tuned` | **Tuned** | Improvisation perk | Main-hand weapon never jams or breaks | MD11 |
+| `smooth` | **Smooth** | Charisma perk | A failed lie only raises suspicion | MD12 |
+| `showman` | **Showman** | Charisma perk | Picture costs 1 charge less | MD13 |
+| `threads_that_hold` | **Threads That Hold** | Empathy Mastered perk |  | new |
+| `hand_off` | **Hand-Off** | Camaraderie perk | Once a round: a friend beside you uses your Defense if higher | new |
+| `nobody_left_behind` | **Nobody Left Behind** | Camaraderie perk | Stabilise −1 AP · a Downed friend beside you takes 50% less | new |
+| `steady_hands` | **Steady Hands** | Camaraderie perk | Settle: 1 AP · a friend's saves get a bonus | new |
+| `pull_together` | **Pull Together** | Camaraderie perk | Tug: 1 AP · a Bonded unit comes toward you | new |
+| `veiled_insult` | **Veiled Insult** | Insinuation perk | 0 AP, once a fight: a foe saves or is Taunted | new |
+| `quiet_thread` | **Quiet Thread** | Insinuation perk | You are never Traced | new |
+| `poker_face` | **Poker Face** | Composure perk | Anyone questioning you or reading your lies: −3 | new |
+| `stand_still` | **Stand Still** | Composure perk | Until you first act: foes −2 to hit you · the first miss gives you a free attack | new |
+| `pure_heart` | **Pure Heart** | Composure perk | Once a fight: the Strain that would Mana Short you is refused | new |
+| `recitation` | **Recitation** | Lore Master perk | Once a turn: a Call you make calms 1 Strain | new |
+| `lore_ward` | **Warding Word** | Lore Master perk | 1 AP: a friend's next Brain or Heart save gets a bonus | new |
+| `righteous` | **Righteous** | Conscience perk | Prayer heals and shields on a friend at half HP: +20% | new |
+| `foresight` | **Foresight** | Conscience perk | Before a big decision: its worst likely result, honestly | new |
+| `five_stars` | **Five Stars** | Authority perk | Fight start: every friend +1 AP on its first turn | new |
+| `commanding_voice` | **Commanding Voice** | Authority perk | +3 on saves against Silenced, Shaken and Fear | new |
+| `fork.figment.hard_light` | **Hard Light** | fork option (visualization) | Your Figments take less damage; one destroyed gives you AP next turn | MD14 |
+| `fork.figment.sharp_light` | **Sharp Light** | fork option (visualization) | Your Figments' strikes deal more damage; a drop makes the next Figment order free | MD15 |
+| `fork.figment.many_hands` | **Many Hands** | fork option (visualization) | One more Figment held; Picture costs less charge | MD16 |
+| `fork.figment.masterwork` | **Masterwork** | fork option (visualization) | Name one Figment your Masterwork: better to hit, harder to hurt, a free order a round | MD17 |
+
 ### 2. Outburst feelings and modules
 
 | # | For | Status | What it must show | Direction | Goes to |
@@ -443,6 +499,7 @@ Claude cannot draw Wick in a new pose or expression, or paint anything.
 
 ## Log
 
+- **20 Nov 2026 (0.33.0):** section 0h opened: the full list of the 45 perks and fork options the UI still shows with the initials mark (41 perks, 4 Visualization forks), each with its id, name and one line on what it does.
 - **16 Nov 2026 (rules 1.60, Doors 3.0 slice C):** section 5c opened: 32 Wick icons for the doors' fork options, each with a placeholder (catalog `fork_icons`).
 - **16 Nov 2026 (rules 1.60, Doors 3.0 slice B):** section 5b opened: four Wick icons for the reshaped moves (Wind-up, Read the Swing, Hold the Lane, Scrap Sentinel), names-only changes listed, two condition glyphs in-house.
 - **16 Nov 2026 (rules 1.56, the Mana Shock):** F3 opened: the Mana Shock sign (a placeholder is in).
