@@ -34,7 +34,8 @@ function withEngine(f: (e: Engine) => void) {
 
 
 export type Screen = 'home' | 'create' | 'room' | 'main' | 'combat' | 'levelup' | 'ultimate' | 'run';
-export interface Me { id: string; name: string }
+/** seat: this browser's room secret (0.33 review): kept in phc.me, never shown or sent but as a room's seat token. */
+export interface Me { id: string; name: string; seat?: string }
 export interface ClientState {
   me: Me; role: 'host' | 'guest' | null; code: string | null; game: GameState | null;
   /** replaced: this player opened the room in another tab or browser, and that link has it now (net.ts). */
@@ -68,6 +69,7 @@ let S: ClientState = {
   narrator: { provider: providerInfo(savedNarr?.provider).id, key: savedNarr?.key || '', model: savedNarr?.model || 'claude-opus-5-5', baseUrl: savedNarr?.baseUrl || '',
     effort: savedNarr?.effort || 'medium', remember: !!savedNarr?.key, scripted: false },
 };
+if (!S.me.seat) S.me = { ...S.me, seat: rid(24) }; // the seat secret travels with the player id (seatToken below)
 write(LS.me, S.me);
 
 const subs = new Set<() => void>();
@@ -84,6 +86,8 @@ let hostState: GameState | null = null;
 
 // ---------- identity, library, navigation ----------
 export function setName(name: string) { set({ me: { ...S.me, name } }); write(LS.me, S.me); }
+/** Test seam: the seat token this browser brings to a room (seatToken). */
+export const _seatToken = (code: string) => seatToken(code);
 /** Go to a screen. 'run' is the play screen since rules 1.54 (a run's screens are its middle column): kept as a name. */
 export function go(screen: Screen, extra: Partial<ClientState> = {}) { set({ screen: screen === 'run' ? 'main' : screen, ...extra }); }
 export function saveToLibrary(sheet: Sheet) {
@@ -182,10 +186,18 @@ export function toMainMenu() { if (S.role === 'host' && hostState) { persist(); 
 export function leaveRoom() { if (S.role === 'host' && hostState) { persist(); conn?.send({ t: 'save', state: slim(hostState) }); } conn?.close(); conn = null; hostState = null; write(LS.room, null); set({ role: null, code: null, game: null, screen: 'home', conn: 'offline' }); }
 export function resumeRoom() { const r = read(LS.room, null); if (r?.code && S.me.name) (r.role === 'host' ? hostRoom(r.code) : joinRoom(r.code)); }
 export const lastRoom = () => read(LS.room, null) as { code: string; role: string } | null;
-function hostToken(code: string) { const k = 'phc.hosttoken.' + code; let t = read(k, null); if (!t) { t = rid(24); write(k, t); } return t; }
+/** The room tokens this page made or read (0.33 review): a token survives a failed localStorage write for the page's life. */
+const tokens = new Map<string, string>();
+function hostToken(code: string) { const k = 'phc.hosttoken.' + code; let t = tokens.get(k) || read(k, null); if (!t) { t = rid(24); write(k, t); } tokens.set(k, t); return t; }
 /** A guest's seat in a room (0.33): the room keeps the first token a player id brings and lets that id in again only
- *  with it (apps/server policy.ts guestSeat), so another player who reads the id cannot take the seat. */
-function seatToken(code: string) { const k = 'phc.seattoken.' + code; let t = read(k, null); if (!t) { t = rid(24); write(k, t); } return t; }
+ *  with it (apps/server policy.ts guestSeat), so another player who reads the id cannot take the seat. A token saved
+ *  before is used as it is; a new one is made from the seat secret kept in phc.me with the player id (0.33 review: a
+ *  browser whose storage refuses writes makes the same token again after a reload, so it never loses its own seat). */
+function seatToken(code: string) {
+  const k = 'phc.seattoken.' + code; let t = tokens.get(k) || read(k, null);
+  if (!t) { t = S.me.seat ? (S.me.seat + '_' + code.replace(/\W/g, '')).slice(0, 64) : rid(24); write(k, t); }
+  tokens.set(k, t); return t;
+}
 
 /** The room was opened in another tab (net.ts, close 4000): take it back here. The other tab's link is replaced in
  *  turn and stops there; a host reloads the save this browser keeps (the other tab wrote it), a guest joins again. */
