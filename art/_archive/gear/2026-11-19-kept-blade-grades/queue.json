@@ -3192,7 +3192,13 @@
     "keep_line": "the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.",
     "status": "pending",
     "production_approved": false,
-    "depends_on": null
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-lever_carbine--fine--1795145177391.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-lever_carbine--fine--1795145177391.json",
+      "request_id": "0fc8148e-a161-47ed-96b1-077dc1cde539"
+    }
   },
   {
     "id": "weapon-lever_carbine--masterwork",
