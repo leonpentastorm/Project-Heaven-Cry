@@ -310,6 +310,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_knives--celestial",
+      "path": "art/icons/gear/weapon-throwing_knives--celestial.png",
+      "sha256": "493c6d9c698ca92f45e8409904f08740d34ef61d4862a0964f02656a08c85e28",
+      "label": "Throwing Knives — Celestial",
+      "family": "weapon-throwing_knives",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-throwing_knives--celestial.png",
+        "sha256": "b6812ba46ac3c7b9de462957ddc637d4d147f18da3e38679d6097cb52a785892"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-throwing_knives--celestial.png",
+        "sha256": "493c6d9c698ca92f45e8409904f08740d34ef61d4862a0964f02656a08c85e28"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-throwing_knives--celestial.txt",
+        "sha256": "7fc2f2f3ee3aa8c62d1b745842dc1da7df562828b91a22a47a6ff3f6aa61bd11"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-throwing_knives.png",
+          "sha256": "8e36e35a0a48efd17166fe67d9ed3e47343497619dc16b865d1a9c41ca88e71e"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_knives--relic.png",
+          "sha256": "be36f423e0c20a49ce19d0ad4decda8aead55a3f96c0d2027808e5754d018241"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-throwing_knives--celestial/01-quality-review/native.png",
+          "sha256": "fa9b0574d0860c6ec4f1c061021928cbf0f221b3c2073eff49ea225816f5bff8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_knives--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_knives--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_knives--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_knives--celestial.png"
+      },
+      "export_hashes": {
+        "256": "ee330a99ae796ececdbb8a785c4ae97ad8009a1746464f64dd94c8b5dbc91a2e",
+        "128": "b8aacaba33068afa89038e1340b844a9d317a743a297df21564e424c7d15bc3a",
+        "64": "e4ee149755e03a7f4c113000cb0ab3d6d1b6e0836b1537c115a041ad335393b6",
+        "32": "bd546f65f4c84faf0d24bed21ecdfe2c32cd9220b79b4cad94caf97bc89fcd40"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-throwing_knives",
+      "outline": {
+        "solid_alpha_iou": 0.8215902236774746,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 29,
+        "different_pixels_64": 133
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
