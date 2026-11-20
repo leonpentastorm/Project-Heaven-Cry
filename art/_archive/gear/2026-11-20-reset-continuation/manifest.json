@@ -1896,6 +1896,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_leaf_dagger--masterwork",
+      "path": "art/icons/gear/weapon-legion_leaf_dagger--masterwork.png",
+      "sha256": "e09a88dfead324c6587d50311cba85c1eb84b359a44424ad8823de9fe7e2e748",
+      "label": "Legion Leaf Dagger — Masterwork",
+      "family": "weapon-legion_leaf_dagger",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_leaf_dagger--masterwork.png",
+        "sha256": "ccd01704e418d18423e65a0f45433877768cfc39a963d978f0221d09f0494fde"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_leaf_dagger--masterwork.png",
+        "sha256": "e09a88dfead324c6587d50311cba85c1eb84b359a44424ad8823de9fe7e2e748"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_leaf_dagger--masterwork.txt",
+        "sha256": "1a5f20bf3fb0e08b11666261a620a44020edc1ef086ab9cc44e29ace1b44f13a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_leaf_dagger.png",
+          "sha256": "c074f9aa7dc085ce042244859c3e1e7c004b2070e0fa7c7af2cc22183ba946db"
+        },
+        {
+          "path": "art/icons/gear/weapon-legion_leaf_dagger--fine.png",
+          "sha256": "30dff0ce6f1183f56ecf9be77e65e0bd9f7c92bb767638316d393e6364878301"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_leaf_dagger.png",
+          "sha256": "5e5f7c73b4a37ae47866b5669929b7760a43adac2cb83a9089f0da4541610715"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_leaf_dagger--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_leaf_dagger--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_leaf_dagger--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_leaf_dagger--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "b4dc76707a471b537cf9ca3b3c89f79d80550798473774ae711a9a3707ddcd91",
+        "128": "9d5c47d1ab876e61a85b1515fc498e79f5f920b8025a781f473e2e60726eb623",
+        "64": "760e0e27708a87a5a905c283033e65357b2654aa5dfdc5d1223f00673ddd8f58",
+        "32": "2e6dba7c6197799044e33400bb5df2789e01c26e30608dc5204cf20a9754444a"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-legion_leaf_dagger",
+      "outline": {
+        "solid_alpha_iou": 0.9684584331395836,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

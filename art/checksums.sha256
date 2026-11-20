@@ -2601,7 +2601,7 @@ bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/g
 f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/gear/2026-11-19-unique-melee-bow/web-build-check.json
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
-84b379001411aecfd913ddbb7cb9e88fbe3a9cba3190ea1ad1aee6143b6ff9ae  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
+4dc03dbd107ae7eed5e0d39294ea54ed52db21824c609ae29224773447315ba1  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
 1006204c5e813723abfb237b9be15ccb822febfcdcff4f3180aba731f6e9d711  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
@@ -2627,7 +2627,7 @@ fa9b0574d0860c6ec4f1c061021928cbf0f221b3c2073eff49ea225816f5bff8  art/_archive/g
 2999330cbaa663b251233bac0c1d1cf8c47d761f63114e094fe256ac9b95aa43  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-dock_cutter--masterwork.json
 1d20b77054e5ac7326d126cebf353f98412aeafa2b62cb32ffc2e1f785fb289c  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-hellraiser_rotary--celestial.json
 54ad9bce4afff6e1e35f06e8acb90ddda1571c52c43ba74c7821632647c53190  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-purifier_flamer--masterwork.json
-73e70caaf15dff5b8f1315336742e787793566e2b1d61b1e784a4b4082a51208  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
+788925a0ff2d7db2e5e2ecbc1fa8b45a59e682b2cc2e399b8c1ebfd004152602  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
 7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--celestial.png
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png
 35517c194752fe89abea9fea2071f1895d426057487192e0f8744fab4eab9fcf  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-broadback_sabre--fine.png
@@ -2641,6 +2641,7 @@ c927804a01123dc4493c197ad0639487dfa7478151ddd0d244395792abef8eeb  art/_archive/g
 d41f627c908cdb82d0030478fbfc718a576b94ed4d53b0cdfda598e5f05e4c21  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-hellraiser_servo_fist--masterwork.png
 a3645baabb1f18c0bb48f31476a0e4779c8932a868395a41a3044ce4aa2c6bd3  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-hellraiser_servo_fist--relic.png
 30dff0ce6f1183f56ecf9be77e65e0bd9f7c92bb767638316d393e6364878301  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_leaf_dagger--fine.png
+e09a88dfead324c6587d50311cba85c1eb84b359a44424ad8823de9fe7e2e748  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_leaf_dagger--masterwork.png
 89b1230dfc247cf8ddf8680bb44d66ed2a9ee1068343e44815270aada208d3f1  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-lowland_chopper--celestial.png
 fa38ba739f8141e5006119a96bd17c1d1004fb3fb6542a1aa19559c2aa3ac102  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-lowland_chopper--fine.png
 4c89fedaeb3b3696de5ae2ccf1b056c22e4c34114ced7f7def1506c7769d5bf3  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-lowland_chopper--masterwork.png
@@ -2658,7 +2659,7 @@ a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921  art/_archive/g
 0ade2a5a847a28f800c042112b7ab0be26ee6641929d9a0e924f39990bc4ba10  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--fine.png
 96c9588f2420f194bf05621dd6fa72ad02c0b340f3dd3822996fd35a604f3a1f  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--masterwork.png
 c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--relic.png
-5afb68ddad30fc2b497c40e16c88808fdc6d6565ebc445551dd2cb5d70d78525  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+3d729d258a5dba59628834ee227878af322ca3dd97212fd387ea00d705fc8d04  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
 7f2013ecf274cfe3c25bb6ea6a28ece6fd0a7e46ecb91aab7de71ace2120fadb  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-broadback_sabre--fine.txt
@@ -2672,6 +2673,7 @@ c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/_archive/g
 44babb44d6495fb3be6c0e8113727986348a37ac4e498054894d216917dfee8f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-hellraiser_servo_fist--masterwork.txt
 6d133dece1e02fda1316bbc6f1539615864852284e72f507d2c8e3a35e24a30f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-hellraiser_servo_fist--relic.txt
 61f6f29faf304b1719254d72963050b22a9e6d6abaca86c28608baf96d0e9e00  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_leaf_dagger--fine.txt
+1a5f20bf3fb0e08b11666261a620a44020edc1ef086ab9cc44e29ace1b44f13a  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_leaf_dagger--masterwork.txt
 844ffcb3c5aeae1fc1b4642b0e9bfd00451fba13aa2a814c14890c946f27252a  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-lowland_chopper--celestial.txt
 3295cdc991b5d1c132abd1ee44ed359bee4c07713781c6c17c0bb6edbf062c75  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-lowland_chopper--fine.txt
 6a470f47f63b7dc1afc8d258c9804081f8a283be3e7306a89fb6ce577fa973d9  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-lowland_chopper--masterwork.txt
@@ -2689,7 +2691,7 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-d7aa02c125b3fc0c3ffeeaa22aab666cbfecbb0c259d31c87d99668adecdbd09  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+67eba8eaf4ee09d3308f043017f227f55727bd15988a1bd7e1d920fe13d74c1e  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 deaf4e20e3843235790df048073620b0e76bfe152a29a7968d3c1860de696192  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-broadback_sabre-32px.png
@@ -2700,8 +2702,8 @@ deaf4e20e3843235790df048073620b0e76bfe152a29a7968d3c1860de696192  art/_archive/g
 9d70ee2dca31d9331c71ee1b39d1e7d56e85a943c6acf71f35886eb4d6c6c3aa  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-hellraiser_rotary-64px.png
 e29f26ea9e11cb0bb2febbbe13e746c83a22feb56d14cac161cd195a8ee9a228  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-hellraiser_servo_fist-32px.png
 e3e8cc03ef6ff523e59d5013e7daae60dd449259d85815ca3eb8330f2eadd9f9  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-hellraiser_servo_fist-64px.png
-b7acbbeae7a13203a48723fb0cedad5686b6b2f4ee1fd9ee026cdbee2a6a85a8  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-legion_leaf_dagger-32px.png
-a6eb444c53436b571e501a765e097809c1d8a26be864a8fa8f7732660225fd47  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-legion_leaf_dagger-64px.png
+defe8769137cbdd7a456f065e325dcb90ed2800cb063a9d3066e31fbb6b418a4  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-legion_leaf_dagger-32px.png
+7dd68b33b3a8f9f6615d277172844e6ddbeed502f16d51615274ec413d391fa4  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-legion_leaf_dagger-64px.png
 92c6259ca24cb6d9a53b0176dd79b769d599117fd18a7f12530f6344cf7f1ae3  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-lowland_chopper-32px.png
 405ee180caed2dd8f25123ee88050c644c85fac3b47cbacc244d44672e7bc913  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-lowland_chopper-64px.png
 73a68b88fb04877f90f9a182f28297c15061b64197cc424d8637de16370c9464  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-ork_rip_saw-32px.png
@@ -2726,6 +2728,7 @@ d70a63870658a8f660f5cd8265887ab78521287ab68bf0f6a95da819b7256d86  art/_archive/g
 2172883b73d1f7c61a9a36fa0e08afad906a09fd15ba6cb1723ed0c9ccacbd06  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_servo_fist--masterwork.png
 7d966b027c8d32633051225c648d835ee3c0eafffa8d2f458cbfe01cc40c2f7d  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_servo_fist--relic.png
 ffe72714830ed7bd2b679c62e937edb681d7712574d7a5a42ab55f1851ce6d96  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_leaf_dagger--fine.png
+ccd01704e418d18423e65a0f45433877768cfc39a963d978f0221d09f0494fde  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_leaf_dagger--masterwork.png
 a4f724b8c123c50cecc02cd4e94143a0d7b357ca2529f259c6d7153b995b089a  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-lowland_chopper--celestial.png
 79b311977859a3fa513fbdc10c4f9318765436c208f4b44288220c75ae9fc5a4  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-lowland_chopper--fine.png
 544655e9af1051ae32b62aa6216366ddf2ffbc89f84c15bace1ff8e7312b8c49  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-lowland_chopper--masterwork.png
@@ -6340,7 +6343,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-6e14edeb27934c36058164a5dce3ebb245fa8a67c10f8d9ecc118840bc219aa4  art/catalog.json
+45952264dc187b32dcbb144b7b077057442eb06e893242b203019dfd455e8e09  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8357,6 +8360,7 @@ cdfe5a737c4f268bd1336297d4782db0a8f276a2418357aabc7abf678887030f  art/icons/gear
 8531df0d98d76b022e769d7bd00fce3e1e0b8a76f72d014490470023e514146b  art/icons/gear/exports/128/weapon-legion_gladius--relic.png
 5919004426304ce3062566f87b6fca079ab28c3726051d1fd5a6ae375674eb45  art/icons/gear/exports/128/weapon-legion_gladius.png
 695bbfe73eaaa86d66f9933271e9ef2c7668d6a8322f0f4a64f2296306ed0fe7  art/icons/gear/exports/128/weapon-legion_leaf_dagger--fine.png
+9d5c47d1ab876e61a85b1515fc498e79f5f920b8025a781f473e2e60726eb623  art/icons/gear/exports/128/weapon-legion_leaf_dagger--masterwork.png
 6b3ea8b46c5effb586a11a05324ac2378d83f51e29c03b31cd3d9a7dcd9cd6d1  art/icons/gear/exports/128/weapon-legion_leaf_dagger.png
 68af83b2bed0980c05032f0a93c4bc148a7db55edc396d0549ad62414ac235a5  art/icons/gear/exports/128/weapon-legion_pdw.png
 edcc3410c92878ff2ea34bad9d53b71b52eb5700fa23d682598ed66f0edf51bf  art/icons/gear/exports/128/weapon-legion_rank_sword.png
@@ -8781,6 +8785,7 @@ c7afe25a8a56f83760499f54ee31dfcc56887b6cbca874676d734c570198d57a  art/icons/gear
 e8b39c81ba014c3d3d4775c0164d763771c1a97331a56e62b0f79d6757afaf65  art/icons/gear/exports/256/weapon-legion_gladius--relic.png
 b8d48e40b38b9b547bb51c62875d2762ac02109142e69ab45341a9a012d4368f  art/icons/gear/exports/256/weapon-legion_gladius.png
 82b4beafbb0ab416e4baca4b87d0fcec2ac7cd48b34c28385303b50f99ca232b  art/icons/gear/exports/256/weapon-legion_leaf_dagger--fine.png
+b4dc76707a471b537cf9ca3b3c89f79d80550798473774ae711a9a3707ddcd91  art/icons/gear/exports/256/weapon-legion_leaf_dagger--masterwork.png
 c39eead9d11c1abb27f096a33013ea1510e1ae8f6cecc14067a4030060c4878e  art/icons/gear/exports/256/weapon-legion_leaf_dagger.png
 3f0f8f175ead077af3c123c88e76aedb7534349ad0e883baa2143adc8bbd963e  art/icons/gear/exports/256/weapon-legion_pdw.png
 aa6c328966598d8c53ebf2d92d10bf9a93a032a01d2ce7ed273c25408e1020d4  art/icons/gear/exports/256/weapon-legion_rank_sword.png
@@ -9205,6 +9210,7 @@ e5b574fede9bfb511ba7989e3ec0f1db7e9049303ec44576f76f3eee705afe1e  art/icons/gear
 fa4becb74fc6f2ed96981591a7f0519547238b442f99cf4000aac9fa1a32766f  art/icons/gear/exports/32/weapon-legion_gladius--relic.png
 a36f5cf75f381e5e75459e4d2b2bba2c6d39d5821febf0db99ef66ffd5bd6145  art/icons/gear/exports/32/weapon-legion_gladius.png
 4ff2fc34931e23f1874cef1bf1c845e45f600d9a5df0dd73cdb215eeca7a9b08  art/icons/gear/exports/32/weapon-legion_leaf_dagger--fine.png
+2e6dba7c6197799044e33400bb5df2789e01c26e30608dc5204cf20a9754444a  art/icons/gear/exports/32/weapon-legion_leaf_dagger--masterwork.png
 7536ee90bec6a9d36ca5ac8533f7cf85dbf3e0997a38023f7cf101af644f6b52  art/icons/gear/exports/32/weapon-legion_leaf_dagger.png
 ba55647e761f2b7bee6a69a6d22ae40157e67f163d74825f8561a9d8e6d88a50  art/icons/gear/exports/32/weapon-legion_pdw.png
 71cad3ddf13bf261f55da68afb7a70351b542ff77b55ed6f68d78d86641f4eca  art/icons/gear/exports/32/weapon-legion_rank_sword.png
@@ -9629,6 +9635,7 @@ bc3d6fe81ad3375f902bfe4f7102639225fd3cdd736acdc21536db0b0ef84646  art/icons/gear
 b4202e9665392573a3a09f27019f3b601b92c9de80d3281245b570532fa8ee55  art/icons/gear/exports/64/weapon-legion_gladius--relic.png
 1fb9745c80dea64172475a521754b32e8277af679dc9566a189c9aa3101eff36  art/icons/gear/exports/64/weapon-legion_gladius.png
 5bb1ff941611864047684e8a9e6d0727c4cdf9f2f2fbd6f9554056029f63477f  art/icons/gear/exports/64/weapon-legion_leaf_dagger--fine.png
+760e0e27708a87a5a905c283033e65357b2654aa5dfdc5d1223f00673ddd8f58  art/icons/gear/exports/64/weapon-legion_leaf_dagger--masterwork.png
 2dbd00725d2bc784f913a04a20820723ca5b6eb95fe84b84d6c52b56877ebba6  art/icons/gear/exports/64/weapon-legion_leaf_dagger.png
 5d7c0eb43a8000de7de8d0ca7a3248cd6c292c99a77d570232c0cf14ccff1521  art/icons/gear/exports/64/weapon-legion_pdw.png
 5810e5fa0360136de2ca9dfdc0a89e749e4be8a91af61edbcbaed2608c978667  art/icons/gear/exports/64/weapon-legion_rank_sword.png
@@ -9929,6 +9936,7 @@ e05eec12c0fcff034c3e28928a45621a2f7e9ca2b840c7ddef60f4f2072a4e2d  art/icons/gear
 66570e9f75b5f26491ab2788d85afc55c7a93f9c1069a6a88b23122528e17a8a  art/icons/gear/weapon-legion_gladius--relic.png
 28e96e7333bce563f97911b40b91750c9a6b578573f85c2438e4e045a5c6cd92  art/icons/gear/weapon-legion_gladius.png
 30dff0ce6f1183f56ecf9be77e65e0bd9f7c92bb767638316d393e6364878301  art/icons/gear/weapon-legion_leaf_dagger--fine.png
+e09a88dfead324c6587d50311cba85c1eb84b359a44424ad8823de9fe7e2e748  art/icons/gear/weapon-legion_leaf_dagger--masterwork.png
 c074f9aa7dc085ce042244859c3e1e7c004b2070e0fa7c7af2cc22183ba946db  art/icons/gear/weapon-legion_leaf_dagger.png
 6d69f356c1f392d54de6a83bec57c2c388925b5f16b2ead6898b3a27e95e864c  art/icons/gear/weapon-legion_pdw.png
 6ad097ad14d652ea9a959762fc71c939ed7b6575b6e430956f7663808ab15c3d  art/icons/gear/weapon-legion_rank_sword.png
