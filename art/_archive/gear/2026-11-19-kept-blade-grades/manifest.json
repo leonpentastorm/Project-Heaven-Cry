@@ -9638,6 +9638,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-breacher_plate--celestial",
+      "path": "art/icons/gear/armour-breacher_plate--celestial.png",
+      "sha256": "fa9096d881e248327d0bed1fd3ed2e3a4f1218b4f324a65fd6608c1c3dc64278",
+      "label": "Breacher plate — Celestial",
+      "family": "armour-breacher_plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breacher_plate--celestial.png",
+        "sha256": "e1ca8ea8e528774bbe958572f655a280d7d0e749c64560047d1e6f763298a7ac"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-breacher_plate--celestial.png",
+        "sha256": "fa9096d881e248327d0bed1fd3ed2e3a4f1218b4f324a65fd6608c1c3dc64278"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-breacher_plate--celestial.txt",
+        "sha256": "c46aa3a5871ad93b9651df2b4e9a300a94af0634fc52ffcc536e68b418b625c1"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-breacher_plate.png",
+          "sha256": "b5478d1d99942caa91c505c71a679b6a331f3b5f5c791148ff5641acc87edcb7"
+        },
+        {
+          "path": "art/icons/gear/armour-breacher_plate--relic.png",
+          "sha256": "392eaa7883fc05450b0c64a1b2700beb70520d968fd5510607b588cfc758c4ce"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breacher_plate--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-breacher_plate--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-breacher_plate--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-breacher_plate--celestial.png"
+      },
+      "export_hashes": {
+        "256": "15e73f366f5714139580d358135e7de22965d015d7b91265ee0f2d95c8c035ef",
+        "128": "65687bbd94c2137fa330f37e2676bf9fa1af85e3b9fcdf2cc49f660a701200ec",
+        "64": "00af1f3cb493487baf5028a378af801c9ead59df7ed63c9e8f3da04c039e6cc4",
+        "32": "e127d29b650fbf945405277a7239d1aeac279c4f51ff412b462601441d8dd3d3"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-breacher_plate",
+      "outline": {
+        "solid_alpha_iou": 0.9778611075801873,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 41
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
