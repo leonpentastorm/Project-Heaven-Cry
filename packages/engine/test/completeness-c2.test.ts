@@ -7,7 +7,7 @@
 // the drone as a token on the area map.
 import { describe, expect, it } from 'vitest';
 import {
-  npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, apLeft, d20, makeObject, SKILL, PATRONS, initiativeBonus, saveBonus,
+  npcsOf, positionsOf, standable, zoneMap, storyObjects, refOf, apLeft, d20, makeObject, SKILL, PERK, PATRONS, initiativeBonus, saveBonus,
   storyCb, briefOf, holdersOf, companionId, DRONE_ROUND_AP,
   type GameState, type Combat, type Unit,
 } from '../src';
@@ -116,12 +116,12 @@ describe('Never There against a real Overwatch shot (item 29)', () => {
 // ---------------------------------------------------------------------------------------------------------------------
 describe('Overhaul on the area map; the Field Repair text (item 30)', () => {
   it('the data says what the spec says: 10% + 5% per Improvisation point above 3 of Durability, no HP per point', () => {
-    const t = (SKILL as any).proficiency.unlocks['3'].text as string;
-    expect(t).toMatch(/10% \+ 5% per Improvisation point above 3/); expect(t).not.toMatch(/HP per point/);
+    const t = (PERK as any).field_repair.tiers.I.text as string; // rules 1.82 item 7008: the perk's text now
+    expect(t).toMatch(/10% \+ 5% per Improvisation point above the first perk step/); expect(t).not.toMatch(/HP per point/);
   });
   it('world/act repair: 1 AP and twice the durability; without Overhaul 2 AP and the plain amount', () => {
     const run = (perk: boolean) => {
-      const s = storyWith([{ perks: perk ? { overhaul: 'mastered' } : {}, kit: 'medic', skills: { proficiency: 10 } }]); const c = s.chars[0];
+      const s = storyWith([{ perks: perk ? { overhaul: 'mastered' } : { field_repair: 'I' }, kit: 'medic', skills: { proficiency: 10 } }]); const c = s.chars[0]; /* rules 1.82 item 7008: without Overhaul, the perk */
       s.g.characters[c.id].weaponState = { ...(s.g.characters[c.id].weaponState || {}), dur: 0 };
       s.act({ type: 'world/act', charId: c.id, act: 'repair' } as any);
       return { ap: apLeft(s.g, s.g.characters[c.id]), dur: s.g.characters[c.id].weaponState!.dur! };

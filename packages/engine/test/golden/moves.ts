@@ -37,7 +37,7 @@ export const MOVERS: Mover[] = [
   { id: 'sigil-push', land: '7,5', go: (g, cb, a, t) => { cb.log.push('PUSH' + A.magicShove(cb, t, a.pos, 2, a)); } },
   { id: 'sigil-pull', from: '8,5', land: '7,5', go: (g, cb, a, t) => { cb.log.push('PULL' + A.magicShove(cb, t, a.pos, -2, a)); } },
   // (class-shove, the Fighter's own Shove, left with rules 1.60 item 4621: Wind-up; its rows are gone on purpose)
-  { id: 'grenadiers-arm', spec: { ...EVEN, traits: ['grenadiers_arm'], attrs: { ...EVEN.attrs, strength: 13 } }, land: '8,5', go: (g, cb, a, t) => perk(g, a, 'grenadiers_arm', 'hurl', { targetId: t.id, tile: '8,5' }) },
+  { id: 'grenadiers-arm', spec: { ...EVEN, traits: ['grenadiers_arm'], attrs: { ...EVEN.attrs, strength: 13 } }, land: '8,5', go: (g, cb, a, t) => perk(g, a, 'trait:grenadiers_arm', 'hurl', { choice: 'u:' + t.id, tile: '8,5' }) /* rules 1.82 item 7010: the object op's hurl */ },
   { id: 'outburst-swap', spec: { ...EVEN, archetype: 'stormcaller', kit: 'soul' }, land: '5,5', prep: (g, a) => { Object.assign(a.mg, { emanator: true, mp: 9999, mpMax: 9999, strain: 0, strainLimit: 30 }); a.mg.designs.push({ id: 'gswap', name: 'Golden swap', school: 'control', option: 'swap', modules: [] }); },
     go: (g, cb, a, t) => { a.ap = 99; let e = A.beginOutburst(cb, g.rng, a, 'gswap', undefined, true, {}); if (e) return 'Begin: ' + e; a.ap = 99; e = A.releaseOutburst(cb, g.rng, a, t.pos); return e ? 'Release: ' + e : null; } },
   { id: 'switcheroo', spec: { ...EVEN, skills: { ...EVEN.skills, faith: 9 } }, land: '5,5', prep: (g, a) => { const c = g.characters[a.charId]; c.belief = { kind: 'faithful', patron: 'the_laughing_mask' }; c.patron = 'the_laughing_mask'; c.devotion = 10; },

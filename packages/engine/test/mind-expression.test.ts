@@ -92,7 +92,7 @@ describe('old saves (rules 1.74 item 6044)', () => {
     const g: any = JSON.parse(JSON.stringify(f.g)); g.combat = null;
     for (const c of Object.values(g.characters) as any[]) { delete c.perkRev; delete c.perkRepick; }
     const c: any = Object.values(migrateLoaded(g).characters)[0];
-    expect(c.perkRepick.proficiency).toEqual([{ id: 'tuned', tier: 'I' }]);
+    expect(c.perkRepick.proficiency).toEqual([{ id: 'field_repair', tier: 'I' }, { id: 'tuned', tier: 'I' }]); // rules 1.82 item 7008: Field Repair (3) is a passive turned perk too
     expect(c.perkRepick.charisma).toEqual([{ id: 'talks_broke_down', tier: 'I' }, { id: 'smooth', tier: 'I' }]);
     expect(ladderAt(9).noSnap).toBe(false);
   });

@@ -509,7 +509,7 @@ const PHYSICAL: ActionSystem = {
     out.push(...B('pullfree'), ...(gunTab ? [] : [...reloads('utility'), ...offRows('utility')]),
       ...(L ? [D('load', 'utility', L.label, li ? li.ap : L.ap, li ? li.ap + ' AP' : '1 AP / ' + ROUNDS_PER_AP + ' rds', li ? 'Load ' + li.rounds + ' loose rounds into your fullest part-empty ' + (w.reload_unit || 'magazine') + '.' : L.text, L.why)] : []),
       ...(gunTab ? [] : clear('utility')),
-      ...wRow('repair', 'utility', { label: 'Field Repair', text: 'Needs Improvisation 3 and one spare-parts charge (' + (u.parts || 0) + ' left). Your weapon regains 10% durability, plus 5% for each Improvisation point above 3. Weapon durability: ' + (u.maxDur ? (u.dur ?? u.maxDur) + '/' + u.maxDur : 'n/a') + '.' }),
+      ...wRow('repair', 'utility', { label: 'Field Repair', text: (W('repair')?.text || '') + ' Spare-parts charges: ' + (u.parts || 0) + '. Weapon durability: ' + (u.maxDur ? (u.dur ?? u.maxDur) + '/' + u.maxDur : 'n/a') + '.' }), // rules 1.82 item 7008: the row's own words (combat.ts weaponActions, from the perk's numbers)
       ...B('pickup', 'door', 'stim', 'stim_throw', 'song', 'extinguish', 'escape', 'recover'), ...(dual ? [] : bothRows), ...B('hide').map((d) => hideHelp(x, d)), ...B('analyze'));
     return out;
   },

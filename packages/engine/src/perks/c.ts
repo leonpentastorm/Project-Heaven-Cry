@@ -451,82 +451,11 @@ register({
 });
 
 // ---------- Grenadier's Arm ----------
-// Long Throw: throwing range +2. Strained Arm: throws cost +1 AP (the data's action_cost: a grenade is 3 AP). Throw
-// anything: "Throw someone" takes an adjacent unit under your carry weight (people 80 kg, elites 100 kg, drones 15 kg;
-// bosses can't be thrown; plan 6b; PROVISIONAL) to a tile within throwing range − 1 per 20 kg, for the throw's AP. It
-// and anyone it lands on take 10 + kg ÷ 4 physical damage × Strength (PROVISIONAL). Objects and story throws: Narrator.
-const weightOf = (t: Unit) => (t.tier === 'boss' ? Infinity : t.companion === 'drone' ? 15 : t.companion ? 40 : t.tier === 'elite' ? 100 : 80);
-const throwCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'throw').ap;
-/** What an object weighs when thrown (PROVISIONAL, spec 14): the light, loose ones; walls, doors and fixtures can't be. */
-const THROW_KG: Record<string, number> = { crate: 25, barrel: 30, lamp: 5, camera: 3, alarm: 3, terminal: 20, container: 60 };
-/** Where a thrown object comes down: the tile, unless a unit or something solid is there (then the nearest free one). */
-const objLanding = (cb: Combat, tile: string, o: any): string | null => {
-  const free = (k: string) => standable(cb.map, k) && !objectsOf(cb).some((x) => x !== o && x.pos === k && blocksMove(x)) && !cb.units.some((v) => !v.dead && v.pos === k);
-  if (free(tile)) return tile;
-  const [x, y] = xy(tile); for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]]) { const k = key(x + dx, y + dy); if (free(k)) return k; }
-  return null;
-};
-const landing = (cb: Combat, tile: string, self: Unit): string | null => {
-  const free = (k: string) => canStand(cb, k, self);
-  if (free(tile)) return tile;
-  const [x, y] = xy(tile); for (const [dx, dy] of [[0, -1], [1, 0], [0, 1], [-1, 0], [1, -1], [1, 1], [-1, 1], [-1, -1]]) { const k = key(x + dx, y + dy); if (free(k)) return k; }
-  return null;
-};
+// Long Throw: throwing range +2 (the data's stat_mod). Strained Arm: throws cost +1 AP (the data's action_cost). Throw
+// anything: its throw of a person, a drone or an object next to you is the object op's hurl (rules 1.82 item 7010, P14:
+// hurl.ts; the trait's grant_action in data, priced at the throw's site). Story throws stay the Narrator's.
 register({
-  id: 'grenadiers_arm', // +2 throw range is the data's generic stat_mod (engine foundations 3); the throw of a body stays here
-  actions: [{
-    id: 'hurl', label: 'Throw someone', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u, h.cb) : 3), target: 'unit', range: 1,
-    text: 'Throw an ally or enemy next to you to a tile in range. They must weigh less than you can carry. The one thrown and whoever they land on take damage by weight.',
-    preview: (h, args) => {
-      const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId); if (!t) return {};
-      if (t === u) return { ok: false, why: 'Pick someone else.' };
-      const kg = weightOf(t), carry = h.c ? carryLimit(h.c) : 0;
-      if (!isFinite(kg)) return { ok: false, why: 'Nobody throws a boss.' };
-      if (kg > carry) return { ok: false, why: 'Too heavy: about ' + kg + ' kg; you can carry ' + Math.floor(carry) + ' kg.' };
-      const range = Math.max(1, throwRangeOf(u) - Math.floor(kg / 20)), k = tileOf(cb, args.tile);
-      if (!k) return { ok: false, why: 'Pick where they land (within ' + tilesN(range) + ').' };
-      if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + tilesN(range) + ' for ' + kg + ' kg.' };
-      if (!lineOfSight(cb, u.pos, k)) return { ok: false, why: 'No line of sight to throw there.' };
-      if (!landing(cb, k, t)) return { ok: false, why: 'No room to land there.' };
-      return { lines: [t.name + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })) + ' damage to it and to anyone there.'] };
-    },
-    run: (h, args) => {
-      const u = h.u!, cb = h.cb!, t = unitById(cb, args.targetId)!, k = tileOf(cb, args.tile)!, kg = weightOf(t);
-      const hit = cb.units.find((v) => v !== t && !v.dead && v.pos === k) || null, land = landing(cb, k, t)!;
-      const mv = displace(cb, null, t, { tile: land }, { by: u, how: 'throw', source: 'throw' }); // the one forced move (combat.ts): it lands, and the tile acts on it
-      if (!mv.moved) { say(cb, t.name + ' won\'t be thrown' + (mv.why ? ' (' + mv.why + ')' : '') + '.'); return null; }
-      const dmg = Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg }));
-      say(cb, u.name + ' throws ' + t.name + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + hurtUnit(t, dmg, false, cb, 'thrown', u) + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + mv.text + '.');
-      checkOver(cb); return null;
-    },
-  }, {
-    // An object next to you (tile) thrown to a tile (choice): a crate, a barrel, a lamp… by its weight (PROVISIONAL
-    // weights, spec 14: objects carry none in the data). It lands there (or the nearest free tile), and it and whoever
-    // it lands on take the same damage by weight; a barrel that breaks goes off as barrels do.
-    id: 'hurl_object', label: 'Throw an object', scope: ['combat'], ap: (h) => (h.u ? throwCost(h.u, h.cb) : 3), target: 'tile', range: 1,
-    pickLabel: 'Where it lands',
-    text: 'Throw an object next to you to a tile in range. It must weigh less than you can carry. The object and whoever it lands on take damage by weight.',
-    preview: (h, args) => {
-      const u = h.u!, cb = h.cb!, k0 = tileOf(cb, args.tile), o = k0 ? objectsOf(cb).find((x) => x.pos === k0 && THROW_KG[x.kind] != null && !(x as any).dead) : null;
-      if (!o) return { ok: false, why: 'Pick an object next to you that can be lifted (a crate, a barrel, a lamp, a terminal).' };
-      if (dist(u.pos, o.pos) > 1) return { ok: false, why: 'Walk up to it first.' };
-      const kg = THROW_KG[o.kind], carry = h.c ? carryLimit(h.c) : 0;
-      if (kg > carry) return { ok: false, why: 'Too heavy: about ' + kg + ' kg; you can carry ' + Math.floor(carry) + ' kg.' };
-      const range = Math.max(1, throwRangeOf(u) - Math.floor(kg / 20)), k = tileOf(cb, args.choice);
-      if (!k) return { ok: false, why: 'Pick where it lands (within ' + tilesN(range) + ').' };
-      if (dist(u.pos, k) > range) return { ok: false, why: 'Out of range: ' + tilesN(range) + ' for ' + kg + ' kg.' };
-      if (!lineOfSight(cb, u.pos, k)) return { ok: false, why: 'No line of sight to throw there.' };
-      if (!objLanding(cb, k, o)) return { ok: false, why: 'No room to land there.' };
-      return { tiles: [k], lines: ['The ' + o.name.toLowerCase() + ' (' + kg + ' kg) flies to ' + refOf(k) + ': ' + Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })) + ' damage to whoever is there, and to it.'] };
-    },
-    run: (h, args) => {
-      const u = h.u!, cb = h.cb!, k0 = tileOf(cb, args.tile)!, o = objectsOf(cb).find((x) => x.pos === k0 && THROW_KG[x.kind] != null)!, k = tileOf(cb, args.choice)!, kg = THROW_KG[o.kind];
-      const dmg = Math.floor(itemAmount('trait:grenadiers_arm', 'damage', [term(h.c ? physicalMult(h.c) : 1, 'stat: physical')], { kg })), hit = cb.units.find((v) => !v.dead && v.pos === k) || null, land = objLanding(cb, k, o)!, was = o.pos;
-      o.pos = land; emitFx(cb, 'shove', { unit: u.id, target: null, from: was, to: land, ok: true, object: o.id });
-      say(cb, u.name + ' hurls the ' + o.name.toLowerCase() + ' to ' + refOf(land) + ' (Grenadier\'s Arm)' + (hit ? hurtUnit(hit, dmg, false, cb, 'thrown', u) : '') + (o.hp != null && o.hp > 0 ? damageObject(cb, land, dmg, 0, u) : '') + '.');
-      checkOver(cb); return null;
-    },
-  }],
+  id: 'grenadiers_arm', dataActions: true,
   brief: () => 'story throws (anything under carry weight): yours',
 });
 

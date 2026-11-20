@@ -38,7 +38,7 @@ import { die, type Rng } from './rng';
 import { rollVs, rerollAttack, attackHits } from './rolls';
 import { spotlight } from './spotlight';
 import { feelChar } from './feelings';
-import { WEAPON, SKILL, ITEM } from './data';
+import { WEAPON, SKILL, ITEM, RULES } from './data';
 import { rngOf, overworld, tilesAround, foesOf } from './kit';
 import { setBraced, setDowned, clearStagger } from './unitstate';
 import { condNotFresh, CORE_ITEM } from './magic';
@@ -285,7 +285,7 @@ export function previewPrayer(g: GameState, who: string, kind: PrayerKind, id: s
   const ap = u ? price({ cb, u, c }, kind === 'whisper' ? 'whisper' : 'pray', AP_COST[kind], args.targetId ? { targetId: args.targetId } : {}).ap : AP_COST[kind]; // rules 1.70 P3: priced with its target (Steadfast, rules 1.75 item 6222)
   const target = pe.entry.target || (kind === 'hymn' ? 'self_or_ally' : 'none'); // an old-shape Blessing goes at you or an ally
   const fig = prayerFigure(pe.entry, c, u);
-  const info = { ...base, ap, effectText: pe.entry.text || '', name: pe.entry.name || id, patron: pe.patron?.id || null, target, targets: targetsOf(g, c, u, cb, target), ...(fig ? { amount: fig } : {}) };
+  const info = { ...base, ap, effectText: pe.entry.text || '', name: pe.entry.name || id, patron: pe.patron?.id || null, target, targets: targetsOf(g, c, u, cb, target, kind), ...(fig ? { amount: fig } : {}) };
   const m = prayerMod(g, c, u);
   // The mode and the gate.
   let gate: number | null = null, mode: PrayerPreview['mode'] = 'standing', roll: PrayerPreview['roll'], overreach: PrayerPreview['overreach'];
@@ -332,10 +332,10 @@ export function storyFaith(g: GameState, c: Character): Record<string, any> {
   const st: any = (c.state ||= {}); return (st.faith ||= {});
 }
 /** Who a prayer may go at (spec: "in sight"). */
-function targetsOf(g: GameState, c: Character, u: Unit | null, cb: Combat | null, target: string): string[] {
+function targetsOf(g: GameState, c: Character, u: Unit | null, cb: Combat | null, target: string, kind: PrayerKind | null = null): string[] {
   if (target === 'tile' || target === 'none' || target === 'self') return [];
   if (cb && u) {
-    const sees = (t: Unit) => t === u || cbSees(cb, u, t);
+    const seats = prayerSeats(cb, u, kind), sees = (t: Unit) => t === u || seats.some((s) => cbSees(cb, seatedAt(u, s), t));
     const allies = cb.units.filter((t) => t.side === u.side && !t.dead && sees(t));
     const enemies = cb.units.filter((t) => t.side !== u.side && !t.dead && !t.surrendered && !t.hidden && sees(t));
     if (target === 'enemy') return enemies.map((t) => t.id);
@@ -348,6 +348,18 @@ function targetsOf(g: GameState, c: Character, u: Unit | null, cb: Combat | null
   if (target === 'enemy') return [];
   return Object.values(g.characters).filter((x) => !x.dead).map((x) => x.id);
 }
+/** Rules 1.82 item 7005 (the seat, P3 on a zone; new engine piece): the tiles a prayer of this kind is counted from: the
+ * caster's own, then every tile of a zone of its side whose kind's row lists the prayer under `seat` (rules.json
+ * zones.kinds: hallowed ground's `seat: ["whisper"]`: a Whisper reaches from holy ground as if the caster stood there).
+ * Its reach (sight and range) is measured from each seat; nothing else of the prayer moves. */
+const SEAT_KINDS: { id: string; seat: string[] }[] = (((RULES as any).zones?.kinds || []) as any[]).filter((k) => Array.isArray(k.seat)).map((k) => ({ id: k.id, seat: k.seat }));
+export function prayerSeats(cb: Combat, u: Unit, kind: PrayerKind | null): string[] {
+  const out = [u.pos]; if (!kind) return out;
+  for (const k of SEAT_KINDS) if (k.seat.includes(kind)) for (const z of cb.zones || []) if (z.kind === k.id && z.side === u.side) for (const t of z.tiles) if (!out.includes(t)) out.push(t);
+  return out;
+}
+/** The caster as if it stood on a seat (its own eyes, from there). */
+const seatedAt = (u: Unit, s: string): Unit => (s === u.pos ? u : ({ ...u, pos: s } as Unit));
 let cbSees: (cb: Combat, u: Unit, t: Unit) => boolean = () => true;
 /** combat.ts's unitSees, lent at load (combat.ts imports the faith rules for nothing; this keeps the graph simple). */
 export function bindFaithSight(f: (cb: Combat, u: Unit, t: Unit) => boolean) { cbSees = f; }
@@ -1012,7 +1024,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
   const pv = previewPrayer(g, u.id, kind, id, a); if (!pv.ok) return pv.why || 'You can\'t pray that now.';
   const pe = prayerEntry(c, kind, id)!; const patron = pe.patron;
   // The target.
-  const t = pickTarget(cb, u, pv, a, pe.entry); if (typeof t === 'string') return t;
+  const t = pickTarget(cb, u, pv, a, pe.entry, false, kind); if (typeof t === 'string') return t;
   pay(cb, u, pv.ap);
   const lim = prayed({ c, u, cb, g });
   if (kind === 'whisper') lim.take('per_turn', 1, WHISPER_KEY); else if (kind === 'hymn') { lim.uncool(HYMN_KEY); lim.cool(0, HYMN_KEY); const st = fs(u); if (st.vowBank) { st.hymnCut = st.vowBank; delete st.vowBank; } else delete st.hymnCut; if (ownCooldown(pe.entry)) { lim.uncool(ownKey(pe.entry.id)); lim.cool(0, ownKey(pe.entry.id)); } }
@@ -1062,7 +1074,7 @@ export function combatPray(cb: Combat, rng: Rng, u: Unit, a: CombatPrayArgs, g: 
 export function prayerAnswerOn(g: GameState, cb: Combat, rng: Rng, unitId: string, kind: PrayerKind, id: string, a: CombatPrayArgs): string | null {
   const u = cb.units.find((x) => x.id === unitId), c = u ? unitChar(u) : null; if (!u || !c) return 'No one to pray.';
   const pv = previewPrayer(g, u.id, kind, id, a), pe = prayerEntry(c, kind, id); if (!pe) return 'No such prayer.';
-  const t = pickTarget(cb, u, pv, a, pe.entry); if (typeof t === 'string') return t;
+  const t = pickTarget(cb, u, pv, a, pe.entry, false, kind); if (typeof t === 'string') return t;
   runEntry(cb, rng, u, kind, pe, t, a, u.blessPower || blessingPower(c));
   return null;
 }
@@ -1127,19 +1139,20 @@ export const prayerPickRange = (entry: any): number | null => { const v = (entry
 /** Why a prayer can't go at what is picked (a string; else the target). `partial`: a two-unit prayer's first pick alone.
  * The one check: combatPray gates on it, and prayerChoices (rules 1.65) lists what it takes. The pick range and the
  * pair's distance are the row's data (prayerPickRange, `pair_within`). */
-function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs, entry: any = null, partial = false): Target | string {
+function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs, entry: any = null, partial = false, kind: PrayerKind | null = null): Target | string {
   const byId = (id?: string) => (id ? cb.units.find((x) => x.id === id) || null : null);
+  const seats = prayerSeats(cb, u, kind); // rules 1.82 item 7005: reach is measured from each seat
   switch (pv.target) {
     case 'self': case 'none': return u;
     case 'tile': {
       if (!a.tile) return 'Pick a tile in sight.';
-      if (!unitSees(cb, u, a.tile)) return 'You can\'t see that tile.';
+      if (!seats.some((s) => unitSees(cb, seatedAt(u, s), a.tile!))) return 'You can\'t see that tile.';
       return null;
     }
     case 'two_units': case 'two_allies': {
       const x = byId(a.targetId), y = byId(a.targetId2), range = prayerPickRange(entry), pair = entry?.pair_within;
       const two = 'Pick two ' + (pv.target === 'two_allies' ? 'allies' : 'units') + ' in sight.';
-      const one = (v: Unit | null): string | null => (!v || !pv.targets.includes(v.id) ? two : range != null && dist(v.pos, u.pos) > range ? 'Both must be within ' + range + ' tiles of you.' : null);
+      const one = (v: Unit | null): string | null => (!v || !pv.targets.includes(v.id) ? two : range != null && !seats.some((s) => dist(v.pos, s) <= range) ? 'Both must be within ' + range + ' tiles of you.' : null);
       if (partial && !y) return one(x) || null;
       const no = one(x) || one(y) || (x === y ? two : null); if (no) return no;
       if (typeof pair === 'number' && dist(x!.pos, y!.pos) > pair) return (pv.name || 'This') + ': pick two allies next to each other.';
@@ -1159,7 +1172,7 @@ function pickTarget(cb: Combat, u: Unit, pv: PrayerPreview, a: CombatPrayArgs, e
 export function prayerChoices(g: GameState, who: string, kind: PrayerKind, id: string, args: PrayerArgs, key: 'targetId' | 'targetId2' | 'tile', cands: string[]): string[] {
   const { c, u, cb } = whoOf(g, who); if (!c || !u || !cb) return [];
   const entry = prayerEntry(c, kind, id)?.entry; if (!entry) return [];
-  return cands.filter((k) => { const a = { ...args, [key]: k }; const pv = previewPrayer(g, u.id, kind, id, a); return pv.ok && typeof pickTarget(cb, u, pv, a, entry, key === 'targetId') !== 'string'; });
+  return cands.filter((k) => { const a = { ...args, [key]: k }; const pv = previewPrayer(g, u.id, kind, id, a); return pv.ok && typeof pickTarget(cb, u, pv, a, entry, key === 'targetId', kind) !== 'string'; });
 }
 /** Which side a prayer's data says it touches (an effect's `scope`, `filter` or `target`, nested ones too): 'allies',
  * 'enemies', or null. */
@@ -1181,10 +1194,11 @@ export function prayerAim(g: GameState, who: string, kind: PrayerKind, id: strin
   const pe = prayerEntry(c, kind, id); if (!pe) return out;
   const entry = pe.entry, target = entry.target || (kind === 'hymn' ? 'self_or_ally' : 'none'), r = prayerRadius(entry), range = prayerPickRange(entry);
   const all: string[] = []; for (let y = 0; y < cb.map.h; y++) for (let x = 0; x < cb.map.w; x++) all.push(x + ',' + y);
-  if (target === 'tile') out.reach = all.filter((k) => unitSees(cb, u, k));
+  const seats = prayerSeats(cb, u, kind), seen = (k: string) => seats.some((s) => unitSees(cb, seatedAt(u, s), k)); // rules 1.82 item 7005
+  if (target === 'tile') out.reach = all.filter(seen);
   // rules 1.65 item 5108.2: a prayer aimed at a unit reaches its data range, else as far as the caster sees (the "you can
   // see" of pickTarget)
-  else if (target !== 'none' && target !== 'self') out.reach = range != null ? all.filter((k) => dist(u.pos, k) <= range) : all.filter((k) => unitSees(cb, u, k));
+  else if (target !== 'none' && target !== 'self') out.reach = range != null ? all.filter((k) => seats.some((s) => dist(s, k) <= range)) : all.filter(seen);
   const side = prayerSide(entry.effects) || (target === 'tile' ? 'enemies' : null);
   const onTiles = (tiles: string[]) => cb.units.filter((v) => !v.dead && tiles.includes(v.pos) && (side === 'allies' ? v.side === u.side : side === 'enemies' ? v.side !== u.side : true));
   let touched: Unit[] = [];

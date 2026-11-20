@@ -5,7 +5,7 @@ import { say, alive, dist, xy, emitFx, fxFell, chained, type FxEvent, coverTileF
 import { emit } from '../../effects/hooks';
 import { applyDamage } from '../../effects/damage';
 import { landed } from '../../effects/output';
-import { reveal } from '../../tactics';
+import { reveal, attackFromHidden } from '../../tactics';
 import { physicalMult, gearNum } from '../../character';
 import { PHYS_RULES } from '../data';
 import { pressureCap } from '../pressure';
@@ -102,7 +102,7 @@ export function looseRound(t: Tech, to: string, fx: Record<string, any> = {}): v
   u.shotsThisTurn = (u.shotsThisTurn || 0) + 1; u.firstShotDone = true; u.firstShotTurn = true; u.attackedTurn = true;
   if (t.hand === 'main' && u.maxDur) u.dur = Math.max(0, (u.dur ?? u.maxDur) - 1);
   emitFx(t.cb, 'shot', { unit: u.id, target: null, from: u.pos, to, weapon: w.id, cat: w.category, mode: 'shot', hit: false, crit: false, fumble: false, dmg: 0, killed: false, ...((t.hand === 'off' ? u.offJammed : u.jammed) ? { jam: true } : {}), tech: t.def.id, vi: 0, ...fx });
-  if (u.hidden && !t.holds('silent') && !(gearNum(u.weapon, u.mods, 'silent') > 0)) reveal(t.cb, u, 'fired', { how: 'attack' });
+  if (u.hidden && !t.holds('silent') && !(gearNum(u.weapon, u.mods, 'silent') > 0)) attackFromHidden(t.cb, u, 'fired'); // rules 1.82 item 7012
 }
 /** Damage with no roll (Flush's Arc line): the weapon's damage as a hit would do it, times mult, less armour, credited
  * as a ranged attack (kill credit, drill, the kill's spill). It raises no on_hit, so it gives no ordinary Pressure.

@@ -317,7 +317,7 @@
       "movement": "1 + 0.5*(agility-1) tiles per AP, minimum 0.5",
       "carry_kg": "20 + 5*(strength-1)",
       "defense": "10 + dodge",
-      "dodge": "max(0, mod(athletics))",
+      "dodge": "max(0, athletics points from skills.json athletics per_point.numbers.defense_from, x its defense, + the armour dodge) (rules 1.82 item 7011)",
       "counter_bonus": "max(0, mod(raw_power))",
       "injury_resist_pct": "10*(endurance-1)",
       "crit_damage_taken_pct": "-10*(perception-1) - 5*analysis (the skill named Acuity)",
@@ -454,6 +454,24 @@
       "diagonal_move_cost": null,
       "difficult_terrain_move_multiplier": 2
     },
+    "hidden_attack": {
+      "gives": "reveal",
+      "line": "{unit} gives its position away, still unseen.",
+      "note": "rules 1.82 item 7012 (Silent; Leon's later word, a call made for him): an attack made from Hidden that is not silent gives the attacker's tile away to its foes and it stays Hidden (gives: tile); reveal: it is revealed (the rule before; the switch ships here, OFF, until the balance lane measures the Operative under it and Leon says). A silent attack gives nothing away. The Break keeps its own reveal (its toggle row). tactics.ts attackFromHidden"
+    },
+    "hurl": {
+      "unit_kg": {
+        "default": 80,
+        "elite": 100,
+        "drone": 15,
+        "companion": 40
+      },
+      "never": [
+        "boss"
+      ],
+      "provisional": true,
+      "note": "rules 1.82 item 7010 (P14, hurl.ts): what a unit weighs when lifted and thrown (Grenadier's Arm's numbers, moved from perks/c.ts); a loose object's weight is its objects.json row's loose.kg"
+    },
     "initiative": {
       "roll": "d20 + initiative_bonus",
       "order": "high first",
@@ -463,8 +481,14 @@
         "ambushers_ap": 3,
         "surprised_can_act": false,
         "exception": "perk says so",
-        "built": false,
-        "built_note": "not built; see spec item 1501. What the engine does instead: an unaware enemy loses round 1 (Stealth and awareness, item 92), and an ambush from hiding opens on the attacker's own turn with the AP it has left. The spec's surprise round stands until Leon rules."
+        "built": true,
+        "on": true,
+        "lines": {
+          "side": "Caught by surprise: {units} lose their first turn.",
+          "immune": "{unit} felt them coming: not caught by surprise (Tremor).",
+          "ap": "{unit} shoots first: {n} AP in a turn it should not have had (Shoot First)."
+        },
+        "built_note": "rules 1.82 item 7004 (call made for Leon; `on` is the switch): when a fight in the approach is joined by an attack from a unit the other side did not see, every unit of that other side loses its first turn (waitRound 2), but one whose surprise_immune holds while a unit of the attacking side stands within its Vision (Tremor) and one with surprise_ap, which keeps its first turn with that many AP (Shoot First). Both sides. Contact by sight alone, or by the approach running out, surprises nobody. ambushers_ap is not read: an ambusher acts on its own turn with the AP it has (item 1501). One function: combat.ts surpriseSide"
       }
     },
     "turn": {
@@ -746,6 +770,8 @@
         "facing": {
           "arc_deg": 45,
           "diagonal": "half",
+          "outside_arc": "none",
+          "outside_arc_note": "rules 1.82 item 7001 (call made for Leon): a cover object beside the target outside arc_deg of the shot counts nothing (none, the lead's pick); half: one outside the arc but less than 90 degrees off the shot and nearer the shooter gives half cover. One function: combat.ts coverFor",
           "note": "rules 1.61 (0.30, cover beside you; item 4960): a cover object on one of the eight tiles round the target counts when the direction from the target to it is within arc_deg of the direction to the shooter and it is nearer the shooter; a diagonal tile counts as `diagonal` cover at most. One function: combat.ts coverFor. PROVISIONAL"
         },
         "melee_ignores": true,
@@ -2675,7 +2701,7 @@
     "about": "Classes 3.0 P10 and P9 (rules 1.78 item 6607): the kinds of zone data may lay (op zone; predicates self_in_zone, actor_in_zone, target_in_zone; engine: magic.ts DATA_ZONE_KINDS, makeZone, zonesAt). A row: id, the system that lays it. One side's zones of a kind on one tile never stack (rules 1.78 item 6601).",
     "kinds": [
       { "id": "sanctuary", "about": "the Chaplain's Sanctuary (rules 1.31)" },
-      { "id": "hallowed", "about": "the Chaplain's Hallow (rules 1.78 item 6607)" }
+      { "id": "hallowed", "about": "the Chaplain's Hallow (rules 1.78 item 6607)", "seat": ["whisper"], "seat_note": "rules 1.82 item 7005 (the seat): a Whisper of a unit of the zone's side reaches from any of its tiles as if the caster stood there (sight and range; faith.ts prayerSeats)" }
     ]
   },
   "ties": {

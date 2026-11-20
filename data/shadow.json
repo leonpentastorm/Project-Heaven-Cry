@@ -746,13 +746,5 @@
       ]
     }
   ],
-  "pending": [
-    {
-      "id": "shadow.parting_cut",
-      "name": "Parting Cut",
-      "group": "break",
-      "min": 9,
-      "why": "a toggle that rides on the Break (both on one attack, with its own points gate), and a re-hide after the Break's own reveal at the action's end: no primitive orders two toggles' acted effects or gates a toggle on the points it spends (rules 1.32 item 1966)"
-    }
-  ]
+  "pending": []
 }

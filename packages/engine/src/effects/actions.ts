@@ -29,6 +29,7 @@ import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, brakeGiven, type
 import { isNumberBlock, numberOf } from './amounts';
 import { doorFeed } from './feed';
 import { pickedFork } from '../doorpicks';
+import { hurlWhy, hurlables } from '../hurl';
 import { techSystemOf, PHYS_RULES, chainOf } from '../physical/data';
 
 /** Data AP strings: "soul_cast_ap" (the Soul cast AP), "sigil_ap+soul_cast_ap" (Glyph AP + Soul cast AP). */
@@ -137,7 +138,7 @@ const TARGET_OF_SIDE: Record<string, ActionDef['target']> ={ foe: 'enemy', ally:
 
 /** The default actions of an item, from its data. */
 export function defaultActions(info: ItemInfo): ActionDef[] {
-  const grants = info.effects.filter((e) => e?.op === 'grant_action');
+  const grants = info.effects.filter((e) => e?.op === 'grant_action' && !e.gate_only); // rules 1.82 item 7008: a gate_only grant opens a basic action (grantedBy) and makes no action of its own
   const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
   const verb = info.kind === 'verb';
   const mk = (id: string, label: string, apRaw: any, usesRaw: string, effs: any[], g: any = {}): ActionDef => {
@@ -172,7 +173,9 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
       if (g.prayer && h.u && h.cb && PRAYER) return PRAYER.why(h.cb, h.u, g.prayer) || true;
       return true;
     };
-    if (reach?.tile) d.preview = (h, args) => { const why = tileReachWhy(h, reach, args.tile); return why ? { ok: false, why } : {}; }; // a tile: in range and in sight
+    const hurl = (g.effects || []).find((e: any) => e?.op === 'object' && e.do === 'hurl'); // rules 1.82 item 7010 (P14): the throw's own refusals, before anything is paid
+    if (hurl) d.preview = (h, args) => { const r = hurlWhy(h, hurl, args.choice, args.tile); return r.why ? { ok: false, why: r.why } : { lines: r.line ? [r.line] : [], ...(args.tile ? { tiles: [args.tile] } : {}) }; };
+    else if (reach?.tile) d.preview = (h, args) => { const why = tileReachWhy(h, reach, args.tile); return why ? { ok: false, why } : {}; }; // a tile: in range and in sight
     else if (reach) {
       d.reach = (h, t) => reachWhy(h, reach, t); d.choices = (h) => (h.cb ? h.cb.units.filter((t) => !reachWhy(h, reach, t)).map((t) => t.id) : []);
       // 0.28.3 (rules 1.55 item 45): a unit-aimed verb whose own op moves the target to the event's tile (Guide's
@@ -276,6 +279,16 @@ export interface PerkActionEntry {
 }
 type Who ={ u?: Unit | null; c?: Character | null; cb?: Combat | null; g?: any };
 
+/** Rules 1.82 item 7008 (an action gated by a held item; new engine piece): the first item the unit holds that grants
+ * this action (`grant_action action: <id>`), its key and that grant row, or null. A basic action whose rule says "yours
+ * while you hold it" (Field Repair: its perk, Overhaul) asks this, and reads its numbers from the row (its `parts`) and
+ * from the item it names (`numbers_from`, else the item itself). Such a grant is `gate_only`: it opens the basic action
+ * and is no action of its own (it does not make its item an action item: collect.ts isAction). */
+export function grantedBy(u: Unit | null | undefined, action: string): { key: string; row: any } | null {
+  if (!u) return null;
+  for (const h of holdersOf({ u })) { const row = h.info.effects.find((e: any) => e?.op === 'grant_action' && e.action === action); if (row) return { key: h.key, row }; }
+  return null;
+}
 /** Every action a holder's items give on this surface, available or greyed (hidden ones left out). */
 export function perkActionsFor(x: Who, scope: ActionScope): PerkActionEntry[] {
   const out: PerkActionEntry[] = [];
@@ -344,6 +357,8 @@ const PICK_LISTS: Record<string, (h: Holder) => PickOption[]> = {};
 /** Register a system's pick list (see PICK_LISTS). */
 export const registerPickList = (name: string, fn: (h: Holder) => PickOption[]) => { PICK_LISTS[name] = fn; };
 // Rules 1.33: Inspire's feelings: every feeling, the felt first, the unfelt greyed with why (Classes 3.0 step 10: the picker).
+// Rules 1.82 item 7010 (P14): what a hurl can lift next to the holder (loose objects, the units its row takes)
+registerPickList('hurlable', (h) => hurlables(h));
 registerPickList('felt', (h) => { const felt: string[] = (h.c || charOfUnit(h.u))?.feelings || []; return [...felt.filter((x) => FEEL_NAME[x]), ...Object.keys(FEEL_NAME).filter((x) => !felt.includes(x))].map((x: string) => ({ id: x, label: FEEL_NAME[x], ...(felt.includes(x) ? {} : { off: UNFELT }) })); });
 /** The choices an action's pick offers this holder (ids are what args.choice takes; `off`: shown greyed, with why). */
 function pickOptions(h: Holder, d: ActionDef): PickOption[] {

@@ -5,6 +5,7 @@
   "items": [
     {
       "id": "crate",
+      "loose": { "kg": 25, "provisional": true },
       "name": "Crate",
       "glyph": "▣",
       "blocks_move": true,
@@ -127,6 +128,7 @@
     },
     {
       "id": "barrel",
+      "loose": { "kg": 30, "provisional": true },
       "name": "Explosive barrel",
       "glyph": "⬢",
       "blocks_move": true,
@@ -156,6 +158,7 @@
     },
     {
       "id": "container",
+      "loose": { "kg": 60, "provisional": true },
       "name": "Container",
       "glyph": "▤",
       "blocks_move": true,
@@ -168,6 +171,7 @@
     },
     {
       "id": "terminal",
+      "loose": { "kg": 20, "provisional": true },
       "name": "Terminal",
       "glyph": "▭",
       "blocks_move": true,
@@ -182,6 +186,7 @@
     },
     {
       "id": "lamp",
+      "loose": { "kg": 5, "provisional": true },
       "name": "Lamp",
       "glyph": "✦",
       "blocks_move": false,
@@ -220,6 +225,7 @@
     },
     {
       "id": "camera",
+      "loose": { "kg": 3, "provisional": true },
       "name": "Camera",
       "glyph": "◉",
       "blocks_move": false,
@@ -232,6 +238,7 @@
     },
     {
       "id": "alarm",
+      "loose": { "kg": 3, "provisional": true },
       "name": "Alarm panel",
       "glyph": "⚠",
       "blocks_move": false,

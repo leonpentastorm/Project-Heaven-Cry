@@ -4,14 +4,14 @@ import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { fxTaps } from './fxtap';
 import { setLogMarker, remark, say, type LogMark, type LogSideMark } from './log';
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
-import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf } from './data';
+import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf, ladderSchedule } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
-import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
+import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, attackFromHidden, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk, CASTER } from './ai-sigil';
 import { armHeart, aiSoulStep, HEART_CASTER } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
@@ -23,7 +23,7 @@ import type { Tie } from './kit';
 import { type OwnedBlock, tieCompanions } from './owned';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit, shieldTotal } from './effects/damage';
-import { itemAmount, amountSpecOf } from './effects/amounts';
+import { itemAmount, amountSpecOf, amountHome } from './effects/amounts';
 import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf, amountOf, scaleOf, mend } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, STIM_PCT, mendFactorOf, kitHeal, flatLevelOf } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
@@ -31,7 +31,7 @@ import { skillRollMod, immune, forbids } from './effects/core';
 import { price, priced, costOf, whyNot, canPay, pay, setAp, withAp, freely, apFor, creditFor } from './effects/cost';
 import { statQuery } from './effects/hooks';
 import { noteFallbacks } from './effects/narrator';
-import { windowStep } from './effects/actions';
+import { windowStep, grantedBy } from './effects/actions';
 import { type Hazard, hazardStep, spotHazards, hazardLiveAt, HAZARD } from './hazards';
 import { packAdd, intoCounts, magItem, dropOnTile, pileAt, selectEntries, takeEntries, entryPack, itemLabel, PILE } from './containers';
 import { canStand, standBlocker, unitsIn, inBounds, work, tiedTo } from './kit';
@@ -106,6 +106,10 @@ export interface Unit {
   npcId?: string;
   /** Attacked in the open from the overworld: this unit sits out every round before this one (spec: Overworld rounds). */
   waitRound?: number;
+  /** Rules 1.82 item 7004: caught by surprise as the fight was joined (the log's words for its lost turn). */
+  surprised?: boolean;
+  /** Rules 1.82 item 7004 (Shoot First): surprised, it keeps its first turn with at most this many AP. */
+  surpriseAp?: number;
   /** Injuries (spec: Injuries): head and torso last this fight; arm and leg go back to the character. */
   injuries?: Injury[]; bleed?: number; dazedNext?: number; injResist?: number; hand?: 'left' | 'right';
   /** PCs: spare magazines (rounds in each) and loose rounds for the weapon. Enemies leave these out: unlimited spares. */
@@ -241,7 +245,7 @@ export interface Combat { /** Rules 1.47: the effects a run's fight keeps for it
   /** Rules 1.64 item 5008: a Survival fight not yet joined (rules.json combat.approach): no foe has seen a character and
    * nobody has attacked. `passes`: full passes of the turn order gone by in it. Absent: the fight is joined (every fight
    * but a run's that opened unseen; every save before 0.31.2). */
-  approach?: { passes: number };
+  approach?: { passes: number; /** rules 1.82 item 7004: the last unit to begin a turn before contact, and whether the other side saw it then */ actor?: { id: string; unseen: boolean } };
   /** Retired in rules 1.9: what lay on the floor in old saves (apply() turns it into piles once; World Play 1.1). */
   floor?: { pos: string; text: string; weapon?: string; rounds?: number }[];
   /** Things said or done mid-fight that need the Narrator's judgement: they ride along in the end-of-fight call. */
@@ -1033,6 +1037,9 @@ export const COVER = {
   full: Math.abs(Number(COVER_R.full.to_hit) || 0),
   arc: Number(COVER_R.facing?.arc_deg ?? 45),
   diagonal: (COVER_R.facing?.diagonal === 'full' ? 'full' : 'half') as 'half' | 'full',
+  /** rules 1.82 item 7001: what a cover object beside the target outside the arc gives ('none', or 'half' while it is
+   * less than 90 degrees off the shot) */
+  outside: (COVER_R.facing?.outside_arc === 'half' ? 'half' : 'none') as 'half' | 'none',
 };
 export type CoverGrade = 'half' | 'full';
 export interface CoverHit { tile: string; grade: CoverGrade; mod: number }
@@ -1059,8 +1066,9 @@ export function coverFor(cb: Combat, from: string, to: string): CoverHit | null 
   for (const e of near) {
     if (dist(from, e.k) >= far) continue;
     const [cx, cy] = xy(e.k), ox = cx - tx, oy = cy - ty;
-    if ((ox * vx + oy * vy) / (Math.hypot(ox, oy) * vl) < cosArc) continue;
-    const grade: CoverGrade = ox !== 0 && oy !== 0 && e.kind === 'full' ? COVER.diagonal : e.kind;
+    const cos = (ox * vx + oy * vy) / (Math.hypot(ox, oy) * vl), inArc = cos >= cosArc;
+    if (!inArc && !(COVER.outside === 'half' && cos > 1e-9)) continue;
+    const grade: CoverGrade = !inArc ? 'half' : ox !== 0 && oy !== 0 && e.kind === 'full' ? COVER.diagonal : e.kind;
     if (!best || (grade === 'full' && best.grade === 'half')) best = { tile: e.k, grade, mod: COVER[grade] };
   }
   return best;
@@ -1258,7 +1266,8 @@ export function knownTile(cb: Combat, side: string, t: Unit): string | null {
   if (t.hidden) return cb.lastSeen?.[side]?.[t.id] ?? null;
   return cb.seenAt?.[side] ? cb.seenAt[side][t.id] ?? cb.lastSeen?.[side]?.[t.id] ?? null : t.pos;
 }
-function noteSeen(cb: Combat, side: string, id: string, at: string) {
+/** A side learns where a unit stands (its seenAt: where its eyes last had it, read by knownTile): the one writer. */
+export function noteSeen(cb: Combat, side: string, id: string, at: string) {
   const m = cb.seenAt?.[side]; if (!m || m[id] !== at) cb.seenAt = { ...cb.seenAt, [side]: { ...m, [id]: at } }; // replaced, never written into (a copied fight shares it)
 }
 /** Does anyone on the attacker's side see the target? */
@@ -1618,7 +1627,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   // technique's strike gives none (opts.noMomentum, from physical/core.ts): Strikes and Openers spend it.
   if (hit && melee && !opts.noMomentum && att.resMax?.momentum != null) resGain(att, 'momentum', 1);
   if (ambush) injury += ' · AMBUSH';
-  if (att.hidden && !isSilent(att) && !opts.quiet) injury += reveal(cb, att, 'attacked', { how: 'attack' }); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights)
+  if (att.hidden && !isSilent(att) && !opts.quiet) injury += attackFromHidden(cb, att, 'attacked'); // quiet: a held shot that keeps its shooter Hidden (physical/, Dead to Rights); rules 1.82 item 7012: the tile, not the unit
   showAttacker(cb, att, tgt); // rules 1.61 item 4963: the shot that shows (a still-Hidden attacker is untouched)
   const spotBack = att.hidden && !opts.quiet && tgt.side !== att.side && alive(tgt) && !tgt.hidden; // rules 1.32 (2.6): a silent attack from Hidden; rolled after the line
   if (condSource(att, 'taunted') === tgt.id) endCond(att, 'taunted', cb);
@@ -1760,7 +1769,7 @@ export function beginTurn(cb: Combat, rng: Rng) {
   guardNextAction(); // the Elite and Boss guard: a new turn is a new action
   if (!u) return;
   // rules 1.64 item 5008: before contact a turn is only its AP (nothing that lasts ticks; no death save, no hazard)
-  if (cb.approach) { setAp(u, turnAp(u, [], []).ap); u.moved = false; u.bank = 0; u.sprinted = false; emitFx(cb, 'turn', { unit: u.id, side: u.side, at: u.pos, round: cb.round }); return; }
+  if (cb.approach) { if (u.side === 'foe') cb.approach.actor = { id: u.id, unseen: !sideSees(cb, 'pc', u) }; setAp(u, turnAp(u, [], []).ap); u.moved = false; u.bank = 0; u.sprinted = false; emitFx(cb, 'turn', { unit: u.id, side: u.side, at: u.pos, round: cb.round }); return; }
   // AP (spec: Skills, traits and perks in play): 'turn_start_pre' {u, grants, penalties} collects perk AP ({n, why});
   // turnAp clamps 6 + perk AP (at most +3 a turn) − Stunned − Dazed to 2..9, then takes any debt.
   condSourcesCheck(cb, u); // a grapple whose grappler is gone ends, and so on
@@ -1768,7 +1777,9 @@ export function beginTurn(cb: Combat, rng: Rng) {
   const pens = ['nausea', 'suppressed'].filter((id) => condOn(u, id)).map((id) => ({ n: -(condMods(id).ap || 0), why: condDef(id)!.title })); // the rows' AP (data/conditions.json)
   const pre: any = emit(cb, 'turn_start_pre', { u, grants: [], penalties: pens, cb, rng });
   const t = turnAp(u, pre.grants || [], pre.penalties || []);
-  setAp(u, t.ap); for (const l of t.lines) say(cb, l);
+  const full = t.ap, cap = u.surpriseAp; delete u.surpriseAp; // rules 1.82 item 7004: Shoot First's first turn, at most its AP
+  setAp(u, cap != null ? Math.min(full, cap) : full); for (const l of t.lines) say(cb, l);
+  if (cap != null && cap < full) say(cb, sayWords(SURPRISE.lines.ap, u, cap));
   if (u.dazedNext) say(cb, u.name + ' is Dazed: −2 AP this turn.');
   if (u.shownTo) delete u.shownTo; // rules 1.61 item 4963: its last attack showed it until now
   clearStagger(u); dazeSpent(u); u.overwatch = null; u.owShots = 0; delete u.owSpend; u.moved = false; u.bank = 0; u.shotsThisTurn = 0; u.heat = Math.max(0, u.heat - (heatPair(u) ? 4 : 2)); u.firstShotTurn = false; u.sprinted = false; u.attackedTurn = false; // off-turn attacks (Riposte, Overwatch) don't count for this turn's Momentum
@@ -1851,11 +1862,36 @@ export function openApproach(cb: Combat): boolean {
  * action that is not the approach's (rules.json combat.approach.quiet / free): that is contact itself. */
 export function contactCheck(cb: Combat, rng: Rng, o: { acting?: boolean } = {}): boolean {
   if (!cb.approach) return false;
-  if (o.acting) { joinFight(cb, rng); return true; }
+  if (o.acting) { const a = active(cb); joinFight(cb, rng, a ? { side: a.side, unseen: !sideSees(cb, a.side === 'pc' ? 'foe' : 'pc', a) } : null); return true; }
   const seen = cb.units.some((u) => u.side === 'pc' && alive(u) && sideSees(cb, 'foe', u));
-  const hit = cb.units.some((u) => (u.side === 'pc' && (u.attackedTurn || (u.shotsThisTurn || 0) > 0)) || (u.side === 'foe' && (u.attackedTurn || u.hp < u.maxHp)));
-  if (!seen && !hit) return false;
-  joinFight(cb, rng); return true;
+  const pcHit = cb.units.some((u) => (u.side === 'pc' && (u.attackedTurn || (u.shotsThisTurn || 0) > 0)) || (u.side === 'foe' && u.hp < u.maxHp));
+  const foeHit = cb.units.some((u) => u.side === 'foe' && u.attackedTurn);
+  if (!seen && !pcHit && !foeHit) return false;
+  // rules 1.82 item 7004: who made contact by an attack, and whether the other side saw the one who acted (a character
+  // acting before contact is unseen by the approach's own rule; a foe acting before contact is a Hidden one, seen or not
+  // as its turn began). Contact by sight alone surprises nobody.
+  const atk = foeHit ? cb.units.find((u) => u.side === 'foe' && u.attackedTurn) : null;
+  const by = pcHit ? { side: 'pc' as const, unseen: true } : atk ? { side: 'foe' as const, unseen: cb.approach.actor?.id === atk.id && cb.approach.actor.unseen } : null;
+  joinFight(cb, rng, by); return true;
+}
+/** Rules 1.82 item 7004 (rules.json combat.initiative.surprise_round): a surprise in the approach. Its switch, its log lines. */
+export const SURPRISE: { on: boolean; lines: { side: string; immune: string; ap: string } } = { on: !!(RULES as any).combat.initiative.surprise_round?.on, lines: (RULES as any).combat.initiative.surprise_round?.lines || { side: '', immune: '', ap: '' } };
+const sayWords = (t: string, u: Unit | null, n?: number) => t.replace(/\{unit\}/g, u?.name || '').replace(/\{n\}/g, String(n ?? ''));
+/** Rules 1.82 item 7004: the side that did not make contact, when it saw nobody of the side that did, is surprised: each
+ * of its units loses round 1 (waitRound 2), but one whose `surprise_immune` holds while a unit of the contact side stands
+ * within its Vision (Tremor), and one with `surprise_ap`, which keeps its first turn with that many AP (Shoot First). */
+function surpriseSide(cb: Combat, by: { side: 'pc' | 'foe'; unseen: boolean } | null): void {
+  if (!SURPRISE.on || !by || !by.unseen) return;
+  const caught: Unit[] = [], them = cb.units.filter((t) => t.side === by.side && alive(t));
+  for (const u of cb.units) {
+    if (u.side === by.side || !alive(u) || u.downed) continue;
+    const own = !!(u.charId || u.held); // (only a unit with items of its own answers either)
+    if (own && statQuery({ u, cb }, 'surprise_immune').add > 0 && them.some((t) => dist(t.pos, u.pos) <= (u.vision || 12))) { if (SURPRISE.lines.immune) say(cb, sayWords(SURPRISE.lines.immune, u)); continue; }
+    const ap = own ? statQuery({ u, cb }, 'surprise_ap').add : 0; if (ap > 0) { u.surpriseAp = ap; continue; }
+    if ((u.waitRound || 0) >= 2) continue; // already sits round 1 out (unaware)
+    u.waitRound = 2; u.surprised = true; caught.push(u);
+  }
+  if (caught.length && SURPRISE.lines.side) say(cb, sayWords(SURPRISE.lines.side, null).replace(/\{units\}/g, caught.map((u) => u.name).join(', ')));
 }
 /** The initiative line (spec item 5605): every unit in the order by name and Initiative. A side that does not see some of
  * them reads them as one count ("2 unseen"): each side's line is built here, where it is written, and kept on the
@@ -1880,9 +1916,10 @@ function sayInitiative(cb: Combat, lead: string) {
 function remarkOpening(cb: Combat) { const at = cb.log.findIndex((l, i) => i < 4 && l.startsWith(INIT_HEAD)); if (at >= 0) remark(cb, at, initiativeMark(cb, at)); }
 /** Rules 1.64 item 5008: contact. The fight is joined: round 1 from the top of the initiative order (rolled as the fight
  * began, read out now), every unit's first turn on full AP (beginTurn). */
-function joinFight(cb: Combat, rng: Rng) {
+function joinFight(cb: Combat, rng: Rng, by: { side: 'pc' | 'foe'; unseen: boolean } | null = null) {
   delete cb.approach; cb.round = 1;
   sayInitiative(cb, APPROACH.joined_log + ' ');
+  surpriseSide(cb, by); // rules 1.82 item 7004: before the alarm tells the foes where the squad stands
   const told = raiseAlarm(cb);
   // rules 1.78 item 6603 (spec item 5010 c): the fight joined is an effects event (the alarm's, `joined`), over the first
   // character the foes learned of (no tile: nobody was told; the screen still sounds it)
@@ -1892,6 +1929,7 @@ function joinFight(cb: Combat, rng: Rng) {
     // action that joins the fight runs there, so a place with no unit is passed over, never read: 0.32 B8)
     cb.turn = i; const u = active(cb);
     if (!u || u.dead || u.surrendered || (u.side === 'foe' && u.downed)) continue;
+    if (u.waitRound && cb.round < u.waitRound) { if (u.surprised) say(cb, u.name + ' is caught by surprise: no turn this round.'); continue; } // rules 1.82 item 7004: surprised (or unaware), it sits round 1 out
     beginTurn(cb, rng); return;
   }
 }
@@ -1932,7 +1970,7 @@ export function endTurn(cb: Combat, rng: Rng, o: { newRound?: boolean } = {}) {
     }
     const u = active(cb)!;
     if (u.dead || u.surrendered || (u.side === 'foe' && (u.downed || cb.field || (cb.approach && !u.hidden)))) continue; // rules 1.62 item 4906: no foe has a turn on the field; rules 1.64 item 5008: nor before contact, but a Hidden one
-    if (u.waitRound && cb.round < u.waitRound) { say(cb, u.name + (u.tags?.includes('unaware') ? ' is caught unaware: no turn this round.' : ' is still reeling from striking in the open: no turn this round.')); continue; }
+    if (u.waitRound && cb.round < u.waitRound) { say(cb, u.name + (u.tags?.includes('unaware') ? ' is caught unaware: no turn this round.' : u.surprised ? ' is caught by surprise: no turn this round.' : ' is still reeling from striking in the open: no turn this round.')); continue; }
     beginTurn(cb, rng);
     if (u.dead || (u.downed && u.side === 'pc') || u.skipTurn) { closeTurn(cb, rng, u); checkOver(cb); if (cb.over) return; continue; }
     return;
@@ -2488,13 +2526,21 @@ export function repairWays(t: Unit): RepairWay[] {
  * repair a machine or Figment for the `repair` amount (profile repair, the repairer's Expression and Improvisation, its
  * level; a repair, not a heal: no healing multipliers; a Downed machine comes back up). With no target: your own weapon's
  * durability, as before. o (the Rigger's Field Fix): the item whose amount it is, its parts (0), its reach, no gate. */
+/** Rules 1.82 item 7008: Field Repair's numbers for this unit: the item that grants it (grantedBy; Overhaul names the
+ * perk's numbers with `numbers_from`) or the caller's own item (a class move: Field Fix), its durability shares and the
+ * key of its `repair` amount block; parts: the grant row's (a tier II grants it with none), else one. null: no grant. */
+export function repairOf(u: Unit, item?: string): { key: string; base: number; per: number; parts: number } | null {
+  const g = grantedBy(u, 'field_repair'), key = item || g?.row?.numbers_from || g?.key; if (!key) return null;
+  const n = amountHome(key)?.numbers || (g ? amountHome(g.row?.numbers_from || g.key)?.numbers : null) || {};
+  return { key, base: Number(n.repair_base) || 0, per: Number(n.repair_per_point) || 0, parts: typeof g?.row?.parts === 'number' ? g.row.parts : 1 };
+}
 export function fieldRepair(cb: Combat, u: Unit, o: { target?: Unit | null; way?: string | null; parts?: number; reach?: number; gate?: boolean; item?: string; label?: string } = {}): string | null {
-  const t = o.target || u, parts = o.parts ?? 1, gate = o.gate ?? true, label = o.label || 'Field Repair';
+  const t = o.target || u, gate = o.gate ?? true, label = o.label || 'Field Repair', rp = repairOf(u, o.item), parts = o.parts ?? rp?.parts ?? 1;
   if (t !== u && (t.side !== u.side || t.dead)) return 'Pick one of your side.';
   if (t !== u && dist(u.pos, t.pos) > (o.reach ?? 1)) return 'Out of reach (' + (o.reach ?? 1) + (o.reach === 1 || o.reach == null ? ' tile).' : ' tiles).');
   const ways = repairWays(t), way = (o.way || (t === u && !o.way ? 'restore_durability' : ways[0])) as RepairWay;
   if (t === u && way === 'restore_durability' && !u.maxDur) return 'Nothing to repair.';
-  if (gate && (u.proficiency || 0) < 3) return 'Needs ' + SKILL.proficiency.name + ' 3.';
+  if (gate && !grantedBy(u, 'field_repair')) return 'Needs the Field Repair perk.'; // rules 1.82 item 7008: an action gated by a held item
   if (parts && (u.parts || 0) < parts) return 'No spare-parts charges.';
   if (!REPAIR_WAYS.includes(way)) return 'Pick what to fix.';
   if (!ways.includes(way)) return way === 'clear_jam' ? (t === u ? 'Your' : t.name + '\'s') + ' weapon isn\'t jammed.' : way === 'restore_durability' ? (t === u ? 'Already in full repair.' : t.name + '\'s weapon is in full repair.') : repairable(t) ? t.name + ' is undamaged.' : t.name + ' isn\'t a machine.';
@@ -2503,12 +2549,13 @@ export function fieldRepair(cb: Combat, u: Unit, o: { target?: Unit | null; way?
   pay(cb, u, cost); if (parts) u.parts = (u.parts || 0) - parts;
   if (way === 'clear_jam') { t.jammed = false; t.heat = 0; emitFx(cb, 'clear', { unit: t.id, at: t.pos, dur: 1000, by: u.id }); say(cb, u.name + ' clears ' + (t === u ? 'the' : t.name + '\'s') + ' jam (' + label + ').'); return null; }
   if (way === 'restore_durability') {
-    const fr: any = (SKILL.proficiency as any).unlocks?.['3']?.effects?.[0] || {}; // the card's numbers (skills.json Field Repair)
-    const add = Math.ceil(t.maxDur! * Math.max(fr.repair_base ?? 0.1, (fr.repair_base ?? 0.1) + (fr.repair_per_point ?? 0.05) * ((u.proficiency || 3) - 3)) * statQuery({ u }, 'field_repair_amount').mult);
+    const first = ladderSchedule('proficiency').perk_steps[0] ?? 0; // the points above the skill's first perk step add
+    const add = Math.ceil(t.maxDur! * Math.max(rp?.base ?? 0, (rp?.base ?? 0) + (rp?.per ?? 0) * ((u.proficiency || first) - first)) * statQuery({ u }, 'field_repair_amount').mult);
     t.dur = Math.min(t.maxDur!, (t.dur ?? 0) + add); emitFx(cb, 'repair', { unit: u.id, ...(t !== u ? { target: t.id } : {}), at: t.pos, dur: 1400 });
     say(cb, u.name + (t === u ? ' patches the weapon' : ' fixes ' + t.name + '\'s weapon') + ': +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return null;
   }
-  const n = Math.floor(amountOf(amountSpecOf(o.item || 'skill:proficiency.3', 'repair'), u, { level: u.charId ? u.level : null }).raw);
+  if (!rp) return 'Needs the Field Repair perk.';
+  const n = Math.floor(amountOf(amountSpecOf(rp.key, 'repair'), u, { level: u.charId ? u.level : null }).raw);
   const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + n); if (up) setDowned(t, false);
   emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
   say(cb, u.name + ' repairs ' + t.name + ' (' + label + '): +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
@@ -3459,7 +3506,7 @@ export function weaponActions(u: Unit, cb?: Combat | null): WeaponAction[] {
   // Guard 2.0 (rules 1.56, the audit's b): the row says the Guard this unit's Brace gives (guardGain, through braceHook)
   const bg = pool ? braceHook.gain?.(u) ?? 0 : 0;
   if (braces || pool) add({ id: 'brace', label: bg ? 'Brace · +' + bg + ' Guard' : 'Brace', ap: price({ cb, u }, 'brace').ap, why: u.braced ? 'Already braced.' : need(price({ cb, u }, 'brace').ap), text: (braces ? 'Set the weapon: no −2 for the LMG, the .700 can fire, Recoil halved.' : 'Set yourself.') + (bg ? ' You gain ' + bg + ' Guard.' : '') + ' Moving ends it.' });
-  if (u.maxDur) { const c = price({ cb, u }, 'field_repair').ap; add({ id: 'repair', label: 'Field Repair', ap: c, why: (u.proficiency || 0) < 3 ? 'Needs ' + SKILL.proficiency.name + ' 3.' : !(u.parts || 0) ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: SKILL.proficiency.name + ' 3+, one spare-parts charge: +10% durability, +5% per point above 3.' }); }
+  if (u.maxDur) { const c = price({ cb, u }, 'field_repair').ap, rp = repairOf(u), pct = (x: number) => Math.round(x * 100); add({ id: 'repair', label: 'Field Repair', ap: c, why: !rp ? 'Needs the Field Repair perk.' : rp.parts && (u.parts || 0) < rp.parts ? 'No spare parts.' : (u.dur ?? u.maxDur) >= u.maxDur ? 'Already in full repair.' : need(c), text: rp ? (rp.parts ? 'One spare-parts charge: ' : 'No spare part: ') + '+' + pct(rp.base) + '% durability, +' + pct(rp.per) + '% per ' + SKILL.proficiency.name + ' point above the first perk step.' : 'Take the Field Repair perk (' + SKILL.proficiency.name + ') to repair in the field.' }); } // rules 1.82 item 7008
   const owAp = price({ cb, u }, 'overwatch', attackApCost(w, melee ? 'melee' : 'shot')).ap;
   add({ id: 'overwatch', label: melee ? 'Hold a strike' : 'Overwatch', ap: owAp, why: need(owAp), text: melee ? 'Hold a strike until your next turn: the first enemy that moves into your reach takes it, as your reaction.' : 'Hold a shot until your next turn: the first enemy that moves in your sight and range takes it, as your reaction.' });
   for (const m of ['burst', 'auto'] as const) if ((w.modes || []).includes(m)) add({ id: m, label: m === 'auto' ? 'Full auto' : 'Burst', ap: m === 'auto' ? ((w as any).grants?.effect?.op === 'auto_ap' ? (w as any).grants.effect.value : 4) : 3, why: null, text: '' });

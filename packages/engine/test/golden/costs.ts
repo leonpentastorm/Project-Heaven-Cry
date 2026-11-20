@@ -151,7 +151,8 @@ const BASIC: Case[] = [
   ['load', (_g, u) => { if (u.mags?.length) { u.mags[0] = Math.max(0, u.mags[0] - 4); u.loose = (u.loose || 0) + 6; } }, () => [{ type: 'combat/load' }]],
   ['clear', (_g, u) => { u.jammed = true; u.heat = 3; }, () => [{ type: 'combat/clear' }]],
   ['clear-off', (_g, u) => { if (u.offWeapon) u.offJammed = true; u.heat = 3; }, () => [{ type: 'combat/clear', hand: 'off' }]],
-  ['repair', (_g, u) => { u.parts = 2; if (u.maxDur) u.dur = Math.max(1, Math.floor(u.maxDur / 2)); }, () => [{ type: 'combat/repair' }]],
+  // rules 1.82 item 7008: Field Repair is a perk now; a sheet that met the old gate (Improvisation 3) holds it, so the rows read as before
+  ['repair', (g, u) => { u.parts = 2; if (u.maxDur) u.dur = Math.max(1, Math.floor(u.maxDur / 2)); const c: any = charOf(g, u); if (c && (c.skills?.proficiency || 0) >= 3 && !c.perks.some((p: any) => p.id === 'field_repair')) { c.perks = [...c.perks, { id: 'field_repair', tier: 'I' }]; if (u.held) u.held = { ...u.held, perks: [...(u.held.perks || []), { id: 'field_repair', tier: 'I' }] } as any; } }, () => [{ type: 'combat/repair' }]],
   ['stim', (g) => { for (const c of Object.values(g.characters) as any[]) c.stims = 2; }, (g) => [{ type: 'combat/stim', targetId: pcs(g)[1].id }]],
   ['stim-downed', (g) => { for (const c of Object.values(g.characters) as any[]) c.stims = 2; const a = pcs(g)[1]; a.hp = 0; a.downed = true; }, (g) => [{ type: 'combat/stim', targetId: pcs(g)[1].id }]],
   ['analyze', null, (g) => [{ type: 'combat/analyze', targetId: foes(g)[1].id }]],

@@ -91,7 +91,7 @@ describe('the Rigger: the moves', () => {
 
 describe('Field Repair (Improvisation\'s door action) and the Blade', () => {
   it('Field Repair: 2 AP and a spare part, on a Figment next to you: the repair amount', () => {
-    const f = figFight([{ skills: { visualization: 5, proficiency: 3 }, level: 5, weapon: 'service_pistol' }]); let u = f.turn(f.pc);
+    const f = figFight([{ skills: { visualization: 5, proficiency: 3 }, perks: { field_repair: 'I' }, level: 5, weapon: 'service_pistol' } as any]); let u = f.turn(f.pc); // rules 1.82 item 7008: Field Repair is a perk
     f.picture(u, 'beast', '2,4'); u = f.unit(u.id); const b = f.figments(u)[0]; b.hp = 1; u.ap = 6; u.parts = 1;
     f.act({ type: 'combat/repair', unitId: u.id, targetId: b.id, way: 'repair' } as any); u = f.unit(u.id);
     expect(f.unit(b.id).hp).toBeGreaterThan(1); expect(u.parts).toBe(0); expect(6 - u.ap).toBe(ACT.costs.field_repair.ap);

@@ -57,6 +57,8 @@ export const STATS = {
   always_seen: 'The other side sees this unit wherever it is (>0; tactics.ts sightOf, Classes 3.0 P7: Traced, a Figment\'s Stare)',
   numb_limbs: 'How many of the unit\'s first limb injuries (arm or leg) carry no penalty (character.ts penalLimbs; rules 1.77 item 6513: Numb)',
   fear_unbound: 'The two refusals of Fear (no attack on its source, no step toward it) do not hold this unit; its to-hit penalty stays (>0; combat.ts fearHolds; rules 1.77 item 6505: Steady I)',
+  surprise_immune: 'A surprise in the approach does not take the first turn of this unit while a unit of the side that made contact stands within its Vision (>0; combat.ts surpriseSide; rules 1.82 item 7004: Tremor)',
+  surprise_ap: 'Surprised in the approach, this unit still has its first turn, with at most this many AP (>0; combat.ts surpriseSide; rules 1.82 item 7004: Shoot First)',
   seen_range: 'Tiles added to (negative: taken from) the range at which other units\' eyes see this unit (combat.ts unitSees with a target, seenRangeOf; rules 1.70 item 5545, P4)',
   // Classes 3.0 step 8 (rules 1.34): Figments
   figment_designs: 'Figment designs kept ready beyond the door\'s ladder (figments.ts designsMax; the Rigger +1)',

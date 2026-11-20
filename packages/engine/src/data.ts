@@ -48,6 +48,16 @@ export const CLASSES: ClassDef[] = ((classesJ as any).base as any[]).map((b) => 
   ...b, ranks: Object.fromEntries(Object.entries(b.ranks || {}).map(([r, v]: [string, any]) => [r, { ...v, moves: (v.moves || []).map((m: any) => resolveClassMove(b.id, m)) }])),
   ...(b.gain ? { gain: (b.gain as any[]).map((m: any) => resolveClassMove(b.id, m)) } : {}), // held from class gain (rules 1.30)
 }));
+/** Rules 1.82 item 7003 (the class-only multiplier): a base class's `dials` (classes.json), each a multiplier on what
+ * that class's characters deal (`value`, the item op `damage_mult` on `dealing`, with its own `if`: the door's damage
+ * kind, a Figment the holder owns), held as one hidden item, key "class:<id>.dials". A dial at exactly 1 is no item at
+ * all (nothing runs, nothing is listed): the numbers are the balance pass's to fit. Read live, so a measure may turn one. */
+export function classDialMove(b: any): any | null {
+  const rows = ((b?.dials || []) as any[]).filter((d) => d && Number.isFinite(d.value) && d.value !== 1);
+  if (!rows.length) return null;
+  return { id: 'dials', key: 'class:' + b.id + '.dials', name: b.name, origin: b.id, ap_cost: 0, uses: 'at_will', hidden: true, adjudication: 'engine', provisional: true, text: '',
+    effects: rows.map((d) => ({ op: 'damage_mult', when: 'dealing', ...(d.if ? { if: d.if } : {}), value: d.value, label: d.label || b.name })) };
+}
 /** Revision 2 class ids and the Revision 3 class an old save's class becomes (medic → bard …). */
 export const CLASS_MIGRATION: Record<string, string> = (classesJ as any).migration?.class_ids || {};
 export const CLASS_RULES: any = (classesJ as any).assignment;

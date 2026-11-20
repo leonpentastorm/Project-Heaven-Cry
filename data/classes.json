@@ -305,6 +305,52 @@
               ],
               "status": "active",
               "surface": "combat"
+            },
+            {
+              "id": "stand_behind_me",
+              "name": "Stand Behind Me",
+              "ap_cost": 0,
+              "uses": "at_will",
+              "text": "A ranged attack on the ally directly behind you (beside you, on the far side from the shooter) lands on you instead: your plates take it as they take any hit",
+              "effects": [
+                {
+                  "op": "redirect",
+                  "when": "taking",
+                  "share": 1,
+                  "if": {
+                    "actor": "foe",
+                    "target": "ally",
+                    "target_behind": true,
+                    "by_hit": true,
+                    "self_alive": true,
+                    "mode": [
+                      "shot",
+                      "aimed",
+                      "burst",
+                      "auto",
+                      "thrown"
+                    ]
+                  },
+                  "label": "Stand Behind Me",
+                  "say": "{self} takes the shot meant for {target} (Stand Behind Me)."
+                }
+              ],
+              "source": "rules 1.82 item 7006 (Waiting on Leon 23, the lead's pick: the three-layers draft's Bulwark rank III ceiling; a call made for Leon). A third move at rank III: its `ceiling` mark keeps it beside the rank's two moves (tools/validate.py)",
+              "adjudication": "engine",
+              "provisional": true,
+              "origin": "defender",
+              "new": true,
+              "fantasy_tags": [
+                "guard",
+                "tank",
+                "protect"
+              ],
+              "attributes": [
+                "endurance"
+              ],
+              "status": "active",
+              "surface": "combat",
+              "ceiling": true
             }
           ]
         }
@@ -688,13 +734,12 @@
               "provisional": true
             }
           },
-          "text": "{=effects.0.ap} AP and all your Momentum (at least {=effects.0.res.momentum}): heave an enemy next to you away. It takes a blow that grows with each Momentum beyond the first {=effects.0.res.momentum}, then makes a Body save against your Raw Power: on a failure it is Off Balance, flies {=effects.0.effects.3.tiles} tiles and lands Prone; on a success it staggers back {=effects.0.effects.4.tiles} tile, whatever it was before (an Off Balance it already had is shaken off by the throw). Whatever it lands on (fire, a trap) acts on it. A Boss takes the blow and the save but is never moved.",
+          "text": "{=ap_cost} AP and all your Momentum (at least {=effects.0.res.momentum}): heave an enemy next to you away. It takes a blow that grows with each Momentum beyond the first {=effects.0.res.momentum}, then makes a Body save against your Raw Power: on a failure it is Off Balance, flies {=effects.0.effects.3.tiles} tiles and lands Prone; on a success it staggers back {=effects.0.effects.4.tiles} tile, whatever it was before (an Off Balance it already had is shaken off by the throw). Whatever it lands on (fire, a trap) acts on it. A Boss takes the blow and the save but is never moved.",
           "effects": [
             {
               "op": "grant_action",
               "action": "breaker_launch",
               "label": "Launch",
-              "ap": 2,
               "uses": "at_will",
               "res": {
                 "momentum": 2
@@ -940,6 +985,81 @@
           "status": "active",
           "surface": "combat",
           "source": "rules 1.78 item 6605 (docs/design/proposals/2026-11-momentum-2.0.md item 15, P13)"
+        },
+        {
+          "id": "hurl",
+          "name": "Hurl",
+          "ap_cost": 2,
+          "uses": "at_will",
+          "amounts": {
+            "hurl": {
+              "kind": "damage",
+              "base": 10,
+              "per": [
+                {
+                  "of": "kg",
+                  "value": 0.25
+                }
+              ],
+              "profile": "physical",
+              "type": "physical",
+              "provisional": true
+            }
+          },
+          "text": "{=effects.0.ap} AP: lift a loose crate, barrel or lamp next to you, or a small foe you hold (Grappled or Bound), and throw it at a tile within {=effects.0.effects.0.range} tiles: it and whoever it lands on take {=amounts.hurl.base} damage and more by its weight. A barrel goes off where it lands.",
+          "effects": [
+            {
+              "op": "grant_action",
+              "action": "hurl",
+              "ap": 2,
+              "site": "throw",
+              "uses": "at_will",
+              "pick": "hurlable",
+              "pick_label": "What to throw",
+              "reach": {
+                "tile": true,
+                "tiles": 4,
+                "sight": true
+              },
+              "label": "Hurl",
+              "effects": [
+                {
+                  "op": "object",
+                  "do": "hurl",
+                  "when": "acted",
+                  "range": 4,
+                  "units": {
+                    "target_tier": [
+                      "vermin",
+                      "minion"
+                    ],
+                    "target_held": true
+                  },
+                  "amount": "hurl",
+                  "label": "Hurl",
+                  "why": {
+                    "target_held": "Grapple or Bind {target} first.",
+                    "target_tier": "{target} is too big to hurl: a Soldier is Throw Down's."
+                  }
+                }
+              ]
+            }
+          ],
+          "origin": "fighter",
+          "new": true,
+          "fantasy_tags": [
+            "melee",
+            "momentum",
+            "demolition"
+          ],
+          "attributes": [
+            "strength"
+          ],
+          "status": "active",
+          "surface": "combat",
+          "adjudication": "engine",
+          "provisional": true,
+          "source": "rules 1.82 item 7010 (momentum-2.0 item 16; P14): the Breaker's gain; small foes are vermin and minions (the draft's recommendation 4: a Soldier is Throw Down's)"
         }
       ]
     },
@@ -1337,11 +1457,7 @@
               "name": "Run and Gun",
               "ap_cost": 0,
               "uses": "per_turn",
-              "numbers": {
-                "tiles": 2,
-                "pressure": 1
-              },
-              "text": "Once a turn after you attack: your next move of up to {=numbers.tiles} tiles is free, with no opportunity attack · your next hit adds +{=numbers.pressure} Pressure",
+              "text": "Once a turn after you attack: your next move of up to {=effects.1.if.path_tiles_at_most} tiles is free, with no opportunity attack · your next hit adds +{=effects.2.value} Pressure",
               "effects": [
                 {
                   "op": "mark",
@@ -1822,7 +1938,20 @@
             }
           ]
         }
-      }
+      },
+      "dials": [
+        {
+          "if": {
+            "actor": "self",
+            "damage": [
+              "sigil_spell"
+            ],
+            "hostile": true
+          },
+          "value": 1,
+          "label": "Sigilist"
+        }
+      ]
     },
     {
       "id": "trickster",
@@ -2150,7 +2279,25 @@
             }
           ]
         }
-      }
+      },
+      "dials": [
+        {
+          "if": {
+            "actor": "ally",
+            "actor_kind": [
+              "figment"
+            ],
+            "actor_tied": {
+              "kind": "owned",
+              "as": "to"
+            },
+            "hostile": true
+          },
+          "value": 1,
+          "label": "Rigger",
+          "note": "the Rigger's Figments (Figments door 119, Rigger 123, against 130 and 150: START-HERE Balance 2.0 4)"
+        }
+      ]
     },
     {
       "id": "bard",
@@ -2671,7 +2818,20 @@
             }
           ]
         }
-      }
+      },
+      "dials": [
+        {
+          "if": {
+            "actor": "self",
+            "damage": [
+              "outburst"
+            ],
+            "hostile": true
+          },
+          "value": 1,
+          "label": "Channeler"
+        }
+      ]
     },
     {
       "id": "guardian",
@@ -3837,6 +3997,19 @@
           "status": "active",
           "surface": "combat",
           "source": "rules 1.78 item 6607 (docs/design/proposals/2026-11-prayer-2.0.md item 16, P9)"
+        }
+      ],
+      "dials": [
+        {
+          "if": {
+            "actor": "self",
+            "damage": [
+              "prayer"
+            ],
+            "hostile": true
+          },
+          "value": 1,
+          "label": "Chaplain"
         }
       ]
     }
@@ -8728,5 +8901,6 @@
       ],
       "batch": 3
     }
-  ]
+  ],
+  "dials_note": "rules 1.82 item 7003: a base class's dials multiply what its characters deal through its door (damage_mult on dealing, each row's if); a dial at 1 is no item at all. PROVISIONAL, every one 1 until the balance pass fits it (data.ts classDialMove)"
 }

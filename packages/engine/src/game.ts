@@ -554,7 +554,14 @@ export function migrateLoaded<T extends GameState | null | undefined>(g: T): T {
     for (const u of (cb?.units || []) as any[]) {
       if (u.lastTurn || u.dead || !condOn(u, 'last_turn')) continue;
       const c: any = (g as any).characters?.[u.charId]; let row: any = null, key = '';
-      for (const p of (c?.perks || []) as any[]) { const it: any = (PERK as any)[p.id]; const fx: any[] = it?.tiers?.[p.tier]?.effects ?? it?.effects ?? []; const r = fx.find((e) => e?.op === 'last_turn'); if (r) { row = { ...r, label: r.label || it.name }; key = 'perk:' + p.id; break; } }
+      // the right perk (the 0.32.0 ship review): only the old handler wrote this state, and it kept its own mark in the
+      // perk's bag (ps[key].lt), so the perk whose bag holds that mark is the one; with no mark anywhere, the first
+      for (const p of (c?.perks || []) as any[]) {
+        const it: any = (PERK as any)[p.id]; const fx: any[] = it?.tiers?.[p.tier]?.effects ?? it?.effects ?? []; const r = fx.find((e) => e?.op === 'last_turn');
+        if (!r) continue; const k = 'perk:' + p.id; const marked = u.ps?.[k]?.lt != null;
+        if (!row || (marked && u.ps?.[key]?.lt == null)) { row = { ...r, label: r.label || it.name }; key = k; }
+        if (marked) break;
+      }
       if (!row) continue;
       const began = u.ps?.[key]?.lt?.began ?? (cb.order?.[cb.turn] === u.id && !cb.window);
       u.lastTurn = { began: !!began, ...(typeof row.turn_ap === 'number' ? { turnAp: row.turn_ap } : {}), ...(row.hits === 'death_save' ? { hits: 'death_save' } : {}), label: row.label, ...(u.lastHitBy ? { by: u.lastHitBy } : {}) };
@@ -3732,7 +3739,7 @@ const sbOf = (g: GameState): Sandbox => g.sandbox || fail('The Proving Ground is
 const liveFight = (g: GameState): Combat | null => (g.phase === 'combat' && g.combat && !g.combat.over ? g.combat : null);
 /** What a fighter keeps when the tools rebuild it from its character (everything the fight itself changed). */
 const SB_KEEP = ['hp', 'ap', 'bank', 'heat', 'jammed', 'shotsThisTurn', 'downed', 'dead', 'saves', 'stunnedNext', 'kills', 'injuries', 'bleed', 'dazedNext',
-  'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'analyzedBy', 'song', 'init',
+  'prone', 'braced', 'guardBrace', 'overwatch', 'reactedRound', 'conds', 'shield', 'moved', 'firstShotDone', 'waitRound', 'surprised', 'surpriseAp', 'analyzedBy', 'song', 'init',
   'condBy', 'condVia', 'condArg', 'condFresh', 'lastTurn', 'hidden', 'hideEntry', 'ambushUsed', 'reactUsed', 'owShots', 'firstShotTurn', 'sprinted', 'attackedTurn', 'res', 'vow', 'faith', 'uses', 'ps', 'armed', 'apNext', 'apDebt', 'apGained', 'apTurnTotal', 'lastHitBy', 'damagedBy', 'throwables', 'ammoType', 'magTypes',
   // Physical 2.0 (rules 1.12): the meters and what a technique left on the unit
   'pressure', 'pressHidden', 'pressBy', 'hitRound', 'hitWith', 'stopped', 'watch', 'chain', 'tech', 'setUp', 'pressedThis', 'nearFoe0', 'noWatch', 'freeReload', 'nailed', 'openerUsed',

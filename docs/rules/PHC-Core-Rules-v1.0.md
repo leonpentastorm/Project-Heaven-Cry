@@ -13497,3 +13497,136 @@ Survival) and the range measures; the account is `docs/design/handoffs/0.32-FIT.
     has no weapon skill (-2 to hit with the fists); with a 40-round cap the stalls end 3 won, 13 lost: not slow wins.
     Every door's Recommended kit clears stage 1 solo 10 times in 40 or more but the Sigilist's (2; Leon's ruling: the
     bot's limit).
+
+### Rules 1.82 (rules lane), 0.33: the rules not built in 0.32 (20 Nov 2026)
+
+The rules lane of 0.33: the owed rules of `docs/ROADMAP.md` ("0.32: needs a primitive", "Leftovers", "Big leftovers"
+and the questions waiting on Leon). Leon approved every new engine piece on 20 Nov 2026 ("approve all new engine
+pieces"); where he had not answered a question, the lead's pick is built behind a data switch (no answer means yes), and
+each is a **call made for Leon** he can reverse. A later revision overrides the body and the earlier ones. Every new
+number is PROVISIONAL; every rule here is `adjudication: engine` unless it says. Hand-off:
+`docs/design/handoffs/0.33-LANE-RULES.md`.
+
+7000. **Borrowed time on an old mid-fight save** (the 0.32.0 ship review): a fight saved under the old Bite the Bullet
+      handler takes its state from the perk whose bag holds that handler's mark (`ps[perk].lt`), not the first perk with
+      a `last_turn` row: a character holding Still Standing and Bite the Bullet gets Bite the Bullet's rule. With no
+      mark anywhere, the first such perk, as before. No number changes.
+7001. **A pillar outside the cover arc counts nothing** (spec 4969 c; **call made for Leon**): a cover object beside the
+      target outside the 45 degree arc of the shot gives no cover, as it already did; the rule is now a switch in data
+      (`rules.json combat.attack.cover.facing.outside_arc`: `none`, ON). Its alternative, `half`, gives half cover from
+      such an object while it is less than 90 degrees off the shot and nearer the shooter. One function, `coverFor`. No
+      number moves.
+7002. **The follow strike's −2 is kept** (rules 1.81 item 6902; **call made for Leon**): the fit proposed 0 because it
+      buys nothing measurable (a follows item deals 1 to 5% of the main hand's damage); the lead keeps −2, so a follow
+      strike stays worse than the main hand's blow as the follow-strike rule (rules 1.58) says. No change in data or code.
+7003. **The class-only multiplier** (the class lines: the Figments door 119 and the Rigger 123 against 130 and 150; new
+      engine piece, approved by Leon 20 Nov 2026): a base class's `dials` (`classes.json`), each a multiplier on what
+      that class's characters deal through its door: the item op `damage_mult` on `dealing`, with its own `if` (the
+      Rigger: a Figment it owns; the Sigilist: its Sigil spells; the Channeler: its Outbursts; the Chaplain: its prayers).
+      They are held as one hidden item of the class (`class:<id>.dials`, `data.ts classDialMove`); a dial at exactly 1
+      is no item at all. **Every dial is 1** (PROVISIONAL): the roadmap gives no number, the balance pass fits them. No
+      number moves.
+7004. **Surprise in the approach** (Waiting on Leon 22, the lead's pick built; **call made for Leon**, the switch
+      `rules.json combat.initiative.surprise_round.on`, ON; closes item 1501 and rules 1.77 item 6517 c): when a fight not
+      yet joined (rules 1.64 item 5008) is joined by an attack, or any action that is not the approach's, from a unit the
+      other side did not see, **every unit of that other side loses its first turn** (`Unit.waitRound` 2; the log: "Caught
+      by surprise: ... lose their first turn.", and each turn passed "is caught by surprise"). Both sides: a character
+      acting unseen before contact catches the foes; a Hidden foe's attack catches the squad when the squad did not see it
+      as its turn began. Contact by sight alone, or by the approach running out of passes, surprises nobody. Two stats
+      (new engine pieces): `surprise_immune` (**Tremor** I and II: not caught while a unit of the attacking side stands
+      within its Vision; "moving on the ground" is not tested: no unit flies today) and `surprise_ap` (**Shoot First**: it
+      keeps its first turn with **3** AP at I, **4** at II, the perk's numbers). Tremor and Shoot First are
+      `adjudication: engine`. The old surprise round's `ambushers_ap` is not read (an ambusher acts on its own turn with
+      the AP it has, item 1501). A story fight's own ambush rules (unaware foes, an attack in the open) are unchanged.
+      One function, `combat.ts surpriseSide`.
+7005. **Praying from holy ground** (prayer-2.0 item 17; closes rules 1.78 item 6607's last part; the seat, P3 on a zone,
+      a new engine piece): a zone kind's row may list prayers under `seat` (`rules.json zones.kinds`); a unit of the
+      zone's side counts such a prayer **from each of the zone's tiles as if it stood there**: its sight and its range
+      (the units it may aim at, the tiles it may pick, a two-unit prayer's pick range). Hallowed ground's row lists the
+      **Whisper**: a Whisper reaches from any hallowed tile of your side's (anyone's Hallow of your side, not only your
+      own; PROVISIONAL), a Hymn and a Miracle do not. Nothing else of the prayer moves (its area round the caster, its
+      AP, its roll). One reader, `faith.ts prayerSeats`, used by the targets, the pick and the aim.
+7006. **Stand Behind Me** (Waiting on Leon 23, the lead's pick: the three-layers draft's Bulwark rank III ceiling;
+      **call made for Leon**; closes rules 1.78 item 6611): the Bulwark's rank III **ceiling move**, beside the rank's two
+      (its `ceiling` mark; the validator's two-a-rank rule counts the two without it: **call made for Leon**, the other
+      way is to fold it into Anchor). A ranged attack by a foe on the ally **directly behind you** (beside you, on the far
+      side from the shooter: the new predicate `target_behind`) lands on you instead, whole (the op `redirect`, share 1):
+      your plates take it as they take any hit. The log says "X takes the shot meant for Y (Stand Behind Me)." Guard 2.0
+      item 9's half-cover design is not built. Its picture is `move-stand-behind-me`.
+7007. **Parting Cut** (Ingenuity 9; shadow-spec section 4; closes rules 1.32 item 1966's first verb): a Break that spends
+      at least **2** Shadow (the spec's "all Shadow, at least 2") and drops its target leaves you **Hidden again**, with
+      the same entry (no fresh ambush), when no enemy's eyes reach you after it. It rides the Break itself (three rows in
+      the Break's toggle, gated `self_skill ingenuity 9` and the Shadow held as the attack is rolled), after the Break's
+      own reveal; Ghost Kill's rule is unchanged beside it (Parting Cut does not ask that no eyes reached you as you
+      struck: the victim's own eyes do not stop it). `shadow.json pending` is empty. No new engine piece.
+7008. **Field Repair is Improvisation's fourth perk** (rules 1.74 item 6042 and rules 1.77 item 6517 b completed; the
+      expression draft section 3): the free unlock at Improvisation 3 is now its perk step ("Mastery 1"), and the perk
+      `field_repair` (I: **2** AP and one spare part: clear a jam, restore **10%** + **5%** a point of Improvisation above
+      the first perk step of a weapon's durability, or repair a machine or Figment for **15**, more as you level; out of
+      combat ten minutes and a charge restore half; II: no spare part) carries the numbers it always had. **Overhaul**
+      grants Field Repair too (at its **1** AP, twice the durability), so it is never dead without the perk. The new
+      engine piece: **an action gated by a held item** (`effects/actions.ts grantedBy`: the first held item whose
+      `grant_action` names the action; a `gate_only` grant opens the basic action and is no action of its own, so the
+      perk is not made an action item). The Field Repair row and the reducer refuse "Needs the Field Repair perk." without
+      one; the row's words are read from the perk's numbers (no typed number). **Old saves:** Improvisation's table is
+      at rev 2 (`perk_remap passives 3: field_repair`): a sheet at Improvisation 3 or more is offered the one re-pick
+      again, Field Repair preselected as far as its perk steps reach (its old perks first). The shelved Field Fix keeps
+      its own call (no gate, no part). Numbers unchanged (PROVISIONAL as before).
+7009. **Breaching Strike onto Into the Wall's row: nothing left to move.** The perk id `breaching_strike` has been Keep
+      Swinging (data only) since rules 1.56; its old wall-slam lives only in `docs/design/move-pool.md`, and no per-perk
+      code of it is left in `perks/skeleton.ts` (only a comment). Into the Wall's row (item 6605) is the one collision
+      rule; when the wall-slam comes back it is that row. No code, no golden line moved. Rules 1.78 item 6605's "Breaching
+      Strike keeps its own code" is withdrawn.
+7010. **Hurl, and P14, the object op's `hurl`** (momentum-2.0 item 16 and section 8.3; closes rules 1.78 item 6606; new
+      engine pieces, approved by Leon 20 Nov 2026): **`object {do: "hurl"}`** lifts what the action's choice names, a
+      loose object next to the holder (a kind with `loose.kg`, `objects.json`: crate **25**, barrel **30**, lamp **5**,
+      camera **3**, alarm **3**, terminal **20**, container **60** kg: Grenadier's Arm's weights, moved from code) or a
+      unit next to it that the row's `units` takes, and throws it at the action's tile within the row's `range` (tiles, or
+      `throw`: the thrower's throwing range) less a tile per `kg_per_tile`, under the carry weight when `carry`; it and
+      whoever is there take the row's `amount` by weight (the block's `kg` part, x the thrower's physical Stat term), a
+      unit by the one forced move (`displace`, how `throw`), an object moved and then struck (a barrel goes off as
+      barrels do). What a unit weighs is `rules.json combat.hurl` (person **80**, Elite **100**, drone **15**, companion
+      **40**; a Boss never). The pick list `hurlable` offers what is next to you (a unit it can't take greyed with the
+      row's own words, `why`); the action's preview refuses before anything is paid. One more predicate, **`target_held`**
+      (Grappled or Bound by the holder; `held.ts heldBy`, Throw Down's one copy). **The Breaker's Hurl** (a gain): **2** AP
+      at the throw's cost site, a loose object or a small foe it holds (**vermin and minions**: the draft's
+      recommendation, a Soldier is Throw Down's; **call made for Leon**) thrown within **4** tiles for **10** + **0.25** a
+      kg (PROVISIONAL). **Grenadier's Arm** is moved onto the op (its own two throws in `perks/c.ts` are gone: one action,
+      "Throw it", any unit but a Boss or a loose object, under the carry weight, the throwing range less a tile a 20 kg;
+      its numbers unchanged).
+7011. **Athletics' Defense from the first point** (Waiting on Leon 19, built as the agility draft says; **call made for
+      Leon**; supersedes rules 1.73's "each from 2" and rules 1.77 item 6517 d): +**1** Defense a point of Athletics from
+      the **first** point (`skills.json athletics per_point.numbers.defense_from` **1**, was 2; PROVISIONAL), before the
+      armour's dodge and never under 0 with it (`character.ts athDefense`). **Built and shipped OFF** (`defense_from` 2,
+      the rule before): at 1 it moves the enemy yardstick (a Soldier's chance to hit the plain rifleman 65% to 60% at
+      every reference level; `test/balance/step1-fit` reads the switch), fails the defence guard
+      (`test/balance/defence-measure`: the idle pair's first Down 4.3 rounds against 4.2 at most), and the Survival guard
+      seed no longer clears its stage. **Owed to the balance lane:** the enemy table's refit, then the switch to 1 (one
+      data word). No balance number is fitted in this lane.
+7012. **Silent, by Leon's later word** (Waiting on Leon 21; closes rules 1.77 item 6517 a; every line below a **call made
+      for Leon**, behind one switch, `rules.json combat.hidden_attack.gives`: `tile` the new rule, `reveal` the rule
+      before; **built and shipped at `reveal`**: at `tile` seven tests that pin the reveal move and the Operative must be
+      measured first: the balance lane, then Leon's word turns it on):
+      **acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not.** One function,
+      `tactics.ts attackFromHidden`, at every site where an attack used to reveal its maker (the shot and the strike,
+      the throw, the launcher's shot, Pressure's suppressing fire, the bare-handed opener, an Outburst's Release): the
+      attacker stays Hidden, and every side hostile to it learns its tile (`noteSeen`, the side's `seenAt`: its searchers
+      and hunters go there; a foe that ends its turn next to it still finds it outright, and the spot rolls stand); the
+      log says once "X gives its position away, still unseen.". The standing lines, resolved closest to his word:
+      (a) the body's "any attack reveals you unless the weapon is silent" now reads "any attack gives your tile away
+      unless it is silent; it never reveals you by itself"; (b) **the Break keeps its reveal** (item 1953: "spent and
+      revealed when the action ends"): it is the door's own spend, a choice to break from the shadows, not an act made
+      from them; (c) **Vanish II's roll**: Vanish is gone (rules 1.73 replaced it with Fade), so nothing is left to change;
+      Vanishing Act (Mastered) keeps its own rule (any attack reveals you, even a silent one: the perk wins); (d) **Parting
+      Cut** (item 7007) re-hides after the Break's reveal, so it stands as built; Ghost Kill stands too and matters only
+      after a reveal (a Break, a hit taken); (e) **the Silent Outburst module** ("Begin, Pump and Release don't reveal you")
+      now means a Release gives nothing away, not even your tile. A silent attack's target still rolls to spot you when its
+      eyes reach your tile (shadow-spec 2.6, unchanged). Balance: an Operative that keeps shooting from Hidden is not
+      revealed by it; its measure is owed to the balance lane.
+7013. **The gaps lane's group F, two of the leftovers** (wave 3 SHOULD-FIX 7 and 18): Run and Gun's text reads its rule's
+      own fields (the free move's `path_tiles_at_most`, the hit's Pressure `value`; its copy in `numbers` is gone), and
+      Launch's AP is one copy (the class move's `ap_cost`; the grant's own `ap` is gone, the grant falls back to it). No
+      number moves. Left, each with its reason in the hand-off: 1 (forced moves on a Boss typed per item: one rule in
+      `forcedRefusal` would move the golden forced-move table and Slam's Boss rule, a ruling), 8 (the client's `within`
+      fallback in `fx/guard.ts`: client code, the effects lane's), 11 (two tests that call inner functions), 14
+      (`enemySearchTile`: AI in code, the enemy lane's).
