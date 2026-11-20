@@ -553,7 +553,7 @@
           { "pray": "whisper", "id": "health", "want": 7, "if": { "target_hp_below": 0.5 }, "per_turn": 1 },
           { "item": "verb:tend.snap", "action": "tend_snap", "want": 6.5, "if": { "target": "foe", "target_hp_below": 0.35 }, "per_turn": 1 },
           { "item": "perk:pull_together", "action": "tend_tug", "want": 5.5, "if": { "target": "foe", "target_beyond": 4 }, "per_turn": 1 },
-          { "item": "verb:tend.bond", "action": "tend_bond", "want": 5.5, "if": { "target": "foe" }, "per_turn": 1 }
+          { "item": "verb:tend.bond", "action": "tend_bond", "want": 5.5, "if": { "target": "foe", "target_beyond": 4 }, "per_turn": 1 }
         ],
         "source": "rules 1.83 item 7104; rules 1.86 items 7400, 7401 (an Attuner in its hand: Bond, Tug, Snap)",
         "provisional": true

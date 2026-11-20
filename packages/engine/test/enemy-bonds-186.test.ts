@@ -45,7 +45,7 @@ function round(f: any, a: Unit, e: Unit): string {
 
 describe('rules 1.86 item 7400: what a unit with no character holds (combat.ts unitGrip)', () => {
   it("the Heart adept holds an Attuner (its row's doors.hands) and Bonds a foe it sees, through Bond's own effects", () => {
-    const { f, a, e } = adept('6,4', '9,4');
+    const { f, a, e } = adept('3,4', '9,4'); // farther than 4 tiles (its Bond want's target_beyond)
     expect(e.holding).toContain('attuner');
     const said = round(f, a, e);
     expect(said).toMatch(/Foe 1 reaches for Tester 1 through a Bond/);
@@ -53,8 +53,15 @@ describe('rules 1.86 item 7400: what a unit with no character holds (combat.ts u
   });
   it('off (ai.doors.on false): it holds nothing in its hands and never Bonds', () => {
     (ENEMY_AI as any).doors.on = false;
-    const { f, a, e } = adept('6,4', '9,4');
+    const { f, a, e } = adept('3,4', '9,4'); // farther than 4 tiles (its Bond want's target_beyond)
     expect(e.holding).toBeUndefined();
+    expect(round(f, a, e)).not.toMatch(/through a Bond/);
+  });
+});
+
+describe('rules 1.86 item 7401: a foe within 4 tiles is not Bonded (the want target_beyond 4)', () => {
+  it('within its Heart Overwatch range it shoots instead', () => {
+    const { f, a, e } = adept('6,4', '9,4');
     expect(round(f, a, e)).not.toMatch(/through a Bond/);
   });
 });
@@ -76,11 +83,12 @@ describe("rules 1.86 item 7401: the Heart adept's Tug and Snap (the door step, t
     if (/reels Tester 1 in/.test(said)) expect(dist(f.unit(a.id).pos, f.unit(e.id).pos)).toBeLessThan(before);
   });
   it('within 4 tiles it does not Tug', () => {
-    const { f, a, e } = bonded('TUGNEAR186', '6,4', '9,4');
+    const { f, a, e } = bonded('TUGNEAR186', '3,4', '9,4');
+    Object.assign(a, { pos: '6,4' });
     expect(round(f, a, e)).not.toMatch(/tugs at the Bond/);
   });
   it("a Bonded foe under 35% of its HP is Snapped: Soul damage through Snap's own amount, and the Bond ends", () => {
-    const { f, a, e } = bonded('SNAP186', '6,4', '9,4');
+    const { f, a, e } = bonded('SNAP186', '3,4', '9,4');
     Object.assign(a, { hp: Math.floor(a.maxHp * 0.3) });
     const hp = a.hp, said = round(f, a, e);
     expect(said).toMatch(/Foe 1 snaps the Bond with Tester 1/);

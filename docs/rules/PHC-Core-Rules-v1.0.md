@@ -13812,7 +13812,8 @@ PROVISIONAL.**
 7401. **Engine lane: the Heart adept's Bond, Tug and Snap.** The Heart adept (`soul_casters heart_adept`) wears an
       Attuner (`doors.hands`), holds Threads, Bond, Snap and Pull Together I (Tug) at Empathy 3, and wants: Snap on a
       Bonded foe under **35%** of its HP (**6.5**), Tug on a Bonded foe farther than **4** tiles (**5.5**: into its Heart
-      Overwatch), Bond on a foe it sees (**5.5**), each once a turn; its Whisper of Health (7) stays first. Each runs
+      Overwatch), Bond on a foe it sees farther than **4** tiles (**5.5**; a Bond on any foe it saw cost the solo Bulwark 7
+      clears of 40, the 20-round stalls doubling), each once a turn; its Whisper of Health (7) stays first. Each runs
       the verb's own data (the Heart save against its Empathy, Threads' share and echo, Snap's Soul damage and Daze,
       Tug's MP from its heart). A new predicate `target_beyond` (and `actor_beyond`): the mirror of `_within`.
 7402. **Engine lane: the Heartfire elite Slams.** Its Guard row's Durability is **5** (was 3; its plates soak by it, as a
