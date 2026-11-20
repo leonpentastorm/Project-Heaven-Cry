@@ -3504,6 +3504,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-boss_shield--fine",
+      "path": "art/icons/gear/shield-boss_shield--fine.png",
+      "sha256": "5625072bf943cf318f57891ca7d5a2be0ee6f2cb83809ff37f8b54c6e021eea9",
+      "label": "Boss Shield — Fine",
+      "family": "shield-boss_shield",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-boss_shield--fine.png",
+        "sha256": "1a98a9da5e651b0421d44b61fcb1992f44230ca76a0c0d96c1e56a8af3dcbf23"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-boss_shield--fine.png",
+        "sha256": "5625072bf943cf318f57891ca7d5a2be0ee6f2cb83809ff37f8b54c6e021eea9"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-boss_shield--fine.txt",
+        "sha256": "4e19fb67bd0b1e494ebdafa46a14e29403f0e8387d0771e5f10d646a606a5c4b"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-boss_shield.png",
+          "sha256": "3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png",
+          "sha256": "e4594f2311e982ae2a4603db4c8c28e53d889d36fb7114e1625d49fccdcb113a"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-boss_shield--fine.png",
+        "128": "art/icons/gear/exports/128/shield-boss_shield--fine.png",
+        "64": "art/icons/gear/exports/64/shield-boss_shield--fine.png",
+        "32": "art/icons/gear/exports/32/shield-boss_shield--fine.png"
+      },
+      "export_hashes": {
+        "256": "7cf3533ca1aa6b3eb494883d9b287b7d1a1bd561f766639b904248500691ca6a",
+        "128": "9e31ee9597f56cfbeb1cd8a25a2e1412ebbf339d4eb94c68f7aed17888cd9251",
+        "64": "c7195c961ab7cd6845a2382eacc08fc88447ae9cd3b517991b6371de18956bc1",
+        "32": "887369f38a90d321ce02897a7b7c71d8f3b3e5a82365b1bb7f0891c3df21008f"
+      },
+      "grade": "fine",
+      "standard_id": "shield-boss_shield",
+      "outline": {
+        "solid_alpha_iou": 0.9904094533669197,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 10
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
