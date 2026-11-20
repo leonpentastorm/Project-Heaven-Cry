@@ -8034,6 +8034,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-hood--masterwork",
+      "path": "art/icons/gear/armour-hood--masterwork.png",
+      "sha256": "ecc89a15d64f9caf44e5312d541c3a859271c3b8501a993647f79e6a34952ddf",
+      "label": "Hood — Masterwork",
+      "family": "armour-hood",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--masterwork.png",
+        "sha256": "b0ee4460eb1e52f226207b82dd169e6960513a05023ad11a697a783b96ac8c7b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-hood--masterwork.png",
+        "sha256": "ecc89a15d64f9caf44e5312d541c3a859271c3b8501a993647f79e6a34952ddf"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-hood--masterwork.txt",
+        "sha256": "388a3392e0ad3afa27ec3399bef05a9dc60df65f70c6cb4c282b2cd117974d2a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-hood.png",
+          "sha256": "8c4e276582b096d10b0338b3bead760bb450cdfbc1c04c54b777d1b9c46d532b"
+        },
+        {
+          "path": "art/icons/gear/armour-hood--fine.png",
+          "sha256": "673107d05e0be8aef5b37f19913c2f5dd5de10c422bd07e2c0fd130d6db2815f"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-hood--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-hood--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-hood--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "f3f26af08492177902ee3d3446947dcee52d18f060b532d5bdca9099c4e1eacc",
+        "128": "faedc7c176c98a6d3fadec816cda5603114fb8d33da4e9ef68806a25d4a6e974",
+        "64": "359dc70c358561f23a785e5b0bf23a0ccb689b0034164147e4fc81db71c9ac09",
+        "32": "3a2b7c618486431c0d7cadc65c2f092377dd8377cd404ea25b0e8460b7a4b0f6"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-hood",
+      "outline": {
+        "solid_alpha_iou": 0.9924002533248891,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 18
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
