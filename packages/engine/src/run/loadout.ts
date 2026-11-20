@@ -363,8 +363,9 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
   };
   const preview = (id: string): GearPreview => {
     const a = /^armour:(\d)$/.exec(id);
-    if (a) { const k = ARMOUR_CLASSES[Number(a[1])]; return { id, name: 'Class ' + a[1] + ' body armour (' + (k?.name || '') + ')', kind: 'armour', rarity: 'standard', category: 'Body armour', traits: [], text: 'Worn on the torso. One class at a time.',
-      lines: [{ key: 'armour', label: 'Armour', value: String(k?.value ?? 0), num: k?.value ?? 0, better: 'higher' }, { key: 'kg', label: 'Weight', value: (k?.weight_kg ?? 0) + ' kg', num: k?.weight_kg ?? 0, better: 'lower' }] }; }
+    // Items 2.0 lane A3: body armour is previewed by the one gear preview (gearpreview.ts: its class worn, the level-scaled
+    // armour the fight uses, its weight), named here as the camp names it
+    if (a) { const k = ARMOUR_CLASSES[Number(a[1])]; return { ...gearPreview(c, { id, rarity: 'standard' }), name: 'Class ' + a[1] + ' body armour (' + (k?.name || '') + ')', text: 'Worn on the torso. One class at a time.' }; }
     return gearPreview(c, { id, rarity: 'standard' });
   };
   const pickCard = (slot: 'weapon' | 'focus', id: string, group: string): LoadoutCardV => { const pv = preview(id), on = p[slot] === id;

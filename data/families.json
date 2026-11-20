@@ -9,6 +9,12 @@
     "gun": ["close", "standard", "long"],
     "gear": ["light", "standard", "heavy"]
   },
+  "form_words": {
+    "about": "Rules 1.91 (Items 2.0 lane A3, the item card, design section 6): the word a card shows for each form, beside its family's name (\"Cavalry blades, hybrid\"). Words only; no rule reads them.",
+    "dex": "Dexterity", "hybrid": "hybrid", "str": "Strength",
+    "close": "close", "standard": "standard", "long": "long",
+    "light": "light", "heavy": "heavy"
+  },
   "form_rules": {
     "about": "Rules 1.91 item 7903: what a melee form hits with and grows with (phys.hits_with, phys.scales_with). A form names one or more patterns; a row of that form matches one of them. A form not listed here is not checked (a form is a label and never overrides a row's numbers).",
     "dex": [{ "hits_with": "dexterity", "scales_with": ["agility"] }],
