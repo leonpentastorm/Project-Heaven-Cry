@@ -5435,6 +5435,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-pitch_axe--fine",
+      "path": "art/icons/gear/weapon-pitch_axe--fine.png",
+      "sha256": "65a83d9ec4bfad972b3b338607b8c0c427b3cc95548e6a0bc59ef0aa4fcc582b",
+      "label": "Pitch Axe — Fine",
+      "family": "weapon-pitch_axe",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-pitch_axe--fine.png",
+        "sha256": "227e62f7ac45e0050d96fba9da4be84dec0689533349a2b2ca0962ed22714f98"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-pitch_axe--fine.png",
+        "sha256": "65a83d9ec4bfad972b3b338607b8c0c427b3cc95548e6a0bc59ef0aa4fcc582b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-pitch_axe--fine.txt",
+        "sha256": "44cb27060cad6f2a4dde079c3ab90f4bc931bcf9f71fe884369161e3cbc17ef9"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-pitch_axe.png",
+          "sha256": "764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png",
+          "sha256": "22b4dc28c0c3d3f7945546bd3a752c11fcce29798618561b279ad238784a078c"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-pitch_axe--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-pitch_axe--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-pitch_axe--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-pitch_axe--fine.png"
+      },
+      "export_hashes": {
+        "256": "31fb0f94e49721d6e8c81926aee9720c657102be7df95f098cff44d0c94f7535",
+        "128": "c41a6de5384c164b660a9c319cca3b19c3db5879e645da180c14e7632dbf46ea",
+        "64": "163e780d5af0a80f14ae3ab1134db1698f0956dfe9b14b0cdcd991e65ddb984c",
+        "32": "b6c75234e6eda39bd3ac30efe8b360f3c3bc225b8fd77bd2f75fdf59be2239b9"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-pitch_axe",
+      "outline": {
+        "solid_alpha_iou": 0.9688827342231738,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 11
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
