@@ -7724,6 +7724,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-cowl--fine",
+      "path": "art/icons/gear/armour-cowl--fine.png",
+      "sha256": "b8c78fa692bac74e76deb439f945e7b811ef051dca2a8b12bf5a33f9a276810d",
+      "label": "Cowl — Fine",
+      "family": "armour-cowl",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-cowl--fine.png",
+        "sha256": "efa362f108d875409239a2b22d243f66dc0a9c53e154146ef159af55596996f9"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-cowl--fine.png",
+        "sha256": "b8c78fa692bac74e76deb439f945e7b811ef051dca2a8b12bf5a33f9a276810d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-cowl--fine.txt",
+        "sha256": "ce6f65d07e16d739f7949e0c8eea3643aeb381c06dd8ba9ed11ecf1baebb5cfc"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-cowl.png",
+          "sha256": "a9d1a28e40f4433587bdd8aa3fd9d8c1617a11bf1f42ac8de4f49821ab3d7efa"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl--fine.png",
+        "128": "art/icons/gear/exports/128/armour-cowl--fine.png",
+        "64": "art/icons/gear/exports/64/armour-cowl--fine.png",
+        "32": "art/icons/gear/exports/32/armour-cowl--fine.png"
+      },
+      "export_hashes": {
+        "256": "0f14f1e8e8c463eb3f1a922ca86ebae0a086008e6f3d41ae0fc09a0e6c661b25",
+        "128": "838a21ec8e96ae58e8bd0ed31b332d85398355ca99c25d13ace17ae0968180f2",
+        "64": "5081e39cfcfebfd37e6f40bcb1d23db574e0071815356dc4a45b997dab98bfb2",
+        "32": "719b934b4390db1431cc316add416bb0ae71ac907545542814f5c0bd8e8ba426"
+      },
+      "grade": "fine",
+      "standard_id": "armour-cowl",
+      "outline": {
+        "solid_alpha_iou": 0.9898716576470236,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
