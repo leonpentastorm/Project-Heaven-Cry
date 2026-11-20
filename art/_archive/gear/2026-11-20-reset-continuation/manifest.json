@@ -1309,6 +1309,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-trench_knife--celestial",
+      "path": "art/icons/gear/weapon-trench_knife--celestial.png",
+      "sha256": "a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921",
+      "label": "Trench Knife — Celestial",
+      "family": "weapon-trench_knife",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-trench_knife--celestial.png",
+        "sha256": "42c5475bb0051182681d16dd1c4a1f4e923c5601d2e151c39cfc1e7dc40115d9"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--celestial.png",
+        "sha256": "a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--celestial.txt",
+        "sha256": "66105ab24dab08f777ec12b52bf7388a668276ceedc447636a78fc0e6f78c1ea"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-trench_knife.png",
+          "sha256": "3f2848a00af47d2ff6f81fd988a2abf2f3d873015164e95e656e7fbaa60dc4a1"
+        },
+        {
+          "path": "art/icons/gear/weapon-trench_knife--relic.png",
+          "sha256": "c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-trench_knife.png",
+          "sha256": "866c269d85c698eb57af17cf228a5d789028c408e6525d0a78917bd0ea0fb387"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-trench_knife--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-trench_knife--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-trench_knife--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-trench_knife--celestial.png"
+      },
+      "export_hashes": {
+        "256": "396054cdaeb7b936cc851e5df25159824d5b63c155d27d3a769a77539df5cd08",
+        "128": "f225518d1655a482274d1eedaad00afee8bfb603eb96fc289cef49533fc0657c",
+        "64": "faf8a48b055240ef6ae2d0082a9002eb8725e3d5c21992238b1c9d84d908c5df",
+        "32": "fe191b8f78f9f36e62e278b4d8a2e1ccef6034104b5afce69708794d49c6ed9c"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-trench_knife",
+      "outline": {
+        "solid_alpha_iou": 0.9548417132216015,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 27
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

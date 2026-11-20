@@ -26825,6 +26825,42 @@
         "different_pixels_32": 1,
         "different_pixels_64": 13
       }
+    },
+    "weapon-trench_knife--celestial": {
+      "label": "Trench Knife — Celestial",
+      "path": "art/icons/gear/weapon-trench_knife--celestial.png",
+      "sha256": "a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-trench_knife--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-trench_knife--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-trench_knife--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-trench_knife--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-trench_knife--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-trench_knife",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9548417132216015,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 27
+      }
     }
   },
   "survival_art": {
