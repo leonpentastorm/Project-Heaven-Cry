@@ -170,6 +170,10 @@ const COMBAT_CSS = [
   '.phc-yt{transform:skewX(-14deg);animation:phcYtIn calc(.42s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both}.phc-yt>*{transform:skewX(14deg)}',
   '.phc-yt::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:phcYtShine calc(.9s * var(--phc-k, 1)) ease-out calc(.35s * var(--phc-k, 1)) both;pointer-events:none}',
   '.phc-cb-act{transition:transform .12s ease-out,box-shadow .12s ease-out,background-color .12s}',
+  // The Space key's hint on Confirm: drawn by CSS so the button's text stays "Confirm" (suites and readers find it by its text);
+  // only where a keyboard is likely (a fine pointer).
+  '@media (pointer:fine){.phc-cb-confirm button.phc-cb-act:first-child::after{content:"SPACE";margin-left:8px;padding:1px 6px;border:1px solid currentColor;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.08em;opacity:.6;vertical-align:middle}}',
+
   '.phc-key-code::before{content:attr(data-code)}', // (the two-key code is drawn, not text: a button's name stays its name)
   '.phc-cb-act:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.18)}',
   '.phc-cb-act:not(:disabled):active{transform:translateY(1px) scale(.985);box-shadow:none;transition-duration:.04s}',
