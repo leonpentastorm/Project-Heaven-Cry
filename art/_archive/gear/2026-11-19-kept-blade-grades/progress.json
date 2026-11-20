@@ -132,7 +132,8 @@
     "armour-cowl--relic",
     "armour-cowl--celestial",
     "armour-hood--fine",
-    "armour-hood--masterwork"
+    "armour-hood--masterwork",
+    "armour-hood--relic"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -166,7 +167,6 @@
     "weapon-whisper_smg--masterwork",
     "weapon-whisper_smg--relic",
     "weapon-whisper_smg--celestial",
-    "armour-hood--relic",
     "armour-hood--celestial",
     "armour-blackout_hood--fine",
     "armour-blackout_hood--masterwork",
@@ -215,7 +215,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-20T04:00:39.157344+00:00",
+  "updated_utc": "2026-11-20T04:02:25.212613+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3,
   "quota_history": [

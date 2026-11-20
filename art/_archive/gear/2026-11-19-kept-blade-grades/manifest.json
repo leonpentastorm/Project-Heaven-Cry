@@ -8096,6 +8096,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-hood--relic",
+      "path": "art/icons/gear/armour-hood--relic.png",
+      "sha256": "34f4280d2ce75cfd123692dcdbbdba5fa9b76206e8f9076c514561d192901d45",
+      "label": "Hood — Relic",
+      "family": "armour-hood",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--relic.png",
+        "sha256": "88d554864e5e0fe77dd7cccca7022666e12c27dfb8ad3409b72466ec37400e12"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-hood--relic.png",
+        "sha256": "34f4280d2ce75cfd123692dcdbbdba5fa9b76206e8f9076c514561d192901d45"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-hood--relic.txt",
+        "sha256": "c986d170e4b0b90ccdfb7cbf0c2ec88188e28b7b839180e04f6e8b46e7a97446"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-hood.png",
+          "sha256": "8c4e276582b096d10b0338b3bead760bb450cdfbc1c04c54b777d1b9c46d532b"
+        },
+        {
+          "path": "art/icons/gear/armour-hood--masterwork.png",
+          "sha256": "ecc89a15d64f9caf44e5312d541c3a859271c3b8501a993647f79e6a34952ddf"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood--relic.png",
+        "128": "art/icons/gear/exports/128/armour-hood--relic.png",
+        "64": "art/icons/gear/exports/64/armour-hood--relic.png",
+        "32": "art/icons/gear/exports/32/armour-hood--relic.png"
+      },
+      "export_hashes": {
+        "256": "13fe1ddd207300bb2569cedd96ac305a0b6c519d2a0381e98b381418230b978f",
+        "128": "25cfd11a74f3f198af994139522e2a14607296c25ebc9270a6dc2414908e82c4",
+        "64": "f6ea37890d51b9654e2d249e989b42ec5e09a368f7b5cac72d4c28c07165c42c",
+        "32": "a9851b63d3c3fb8a3106d6b69e2b3796a093a3c5c33fb9d09646e8fbe18df002"
+      },
+      "grade": "relic",
+      "standard_id": "armour-hood",
+      "outline": {
+        "solid_alpha_iou": 0.990291500493745,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 19
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
