@@ -46,9 +46,20 @@ export function figLevelUp(skillId, p) {
 // Who runs it, always in words (colour pairs with the word): solid for the engine, dashed for the Narrator.
 const BADGE_INK = { engine: '#E7EBF3', both: '#C9D3E3', narrator: '#A3AEC2' };
 const badgeStyle = (v) => 'flex: none; padding: 1px 8px; border-radius: 999px; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.04em; white-space: nowrap; border: 1px ' + (v === 'narrator' ? 'dashed' : 'solid') + ' ' + BADGE_INK[v] + '; color: ' + BADGE_INK[v];
+/** The level-up screen's separator (0.33): the class column's width in px, its default, its floor and its share of the
+ *  screen at most; kept in this browser (localStorage), a step for the arrow keys. */
+const SPLIT = { key: 'phc.levelup.classW', def: 380, min: 240, maxShare: 0.6, step: 24 };
+const splitRead = () => { try { const n = Number(localStorage.getItem(SPLIT.key)); return Number.isFinite(n) && n >= SPLIT.min ? n : SPLIT.def; } catch { return SPLIT.def; } };
+const splitSave = (n) => { try { localStorage.setItem(SPLIT.key, String(Math.round(n))); } catch { /* a private window keeps nothing */ } };
 ensureStyle('phc-levelup', [
   '.phc-lu-head{position:sticky;top:0;z-index:16;background:#0A0D13}',
-  '.phc-lu-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(220px,280px);gap:20px;padding:8px 28px 24px;align-items:start}',
+  // 0.33 (Leon: "Add a draggable separator on the level up screen that separates the skill and perk part and the class
+  // part"): the class column's width is the separator's (--phc-lu-classw, kept in this browser), wider by default
+  '.phc-lu-body{flex:1;display:grid;grid-template-columns:minmax(0,1fr) 14px var(--phc-lu-classw,' + SPLIT.def + 'px);gap:6px;padding:8px 28px 24px;align-items:start}',
+  '.phc-lu-split{align-self:stretch;min-height:240px;display:flex;justify-content:center;cursor:col-resize;touch-action:none;border-radius:6px;outline:none}',
+  '.phc-lu-split-grip{width:4px;border-radius:99px;background:#232D3F;transition:background 0.15s}',
+  '.phc-lu-split:hover .phc-lu-split-grip,.phc-lu-split:focus-visible .phc-lu-split-grip,.phc-lu-split[data-drag] .phc-lu-split-grip{background:#E7EBF3}',
+  '.phc-lu-split:focus-visible{box-shadow:0 0 0 2px #FFFFFF}',
   '.phc-lu-class{position:sticky;top:96px}',
   '.phc-lu-pick{display:flex;flex-direction:column;gap:14px;padding:24px 32px 0}',
   '.phc-lu-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,max(280px,calc((100% - 24px) / 3))),1fr));gap:12px}',
@@ -56,7 +67,7 @@ ensureStyle('phc-levelup', [
   '@media (max-width:760px){.phc-lu-head{flex-wrap:wrap!important;padding:8px 12px!important}.phc-lu-head .phc-lu-budget{flex-basis:100%!important;flex-wrap:wrap!important}.phc-lu-chooser{padding:12px!important}.phc-lu-confirm{padding:12px!important}.phc-lu-body{padding:8px 12px 24px!important}.phc-lu-why>span{white-space:normal!important}.phc-lu-attr-why{flex:1 1 100%!important}}',
   '.phc-lu-confirm{position:sticky;bottom:0;z-index:3;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;padding:12px 132px 12px 16px;border-radius:12px;background:#10151F;border:1px solid #232D3F;box-shadow:0 -8px 24px rgba(10,13,19,0.85)}',
   '@media (max-width:1000px){.phc-lu-pick{padding:16px 16px 0}}',
-  '@media (max-width:1000px){.phc-lu-body{grid-template-columns:minmax(0,1fr);padding:12px 16px}.phc-lu-class{order:-1;position:static}}',
+  '@media (max-width:1000px){.phc-lu-body{grid-template-columns:minmax(0,1fr);padding:12px 16px}.phc-lu-class{order:-1;position:static}.phc-lu-split{display:none}}',
   '.phc-lu-raise:not(:disabled):hover{background:#FFFFFF!important;color:#0A0D13!important}',
   '.phc-lu-choice:hover{background:#FFFFFF!important;color:#0A0D13!important}',
   '.phc-lu-row{display:flex;align-items:center;gap:10px;min-width:0}',
@@ -73,6 +84,25 @@ ensureStyle('phc-levelup', [
 
 export class LevelUpLogic extends DCLogic {
   constructor(props) { super(props); this.state = {}; }
+  /** The separator's width bounds now (the class column at least SPLIT.min, at most SPLIT.maxShare of the body). */
+  splitMax() { const b = typeof document !== 'undefined' && document.querySelector('.phc-lu-body'); const w = b && b.clientWidth ? b.clientWidth : (typeof window !== 'undefined' ? window.innerWidth : 1280); return Math.max(SPLIT.min, Math.round(w * SPLIT.maxShare)); }
+  splitSet(n, save = true) { const w = Math.round(Math.min(this.splitMax(), Math.max(SPLIT.min, n))); this.setState({ classW: w }); if (save) splitSave(w); return w; }
+  /** Drag: the class column's left edge follows the pointer (its right edge is the body's, less its padding). */
+  splitDown(e) {
+    if (e.button != null && e.button !== 0) return; e.preventDefault();
+    const sep = e.currentTarget, body = sep && sep.closest('.phc-lu-body'); if (!body) return;
+    const r = body.getBoundingClientRect(), pad = parseFloat(getComputedStyle(body).paddingRight) || 0;
+    sep.setAttribute('data-drag', ''); try { sep.focus({ preventScroll: true }); } catch { /* */ }
+    const move = (ev) => this.splitSet(r.right - pad - ev.clientX - 7, false);
+    const up = (ev) => { window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); window.removeEventListener('pointercancel', up); sep.removeAttribute('data-drag'); if (ev && ev.clientX != null) move(ev); splitSave(this.state.classW ?? splitRead()); };
+    window.addEventListener('pointermove', move); window.addEventListener('pointerup', up); window.addEventListener('pointercancel', up);
+  }
+  /** Keyboard: Left widens the class column, Right narrows it (the separator moves with the arrow); Home and End to the bounds. */
+  splitKey(e) {
+    const w = this.state.classW ?? splitRead(), k = e.key;
+    const to = k === 'ArrowLeft' ? w + SPLIT.step : k === 'ArrowRight' ? w - SPLIT.step : k === 'Home' ? this.splitMax() : k === 'End' ? SPLIT.min : null;
+    if (to == null) return; e.preventDefault(); this.splitSet(to);
+  }
   /** How many TO CHOOSE chips fit whole in the strip, measured after the frame is drawn (and on a resize): the leading
    *  chips whose right edge is inside the strip; with the '+N more' chip shown, all of them may fit in the room it takes. */
   tcFit(n) {
@@ -95,7 +125,7 @@ export class LevelUpLogic extends DCLogic {
   flash(id, text) { if (!text) return; this.setState({ flash: { id, text } }); clearTimeout(this._fl); this._fl = setTimeout(() => this.setState({ flash: null }), 1600); }
   renderVals() {
     const st = getState(), g = st.game, c = g && g.characters[st.levelupChar];
-    if (!c || c.owner !== st.me.id) { queueMicrotask(() => go(g ? homeScreen(g) : 'home')); return { ...lightboxVals(this), ...epccgVals(this), classCards: [], tree: [], toChoose: [], ch: {}, pick: {}, cls: { sig: [], ranks: [], closest: [] } }; }
+    if (!c || c.owner !== st.me.id) { queueMicrotask(() => go(g ? homeScreen(g) : 'home')); return { ...lightboxVals(this), ...epccgVals(this), classCards: [], tree: [], toChoose: [], ch: {}, pick: {}, cls: { sig: [], ranks: [], closest: [] }, split: { bodyStyle: '', now: SPLIT.def, min: SPLIT.min, max: SPLIT.def, down: () => {}, key: () => {}, reset: () => {} } }; }
     const choosing = c.level >= 3 && !c.classId;
     // ---------- the class choice at level 3 (Class Roster Revision 3): every class of the highest attribute, ties all
     // offered; a card selects, the confirm bar commits (the class is for good) ----------
@@ -273,6 +303,7 @@ export class LevelUpLogic extends DCLogic {
       budget: [budgetChip(left, 'Skill', '#7F8BA1'), budgetChip(attrLeft, 'Attribute', '#7F8BA1')],
       spend: [left ? left + ' Skill point' + (left > 1 ? 's' : '') : '', attrLeft ? attrLeft + ' Attribute point' + (attrLeft > 1 ? 's' : '') : ''].filter(Boolean).join(' · ') || 'Nothing to spend',
       choosing, classCards, pick, cls,
+      split: ((w) => ({ bodyStyle: '--phc-lu-classw: ' + w + 'px', now: w, min: SPLIT.min, max: this.splitMax(), down: (e) => this.splitDown(e), key: (e) => this.splitKey(e), reset: () => this.splitSet(SPLIT.def) }))(Math.min(this.splitMax(), this.state.classW ?? splitRead())),
       famTabs, tree, toChoose, hasToChoose: toChoose.length > 0, ch,
       tcHasMore: more > 0, tcMoreText: '+' + more + ' more', tcMoreAria: more + ' more to choose: open the next', tcMoreOpen: () => (queue[shown] ? openCh(queue[shown].key) : null),
       tcMoreStyle: 'min-height: 30px; padding: 0 12px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: pointer; white-space: nowrap; border: 1px dashed #FFFFFF; background: transparent; color: #FFFFFF',
