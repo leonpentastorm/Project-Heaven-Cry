@@ -113,7 +113,9 @@ function PickCard({ c, slot, charId, v }: { c: LoadoutCardV; slot: 'weapon' | 'f
   );
 }
 /** A menu card with its price and a stepper (the rack's better one with its numbers against the free one). */
-function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: string; tag?: string; compare?: CompareRowV[] }) {
+function ShelfCard({ c, charId, tag, compare: all }: { c: LoadoutCardV; charId: string; tag?: string; compare?: CompareRowV[] }) {
+  // 0.33 (outside playtest of 0.32.0: "To hit 40% 40%"): only what changes is compared; a card where nothing does shows its own lines
+  const compare = (all || []).filter((r) => r.free !== r.better);
   return (
     <article data-phc-camp-card={c.key} {...tipProps(c.text ? c.name + '. ' + c.text : c.name)} style={{ ...cardBox(false), border: '1px solid ' + (c.taken ? '#7A879E' : I.line) }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0 }}>
@@ -126,7 +128,7 @@ function ShelfCard({ c, charId, tag, compare }: { c: LoadoutCardV; charId: strin
       {compare && compare.length ? (
         <dl className="phc-camp-stats" data-phc-camp-compare="" data-phc-camp-stats="" style={{ gridTemplateColumns: 'minmax(6.5em, 1fr) minmax(0, auto) minmax(0, auto)' }}>
           <dt aria-hidden="true" style={{ fontSize: 'var(--fs-sub)' }} />
-          <dd aria-hidden="true" style={{ fontSize: 'var(--fs-sub)', fontWeight: 400, color: I.muted }}>Free</dd>
+          <dd aria-hidden="true" style={{ fontSize: 'var(--fs-sub)', fontWeight: 400, color: I.muted }}>Your free one</dd>
           <dd aria-hidden="true" style={{ fontSize: 'var(--fs-sub)', fontWeight: 400, color: I.muted }}>This</dd>
           {compare.slice(0, 4).map((r) => <React.Fragment key={r.key}>
             <dt {...tipProps(r.label)}>{label(r.label)}</dt>
@@ -307,7 +309,7 @@ export function LoadoutScreen() {
                   <div key={a.id} data-phc-camp-family={a.id} data-phc-camp-cards={(a.again ? 1 : 0) + (a.better ? 1 : 0)} style={{ minWidth: 0 }}>
                     <span style={{ ...kick, display: 'block', marginBottom: 8 }}>{a.name.toUpperCase()}</span>
                     <div className="phc-camp-pair" role="group" aria-label={a.name}>
-                      {a.again ? <ShelfCard c={a.again} charId={charId} tag="FREE" /> : null}
+                      {a.again ? <ShelfCard c={a.again} charId={charId} tag="A SECOND ONE" /> : null}
                       {a.better ? <ShelfCard c={a.better} charId={charId} tag="" compare={a.better.compare} /> : null}
                     </div>
                   </div>))}

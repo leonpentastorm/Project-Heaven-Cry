@@ -172,10 +172,16 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
     const x = clone(c), slot = String(it.slot || '');
     if (slot === 'off_hand') x.offHand = { id } as any; else if (slot) x.worn = { ...(x.worn || {}), [slot]: id };
     const rng = rngFor('gear-preview', c.id + '#' + id), u = unitFromCharacter(x, '0,0', rng);
+    // 0.33 (outside playtest of 0.32.0: a Padded undershirt read "Armour 0 → 1", the character's total): the piece's own
+    // part, what it adds over that slot empty (the same unit build, the slot cleared), signed; a compare reads the same
+    const x0 = clone(c); if (slot === 'off_hand') x0.offHand = null as any; else if (slot) { const wn: any = { ...(x0.worn || {}) }; delete wn[slot]; x0.worn = wn; }
+    const u0 = unitFromCharacter(x0, '0,0', rngFor('gear-preview', c.id + '#' + id));
+    const own = (a: number, b: number) => Math.round(((a || 0) - (b || 0)) * 10) / 10, sgn = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '') + shown(Math.abs(n));
+    const dDef = own(u.def, u0.def), dArm = own(u.armour, u0.armour), dInj = own(u.injResist || 0, u0.injResist || 0);
     return { ...base, kind: 'armour', category: cap(String(it.category)) + (slot ? ' · ' + slot.replace(/_/g, ' ') : ''), traits: [], lines: [
-      { key: 'def', label: 'Defense', value: shown(u.def), num: u.def, better: 'higher' },
-      { key: 'armour', label: 'Armour', value: shown(u.armour), num: u.armour, better: 'higher' },
-      { key: 'injury', label: 'Injury resistance', value: pct(u.injResist || 0), num: u.injResist || 0, better: 'higher' },
+      { key: 'def', label: 'Defense', value: sgn(dDef), num: dDef, better: 'higher' },
+      { key: 'armour', label: 'Armour', value: sgn(dArm), num: dArm, better: 'higher' },
+      { key: 'injury', label: 'Injury resistance', value: sgn(dInj) + '%', num: dInj, better: 'higher' },
       { key: 'kg', label: 'Weight', value: (it.weight_kg ?? 0) + ' kg', num: it.weight_kg ?? 0, better: 'lower' },
       ...(maxDurOf(id, rarity) ? [{ key: 'dur', label: 'Durability (full)', value: shown(maxDurOf(id, rarity)), num: maxDurOf(id, rarity), better: 'higher' as const }] : []), // rules 1.50: a shield wears
     ] };

@@ -310,6 +310,11 @@
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Moves</h1>
 <p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What your build already knows how to do. What you carry is not chosen here: the mode hands it out when play starts (in Survival you build a loadout at the camp; a campaign gives its own). Everyone also carries one <span style="color: #E7EBF3">Essence of Experience</span>: experience sealed in mana. Anyone holding a focus (an Evoker, an Emanator, a Visualizer or an Attuner) can crack it outside a fight for themselves or a friend. It also sells well.</p>
 <sc-if value="{{noMoves}}" hint-placeholder-val="{{false}}"><p data-no-moves="" style="margin: 0; font-size: 15px; color: #C9D3E3">{{noMovesText}}</p></sc-if>
+<sc-if value="{{hasDoors}}" hint-placeholder-val="{{false}}">
+<h2 style="margin: 12px 0 0; font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">Doors</h2>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">Each attribute's fighting skill is a door: a way of fighting anyone with points in it can use, and its class uses best. Yours open with the points you placed.</p>
+<sc-for list="{{doorCards}}" as="dc"><div data-start-door="{{dc.key}}" style="{{dc.style}}"><span style="{{dc.nameStyle}}">{{dc.name}}</span><span style="font-size: 15px; line-height: 1.5; color: #E7EBF3">{{dc.line}}</span><sc-if value="{{dc.hasFork}}" hint-placeholder-val="{{false}}"><span data-start-door-fork="" style="font-size: var(--fs-sub); font-weight: 700; color: #FFFFFF">{{dc.fork}}</span></sc-if></div></sc-for>
+</sc-if>
 
 <sc-if value="{{hasTech}}" hint-placeholder-val="{{true}}">
 <h2 style="margin: 12px 0 0; font-family: 'Spectral', serif; font-size: 28px; font-weight: 600">Techniques</h2>
