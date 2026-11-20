@@ -248,6 +248,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_knives--relic",
+      "path": "art/icons/gear/weapon-throwing_knives--relic.png",
+      "sha256": "be36f423e0c20a49ce19d0ad4decda8aead55a3f96c0d2027808e5754d018241",
+      "label": "Throwing Knives — Relic",
+      "family": "weapon-throwing_knives",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-throwing_knives--relic.png",
+        "sha256": "17ed77b5ecc60bd0b45b613acb5eab559b65f8219749c9231a6713467016af32"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-throwing_knives--relic.png",
+        "sha256": "be36f423e0c20a49ce19d0ad4decda8aead55a3f96c0d2027808e5754d018241"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-throwing_knives--relic.txt",
+        "sha256": "975c368cac217ae0da2b2e694996d532e8dc4afb770957d3960e5ff54843e203"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-throwing_knives.png",
+          "sha256": "8e36e35a0a48efd17166fe67d9ed3e47343497619dc16b865d1a9c41ca88e71e"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_knives--masterwork.png",
+          "sha256": "b0646dcbfff751036340e788efee12908cd2d6b413741704a13fe4dbe96173c6"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_knives--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_knives--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_knives--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_knives--relic.png"
+      },
+      "export_hashes": {
+        "256": "57108cba57703a3c755014e37cad18b47cf59caf9574664da6e90091d44e9e83",
+        "128": "7eede864f188ef568f9da5e90753caa683f4fa5e7cf8aabd74b93ac83903c09d",
+        "64": "29029d75d4836becf3a20a112079c34287c78ffbcb2bb99c1b1b5d51d80e97ee",
+        "32": "28bd5234c1f3a294e8c8da6d1e9dc975a88c04fc09b314a881b3ae268f556f49"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-throwing_knives",
+      "outline": {
+        "solid_alpha_iou": 0.8102292226917659,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 30,
+        "different_pixels_64": 142
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
