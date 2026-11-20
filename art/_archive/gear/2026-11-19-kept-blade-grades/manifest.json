@@ -9944,6 +9944,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-rig_belt--fine",
+      "path": "art/icons/gear/armour-rig_belt--fine.png",
+      "sha256": "5b196507f8c6de5f63ebb24512efbaefd9b1bed06853899c7c82c127733e3aa0",
+      "label": "Rig belt — Fine",
+      "family": "armour-rig_belt",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-rig_belt--fine.png",
+        "sha256": "b4f50227f05d91807ee5261d9b918c85fe8f40da2fc6fca23f11a5b1f19ab242"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-rig_belt--fine.png",
+        "sha256": "5b196507f8c6de5f63ebb24512efbaefd9b1bed06853899c7c82c127733e3aa0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-rig_belt--fine.txt",
+        "sha256": "e428b2a8dbec5b925e6484039840f4507eb744f5938a35ca6cb83eb811453c43"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-rig_belt.png",
+          "sha256": "44bd233e33a7f498cb19cd94101e71a0e5e1cbbdb12c4a1e9a60d4b656a63269"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-rig_belt--fine.png",
+        "128": "art/icons/gear/exports/128/armour-rig_belt--fine.png",
+        "64": "art/icons/gear/exports/64/armour-rig_belt--fine.png",
+        "32": "art/icons/gear/exports/32/armour-rig_belt--fine.png"
+      },
+      "export_hashes": {
+        "256": "0a71bdc84f52c94f37f5c596b299f406e11ee71614e53c6b05efa5603c0a357b",
+        "128": "792ca5c009af0e754361755df6a726da5b60ea0b109c4c7a2592c89dd27d29cc",
+        "64": "17a1ca56efc3ac955064a1f3eb3fb4be3fa4a33d5c64bce1eb5ac9b8d4441e2b",
+        "32": "f7c487ed8f0aabccf48aae43831351fdd6bf2684150852d0716ca5fba18ec5e9"
+      },
+      "grade": "fine",
+      "standard_id": "armour-rig_belt",
+      "outline": {
+        "solid_alpha_iou": 0.9893583668497004,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 17
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
