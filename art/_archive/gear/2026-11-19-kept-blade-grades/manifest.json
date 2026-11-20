@@ -13028,6 +13028,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-decrkm_autopistol--fine",
+      "path": "art/icons/gear/weapon-decrkm_autopistol--fine.png",
+      "sha256": "60b2730c8827025df25134ce1043ebfd2f5c9de19068b91bd51ff0c620525dad",
+      "label": "DECRKM autopistol repaint — Fine",
+      "family": "weapon-decrkm_autopistol",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-decrkm_autopistol--fine.png",
+        "sha256": "72cdd6c1bd3f3ccdd9dfdd37d079cec42e74a6dd7fcd2ecc389df8592e70d913"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-decrkm_autopistol--fine.png",
+        "sha256": "60b2730c8827025df25134ce1043ebfd2f5c9de19068b91bd51ff0c620525dad"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-decrkm_autopistol--fine.txt",
+        "sha256": "1799a0d682088a77859f5158c1c5d8bd52719a825ba3fa9b4b88ad78bb845d39"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-decrkm_autopistol.png",
+          "sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-decrkm_autopistol--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-decrkm_autopistol--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-decrkm_autopistol--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-decrkm_autopistol--fine.png"
+      },
+      "export_hashes": {
+        "256": "f90ea19147f452669f21b2c58c921d5126fd42cebee07ee227d4dfd336917a65",
+        "128": "5187fd38b01fcdfe91e69edf6cff2dd37b6e2249bd943832e4ef3fe1ea100b71",
+        "64": "781534e7bafc9091c160078fb22d64b825ffc7c7efe08af43587d7fb0c2ce20a",
+        "32": "417f8cda3fbc5df3ab2c9e2ac13ce1467379c0069a52c40f40776ca1e676d261"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-decrkm_autopistol",
+      "outline": {
+        "solid_alpha_iou": 0.9749308216661292,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 10
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
