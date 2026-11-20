@@ -26429,6 +26429,42 @@
         "different_pixels_32": 12,
         "different_pixels_64": 40
       }
+    },
+    "armour-hood--fine": {
+      "label": "Hood — Fine",
+      "path": "art/icons/gear/armour-hood--fine.png",
+      "sha256": "673107d05e0be8aef5b37f19913c2f5dd5de10c422bd07e2c0fd130d6db2815f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood--fine.png",
+        "128": "art/icons/gear/exports/128/armour-hood--fine.png",
+        "64": "art/icons/gear/exports/64/armour-hood--fine.png",
+        "32": "art/icons/gear/exports/32/armour-hood--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9923922901255477,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 17
+      }
     }
   },
   "survival_art": {
