@@ -733,8 +733,9 @@ export const carryLimit = (c: Character) => fx(c, 'carry', 20 + 5 * (A(c, 'stren
 // ---------- injuries (spec: Injuries) ----------
 /** Injury resistance: 10% per Endurance above 1 (rules.json injury_resist_pct). */
 export const injuryResistPct = (c: Character) => fx(c, 'injury_resist', 10 * (A(c, 'endurance') - 1) + gearBonus(c, 'injury_resist_bonus'));
-/** One-handed weapons; everything else needs both arms, so any arm injury hurts it (spec: Injuries). */
-export const ONE_HANDED = ['pistol', 'revolver', 'light_melee', 'thrown', 'unarmed', 'shield'];
+/** Rules 1.91 item 7911 (spec: Injuries): a weapon is two-handed when its row says `2H` (one-handed otherwise); a two-handed
+ * weapon needs both arms, so any arm injury hurts it. The one test: the row's `hands` (the category list is gone). */
+export const oneHanded = (w: { hands?: string } | null | undefined): boolean => !!w && w.hands !== '2H';
 export const mainHandSide = (c: Pick<Sheet, 'identity'>): 'left' | 'right' => (/^l/i.test(c.identity?.hand || '') ? 'left' : 'right');
 export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP next turn', torso: 'Bleeding: 5 damage a turn for 3 rounds; a stim stops it', arm: '−2 to attacks with that arm, until treated', leg: 'Half Movement, until treated' };
 
