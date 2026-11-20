@@ -403,8 +403,6 @@ function gmDeskVals(self, g, label) {
 }
 
 export class MainLogic extends DCLogic {
-  /** The magic workshop reads the store's toast (a refused Save): a toast alone renders this screen again (App.tsx). */
-  static readsToast = true;
   constructor(props) {
     super(props);
     this.state = { tab: 'skills', core: 'body', sel: null, draft: '', rawDraft: '', polished: false, polishing: false, pickRoll: false, dice: null, custom: false, area: false, table: pref('table', 'felt'), skin: pref('skin', 'ivory') };

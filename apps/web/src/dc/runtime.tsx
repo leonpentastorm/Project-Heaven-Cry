@@ -297,7 +297,5 @@ export function makeScreen<P>(template: string, Logic: new (props: P) => DCLogic
     RENDERS.ms += now() - t0;
     return out;
   };
-  // A logic that reads the store's toast in its values (static readsToast) renders again for a toast alone (App.tsx).
-  (Screen as any).readsToast = !!(Logic as any).readsToast;
   return Screen;
 }

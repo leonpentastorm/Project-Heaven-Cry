@@ -37,19 +37,15 @@ function onlyToast(a: ClientState, b: ClientState): boolean {
   for (const k of Object.keys(b) as (keyof ClientState)[]) if (k !== 'toast' && a[k] !== b[k]) return false;
   return Object.keys(a).length === Object.keys(b).length;
 }
-/** The screen, rendered again only when the state it is drawn with (or the screen) changes. */
-const ScreenHost = React.memo(function ScreenHost({ C: Comp, tick }: { C: React.ComponentType<any>; tick: ClientState }) { return <Comp tick={tick} />; });
 function useShownScreen(st: ClientState): Shown | null {
   const [, bump] = React.useReducer((x: number) => x + 1, 0);
   const shown = React.useRef<Shown | null>(null);
   const C = loadedScreen(st.screen), sb = !!st.game?.sandbox;
   const ready = C !== undefined && (!sb || !!loadedSandbox());
   if (ready) {
-    // A store change that is only a toast (the toast is App's own) keeps the state the screen was drawn with, so the
-    // screen does not render again for it; a screen that reads the toast (its logic's static readsToast) still does.
-    const Comp = C || (Title as any), prev = shown.current;
-    const keep = !!prev && prev.screen === st.screen && prev.C === Comp && !Comp.readsToast && onlyToast(prev.tick, st);
-    shown.current = { screen: st.screen, tick: keep ? prev!.tick : st, C: Comp };
+    // (Every store change renders the screen, a toast alone included: the screen decides things on the render it is
+    // given, such as the tab a turn opens on. Only the overlays skip a toast alone, below.)
+    shown.current = { screen: st.screen, tick: st, C: C || (Title as any) };
   }
   const want = ready ? null : st.screen + (sb ? '+sandbox' : '');
   React.useEffect(() => {
@@ -77,8 +73,8 @@ const tally = (name: string) => { RENDERS_BY[name] = (RENDERS_BY[name] || 0) + 1
 function counted<P extends object>(name: string, Comp: React.ComponentType<P>): React.ComponentType<P & { v: number }> {
   const W = ({ v: _v, ...p }: P & { v: number }) => { tally(name); return React.createElement(Comp, p as P); };
   W.displayName = name;
-  // Memoised: an overlay renders again when its props change or the store changed in anything but its toast (v), never
-  // for a toast alone or App's own transition state (the outside code review's performance work).
+  // Memoised: an overlay renders again when its props change or App rendered for anything but a toast alone (v): never
+  // for a toast alone (the outside code review's performance work).
   return React.memo(W) as any;
 }
 const C = {
@@ -96,9 +92,10 @@ export function App() {
   const st = React.useSyncExternalStore(subscribe, getState);
   tally('App');
   const shown = useShownScreen(st), screen = shown?.screen ?? st.screen, Screen = shown?.C;
-  // v: a count of the store's changes other than a toast alone (the overlays' memo reads it).
+  // v: a count of App's renders, less those for a toast alone (the overlays' memo reads it): they render as they always
+  // did (App's own transition state included), except for a store change that is only the toast.
   const seen = React.useRef<{ st: ClientState; v: number }>({ st, v: 0 });
-  if (seen.current.st !== st) seen.current = { st, v: seen.current.v + (onlyToast(seen.current.st, st) ? 0 : 1) };
+  seen.current = { st, v: seen.current.v + (seen.current.st !== st && onlyToast(seen.current.st, st) ? 0 : 1) };
   const v = seen.current.v;
   const tr = useScreenTransition(screen, st.game?.phase);
   const Sandbox = st.game?.sandbox ? loadedSandbox() : null; // (the Proving Ground's tools: their own chunk, screenLoad.ts)
@@ -143,7 +140,7 @@ export function App() {
   return (
     <>
       {/* key: a fresh logic instance per screen and character, so local state never leaks between them */}
-      <div key={'w' + screen} ref={tr.wrap} className={tr.inCls || undefined}>{shown && Screen && <ScreenHost key={screen + (shown.tick.levelupChar || '')} C={Screen} tick={shown.tick} />}</div>
+      <div key={'w' + screen} ref={tr.wrap} className={tr.inCls || undefined}>{shown && Screen && <Screen key={screen + (shown.tick.levelupChar || '')} tick={shown.tick} />}</div>
       {/* The screen that just left: a frozen copy playing its out animation (never clickable). */}
       <div ref={tr.ghostHolder} aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 55, pointerEvents: 'none', overflow: 'hidden', display: tr.ghost ? 'block' : 'none' }} />
       {tr.ghost === 'combat-in' && !reducedMotion() && <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 56, pointerEvents: 'none', overflow: 'hidden' }}>

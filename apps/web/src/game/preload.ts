@@ -3,9 +3,10 @@
 //  · First, only what the title itself draws (Title.tsx TITLE_ART), several at a time.
 //  · Nothing else starts before the page has loaded (the window's load event, and the title's art or TITLE_WAIT_MS):
 //    the page's own code, fonts and title art never compete with art the player may not see for minutes.
-//  · Then only the next screens' art and code: on every screen the player reaches (App.tsx calls warmNext), the art
-//    of the screens they can reach from it (NEXT, SCREEN_ART) and those screens' code chunks (screenLoad.ts), a few
-//    files at a time at low priority, small sizes only. A screen change replaces what was still waiting: the player has
+//  · Then only the next screens' code and art: on every screen the player reaches (App.tsx calls warmNext), the code
+//    chunks of the screens they can reach from it (screenLoad.ts; from the load event on: a screen waits for its chunk)
+//    and their art (NEXT, SCREEN_ART; once the title's art is in too), a few files at a time at low priority, small
+//    sizes only. A screen change replaces what was still waiting: the player has
 //    moved on. Art no screen names here loads when a screen shows it, as every <img> does.
 // Nothing waits on it: an <img> whose file is not in yet shows its usual fallback and swaps in when it lands.
 import ASSETS from './assets.json';
@@ -23,6 +24,9 @@ export const NEXT: Record<Screen, Screen[]> = {
   levelup: ['main', 'combat'],
   ultimate: ['main', 'combat'],
 };
+/** Code reached from a screen beyond NEXT's (its chunk only, not its art): the title's Continue and the Proving Ground
+ *  open the play screen straight away. */
+export const CODE_NEXT: Partial<Record<Screen, Screen[]>> = { home: ['main'] };
 /** The art each screen draws (asset-name prefixes: art/catalog.json ids), the part worth warming ahead. */
 export const SCREEN_ART: Record<Screen, string[]> = {
   home: ['title-', 'wick-run', 'wick-stop', 'wick-idle', 'wick-hello', 'wick-wave', 'wick-welcome'],
@@ -65,7 +69,7 @@ function warmAll(urls: string[], at: number, onOne: () => void): Promise<void> {
 const TITLE_WAIT_MS = 3000;
 /** Files warmed at once: the title's own art, and the next screens' behind a screen. */
 const AT_FIRST = 6, AT_NEXT = 4;
-const P = { started: false, ready: false, warmed: new Set<string>(), queue: [] as string[], running: 0, screen: 'home' as Screen };
+const P = { started: false, loaded: false, ready: false, warmed: new Set<string>(), queue: [] as string[], running: 0, screen: 'home' as Screen };
 /** For the browser checks (title.mjs): the title's files, the files queued since, how many are in, and the screen. */
 const state = { first: 0, rest: 0, done: 0, titleDone: false, ready: false, screen: 'home' as Screen };
 function pump() {
@@ -75,13 +79,18 @@ function pump() {
     warmOne(A[k], true).then(() => { state.done++; P.running--; pump(); });
   }
 }
-/** Warm what the player can reach next from this screen: the screens' code first, then their art (replacing the
- *  art still waiting from the screen before). Before the page has loaded it only notes the screen. */
+/** The next screens' code chunks, once the page has loaded (small, and a screen waits for its chunk: never held for art). */
+function warmCode(screen: Screen) {
+  if (!P.loaded) return;
+  for (const s of [...(NEXT[screen] || []), ...(CODE_NEXT[screen] || [])]) loadScreen(s).catch(() => { /* loaded again when the screen is reached */ });
+  if (screen === 'home' || screen === 'room') loadSandbox().catch(() => { /* the Proving Ground opens from both */ });
+}
+/** Warm what the player can reach next from this screen: the screens' code once the page has loaded, then their art
+ *  once the title's art is in too (replacing the art still waiting from the screen before). */
 export function warmNext(screen: Screen) {
   P.screen = screen; state.screen = screen;
+  warmCode(screen);
   if (!P.ready) return;
-  for (const s of NEXT[screen] || []) loadScreen(s).catch(() => { /* loaded again when the screen is reached */ });
-  if (screen === 'home' || screen === 'room') loadSandbox().catch(() => { /* the Proving Ground opens from both */ });
   P.queue.forEach((k) => P.warmed.delete(k)); // (dropped from the queue: warmed later if a screen asks again)
   const add = nextArt(ASSETS as Record<string, string>, screen, P.warmed);
   add.forEach((k) => P.warmed.add(k));
@@ -97,6 +106,7 @@ export function startPreload(titleArt: string[]) {
   (window as any).__phcPreload = state;
   const head = warmAll(first.map((k) => A[k]), AT_FIRST, () => { state.done++; }).then(() => { state.titleDone = true; });
   const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise<void>((ok) => window.addEventListener('load', () => ok(), { once: true }));
+  loaded.then(() => { P.loaded = true; warmCode(P.screen); });
   Promise.all([loaded, Promise.race([head, new Promise<void>((ok) => setTimeout(ok, TITLE_WAIT_MS))])]).then(() => {
     P.ready = true; state.ready = true; warmNext(P.screen);
   });
