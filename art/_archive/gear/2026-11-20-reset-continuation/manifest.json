@@ -3634,6 +3634,77 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-boss_shield--relic",
+      "path": "art/icons/gear/shield-boss_shield--relic.png",
+      "sha256": "9af1111d93c1ee9239cc3ebecb79a43c73f128d2604af681cf152528a6ad4174",
+      "label": "Boss Shield — Relic",
+      "family": "shield-boss_shield",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-boss_shield--relic.png",
+        "sha256": "d50118fa894b968e9acedf1bb83ff71adfa6b3c03b180398681f74c797f30ebc"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-boss_shield--relic.png",
+        "sha256": "9af1111d93c1ee9239cc3ebecb79a43c73f128d2604af681cf152528a6ad4174"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-boss_shield--relic.txt",
+        "sha256": "746c3ff8bd5c805676c7966750cf76e0a9d520f023850d7b26776b701eda6c9c"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-boss_shield.png",
+          "sha256": "3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8"
+        },
+        {
+          "path": "art/icons/gear/shield-boss_shield--masterwork.png",
+          "sha256": "74958d034b6a2b864df8eabc9e481d60eeb9671fdf17cd24f640eca0db8f5f12"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-boss_shield--relic/01-quality-review/native.png",
+          "sha256": "7a2e9a053392cf4e30a7c1796ad5cbfbcb484b55e62212bb578bb55cc756e6b0"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png",
+          "sha256": "e4594f2311e982ae2a4603db4c8c28e53d889d36fb7114e1625d49fccdcb113a"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-boss_shield--relic.png",
+        "128": "art/icons/gear/exports/128/shield-boss_shield--relic.png",
+        "64": "art/icons/gear/exports/64/shield-boss_shield--relic.png",
+        "32": "art/icons/gear/exports/32/shield-boss_shield--relic.png"
+      },
+      "export_hashes": {
+        "256": "adda1f7a22678b9fd0a1a6ea8ba392e5d0349fcdc92100eac3c3d92dda4d029e",
+        "128": "8f4a775481634c6a29506386c1b6c9002a3da956ad94c8ec9b79ea77dcb8b11f",
+        "64": "6d2623f8a2ab199e13c5fada5a3dd4d39c3b6d3def5325ef46ca5eb25dbd49ce",
+        "32": "7a15d50f7537855f49cdfcba7f28979d8b4a6b639197a74c5719b2486618a0f7"
+      },
+      "grade": "relic",
+      "standard_id": "shield-boss_shield",
+      "outline": {
+        "solid_alpha_iou": 0.9859654330099112,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
