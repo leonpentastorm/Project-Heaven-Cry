@@ -10196,6 +10196,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-field_trousers--fine",
+      "path": "art/icons/gear/armour-field_trousers--fine.png",
+      "sha256": "9108cd44c3dd8e8bb1edf9456082891eae4289ffe7c20c76bbeadf4d07aac54d",
+      "label": "Field trousers — Fine",
+      "family": "armour-field_trousers",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_trousers--fine.png",
+        "sha256": "85f6a7af0da083269fb12b5e8aed362ddd39b451aa0b6b792227f26054eb05af"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-field_trousers--fine.png",
+        "sha256": "9108cd44c3dd8e8bb1edf9456082891eae4289ffe7c20c76bbeadf4d07aac54d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-field_trousers--fine.txt",
+        "sha256": "b5ba48c050a1b14c71239dd2a56c14a2dd114e12795d16e5b781c3af06bce56d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-field_trousers.png",
+          "sha256": "644b0fbc3da4c8259b5e88aceb8f7b140573ab63a3679b6cf1439c0f0ed573ab"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_trousers--fine.png",
+        "128": "art/icons/gear/exports/128/armour-field_trousers--fine.png",
+        "64": "art/icons/gear/exports/64/armour-field_trousers--fine.png",
+        "32": "art/icons/gear/exports/32/armour-field_trousers--fine.png"
+      },
+      "export_hashes": {
+        "256": "6d20085d0ff5f90fee19d1fb432be7b89b7d375dbca5ddfef851c37448faf87a",
+        "128": "a942fee6254f645bf561cf031bcbc91a428f5e70b62a9010b0ff07b536eae745",
+        "64": "9e70dd00d2ff811167464fb5bcf2ea0344a40ab61da2469c4ffa2f185f7c615e",
+        "32": "c7a2d61707a680a03475f39642c3dbce3cfeaec0a95d9a032db02f06bdb580a3"
+      },
+      "grade": "fine",
+      "standard_id": "armour-field_trousers",
+      "outline": {
+        "solid_alpha_iou": 0.980325369792535,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 22
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
