@@ -8278,6 +8278,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-blackout_hood--masterwork",
+      "path": "art/icons/gear/armour-blackout_hood--masterwork.png",
+      "sha256": "32134cfbe0c6ec0b97b712b9f8de3f47ea44a6094f9c06e2d44e2b410e88b668",
+      "label": "Blackout hood — Masterwork",
+      "family": "armour-blackout_hood",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-blackout_hood--masterwork.png",
+        "sha256": "f922d7001f84e7e4b05429ead2f40abb72d0eabebf28e8900a27f3d52d05dca9"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-blackout_hood--masterwork.png",
+        "sha256": "32134cfbe0c6ec0b97b712b9f8de3f47ea44a6094f9c06e2d44e2b410e88b668"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-blackout_hood--masterwork.txt",
+        "sha256": "f7fa5257722d2a9e626724109622f1929a172cfc6e32656dfc6c3c4722d4251a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-blackout_hood.png",
+          "sha256": "b9c6cb8fe201b0d9e8dfb84a2b9059fae5501ef2b87c0f9fe863cf9b3571413c"
+        },
+        {
+          "path": "art/icons/gear/armour-blackout_hood--fine.png",
+          "sha256": "e1b7edddcfd7644d2cb7f7efba4dd2fd59cf5e5007f07aee1e8527e4c676608c"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-blackout_hood--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-blackout_hood--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-blackout_hood--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-blackout_hood--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "a98047040571e567d423f692f934326dd5a728c14ee636c1d620424981e53448",
+        "128": "67fd7980f589719f319b9f5d3773a9694600853fd83b38b30fae5f5944070115",
+        "64": "71633a137fdd58e48b57e9279fceae83d2c67327203d77f4d03ce9a851c452b8",
+        "32": "e8579c29380a4162d5a0450b92c710021937c9bab3def9ecd612995c93ad923f"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-blackout_hood",
+      "outline": {
+        "solid_alpha_iou": 0.9882323878167868,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 18
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
