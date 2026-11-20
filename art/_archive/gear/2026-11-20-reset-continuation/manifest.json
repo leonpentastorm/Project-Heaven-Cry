@@ -5171,6 +5171,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-weighted_gloves--fine",
+      "path": "art/icons/gear/weapon-weighted_gloves--fine.png",
+      "sha256": "145a23a2ec6b8dea6474d736972d06dafdea4e30be22c14a5d2fd418b9a96d85",
+      "label": "Weighted Gloves — Fine",
+      "family": "weapon-weighted_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-weighted_gloves--fine.png",
+        "sha256": "def8ecb32a60c639fa4ab6f0361a790360dca0c2038723d147af473f434dc7e2"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--fine.png",
+        "sha256": "145a23a2ec6b8dea6474d736972d06dafdea4e30be22c14a5d2fd418b9a96d85"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--fine.txt",
+        "sha256": "9174c6e15a67c3c78f24e7b4fb123888dc8fae9ce69d3b0e3ad5a9688bf84991"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-weighted_gloves.png",
+          "sha256": "a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png",
+          "sha256": "0189245e4f1c2eeff8998b07ae9f383745a1d2c2e6fe1127c9f34c301b2fa623"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-weighted_gloves--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-weighted_gloves--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-weighted_gloves--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-weighted_gloves--fine.png"
+      },
+      "export_hashes": {
+        "256": "f76c773edb53c880dbbb9b1516364c8919ae22c204e1b7d62b03e585e20a1476",
+        "128": "5b2685af474e601fbd9344838905a8f0b3fb436dc88d9f5f4f4712389839e66c",
+        "64": "173655691a7cc66629c7f6858b46cb38b7bc3dbdc5bf2fba295e491f427b813e",
+        "32": "38a53f662fa25e59143107ddde0f506cc32ddd58c30b2298728edf8c24cf2001"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-weighted_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9907197703623969,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 8
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

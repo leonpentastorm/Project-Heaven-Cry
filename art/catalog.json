@@ -28913,6 +28913,42 @@
         "different_pixels_32": 7,
         "different_pixels_64": 15
       }
+    },
+    "weapon-weighted_gloves--fine": {
+      "label": "Weighted Gloves — Fine",
+      "path": "art/icons/gear/weapon-weighted_gloves--fine.png",
+      "sha256": "145a23a2ec6b8dea6474d736972d06dafdea4e30be22c14a5d2fd418b9a96d85",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-weighted_gloves--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-weighted_gloves--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-weighted_gloves--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-weighted_gloves--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-weighted_gloves--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.5",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-weighted_gloves",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9907197703623969,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 8
+      }
     }
   },
   "survival_art": {
