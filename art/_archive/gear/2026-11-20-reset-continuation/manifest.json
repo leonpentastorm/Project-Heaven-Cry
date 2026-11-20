@@ -5632,6 +5632,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-pitch_axe--celestial",
+      "path": "art/icons/gear/weapon-pitch_axe--celestial.png",
+      "sha256": "a2e437db6fed48b2b1e52dc082badce1747312a931aff76a94590cd30701bf91",
+      "label": "Pitch Axe — Celestial",
+      "family": "weapon-pitch_axe",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-pitch_axe--celestial.png",
+        "sha256": "82242303426cb4125833f76c84ca531cb3223d3e178fdcb0e62cc57cbdaa4bae"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-pitch_axe--celestial.png",
+        "sha256": "a2e437db6fed48b2b1e52dc082badce1747312a931aff76a94590cd30701bf91"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-pitch_axe--celestial.txt",
+        "sha256": "5ab79f3953e70002d122061cfa4315170b81758752eec58f10551f60574370d8"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-pitch_axe.png",
+          "sha256": "764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b"
+        },
+        {
+          "path": "art/icons/gear/weapon-pitch_axe--relic.png",
+          "sha256": "219b5cf055b455311d90158b0f61751fbe274c5ca37a844f7b6fe9f82194afdf"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png",
+          "sha256": "22b4dc28c0c3d3f7945546bd3a752c11fcce29798618561b279ad238784a078c"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-pitch_axe--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-pitch_axe--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-pitch_axe--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-pitch_axe--celestial.png"
+      },
+      "export_hashes": {
+        "256": "419514e4011013ffb4e73cb47dc6f2f86ca7efddc1b9b1f4bffb31b44a08c8ed",
+        "128": "66e858f1f7245a1cd3afd21e35061c9041c83ea703bf06bab50275731896d0cf",
+        "64": "15fc803473862237f22a0a19f5718e3c046d9160f2a830f6ee73d3331ccc10bc",
+        "32": "a39ba192e223591af7719668651c8db9a34136532503cc19a1a1bd0a5769cdae"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-pitch_axe",
+      "outline": {
+        "solid_alpha_iou": 0.9385984857097383,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 18
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
