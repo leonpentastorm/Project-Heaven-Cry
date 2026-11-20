@@ -482,7 +482,8 @@
         "surprised_can_act": false,
         "exception": "perk says so",
         "built": true,
-        "on": true,
+        "on": false,
+        "on_note": "OFF (Leon, 20 Nov 2026: \"turn it off, we need more thinking on this\"): with it on, a squad that acts first unseen takes every foe's first turn in most fights, and a class that can only walk in gets it for nothing. Built and tested behind this switch.",
         "springs": ["pc"],
         "springs_note": "Leon, 20 Nov 2026: only the squad springs a surprise for now (a class with no scouting tool had no answer to a Hidden foe taking the whole squad's first turn). Add \"foe\" to let a Hidden foe's unseen attack catch the squad again.",
         "lines": {

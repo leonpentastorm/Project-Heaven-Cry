@@ -33,8 +33,12 @@ function ambushed(perks: { id: string; tier: string }[] = [], near = false): Gam
 }
 const step = (g: GameState) => { const u = pcOf(g); return apply(g, { type: 'combat/end-turn', unitId: u.id } as any, ownerOf(0)); };
 
+const SHIPPED_ON = SURPRISE.on; SURPRISE.on = true; // the rule is built behind its switch: these tests turn it on
 describe('rules 1.82 item 7004: surprise in the approach', () => {
-  it('the switch is on, its words are data', () => { expect(SURPRISE.on).toBe(true); expect(SURPRISE.lines.side).toContain('{units}'); });
+  it('as shipped the switch is OFF (Leon, 20 Nov 2026); its words are data', () => { expect(SHIPPED_ON).toBe(false); expect(SURPRISE.lines.side).toContain('{units}'); });
+  it('off: a character acting before contact takes no foe\'s turn', () => {
+    SURPRISE.on = false; try { const n = step(ambushed()); expect(n.combat!.units.some((x) => x.surprised)).toBe(false); } finally { SURPRISE.on = true; }
+  });
   it('a character acting before contact catches every foe: each loses round 1, and the character acts first', () => {
     const g = copy(unseenFight()), u = pcOf(g), full = turnAp(u, [], []).ap;
     const n = apply(g, { type: 'combat/prone', unitId: u.id } as any, ownerOf(0)), cb = n.combat!;

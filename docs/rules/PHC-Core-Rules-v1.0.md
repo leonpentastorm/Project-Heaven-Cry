@@ -13539,6 +13539,9 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       `adjudication: engine`. The old surprise round's `ambushers_ap` is not read (an ambusher acts on its own turn with
       the AP it has, item 1501). A story fight's own ambush rules (unaware foes, an attack in the open) are unchanged.
       One function, `combat.ts surpriseSide`.
+      **SWITCHED OFF (Leon, 20 Nov 2026: "turn it off, we need more thinking on this"):** `surprise_round.on` is
+      `false`; the approach plays as in 0.32. On, a squad acting first unseen took every foe's first turn in most fights,
+      and a class that can only walk in got it for nothing. The rule stays built and tested behind the switch.
       **Leon, 20 Nov 2026 (overrides "both sides" above):** only the squad springs a surprise for now
       (`surprise_round.springs`: `["pc"]`): a class with no scouting tool had no answer to a Hidden foe taking the whole
       squad's first turn. A Hidden foe's unseen attack still joins the fight; it takes nobody's turn. Adding `"foe"` to
