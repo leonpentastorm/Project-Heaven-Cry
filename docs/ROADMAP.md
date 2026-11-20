@@ -1,6 +1,6 @@
 # Roadmap: what's next, and everything planned but not built (started at v0.0.1, 9 Nov 2026; kept current)
 
-**Live: 0.33.0 (20 Nov 2026; rules 1.82 to 1.90; account `docs/design/handoffs/0.33.0-LIVE.md`). Next: Items 2.0 (`docs/design/proposals/2026-11-20-items-2.0-plan.md`), built and left ready, not live without Leon's word.** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
+**Live: 0.33.0 (20 Nov 2026; rules 1.82 to 1.90; account `docs/design/handoffs/0.33.0-LIVE.md`). Next: 0.34.0 "Items 2.0" is BUILT on `wip/release-0.34` (`721db5e33` and the account commit after it), NOT merged here and NOT live: read `docs/design/handoffs/0.34.0-READY.md`; its own roadmap section is on that branch.** **This file is the only list of owed work.** Hand-offs describe a session's state and link here; they do not list work. An item leaves this file only with evidence (a commit or a test). Every item says when its state was last checked against the code.
 
 Item format: `**Short name.** What is owed. [size S/M/L] [state: open | partly | not verified; checked in code 19 Nov 2026 | from documents only] [source]`. Sizes: S under an hour, M a few hours, L about a day.
 
