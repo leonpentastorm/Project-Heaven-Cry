@@ -7228,7 +7228,13 @@
     "standard_sha256": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
     "standard_status": "review-candidate",
     "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
-    "current_data_item_present": false
+    "current_data_item_present": false,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_carbine--fine--1795160984675.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_carbine--fine--1795160984675.json",
+      "request_id": "a86f848c-32f6-48f4-840d-6f400678b827"
+    }
   },
   {
     "id": "weapon-whisper_carbine--masterwork",
