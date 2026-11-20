@@ -26141,6 +26141,42 @@
         "different_pixels_32": 7,
         "different_pixels_64": 24
       }
+    },
+    "weapon-throwing_knives--fine": {
+      "label": "Throwing Knives — Fine",
+      "path": "art/icons/gear/weapon-throwing_knives--fine.png",
+      "sha256": "cd04352a1bec2ab1b8a6576aae274b0e4fced87defa5fc71ff3fb24d72943881",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_knives--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_knives--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_knives--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_knives--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-throwing_knives--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.10",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-throwing_knives",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9307612814330003,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 54
+      }
     }
   },
   "survival_art": {

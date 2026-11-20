@@ -128,6 +128,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_knives--fine",
+      "path": "art/icons/gear/weapon-throwing_knives--fine.png",
+      "sha256": "cd04352a1bec2ab1b8a6576aae274b0e4fced87defa5fc71ff3fb24d72943881",
+      "label": "Throwing Knives — Fine",
+      "family": "weapon-throwing_knives",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-throwing_knives--fine.png",
+        "sha256": "a95d493366bd428f7668a4742bbffac44a865fd9cdb983eb8cde7b9c90f5d6ba"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-throwing_knives--fine.png",
+        "sha256": "cd04352a1bec2ab1b8a6576aae274b0e4fced87defa5fc71ff3fb24d72943881"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-throwing_knives--fine.txt",
+        "sha256": "d261f1b59ba7580ef84f50bcc9b8dea9c921059d664526d1528f45643bd6edf3"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-throwing_knives.png",
+          "sha256": "8e36e35a0a48efd17166fe67d9ed3e47343497619dc16b865d1a9c41ca88e71e"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_knives--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_knives--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_knives--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_knives--fine.png"
+      },
+      "export_hashes": {
+        "256": "5a101683360f1080540549859f27ce6535e4da991045a7fde30afd8eca8d900f",
+        "128": "c631615a6fb563c5878bc2bc3f708bc99814c9f01e527bc497fa4672b4a2566c",
+        "64": "dccbe745672ee6db4a0407877081da486edb3396d6f7e806108a9176b440b5fc",
+        "32": "485c2dc706b2ce3ee37e20a953e86c9a83693a73f70a8826f79624d39fba74ea"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-throwing_knives",
+      "outline": {
+        "solid_alpha_iou": 0.9307612814330003,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 54
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
