@@ -1,0 +1,91 @@
+{
+  "id": "fork.sigil.running_script",
+  "src": "/workspace/generated_images/exec-8a8168c2-ad37-4f2a-8298-e27fd2c59d29.png",
+  "job": {
+    "id": "fork.sigil.running_script",
+    "number": 66,
+    "file": 3,
+    "path": "art/icons/forks/sigil-running-script.png",
+    "references": [
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-on-white.png",
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-ink.png"
+    ],
+    "prompt": "Draw ONLY the new small rune overlay for the attached fictional RPG icon. DO NOT draw or include any robot, original glyph, original line, rectangle, matte or background. Same1024square coordinate canvas as reference. One tiny invented angular rune is all that appears, aroundx640,y650, about40pixels tall and35wide. A thin single contour of THREE joined straight strokes, with the final stroke only half complete, trailing up-left toward the drawing hand location in the reference. It is an abstract unfinished angular hook, not a letter or number, not parallel speed lines, not an envelope. The reference is for placement/lineweight only: exclude its entire existing drawing from your output, leave everything else transparent. Solid black ink, crisp flat shape, transparent everywhere else including between the strokes, no white underpaint, no grey, no spatter, glow, shading or extra marks. One PNG transparent overlay asset.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-on-white.png": "f52a57e66fdf4eef8eceb05d507abee9479fad1cc928f08e64fe47b13d8b6517",
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-ink.png": "a83653b3bd73ad0b27f259b4b4c348beed7c0b171859b9ca25b616006bae7618"
+    },
+    "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+    "technical_export_note": "Intermediate flat black ink requested to preserve negative-space alpha; if faithful, exporter may normalize visible RGB to purewhite without modifying alpha or geometry. No code-created drawing or compositing.",
+    "generation_mode": "delta-only overlay; no production composite without explicit alternate editing authorization"
+  },
+  "preflight": {
+    "own": "a4bf4957b05af4f63abb2c41967cf3053e5b6e8d",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "latest_comment": 7045450156,
+    "run": "sole-20261120-1615"
+  },
+  "clock": {
+    "current_time": "2026-11-20 18:16:27 UTC"
+  },
+  "attempt": "066-rune-only-v1",
+  "review": "Isolated addon inspected on white preview. Clean transparent black stroke, but only two segments; missing the required half third stroke. No character pixels or production master changed. Support asset only, no selected-picture contribution.",
+  "source_sha256": "e3d7d686b6c79748020b51e5c56c2bda0c4dcb9a014cd40f722b9ac55ccf1182",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "native_mode": "RGBA",
+  "native_alpha_bbox": [
+    63,
+    71,
+    1154,
+    1228
+  ],
+  "references": [
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-on-white.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/references/00-running-original-black-on-white.png",
+      "sha256": "f52a57e66fdf4eef8eceb05d507abee9479fad1cc928f08e64fe47b13d8b6517"
+    },
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-ink.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/references/01-running-original-black-ink.png",
+      "sha256": "a83653b3bd73ad0b27f259b4b4c348beed7c0b171859b9ca25b616006bae7618"
+    }
+  ],
+  "technical_previews": {
+    "1024": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/preview-1024.png",
+      "sha256": "47833733704a73fca16fdde3967570e0b580d9fc9201ee920efbe08d4a4f74cb"
+    },
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/preview-256.png",
+      "sha256": "4386f7e22026852c0daae7a697f6aadad649ec5f0c0ffc131f92c9f2f8aee6c8"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/preview-128.png",
+      "sha256": "5616a7133408a81267a31b00d89faec402dae2ae714a078814a3ea5f06012906"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/preview-64.png",
+      "sha256": "430a3b734267e95360ce70d2ce62c6337e4827d3d5d7192da1a9286f8606aa1b"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/preview-32.png",
+      "sha256": "cf2970c791a37a74869e06c32c5f38bf3878dd1bad2663819536be4a363d668c"
+    }
+  },
+  "selected": false,
+  "count_contribution": 0,
+  "status": "quality-rejected",
+  "production_approved": false,
+  "implementation_ready": false
+}
