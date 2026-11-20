@@ -60,6 +60,7 @@ ok('Start the run asks "Level up first?" with Open Level up (' + asked.replace(/
 await dlg.locator('button', { hasText: 'Open Level up' }).click();
 await h.waitForFunction(() => window.__phc.getState().screen === 'levelup', null, { timeout: 30000 });
 const chipB = h.getByRole('button', { name: /2 choices · Figment form/ });
+await chipB.first().waitFor({ timeout: 15000 }).catch(() => {}); // the chip is drawn a moment after the screen opens (a timing check, red before 0.33's ambush merge too)
 ok('Level up: the TO CHOOSE chip "2 choices · Figment form"', (await chipB.count()) > 0);
 await chipB.first().click(); await settle(h, 300);
 await h.screenshot({ path: OUT + 'doors-new-rigger-chooser.png' });

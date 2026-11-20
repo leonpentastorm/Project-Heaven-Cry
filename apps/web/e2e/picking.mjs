@@ -173,5 +173,8 @@ await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
 { const e = await act({ type: 'combat/door', unitId: (await me()).id, tile: '10,4' }); await settle(p, 300); const dr = (await G()).combat.objects.find((o) => o.pos === '10,4'); ok('the blockhouse door opened (' + (e || (dr && dr.open ? 'open' : 'shut')) + ')', !!dr && !!dr.open); }
 ok('inside the blockhouse at L5, next to the lamp', await walkTo('11,4'));
 await act({ type: 'combat/end-turn', unitId: (await me()).id }); await toMe();
+// rules 1.90 item 7800: no approach keeps the character unseen while the foes wait; their turns have run since the Hide
+// above, so it Hides again inside the blockhouse (Douse is from Hidden)
+ok('Hidden again inside the blockhouse', (await act({ type: 'combat/hide', unitId: (await me()).id })) === null && !!(await me()).hidden);
 await check('Douse', /^Douse/, { shot: 'douse', need: ['reach', 'choice'], subset: true, bad: '11,5' });
 await browser.close();
