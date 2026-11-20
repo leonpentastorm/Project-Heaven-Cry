@@ -4907,6 +4907,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_skinner--masterwork",
+      "path": "art/icons/gear/weapon-ork_skinner--masterwork.png",
+      "sha256": "0536aa1e437a63ca97a864016d167949ae3f7f81aa9338d2b2d181249f2df95a",
+      "label": "Ork Skinner — Masterwork",
+      "family": "weapon-ork_skinner",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_skinner--masterwork.png",
+        "sha256": "f16ba792040e931ed8de5ae9eef3edcd678444c7ada76796c9cfc16dedfe87b1"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-ork_skinner--masterwork.png",
+        "sha256": "0536aa1e437a63ca97a864016d167949ae3f7f81aa9338d2b2d181249f2df95a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-ork_skinner--masterwork.txt",
+        "sha256": "187515928c8240508a278b80d5028a7e6416bcf1d72f342eb8dc8d627f4a8f4e"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_skinner.png",
+          "sha256": "780bde15cfd66b073d80dd8087e1a4f204af717f4392a4c6522bd46dc71f9886"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_skinner--fine.png",
+          "sha256": "c0161af4660ed187cf46db1308d1b50b7684119224de4ae4458732611e121c29"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_skinner.png",
+          "sha256": "569382b3a98782be292324aea7f73823628cbcb572ce026ff63b9db2ad7cc59b"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_skinner--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_skinner--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_skinner--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_skinner--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "a03bb254f5a8c8ace220ca6c2a6d5a0f2302dd542cad8e659bbe2044a5e79607",
+        "128": "aec65dd435df3f32b9188e76b55a8875fe6c45892a63fb482cd1703d11fb59f0",
+        "64": "a84959ca946ef48442899f49bc6326c521978705a1859f88730962931b96a93b",
+        "32": "131906498ef987ec07b2954d83198ca697772d79da58992122f157664b7e45df"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-ork_skinner",
+      "outline": {
+        "solid_alpha_iou": 0.9713117085547199,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
