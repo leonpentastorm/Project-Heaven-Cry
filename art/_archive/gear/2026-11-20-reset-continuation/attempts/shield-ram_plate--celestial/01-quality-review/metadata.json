@@ -1,0 +1,50 @@
+{
+  "id": "shield-ram_plate--celestial",
+  "job": {
+    "id": "shield-ram_plate--celestial",
+    "standard_id": "shield-ram_plate",
+    "grade": "celestial",
+    "label": "Ram Plate \u2014 Celestial",
+    "path": "art/icons/gear/shield-ram_plate--celestial.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-ram_plate.png",
+      "art/icons/gear/shield-ram_plate--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-ram_plate",
+    "family_references": [
+      "art/icons/gear/shield-ram_plate.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.\n\nGrade: Celestial. Keep the shape, the rim inlay and the ring's place. The face becomes a pale, unmarked pearl-ivory, the rim and rivets the same. The rim inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Core windows keep their own colour.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses brass-orange #F68A38, preserving the original central orange stripe. Relic adds its small flush gilt ring around the centre point on the existing central reinforcing ridge, no new boss; the ONE repair is a small flush riveted patch on the lower-left flat side panel, inside the rim, without covering or bending the ridge. Celestial retains the same patch surface boundaries in pale material. All metal and face materials read pale pearl-ivory; dark tones only in recess shadows. The rim inlay is a faint contained ivory-gold line, never a halo or bloom. Existing core windows stay cyan, exact circuits preserved. No decorative scrollwork or motifs on the rim or face. All rivets, fittings and any existing strap/handle materials are clean pale pearl-ivory or pale hide in their original shapes; only inlay/ring retain contained pale gold. All core glass stays cyan.",
+    "keep_line": "the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png"
+    ],
+    "depends_on": "shield-ram_plate--relic"
+  },
+  "preflight": {
+    "id": "shield-ram_plate--celestial",
+    "peer": "4ca9820126fbab620e2641ad39a20666b644fabd",
+    "latest_comment": 7030873867,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 05:05:54 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-6d37bc16-aa8c-4c12-9527-89785a2585e0.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-ram_plate--celestial/01-quality-review/native.png",
+  "sha256": "bba9c1a59c89324d8d5439797404e5a0ca1bddaafa842dee2fa785b37201eadb",
+  "status": "unselected-quality-review",
+  "review_note": "Celestial side-handle wrap remains brown instead of pale hide.",
+  "reference_hashes": {
+    "art/icons/gear/shield-ram_plate.png": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599",
+    "art/icons/gear/shield-ram_plate--relic.png": "4cb1d5eb3e00e607d78186d8c4a2ae50349884ad8e48c628b691cf6cc5b96e41",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}

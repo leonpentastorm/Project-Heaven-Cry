@@ -2613,6 +2613,9 @@ d4641f47d5040bc171d64875d4fcc1c2ecba189d92b185a39c076e39d07b6bd0  art/_archive/g
 1c1583a37a6d9c9b1f6f50e4425e1042c5e52ec8ec9dbcc46f88acd7d4f53eb7  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-boss_shield--relic/01-quality-review/metadata.json
 7a2e9a053392cf4e30a7c1796ad5cbfbcb484b55e62212bb578bb55cc756e6b0  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-boss_shield--relic/01-quality-review/native.png
 002c3429baaf363fb99ba38a816b9aaec3b994d5af6e333f0201531a5a87e306  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-boss_shield--relic/01-quality-review/prompt.txt
+98ef973b91a5ad8ca953201e484ad31ab9f6f3b4f3af6005af303663f0fb7dc0  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-ram_plate--celestial/01-quality-review/metadata.json
+bba9c1a59c89324d8d5439797404e5a0ca1bddaafa842dee2fa785b37201eadb  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-ram_plate--celestial/01-quality-review/native.png
+f5b6e3bc0a815d57930dc808b000f603374b79fa28b82bdf098a7c568d7c7cab  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-ram_plate--celestial/01-quality-review/prompt.txt
 4db9aa654514960817808930b890c9fa226f360e35a4278550d758350aa91d90  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-ram_plate--relic/01-quality-review/metadata.json
 0d4f4dfe218dbfebd15e7f02c2b379b773e39ead02fa6cccd16e2172edfa6677  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-ram_plate--relic/01-quality-review/native.png
 58c8472ffa8ebdb35dc504d7ca37c04d2441a907f705ca94b0855d2e7cc660ce  art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-ram_plate--relic/01-quality-review/prompt.txt
@@ -2787,7 +2790,7 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-82596ff884b13951e6b7f5ec0a290df0e43c0c9959638d11fa134adcc5c922b2  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+82c30ac201a2027cf978f1c5b0da70bce7873f1db24334554326e7cea7645d4d  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 99de7d9f167e8a7e581e3465bc632e4ce7326e7ecf3e5a833f38e37cf4ad9318  art/_archive/gear/2026-11-20-reset-continuation/reviews/shield-boss_shield-32px.png
