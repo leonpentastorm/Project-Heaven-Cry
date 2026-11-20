@@ -172,8 +172,11 @@ const COMBAT_CSS = [
   '.phc-yt::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:phcYtShine calc(.9s * var(--phc-k, 1)) ease-out calc(.35s * var(--phc-k, 1)) both;pointer-events:none}',
   '.phc-cb-act{transition:transform .12s ease-out,box-shadow .12s ease-out,background-color .12s}',
   // The Space key's hint on Confirm: drawn by CSS so the button's text stays "Confirm" (suites and readers find it by its text);
-  // only where a keyboard is likely (a fine pointer).
-  '@media (pointer:fine){.phc-cb-confirm button.phc-cb-act:first-child::after{content:"SPACE";margin-left:8px;padding:1px 6px;border:1px solid currentColor;border-radius:5px;font-size:var(--fs-sub);font-weight:700;letter-spacing:.08em;opacity:.6;vertical-align:middle}}',
+  // only where a keyboard is likely (a fine pointer). 0.33 sound lane: one line always; the chip in the button's own dark ink, a faint
+  // dark fill, full strength, so it reads on the light button; dropped when the row is too narrow to hold it)
+  '.phc-cb-confirm{container-type:inline-size}.phc-cb-confirm button.phc-cb-act:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px}',
+  '@media (pointer:fine){.phc-cb-confirm button.phc-cb-act:first-child::after{content:"SPACE";display:inline-block;margin-left:10px;padding:2px 7px;border:1.5px solid currentColor;border-radius:5px;background:rgba(10,13,19,.1);font-size:var(--fs-sub);font-weight:700;line-height:1.2;letter-spacing:.1em;vertical-align:1px}}',
+  '@container (max-width:340px){.phc-cb-confirm button.phc-cb-act:first-child::after{display:none}}',
 
   '.phc-key-code::before{content:attr(data-code)}', // (the two-key code is drawn, not text: a button's name stays its name)
   '.phc-cb-act:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.18)}',

@@ -13786,3 +13786,26 @@ number of the rules changes.
     reward panel says "Yours to take:" over a single card (`survival.json reward_panel.take_one`); the Bonds door line
     says "when you are hurt it takes 20% of the blow for you"; the Proving Ground says "No wave cleared yet" before the
     first; creation's Essence of Experience line says who can crack it (any focus in a hand), with no typed number.
+
+### Rules 1.86 (sounds and the last polish), the sound lane of 0.33 (20 Nov 2026)
+
+Presentation and the Narrator's desk (`docs/design/handoffs/0.33-LANE-SOUND.md`). No number of the rules changes.
+
+7400. **Sound lane: each patron has its own sound.** A patron's data row may name `sound`, one of the game's sound names
+    (`data/patrons.json`, presentation only; the validator checks it). A Hymn plays it over the shared choir, a Miracle as
+    it lands, a Whisper softly; the eight are a shared family with one distinct layer each (a cathedral bell, a crate and
+    a stamp, laughter, coins, a hearth, a distant roll of thunder, a vibraphone, a clock's count).
+7401. **Sound lane: a bolt cracks apart from the thunder.** Each bolt of a storm prayer plays its own lightning crack on
+    the unit it lands on; the thunder still rolls once.
+7402. **Sound lane: the divine impact.** A prayer whose data wounds (an HP loss or a damage op) lands on each foe it
+    touches with the divine impact; the Chaplain's Smite and Amen land with it too. A prayer that only heals or shields
+    never plays it.
+7403. **Sound lane: the Narrator's desk draws the open shapes as rows.** Ground items, a trigger's spawn list and drops
+    (an enemy's or a person's) are left open in the AI's tool (every token of it goes out on every call). The desk takes
+    their shapes from the tool's own definitions elsewhere (a cache's loot row; the npcs[] place shape's fields) and
+    draws add-a-row pickers; what it sends is checked by the engine exactly as the AI's turn is. The AI's tool is
+    unchanged.
+7404. **Sound lane: the forms and forks you chose stay on the MAGIC tab.** Once a Figment form is chosen the choice
+    chips go; the FIGMENTS section now shows the forms known ("FORMS KNOWN · 2 / 2") and the door's forks held (TRIAGE row 10).
+7405. **Sound lane: the Confirm button's SPACE hint stays on one line** in the button's own dark ink, and is dropped
+    when the button row is too narrow to hold it.

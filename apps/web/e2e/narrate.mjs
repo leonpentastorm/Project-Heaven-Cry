@@ -129,9 +129,21 @@ try {
   await xr.getByLabel('Source', { exact: true }).selectOption('dialogue');
   await xr.getByLabel('Amount', { exact: true }).fill('30');
   await xr.getByLabel('Reason', { exact: true }).fill('talked the ramp down');
+  // 0.33: things on the ground as rows (the tool's loot row; it was a JSON box): two stims at C3
+  await desk.locator('[data-gm-group="world"] summary').click();
+  await desk.locator('[data-gm-add="ground"]').click();
+  const gr = desk.locator('[data-gm-entry="ground.0"]');
+  await gr.getByLabel('Tile', { exact: true }).fill('C3');
+  await gr.locator('[data-gm-add="ground.0.items"]').click();
+  const gi = gr.locator('[data-gm-entry="ground.0.items.0"]');
+  await gi.getByLabel('Item', { exact: true }).fill('stim');
+  await gi.getByLabel('How many', { exact: true }).fill('2');
+  ok('the ground field is rows, not a JSON box', (await desk.locator('[data-gm-field="ground"] textarea').count()) === 0);
   await host.locator('[data-gm-send]').click();
   await host.waitForFunction(([id, x]) => window.__phc.truth().characters[id].xp > x, [charId, xp0], { timeout: 30000 }).catch(() => {});
   ok('the desk\'s XP is given by the engine (' + xp0 + ' to ' + (await T(host)).characters[charId].xp + ')', (await T(host)).characters[charId].xp === xp0 + 30);
+  const pile = ((await T(host)).story.objects || []).find((o) => o.kind === 'pile' && JSON.stringify(o).includes('stim'));
+  ok('the desk\'s ground row is a pile the engine put down (' + JSON.stringify(pile && pile.items) + ')', !!pile);
   await guest.waitForFunction(() => window.__phc.getState().game.story.await === 'players', null, { timeout: 30000 });
   ok('the results are told and the next round opens for the players', true);
 
