@@ -1506,6 +1506,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lowland_chopper--relic",
+      "path": "art/icons/gear/weapon-lowland_chopper--relic.png",
+      "sha256": "cbe5deb5476c3be2d22b9fa5db69948a8a18233f02de648cbff3985911939220",
+      "label": "Lowland Chopper — Relic",
+      "family": "weapon-lowland_chopper",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-lowland_chopper--relic.png",
+        "sha256": "0009a3d9d9eac0e48a6d4387b96ddbe315b3f809894e3d920b56d5f27bc02d26"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-lowland_chopper--relic.png",
+        "sha256": "cbe5deb5476c3be2d22b9fa5db69948a8a18233f02de648cbff3985911939220"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-lowland_chopper--relic.txt",
+        "sha256": "e04655f9edc53cc963f4cd82115820415d4714b7d09f7582b3db504ec44d6974"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lowland_chopper.png",
+          "sha256": "3448226ac076dedebcff4fd4f6a45dfacdc43dc66aa355a78aa468c95e537fff"
+        },
+        {
+          "path": "art/icons/gear/weapon-lowland_chopper--masterwork.png",
+          "sha256": "4c89fedaeb3b3696de5ae2ccf1b056c22e4c34114ced7f7def1506c7769d5bf3"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-lowland_chopper.png",
+          "sha256": "bc6a4335dbcdcca7250dd548b502da43fd85eddf95df823d00007f811d21fea4"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lowland_chopper--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-lowland_chopper--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-lowland_chopper--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-lowland_chopper--relic.png"
+      },
+      "export_hashes": {
+        "256": "fccb73a1ad5862f5adb5efe4dbd6dfb660ca5de0a03a73e20c084e9fce605d0b",
+        "128": "6fd2251a118ffdd634971ef613357c215c06df7e1b6f088efb869e3f281b5b1f",
+        "64": "f3875c58aecc130dc0caab6040275874e12b08bcf828f2e5737a681871d09f95",
+        "32": "5cb920fb8c8a006420cc679efd9badca4568adc6ae2a3f8f3ee8df70a2438563"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-lowland_chopper",
+      "outline": {
+        "solid_alpha_iou": 0.9392586326697079,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 37
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
