@@ -3973,6 +3973,77 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-ram_plate--celestial",
+      "path": "art/icons/gear/shield-ram_plate--celestial.png",
+      "sha256": "e1fce9f4988e3a309ca062979c43ebe27d4a46c33a760cdf13ceb5c18631f97b",
+      "label": "Ram Plate — Celestial",
+      "family": "shield-ram_plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-ram_plate--celestial.png",
+        "sha256": "0ebe96febba9c020d94b1fa1ef6259fe8d7f9c06aec569b75c6ec2821d1894d0"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-ram_plate--celestial.png",
+        "sha256": "e1fce9f4988e3a309ca062979c43ebe27d4a46c33a760cdf13ceb5c18631f97b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-ram_plate--celestial.txt",
+        "sha256": "61de6859dfee28a0209065f20f604a358b0cf5bc4f5c01e033337c5f418fbb34"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-ram_plate.png",
+          "sha256": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599"
+        },
+        {
+          "path": "art/icons/gear/shield-ram_plate--relic.png",
+          "sha256": "4cb1d5eb3e00e607d78186d8c4a2ae50349884ad8e48c628b691cf6cc5b96e41"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-ram_plate--celestial/01-quality-review/native.png",
+          "sha256": "bba9c1a59c89324d8d5439797404e5a0ca1bddaafa842dee2fa785b37201eadb"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png",
+          "sha256": "267861bafac742616f7674fb1f0a1707952beb4490b4ddfa657a6b45cde8e846"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-ram_plate--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-ram_plate--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-ram_plate--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-ram_plate--celestial.png"
+      },
+      "export_hashes": {
+        "256": "0e10b529cd193c45f353721b330ce0a7c8a84a7877d28507de0eda4eac8f11ec",
+        "128": "deba0841d62e41ef83f6424ce9dfd3e70598e7656073cfc77427f7cebf3bb391",
+        "64": "0ff00a85f6fea4ae800f7925e676cac34f26e16e68b3adcba9de16349a6a3a3d",
+        "32": "c48fa36831c1ac04bd8d18acbd2480f739185eb27c1e52fad092148b470b3f95"
+      },
+      "grade": "celestial",
+      "standard_id": "shield-ram_plate",
+      "outline": {
+        "solid_alpha_iou": 0.9720574544487299,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 42
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
