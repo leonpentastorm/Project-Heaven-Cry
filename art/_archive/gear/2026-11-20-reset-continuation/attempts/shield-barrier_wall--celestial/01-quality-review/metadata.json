@@ -1,0 +1,50 @@
+{
+  "id": "shield-barrier_wall--celestial",
+  "job": {
+    "id": "shield-barrier_wall--celestial",
+    "standard_id": "shield-barrier_wall",
+    "grade": "celestial",
+    "label": "Barrier Wall \u2014 Celestial",
+    "path": "art/icons/gear/shield-barrier_wall--celestial.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-barrier_wall.png",
+      "art/icons/gear/shield-barrier_wall--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-barrier_wall",
+    "family_references": [
+      "art/icons/gear/shield-barrier_wall.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.\n\nGrade: Celestial. Keep the shape, the rim inlay and the ring's place. The face becomes a pale, unmarked pearl-ivory, the rim and rivets the same. The rim inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Core windows keep their own colour.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is brass-orange matching the existing orange perimeter accent. All SIX cores stay cyan at every grade, with the same circuits; no extra windows. Relic puts the flush gilt ring around the existing centre point of the CENTRAL METAL SPINE, without covering glass and without adding a boss. The ONE repair is a small flush riveted plate on an existing lower-left outer metal corner panel, clear of glass and foot. Celestial keeps this same repair boundary in pale metal and a pale trace of the existing orange trim, no new holes or parts. All metal and face materials read pale pearl-ivory; dark tones only in recess shadows. The rim inlay is a faint contained ivory-gold line, never a halo or bloom. Existing core windows stay cyan, exact circuits preserved. No decorative scrollwork or motifs on the rim or face. All rivets, fittings and any existing strap/handle materials are clean pale pearl-ivory or pale hide in their original shapes; only inlay/ring retain contained pale gold. All core glass stays cyan.",
+    "keep_line": "the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png"
+    ],
+    "depends_on": "shield-barrier_wall--relic"
+  },
+  "preflight": {
+    "id": "shield-barrier_wall--celestial",
+    "peer": "70cb66f7621ccc3f295e3d76b77b945c0a48eafe",
+    "latest_comment": 7031249405,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 05:27:41 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-b0793c26-3a4b-4d09-9ff9-3b1f18828ede.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/shield-barrier_wall--celestial/01-quality-review/native.png",
+  "sha256": "65301e61e590a9a78f2fded3f8e9808755934489378b707cf150d51da872862c",
+  "status": "unselected-quality-review",
+  "review_note": "Celestial omits the original central rivet inside the gilt ring, retains brown grip and strap, and keeps saturated orange rather than a pale trim trace.",
+  "reference_hashes": {
+    "art/icons/gear/shield-barrier_wall.png": "2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803",
+    "art/icons/gear/shield-barrier_wall--relic.png": "979200faeb63356d12db04626971b87d9e5a1962f4fc0894b822297943ddc231",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}
