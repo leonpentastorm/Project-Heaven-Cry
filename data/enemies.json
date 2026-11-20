@@ -596,11 +596,11 @@
       "text": "An elite with a sabre and a burning heart: it holds a Fire Outburst and walks into you, so its aura scorches whoever stands next to it; it drops a Heartfire burst on a cluster (Burning from stage 2; at stage 4 the fire spreads and the ground burns) or a Cinder wave into a line at close range, and an Ember mend on its own around it. One free Pump a round (as Empathy 3); Strain limit 5.",
       "guard": { "plates": 3, "durability": 3, "provisional": true },
       "doors": {
-        "hold": ["skill:durability.1", "class:defender.retort"],
+        "hold": ["skill:durability.1"],
         "wants": [
           { "item": "skill:durability.1", "action": "guard_challenge", "want": 4.5, "each": 1, "min": 2, "per_turn": 1 }
         ],
-        "source": "rules 1.83 items 7100, 7101, 7103",
+        "source": "rules 1.83 items 7100, 7101, 7102",
         "provisional": true
       },
       "provisional": true

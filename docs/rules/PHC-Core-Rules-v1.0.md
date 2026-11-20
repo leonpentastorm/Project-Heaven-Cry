@@ -13497,3 +13497,81 @@ Survival) and the range measures; the account is `docs/design/handoffs/0.32-FIT.
     has no weapon skill (-2 to hit with the fists); with a 40-round cap the stalls end 3 won, 13 lost: not slow wins.
     Every door's Recommended kit clears stage 1 solo 10 times in 40 or more but the Sigilist's (2; Leon's ruling: the
     bot's limit).
+
+### Rules 1.83 (enemy doors), 0.33: enemies hold door verbs and prayers, and read more of what the doors do (20 Nov 2026)
+
+The enemy lane of 0.33 (hand-off `docs/design/handoffs/0.33-LANE-ENEMY.md`). Behaviour is data: a row's `doors` block in
+`enemies.json` (a tier's, a caster archetype's, or a tag's in `ai.tag_doors`), read once as the fight starts
+(`combat.ts armDoors`), gives the enemy items it holds and what it wants of them; the doors' own code then runs for it as
+for a character, through the player's own action path. Leon approved the new engine pieces on 20 Nov 2026 ("approve all
+new engine pieces"); each is listed in item 7110. **Every number here is PROVISIONAL.**
+
+7100. **The enemy door step.** Where an enemy would make a plain attack (worth 5) it weighs each of its `wants`: an item
+      action it holds (`{item, action}`) or a Whisper (`{pray: whisper, id}`), worth `want`, plus `each` for every unit
+      of the other side the action's own effects would reach (its effects' `targets`, read by the item ops' own
+      selector as a preview; a unit already bearing the condition an effect gives does not count). An action with such
+      a set that reaches fewer than `min` (default 1) is not taken; an aimed action is not aimed at a unit it would not
+      change; a target must pass the want's `if` (the item ops' predicates). Each want is used at most `per_turn` a
+      turn. It acts on the best want that beats a plain attack AND the technique and the Call it would otherwise use
+      (their own scores; a tie goes to them). An item action runs through `runPerkAction` (its price, its gate, its
+      reach, its effects), a Whisper through `combatPray`; the trigger `acted` names it as the reducer names a
+      character's (the action's own id, a Whisper's `whisper`). Planning is pure (no die), so the intent the Read shows
+      is what the enemy then does. A caster's magic step comes first (its Sigil and Soul steps are before every
+      technique step), so a caster uses a door when its magic does not act. `ai.doors.on` false turns every block off.
+7101. **What a block gives.** `hold`: items by their full key (a skill's door item `skill:durability.1`, a door verb
+      `verb:shadow.tag`, a class move `class:defender.retort`; a tier after `@`), held as a character holds them
+      (Held `items`); `skills`: the door points their gates read (a stat block's points, never lowered; the predicate
+      `self_skill` reads them for a unit with no character); `faith`: a prayer sheet (item 7104); `wants` (item 7100).
+      Blocks add up: the tier's, the caster's, each tag's.
+7102. **Given in 0.33 (the rows).** The **Heartfire elite** holds Durability's door item (Challenge at its Durability 3;
+      Slam needs 5); it Challenges when two characters or more stand within 2 tiles (want **4.5**, **+1** a foe
+      reached, min **2**, once a turn).
+      A **skulker** (tag `skulk`: Survival's flanking Minions and Soldiers) holds Tag and Ghost Kill: from Hidden it
+      Tags a character that can't see it (want **5.5**, once a turn: the character is Marked, so it can't hide), and a
+      kill nobody sees puts it back in Hidden. A **faithful** foe (tag `faithful`) keeps Holy Father Nerukhan
+      (Devotion **3**, Faith **1**). The **Heart adept** keeps Mother Ember (Devotion **3**, Faith **1**); the **Heart
+      sovereign** Mother Ember (Devotion **6**, Faith **3**).
+7103. **Not given to any row (built, data only to add):** Retort (a class move held by key works, `class:defender.retort`;
+      on the Heartfire elite it cost four Bulwarks 17 to 12 clears of 40 at stage 1, so it was taken off), Slam (no
+      Guard-holding row reaches Durability 5: raising the Heartfire elite's 3 is a balance call, and its plates soak by
+      the same points), Stalk (it builds a Shadow meter
+      no enemy spends), Last Plate (no such verb since 0.32: it left the door). Not built: Tug, Bond and Snap (the
+      verbs need an Attuner in hand, and `self_holds` reads a character's gear: a unit with no character holds
+      nothing), a Figment order (no enemy Pictures yet: the Visualist archetype of figments-spec section 8 is the
+      casters pass's).
+7104. **Enemy prayers.** A row's `doors.faith` (`{patron, devotion, faith}`) gives the unit a prayer sheet (`Unit.sheet`:
+      its id, name, level, Faith, belief and Devotion; never a character, never in the game's characters), which
+      `faith.ts` reads in a character's place (`unitChar`, `whoOf`). The Whisper then runs as a character's: its gate,
+      its AP, its once a turn, its patron's line. Patron tags, vows, Witnessed and interventions stay a character's (they
+      read `charId`). Wants: the faithful foe and the Heart adept whisper **Health** over a squadmate under **half** its
+      HP (want **7**); the Heart sovereign **Protection** over one under half (want **6**). Both Heart casters heal with
+      their Outburst first (item 7100: the magic step comes first).
+7105. **The stat block's points** (`effects/hooks.ts unitSkill`, moved there from `physical/core.ts`, which re-exports
+      it): one reading for the predicates `self_skill` and `self_skill_below` and the techniques' `innate` gate.
+7106. **The Read foresees Pressure (rules 1.79 items 6700 and 6701).** What Pressure makes an enemy do first this turn
+      is worked out once, without doing it (`physical/ai.ts pressurePlan`), and both the hook that does it and the
+      intent read it: a Broken enemy's intent is "break and run for cover at X" (the tile it then walks to) or "throw
+      itself flat and stay down"; a Suppressed one's "keep its head down and slide into cover at X". In cover already
+      (Broken) or with no slide (Suppressed), the intent is what it then does.
+7107. **The bait reads Answers (rules 1.79 item 6708).** A target holding an Answer ready against a melee blow (an Answer
+      technique of the attack kind it can use now, or an item Answer: an effect whose `if` names `answer_on`, its own
+      holder predicates holding, such as Retort while holding Guard) with a reaction left, seen by the enemy's side:
+      a bait-tier unit with a melee weapon counts it as `ai.bait.answer_lure` (**0.3**) of its max HP more hurt while a
+      stronger ally stands (it goes there first, to draw the answer; the log says so once a fight, "goes at X first, to
+      draw the answer"); the stronger melee ally counts it as `answer_hold` (**0.5**) less while a bait has still to act
+      this round. The roles are the bait's (`ai-sigil.ts baitRole`). Never against a Taunt.
+7108. **NULL on a Figment, the enemy's weighing (figments-spec section 8).** An enemy Sigil caster counts a Figment NULL
+      would unmake as worth its charge (`figment.made`) x `ai.null_figment` (**4**), its own side's a loss, and a
+      Figment its side sees is a tile it aims NULL at. A plan whose only catch is a Figment now counts (the preview's
+      `nullHits`, not only `nulls`).
+7109. **Interpose for an enemy with Durability 3 (rules 1.79 item 6710).** Checked through the reducer: a character's
+      shot at a soldier beside the Heartfire elite is taken by the elite (1 Guard, then its plates soak the blow by
+      Guard's own rule). It was usable already (Interpose is Durability 3's innate technique, read by `unitSkill`).
+7110. **New engine pieces (approved by Leon, 20 Nov 2026).** (a) `Held.items` (any item by its key; `itemsOf`,
+      `heldKey`, `heldAny`). (b) The enemy door step (`ai-doors.ts aiDoor`, an `enemyStep`), its `DoorWant` shape and
+      `Unit.wants`. (c) `Unit.sheet`, the prayer sheet. (d) `EnemyStep.act` may return the name the trigger `acted`
+      carries (and its target), and `acted` carries the enemy turn's `rng` (an op on `acted` may roll outside apply).
+      (e) `enemyOpening` (combat.ts): what a system makes an enemy do before its first action, as the intent reads it.
+      (f) `enemyAimWeight` (combat.ts): what a system adds to how an enemy weighs a target, and the aim reason `bait`.
+      (g) `pressurePlan`, `answerReady` (physical/ai.ts), `baitRole` exported (ai-sigil.ts), `unitSkill` moved to
+      effects/hooks.ts. No trigger, predicate, op, hook, cost site, stat or scope was added.

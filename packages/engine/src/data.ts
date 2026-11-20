@@ -60,7 +60,9 @@ export const ENEMY_AI: { figments_last: string[]; shelter: Record<string, number
   pressure?: { on: boolean; suppressed_cover_tiles: number; suppressed_move_tiles: number; lines: Record<'broken_cover' | 'broken_prone' | 'suppressed_cover', string> };
   focus?: { on: boolean; rounds: number; keep: number; threat: number; lines: Record<'keep' | 'threat', string> };
   angle?: { on: boolean; max_tiles: number; cover: number; line: string };
-  bait?: { on: boolean; tiers: string[]; for: string[]; lure: number; hold: number; line: string } } = { figments_last: [], shelter: {}, held_risk: 0, skulk_open: 0, healer_tie: null, boss_hidden_rounds: Infinity, ...((enemiesJ as any).ai || {}) };
+  bait?: { on: boolean; tiers: string[]; for: string[]; lure: number; hold: number; line: string; /** rules 1.83 item 7107 */ answer_lure?: number; answer_hold?: number; answer_line?: string };
+  // Rules 1.83 (0.33, enemy doors): the door step's switch, the tags' door blocks, NULL's worth for a Figment's charge
+  doors?: { on: boolean }; tag_doors?: Record<string, any>; null_figment?: number } = { figments_last: [], shelter: {}, held_risk: 0, skulk_open: 0, healer_tie: null, boss_hidden_rounds: Infinity, ...((enemiesJ as any).ai || {}) };
 export const ARCHETYPES: any[] = (archetypesJ as any).items;
 
 export const SKILL: Record<string, SkillDef> = Object.fromEntries(SKILLS.map((s) => [s.id, s]));

@@ -2853,9 +2853,9 @@ export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'an
 /** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
  * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, id, tile, toggles, mode, ap, choice}
  * (choice, rules 1.33: the action's pick, as a felt feeling given by Inspire). */
-export function acted(cb: Combat, u: Unit, o: { action: string; id?: string | null; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
+export function acted(cb: Combat, u: Unit, o: { action: string; id?: string | null; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null; /** rules 1.83: the turn's rng, when the game may not be bound (the enemy turn) */ rng?: Rng }): void {
   // id (rules 1.77 item 6502): the action's own id when its name is a family (a Call: call.spot), read by `action_id`
-  emit(cb, 'acted', { u, t: o.t || null, action: o.action, ...(o.id ? { id: o.id } : {}), tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
+  emit(cb, 'acted', { u, t: o.t || null, action: o.action, ...(o.id ? { id: o.id } : {}), tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), ...(o.rng ? { rng: o.rng } : {}), cb });
 }
 /** How a unit's health reads on screen (rules 1.3; rules 1.55 item 29; `rules.json combat.health_look`): the one place
  * it is worked out. The squad's own and an Analyzed foe read exactly (`known`: the bar, `pct` 0 to 100, and the HP
@@ -2995,7 +2995,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
   // as the reducer names it (a cost site, a move's kind, 'attack' with its mode). Its magic, technique and clearing steps
   // (ai-sigil.ts, ai-soul.ts, ENEMY_STEPS, aiClearBlock), whose own verbs the AI does not report, are named by their
   // system: 'sigil', 'outburst', 'technique', 'clear_block'.
-  const did = (action: string, o: { t?: Unit | null; tile?: string | null; mode?: string | null } = {}) => acted(cb, u, { action, ...o });
+  const did = (action: string, o: { t?: Unit | null; tile?: string | null; mode?: string | null } = {}) => acted(cb, u, { action, ...o, rng }); // (the turn's rng: an item's op on `acted` may roll)
   for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
     stood.add(u.pos);
     // 'enemy_action_start' {u, step}: before each enemy action; an item may open a window (Between Heartbeats) or set
