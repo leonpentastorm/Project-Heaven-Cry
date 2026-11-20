@@ -5301,6 +5301,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-weighted_gloves--relic",
+      "path": "art/icons/gear/weapon-weighted_gloves--relic.png",
+      "sha256": "c3fc0ebb999523ac0afd624fac8d5eca85cb384799daef091806f0d4cc6998a3",
+      "label": "Weighted Gloves — Relic",
+      "family": "weapon-weighted_gloves",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-weighted_gloves--relic.png",
+        "sha256": "477c47b390a7beb8db7670d507727514bc5488d56246324f8d7b6855010e3450"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-weighted_gloves--relic.png",
+        "sha256": "c3fc0ebb999523ac0afd624fac8d5eca85cb384799daef091806f0d4cc6998a3"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-weighted_gloves--relic.txt",
+        "sha256": "f4470e6fdb2db8949aa5fd2588f1dea7e8e52be8350916c4779be099c8ff68e8"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-weighted_gloves.png",
+          "sha256": "a00ae49d6e18a4de048af790ca206fa693dbe31a17de4d6915d5ea34099c1e3a"
+        },
+        {
+          "path": "art/icons/gear/weapon-weighted_gloves--masterwork.png",
+          "sha256": "6b51800311c1abac3fb5097aa49424a95050f411f3fe963aaa6021f5c0642fdc"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png",
+          "sha256": "0189245e4f1c2eeff8998b07ae9f383745a1d2c2e6fe1127c9f34c301b2fa623"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-weighted_gloves--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-weighted_gloves--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-weighted_gloves--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-weighted_gloves--relic.png"
+      },
+      "export_hashes": {
+        "256": "e61347a49dc6c4bdee2d15c2c2deca1cdc267db34014a25047ff1c524e9ae4c2",
+        "128": "a1cd1b813f802e1f58f5b988b3ea1fea60d0aa2af3ab6dccb43c4eb20210d1e8",
+        "64": "6a1fadfc6bb9ad54a7e080d3aa3411192013c3e45c034ad477eee997c6f3670e",
+        "32": "5d9f47dd31fe626ce34b2f4419ee3abab2c966333e7c8415ee6e4b070d946707"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-weighted_gloves",
+      "outline": {
+        "solid_alpha_iou": 0.9872251675387864,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
