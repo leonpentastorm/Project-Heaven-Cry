@@ -7410,6 +7410,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-gas_mask--celestial",
+      "path": "art/icons/gear/armour-gas_mask--celestial.png",
+      "sha256": "f396d72f6ed658a18b4a9d047e35c41367b61cfa70429a61949dec5b54538618",
+      "label": "Gas Mask — Celestial",
+      "family": "armour-gas_mask",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-gas_mask--celestial.png",
+        "sha256": "06b1b4b815f475c21886bc15bcc61fb086dde47d442c07fbbb71f204ff2bc598"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-gas_mask--celestial.png",
+        "sha256": "f396d72f6ed658a18b4a9d047e35c41367b61cfa70429a61949dec5b54538618"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-gas_mask--celestial.txt",
+        "sha256": "78de060fd3505c6a08dade128a1e47c8278a1a0c6fa527e65e1111301044329a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-gas_mask.png",
+          "sha256": "a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e"
+        },
+        {
+          "path": "art/icons/gear/armour-gas_mask--relic.png",
+          "sha256": "d9042b1c966b190063fc9a5e55a82a542aa17452337887540267e08c660f4be9"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-gas_mask--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-gas_mask--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-gas_mask--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-gas_mask--celestial.png"
+      },
+      "export_hashes": {
+        "256": "95ad2f5d7668bbef099b6aece6d5154971aea7671c98bfa0af75a9675e4a4fb0",
+        "128": "9edb5e6298930364b7467305059b64a8179b96735c1696e200d2296eb76bc01b",
+        "64": "ef18974868caff49474d8d4185aa04c6c8fb453da75f2c28af8fd0a321270d9a",
+        "32": "c4cc888616e3706234fd3a730b9b173bc8d0ab1999c708f2e9a763f4cba713bc"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-gas_mask",
+      "outline": {
+        "solid_alpha_iou": 0.981029283998569,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 23
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
