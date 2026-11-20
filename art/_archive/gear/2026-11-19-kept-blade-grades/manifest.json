@@ -11188,6 +11188,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_wreck_saw--fine",
+      "path": "art/icons/gear/weapon-ork_wreck_saw--fine.png",
+      "sha256": "1b97fe1e892376933d74932eb444a98a54e8a7c5b7d16a18af20fa468c92b6a3",
+      "label": "Wreck saw — Fine",
+      "family": "weapon-ork_wreck_saw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--fine.png",
+        "sha256": "2645a95c7b6452035974a80dcc27999e246f79d45245d7831cd8bed58735b27d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_wreck_saw--fine.png",
+        "sha256": "1b97fe1e892376933d74932eb444a98a54e8a7c5b7d16a18af20fa468c92b6a3"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_wreck_saw--fine.txt",
+        "sha256": "2a0d1325bfd8db41984919fc17949a5e251dbe7d8e10212f0cb4097943a928bd"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+          "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw--fine.png"
+      },
+      "export_hashes": {
+        "256": "6c0e43ec0fb9f5a0cbfaad7d71c8de801ba5c2f128b9bc5a999acfd8bd66fc32",
+        "128": "3a1be482ac0ae6fe8bbdadf70a97aafc2ec8ea3cf99bc6f57d20982c636f9ddf",
+        "64": "ec602a5a38ccbba985b98d67eab358cd5f4596f179e595e416b811222eb496a7",
+        "32": "5b29e7ddb0cb8394c86583ac4190c56dce08a80233341c0f961fcd8e5029cd05"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-ork_wreck_saw",
+      "outline": {
+        "solid_alpha_iou": 0.9717107293488324,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 35
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
