@@ -28,10 +28,9 @@
     "file": 1,
     "path": "art/sprites/kit/rim/wall-corner.png",
     "references": [
-      "art/sprites/kit/rim/wall-corner.png",
       "art/sprites/kit/rim/wall-straight.png"
     ],
-    "prompt": "Repaint the FIRST attached L-shaped wall CORNER tile, keeping its EXACT transparent footprint and canvas placement. The SECOND image is the wall material reference. This is a fictional RPG overhead map tile,256square. Replace the old corners different lighter panel-grid material with exactly the straight tiles blue-grey brushed steel. Remove every old panel-grid line, hazard stripe and extra corner bolt. Preserve the exact L silhouette. Same thin ivory caps on exposed boundaries as straight, running continuously around both corners. Add one fine cyan centreline: start at left edge exactly halfway through the horizontal arm, go right to the centre of the vertical arm, bend90degrees, continue straight DOWN centred through the vertical arm, ending at bottom edge. Exactly halfway between vertical edgecaps, equal steel width on both sides of cyan. No endcap/outline across either opening. Transparent background, no shadow, no added grid/seams/bolts. Both opening cross-sections must butt seamlessly to the straight tile. One square PNG.",
+    "prompt": "Paint a NEW square seamless L-corner game tile from this straight-wall material, for fictional RPG Project Heaven Cry. Strict orthographic overhead view, transparent PNG,256x256 equivalent. EXACT geometry: horizontal arm is rectangle x0..191,y64..191; vertical arm is rectangle x64..191,y64..255; their union is one continuous square-elbow L, open at left and bottom cell edges. Thus left opening rows64..191 and bottom opening columns64..191. Everything else transparent. No top-edge or right-edge pixels. Copy attached straight walls blue-grey steel value, directional brushed worn texture, ivory edge cap width and thin cyan strip width. One cyan light stripe follows the CENTRE of this L: (x0,y128) to (x128,y128) then (x128,y256), sharp rightangle. Both sides of vertical cyan have equal steel width. Ivory cap follows ONLY exposed boundaries of L, never across left or bottom open end. Steel surface and cyan run off both openings with no endcap/outline. Both exposed elbow corners square. No extra panel grid, bolts, hazards, seams or cast shadows. One single tile, full square canvas, no perspective or background.",
     "status": "pending",
     "run": "sole-20261120-1615",
     "source_branch": "art/prompt-pack-01-04-2026-11-19",
@@ -39,7 +38,6 @@
     "production_approved": false,
     "implementation_ready": false,
     "reference_sha256": {
-      "art/sprites/kit/rim/wall-corner.png": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c",
       "art/sprites/kit/rim/wall-straight.png": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4"
     },
     "original_sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c",
