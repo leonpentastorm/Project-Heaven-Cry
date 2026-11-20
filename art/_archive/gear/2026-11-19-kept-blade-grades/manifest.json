@@ -11618,6 +11618,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hellraiser_piston_knuckles--celestial",
+      "path": "art/icons/gear/weapon-hellraiser_piston_knuckles--celestial.png",
+      "sha256": "77bcc0f8aeb93f323401c8de7acf0ec7f2715490e7678738be7cf2fa07bea9e6",
+      "label": "Piston knuckles — Celestial",
+      "family": "weapon-hellraiser_piston_knuckles",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_piston_knuckles--celestial.png",
+        "sha256": "b3efb7d67b7e193754cd0e40046174cdfa8ce7fa2747e0949356fb39aa0edb19"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hellraiser_piston_knuckles--celestial.png",
+        "sha256": "77bcc0f8aeb93f323401c8de7acf0ec7f2715490e7678738be7cf2fa07bea9e6"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_piston_knuckles--celestial.txt",
+        "sha256": "8cb232d661fbbdd5b4b23cef10c7ee3b5879cf19a21b8bc19d415fd6c75a0c4e"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hellraiser_piston_knuckles.png",
+          "sha256": "68fbc1095dea7ba6eb74bc586dbcb0f7d01934e67c2fef828d3bd2e0741e0ef1"
+        },
+        {
+          "path": "art/icons/gear/weapon-hellraiser_piston_knuckles--relic.png",
+          "sha256": "faec4ede3318e251c18ac27e8724baa4abf4a248fcd4b9af2b6eb5602ce5eed5"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--celestial.png"
+      },
+      "export_hashes": {
+        "256": "33c44b9115f84ee2464b0c9507e3db39385e4a5b6debc1a7a03d1d8069d505ca",
+        "128": "c648f5c7c4dbc417af85225d8eb16c8a3769bf4163ab6a7a689fae55fd109c6e",
+        "64": "5976f6cb8668e4430eb795035186443e14d449b5f3e89bce3e7a3447065891a2",
+        "32": "519cc53dbdff28ab8b0698d2ab810c51882e0e9e6ddaf23faf5993a323411c54"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-hellraiser_piston_knuckles",
+      "outline": {
+        "solid_alpha_iou": 0.9180844360428482,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 21,
+        "different_pixels_64": 67
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

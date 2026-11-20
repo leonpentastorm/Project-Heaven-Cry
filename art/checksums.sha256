@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-d95079daf2d0bcad3823229b883b9a7f1c5de96070db815295ad1cae7dc19a57  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+22e6f95d249c6131c29a9471b70ce137e062ff9f2579b598ec124885cab234d7  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 cfe0b7165b9763268d0236c6c4e2d3115516495eb909f41cfb8621beee42e813  art/_archive/gear/2026-11-19-kept-blade-grades/START-HERE-2026-11-20.md
 8ee34c72311bf68773c6853ab0bb7d25b31c2b57e8143486cfbd5f27578d9e64  art/_archive/gear/2026-11-19-kept-blade-grades/TOMORROW.md
 dc45fc3c9fb69cc8ef2a2ab30aaefdfe979447725ab1cf53391fc2ffe47c8ca4  art/_archive/gear/2026-11-19-kept-blade-grades/VALIDATION.md
@@ -1861,7 +1861,7 @@ f85847b07f42b0eaf1f645e351ca8a5bdc0a03f90b1a19d3eb10d8d9fefe7a6c  art/_archive/g
 413b2adf894497a56b98375b72437e60d2a8805d53727e3441070c247e265c32  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_hammer--fine--1795155698827.json
 e49b88c1c8e8faccd29fab4de73c1d9e3b9d656d510539f826076b68a6323021  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-war_pick--fine--1795155670059.json
 63fe7ac88a5e6ac611b6d1d7336d6104cec11fa77f81d5d1b786da46672b42b9  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json
-ba164762655ee86d0f57cbd3ec5a1214b3f95b87844a8183d17ed226972a8acb  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
+efbd94addfa11a1726a8415264b6600c14f937baa81ab3d23fd4ebc9d4696bb4  art/_archive/gear/2026-11-19-kept-blade-grades/manifest.json
 31b9266c8a923ce1e84e1237e45494829d72265679afc370a72675e70d85c156  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--celestial.png
 f93411441905437355171c2f6a64045a0cfe2099aaf24cf694d5dd7da311afa6  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--fine.png
 fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-armoured_greaves--masterwork.png
@@ -2011,6 +2011,7 @@ e438f18f6f6aafbf6b6b445637f11eeb271dcb7d6b4ab1b27c359851b4b9b6ac  art/_archive/g
 976dda359eb94adec3ddc828079cf2b65da366bd07d647d2acf1cfc71039f888  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hatchet--fine.png
 e7a29e3f0b8dd972bb981d3a215f36436240d918c82f5e4c2449e7d1d9ae8d90  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hatchet--masterwork.png
 032d4c14c77fe8900b89eed9f1be78e08aeb2b09ec02e96e07fcbe90fb30b05d  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hatchet--relic.png
+77bcc0f8aeb93f323401c8de7acf0ec7f2715490e7678738be7cf2fa07bea9e6  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hellraiser_piston_knuckles--celestial.png
 f965855cebd51de3220752141cf2c9bf3825d29ab798b8eda0ffa4ecf31a6758  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hellraiser_piston_knuckles--fine.png
 9a8b138f6d8988fae7fea21e8b534c985985948dc59e5be0ec50bdc3b90ebff5  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hellraiser_piston_knuckles--masterwork.png
 faec4ede3318e251c18ac27e8724baa4abf4a248fcd4b9af2b6eb5602ce5eed5  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hellraiser_piston_knuckles--relic.png
@@ -2053,7 +2054,7 @@ cb6af16fe46cf881c21bd95a77d73180f6b7dc62e68514fea15179baa1c7e08d  art/_archive/g
 876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--fine.png
 ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--masterwork.png
 9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--relic.png
-dbd1b5ab120d0a9db4a194e529eec6eacf5c5af0254a1ea17129699e5ccfea85  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+86d37579bbb1683b33e1bb00acebfaa570c9da5678e481ab79e9c8cb98bc5a61  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 7072283c256a7cd34d750cfe09118d83631509ed58760961580028abc78f6bf8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt
 048ccfc688b5412dd99ae31c3119eaae6f4126ba06c421f73ccb095a68e03315  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--fine.txt
 109c7d7ccd649f9b5ca60c47fa35ef9a7c9308c47c1c903dba426028fbf7b521  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt
@@ -2214,7 +2215,7 @@ cd9b33c662879de3eff68e30f459addc855cdf2be6b64d6f84c6536ddfbf2d92  art/_archive/g
 123ad05e1a19b0435f220164e24c7cd109c840950dee42eb93a1f9b3f65e11a3  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_door_knocker--fine.txt
 6bdf2085bbf63330fb7f2c10b40be609bfc2a9e403664231941a65cdf067b04b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_door_knocker--masterwork.txt
 ce7e10dfa022172ab3a950a8b156bee19667d414304d1178174e60a773a85860  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_door_knocker--relic.txt
-1414217a6e35c5efce3c02f78860f9e89f7003b2bd8df4eedc1bcc6334f4f572  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_piston_knuckles--celestial.txt
+8cb232d661fbbdd5b4b23cef10c7ee3b5879cf19a21b8bc19d415fd6c75a0c4e  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_piston_knuckles--celestial.txt
 f97430de47d71ad01df9d7617269cbbf7e27de34796f7eaf2918593ca54b8256  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_piston_knuckles--fine.txt
 e631ebe8ec28f2db2b03e2720d1fd8e24edf7a244cb5df83eb93cf1e6db17010  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_piston_knuckles--masterwork.txt
 5733668460d5747e388d44799f573e31a6268de349f505fe938a164881ad6126  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_piston_knuckles--relic.txt
@@ -2310,7 +2311,7 @@ bc68a83c56a8024aa509dbc18cd09734ffcdd82548d35c4442ec53dc05ea409f  art/_archive/g
 3dea41ecea9988023656c2dbfa4e527fcb8194d71b6aea386f1ed9f9e6294d0b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--fine.txt
 684d47c91ba4301ee4c3f08b30bcf0f4e1883952dbc341a5852a161ae3effafd  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--masterwork.txt
 50a61f4ac3a7e5f5690ba802260fb911300852923bddd0fd2e750b56d2123871  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--relic.txt
-29880216b1bf0b747abf6c921be353ea7f9573c993df9f34426c4c5b70b21bb5  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+687884e2eb0ae655a23946cea86717d5703ce2d7b5f7c676e8893bff6c273182  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 40590eb9b576e9d16899ba703041c16e3244a5a4fd689355e53adc4dd536d2fb  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-32px.png
 9b9c6401e3920bb264df0cc7aad2ea9bf468b2b079f3eeb7efd87a219275fa67  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-64px.png
 ac788bb44b1e1e9dfaf3afe95f2b8facc30a95c3eeb2e07876760fb7c46cc2bc  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-assault_helm-32px.png
@@ -2388,8 +2389,8 @@ b117bed4d88de64773c988da08fa3b30c9a0542724e275c33910615f090e9fd7  art/_archive/g
 0f6b3f6551bccc1bd8f045f77517f8f35a0fe6178bfdae4c2e36f24ca56e4d6a  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hand_wraps-64px.png
 cf34503634eacef5499b228236627eb45534ccc37208f5e91c857a493ae983bd  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hatchet-32px.png
 bc862f3b4a165bd9ec6b3141361df4d4b8e3d6bca0e74067018a8a17ea828cae  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hatchet-64px.png
-19e284ebddb90914020966e665186e8a740f9b4cb0726ba3491733728e3d3394  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hellraiser_piston_knuckles-32px.png
-3a03c4b8894bbe5b35ab16506d7750cd5ad52822a5f2b5c1161cbfa4221de7f1  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hellraiser_piston_knuckles-64px.png
+2de20258aa6d1ed91fe784c30a319014331246f8e340a01adca4fe84107b6467  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hellraiser_piston_knuckles-32px.png
+7d51edc8fef41a8143bc3e1695bc85e8a35ed6672c885aa0c58ea028b95aa614  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-hellraiser_piston_knuckles-64px.png
 3c0343d20ff1155a5e713a072d90b50a82a6106b3e0df793d81358c518ce722f  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-iron_mitts-32px.png
 770555f19e682943a0e535065182b0ab7ca986b9d67663b9cb52ceb96c7ba393  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-iron_mitts-64px.png
 866e56e2d9f7a64076273be22db9939333a36d03e80010a8c431b08a4fbd89f7  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/weapon-kemizuchi_duelling_blade-32px.png
@@ -2562,6 +2563,7 @@ c29e0ed99414cdd4748e8287f66a0edb703bfbaae3156cff1945fb8c9ef3f716  art/_archive/g
 5caf62d198ac2e4a55310cced0781d0c57ceb461941c1c242f3f89a1499cbdcf  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--fine.png
 9248a26d314592328c8da2a5a6d474cdc326b0e150e92b65115ed3933da79924  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--masterwork.png
 e1382976279c736ba445ab48662ae28476fcd4a344639ec794a66b4b5a938f2b  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hatchet--relic.png
+b3efb7d67b7e193754cd0e40046174cdfa8ce7fa2747e0949356fb39aa0edb19  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_piston_knuckles--celestial.png
 79ca61513d859842180cde697aa0d4e9e7716b1de3d6e9fecdf6ab36ba1a585f  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_piston_knuckles--fine.png
 79cfc2abf7d58f8db1d002ecb63bf59d8071408624ffa94351ff1ae9e4748f97  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_piston_knuckles--masterwork.png
 491f53216ffdad075812cf09650d1417c947ead94030311aec106451192d59dd  art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_piston_knuckles--relic.png
@@ -6551,7 +6553,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-a5ef694b6148bd61137ccb21404a0c2bc7b92add763f4a2ec12d95116bdaf94f  art/catalog.json
+9784f0491bf273cdd0967ab4fc30637475d6e901149e2a6e8125205415af41cf  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8627,6 +8629,7 @@ facc8437a4674a0e9bcc7a369f835664aafd1a91be6e66cb10bdacf93f25423b  art/icons/gear
 76c43fea8383b91c58b2f7cbef20d06377e250dd006491a4fe608ed9fb4d8bcb  art/icons/gear/exports/128/weapon-hatchet.png
 fda08539ad63643bb17595c7830b4348ab3e678eac89ba36202d4f85f58b3661  art/icons/gear/exports/128/weapon-hellraiser_door_knocker.png
 b11732d331ec7788914fd75d444ba9be453ca3ff4d332b91d4f4c8b5696f092f  art/icons/gear/exports/128/weapon-hellraiser_lmg.png
+c648f5c7c4dbc417af85225d8eb16c8a3769bf4163ab6a7a689fae55fd109c6e  art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--celestial.png
 255ca328c61d7b2264c7a43d60c124ff33ec7420e958a24358be823e5ef14081  art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--fine.png
 17dc5dc0dfa34e8741a772230fba04a6bb0583f6f838f40cd82f82f63aebb3d2  art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--masterwork.png
 9960d8045b827f29bfc645b07e76aa744e6c139f6da36b52d7cd04fe088efa1a  art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--relic.png
@@ -9097,6 +9100,7 @@ cdc317ec02b4401fd324c72dc103a097efae6abd0bf0c733ed09a007258834aa  art/icons/gear
 fad5f5a8b9247c75018bf2a178a5d43eb7d1a92c45d21d6fa957e365cd87f523  art/icons/gear/exports/256/weapon-hatchet.png
 2dc24d0bf4349a461d352df5aed8bfb82bf66e85bdc87169d8758b6a320aa2af  art/icons/gear/exports/256/weapon-hellraiser_door_knocker.png
 105c0e91621a82f850da5bb399e2f5ec55da7dd21d150e6700dc8d6655101ffb  art/icons/gear/exports/256/weapon-hellraiser_lmg.png
+33c44b9115f84ee2464b0c9507e3db39385e4a5b6debc1a7a03d1d8069d505ca  art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--celestial.png
 d830ada78da92e9c9ac19871e4eb36ce12df3ddded09cef123fd059d69273bcc  art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--fine.png
 9788c01b32a607d05a6d54aa73142e63eeb2f1a6e1fe7f1cc2305d09cdb833c0  art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--masterwork.png
 35be1b99f2639f85776147f2fecb4181139bbf78fea2cbde9991c36f63a3cb13  art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--relic.png
@@ -9567,6 +9571,7 @@ e80e4bba93a6388a0fd8bfec72a2ec3f60b2baea9652300883253ec800270ea0  art/icons/gear
 e68c7129abf9f20ad5cf4a6e6f040744c334b90d4b6f778df618c317e4df01ce  art/icons/gear/exports/32/weapon-hatchet.png
 1bf12a56e43e8942ee1f63c77b32404c6db7faab257ca2c599f8c4fe92679bb8  art/icons/gear/exports/32/weapon-hellraiser_door_knocker.png
 fb483729621c91f7de49b5fa0edf12a0e491cedb1f12f30dc0e8764b9e9285fd  art/icons/gear/exports/32/weapon-hellraiser_lmg.png
+519cc53dbdff28ab8b0698d2ab810c51882e0e9e6ddaf23faf5993a323411c54  art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--celestial.png
 e93dc2881e5157a32e6038fb2f61773aa6df6dba514aedcad2043263507e4810  art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--fine.png
 6981b89eb76740e27a0fd3fe89ad8a4a651a555cac1599b5336a2f1b84110cf5  art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--masterwork.png
 80d823abe7ce1aeac4d5a4189954a06e59d50efcfca117b893d072ee925020dc  art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--relic.png
@@ -10037,6 +10042,7 @@ bf5ace5121861d83e3e45b87494ecdce74c45bca1a456ff8c86562c0d5cdce7b  art/icons/gear
 cf99bc98216557885603a1bbef4df2ed2774bb96d5e1b516f87fab054fc5a2e4  art/icons/gear/exports/64/weapon-hatchet.png
 c95c2822e5fc1fded7ff7422e7d7cc0ab64147f14a0648941a4675823b52a541  art/icons/gear/exports/64/weapon-hellraiser_door_knocker.png
 dcbafca82b1053a75092d2153185cbe356b636441179ae4302a9327c58d30a23  art/icons/gear/exports/64/weapon-hellraiser_lmg.png
+5976f6cb8668e4430eb795035186443e14d449b5f3e89bce3e7a3447065891a2  art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--celestial.png
 64b65fb2ce188be8e7ecdf6a4cfa469f2434cf67c1d54c3a9222b58af93cf393  art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--fine.png
 0c76f84ec0ed74ad76403a1a240cd2d3d18b9a46cecceb458b13559ab9883a1b  art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--masterwork.png
 c6c2ae8f8bf1f03c24acfd64de41041da21298a45ed7f1e4e249886e41bf0ee9  art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--relic.png
@@ -10327,6 +10333,7 @@ e7a29e3f0b8dd972bb981d3a215f36436240d918c82f5e4c2449e7d1d9ae8d90  art/icons/gear
 a69bacdfb22ca5070e0e1a1edd6697ba40992bb95dc0851be4b4d35dc72947ac  art/icons/gear/weapon-hatchet.png
 02aac08ab2efeec09c1767064e2a9dd0ae2504fa6412d6c7686b7cca58d88e40  art/icons/gear/weapon-hellraiser_door_knocker.png
 41e839611f911c6e16ed33df550e9a5104d5d5891f60499ab24af75982713c99  art/icons/gear/weapon-hellraiser_lmg.png
+77bcc0f8aeb93f323401c8de7acf0ec7f2715490e7678738be7cf2fa07bea9e6  art/icons/gear/weapon-hellraiser_piston_knuckles--celestial.png
 f965855cebd51de3220752141cf2c9bf3825d29ab798b8eda0ffa4ecf31a6758  art/icons/gear/weapon-hellraiser_piston_knuckles--fine.png
 9a8b138f6d8988fae7fea21e8b534c985985948dc59e5be0ec50bdc3b90ebff5  art/icons/gear/weapon-hellraiser_piston_knuckles--masterwork.png
 faec4ede3318e251c18ac27e8724baa4abf4a248fcd4b9af2b6eb5602ce5eed5  art/icons/gear/weapon-hellraiser_piston_knuckles--relic.png
