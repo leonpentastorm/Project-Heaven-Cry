@@ -238,6 +238,10 @@ export const canLayGrandForms = (c: Character | null | undefined): boolean => !!
 export const heldOfUnit = (u: Unit | null | undefined): Held => (u?.held ? u.held : u?.charId && G?.characters?.[u.charId] ? heldOfChar(G.characters[u.charId]) : { perks: [], traits: [] });
 /** The character behind a unit in the bound game, or null (an enemy, a thing). */
 export const charOfUnit = (u: Unit | null | undefined): Character | null => (u?.charId && G?.characters?.[u.charId]) || null;
+/** A unit's points in a skill: its character's now, else what the unit was built with (a stat block may give them: an enemy
+ * row's `guard` or `doors.skills`, rules 1.79 and 1.83). THE reading (physical/core.ts re-exports it; the predicate
+ * `self_skill` reads it). */
+export const unitSkill = (u: Unit, skill: string): number => { const c = u.companion ? null : charOfUnit(u); return (c ? (c.skills as any)?.[skill] : (u as any)[skill]) || 0; };
 
 function holder(info: ItemInfo, c: Character | null, u: Unit | null, cb: Combat | null): Holder {
   return { key: info.key, itemId: info.id, kind: info.kind, tier: info.tier, info, c, u, cb, g: G };

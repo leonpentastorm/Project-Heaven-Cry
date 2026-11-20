@@ -4,7 +4,7 @@
 // Momentum is the melee meter (on the user); Pressure is the ranged one (on the target): pressure.ts.
 import { say, unsay, type Combat, type Unit, noteLoose, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, dist, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON } from '../data';
-import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery, statHeard } from '../effects/hooks';
+import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery, statHeard, unitSkill } from '../effects/hooks';
 import { scaleOf } from '../effects/output';
 import { apDebt } from '../effects/ap';
 import { price, priced, whyNot, pay, refund } from '../effects/cost';
@@ -106,8 +106,8 @@ const offHeld = (u: Unit): string | null => u.offWeapon || (shieldOf(u) || null)
  * off hand while it holds no weapon and a shield is held (in it, or in the main hand); the main hand when it holds a
  * shield and the off hand a weapon (item 4313's asymmetry closed). */
 const shieldHand = (u: Unit, hand: 'main' | 'off') => (hand === 'off' ? !u.offWeapon && !!shieldOf(u) : !!u.offWeapon && isShieldId(u.swapMain || u.weapon));
-/** A unit's points in a skill: its character's now, else what the unit was built with (a stat block may give them). */
-export const unitSkill = (u: Unit, skill: string): number => { const c = u.companion ? null : charOfUnit(u); return (c ? (c.skills as any)?.[skill] : (u as any)[skill]) || 0; };
+/** A unit's points in a skill (effects/hooks.ts unitSkill, the one reading). */
+export { unitSkill } from '../effects/hooks';
 /** Guard's numbers (techniques.json rules.guard): every one the engine reads must be there, checked once at load, so no
  *  fallback in code can disagree with the data (the 0.29 consolidation, SF5). */
 const GUARD_NUMBERS = ['max', 'soak', 'gain_base', 'gain_per_point', 'shield_gain', 'two_shield_mult', 'brace_gain', 'brace_shield_gain', 'keep_back', 'interpose_cost'] as const;

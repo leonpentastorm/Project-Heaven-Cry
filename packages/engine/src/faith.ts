@@ -260,7 +260,7 @@ export interface PrayerArgs { targetId?: string; targetId2?: string; tile?: stri
 function whoOf(g: GameState, who: string): { c: Character | null; u: Unit | null; cb: Combat | null } {
   const cb = g.phase === 'combat' && g.combat && !g.combat.over ? g.combat : null;
   const u = cb?.units.find((x) => x.id === who || x.charId === who) || null;
-  const c = g.characters[who] || (u?.charId ? g.characters[u.charId] : null) || null;
+  const c = g.characters[who] || (u?.charId ? g.characters[u.charId] : null) || ((u?.sheet as Character | undefined) ?? null); // rules 1.83: an enemy's prayer sheet
   return { c, u, cb };
 }
 /** The entry asked for: a Whisper, a Hymn (own or kept) or the patron's Miracle. */
@@ -585,7 +585,8 @@ function speak(g: GameState | null, cb: Combat | null, rng: Rng, c: Character, p
   return text;
 }
 const fs = (u: Unit): Record<string, any> => (u.faith ||= {});
-const unitChar = (u: Unit | null | undefined): Character | null => charOfUnit(u);
+// rules 1.83 item 7104: a unit with no character prays from its prayer sheet (Unit.sheet, an enemy row's `doors.faith`)
+const unitChar = (u: Unit | null | undefined): Character | null => charOfUnit(u) || ((u?.sheet as Character | undefined) ?? null);
 /** The game and its rng while a fight runs (bound by apply()). */
 const G = (): GameState | null => boundGame() as GameState | null;
 

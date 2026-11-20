@@ -543,7 +543,15 @@
           "modules": []
         }
       ],
-      "text": "A soldier who fights from the chest: Begins a Raw Heart bolt when it has the AP, Pumps with what it doesn't spend shooting, and lets it go at whoever walks into 4 tiles (Heart Overwatch). A Mending pulse for a hurt squadmate. It steadies or lets go before its heart burns (Strain limit 4).",
+      "text": "A soldier who fights from the chest: Begins a Raw Heart bolt when it has the AP, Pumps with what it doesn't spend shooting, and lets it go at whoever walks into 4 tiles (Heart Overwatch). A Mending pulse for a hurt squadmate. It steadies or lets go before its heart burns (Strain limit 4). It keeps Mother Ember, and whispers Health over a squadmate under half its HP.",
+      "doors": {
+        "faith": { "patron": "mother_ember", "devotion": 3, "faith": 1 },
+        "wants": [
+          { "pray": "whisper", "id": "health", "want": 7, "if": { "target_hp_below": 0.5 }, "per_turn": 1 }
+        ],
+        "source": "rules 1.83 item 7104",
+        "provisional": true
+      },
       "provisional": true
     },
     {
@@ -587,6 +595,14 @@
       ],
       "text": "An elite with a sabre and a burning heart: it holds a Fire Outburst and walks into you, so its aura scorches whoever stands next to it; it drops a Heartfire burst on a cluster (Burning from stage 2; at stage 4 the fire spreads and the ground burns) or a Cinder wave into a line at close range, and an Ember mend on its own around it. One free Pump a round (as Empathy 3); Strain limit 5.",
       "guard": { "plates": 3, "durability": 3, "provisional": true },
+      "doors": {
+        "hold": ["skill:durability.1"],
+        "wants": [
+          { "item": "skill:durability.1", "action": "guard_challenge", "want": 4.5, "each": 1, "min": 2, "per_turn": 1 }
+        ],
+        "source": "rules 1.83 items 7100, 7101, 7102",
+        "provisional": true
+      },
       "provisional": true
     },
     {
@@ -637,7 +653,15 @@
           ]
         }
       ],
-      "text": "The fight's centre, a heart you can see filling: a Storm Sovereign lance through a line of you (chains at stage 2, two chains and Shaken at 4), a homing Rime bolt that Slows and at stage 4 Pins, a Gale heart that throws everyone next to it away, and Sovereign's grace on its hurt guards. Two free Pumps a round (as Empathy 7), reach +1, Strain limit 6: it holds for the big release when you bunch up, and watches with the heart when you close in.",
+      "text": "The fight's centre, a heart you can see filling: a Storm Sovereign lance through a line of you (chains at stage 2, two chains and Shaken at 4), a homing Rime bolt that Slows and at stage 4 Pins, a Gale heart that throws everyone next to it away, and Sovereign's grace on its hurt guards. Two free Pumps a round (as Empathy 7), reach +1, Strain limit 6: it holds for the big release when you bunch up, and watches with the heart when you close in. It keeps Mother Ember, and whispers Protection over a guard under half its HP.",
+      "doors": {
+        "faith": { "patron": "mother_ember", "devotion": 6, "faith": 3 },
+        "wants": [
+          { "pray": "whisper", "id": "protection", "want": 6, "if": { "target_hp_below": 0.5 }, "per_turn": 1 }
+        ],
+        "source": "rules 1.83 item 7104",
+        "provisional": true
+      },
       "provisional": true
     }
   ],
@@ -688,7 +712,31 @@
       "lure": 12,
       "hold": 20,
       "line": "{name} breaks into the held lane to draw the shot.",
+      "answer_lure": 0.3,
+      "answer_hold": 0.15,
+      "answer_line": "{name} goes at {target} first, to draw the answer.",
       "provisional": true
-    }
+    },
+    "about_1_83": "Rules 1.83 (0.33, enemy doors; items 7100 to 7110). A row's `doors` block (a tier's, a caster archetype's, or a tag's in `tag_doors`; combat.ts armDoors) gives the enemy: `hold`, items by key (a skill's door item, a door verb, a class move), held as a character holds them, so the doors' own code runs for it; `skills`, the door points their gates read (never lowered); `faith`, a prayer sheet (patron, devotion, faith) faith.ts reads in a character's place; `wants`, what the enemy step (ai-doors.ts) weighs against a plain attack (5): an item action ({item, action}) or a Whisper ({pray: whisper, id}), worth `want`, plus `each` for every foe its own effects reach (fewer than `min`, default 1: not taken), on targets that pass `if` (the item ops' predicates), at most `per_turn` a turn. It acts only when the want beats its technique and its Call too. doors.on false turns every block off. bait.answer_lure / answer_hold: a melee bait counts a target holding a ready Answer against a melee blow (an Answer technique, or an item Answer such as Retort) as that share of its max HP more hurt (it goes there first, to draw the answer), and the stronger melee ally counts it as that share less while a bait has still to act this round. null_figment: what an enemy Sigil caster counts NULL as worth for each charge of a Figment on the tiles (figments-spec section 8: x 4; its own side's a loss). All PROVISIONAL.",
+    "doors": { "on": true, "provisional": true },
+    "tag_doors": {
+      "faithful": {
+        "faith": { "patron": "nerukhan", "devotion": 3, "faith": 1 },
+        "wants": [
+          { "pray": "whisper", "id": "health", "want": 7, "if": { "target_hp_below": 0.5 }, "per_turn": 1 }
+        ],
+        "source": "rules 1.83 item 7104",
+        "provisional": true
+      },
+      "skulk": {
+        "hold": ["verb:shadow.tag", "skill:ingenuity.3"],
+        "wants": [
+          { "item": "verb:shadow.tag", "action": "tag", "want": 7.5, "if": { "self_tier": ["soldier"] }, "per_turn": 1 }
+        ],
+        "source": "rules 1.83 items 7100, 7102",
+        "provisional": true
+      }
+    },
+    "null_figment": 4
   }
 }

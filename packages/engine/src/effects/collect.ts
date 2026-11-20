@@ -213,7 +213,9 @@ export function instanceMods(id: string | null | undefined, st?: { prop?: string
 }
 /** What a holder holds, the compact form a Unit carries (u.fx) and the collector reads. skills: the skill unlocks it has
  * reached ("brain_power.3"), only those in SKILL_ITEMS. */
-export interface Held { perks: { id: string; tier: string }[]; traits: string[]; cls?: string | null; rank?: number; adv?: string | null; skills?: string[]; relics?: string[]; verbs?: string[] }
+export interface Held { perks: { id: string; tier: string }[]; traits: string[]; cls?: string | null; rank?: number; adv?: string | null; skills?: string[]; relics?: string[]; verbs?: string[];
+  /** Rules 1.83 item 7101: any items by their full key ("class:defender.retort", "perk:x@II": a tier after @), held as
+   * they are: an enemy row's `doors.hold` (combat.ts armDoors). A character's sheet never writes it. */ items?: string[] }
 /** Skill Mastery unlocks the runtime runs as items (perk-runtime H4): key "skill:<skillId>.<points>". Derived from the
  * data (Classes 3.0 P6): every skills.json unlock marked `"item": true`, in the data's order. The rest of the skills'
  * unlocks are perk steps (perk_choice) or the Narrator's (their text reaches it through the skill's card). */
@@ -248,7 +250,7 @@ export function doorTabsOf(x: { held?: Held | null; skills?: Record<string, numb
 export const skillItemsOf = (skills: Record<string, number> | null | undefined): string[] =>
   SKILL_ITEMS.filter((k) => { const [sid, lvl] = k.split('.'); return (skills?.[sid] || 0) >= +lvl; });
 /** Does a holder hold anything at all (a quick skip for dispatch)? */
-export const heldAny = (h: Held) => !!(h.perks.length || h.traits.length || h.cls || advancedActive(h.adv) || h.skills?.length || h.relics?.length || h.verbs?.length);
+export const heldAny = (h: Held) => !!(h.perks.length || h.traits.length || h.cls || advancedActive(h.adv) || h.skills?.length || h.relics?.length || h.verbs?.length || h.items?.length);
 
 /** Class moves a holder has: base class moves up to its rank, and every move of its advanced class. */
 export function classMoveKeys(h: Held): { key: string; rank: string }[] {
@@ -280,6 +282,7 @@ export function itemsOf(h: Held): ItemInfo[] {
   for (const k of h.skills || []) { const i = itemInfo('skill:' + k); if (i) out.push(i); }
   for (const k of h.relics || []) { const i = itemInfo('relic:' + k); if (i) out.push(i); }
   for (const k of h.verbs || []) { const i = itemInfo('verb:' + k); if (i) out.push(i); }
+  for (const k of h.items || []) { const [key, tier] = k.split('@'); const i = itemInfo(key, tier || undefined); if (i) out.push(i); } // rules 1.83: any item by its key
   if (itemsCache.size > 400) itemsCache.clear();
   itemsCache.set(k, out);
   return out;
@@ -301,6 +304,7 @@ const heldKeyOf = (h: Held) => {
   for (const k of h.skills || []) s += k + '\n';
   if (h.relics?.length) { s += '|'; for (const k of h.relics) s += k + '\n'; }
   if (h.verbs?.length) { s += '|v'; for (const k of h.verbs) s += k + '\n'; }
+  if (h.items?.length) { s += '|i'; for (const k of h.items) s += k + '\n'; } // rules 1.83: Held.items
   return s;
 };
 

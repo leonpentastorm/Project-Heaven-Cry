@@ -220,6 +220,12 @@ export interface Unit {
   /** Calls (rules 1.13, calls/): what Calls left on this unit and its own Call counters; an enemy's Call list and the
    * level that stands in for its skill points. */
   call?: import('./calls/types').CallMarks; calls?: string[]; callLevel?: number;
+  /** Rules 1.83 item 7100: an enemy's door wants (its rows' `doors.wants`, combat.ts armDoors): the held item actions and
+   * prayers the enemy step (ai-doors.ts) weighs against a plain attack. */
+  wants?: DoorWant[];
+  /** Rules 1.83 item 7104: the prayer sheet of a unit with no character (an enemy row's `doors.faith`): what faith.ts
+   * reads in a character's place (its Faith, its patron, its Devotion). Never a character's. */
+  sheet?: Record<string, any>;
   /** Rules 1.12: held where it stands until someone spends the AP to free it (Run Through, a nailing arrow): who did it, with which technique, the AP, and a weapon left in it. */
   /** weapons thrown into this unit and still in it (rules 1.12, Throw): they fall where it falls; Pull Out takes one back */
   stuck?: { by: string; weapon: string; item?: PackItem }[];
@@ -630,6 +636,33 @@ export function unitFromEnemy(id: string, name: string, tierId: string, weaponId
  * gives the unit its Guard pool, full, the Durability points the door reads (physical/core.ts unitSkill), and the Guard
  * technique the door gives anyone with Durability. Then the door's own code runs for it as for a character: the plates
  * soak, Pressure comes off them first, the Guard technique and Brace raise them, Interpose at Durability 3. */
+/** Rules 1.83 item 7100: one entry of a row's `doors.wants`: an item action the unit holds (`item` its key, `action` the
+ * action's id) or a prayer (`pray`: whisper, `id` the Whisper's id), with how much the enemy wants it (`want`, a plain
+ * attack is 5), more for each foe its own effects reach (`each`, by its effects' `targets`; with such a set, fewer than
+ * `min` (default 1) reached is no use), predicates each target must pass (`if`, the item ops' own), at most `per_turn`. */
+export interface DoorWant { item?: string; action?: string; pray?: 'whisper'; id?: string; want: number; each?: number; min?: number; if?: Record<string, unknown>; per_turn?: number }
+/** Rules 1.83 items 7100 to 7104: the door blocks that apply to a foe: its tier's row, its caster archetype's row and one
+ * for each of its tags (enemies.json `ai.tag_doors`), in that order. */
+export function doorBlocks(tier: string | undefined, caster: string | undefined, tags: readonly string[] | undefined): any[] {
+  const T: any = (ENEMY_AI as any).tag_doors || {};
+  return [tier ? (ENEMY as any)[tier]?.doors : null, caster ? ((CASTER as any)[caster] || (HEART_CASTER as any)[caster])?.doors : null, ...(tags || []).map((t) => T[t])].filter((b) => b && typeof b === 'object');
+}
+/** Rules 1.83 items 7100 to 7104, the doors on an enemy: what its rows' `doors` blocks give the unit, read here and only
+ * here (as armGuard reads `guard`): the items it holds (`hold`, by key: Held.items), the door points their gates read
+ * (`skills`: the stat block's points, physical/core.ts unitSkill; never lowered), its wants (`wants`, Unit.wants) and a
+ * prayer sheet (`faith`: patron, devotion, faith; Unit.sheet). Then the doors' own code runs for it as for a character. */
+function armDoors(u: Unit, blocks: any[]) {
+  if (!blocks.length || (ENEMY_AI as any).doors?.on === false) return;
+  const hold: string[] = [], wants: DoorWant[] = [];
+  for (const b of blocks) {
+    for (const k of b.hold || []) if (typeof k === 'string' && !hold.includes(k)) hold.push(k);
+    for (const [sk, n] of Object.entries(b.skills || {})) if (SKILL[sk] && Number(n) > 0) (u as any)[sk] = Math.max(Number((u as any)[sk]) || 0, Number(n));
+    for (const w of b.wants || []) if (w && Number(w.want) > 0) wants.push({ ...w });
+    if (b.faith?.patron) u.sheet = { id: u.id, name: u.name, level: u.level ?? 1, npc: true, attrs: {}, skills: { faith: Math.max(1, Number(b.faith.faith) || 1) }, belief: { kind: 'faithful', patron: b.faith.patron }, devotion: Math.max(0, Number(b.faith.devotion) || 0) };
+  }
+  if (hold.length) u.held = { perks: [], traits: [], items: hold };
+  if (wants.length) u.wants = wants;
+}
 function armGuard(u: Unit, row: any) {
   const n = Number(row?.guard?.plates); if (!(n > 0)) return;
   u.res = { ...(u.res || {}), guard: n }; u.resMax = { ...(u.resMax || {}), guard: n }; (u as any).durability = Math.max(1, Number(row.guard.durability) || 1);
@@ -1739,6 +1772,7 @@ export function startCombat(name: string, mapId: string | MapDef, pcs: { c: Char
     armGuard(u, ENEMY[f.tier]); armGuard(u, f.caster ? CASTER[f.caster] || HEART_CASTER[f.caster] : null); // rules 1.79: a row's Guard
     levelFoeMagic(u); // rules 1.15: its spells grow as its weapon does
     applyFoeTraits(u, { ...f, kind: f.kind || (/drone|robot|automaton|\bbot\b/i.test(f.name) ? 'robot' : /turret/i.test(f.name) ? 'turret' : undefined) });
+    armDoors(u, doorBlocks(f.tier, f.caster, u.tags)); // rules 1.83: its rows' doors (after its tags: a tag may give a door)
     if (f.drops && typeof f.drops === 'object') u.drops = JSON.parse(JSON.stringify(f.drops)); // rules 1.9 drop tables
     units.push(u);
   });
@@ -2866,9 +2900,9 @@ export const analyzeCost = (u: Unit, cb?: Combat | null) => price({ cb, u }, 'an
 /** THE door of the trigger `acted` (Classes 3.0 P2): a unit's own action succeeded. The reducer fires it once after each
  * action; a verb that can run inside another (Analyze) fires its own. ctx: {u, t, action, id, tile, toggles, mode, ap, choice}
  * (choice, rules 1.33: the action's pick, as a felt feeling given by Inspire). */
-export function acted(cb: Combat, u: Unit, o: { action: string; id?: string | null; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null }): void {
+export function acted(cb: Combat, u: Unit, o: { action: string; id?: string | null; t?: Unit | null; tile?: string | null; toggles?: string[]; mode?: string | null; ap?: number; choice?: string | null; /** rules 1.83: the turn's rng, when the game may not be bound (the enemy turn) */ rng?: Rng }): void {
   // id (rules 1.77 item 6502): the action's own id when its name is a family (a Call: call.spot), read by `action_id`
-  emit(cb, 'acted', { u, t: o.t || null, action: o.action, ...(o.id ? { id: o.id } : {}), tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), cb });
+  emit(cb, 'acted', { u, t: o.t || null, action: o.action, ...(o.id ? { id: o.id } : {}), tile: o.tile || null, toggles: o.toggles || [], mode: o.mode || null, ...(o.ap != null ? { ap: o.ap } : {}), ...(o.choice != null ? { choice: o.choice } : {}), ...(o.rng ? { rng: o.rng } : {}), cb });
 }
 /** How a unit's health reads on screen (rules 1.3; rules 1.55 item 29; `rules.json combat.health_look`): the one place
  * it is worked out. The squad's own and an Analyzed foe read exactly (`known`: the bar, `pct` 0 to 100, and the HP
@@ -2981,8 +3015,16 @@ export const stimAp = (u: Unit, t: Unit, isMedic: boolean, cb?: Combat | null) =
  * acting (the Trickster's Read). */
 /** Steps an engine system outside this file gives the enemy AI (physical/ai.ts: a technique), tried where the plain
  * attack would be. plan says what it would do now, changing nothing (the intent line); act does it and returns true. */
-export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId?: string; why?: AimWhy } | null; act(cb: Combat, rng: Rng, u: Unit): boolean }
+export interface EnemyStep { plan(cb: Combat, u: Unit): { text: string; targetId?: string; why?: AimWhy } | null;
+  /** Do it: false, nothing done; true, done (the trigger `acted` names it 'technique'); or (rules 1.83 item 7100) the name
+   * `acted` carries, as the reducer names the same action of a character (an item action's own id, a Whisper's
+   * 'whisper'), and its aimed unit. */
+  act(cb: Combat, rng: Rng, u: Unit): boolean | { action: string; t?: Unit | null } }
 const ENEMY_STEPS: EnemyStep[] = [];
+/** Rules 1.83 item 7106: what a system makes an enemy do before its first action, on 'enemy_action_start' (physical/ai.ts:
+ * Pressure's walk to cover), as the intent (the Trickster's Read) foresees it: the first that names one. Pure. */
+const ENEMY_OPENINGS: ((cb: Combat, u: Unit) => Intent | null)[] = [];
+export const enemyOpening = (f: (cb: Combat, u: Unit) => Intent | null): void => { ENEMY_OPENINGS.push(f); };
 /** first: tried before the steps already registered (a Call comes before a technique: calls/ai.ts). */
 export const enemyStep = (s: EnemyStep, first = false) => { if (first) ENEMY_STEPS.unshift(s); else ENEMY_STEPS.push(s); };
 /** Rules 1.37 (shadow-spec 8.1): a Boss is never Hidden after round `ai.boss_hidden_rounds` (enemies.json). */
@@ -3000,7 +3042,7 @@ export function enemyTurn(cb: Combat, rng: Rng) {
   // as the reducer names it (a cost site, a move's kind, 'attack' with its mode). Its magic, technique and clearing steps
   // (ai-sigil.ts, ai-soul.ts, ENEMY_STEPS, aiClearBlock), whose own verbs the AI does not report, are named by their
   // system: 'sigil', 'outburst', 'technique', 'clear_block'.
-  const did = (action: string, o: { t?: Unit | null; tile?: string | null; mode?: string | null } = {}) => acted(cb, u, { action, ...o });
+  const did = (action: string, o: { t?: Unit | null; tile?: string | null; mode?: string | null } = {}) => acted(cb, u, { action, ...o, rng }); // (the turn's rng: an item's op on `acted` may roll)
   for (let step = 0; step < 6 && u.ap > 0 && !cb.over; step++) {
     stood.add(u.pos);
     // 'enemy_action_start' {u, step}: before each enemy action; an item may open a window (Between Heartbeats) or set
@@ -3023,7 +3065,8 @@ export function enemyTurn(cb: Combat, rng: Rng) {
     if (!order && aiSoulStep(cb, rng, u)) { did('outburst'); checkOver(cb); continue; }
     const w = WEAPON[u.weapon];
     if (enemyNeedsReload(u) && canPay(cb, u, reloadAp(u, cb))) { reload(cb, u); did('reload'); continue; }
-    if (!order && ENEMY_STEPS.some((s) => s.act(cb, rng, u))) { did('technique'); checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack
+    let stepDid: ReturnType<EnemyStep['act']> = false;
+    if (!order && ENEMY_STEPS.some((s) => (stepDid = s.act(cb, rng, u)))) { const sd = stepDid as ReturnType<EnemyStep['act']>; did(typeof sd === 'object' ? sd.action : 'technique', typeof sd === 'object' ? { t: sd.t || null } : {}); checkOver(cb); continue; } // Physical 2.0: a technique it wants more than a plain attack (rules 1.83: a door's item action or prayer names itself)
     const mode = enemyMode(u), pcs = perceivedFoes(cb, u);
     const targets = enemyTargets(cb, u, mode, order, pcs);
     // rules 1.79 item 6701: a Suppressed or Broken enemy walks short this turn (physical/ai.ts sets the cap); it neither
@@ -3128,7 +3171,11 @@ export const doctrineOf = (u: Unit): { id: Doctrine; spread: number; near: numbe
 export const finishing = (t: Unit): boolean => !t.downed && t.hp <= Math.max(0, Number(FOCUS_MEMORY.finish_share) || 0) * Math.max(1, t.maxHp);
 /** Why an enemy takes the target it takes, when its doctrine (or the healer weight) decided between two it could have
  * had: shown on its intent and said once in the fight log. */
-export type AimWhy = 'healer' | 'spread' | 'wounded' | 'nearest';
+export type AimWhy = 'healer' | 'spread' | 'wounded' | 'nearest' | 'bait';
+/** Rules 1.83 item 7107: what a system adds to how an enemy weighs a target (a share of the target's max HP: more is less
+ * wanted, less is more; physical/ai.ts: a target holding a ready Answer, for the bait and the ally it draws for). Pure. */
+const AIM_WEIGHTS: ((cb: Combat, u: Unit, t: Unit, mode: 'melee' | 'shot') => number)[] = [];
+export const enemyAimWeight = (f: (cb: Combat, u: Unit, t: Unit, mode: 'melee' | 'shot') => number): void => { AIM_WEIGHTS.push(f); };
 const aimOwner = (t: Unit): string => (t as any).ghostOf || t.id;
 /** How many other units of u's side have attacked this target this round (rules 1.25). */
 export function alliesOn(cb: Combat, u: Unit, t: Unit): number {
@@ -3149,6 +3196,7 @@ export function noteEnemyAim(cb: Combat, u: Unit, t: Unit, why?: AimWhy) {
   if (u.side === 'foe' && !u.charId && ENEMY_AI.focus && ENEMY_AI.focus.on !== false) { noteFocus(cb, u, aimOwner(t)); const A = aiUses(cb, u); A.uncool('ai:aim'); A.cool(1, 'ai:aim'); (u as any).aimMem = aimOwner(t); } // rules 1.79 item 6705: who it is fighting, and since when
   if (why === 'healer') { noteHealerHunt(cb, u, t); return; }
   if (!why || (cb.doctrineSaid ||= {})[why]) return; cb.doctrineSaid[why] = true;
+  if (why === 'bait') { const B: any = ENEMY_AI.bait; if (B?.answer_line) say(cb, String(B.answer_line).replace(/\{name\}/g, u.name).replace(/\{target\}/g, t.name)); return; } // rules 1.83 item 7107
   say(cb, u.name + (why === 'spread' ? ' takes a target nobody else is shooting at: the enemy spreads its fire.' : why === 'wounded' ? ' picks out ' + t.name + ': the enemy goes for the wounded.' : ' goes at ' + t.name + ': it takes whoever is nearest.'));
 }
 /** Rules 1.79: the fight log says once a fight for each enemy that it stayed on the one it fought in an earlier round
@@ -3167,7 +3215,7 @@ function noteFocus(cb: Combat, u: Unit, id: string) {
  * the rounds), the likeliest hit. reachOnly: only those a plain attack reaches now; otherwise nobody is dropped, and
  * one it can't reach keeps its place after the equal ones it can. `healer` is set on the entry the healer weight was
  * given to; `why` on the first, when the choice was a choice. Pure. */
-interface Aim { t: Unit; pv: AttackPreview; healer: boolean; fire: number; far: number; why?: AimWhy }
+interface Aim { t: Unit; pv: AttackPreview; healer: boolean; fire: number; far: number; why?: AimWhy; /** rules 1.83: the systems' weight (AIM_WEIGHTS) */ aw?: number }
 function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], reachOnly: boolean): Aim[] {
   const tauntBy = tauntedBy(u), d = doctrineOf(u);
   // Rules 1.37: a tier that leaves Figments for last (Soldiers, Elites, Bosses) sizes up no Figment while a character is
@@ -3190,13 +3238,16 @@ function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], rea
   if (keepId && u.hitRound) for (const [id, r] of Object.entries(u.hitRound)) if (id !== keepId && r >= at! && r > tr && list.some((x) => aimOwner(x.t) === id && !x.t.downed)) { tr = r; threatId = id; }
   const held = (x: Aim) => (!fo || x.t.downed ? 0 : threatId ? (aimOwner(x.t) === threatId ? fo.threat : 0) : keepId && aimOwner(x.t) === keepId ? fo.keep : 0);
   // focus memory (rules 1.61 item 4964): each other attacker of its side this round makes the target less worth it, unless it is nearly finished
-  const key = (x: Aim) => hurtShare(cb, x.t) + d.spread * x.fire + (finishing(x.t) ? 0 : d.memory * x.fire) + ownedWeight(u, x.t) - held(x) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
+  // rules 1.83 item 7107: what the systems add (a target with a ready Answer, for the bait); never against a Taunt
+  if (AIM_WEIGHTS.length && u.side === 'foe' && !u.charId && !tauntBy) for (const x of list) if (!x.t.downed) { const w = AIM_WEIGHTS.reduce((a, f) => a + f(cb, u, x.t, mode), 0); if (w) x.aw = w; }
+  const key = (x: Aim) => (x.aw || 0) + hurtShare(cb, x.t) + d.spread * x.fire + (finishing(x.t) ? 0 : d.memory * x.fire) + ownedWeight(u, x.t) - held(x) + (x.healer ? -focus : d.near && !x.t.downed ? d.near * (x.far - near0) : 0), pct = (x: Aim) => (x.pv.ok ? x.pv.pct : -1);
   list.sort((a, b) => (aimOwner(b.t) === tauntBy ? 1 : 0) - (aimOwner(a.t) === tauntBy ? 1 : 0) || (a.t.downed ? 1 : 0) - (b.t.downed ? 1 : 0) || lateOf(a) - lateOf(b) || key(a) - key(b) || pct(b) - pct(a));
   const top = list[0];
   if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {
     const rest = list.filter((x) => !x.t.downed && aimOwner(x.t) !== aimOwner(top.t));
     const nearer = d.near > 0 && rest.some((x) => x.far > top.far), fresher = rest.some((x) => x.fire > top.fire), worse = rest.some((x) => hurtShare(cb, x.t) > hurtShare(cb, top.t));
-    top.why = top.healer ? 'healer' : d.id === 'nearest' && nearer ? 'nearest' : fresher ? 'spread' : worse ? 'wounded' : nearer ? 'nearest' : undefined;
+    const baited = (top.aw || 0) < 0 && rest.some((x) => key(x) - (x.aw || 0) < key(top) - (top.aw || 0)); // rules 1.83: the Answer's weight made the choice
+    top.why = baited ? 'bait' : top.healer ? 'healer' : d.id === 'nearest' && nearer ? 'nearest' : fresher ? 'spread' : worse ? 'wounded' : nearer ? 'nearest' : undefined;
     if (!top.why) delete top.why;
   }
   return list;
@@ -3407,10 +3458,11 @@ export function kitOf(cb: Combat, u: Unit, side: string): KitView | null {
 /** Rules 1.23: the reason an intent gives when the enemy goes for the squad's healer. */
 export const HEALER_WHY = ': it goes for whoever is mending the squad';
 /** Rules 1.25: the reason an intent gives for each way an enemy chooses its target. */
-export const AIM_WHY: Record<AimWhy, string> = { healer: HEALER_WHY, spread: ': it spreads its fire', wounded: ': it goes for the wounded', nearest: ': it takes the nearest' };
+export const AIM_WHY: Record<AimWhy, string> = { healer: HEALER_WHY, spread: ': it spreads its fire', wounded: ': it goes for the wounded', nearest: ': it takes the nearest', bait: ': it draws the answer' };
 function intentInner(cb: Combat, u: Unit): Intent {
   const order = condOn(u, 'commanded') ? u.condArg?.commanded || 'halt' : null;
   if (order) return { kind: 'order', text: 'obey its order (' + order.split(':')[0] + ')' };
+  for (const f of ENEMY_OPENINGS) { const o = f(cb, u); if (o) return o; } // rules 1.83 item 7106: Pressure's first move comes before anything else
   // the same AP gates as enemyTurn's ladder (review bug 10: the intent named recoveries the turn could not pay for)
   if (condOn(u, 'burning') && affords(cb, u, 'extinguish')) return { kind: 'recover', text: 'beat out the flames on it' };
   if (condOn(u, 'grappled') && affords(cb, u, 'escape')) return { kind: 'recover', text: 'break the grapple' };

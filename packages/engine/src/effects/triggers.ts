@@ -35,7 +35,7 @@ import { objectIs, makeObject } from '../objects';
 import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
 import { isStatId } from './stats';
 import type { ItemInfo } from './types';
-import { charOfUnit } from './hooks';
+import { charOfUnit, unitSkill } from './hooks';
 import patronsJ from '../../../../data/patrons.json';
 import { TECHNIQUES, PHYS_RULES as TECH_RULES, techGroupOf, techSystemOf } from '../physical/data';
 import { RESOURCES, resGive } from './cost';
@@ -277,7 +277,8 @@ function madeWithUnit(ev: Ev): boolean {
 P('with_this', 'bool', 'the event is (or is not) made with the gear instance that carries this item as its named property or a fitted mod (rules 1.43, 1.56: a Relic\'s property): the instance in a hand, and a weapon\'s event made with that hand\'s weapon, a door\'s event (Sigil, Outburst, a save forced through a door skill, a heal or shield of its kind) with that door\'s focus; the own defence of the holder (P14: the holder is the target, another unit the actor) with the instance in a hand', (ev, v) => madeWith(ev) === v);
 // Rules 1.33 (Tending, Bonds and the Mender): a door's ladder, the holder's ties, the action's pick
 /** The holder's points in a skill (a character's sheet; a unit with none has 0). */
-const skillPts = (ev: Ev, sk: string): number => Number(((ev.h.c || charOfUnit(ev.self)) as any)?.skills?.[sk] || 0);
+// rules 1.83 item 7102: a unit with no sheet (an enemy) has the points its row gives it (effects/hooks.ts unitSkill, the one door)
+const skillPts = (ev: Ev, sk: string): number => { const c = ev.h.c || charOfUnit(ev.self); return Number(c ? (c as any).skills?.[sk] || 0 : ev.self && !ev.self.companion ? unitSkill(ev.self, sk) : 0); };
 P('self_skill', 'skill', 'the holder has at least these points in each skill named ({empathy: 7}: a door\'s ladder)', (ev, v) => Object.entries(v || {}).every(([k, n]) => skillPts(ev, k) >= Number(n)));
 P('self_skill_below', 'skill', 'the holder has fewer than these points in each skill named (as self_skill)', (ev, v) => Object.entries(v || {}).every(([k, n]) => skillPts(ev, k) < Number(n)));
 P('self_tied', 'tie', 'the holder holds a tie of this kind (a kind, or {kind, side: foe, ally or any}: its far end of that side to the holder)', (ev, v) => {
