@@ -18,7 +18,7 @@ const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, 
 const W = () => survivalRun.reward_panel;
 
 /** The middle column's visible box (the play screen's centre slot), clipped to the window: what the panel covers. */
-function useCentreBox(): { left: number; top: number; width: number; height: number } {
+export function useCentreBox(): { left: number; top: number; width: number; height: number } {
   const read = () => {
     const el = document.querySelector('[data-phc-centre]') as HTMLElement | null, b = el?.getBoundingClientRect();
     if (!b || !b.width) return { left: 0, top: 0, width: innerWidth, height: innerHeight };
@@ -29,9 +29,10 @@ function useCentreBox(): { left: number; top: number; width: number; height: num
   React.useLayoutEffect(() => {
     let raf = 0;
     const on = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => setBox((o) => { const n = read(); return o.left === n.left && o.top === n.top && o.width === n.width && o.height === n.height ? o : n; })); };
-    on(); addEventListener('resize', on); addEventListener('scroll', on, true);
+    // (a screen's entrance slides the middle in: read again when an animation ends, a transform moves no ResizeObserver)
+    on(); addEventListener('resize', on); addEventListener('scroll', on, true); addEventListener('animationend', on, true);
     const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(on) : null; const el = document.querySelector('[data-phc-centre]'); if (ro && el) ro.observe(el);
-    return () => { cancelAnimationFrame(raf); removeEventListener('resize', on); removeEventListener('scroll', on, true); ro?.disconnect(); };
+    return () => { cancelAnimationFrame(raf); removeEventListener('resize', on); removeEventListener('scroll', on, true); removeEventListener('animationend', on, true); ro?.disconnect(); };
   }, []);
   return box;
 }
@@ -93,7 +94,7 @@ export function RewardPanel({ p, onClose }: { p: RewardPanelV; onClose: () => vo
             style={{ flex: 'none', width: 40, height: 40, borderRadius: 10, border: '1px solid ' + ink.line, background: 'transparent', color: ink.text, fontSize: 20, fontFamily: 'inherit', cursor: 'pointer' }}>{'✕'}</button>
         </div>
         {p.pay.length ? <Fold id="reward:pay" title={W().pay}>{p.pay.map((x) => <Pay key={x.charId} p={x} named={p.pay.length > 1} />)}</Fold> : null}
-        {p.offers.length ? <Fold id="reward:pick" title={<span style={{ fontSize: 'var(--fs-body)', fontWeight: 700, color: ink.text }}>{W().pick}</span>}>{p.offers.map((o) => <Offer key={o.charId} o={o} minH={280} inPanel />)}</Fold> : null}
+        {p.offers.length ? <Fold id="reward:pick" title={<span style={{ fontSize: 'var(--fs-body)', fontWeight: 700, color: ink.text }}>{p.offers.every((o) => (o.materials ? 1 : 0) + o.cards.length <= 1) ? W().take_one || W().pick : W().pick}</span>}>{p.offers.map((o) => <Offer key={o.charId} o={o} minH={280} inPanel />)}</Fold> : null}
         {p.kits.length ? <Fold id="reward:kit" title={W().kit}>{p.kits.map((x) => <Choices key={'kit-' + x.charId} x={x} kit />)}</Fold> : null}
       </div>
     </div>, document.body);

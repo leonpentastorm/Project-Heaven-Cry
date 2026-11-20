@@ -94,9 +94,10 @@ export function RunScreen() {
       <RewardDock say={panelOpen ? null : say} owed={!!rp?.owe && !panelOpen} onOpen={reopen} />
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, padding: '16px 20px 28px' }}>
       {/* the node's panel first when it holds something to do (the rewards, a safe node's choices): it is what is asked now */}
-      {v.note || tally || v.kits.length || v.choices.length || rewards || place ? (
+      {/* 0.33 polish: while the reward panel is open its heading says what the note says: the note is not drawn twice */}
+      {(v.note && !panelOpen) || tally || v.kits.length || v.choices.length || rewards || place ? (
         <section aria-label={rewards ? 'Rewards' : 'This stop'} data-phc-rewards={rewards ? '' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          {v.note ? (
+          {v.note && !panelOpen ? (
             <div data-phc-note="" style={{ display: 'flex', flexDirection: 'column', gap: 6, padding: 14, borderRadius: 12, background: ink.panel, border: '1px solid ' + ink.line }}>
               <span style={kick}>{v.note.kicker}</span>
               <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{v.note.title}</span>

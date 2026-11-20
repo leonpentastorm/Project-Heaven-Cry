@@ -308,7 +308,7 @@
 <sc-if value="{{isMoves}}" hint-placeholder-val="{{false}}">
 <section style="display: flex; flex-direction: column; gap: 16px; padding: 24px 32px">
 <h1 style="margin: 0; font-family: 'Spectral', serif; font-size: 36px; font-weight: 600">Moves</h1>
-<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What your build already knows how to do. What you carry is not chosen here: the mode hands it out when play starts (in Survival you build a loadout at the camp; a campaign gives its own). Everyone also carries one <span style="color: #E7EBF3">Essence of Experience</span>: 100 XP sealed in mana, cracked by a Mastery 2 Evoker or Emanator user. It sells well.</p>
+<p style="margin: 0; font-family: 'Spectral', serif; font-size: 16px; color: #A3AEC2">What your build already knows how to do. What you carry is not chosen here: the mode hands it out when play starts (in Survival you build a loadout at the camp; a campaign gives its own). Everyone also carries one <span style="color: #E7EBF3">Essence of Experience</span>: experience sealed in mana. Anyone holding a focus (an Evoker, an Emanator, a Visualizer or an Attuner) can crack it outside a fight for themselves or a friend. It also sells well.</p>
 <sc-if value="{{noMoves}}" hint-placeholder-val="{{false}}"><p data-no-moves="" style="margin: 0; font-size: 15px; color: #C9D3E3">{{noMovesText}}</p></sc-if>
 
 <sc-if value="{{hasTech}}" hint-placeholder-val="{{true}}">
@@ -517,6 +517,7 @@
 <div style="display: flex; gap: 10px; align-items: center; font-size: 15px"><span style="{{c.markStyle}}">{{c.mark}}</span><span>{{c.label}}</span></div>
 </sc-for>
 <button type="button" data-sfx="none" onClick="{{lockIn}}" disabled="{{lockOff}}" style="{{lockStyle}}">{{lockLabel}}</button>
+<sc-if value="{{hasLockWhy}}" hint-placeholder-val="{{false}}"><span data-lock-why="" role="status" style="font-size: var(--fs-body); line-height: 1.4; color: #FFFFFF">{{lockWhy}}</span></sc-if>
 <button type="button" onClick="{{saveDraft}}" style="min-height: 44px; border-radius: 10px; border: 1px solid #2E3A50; background: transparent; color: #E7EBF3; font-family: inherit; font-weight: 600; cursor: pointer">Save as draft</button>
 <span style="font-size: var(--fs-sub); color: #A3AEC2">Drafts can be brought into any room. Once locked in, this record is what the Narrator and the squad see.</span>
 </aside>

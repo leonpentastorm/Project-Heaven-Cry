@@ -9,6 +9,7 @@ import type { Action } from '@engine';
 import { vowIconUri } from './faithArt';
 import { FAITH_INK } from './faithView';
 import { ensureMotionCss } from '../screens/shared';
+import { useCentreBox } from './RewardPanel';
 
 const ink = { ground: '#0A0D13', panel: '#10151F', raised: '#1C2536', line: '#232D3F', text: '#E7EBF3', muted: '#A3AEC2' };
 
@@ -52,12 +53,13 @@ export function VowPopup({ onClose, at }: { onClose: () => void; at: 'enter' | '
   ensureMotionCss();
   const st = React.useSyncExternalStore(subscribe, getState), v = vowPopupView(st.game, st.me.id);
   const [, redraw] = React.useReducer((x: number) => x + 1, 0);
+  const box = useCentreBox(); // 0.33 polish: over the middle column, so both side panels stay readable (it hid half the sheet)
   if (!v.chars.length) return null;
   const done = !vowPopupView(st.game, st.me.id).due;
   return (
     <div className="phc-m-backdrop" data-phc-vow-popup={at} role="dialog" aria-modal="true" aria-label="Swear a vow"
-      style={{ position: 'fixed', inset: 0, zIndex: 60, display: 'grid', placeItems: 'center', background: 'rgba(5, 7, 11, 0.62)' }}>
-      <div className="phc-m-card" style={{ width: 'min(720px, calc(100vw - 32px))', maxHeight: 'calc(100vh - 64px)', overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 14, padding: 18, borderRadius: 14, background: ink.ground, border: '1px solid ' + ink.line, borderTop: '3px solid ' + FAITH_INK, color: ink.text, fontFamily: "'Chakra Petch', sans-serif", boxShadow: '0 18px 48px rgba(0,0,0,.6)' }}>
+      style={{ position: 'fixed', left: box.left, top: box.top, width: box.width, height: box.height, zIndex: 60, display: 'grid', placeItems: 'center', padding: 12, boxSizing: 'border-box', background: 'rgba(5, 7, 11, 0.62)' }}>
+      <div className="phc-m-card" style={{ width: '100%', maxWidth: 720, maxHeight: '100%', boxSizing: 'border-box', overflow: 'auto', display: 'flex', flexDirection: 'column', gap: 14, padding: 18, borderRadius: 14, background: ink.ground, border: '1px solid ' + ink.line, borderTop: '3px solid ' + FAITH_INK, color: ink.text, fontFamily: "'Chakra Petch', sans-serif", boxShadow: '0 18px 48px rgba(0,0,0,.6)' }}>
         <span style={{ fontFamily: "'Spectral', serif", fontSize: 22, fontWeight: 600 }}>{at === 'rest' ? 'Change your vow' : 'Swear a vow'}</span>
         <span style={{ fontSize: 'var(--fs-body)', lineHeight: 1.5, color: '#DCE2EC' }}>Your patron hears it at the start of every fight until you change it at a rest. Kept to a fight's end, it raises your Devotion; broken, your patron says so. Or fight unsworn.</span>
         {v.chars.map((c) => <CharBlock key={c.charId} c={c} onPick={redraw} />)}

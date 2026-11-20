@@ -209,13 +209,13 @@ describe('the points step: what the next point gives', () => {
   it('a skill shows the roll it gives as a chip (the engine\'s check modifier) and one line: what its next point gives (the road map)', () => {
     const l = screen();
     let k = skillOf(l.renderVals(), 'durability');
-    expect(k.modChip).toBe('−2'); expect(k.modTitle).toBe('Roll −2 now, 0 with the next point'); expect(k.nextAt).toBe(1);
+    expect(k.modChip).toBe('−2'); expect(k.modTitle).toBe('Added to your d20 when you roll this skill: −2 (untrained) now, 0 with the next point'); expect(k.nextAt).toBe(1);
     expect(k.line).toBe(nextLine('durability', 0));
     expect(k.incAria).toBe('Raise Durability from 0 to 1 for 1 Skill point. Roll 0. ' + nextLine('durability', 0));
     // the third skill under an attribute rolls checks one better
     k = skillOf(l.renderVals(), 'sensory');
     expect(checkModOf('sensory', 1)).toBe(1);
-    expect(k.modTitle).toBe('Roll −2 now, +1 with the next point');
+    expect(k.modTitle).toBe('Added to your d20 when you roll this skill: −2 (untrained) now, +1 with the next point');
     press(l, 'durability', 2);
     k = skillOf(l.renderVals(), 'durability');
     expect(k.nextAt).toBe(3); expect(k.line).toBe(nextLine('durability', 2)); expect(k.line).toContain('Perk: ');

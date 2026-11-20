@@ -388,7 +388,7 @@ function gmDeskVals(self, g, label) {
   return { show: true, head: 'YOUR TURN, NARRATOR · ' + (WORK_HEAD[w.kind] || 'the story').toUpperCase(), note: w.redo ? 'The room asked for it again: ' + w.redo : w.note || '',
     hint: 'Write what happens. Call a check when the outcome is in doubt: the engine rolls it, and the players see the TN and the sum.',
     ooc: (g.story.oocAsk || []).map((q, i) => ({ key: 'q' + i, text: q.name + ' asks: ' + q.text })), hasOoc: !!(g.story.oocAsk || []).length,
-    title: st.title || '', onTitle: (e) => set({ title: e.target.value }), sceneTitle: g.story.scene.title || '',
+    title: st.title || '', onTitle: (e) => set({ title: e.target.value }), sceneTitle: g.story.scene.title ? 'Scene title (optional; now: ' + g.story.scene.title + ')' : 'Scene title (optional)',
     text: st.text || '', onText: (e) => set({ text: e.target.value }),
     rulings: rulings.map((r) => { const who = g.characters[r.charId], no = said[r.id] === 'no';
       return { key: r.id, text: (who ? who.name + ': ' : '') + r.text, yesPressed: no ? 'false' : 'true', noPressed: no ? 'true' : 'false',
@@ -460,7 +460,7 @@ export class MainLogic extends DCLogic {
    *  player card keeps room for (four players and the Narrator; four in the Proving Ground, which has no Narrator).
    *  The order is this browser's, not the game's. */
   panelVals(seats, PL) {
-    if (this._rpKey !== PL.key) { this._rpKey = PL.key; this._rp = null; }
+    { const k = PL.key + ':' + PL.list.join(','); if (this._rpKey !== k) { this._rpKey = k; this._rp = null; } } // the list as well (Give comes with a second player)
     const all = PL.list, order = this._rp || (this._rp = readStoryPanels(all));
     const set = (o, focus) => { this._rp = o; saveStoryPanels(o, all); this.setState({});
       // the keyboard stays on the grip it moved
@@ -478,7 +478,7 @@ export class MainLogic extends DCLogic {
       // Last in the column (its first place), the player card sticks to the bottom so End turn is always in reach;
       // moved up, it sits in the flow like the others.
       squadStyle: 'order: ' + o.squad + '; flex: none; display: flex; flex-direction: column; gap: 8px; background: #0A0D13; '
-        + (last ? 'margin-top: auto; position: sticky; bottom: -14px; z-index: 2; padding: 10px 0 0; border-top: 1px solid #232D3F' : 'padding: 10px 0; border-top: 1px solid #232D3F; border-bottom: 1px solid #232D3F'),
+        + (last ? 'margin-top: auto; position: sticky; bottom: -14px; z-index: 2; padding: 10px 0 0; border-top: 1px solid #232D3F; box-shadow: 0 -14px 14px -8px rgba(10, 13, 19, 0.95)' : 'padding: 10px 0; border-top: 1px solid #232D3F; border-bottom: 1px solid #232D3F'),
       // Two seats a row; the rows for every seat are kept even when fewer sit (the card never grows or clips mid-game).
       seatsStyle: 'display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: ' + SQUAD_ROW_PX + 'px; gap: ' + SQUAD_GAP_PX + 'px 10px; align-items: center; min-height: ' + squadMinHeight(seats) + 'px' };
   }

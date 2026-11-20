@@ -318,7 +318,7 @@ ok('leaving the field goes straight to the rewards: no end card to click', (awai
 r = await run();
 const c = Object.values(g.characters)[0];
 ok('the rewards: XP (' + SVD.xp.base + ' at stop 1, rules 1.54 item 9) and credits each, no ammunition pack (rules 1.55: ' + (r.note.ammo[c.id] || []).length + ' lines)', r.note.xp === SVD.xp.base && c.xp === r.note.xp && c.credits === kept + r.note.credits && (r.note.ammo[c.id] || []).length === 0
-  && new RegExp(r.note.xp + ' XP').test(await p.locator('[data-phc-note]').textContent()));
+  && new RegExp(r.note.xp + ' XP').test(await p.locator('[data-phc-note], [data-phc-reward-panel]').first().textContent()));
 const o1 = r.offers[c.id], wcard = p.locator('[data-phc-offer="' + c.id + '"] [data-phc-pick]');
 { // rules 1.54 item 2: Materials or One weapon, two large cards; credits instead is gone
   const mats = await p.locator('[data-phc-offer="' + c.id + '"] [data-phc-material]').evaluateAll((l) => l.map((e) => [e.getAttribute('data-phc-material'), Number(e.getAttribute('data-phc-material-n'))]));

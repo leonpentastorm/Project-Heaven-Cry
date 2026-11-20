@@ -83,7 +83,7 @@ await settle(p, 300);
 ok('nothing selected yet: no confirm button', (await p.locator('button.phc-lu-confirm-btn').count()) === 0);
 await card.click();
 await settle(p, 250);
-ok('the selected card is named on the confirm bar; the side panel stays one line until a class is held (0.31.11 item C): ' + (await p.locator('button.phc-lu-confirm-btn').textContent()), (await p.locator('button.phc-lu-confirm-btn').textContent()).includes(NAME.infiltrator) && (await p.locator('.phc-lu-class-line').textContent()) === 'Class: choose it from TO CHOOSE');
+ok('the selected card is named on the confirm bar; the side panel stays one line until a class is held (0.31.11 item C): ' + (await p.locator('button.phc-lu-confirm-btn').textContent()), (await p.locator('button.phc-lu-confirm-btn').textContent()).includes(NAME.infiltrator) && (await p.locator('.phc-lu-class-line').textContent()) === 'Class: open the Class chip above');
 ok('a card only selects (no class yet)', !(await G()).characters[cid].classId);
 await snap('03-picker-selected');
 await p.locator('button.phc-lu-confirm-btn').click();

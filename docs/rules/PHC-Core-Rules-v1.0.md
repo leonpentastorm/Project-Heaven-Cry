@@ -13762,3 +13762,27 @@ Settles rules 1.80 item 6802 (what the desk did not send, and what the Narrator'
     reducer), `apps/web/e2e/narrate.mjs` (two browsers: the host narrates a hook, a lurker, a hidden trap and XP from the
     desk; the host's notes and map show them, the guest's screen and view do not; a check asked and rolled by the
     engine).
+
+### Rules 1.85 (polish), the polish lane of 0.33 (20 Nov 2026)
+
+The screenshot pass's small faults and the effects owed from 0.32 (`docs/design/handoffs/0.33-LANE-POLISH.md`). No
+number of the rules changes.
+
+7300. **A cleanse says what it ended.** The triggered `cleanse` op leaves the names of the conditions it ended for its
+    row's `say` (`{cleansed}`: "Bleeding ends", "Bleeding, Dazed end", or "nothing to end"). Soothe (Steady Hands II)
+    says "<you> soothes <friend>: <what> ends." (it had no log line; `perks.json steady_hands`).
+7301. **Tug on a friend already beside you shows it.** Its row (the `use` row that says so, rules 1.72 item 5706)
+    sends the fx `tie_pulse`: a pulse runs down the Bond to the friend, who answers in the Bond's ink; nothing moves.
+7302. **Every end of a tie a kind draws is one engine event** (was the tie op's alone, rules 1.72 item 5701): `untie`
+    sends the stance `untie` for each tie whose kind draws a line, whatever ended it (the Let go op, a Down, the
+    Attuner leaving, a full round out of sight, the kind's mark ended; `why`: down, gear, sight, mark). The fight's end
+    says nothing. The map's BREAK plays from the event; the old reading of the view stays only as a fallback.
+7303. **A held condition is never said as a count.** Together's Inspired and Guarded are held until the caster's next
+    turn (rules item 615); the log says "until <caster>'s next turn", never "99 rounds" (`applyCond`'s `lasts`).
+7304. **Give is left out of a one-character game.** The right panel's Give module (the mode's `panels`) hands things to
+    another player; with one character it said only "No one to hand anything to", so it is not drawn (the shop's Give
+    tab already did the same). It returns when a second character joins. Every mode keeps both side panels.
+7305. **Screen words** (no rule changes): a gear card's two lines are "Skill to hit" and "Attribute on damage"; the
+    reward panel says "Yours to take:" over a single card (`survival.json reward_panel.take_one`); the Bonds door line
+    says "when you are hurt it takes 20% of the blow for you"; the Proving Ground says "No wave cleared yet" before the
+    first; creation's Essence of Experience line says who can crack it (any focus in a hand), with no typed number.

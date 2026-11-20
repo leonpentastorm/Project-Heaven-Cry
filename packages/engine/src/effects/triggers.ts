@@ -384,7 +384,7 @@ function withNumbers(ev: Ev, x: any): any {
 function fill(s: string, ev: Ev): string {
   return s.replace(/\{(self|actor|target)\}/g, (_m, w) => unitOf(ev, w as Who)?.name || '').replace(/\{source\}/g, () => ev.h.source?.name || '')
   .replace(/\{patron\}/g, () => PATRON_NAME[patronIdOf(ev.h.c || charOfUnit(ev.self)) || ''] || 'the patron') // rules 1.31: the holder's patron (Smite's line)
-  .replace(/\{gain\}/g, () => String((ev as any).gain ?? 0)).replace(/\{res:([a-z_]+)\}/g, (_m, id) => String(ev.self.res?.[id] ?? 0)).replace(/\{resmax:([a-z_]+)\}/g, (_m, id) => String(ev.self.resMax?.[id] ?? 0));
+  .replace(/\{gain\}/g, () => String((ev as any).gain ?? 0)).replace(/\{cleansed\}/g, () => String((ev as any).cleansed ?? 'nothing to end')).replace(/\{res:([a-z_]+)\}/g, (_m, id) => String(ev.self.res?.[id] ?? 0)).replace(/\{resmax:([a-z_]+)\}/g, (_m, id) => String(ev.self.resMax?.[id] ?? 0));
 }
 
 // ============================================================================================== the ops
@@ -457,7 +457,10 @@ O('cleanse', ANY, true, ['condition', 'family', 'count', 'newest'], 'end conditi
   let ids = e.condition ? list(e.condition).map(condId).filter((id) => condHas(u, id)) : debuffsOf(u, e.family || undefined);
   if (e.newest) ids = [...ids].sort((a, b) => (u.condAt?.[b] || 0) - (u.condAt?.[a] || 0)); // rules 1.33 (Soothe): the newest first (condAt: the order they landed in)
   // rules 1.72 item 5700: each condition ended is shown (the cleanse's existing fx, `boon` word cleanse: the Sigil's, Clear Water's)
-  for (const id of ids.slice(0, e.count || ids.length)) { endCond(u, id, ev.cb); if (ev.cb && !ev.preview) emitFx(ev.cb, 'boon', { target: u.id, at: u.pos, word: 'cleanse', cond: id }); }
+  const gone = ids.slice(0, e.count || ids.length);
+  for (const id of gone) { endCond(u, id, ev.cb); if (ev.cb && !ev.preview) emitFx(ev.cb, 'boon', { target: u.id, at: u.pos, word: 'cleanse', cond: id }); }
+  // rules 1.85 item 7300: what it ended, for the row's `say` ({cleansed}: the conditions' names, or "nothing to end")
+  (ev as any).cleansed = gone.length ? gone.map((id) => (CONDITION_ROWS as any[]).find((r) => r.id === id)?.name || id).join(', ') + (gone.length > 1 ? ' end' : ' ends') : 'nothing to end';
 });
 O('cond_rounds', ['cond_incoming'], false, ['max', 'add'], 'change the rounds of the condition being put on: at most max, or add', (ev, e) => {
   if (typeof e.max === 'number') ev.ctx.rounds = Math.min(ev.ctx.rounds || 1, e.max);
@@ -523,7 +526,7 @@ O('tie', ANY, true, ['kind', 'clear'], 'tie the holder to the target by a kind (
   const t = pick(ev, e);
   // rules 1.72 item 5701: a tie this op ends is shown (the existing `stance` fx, what `untie`: the holder, the far end as
   // target, the kind as how), so the client draws the parting from the event, not from two views
-  const ended = (pick: (x: any) => boolean) => { const gone: any[] = []; const n = untie(ev.cb, (x) => { const m = pick(x); if (m) gone.push(x); return m; }); for (const x of gone) emitFx(ev.cb, 'stance', { unit: x.from, at: ev.self.pos, what: 'untie', target: x.to, how: x.kind }); return n; };
+  const ended = (pick: (x: any) => boolean) => untie(ev.cb, pick, { at: ev.self.pos }); // untie says each end (rules 1.85 item 7302)
   if (e.clear === 'all') return ended((x) => x.kind === e.kind && x.from === ev.self.id) > 0 ? undefined : false;
   if (e.clear === 'target') return t && ended((x) => x.kind === e.kind && x.from === ev.self.id && x.to === t.id) > 0 ? undefined : false;
   return t && tie(ev.cb, ev.self, t, e.kind) ? undefined : false;

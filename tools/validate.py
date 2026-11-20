@@ -3526,6 +3526,12 @@ def _tend_bond_check():
     for it in (th, bd):
         for k, v in (it.get("numbers") or {}).items():
             if k in src and src[k] != v: errors.append(f"tending.json {it.get('id')} numbers.{k} is {v}, but the effect the engine runs says {src[k]}")
+    # 0.33 (the Bond card's copies, roadmap "Small test faults"): the Empathy door line's door_numbers are copies too
+    _emp = next((x for x in (data.get("skills") or {}).get("items") or [] if x.get("id") == "empathy"), {}) if isinstance(data.get("skills"), dict) else {}
+    for k, v in (_emp.get("door_numbers") or {}).items():
+        if k == "about": continue
+        if k not in src: errors.append(f"skills.json empathy door_numbers.{k}: no effect value is known for it (add it to tools/validate.py _tend_bond_check)"); continue
+        if src[k] != v: errors.append(f"skills.json empathy door_numbers.{k} is {v}, but the effect the engine runs says {src[k]}")
 _tend_bond_check()
 
 # Rules 1.56 (the alpha perks, spec item 4208): a number block's step that reads a target's Pressure (`target:pressure`)

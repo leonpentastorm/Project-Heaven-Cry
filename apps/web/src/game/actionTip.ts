@@ -204,6 +204,11 @@ export function placeTip(r: Rect, b: { width: number; height: number }, W: numbe
     for (const x of sides) { for (const y of ys) cands.push([x, y]); for (let k = 1; k <= 8; k++) { cands.push([x, clampY(mid - b.height / 2 - k * 24)]); cands.push([x, clampY(mid - b.height / 2 + k * 24)]); } }
     cands.push(...tries);
     for (const [x, y] of cands) if (fits(x, y) && !avoid.some((q) => hits(q, x, y))) return { x: Math.round(x), y: Math.round(y) };
+    // 0.33 polish (the path map's card covered the neighbouring rows): no clean spot, the one that covers the fewest
+    // of them (ties: the earlier candidate)
+    let best: [number, number] | null = null, bestN = Infinity;
+    for (const [x, y] of cands) { if (!fits(x, y)) continue; const n = avoid.filter((q) => hits(q, x, y)).length; if (n < bestN) { bestN = n; best = [x, y]; } }
+    if (best) return { x: Math.round(best[0]), y: Math.round(best[1]) };
   }
   for (const [x, y] of tries) if (fits(x, y)) return { x: Math.round(x), y: Math.round(y) };
   // nowhere clean: the side with the most room, clamped

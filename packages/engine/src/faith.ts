@@ -1408,7 +1408,8 @@ function runEntryInner(cb: Combat, rng: Rng, u: Unit, kind: PrayerKind, pe: { en
       // Until the caster's next turn (the card; item 615): held on the fight and ended at the caster's turn_start, as Hold
       // the Gate is. A 1-round condition ended at each bearer's own turn end instead (truth pass 3).
       const [x, y] = two; ((cb as any).faithTogether ||= []).push({ by: u.id, ids: [x.id, y.id] });
-      return applyCond(cb, rng, u, x, 'inspired', TOGETHER_HOLD, undefined, { skipSave: true }) + applyCond(cb, rng, u, x, 'guarded', TOGETHER_HOLD, undefined, { skipSave: true }) + applyCond(cb, rng, u, y, 'inspired', TOGETHER_HOLD, undefined, { skipSave: true }) + applyCond(cb, rng, u, y, 'guarded', TOGETHER_HOLD, undefined, { skipSave: true });
+      const hold = { skipSave: true, lasts: 'until ' + u.name + "'s next turn" }; // rules 1.85 item 7303: the hold is never said as a count
+      return applyCond(cb, rng, u, x, 'inspired', TOGETHER_HOLD, undefined, hold) + applyCond(cb, rng, u, x, 'guarded', TOGETHER_HOLD, undefined, hold) + applyCond(cb, rng, u, y, 'inspired', TOGETHER_HOLD, undefined, hold) + applyCond(cb, rng, u, y, 'guarded', TOGETHER_HOLD, undefined, hold);
     }
     case 'love_conquers': { // rules 1.6.2 (item 733): non-boss enemies in sight surrender, no save; who can't yield: Heart save or Commanded (hold)
       let out = '';

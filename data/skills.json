@@ -3987,7 +3987,7 @@
       "core": "soul",
       "slot": "alpha",
       "summary": "Feeling what the other side feels, enemies included.",
-      "door_line": "Your door is Bonds: tie yourself to a friend or a foe. Tend a Bonded friend; hurt a Bonded foe. A foe makes a Heart save to resist (an Elite at +{=door_numbers.save_elite}, a Boss at +{=door_numbers.save_boss}). While you hold it you have +{=door_numbers.hit} to hit it, and {=door_numbers.share|pct}% of the damage you take goes to it. It takes {=door_numbers.echo|pct}% of every heal you give. Your damage is +{=door_numbers.per_bond|pct}% for each Bond you hold. Snap breaks a Bond: a foe takes Soul damage and is Dazed. While you hold any Bond you are Traced.",
+      "door_line": "Your door is Bonds: tie yourself to a friend or a foe. Tend a Bonded friend; hurt a Bonded foe. A foe makes a Heart save to resist (an Elite at +{=door_numbers.save_elite}, a Boss at +{=door_numbers.save_boss}). While you hold it you have +{=door_numbers.hit} to hit it, and when you are hurt it takes {=door_numbers.share|pct}% of the blow for you. It takes {=door_numbers.echo|pct}% of every heal you give. Your damage is +{=door_numbers.per_bond|pct}% for each Bond you hold. Snap breaks a Bond: a foe takes Soul damage and is Dazed. While you hold any Bond you are Traced.",
       "forks": [
         {
           "id": "a",

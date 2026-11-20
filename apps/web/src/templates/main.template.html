@@ -39,10 +39,10 @@
 </div>
 <div style="display: flex; flex-direction: column; gap: 6px">
 <sc-for list="{{barsA}}" as="b" hint-placeholder-count="2">
-<div style="display: grid; grid-template-columns: 40px minmax(0, 1fr) 96px; gap: 8px; align-items: center">
+<div style="display: grid; grid-template-columns: 40px minmax(0, 1fr) minmax(96px, max-content); gap: 8px; align-items: center">
 <span style="{{b.labelStyle}}">{{b.label}}</span>
 <div style="height: 8px; border-radius: 99px; background: #1C2536; overflow: hidden"><div style="{{b.fill}}"></div></div>
-<span style="font-size: var(--fs-sub); text-align: right; color: #C9D3E3">{{b.text}}</span>
+<span style="font-size: var(--fs-sub); text-align: right; white-space: nowrap; color: #C9D3E3">{{b.text}}</span>
 </div>
 </sc-for>
 <sc-if value="{{echoV.has}}" hint-placeholder-val="{{true}}"><button type="button" data-phc-echo="" class="{{echoV.cls}}" onClick="{{echoV.toggle}}" aria-expanded="{{echoV.expanded}}" aria-label="{{echoV.aria}}" tip="What Echo is, how you get it and where you spend it" style="display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; min-height: 24px; padding: 2px 0; border: 0; border-radius: 6px; background: transparent; color: #FFFFFF; font-family: inherit; text-align: left; cursor: pointer">

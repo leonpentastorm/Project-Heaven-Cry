@@ -49,7 +49,7 @@ describe('the gear preview names the skill a weapon hits with and what its damag
       if (zero(ph.profile || 'weapon')) expect(s, w.id).toBeUndefined();
       else { // rules 1.56: the Attribute, never the skill; with the percent the hit's own multiplier stands from the profile's pin (the flat weapon profile: rules 1.61 R5)
         const n = Math.round((weaponMult(c, w.id) / statTerm('weapon', [], []) - 1) * 100);
-        expect(s?.label, w.id).toBe('Damage');
+        expect(s?.label, w.id).toBe('Attribute on damage');
         expect(s?.value, w.id).toBe((n >= 0 ? '+' : '') + n + '% (' + (ph.scales_with as string[]).filter((x) => ATTRS.some((a) => a.id === x)).map(nm).join(' and ') + ')');
       }
     }

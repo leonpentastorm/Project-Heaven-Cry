@@ -182,6 +182,8 @@ export function faithBatch(evs: any[]): void {
     else if (e.k === 'holy_dread') { const c = back(i, (x) => x.k === 'cond' && x.id === 'shaken'); if (c) e._on = { target: c.target, at: c.at, resisted: !!c.resisted }; }
     else if (e.k === 'last_rites') { const p = fwd(i, (x) => x.k === 'prayer' && x.target) || back(i, (x) => x.k === 'prayer' && x.target); if (p) e._on = { target: p.target }; }
     else if (e.k === 'prayer' && !e._hits) prayerTies(evs, i);
+    // 0.33: the Miracle's own event lands what its prayer touched (Everyone Home's allies answer on their tokens)
+    else if (e.k === 'miracle' && !e._hits) { const p = back(i, (x) => x.k === 'prayer' && x.kind === 'miracle'); if (p) { if (!p._hits) prayerTies(evs, evs.indexOf(p)); e._hits = p._hits; e._el = p._el; e._name = p._name; e._nameOn = p._nameOn; e._nameAt = p._nameAt; } }
   }
 }
 /** A prayer's entry in data (patrons.json): a Whisper by its id, a Hymn or the Miracle by the patron's own rows. */
@@ -517,6 +519,8 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
           play('feel_residue_holy' as Sfx, fp, { rate: 0.9, gain: 0.8 });
           if (fp && !reducedMotion()) ring(fp, acc, 900, { from: 0.3, to: 2.2, width: 4 });
           area.slice(0, 25).forEach((k, i) => { const q = at(k); if (q) after(() => { rays(q, acc, 3, 700); if (!reducedMotion()) burst('glow', q, q.s * 1.3, 700, { color: acc, blend: 'screen' }); }, i * 25); });
+          // 0.33: every unit the Miracle touched answers on its own token (the prayer's landing, as a Hymn's)
+          landOn(e, cp, acc, 120);
         },
       });
     },

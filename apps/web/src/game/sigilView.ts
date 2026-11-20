@@ -462,7 +462,7 @@ export function placedView(cb: any, side: 'pc' | 'foe' = 'pc', seen?: Set<string
   const T = (k: string) => (tiles[k] ||= { layer: '', marks: [], note: '' });
   for (const z of list) {
     if ((cb.zones || []).some((x: any) => x.id === z.id && secretFrom(x, side))) continue;
-    kinds.add(z.kind);
+    kinds.add(z.kind); if (z.kind === 'trap') kinds.add(z.mine ? 'trap:mine' : 'trap:spotted'); // the legend names whose (0.33)
     const ink = z.mine ? SIGIL_GLOW : HOSTILE_INK, owner = z.mine ? 'yours' : 'hostile', rounds = z.left >= 90 ? 'for the scene' : z.left + (z.left === 1 ? ' round' : ' rounds') + ' left';
     const words = (z.words || []).filter((w: string) => SIGIL[w]).map(up).join(' · ');
     // A Grand form (the Grand Sigilist's staff): its word's tint on every tile, a bright edge ring, the staff badge
@@ -528,7 +528,7 @@ export function placedLegend(kinds: Set<string>, anyGlyph: boolean): { key: stri
   if (kinds.has('fuse')) out.push({ key: 'zfu', box: box('box-shadow: inset 0 0 0 2px #AE9BFF'), name: '⏲ Fuse (an Outburst waiting: next turn, or a step in)' });
   if (kinds.has('linger')) out.push({ key: 'zli', box: box('background: rgba(174, 155, 255, 0.12); box-shadow: inset 0 0 0 2px #AE9BFF'), name: '≋ Linger (an Outburst left as a field)' });
   if (kinds.has('field')) out.push({ key: 'zf', box: box('background: ' + ELEMENT_TINT.fire + '; box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▦ Field (tinted by its element; hurts whoever enters: full the first time, half after)' });
-  if (kinds.has('trap')) out.push({ key: 'zt', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW + '; background: repeating-linear-gradient(45deg, rgba(79, 200, 223, 0.2) 0 3px, transparent 3px 6px)'), name: '⧗ Trap (yours, or a spotted one)' });
+  if (kinds.has('trap')) out.push({ key: 'zt', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW + '; background: repeating-linear-gradient(45deg, rgba(79, 200, 223, 0.2) 0 3px, transparent 3px 6px)'), name: '⧗ ' + (kinds.has('trap:mine') && !kinds.has('trap:spotted') ? 'Your trap' : kinds.has('trap:spotted') && !kinds.has('trap:mine') ? 'Spotted trap (hostile)' : 'Trap (yours, or a spotted hostile one)') });
   if (kinds.has('turret')) out.push({ key: 'zu', box: box('box-shadow: inset 0 0 0 2px ' + SIGIL_GLOW), name: '▲ Turret (rounds left, HP)' });
   if (kinds.has('raise')) out.push({ key: 'zr', box: box('background: rgba(201, 211, 227, 0.32)'), name: '▇ RAISE wall (HP)' });
   if (kinds.has('veil')) out.push({ key: 'zv', box: box('background: rgba(120, 128, 142, 0.55)'), name: 'Smoke (blocks sight)' });

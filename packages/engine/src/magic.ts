@@ -348,7 +348,9 @@ export interface CondOpts { /** No save (a hit's rider, a perk that says so). */
   /** Rules 1.77 item 6503: the action that puts it on (its acted name) and the unit that action was aimed at, told to
    * 'cond_apply' (ctx.action, ctx.aim) so an item can tell the named foe from the rest of an area. */ action?: string; aim?: Unit | null;
   /** Called once the condition has taken hold, just before 'cond_landed' is told (a move logs its own line here, so
-   * that what reacts to the landing (Shrug It Off) reads after it). Never stored. */ onLand?: () => void }
+   * that what reacts to the landing (Shrug It Off) reads after it). Never stored. */ onLand?: () => void;
+  /** Rules 1.85 item 7303: the words for how long it lasts when its rounds are a hold ended by something else (Together:
+   * "until <caster>'s next turn"); the log says them instead of the count. */ lasts?: string }
 /** The second door of an immunity (the first is the 'cond_apply' hook): the `immune:<id>` query, and for Bleeding the
  * data's own word for it ('bleed'). Sets ca.cancel. Both doors are asked for every condition, whoever applies it. */
 /** The condition took hold: the caller's onLand, then 'cond_landed' {by, t, id, rounds}. */
@@ -401,7 +403,7 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
     if (id === 'grappled' || id === 'stunned') { dropHeldShot(cb, t, id); }
   }
   landed(cb, opts, { by, t, id, rounds: n, cb, rng }); // 'cond_landed' {by, t, id, rounds}: after it takes hold
-  const dur = def.noTick && !rounds ? '' : n + ' round' + (n === 1 ? '' : 's');
+  const dur = opts.lasts ? opts.lasts : def.noTick && !rounds ? '' : n + ' round' + (n === 1 ? '' : 's');
   return ' · ' + t.name + ' is ' + def.name + (dur || saved ? ' (' + [dur, saved].filter(Boolean).join('; ') + ')' : '');
 }
 /** The numbers a table condition puts on its bearer while it lasts (the row's Defense, Movement and vision; condtable.ts
