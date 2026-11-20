@@ -27185,6 +27185,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 7
       }
+    },
+    "armour-sealed_visor--masterwork": {
+      "label": "Sealed visor — Masterwork",
+      "path": "art/icons/gear/armour-sealed_visor--masterwork.png",
+      "sha256": "65380f576a365899575af54a07469f9747a82560c519e0068ba9c077c565d407",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sealed_visor--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sealed_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.991228190666663,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 9
+      }
     }
   },
   "survival_art": {
