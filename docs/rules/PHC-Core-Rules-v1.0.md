@@ -14169,8 +14169,8 @@ A1 lays down.
       every golden table and replay it moves.
 7913. **Reach has one reader** (`combat.ts meleeReachOf`): a melee strike reaches 2 tiles with a weapon whose `phys.props`
       hold `reach` (or whose older `properties` hold `reach_2`, kept as debt), or what its granted `reach` effect says;
-      else 1. No id is tested (the lance carries `reach`). Lunge (`perks/a.ts`) and the Breaker's Lunge tile
-      (`classes/i.ts`) ask the same reader in place of their own copies.
+      else 1. No id is tested (the lance carries `reach`). Earthbreaker's reach (`perks/a.ts`) and the Breaker's Lunge
+      tile (`classes/i.ts`) ask the same reader in place of their own copies.
 7914. **INTENDED change of item 7913:** the two perk copies read only `reach_2` and the lance, and only for a row of a
       melee category. Through the one reader, the **grand staff** (`phys.props` `reach`) and the **bot-thread banner**
       (`reach_2`, category `mana`) now reach 2 for them too, and a Disarmed or lowered weapon strikes with the fists'
