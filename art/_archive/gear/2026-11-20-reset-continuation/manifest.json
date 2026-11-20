@@ -4312,6 +4312,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-bulwark_screen--fine",
+      "path": "art/icons/gear/shield-bulwark_screen--fine.png",
+      "sha256": "b9754138bee842889f43e62e1ef4db29435651ea52cf4142a43c187b58f7d48b",
+      "label": "Bulwark Screen — Fine",
+      "family": "shield-bulwark_screen",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-bulwark_screen--fine.png",
+        "sha256": "7c743c29cc6b93f8db158509ebc02110c9c0e37bf50d14e2db1cd1a19e9164df"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-bulwark_screen--fine.png",
+        "sha256": "b9754138bee842889f43e62e1ef4db29435651ea52cf4142a43c187b58f7d48b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-bulwark_screen--fine.txt",
+        "sha256": "e295a5fecf295867f3efd0e49554e0cb55ad4b380478c09319be40ac99366ed7"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-bulwark_screen.png",
+          "sha256": "56e0aec15b0b546122ee1565b8b1dc246e7a0ef0df4fcba68bab9bdeb4966dc0"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png",
+          "sha256": "643adb704e78fa71f8106ee942b6412a4a89aa6631a5560b1c602eae76ad5337"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-bulwark_screen--fine.png",
+        "128": "art/icons/gear/exports/128/shield-bulwark_screen--fine.png",
+        "64": "art/icons/gear/exports/64/shield-bulwark_screen--fine.png",
+        "32": "art/icons/gear/exports/32/shield-bulwark_screen--fine.png"
+      },
+      "export_hashes": {
+        "256": "f3d670f8b00541df5a390a5ccd652249fdef0a1af8b79ab7bbf8b70aa0ea7150",
+        "128": "87dc7ec1734aeb469b22a16578608dab34e5783fc820a8d86c16bae8bf924a28",
+        "64": "c14948940999750441e4189c7fdbe53ce138b943a14da219bfb0fe4179be5d07",
+        "32": "d8f1b912df4e9f20d797059bf6e2c85357dc9faffc0a323ee6e5d2f46c2c8faa"
+      },
+      "grade": "fine",
+      "standard_id": "shield-bulwark_screen",
+      "outline": {
+        "solid_alpha_iou": 0.9858745961627217,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 16,
+        "different_pixels_64": 19
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
