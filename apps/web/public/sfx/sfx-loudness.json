@@ -1278,6 +1278,96 @@
    "gain": 0,
    "after": -19.52,
    "peakAfter": -6.11
+  },
+  "cb/lightning.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -22.67,
+   "peakBefore": -3.49,
+   "gain": 8.67,
+   "after": -16.7,
+   "peakAfter": -0.95
+  },
+  "cb/divine_hit.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -14.94,
+   "peakBefore": -3.18,
+   "gain": 0.94,
+   "after": -13.99,
+   "peakAfter": -2.27
+  },
+  "cb/patron_nerukhan.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -11.04,
+   "peakBefore": -2.61,
+   "gain": 0,
+   "after": -11.04,
+   "peakAfter": -2.61
+  },
+  "cb/patron_quartermaster.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -16.04,
+   "peakBefore": -2.94,
+   "gain": 2.04,
+   "after": -14.0,
+   "peakAfter": -1.14
+  },
+  "cb/patron_mask.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -11.45,
+   "peakBefore": -3.01,
+   "gain": 0,
+   "after": -11.45,
+   "peakAfter": -3.01
+  },
+  "cb/patron_toll.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -22.32,
+   "peakBefore": -3.6,
+   "gain": 8.32,
+   "after": -15.86,
+   "peakAfter": -0.73
+  },
+  "cb/patron_ember.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -12.53,
+   "peakBefore": -2.99,
+   "gain": 0,
+   "after": -12.53,
+   "peakAfter": -2.99
+  },
+  "cb/patron_overcast.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -13.34,
+   "peakBefore": -3.34,
+   "gain": 0,
+   "after": -13.34,
+   "peakAfter": -3.34
+  },
+  "cb/patron_matchmaker.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -10.49,
+   "peakBefore": -3.03,
+   "gain": 0,
+   "after": -10.49,
+   "peakAfter": -3.03
+  },
+  "cb/patron_weaver.ogg": {
+   "family": "magic",
+   "target": -14.0,
+   "before": -18.41,
+   "peakBefore": -3.53,
+   "gain": 4.41,
+   "after": -13.99,
+   "peakAfter": -1.04
   }
  }
 }

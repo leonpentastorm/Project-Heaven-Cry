@@ -128,22 +128,31 @@ describe('effects audit', () => {
     expect(ROWS.length).toBeGreaterThan(30);
     // 0.33: Everyone Home's allies answer on their tokens (the Miracle's landing runs landOn)
     expect(ROWS.find((r) => r.action.includes('everyone_home'))!.fault).toBe('ok');
+    // 0.33 sound lane: every Hymn and Miracle plays its patron's own layer (data: patrons.json `sound`); a storm's bolt
+    // cracks apart from the thunder; a prayer's wound on a foe lands with the divine impact
+    for (const it of pj.items) for (const r of ROWS.filter((x) => x.group === 'prayer' && x.action.includes(it.id + '.') && !/REFUSED/.test(x.fault))) expect(r.sound).toContain(it.sound);
+    const row = (a: string) => ROWS.find((r) => r.action.includes(a))!;
+    expect(row('thunderclap').sound).toContain('lightning'); expect(row('thunderclap').sound).toContain('thunder');
+    expect(row('nerukhan.judgement').sound).toContain('divine_hit'); expect(row('whisper rebuke').sound).toContain('divine_hit');
+    expect(row('nerukhan.absolution').sound).not.toContain('divine_hit');
   }, 60000); // every prayer through the reducer: seconds on a quiet machine, past 5 s on a busy one
 
   it('bonds and tending', () => {
-    const verbs: [string, string, string?][] = [['bond', 'ally'], ['mend', 'ally', 'bond'], ['shield', 'ally', 'bond'], ['touch', 'ally', 'bond'], ['settle', 'ally', 'bond'], ['soothe', 'ally', 'bond'], ['tug', 'ally', 'bond'], ['guide', 'ally', 'bond'], ['raise', 'downed', 'bond'], ['snap', 'ally', 'bond'], ['let_go', 'ally', 'bond'], ['bond', 'foe'], ['mend_self', 'self', 'bondfoe'], ['echo: foe hits the Bonded ally', 'hit', 'bond']];
+    const MOVED: Record<string, string> = { settle: 'steady_hands', soothe: 'steady_hands', tug: 'pull_together', guide: 'pull_together', raise: 'nobody_left_behind' };
+    const verbs: [string, string, string?][] = [['bond', 'ally'], ['mend', 'ally', 'bond'], ['shield', 'ally', 'bond'], ['settle', 'ally', 'bond'], ['soothe', 'ally', 'bond'], ['tug', 'ally', 'bond'], ['guide', 'ally', 'bond'], ['raise', 'downed', 'bond'], ['snap', 'ally', 'bond'], ['let_go', 'ally', 'bond'], ['bond', 'foe'], ['mend_self', 'self', 'bondfoe'], ['echo: foe hits the Bonded ally', 'hit', 'bond']];
     for (const [v, who, pre] of verbs) {
-      const f = fightWith([{ name: 'Medic', archetype: 'mender', skills: { empathy: 10 }, attrs: { insight: 10 }, offHand: 'attuner', weapon: 'service_pistol', level: 12 }, { name: 'Gun' }], [{ at: 'F6' }], { level: 12 });
+      const f = fightWith([{ name: 'Medic', archetype: 'mender', skills: { empathy: 10 }, attrs: { insight: 10 }, offHand: 'attuner', weapon: 'service_pistol', level: 12, perks: { steady_hands: 'II', pull_together: 'II', nobody_left_behind: 'II' } }, { name: 'Gun' }], [{ at: 'F6' }], { level: 12 });
       const [me, al] = f.pcs, foe = f.foe; me.pos = '2,5'; al.pos = '3,5'; foe.pos = '5,5'; (foe as any).sv = { heart: -99 };
       for (const u of f.cb.units) { u.conds = {}; u.shield = 0; delete (u as any).shields; }
       me.hp = Math.round(me.maxHp * 0.6); al.hp = Math.round(al.maxHp / 2);
       f.turn(me);
-      const perk = (id: string, t?: Unit) => { f.unit(me.id).ap = 9; f.act({ type: 'combat/perk', unitId: me.id, id: 'verb:tend.' + id, ...(t ? { targetId: t.id } : {}) } as any); };
+      // since rules 1.75 Settle, Soothe, Tug, Guide and Raise are perks' actions (the perk's row, by its action id)
+      const perk = (id: string, t?: Unit, x: any = {}) => { f.unit(me.id).ap = 9; const m = MOVED[id]; f.act({ type: 'combat/perk', unitId: me.id, id: m ? 'perk:' + m : 'verb:tend.' + id, ...(m ? { actionId: 'tend_' + id } : {}), ...(t ? { targetId: t.id } : {}), ...x } as any); };
       try { if (pre === 'bond') perk('bond', f.unit(al.id)); if (pre === 'bondfoe') perk('bond', f.unit(foe.id)); } catch { /* the row says it */ }
       if (who === 'downed') { const a = f.unit(al.id); a.hp = 0; (a as any).downed = true; }
       audit('bond', v + (pre ? ' (after Bond' + (pre === 'bondfoe' ? ' on a foe' : '') + ')' : ''), f as any, me.id, () => {
         if (who === 'hit') { f.unit(foe.id).pos = '4,5'; f.act({ type: 'combat/end-turn', unitId: me.id } as any); return; }
-        if (v === 'guide') { f.unit(me.id).ap = 9; f.act({ type: 'combat/perk', unitId: me.id, id: 'verb:tend.guide', targetId: al.id, tile: '3,4' } as any); return; }
+        if (v === 'guide') { perk('guide', f.unit(al.id), { tile: '3,4' }); return; }
         perk(v, who === 'ally' || who === 'downed' ? f.unit(al.id) : who === 'foe' ? f.unit(foe.id) : undefined);
       });
     }

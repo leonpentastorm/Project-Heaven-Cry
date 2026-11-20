@@ -394,6 +394,7 @@
       "costume": "A stern holy father of the Lumeri saint-church who speaks for the saints; never breaks costume. 'Only the saints may judge.'",
       "archetype": "the judge-saint",
       "accent": "#E9D6A2",
+      "sound": "patron_nerukhan",
       "likes": [
         "judge",
         "mercy",
@@ -631,6 +632,7 @@
       "costume": "The logistics god of a war that never ended: a clerk's visor, a requisition stamp worn on a chain, and a deep love of forms filed in triplicate.",
       "archetype": "the quartermaster of a war god",
       "accent": "#8B9F47",
+      "sound": "patron_quartermaster",
       "likes": [
         "supply",
         "hold",
@@ -899,6 +901,7 @@
       "costume": "The trickster: a grinning mask that never comes off. Joined the Accords to troll them and demands a show.",
       "archetype": "the trickster",
       "accent": "#B83243",
+      "sound": "patron_mask",
       "likes": [
         "trick",
         "burn",
@@ -1113,6 +1116,7 @@
       "costume": "A quiet Celestial in a boatman's oilskin with a coin box at the hip, who answers at dusk; the guide of the dead at the last crossing.",
       "archetype": "the ferryman of the dead",
       "accent": "#79BDB6",
+      "sound": "patron_toll",
       "likes": [
         "mercy",
         "heal",
@@ -1322,6 +1326,7 @@
       "costume": "The hearth-mother: a kettle always on, an apron, flour on the sleeves; calls everyone 'love'.",
       "archetype": "the hearth-mother",
       "accent": "#ED8A3C",
+      "sound": "patron_ember",
       "likes": [
         "heal",
         "protect",
@@ -1553,6 +1558,7 @@
       "costume": "The thunder sky-father, played big and theatrical: a beard of cloud, a lightning rod carried like a sceptre. Has a rival Thunder-Father (a future patron).",
       "archetype": "the thunder sky-father",
       "accent": "#4E8DD1",
+      "sound": "patron_overcast",
       "likes": [
         "storm",
         "kill",
@@ -1798,6 +1804,7 @@
       "costume": "The love goddess, played as a wedding planner: a clipboard, a seating chart, and spools of red thread.",
       "archetype": "the love goddess",
       "accent": "#D879AF",
+      "sound": "patron_matchmaker",
       "likes": [
         "protect",
         "mercy",
@@ -2015,6 +2022,7 @@
       "costume": "The fate-spinner, played as an auditor: a loom of ledger tape and an abacus of beads that clicks while she listens.",
       "archetype": "the fate-spinner",
       "accent": "#9C82D7",
+      "sound": "patron_weaver",
       "likes": [
         "hold",
         "trick",

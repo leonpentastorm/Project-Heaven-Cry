@@ -314,6 +314,10 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
   /** The Chaplain's patron (a row's fx names its holder) and its light: the data's accent. */
   const patronOf = (e: any): string | null => e.patron || (K.patronOfUnit ? K.patronOfUnit(e.target || e.unit) : null);
   const accOf = (pat: string | null) => accentOf(pat, pat ? (FAITH_PATRON as any)[pat]?.accent : null);
+  /** 0.33: the patron's own layer over the shared choir (its data's `sound`; none: the choir alone). */
+  const patronLayer = (pat: string | null | undefined, p: Pt | null, o: { gain?: number; delay?: number } = {}) => {
+    const snd = pat ? (FAITH_PATRON as any)[pat]?.sound : null; if (snd) play(snd as Sfx, p, { gain: o.gain ?? 0.8, delay: o.delay ?? 140 });
+  };
   /** Where a prayer lands: each unit it touched answers on its own token (an ally rises in the light, a foe jolts back
    *  from it), a ring in the light closes on it; a storm's wound is a bolt from above (its element: the hurt plays the
    *  impact and its sound). Nothing touched but a state: the prayer's own name (its data's `name`) where it lands. */
@@ -321,10 +325,14 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
     const hits: string[] = Array.isArray(e._hits) ? e._hits : [];
     if (e._el === 'shock' && hits.length) play('thunder' as Sfx, at(posAny(hits[0])), { gain: 0.9, delay }); // the storm's prayers: thunder as the bolts land
     const side = (id: string) => (K.sideOf ? K.sideOf(id) : null), mine = K.sideOf ? K.sideOf(e.unit) : null;
+    const wounds = prayerWounds(prayerData(e.k === 'miracle' ? { ...e, kind: 'miracle' } : e)); // 0.33: a prayer that wounds lands on a foe with the divine impact
     hits.forEach((id, i) => {
       const q = at(posAny(id)); if (!q) return;
+      const foe0 = !!mine && !!side(id) && side(id) !== mine;
+      if (e._el === 'shock') play('lightning', q, { gain: 0.85, rate: 0.95 + 0.1 * ((i % 3) / 2), delay: delay + i * 60 }); // each bolt cracks; the thunder rolls once
+      else if (wounds && foe0) play('divine_hit', q, { gain: 0.8, delay: delay + i * 60 });
       after(() => {
-        const tt = K.tokOf ? K.tokOf(id) : null, foe = !!mine && !!side(id) && side(id) !== mine;
+        const tt = K.tokOf ? K.tokOf(id) : null, foe = foe0;
         if (from && hits.length > 1 && (from.x !== q.x || from.y !== q.y)) thread({ ...from, y: from.y - from.s * 0.4 }, q, 180, { faint: true, ink, core: '#FFF7DC' });
         fxMarker(q, 'data-phc-prayer-land', id);
         if (e._el === 'shock') bolt(q, ink);
@@ -357,6 +365,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
         // prayer 2.0: the one who prays bows first, then the light travels to the target and its ring lands
         tokenMove(tok, 'bow', 180);
         play('crystal', from || p, { rate: 1.8, gain: 0.45 });
+        patronLayer(e.patron, from || p, { gain: 0.4, delay: 80 }); // a Whisper is prayed to the patron too: its layer, softly
         if (from) { whisperOverHead(e.id, from); rays(from, FAITH_GOLD, 3, 520); }
         if (apart && from) {
           const rebuke = prayerWounds(prayerData(e));
@@ -374,6 +383,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       tokenMove(tok, 'raise', 900); // a Hymn: the hand raised while the face is over the head
       if (apart && from) [-0.25, 0, 0.25].forEach((dx, i) => lightLine({ x: from.x + dx * from.s, y: from.y - from.s * 0.9, s: from.s }, p!, acc, 300, { delay: 200 + i * 40 }));
       play('soul_choir' as Sfx, from || p, { rate: 1.1, gain: 0.7 });
+      patronLayer(e.patron, from || p);
       if (from) faceOverHead(e.patron || '', from, { accent: acc, unit: e.unit });
       if (p) {
         rays(p, acc, 7, 900, 120);
@@ -450,6 +460,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       mark(patronMarkUri(pat || ''), { ...q, y: q.y - q.s * 0.5 }, q.s * 0.45, 700, { glow: acc, from: 1.4, to: 0.9, delay: 60 });
       if (!reducedMotion()) burst('glow', q, q.s * 0.9, 240, { color: '#FFFFFF', blend: 'screen', delay: 200 });
       play('crystal', q, { rate: 0.7, gain: 0.5 });
+      play('divine_hit', q, { gain: 0.75, delay: 180 }); // 0.33: the mark lands with the divine impact
       floatText(chaplainWord(e), { ...q, y: q.y - q.s * 0.75 }, FAITH_INK, { small: true, delay: 220 });
     },
     ward_seal(e: any) {
@@ -479,6 +490,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
       if (from) { if (!reducedMotion()) burst('glow', { ...from, y: from.y - from.s * 0.5 }, from.s * 0.5, 300, { color: acc, blend: 'screen' }); lightLine({ ...from, y: from.y - from.s * 0.4 }, q, acc, 200, { delay: 80 }); }
       if (!reducedMotion()) { ring(q, acc, 500, { from: 0.4, to: 1.0, width: 2, delay: 260 }); ring(q, acc, 600, { from: 0.4, to: 1.35, width: 1.5, delay: 340 }); }
       play('crystal', q, { rate: 1.5, gain: 0.4, delay: 260 });
+      play('divine_hit', q, { gain: 0.65, rate: 1.1, delay: 260 });
       floatText(chaplainWord(e), { ...q, y: q.y - q.s * 0.75 }, FAITH_INK, { small: true, delay: 280 });
     },
     holy_dread(e: any) {
@@ -517,6 +529,7 @@ export function faithHandlers(K: FaithKit): Record<string, (e: FxEvent) => void>
         onLand: () => {
           const fp = o.focus && o.focus !== 'map' ? at(o.focus) : null;
           play('feel_residue_holy' as Sfx, fp, { rate: 0.9, gain: 0.8 });
+          patronLayer(e.patron, fp, { gain: 0.9, delay: 60 });
           if (fp && !reducedMotion()) ring(fp, acc, 900, { from: 0.3, to: 2.2, width: 4 });
           area.slice(0, 25).forEach((k, i) => { const q = at(k); if (q) after(() => { rays(q, acc, 3, 700); if (!reducedMotion()) burst('glow', q, q.s * 1.3, 700, { color: acc, blend: 'screen' }); }, i * 25); });
           // 0.33: every unit the Miracle touched answers on its own token (the prayer's landing, as a Hymn's)
