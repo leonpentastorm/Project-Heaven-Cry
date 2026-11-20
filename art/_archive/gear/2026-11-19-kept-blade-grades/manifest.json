@@ -12420,6 +12420,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lumeri_votive_torch--fine",
+      "path": "art/icons/gear/weapon-lumeri_votive_torch--fine.png",
+      "sha256": "853be208abe301f170823534fbc02b88947a6be9f86979760d98c72b1fa48f9b",
+      "label": "Lumeri votive torch — Fine",
+      "family": "weapon-lumeri_votive_torch",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--fine.png",
+        "sha256": "6f944d28a7b6c429a9174ccd84120bed5e4bf4a54d88c1ebdfdfc120d96a0b72"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lumeri_votive_torch--fine.png",
+        "sha256": "853be208abe301f170823534fbc02b88947a6be9f86979760d98c72b1fa48f9b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_votive_torch--fine.txt",
+        "sha256": "657e6be22bbf4cd08b84b2f27344c4fbae844ca54b3aa98751fafd3df18bf7f5"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lumeri_votive_torch.png",
+          "sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch--fine.png"
+      },
+      "export_hashes": {
+        "256": "979a162663f876c6194292b4de044a3a3d7202d547507bbf9ebe0e31be3f9c41",
+        "128": "08c24986c9d7c8c148903b3ef0c5ba72a397d3ee252a5a48a7c8a798890482a8",
+        "64": "a7c08c6f61b3b4699fd0e3a6f6bd37d555856e04cfe0d79480386a5f32296cbe",
+        "32": "41c446451dbd59c5f42bbf76a5284107e3b6310ef5e025e0901a388028421b47"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-lumeri_votive_torch",
+      "outline": {
+        "solid_alpha_iou": 0.9715855174349447,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
