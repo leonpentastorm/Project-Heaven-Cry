@@ -13526,9 +13526,10 @@ new engine pieces"); each is listed in item 7110. **Every number here is PROVISI
 7102. **Given in 0.33 (the rows).** The **Heartfire elite** holds Durability's door item (Challenge at its Durability 3;
       Slam needs 5); it Challenges when two characters or more stand within 2 tiles (want **4.5**, **+1** a foe
       reached, min **2**, once a turn).
-      A **skulker** (tag `skulk`: Survival's flanking Minions and Soldiers) holds Tag and Ghost Kill: from Hidden it
-      Tags a character that can't see it (want **5.5**, once a turn: the character is Marked, so it can't hide), and a
-      kill nobody sees puts it back in Hidden. A **faithful** foe (tag `faithful`) keeps Holy Father Nerukhan
+      A **skulker** (tag `skulk`: Survival's flanking Minions and Soldiers) holds Tag and Ghost Kill: a Soldier skulker
+      from Hidden Tags a character that can't see it (want **7.5**, above its Suppress (7), once a turn, `if: self_tier soldier`: the character
+      is Marked, so it can't hide; a Minion's Tag cost it a shot and gave four Channelers 3 to 4 clears of 40, so only
+      the Soldier wants it), and a kill nobody sees puts any skulker back in Hidden. A **faithful** foe (tag `faithful`) keeps Holy Father Nerukhan
       (Devotion **3**, Faith **1**). The **Heart adept** keeps Mother Ember (Devotion **3**, Faith **1**); the **Heart
       sovereign** Mother Ember (Devotion **6**, Faith **3**).
 7103. **Not given to any row (built, data only to add):** Retort (a class move held by key works, `class:defender.retort`;

@@ -102,8 +102,8 @@ describe('rules 1.83 item 7104: an enemy with a prayer sheet whispers', () => {
 
 const SKULK_SEED = 'DOORS183-T2'; // (a seed whose end-of-turn look does not spot the skulker first)
 describe('rules 1.83 item 7102: a skulker Tags from the dark', () => {
-  it('a Hidden skulker Tags a foe that cannot see it (Marked), then fights on', () => {
-    const f = fight([{ weapon: 'hellraiser_service_rifle' }], [{ tier: 'minion', weapon: 'service_pistol', at: 'H6', tags: ['skulk'], hidden: true }], SKULK_SEED);
+  it('a Hidden Soldier skulker Tags a foe that cannot see it (Marked), then fights on', () => {
+    const f = fight([{ weapon: 'hellraiser_service_rifle' }], [{ tier: 'soldier', weapon: 'service_pistol', at: 'H6', tags: ['skulk'], hidden: true }], SKULK_SEED);
     const a = f.pcs[0], e = f.foes[0];
     expect(e.hidden).toBeTruthy();
     f.cb.map = { ...f.cb.map, dark: true } as any; // a dark map: the character's eyes reach half as far off the lit tiles, so it cannot see the skulker's tile

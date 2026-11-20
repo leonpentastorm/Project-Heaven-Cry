@@ -731,7 +731,7 @@
       "skulk": {
         "hold": ["verb:shadow.tag", "skill:ingenuity.3"],
         "wants": [
-          { "item": "verb:shadow.tag", "action": "tag", "want": 5.5, "per_turn": 1 }
+          { "item": "verb:shadow.tag", "action": "tag", "want": 7.5, "if": { "self_tier": ["soldier"] }, "per_turn": 1 }
         ],
         "source": "rules 1.83 items 7100, 7102",
         "provisional": true
