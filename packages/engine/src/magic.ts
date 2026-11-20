@@ -11,7 +11,7 @@ import {
   sigilMult, soulMult, elementalMult, maxSigilWords, glyphAp, sigilCoreSaving, sigilRangeBonus, sigilDurationBonus,
   soulCastAp, soulCostSaving, soulRangeBonus, syphonMult, strainLimit, swellFree, saveBonus, strengthTable, hasEvoker, hasEmanator, carriesEvoker, carriesEmanator, carriesMpFocus, hasAttuner, carriesVisualizer, hasVisualizer, NEEDS_EVOKER, NEEDS_EMANATOR, NEEDS_MP_FOCUS, coresCarried, mpNow, evoChargeNow, freePumps, migrateDesign, schoolSide, CORE_CHARGE, coreChargeOf,
 } from './character';
-import { say, type Combat, type Unit, alwaysSeen, bossInTheOpen, dist, lineOfSight, standable, refOf, coverTileFor, coverBonus, showAttacker, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
+import { say, type Combat, type Unit, alwaysSeen, bossInTheOpen, dist, lineOfSight, sightBlockers, standable, refOf, coverTileFor, coverBonus, showAttacker, emitFx, fxFell, noteCrit , dropNailed, dropStuck, rollInjury, displace, swapUnits, stepEvent } from './combat';
 import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
@@ -877,14 +877,16 @@ export function formSize(d: OutburstDesign, stage?: number): number {
 /** How far the heart reaches for Heart Overwatch and the aim: Bolt and Burst their range, Wave and Lance their length,
  * Aura its radius. */
 export function heartReach(m: MagicUnit, d: OutburstDesign): number { const f = formOf(d); return f === 'bolt' || f === 'burst' ? designRange(m, d) : formSize(d); }
-const XY = (k: string) => k.split(',').map(Number) as [number, number];
+// one comma (every tile key): the two numbers without split's arrays (0.33 engine speed: asked for every tile an area plan walks); anything else as split reads it
+const XY = (k: string): [number, number] => { const i = k.indexOf(','); return i >= 0 && k.indexOf(',', i + 1) < 0 ? [Number(k.slice(0, i)), Number(k.slice(i + 1))] : (k.split(',').map(Number) as [number, number]); };
 const onGrid = (cb: Combat, k: string) => { const [x, y] = XY(k); return x >= 0 && y >= 0 && x < (cb.map as any).w && y < (cb.map as any).h; };
 /** The tiles a release covers (spec: rules 1.5, Shapes): Bolt the aim; Wave a cone from the caster toward the aim
  * (within its length, about 45 degrees: the flamer's and Sigil's cone test); Burst a radius around the aim; Aura a
  * radius around the caster (its own tile left out); Lance a straight 8-direction line from the caster, walls stop it. */
 export function outburstArea(cb: Combat, u: Unit, d: OutburstDesign, aim: string, stage?: number): string[] {
   const f = formOf(d), n = formSize(d, stage ?? u.mg?.held?.stage), ether = d.modules.includes('ether'), out: string[] = [];
-  const seen = (k: string, from: string) => ether || k === from || lineOfSight(cb, from, k);
+  // the walls once for the whole area, when first needed (0.33 engine speed: a line per tile built them per tile)
+  let walls: Set<string> | undefined; const seen = (k: string, from: string) => ether || k === from || lineOfSight(cb, from, k, false, (walls ||= sightBlockers(cb)));
   if (f === 'bolt') return [aim];
   const [cx, cy] = XY(u.pos);
   if (f === 'burst' || f === 'aura') {

@@ -20,7 +20,7 @@ import type { Character } from './character';
 import { isMedicChar, magazineSize } from './character';
 import { WEAPON } from './data';
 import { type Combat, type Unit, type AttackMode, isMelee, attackApCost, effectiveRange, analyzeCost, analyzeRange, stimAp, reloadBothAp, reloadOffAp, reloadHands, loadMagazine, clearJam, coverOffAp, canJam, moveBlock, moveHowBlock, movePlan,
-  sprintTiles, apForTiles, paths, movePaths, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, dist, objectsOf, twoJammingGuns, cardFight, type MoveHow } from './combat';
+  sprintTiles, apForTiles, paths, movePaths, meleeReachOf, opticBands, MAX_RANGE_BANDS, lineOfSight, sightBlockers, dist, objectsOf, twoJammingGuns, cardFight, type MoveHow } from './combat';
 import { price, whyNot, needs, creditFor, setAp, apFor } from './effects/cost';
 import { COST_SITE_IDS, type CostSite } from './effects/stats';
 import { emitStory } from './effects/hooks';
@@ -252,10 +252,11 @@ export function reachOf(cb: Combat | null, u: Unit, what: ReachWhat, o: { step?:
 /** The tiles that reach covers, each with its range band (0: the first, where there is no penalty). */
 export function reachTiles(cb: Combat, u: Unit, what: ReachWhat, o: { step?: number; fists?: boolean } = {}): Map<string, number> {
   const r = reachOf(cb, u, what, o), out = new Map<string, number>(), solid = new Set(cb.map.solid);
+  let walls: Set<string> | undefined; // the sight walls once for the map, when first needed (0.33 engine speed)
   for (let y = 0; y < cb.map.h; y++) for (let x = 0; x < cb.map.w; x++) {
     const k = x + ',' + y; if (k === u.pos || solid.has(k)) continue;
     const d = dist(u.pos, k);
-    if (d <= r.max && (!r.los || lineOfSight(cb, u.pos, k))) out.set(k, r.band ? Math.max(0, Math.ceil(d / r.band) - 1) : 0);
+    if (d <= r.max && (!r.los || lineOfSight(cb, u.pos, k, false, (walls ||= sightBlockers(cb))))) out.set(k, r.band ? Math.max(0, Math.ceil(d / r.band) - 1) : 0);
   }
   return out;
 }

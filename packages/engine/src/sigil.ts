@@ -14,7 +14,7 @@ import {
 } from './sigilwords';
 export * from './sigilwords';
 import { say, objectAtLevel,
-  type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, unitSees, objectsOf, objectsAt, coverTileFor, coverBonus, showAttacker, emitFx, noteCrit, sightFx,
+  type Combat, type Unit, dist, xy, key, refOf, standable, lineOfSight, sightBlockers, unitSees, objectsOf, objectsAt, coverTileFor, coverBonus, showAttacker, emitFx, noteCrit, sightFx,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction, displace
 } from './combat';
 import { type Rng } from './rng';
@@ -592,11 +592,11 @@ function relayChains(cb: Combat, u: Unit, sp: Spell, depth: number): { ally: Uni
 export function evokeOrigins(cb: Combat, u: Unit, p: Pattern | string): { tile: string; ok: boolean; why?: string; mode?: Facing['mode']; dir?: Dir }[] {
   const pat = typeof p === 'string' ? findPattern(cb, p, u.pos) : p; if (typeof pat === 'string') return [];
   const er: any = emit(cb, 'evoke_reach', { u, pattern: pat, reach: 1, cb }), reach = Math.max(1, er.reach || 1), out: { tile: string; ok: boolean; why?: string; mode?: Facing['mode']; dir?: Dir }[] = [];
-  const seen = new Set<string>();
+  const seen = new Set<string>(); let walls: Set<string> | undefined; // the sight walls once, when first needed (0.33 engine speed)
   for (const g of pat.tiles) for (const k of tilesAround(g, reach)) {
     if (seen.has(k) || !inBounds(cb, k)) continue; seen.add(k);
     const d = Math.min(...pat.tiles.map((t) => dist(t, k)));
-    if (d > 1 && !pat.tiles.some((t) => dist(t, k) <= reach && lineOfSight(cb, k, t))) continue;
+    if (d > 1 && !pat.tiles.some((t) => dist(t, k) <= reach && lineOfSight(cb, k, t, false, (walls ||= sightBlockers(cb))))) continue;
     const blocked = !standable(cb.map, k) || cb.units.some((x) => x !== u && !x.dead && x.pos === k);
     const f = facingFrom(pat, k);
     if (typeof f === 'string') out.push({ tile: k, ok: false, why: f });
@@ -1288,7 +1288,8 @@ function turretFire(cb: Combat, rng: Rng, z: Zone) {
  * creature of the other side), ties the lowest HP, then the engine's order; one per missile. */
 export function turretAim(cb: Combat, sp: Spell, at: string, side: 'pc' | 'foe', by: Unit | null): { range: number; reach: string[]; targets: Unit[] } {
   const range = sp.reach && sp.missile !== 'relay' ? sp.range + (by?.mg?.rangeBonus || 0) : 1;
-  const sees = (k: string) => dist(at, k) <= range && (sp.missile === 'appear' || dist(at, k) <= 1 || lineOfSight(cb, at, k));
+  let walls: Set<string> | undefined; // the sight walls once, when first needed (0.33 engine speed)
+  const sees = (k: string) => dist(at, k) <= range && (sp.missile === 'appear' || dist(at, k) <= 1 || lineOfSight(cb, at, k, false, (walls ||= sightBlockers(cb))));
   const reach = tilesAround(at, range).filter((k) => k !== at && inBounds(cb, k) && sees(k));
   const targets = cb.units.map((v, i) => ({ v, i })).filter(({ v }) => !v.dead && v.pos !== at && !(sp.kin && v.side === side) && !(sp.harmful && (v.downed || v.surrendered) && !sp.subjects.some(isBoonWord)) && !(v.hidden && v.side !== side) && sees(v.pos))
     .sort((a, b) => dist(at, a.v.pos) - dist(at, b.v.pos) || a.v.hp - b.v.hp || a.i - b.i).slice(0, sp.missiles).map((x) => x.v);

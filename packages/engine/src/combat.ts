@@ -539,7 +539,17 @@ export function walkable(map: MapDef, objs: MapObject[], from: string, to: strin
   return false;
 }
 /** Tiles a character may stand on outside a fight. */
-export const standable = (map: MapDef, k: string) => { const [x, y] = k.split(',').map(Number); return x >= 0 && y >= 0 && x < map.w && y < map.h && !map.solid.includes(k) && !map.cover.includes(k) && !(map.full || []).includes(k); };
+export const standable = (map: MapDef, k: string) => {
+  // the first two numbers of "x,y" as split(',').map(Number) reads them, without the two arrays (it is asked very often)
+  const i = k.indexOf(','); if (i < 0) return false; const j = k.indexOf(',', i + 1), x = Number(k.slice(0, i)), y = Number(j < 0 ? k.slice(i + 1) : k.slice(i + 1, j));
+  return x >= 0 && y >= 0 && x < map.w && y < map.h && !tileSet(map.solid).has(k) && !tileSet(map.cover).has(k) && !(map.full ? tileSet(map.full).has(k) : false); };
+/** 0.33 engine speed: a map's tile list as a set, made once per list (standable is asked for every tile of every path
+ * search; includes() walked the list each time). Made again if the list's length changed (a list built by pushing). */
+const TILE_SETS = new WeakMap<readonly string[], { n: number; s: Set<string> }>();
+function tileSet(list: readonly string[]): Set<string> {
+  const m = TILE_SETS.get(list); if (m && m.n === list.length) return m.s;
+  const s = new Set(list); TILE_SETS.set(list, { n: list.length, s }); return s;
+}
 
 /** Tiles between two tiles on the grid (diagonals count 1). */
 export const dist = (a: string, b: string) => { const [ax, ay] = xy(a), [bx, by] = xy(b); return Math.max(Math.abs(ax - bx), Math.abs(ay - by)); };
@@ -1107,16 +1117,20 @@ export function litAt(cb: Combat, k: string): boolean {
 /** walls: sightBlockers(cb), from a caller that asks about many eyes or many tiles at once (building it is four times the cost of walking one line).
  * t: the unit looked at, when the question is "does u see t" (rules 1.70 item 5545, P4: its stat `seen_range` widens or
  * narrows the range at which it is seen; asked only when something in the fight answers it). */
-export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string>, t?: Unit | null): boolean {
+export function unitSees(cb: Combat, u: Unit, k: string, walls?: Set<string> | (() => Set<string>), t?: Unit | null, add?: () => number): boolean {
   if (u.dead || u.downed || u.eyes === false) return false; // Classes 3.0 P7: a unit with no eyes of its own sees nothing
-  return dist(u.pos, k) <= eyeReach(cb, u, k, t) && (k === u.pos || lineOfSight(cb, u.pos, k, false, walls));
+  return dist(u.pos, k) <= eyeReach(cb, u, k, t, add) && (k === u.pos || lineOfSight(cb, u.pos, k, false, typeof walls === 'function' ? walls() : walls));
 }
+/** 0.33 engine speed: one sight question asked of many eyes (sideSeesUnit, visibility) works out what does not depend on
+ * the eye once, when first needed: the walls (sightBlockers) and the looked-at unit's seen_range (seenRangeOf). Nothing
+ * changes between the eyes, so each answer is the one each eye would have worked out (the replays hold it). */
+const once = <T>(f: () => T): (() => T) => { let done = false, v: T; return () => { if (!done) { v = f(); done = true; } return v!; }; };
 /** THE one sight range (rules 1.76 item 6403): how far u's eyes reach to tile k: its vision, halved off a lit tile on a
  * dark map without dark sight, plus the looked-at unit's `seen_range` (Prone's, rules 1.76 item 6402); never below 0.
  * unitSees and the enemy's own aim (enemyHuntTile, the firing-position score) read it, and the items that stretch or
  * shrink a sight (Wind on the Skin, Lowland Born: the 0.32 merge, M2; Chain Smoker is a seen_range row); no second copy. */
-export function eyeReach(cb: Combat, u: Unit, k: string, t?: Unit | null): number {
-  return Math.max(0, (litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2)) + seenRangeOf(cb, t));
+export function eyeReach(cb: Combat, u: Unit, k: string, t?: Unit | null, add?: () => number): number {
+  return Math.max(0, (litAt(cb, k) || u.darkSight ? (u.vision || 12) : Math.floor((u.vision || 12) / 2)) + (add ? add() : seenRangeOf(cb, t)));
 }
 /** Rules 1.70 item 5545 (P4): the tiles a unit's stat `seen_range` adds to the range at which others' eyes see it (0 when
  * nothing in the fight answers the stat: the sight test stays as fast as it was). */
@@ -1129,7 +1143,8 @@ export function visibility(cb: Combat, side: 'pc' | 'foe' = 'pc') {
   for (const t of cb.units) if (t.side !== side && !t.dead) {
     // A Hidden unit isn't seen (spec: Helpful states): at most sensed, by Sensory range.
     // rules 1.70 P4: a unit with a seen_range of its own is looked at by each eye (the tile set holds plain sight)
-    let isSeen = (t.shownTo === side || (seenRangeOf(cb, t) ? eyes.some((u) => unitSees(cb, u, t.pos, walls, t)) : tiles.has(t.pos))) && !t.hidden, isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3));
+    const add = once(() => seenRangeOf(cb, t));
+    let isSeen = (t.shownTo === side || (add() ? eyes.some((u) => unitSees(cb, u, t.pos, walls, t, add)) : tiles.has(t.pos))) && !t.hidden, isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3));
     if (sightHooked(cb)) { const r = seesHook(cb, side, t, null, isSeen, isSensed); isSeen = r.seen; isSensed = !isSeen && r.sensed; }
     if (isSeen) seen.add(t.id); else if (isSensed) sensed.add(t.id);
   }
@@ -1156,11 +1171,12 @@ function seesHook(cb: Combat, side: 'pc' | 'foe', t: Unit, by: Unit | null, seen
  * too (noteSighted; test/sight-order.test.ts holds the two together). `readShown` false leaves out the shot that shows
  * (Unit.shownTo, rules 1.61 item 4963): the sight words data reads (tactics.ts sightOf) are judged by eyes alone, so
  * no Shadow outcome moves (rules 1.61 item 4970). */
-export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly = false, walls0?: Set<string>, readShown = true): boolean {
+export function sideSeesUnit(cb: Combat, side: 'pc' | 'foe', t: Unit, onMapOnly = false, walls0?: Set<string> | (() => Set<string>), readShown = true): boolean {
   if (t.side === side) return true;
   if (t.dead) return false;
-  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !inBounds(cb, t.pos), walls = t.hidden || off ? undefined : walls0 || sightBlockers(cb);
-  let isSeen = !t.hidden && !off && ((readShown && t.shownTo === side) || eyes.some((u) => unitSees(cb, u, t.pos, walls, t)));
+  const eyes = cb.units.filter((u) => u.side === side && !u.dead && !u.downed), off = onMapOnly && !inBounds(cb, t.pos);
+  const walls = walls0 || once(() => sightBlockers(cb)), add = once(() => seenRangeOf(cb, t));
+  let isSeen = !t.hidden && !off && ((readShown && t.shownTo === side) || eyes.some((u) => unitSees(cb, u, t.pos, walls, t, add)));
   if (sightHooked(cb)) { const isSensed = !isSeen && eyes.some((u) => dist(u.pos, t.pos) <= 1 + Math.floor((u.sensory || 0) / 3)); isSeen = seesHook(cb, side, t, null, isSeen, isSensed).seen; }
   return isSeen;
 }
@@ -1183,7 +1199,7 @@ export function moveFx(cb: Combat, u: Unit, path: string[], how: string, walked?
 }
 /** A mover's sight where it stands now, as moveFx's walked entry ('1' or '0' for the pc side, then the foe side). */
 export const sightHere = (cb: Combat, u: Unit) => (sideSeesUnit(cb, 'pc', u) ? '1' : '0') + (sideSeesUnit(cb, 'foe', u) ? '1' : '0');
-const seenIds = (cb: Combat, side: 'pc' | 'foe', onMapOnly = false) => cb.units.filter((t) => t.side !== side && !t.dead && sideSeesUnit(cb, side, t, onMapOnly)).map((t) => t.id);
+const seenIds = (cb: Combat, side: 'pc' | 'foe', onMapOnly = false) => { const walls = once(() => sightBlockers(cb)); return cb.units.filter((t) => t.side !== side && !t.dead && sideSeesUnit(cb, side, t, onMapOnly, walls)).map((t) => t.id); };
 /** What a walker's side saw after each of its steps (moveUnit): at, the walker's tile; ids, the hostiles seen then. */
 export interface WalkSight { by: string; side: 'pc' | 'foe'; steps: { at: string; ids: Set<string> }[] }
 /** The walker's tile from which this unit stayed in (in = true) or out of its side's sight to the walk's end (the step
