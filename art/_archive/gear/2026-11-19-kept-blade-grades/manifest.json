@@ -7596,6 +7596,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-assault_helm--relic",
+      "path": "art/icons/gear/armour-assault_helm--relic.png",
+      "sha256": "da6898489781ca001e01c1e806ba7b5136b52ab983bd2cda5b3b3d4af81610c8",
+      "label": "Assault Helm — Relic",
+      "family": "armour-assault_helm",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-assault_helm--relic.png",
+        "sha256": "2cb46d400b177e6183af980853aa50cddb59305cf5d938a4249233fcd9ce90d4"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-assault_helm--relic.png",
+        "sha256": "da6898489781ca001e01c1e806ba7b5136b52ab983bd2cda5b3b3d4af81610c8"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-assault_helm--relic.txt",
+        "sha256": "6263a41b1610b15f78024261adb5fffd3f5cb295338e838ee8546c59f31567b4"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-assault_helm--relic/v1/source.png",
+          "sha256": "5fba0fff3b7e3add9f501fbd88e411ecf4964107a75c0ecfa7bf9ede0d08f61c"
+        },
+        {
+          "path": "art/icons/gear/armour-assault_helm.png",
+          "sha256": "c171a27223a1bf4a108f774695087d2fc3d2074789e196f0661a740013f20e0a"
+        },
+        {
+          "path": "art/icons/gear/armour-assault_helm--masterwork.png",
+          "sha256": "d04a5ca71a656e1e65265d3390bf3aa9c9309fcc3f5051bd03f5db557da0108b"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm--relic.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm--relic.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm--relic.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm--relic.png"
+      },
+      "export_hashes": {
+        "256": "3d864c32a96b62a2189b35ba967766e1ac9972242c204af9e6974eb11002ba77",
+        "128": "b5a44d866cba3b7e8819140d8c547abb5a208c511c811cbcdda44e06371b66ce",
+        "64": "df4e1e89a00a59c348b8160f057f2778d7553d11188a97812d4c2fa4f43af730",
+        "32": "4df872a3037dccff007d639534e02b01a591600a6bd5eb6102149bd4f411c713"
+      },
+      "grade": "relic",
+      "standard_id": "armour-assault_helm",
+      "outline": {
+        "solid_alpha_iou": 0.9535728061586434,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 18,
+        "different_pixels_64": 67
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
