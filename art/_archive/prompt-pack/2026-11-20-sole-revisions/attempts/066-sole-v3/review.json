@@ -1,0 +1,91 @@
+{
+  "id": "fork.sigil.running_script",
+  "src": "/workspace/generated_images/exec-ede022c5-5b88-4067-9c42-31908e9d5868.png",
+  "job": {
+    "id": "fork.sigil.running_script",
+    "number": 66,
+    "file": 3,
+    "path": "art/icons/forks/sigil-running-script.png",
+    "references": [
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-script-on-charcoal.png",
+      "art/icons/forks/sigil-running-script.png"
+    ],
+    "prompt": "Precise fictional RPG vector-style mascot icon edit. Use attached ORIGINAL image1 shown on charcoal solely to see the original design. Image2 is its transparent original. Reproduce that exact crouching Wick pose and original square/oval glyph and trailing chain with one small half-completed three-stroke angular rune above-right of the square near the drawing hand. No other changes to shapes, pose, face or line weight. IMPORTANT output preparation: render the ink as SOLID BLACK on transparent alpha in this intermediate file, so every interior negative-space cutout is fully TRANSPARENT: screen surrounding pixel eyes, spaces between limbs and cape, chest cutout surrounding cross, square-glyph interior, oval-glyph interior and trailing-link interiors. No white paint or white underfill, no grey ink, no spatter or texture; hard confident single flat black silhouette and transparent holes. The game exporter will normalize inkRGB to purewhite without changing alpha. Exact originalcomposition, size, placement, tilted screen with angular pixel eyes and smiling mouth, two tiny upper-right screen fasteners, capelet, chest cross, left boot forward and right leg crouched. Only new tiny half-drawn three-straight-stroke rune beside existing glyph nearer stylus. One1024square PNG with genuine transparency. No background.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-script-on-charcoal.png": "b0ea08f93854243725596395646056b0249294166f11b9a3d4ddafa4fbfc8ed7",
+      "art/icons/forks/sigil-running-script.png": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
+    },
+    "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+    "technical_export_note": "Intermediate flat black ink requested to preserve negative-space alpha; if faithful, exporter may normalize visible RGB to purewhite without modifying alpha or geometry. No code-created drawing or compositing."
+  },
+  "preflight": {
+    "id": "fork.sigil.running_script",
+    "own": "ba080be6dd76776da57322b06e257c8e30d4da01",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "run": "sole-20261120-1615",
+    "latest_comment": 7044738722
+  },
+  "clock": {
+    "current_time": "2026-11-20 16:43:16 UTC"
+  },
+  "attempt": "066-sole-v3",
+  "review": "Best visual candidate: original crouch, pixel face, cape, chest cross and square/oval/link glyphs visually retained; added small three-stroke rune near hand. Black-ink intermediate fixes transparent cutouts. Technical RGB normalization to white and full-canvas resize only previewed, no creative code drawing. Strict unchanged-pixel requirement NOT passed: alpha>=127 IoU outside added-rune ROI x610..689,y585..679 is0.9349837943616609,6379 XOR pixels. Do not claim exact preservation. Retain as unselected partial candidate, original production untouched; contribution0.",
+  "source_sha256": "aa40b2e5244bb774377736ebd8cb231cb542fafa8ee5a6df67c1474d44ac4305",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "native_mode": "RGBA",
+  "native_alpha_bbox": [
+    33,
+    150,
+    1224,
+    1115
+  ],
+  "references": [
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-script-on-charcoal.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v3/references/00-running-script-on-charcoal.png",
+      "sha256": "b0ea08f93854243725596395646056b0249294166f11b9a3d4ddafa4fbfc8ed7"
+    },
+    {
+      "original_path": "art/icons/forks/sigil-running-script.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v3/references/01-sigil-running-script.png",
+      "sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
+    }
+  ],
+  "technical_previews": {
+    "1024": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v3/preview-1024.png",
+      "sha256": "bc60428408a12d661eeaa6cbecff0f8b9b334ebc75ed2f06bfcdbf470a836272"
+    },
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v3/preview-256.png",
+      "sha256": "ece70848a4a07bcd9b102bd969ea12732b0149588192914f668a432bf14ad308"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v3/preview-128.png",
+      "sha256": "224aacdf0d95a4f9142ad4a27dbb7985ecbffb3c3ec55f90038c971e1df54c75"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v3/preview-64.png",
+      "sha256": "5903ccd3a29514c721fb935c2242d8f6f583254c15f244f045c9400e923db071"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v3/preview-32.png",
+      "sha256": "fcc1577715116fc14b301bab940e910ac113905820f16b7f1a9bdf613a8f3328"
+    }
+  },
+  "selected": false,
+  "count_contribution": 0,
+  "status": "quality-rejected",
+  "production_approved": false,
+  "implementation_ready": false
+}
