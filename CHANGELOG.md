@@ -8,6 +8,24 @@ Project Heaven Cry is numbered **0.MINOR.PATCH** until the 1.0 release.
 
 The game shows its version in the corner of the title screen and in every "Report a problem" bundle (`gameVersion`), read from the root `package.json` at build time (`apps/web/src/version.ts`).
 
+## 0.33.0 — the rules owed from 0.32, enemy doors, I'll narrate from the desk, the outside playtest's fixes (rules 1.82 to 1.89)
+
+- **The rules owed from 0.32:** Stand Behind Me, Parting Cut, Field Repair as Improvisation's fourth perk, the Breaker's **Hurl** and Grenadier's Arm on one throw rule, a Whisper from holy ground, class dials (every one 1 for now), Borrowed Time on an old save. Surprise in the approach is built and **switched off** (Leon, 20 Nov: "we need more thinking on this").
+- **Silent:** an attack from Hidden that is not silent gives your tile away and keeps you Hidden (it used to reveal you). Athletics' Defense from the first point is measured and stays off until Leon decides.
+- **Enemies use the doors:** Challenge, Tag, Ghost Kill and Whispers from an enemy's faith; the Heart adept Bonds, Tugs and Snaps; the Heartfire elite Slams. Enemies foresee Pressure, read your Answers and weigh a Figment.
+- **Balance:** Rally gives 3 AP at every step (and sheds Pressure from 4 points); Brief takes 2 AP off your next action (more from 4 and 8 points); Name the Sinner makes your prayers deal 40% more to a Judged or Marked foe.
+- **I'll narrate:** the whole turn from the Narrator's desk (the AI's turn as a form), the Narrator's notes and map, the seat's view; ground items, spawns and drops as rows to add.
+- **Survival:** at a shrine's altar anyone can consume an **Essence of Experience**, focus or not (it is not the shrine's one thing); outside a run only someone with a focus in a hand can crack it (Leon, 20 Nov). A gun emptied in one fight starts the next one empty, on purpose.
+- **The outside playtest of live 0.32.0:** SOAKED counts what Guard plates take; the follow strike comes after a hit or a miss, never a natural 1; Challenge, Slam and the push say themselves in the log; Glass Runner's free walk is never a debt; bought special rounds are named and can be loaded into the gun; a technique's preview shows the target's armour; the Evoke and Draw previews; the field's own round in the header; the next point's fork line on Level up.
+- **The fight screen:** a page that draws no frames (some browsers, a hidden window) shows every panel instead of blank tabs; the reward bar and the first pick stay on screen in a narrow window; each action has its own card; a refusal is said once; a new turn starts on Move with nothing chosen; the log reads oldest first; the You card fits at 1280x900; the SHADOW header says what the Eye sees; Whole map clicks act; Space presses Confirm.
+- **Sounds:** a storm bolt's own lightning crack, the divine impact when a prayer wounds, and each patron's own sound over the Hymn's choir (all CC0, credited).
+- **Faster:** the title loads about 0.9 MB instead of 5.3 MB (the engine and the room's overlays load behind it); the bundle split by screen; fight renders and the engine's actions about twice as fast. A page left open across a release warms every screen in the background and offers Reload if one cannot load.
+- **Online:** the site is served by Workers Static Assets (one deploy command); a guest's seat belongs to its browser, and survives a browser whose storage is full; the ping line and a SENDING mark for actions on the way.
+
+**Rules:** 1.82 the rules lane (items 7000-7013); 1.83 enemy doors (7100-7112); 1.84 the human Narrator (7200-7206); 1.85 polish (7300-7305); 1.86 the engine lane (7400-7411); 1.87 balance (7500-7504); 1.88 sounds and the desk (7600-7605); 1.89 the outside playtest, rules side (7700-7715). Hand-offs `docs/design/handoffs/0.33-LANE-*.md`; the balance baseline for Items 2.0 is `docs/design/handoffs/0.33-MEASURES.md`.
+
+**Known and unfinished** (each in `docs/ROADMAP.md`): Surprise in the approach (off); Athletics from the first point (off, waiting on Leon); Echo in a fight (undefined in the spec); the Sigilist bot's clear rate (the Line's shape); the weapon-side fits (with Items 2.0 and Weapon Arts); a host control to free a guest's seat; `deploy_site.py` running a deploy on an unknown argument.
+
 ## 0.32.0 — the nine attributes reworked (rules 1.70 to 1.81)
 
 - **The nine attributes reworked:** every alpha skill has its own ladder of perk steps; every beta and gamma skill has four perks; every fork option is open; a Call costs 3 AP, 2 AP from 5 points and 1 AP from 9 (twice a turn at 10, and the reaction may pay).
