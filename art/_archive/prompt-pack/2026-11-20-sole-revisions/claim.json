@@ -1,0 +1,13 @@
+{
+  "run": "sole-20261120-1615",
+  "branch": "art/2026-11-20-reset-continuation",
+  "issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
+  "claim_comment": 7044738722,
+  "exact_ids": [
+    "fork.sigil.running_script",
+    "kit-rim-wall-corner"
+  ],
+  "status": "active",
+  "first": "fork.sigil.running_script",
+  "notes": "Sole-artist takeover explicitly authorized by Leon. Original destinations unchanged across owner/develop/source branches. Correct mapping File03#066 and File01#013. Scrap Turret held. No blocked request retry."
+}

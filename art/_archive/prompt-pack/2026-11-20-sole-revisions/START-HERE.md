@@ -1,0 +1,5 @@
+# Sole artist: two unfinished corrections
+
+Run sole-20261120-1615, branch art/2026-11-20-reset-continuation. File03 #066 Running Script: localized three-stroke half-glyph addition preserving original. File01 #013 Rim Wall Corner: exact joins/material correction. Original source branch550f80c7d, existing sources match current branch and develop. Exact prompts and reference hashes are in queue.json. Read live issue3 and all comments plus remote deliveries immediately before every imagegen. Native, prompts, references, prior masters/exports and review are retained per attempt. Select only if the actual correction passes; all candidates unapproved. Technical resizes/alpha metrics only in code; creative changes exclusively imagegen.
+
+Integrated verified count508/871; imports/exports/rejected attempts count0. Own gear88/114, remaining26 service-blocked/dependent, including newly rejected SpearMasterwork; peer212/272, remaining60 service-blocked/dependent. No actual image quota in resumed run.

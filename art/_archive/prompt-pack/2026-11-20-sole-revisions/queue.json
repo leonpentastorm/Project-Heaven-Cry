@@ -1,0 +1,44 @@
+[
+  {
+    "id": "fork.sigil.running_script",
+    "number": 66,
+    "file": 3,
+    "path": "art/icons/forks/sigil-running-script.png",
+    "references": [
+      "art/icons/forks/sigil-running-script.png"
+    ],
+    "prompt": "This is fictional RPG game art for Project Heaven Cry. Edit the supplied existing PNG for a specific unfinished art correction. Preserve the supplied image's composition and canvas. Deliver one image only, PNG with genuine transparent alpha, no background or checkerboard. Localized addition only to the attached 1024x1024 Wick icon. Preserve all existing marks: the exact robot's tilted screen, face, fasteners, capelet, lantern-heart cross, crouching body, limbs, stylus curved line, original square glyph within oval ring, the chain-like broken glyphs at right and three fragments. Do not redraw, move, scale, smooth, recolour or simplify any of that artwork. Add ONE small second invented rune of THREE straight strokes, only half finished in a THIN pure-white contour, beside the existing square glyph on the upper/right side nearer Wick's drawing mitten (roughly x620 y700), with its last incomplete stroke trailing toward the drawing hand. It must read as the next glyph already under way. Keep the existing lit glyph exactly in place and unchanged. Pure white flat ink (#FFFFFF), transparent cutouts, no grey, glow, gradients, spatter or extra motion lines. This is an edit of the attached exact picture, not a redesign of the character or pose. Keep the original 1024 square canvas.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/icons/forks/sigil-running-script.png": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
+    },
+    "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
+  },
+  {
+    "id": "kit-rim-wall-corner",
+    "number": 13,
+    "file": 1,
+    "path": "art/sprites/kit/rim/wall-corner.png",
+    "references": [
+      "art/sprites/kit/rim/wall-straight.png",
+      "art/sprites/kit/rim/wall-corner.png"
+    ],
+    "prompt": "This is fictional RPG game art for Project Heaven Cry. Edit the supplied existing PNG for a specific unfinished art correction. Preserve the supplied image's composition and canvas. Deliver one image only, PNG with genuine transparent alpha, no background or checkerboard. Create the corrected 256x256 Rim wall CORNER tile using the first reference's straight wall as the exact paint/material authority and the second reference only for L geometry. Strict top-down orthographic, no perspective. A 128px-thick L joins LEFT edge centred y64..191 to BOTTOM edge centred x64..191. Outer elbow is square at x192,y64; inner elbow at x64,y192. Transparent empty above y64 and right of x192, with empty lower-left notch x0..63,y192..255. Both arms have completely flat cut ends at the cell border with no end outline or end cap: left end exactly y64 through191 inclusive, bottom end exactly x64 through191 inclusive. No opaque pixels on top or right cell edge. Match the attached STRAIGHT exactly: same blue-grey bulkhead value and brushed, worn plate texture, same ivory cap-band width, same thin cyan #8BDEEE light strip through the centre. Carry cap and cyan strip in continuous clean right-angle bends around the corner, meeting the straight reference at each opening's same centreline/height. Top-left light; no cast shadow. Remove the old corner's panel grid, hazard stripes, corner fittings and extra bolts. No new seams, panel grid, rivets, lettering, rounded corners or lighter cap. Transparent canvas right to flat-cut openings. Output one square tile, preserve full canvas and exact half-tile dimensions.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/sprites/kit/rim/wall-straight.png": "b521aa4f20e2b5e5c39c5b50d870fe9f42de50c8f0ff284fb4afdc58547d56e4",
+      "art/sprites/kit/rim/wall-corner.png": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c"
+    },
+    "original_sha256": "7015b73a87efc9ef5a2c46ef8f413dca072af3204c153eac71f516d28b1e863c"
+  }
+]

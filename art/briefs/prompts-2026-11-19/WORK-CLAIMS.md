@@ -2,7 +2,7 @@
 
 Leon explicitly appointed this worker sole artist and directed integration of the stopped peer. Active run `sole-20261120-1615`, branch `art/2026-11-20-reset-continuation`. Issue3 takeover comment7044430497 supersedes the two former producer records. Exact job ownership stays logged before drawing.
 
-Peer tip3f50be292:212 exclusive grade candidates,93 new since shared baseline7038c238. Own continuation88/114 delivered;23 blocked/dependent,3 eligible LegionSpear grades (Masterwork,Relic,Celestial). Next: `weapon-legion_spear--masterwork`. Combined distinct count508/871. Shared imports/exports/attempts count0 new. All candidates remain unapproved with outline review pending.
+Peer tip3f50be292:212 exclusive grade candidates,93 new since shared baseline7038c238. Own continuation88/114 delivered;26 service-blocked/dependent after actual SpearMasterwork moderation rejection (no retry). Next: File03#066 `fork.sigil.running_script` and File01#013 `kit-rim-wall-corner`; exact quality-revision queue at art/_archive/prompt-pack/2026-11-20-sole-revisions/queue.json. Combined distinct count508/871. Shared imports/exports/attempts count0 new. All candidates remain unapproved with outline review pending.
 
 Peer60 pending jobs are service-rejected/dependent; retain exact errors and do not retry them. All older alpha-cleaned imports, originals, native sources, prompts and metadata remain. User-authorized sole ownership covers further eligible work after live/source checks. WarPick/WarHammer are now service-blocked. RunningScript#066 and RimWallCorner#013 have pending quality revisions; inspect exact handoffs before revision. ScrapTurret remains on0.30 HOLD.
 
