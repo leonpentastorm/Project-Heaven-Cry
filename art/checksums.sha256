@@ -2601,7 +2601,7 @@ bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/g
 f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/gear/2026-11-19-unique-melee-bow/web-build-check.json
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
-a4fcbbaff10351c05ad27e4a5e540455a04607966f2aadff9e4daff09c63f9c4  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
+98aa2801a6bb9a3f843f1980a204b28f6cc7e684c650e31b3bfae76ef7fc81f4  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
 1006204c5e813723abfb237b9be15ccb822febfcdcff4f3180aba731f6e9d711  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
@@ -2632,7 +2632,7 @@ fa9b0574d0860c6ec4f1c061021928cbf0f221b3c2073eff49ea225816f5bff8  art/_archive/g
 4539a422f89b173b79fc509303d36d1f49327d82626972f0cfbb5b440c06f424  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-long_draw--fine.json
 54ad9bce4afff6e1e35f06e8acb90ddda1571c52c43ba74c7821632647c53190  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-purifier_flamer--masterwork.json
 5a106830d33315e571ea8b79ba48686d9723d512e7c26ae4c20fffc1091ad5b7  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-short_draw--fine.json
-d2e4be3831868815a4779e2fb3da6b7bb44edfdc31fb1b7078321499ce8c8a0a  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
+87b9890ff3d8f300d4c2356bdade22952b7bdfa3807e2da869a43653aff9d5bd  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
 7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--celestial.png
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png
 35517c194752fe89abea9fea2071f1895d426057487192e0f8744fab4eab9fcf  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-broadback_sabre--fine.png
@@ -2645,6 +2645,7 @@ dfa655b606115eddeda239a6377238d7b5be67ef11db1c662fa3932faf77ddcc  art/_archive/g
 c927804a01123dc4493c197ad0639487dfa7478151ddd0d244395792abef8eeb  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-hellraiser_servo_fist--fine.png
 d41f627c908cdb82d0030478fbfc718a576b94ed4d53b0cdfda598e5f05e4c21  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-hellraiser_servo_fist--masterwork.png
 a3645baabb1f18c0bb48f31476a0e4779c8932a868395a41a3044ce4aa2c6bd3  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-hellraiser_servo_fist--relic.png
+3aac902c12828a2d413e144d7ee5b8b1ea41a6d46bdb87bb4a1cc26a5a5f9022  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-kemizuchi_side_sword--fine.png
 e78e6d1115b2aef565b30966b8d32f07f02dd2d55ae83f3b844f0c165dada896  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_leaf_dagger--celestial.png
 30dff0ce6f1183f56ecf9be77e65e0bd9f7c92bb767638316d393e6364878301  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_leaf_dagger--fine.png
 e09a88dfead324c6587d50311cba85c1eb84b359a44424ad8823de9fe7e2e748  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-legion_leaf_dagger--masterwork.png
@@ -2670,7 +2671,7 @@ a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921  art/_archive/g
 0ade2a5a847a28f800c042112b7ab0be26ee6641929d9a0e924f39990bc4ba10  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--fine.png
 96c9588f2420f194bf05621dd6fa72ad02c0b340f3dd3822996fd35a604f3a1f  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--masterwork.png
 c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--relic.png
-79eae6ddecfa8e14eef890c67ec287e142b9db7cc2bb1f2a0cc8f9d389285fb4  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+45ba1344fa2662c772b6ac6d1113e6a7650ca256510cf9cabf0ae90f5265c3fe  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
 7f2013ecf274cfe3c25bb6ea6a28ece6fd0a7e46ecb91aab7de71ace2120fadb  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-broadback_sabre--fine.txt
@@ -2683,6 +2684,7 @@ c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/_archive/g
 4c40e1c6970a72ecc8673ae4aa710d6971643c01a594e016f6293e7fcf15c5af  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-hellraiser_servo_fist--fine.txt
 44babb44d6495fb3be6c0e8113727986348a37ac4e498054894d216917dfee8f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-hellraiser_servo_fist--masterwork.txt
 6d133dece1e02fda1316bbc6f1539615864852284e72f507d2c8e3a35e24a30f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-hellraiser_servo_fist--relic.txt
+f261212073cc63f62fd3127bb143751cb81bc94200e6b8487bbd51362a31cffc  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-kemizuchi_side_sword--fine.txt
 f93291ca1446909339b29267e57c3ee8f4dedce921930a978f0490470ee4cdca  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_leaf_dagger--celestial.txt
 61f6f29faf304b1719254d72963050b22a9e6d6abaca86c28608baf96d0e9e00  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_leaf_dagger--fine.txt
 1a5f20bf3fb0e08b11666261a620a44020edc1ef086ab9cc44e29ace1b44f13a  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-legion_leaf_dagger--masterwork.txt
@@ -2708,7 +2710,7 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-67854b988daf2afb8e29abbf4f6863beaae811daa00f8a18067d7425808392b1  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+c243781ad7ddcb55d8be866ff7720b71268bd29d0930493cd5cdfe99e7f0e5fb  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 deaf4e20e3843235790df048073620b0e76bfe152a29a7968d3c1860de696192  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-broadback_sabre-32px.png
@@ -2719,6 +2721,8 @@ deaf4e20e3843235790df048073620b0e76bfe152a29a7968d3c1860de696192  art/_archive/g
 9d70ee2dca31d9331c71ee1b39d1e7d56e85a943c6acf71f35886eb4d6c6c3aa  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-hellraiser_rotary-64px.png
 e29f26ea9e11cb0bb2febbbe13e746c83a22feb56d14cac161cd195a8ee9a228  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-hellraiser_servo_fist-32px.png
 e3e8cc03ef6ff523e59d5013e7daae60dd449259d85815ca3eb8330f2eadd9f9  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-hellraiser_servo_fist-64px.png
+c7fd22a6d9ba25294939efde1a4770d1058c742f43647f6ed5507509224a5781  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-kemizuchi_side_sword-32px.png
+eb2a7d4b18d9df855a271d95822f8d0f37019b4b05f11685daf6c4e78cbf59fc  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-kemizuchi_side_sword-64px.png
 2fde10a72f5e135d1ca11a1668c4529727f0a51ef5f427914d9b590445f621c7  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-legion_leaf_dagger-32px.png
 b86664326484d995baf073aace7d2b09b255a4419e3f10a69a9f49a00afebd3d  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-legion_leaf_dagger-64px.png
 be9201f18ec2a4d934326933ececdcd2058c4dc3967ca057708808c0e4dddece  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-legion_rank_sword-32px.png
@@ -2746,6 +2750,7 @@ aded1c063e793661cafa4575ef6e19d673309af437f0617c21be7fc60a9448aa  art/_archive/g
 d70a63870658a8f660f5cd8265887ab78521287ab68bf0f6a95da819b7256d86  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_servo_fist--fine.png
 2172883b73d1f7c61a9a36fa0e08afad906a09fd15ba6cb1723ed0c9ccacbd06  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_servo_fist--masterwork.png
 7d966b027c8d32633051225c648d835ee3c0eafffa8d2f458cbfe01cc40c2f7d  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_servo_fist--relic.png
+559ba5c7db434d0c1552970d26c86cb56102cadc96234d748c347f5fd4cb93dd  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-kemizuchi_side_sword--fine.png
 42cbffb9128f0860a34024171c65428836aa9c752692d3f061e04d6c644eb773  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_leaf_dagger--celestial.png
 ffe72714830ed7bd2b679c62e937edb681d7712574d7a5a42ab55f1851ce6d96  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_leaf_dagger--fine.png
 ccd01704e418d18423e65a0f45433877768cfc39a963d978f0221d09f0494fde  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-legion_leaf_dagger--masterwork.png
@@ -6368,7 +6373,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-b44ddd7ab953beb5ffd315e764ad464e6211436ff10c97f9250946996c83d0a7  art/catalog.json
+7daf4ea16e2e99aa0d4ab45bb7b63d3c59cf9853579dc17ecf0bea8f6a20880d  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8360,6 +8365,7 @@ e291bf6e01fc33fa976bbb1509d63accaeac9d07d0ce514c73dd111f218b60bf  art/icons/gear
 0ac89b787dd4f75267993a543bd23753dcd6f9c25622e53b47d8e815a479c6d1  art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade--masterwork.png
 8a3b625e8cdb38b3e262773c188c74ad8885c57e7b4bfd7e21ace19f32cbe0f9  art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade--relic.png
 2cf99a820e6180063d0da89fbc10f34de7b5c8bcf63bcf2a7328218139e89d23  art/icons/gear/exports/128/weapon-kemizuchi_duelling_blade.png
+537d69e2328bebcd70896aa876f69c0e1e3f5df022ca39a7ff7bbdaeb4710a89  art/icons/gear/exports/128/weapon-kemizuchi_side_sword--fine.png
 4506b78f676fbcdb50d6ccff483fb2b8abb5dcb86bef0ed463210feb83a3a2ed  art/icons/gear/exports/128/weapon-kemizuchi_side_sword.png
 15f79d209b9ff31c466ca9cc73e337f58167b7470d8af0ade6fdf51602a0ddf6  art/icons/gear/exports/128/weapon-kemizuchi_strikers--celestial.png
 792fe0e3153047159e18cce4d1f4738f214ea4db45be4ead8a6a257c3ddedcc9  art/icons/gear/exports/128/weapon-kemizuchi_strikers--fine.png
@@ -8791,6 +8797,7 @@ ab225e6a7557313a81139450445446e5588698c5895c7c67351e9fac185f553b  art/icons/gear
 1ad6ba9fa2bd18f6fa2f5c090775caf5b0bd32f98b19e8699f4a0ee20fe3f2d7  art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade--masterwork.png
 52cbe6ff2d85357a6537b55f6bc4dac71257c73cde2fa06dbfdbb6f62d1b837a  art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade--relic.png
 5bfaf88d4b091b74dea730a1a22d028bcada2c9952618555a7db6c37f3ee74c9  art/icons/gear/exports/256/weapon-kemizuchi_duelling_blade.png
+30c599d53e99262af391ffb74fc8fba956cc5d2a72c875523069302d90287ead  art/icons/gear/exports/256/weapon-kemizuchi_side_sword--fine.png
 4ca9332ee08108a1da0ffa28832aa531003ea0bcc2f83f38076cff23a7b8e182  art/icons/gear/exports/256/weapon-kemizuchi_side_sword.png
 62b01b69fff37bc07f33b7d4fabad1eb519cf39bfbfc0afeebeeff28ebcc384a  art/icons/gear/exports/256/weapon-kemizuchi_strikers--celestial.png
 3bbcd492c46641c20c19aaca435e8c4e04b31cc68a3a880103ed63cb552fe964  art/icons/gear/exports/256/weapon-kemizuchi_strikers--fine.png
@@ -9222,6 +9229,7 @@ c3c11a2244eb700935bc530787bcaa0df05fc8e8f3af5b4f2c3cd42e0b815e79  art/icons/gear
 767c597eeddce273a7ba6d0ec95c0e799c2a3cd30dad2fe29e7b3d5b6a9fda87  art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade--masterwork.png
 f2fab4881fe50265bee6ea34510b5c6e614a792da9472fbbe11471532c825aa7  art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade--relic.png
 0513d6fb89fa1e1933557d5c52e18181812d8ddd3785c04cdc85207aa44a7b90  art/icons/gear/exports/32/weapon-kemizuchi_duelling_blade.png
+17f970ec63a03cf02f414412116c8f28969f8ae1e8ecdf51b90f464d28de3fca  art/icons/gear/exports/32/weapon-kemizuchi_side_sword--fine.png
 48c69fac279b129b93ce3158f01bf7a44e9659bfe02daaf92e981ca604e25854  art/icons/gear/exports/32/weapon-kemizuchi_side_sword.png
 f3cd5ae113af3b21ff58c233bd8d4c29fbf8f5708098f62ef12287cf7844ec28  art/icons/gear/exports/32/weapon-kemizuchi_strikers--celestial.png
 f2d864e3cc28c7e1e1562d37415bebf803b7d434b0c3b1001c1081f79ce2de91  art/icons/gear/exports/32/weapon-kemizuchi_strikers--fine.png
@@ -9653,6 +9661,7 @@ c161ec288096dea1401ea4258a97dfaca42080c0edaeb0f07e67b5e32e5a6fcf  art/icons/gear
 27fcdd41d38e160429a7dd799f79eaee0c6d8ec188e06701cab1d233fbcd525a  art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade--masterwork.png
 15b1c58fa0155d2399bd85eb7ce58ed6d2c615a39a83e9d4838523b382a21c15  art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade--relic.png
 608c5898d5d88e30c40094730ffb21c8fce482f61024ccff5c33470ad2f0e64d  art/icons/gear/exports/64/weapon-kemizuchi_duelling_blade.png
+42301882311f9fc504304880d9924ceb25cf43f61a772acd09a0e9b6ac942385  art/icons/gear/exports/64/weapon-kemizuchi_side_sword--fine.png
 ecbf7dd94d3465e111c8c9405af934e62a051e5cd77763f9f0bfac1adb9fd07a  art/icons/gear/exports/64/weapon-kemizuchi_side_sword.png
 7518e9baf6c0366182159c196440686c6fc809fb018638adf16afacfde176781  art/icons/gear/exports/64/weapon-kemizuchi_strikers--celestial.png
 23eccc3898a69fb3e0895a9a4904b7e7bb50e66a825d0c5b708136ed0052a525  art/icons/gear/exports/64/weapon-kemizuchi_strikers--fine.png
@@ -9960,6 +9969,7 @@ ac864ea22d5aadf5e0978cd0369b126f3cbbbc3730d02a5eba3be782a4497808  art/icons/gear
 64ee9fb6fd4caae71b938cf6e354366d076567aa7d113dcd6449e51c7af0a0c8  art/icons/gear/weapon-kemizuchi_duelling_blade--masterwork.png
 68300e9f5da67fec2732862411188df7395006385d30c3576c70be16869e76cb  art/icons/gear/weapon-kemizuchi_duelling_blade--relic.png
 f6f112ac6072666b6c00c65ecbb96c3caf5bbf486df51d56c8e46165521c8e2d  art/icons/gear/weapon-kemizuchi_duelling_blade.png
+3aac902c12828a2d413e144d7ee5b8b1ea41a6d46bdb87bb4a1cc26a5a5f9022  art/icons/gear/weapon-kemizuchi_side_sword--fine.png
 ab263efaac50ca2d6289353002bcf9226a7f17c9d9dcbebd6faee5346f32f5d6  art/icons/gear/weapon-kemizuchi_side_sword.png
 28751d28519690f0858912f32de0df55e11f682f9f1a7ae5e35e98c31a75e8fe  art/icons/gear/weapon-kemizuchi_strikers--celestial.png
 27e94e8ecd863a00623e3921fe38f44e7639a586711735f6e0b2c63238be9c21  art/icons/gear/weapon-kemizuchi_strikers--fine.png

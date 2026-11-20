@@ -2365,6 +2365,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_side_sword--fine",
+      "path": "art/icons/gear/weapon-kemizuchi_side_sword--fine.png",
+      "sha256": "3aac902c12828a2d413e144d7ee5b8b1ea41a6d46bdb87bb4a1cc26a5a5f9022",
+      "label": "Kemizuchi Side Sword — Fine",
+      "family": "weapon-kemizuchi_side_sword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-kemizuchi_side_sword--fine.png",
+        "sha256": "559ba5c7db434d0c1552970d26c86cb56102cadc96234d748c347f5fd4cb93dd"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-kemizuchi_side_sword--fine.png",
+        "sha256": "3aac902c12828a2d413e144d7ee5b8b1ea41a6d46bdb87bb4a1cc26a5a5f9022"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-kemizuchi_side_sword--fine.txt",
+        "sha256": "f261212073cc63f62fd3127bb143751cb81bc94200e6b8487bbd51362a31cffc"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_side_sword.png",
+          "sha256": "ab263efaac50ca2d6289353002bcf9226a7f17c9d9dcbebd6faee5346f32f5d6"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png",
+          "sha256": "77cb7f7c217c2dcfe16d884006634aa99f23fec5f35ce477cd5ae12a23eb02c6"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_side_sword--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_side_sword--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_side_sword--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_side_sword--fine.png"
+      },
+      "export_hashes": {
+        "256": "30c599d53e99262af391ffb74fc8fba956cc5d2a72c875523069302d90287ead",
+        "128": "537d69e2328bebcd70896aa876f69c0e1e3f5df022ca39a7ff7bbdaeb4710a89",
+        "64": "42301882311f9fc504304880d9924ceb25cf43f61a772acd09a0e9b6ac942385",
+        "32": "17f970ec63a03cf02f414412116c8f28969f8ae1e8ecdf51b90f464d28de3fca"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-kemizuchi_side_sword",
+      "outline": {
+        "solid_alpha_iou": 0.9632746195304273,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 13
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
