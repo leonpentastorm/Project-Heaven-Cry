@@ -1,0 +1,47 @@
+{
+  "id": "weapon-adamantile_longsword--fine",
+  "job": {
+    "id": "weapon-adamantile_longsword--fine",
+    "standard_id": "weapon-adamantile_longsword",
+    "grade": "fine",
+    "label": "Adamantile Brigade Longsword \u2014 Fine",
+    "path": "art/icons/gear/weapon-adamantile_longsword--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_longsword.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_longsword",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_longsword.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses the existing brass-orange #F68A38 line inside the fuller. Preserve the existing pommel crest as a maker part. Relic adds only one tiny flush gilt ornament on an existing guard wing, no second crest or added plate. No ring pommel or enlarged slab blade.",
+    "keep_line": "the same straight double-edged medium-width steel blade with angular point and recessed fuller carrying the brass-orange stripe, two squared plate-wing crossguard ends with rivets, long brown spiral-wrapped grip and small gilt-edged crest-shaped pommel. Preserve the fuller, orange stripe location, guard wings, rivets, grip length and crest outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png"
+    ]
+  },
+  "preflight": {
+    "id": "weapon-adamantile_longsword--fine",
+    "peer": "39b2e40cce2b9388224dd0dc9e5a8180bd3973c3",
+    "latest_comment": 7030378937,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 04:34:09 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-009571c5-d403-4470-8b99-190d0774b25d.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-adamantile_longsword--fine/01-quality-review/native.png",
+  "sha256": "c30f8ca8250b4fcc21ef8ed819821f97535267b4f3e41deebeb418e67fa3cbe4",
+  "status": "unselected-quality-review",
+  "review_note": "Fine adds a new gilt flourish on a guard wing before the Relic grade.",
+  "reference_hashes": {
+    "art/icons/gear/weapon-adamantile_longsword.png": "ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}
