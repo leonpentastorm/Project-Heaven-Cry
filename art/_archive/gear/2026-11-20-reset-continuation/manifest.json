@@ -1573,6 +1573,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lowland_chopper--celestial",
+      "path": "art/icons/gear/weapon-lowland_chopper--celestial.png",
+      "sha256": "89b1230dfc247cf8ddf8680bb44d66ed2a9ee1068343e44815270aada208d3f1",
+      "label": "Lowland Chopper — Celestial",
+      "family": "weapon-lowland_chopper",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-lowland_chopper--celestial.png",
+        "sha256": "a4f724b8c123c50cecc02cd4e94143a0d7b357ca2529f259c6d7153b995b089a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-lowland_chopper--celestial.png",
+        "sha256": "89b1230dfc247cf8ddf8680bb44d66ed2a9ee1068343e44815270aada208d3f1"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-lowland_chopper--celestial.txt",
+        "sha256": "844ffcb3c5aeae1fc1b4642b0e9bfd00451fba13aa2a814c14890c946f27252a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lowland_chopper.png",
+          "sha256": "3448226ac076dedebcff4fd4f6a45dfacdc43dc66aa355a78aa468c95e537fff"
+        },
+        {
+          "path": "art/icons/gear/weapon-lowland_chopper--relic.png",
+          "sha256": "cbe5deb5476c3be2d22b9fa5db69948a8a18233f02de648cbff3985911939220"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-lowland_chopper.png",
+          "sha256": "bc6a4335dbcdcca7250dd548b502da43fd85eddf95df823d00007f811d21fea4"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lowland_chopper--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-lowland_chopper--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-lowland_chopper--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-lowland_chopper--celestial.png"
+      },
+      "export_hashes": {
+        "256": "6d2b4d44d29977370ab0b6f7a95191506c3acb730a90db3d8bfcad980a18ac55",
+        "128": "dc6b7c1ccd0d44957ca2d02b7fdbda903253b0a1a74fcbdfce044b1098e2b07d",
+        "64": "4354d28418843f98209ca06346a1bc7fe27a9d8972cef1a88c0ba7cf13d53d65",
+        "32": "47e90d644c7889ad1438d810b44d333763ee04e4d034faabce0de3af5e1616a6"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-lowland_chopper",
+      "outline": {
+        "solid_alpha_iou": 0.9158389869916179,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 17,
+        "different_pixels_64": 62
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
