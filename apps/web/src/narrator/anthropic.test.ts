@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+await (await import('./anthropic')).loadSdk(); // the SDK loads on first use (the bundle split): here, outside the tests' time limits
 import { apply, newGame, ARCHETYPES, BUILT_IN_CAMPAIGNS, type GameState } from '@engine';
 import { anthropicProvider } from './anthropic';
 import { turnSchema, loreKeys, loreFor, RULES_PROMPT, campaignPrompt, partyPrompt, turnPrompt } from './context';

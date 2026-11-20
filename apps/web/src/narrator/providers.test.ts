@@ -1,6 +1,7 @@
 // Narrator providers beyond Anthropic: the OpenAI-compatible adapter (OpenRouter, OpenAI, DeepSeek, Gemini, local,
 // third-party sites), Anthropic-format third-party sites, and the settings helpers. Every reply here is faked.
 import { beforeEach, describe, expect, it } from 'vitest';
+await (await import('./anthropic')).loadSdk(); // the SDK loads on first use (the bundle split): here, outside the tests' time limits
 import { apply, newGame, ARCHETYPES, type GameState } from '@engine';
 import { PROVIDERS, guessProvider, keyMismatch, cleanBase, baseOf, notReadyReason, isPriced, makeProvider, openaiProvider, listModels, testKey, polishWith, jsonFrom, resetQuirks, type NarratorConfig } from './providers';
 

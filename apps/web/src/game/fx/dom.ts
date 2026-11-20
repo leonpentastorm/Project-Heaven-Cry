@@ -271,13 +271,15 @@ let raf = 0;
 function track() {
   raf = 0;
   const now = performance.now();
-  for (let i = anchored.length - 1; i >= 0; i--) {
-    const a = anchored[i];
-    if (now > a.until || !a.box.isConnected) { anchored.splice(i, 1); continue; }
-    const p = centre(a.key);
-    if (!p) { a.box.style.opacity = '0'; continue; }
-    a.box.style.left = (p.x + (a.dx || 0) * p.s - a.box.offsetWidth / 2) + 'px'; a.box.style.top = (p.y + a.dy * p.s - a.box.offsetHeight / 2) + 'px';
-  }
+  for (let i = anchored.length - 1; i >= 0; i--) { const a = anchored[i]; if (now > a.until || !a.box.isConnected) anchored.splice(i, 1); }
+  // Every read first (the tiles' places, the nodes' sizes), then every write: a write between two reads made the
+  // browser lay the page out again for each node, every frame (the outside code review's performance work).
+  const at = anchored.map((a) => { const p = centre(a.key); return p ? { p, w: a.box.offsetWidth, h: a.box.offsetHeight } : null; });
+  anchored.forEach((a, i) => {
+    const r = at[i];
+    if (!r) { a.box.style.opacity = '0'; return; }
+    a.box.style.left = (r.p.x + (a.dx || 0) * r.p.s - r.w / 2) + 'px'; a.box.style.top = (r.p.y + a.dy * r.p.s - r.h / 2) + 'px';
+  });
   if (anchored.length) raf = requestAnimationFrame(track);
 }
 /** Keep a node centred over a tile (dy in tiles) while it lives, so it follows scrolling and re-layouts. */

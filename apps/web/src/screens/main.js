@@ -66,6 +66,7 @@ import { fromSkillsOf } from '../game/skillUnlocks'; // 0.31.9: the PERKS menu's
 import { foldVals } from '../game/fold'; // 0.31.x: the fork card folds to one line (the shared fold, remembered)
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 import { powerPct } from '../game/power'; // 0.32 B6: an Outburst's strength in percent
+import '../game/GiveTab'; // the 'give-inline' and 'give-tab' mounts this screen draws (registered there; the screen is its own chunk)
 const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
 const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)

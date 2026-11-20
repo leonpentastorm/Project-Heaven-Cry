@@ -7,7 +7,7 @@ import { getState, go, leaveRoom, toMainMenu, saveNow, retryNarrator, toast } fr
 import { openReport, openSpend } from '../game/report';
 import { openSettings } from '../game/settings';
 import { askConfirm, dialogOpen } from '../game/dialog';
-import { leaveProvingGround } from '../game/sandbox';
+import { leaveProvingGround } from '../game/provingGround';
 import { openMemory } from '../game/memory';
 import { offersAreaMap } from '../game/panels';
 import { narratorOptional } from '../game/modes';

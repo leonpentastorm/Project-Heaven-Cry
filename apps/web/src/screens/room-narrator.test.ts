@@ -14,7 +14,7 @@ vi.mock('../game/store', () => ({
 }));
 vi.mock('../game/report', () => ({ openReport: () => {} }));
 vi.mock('../game/charfile', () => ({ importCharacter: async () => null }));
-vi.mock('../game/sandbox', () => ({ openProvingGround: () => {}, leaveProvingGround: () => {} }));
+vi.mock('../game/provingGround', () => ({ openProvingGround: () => {}, leaveProvingGround: () => {} }));
 const { RoomLogic } = await import('./room.js');
 const vals = () => { const L: any = new RoomLogic({}); return L.renderVals(); };
 

@@ -2,6 +2,7 @@
 // what it may answer), the answer's schema and its parsing, the three providers (Anthropic, OpenAI-compatible,
 // scripted), and the main brief's words about speech in a fight.
 import { describe, expect, it } from 'vitest';
+await (await import('./anthropic')).loadSdk(); // the SDK loads on first use (the bundle split): here, outside the tests' time limits
 import { apply, newGame, ARCHETYPES, active, fightRulingOf, healthView, type GameState, type FightRuling } from '@engine';
 import { anthropicProvider, scriptedProvider } from './anthropic';
 import { openaiProvider, resetQuirks } from './providers';

@@ -12,7 +12,7 @@ import { openReport } from '../game/report';
 import { importCharacter } from '../game/charfile';
 import { validateSheet, CLASS, levelUpDue } from '@engine';
 import { askLevelUp, levelUpAsk } from '../game/campView';
-import { openProvingGround } from '../game/sandbox';
+import { openProvingGround } from '../game/provingGround';
 import { classOf } from '../game/commands';
 import { modeCards, radioKey, narratorOptional, startsRun, testSeed } from '../game/modes';
 import { openTipOn } from '../game/actionTip';

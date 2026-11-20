@@ -4,7 +4,7 @@
 // press -> Wick says hello -> slide. Wick is the artist's five clips (art/mascot/wick-anim): run, stop, idle, hello, wave.
 import React from 'react';
 import { ART } from '../screens/shared';
-import { startProvingGround } from '../game/sandbox';
+import { startProvingGround } from '../game/provingGround';
 import { forgetSession, getState, go, hostRoom, joinRoom, lastRoom, listSessions, removeFromLibrary, resumeSession, setName, subscribe } from '../game/store';
 import { exportCharacter, importCharacter } from '../game/charfile';
 import { openReport } from '../game/report';

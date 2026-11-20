@@ -1,7 +1,10 @@
 // The Anthropic provider for the AI Narrator. Runs in the host's browser: the API key stays in this browser and is
 // sent only to api.anthropic.com (or the Anthropic-format site the host typed). One call per Narrator turn, the turn
 // handed in through a tool, cached system layers. Other services: providers.ts.
-import Anthropic from '@anthropic-ai/sdk';
+// The SDK loads on first use (the bundle split: a game without the AI Narrator never downloads it).
+type AnthropicSdk = typeof import('@anthropic-ai/sdk').default;
+let sdk: AnthropicSdk | null = null;
+export const loadSdk = async (): Promise<AnthropicSdk> => sdk || (sdk = (await import('@anthropic-ai/sdk')).default);
 import type { GameState, NarratorTurn, FightRuling } from '@engine';
 import { missionBoard } from '@engine';
 import { noteExchange } from '../game/debug';
@@ -35,14 +38,16 @@ export interface NarratorProvider { turn(g: GameState): Promise<NarratorResult>;
 
 /** An Anthropic client on the player's key. baseURL: a third-party site that speaks Anthropic's format (a Claude
  * reseller); those often check x-api-key rather than the bearer token, so both are sent there. */
-function makeClient(apiKey: string, opts: { baseURL?: string; fetchImpl?: typeof fetch; maxRetries: number; timeout: number }) {
+async function makeClient(apiKey: string, opts: { baseURL?: string; fetchImpl?: typeof fetch; maxRetries: number; timeout: number }) {
+  const Anthropic = await loadSdk();
   // authToken: null so only the player's own key is ever sent, never a token from the environment.
   return new Anthropic({ apiKey, authToken: null, dangerouslyAllowBrowser: true, maxRetries: opts.maxRetries, timeout: opts.timeout,
     ...(opts.baseURL ? { baseURL: opts.baseURL, defaultHeaders: { 'x-api-key': apiKey } } : {}), ...(opts.fetchImpl ? { fetch: opts.fetchImpl } : {}) });
 }
 
 export function anthropicProvider(apiKey: string, model: string, effort: 'low' | 'medium' | 'high' = 'medium', fetchImpl?: typeof fetch, onLookup?: (keys: string[]) => void, baseURL?: string): NarratorProvider {
-  const client = makeClient(apiKey, { baseURL, fetchImpl, maxRetries: 2, timeout: 180_000 });
+  const clientP = makeClient(apiKey, { baseURL, fetchImpl, maxRetries: 2, timeout: 180_000 });
+  clientP.catch(() => {}); // (a failed load is reported by the call that awaits it)
   // A reseller's model may not be one of ours: price it as Opus (the dearest common case) so the ceiling still holds.
   const price = MODELS.find((m) => m.id === model) || MODELS[0];
   const who = baseURL ? 'The API site' : 'Anthropic';
@@ -82,11 +87,12 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
         params.messages = messages;
         // The cost ceiling: the reply may only use what is left of it.
         params.max_tokens = Math.max(2000, Math.min(16000, Math.floor(((COST_CEILING_USD - spent()) * 1e6 - TOKENS(JSON.stringify(messages)) * price.input) / price.output)));
-        try { return await client.beta.messages.create(params); } catch (e) {
+        try { return await (await clientP).beta.messages.create(params); } catch (e) {
+          const Anthropic = sdk;
           // If the API won't take the fallback option with this request, run the turn without it rather than stall.
-          if (e instanceof Anthropic.BadRequestError && params.fallbacks) { delete params.fallbacks; delete params.betas; return call(); }
+          if (Anthropic && e instanceof Anthropic.BadRequestError && params.fallbacks) { delete params.fallbacks; delete params.betas; return call(); }
           // A third-party site that doesn't know the effort setting: run without it.
-          if (e instanceof Anthropic.BadRequestError && baseURL && params.output_config && /output_config|effort/i.test((e as Error).message)) { delete params.output_config; return call(); }
+          if (Anthropic && e instanceof Anthropic.BadRequestError && baseURL && params.output_config && /output_config|effort/i.test((e as Error).message)) { delete params.output_config; return call(); }
           throw new Error(explain(e, who));
         }
       };
@@ -136,7 +142,7 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
     // An edit the room voted for (spec: Rerolls and edits): the Narrator rewords its own line. Only the words: anything
     // that would change what happened (items, money, injuries, deaths, positions, events, outcomes) is refused.
     async rewrite(g, text, ask) {
-      const res: any = await client.messages.create({
+      const res: any = await (await clientP).messages.create({
         model, max_tokens: 4000, output_config: { effort: 'low' }, tools: [REWRITE_TOOL],
         system: [{ type: 'text', text: REWRITE_SYSTEM }],
         messages: [{ role: 'user', content: rewriteAsk(g, text, ask) }],
@@ -150,7 +156,7 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
     // after FIGHT_TIMEOUT_MS. The engine validates the answer.
     async fight(g, r) {
       const tool = fightTool(g, r);
-      const res: any = await client.messages.create({
+      const res: any = await (await clientP).messages.create({
         model, max_tokens: FIGHT_MAX_TOKENS, ...(baseURL ? {} : { output_config: { effort: 'low' } }), tools: [tool],
         system: [{ type: 'text', text: FIGHT_SYSTEM }],
         messages: [{ role: 'user', content: fightAsk(g, r) }],
@@ -169,6 +175,8 @@ export function anthropicProvider(apiKey: string, model: string, effort: 'low' |
 
 
 function explain(e: unknown, who = 'Anthropic'): string {
+  const Anthropic = sdk;
+  if (!Anthropic) return "Couldn't reach " + who + ': ' + String((e as Error)?.message || e);
   if (e instanceof Anthropic.AuthenticationError) return who + ' rejected the API key. Check it in the room settings.';
   if (e instanceof Anthropic.PermissionDeniedError) return 'This API key can\'t use that model. Pick another model in the room settings.';
   if (e instanceof Anthropic.NotFoundError) return 'That model isn\'t available to this key' + (who === 'Anthropic' ? '' : ', or the API address is wrong') + '. Pick another model.';
@@ -181,7 +189,7 @@ function explain(e: unknown, who = 'Anthropic'): string {
 /** "Polish with AI": rewrite a player's words as in-world prose with a small, fast model on the host's key.
  * Through a third-party site, on the model the host picked (the site may not carry Haiku). */
 export async function polish(apiKey: string, text: string, charName: string, model = 'claude-haiku-5-5', baseURL?: string): Promise<string> {
-  const client = makeClient(apiKey, { baseURL, maxRetries: 1, timeout: 60_000 });
+  const client = await makeClient(apiKey, { baseURL, maxRetries: 1, timeout: 60_000 });
   const res: any = await client.messages.create({
     model, max_tokens: 2000, ...(baseURL ? {} : { output_config: { effort: 'low' } }),
     system: POLISH_SYSTEM,

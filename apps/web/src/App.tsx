@@ -1,22 +1,9 @@
 // Routes between the screens. Each screen is a prototype template plus its logic (src/screens/*), rendered by the
 // Design Component runtime (src/dc/runtime.tsx). A thin bar shows the connection and any rule message.
 import React from 'react';
-import { makeScreen } from './dc/runtime';
-import { expand } from './screens/shared';
-import { getState, subscribe, takeOver, type Screen } from './game/store';
-import createT from './templates/create.template.html?raw';
-import roomT from './templates/room.template.html?raw';
-import mainT from './templates/main.template.html?raw';
-import combatT from './templates/combat.template.html?raw';
-import levelupT from './templates/levelup.template.html?raw';
-import ultimateT from './templates/ultimate.template.html?raw';
-import { CreateLogic } from './screens/create';
-import { RoomLogic } from './screens/room';
-import { MainLogic } from './screens/main';
-import { CombatLogic } from './screens/combat';
-import { expandLayout } from './game/combatLayout';
-import { LevelUpLogic } from './screens/levelup';
-import { UltimateLogic } from './screens/ultimate';
+import { getState, subscribe, takeOver, toast, type ClientState, type Screen } from './game/store';
+import { loadedScreen, loadScreen, loadedSandbox, loadSandbox } from './screenLoad';
+import { warmNext } from './game/preload';
 import { Music } from './game/music';
 import { Title } from './title/Title';
 import { installButtonSounds, sfx, sfxForLine, hasSfx, reducedMotion, onUiPrefs } from './game/sfx';
@@ -32,7 +19,6 @@ import { FxLayer } from './game/fx/FxLayer';
 import { TurnIntro, cue } from './game/turnIntro';
 import { CutInLayer } from './game/spotlight/CutInLayer';
 import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
-import { SandboxPanel } from './game/sandbox';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
 import { MissionLayer } from './game/missionBoard';
 import { DialogHost } from './game/dialog';
@@ -41,24 +27,80 @@ import { leaveFlow } from './screens/shell';
 import { ModeCentre } from './game/modeCentre';
 import { NarratorSeat } from './narrator/desk';
 
-const MAIN = makeScreen(expand(mainT), MainLogic as any);
-const SCREENS: Record<Screen, React.ComponentType<any>> = {
-  home: Title as any,
-  create: makeScreen(expand(createT), CreateLogic as any),
-  room: makeScreen(expand(roomT), RoomLogic as any),
-  main: MAIN,
-  combat: makeScreen(expandLayout(expand(combatT)), CombatLogic as any),
-  levelup: makeScreen(expand(levelupT), LevelUpLogic as any),
-  ultimate: makeScreen(expand(ultimateT), UltimateLogic as any),
-  run: MAIN, // rules 1.54: a run's screens are the play screen's middle (store.go sends 'run' to 'main')
+/** The screen on show and the state it was drawn with. Each screen's code is its own chunk (screenLoad.ts): until the
+ *  next screen's chunk is in, the one on show stays, drawn from the state it last had (never a state meant for
+ *  another screen), so a screen change never flashes an empty page. The chunks a player can reach next are loaded
+ *  ahead of time (game/preload.ts warmNext), so the wait is normally nothing. */
+type Shown = { screen: Screen; tick: ClientState; C: React.ComponentType<any> };
+/** Whether the store's change from a to b is only its toast (a poke, with nothing changed, is not: it asks for a render). */
+function onlyToast(a: ClientState, b: ClientState): boolean {
+  if (a === b || a.toast === b.toast) return false;
+  for (const k of Object.keys(b) as (keyof ClientState)[]) if (k !== 'toast' && a[k] !== b[k]) return false;
+  return Object.keys(a).length === Object.keys(b).length;
+}
+function useShownScreen(st: ClientState): Shown | null {
+  const [, bump] = React.useReducer((x: number) => x + 1, 0);
+  const shown = React.useRef<Shown | null>(null);
+  const C = loadedScreen(st.screen), sb = !!st.game?.sandbox;
+  const ready = C !== undefined && (!sb || !!loadedSandbox());
+  if (ready) {
+    // (Every store change renders the screen, a toast alone included: the screen decides things on the render it is
+    // given, such as the tab a turn opens on. Only the overlays skip a toast alone, below.)
+    shown.current = { screen: st.screen, tick: st, C: C || (Title as any) };
+  }
+  const want = ready ? null : st.screen + (sb ? '+sandbox' : '');
+  React.useEffect(() => {
+    if (!want) return;
+    let live = true, tries = 0;
+    const go = () => Promise.all([loadScreen(st.screen), sb ? loadSandbox() : null]).then(() => { if (live) bump(); }, (e) => {
+      if (!live) return;
+      if (++tries < 3) { setTimeout(go, 1500); return; }
+      console.error(e); toast('This screen could not load. Check the connection and reload the page.');
+    });
+    go();
+    return () => { live = false; };
+  }, [want]);
+  return shown.current;
+}
+
+// ---------- render counts (the outside code review's performance work) ----------
+// How many times each part of the page has rendered: window.__phcRenders (App, every overlay below, the Proving
+// Ground's panel); the screens count their own (window.__phcRenderCount, dc/runtime.tsx). tools/perf/fight_render_probe.mjs
+// reads them.
+const RENDERS_BY: Record<string, number> = {};
+if (typeof window !== 'undefined') (window as any).__phcRenders = RENDERS_BY;
+const tally = (name: string) => { RENDERS_BY[name] = (RENDERS_BY[name] || 0) + 1; };
+/** An overlay with its renders counted. */
+function counted<P extends object>(name: string, Comp: React.ComponentType<P>): React.ComponentType<P & { v: number }> {
+  const W = ({ v: _v, ...p }: P & { v: number }) => { tally(name); return React.createElement(Comp, p as P); };
+  W.displayName = name;
+  // Memoised: an overlay renders again when its props change or App rendered for anything but a toast alone (v): never
+  // for a toast alone (the outside code review's performance work).
+  return React.memo(W) as any;
+}
+const C = {
+  Music: counted('Music', Music), NarratorVoice: counted('NarratorVoice', NarratorVoice), VotePanel: counted('VotePanel', VotePanel),
+  MemoryPanel: counted('MemoryPanel', MemoryPanel), StoryScroll: counted('StoryScroll', StoryScroll), FxLayer: counted('FxLayer', FxLayer),
+  TurnIntro: counted('TurnIntro', TurnIntro), CutInLayer: counted('CutInLayer', CutInLayer), ModeCentre: counted('ModeCentre', ModeCentre),
+  MissionLayer: counted('MissionLayer', MissionLayer), PlaytestTools: counted('PlaytestTools', PlaytestTools), Tips: counted('Tips', Tips),
+  SettingsHost: counted('SettingsHost', SettingsHost), DialogHost: counted('DialogHost', DialogHost),
 };
+const CSandbox = React.memo(function CSandbox({ C: Panel, v: _v, ...p }: { C: React.ComponentType<any>; v: number } & Record<string, any>) { tally('Sandbox'); return <Panel {...p} />; });
 
 onVoice(poke);
 installButtonSounds();
 export function App() {
   const st = React.useSyncExternalStore(subscribe, getState);
-  const Screen = SCREENS[st.screen];
-  const tr = useScreenTransition(st.screen, st.game?.phase);
+  tally('App');
+  const shown = useShownScreen(st), screen = shown?.screen ?? st.screen, Screen = shown?.C;
+  // v: a count of App's renders, less those for a toast alone (the overlays' memo reads it): they render as they always
+  // did (App's own transition state included), except for a store change that is only the toast.
+  const seen = React.useRef<{ st: ClientState; v: number }>({ st, v: 0 });
+  seen.current = { st, v: seen.current.v + (seen.current.st !== st && onlyToast(seen.current.st, st) ? 0 : 1) };
+  const v = seen.current.v;
+  const tr = useScreenTransition(screen, st.game?.phase);
+  const Sandbox = st.game?.sandbox ? loadedSandbox() : null; // (the Proving Ground's tools: their own chunk, screenLoad.ts)
+  React.useEffect(() => { warmNext(screen); }, [screen]);
   // --- SOUNDS FROM LOG LINES (owned by the FX pass) ---
   // Combat and area-map sounds now come from the engine's presentation events, played by the effects layer (game/fx)
   // in sync with what is seen. Log lines only sound for a fight or a story that has no events at all: a save from
@@ -80,9 +122,9 @@ export function App() {
   // --- END SOUNDS FROM LOG LINES ---
   // A refused action gets the error sound.
   React.useEffect(() => { if (st.toast && !st.toast.ok) sfx('error'); }, [st.toast?.at]);
-  React.useEffect(() => { window.scrollTo(0, 0); }, [st.screen]);
+  React.useEffect(() => { window.scrollTo(0, 0); }, [screen]);
   // Character creation has its own theme, "Intake" (fades in on arrival, out on leaving).
-  React.useEffect(() => { if (st.screen === 'create') playCreateMusic(); else stopCreateMusic(); }, [st.screen]);
+  React.useEffect(() => { if (screen === 'create') playCreateMusic(); else stopCreateMusic(); }, [screen]);
   const n = st.game?.story.entries.length || 0;
   const bar = st.role && st.conn !== 'online' ? (st.conn === 'host-away' ? 'The host is offline. Your screen will update when they return.' : st.conn === 'replaced' ? 'Opened in another tab: the room is there now.' : st.conn === 'error' ? 'Can\'t join: ' + (st.connNote || 'connection refused') : 'Connecting to room ' + st.code + '…') : null;
   const barP = usePresence(bar), toastP = usePresence(st.toast);
@@ -94,12 +136,12 @@ export function App() {
     const f = () => { const h = document.querySelector('header'); setBarTop(h ? Math.max(0, Math.round(h.getBoundingClientRect().bottom)) : 0); };
     f(); window.addEventListener('resize', f); const t = setInterval(f, 800);
     return () => { window.removeEventListener('resize', f); clearInterval(t); };
-  }, [!!barP.shown, st.screen]);
+  }, [!!barP.shown, screen]);
   const guestAway = st.conn === 'host-away' && st.role === 'guest';
   return (
     <>
       {/* key: a fresh logic instance per screen and character, so local state never leaks between them */}
-      <div key={'w' + st.screen} ref={tr.wrap} className={tr.inCls || undefined}><Screen key={st.screen + (st.levelupChar || '')} tick={st} /></div>
+      <div key={'w' + screen} ref={tr.wrap} className={tr.inCls || undefined}>{shown && Screen && <Screen key={screen + (shown.tick.levelupChar || '')} tick={shown.tick} />}</div>
       {/* The screen that just left: a frozen copy playing its out animation (never clickable). */}
       <div ref={tr.ghostHolder} aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 55, pointerEvents: 'none', overflow: 'hidden', display: tr.ghost ? 'block' : 'none' }} />
       {tr.ghost === 'combat-in' && !reducedMotion() && <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 56, pointerEvents: 'none', overflow: 'hidden' }}>
@@ -107,24 +149,24 @@ export function App() {
         <div style={{ position: 'absolute', top: '-20%', bottom: '-20%', left: '30%', width: '22%', background: 'linear-gradient(90deg, transparent, rgba(246, 81, 87, 0.85) 40%, #FFFFFF 50%, rgba(246, 81, 87, 0.85) 60%, transparent)', animation: 'phcSlash .5s cubic-bezier(.5,0,.3,1) .22s both' }} />
         {/* (The fight's title is the FIGHT card of the turn banners, game/turnIntro.tsx: one card, not two.) */}
       </div>}
-      {st.role && <Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
-      {st.role && <NarratorVoice game={st.game || null} />}
-      {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
-      {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side="left" compact />}
-      {st.screen === 'main' && <StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
-      {st.role && <FxLayer game={st.game || null} screen={st.screen} />}
-      {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={st.screen} />}
+      {st.role && <C.Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} v={v} />}
+      {st.role && <C.NarratorVoice game={st.game || null} v={v} />}
+      {st.role && <C.VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} v={v} />}
+      {st.role === 'host' && <C.MemoryPanel game={st.game || null} isHost side="left" compact v={v} />}
+      {screen === 'main' && <C.StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} v={v} />}
+      {st.role && <C.FxLayer game={st.game || null} screen={screen} v={v} />}
+      {st.role && <C.TurnIntro game={st.game || null} meId={st.me.id} screen={screen} v={v} />}
       {/* Spotlight cut-ins (decision 113): torn eye strips over a blurred screen, z-index 64. */}
-      {st.role && <CutInLayer game={st.game || null} screen={st.screen} />}
-      {st.role && <SandboxPanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={st.screen} />}
-      {st.role && <ModeCentre game={st.game || null} screen={st.screen} />}
-      {st.role === 'host' && st.screen === 'main' && <NarratorSeat game={st.game || null} meId={st.me.id} />}
-      {st.role && <MissionLayer game={st.game || null} screen={st.screen} />}
-      <PlaytestTools />
-      <Tips />
+      {st.role && <C.CutInLayer game={st.game || null} screen={screen} v={v} />}
+      {st.role && Sandbox && <CSandbox C={Sandbox} v={v} game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={screen} />}
+      {st.role && <C.ModeCentre game={st.game || null} screen={screen} v={v} />}
+      {st.role === 'host' && screen === 'main' && <NarratorSeat game={st.game || null} meId={st.me.id} />}
+      {st.role && <C.MissionLayer game={st.game || null} screen={screen} v={v} />}
+      <C.PlaytestTools v={v} />
+      <C.Tips v={v} />
       {/* The settings cog (every header's ⚙) and the in-game dialogs (never the browser's confirm/prompt/alert). */}
-      <SettingsHost />
-      <DialogHost />
+      <C.SettingsHost v={v} />
+      <C.DialogHost v={v} />
       {barP.shown && <div data-phc-conn-bar="" style={{ position: 'fixed', top: barTop + 8, left: 0, right: 0, zIndex: 60, display: 'flex', justifyContent: 'center', padding: '0 12px', pointerEvents: 'none' }}>
         <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 12px', maxWidth: 'min(680px, 100%)', padding: '8px 14px', borderRadius: 10, background: '#1C2536', border: '1px solid #2E3A50', boxShadow: '0 8px 30px rgba(0,0,0,.45)', color: '#E7EBF3', fontSize: 'var(--fs-sub)', textAlign: 'center' }}>
           <span>{barP.shown}</span>
