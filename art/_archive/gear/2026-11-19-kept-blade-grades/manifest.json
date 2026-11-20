@@ -9758,6 +9758,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-mesh_undersuit--masterwork",
+      "path": "art/icons/gear/armour-mesh_undersuit--masterwork.png",
+      "sha256": "385c606eb348f0602d86a2bdb81f3bb3dfec30fc02cfc45f0d74c4ecd68fcf48",
+      "label": "Mesh undersuit — Masterwork",
+      "family": "armour-mesh_undersuit",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-mesh_undersuit--masterwork.png",
+        "sha256": "46c59e0c4f993b7bc77dd8675b8fe1f8ab16c223867e413fdecfb5919e3db25d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-mesh_undersuit--masterwork.png",
+        "sha256": "385c606eb348f0602d86a2bdb81f3bb3dfec30fc02cfc45f0d74c4ecd68fcf48"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-mesh_undersuit--masterwork.txt",
+        "sha256": "dd0af0d5830fe2de2f069eaa9404ba1181ecacc7e44ddd8668172913221813c4"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-mesh_undersuit.png",
+          "sha256": "5a36c6129138e8b7b640bf3a216b8bab73b604f9701396f6a054913f74fca1a9"
+        },
+        {
+          "path": "art/icons/gear/armour-mesh_undersuit--fine.png",
+          "sha256": "2df4c52b37e4037d72b8cdc8afa4760039b365f2416d76ea96075672f6320d12"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "5907129095e1d8e912267bcdb70c1f90e92607ef2da33e1d06d82ddd699dea0c",
+        "128": "33f40186a23afe5d2740fe2b74af299d0d017f1ad8ccc0a1989b45516803a960",
+        "64": "acfbe3cf85d07b4776cd50968925b843df12a235caaac3af27a031ba7a24ae6d",
+        "32": "43751e5af481cbbbf575e2b2566fb4d8fed34a437315f5d7872140acc203489d"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-mesh_undersuit",
+      "outline": {
+        "solid_alpha_iou": 0.9821091368103874,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

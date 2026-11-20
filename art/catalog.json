@@ -27473,6 +27473,42 @@
         "different_pixels_32": 7,
         "different_pixels_64": 20
       }
+    },
+    "armour-mesh_undersuit--masterwork": {
+      "label": "Mesh undersuit — Masterwork",
+      "path": "art/icons/gear/armour-mesh_undersuit--masterwork.png",
+      "sha256": "385c606eb348f0602d86a2bdb81f3bb3dfec30fc02cfc45f0d74c4ecd68fcf48",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-mesh_undersuit--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-mesh_undersuit",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9821091368103874,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 26
+      }
     }
   },
   "survival_art": {
