@@ -26429,6 +26429,42 @@
         "different_pixels_32": 12,
         "different_pixels_64": 59
       }
+    },
+    "weapon-hellraiser_servo_fist--fine": {
+      "label": "Hellraiser Servo Fist — Fine",
+      "path": "art/icons/gear/weapon-hellraiser_servo_fist--fine.png",
+      "sha256": "c927804a01123dc4493c197ad0639487dfa7478151ddd0d244395792abef8eeb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_servo_fist--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_servo_fist--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_servo_fist--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_servo_fist--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-hellraiser_servo_fist--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_servo_fist",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9814190389042791,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 16
+      }
     }
   },
   "survival_art": {
