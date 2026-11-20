@@ -8,6 +8,7 @@ import {
   applyDamage, healUnit, heldMult, previewOutburstPlan, newGame, ARCHETYPES, type Combat, type Unit, type OutburstDesign,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
+import { HIDDEN_ATTACK } from '../src/tactics';
 
 function calmSeed(n = 60): number { for (let s = 1; s < 2000000; s++) { const r = { state: s }; let ok = true; for (let i = 0; i < n && ok; i++) { const v = d20(r); ok = v > 1 && v < 20; } if (ok) return s; } throw new Error('no seed'); }
 const SEED = calmSeed();
@@ -207,6 +208,15 @@ describe('the new modules (section 4)', () => {
     const hp = f.foe.hp; f.turn(f.foe); expect(f.unit(f.foe.id).hp).toBe(hp - 5);
     const g = rig(); me(g).hidden = true; const e = give(g.pc, { modules: ['silent'] }); begin(g, e, g.pc, { aim: '6,5' }); expect(me(g).hidden).toBe(true);
     const h = rig(); me(h).hidden = true; const k = give(h.pc, {}); begin(h, k, h.pc, { aim: '6,5' }); expect(me(h).hidden).toBe(true); /* rules 1.87 item 7503: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */
+  });
+  it('a loud release from Hidden goes through the one rule (attackFromHidden): at reveal, revealed with FOUND (how: attack) to its own side, as a shot is', () => {
+    const was = HIDDEN_ATTACK.gives; HIDDEN_ATTACK.gives = 'reveal';
+    try {
+      const h = rig(); me(h).hidden = true; const k = give(h.pc, {}); const n = h.cb.fxSeq || 0; begin(h, k, h.pc, { aim: '6,5' });
+      expect(me(h).hidden).toBeFalsy(); expect(logHas(h.cb, /is revealed \(released an Outburst\)/)).toBe(true);
+      const ev = (h.cb.fx || []).filter((e: any) => e.n > n && e.k === 'stance' && e.what === 'found' && e.unit === h.pc.id);
+      expect(ev.length).toBe(1); expect(ev[0].how).toBe('attack');
+    } finally { HIDDEN_ATTACK.gives = was; }
   });
   it('Thread: a Buff release threads two allies; the next heal on one heals the other as much', () => {
     const f = rig(['9,9'], ['5,5', '5,6']); const [, a, b] = f.pcs; a.hp = 400; b.hp = 400;

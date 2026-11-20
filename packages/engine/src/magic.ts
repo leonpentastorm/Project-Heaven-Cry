@@ -24,7 +24,7 @@ import { applyDamage, healUnit, grantShield, tendHook } from './effects/damage';
 import { itemAmount, amountMult } from './effects/amounts';
 import { mendFactor, MENDING, flatLevelOf } from './effects/mending';
 import { deal, mend, mendSized, gatePct, gatedAmount, amountOf, term, armourAgainst, levelFactor, statOf, scaleOf, type Term } from './effects/output';
-import { canReact, react, loseReactions, dropHeldShot, attackFromHidden, hiddenAttackTileOnly } from './tactics';
+import { canReact, react, loseReactions, dropHeldShot, attackFromHidden } from './tactics';
 import { makeObject } from './objects';
 import { rollDeathDrops } from './loot';
 import { grantGoods, lootToPack } from './containers';
@@ -1556,8 +1556,8 @@ function releaseAtInner(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, aim: s
   if (!wild) { noteRelease(cb, u); if (F.has('belonging')) noteRelease(cb, u); } // Belonging counts twice for allies' Resonance
   if (res.with.length) emitFx(cb, 'resonance', { unit: u.id, at: u.pos, with: res.with, bonus: res.bonus });
   // Silent (rules 1.8): a hostile release reveals a Hidden caster, as a harmful Sigil does; Silent keeps you hidden.
-  if (u.hidden && hostile && !has('silent') && !wild && hiddenAttackTileOnly()) attackFromHidden(cb, u, 'released an Outburst'); // rules 1.82 item 7012: the tile, not the unit (the Silent module: nothing)
-  else if (u.hidden && hostile && !has('silent') && !wild) { endCond(u, 'hidden', cb); say(cb, u.name + ' is revealed (released an Outburst).'); emit(cb, 'spotted', { u, why: 'released an Outburst', cb }); }
+  // rules 1.82 item 7012: the one rule of an attack from Hidden (tactics.ts attackFromHidden: the tile, or a reveal by the switch)
+  if (u.hidden && hostile && !has('silent') && !wild) attackFromHidden(cb, u, 'released an Outburst');
   const does = felt.map((f) => feelingWord(d, f)).filter(Boolean);
   emitFx(cb, 'release', { unit: u.id, at: u.pos, to: aim, design: d.id, school: d.school, school2: d.school2 || null, option: d.option || null, form, tone, element: toneElement(tone), stage, mult: Math.round(sm * 100) / 100,
     riderStage: rs, wild, reaction, resonance: res.bonus, area: tiles, targets: [...targets, ...loved].map((t) => t.id), felt, ...(does.length ? { does: [...new Set(does)] } : {}) });

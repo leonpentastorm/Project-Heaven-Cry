@@ -259,8 +259,6 @@ export function reveal(cb: Combat, u: Unit, why: string, o: { how?: FoundHow; by
  * tile is given away: every side it is hostile to learns where it stands (noteSeen; their searchers and hunters go
  * there), and the log says so once. With "reveal" it is revealed, the rule before. A silent attack gives nothing away. */
 export const HIDDEN_ATTACK: { gives: 'tile' | 'reveal'; line: string } = { gives: 'reveal', line: '', ...((RULES as any).combat.hidden_attack || {}) };
-/** Does an attack from Hidden give only the tile away (rules 1.82 item 7012's switch)? */
-export const hiddenAttackTileOnly = (): boolean => HIDDEN_ATTACK.gives === 'tile';
 export function attackFromHidden(cb: Combat, u: Unit, why: string): string {
   if (!u.hidden) return '';
   if (HIDDEN_ATTACK.gives !== 'tile') return reveal(cb, u, why, { how: 'attack' });
