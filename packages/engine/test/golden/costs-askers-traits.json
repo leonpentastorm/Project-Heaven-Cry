@@ -49,7 +49,7 @@
 "asker/trait/forlorn_hope/disengage": "REFUSED Forlorn Hope: you never Disengage.",
 "asker/trait/ghost_soldier/#": "no line differs",
 "asker/trait/glass_runner/move": "P1 res.guard4>3",
-"asker/trait/glass_runner/move-far": "P1 ap9>8 bank0>-2.5 res.guard4>3",
+"asker/trait/glass_runner/move-far": "P1 ap9>8 res.guard4>3",
 "asker/trait/grenadiers_arm/throw": "P1 ap9>6 throwables.frag_grenade2>1",
 "asker/trait/grudge_bearer/call/call.taunt": "P1 ap9>7",
 "asker/trait/grudge_bearer/call/call.threaten": "P1 ap9>7",

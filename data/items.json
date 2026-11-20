@@ -17,7 +17,7 @@
       "start_quantity": 1,
       "adjudication": "engine",
       "provisional": true,
-      "text": "Experience sealed in mana, worth {=effects.0.value} XP. Anyone with a focus in a hand can crack it outside a fight: an Evoker, an Emanator, a Visualizer or an Attuner. They choose who absorbs it: themselves or a party member. A character can absorb {=effects.0.limit.n} per rest. It also sells well.",
+      "text": "Experience sealed in mana, worth {=effects.0.value} XP. Anyone with a focus in a hand can crack it outside a fight: an Evoker, an Emanator, a Visualizer or an Attuner. They choose who absorbs it: themselves or a party member. A character can absorb {=effects.0.limit.n} per rest. On a Survival run anyone, focus or not, can consume it at a shrine's altar. It also sells well.",
       "use": { "label": "Crack for", "via": "effects" },
       "requires_to_use": [
         { "holds": { "slot": "hand", "door": "any" }, "why": "Crack it with a focus in a hand: an Evoker, an Emanator, a Visualizer or an Attuner." }

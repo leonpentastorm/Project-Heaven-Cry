@@ -8,7 +8,7 @@
 // What the stream does not say is not counted, and is listed in docs/design/handoffs/survival-step-6.md:
 //   - Shields GIVEN: `grantShield` emits a hook, not an effect (only two classes emit a `shield` event with a size), so
 //     the tally has the damage a character's shield and armour soaked (`absorbed`: a `shield` event's, and since rules
-//     1.66 a weapon hit's `absorbed`, its armour and shield), not what was given. A stim's heal (`stim`) counts.
+//     1.66 a weapon hit's `absorbed`, its armour and shield, and since 0.33 a Guard soak's `soaked`), not what was given. A stim's heal (`stim`) counts.
 //   - A `hurt` or a `heal` mostly carries no source: it is credited to the unit whose `turn` is open (the actor); damage
 //     or healing made while a foe's turn is open (a reaction, a bleed) is the fight's `other`, and a heal that no effect
 //     reports (the perk `mend` op, a Bond) is missing from `healed`. Since 0.31.12 a `hurt` that names its dealer
@@ -18,7 +18,7 @@ import type { Combat, Unit } from '../combat';
 import { ownerOf } from '../owned';
 
 /** One event of the tape: the fields the tally reads, copied when the effect was emitted. */
-export interface TapeEv { k: string; unit?: string; target?: string; by?: string; dmg?: number; hit?: boolean; amount?: number; absorbed?: number; heal?: number; dead?: boolean; surrendered?: boolean; object?: boolean }
+export interface TapeEv { k: string; unit?: string; target?: string; by?: string; dmg?: number; hit?: boolean; amount?: number; absorbed?: number; heal?: number; dead?: boolean; surrendered?: boolean; object?: boolean; soaked?: number }
 /** What one character did in one fight (rules 1.47). `shots`/`hits`: weapon attacks made and landed (a Burst's rounds
  * count each); `absorbed`: damage its shield and armour soaked; `deaths`: Downs that were deaths. */
 export interface TallyRow { name: string; dealt: number; taken: number; healed: number; absorbed: number; kills: number; downs: number; deaths: number; shots: number; hits: number }
@@ -34,6 +34,7 @@ function slim(ev: { k: string; [x: string]: any }): TapeEv {
   if (typeof ev.amount === 'number') e.amount = ev.amount;
   if (typeof ev.absorbed === 'number') e.absorbed = ev.absorbed;
   if (typeof ev.heal === 'number') e.heal = ev.heal;
+  if (typeof ev.soaked === 'number') e.soaked = ev.soaked;
   if (ev.hit) e.hit = true;
   if (ev.dead) e.dead = true;
   if (ev.surrendered) e.surrendered = true;
@@ -42,7 +43,9 @@ function slim(ev: { k: string; [x: string]: any }): TapeEv {
 }
 // The tap keeps the effect itself, not a copy: a shot's damage is written on it after it is emitted (combat.ts
 // resolveAttack), so it is read when the action is done. Only a fight that has a tape (a run's) keeps one.
-fxTaps.push((cb: Combat, ev) => { if (cb.tape && KINDS.has(ev.k)) cb.tape.push(ev as TapeEv); });
+// 0.33 (outside playtest 0.32.0, Durability item 1): a Guard soak (physical/core.ts guardFx, why 'soak') is soaked
+// damage too; only the soak's events are kept (a gain or a spend says nothing the tally reads).
+fxTaps.push((cb: Combat, ev) => { if (cb.tape && (KINDS.has(ev.k) || (ev.k === 'guard' && ev.why === 'soak' && ev.soaked > 0))) cb.tape.push(ev as TapeEv); });
 /** When an action is done (game.ts `apply`): the tape's effects are cut down to the fields the tally reads, so a saved fight carries little. */
 export function settleTape(cb: Combat) { if (cb.tape) cb.tape = cb.tape.map(slim); }
 
@@ -84,6 +87,7 @@ export function fightTally(tape: TapeEv[], units: Pick<Unit, 'id' | 'side' | 'na
       const n = e.heal || 0; if (n <= 0 || side.get(e.target || '') !== 'pc') continue;
       const me = row(e.unit); if (me) me.healed += n; else t.other.healed += n;
     } else if (e.k === 'shield') { const r = row(e.target); if (r) r.absorbed += e.absorbed || 0; }
+    else if (e.k === 'guard') { const r = row(e.unit); if (r) r.absorbed += e.soaked || 0; } // a Guard soak: the plates' share of a hit
     else if (e.k === 'down' && e.unit) {
       const r = row(e.unit);
       if (r) { if (e.dead) r.deaths++; else r.downs++; }

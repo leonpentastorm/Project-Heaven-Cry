@@ -198,7 +198,7 @@ export function patternPanel(cb: any, tile: string | null, u: any, knows: (w: st
   const verdict = !allRead ? 'Unreadable: you don\'t know every word in it.' : pa.valid ? '✓ A spell: ' + spellSummary(pa.words) : '◆ ' + (pa.why || 'Not a spell yet.');
   const m = u && u.mg, now = pa.costNow || {}, after = pa.costAfter || {};
   const stats = !ours || !m ? [] : [
-    { k: 'Charge', now: String(now.charge), after: String(after.charge) + (after.evokeCharge != null ? ' (−' + after.evokeCharge + ')' : '') },
+    { k: 'Charge', now: String(now.charge), after: String(after.charge) + (after.short ? ' (short ' + after.short + ': swap a core)' : after.evokeCharge != null ? ' (−' + after.evokeCharge + ')' : '') },
     { k: 'AP', now: num(now.ap), after: num(after.ap) }, // AP can be fractional (Glyph AP 0.8): no float noise
     { k: 'Flux', now: now.flux + '/' + fluxMaxOf(u, cb, g), after: after.flux + '/' + fluxMaxOf(u, cb, g) }, // the limit the reducer keeps (g: the game the feed reads)
   ];

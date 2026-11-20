@@ -495,7 +495,7 @@ export function strike(t: Tech, o: StrikeOpts = {}): StrikeResult {
         if (r.cancelled) { st.cancelled = true; return { ok: true, hit: false, crit: false, dmg: 0, killed: false, pct: pv.pct, target: tgt, cancelled: true }; } // a reaction ended it before the roll: not a miss, no riders
         if (rd) { if (rd.fromMag === false && t.w.magazine != null && !u.infiniteAmmo) u.ammo += 1; rd.by.fired?.(t, tgt, rd.type); } // a round not from the magazine: the magazine stays as it was
         if (t.def.system === 'melee') momentumFx(t.cb, u, m0); // the engine added the plain attack's +1 (a reaction's hit on the user shows itself)
-        if (mode === 'melee' && t.hand === 'main' && !st.real) st.real = act.real || tgt; // the first roll really made, at the unit really struck (rules 1.58: a follow goes at it)
+        if (mode === 'melee' && t.hand === 'main' && !st.real) { st.real = act.real || tgt; st.realRoll = { hit: r.hit, fumble: r.fumble }; } // the first roll really made, at the unit really struck (rules 1.58: a follow goes at it; rules 1.86: a fumble makes none)
         // the unit the attack was really made against (Confused, a captive held as a shield, Duck and Roll): riders follow it
         return { ok: true, hit: r.hit, crit: r.crit, dmg: r.damage, killed: r.killed, pct: pv.pct, target: act.real || tgt };
       } finally { if (rd) { u.ammoType = type0; rd.by.done?.(t, tgt); } }
@@ -968,7 +968,11 @@ function follow(t: Tech): void {
   const o: StrikeOpts = { target: real, extra: ft.num('extra'), mult: ft.num('mult', 1), label: WEAPON[id]?.name || fdef.name, rider: true, noPressure: true, noMomentum: true, chain: true };
   if (t.preview) { strike(ft, o); for (const a of ft.pv.attacks) t.pv.attacks.push({ ...a, follow: true, item: id }); return; }
   if (!canStrike(ft, real)) return; // out of its reach: no follow, and nothing is said
-  say(cb, '  ' + (WEAPON[id]?.name || fdef.name) + ' follows:');
+  // rules 1.86 (outside playtest 0.32.0): a follow comes after a hit or a miss, never after a natural 1 (a fumble), and
+  // the log says which it followed
+  const first = st.realRoll as { hit: boolean; fumble: boolean } | undefined, nm = WEAPON[id]?.name || fdef.name;
+  if (first?.fumble) { say(cb, '  ' + nm + ' does not follow: the swing fumbled.'); return; }
+  say(cb, '  ' + nm + ' follows' + (first ? (first.hit ? ' the hit' : ' the miss') : '') + ':');
   const g0 = guardOf(u); strike(ft, o);
   { const got = guardOf(u) - g0, m = guardMult(u); if (got > 0 && m > 1) resGain(u, 'guard', got * (m - 1)); } // rules 1.59 (T4): two shields double the plate its own line gave
   if (guardOf(u) > g0) guardFx(cb, u, g0, 'gain'); // a plate its own line gave (a shield's, once a turn) plays as any gain
