@@ -3596,7 +3596,13 @@
     "keep_line": "the same compact dark angular suppressed submachine gun pointing up-right, one long fat plain suppressor with a dark circular end, small receiver with short top rail and low sights, straight slightly slanted magazine below and ahead of the grip, separate pistol grip and rectangular trigger guard, short angular rear stock with a small riveted blue-grey side plate. Preserve suppressor length/diameter, muzzle opening, magazine angle, grip/guard opening, stock shape, rivets, sights and exactly the small blue-grey stock plate. No second magazine or new ports, no muzzle light.",
     "status": "pending",
     "production_approved": false,
-    "depends_on": null
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json",
+      "request_id": "890725b2-bbba-422d-9dc8-8dfca94617b4"
+    }
   },
   {
     "id": "weapon-whisper_smg--masterwork",
