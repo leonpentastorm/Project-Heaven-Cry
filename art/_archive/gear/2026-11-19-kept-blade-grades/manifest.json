@@ -12970,6 +12970,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-magistrate_pistol--fine",
+      "path": "art/icons/gear/weapon-magistrate_pistol--fine.png",
+      "sha256": "e7e7407b4a76c5a8626b04e1240df4a4fe3f835f944ee7e7522b6936c58ec1bb",
+      "label": "Magistrate pistol repaint — Fine",
+      "family": "weapon-magistrate_pistol",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-magistrate_pistol--fine.png",
+        "sha256": "22731440aa40d75df1909b049d8420f8b43070e2e67f5a29d0239876080bc9cd"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-magistrate_pistol--fine.png",
+        "sha256": "e7e7407b4a76c5a8626b04e1240df4a4fe3f835f944ee7e7522b6936c58ec1bb"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-magistrate_pistol--fine.txt",
+        "sha256": "767c741abd7072b439b5c67ac8927653ced295a1d80840750f4428d53184bd00"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-magistrate_pistol.png",
+          "sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-magistrate_pistol--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-magistrate_pistol--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-magistrate_pistol--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-magistrate_pistol--fine.png"
+      },
+      "export_hashes": {
+        "256": "0d1a8d783f27d2e2fb704231da039359582c3f1b6cf910a9eb2dd16ba635ce3e",
+        "128": "73fd6db21109a4f50d45df8af05453c826164662efb06cf9dc4a1373ee41f315",
+        "64": "d5fac59fa84238dd305df4c7695d9e521cff87e18ce844433dd5e7d426272a9b",
+        "32": "fe7756ae29c0e698ed46ea96dd556d208074be09bb241905336be7e73a3ea31d"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-magistrate_pistol",
+      "outline": {
+        "solid_alpha_iou": 0.9647372981767379,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 0,
+        "different_pixels_64": 5
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
