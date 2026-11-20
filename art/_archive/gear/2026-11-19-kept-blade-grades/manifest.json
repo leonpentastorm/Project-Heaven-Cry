@@ -8832,6 +8832,76 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-sight_visor--relic",
+      "path": "art/icons/gear/armour-sight_visor--relic.png",
+      "sha256": "f41567b00f96e8592da7fe56b8b067830526729407f44dfcce9f86b33ad98b5d",
+      "label": "Sight visor — Relic",
+      "family": "armour-sight_visor",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sight_visor--relic.png",
+        "sha256": "6a6df3ca9e9af35a45db321ab9d17f15dd024fa96065478a206cd909f736862c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-sight_visor--relic.png",
+        "sha256": "f41567b00f96e8592da7fe56b8b067830526729407f44dfcce9f86b33ad98b5d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-sight_visor--relic.txt",
+        "sha256": "00a7a8f40e5f1d85a5298d235ea045fe9ebf33da4c1979a88f82431cea4121f0"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-sight_visor--relic/v2/source.png",
+          "sha256": "54bac066b9b9ae8b993e2ad9aeeb477a00a54ce08f075d54d62ac77e3b1acf46"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-sight_visor--relic/v1/source.png",
+          "sha256": "2c4ad7c584a4fe56905434e08f3d1f1bb04456f4d2634af2c4d86290947f296a"
+        },
+        {
+          "path": "art/icons/gear/armour-sight_visor.png",
+          "sha256": "477c0f52e43494ba1432e0d9f0964cbc28cd7c5454367c531bbb9aff367b26a0"
+        },
+        {
+          "path": "art/icons/gear/armour-sight_visor--masterwork.png",
+          "sha256": "c0de479753a188ea382c8bc6596cbc06f20263511e283ed880d909c8c2308a47"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sight_visor--relic.png",
+        "128": "art/icons/gear/exports/128/armour-sight_visor--relic.png",
+        "64": "art/icons/gear/exports/64/armour-sight_visor--relic.png",
+        "32": "art/icons/gear/exports/32/armour-sight_visor--relic.png"
+      },
+      "export_hashes": {
+        "256": "5d0d5ae3b864dc177fccadcd648e8c3aa41f6d8b9de19c2c9538394d14eabc2d",
+        "128": "4921126d0e45c916ba80395817a2809956df6d0f4b0739289bde6071437253b1",
+        "64": "5ac559807d9d79881291bd67cc964cda05da037273993261d5696c2159a69cc0",
+        "32": "03f46827a0b679b0ed4653c4abb8d26221af3b97b891a6afada595e4ff754e5a"
+      },
+      "grade": "relic",
+      "standard_id": "armour-sight_visor",
+      "outline": {
+        "solid_alpha_iou": 0.9330363986543173,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 26,
+        "different_pixels_64": 79
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
