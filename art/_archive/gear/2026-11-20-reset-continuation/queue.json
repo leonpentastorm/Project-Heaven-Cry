@@ -1007,7 +1007,11 @@
     "reference_sources": [
       "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-broadback_sabre.png"
     ],
-    "depends_on": "weapon-broadback_sabre--masterwork"
+    "depends_on": "weapon-broadback_sabre--masterwork",
+    "generation_error": {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-broadback_sabre--relic.json"
+    }
   },
   {
     "id": "weapon-broadback_sabre--celestial",
