@@ -28841,6 +28841,42 @@
         "different_pixels_32": 3,
         "different_pixels_64": 23
       }
+    },
+    "weapon-ork_skinner--celestial": {
+      "label": "Ork Skinner — Celestial",
+      "path": "art/icons/gear/weapon-ork_skinner--celestial.png",
+      "sha256": "ec7161b8fc5686c4919f47c6caf61f1f437c694f8e67bbc17b56113d150b67cb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_skinner--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_skinner--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_skinner--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_skinner--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_skinner--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_skinner",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9564964320693997,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 32
+      }
     }
   },
   "survival_art": {
