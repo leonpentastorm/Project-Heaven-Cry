@@ -29,7 +29,9 @@
     "shield-barrier_wall",
     "weapon-ork_skinner",
     "weapon-ork_cleaver_glaive",
-    "weapon-weighted_gloves"
+    "weapon-weighted_gloves",
+    "weapon-pitch_axe",
+    "weapon-legion_spear"
   ],
   "ids": [
     "armour-ballistic_helmet--relic",
@@ -137,7 +139,15 @@
     "weapon-weighted_gloves--fine",
     "weapon-weighted_gloves--masterwork",
     "weapon-weighted_gloves--relic",
-    "weapon-weighted_gloves--celestial"
+    "weapon-weighted_gloves--celestial",
+    "weapon-pitch_axe--fine",
+    "weapon-pitch_axe--masterwork",
+    "weapon-pitch_axe--relic",
+    "weapon-pitch_axe--celestial",
+    "weapon-legion_spear--fine",
+    "weapon-legion_spear--masterwork",
+    "weapon-legion_spear--relic",
+    "weapon-legion_spear--celestial"
   ],
   "shared_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
   "reservation_comment": 7026736883,
@@ -259,6 +269,20 @@
         "weapon-weighted_gloves--masterwork",
         "weapon-weighted_gloves--relic",
         "weapon-weighted_gloves--celestial"
+      ],
+      "source_commit": "fb99282187819f5fedf48705ac2f8d4512d52337"
+    },
+    {
+      "comment": 7031679727,
+      "ids": [
+        "weapon-pitch_axe--fine",
+        "weapon-pitch_axe--masterwork",
+        "weapon-pitch_axe--relic",
+        "weapon-pitch_axe--celestial",
+        "weapon-legion_spear--fine",
+        "weapon-legion_spear--masterwork",
+        "weapon-legion_spear--relic",
+        "weapon-legion_spear--celestial"
       ],
       "source_commit": "fb99282187819f5fedf48705ac2f8d4512d52337"
     }

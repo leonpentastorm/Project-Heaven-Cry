@@ -1,3 +1,12 @@
+# Active hafted-grade extension
+
+Run reset-20261120-165ac7984341 on art/2026-11-20-reset-continuation. Claim7031679727 exact8: weapon-pitch_axe and weapon-legion_spear, four grades each. Prior106:83 delivered,23 service-blocked/dependent; no retries. Full114-ID queue/claim/progress in reset archive. All review candidates, no artistic approval. Per-image live coordination/export/validation/commit/push continues.
+
+Peer armour56 remains exclusive. FREE at this checkpoint: WarPick4 and WarHammer4 after live source/claim verification. Imported references count0 new. No actual quota yet.
+
+---
+Historical snapshots below; live issue3 supersedes them.
+
 # Active Ork and weighted-glove grade extension
 
 Run reset-20261120-165ac7984341, branch art/2026-11-20-reset-continuation. Claim7031397068 exact12grades: weapon-ork_skinner, weapon-ork_cleaver_glaive, weapon-weighted_gloves, all four grades each. Prior94jobs:74 delivered,20 service-blocked/dependent. All24shields complete. Full106ID queue/claim/progress in reset-continuation archive. All review candidates, no artistic approval. Each image is shown/inspected/validated/committed/pushed before the next request; latest issue3 and actual remote deliveries checked before EVERY image.

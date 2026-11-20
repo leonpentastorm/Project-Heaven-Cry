@@ -109,7 +109,15 @@
     "weapon-kemizuchi_side_sword--celestial",
     "weapon-ork_cleaver_glaive--masterwork",
     "weapon-ork_cleaver_glaive--relic",
-    "weapon-ork_cleaver_glaive--celestial"
+    "weapon-ork_cleaver_glaive--celestial",
+    "weapon-pitch_axe--fine",
+    "weapon-pitch_axe--masterwork",
+    "weapon-pitch_axe--relic",
+    "weapon-pitch_axe--celestial",
+    "weapon-legion_spear--fine",
+    "weapon-legion_spear--masterwork",
+    "weapon-legion_spear--relic",
+    "weapon-legion_spear--celestial"
   ],
   "baseline_project_pictures": 327,
   "project_total": 871,

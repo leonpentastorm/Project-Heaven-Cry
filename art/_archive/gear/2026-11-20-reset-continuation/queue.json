@@ -3035,5 +3035,225 @@
       "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-weighted_gloves.png"
     ],
     "depends_on": "weapon-weighted_gloves--relic"
+  },
+  {
+    "id": "weapon-pitch_axe--fine",
+    "standard_id": "weapon-pitch_axe",
+    "grade": "fine",
+    "label": "Pitch Axe — Fine",
+    "path": "art/icons/gear/weapon-pitch_axe--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-pitch_axe.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-pitch_axe",
+    "family_references": [
+      "art/icons/gear/weapon-pitch_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.\n\nGrade: Fine. The same weapon, newly kept. The head is cleaned of grime, its cutting edge, point or striking face bright; the haft is oiled smooth, its bands and wraps tightened. Add one thin engraved line on the cheek of the head that follows the head's own outline a little inside it. Nothing else is added.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork uses bright brass inlay on the existing axe cheek line. Keep one flared bit and one short rear spike; no second blade or crossing head. The haft stays straight walnut with its original diameter. No feather, bead, tribal motif or extra hardware. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
+    "keep_line": "the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png"
+    ]
+  },
+  {
+    "id": "weapon-pitch_axe--masterwork",
+    "standard_id": "weapon-pitch_axe",
+    "grade": "masterwork",
+    "label": "Pitch Axe — Masterwork",
+    "path": "art/icons/gear/weapon-pitch_axe--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-pitch_axe.png",
+      "art/icons/gear/weapon-pitch_axe--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-pitch_axe",
+    "family_references": [
+      "art/icons/gear/weapon-pitch_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line on the head with the item's accent colour (bright brass if it has no accent), so the head carries one clear coloured stripe. The haft becomes a finer, darker, straight-grained wood (or a finer steel tube where it is metal), with two flat metal strips laid along it below the head, flush with its surface; the butt cap and the socket are re-made in the same shapes with crisp edges. Exact edges, no wear.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork uses bright brass inlay on the existing axe cheek line. Keep one flared bit and one short rear spike; no second blade or crossing head. The haft stays straight walnut with its original diameter. No feather, bead, tribal motif or extra hardware. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades. The TWO new flat metal strips are THIN FLUSH inlays running lengthwise on the exposed haft just below the socket, never attached rails, braces, straps or projecting parts. They stay entirely inside the original shaft outline.",
+    "keep_line": "the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png"
+    ],
+    "depends_on": "weapon-pitch_axe--fine"
+  },
+  {
+    "id": "weapon-pitch_axe--relic",
+    "standard_id": "weapon-pitch_axe",
+    "grade": "relic",
+    "label": "Pitch Axe — Relic",
+    "path": "art/icons/gear/weapon-pitch_axe--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-pitch_axe.png",
+      "art/icons/gear/weapon-pitch_axe--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-pitch_axe",
+    "family_references": [
+      "art/icons/gear/weapon-pitch_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.\n\nGrade: Relic. Keep the shape and the inlay. The head darkens to a warm deep patina, the inlay to dull old gold, and the socket where head meets haft carries one small flush gilt ornament ring. Add one old repair that tells a story: the haft spliced near the grip and bound with old cord, or a cracked cheek held by two hand-set rivets. The edge, point or face is still bright and true.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork uses bright brass inlay on the existing axe cheek line. Keep one flared bit and one short rear spike; no second blade or crossing head. The haft stays straight walnut with its original diameter. No feather, bead, tribal motif or extra hardware. Add ONE short repair near the existing grip, bound with old cord INSIDE the original shaft/grip silhouette; no new protruding knot, collar or metal patch. Preserve the two Masterwork flush shaft strips. The ONE tiny gilt ornament ring is inlaid on the EXISTING socket collar, no extra disc or backing plate. The head inlay becomes old gold; surface patina is warm deep oiled brown, not rust.",
+    "keep_line": "the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png"
+    ],
+    "depends_on": "weapon-pitch_axe--masterwork"
+  },
+  {
+    "id": "weapon-pitch_axe--celestial",
+    "standard_id": "weapon-pitch_axe",
+    "grade": "celestial",
+    "label": "Pitch Axe — Celestial",
+    "path": "art/icons/gear/weapon-pitch_axe--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-pitch_axe.png",
+      "art/icons/gear/weapon-pitch_axe--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-pitch_axe",
+    "family_references": [
+      "art/icons/gear/weapon-pitch_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork uses bright brass inlay on the existing axe cheek line. Keep one flared bit and one short rear spike; no second blade or crossing head. The haft stays straight walnut with its original diameter. No feather, bead, tribal motif or extra hardware. ALL head metal, socket, crossbar if present, two flush shaft strips and butt cap become pale PEARL-IVORY. The wood haft becomes immaculate pale IVORY WOOD, and ALL leather/cord including grip and repair binding becomes IVORY HIDE/CORD. Charcoal only in crevice shadows. Keep the Relic repair and socket ornament in their same places. The head inlay and socket seam emit only a thin contained ivory-gold line; no halo or external light.",
+    "keep_line": "the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png"
+    ],
+    "depends_on": "weapon-pitch_axe--relic"
+  },
+  {
+    "id": "weapon-legion_spear--fine",
+    "standard_id": "weapon-legion_spear",
+    "grade": "fine",
+    "label": "Legion Spear — Fine",
+    "path": "art/icons/gear/weapon-legion_spear--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_spear",
+    "family_references": [
+      "art/icons/gear/weapon-legion_spear.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Fine. The same weapon, newly kept. The head is cleaned of grime, its cutting edge, point or striking face bright; the haft is oiled smooth, its bands and wraps tightened. Add one thin engraved line on the cheek of the head that follows the head's own outline a little inside it. Nothing else is added.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
+    "keep_line": "the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png"
+    ]
+  },
+  {
+    "id": "weapon-legion_spear--masterwork",
+    "standard_id": "weapon-legion_spear",
+    "grade": "masterwork",
+    "label": "Legion Spear — Masterwork",
+    "path": "art/icons/gear/weapon-legion_spear--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/icons/gear/weapon-legion_spear--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_spear",
+    "family_references": [
+      "art/icons/gear/weapon-legion_spear.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line on the head with the item's accent colour (bright brass if it has no accent), so the head carries one clear coloured stripe. The haft becomes a finer, darker, straight-grained wood (or a finer steel tube where it is metal), with two flat metal strips laid along it below the head, flush with its surface; the butt cap and the socket are re-made in the same shapes with crisp edges. Exact edges, no wear.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades. The TWO new flat metal strips are THIN FLUSH inlays running lengthwise on the exposed haft just below the socket, never attached rails, braces, straps or projecting parts. They stay entirely inside the original shaft outline.",
+    "keep_line": "the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png"
+    ],
+    "depends_on": "weapon-legion_spear--fine"
+  },
+  {
+    "id": "weapon-legion_spear--relic",
+    "standard_id": "weapon-legion_spear",
+    "grade": "relic",
+    "label": "Legion Spear — Relic",
+    "path": "art/icons/gear/weapon-legion_spear--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/icons/gear/weapon-legion_spear--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_spear",
+    "family_references": [
+      "art/icons/gear/weapon-legion_spear.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Relic. Keep the shape and the inlay. The head darkens to a warm deep patina, the inlay to dull old gold, and the socket where head meets haft carries one small flush gilt ornament ring. Add one old repair that tells a story: the haft spliced near the grip and bound with old cord, or a cracked cheek held by two hand-set rivets. The edge, point or face is still bright and true.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. Add ONE short repair near the existing grip, bound with old cord INSIDE the original shaft/grip silhouette; no new protruding knot, collar or metal patch. Preserve the two Masterwork flush shaft strips. The ONE tiny gilt ornament ring is inlaid on the EXISTING socket collar, no extra disc or backing plate. The head inlay becomes old gold; surface patina is warm deep oiled brown, not rust.",
+    "keep_line": "the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png"
+    ],
+    "depends_on": "weapon-legion_spear--masterwork"
+  },
+  {
+    "id": "weapon-legion_spear--celestial",
+    "standard_id": "weapon-legion_spear",
+    "grade": "celestial",
+    "label": "Legion Spear — Celestial",
+    "path": "art/icons/gear/weapon-legion_spear--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/icons/gear/weapon-legion_spear--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_spear",
+    "family_references": [
+      "art/icons/gear/weapon-legion_spear.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. ALL head metal, socket, crossbar if present, two flush shaft strips and butt cap become pale PEARL-IVORY. The wood haft becomes immaculate pale IVORY WOOD, and ALL leather/cord including grip and repair binding becomes IVORY HIDE/CORD. Charcoal only in crevice shadows. Keep the Relic repair and socket ornament in their same places. The head inlay and socket seam emit only a thin contained ivory-gold line; no halo or external light.",
+    "keep_line": "the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png"
+    ],
+    "depends_on": "weapon-legion_spear--relic"
   }
 ]
