@@ -11,7 +11,7 @@ import { poke } from './game/store';
 import { PlaytestTools } from './game/report';
 import { usePresence, presenceCls, COMBAT_IN_MS } from './game/presence';
 import { playCreateMusic, stopCreateMusic } from './game/createMusic';
-import { DialogHost } from './game/dialog';
+import { DialogHost, askConfirm } from './game/dialog';
 import { SettingsHost } from './game/settings';
 import { counted, tally } from './game/renderCount';
 // The client load lane (0.33): the room's overlays read the engine, so they are their own chunk (game/roomLayer.tsx,
@@ -46,7 +46,10 @@ function useShownScreen(st: ClientState): Shown | null {
     const go = () => Promise.all([loadScreen(st.screen), sb ? loadSandbox() : null, room ? ROOM_LAYER.load() : null]).then(() => { if (live) bump(); }, (e) => {
       if (!live) return;
       if (++tries < 3) { setTimeout(go, 1500); return; }
-      console.error(e); toast('This screen could not load. Check the connection and reload the page.');
+      // the last try failed: a page left open across a release asks for files that are gone (0.33 review). Reload is
+      // safe: the host's game is saved (IndexedDB and the room), a guest gets its view back when it rejoins.
+      console.error(e); askConfirm({ title: 'This screen could not load', body: 'The game may have been updated since this page was opened, or the connection dropped. Reload the page to carry on: your game is saved.', confirm: 'Reload', cancel: 'Not now' })
+        .then((yes) => { if (yes) location.reload(); else toast('This screen could not load. Reload the page to carry on.'); });
     });
     go();
     return () => { live = false; };

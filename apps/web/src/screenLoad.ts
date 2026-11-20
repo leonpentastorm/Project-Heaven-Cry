@@ -16,6 +16,9 @@ const LOAD: Record<ChunkScreen, () => Promise<{ default: Comp }>> = {
   levelup: () => import('./screenChunks/levelup'),
   ultimate: () => import('./screenChunks/ultimate'),
 };
+/** Every screen chunk (the preloader warms them all a while after the load event: a page left open across a release
+ *  never needs a file that is gone to change screen). */
+export const CHUNK_SCREENS = Object.keys(LOAD) as ChunkScreen[];
 /** The chunk a screen lives in: 'run' is the play screen (store.go), the title has none. */
 export const chunkOf = (s: Screen): ChunkScreen | null => (s === 'home' ? null : s === 'run' ? 'main' : s);
 

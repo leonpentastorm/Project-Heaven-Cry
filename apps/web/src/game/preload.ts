@@ -12,7 +12,7 @@
 // Nothing waits on it: an <img> whose file is not in yet shows its usual fallback and swaps in when it lands.
 import ASSETS from './assets.json';
 import { type Screen, loadEngine } from './store';
-import { loadScreen, loadSandbox, ROOM_LAYER } from '../screenLoad';
+import { loadScreen, loadSandbox, ROOM_LAYER, CHUNK_SCREENS } from '../screenLoad';
 
 /** The screens a player can reach from each one (where the art and code are warmed ahead). */
 export const NEXT: Record<Screen, Screen[]> = {
@@ -70,7 +70,9 @@ function warmAll(urls: string[], at: number, onOne: () => void): Promise<void> {
 const TITLE_WAIT_MS = 3000;
 /** Files warmed at once: the title's own art, and the next screens' behind a screen. */
 const AT_FIRST = 6, AT_NEXT = 4;
-const P = { started: false, loaded: false, ready: false, warmed: new Set<string>(), queue: [] as string[], running: 0, screen: 'home' as Screen };
+/** How long after the page has loaded every other screen's chunk is warmed (ms; the next screens' come first). */
+const ALL_CODE_MS = 4000;
+const P = { started: false, loaded: false, allCode: false, ready: false, warmed: new Set<string>(), queue: [] as string[], running: 0, screen: 'home' as Screen };
 /** For the browser checks (title.mjs): the title's files, the files queued since, how many are in, and the screen. */
 const state = { first: 0, rest: 0, done: 0, titleDone: false, ready: false, screen: 'home' as Screen };
 function pump() {
@@ -89,6 +91,9 @@ function warmCode(screen: Screen) {
   ROOM_LAYER.load().catch(() => { /* loaded again when a room's screen is shown */ });
   for (const s of [...(NEXT[screen] || []), ...(CODE_NEXT[screen] || [])]) loadScreen(s).catch(() => { /* loaded again when the screen is reached */ });
   if (screen === 'home' || screen === 'room') loadSandbox().catch(() => { /* the Proving Ground opens from both */ });
+  // then, once, every other screen's chunk and the Proving Ground's (0.33 review: a page open across a release would
+  // otherwise ask for a chunk the new release no longer has, the first time it reaches that screen); they are small
+  if (!P.allCode) { P.allCode = true; setTimeout(() => { for (const s of CHUNK_SCREENS) loadScreen(s).catch(() => { /* loaded again when reached */ }); loadSandbox().catch(() => { /* again when opened */ }); }, ALL_CODE_MS); }
 }
 /** Warm what the player can reach next from this screen: the screens' code once the page has loaded, then their art
  *  once the title's art is in too (replacing the art still waiting from the screen before). */
