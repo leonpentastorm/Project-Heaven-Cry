@@ -1,3 +1,10 @@
+# Active56-armour extension —20November2026
+
+Current exact claim7029516545: all four grades for14new file07 armour Standards on `art/2026-11-19-kept-blade-grades`.56ready prompts committed in queue.json (total208:121delivered,56eligible,31earlier rejected/dependent). Initial reset scope26 yielded GasMask2delivered; all six independent kept-gunFine requests rejected, higher18dependent, all exact responses retained. Those gun requests are not free retries and were not quota failures. Peer new24blade claim7029498929 is separate. All14Standard paintings and newgrades remain unapproved candidates. Read live issue3opening+allcomments and check actualremote deliveries beforeEVERY creative request.
+
+---
+Historical snapshots below.
+
 # Current26-picture reservation —20November2026
 
 Owner kept-grades-20261120-031914Z on `art/2026-11-19-kept-blade-grades` reserves Gas MaskRelic/Celestial2 and all four grades each of `weapon-parlour_pistol`, `weapon-lever_carbine`, `weapon-sawn_off`, `weapon-coach_gun`, `weapon-legion_bullpup`, `weapon-whisper_smg`24. These gun24 are NO LONGER FREE. Claim7027017190 at https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Exact committed IDs and peer22 exclusion: `art/_archive/gear/2026-11-19-kept-blade-grades/coordination/resume-2026-11-20.json`. Restart03:19:14UTC /10:19:14Asia/Saigon; no early image calls. Read START-HERE-2026-11-20.md, current issue and allcomments, post unique START and recheck remote deliveries before every render.
