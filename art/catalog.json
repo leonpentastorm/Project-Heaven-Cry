@@ -27617,6 +27617,42 @@
         "different_pixels_32": 2,
         "different_pixels_64": 15
       }
+    },
+    "weapon-adamantile_plate_needle--masterwork": {
+      "label": "Adamantile Plate Needle — Masterwork",
+      "path": "art/icons/gear/weapon-adamantile_plate_needle--masterwork.png",
+      "sha256": "12aa123bc3b38bea4efd1716655e245a0263079f5bbbfe64d813fdb5609c2a46",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_plate_needle--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_plate_needle--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_plate_needle--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_plate_needle--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-adamantile_plate_needle--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-adamantile_plate_needle",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9289047724314101,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 21
+      }
     }
   },
   "survival_art": {

@@ -2601,7 +2601,7 @@ bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/g
 f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/gear/2026-11-19-unique-melee-bow/web-build-check.json
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
-4dcc39df2c98d34a41a4bd4fe8982e95956e2208556241ea2f9ff15349a1f10e  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
+fb48289386f5b70beff5e43febaa441827ed7a14c8eb528a1882ea2d4d10b8c3  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
 1006204c5e813723abfb237b9be15ccb822febfcdcff4f3180aba731f6e9d711  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
@@ -2648,10 +2648,11 @@ b02754d15bfca27e004d2481c99034a693be29331d1f645af5dec4527a910917  art/_archive/g
 4539a422f89b173b79fc509303d36d1f49327d82626972f0cfbb5b440c06f424  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-long_draw--fine.json
 54ad9bce4afff6e1e35f06e8acb90ddda1571c52c43ba74c7821632647c53190  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-purifier_flamer--masterwork.json
 5a106830d33315e571ea8b79ba48686d9723d512e7c26ae4c20fffc1091ad5b7  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-short_draw--fine.json
-99aeb857f9ab7294a89509a82f558c17e322f35c7335e8b1b81d8c073c061d24  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
+e495632d2bebb8f89457c09383af81daa919a71be495c06785f0945f9d57112d  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
 7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--celestial.png
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png
 0195bf4893364dd1fd56f25bb7d378daa77ecd5a4d5189e711e1d13e4c0271c0  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-adamantile_plate_needle--fine.png
+12aa123bc3b38bea4efd1716655e245a0263079f5bbbfe64d813fdb5609c2a46  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-adamantile_plate_needle--masterwork.png
 35517c194752fe89abea9fea2071f1895d426057487192e0f8744fab4eab9fcf  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-broadback_sabre--fine.png
 b6975468cd67e8f9c2a949ce8e083cf6e66948bc6467b94edf5972a14d7ef15b  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-broadback_sabre--masterwork.png
 0061edd8e5b2297235b593eaaf92d94e91e49566b3a0a8447172afe29878ec79  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-dock_cutter--fine.png
@@ -2692,10 +2693,11 @@ a3c54d67c9815bcab132bff8f9d9dca23c20d74f8d995034245afdbd4d9af921  art/_archive/g
 0ade2a5a847a28f800c042112b7ab0be26ee6641929d9a0e924f39990bc4ba10  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--fine.png
 96c9588f2420f194bf05621dd6fa72ad02c0b340f3dd3822996fd35a604f3a1f  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--masterwork.png
 c7ed7d01288934571de00ea1802c3f3f7750d966fe07e42125c73ef2385c8ff4  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-trench_knife--relic.png
-79c3bef9dd4183be36e382ab1b77bd1bbb8aa4aeaee68a77e1c94eaabb7bb31f  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+969ed1def73d8213078d241615342ca8c3bf555318f2adc590b81f057fb0ba17  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
 3d0581393f326a528d9c400e1428e47bbe777c7c20c9205770121fe63a7f0894  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-adamantile_plate_needle--fine.txt
+2dc781c877add8b3b3279dcb750fea5cacb45f2c4d52a5a4ce0dc26e76e6a2a8  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-adamantile_plate_needle--masterwork.txt
 7f2013ecf274cfe3c25bb6ea6a28ece6fd0a7e46ecb91aab7de71ace2120fadb  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-broadback_sabre--fine.txt
 4545d11c3cb589d78c681261c9bfe4bfb73514ff477f2da8b922d5b4b8813aee  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-broadback_sabre--masterwork.txt
 4ecf52eea6c0d0755b385859a1274afaa64e227438454beb2a651b7d8a3d998d  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-dock_cutter--fine.txt
@@ -2736,11 +2738,11 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-de060f71c39a9118e054ef280d427f01bb50333d5d8a81c81773418eaa29c57a  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+b4631d18bea526144e8293b806d17ba90c7eded9b9ef837fa4e0bb93e74398f4  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
-f58d2fd8ab8efb649079fc177204f0e4f0477c7d8504e3fcd16244d14fe707e5  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-adamantile_plate_needle-32px.png
-604968fbecb2b65da1e9b0db71c5590f1057eb02987b3d7c6a7b67c78c7b92b1  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-adamantile_plate_needle-64px.png
+98d9d09b19dc33d7725ba32a9c1d9f62c0fd2558236c2d9c51335b2df35a615f  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-adamantile_plate_needle-32px.png
+b4a60a8096c8325a3b7cb3e635442d8d3db03fca483c265ce64f24fc5b908405  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-adamantile_plate_needle-64px.png
 deaf4e20e3843235790df048073620b0e76bfe152a29a7968d3c1860de696192  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-broadback_sabre-32px.png
 91d6b02509763ac9a456d40eed7eeaf6e44ddd9c03215cc6ba65234643195ba1  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-broadback_sabre-64px.png
 8b0111c70977dd8cb86f568a98bfe726534cfe9a5de4182702af2ed89bdc00d4  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-dock_cutter-32px.png
@@ -2771,6 +2773,7 @@ f95b212927a47888edc1462302638454cc9cda7c3fcdedc496bb6b7aeb61abc5  art/_archive/g
 0d05f58b44ec65030dbf330cad1d517c758fffaa9ed19d0ff59e24548e4d5f3f  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/armour-ballistic_helmet--celestial.png
 68a55e5cd15f7b8ce6323d6e3686ce906a281b75fb107ae8dc205d93a01c4a41  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/armour-ballistic_helmet--relic.png
 085c77262b77069b1864de5cf09dc356f6ba500e37bf9d3cabe4c134f64390a0  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-adamantile_plate_needle--fine.png
+1ccf25ec9acd15f56570426dd3c62048a74cd528fbe1e9671b9ff0e206a60031  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-adamantile_plate_needle--masterwork.png
 940cc99c989eace8bccd3de2316f5867f42ba6cc4ee71e79f110781c9414835d  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-broadback_sabre--fine.png
 3083ae59066839aebb9190d3cde444b67d44772e308fbf10d48eea25ad78163e  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-broadback_sabre--masterwork.png
 71422a49dd1c67c79653bc4cd623d78b15409db8dd0d738b555dc15472505585  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-dock_cutter--fine.png
@@ -6408,7 +6411,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-d2c93b38e26643d188960a2ba7413c83525b4e57a024f5f87ec465a4a7e328db  art/catalog.json
+1156d33f4cf05dbc9dc4ac09b5117217526dae887da537130ce573e2dcff5fd1  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -8323,6 +8326,7 @@ b2bc0338f105f28787e4c62999b1f626f2ba5ee0ed4227f5698247355014c185  art/icons/gear
 9a6d75caa44e94946a87bf09ba72dfa04bea7516312d0405493bb56c57ff043b  art/icons/gear/exports/128/weapon-adamantile_greatsword.png
 5de599df43b3bfbb54318f59344f5b6b1d5fd66a0a3634747f15e8b3ae91b1fb  art/icons/gear/exports/128/weapon-adamantile_longsword.png
 aec6f48079bc29439ce95956c2bdd07dac5c2185324e55dc464758f3f1125422  art/icons/gear/exports/128/weapon-adamantile_plate_needle--fine.png
+6cd4560a003efb2892091c1bf48826611edc367b5c390fe48e0183a21ff51276  art/icons/gear/exports/128/weapon-adamantile_plate_needle--masterwork.png
 7d011079e0101bbc7fa38b3fd67c195a772cc68b4010b44fffff904d9052421f  art/icons/gear/exports/128/weapon-adamantile_plate_needle.png
 f51e9ed518424c5ccd38d49338994bfdb065aea4bc3aa5761166eeef659329fd  art/icons/gear/exports/128/weapon-afterword.png
 c18740378b72befe1e6c5966f34fabd81f343009fa63414cd770771e4a37d884  art/icons/gear/exports/128/weapon-beast_bite.png
@@ -8760,6 +8764,7 @@ bf1386e3c01dc7d9bbbd4035cc85429562f5c4e08df68621262ba477873945bc  art/icons/gear
 f90c55231d744f9a979deafc58df70ea935c53cfef90075d13341b3026ed7145  art/icons/gear/exports/256/weapon-adamantile_greatsword.png
 2050721bcab5ce9127f4a4bc1d55a0ad71c952e88cd0ec2e24fe479dd0a72ca7  art/icons/gear/exports/256/weapon-adamantile_longsword.png
 34a0372556247499d2dc9c255dedfee5224593ead4dad2e928ebdb765aa7644d  art/icons/gear/exports/256/weapon-adamantile_plate_needle--fine.png
+139525d4a1f2dd41ed0a11b56ebf6420daa5558205b40f481e6470d4c252719a  art/icons/gear/exports/256/weapon-adamantile_plate_needle--masterwork.png
 fc631e03b88895a38885dc6e0e95d951bc24557ec9d5013d532d52e783680050  art/icons/gear/exports/256/weapon-adamantile_plate_needle.png
 e800a662ddb5698fcadc24bd7d87bacbdb688f8fad780ecfc2e85634a895bf9e  art/icons/gear/exports/256/weapon-afterword.png
 e50bfb54d0489d3a5bd1b30490afab3a7229ea1fd7d76d77b0c5e66edc74054d  art/icons/gear/exports/256/weapon-beast_bite.png
@@ -9197,6 +9202,7 @@ a25f0d50a876d5b7635e30211e939aabc14a6b693699f0a54e4c08403c5c5726  art/icons/gear
 7fd93518fa944d22ce7f1c05bf5d65d856fecd1caf6dbaf73421a0dacf7b419d  art/icons/gear/exports/32/weapon-adamantile_greatsword.png
 9c3519d231145ffc9793082557886e0573fa04235f1d34eed3566c3f3eac136f  art/icons/gear/exports/32/weapon-adamantile_longsword.png
 e3c2d0de7b095a942b055f0b0dd3ae9c53c87d28c108b42adc0caf8e95c25ee5  art/icons/gear/exports/32/weapon-adamantile_plate_needle--fine.png
+3a814af4b42dabda726e594a5fc7d41828ca5306b9285e2b87327328779d6c56  art/icons/gear/exports/32/weapon-adamantile_plate_needle--masterwork.png
 0b968cec8d3506ea5eae5ce6aa0c18d3adeabf0c9596f2591827504ac441db7a  art/icons/gear/exports/32/weapon-adamantile_plate_needle.png
 73f70d310877cec6ce915eeb213244fd54e226af894573149333884dbc448b6c  art/icons/gear/exports/32/weapon-afterword.png
 b64e5deba81984440c34d7db4d6ae0abe888bf8fc1bba9432e8d467e657c0ed2  art/icons/gear/exports/32/weapon-beast_bite.png
@@ -9634,6 +9640,7 @@ a02697196cc0fd4770f3d932e633d09d2d9f703d3c50372d202290bffae02a76  art/icons/gear
 e5debfd9a8010b9602881f42c6d559df53067c783bd2cd2c2305fce6e470a329  art/icons/gear/exports/64/weapon-adamantile_greatsword.png
 e592ce52df57e8a4a0b375b48e507a19725c2a4c04b740ab379746d0df6571eb  art/icons/gear/exports/64/weapon-adamantile_longsword.png
 0178ca8055a68d81f43856b1df8e56f701e1c4964d323055b8d782171871d26f  art/icons/gear/exports/64/weapon-adamantile_plate_needle--fine.png
+458d2801724eaa5529fc190b58563b2124f384062ed894d5407ba65c8a73b58d  art/icons/gear/exports/64/weapon-adamantile_plate_needle--masterwork.png
 f381b36111dd7d67dcfb30eb0a8622708fd44dcd275c9ea2e1ac4a669fc26b34  art/icons/gear/exports/64/weapon-adamantile_plate_needle.png
 b028aa160b11f88357ada7664b58582490d5b3712c9d6f72b166941819d39488  art/icons/gear/exports/64/weapon-afterword.png
 7ec14b081b7e6a4088dfcbafe5664c9e9a49227e1a397209a10ecff70306e3f4  art/icons/gear/exports/64/weapon-beast_bite.png
@@ -9947,6 +9954,7 @@ ef6282e8f21698726a68e0efcf353b5e7195054adf284e6fe4bde5ad60d647d3  art/icons/gear
 74764eb60ffb2b26b581206171e9d7f9a44453f23c061fb636fef61e2efe7f12  art/icons/gear/weapon-adamantile_greatsword.png
 ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8  art/icons/gear/weapon-adamantile_longsword.png
 0195bf4893364dd1fd56f25bb7d378daa77ecd5a4d5189e711e1d13e4c0271c0  art/icons/gear/weapon-adamantile_plate_needle--fine.png
+12aa123bc3b38bea4efd1716655e245a0263079f5bbbfe64d813fdb5609c2a46  art/icons/gear/weapon-adamantile_plate_needle--masterwork.png
 2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13  art/icons/gear/weapon-adamantile_plate_needle.png
 69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb  art/icons/gear/weapon-afterword.png
 7f457aa27ebe1908fb9df93eb3a2d10efa67fbb8b029bb039bff882dace73a10  art/icons/gear/weapon-beast_bite.png
