@@ -6,6 +6,7 @@
 // Which icon a thing shows is always its data row's field, looked up through the engine (figmentLookOf: a form, the
 // turret, an item); no id is named here. Adding a form with an icon needs no code: the file and the row's field.
 import { figmentLookOf } from '@engine';
+import ASSETS from './assets.json';
 
 const FILES = import.meta.glob('../../../../art/icons/figments/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
 const ICONS: Record<string, string> = {};
@@ -51,3 +52,11 @@ export function figmentLogIcon(text: string, figs: readonly { name: string; icon
   }
   return best ? figmentIconUri(best.icon, FIG_LINE) : '';
 }
+
+/** The delivered white-ink picture of a Figment order or trait (Items 2.0 item 21: art/icons/figments/order-<id>.png and
+ *  trait-<id>.png, built by tools/build_web_assets.py under their file stem): an order row's `icon` (order-draw-fire) or a
+ *  trait's id (kindling -> trait-kindling). '' when there is none; the form icons are the line SVGs above, not these. */
+export const figmentPng = (icon: string | null | undefined, trait = false): string => {
+  const key = trait && icon ? 'trait-' + icon : icon || '', A = ASSETS as Record<string, string>;
+  return /^(order|trait)-/.test(key) && Object.prototype.hasOwnProperty.call(A, key) ? A[key] : '';
+};
