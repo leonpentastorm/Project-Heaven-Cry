@@ -473,5 +473,5 @@ if __name__ == "__main__":
         print("items2 sheet: " + ("up to date" if ok else "STALE: run python tools/items2_sheet.py")); sys.exit(0 if ok and not drift else 1)
     if "--spec" in sys.argv: print(spec_rows(sheet)); sys.exit(0)
     if "--validate" in sys.argv: sys.exit(validate(sheet))
-    SHEET.write_text(text, encoding="utf-8")
+    SHEET.write_text(text, encoding="utf-8", newline=chr(10))
     print(f"items2 sheet: {len(sheet['weapons'])} weapon rows, {len(sheet['edits'])} edit, {len(sheet['items'])} item rows, {len(sheet['holds'])} held, {len(sheet['missing'])} missing")
