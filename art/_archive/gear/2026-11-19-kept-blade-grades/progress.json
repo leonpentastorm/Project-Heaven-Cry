@@ -1,5 +1,5 @@
 {
-  "target": 260,
+  "target": 272,
   "status": "drawing",
   "delivered": [
     "weapon-kemizuchi_duelling_blade--fine",
@@ -263,11 +263,23 @@
     "weapon-whisper_carbine--fine",
     "weapon-whisper_carbine--masterwork",
     "weapon-whisper_carbine--relic",
-    "weapon-whisper_carbine--celestial"
+    "weapon-whisper_carbine--celestial",
+    "weapon-service_pistol--fine",
+    "weapon-service_pistol--masterwork",
+    "weapon-service_pistol--relic",
+    "weapon-service_pistol--celestial",
+    "weapon-magistrate_pistol--fine",
+    "weapon-magistrate_pistol--masterwork",
+    "weapon-magistrate_pistol--relic",
+    "weapon-magistrate_pistol--celestial",
+    "weapon-decrkm_autopistol--fine",
+    "weapon-decrkm_autopistol--masterwork",
+    "weapon-decrkm_autopistol--relic",
+    "weapon-decrkm_autopistol--celestial"
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-20T07:46:14.839240+00:00",
+  "updated_utc": "2026-11-20T07:52:08.489176+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3,
   "quota_history": [

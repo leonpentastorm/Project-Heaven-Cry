@@ -1,3 +1,5 @@
+> Current kept-grades20Nov: armour56/powered/thrown24/Lumeri8 complete, own210selected (91new). Next12 repaint-based gun-grade reservation7033714996, exact272-ID queue. Prior50 service-blocked/dependent retained without retry; no actual new quota. Three already-integrated Standards are unchanged and excluded from new counts.
+
 > Current kept-grades20Nov: armour56 and powered/thrown24 complete, own201selected (82new). Next16 Lumeri/Whisper reservation7033232334, exact260-ID queue. Prior43 service-blocked/dependent retained without retry; no actual new quota. Four further existing Standard imports are unchanged and excluded from new counts.
 
 > Current kept-grades20Nov: armour56 complete, own177selected. Next28 ShortBow/powered/thrown reservation7032212554, exact244-ID queue. Prior39 service-blocked/dependent retained without retry; no actual new quota. Seven existing Standard imports are unchanged and excluded from new counts.

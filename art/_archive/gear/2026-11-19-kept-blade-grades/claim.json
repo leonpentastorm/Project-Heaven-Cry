@@ -1,6 +1,6 @@
 {
   "branch": "art/2026-11-19-kept-blade-grades",
-  "updated_utc": "2026-11-20T07:25:13.705993+00:00",
+  "updated_utc": "2026-11-20T07:52:08.489176+00:00",
   "ids": [
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
@@ -261,7 +261,19 @@
     "weapon-whisper_carbine--fine",
     "weapon-whisper_carbine--masterwork",
     "weapon-whisper_carbine--relic",
-    "weapon-whisper_carbine--celestial"
+    "weapon-whisper_carbine--celestial",
+    "weapon-service_pistol--fine",
+    "weapon-service_pistol--masterwork",
+    "weapon-service_pistol--relic",
+    "weapon-service_pistol--celestial",
+    "weapon-magistrate_pistol--fine",
+    "weapon-magistrate_pistol--masterwork",
+    "weapon-magistrate_pistol--relic",
+    "weapon-magistrate_pistol--celestial",
+    "weapon-decrkm_autopistol--fine",
+    "weapon-decrkm_autopistol--masterwork",
+    "weapon-decrkm_autopistol--relic",
+    "weapon-decrkm_autopistol--celestial"
   ],
   "standards": [
     "weapon-kemizuchi_duelling_blade",
@@ -328,7 +340,10 @@
     "weapon-lumeri_votive_torch",
     "weapon-lumeri_cathedral_burner",
     "weapon-whisper_pistol",
-    "weapon-whisper_carbine"
+    "weapon-whisper_carbine",
+    "weapon-service_pistol",
+    "weapon-magistrate_pistol",
+    "weapon-decrkm_autopistol"
   ],
   "other_agent_proof_standards": [
     "weapon-katana",
@@ -343,9 +358,9 @@
     "weapon-legion_gladius"
   ],
   "peer_canonical_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
-  "target": 260,
-  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7033232334",
+  "target": 272,
+  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7033714996",
   "latest_implementer_commit": "7e1f6bd065b47ce6f9d9325629abdeaffba7b0e9",
-  "handoff_status": "active;armour56 complete;next16 Lumeri/Whisper reserved;43 prior rejected/dependent",
+  "handoff_status": "active;armour56 complete;next12 repaint-based gun grades reserved;50 prior rejected/dependent",
   "next_reset_utc": "2026-11-20T03:19:14Z"
 }

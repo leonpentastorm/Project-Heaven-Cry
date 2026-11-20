@@ -7328,5 +7328,374 @@
     "standard_status": "review-candidate",
     "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
     "current_data_item_present": false
+  },
+  {
+    "id": "weapon-service_pistol--fine",
+    "standard_id": "weapon-service_pistol",
+    "grade": "fine",
+    "label": "Service pistol repaint — Fine",
+    "path": "art/icons/gear/weapon-service_pistol--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-service_pistol.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-service_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-service_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 2,
+    "keep_line": "the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Add only ONE thin uncoloured engraved contour along the largest existing slide/receiver side or lantern/flask body surface; no inlay colour, ornament, repair or new part.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-service_pistol--masterwork",
+    "standard_id": "weapon-service_pistol",
+    "grade": "masterwork",
+    "label": "Service pistol repaint — Masterwork",
+    "path": "art/icons/gear/weapon-service_pistol--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-service_pistol.png",
+      "art/icons/gear/weapon-service_pistol--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-service_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-service_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 2,
+    "keep_line": "the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is the existing muted slate-blue/steel-blue accent, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-service_pistol--fine",
+    "standard_sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-service_pistol--relic",
+    "standard_id": "weapon-service_pistol",
+    "grade": "relic",
+    "label": "Service pistol repaint — Relic",
+    "path": "art/icons/gear/weapon-service_pistol--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-service_pistol.png",
+      "art/icons/gear/weapon-service_pistol--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-service_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-service_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 2,
+    "keep_line": "the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. One small flush ornamental scroll panel sits beside the inlay on an existing side surface, wholly within its original silhouette, no lettering or symbolic crest. ONE existing small fastener is replaced by a different-metal fastener in exactly its current hole and size as the old repair; no added pin or hardware. Patina is deep warm oiled bronze-brown, never fresh rust; original signature accent stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-service_pistol--masterwork",
+    "standard_sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-service_pistol--celestial",
+    "standard_id": "weapon-service_pistol",
+    "grade": "celestial",
+    "label": "Service pistol repaint — Celestial",
+    "path": "art/icons/gear/weapon-service_pistol--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-service_pistol.png",
+      "art/icons/gear/weapon-service_pistol--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-service_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-service_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 2,
+    "keep_line": "the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Keep the prior Relic scroll panel and single contrasting-metal repair in exactly their positions and outlines, now pale clean material with faint seams. Preserve all dark ports/openings; light belongs only to the flush inlay and one original seam, not the muzzle or beyond the outline.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-service_pistol--relic",
+    "standard_sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-magistrate_pistol--fine",
+    "standard_id": "weapon-magistrate_pistol",
+    "grade": "fine",
+    "label": "Magistrate pistol repaint — Fine",
+    "path": "art/icons/gear/weapon-magistrate_pistol--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-magistrate_pistol.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-magistrate_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-magistrate_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 3,
+    "keep_line": "the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Add only ONE thin uncoloured engraved contour along the largest existing slide/receiver side or lantern/flask body surface; no inlay colour, ornament, repair or new part.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-magistrate_pistol--masterwork",
+    "standard_id": "weapon-magistrate_pistol",
+    "grade": "masterwork",
+    "label": "Magistrate pistol repaint — Masterwork",
+    "path": "art/icons/gear/weapon-magistrate_pistol--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-magistrate_pistol.png",
+      "art/icons/gear/weapon-magistrate_pistol--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-magistrate_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-magistrate_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 3,
+    "keep_line": "the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is bright brass, matching the original brass fittings, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-magistrate_pistol--fine",
+    "standard_sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-magistrate_pistol--relic",
+    "standard_id": "weapon-magistrate_pistol",
+    "grade": "relic",
+    "label": "Magistrate pistol repaint — Relic",
+    "path": "art/icons/gear/weapon-magistrate_pistol--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-magistrate_pistol.png",
+      "art/icons/gear/weapon-magistrate_pistol--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-magistrate_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-magistrate_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 3,
+    "keep_line": "the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. One small flush ornamental scroll panel sits beside the inlay on an existing side surface, wholly within its original silhouette, no lettering or symbolic crest. ONE existing small fastener is replaced by a different-metal fastener in exactly its current hole and size as the old repair; no added pin or hardware. Patina is deep warm oiled bronze-brown, never fresh rust; original signature accent stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-magistrate_pistol--masterwork",
+    "standard_sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-magistrate_pistol--celestial",
+    "standard_id": "weapon-magistrate_pistol",
+    "grade": "celestial",
+    "label": "Magistrate pistol repaint — Celestial",
+    "path": "art/icons/gear/weapon-magistrate_pistol--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-magistrate_pistol.png",
+      "art/icons/gear/weapon-magistrate_pistol--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-magistrate_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-magistrate_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 3,
+    "keep_line": "the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Keep the prior Relic scroll panel and single contrasting-metal repair in exactly their positions and outlines, now pale clean material with faint seams. Preserve all dark ports/openings; light belongs only to the flush inlay and one original seam, not the muzzle or beyond the outline.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-magistrate_pistol--relic",
+    "standard_sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-decrkm_autopistol--fine",
+    "standard_id": "weapon-decrkm_autopistol",
+    "grade": "fine",
+    "label": "DECRKM autopistol repaint — Fine",
+    "path": "art/icons/gear/weapon-decrkm_autopistol--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-decrkm_autopistol",
+    "family_references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Add only ONE thin uncoloured engraved contour along the largest existing slide/receiver side or lantern/flask body surface; no inlay colour, ornament, repair or new part.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-decrkm_autopistol--masterwork",
+    "standard_id": "weapon-decrkm_autopistol",
+    "grade": "masterwork",
+    "label": "DECRKM autopistol repaint — Masterwork",
+    "path": "art/icons/gear/weapon-decrkm_autopistol--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png",
+      "art/icons/gear/weapon-decrkm_autopistol--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-decrkm_autopistol",
+    "family_references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is bright brass, matching the original brass fittings, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-decrkm_autopistol--fine",
+    "standard_sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-decrkm_autopistol--relic",
+    "standard_id": "weapon-decrkm_autopistol",
+    "grade": "relic",
+    "label": "DECRKM autopistol repaint — Relic",
+    "path": "art/icons/gear/weapon-decrkm_autopistol--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png",
+      "art/icons/gear/weapon-decrkm_autopistol--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-decrkm_autopistol",
+    "family_references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. One small flush ornamental scroll panel sits beside the inlay on an existing side surface, wholly within its original silhouette, no lettering or symbolic crest. ONE existing small fastener is replaced by a different-metal fastener in exactly its current hole and size as the old repair; no added pin or hardware. Patina is deep warm oiled bronze-brown, never fresh rust; original signature accent stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-decrkm_autopistol--masterwork",
+    "standard_sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
+  },
+  {
+    "id": "weapon-decrkm_autopistol--celestial",
+    "standard_id": "weapon-decrkm_autopistol",
+    "grade": "celestial",
+    "label": "DECRKM autopistol repaint — Celestial",
+    "path": "art/icons/gear/weapon-decrkm_autopistol--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png",
+      "art/icons/gear/weapon-decrkm_autopistol--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-decrkm_autopistol",
+    "family_references": [
+      "art/icons/gear/weapon-decrkm_autopistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single compact right-facing side-view DECRKM autopistol repaint, angular straight dark upper slide/receiver with original rear serrations, small top sight edges and the paired front-side vents, short dark muzzle, large squared trigger-guard opening with its curved trigger, diagonally ribbed dark grip and its round pins, the long straight magazine extending vertically below that grip with its current baseplate, and short narrow front support grip under the forward body. Preserve every opening, vent, edge, pin, grip contour, magazine length/angle, front support and sight position. Dark steel/black grip with its existing worn brass-toned fasteners, no coloured maker accent. No new rail, optic, stock, extra magazine, lettering or external effect.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Keep the prior Relic scroll panel and single contrasting-metal repair in exactly their positions and outlines, now pale clean material with faint seams. Preserve all dark ports/openings; light belongs only to the flush inlay and one original seam, not the muzzle or beyond the outline.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-decrkm_autopistol--relic",
+    "standard_sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true
   }
 ]

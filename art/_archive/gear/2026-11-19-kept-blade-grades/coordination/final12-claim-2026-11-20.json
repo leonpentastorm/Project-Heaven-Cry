@@ -1,0 +1,29 @@
+{
+  "owner": "kept-20261120-mwoeq1o9",
+  "branch": "art/2026-11-19-kept-blade-grades",
+  "claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7033714996",
+  "ids": [
+    "weapon-service_pistol--fine",
+    "weapon-service_pistol--masterwork",
+    "weapon-service_pistol--relic",
+    "weapon-service_pistol--celestial",
+    "weapon-magistrate_pistol--fine",
+    "weapon-magistrate_pistol--masterwork",
+    "weapon-magistrate_pistol--relic",
+    "weapon-magistrate_pistol--celestial",
+    "weapon-decrkm_autopistol--fine",
+    "weapon-decrkm_autopistol--masterwork",
+    "weapon-decrkm_autopistol--relic",
+    "weapon-decrkm_autopistol--celestial"
+  ],
+  "status": "exact prompts ready",
+  "remote_refs_checked": 129,
+  "delivered_conflicts": [],
+  "source_provenance": "coordination/final12-standard-provenance.json",
+  "imports_count_as_new_drawings": false,
+  "peer_excluded": [
+    "weapon-pitch_axe",
+    "weapon-legion_spear"
+  ],
+  "updated_utc": "2026-11-20T07:52:08.489176+00:00"
+}

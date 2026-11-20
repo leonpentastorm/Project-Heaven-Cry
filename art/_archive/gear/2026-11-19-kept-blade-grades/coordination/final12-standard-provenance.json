@@ -1,0 +1,420 @@
+{
+  "imports": [
+    {
+      "stem": "weapon-service_pistol",
+      "branch": "art/2026-11-19-repaint-continuation",
+      "commit": "f48fcbd299cfefbdf360a28df3836a6e195d0806",
+      "catalog_entry": {
+        "label": "Service pistol",
+        "path": "art/icons/gear/weapon-service_pistol.png",
+        "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-service_pistol.png",
+          "128": "art/icons/gear/exports/128/weapon-service_pistol.png",
+          "64": "art/icons/gear/exports/64/weapon-service_pistol.png",
+          "32": "art/icons/gear/exports/32/weapon-service_pistol.png"
+        },
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/02-weapon-service_pistol.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief_number": 1,
+        "origin": "brief",
+        "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-service_pistol.png",
+        "previous_exports": {
+          "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-service_pistol.png",
+          "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-service_pistol.png",
+          "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-service_pistol.png",
+          "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-service_pistol.png"
+        },
+        "previous_source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P049.png",
+        "implementation_ready": false,
+        "collection": "prompt-pack-2026-11-19-file-10",
+        "previous_sha256": "cd5841d14335d25229287f0398e49f76cf8c4e3d9f8459db78e920510aa6697e",
+        "previous_native_dimensions": [
+          1254,
+          1254
+        ]
+      },
+      "files": [
+        {
+          "path": "art/icons/gear/weapon-service_pistol.png",
+          "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+          "git_blob": "209e41b829152cd8064573f523d135be001980f3"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-10/native/02-weapon-service_pistol.png",
+          "sha256": "573c20fa7cc71b123b6d53169e3b8f75d6f4e4ce836c6fe4023a77a53ed9005b",
+          "git_blob": "d4483951bf2eb5948dbd125baa326e4ad709027d"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-service_pistol.png",
+          "sha256": "bc50fd7f3a0a7d1b9ecded5fa0c49b01c1a4e478875cbef29e399312b1950e53",
+          "git_blob": "641cdd5c4f67457ca688c0fa08e5441c2af4cff3"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-service_pistol.png",
+          "sha256": "8c15510dd69d0aa4a2cd4e6b28e20b0feeb583a9e90b246de448475a296a2354",
+          "git_blob": "c31d2730eb69c5ed1987c1de3c80ac076e712528"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-service_pistol.png",
+          "sha256": "31612043d0aff4489da78ccd1e7ae41dfe397b08d8da36a99e972cd5f6cafb91",
+          "git_blob": "fe72777636706fa53447f093f830eda4f47ce270"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-service_pistol.png",
+          "sha256": "ec396ae29667254e76ca104b2cfb4b381a79076e2e62095d42fb5d86670afdaf",
+          "git_blob": "d07ca078693a63ffecb5f822856ef0c9b962ac7f"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-10/records/02.json",
+          "sha256": "b53f2f5a0d3027ed7c00c6e5f1eb3638008d86602d3d90cd266dfba36bb1f918",
+          "git_blob": "b18109de50076aa65fc23446aa0437162ee88dd7"
+        }
+      ],
+      "source_manifest_path": "art/_archive/prompt-pack/2026-11-19-file-10/manifest.json",
+      "source_manifest_entry": {
+        "n": 2,
+        "id": "service_pistol",
+        "title": "Service pistol",
+        "path": "art/icons/gear/weapon-service_pistol.png",
+        "refs": [
+          "art/icons/gear/weapon-service_pistol.png"
+        ],
+        "paint": "A polymer-frame striker-fired service pistol, the pistol in every holster. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a blocky, squared steel slide with a flat top, squared front and fine vertical serrations at the rear; a small open ejection port; a polymer frame with a squared trigger guard; a trigger with a small safety blade in its face; no hammer showing; a slightly angled grip with shallow finger grooves and a flush magazine base. Materials: matte black slide with edges rubbed grey, black polymer frame. Maker's touch: one faded blue-grey (#5394AC) grip panel set into the side of the grip.\nAt 32 px: a plain blocky slide on a squared frame, no hammer.",
+        "repaint": true,
+        "span": 0.8,
+        "label": "Service pistol",
+        "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-service_pistol.png",
+          "128": "art/icons/gear/exports/128/weapon-service_pistol.png",
+          "64": "art/icons/gear/exports/64/weapon-service_pistol.png",
+          "32": "art/icons/gear/exports/32/weapon-service_pistol.png"
+        },
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/02-weapon-service_pistol.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief_number": 1,
+        "origin": "brief",
+        "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-service_pistol.png",
+        "previous_exports": {
+          "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-service_pistol.png",
+          "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-service_pistol.png",
+          "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-service_pistol.png",
+          "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-service_pistol.png"
+        },
+        "previous_source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P049.png",
+        "implementation_ready": false,
+        "collection": "prompt-pack-2026-11-19-file-10",
+        "previous_sha256": "cd5841d14335d25229287f0398e49f76cf8c4e3d9f8459db78e920510aa6697e",
+        "previous_native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_sha256": "573c20fa7cc71b123b6d53169e3b8f75d6f4e4ce836c6fe4023a77a53ed9005b",
+        "export_sha256": {
+          "256": "bc50fd7f3a0a7d1b9ecded5fa0c49b01c1a4e478875cbef29e399312b1950e53",
+          "128": "8c15510dd69d0aa4a2cd4e6b28e20b0feeb583a9e90b246de448475a296a2354",
+          "64": "31612043d0aff4489da78ccd1e7ae41dfe397b08d8da36a99e972cd5f6cafb91",
+          "32": "ec396ae29667254e76ca104b2cfb4b381a79076e2e62095d42fb5d86670afdaf"
+        },
+        "generator_prompt": "One isolated fictional game inventory painting for Project Heaven Cry RPG. A stylized, nonfunctional prop, shown in one single exterior perspective, no schematic or inset. Heavenprint hand-painted gouache, bold contour, visible angular brushwork, crisp focal edge, medium dark shadows, upper-left warm ivory highlights, wear kept within the object. First reference is brushwork only. Remaining refs are fictional RPG family icons; use their brushwork, palette and scale. Service Pistol repaint for the RPG. A compact plain block of matte charcoal sits above a moderately angled black grip and a squared thin guard outline. Level side profile pointing right. Clean flat top, short straight squared front, a small closed dark inset at its top edge, short rear scorelines, flush bottom and no external hammer. A single narrow desaturated blue-grey grip panel, lightly worn. One understated blocky exterior prop. On a true transparent 1024 square with clear margins, no stage or cast shadow. No print, letters, numbers, people, logos, insignia, flare, smoke, backdrop or colored frame. One clear silhouette readable at 32 px."
+      },
+      "notes": "Import exact bytes; source records include original selected generator_prompt. Preserve prior production/native/exports metadata before replacing any existing older Standard."
+    },
+    {
+      "stem": "weapon-magistrate_pistol",
+      "branch": "art/2026-11-19-repaint-continuation",
+      "commit": "f48fcbd299cfefbdf360a28df3836a6e195d0806",
+      "catalog_entry": {
+        "label": "Magistrate heavy pistol",
+        "path": "art/icons/gear/weapon-magistrate_pistol.png",
+        "sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-magistrate_pistol.png",
+          "128": "art/icons/gear/exports/128/weapon-magistrate_pistol.png",
+          "64": "art/icons/gear/exports/64/weapon-magistrate_pistol.png",
+          "32": "art/icons/gear/exports/32/weapon-magistrate_pistol.png"
+        },
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/03-weapon-magistrate_pistol.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief_number": 27,
+        "origin": "brief",
+        "implementation_ready": false,
+        "collection": "prompt-pack-2026-11-19-file-10",
+        "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-magistrate_pistol.png",
+        "previous_sha256": "2f2480add3d3b09b9546464aea65ccd153b8b843cc1df8a7969632286ba035cd",
+        "previous_exports": {
+          "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-magistrate_pistol.png",
+          "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-magistrate_pistol.png",
+          "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-magistrate_pistol.png",
+          "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-magistrate_pistol.png"
+        },
+        "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-magistrate_pistol.png",
+        "previous_native_dimensions": [
+          1254,
+          1254
+        ]
+      },
+      "files": [
+        {
+          "path": "art/icons/gear/weapon-magistrate_pistol.png",
+          "sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+          "git_blob": "8a5b71724d79ad6d163cea401b87eda662da40c2"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-10/native/03-weapon-magistrate_pistol.png",
+          "sha256": "0286bedbd84bf40e83861ff0d3c2df2f687f09939ec9431f2f21a749735c3cc2",
+          "git_blob": "bdeaaaaeaab67a3156d96a99e9fa8e3cefcd07da"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-magistrate_pistol.png",
+          "sha256": "58589365213cef08409f85fca1da9b5c0a6fe2041edcf2db2b1f22fbf5073653",
+          "git_blob": "717f0ce42d9a8313343a3c0b6aa3a334b19790a4"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-magistrate_pistol.png",
+          "sha256": "3c09773a50a1d14531a7629748e476744128204d3a46aac6b77b023b14642d73",
+          "git_blob": "b4c063da975bea2aa0c2d17fcca30fc1311d7ae8"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-magistrate_pistol.png",
+          "sha256": "4a1aa3dbd5156911b7c265599e729f21d9764938d2afc29c2bc52ac357649eef",
+          "git_blob": "be5cd6e39ef3e371bcf55f16851a104f0ddb44a0"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-magistrate_pistol.png",
+          "sha256": "0d31cf6968562f513336aea730d9238ed131f22820bb4c4146e781a328173162",
+          "git_blob": "3bd7a02cc47a21857eef3218585f95bffc84523c"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-10/records/03.json",
+          "sha256": "eb1e23bf2945568b0d2a05ef36e630f55523ba35e9a6e97272651e88e86d1c4e",
+          "git_blob": "7ed3d482db0ba6b0eff67382725481e76328e891"
+        }
+      ],
+      "source_manifest_path": "art/_archive/prompt-pack/2026-11-19-file-10/manifest.json",
+      "source_manifest_entry": {
+        "n": 3,
+        "id": "magistrate_pistol",
+        "title": "Magistrate heavy pistol",
+        "path": "art/icons/gear/weapon-magistrate_pistol.png",
+        "refs": [
+          "art/icons/gear/weapon-magistrate_pistol.png"
+        ],
+        "paint": "A steel single-action heavy service pistol of the century-old pattern. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a slim, full-length flat-sided steel slide with vertical serrations at the rear; a short round barrel bushing at the muzzle, flush with the slide (no flare); a spur hammer at the back; a grip safety in the back of the grip with a beavertail; a thumb safety lever above the grip; a straight, near-vertical grip with flat side panels; a slim rounded trigger guard and a long flat trigger. Materials: polished dark blued steel with worn bright edges. Maker's touch: ivory grip panels with one small blank brass seal plate set in them.\nAt 32 px: a long slim flat slide over a straight grip with pale panels.",
+        "repaint": true,
+        "span": 0.8,
+        "label": "Magistrate heavy pistol",
+        "sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-magistrate_pistol.png",
+          "128": "art/icons/gear/exports/128/weapon-magistrate_pistol.png",
+          "64": "art/icons/gear/exports/64/weapon-magistrate_pistol.png",
+          "32": "art/icons/gear/exports/32/weapon-magistrate_pistol.png"
+        },
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/03-weapon-magistrate_pistol.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief_number": 27,
+        "origin": "brief",
+        "implementation_ready": false,
+        "collection": "prompt-pack-2026-11-19-file-10",
+        "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-magistrate_pistol.png",
+        "previous_sha256": "2f2480add3d3b09b9546464aea65ccd153b8b843cc1df8a7969632286ba035cd",
+        "previous_exports": {
+          "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-magistrate_pistol.png",
+          "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-magistrate_pistol.png",
+          "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-magistrate_pistol.png",
+          "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-magistrate_pistol.png"
+        },
+        "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-magistrate_pistol.png",
+        "previous_native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_sha256": "0286bedbd84bf40e83861ff0d3c2df2f687f09939ec9431f2f21a749735c3cc2",
+        "export_sha256": {
+          "256": "58589365213cef08409f85fca1da9b5c0a6fe2041edcf2db2b1f22fbf5073653",
+          "128": "3c09773a50a1d14531a7629748e476744128204d3a46aac6b77b023b14642d73",
+          "64": "4a1aa3dbd5156911b7c265599e729f21d9764938d2afc29c2bc52ac357649eef",
+          "32": "0d31cf6968562f513336aea730d9238ed131f22820bb4c4146e781a328173162"
+        },
+        "generator_prompt": "One isolated fictional game inventory painting for Project Heaven Cry RPG. A stylized, nonfunctional prop, shown in one single exterior perspective, no schematic or inset. Heavenprint hand-painted gouache, bold contour, visible angular brushwork, crisp focal edge, medium dark shadows, upper-left warm ivory highlights, wear kept within the object. First reference is brushwork only. Remaining refs are fictional RPG family icons; use their brushwork, palette and scale. Magistrate Heavy Pistol repaint for the RPG. A long slim flat blued-steel top contour with an extremely subtle small circular end at right, a short upward rear spur, a simple rounded guard under it, near-vertical ivory handle, a tiny blank brass plate inset flush in the ivory. Rubbing on the dark steel edges only. Level side profile, narrow simple proportions. One prop with no ornamental crest or readable marks. On a true transparent 1024 square with clear margins, no stage or cast shadow. No print, letters, numbers, people, logos, insignia, flare, smoke, backdrop or colored frame. One clear silhouette readable at 32 px."
+      },
+      "notes": "Import exact bytes; source records include original selected generator_prompt. Preserve prior production/native/exports metadata before replacing any existing older Standard."
+    },
+    {
+      "stem": "weapon-decrkm_autopistol",
+      "branch": "art/2026-11-19-repaint-continuation",
+      "commit": "f48fcbd299cfefbdf360a28df3836a6e195d0806",
+      "catalog_entry": {
+        "label": "Decrkm auto-pistol",
+        "path": "art/icons/gear/weapon-decrkm_autopistol.png",
+        "sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-decrkm_autopistol.png",
+          "128": "art/icons/gear/exports/128/weapon-decrkm_autopistol.png",
+          "64": "art/icons/gear/exports/64/weapon-decrkm_autopistol.png",
+          "32": "art/icons/gear/exports/32/weapon-decrkm_autopistol.png"
+        },
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/04-weapon-decrkm_autopistol.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief_number": 25,
+        "origin": "brief",
+        "implementation_ready": false,
+        "collection": "prompt-pack-2026-11-19-file-10",
+        "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-decrkm_autopistol.png",
+        "previous_sha256": "7e349cb915ee1c555f7faba91f2f4161a8ff541e004c561efde1bf32b2eb0a44",
+        "previous_exports": {
+          "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-decrkm_autopistol.png",
+          "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-decrkm_autopistol.png",
+          "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-decrkm_autopistol.png",
+          "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-decrkm_autopistol.png"
+        },
+        "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-decrkm_autopistol.png",
+        "previous_native_dimensions": [
+          1254,
+          1254
+        ]
+      },
+      "files": [
+        {
+          "path": "art/icons/gear/weapon-decrkm_autopistol.png",
+          "sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+          "git_blob": "10f287edb25d8fc2cc1d4e162860b15c9c89cb12"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-10/native/04-weapon-decrkm_autopistol.png",
+          "sha256": "0dc24fa07279e25f9ebacf13f240bbf01bcc6494ba67a9d77e275bfe8236a98b",
+          "git_blob": "08877d491f2f48d148903b68e02e135418d26b7f"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-decrkm_autopistol.png",
+          "sha256": "1f227713327cfe128d3d51b647f7d9021af2eabc1588ad026b97d93f8ba7d381",
+          "git_blob": "6f3e0e747fe9da944a4c7569c04ccc629f37823f"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-decrkm_autopistol.png",
+          "sha256": "b3f9cd8131569b2491059f943921d999fc22154adae3f6df54693cf35e0b306a",
+          "git_blob": "8b20f30aaaadb3d09fa0fe8703025e32444afddf"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-decrkm_autopistol.png",
+          "sha256": "35a2e4e1ce988c9bf626a39c909c26c026eb995f7d85bf782136f623e517ff89",
+          "git_blob": "38b4e7cfcb005008cae88b50f414354f71f9dee6"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-decrkm_autopistol.png",
+          "sha256": "a9cbb5844167a4db23c409c89637f13162e5809bb5daea928779e664f0737309",
+          "git_blob": "53f82981ce173521c43211ca3bcd143c0aaa2de1"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-10/records/04.json",
+          "sha256": "ff0e42f0ceab208d8a39deaeeebb5539eeb13fb60e1dbadc68708ece823d5f82",
+          "git_blob": "5c71f52f257f82c563374c50cc405d5381598a35"
+        }
+      ],
+      "source_manifest_path": "art/_archive/prompt-pack/2026-11-19-file-10/manifest.json",
+      "source_manifest_entry": {
+        "n": 4,
+        "id": "decrkm_autopistol",
+        "title": "Decrkm auto-pistol",
+        "path": "art/icons/gear/weapon-decrkm_autopistol.png",
+        "refs": [
+          "art/icons/gear/weapon-decrkm_autopistol.png"
+        ],
+        "paint": "A full-size select-fire burst machine pistol with a fold-down front grip. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a steel pistol with an open-top slide that shows the barrel; a short three-port compensator on the muzzle; an enlarged trigger guard; a small metal front grip hinged in front of the trigger guard and folded down, pointing to the ground; a long 20-round magazine reaching well below the grip; an exposed hammer. Materials: dark gunmetal, black grip panels, worn bright edges. Maker's touch: one small brass pin through the slide.\nAt 32 px: a pistol with a long magazine and a little grip hanging under its front.",
+        "repaint": true,
+        "span": 0.8,
+        "label": "Decrkm auto-pistol",
+        "sha256": "bd817971baa23d1ae9a9d380966e069851cca646be589bf8c95daec46b16c175",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-decrkm_autopistol.png",
+          "128": "art/icons/gear/exports/128/weapon-decrkm_autopistol.png",
+          "64": "art/icons/gear/exports/64/weapon-decrkm_autopistol.png",
+          "32": "art/icons/gear/exports/32/weapon-decrkm_autopistol.png"
+        },
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-10/native/04-weapon-decrkm_autopistol.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief_number": 25,
+        "origin": "brief",
+        "implementation_ready": false,
+        "collection": "prompt-pack-2026-11-19-file-10",
+        "previous_path": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/weapon-decrkm_autopistol.png",
+        "previous_sha256": "7e349cb915ee1c555f7faba91f2f4161a8ff541e004c561efde1bf32b2eb0a44",
+        "previous_exports": {
+          "256": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/256/weapon-decrkm_autopistol.png",
+          "128": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/128/weapon-decrkm_autopistol.png",
+          "64": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/64/weapon-decrkm_autopistol.png",
+          "32": "art/_archive/prompt-pack/2026-11-19-file-10/superseded/art/icons/gear/exports/32/weapon-decrkm_autopistol.png"
+        },
+        "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-decrkm_autopistol.png",
+        "previous_native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_sha256": "0dc24fa07279e25f9ebacf13f240bbf01bcc6494ba67a9d77e275bfe8236a98b",
+        "export_sha256": {
+          "256": "1f227713327cfe128d3d51b647f7d9021af2eabc1588ad026b97d93f8ba7d381",
+          "128": "b3f9cd8131569b2491059f943921d999fc22154adae3f6df54693cf35e0b306a",
+          "64": "35a2e4e1ce988c9bf626a39c909c26c026eb995f7d85bf782136f623e517ff89",
+          "32": "a9cbb5844167a4db23c409c89637f13162e5809bb5daea928779e664f0737309"
+        },
+        "generator_prompt": "One isolated fictional game inventory painting for Project Heaven Cry RPG. A stylized, nonfunctional prop, shown in one single exterior perspective, no schematic or inset. Heavenprint hand-painted gouache, bold contour, visible angular brushwork, crisp focal edge, medium dark shadows, upper-left warm ivory highlights, wear kept within the object. First reference is brushwork only. Remaining refs are fictional RPG family icons; use their brushwork, palette and scale. Decrkm Auto-Pistol game icon repaint. Static chunky dark steel outline, level with the front facing right. A short squared front extension, an extra small hinged handle visually descending at the front, a long narrow straight rectangular tail extending down from the primary grip, and one little rear spur. One small plain brass dot near the top. Well-worn charcoal metal and matte black handle surfaces. Keep the packed frontal silhouette and modest warm edge highlights. Single exterior object. On a true transparent 1024 square with clear margins, no stage or cast shadow. No print, letters, numbers, people, logos, insignia, flare, smoke, backdrop or colored frame. One clear silhouette readable at 32 px."
+      },
+      "notes": "Import exact bytes; source records include original selected generator_prompt. Preserve prior production/native/exports metadata before replacing any existing older Standard."
+    }
+  ],
+  "current_production_already_matches": true,
+  "replacement_performed": false,
+  "unchanged_bytes": true,
+  "counts_as_new_drawing": false,
+  "previous_revisions_retained": true
+}
