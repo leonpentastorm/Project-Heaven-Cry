@@ -1,0 +1,41 @@
+{
+  "n": 16,
+  "id": "short_bow",
+  "title": "Short bow (Bows, close)",
+  "path": "art/icons/gear/weapon-short_bow.png",
+  "refs": [
+    "art/icons/gear/weapon-recurve_bow.png",
+    "art/icons/gear/weapon-longbow.png"
+  ],
+  "paint": "A short, light frontier hunting bow that any hand can draw, made to be shot from behind a wall. Pose: upright on a gentle diagonal, string to the lower left, filling about 85% of the canvas height like the other bows (do not draw it smaller: it is told apart by shape). Silhouette: one single deep D-shaped curve from tip to tip, no reflexed ends, thick short limbs tapering to plain rounded nocks; a broad rawhide-wrapped grip; a taut dark string. No arrow on the string. Materials: pale ash wood with dry-brush grain, rawhide wrap, a dark string; no colour accent.\nAt 32 px: against the recurve bow, one soft D-curve with no flicked tips; against the longbow, a deep bend and thick limbs, not a tall near-straight stave.\nAvoid: an arrow, a quiver, sights or a stabiliser, recurved tips, carving or feathers.",
+  "needs": false,
+  "span": 0.85,
+  "label": "Short bow (Bows, close)",
+  "sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-short_bow.png",
+    "128": "art/icons/gear/exports/128/weapon-short_bow.png",
+    "64": "art/icons/gear/exports/64/weapon-short_bow.png",
+    "32": "art/icons/gear/exports/32/weapon-short_bow.png"
+  },
+  "collection": "prompt-pack-2026-11-19-file-06",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-06/native/16-weapon-short_bow.png",
+  "source_sha256": "9ce5fb08668b99ffb69fc552dfce8b2a2fbd00d9732fb57b07fca423027c47bd",
+  "export_sha256": {
+    "256": "09681ddf21c63fd5d6507127f7558016b9b0e4e1497c90a5b2f8db49fab91e15",
+    "128": "3de6d9331f098022a3c73b4fcc6c4fed3c8a4e08f02922b72f3828584a9f9956",
+    "64": "3b21c28d49915379796f244bc59a3498142d3e28e6f7dae5289697d418b05442",
+    "32": "502dc06c5d5c34af4cc78657e52b64acecf8e935fae375187157ddd3f09b775a"
+  },
+  "generator_prompt": "One isolated fictional game inventory painting for Project Heaven Cry RPG. A stylized, nonfunctional prop, shown in one single exterior perspective, no schematic or inset. Heavenprint hand-painted gouache, bold contour, visible angular brushwork, crisp focal edge, medium dark shadows, upper-left warm ivory highlights, wear kept within the object. First reference is brushwork only. Remaining refs are fictional RPG family icons; use their brushwork, palette and scale. Frontier Short Bow, an unstrung-looking deeply curved D-shaped fantasy bow displayed with a single straight taut dark bowstring connecting both ends. Complete thin string runs as a chord on the left of the arched sturdy pale ash stave, no arrow. Limbs plain and thick at the center, taper to round nocks; broad rawhide-wrapped grip. A long gentle diagonal upright left string, not a recurve profile. Dull ivory wood and matte rawhide, no paint accent. Decorative single-game-object silhouette only. On a true transparent 1024 square with clear margins, no stage or cast shadow. No print, letters, numbers, people, logos, insignia, flare, smoke, backdrop or colored frame. One clear silhouette readable at 32 px."
+}

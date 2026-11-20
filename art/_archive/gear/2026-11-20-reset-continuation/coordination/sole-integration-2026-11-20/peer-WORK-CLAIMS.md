@@ -1,0 +1,124 @@
+> Current kept-grades20Nov: armour56/powered/thrown24/Lumeri8 complete, own210selected (91new). Next12 repaint-based gun-grade reservation7033714996, exact272-ID queue. Prior50 service-blocked/dependent retained without retry; no actual new quota. Three already-integrated Standards are unchanged and excluded from new counts.
+
+> Current kept-grades20Nov: armour56 and powered/thrown24 complete, own201selected (82new). Next16 Lumeri/Whisper reservation7033232334, exact260-ID queue. Prior43 service-blocked/dependent retained without retry; no actual new quota. Four further existing Standard imports are unchanged and excluded from new counts.
+
+> Current kept-grades20Nov: armour56 complete, own177selected. Next28 ShortBow/powered/thrown reservation7032212554, exact244-ID queue. Prior39 service-blocked/dependent retained without retry; no actual new quota. Seven existing Standard imports are unchanged and excluded from new counts.
+
+> Current kept-grades update20Nov: armour56 complete, own177selected; next WarPick4/WarHammer4 exact reservation7032134179. Queue216 with31 prior service-blocked/dependent. Peer PitchAxe/LegionSpear excluded. All remain review candidates.
+
+# Active56-armour extension —20November2026
+
+Current exact claim7029516545: all four grades for14new file07 armour Standards on `art/2026-11-19-kept-blade-grades`.56ready prompts committed in queue.json (total208:121delivered,56eligible,31earlier rejected/dependent). Initial reset scope26 yielded GasMask2delivered; all six independent kept-gunFine requests rejected, higher18dependent, all exact responses retained. Those gun requests are not free retries and were not quota failures. Peer new24blade claim7029498929 is separate. All14Standard paintings and newgrades remain unapproved candidates. Read live issue3opening+allcomments and check actualremote deliveries beforeEVERY creative request.
+
+---
+Historical snapshots below.
+
+# Current26-picture reservation —20November2026
+
+Owner kept-grades-20261120-031914Z on `art/2026-11-19-kept-blade-grades` reserves Gas MaskRelic/Celestial2 and all four grades each of `weapon-parlour_pistol`, `weapon-lever_carbine`, `weapon-sawn_off`, `weapon-coach_gun`, `weapon-legion_bullpup`, `weapon-whisper_smg`24. These gun24 are NO LONGER FREE. Claim7027017190 at https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Exact committed IDs and peer22 exclusion: `art/_archive/gear/2026-11-19-kept-blade-grades/coordination/resume-2026-11-20.json`. Restart03:19:14UTC /10:19:14Asia/Saigon; no early image calls. Read START-HERE-2026-11-20.md, current issue and allcomments, post unique START and recheck remote deliveries before every render.
+
+Other worker owns22 on art/2026-11-20-reset-continuation; do not duplicate. No independent kept-Standard free lane remains in the former46 list; new-Standard grades and latest ART-REQUESTS require prerequisite/current-claim checks.119own and58peer delivered remain unchanged; this is reservation/preparation only.
+
+---
+Historical snapshots below; current live channel takes precedence.
+
+# Usage-limit handoff — 19 November 2026
+
+Current branch: `art/2026-11-19-kept-blade-grades`. Own119/128 selected grade candidates are pushed; peer58 are imported with originals/versioned alpha cleanup. Combined pinned count327/871 (150 previously audited base/unique +119 exclusive own grades +58 peer grades). Exports/shared imports/alternatives never count again.
+
+Actual own image limit on Gas Mask Relic: reset **20 November2026 10:19:14 Bangkok /03:19:14 UTC**, epoch1795144754. Do not call image_gen earlier. Exact response and progress: `art/_archive/gear/2026-11-19-kept-blade-grades/`. Next reserved work: Gas Mask Relic then Celestial (2). Seven earlier Ork/War Axe grades stay rejected/dependent; do not repeatedly resubmit. Other peer eight rejected/dependent grades also stay blocked. Night Goggles4 and Gas MaskFine/Masterwork are delivered; do not redraw.
+
+FREE after checking the latest issue3: Ballistic Helmet Relic/Celestial2; kept guns24 (parlour_pistol, lever_carbine, sawn_off, coach_gun, legion_bullpup, whisper_smg), heavy8 (hellraiser_rotary,purifier_flamer), powered8 (ork_rip_saw,hellraiser_servo_fist), thrown4 (throwing_knives). Publish an exact claim before drawing. New Standard-grade work requires current source/claim checks; gun repaints and unique dependencies have separate recorded blockers.
+
+Shared channel https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Complete tomorrow instructions: `art/_archive/gear/2026-11-19-kept-blade-grades/TOMORROW.md`. All candidates remain unapproved; keep develop untouched.
+
+---
+Historical snapshots below; latest channel/queue takes precedence.
+
+# Live head-accessory claim — 19 November 2026
+
+Shared channel: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7011687307 . This worker owns128 exact IDs in art/_archive/gear/2026-11-19-kept-blade-grades/queue.json,113 delivered plus7 earlier blocked/dependent plus8 newly claimed head-accessory grades: armour-night_goggles and armour-gas_mask, all four grades each. Branch art/2026-11-19-kept-blade-grades. All52 earlier armour grades delivered.
+
+Peer58 grades preserved/imported at56d367683 with technical alpha cleanup and originals retained; do not redraw them. Free: Ballistic Helmet Relic/Celestial2; kept guns24/heavy8/powered8/thrown4=44; other new-Standard grades require checking claims/prerequisites. Current session has no usage-limit response. No artistic approval asserted.
+
+---
+Historical snapshots below; latest channel/queue takes precedence.
+
+# Live armour claim — 19 November 2026
+
+Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Latest claim comment7006801866.
+
+This worker owns120 candidates on `art/2026-11-19-kept-blade-grades`: prior68 (61 delivered,7 blocked/dependent) plus52 kept-armour grades, four each for `armour-torso_class1_light`, `armour-torso_class2_medium`, `armour-torso_class3_heavy`, `armour-torso_class4_assault`, `armour-torso_class5_juggernaut`, `armour-padded_undershirt`, `armour-trauma_plate`, `armour-runner_trousers`, `armour-armoured_greaves`, `armour-work_gloves`, `armour-combat_gloves`, `armour-field_boots`, `armour-heavy_boots`. Exact current status: `art/_archive/gear/2026-11-19-kept-blade-grades/queue.json`.
+
+Free at this snapshot: released10 headgear jobs from grade-proof, kept guns24/heavy8/powered8/thrown4 (44 further pictures); new-Standard grades require checking their prerequisites and branch. Peer58 grades stay delivered. Never redraw them or count shared12 imports/archived3 overlaps twice. All candidates remain unapproved.
+
+---
+Historical snapshots below; latest mailbox and this section take precedence.
+
+# Live claim expansion — 19 November 2026
+
+Shared mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Check comments before taking IDs.
+
+`art/2026-11-19-kept-blade-grades` owns68 candidates: previous32 plus36 gloves/foci, four grades each for `weapon-striking_gloves`, `weapon-hand_wraps`, `weapon-knuckledusters`, `weapon-kemizuchi_strikers`, `weapon-iron_mitts`, `focus-evoker`, `focus-emanator`, `focus-visualizer`, `focus-attuner`. The first25 are delivered; seven earlier jobs are service-blocked/dependent. See `art/_archive/gear/2026-11-19-kept-blade-grades/queue.json` for exact status.
+
+Peer grade-proof has58 delivered. Its10 remaining headgear jobs are released (Ballistic Helmet Relic/Celestial, Night Goggles4, Gas Mask4). Other kept armour52, guns24, heavy8, powered8, thrown4 remain free at this snapshot:96 further candidates. Do not take an ID without checking issue3. All candidates remain unapproved.
+
+---
+Historical claim snapshots below; latest mailbox and the section above take precedence.
+
+# Current grade lane — acknowledged split
+
+Coordination and acknowledgment: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . This worker owns **32 candidates**: four grades for kemizuchi_duelling_blade, adamantile_greatsword, ork_machete, hatchet, war_axe, glaive, lance and maul. Exact ids are in the active claim.json. The other instance owns Katana/Drifter, combat_knife/sabre/legion_gladius, recurve_bow/longbow, crossbow/repeating_crossbow and shield-buckler/riot_shield/pavise.
+
+Three early overlapping local renders are archived under coordination/overlap-archive; their twelve canonical blade candidates are reused byte-for-byte from peer commit2d9d2fb50, with repo-relative catalog source paths. They are not counted as new active-lane drawings. No further work on the released blade sets. Standards are unchanged; no approval is fabricated. Every active candidate is generated with image_gen, shown, exported, technically validated, committed and pushed individually. No final-report pause while eligible jobs remain.
+
+
+---
+
+# Kept-blade grade candidates — active lane
+
+Shared coordination mailbox: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Message sent to the other instance; no acknowledgment is claimed yet.
+
+This branch exclusively claims24 grade candidates: Fine/Masterwork/Relic/Celestial for combat_knife, sabre, legion_gladius, kemizuchi_duelling_blade, adamantile_greatsword and ork_machete. Exact ids are in claim.json and queue.json. Katana/Drifter remain the other instance’s8-image proof lane. Their7 delivered uniques are preserved on their own branch; this worker’s five uniques stay delivered on unique-melee-bow.
+
+Leon explicitly asked to continue working instead of stopping for report checkpoints. This lane prepares review candidates continuously; it does not invent proof approval or mark exact silhouettes as passed. Every candidate will record measured outline comparison, native source, references, prompt and technical exports, then be shown/validated/committed/pushed before the next render. No code-drawn replacement or silhouette warp. Older masters and sources remain unchanged. The general proof gate and individual artistic approval remain recorded as pending.
+
+Progress is durable in progress.json. On service rejection, retain the exact response without prompt changes to evade it; dependent steps wait. On quota, save the returned reset and do not retry early. Before taking another set, check the shared mailbox and current branches, then publish the exact claim. Develop remains untouched.
+
+
+---
+
+# November 19 art work claims — current checkpoint
+
+Checked live branches before drawing, each new claim and final handoff. Source briefs: develop2020b5c2 (unchanged). All entries are candidate masters; exports and trial renders do not count as extra delivered pictures.
+
+## This worker
+
+- Files05/07:39/39 Standard candidates delivered on `art/2026-11-19-melee-armour` (fb992821).
+- File10 section1: the3 prior candidates are preserved.14 unfinished repaints remain blocked:12 rejected independent renders,2 missing the service-rifle repaint. No new repaint was delivered on `art/2026-11-19-repaint-continuation` (f48fcbd2).
+- File08 sectionD entries1–7 and15 were claimed before drawing on `art/2026-11-19-unique-melee-bow`. **5 delivered:** Last Sentence, Owed in Full, Breath of Morning, Rearguard, Windfall. **3 blocked by moderation:** Grandmother’s Teeth, Last Crossing, Reveille. No active renderer remains; an explicit takeover can update the claim after reading exact errors. No quota/reset timestamp was returned.
+
+## Other instance — do not duplicate
+
+`art/2026-11-19-unique-gear` at8b0bfbb7 reserves entries8,10,11,17,19–23. Seven candidates delivered there: Homecoming, Outpost Wall, Red Thread, Hearth Coat, Lucky Dent, Spring Air and The Long Road. In Triplicate and Encore were rejected. The broad earlier file08 reservation was narrowed into these explicit lanes; our five delivered uniques are distinct.
+
+Files01–04 remain in `art/prompt-pack-01-04-2026-11-19` at550f80c7:85/88 candidates, with Running Script and Rim wall corner still requiring exact edits and Scrap Turret on the0.30 hold. Grade proofs remain in `art/2026-11-19-grade-proof` at450a9c19, pending the exact-outline check and approval gate.
+
+## Available only with the listed blockers resolved
+
+| Work | Remaining | Current prerequisite/blocker |
+| --- | ---: | --- |
+| File06 Gun Forms | 14 | 12 need File10 reference repaints. Fowling Gun and Arbalest are paused, with service rejections and Arbalest draft corrections recorded on ba1ba223. Explicit takeover needed. |
+| File09 Heavy/Strange | 8 | 7 need File10 reference repaints; Twin Rotary has a recorded service rejection. |
+| File10 section1 | 14 | Paused handoff,12 rejected renders and2 dependent jobs. Preserve the3 prior candidates. |
+| File10 section2 | 15 | Five new line bases have recorded service rejections; each base must precede its two variants. No new delivery on95ea51f3. |
+| Unique entries9,12,13,14,16,18 | 6 | Missing or approved family references required by the individual Attach lines. |
+| Higher grades | 656 | Approved Standard masters and reviewed proof-sheet gate required. |
+
+No additional independent, unclaimed unique brief was found after the final peer check. Do not duplicate another lane, reinterpret a rejected request to bypass moderation, or count an old painting as the requested repaint. Read each exact error and prerequisite before taking over.
+
+## Verified pack count
+
+Baseline138 candidates (85 files01–04,39 files05/07,3 file06,8 file09,3 file10), plus12 unique candidates across the two branches = **150/215 base and unique pictures;150/871 overall**. Higher-grade production:0/656. Remaining721 includes the hold. The two Fine proof drafts and rejected/unselected images are excluded. Each candidate still needs Leon’s artistic approval.
+
+History of this worker’s previous claim text is retained in `art/_archive/gear/2026-11-19-unique-melee-bow/claim-history/`. Full-checkout validation and normal merge integration must preserve both workers’ catalog/checksum entries. Develop is untouched; no force pushes.

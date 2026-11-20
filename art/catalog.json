@@ -7017,7 +7017,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "used_to_the_pain",
+      "data_id": "second_wind",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
@@ -7041,7 +7041,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "scar_tissue",
+      "data_id": "numb",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
@@ -7243,7 +7243,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "iron_stomach",
+      "data_id": "steady",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "D",
@@ -8285,7 +8285,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "double_meaning",
+      "data_id": "between_the_lines",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "E",
@@ -8411,7 +8411,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "old_tongue",
+      "data_id": "old_tales",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "E",
@@ -8683,7 +8683,7 @@
       "background": "transparent",
       "ink": "#FFFFFF",
       "usage": "perk icon",
-      "data_id": "real_power",
+      "data_id": "rank_has_privileges",
       "status": "review-candidate",
       "production_approved": false,
       "batch": "E",
@@ -29237,6 +29237,3607 @@
         "different_pixels_32": 3,
         "different_pixels_64": 15
       }
+    },
+    "armour-field_trousers--relic": {
+      "label": "Field trousers — Relic",
+      "path": "art/icons/gear/armour-field_trousers--relic.png",
+      "sha256": "0577c47bd90282a9ab34fe5ef895bb2b254358c6e0cd950c708e8f02a59c4e2c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_trousers--relic.png",
+        "128": "art/icons/gear/exports/128/armour-field_trousers--relic.png",
+        "64": "art/icons/gear/exports/64/armour-field_trousers--relic.png",
+        "32": "art/icons/gear/exports/32/armour-field_trousers--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_trousers--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-field_trousers",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9546139562420948,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 51
+      }
+    },
+    "armour-sealed_visor--celestial": {
+      "label": "Sealed visor — Celestial",
+      "path": "art/icons/gear/armour-sealed_visor--celestial.png",
+      "sha256": "1aac5900d216bd315fa7e182d31040c36d146f0cc9a973c3ee2cb713489cac69",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sealed_visor--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sealed_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9834159839995616,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 23
+      }
+    },
+    "weapon-whisper_pistol": {
+      "label": "Whisper pistol (Whisper, close)",
+      "path": "art/icons/gear/weapon-whisper_pistol.png",
+      "sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-whisper_pistol.png",
+        "128": "art/icons/gear/exports/128/weapon-whisper_pistol.png",
+        "64": "art/icons/gear/exports/64/weapon-whisper_pistol.png",
+        "32": "art/icons/gear/exports/32/weapon-whisper_pistol.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-06",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-06/native/04-weapon-whisper_pistol.png"
+    },
+    "armour-cowl--relic": {
+      "label": "Cowl — Relic",
+      "path": "art/icons/gear/armour-cowl--relic.png",
+      "sha256": "1ff7a2100056b1faf1e1eda81e6f6d973e173c06e42e01dd9ffdf1c0a4f081f0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl--relic.png",
+        "128": "art/icons/gear/exports/128/armour-cowl--relic.png",
+        "64": "art/icons/gear/exports/64/armour-cowl--relic.png",
+        "32": "art/icons/gear/exports/32/armour-cowl--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-cowl--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-cowl",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9833090587693418,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 25
+      }
+    },
+    "weapon-lumeri_votive_torch": {
+      "label": "Votive torch",
+      "path": "art/icons/gear/weapon-lumeri_votive_torch.png",
+      "sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/09-weapon-lumeri_votive_torch.png"
+    },
+    "weapon-throwing_javelins--fine": {
+      "label": "Throwing javelins — Fine",
+      "path": "art/icons/gear/weapon-throwing_javelins--fine.png",
+      "sha256": "5c56e147e3e347452f5e2a3c3afade5819646e609057fe3bac345bf7415e9d0d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_javelins--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_javelins--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_javelins--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_javelins--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.10",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-throwing_javelins",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9796177392862476,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 8
+      }
+    },
+    "weapon-hellraiser_door_knocker--fine": {
+      "label": "Door-knocker — Fine",
+      "path": "art/icons/gear/weapon-hellraiser_door_knocker--fine.png",
+      "sha256": "e4cf21b0e8350134b910b2068efe4843cdbc56e3817c4842cea97546d0b1ef3d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_door_knocker--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_door_knocker",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9787874611739513,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 17
+      }
+    },
+    "weapon-ork_wreck_saw--fine": {
+      "label": "Wreck saw — Fine",
+      "path": "art/icons/gear/weapon-ork_wreck_saw--fine.png",
+      "sha256": "1b97fe1e892376933d74932eb444a98a54e8a7c5b7d16a18af20fa468c92b6a3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_wreck_saw",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9717107293488324,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 35
+      }
+    },
+    "armour-spotters_monocle--masterwork": {
+      "label": "Spotter's monocle — Masterwork",
+      "path": "art/icons/gear/armour-spotters_monocle--masterwork.png",
+      "sha256": "6355171267de35682fd099e389feb6308716f56bbc599b8f124286de4704e3d6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-spotters_monocle--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-spotters_monocle--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-spotters_monocle--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-spotters_monocle--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-spotters_monocle--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-spotters_monocle",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9711075607576286,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 33
+      }
+    },
+    "armour-spotters_monocle--relic": {
+      "label": "Spotter's monocle — Relic",
+      "path": "art/icons/gear/armour-spotters_monocle--relic.png",
+      "sha256": "b88853fe9c49164b8df0a8fca24d9b476997c68e12d22521ff260827685b7a2c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-spotters_monocle--relic.png",
+        "128": "art/icons/gear/exports/128/armour-spotters_monocle--relic.png",
+        "64": "art/icons/gear/exports/64/armour-spotters_monocle--relic.png",
+        "32": "art/icons/gear/exports/32/armour-spotters_monocle--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-spotters_monocle--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-spotters_monocle",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9602949286166541,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 39
+      }
+    },
+    "armour-tactical_gloves--celestial": {
+      "label": "Tactical gloves — Celestial",
+      "path": "art/icons/gear/armour-tactical_gloves--celestial.png",
+      "sha256": "54153dfb89beecb33589c52256c2fba464da86289e212fdbfb13f6c1892399b3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-tactical_gloves--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-tactical_gloves--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-tactical_gloves--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-tactical_gloves--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-tactical_gloves--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-tactical_gloves",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9634503254932525,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 37
+      }
+    },
+    "armour-breacher_plate--fine": {
+      "label": "Breacher plate — Fine",
+      "path": "art/icons/gear/armour-breacher_plate--fine.png",
+      "sha256": "4c70c90de9a62a30cd86897ad4940039af5b0a75d34e16bc51aff587a16bc57f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breacher_plate--fine.png",
+        "128": "art/icons/gear/exports/128/armour-breacher_plate--fine.png",
+        "64": "art/icons/gear/exports/64/armour-breacher_plate--fine.png",
+        "32": "art/icons/gear/exports/32/armour-breacher_plate--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breacher_plate--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breacher_plate",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9923056942971867,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 23
+      }
+    },
+    "armour-spotters_monocle--fine": {
+      "label": "Spotter's monocle — Fine",
+      "path": "art/icons/gear/armour-spotters_monocle--fine.png",
+      "sha256": "8aa14473f5fe948b0496e0863360c7b6376aa1ab445ae28988c9e380e0b117e5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-spotters_monocle--fine.png",
+        "128": "art/icons/gear/exports/128/armour-spotters_monocle--fine.png",
+        "64": "art/icons/gear/exports/64/armour-spotters_monocle--fine.png",
+        "32": "art/icons/gear/exports/32/armour-spotters_monocle--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-spotters_monocle--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-spotters_monocle",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9788535829882017,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 20
+      }
+    },
+    "weapon-hellraiser_piston_knuckles--relic": {
+      "label": "Piston knuckles — Relic",
+      "path": "art/icons/gear/weapon-hellraiser_piston_knuckles--relic.png",
+      "sha256": "faec4ede3318e251c18ac27e8724baa4abf4a248fcd4b9af2b6eb5602ce5eed5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_piston_knuckles--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_piston_knuckles",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9439084528217596,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 17,
+        "different_pixels_64": 52
+      }
+    },
+    "weapon-lumeri_cathedral_burner--relic": {
+      "label": "Lumeri cathedral burner — Relic",
+      "path": "art/icons/gear/weapon-lumeri_cathedral_burner--relic.png",
+      "sha256": "e2625bbaa4f973425d5c56b1bdf7aebebb3823b00c6a85361fb2f355225a711e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_cathedral_burner--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lumeri_cathedral_burner",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9719443766772383,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 42
+      }
+    },
+    "armour-assault_helm--celestial": {
+      "label": "Assault Helm — Celestial",
+      "path": "art/icons/gear/armour-assault_helm--celestial.png",
+      "sha256": "f38be6149b0516edbd0641ae218fc24d5cfacec7e8d40aa75517163d87d1c237",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-assault_helm--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-assault_helm",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.959540841610825,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 17,
+        "different_pixels_64": 58
+      }
+    },
+    "weapon-ork_wreck_saw--relic": {
+      "label": "Wreck saw — Relic",
+      "path": "art/icons/gear/weapon-ork_wreck_saw--relic.png",
+      "sha256": "cb6af16fe46cf881c21bd95a77d73180f6b7dc62e68514fea15179baa1c7e08d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_wreck_saw",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9417053817631574,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 72
+      }
+    },
+    "armour-tactical_gloves--fine": {
+      "label": "Tactical gloves — Fine",
+      "path": "art/icons/gear/armour-tactical_gloves--fine.png",
+      "sha256": "43100e2ac87dffbc05488422fa53d783f4e60c63e8e8628d165dfbc3b5cc7f74",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-tactical_gloves--fine.png",
+        "128": "art/icons/gear/exports/128/armour-tactical_gloves--fine.png",
+        "64": "art/icons/gear/exports/64/armour-tactical_gloves--fine.png",
+        "32": "art/icons/gear/exports/32/armour-tactical_gloves--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-tactical_gloves--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-tactical_gloves",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9792279237408708,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 19
+      }
+    },
+    "armour-hood--fine": {
+      "label": "Hood — Fine",
+      "path": "art/icons/gear/armour-hood--fine.png",
+      "sha256": "673107d05e0be8aef5b37f19913c2f5dd5de10c422bd07e2c0fd130d6db2815f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood--fine.png",
+        "128": "art/icons/gear/exports/128/armour-hood--fine.png",
+        "64": "art/icons/gear/exports/64/armour-hood--fine.png",
+        "32": "art/icons/gear/exports/32/armour-hood--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9923922901255477,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 17
+      }
+    },
+    "weapon-magistrate_pistol--fine": {
+      "label": "Magistrate pistol repaint — Fine",
+      "path": "art/icons/gear/weapon-magistrate_pistol--fine.png",
+      "sha256": "e7e7407b4a76c5a8626b04e1240df4a4fe3f835f944ee7e7522b6936c58ec1bb",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-magistrate_pistol--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-magistrate_pistol--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-magistrate_pistol--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-magistrate_pistol--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-magistrate_pistol--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.3",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-magistrate_pistol",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9647372981767379,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 0,
+        "different_pixels_64": 5
+      }
+    },
+    "armour-sight_visor--masterwork": {
+      "label": "Sight visor — Masterwork",
+      "path": "art/icons/gear/armour-sight_visor--masterwork.png",
+      "sha256": "c0de479753a188ea382c8bc6596cbc06f20263511e283ed880d909c8c2308a47",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sight_visor--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-sight_visor--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-sight_visor--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-sight_visor--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sight_visor--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sight_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9705223901428659,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 40
+      }
+    },
+    "armour-hood--relic": {
+      "label": "Hood — Relic",
+      "path": "art/icons/gear/armour-hood--relic.png",
+      "sha256": "34f4280d2ce75cfd123692dcdbbdba5fa9b76206e8f9076c514561d192901d45",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood--relic.png",
+        "128": "art/icons/gear/exports/128/armour-hood--relic.png",
+        "64": "art/icons/gear/exports/64/armour-hood--relic.png",
+        "32": "art/icons/gear/exports/32/armour-hood--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.990291500493745,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 19
+      }
+    },
+    "weapon-lumeri_votive_torch--relic": {
+      "label": "Lumeri votive torch — Relic",
+      "path": "art/icons/gear/weapon-lumeri_votive_torch--relic.png",
+      "sha256": "1a443d3e865ae5c1ab1af16f19a651d7282c7fd5ee6e7f1cfc53c338f1577ef6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lumeri_votive_torch",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9626860244484553,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 27
+      }
+    },
+    "armour-breather--fine": {
+      "label": "Breather — Fine",
+      "path": "art/icons/gear/armour-breather--fine.png",
+      "sha256": "441d96ff6e4b937dfd8102d7fa0a73a5cc22a0ff4345f1c3a7611e9950d0ac1a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--fine.png",
+        "128": "art/icons/gear/exports/128/armour-breather--fine.png",
+        "64": "art/icons/gear/exports/64/armour-breather--fine.png",
+        "32": "art/icons/gear/exports/32/armour-breather--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breather",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9853352740110903,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 20
+      }
+    },
+    "weapon-short_bow": {
+      "label": "Short bow (Bows, close)",
+      "path": "art/icons/gear/weapon-short_bow.png",
+      "sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-short_bow.png",
+        "128": "art/icons/gear/exports/128/weapon-short_bow.png",
+        "64": "art/icons/gear/exports/64/weapon-short_bow.png",
+        "32": "art/icons/gear/exports/32/weapon-short_bow.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-06",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-06/native/16-weapon-short_bow.png"
+    },
+    "armour-rig_belt--celestial": {
+      "label": "Rig belt — Celestial",
+      "path": "art/icons/gear/armour-rig_belt--celestial.png",
+      "sha256": "a05265c9886c3d7e5ee32219b449a8188a72911bcca9da24174cb6326473ce6b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-rig_belt--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-rig_belt--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-rig_belt--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-rig_belt--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-rig_belt--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-rig_belt",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.954979873355147,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 54
+      }
+    },
+    "weapon-hellraiser_door_knocker--celestial": {
+      "label": "Door-knocker — Celestial",
+      "path": "art/icons/gear/weapon-hellraiser_door_knocker--celestial.png",
+      "sha256": "215c1828513c0e7fc11c9a004ded7d29cc3f01ead88cb8cd4c336a47aebce1ce",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_door_knocker--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_door_knocker",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9421342868162912,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 13,
+        "different_pixels_64": 41
+      }
+    },
+    "armour-sight_visor--fine": {
+      "label": "Sight visor — Fine",
+      "path": "art/icons/gear/armour-sight_visor--fine.png",
+      "sha256": "eff5787254486a6a35414fa948c666e2131ad56f701485a40fc82c996cee3160",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sight_visor--fine.png",
+        "128": "art/icons/gear/exports/128/armour-sight_visor--fine.png",
+        "64": "art/icons/gear/exports/64/armour-sight_visor--fine.png",
+        "32": "art/icons/gear/exports/32/armour-sight_visor--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sight_visor--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sight_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9669074063175241,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 42
+      }
+    },
+    "armour-cowl--celestial": {
+      "label": "Cowl — Celestial",
+      "path": "art/icons/gear/armour-cowl--celestial.png",
+      "sha256": "2c267e6c081b5b1ed9c610f035c07025fdca1448a8640f3436e3f98858d8e423",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-cowl--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-cowl--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-cowl--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-cowl--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-cowl",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9742074019823981,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 40
+      }
+    },
+    "armour-rig_belt--fine": {
+      "label": "Rig belt — Fine",
+      "path": "art/icons/gear/armour-rig_belt--fine.png",
+      "sha256": "5b196507f8c6de5f63ebb24512efbaefd9b1bed06853899c7c82c127733e3aa0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-rig_belt--fine.png",
+        "128": "art/icons/gear/exports/128/armour-rig_belt--fine.png",
+        "64": "art/icons/gear/exports/64/armour-rig_belt--fine.png",
+        "32": "art/icons/gear/exports/32/armour-rig_belt--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-rig_belt--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-rig_belt",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9893583668497004,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 17
+      }
+    },
+    "weapon-ork_wreck_saw--celestial": {
+      "label": "Wreck saw — Celestial",
+      "path": "art/icons/gear/weapon-ork_wreck_saw--celestial.png",
+      "sha256": "634edd23357ced5b14d41a822405b8a8d5175c4ef31bf76f68d0f9a9d5f2af8a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_wreck_saw",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9272837736789631,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 19,
+        "different_pixels_64": 87
+      }
+    },
+    "armour-mesh_undersuit--relic": {
+      "label": "Mesh undersuit — Relic",
+      "path": "art/icons/gear/armour-mesh_undersuit--relic.png",
+      "sha256": "962ad8c2499b1eca9abc7567f2c6e5e7e34fbb6396272127cbc022678fc77bf0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit--relic.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit--relic.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit--relic.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-mesh_undersuit--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-mesh_undersuit",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9795319924079334,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 25
+      }
+    },
+    "weapon-lumeri_cathedral_burner": {
+      "label": "Cathedral burner",
+      "path": "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+      "sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/10-weapon-lumeri_cathedral_burner.png"
+    },
+    "armour-assault_helm--fine": {
+      "label": "Assault Helm — Fine",
+      "path": "art/icons/gear/armour-assault_helm--fine.png",
+      "sha256": "fb653c2ee0b33577df115de18c4225d2c29932385f03c48e670be820583df86a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm--fine.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm--fine.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm--fine.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-assault_helm--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-assault_helm",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9850699542274808,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 25
+      }
+    },
+    "armour-cowl--fine": {
+      "label": "Cowl — Fine",
+      "path": "art/icons/gear/armour-cowl--fine.png",
+      "sha256": "b8c78fa692bac74e76deb439f945e7b811ef051dca2a8b12bf5a33f9a276810d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl--fine.png",
+        "128": "art/icons/gear/exports/128/armour-cowl--fine.png",
+        "64": "art/icons/gear/exports/64/armour-cowl--fine.png",
+        "32": "art/icons/gear/exports/32/armour-cowl--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-cowl--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-cowl",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9898716576470236,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 20
+      }
+    },
+    "weapon-whisper_pistol--fine": {
+      "label": "Whisper pistol — Fine",
+      "path": "art/icons/gear/weapon-whisper_pistol--fine.png",
+      "sha256": "17722607226048cca599ce81a3b96b9b8329661cd75b34287e22de95bde44e5a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-whisper_pistol--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-whisper_pistol--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-whisper_pistol--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-whisper_pistol--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-whisper_pistol--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.3",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-whisper_pistol",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.948164080972648,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 5
+      }
+    },
+    "armour-jump_boots--celestial": {
+      "label": "Jump boots — Celestial",
+      "path": "art/icons/gear/armour-jump_boots--celestial.png",
+      "sha256": "58141b36e5628203b008006c43a1b15215d4c3d5a7faa23a6baa4889e5a453cf",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-jump_boots--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-jump_boots--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-jump_boots--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-jump_boots--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-jump_boots",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9837683917414697,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 21
+      }
+    },
+    "weapon-hellraiser_door_knocker--relic": {
+      "label": "Door-knocker — Relic",
+      "path": "art/icons/gear/weapon-hellraiser_door_knocker--relic.png",
+      "sha256": "9151971eb650512ab03c9e11e9c7da70407c1d7d5c6aac238fe263eac579037f",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_door_knocker--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_door_knocker",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9559574624282913,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 34
+      }
+    },
+    "armour-sealed_visor--masterwork": {
+      "label": "Sealed visor — Masterwork",
+      "path": "art/icons/gear/armour-sealed_visor--masterwork.png",
+      "sha256": "65380f576a365899575af54a07469f9747a82560c519e0068ba9c077c565d407",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sealed_visor--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sealed_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.991228190666663,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 9
+      }
+    },
+    "weapon-throwing_darts": {
+      "label": "Throwing darts",
+      "path": "art/icons/gear/weapon-throwing_darts.png",
+      "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_darts.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_darts.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_darts.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_darts.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/15-weapon-throwing_darts.png"
+    },
+    "armour-spotters_monocle--celestial": {
+      "label": "Spotter's monocle — Celestial",
+      "path": "art/icons/gear/armour-spotters_monocle--celestial.png",
+      "sha256": "8df7789f750635105231b5f579f4f4e44550ca0ce17664db35cf6b1160ad3eb1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-spotters_monocle--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-spotters_monocle--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-spotters_monocle--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-spotters_monocle--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-spotters_monocle--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-spotters_monocle",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9548556591012596,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 45
+      }
+    },
+    "armour-breacher_plate--relic": {
+      "label": "Breacher plate — Relic",
+      "path": "art/icons/gear/armour-breacher_plate--relic.png",
+      "sha256": "392eaa7883fc05450b0c64a1b2700beb70520d968fd5510607b588cfc758c4ce",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breacher_plate--relic.png",
+        "128": "art/icons/gear/exports/128/armour-breacher_plate--relic.png",
+        "64": "art/icons/gear/exports/64/armour-breacher_plate--relic.png",
+        "32": "art/icons/gear/exports/32/armour-breacher_plate--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breacher_plate--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breacher_plate",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9765204288587432,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 41
+      }
+    },
+    "weapon-hellraiser_piston_knuckles": {
+      "label": "Piston knuckles",
+      "path": "art/icons/gear/weapon-hellraiser_piston_knuckles.png",
+      "sha256": "68fbc1095dea7ba6eb74bc586dbcb0f7d01934e67c2fef828d3bd2e0741e0ef1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/13-weapon-hellraiser_piston_knuckles.png"
+    },
+    "weapon-hellraiser_piston_knuckles--masterwork": {
+      "label": "Piston knuckles — Masterwork",
+      "path": "art/icons/gear/weapon-hellraiser_piston_knuckles--masterwork.png",
+      "sha256": "9a8b138f6d8988fae7fea21e8b534c985985948dc59e5be0ec50bdc3b90ebff5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_piston_knuckles--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_piston_knuckles",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9579238143071155,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 13,
+        "different_pixels_64": 38
+      }
+    },
+    "weapon-ork_wreck_saw": {
+      "label": "Wreck saw",
+      "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+      "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/12-weapon-ork_wreck_saw.png"
+    },
+    "weapon-throwing_darts--relic": {
+      "label": "Throwing darts — Relic",
+      "path": "art/icons/gear/weapon-throwing_darts--relic.png",
+      "sha256": "b17911d2a1662f9f7c69c72545ef361cb3f56cd92b01da0ad324e80d13f01826",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_darts--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_darts--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_darts--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_darts--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.10",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-throwing_darts",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.97773648571624,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 36
+      }
+    },
+    "armour-field_trousers--masterwork": {
+      "label": "Field trousers — Masterwork",
+      "path": "art/icons/gear/armour-field_trousers--masterwork.png",
+      "sha256": "35f12cca65d409c638f791630ec3784bf8b76ec6ce1f59aabef7cc187efefda1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_trousers--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-field_trousers--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-field_trousers--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-field_trousers--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_trousers--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-field_trousers",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9687943646891803,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 35
+      }
+    },
+    "weapon-throwing_javelins--masterwork": {
+      "label": "Throwing javelins — Masterwork",
+      "path": "art/icons/gear/weapon-throwing_javelins--masterwork.png",
+      "sha256": "3aca2654a89d6600486e7aa7b1e1c7c2a5f746997a6f5832f71981d3448a8240",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_javelins--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_javelins--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_javelins--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_javelins--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.10",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-throwing_javelins",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9690921951134319,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 19
+      }
+    },
+    "weapon-ork_snarl_knife--masterwork": {
+      "label": "Snarl knife — Masterwork",
+      "path": "art/icons/gear/weapon-ork_snarl_knife--masterwork.png",
+      "sha256": "e60a8f9bfac24f0da82bbb57ce5af2f0d4b3c1fdc17f0cd61d112c62609f0afa",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_snarl_knife",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9595085926533032,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 12
+      }
+    },
+    "armour-mesh_undersuit--fine": {
+      "label": "Mesh undersuit — Fine",
+      "path": "art/icons/gear/armour-mesh_undersuit--fine.png",
+      "sha256": "2df4c52b37e4037d72b8cdc8afa4760039b365f2416d76ea96075672f6320d12",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit--fine.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit--fine.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit--fine.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-mesh_undersuit--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-mesh_undersuit",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9862896052510505,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 20
+      }
+    },
+    "armour-gas_mask--relic": {
+      "label": "Gas Mask — Relic",
+      "path": "art/icons/gear/armour-gas_mask--relic.png",
+      "sha256": "d9042b1c966b190063fc9a5e55a82a542aa17452337887540267e08c660f4be9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-gas_mask--relic.png",
+        "128": "art/icons/gear/exports/128/armour-gas_mask--relic.png",
+        "64": "art/icons/gear/exports/64/armour-gas_mask--relic.png",
+        "32": "art/icons/gear/exports/32/armour-gas_mask--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-gas_mask--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-gas_mask",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9751080221125613,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 28
+      }
+    },
+    "weapon-throwing_darts--masterwork": {
+      "label": "Throwing darts — Masterwork",
+      "path": "art/icons/gear/weapon-throwing_darts--masterwork.png",
+      "sha256": "4117155ac790c69b11737ffcde76ca014016b1002c7c487c03b5c84466538182",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_darts--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_darts--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_darts--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_darts--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.10",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-throwing_darts",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9839050981564753,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 22
+      }
+    },
+    "armour-field_trousers--fine": {
+      "label": "Field trousers — Fine",
+      "path": "art/icons/gear/armour-field_trousers--fine.png",
+      "sha256": "9108cd44c3dd8e8bb1edf9456082891eae4289ffe7c20c76bbeadf4d07aac54d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_trousers--fine.png",
+        "128": "art/icons/gear/exports/128/armour-field_trousers--fine.png",
+        "64": "art/icons/gear/exports/64/armour-field_trousers--fine.png",
+        "32": "art/icons/gear/exports/32/armour-field_trousers--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_trousers--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-field_trousers",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.980325369792535,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 22
+      }
+    },
+    "armour-blackout_hood--fine": {
+      "label": "Blackout hood — Fine",
+      "path": "art/icons/gear/armour-blackout_hood--fine.png",
+      "sha256": "e1b7edddcfd7644d2cb7f7efba4dd2fd59cf5e5007f07aee1e8527e4c676608c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-blackout_hood--fine.png",
+        "128": "art/icons/gear/exports/128/armour-blackout_hood--fine.png",
+        "64": "art/icons/gear/exports/64/armour-blackout_hood--fine.png",
+        "32": "art/icons/gear/exports/32/armour-blackout_hood--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-blackout_hood--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-blackout_hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9915822314230315,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 13
+      }
+    },
+    "armour-sealed_visor--relic": {
+      "label": "Sealed visor — Relic",
+      "path": "art/icons/gear/armour-sealed_visor--relic.png",
+      "sha256": "c71e62cf2d247bc1d0cd32d38a7cf76cdf33873c6457a17cebcada5af14fe983",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor--relic.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor--relic.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor--relic.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sealed_visor--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sealed_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9846128523420891,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 26
+      }
+    },
+    "armour-breacher_plate--celestial": {
+      "label": "Breacher plate — Celestial",
+      "path": "art/icons/gear/armour-breacher_plate--celestial.png",
+      "sha256": "fa9096d881e248327d0bed1fd3ed2e3a4f1218b4f324a65fd6608c1c3dc64278",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breacher_plate--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-breacher_plate--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-breacher_plate--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-breacher_plate--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breacher_plate--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breacher_plate",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9778611075801873,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 41
+      }
+    },
+    "weapon-lumeri_cathedral_burner--celestial": {
+      "label": "Lumeri cathedral burner — Celestial",
+      "path": "art/icons/gear/weapon-lumeri_cathedral_burner--celestial.png",
+      "sha256": "10643b46d025aae619733ed3a6782d5a2ae32312f9b1340f7944616a37552aa6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_cathedral_burner--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lumeri_cathedral_burner",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9740647710907934,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 30
+      }
+    },
+    "armour-blackout_hood--celestial": {
+      "label": "Blackout hood — Celestial",
+      "path": "art/icons/gear/armour-blackout_hood--celestial.png",
+      "sha256": "673e6a48e2ad3ad7c5075fce766cdddeea42c064ea5e018600377ec8ec4f010a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-blackout_hood--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-blackout_hood--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-blackout_hood--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-blackout_hood--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-blackout_hood--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-blackout_hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9834691629637553,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 21
+      }
+    },
+    "armour-tactical_gloves--relic": {
+      "label": "Tactical gloves — Relic",
+      "path": "art/icons/gear/armour-tactical_gloves--relic.png",
+      "sha256": "16f62eaf2993e794087dc41ee32967aefcdca91a704da89064abbd90aa630c51",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-tactical_gloves--relic.png",
+        "128": "art/icons/gear/exports/128/armour-tactical_gloves--relic.png",
+        "64": "art/icons/gear/exports/64/armour-tactical_gloves--relic.png",
+        "32": "art/icons/gear/exports/32/armour-tactical_gloves--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-tactical_gloves--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-tactical_gloves",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9576579715333203,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 43
+      }
+    },
+    "armour-breacher_plate--masterwork": {
+      "label": "Breacher plate — Masterwork",
+      "path": "art/icons/gear/armour-breacher_plate--masterwork.png",
+      "sha256": "27cdc67929746abed7838aca9d3dc66385396e1894a4c7ac7b9b32099815e873",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breacher_plate--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-breacher_plate--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-breacher_plate--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-breacher_plate--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breacher_plate--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breacher_plate",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9894703926586301,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 20
+      }
+    },
+    "weapon-ork_snarl_knife--celestial": {
+      "label": "Snarl knife — Celestial",
+      "path": "art/icons/gear/weapon-ork_snarl_knife--celestial.png",
+      "sha256": "eb52552c61fa3f5b0e713a0d5e1fe5b19407735b61eed01d8167f78977e55d4c",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_snarl_knife",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9149504163354115,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 13,
+        "different_pixels_64": 47
+      }
+    },
+    "armour-sight_visor--celestial": {
+      "label": "Sight visor — Celestial",
+      "path": "art/icons/gear/armour-sight_visor--celestial.png",
+      "sha256": "11037abc538fff2d5cc011204f82e3218547e966bbf89874ff9692e043eeb2ad",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sight_visor--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-sight_visor--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-sight_visor--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-sight_visor--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sight_visor--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sight_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9382334154321624,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 25,
+        "different_pixels_64": 79
+      }
+    },
+    "armour-gas_mask--celestial": {
+      "label": "Gas Mask — Celestial",
+      "path": "art/icons/gear/armour-gas_mask--celestial.png",
+      "sha256": "f396d72f6ed658a18b4a9d047e35c41367b61cfa70429a61949dec5b54538618",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-gas_mask--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-gas_mask--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-gas_mask--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-gas_mask--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-gas_mask--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-gas_mask",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.981029283998569,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 23
+      }
+    },
+    "armour-blackout_hood--masterwork": {
+      "label": "Blackout hood — Masterwork",
+      "path": "art/icons/gear/armour-blackout_hood--masterwork.png",
+      "sha256": "32134cfbe0c6ec0b97b712b9f8de3f47ea44a6094f9c06e2d44e2b410e88b668",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-blackout_hood--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-blackout_hood--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-blackout_hood--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-blackout_hood--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-blackout_hood--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-blackout_hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9882323878167868,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 18
+      }
+    },
+    "weapon-lumeri_votive_torch--celestial": {
+      "label": "Lumeri votive torch — Celestial",
+      "path": "art/icons/gear/weapon-lumeri_votive_torch--celestial.png",
+      "sha256": "b4d4333e74974a8d8e460b55478d07001b86d253b3088e77da8976ef8989f1d2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lumeri_votive_torch",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9537566912866412,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 32
+      }
+    },
+    "armour-blackout_hood--relic": {
+      "label": "Blackout hood — Relic",
+      "path": "art/icons/gear/armour-blackout_hood--relic.png",
+      "sha256": "4813535f2ab775b8a8d959b4465de94cd24ad5ae123a151c1776e23c249998a8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-blackout_hood--relic.png",
+        "128": "art/icons/gear/exports/128/armour-blackout_hood--relic.png",
+        "64": "art/icons/gear/exports/64/armour-blackout_hood--relic.png",
+        "32": "art/icons/gear/exports/32/armour-blackout_hood--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-blackout_hood--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-blackout_hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9867187318680809,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 17
+      }
+    },
+    "armour-field_trousers--celestial": {
+      "label": "Field trousers — Celestial",
+      "path": "art/icons/gear/armour-field_trousers--celestial.png",
+      "sha256": "3db6088a857af66a699289022a4cf3e1a2135c8904e466f4f808509dd2b8ec85",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-field_trousers--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-field_trousers--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-field_trousers--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-field_trousers--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-field_trousers--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-field_trousers",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9649392359054713,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 42
+      }
+    },
+    "armour-sight_visor--relic": {
+      "label": "Sight visor — Relic",
+      "path": "art/icons/gear/armour-sight_visor--relic.png",
+      "sha256": "f41567b00f96e8592da7fe56b8b067830526729407f44dfcce9f86b33ad98b5d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sight_visor--relic.png",
+        "128": "art/icons/gear/exports/128/armour-sight_visor--relic.png",
+        "64": "art/icons/gear/exports/64/armour-sight_visor--relic.png",
+        "32": "art/icons/gear/exports/32/armour-sight_visor--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sight_visor--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sight_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9330363986543173,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 26,
+        "different_pixels_64": 79
+      }
+    },
+    "weapon-whisper_carbine": {
+      "label": "Whisper carbine (Whisper, long)",
+      "path": "art/icons/gear/weapon-whisper_carbine.png",
+      "sha256": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-whisper_carbine.png",
+        "128": "art/icons/gear/exports/128/weapon-whisper_carbine.png",
+        "64": "art/icons/gear/exports/64/weapon-whisper_carbine.png",
+        "32": "art/icons/gear/exports/32/weapon-whisper_carbine.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-06",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-06/native/05-weapon-whisper_carbine.png"
+    },
+    "weapon-throwing_javelins--celestial": {
+      "label": "Throwing javelins — Celestial",
+      "path": "art/icons/gear/weapon-throwing_javelins--celestial.png",
+      "sha256": "d0f76e0f414e62eba16e0f9bf623517ec9be508f512fc3952035ec982a2d8752",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_javelins--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_javelins--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_javelins--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_javelins--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.10",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-throwing_javelins",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9568353021742853,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 38
+      }
+    },
+    "weapon-decrkm_autopistol--fine": {
+      "label": "DECRKM autopistol repaint — Fine",
+      "path": "art/icons/gear/weapon-decrkm_autopistol--fine.png",
+      "sha256": "60b2730c8827025df25134ce1043ebfd2f5c9de19068b91bd51ff0c620525dad",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-decrkm_autopistol--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-decrkm_autopistol--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-decrkm_autopistol--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-decrkm_autopistol--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-decrkm_autopistol--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.3",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-decrkm_autopistol",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9749308216661292,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 10
+      }
+    },
+    "weapon-hellraiser_piston_knuckles--celestial": {
+      "label": "Piston knuckles — Celestial",
+      "path": "art/icons/gear/weapon-hellraiser_piston_knuckles--celestial.png",
+      "sha256": "77bcc0f8aeb93f323401c8de7acf0ec7f2715490e7678738be7cf2fa07bea9e6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_piston_knuckles--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_piston_knuckles",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9180844360428482,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 21,
+        "different_pixels_64": 67
+      }
+    },
+    "armour-assault_helm--masterwork": {
+      "label": "Assault Helm — Masterwork",
+      "path": "art/icons/gear/armour-assault_helm--masterwork.png",
+      "sha256": "d04a5ca71a656e1e65265d3390bf3aa9c9309fcc3f5051bd03f5db557da0108b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-assault_helm--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-assault_helm",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9857479504617674,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 22
+      }
+    },
+    "armour-breather--masterwork": {
+      "label": "Breather — Masterwork",
+      "path": "art/icons/gear/armour-breather--masterwork.png",
+      "sha256": "94a935d094642e6f8b310896996eb8954585281c558bebacc79f523a19a8363d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-breather--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-breather--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-breather--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breather",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.98122369257377,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 19
+      }
+    },
+    "weapon-hellraiser_door_knocker": {
+      "label": "Door-knocker",
+      "path": "art/icons/gear/weapon-hellraiser_door_knocker.png",
+      "sha256": "02aac08ab2efeec09c1767064e2a9dd0ae2504fa6412d6c7686b7cca58d88e40",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/14-weapon-hellraiser_door_knocker.png"
+    },
+    "weapon-hellraiser_piston_knuckles--fine": {
+      "label": "Piston knuckles — Fine",
+      "path": "art/icons/gear/weapon-hellraiser_piston_knuckles--fine.png",
+      "sha256": "f965855cebd51de3220752141cf2c9bf3825d29ab798b8eda0ffa4ecf31a6758",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_piston_knuckles--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_piston_knuckles",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.972258812717446,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 27
+      }
+    },
+    "armour-breather--celestial": {
+      "label": "Breather — Celestial",
+      "path": "art/icons/gear/armour-breather--celestial.png",
+      "sha256": "dcb007a5dcb8fd91a3b6fd7ca84105aaabcec73486e576014699232a93cb90c1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-breather--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-breather--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-breather--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breather",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9793219202903487,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 26
+      }
+    },
+    "armour-hood--celestial": {
+      "label": "Hood — Celestial",
+      "path": "art/icons/gear/armour-hood--celestial.png",
+      "sha256": "24eb18be44b31038356f3e238eca28571e3cd646ccaf8604eafead40ae6f1fc6",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-hood--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-hood--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-hood--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9889849824959376,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 26
+      }
+    },
+    "weapon-throwing_javelins": {
+      "label": "Throwing javelins",
+      "path": "art/icons/gear/weapon-throwing_javelins.png",
+      "sha256": "50f55c624c9d5e0e72a60eeb623182329ebe0a3f4f5c6000872e87cc6af53621",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_javelins.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_javelins.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_javelins.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_javelins.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/16-weapon-throwing_javelins.png"
+    },
+    "weapon-ork_snarl_knife": {
+      "label": "Snarl knife",
+      "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+      "sha256": "4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/11-weapon-ork_snarl_knife.png"
+    },
+    "weapon-lumeri_cathedral_burner--masterwork": {
+      "label": "Lumeri cathedral burner — Masterwork",
+      "path": "art/icons/gear/weapon-lumeri_cathedral_burner--masterwork.png",
+      "sha256": "5cfb1a5ae198860c70a7e597ea56d894de8b3ed44e6abe15081b97e5fb72ab5d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_cathedral_burner--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lumeri_cathedral_burner",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9708203851239336,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 44
+      }
+    },
+    "armour-jump_boots--fine": {
+      "label": "Jump boots — Fine",
+      "path": "art/icons/gear/armour-jump_boots--fine.png",
+      "sha256": "21bd97b78647cce8ab697213d2e4c80afc7e2cc5887689276b4a64d7da78834e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-jump_boots--fine.png",
+        "128": "art/icons/gear/exports/128/armour-jump_boots--fine.png",
+        "64": "art/icons/gear/exports/64/armour-jump_boots--fine.png",
+        "32": "art/icons/gear/exports/32/armour-jump_boots--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-jump_boots",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9892376953156842,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 20
+      }
+    },
+    "weapon-lumeri_cathedral_burner--fine": {
+      "label": "Lumeri cathedral burner — Fine",
+      "path": "art/icons/gear/weapon-lumeri_cathedral_burner--fine.png",
+      "sha256": "43f9136c5a5a017f07ecb763cc8e6c020eb5abe0aea4adf8dcd4b1d180af10af",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_cathedral_burner--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lumeri_cathedral_burner",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9803154909845285,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 27
+      }
+    },
+    "armour-rig_belt--relic": {
+      "label": "Rig belt — Relic",
+      "path": "art/icons/gear/armour-rig_belt--relic.png",
+      "sha256": "dfb1c1918d806fb46823ba1c891f68cd1a0cb3f4f42fb7ab365ff3ddc62a7499",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-rig_belt--relic.png",
+        "128": "art/icons/gear/exports/128/armour-rig_belt--relic.png",
+        "64": "art/icons/gear/exports/64/armour-rig_belt--relic.png",
+        "32": "art/icons/gear/exports/32/armour-rig_belt--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-rig_belt--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-rig_belt",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.97714707512799,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 27
+      }
+    },
+    "weapon-hellraiser_door_knocker--masterwork": {
+      "label": "Door-knocker — Masterwork",
+      "path": "art/icons/gear/weapon-hellraiser_door_knocker--masterwork.png",
+      "sha256": "3e1446c117b8d5e5571284196744c4ae80cc283671f80d3e4f498f0ca5863114",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_door_knocker--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-hellraiser_door_knocker",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9764108233312276,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 18
+      }
+    },
+    "armour-mesh_undersuit--celestial": {
+      "label": "Mesh undersuit — Celestial",
+      "path": "art/icons/gear/armour-mesh_undersuit--celestial.png",
+      "sha256": "5d8b1a936720f27095617e9ded350f07292f85249853267339978343e749fcf8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-mesh_undersuit--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-mesh_undersuit",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9737924025290855,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 16,
+        "different_pixels_64": 30
+      }
+    },
+    "weapon-throwing_javelins--relic": {
+      "label": "Throwing javelins — Relic",
+      "path": "art/icons/gear/weapon-throwing_javelins--relic.png",
+      "sha256": "45107d90d1ec0390fc1eaeda10161fe47b3155eafe4506e6a528f67b80bcb57d",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_javelins--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_javelins--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_javelins--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_javelins--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.10",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-throwing_javelins",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9617624791369135,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 36
+      }
+    },
+    "weapon-throwing_darts--celestial": {
+      "label": "Throwing darts — Celestial",
+      "path": "art/icons/gear/weapon-throwing_darts--celestial.png",
+      "sha256": "76897bb72686b470e5e9b3ddb2dbaf3ad987cec9a453f340bc4d60a6b1628378",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_darts--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_darts--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_darts--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_darts--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.10",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-throwing_darts",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9743682847193235,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 34
+      }
+    },
+    "weapon-lumeri_votive_torch--fine": {
+      "label": "Lumeri votive torch — Fine",
+      "path": "art/icons/gear/weapon-lumeri_votive_torch--fine.png",
+      "sha256": "853be208abe301f170823534fbc02b88947a6be9f86979760d98c72b1fa48f9b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lumeri_votive_torch",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9715855174349447,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 20
+      }
+    },
+    "armour-rig_belt--masterwork": {
+      "label": "Rig belt — Masterwork",
+      "path": "art/icons/gear/armour-rig_belt--masterwork.png",
+      "sha256": "fdc64692167dc6af259bd25c5ebdd1bae7c079e0e8ef8171c48c51056f34fd1e",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-rig_belt--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-rig_belt--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-rig_belt--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-rig_belt--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-rig_belt--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-rig_belt",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9778022707340775,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 31
+      }
+    },
+    "weapon-ork_snarl_knife--relic": {
+      "label": "Snarl knife — Relic",
+      "path": "art/icons/gear/weapon-ork_snarl_knife--relic.png",
+      "sha256": "f9f99f9012ee74a3dd4c11426fbe7a1d474396118eb506861bd6becca9395557",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_snarl_knife",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9586561058403691,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 12
+      }
+    },
+    "weapon-lumeri_votive_torch--masterwork": {
+      "label": "Lumeri votive torch — Masterwork",
+      "path": "art/icons/gear/weapon-lumeri_votive_torch--masterwork.png",
+      "sha256": "76f459c3ba49996ce56d9a9b9f4e587e1e2b95bd9bf7b98fdf1ec9660ed8a862",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.8",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-lumeri_votive_torch",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9488743993140715,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 31
+      }
+    },
+    "armour-jump_boots--masterwork": {
+      "label": "Jump boots — Masterwork",
+      "path": "art/icons/gear/armour-jump_boots--masterwork.png",
+      "sha256": "81b13bebdb00bb12f5bfd733fac172382b65c54f8f72508efcd2eccfd83f5d94",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-jump_boots--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-jump_boots--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-jump_boots--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-jump_boots--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-jump_boots",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.984739874735164,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 18
+      }
+    },
+    "armour-sealed_visor--fine": {
+      "label": "Sealed visor — Fine",
+      "path": "art/icons/gear/armour-sealed_visor--fine.png",
+      "sha256": "5251720edeac62f6b624bb21653d7896b09158aaae7ad16e7a1fd8d7afb39f0a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor--fine.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor--fine.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor--fine.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sealed_visor--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sealed_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9916544881162987,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 7
+      }
+    },
+    "armour-assault_helm--relic": {
+      "label": "Assault Helm — Relic",
+      "path": "art/icons/gear/armour-assault_helm--relic.png",
+      "sha256": "da6898489781ca001e01c1e806ba7b5136b52ab983bd2cda5b3b3d4af81610c8",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm--relic.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm--relic.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm--relic.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-assault_helm--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-assault_helm",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9535728061586434,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 18,
+        "different_pixels_64": 67
+      }
+    },
+    "weapon-ork_wreck_saw--masterwork": {
+      "label": "Wreck saw — Masterwork",
+      "path": "art/icons/gear/weapon-ork_wreck_saw--masterwork.png",
+      "sha256": "ba141ac9fa41333ee978c92bb5f534e805ba1c6797ce7a3f25ebb6d1c6a23f09",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_wreck_saw",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.968053603613698,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 32
+      }
+    },
+    "weapon-ork_snarl_knife--fine": {
+      "label": "Snarl knife — Fine",
+      "path": "art/icons/gear/weapon-ork_snarl_knife--fine.png",
+      "sha256": "36bb6f5d0d9e641ec58e27107f37c5be3b98eb6a0559a25e9cceb2a4b0478b73",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_snarl_knife",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9634498320738875,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 11
+      }
+    },
+    "armour-hood--masterwork": {
+      "label": "Hood — Masterwork",
+      "path": "art/icons/gear/armour-hood--masterwork.png",
+      "sha256": "ecc89a15d64f9caf44e5312d541c3a859271c3b8501a993647f79e6a34952ddf",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-hood--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-hood--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-hood--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-hood--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-hood--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-hood",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9924002533248891,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 18
+      }
+    },
+    "armour-cowl--masterwork": {
+      "label": "Cowl — Masterwork",
+      "path": "art/icons/gear/armour-cowl--masterwork.png",
+      "sha256": "232afee8ff987ee00ebfbfa97e0bce0f308dd9b65fe5dddb8d82e61326ce53a2",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-cowl--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-cowl--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-cowl--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-cowl--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-cowl",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9886147293646673,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 15
+      }
+    },
+    "armour-breather--relic": {
+      "label": "Breather — Relic",
+      "path": "art/icons/gear/armour-breather--relic.png",
+      "sha256": "b985954bb66bbaee116e56b1214b16b29735f1d88481d55c05a88c5c00ba5007",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-breather--relic.png",
+        "128": "art/icons/gear/exports/128/armour-breather--relic.png",
+        "64": "art/icons/gear/exports/64/armour-breather--relic.png",
+        "32": "art/icons/gear/exports/32/armour-breather--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-breather--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-breather",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9768565920181248,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 27
+      }
+    },
+    "weapon-throwing_darts--fine": {
+      "label": "Throwing darts — Fine",
+      "path": "art/icons/gear/weapon-throwing_darts--fine.png",
+      "sha256": "67e73d5a2efea36b05d7acf03df6fca43aef0c4111b26c9ae5b6ca94ca1f6110",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_darts--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_darts--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_darts--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_darts--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_darts--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.10",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-throwing_darts",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.989506651725426,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 9
+      }
+    },
+    "armour-jump_boots--relic": {
+      "label": "Jump boots — Relic",
+      "path": "art/icons/gear/armour-jump_boots--relic.png",
+      "sha256": "67565872db3a3afb188259c3a0272fd35138f4cc064efb2a5c7e4e180d861451",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-jump_boots--relic.png",
+        "128": "art/icons/gear/exports/128/armour-jump_boots--relic.png",
+        "64": "art/icons/gear/exports/64/armour-jump_boots--relic.png",
+        "32": "art/icons/gear/exports/32/armour-jump_boots--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-jump_boots--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-jump_boots",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9868982078970153,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 16
+      }
+    },
+    "armour-tactical_gloves--masterwork": {
+      "label": "Tactical gloves — Masterwork",
+      "path": "art/icons/gear/armour-tactical_gloves--masterwork.png",
+      "sha256": "7a131859769c515323a11db4457978b114d6f432e1435d57cb4e07aaec635645",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-tactical_gloves--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-tactical_gloves--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-tactical_gloves--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-tactical_gloves--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-tactical_gloves--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-tactical_gloves",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9720731648149047,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 26
+      }
+    },
+    "armour-mesh_undersuit--masterwork": {
+      "label": "Mesh undersuit — Masterwork",
+      "path": "art/icons/gear/armour-mesh_undersuit--masterwork.png",
+      "sha256": "385c606eb348f0602d86a2bdb81f3bb3dfec30fc02cfc45f0d74c4ecd68fcf48",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-mesh_undersuit--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-mesh_undersuit--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-mesh_undersuit--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-mesh_undersuit--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-mesh_undersuit--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-mesh_undersuit",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9821091368103874,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 26
+      }
     }
   },
   "survival_art": {
@@ -42040,9 +45641,7 @@
         "24": "art/icons/moves/exports/24/follow-through.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-follow-through/follow-through.svg",
-      "data_ids": [
-        "skill:raw_power.5"
-      ]
+      "data_ids": []
     },
     "move-heavy-hands": {
       "label": "Wick — Heavy Hands",
@@ -42077,9 +45676,7 @@
         "24": "art/icons/moves/exports/24/heavy-hands.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-heavy-hands/heavy-hands.svg",
-      "data_ids": [
-        "skill:raw_power.3"
-      ]
+      "data_ids": []
     },
     "move-the-charge-carries": {
       "label": "Wick — The Charge Carries",
@@ -42533,9 +46130,7 @@
         "24": "art/icons/moves/exports/24/quick-draw.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-quick-draw/quick-draw.svg",
-      "data_ids": [
-        "skill:dexterity.5"
-      ]
+      "data_ids": []
     },
     "move-speed-load": {
       "label": "Speed Load",
@@ -43559,7 +47154,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-overclock-sigil/overclock-sigil.svg",
       "data_ids": [
-        "skill:brain_power.3"
+        "skill:brain_power.2"
       ]
     },
     "move-twin-draw": {
@@ -44495,7 +48090,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-overdraw/overdraw.svg",
       "data_ids": [
-        "skill:will_power.3"
+        "skill:will_power.2"
       ]
     },
     "move-pure-heart": {
@@ -44532,7 +48127,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-pure-heart/pure-heart.svg",
       "data_ids": [
-        "skill:will_power.5"
+        "perk:pure_heart"
       ]
     },
     "move-shape": {
@@ -44831,7 +48426,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-deliver-the-sinner/deliver-the-sinner.svg",
       "data_ids": [
-        "skill:faith.5"
+        "skill:faith.2"
       ]
     },
     "move-at-your-side": {
@@ -45203,7 +48798,10 @@
         "32": "art/icons/moves/exports/32/open-guard.png",
         "24": "art/icons/moves/exports/24/open-guard.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-open-guard/open-guard.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-open-guard/open-guard.svg",
+      "data_ids": [
+        "relic:open_hand#open_guard"
+      ]
     },
     "move-jab": {
       "label": "Wick — Jab",
@@ -45237,7 +48835,10 @@
         "32": "art/icons/moves/exports/32/jab.png",
         "24": "art/icons/moves/exports/24/jab.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-jab/jab.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-jab/jab.svg",
+      "data_ids": [
+        "relic:open_hand#jab"
+      ]
     },
     "move-palm": {
       "label": "Wick — Palm",
@@ -45271,7 +48872,10 @@
         "32": "art/icons/moves/exports/32/palm.png",
         "24": "art/icons/moves/exports/24/palm.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-palm/palm.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-palm/palm.svg",
+      "data_ids": [
+        "relic:open_hand#palm"
+      ]
     },
     "move-sweep-form": {
       "label": "Wick — Sweep (form)",
@@ -45305,7 +48909,10 @@
         "32": "art/icons/moves/exports/32/sweep-form.png",
         "24": "art/icons/moves/exports/24/sweep-form.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-sweep-form/sweep-form.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-sweep-form/sweep-form.svg",
+      "data_ids": [
+        "relic:open_hand#sweep"
+      ]
     },
     "move-snatch": {
       "label": "Wick — Snatch",
@@ -45339,7 +48946,10 @@
         "32": "art/icons/moves/exports/32/snatch.png",
         "24": "art/icons/moves/exports/24/snatch.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-snatch/snatch.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/move-snatch/snatch.svg",
+      "data_ids": [
+        "relic:open_hand#snatch"
+      ]
     },
     "move-breath": {
       "label": "Wick — Breath",
@@ -48390,7 +52000,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-read-intent/read-intent.svg",
       "data_ids": [
-        "verb:shadow.read_intent"
+        "perk:read_intent"
       ]
     },
     "shadow-open-seam": {
@@ -48537,9 +52147,7 @@
         "24": "art/icons/shadow/exports/24/foul.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-foul/foul.svg",
-      "data_ids": [
-        "verb:shadow.foul"
-      ]
+      "data_ids": []
     },
     "shadow-plant": {
       "label": "Wick — Plant",
@@ -48574,9 +52182,7 @@
         "24": "art/icons/shadow/exports/24/plant.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-plant/plant.svg",
-      "data_ids": [
-        "verb:shadow.plant"
-      ]
+      "data_ids": []
     },
     "shadow-disable": {
       "label": "Disable",
@@ -48722,9 +52328,7 @@
         "24": "art/icons/shadow/exports/24/vault.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-vault/vault.svg",
-      "data_ids": [
-        "verb:shadow.vault"
-      ]
+      "data_ids": []
     },
     "shadow-pick": {
       "label": "Pick",
@@ -48869,7 +52473,10 @@
         "32": "art/icons/shadow/exports/32/slip.png",
         "24": "art/icons/shadow/exports/24/slip.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-slip/slip.svg"
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-slip/slip.svg",
+      "data_ids": [
+        "verb:shadow.stalk"
+      ]
     },
     "shadow-mark": {
       "label": "Wick — Mark (group mark and Operative rank I move)",
@@ -48905,7 +52512,8 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/shadow-mark/mark.svg",
       "data_ids": [
-        "class:assassin.mark"
+        "class:assassin.mark",
+        "verb:shadow.case"
       ]
     },
     "shadow-work": {
@@ -49124,7 +52732,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-tug/tug.svg",
       "data_ids": [
-        "verb:tend.tug"
+        "perk:pull_together#tend_tug"
       ]
     },
     "tend-mend": {
@@ -49234,9 +52842,7 @@
         "24": "art/icons/tending/exports/24/touch.png"
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-touch/touch.svg",
-      "data_ids": [
-        "verb:tend.touch"
-      ]
+      "data_ids": []
     },
     "tend-settle": {
       "label": "Settle",
@@ -49272,7 +52878,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-settle/settle.svg",
       "data_ids": [
-        "verb:tend.settle"
+        "perk:steady_hands#tend_settle"
       ]
     },
     "tend-soothe": {
@@ -49309,7 +52915,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-soothe/soothe.svg",
       "data_ids": [
-        "verb:tend.soothe"
+        "perk:steady_hands#tend_soothe"
       ]
     },
     "tend-shield": {
@@ -49383,7 +52989,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-raise/raise.svg",
       "data_ids": [
-        "verb:tend.raise"
+        "perk:nobody_left_behind#tend_raise"
       ]
     },
     "tend-guide": {
@@ -49420,7 +53026,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-guide/guide.svg",
       "data_ids": [
-        "verb:tend.guide"
+        "perk:pull_together#tend_guide"
       ]
     },
     "tend-field-surgery": {
@@ -49494,7 +53100,7 @@
       },
       "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/tend-last-thread/last-thread.svg",
       "data_ids": [
-        "verb:tend.last_thread"
+        "perk:nobody_left_behind"
       ]
     },
     "tend-syphon": {
@@ -49617,7 +53223,10 @@
         "32": "art/icons/tending/exports/32/threads.png",
         "24": "art/icons/tending/exports/24/threads.png",
         "16": "art/icons/tending/exports/16/threads.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.threads"
+      ]
     },
     "tend-hold-down": {
       "label": "Threads That Hold",
@@ -49645,7 +53254,10 @@
         "32": "art/icons/tending/exports/32/hold-down.png",
         "24": "art/icons/tending/exports/24/hold-down.png",
         "16": "art/icons/tending/exports/16/hold-down.png"
-      }
+      },
+      "data_ids": [
+        "perk:threads_that_hold"
+      ]
     },
     "tend-bonds-5": {
       "label": "Two Bonds",
@@ -49673,7 +53285,10 @@
         "32": "art/icons/tending/exports/32/bonds-5.png",
         "24": "art/icons/tending/exports/24/bonds-5.png",
         "16": "art/icons/tending/exports/16/bonds-5.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.bonds_5"
+      ]
     },
     "tend-bonds-8": {
       "label": "Three Bonds",
@@ -49701,7 +53316,10 @@
         "32": "art/icons/tending/exports/32/bonds-8.png",
         "24": "art/icons/tending/exports/24/bonds-8.png",
         "16": "art/icons/tending/exports/16/bonds-8.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.bonds_8"
+      ]
     },
     "tend-mender-bonds": {
       "label": "One More Bond",
@@ -49729,7 +53347,10 @@
         "32": "art/icons/tending/exports/32/mender-bonds.png",
         "24": "art/icons/tending/exports/24/mender-bonds.png",
         "16": "art/icons/tending/exports/16/mender-bonds.png"
-      }
+      },
+      "data_ids": [
+        "verb:tend.mender_bonds"
+      ]
     }
   },
   "condition_icons": {

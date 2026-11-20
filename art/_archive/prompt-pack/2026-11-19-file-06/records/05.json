@@ -1,0 +1,40 @@
+{
+  "n": 5,
+  "id": "whisper_carbine",
+  "title": "Whisper carbine (Whisper, long)",
+  "path": "art/icons/gear/weapon-whisper_carbine.png",
+  "refs": [
+    "art/icons/gear/weapon-whisper_smg.png"
+  ],
+  "paint": "The integrally suppressed special-purpose carbine pattern. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a fat smooth suppressor that forms the whole fore-end, one even tube from just ahead of the receiver to the muzzle, no ports and no brake; a small stamped receiver with a dust cover and a large safety lever on the right side; a short straight box magazine; a skeleton wooden thumbhole stock, an open frame of wood with the pistol grip inside it; a compact scope on a side rail on the left of the receiver. Materials: matte black metal, dull and non-reflective, a dark matte-stained wood stock, the faintest grey edge highlights. Maker's touch: a single small dark steel-blue tag on the stock, blank.\nAt 32 px: against the Whisper submachine gun, longer with an open wooden stock and a scope; against every other rifle, the only one whose front half is one fat smooth tube.\nAvoid: lens glint, a bipod, a bayonet, shine, any marking.",
+  "needs": false,
+  "span": 0.85,
+  "label": "Whisper carbine (Whisper, long)",
+  "sha256": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-whisper_carbine.png",
+    "128": "art/icons/gear/exports/128/weapon-whisper_carbine.png",
+    "64": "art/icons/gear/exports/64/weapon-whisper_carbine.png",
+    "32": "art/icons/gear/exports/32/weapon-whisper_carbine.png"
+  },
+  "collection": "prompt-pack-2026-11-19-file-06",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "source_path": "art/_archive/prompt-pack/2026-11-19-file-06/native/05-weapon-whisper_carbine.png",
+  "source_sha256": "4adb890b3f4a9f63d47a32c76a0d5f7c5b5615ab6778ce06c87398ed7cd4fd4f",
+  "export_sha256": {
+    "256": "d26ba24a4877d6964334beade0e53ace4e15899663a9dc76541659283abb92ad",
+    "128": "46257e88824fc9f648e9a8776f2609890fea173e66504c9c27c9f0ece0f1ba87",
+    "64": "4c97b4bcab027c602d06fd49918cf89e865b2d5a28eb226171e54fd51b2c3ebb",
+    "32": "e244d58f99dfccf457c0dda49c9b22760f64b2bd9b0cfb171bc70d0a50a4d479"
+  },
+  "generator_prompt": "One isolated fictional game inventory painting for Project Heaven Cry RPG. A stylized, nonfunctional prop, shown in one single exterior perspective, no schematic or inset. Heavenprint hand-painted gouache, bold contour, visible angular brushwork, crisp focal edge, medium dark shadows, upper-left warm ivory highlights, wear kept within the object. First reference is brushwork only. Remaining refs are fictional RPG family icons; use their brushwork, palette and scale. Whisper Carbine, a long fictional inventorial prop. One long fat uninterrupted matte charcoal front tube that makes up the front half, behind it a small angular steel body with a single short straight lower block, a compact matte optical shape on top and an open dark wooden thumbhole silhouette in the stock. One tiny muted steel-blue tag at the heel. Low diagonal, front upper right, external contour only. On a true transparent 1024 square with clear margins, no stage or cast shadow. No print, letters, numbers, people, logos, insignia, flare, smoke, backdrop or colored frame. One clear silhouette readable at 32 px."
+}

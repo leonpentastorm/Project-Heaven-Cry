@@ -1,0 +1,340 @@
+[
+  {
+    "n": 9,
+    "id": "lumeri_votive_torch",
+    "title": "Votive torch",
+    "path": "art/icons/gear/weapon-lumeri_votive_torch.png",
+    "refs": [
+      "art/icons/gear/weapon-purifier_flamer.png",
+      "art/icons/weapons/purifier_flamer.svg"
+    ],
+    "paint": "A pistol-sized flamer for one hand: a small lancet-windowed nozzle fed by a flask clipped under the grip. Pose: side profile turned slightly toward the viewer, nozzle to the right, level, about 80% of the canvas width like a pistol. Silhouette: a short brass nozzle shaped like a votive lamp, a round fuel flask under the frame, a coiled feed line, a small contained pilot flame at the tip. Materials: ivory-painted steel, gold bands, brass nozzle. Accent: Lumeri gold #F2C46A; the pilot flame small and contained.\nAt 32 px: a round flask under the grip and a lamp nozzle, no barrel.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.8,
+    "label": "Votive torch",
+    "sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch.png",
+      "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch.png",
+      "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch.png",
+      "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/09-weapon-lumeri_votive_torch.png",
+    "source_sha256": "12125e93aaf48727111ea31f70b3b1dd28fa998e7f4b5fa51d24626389f571cb",
+    "export_sha256": {
+      "256": "85ef98e9bf78f2af1a799ef14057781ee33b44bf581307853ca2373066f19c1a",
+      "128": "29181eb58796856b6cbb2beed1647a99669e63154bd631bfb7f3d30f985c9b7e",
+      "64": "4c074a8d5a921b15a9ee59f744db1e45da74e8565929eeb9314ecb751102674d",
+      "32": "b500d50e6e0cda9b487508c8a28ae2605b440065ac6ade2f37ef432bdda43481"
+    },
+    "generator_prompt": "Paint a single fictional nonfunctional video-game inventory icon for Project Heaven Cry, a fantasy role-playing game. It is concept art of an imagined prop. Use one exterior, slightly three-quarter view only. Hand-painted opaque Heavenprint gouache, bold readable contour, angular scuffed brushstrokes and selective hatching, charcoal shadows, upper-left ivory highlights and restrained accent paint. The first reference shows only brushwork and materials. Any item reference is a fictional prop in the same game, for family color and scale. Lumeri Votive Torch, a wholly invented lamp-like fantasy gadget. A palm-sized polished brass lancet lantern points right, with a single pinprick of warm candlelight inside its recessed window. Below the ivory-painted sculpted handle sits one rounded brass-and-ivory flask next to a decorative coil. This is an isolated magical prop. Pale warm ivory, muted gold banding and worn charcoal recesses. Level, three-quarter side view with the lantern at right, no external flame. Square 1024 PNG on true transparent alpha with ample margins. Legible as one silhouette at 32 pixels. No lettering, insignia, numbers, logos, people, background, dimension marks, inset diagrams or view of interior parts."
+  },
+  {
+    "n": 10,
+    "id": "lumeri_cathedral_burner",
+    "title": "Cathedral burner",
+    "path": "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+    "refs": [
+      "art/icons/gear/weapon-purifier_flamer.png",
+      "art/icons/weapons/purifier_flamer.svg"
+    ],
+    "paint": "The wall of fire made into architecture: a two-tank backpack burner with a long lance nozzle. Pose: the tank pack upright behind, the lance diagonal in front, drawn together as one object, about 90% of the canvas width. Silhouette: two tall tanks shaped like twin spires side by side with lancet arches, heavy hoses to a long straight lance ending in a lancet-arched nozzle with a brass collar, a small pilot flame at the tip. Materials: ivory-painted steel, gold banding, brass head. Accent: Lumeri gold #F2C46A.\nAt 32 px: two spire tanks and a lance much longer than the purifier's.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.89,
+    "label": "Cathedral burner",
+    "sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner.png",
+      "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner.png",
+      "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner.png",
+      "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/10-weapon-lumeri_cathedral_burner.png",
+    "source_sha256": "363e1d2f2ed194c538398652efcee6e0b186fc7a9bea6473a9cfca72a560d53f",
+    "export_sha256": {
+      "256": "6bc6063c30092b730936b907582431837320f274548e1d73746b25ffeca8a039",
+      "128": "78fed6bf5077e5ba9fbbfd60a5c35339e6285828f54750e008a2f334f3b5ba94",
+      "64": "1c88f8839cb8252e31cad9d7c1b4bf8bd0eb4b30f3e3f8764acd46c4165dcfdf",
+      "32": "a11c2c9967ce0d8ac18b7508d271d1ffe2868e80e34be078383455d930ad436d"
+    },
+    "generator_prompt": "Paint a single fictional nonfunctional video-game inventory icon for Project Heaven Cry, a fantasy role-playing game. It is concept art of an imagined prop. Use one exterior, slightly three-quarter view only. Hand-painted opaque Heavenprint gouache, bold readable contour, angular scuffed brushstrokes and selective hatching, charcoal shadows, upper-left ivory highlights and restrained accent paint. The first reference shows only brushwork and materials. Any item reference is a fictional prop in the same game, for family color and scale. Lumeri Cathedral Burner, a prop based on twin cathedral towers. Two tall ivory cylinders with sculptural pointed tops sit together on one backplate. A long dark lance crosses the front diagonally, ending at upper right in a big lancet-window brass lantern head with a tiny stationary ember inside. Two dark curved decorative lines connect the ensemble. Whole object only. Ivory ceramic finish, restrained antique gold shoulders. Bold at icon size, no hand, no fire outside the lantern. Square 1024 PNG on true transparent alpha with ample margins. Legible as one silhouette at 32 pixels. No lettering, insignia, numbers, logos, people, background, dimension marks, inset diagrams or view of interior parts."
+  },
+  {
+    "n": 11,
+    "id": "ork_snarl_knife",
+    "title": "Snarl knife",
+    "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+    "refs": [
+      "art/icons/gear/weapon-ork_rip_saw.png",
+      "art/icons/weapons/ork_rip_saw.svg",
+      "art/icons/gear/weapon-combat_knife.png"
+    ],
+    "paint": "The rip-saw's little brother, for one hand: a short chain-toothed knife with a pull-cord engine on the guard. Pose: on the 45 degree diagonal, handle bottom-left, point top-right, filling about 80% of the diagonal. Silhouette: a short bar of chain teeth, a fist-sized welded engine at the guard with a pull-cord ring and a stub exhaust, a nail-studded grip. Materials: rust, scorched steel, welds. Accent: dirty ochre daubs, soot.\nAt 32 px: chain teeth and an engine lump at the guard, not a plain knife.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.8,
+    "label": "Snarl knife",
+    "sha256": "4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife.png",
+      "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife.png",
+      "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife.png",
+      "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/11-weapon-ork_snarl_knife.png",
+    "source_sha256": "147736d6534b3074ee74dbe83e195682dcd329b82cda93e3e51d8477dcc1f729",
+    "export_sha256": {
+      "256": "82d7f7365ab64e17fc55df02ea46a68b19cb078d9157dc1640899e416a595dcc",
+      "128": "7e20f210d541c3f8b697cccda1ced8fc6bdf03dc57635bcd0272fd3936692de6",
+      "64": "e6e3890825eb7ea3b3e54c666cc5492f2c7efcdce57c7f7adb8a6c25c6bf9cbd",
+      "32": "d9e88fca96de992dd6998fbfca44042f880575c4e0f6530bbb47883fab9f0098"
+    },
+    "generator_prompt": "Create one finished Project Heaven Cry RPG inventory painting based on the first attached short fantasy prop, with the second attachment as game family's visual anchor. Preserve the diagonal, bounding size, worn ochre circular guard, cloth grip, and worn dark gouache. Change the blade silhouette only: replace all three big concave bites with a thin, short blunt oval metal bar edged by a continuous decorative chain of small regular tiny raised saw teeth like the existing fantasy family icon. A small row of individual close-set dark links is readable all along the bar, never three large curved notches. All one nonfunctional fictional prop on transparent alpha. No perspective changes to the grip or guard, no lettering, no floor."
+  },
+  {
+    "n": 12,
+    "id": "ork_wreck_saw",
+    "title": "Wreck saw",
+    "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+    "refs": [
+      "art/icons/gear/weapon-ork_rip_saw.png",
+      "art/icons/weapons/ork_rip_saw.svg"
+    ],
+    "paint": "For plates, cover and the man inside them: a two-hand circular saw on a long engine body. Pose: on the 45 degree diagonal, the saw head top-right as the focal point, nearly corner to corner. Silhouette: a huge round toothed saw disc at the head with a bent guard over it, a long welded engine body, two exhaust stacks, a crossbar handle. Materials: rust, scorched steel, welded plates, nails. Accent: dirty ochre daubs, soot black. A heavy slow weapon: it must look heavy.\nAt 32 px: a round disc, not the rip-saw's long bar.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.89,
+    "label": "Wreck saw",
+    "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw.png",
+      "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw.png",
+      "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw.png",
+      "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/12-weapon-ork_wreck_saw.png",
+    "source_sha256": "e12ff7875e50b8b985aa7972e0ca1f67b23fe0277b8180b1df264f97c285be0f",
+    "export_sha256": {
+      "256": "90218d6b804dc77fd507b585230800051f645232f31e7ec9fd5b4c589c0d3ffc",
+      "128": "2cabcc6398d8c5c573c48311edbddb4d3892ebd82d2d5515989c7d8eed67d85c",
+      "64": "f80b086dc1cc0e3d69ae5f19d88df2b44ed7416b54f0282aa0a462fea184ba2d",
+      "32": "08db7a0c988d75e004b1feab77155e401813a62269ba93f2d0565c8ee1ecf0d1"
+    },
+    "generator_prompt": "Paint a single fictional nonfunctional video-game inventory icon for Project Heaven Cry, a fantasy role-playing game. It is concept art of an imagined prop. Use one exterior, slightly three-quarter view only. Hand-painted opaque Heavenprint gouache, bold readable contour, angular scuffed brushstrokes and selective hatching, charcoal shadows, upper-left ivory highlights and restrained accent paint. The first reference shows only brushwork and materials. Any item reference is a fictional prop in the same game, for family color and scale. Wreck Saw, a heavy made-up fantasy scrap-cutter prop. One oversized continuous round toothed steel disc at upper right, partly enclosed by a thick curved yellow-ochre guard, merges into a long dark blocky engine-shaped handle assembly toward lower left. There is a clear painted central hub, a single broad crossbar grip and two small dark protrusions at the back. A whole, unbroken silhouette, no loose pieces. Thick irregular charcoal, rust and dirty faded ochre. Forty-five degree diagonal, very distinct from the narrow rip-saw. Square 1024 PNG on true transparent alpha with ample margins. Legible as one silhouette at 32 pixels. No lettering, insignia, numbers, logos, people, background, dimension marks, inset diagrams or view of interior parts."
+  },
+  {
+    "n": 13,
+    "id": "hellraiser_piston_knuckles",
+    "title": "Piston knuckles",
+    "path": "art/icons/gear/weapon-hellraiser_piston_knuckles.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_servo_fist.png",
+      "art/icons/weapons/hellraiser_servo_fist.svg",
+      "art/icons/gear/weapon-knuckledusters.png"
+    ],
+    "paint": "The servo-fist without the gauntlet: a knuckle bar with a single piston strapped along the wrist. Pose: upright, three-quarter, filling about 75% of the canvas; no hand inside. Silhouette: a slab knuckle bar of four rings, one exposed piston running back to a wrist cuff with a small air bottle, no glove. Materials: dark steel, black rubber hose, scuffs. Accent: oxide red #CC2435 on the cuff.\nAt 32 px: one long piston behind the knuckle bar.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.75,
+    "label": "Piston knuckles",
+    "sha256": "68fbc1095dea7ba6eb74bc586dbcb0f7d01934e67c2fef828d3bd2e0741e0ef1",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles.png",
+      "128": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles.png",
+      "64": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles.png",
+      "32": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/13-weapon-hellraiser_piston_knuckles.png",
+    "source_sha256": "bfe3578209bd2d051fa5db5aad230789476c5dcb6d22bb5f9c686050bf6a456d",
+    "export_sha256": {
+      "256": "675c4d43e68c6e5020fc6d875b64d0a10a925dc48686d0e716160a822a9b094d",
+      "128": "dce921428c89f8a840a17fc83f3f4d6914e048521a416e1a64070f917389c93c",
+      "64": "259c97865e4b08c414c56952ba91829f0b66c7d516aba0abfb2c6a722145ec4e",
+      "32": "14971404092beb287ce7a797e16529df693800e3d9e6d36f1479912ad6209212"
+    },
+    "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills the width the description gives, inside the central 90% of the canvas. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The name, maker and markings are invented: never a real brand, model name, logo or text; a shape not marked Pattern is invented too. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail concentrated on one or two focal edges and make the shape unmistakable when shrunk. Colour: metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the faction's signature colour is the single accent (given in each prompt), a muted local paint, not a glow. Rarity is not shown by a coloured border (the UI adds that): standard finish only, with honest wear. Heavy weapons are drawn dense and heavy, and must read heavier than any rifle even at 32 px. The object:\n\nThe servo-fist without the gauntlet: a knuckle bar with a single piston strapped along the wrist. Pose: upright, three-quarter, filling about 75% of the canvas; no hand inside. Silhouette: a slab knuckle bar of four rings, one exposed piston running back to a wrist cuff with a small air bottle, no glove. Materials: dark steel, black rubber hose, scuffs. Accent: oxide red #CC2435 on the cuff.\nAt 32 px: one long piston behind the knuckle bar.\n\nThis is the new Standard-finish form for Project Heaven Cry. Keep the family reference's gouache materials while matching this form's silhouette exactly.\n\nOne isolated inventory object with unbroken mechanical attachment and geometrically consistent perspective. Use the first composite reference for material treatment only; keep the specific pose in the subject brief. Single object view, no exploded schematic, text, logo, label, watermark, floor or glow. Leave genuinely transparent clear canvas edges.\n\nFour apertures in one single proximal knuckle bar, the object open and hollow, connected straight piston over its wrist brace, physically plausible connection. Empty, no hand."
+  },
+  {
+    "n": 14,
+    "id": "hellraiser_door_knocker",
+    "title": "Door-knocker",
+    "path": "art/icons/gear/weapon-hellraiser_door_knocker.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_servo_fist.png",
+      "art/icons/weapons/hellraiser_servo_fist.svg"
+    ],
+    "paint": "A mining ram worn by trench troops: a forearm-length pneumatic ram gauntlet with a flat striking plate. Pose: upright, three-quarter, filling about 75% of the canvas; no hand or arm inside. Silhouette: a massive flat square ram plate over the knuckles, two thick pistons running the length of the forearm, an air tank at the elbow, short trench spikes on the plate's edge. Materials: dark steel, dented plate, black hoses. Accent: oxide red #CC2435.\nAt 32 px: twice as long as the servo-fist, with a flat square plate in front.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.75,
+    "label": "Door-knocker",
+    "sha256": "02aac08ab2efeec09c1767064e2a9dd0ae2504fa6412d6c7686b7cca58d88e40",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker.png",
+      "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker.png",
+      "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker.png",
+      "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/14-weapon-hellraiser_door_knocker.png",
+    "source_sha256": "77e9069cda67f98cd14537f5316401a2b33f4b2a75d652255a32f2b2190ac758",
+    "export_sha256": {
+      "256": "2dc24d0bf4349a461d352df5aed8bfb82bf66e85bdc87169d8758b6a320aa2af",
+      "128": "fda08539ad63643bb17595c7830b4348ab3e678eac89ba36202d4f85f58b3661",
+      "64": "c95c2822e5fc1fded7ff7422e7d7cc0ab64147f14a0648941a4675823b52a541",
+      "32": "1bf12a56e43e8942ee1f63c77b32404c6db7faab257ca2c599f8c4fe92679bb8"
+    },
+    "generator_prompt": "Repaint this completed fantasy inventory art in the same rough gouache and worn oxide-red palette. New composition: an UPRIGHT tall gauntlet standing vertically, cuff opening and air tank at the BOTTOM of the image, steel square plate at the TOP of the image. This is a mining ram wrist brace, displayed empty, with one visible hollow forearm opening at the bottom in three-quarter view. The two thick parallel pistons visibly run vertically along a long forearm brace from bottom to top and join the same flat heavy steel plate, with short points at the edge. Elongate the body so it reads as long as two short gloves. Keep one coherent object of clear, readable near-vertical silhouette, same red steel palette, no human, no label, no ground. Transparent square."
+  },
+  {
+    "n": 15,
+    "id": "throwing_darts",
+    "title": "Throwing darts",
+    "path": "art/icons/gear/weapon-throwing_darts.png",
+    "refs": [
+      "art/icons/gear/weapon-throwing_knives.png",
+      "art/icons/weapons/throwing_knives.svg"
+    ],
+    "paint": "Eight quiet needles: a roll of slim weighted darts, two with a dark coated tip. Pose: three-quarter, the roll laid open on the diagonal, filling about 80% of the canvas. Silhouette: a leather roll opened flat with eight needle darts held in loops, short stiff flights, two tips darkened. Materials: blackened steel, worn leather. Accent: none.\nAt 32 px: many thin lines in a row, not four blades in a fan.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.8,
+    "label": "Throwing darts",
+    "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-throwing_darts.png",
+      "128": "art/icons/gear/exports/128/weapon-throwing_darts.png",
+      "64": "art/icons/gear/exports/64/weapon-throwing_darts.png",
+      "32": "art/icons/gear/exports/32/weapon-throwing_darts.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/15-weapon-throwing_darts.png",
+    "source_sha256": "1b6db1db583d13540bb569d208373967d112ea905a335568af702980eeb8ca5b",
+    "export_sha256": {
+      "256": "51a06ddcb10a8409c91c8b1c0be83dcdd55ec191bc0266baab2474553496b336",
+      "128": "e650fcc637868b45907ae3a8483440ae5988dd9987d642cd4152733f7952339a",
+      "64": "1c8cc0003db1bd85bdae3e509f555a3aeba743c79609d52fdc9e5bb67b493a3c",
+      "32": "4956eb88ac0aa330ee58880b5f9adac800b4f4fb897b8305d64d3a4bb81d0ea5"
+    },
+    "generator_prompt": "Edit the attached Project Heaven Cry inventory-art painting of a leather roll of little steel darts. Keep the diagonal pose, gouache materials, stitching, transparent background, dark steel and the last two dark points. There are currently seven darts, five bright and two dark. Make a slightly wider cloth roll holding exactly EIGHT, six bright points then two dark points. Add exactly one more bright-pointed dart with its own identical leather loop on the left. Match all eight as a single evenly spaced continuous row, with one fin tail and one point per shaft. Clear transparent margin on all four sides. No backdrop or lettering."
+  },
+  {
+    "n": 16,
+    "id": "throwing_javelins",
+    "title": "Throwing javelins",
+    "path": "art/icons/gear/weapon-throwing_javelins.png",
+    "refs": [
+      "art/icons/gear/weapon-throwing_knives.png",
+      "art/icons/weapons/throwing_knives.svg"
+    ],
+    "paint": "Heavy and short: three iron javelins in a back quiver. Pose: on the 45 degree diagonal, the heads top-right, filling about 85% of the diagonal. Silhouette: three short thick shafts with long barbless iron heads, standing in a stiff leather back quiver, the heads fanned. Materials: dark iron heads, ash shafts, worn leather. Accent: none.\nAt 32 px: three short shafts in a quiver, not one long pole.",
+    "pattern": false,
+    "needs": false,
+    "span": 0.85,
+    "label": "Throwing javelins",
+    "sha256": "50f55c624c9d5e0e72a60eeb623182329ebe0a3f4f5c6000872e87cc6af53621",
+    "width": 1024,
+    "height": 1024,
+    "background": "transparent",
+    "status": "review-candidate",
+    "production_approved": false,
+    "implementation_ready": false,
+    "exports": {
+      "256": "art/icons/gear/exports/256/weapon-throwing_javelins.png",
+      "128": "art/icons/gear/exports/128/weapon-throwing_javelins.png",
+      "64": "art/icons/gear/exports/64/weapon-throwing_javelins.png",
+      "32": "art/icons/gear/exports/32/weapon-throwing_javelins.png"
+    },
+    "collection": "prompt-pack-2026-11-19-file-09",
+    "native_dimensions": [
+      1254,
+      1254
+    ],
+    "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/16-weapon-throwing_javelins.png",
+    "source_sha256": "01ae705b5668c838e6aa55fec3115f7a530352e0e4c4cc3cc671a55b9f95ab2b",
+    "export_sha256": {
+      "256": "b0157a98742b0139ce1d4be68dec18b315ee2ec85fae17f08bedbf45bae1b667",
+      "128": "7c5dbdd3ad15769bc94d89cb85c6ead533b02fa9de0209a9d121c814e6a8069c",
+      "64": "e5a7a2216741f498ac853be4e2cf540960aeb4ef6e74bb4b30542429472a9629",
+      "32": "ba1ac4fd51eccb2b8c800573824d3d839032eedc607085afaa545e5e66062a32"
+    },
+    "generator_prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills the width the description gives, inside the central 90% of the canvas. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The name, maker and markings are invented: never a real brand, model name, logo or text; a shape not marked Pattern is invented too. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail concentrated on one or two focal edges and make the shape unmistakable when shrunk. Colour: metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the faction's signature colour is the single accent (given in each prompt), a muted local paint, not a glow. Rarity is not shown by a coloured border (the UI adds that): standard finish only, with honest wear. Heavy weapons are drawn dense and heavy, and must read heavier than any rifle even at 32 px. The object:\n\nHeavy and short: three iron javelins in a back quiver. Pose: on the 45 degree diagonal, the heads top-right, filling about 85% of the diagonal. Silhouette: three short thick shafts with long barbless iron heads, standing in a stiff leather back quiver, the heads fanned. Materials: dark iron heads, ash shafts, worn leather. Accent: none.\nAt 32 px: three short shafts in a quiver, not one long pole.\n\nThis is the new Standard-finish form for Project Heaven Cry. Keep the family reference's gouache materials while matching this form's silhouette exactly.\n\nOne isolated inventory object with unbroken mechanical attachment and geometrically consistent perspective. Use the first composite reference for material treatment only; keep the specific pose in the subject brief. Single object view, no exploded schematic, text, logo, label, watermark, floor or glow. Leave genuinely transparent clear canvas edges.\n\nExactly three complete javelins, exactly one straight shaft per leaf point, all secured within one leather quiver. All three points face one direction and emerge coherently."
+  }
+]

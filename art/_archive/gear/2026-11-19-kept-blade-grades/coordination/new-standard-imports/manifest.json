@@ -1,0 +1,475 @@
+{
+  "status": "unchanged Standard imports for reserved grade references",
+  "production_approved": false,
+  "imports": [
+    {
+      "id": "weapon-short_bow",
+      "source_branch": "origin/art/2026-11-19-gun-forms",
+      "source_commit": "ba1ba223a0698cb601da1008f89c9bde478e40d0",
+      "original_catalog_entry": {
+        "label": "Short bow (Bows, close)",
+        "path": "art/icons/gear/weapon-short_bow.png",
+        "sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "implementation_ready": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-short_bow.png",
+          "128": "art/icons/gear/exports/128/weapon-short_bow.png",
+          "64": "art/icons/gear/exports/64/weapon-short_bow.png",
+          "32": "art/icons/gear/exports/32/weapon-short_bow.png"
+        },
+        "collection": "prompt-pack-2026-11-19-file-06",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-06/native/16-weapon-short_bow.png"
+      },
+      "files": [
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-06/native/16-weapon-short_bow.png",
+          "sha256": "9ce5fb08668b99ffb69fc552dfce8b2a2fbd00d9732fb57b07fca423027c47bd",
+          "git_blob": "d1b3bf6ff05fd4be115311a9b9b9c560307c98fd"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-06/records/16.json",
+          "sha256": "a179491fe5067df3efbdcf2663d22855280a70dbcf92d8993ce6aa9b842d966f",
+          "git_blob": "ce51dbfd4ad2047959514ce01386e13b49995d1a"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-short_bow.png",
+          "sha256": "3de6d9331f098022a3c73b4fcc6c4fed3c8a4e08f02922b72f3828584a9f9956",
+          "git_blob": "7afa006543261c91747b4734f23d77286160ac48"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-short_bow.png",
+          "sha256": "09681ddf21c63fd5d6507127f7558016b9b0e4e1497c90a5b2f8db49fab91e15",
+          "git_blob": "97249737f59a0037a6327e75e7f96bbba36ef6dc"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-short_bow.png",
+          "sha256": "502dc06c5d5c34af4cc78657e52b64acecf8e935fae375187157ddd3f09b775a",
+          "git_blob": "b5e4d79037de80d88f9c5d21fe0962fe61b51aab"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-short_bow.png",
+          "sha256": "3b21c28d49915379796f244bc59a3498142d3e28e6f7dae5289697d418b05442",
+          "git_blob": "806149bafdd0b3ea76e800b0a8058f0c1a568384"
+        },
+        {
+          "path": "art/icons/gear/weapon-short_bow.png",
+          "sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6",
+          "git_blob": "ffcfe8ef215184333d9059e7c3fdee81c17ab916"
+        }
+      ],
+      "unchanged_bytes": true,
+      "counts_as_new_drawing": false
+    },
+    {
+      "id": "weapon-ork_snarl_knife",
+      "source_branch": "origin/art/2026-11-19-heavy-and-strange",
+      "source_commit": "c51fe4cc33b0dab7aaa5e47350ded60003e57871",
+      "original_catalog_entry": {
+        "label": "Snarl knife",
+        "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+        "sha256": "4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "implementation_ready": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife.png",
+          "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife.png",
+          "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife.png",
+          "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife.png"
+        },
+        "collection": "prompt-pack-2026-11-19-file-09",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/11-weapon-ork_snarl_knife.png"
+      },
+      "files": [
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/native/11-weapon-ork_snarl_knife.png",
+          "sha256": "147736d6534b3074ee74dbe83e195682dcd329b82cda93e3e51d8477dcc1f729",
+          "git_blob": "9d329beec8702fa30ff5dd6852973507cfce85ee"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/records/11.json",
+          "sha256": "e8e3c3408fe1384b6c75c75938e03f43633a1afa72b8750a44d3e74bdd995362",
+          "git_blob": "c45555a3f9d48e1d0c641ba7eb6d29cb6a257174"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-ork_snarl_knife.png",
+          "sha256": "7e20f210d541c3f8b697cccda1ced8fc6bdf03dc57635bcd0272fd3936692de6",
+          "git_blob": "0b2e658692298e881b99b4149b7246382500d654"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-ork_snarl_knife.png",
+          "sha256": "82d7f7365ab64e17fc55df02ea46a68b19cb078d9157dc1640899e416a595dcc",
+          "git_blob": "8b488dc7367938183e01e71f3229e8d0a0ae4c36"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-ork_snarl_knife.png",
+          "sha256": "d9e88fca96de992dd6998fbfca44042f880575c4e0f6530bbb47883fab9f0098",
+          "git_blob": "b24d57d8ae76b6ada70266f0cc3cd9923d2debcd"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-ork_snarl_knife.png",
+          "sha256": "e6e3890825eb7ea3b3e54c666cc5492f2c7efcdce57c7f7adb8a6c25c6bf9cbd",
+          "git_blob": "e289e4110424497fd0a0ee2d6efe44bf3cf6922e"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+          "sha256": "4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3",
+          "git_blob": "be6b0b533de04820df850ab3463c62a568a36dc0"
+        }
+      ],
+      "unchanged_bytes": true,
+      "counts_as_new_drawing": false
+    },
+    {
+      "id": "weapon-ork_wreck_saw",
+      "source_branch": "origin/art/2026-11-19-heavy-and-strange",
+      "source_commit": "c51fe4cc33b0dab7aaa5e47350ded60003e57871",
+      "original_catalog_entry": {
+        "label": "Wreck saw",
+        "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+        "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "implementation_ready": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw.png",
+          "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw.png",
+          "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw.png",
+          "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw.png"
+        },
+        "collection": "prompt-pack-2026-11-19-file-09",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/12-weapon-ork_wreck_saw.png"
+      },
+      "files": [
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/native/12-weapon-ork_wreck_saw.png",
+          "sha256": "e12ff7875e50b8b985aa7972e0ca1f67b23fe0277b8180b1df264f97c285be0f",
+          "git_blob": "52e98cc9f7e83720804eee4f4b63903ac8a78820"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/records/12.json",
+          "sha256": "cd086098f6e60704a33cd7e88e311202778b95f3b292256d8ea2444dba36dfe4",
+          "git_blob": "e116c4a7101ebd003dc0d6483cfea84ec1a639e4"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-ork_wreck_saw.png",
+          "sha256": "2cabcc6398d8c5c573c48311edbddb4d3892ebd82d2d5515989c7d8eed67d85c",
+          "git_blob": "7d1f8651a7cafa8b2bf5ff75424cedd09da2250e"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-ork_wreck_saw.png",
+          "sha256": "90218d6b804dc77fd507b585230800051f645232f31e7ec9fd5b4c589c0d3ffc",
+          "git_blob": "f62f2307586fc26d3e897a57be0fbe0c75a239f5"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-ork_wreck_saw.png",
+          "sha256": "08db7a0c988d75e004b1feab77155e401813a62269ba93f2d0565c8ee1ecf0d1",
+          "git_blob": "bf1bf7901fb2c26db8f286fcd18a2dbd5c8cfee3"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-ork_wreck_saw.png",
+          "sha256": "f80b086dc1cc0e3d69ae5f19d88df2b44ed7416b54f0282aa0a462fea184ba2d",
+          "git_blob": "ff504501bec6d8a82fcb5926d72cb97ba757b869"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+          "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d",
+          "git_blob": "f1fe747c82f3972452bff1da4c4e3f235757ddec"
+        }
+      ],
+      "unchanged_bytes": true,
+      "counts_as_new_drawing": false
+    },
+    {
+      "id": "weapon-hellraiser_piston_knuckles",
+      "source_branch": "origin/art/2026-11-19-heavy-and-strange",
+      "source_commit": "c51fe4cc33b0dab7aaa5e47350ded60003e57871",
+      "original_catalog_entry": {
+        "label": "Piston knuckles",
+        "path": "art/icons/gear/weapon-hellraiser_piston_knuckles.png",
+        "sha256": "68fbc1095dea7ba6eb74bc586dbcb0f7d01934e67c2fef828d3bd2e0741e0ef1",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "implementation_ready": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles.png",
+          "128": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles.png",
+          "64": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles.png",
+          "32": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles.png"
+        },
+        "collection": "prompt-pack-2026-11-19-file-09",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/13-weapon-hellraiser_piston_knuckles.png"
+      },
+      "files": [
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/native/13-weapon-hellraiser_piston_knuckles.png",
+          "sha256": "bfe3578209bd2d051fa5db5aad230789476c5dcb6d22bb5f9c686050bf6a456d",
+          "git_blob": "247a1708fec2be06b904e186fbf25c31c7c32793"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/records/13.json",
+          "sha256": "0cc6c820879fa6578ad81a9c0686936b71db4b3f5a1fdf4041b9cdf6705314da",
+          "git_blob": "205fb834f33c240de597a38682da21602af83c68"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles.png",
+          "sha256": "dce921428c89f8a840a17fc83f3f4d6914e048521a416e1a64070f917389c93c",
+          "git_blob": "50ad0e30aeadd1f8d1334c0b49aa3c694a37bfb3"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles.png",
+          "sha256": "675c4d43e68c6e5020fc6d875b64d0a10a925dc48686d0e716160a822a9b094d",
+          "git_blob": "7b2e67699f56c49206c1836d902019e0f16fc3bc"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles.png",
+          "sha256": "14971404092beb287ce7a797e16529df693800e3d9e6d36f1479912ad6209212",
+          "git_blob": "d2f16c7ec489cc3e0c0db9aa43ccc665790cfbe5"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles.png",
+          "sha256": "259c97865e4b08c414c56952ba91829f0b66c7d516aba0abfb2c6a722145ec4e",
+          "git_blob": "47818fd066f9de319df89b7be912cef3623f8c6d"
+        },
+        {
+          "path": "art/icons/gear/weapon-hellraiser_piston_knuckles.png",
+          "sha256": "68fbc1095dea7ba6eb74bc586dbcb0f7d01934e67c2fef828d3bd2e0741e0ef1",
+          "git_blob": "31e241c6c7321d02670a00adb34a296e3f90a9fc"
+        }
+      ],
+      "unchanged_bytes": true,
+      "counts_as_new_drawing": false
+    },
+    {
+      "id": "weapon-hellraiser_door_knocker",
+      "source_branch": "origin/art/2026-11-19-heavy-and-strange",
+      "source_commit": "c51fe4cc33b0dab7aaa5e47350ded60003e57871",
+      "original_catalog_entry": {
+        "label": "Door-knocker",
+        "path": "art/icons/gear/weapon-hellraiser_door_knocker.png",
+        "sha256": "02aac08ab2efeec09c1767064e2a9dd0ae2504fa6412d6c7686b7cca58d88e40",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "implementation_ready": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker.png",
+          "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker.png",
+          "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker.png",
+          "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker.png"
+        },
+        "collection": "prompt-pack-2026-11-19-file-09",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/14-weapon-hellraiser_door_knocker.png"
+      },
+      "files": [
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/native/14-weapon-hellraiser_door_knocker.png",
+          "sha256": "77e9069cda67f98cd14537f5316401a2b33f4b2a75d652255a32f2b2190ac758",
+          "git_blob": "7cce6b1c018ec7f4ca99ec9bca55ed621ff6efd5"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/records/14.json",
+          "sha256": "0449c25631cb92786d97c9afa698693b065ecf2818de7fa2d2de0e77e5b462d7",
+          "git_blob": "c891c76235a75beb055886d3021a36b040c55fc5"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker.png",
+          "sha256": "fda08539ad63643bb17595c7830b4348ab3e678eac89ba36202d4f85f58b3661",
+          "git_blob": "1e26ddada00a7813c8a2d06cf89ac2de05a88f4f"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker.png",
+          "sha256": "2dc24d0bf4349a461d352df5aed8bfb82bf66e85bdc87169d8758b6a320aa2af",
+          "git_blob": "6a60e7d2ba76430e635b980ab598b263fba1601a"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker.png",
+          "sha256": "1bf12a56e43e8942ee1f63c77b32404c6db7faab257ca2c599f8c4fe92679bb8",
+          "git_blob": "3fb88e6d95318a3f730a9582869a69c8743d5698"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker.png",
+          "sha256": "c95c2822e5fc1fded7ff7422e7d7cc0ab64147f14a0648941a4675823b52a541",
+          "git_blob": "d06f44fb5b727cac49bbee3a8a93938d604f382b"
+        },
+        {
+          "path": "art/icons/gear/weapon-hellraiser_door_knocker.png",
+          "sha256": "02aac08ab2efeec09c1767064e2a9dd0ae2504fa6412d6c7686b7cca58d88e40",
+          "git_blob": "e06d5f70ffb68713d01097f0ef8998aba6f3b98e"
+        }
+      ],
+      "unchanged_bytes": true,
+      "counts_as_new_drawing": false
+    },
+    {
+      "id": "weapon-throwing_darts",
+      "source_branch": "origin/art/2026-11-19-heavy-and-strange",
+      "source_commit": "c51fe4cc33b0dab7aaa5e47350ded60003e57871",
+      "original_catalog_entry": {
+        "label": "Throwing darts",
+        "path": "art/icons/gear/weapon-throwing_darts.png",
+        "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "implementation_ready": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-throwing_darts.png",
+          "128": "art/icons/gear/exports/128/weapon-throwing_darts.png",
+          "64": "art/icons/gear/exports/64/weapon-throwing_darts.png",
+          "32": "art/icons/gear/exports/32/weapon-throwing_darts.png"
+        },
+        "collection": "prompt-pack-2026-11-19-file-09",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/15-weapon-throwing_darts.png"
+      },
+      "files": [
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/native/15-weapon-throwing_darts.png",
+          "sha256": "1b6db1db583d13540bb569d208373967d112ea905a335568af702980eeb8ca5b",
+          "git_blob": "47d5542149c46d246e40a5ff70dfff0cad66d3d4"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/records/15.json",
+          "sha256": "2dc588c4262f90e5b85f7ec54effb78383d5a3272bd4c74958ac055680a10db9",
+          "git_blob": "254f45c57c83e38234803e0c40c5fb599a49e30c"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-throwing_darts.png",
+          "sha256": "e650fcc637868b45907ae3a8483440ae5988dd9987d642cd4152733f7952339a",
+          "git_blob": "30ac71e1580a5a5fd1c67f8de1a79c7874c9bcc0"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-throwing_darts.png",
+          "sha256": "51a06ddcb10a8409c91c8b1c0be83dcdd55ec191bc0266baab2474553496b336",
+          "git_blob": "1265654f1600de6193a78f3f1f2e832b6d4cdea5"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-throwing_darts.png",
+          "sha256": "4956eb88ac0aa330ee58880b5f9adac800b4f4fb897b8305d64d3a4bb81d0ea5",
+          "git_blob": "5272d304d2861eed3978da9a493e767e61d7d5b3"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-throwing_darts.png",
+          "sha256": "1c8cc0003db1bd85bdae3e509f555a3aeba743c79609d52fdc9e5bb67b493a3c",
+          "git_blob": "31ad8b70a7ed13901ca97a021ddf0bed8bc9fae8"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_darts.png",
+          "sha256": "7198d94034839265f183871fd3c4b12ba195ab735b9ee7c743cadf640db5e3e2",
+          "git_blob": "8a816bcf68fed264d6a54b10066088a7a9daf3e0"
+        }
+      ],
+      "unchanged_bytes": true,
+      "counts_as_new_drawing": false
+    },
+    {
+      "id": "weapon-throwing_javelins",
+      "source_branch": "origin/art/2026-11-19-heavy-and-strange",
+      "source_commit": "c51fe4cc33b0dab7aaa5e47350ded60003e57871",
+      "original_catalog_entry": {
+        "label": "Throwing javelins",
+        "path": "art/icons/gear/weapon-throwing_javelins.png",
+        "sha256": "50f55c624c9d5e0e72a60eeb623182329ebe0a3f4f5c6000872e87cc6af53621",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "implementation_ready": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/weapon-throwing_javelins.png",
+          "128": "art/icons/gear/exports/128/weapon-throwing_javelins.png",
+          "64": "art/icons/gear/exports/64/weapon-throwing_javelins.png",
+          "32": "art/icons/gear/exports/32/weapon-throwing_javelins.png"
+        },
+        "collection": "prompt-pack-2026-11-19-file-09",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/16-weapon-throwing_javelins.png"
+      },
+      "files": [
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/native/16-weapon-throwing_javelins.png",
+          "sha256": "01ae705b5668c838e6aa55fec3115f7a530352e0e4c4cc3cc671a55b9f95ab2b",
+          "git_blob": "cfa9a9271d1b50d2bd7ca003f3be6ce9f1d15636"
+        },
+        {
+          "path": "art/_archive/prompt-pack/2026-11-19-file-09/records/16.json",
+          "sha256": "1fd1e695477dc32baba7c92936775574dfc2f9785911f5783a7feca9340dc85a",
+          "git_blob": "8fa3a16b7f192dda7ae9abee04c75be10a735ee1"
+        },
+        {
+          "path": "art/icons/gear/exports/128/weapon-throwing_javelins.png",
+          "sha256": "7c5dbdd3ad15769bc94d89cb85c6ead533b02fa9de0209a9d121c814e6a8069c",
+          "git_blob": "50c3e576a9abe61dd0b95b0ed335821be0e603f2"
+        },
+        {
+          "path": "art/icons/gear/exports/256/weapon-throwing_javelins.png",
+          "sha256": "b0157a98742b0139ce1d4be68dec18b315ee2ec85fae17f08bedbf45bae1b667",
+          "git_blob": "495058cedfcf25bb19f33ecd34a2b360d2baf732"
+        },
+        {
+          "path": "art/icons/gear/exports/32/weapon-throwing_javelins.png",
+          "sha256": "ba1ac4fd51eccb2b8c800573824d3d839032eedc607085afaa545e5e66062a32",
+          "git_blob": "9e468ccd500a6e9e242072f87563c1fb6bde5897"
+        },
+        {
+          "path": "art/icons/gear/exports/64/weapon-throwing_javelins.png",
+          "sha256": "e5a7a2216741f498ac853be4e2cf540960aeb4ef6e74bb4b30542429472a9629",
+          "git_blob": "c671b1f4519ef909c9367fe38d49449d44595656"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_javelins.png",
+          "sha256": "50f55c624c9d5e0e72a60eeb623182329ebe0a3f4f5c6000872e87cc6af53621",
+          "git_blob": "abcb6130dcab57530f3ad289b192c1cfe09efabd"
+        }
+      ],
+      "unchanged_bytes": true,
+      "counts_as_new_drawing": false
+    }
+  ]
+}

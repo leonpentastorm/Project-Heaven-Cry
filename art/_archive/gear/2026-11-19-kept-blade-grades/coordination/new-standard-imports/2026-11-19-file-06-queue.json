@@ -1,0 +1,213 @@
+[
+  {
+    "n": 1,
+    "id": "snub_revolver",
+    "title": "Snub revolver (Revolvers, close)",
+    "path": "art/icons/gear/weapon-snub_revolver.png",
+    "refs": [
+      "art/icons/gear/weapon-drifter_revolver.png",
+      "art/icons/gear/weapon-frontier_hand_cannon.png"
+    ],
+    "paint": "The snub-nosed pocket revolver pattern. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols (do not draw it smaller: it is told apart by shape). Silhouette, kept exactly: a small-frame double-action revolver with a two-inch barrel that barely clears the front of the cylinder, a ramped blade front sight on top of it and a short exposed ejector rod beneath; a five-shot swing-out cylinder with a plain smooth outside (no flutes) that is the widest and most central mass; a cylinder release latch on the side of the frame behind the cylinder; a shrouded hammer with only its tip showing; a rounded trigger guard; a small round-butt grip. Materials: oiled dark steel rubbed silver along the cylinder edges and the muzzle crown, dark walnut grip panels with a worn pale patch. Maker's touch: one aged-brass screw in the side plate of the frame.\nAt 32 px: against the drifter revolver, almost no barrel and a small round grip; against the hand cannon, slim and short with no underlug.\nAvoid: a spurred hammer, a fluted cylinder, a sixth chamber, a long barrel, engraving, a holster, a speedloader.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 2,
+    "id": "decrkm_carbine",
+    "title": "Decrkm carbine (Decrkm automatics, long)",
+    "path": "art/icons/gear/weapon-decrkm_carbine.png",
+    "refs": [
+      "art/icons/gear/weapon-decrkm_smg.png",
+      "art/icons/gear/weapon-decrkm_autopistol.png"
+    ],
+    "paint": "The long-barrelled semi-automatic carbine of the boxy telescoping-bolt submachine gun pattern. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the same short boxy stamped receiver as the attached submachine gun, with its ribbed top cover and the cocking knob on top; the magazine inserted through the pistol grip, its base flush with the grip; a grip safety at the back of the grip; a protected front sight with two ears at the front of the receiver and a rear sight with ears at the back; a long thin barrel running far out in front of the receiver, held by a knurled barrel nut; a fixed wooden buttstock in place of the folding metal stock. Materials: dull gunmetal stamped steel, black grip panels, dark oiled wood stock, paint worn through to bare metal at the edges. Maker's touch: one small brass pin through the receiver.\nAt 32 px: against the Decrkm submachine gun, a long bare barrel and a wooden stock; against every other rifle, a short box with the magazine in the grip and a thin barrel.\nAvoid: a scope, a curved magazine, a drum, a bayonet, a muzzle brake, a folding stock.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 3,
+    "id": "legion_marksman_rifle",
+    "title": "Legion marksman rifle (Legion automatics, long)",
+    "path": "art/icons/gear/weapon-legion_marksman_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-legion_bullpup.png",
+      "art/icons/gear/weapon-legion_pdw.png"
+    ],
+    "paint": "The issued marksman fit of the carry-handle bullpup pattern. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the same rifle as the attached Legion bullpup, the long carry handle running over the whole top of the gun with the cocking handle under it; the short straight magazine set behind the pistol grip; the long trigger guard; the ribbed polymer fore-end and the short barrel with its ringed flash hider; fitted for the marksman: a compact scope clamped on top of the carry handle, and the two thin bipod legs unfolded and spread down under the fore-end. Materials: anonymous olive-grey polymer and bare steel, scuffed from issue. Maker's touch: one pale stripe painted round the butt.\nAt 32 px: against the Legion bullpup, a scope on the handle and two legs spread under the front; against the precision rifles, a short bullpup body with the magazine behind the grip.\nAvoid: wood, a thumbhole or skeleton stock, a longer barrel, a crest, spikes, a bolt knob, any marking.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 4,
+    "id": "whisper_pistol",
+    "title": "Whisper pistol (Whisper, close)",
+    "path": "art/icons/gear/weapon-whisper_pistol.png",
+    "refs": [
+      "art/icons/gear/weapon-whisper_smg.png"
+    ],
+    "paint": "The wartime integrally suppressed tube pistol pattern. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols. Silhouette, kept exactly: the whole gun is one long smooth cylinder of even diameter, receiver and suppressor in one, from a round knurled bolt cap at the rear end to a plain flat muzzle; the magazine forms the grip, hanging straight down below the rear third of the tube, with a rubber-covered base; a grip safety on the back of the grip; a small trigger in a narrow trigger guard; two tiny low blade sights on top of the tube. Materials: matte black everything, a dull non-reflective finish that swallows the light, only the faintest grey edge highlights, dark rubber on the grip base. Maker's touch: a single small dark steel-blue tag at the base of the grip, blank.\nAt 32 px: against the service pistol, a long smooth tube with a grip under its back end; against the Whisper submachine gun, no stock and no front grip.\nAvoid: shine or glints, a slide, ports or holes in the tube, a laser or light, an optic, a screwed-on can with knurling at the front.",
+    "needs": false,
+    "span": 0.8
+  },
+  {
+    "n": 5,
+    "id": "whisper_carbine",
+    "title": "Whisper carbine (Whisper, long)",
+    "path": "art/icons/gear/weapon-whisper_carbine.png",
+    "refs": [
+      "art/icons/gear/weapon-whisper_smg.png"
+    ],
+    "paint": "The integrally suppressed special-purpose carbine pattern. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a fat smooth suppressor that forms the whole fore-end, one even tube from just ahead of the receiver to the muzzle, no ports and no brake; a small stamped receiver with a dust cover and a large safety lever on the right side; a short straight box magazine; a skeleton wooden thumbhole stock, an open frame of wood with the pistol grip inside it; a compact scope on a side rail on the left of the receiver. Materials: matte black metal, dull and non-reflective, a dark matte-stained wood stock, the faintest grey edge highlights. Maker's touch: a single small dark steel-blue tag on the stock, blank.\nAt 32 px: against the Whisper submachine gun, longer with an open wooden stock and a scope; against every other rifle, the only one whose front half is one fat smooth tube.\nAvoid: lens glint, a bipod, a bayonet, shine, any marking.",
+    "needs": false,
+    "span": 0.85
+  },
+  {
+    "n": 6,
+    "id": "mandestra_drum_pistol",
+    "title": "Mandestra drum pistol (Mandestra drum guns, close)",
+    "path": "art/icons/gear/weapon-mandestra_drum_pistol.png",
+    "refs": [
+      "art/icons/gear/weapon-mandestra_drum_gun.png"
+    ],
+    "paint": "The long-barrelled toggle-lock pistol pattern with the snail drum magazine. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols; the drum may hang low into the frame. Silhouette, kept exactly: a toggle-lock action on top of the frame, the jointed knee-shaped toggle ending in two round knurled grips at the rear; a long slim tapered barrel with a tangent leaf rear sight on the barrel just ahead of the frame and a small blade front sight; a steeply raked grip with chequered wooden panels; a snail-shaped drum magazine, a round drum on a long neck inserted into the bottom of the grip, angling forward and down below the barrel. No stock. Materials: lacquered dark red-black metal with soft highlights, dark wooden grip panels, polished brass drum plates. Maker's touch: brass on the drum, and one small blank brass tag on the side of the frame.\nAt 32 px: against the other pistols, the toggle on top and the big round drum under the grip; against the Mandestra drum gun, no stock and pistol length.\nAvoid: a stick magazine, a stock, text on the tag, engraving that looks like lettering, chrome shine.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 7,
+    "id": "mandestra_drum_rifle",
+    "title": "Mandestra drum rifle (Mandestra drum guns, long)",
+    "path": "art/icons/gear/weapon-mandestra_drum_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-mandestra_drum_gun.png"
+    ],
+    "paint": "The wartime drum-fed submachine gun pattern with the full wooden rifle stock. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a full one-piece wooden stock running from the butt, with a strong drop at the wrist, up to a wooden fore-wrist under the receiver; a short hinged stamped receiver with a small flip rear sight on top; a round barrel jacket pierced with rows of oblong cooling slots, its front end cut off on a slant to make the muzzle compensator, with a hooded front sight; a large round drum magazine under the receiver just ahead of the trigger guard. Materials: lacquered dark red-black on the metal with soft highlights, dark oiled wood, polished brass drum plates. Maker's touch: the brass drum plates and one small blank brass tag on the stock.\nAt 32 px: against the Mandestra drum gun, a full wooden rifle stock and a slotted jacket with a slanted nose; against the Brigade drum shotgun, wood and a slotted round jacket, not a straight black box.\nAvoid: a bipod, a belt, a box magazine, a pistol grip, chrome, text or numbers on the drum.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 8,
+    "id": "hellraiser_trench_carbine",
+    "title": "Hellraiser trench carbine (Hellraiser line, close)",
+    "path": "art/icons/gear/weapon-hellraiser_trench_carbine.png",
+    "refs": [
+      "art/icons/gear/weapon-hellraiser_service_rifle.png",
+      "art/icons/gear/weapon-hellraiser_lmg.png"
+    ],
+    "paint": "The folding-stock short assault carbine of the stamped long-stroke rifle family. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width like the submachine guns. Silhouette, kept exactly: a very short barrel ending in a large cylindrical cone-shaped muzzle booster; a short gas tube over the barrel with a short wooden handguard above and below; a hinged top cover that lifts from the front, carrying a small flip rear sight; a stamped steel receiver with a large safety lever on the right side; a short, strongly curved box magazine; a pistol grip; a side-folding skeleton stock of two struts and a triangular butt, shown open. Materials: dark stamped steel and worn reddish-brown wood with hard scratches at every edge. Maker's touch: oxide red #CC2435 as one muted band round the handguard.\nAt 32 px: against the Hellraiser service rifle, half the length with a fat booster at the muzzle and an open strut stock; against the Adamantile carbine, a curved magazine and a cone booster in place of a long slotted flash hider.\nAvoid: a bayonet, spikes, blood, a scope, a drum, ornament.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 9,
+    "id": "adamantile_carbine",
+    "title": "Adamantile carbine (Adamantile battle rifles, close)",
+    "path": "art/icons/gear/weapon-adamantile_carbine.png",
+    "refs": [
+      "art/icons/gear/weapon-adamantile_battle_rifle.png"
+    ],
+    "paint": "The paratrooper version of the tilting-breechblock metric battle rifle. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width like the short carbines. Silhouette, kept exactly: the same receiver as the attached battle rifle, its top cover tapering to the rear peep sight, the small folding cocking handle on the left side toward the front, and a straight 20-round box magazine; a short barrel with a tall eared front sight and a long slotted flash hider; a slim ventilated handguard; a side-folding skeleton stock of steel tubes with a flat butt plate, shown open. No carry handle. Materials: dark steel and black furniture, worn grey at the edges. Maker's touch: one small blank gilt boss at the heel of the stock and a thin brass-orange #F68A38 trim line along the handguard.\nAt 32 px: against the Adamantile battle rifle, shorter with an open tube stock; against the Hellraiser trench carbine, a straight magazine and a long slotted flash hider.\nAvoid: armour plates, spikes, a bayonet, a drum, a scope, heraldry with figures or letters.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 10,
+    "id": "adamantile_heavy_rifle",
+    "title": "Adamantile heavy rifle (Adamantile battle rifles, long)",
+    "path": "art/icons/gear/weapon-adamantile_heavy_rifle.png",
+    "refs": [
+      "art/icons/gear/weapon-adamantile_battle_rifle.png"
+    ],
+    "paint": "The heavy-barrel squad version of the metric full-power battle rifle pattern. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: the same receiver as the attached battle rifle, with its top cover tapering to the rear peep sight, the small folding cocking handle on the left toward the front and the tall eared front sight; a thick heavy barrel ending in a long slotted flash hider; a folding bipod hinged near the muzzle, its two legs folded back along the barrel; a wooden handguard and a fixed wooden stock; a straight 30-round box magazine. Materials: dark steel and dark oiled wood, chipped at the edges. Maker's touch: one small blank gilt boss at the heel of the stock and a thin brass-orange #F68A38 trim line along the handguard.\nAt 32 px: against the Adamantile battle rifle, a thicker barrel, wood and a bipod; against the long rifle, a straight magazine and a bipod, no scope.\nAvoid: armour plates, spikes, a huge round muzzle brake, a scope, any device or lettering on the gilt boss.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 11,
+    "id": "fowling_gun",
+    "title": "Fowling gun (Break-action shotguns, long)",
+    "path": "art/icons/gear/weapon-fowling_gun.png",
+    "refs": [
+      "art/icons/gear/weapon-coach_gun.png",
+      "art/icons/gear/weapon-sawn_off.png"
+    ],
+    "paint": "The long side-by-side hammer game gun pattern. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width, longer than the coach gun. Silhouette, kept exactly: two very long slim side-by-side barrels, longer than the stock, with a raised rib between them and a single small bead at the muzzle; two exposed hammers on side-lock plates; a top lever behind the breech; double triggers in one trigger guard; a slim splinter fore-end; a slender straight-hand stock with a narrow wrist. Materials: dark browned steel barrels with a soft sheen, figured walnut. Maker's touch: one brass hinge pin.\nAt 32 px: against the coach gun, barrels far longer and slimmer; against the long rifle, two barrels and two hammers, no scope and no bolt.\nAvoid: a scope, a pump, a magazine tube, engraving of animals or scenes, a sling.",
+    "needs": false,
+    "span": 0.85
+  },
+  {
+    "n": 12,
+    "id": "brigade_shot_pistol",
+    "title": "Brigade shot-pistol (Brigade auto shotguns, close)",
+    "path": "art/icons/gear/weapon-brigade_shot_pistol.png",
+    "refs": [
+      "art/icons/gear/weapon-brigade_auto_shotgun.png"
+    ],
+    "paint": "The stockless short version of the box-fed shotgun built on the stamped long-stroke rifle's body. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols. Silhouette, kept exactly: the same receiver as the attached auto shotgun, with the ribbed dust cover, the large safety lever on the right side and a fat straight box magazine; a very short barrel with a short gas tube over it and a short handguard; a pistol grip; no stock, the receiver ending in a plain rear plate with a sling loop. Materials: dark stamped steel and black polymer, worn grey at every edge. Maker's touch: one small blank gilt boss on the side of the receiver and a thin brass-orange #F68A38 trim line along the handguard.\nAt 32 px: against the sawn-off, one barrel and a fat box magazine, not two barrels; against the Lumeri hand scatter, a box magazine and a dust cover, not a pump and a tube.\nAvoid: armour plates, a ram plate, double barrels, a tube magazine, spikes, a stock, any device or lettering on the gilt boss.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 13,
+    "id": "brigade_drum_shotgun",
+    "title": "Brigade drum shotgun (Brigade auto shotguns, long)",
+    "path": "art/icons/gear/weapon-brigade_drum_shotgun.png",
+    "refs": [
+      "art/icons/gear/weapon-brigade_auto_shotgun.png"
+    ],
+    "paint": "The full-auto drum-fed combat shotgun pattern with the straight-line box body. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 80% of the canvas width like the shotguns. Silhouette, kept exactly: a long rectangular box receiver that runs straight back into a fixed stock of the same depth, the whole gun one straight line; a long carry handle along the top with the rear sight in it; a large round drum magazine under the receiver just ahead of the pistol grip; a short barrel sticking out of the front of the box, ending in a big flash hider, with a front sight post. Materials: black polymer and dark steel, scuffed at every edge. Maker's touch: one small blank gilt boss at the heel of the stock and a thin brass-orange #F68A38 trim line along the side of the box.\nAt 32 px: against the Brigade auto shotgun, a straight box body with a round drum; against the Mandestra drum rifle, a black box and a handle, not wood and a slotted jacket.\nAvoid: armour plates, a ram plate, a belt, a bipod, spikes, a tube magazine, lettering.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 14,
+    "id": "lumeri_hand_scatter",
+    "title": "Lumeri hand scatter (Lumeri scatterguns, close)",
+    "path": "art/icons/gear/weapon-lumeri_hand_scatter.png",
+    "refs": [
+      "art/icons/gear/weapon-lumeri_scattergun.png"
+    ],
+    "paint": "The short pistol-grip pump shotgun pattern, fitted for breaching doors. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width like the other pistols. Silhouette, kept exactly: a short barrel over a tube magazine that runs to the muzzle; a ribbed pump fore-end with a hand strap; a receiver with an ejection port on the side; a bird's-head pistol grip curling down behind the trigger guard and no stock; a short toothed breaching standoff on the muzzle; a small bead front sight. Materials: dark steel, ivory-painted grip and pump. Maker's touch: one thin Lumeri gold #F2C46A inlay line along the grip.\nAt 32 px: against the Lumeri scattergun, a pump and a bird's-head grip with no stock; against the Brigade shot-pistol, a pump and a tube, not a box magazine.\nAvoid: any cross, star or real faith's symbol, prayer text, smoke, a censer chain, a stock.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 15,
+    "id": "lumeri_long_scatter",
+    "title": "Lumeri long scatter (Lumeri scatterguns, long)",
+    "path": "art/icons/gear/weapon-lumeri_long_scatter.png",
+    "refs": [
+      "art/icons/gear/weapon-lumeri_scattergun.png"
+    ],
+    "paint": "The semi-automatic gas-operated tube-fed combat shotgun pattern. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long barrel over a tube magazine that runs almost to the muzzle; a short gas-system collar on the barrel just ahead of the receiver; a fixed slim ribbed fore-end, no pump; a receiver with a flat top rail; a ghost-ring rear sight (a ring with two protective ears) and a post front sight with two ears; a separate pistol grip and a collapsible stock on a tube. Materials: dark steel, ivory-painted fore-end, grip and stock. Maker's touch: one thin Lumeri gold #F2C46A inlay line along the stock.\nAt 32 px: against the Lumeri scattergun, a fixed fore-end, ring sights and a pistol-grip tube stock; against the fowling gun, one barrel over a tube, ivory not walnut.\nAvoid: any cross, star or real faith's symbol, prayer text, smoke, a censer, a scope, a pump.",
+    "needs": true,
+    "span": 0.85
+  },
+  {
+    "n": 16,
+    "id": "short_bow",
+    "title": "Short bow (Bows, close)",
+    "path": "art/icons/gear/weapon-short_bow.png",
+    "refs": [
+      "art/icons/gear/weapon-recurve_bow.png",
+      "art/icons/gear/weapon-longbow.png"
+    ],
+    "paint": "A short, light frontier hunting bow that any hand can draw, made to be shot from behind a wall. Pose: upright on a gentle diagonal, string to the lower left, filling about 85% of the canvas height like the other bows (do not draw it smaller: it is told apart by shape). Silhouette: one single deep D-shaped curve from tip to tip, no reflexed ends, thick short limbs tapering to plain rounded nocks; a broad rawhide-wrapped grip; a taut dark string. No arrow on the string. Materials: pale ash wood with dry-brush grain, rawhide wrap, a dark string; no colour accent.\nAt 32 px: against the recurve bow, one soft D-curve with no flicked tips; against the longbow, a deep bend and thick limbs, not a tall near-straight stave.\nAvoid: an arrow, a quiver, sights or a stabiliser, recurved tips, carving or feathers.",
+    "needs": false,
+    "span": 0.85
+  },
+  {
+    "n": 17,
+    "id": "arbalest",
+    "title": "Arbalest (Crossbows, long)",
+    "path": "art/icons/gear/weapon-arbalest.png",
+    "refs": [
+      "art/icons/gear/weapon-crossbow.png",
+      "art/icons/gear/weapon-repeating_crossbow.png"
+    ],
+    "paint": "A heavy frontier arbalest: one bolt that goes through a door. Pose: horizontal like a rifle, the prod at the right turned slightly toward the viewer, filling about 85% of the canvas width. Silhouette: a very thick laminated steel prod, much wider and deeper than the crossbow's, bound to the stock with iron bands; a long rifle-like stock; a stirrup at the front; at the rear a squared toothed crank box with a short handle, in place of the crossbow's windlass; one heavy square-headed bolt lying loaded in the groove. Materials: dark steel prod with hammered facets, plain oiled wood stock, a thick rope-and-cable string, iron fittings; no colour accent.\nAt 32 px: against the crossbow, the prod is far thicker and wider and the crank is a toothed box; against the repeating crossbow, no magazine box on top.\nAvoid: a magazine, a scope, ornament or inlay, a loose bolt beside it, a hand on the crank.",
+    "needs": false,
+    "span": 0.85
+  }
+]

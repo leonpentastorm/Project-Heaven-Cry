@@ -1,3 +1,9 @@
+# Superseded startup scope
+
+The current scheduled reservation is26 eligible drawings (Gas Mask2 +kept gun24), not just Gas Mask2. Read [START-HERE-2026-11-20.md](START-HERE-2026-11-20.md) and coordination/resume-2026-11-20.json first. The historical snapshot below remains preserved.
+
+---
+
 # Continue after the image reset
 
 Start from `art/2026-11-19-kept-blade-grades`, workspace `/workspace/PHC-art-2026-11-19`. Read `HANDOFF.md`, `progress.json`, `queue.json`, `claim.json`, current `art/AGENTS.md`, the guide/gear rules, current full file08 brief, and issue3 before drawing. User authorized continuous candidate production and push after every image, without batch approval pauses. Develop remains untouched.

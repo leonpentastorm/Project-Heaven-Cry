@@ -1,3 +1,27 @@
+> Current kept-grades20Nov: armour56/powered/thrown24/Lumeri8 complete, own210selected (91new). Next12 repaint-based gun-grade reservation7033714996, exact272-ID queue. Prior50 service-blocked/dependent retained without retry; no actual new quota. Three already-integrated Standards are unchanged and excluded from new counts.
+
+> Current kept-grades20Nov: armour56 and powered/thrown24 complete, own201selected (82new). Next16 Lumeri/Whisper reservation7033232334, exact260-ID queue. Prior43 service-blocked/dependent retained without retry; no actual new quota. Four further existing Standard imports are unchanged and excluded from new counts.
+
+> Current kept-grades20Nov: armour56 complete, own177selected. Next28 ShortBow/powered/thrown reservation7032212554, exact244-ID queue. Prior39 service-blocked/dependent retained without retry; no actual new quota. Seven existing Standard imports are unchanged and excluded from new counts.
+
+> Current kept-grades update20Nov: armour56 complete, own177selected; next WarPick4/WarHammer4 exact reservation7032134179. Queue216 with31 prior service-blocked/dependent. Peer PitchAxe/LegionSpear excluded. All remain review candidates.
+
+# Active56-armour extension —20November2026
+
+Current exact claim7029516545: all four grades for14new file07 armour Standards on `art/2026-11-19-kept-blade-grades`.56ready prompts committed in queue.json (total208:121delivered,56eligible,31earlier rejected/dependent). Initial reset scope26 yielded GasMask2delivered; all six independent kept-gunFine requests rejected, higher18dependent, all exact responses retained. Those gun requests are not free retries and were not quota failures. Peer new24blade claim7029498929 is separate. All14Standard paintings and newgrades remain unapproved candidates. Read live issue3opening+allcomments and check actualremote deliveries beforeEVERY creative request.
+
+---
+Historical snapshots below.
+
+# Current26-picture reservation —20November2026
+
+Owner kept-grades-20261120-031914Z on `art/2026-11-19-kept-blade-grades` retains Gas MaskRelic/Celestial2 and now reserves all four grades each of `weapon-parlour_pistol`, `weapon-lever_carbine`, `weapon-sawn_off`, `weapon-coach_gun`, `weapon-legion_bullpup`, `weapon-whisper_smg`24. The former free gun24 are NO LONGER FREE. Claim https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7027017190 . Reset03:19:14UTC /10:19:14Asia/Saigon; no early image requests. Current startup: `art/_archive/gear/2026-11-19-kept-blade-grades/START-HERE-2026-11-20.md`; exact reservation and peer22 exclusion in coordination/resume-2026-11-20.json.
+
+The other worker owns22 on art/2026-11-20-reset-continuation. Check live issue3 and all comments plus actual remote deliveries before every request; earliest unreleased nonconflicting claim wins.119own and58peer deliveries remain unchanged; preparation adds0 images.
+
+---
+Historical snapshots below; current live channel takes precedence.
+
 # November19 prompt pack — current handoff
 
 Updated19 November2026 on `art/2026-11-19-kept-blade-grades`. Live communication: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . The older status on `art/prompt-pack-01-04-2026-11-19` at550f80c7d is preserved under `art/_archive/gear/2026-11-19-kept-blade-grades/coordination/original-file-status-550f80c7d.md` and is superseded for these later claims/counts. Source developc22cc8f7b is integrated on this art branch; develop is untouched.
