@@ -7348,6 +7348,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-gas_mask--relic",
+      "path": "art/icons/gear/armour-gas_mask--relic.png",
+      "sha256": "d9042b1c966b190063fc9a5e55a82a542aa17452337887540267e08c660f4be9",
+      "label": "Gas Mask — Relic",
+      "family": "armour-gas_mask",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-gas_mask--relic.png",
+        "sha256": "bc7d02bb95c60d299850b09314a8c8d36b7291aec1af0d72ca96bad9375220a5"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-gas_mask--relic.png",
+        "sha256": "d9042b1c966b190063fc9a5e55a82a542aa17452337887540267e08c660f4be9"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-gas_mask--relic.txt",
+        "sha256": "2fe541109d7faaf0785ad79713b680d426b1e74b91220f9c3ac62ff8dedb9112"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-gas_mask.png",
+          "sha256": "a633011fa2fed3defd33228d8dce7475d39060df9c779a1a9ebf0beab46ef98e"
+        },
+        {
+          "path": "art/icons/gear/armour-gas_mask--masterwork.png",
+          "sha256": "fb1322e661e8a595fa9895f3241601786aca0b7ea73b5d0017a3a6391c54226a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-gas_mask--relic.png",
+        "128": "art/icons/gear/exports/128/armour-gas_mask--relic.png",
+        "64": "art/icons/gear/exports/64/armour-gas_mask--relic.png",
+        "32": "art/icons/gear/exports/32/armour-gas_mask--relic.png"
+      },
+      "export_hashes": {
+        "256": "b5c5d24c3fc82710be5a84bf0227470c99a374cbc4779980f3fc7193c269e13a",
+        "128": "4a6704ecdcffd0082c9a2f10fc7bd62815f7a82e15088b321962b0954a374699",
+        "64": "d3b0422c64106c8de76bd3cf10a0b3de85ef96d8d8c9e104cebb67981e97b33a",
+        "32": "7d810cf035fef42607fd242ea57af6f29031cfc8c6ea1a11227647f171597db9"
+      },
+      "grade": "relic",
+      "standard_id": "armour-gas_mask",
+      "outline": {
+        "solid_alpha_iou": 0.9751080221125613,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 28
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "target": 152,
-  "status": "paused-image-usage-limit",
+  "status": "drawing",
   "delivered": [
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
@@ -120,7 +120,8 @@
     "armour-night_goggles--relic",
     "armour-night_goggles--celestial",
     "armour-gas_mask--fine",
-    "armour-gas_mask--masterwork"
+    "armour-gas_mask--masterwork",
+    "armour-gas_mask--relic"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -130,7 +131,6 @@
     "weapon-war_axe--masterwork",
     "weapon-war_axe--relic",
     "weapon-war_axe--celestial",
-    "armour-gas_mask--relic",
     "armour-gas_mask--celestial",
     "weapon-parlour_pistol--fine",
     "weapon-parlour_pistol--masterwork",
@@ -159,19 +159,22 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-20T01:02:18.668732+00:00",
+  "updated_utc": "2026-11-20T03:20:45.936517+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3,
-  "image_quota": {
-    "type": "usage_limit_reached",
-    "http_status": 429,
-    "asset_id": "armour-gas_mask--relic",
-    "resets_at": 1795144754,
-    "reset_utc": "2026-11-20T03:19:14Z",
-    "reset_bangkok": "2026-11-20 10:19:14",
-    "timezone": "Asia/Bangkok",
-    "returned_resets_in_seconds": 46205,
-    "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/armour-gas_mask--relic.json",
-    "retry_not_before_epoch": 1795144754
-  }
+  "quota_history": [
+    {
+      "type": "usage_limit_reached",
+      "http_status": 429,
+      "asset_id": "armour-gas_mask--relic",
+      "resets_at": 1795144754,
+      "reset_utc": "2026-11-20T03:19:14Z",
+      "reset_bangkok": "2026-11-20 10:19:14",
+      "timezone": "Asia/Bangkok",
+      "returned_resets_in_seconds": 46205,
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/armour-gas_mask--relic.json",
+      "retry_not_before_epoch": 1795144754,
+      "resolved_by_successful_export": "armour-gas_mask--relic"
+    }
+  ]
 }

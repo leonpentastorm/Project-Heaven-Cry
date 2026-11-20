@@ -1,7 +1,7 @@
 {
   "owner": "kept-grades-20261120-031914Z",
   "branch": "art/2026-11-19-kept-blade-grades",
-  "status": "reserved-waiting-reset",
+  "status": "active-started-preflight-waiting-exact-reset",
   "reset_epoch": 1795144754,
   "reset_utc": "2026-11-20T03:19:14Z",
   "reset_local": "2026-11-20T10:19:14+07:00",
@@ -106,5 +106,8 @@
     "one_time": true,
     "action": "actual continuous image production through new quota, not reminder",
     "environment_selection": "inherited"
-  }
+  },
+  "start_comment": 7029255401,
+  "start_utc": "2026-11-20T03:17:12.973967+00:00",
+  "invocation_id": "kept-20261120-mwoeq1o9"
 }

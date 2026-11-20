@@ -26069,6 +26069,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 25
       }
+    },
+    "armour-gas_mask--relic": {
+      "label": "Gas Mask — Relic",
+      "path": "art/icons/gear/armour-gas_mask--relic.png",
+      "sha256": "d9042b1c966b190063fc9a5e55a82a542aa17452337887540267e08c660f4be9",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-gas_mask--relic.png",
+        "128": "art/icons/gear/exports/128/armour-gas_mask--relic.png",
+        "64": "art/icons/gear/exports/64/armour-gas_mask--relic.png",
+        "32": "art/icons/gear/exports/32/armour-gas_mask--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-gas_mask--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-gas_mask",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9751080221125613,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 28
+      }
     }
   },
   "survival_art": {
