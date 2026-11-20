@@ -14074,3 +14074,141 @@ off) was either free for the squad or unanswerable. Every number here is PROVISI
 7816. **Old saves:** a fight saved not yet joined (`Combat.approach`) loads as a joined fight at round 1 (`game.ts
       migrateLoaded`: the state dropped, the turn under way goes on); a character already at Ingenuity 5 or more holds
       the Scout step on load (the step is an item of the skill's points, read on every load).
+
+### Rules 1.91 (the item model), 0.34: tags, families, grades as a rule, armour grades, the unique-ready line and the Weapon Art slot (20 Nov 2026)
+
+Items 2.0, stage A (Leon's rulings of 20 Nov 2026: `docs/design/proposals/2026-11-20-items-2.0-plan.md`; the design and
+its recommended answers, which are the rulings: `2026-11-20-items-2.0-design.md`; tables: `-tables.md`; the lead's
+numbers: `-numbers.md`). Stage A adds no content and moves no number except the two intended rule changes named below
+(items 7912 and 7914), each in its own commit. Every new number is PROVISIONAL and in data. Items 7900 to 7949 are rules
+1.91's. Lane A1 builds items 7900 to 7906 and 7910 to 7921; lane A2 builds the armour items 7907 to 7909 on the data
+A1 lays down.
+
+7900. **One closed list of tag kinds** (`data/rules.json item_tag_kinds`, each kind with its `about`). An item's tags are
+      `kind:value` strings, and general code asks for tags, never for an item's id. The kinds, and where each value lives:
+      - `kind`: the row's raw data `category`, as it is (`light_melee`, `thrown`, `pistol`, `shield`, `armour`, `focus`,
+        `mod`...); no mapping table.
+      - `family`: the row's `family` (item 7902); a row with no family is its own family (`family:<its id>`); a variant
+        is its base's.
+      - `form`: the row's `form` (item 7903).
+      - `line`: the row's maker line (`legion`, `kemizuchi`, `adamantile`, `hellraiser`, `smetanita`, `adcorp`, `chezknov`,
+        `arsenal`, `albert_town`, `lumeri`, `ork`, `frontier`, `science_team`, `officers`...).
+      - `pattern`: the row's real-pattern word; art and collections only, no rules reader.
+      - `grade`: the INSTANCE's grade (item 7905), never the row's; a row with no instance is Standard (a unique, its
+        fixed grade: item 7917).
+      - `slot`: the slot of the slot table (item 7908) the row is worn or held in (`slot` on the row; a weapon row with
+        none is held in a hand, `main_hand`).
+      - `role`: words general code asks for, from the row's `tags` (today `lever`, `electronic`, `evoker_linked`, and
+        `natural`: a body's own weapon, the fists and a beast's bite, item 7919).
+      - `unique`: `true` on a unique variants line (item 7917).
+      There is no `explosive` tag (a row already carries `explosive: true`, item 7916) and no `rarity` tag beside
+      `grade` (they are one value). For body armour (`armour:<n>`, no items row) the tags come from the class row of
+      `rules.json combat.armor.classes` (`kind:armour`, `slot:torso_outer`, and the class row's `family`, `form` and
+      `line` once lane A2 writes them).
+7901. **One reader.** `itemTags(id, instance?)` gives an item's tags; `itemsWith(query)` gives the ids of the weapon and
+      item rows (weapons first, in data order, then items) whose tags hold every tag of `all`, at least one of `any`
+      when given, and none of `none`. A query may ask for `rolled` rows only: a row a pool may roll is priced and is
+      not a variant (a variant, a unique included, is never rolled: rules 1.56 L4). It replaces the partial copies (the
+      shop's bias tags, the Relic step's fits words, the reward pick's category, the loadout's archetype filter, the
+      equip ban's row tags). Item 7920 lists the pools that read it.
+7902. **Families as data** (`data/families.json`). A weapon, shield or armour piece belongs to one family and is one of
+      its forms. A family row: `id`, `name`, its maker `line`, its `forms` (each form's id and, for a weapon family, the
+      technique the form lends and teaches, `teaches`), and `weapon_art` (item 7918). **A form's technique lives on the
+      family, once:** a row names `phys.teaches` only to override its family's form, and the validator refuses a row
+      whose `phys.teaches` repeats its family's. A row with no `family` is its own family and keeps its own `teaches`
+      (every row of 0.33 until lane A4 types the families in). `mastery_family` (the drill and One Blade's key, saved
+      state) is a separate key and is unchanged. 0.34's stage A ships two sample families: the Cavalry blades and the
+      Axes (design tables section 2); the rest are typed by lane A4 and stage B.
+7903. **Forms.** Melee forms are `dex`, `hybrid`, `str`; gun and bow forms `close`, `standard`, `long`; shield, armour
+      and heavy forms `light`, `standard`, `heavy` (`families.json form_kinds`). A form is a label: it never overrides a
+      row's numbers. The validator checks a melee row against its form (`families.json form_rules`): a `dex` form hits
+      with Dexterity and grows with Agility; a `str` form hits with Raw Power and grows with Strength; a `hybrid` form any
+      of the three patterns in use (those two, and Dexterity growing with Strength, the hatchet's). A form's second
+      skill (`second_skill`) is an alpha skill or none (R5) and feeds the family's signature, never the hit (built per
+      signature in stage B).
+7904. **The hit skill is one key: `phys.hits_with`.** The weapon row's older `skill` is its copy (equal on all 72 rows of
+      0.33); where a row carries no `skill`, the loader writes it from `phys.hits_with` for the old readers, and the
+      validator refuses a row where both are written and differ. Lane A4 removes `skill` from the rows.
+7905. **Grades are a rule, on the instance.** A row is always the Standard; an instance carries its grade in
+      `GearState.rarity`. The `rules.json rarity` rows are the one ladder: each row's `order` (0 Standard to 4
+      Celestial), its word (`name`), whether a shop or the Forge ever gives it (`sold`; false on Celestial: a Boss's
+      reward only) and its numbers, unchanged: accuracy +0 / +1 / +2 / +2 / +2, damage x1, durability x1 / 1.25 / 1.5 /
+      1.5 / 1.5, price x1 / 3 / 8 / 25 / 50, marks 0 to 4. Every list of the grades in code reads these rows (the
+      Forge's ladder is the rows with `sold`, in order). The spec's +1 mod slot for Fine and Masterwork stays in the
+      spec, unbuilt (mod slots come from the row only) until stage C builds it behind a data column that can be 0;
+      Celestial's quirk is not designed (until then Celestial is Relic stats).
+7906. **The `arm` column.** Each rarity row carries `arm`, the multiplier a grade gives a worn piece's ARMOUR VALUE and
+      nothing else: **1 for every grade** in this pass (PROVISIONAL; stage C fits it), so no number moves. It is read
+      only by lane A2's armour grades (item 7907).
+7907. **Armour grades (built by lane A2).** A worn piece with an armour value, and the body armour, carry a grade:
+      `Character.wornState` (by slot, a `GearState`, absent means Standard, written only when not Standard; body armour
+      at `wornState.torso_outer`, the slot table's `armour_class_from`). A worn piece with no armour value is ungraded
+      (the row's `graded: false`: `field_helmet`, `night_goggles`, `gas_mask`, `utility_belt`, `runner_trousers`,
+      `work_gloves`, `field_boots`, `prescription_glasses`, `smiling_mask`, and the new hoods, optics, `breather`,
+      `sealed_visor`, `rig_belt` and `jump_boots`) and is refused a grade. The grade scales the armour value only, by
+      `arm`, where gear effects are summed. The Forge's grade step takes graded armour at the same fees; the Relic step
+      is refused for armour in this pass (armour Relic properties come with the uniques). Armour does not wear and takes
+      no mods, as before.
+7908. **The slot table** (`rules.json equipment_slots.table`): each slot's `id`, its saved key (`key`: what
+      `Character.worn` is keyed by), its `label` and its `order`; read by the engine and the client (the client's own
+      copies go with the card lane). The saved key wins: the inner torso slot's key is `inner_torso` (the list's older
+      `torso_inner` spelling is lane A2's to retire, with a one-time mapping of a saved `worn.torso_inner` on load).
+      `veil` stays reserved. Body armour's grade sits at the `armour_class_from` slot (`torso_outer`).
+7909. **Body armour classes are one copy** (lane A2): the class rows of `rules.json combat.armor.classes` (the typed table
+      in code is deleted), each with the fields code compares (no sprint, armoured, the class-1 cap) and the tag fields;
+      the breacher plate is a class row APPENDED (class 6), never inserted (a save stores the class number).
+7910. **Who holds a weapon of a family:** the predicate `self_holds` `hands` takes `tags` beside `props` (every tag of
+      the list on the thing in the hand, read through `itemTags`); a field, not a new predicate.
+7911. **One-handed is the row's `hands`** (supersedes the category list of the Injuries rule's "one-handed weapons"). A
+      weapon is two-handed when its row says `2H`, one-handed otherwise. An injured arm gives -2 to attacks with a
+      two-handed weapon whatever the arm, and with a one-handed weapon only from the arm that holds it.
+7912. **INTENDED change of item 7911:** seven rows are one-handed by their `hands` and were not in the category list, so
+      an injury to the arm that does not hold them no longer costs their attacks -2: `ork_machete`, `legion_pdw`,
+      `sawn_off`, `spellslinger_pistol`, `evoker_blade`, `emanator_gauntlet`, `emanator_katana`. Its own commit names
+      every golden table and replay it moves.
+7913. **Reach has one reader** (`combat.ts meleeReachOf`): a melee strike reaches 2 tiles with a weapon whose `phys.props`
+      hold `reach` (or whose older `properties` hold `reach_2`, kept as debt), or what its granted `reach` effect says;
+      else 1. No id is tested (the lance carries `reach`). Lunge (`perks/a.ts`) and the Breaker's Lunge tile
+      (`classes/i.ts`) ask the same reader in place of their own copies.
+7914. **INTENDED change of item 7913:** the two perk copies read only `reach_2` and the lance, and only for a row of a
+      melee category. Through the one reader, the **grand staff** (`phys.props` `reach`) and the **bot-thread banner**
+      (`reach_2`, category `mana`) now reach 2 for them too, and a Disarmed or lowered weapon strikes with the fists'
+      reach there as every other strike does. Its own commit names every golden table and replay it moves.
+7915. (Reserved.)
+7916. **The demolitionist's charges and the shelling flashback** read the rows: an explosive charge is a row with
+      `explosive: true` and category `thrown` (today `frag_grenade`, `satchel_charge`, `incendiary_grenade`; the
+      launchers `smetanita_thumper` and `breacher_tube` are explosive and not thrown, and are not charges). The three
+      id lists in code are deleted (one named a `satchel` that never existed). No behaviour changes, save one order:
+      when no charge is named and several are carried, the first in data order is placed (it was satchel, frag,
+      incendiary; now frag, satchel, incendiary).
+7917. **The unique-ready variants line** (zero unique rows ship in 0.34; Leon's ruling 3). A unique is one line of
+      `data/variants.json` with `unique: true`, and nothing else in the repo changes for it except an op its effect may
+      still need (approved as a primitive when the uniques return):
+      - `unique` (true) and `effects` (a list of item-op effects) are defined and validated on a variants line;
+        `effects` is allowed only on a unique line.
+      - A unique's `effects` are held while the instance is EQUIPPED in a hand, the way a variant's modifiers are (the
+        loader makes them one modifier item of the row, `vmod.<id>.unique`); held while WORN comes with lane A2's
+        primitive N4 (worn item ids join `relics`), which reads the same row field.
+      - The two-modifier cap and the worth cap (`worth_cap`) do not apply to a unique line (a unique may carry no
+        modifier at all).
+      - A unique's grade is FIXED: the line's `rarity`, written to the instance's `GearState.rarity` at every grant
+        (the one grant converter `containers.ts lootToPack`, a Narrator's or the sandbox's give, a dropped weapon, a
+        reward or shop piece) and every pool, and the Forge's grade step refuses it ("its grade is its own"). Only a
+        unique has a fixed grade; an ordinary variant's `rarity` stays the price grade it is.
+      - Never rolled in loot or a shop (as every variant); its Weapon Art slot is empty (item 7918).
+      - A variants line may take a body armour class row as its base once lane A2 makes the class rows the one copy
+        (the seam is left: today a base is a weapons or items row).
+7918. **The Weapon Art slot.** `weapon_art` is a field, not a tag: null on every family row, every item row and every
+      variants line in this pass; the validator refuses any other value until the Weapon Art patch (Leon's ruling 2).
+      The instance gets the optional saved field `GearState.weapon_art` (null, never written in this pass), so the
+      Weapon Arts patch adds no saved field whether a Masterwork-or-better weapon's own card belongs to the row or the
+      instance (design item 22: the instance).
+7919. **The natural weapons** (the fists and the beast's bite) are the rows with the role tag `natural`: what cannot be
+      thrown because the hands are bare reads the tag, not an id list.
+7920. **The run's pools read families and tags** (`itemsWith`), so a new item is a data line: the shop's rolled gear and
+      items and its faces' bias, the reward pick (its pickable gear, its "own kind" offer), the camp loadout's archetype
+      weapons, the Relic step's fits (guns, magazine guns, melee, foci), the Forge's rolled stock and its upgrade list.
+      On a fixed seed every pool gives the same stock as before (a test proves the shop roll and the reward offer).
+7921. **Old saves** load unchanged: no id is renamed or removed (the 72 weapon ids, every item id, `armour:<n>`); the new
+      saved field (`GearState.weapon_art`) is optional and never written; no revision stamp is written. The recorded
+      replays and every golden table stay as recorded, except what the commits of items 7912 and 7914 name.
