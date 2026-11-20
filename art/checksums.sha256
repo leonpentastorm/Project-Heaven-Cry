@@ -2620,6 +2620,7 @@ f6d47f3e21b258b7ad4929c5cc9f97b415985fbd1d7a5831e6fad5dc9dc0cd62  art/_archive/g
 fa9b0574d0860c6ec4f1c061021928cbf0f221b3c2073eff49ea225816f5bff8  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-throwing_knives--celestial/01-quality-review/native.png
 44e3257ac1602555b61f545fd4ac6a27288771d93b7f3a6d5abf706ebe171863  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-throwing_knives--celestial/01-quality-review/prompt.txt
 e5b76e865ec4c31a4dec099e4b32396681ac2ca1fe691d634e90910a39dbcee4  art/_archive/gear/2026-11-20-reset-continuation/claim.json
+1d20b77054e5ac7326d126cebf353f98412aeafa2b62cb32ffc2e1f785fb289c  art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-hellraiser_rotary--celestial.json
 dcb8542bd9c249327bf996bccbd3e710e8cc775377916b67bdc4aeaccc0c7de7  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
 7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--celestial.png
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png
@@ -2638,7 +2639,7 @@ c84db806215bb0d3c44e1a068354b577aaa7333e94feea2c4fe03ab8f8d4f510  art/_archive/g
 cd04352a1bec2ab1b8a6576aae274b0e4fced87defa5fc71ff3fb24d72943881  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-throwing_knives--fine.png
 b0646dcbfff751036340e788efee12908cd2d6b413741704a13fe4dbe96173c6  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-throwing_knives--masterwork.png
 be36f423e0c20a49ce19d0ad4decda8aead55a3f96c0d2027808e5754d018241  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-throwing_knives--relic.png
-e7036d03b84712ff52d2ae28349c1d6c89dfb512579d0d178a6ea26681447109  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+44877e33ff36411602dd7ae51e94c6bc31ee22c2890fef162f1c5ac4401c33c2  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
 96454334a6baa1492c198e312da71ab7a579139afd01a4d5724f8d9f02f1564d  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-hellraiser_rotary--fine.txt
@@ -2656,7 +2657,7 @@ e7036d03b84712ff52d2ae28349c1d6c89dfb512579d0d178a6ea26681447109  art/_archive/g
 d261f1b59ba7580ef84f50bcc9b8dea9c921059d664526d1528f45643bd6edf3  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-throwing_knives--fine.txt
 e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-throwing_knives--masterwork.txt
 975c368cac217ae0da2b2e694996d532e8dc4afb770957d3960e5ff54843e203  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-throwing_knives--relic.txt
-66117e9d8004a410cf54959816c96e550fe238a685c8022ca2076736ae45ab55  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+c4ac1336a24e5b7b1bec8423cd3e0656955bd64a6b5a97f6211c6392d2e43660  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 1e2078119cbfd74a3c4537b723705411ba9532e76cf268878a21621261b015dd  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-hellraiser_rotary-32px.png
