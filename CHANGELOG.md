@@ -22,10 +22,12 @@ The game shows its version in the corner of the title screen and in every "Repor
 - **The Narrator** sees the weapon families and looks a family up for its weapons.
 - **Figment orders and traits** have their own pictures (41).
 - **The simulator** reads tags, not ids.
+- **The review's fixes (rules 1.93 items 8113-8119):** one reader of a body armour id (any class number is priced, named and previewed); anything that takes no grade (the mana weapons, fists) is offered, sold and rewarded at Standard, with no Relic property, while a piece already saved at a grade keeps it; the Narrator may name a weapon family and the enemy, npc or loot gets that family's standard form (an unknown weapon is a service pistol and the log says so); the item card lists a maker line's signature (Arsenal's reload, Smetanita's Pressure, the siege tube's loader, a shield's follow and ward); fists are never rolled as gear; the demolitionist sets the strongest charge carried when none is named (a satchel before a frag); one grade ladder in the simulator, the validator and the sheet.
+- **The lead's first fit of the new rows (rules 1.93 item 8120, provisional):** 34 new weapons' damage and two magazines moved so that a family's forms trade rather than climb (the javelins 24 to 14, the drum launcher 40 to 28, the arbalest 72 to 60, the Blackpoint carbine 3 rounds at 50, the votive torch 20 with 8 fuel, and the rest); no old weapon changed. Re-measured in `docs/design/handoffs/0.34-MEASURES.md`.
 
-**Rules:** 1.91 items 7900-7921 and 7950-7959 (the item model, armour); 1.92 items 8000-8046 (stage B); 1.93 items 8100-8112 (the integration and the lead's rulings). Hand-offs `docs/design/handoffs/0.34-LANE-*.md`; the class measure `docs/design/handoffs/0.34-MEASURES.md`.
+**Rules:** 1.91 items 7900-7921 and 7950-7959 (the item model, armour); 1.92 items 8000-8046 (stage B); 1.93 items 8100-8120 (the integration, the lead's rulings, the review's fixes and the first fit). Hand-offs `docs/design/handoffs/0.34-LANE-*.md`; the class measure `docs/design/handoffs/0.34-MEASURES.md`.
 
-**Known and unfinished** (each in `docs/ROADMAP.md`, section "0.34"): signatures that ship plain and second-skill effects owed (Chezknov recoil, the revolvers' critical range, and the rest); `breather` and `blackpoint_wall_gun` held; Stage C, the lead's balance fit.
+**Known and unfinished** (each in `docs/ROADMAP.md`, section "0.34"): signatures that ship plain and second-skill effects owed (Chezknov recoil, the revolvers' critical range, and the rest); `breather` and `blackpoint_wall_gun` held; the rest of Stage C (the fit's flags, and the old rows over their lines on the new measure, waiting on Leon).
 
 ## 0.33.0 — the ambush, the rules owed from 0.32, enemy doors, I'll narrate from the desk, the outside playtest's fixes (rules 1.82 to 1.90)
 
