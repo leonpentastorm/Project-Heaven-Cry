@@ -2629,6 +2629,77 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_sword_breaker--celestial",
+      "path": "art/icons/gear/weapon-kemizuchi_sword_breaker--celestial.png",
+      "sha256": "9884b7fd4df7272efd921c099d7d8651be7abbbaa6ce675ddf091623f518bc23",
+      "label": "Kemizuchi Sword Breaker — Celestial",
+      "family": "weapon-kemizuchi_sword_breaker",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-kemizuchi_sword_breaker--celestial.png",
+        "sha256": "afd66877419fca3467af766c188b8cfff1d0d68954dcab23b52ecb4f321cf15b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-kemizuchi_sword_breaker--celestial.png",
+        "sha256": "9884b7fd4df7272efd921c099d7d8651be7abbbaa6ce675ddf091623f518bc23"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-kemizuchi_sword_breaker--celestial.txt",
+        "sha256": "997ceba6dba520d7ab7ce115448d90ab43fa35848a183339ec4178d68a231c78"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_sword_breaker.png",
+          "sha256": "58521e7d0c861cb4aefa8e85275d67177cf7988d8270c1b1d20af51984080b80"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_sword_breaker--relic.png",
+          "sha256": "257a8cfab33f24febb67c5aa46ff72422f0c080b0eef57215d4561ef98f17926"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-kemizuchi_sword_breaker--celestial/01-quality-review/native.png",
+          "sha256": "7d6543c6875844f60f4cee30a794feb73b19abffbb86dd0c566d0c0084cbf69a"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_sword_breaker.png",
+          "sha256": "3f942bad0ad5813a6bac00f280bbe61730e7a34c6fda3f3652cc93ed2f894529"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_sword_breaker--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_sword_breaker--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_sword_breaker--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_sword_breaker--celestial.png"
+      },
+      "export_hashes": {
+        "256": "a257c00ca2615dfa007d8391317c8ebdf890f4af918589044a46e5434243bfa2",
+        "128": "2b0eaa86cb380d3d26f32e96a724170be2432cf34e772be099906df47d4735c7",
+        "64": "09d25dd64fbce6fb2cb8e82a208cf8a4792d1edfeb080b69989f68c7818af89d",
+        "32": "2bb65b61237a625b23ea4ba6a6649d258bcd0a329c43e7ae85562bd7201c85ba"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-kemizuchi_sword_breaker",
+      "outline": {
+        "solid_alpha_iou": 0.8954293431497131,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 17,
+        "different_pixels_64": 76
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
