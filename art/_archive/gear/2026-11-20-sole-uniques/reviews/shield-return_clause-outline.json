@@ -1,0 +1,10 @@
+{
+  "method": "Canvas alpha>=127 IoU after technical uniform framing, no forced silhouette or nonuniform warp",
+  "reference": "art/icons/gear/shield-deflector.png",
+  "iou": 0.919727160204333,
+  "xor_pixels": 27044,
+  "exact_outline_pass": false,
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false
+}

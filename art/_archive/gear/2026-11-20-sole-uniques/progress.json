@@ -1,11 +1,14 @@
 {
   "status": "drawing",
-  "delivered": [],
+  "delivered": [
+    "shield-return_clause"
+  ],
   "remaining": [
-    "shield-return_clause",
     "shield-grudge_plate"
   ],
   "image_quota": null,
   "baseline_project": 508,
-  "project_total": 871
+  "project_total": 871,
+  "updated_utc": "2026-11-20T16:54:20.829235+00:00",
+  "project_distinct_count": 509
 }

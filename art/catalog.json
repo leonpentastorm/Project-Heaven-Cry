@@ -32838,6 +32838,33 @@
         "different_pixels_32": 7,
         "different_pixels_64": 26
       }
+    },
+    "shield-return_clause": {
+      "label": "Return Clause",
+      "path": "art/icons/gear/shield-return_clause.png",
+      "sha256": "9f3eaa1e910f9c94759ac905eff4189073d2cac40ff0227bb1a7274d435a4c21",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-return_clause.png",
+        "128": "art/icons/gear/exports/128/shield-return_clause.png",
+        "64": "art/icons/gear/exports/64/shield-return_clause.png",
+        "32": "art/icons/gear/exports/32/shield-return_clause.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-return_clause.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 16,
+      "collection": "2026-11-19-unique-melee-bow",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

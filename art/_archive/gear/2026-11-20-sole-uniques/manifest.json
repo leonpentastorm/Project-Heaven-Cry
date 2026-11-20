@@ -1,1 +1,66 @@
-{"assets": []}
+{
+  "assets": [
+    {
+      "id": "shield-return_clause",
+      "path": "art/icons/gear/shield-return_clause.png",
+      "sha256": "9f3eaa1e910f9c94759ac905eff4189073d2cac40ff0227bb1a7274d435a4c21",
+      "label": "Return Clause",
+      "family": "08-unique-shields",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-return_clause.png",
+        "sha256": "05ec5670c5e5dd31f5c0b4ec1abec36becf03409804801ad7d6982d6f52d6dca"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-sole-uniques/masters/v1/shield-return_clause.png",
+        "sha256": "9f3eaa1e910f9c94759ac905eff4189073d2cac40ff0227bb1a7274d435a4c21"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-sole-uniques/prompts/shield-return_clause.txt",
+        "sha256": "9f35ac3b3b805411becd369f4ff94e080961ab4f6fff28359d9a82a9b4eed34d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-deflector.png",
+          "sha256": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4"
+        },
+        {
+          "path": "art/icons/gear/shield-buckler.png",
+          "sha256": "1aeb92d2b419c48978476f314468c35639a89abe0732b5edf8cdbcc4d8510b9b"
+        },
+        {
+          "path": "art/icons/gear/shield-riot_shield.png",
+          "sha256": "be50f5e0eae8c794f4ba47ebc2e9d8d19f7a8a8cde211262e39c655d9195e8f0"
+        },
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-return_clause.png",
+        "128": "art/icons/gear/exports/128/shield-return_clause.png",
+        "64": "art/icons/gear/exports/64/shield-return_clause.png",
+        "32": "art/icons/gear/exports/32/shield-return_clause.png"
+      },
+      "export_hashes": {
+        "256": "ac71687bf42357b3e7eed98c5c5ec5c0209233480144ca17f70b127446eb6cd6",
+        "128": "689344147c6ce7a349f6594cbd2c8de03dfd4d3125b9c47d9d3451122897289f",
+        "64": "cc44ed85dd160d0ef2623ccb55023ea57174967f5e143e1b785c39a8e49ef8ef",
+        "32": "620ba9c4ba3931dbfae402412c06af862087619ca1d25d9b3da3ab4bb9e12a47"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false
+    }
+  ]
+}
