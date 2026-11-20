@@ -5981,7 +5981,13 @@
     "standard_sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6",
     "standard_status": "review-candidate",
     "current_data_item_present": false,
-    "prepared_at_utc": "2026-11-20T06:26:26.615493+00:00"
+    "prepared_at_utc": "2026-11-20T06:26:26.615493+00:00",
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-short_bow--fine--1795156080226.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-short_bow--fine--1795156080226.json",
+      "request_id": "9d0d2afe-999b-41e1-821e-4adf56f0eb10"
+    }
   },
   {
     "id": "weapon-short_bow--masterwork",
