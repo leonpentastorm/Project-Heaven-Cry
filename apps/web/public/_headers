@@ -1,0 +1,14 @@
+# Workers Static Assets headers (0.33; read by Cloudflare, never served). The default is
+# "public, max-age=0, must-revalidate" with an ETag: index.html keeps it (a new release is seen at once).
+# Art, sound and the built scripts keep the day's cache they had under KV; art replaced under the same name carries
+# ?v=<content hash> (tools/build_web_assets.py), and the scripts' names carry their hash.
+/assets/*
+  Cache-Control: public, max-age=86400
+/music/*
+  Cache-Control: public, max-age=86400
+/sfx/*
+  Cache-Control: public, max-age=86400
+/fx/*
+  Cache-Control: public, max-age=86400
+/*
+  X-Content-Type-Options: nosniff

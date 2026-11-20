@@ -7,6 +7,7 @@ import { newRoomPlay, testRoom } from './modes';
 import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
 import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
 import { connect, hop, type Conn } from './net';
+import { sentAct, answered, dropPending, hostAnswered, resetNet } from './netStats';
 import { DEFAULT_START, shownStart } from './starts';
 import { battlePace } from './combatSpeed';
 
@@ -107,6 +108,7 @@ export function hostRoom(code = roomCode()) {
   write(LS.room, { code, role: 'host' });
   set({ role: 'host', code, game: viewFor(hostState, S.me.id), screen: screenFor(hostState), conn: 'connecting' });
   conn?.close(); // a page that hosts or joins again ends its old link first (it kept running beside the new one)
+  resetNet();
   conn = connect({ code, pid: S.me.id, name: S.me.name, role: 'host', token: hostToken(code) }, onMessage, onConn);
   persist();
   fightAsked = null; queueMicrotask(maybeFightRule); // rules 1.14: a fight saved while an attempt waited asks the Narrator again
@@ -117,8 +119,8 @@ export function joinRoom(code: string) {
   if (!/^[A-Z0-9]{6}$/.test(code)) return toast('Room codes are 6 letters and numbers.');
   write(LS.room, { code, role: 'guest' });
   set({ role: 'guest', code, game: null, screen: 'room', conn: 'connecting' });
-  conn?.close();
-  conn = connect({ code, pid: S.me.id, name: S.me.name, role: 'guest' }, onMessage, onConn);
+  conn?.close(); resetNet();
+  conn = connect({ code, pid: S.me.id, name: S.me.name, role: 'guest', token: seatToken(code) }, onMessage, onConn);
 }
 // ---------- saved games (the title screen's list) ----------
 export interface SessionInfo { code: string; role: 'host' | 'guest'; title: string; chars: string; players: string; phase: string; round: number; savedAt: number }
@@ -154,6 +156,9 @@ export function leaveRoom() { if (S.role === 'host' && hostState) { persist(); c
 export function resumeRoom() { const r = read(LS.room, null); if (r?.code && S.me.name) (r.role === 'host' ? hostRoom(r.code) : joinRoom(r.code)); }
 export const lastRoom = () => read(LS.room, null) as { code: string; role: string } | null;
 function hostToken(code: string) { const k = 'phc.hosttoken.' + code; let t = read(k, null); if (!t) { t = rid(24); write(k, t); } return t; }
+/** A guest's seat in a room (0.33): the room keeps the first token a player id brings and lets that id in again only
+ *  with it (apps/server policy.ts guestSeat), so another player who reads the id cannot take the seat. */
+function seatToken(code: string) { const k = 'phc.seattoken.' + code; let t = read(k, null); if (!t) { t = rid(24); write(k, t); } return t; }
 
 /** The room was opened in another tab (net.ts, close 4000): take it back here. The other tab's link is replaced in
  *  turn and stops there; a host reloads the save this browser keeps (the other tab wrote it), a guest joins again. */
@@ -162,13 +167,14 @@ export function takeOver() {
   if (role === 'host') hostRoom(code); else joinRoom(code);
 }
 function onConn(state: Conn['state'], note = '') {
+  if (state !== 'open') dropPending(); // nothing will answer what was on the way
   set({ conn: state === 'open' ? 'online' : state === 'closed' ? 'connecting' : state === 'replaced' ? 'replaced' : 'error', connNote: note });
   // The link is back: everyone gets the state as it is now. A beat later, so it goes out after whatever the link kept
   // while it was down (net.ts sends that as soon as this returns): the newest view must be the last to arrive.
   if (state === 'open' && S.role === 'host' && hostState) setTimeout(() => broadcast(true), 0);
 }
 
-function onMessage(m: any) {
+function onMessage(m: any, bytes = 0) {
   net.lastAt = Date.now(); net.last = String(m?.t || ''); net.got++;
   if (S.role === 'host') {
     if (m.t === 'snapshot' && m.state && (!hostState || m.state.v > hostState.v) && m.state.code === S.code) { hostState = migrateLoaded(m.state); set({ game: viewFor(hostState!, S.me.id), screen: screenFor(hostState!) }); }
@@ -179,9 +185,9 @@ function onMessage(m: any) {
     if (m.t === 'act') runHost(m.action, m.from, m.nonce);
     if (m.t === 'sync') answerSync(String(m.from || ''), Number(m.v));
   } else {
-    if (m.t === 'view') { if (m.resync) net.resyncs++; const prev = S.game; set({ game: migrateLoaded(m.state), conn: 'online' }); drawn(m.state?.v); followPhase(prev, m.state); noteSession(m.state, 'guest'); provingClosed(prev, m.state); }
-    if (m.t === 'err') toast(m.message);
-    if (m.t === 'host') set({ conn: m.online ? 'online' : 'host-away' });
+    if (m.t === 'view') { if (m.ack) answered(m, bytes); if (m.resync) net.resyncs++; const prev = S.game; set({ game: migrateLoaded(m.state), conn: 'online' }); drawn(m.state?.v); followPhase(prev, m.state); noteSession(m.state, 'guest'); provingClosed(prev, m.state); }
+    if (m.t === 'err') { answered(m, bytes, true); dropPending(); toast(m.message); }
+    if (m.t === 'host') { if (!m.online) dropPending(); set({ conn: m.online ? 'online' : 'host-away' }); }
   }
 }
 
@@ -247,25 +253,26 @@ export function act(a: Action) {
   // B14, 0.32: a refusal's toast ("Can't reach that tile.", "Needs 7 AP.") is about the last try: the next action clears it
   if (S.toast && !S.toast.ok && Date.now() - S.toast.at > 250) set({ toast: null });
   if (S.role === 'host') runHost(a, S.me.id, null);
-  else if (S.role === 'guest') { if (!conn) return toast('Not connected.'); conn.send({ t: 'act', action: a, nonce: rid(6) }); }
+  else if (S.role === 'guest') { if (!conn) return toast('Not connected.'); const nonce = rid(6); sentAct(nonce, a.type); conn.send({ t: 'act', action: a, nonce }); }
 }
 
 function runHost(a: Action, by: string, nonce: string | null) {
   if (!hostState) return;
+  const t0 = performance.now();
   try {
     hostState = apply(hostState, a, by);
     if (nonce) hop('applied', { t: 'act', nonce, v: hostState.v, from: by });
   } catch (e) {
     const msg = e instanceof RuleError ? e.message : 'Something went wrong: ' + String((e as Error)?.message || e);
     if (!(e instanceof RuleError)) console.error(e);
-    if (by === S.me.id) toast(msg); else conn?.send({ t: 'err', pid: by, message: msg, nonce });
+    if (by === S.me.id) toast(msg); else conn?.send({ t: 'err', pid: by, message: msg, nonce, hostMs: Math.round(performance.now() - t0) });
     return;
   }
   const prev = S.game;
   set({ game: viewFor(hostState, S.me.id) });
   followPhase(prev, S.game!);
   persistSoon();
-  broadcast(false);
+  broadcast(false, nonce && by !== S.me.id ? { pid: by, nonce, t0 } : undefined);
   queueMicrotask(maybeNarrate);
   queueMicrotask(maybeFightRule);
   queueMicrotask(carryOutVote);
@@ -291,9 +298,17 @@ const flushSave = () => { if (lsTimer != null) persist(); };
 if (typeof addEventListener === 'function') addEventListener('pagehide', flushSave);
 if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') document.addEventListener('visibilitychange', () => { if (pageHidden()) flushSave(); });
 function persist() { if (lsTimer != null) { clearTimeout(lsTimer); lsTimer = null; } if (hostState) { write(LS.game(hostState.code), slim(hostState)); noteSession(hostState, 'host'); clearTimeout(idbTimer); const g = hostState; idbTimer = setTimeout(() => idbPut(g.code, g), 400); } }
-function broadcast(force: boolean) {
+/** ack: the guest action this broadcast answers; that player's view carries its nonce back with the host's own time on
+ *  it (netStats.ts splits the guest's delay with it). */
+function broadcast(force: boolean, ack?: { pid: string; nonce: string; t0: number }) {
   if (!conn || !hostState) return;
-  for (const p of hostState.players) if (p.id !== S.me.id) conn.send({ t: 'view', pid: p.id, state: viewFor(hostState, p.id) });
+  for (const p of hostState.players) {
+    if (p.id === S.me.id) continue;
+    const m: any = { t: 'view', pid: p.id, state: viewFor(hostState, p.id) };
+    if (ack && ack.pid === p.id) { m.ack = ack.nonce; m.hostMs = Math.round(performance.now() - ack.t0); }
+    const n = conn.send(m);
+    if (m.ack) hostAnswered(m.hostMs, n);
+  }
   if (force || Date.now() - lastSave > 1500) { lastSave = Date.now(); conn.send({ t: 'save', state: slim(hostState) }); }
 }
 

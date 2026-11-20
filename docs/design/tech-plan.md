@@ -177,3 +177,23 @@ A rejected call returns the engine's sentence to the Narrator. After two failed 
 4. **Anthropic first**, then OpenAI-compatible, then Google.
 5. **The first playable target is the M813 slice, solo with the AI Narrator** (M0–M5), before co-op.
 6. **Where code lives:** `packages/` (engine, data, narrator) and `apps/` (web, server) in this repo; work happens on `develop` with a branch per milestone; `design/canvas/` stays as the reference.
+
+## 11. Online and hosting, 0.33 (lane hand-off `docs/design/handoffs/0.33-LANE-ONLINE.md`)
+
+- **The site is Workers Static Assets** (was Workers KV since decision 62). `apps/server/wrangler.jsonc` `assets`:
+  `apps/web/dist`, `not_found_handling: single-page-application`, the Worker first only for `/room/*`, `/health`,
+  `/hf/*`. Cache rules in `apps/web/public/_headers` (art, sound, scripts a day; `index.html` revalidated by ETag).
+  Limits confirmed on Cloudflare's pages (20 Nov 2026): 100,000 files a version on the Paid plan, 25 MiB a file. One
+  command deploys (`python tools/deploy_site.py --build`); rollback is `wrangler rollback` (HANDOFF.md, Deploy). The KV
+  namespace stays one release as the 0.32 rollback.
+- **The room server** (`apps/server/src/index.ts`, rules in `policy.ts`): a guest's seat is kept by the first token its
+  player id brings (`seat:<pid>`); a host token is 16 to 64 word characters; views and the save are kept in memory and
+  written together by the room's alarm 2 s after the first (and when the last player leaves); the alarm empties a room
+  nobody has opened for 30 days; a host's first link gives the room a location hint from the host's continent; the
+  ping is answered by the runtime (`setWebSocketAutoResponse`) without waking the room.
+- **The delay reading**: a guest action's nonce comes back on the host's answer (`ack`, with `hostMs`); the room stamps
+  `leg` (its clock, from passing the action on to the answer). `apps/web/src/game/netStats.ts` splits the guest's
+  delay into you–room, room–host and host without comparing clocks; shown in the room (`NetLine.tsx`) and in the
+  Report a problem bundle (`net`). The guest's click shows a "sending" mark where it pressed until the answer.
+- **A referee in the room** (the engine in the Durable Object) is written up, not built:
+  `docs/design/proposals/2026-11-room-referee.md`.

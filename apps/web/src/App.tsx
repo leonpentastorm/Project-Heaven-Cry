@@ -13,6 +13,7 @@ import { NarratorVoice } from './game/narratorVoice';
 import { onVoice } from './game/voice';
 import { poke } from './game/store';
 import { PlaytestTools } from './game/report';
+import { NetLine } from './game/NetLine';
 import { Tips } from './game/tips';
 import { StoryScroll } from './game/storyScroll';
 import { FxLayer } from './game/fx/FxLayer';
@@ -163,6 +164,7 @@ export function App() {
       {st.role === 'host' && screen === 'main' && <NarratorSeat game={st.game || null} meId={st.me.id} />}
       {st.role && <C.MissionLayer game={st.game || null} screen={screen} v={v} />}
       <C.PlaytestTools v={v} />
+      {st.role && <NetLine game={st.game || null} role={st.role} />}
       <C.Tips v={v} />
       {/* The settings cog (every header's ⚙) and the in-game dialogs (never the browser's confirm/prompt/alert). */}
       <C.SettingsHost v={v} />

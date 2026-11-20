@@ -1,11 +1,16 @@
 {
   // PHC: the web game plus multiplayer rooms (one Durable Object per room).
+  // The site is Workers Static Assets (0.33): apps/web/dist, uploaded by `wrangler deploy` (only changed files). The
+  // Worker runs first for the rooms, the health check and the voice model; every other path is a file, and a path with
+  // no file is the game (index.html). Headers: apps/web/public/_headers. Deploy: python tools/deploy_site.py.
+  // Before 0.33 the site was served from the KV namespace 03c97e375a064e49a506ee40c0717de3 (binding SITE); it is kept,
+  // untouched, for one release as the rollback (docs/HANDOFF.md, Deploy).
   "name": "project-heaven-cry",
   "main": "src/index.ts",
   "compatibility_date": "2026-09-01",
   "account_id": "0ccc1209e3e871897b9ab6feeef79210",
   "workers_dev": true,
-  "kv_namespaces": [{ "binding": "SITE", "id": "03c97e375a064e49a506ee40c0717de3" }],
+  "assets": { "directory": "../web/dist", "binding": "ASSETS", "not_found_handling": "single-page-application", "run_worker_first": ["/room/*", "/health", "/hf/*"] },
   "durable_objects": { "bindings": [{ "name": "ROOMS", "class_name": "Room" }] },
   "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Room"] }],
   "observability": { "enabled": true }

@@ -1,5 +1,6 @@
 {
-  // Local development: serves apps/web/dist as static assets. Production (wrangler.jsonc) serves the site from KV.
+  // Local development: the same as wrangler.jsonc (static assets from apps/web/dist) under another name, so local rooms
+  // never share a name with the live Worker.
   "name": "project-heaven-cry-dev",
   "main": "src/index.ts",
   "compatibility_date": "2026-09-01",

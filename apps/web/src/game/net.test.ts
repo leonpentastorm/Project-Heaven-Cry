@@ -61,7 +61,7 @@ describe('the room link (net.ts)', () => {
     const c = connect(opts, () => {}, () => {});
     FakeWS.all[0].open();
     expect(vi.getTimerCount(), 'the keep-alive').toBe(1);
-    vi.advanceTimersByTime(25_000);
+    vi.advanceTimersByTime(5_000);
     expect(FakeWS.all[0].sent).toContain('{"t":"ping"}');
     FakeWS.all[0].drop(1006); // a retry is now waiting
     expect(vi.getTimerCount()).toBe(2);
