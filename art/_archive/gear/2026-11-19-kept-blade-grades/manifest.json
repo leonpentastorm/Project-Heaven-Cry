@@ -11680,6 +11680,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hellraiser_door_knocker--fine",
+      "path": "art/icons/gear/weapon-hellraiser_door_knocker--fine.png",
+      "sha256": "e4cf21b0e8350134b910b2068efe4843cdbc56e3817c4842cea97546d0b1ef3d",
+      "label": "Door-knocker — Fine",
+      "family": "weapon-hellraiser_door_knocker",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-hellraiser_door_knocker--fine.png",
+        "sha256": "3582afef80458a76a729f9871ad3687713fc1bdf2547f0934c8534fa42892900"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-hellraiser_door_knocker--fine.png",
+        "sha256": "e4cf21b0e8350134b910b2068efe4843cdbc56e3817c4842cea97546d0b1ef3d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-hellraiser_door_knocker--fine.txt",
+        "sha256": "123ad05e1a19b0435f220164e24c7cd109c840950dee42eb93a1f9b3f65e11a3"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hellraiser_door_knocker.png",
+          "sha256": "02aac08ab2efeec09c1767064e2a9dd0ae2504fa6412d6c7686b7cca58d88e40"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_door_knocker--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_door_knocker--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_door_knocker--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_door_knocker--fine.png"
+      },
+      "export_hashes": {
+        "256": "1eca2742c3b54cd81d1e65e098d781c0b895a1814a8c856e5b1157142bdbed7c",
+        "128": "3b63f427d99faeedc9b0008e64d05564dd0d4463a98b53073ddd733511ace3e1",
+        "64": "51b11017caffbca70bc56d5564b500f321f7c1fab089db900a0374319ec76c76",
+        "32": "b15c950a5bd0e75f56db8c0526c3a4232562b79a7fc15759277729bbe70ec0ce"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-hellraiser_door_knocker",
+      "outline": {
+        "solid_alpha_iou": 0.9787874611739513,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 17
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
