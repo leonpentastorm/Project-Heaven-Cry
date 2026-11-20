@@ -175,7 +175,7 @@ const COMBAT_CSS = [
   // only where a keyboard is likely (a fine pointer). 0.33 sound lane: one line always; the chip in the button's own dark ink, a faint
   // dark fill, full strength, so it reads on the light button; dropped when the row is too narrow to hold it)
   '.phc-cb-confirm{container-type:inline-size}.phc-cb-confirm button.phc-cb-act:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 10px}',
-  '@media (pointer:fine){.phc-cb-confirm button.phc-cb-act:first-child::after{content:"SPACE";display:inline-block;margin-left:10px;padding:2px 7px;border:1.5px solid currentColor;border-radius:5px;background:rgba(10,13,19,.1);font-size:var(--fs-sub);font-weight:700;line-height:1.2;letter-spacing:.1em;vertical-align:1px}}',
+  '@media (pointer:fine){.phc-cb-confirm button.phc-cb-act:first-child::after{content:"SPACE" / "";display:inline-block;margin-left:10px;padding:2px 7px;border:1.5px solid currentColor;border-radius:5px;background:rgba(10,13,19,.1);font-size:var(--fs-sub);font-weight:700;line-height:1.2;letter-spacing:.1em;vertical-align:1px}}',
   '@container (max-width:340px){.phc-cb-confirm button.phc-cb-act:first-child::after{display:none}}',
 
   '.phc-key-code::before{content:attr(data-code)}', // (the two-key code is drawn, not text: a button's name stays its name)

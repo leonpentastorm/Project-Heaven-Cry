@@ -70,7 +70,7 @@ describe('rules 1.84: the Narrator\'s desk is the AI Narrator\'s tool', () => {
     expect(tool.properties.ground.items.properties.items.items).toEqual({ type: 'object' });
     // a row as the desk holds it (numbers typed as text, empty fields) is cleaned to the tool's shape
     expect(clean(F.ground, [{ at: 'D4', items: [{ item: 'stim', qty: '2', rarity: '', name: '' }] }])).toEqual([{ at: 'D4', items: [{ item: 'stim', qty: 2 }] }]);
-    setDeskField('ground', [{ at: 'D4', items: [{ item: 'stim', qty: '2' }] }]);
+    setDeskField('ground', [{ at: 'D4', items: [{ item: 'stim_injector', qty: '2' }] }]);
     setDeskField('triggers', [{ action: 'place', when: 'enter', tiles: ['F6'], then: 'spawn', spawn: [{ name: 'Late guard', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: 'H6' }] }]);
     setDeskField('npcs', [{ action: 'place', name: 'Quartermaster', side: 'neutral', tier: 'minion', weapon: 'service_pistol', at: 'J8', drops: { table: '', items: [{ item: 'stim', qty: '3' }] } }]);
     const extra: any = deskTurn(g);
@@ -78,7 +78,7 @@ describe('rules 1.84: the Narrator\'s desk is the AI Narrator\'s tool', () => {
     expect(extra.npcs[0].drops).toEqual({ items: [{ item: 'stim', qty: 3 }] });
     g = { ...g, story: { ...g.story, await: 'narrator', work: { kind: 'round' } } } as GameState;
     g = apply(g, { type: 'narrator/turn', turn: { ...extra, narration: 'Things change in the yard.' } }, 'host');
-    expect(JSON.stringify((g.story.objects || []).filter((o: any) => o.kind === 'pile'))).toMatch(/stim/);
+    expect(JSON.stringify((g.story.objects || []).filter((o: any) => o.kind === 'pile'))).toMatch(/stim_injector/);
     expect(((g.story as any).triggers || []).some((t: any) => t.then === 'spawn' && t.spawn?.[0]?.name === 'Late guard')).toBe(true);
     expect(npcsOf(g).find((n) => n.name === 'Quartermaster')?.drops).toEqual({ items: [{ item: 'stim', qty: 3 }] });
   });
