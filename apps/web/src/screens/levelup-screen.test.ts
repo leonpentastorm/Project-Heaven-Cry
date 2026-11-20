@@ -158,7 +158,18 @@ describe('level-up screen', () => {
     expect(panel()).toBeTruthy(); expect(dex().querySelector('.phc-perk-row')).toBeNull();
     const rows = [...panel().querySelectorAll('.phc-perk-row')];
     expect(rows.length).toBe(2);
-    for (const r of rows) { expect(r.querySelector('.phc-perk-t1')!.textContent).toMatch(/^I \S/); expect(r.querySelector('.phc-perk-t2')!.textContent).toMatch(/^II \S/); expect(r.textContent).not.toMatch(/Passive|TIER/); }
+    // 0.33 (Leon: "go down a line instead of putting I and II in one line ... Put a border radius around the I and II"):
+    // each tier its own line under the name, starting with its rounded chip; none held yet: both muted, no tick
+    for (const r of rows) {
+      for (const [cls, label] of [['.phc-perk-t1', 'I'], ['.phc-perk-t2', 'II']] as const) {
+        const t = r.querySelector(cls) as HTMLElement, chip = t.querySelector('.phc-tier-chip') as HTMLElement;
+        expect(chip.textContent).toBe(label); expect(chip.style.borderRadius).toBe('6px'); expect(chip.style.border).toMatch(/1px solid/);
+        expect(t.querySelector('.phc-tier-text')!.textContent).toMatch(/^\S/); expect(t.getAttribute('data-tier-held')).toBe('no'); expect(t.querySelector('.phc-tier-tick')).toBeNull();
+        expect(t.parentElement!.classList.contains('phc-perk-tiers')).toBe(true);
+      }
+      expect(r.querySelector('.phc-perk-head .phc-perk-t1')).toBeNull(); // not on the name's line
+      expect(r.textContent).not.toMatch(/Passive|TIER/);
+    }
     expect([...panel().querySelectorAll('button.phc-perk-act')].map((b) => b.textContent)).toEqual(['Take', 'Take']);
     expect(panel().querySelector('.phc-lu-ch-next')).toBeTruthy(); // the fork waits too: "Next choice"
     // one click arms it, one confirm line takes it: a step taken, one left
@@ -339,5 +350,30 @@ describe('0.32 B12: no empty icon box, no raw perk id', () => {
     expect(keep.textContent).not.toContain('scar_tissue');
     for (const x of [keep, again]) expect(x.querySelector('img')!.getAttribute('src')).toBeTruthy();
     root.unmount();
+  });
+});
+
+// 0.33 (Leon on live 0.32.0: "Add a draggable separator on the level up screen that separates the skill and perk part and
+// the class part. No text in the skill part is that big to have the class menu so tiny"): a separator between the two
+// columns, reachable by keyboard; the class column wider by default; its width kept in this browser.
+describe('0.33: the level-up screen\'s separator', () => {
+  it('a vertical separator between the skills and the class column; the arrow keys move it, the width is kept', async () => {
+    localStorage.removeItem('phc.levelup.classW');
+    setup((c) => { c.level = 2; });
+    const { el, root } = await mount();
+    const body = el.querySelector('.phc-lu-body') as HTMLElement, sep = el.querySelector('.phc-lu-split') as HTMLElement;
+    expect(sep.getAttribute('role')).toBe('separator'); expect(sep.getAttribute('aria-orientation')).toBe('vertical'); expect(sep.tabIndex).toBe(0);
+    expect(sep.previousElementSibling!.getAttribute('aria-label')).toBe('Level up'); expect(sep.nextElementSibling!.getAttribute('aria-label')).toBe('Your class');
+    const w0 = Number(sep.getAttribute('aria-valuenow')); expect(w0).toBeGreaterThan(280); // wider than the old 220-280 px column
+    expect(body.style.getPropertyValue('--phc-lu-classw')).toBe(w0 + 'px');
+    await React.act(async () => { sep.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true })); });
+    const w1 = Number(sep.getAttribute('aria-valuenow')); expect(w1).toBeGreaterThan(w0);
+    expect(localStorage.getItem('phc.levelup.classW')).toBe(String(w1));
+    await React.act(async () => { sep.dispatchEvent(new KeyboardEvent('keydown', { key: 'End', bubbles: true })); });
+    expect(Number(sep.getAttribute('aria-valuenow'))).toBe(Number(sep.getAttribute('aria-valuemin')));
+    root.unmount();
+    // a new screen starts from the kept width
+    const again = await mount(); expect(Number(again.el.querySelector('.phc-lu-split')!.getAttribute('aria-valuenow'))).toBe(Number(localStorage.getItem('phc.levelup.classW')));
+    again.root.unmount(); localStorage.removeItem('phc.levelup.classW');
   });
 });

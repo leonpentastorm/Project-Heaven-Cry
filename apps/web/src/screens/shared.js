@@ -69,7 +69,9 @@ export function roadMap(id, who) {
   const head = rows.filter((r, j) => j !== fi && isEach(r)).map((r) => (fromOf(r.at) > 1 ? r.text + ' (from ' + fromOf(r.at) + ')' : r.text));
   const forks = (() => { try { return doorForkView(null, id); } catch { return null; } })();
   const cb = callBlock(id, null), perkNames = (ep.perks || []).map((p) => p.name).join(' or ');
-  const perkTip = (ps) => ps.map((p) => p.name + ': ' + (p.t1 || p.text || '')).join(' / ');
+  // one line each in the hover card (0.33, Leon: "Hover for the perk need proper new line for each perk"): the card
+  // (game/actionTip.ts proseTip) lays a block a line, its "Name:" in bold
+  const perkTip = (ps) => ps.map((p) => p.name + ': ' + (p.t1 || p.text || '')).join('\n');
   let firstPerk = true;
   const caps = (() => { try { return ladderCaps(id, who || null); } catch { return {}; } })();
   const steps = Array.from({ length: top }, (_, i) => {
@@ -81,7 +83,7 @@ export function roadMap(id, who) {
     const u = un[n], ls = ladderStepAt(id, n); // rules 1.70 item 5537: the perk steps and the Mastered perk are the schedule's
     const fs = u && u.category === 'Fork' && forks ? forks.steps.find((x) => x.at === n) : null;
     if (fs) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + fs.options.map((o) => o.name).join(' or ') + (fs.offered ? '' : ' · sealed'),
-      tip: fs.options.filter((o) => o.text).map((o) => o.name + ': ' + o.text).join(' / ') });
+      tip: fs.options.filter((o) => o.text).map((o) => o.name + ': ' + o.text).join('\n') });
     else if (u && u.category === 'Fork' && u.name) lines.push({ key: 'u', kind: 'fork', at: 'at ' + n, text: 'Fork: ' + u.name, tip: '' });
     // a named unlock: its name on the face, its player line in the hover (an unlock named only for its mastery step, or
     // with no name of its own, shows its player line on the face, and has no hover)
@@ -94,7 +96,7 @@ export function roadMap(id, who) {
     const perks = step === 'mastered' ? (ep.mastered ? [ep.mastered] : []) : step ? ep.perks || [] : [];
     // the first perk step names the two perks; a later one says "Perk" (the names and what they do in its hover)
     if (step === 'mastered') lines.push({ key: 'm', kind: 'mastered', at: 'at ' + n, text: 'Mastered: ' + (ep.mastered ? ep.mastered.name : 'its Mastered perk'), tip: ep.mastered && ep.mastered.text ? ep.mastered.name + ': ' + ep.mastered.text : '' });
-    else if (step) { lines.push({ key: 'm', kind: 'perk', at: 'at ' + n, text: firstPerk ? 'Perk: ' + perkNames : 'Perk', tip: (firstPerk ? '' : 'Perk: ' + perkNames + ', or a Tier II · ') + perkTip(perks) }); firstPerk = false; }
+    else if (step) { lines.push({ key: 'm', kind: 'perk', at: 'at ' + n, text: firstPerk ? 'Perk: ' + perkNames : 'Perk', tip: (firstPerk ? '' : 'Perk: ' + perkNames + ', or a Tier II\n') + perkTip(perks) }); firstPerk = false; }
     return { n, lines, step, perks: perks.map((p) => ({ id: p.id, name: p.name, icon: p.icon || '' })) };
   });
   return { head, feed: fi >= 0 && rows[fi] ? rows[fi].text : '', top, steps };
@@ -181,10 +183,15 @@ export const spriteStyle = (o) => { const b = o.spriteBox || { w: 1, h: 1, dx: 0
 /** 0.30.0: a card's SHIELDS block (game/shieldLook.ts shieldBlock), Y. its values: in the hover card and, by
  *  <!--SHIELDS:path-->, wherever a template shows a unit's HP (the target card, your own panel). */
 const SHIELDS_TPL = '<sc-if value="{{Y.has}}"><span data-shields-block style="display: flex; flex-direction: column; gap: 2px"><span style="{{Y.headStyle}}">{{Y.head}}</span><sc-if value="{{Y.hasGuardFirst}}"><span data-shield-guard="first" tip="{{Y.guardTitle}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="flex: none; width: 10px; text-align: center; font-size: var(--fs-sub); color: #E7EBF3">{{Y.guardGlyph}}</span><span>{{Y.guardLine}}</span></span></sc-if><sc-for list="{{Y.lines}}" as="shl"><span data-shield-line="{{shl.kind}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="{{shl.pipStyle}}">{{shl.glyph}}</span><span style="{{shl.nameStyle}}">{{shl.name}}</span><span style="font-weight: 700; font-variant-numeric: tabular-nums">{{shl.amount}}</span><span style="font-size: var(--fs-sub); color: #A3AEC2">· {{shl.lasts}}</span></span></sc-for><sc-if value="{{Y.hasGuardLast}}"><span data-shield-guard="last" tip="{{Y.guardTitle}}" style="{{Y.lineStyle}}"><span aria-hidden="true" style="flex: none; width: 10px; text-align: center; font-size: var(--fs-sub); color: #E7EBF3">{{Y.guardGlyph}}</span><span>{{Y.guardLine}}</span></span></sc-if><span data-shield-absorb style="font-size: var(--fs-sub); font-weight: 700; color: #FFFFFF">{{Y.absorb}}</span><sc-if value="{{Y.hasAbsorbDrop}}"><span data-shield-absorb-drop style="{{Y.subStyle}}">{{Y.absorbDrop}}</span></sc-if><sc-if value="{{Y.hasRule}}"><span data-shield-rule style="{{Y.subStyle}}">{{Y.rule}}</span><sc-if value="{{Y.hasGuard}}"><span data-shield-guard-how style="{{Y.subStyle}}">{{Y.guardName}}: {{Y.guardTitle}}</span></sc-if></sc-if></span></sc-if>';
-/** A perk as ONE row (docs/design/handoffs/2026-11-18-skill-screens-redesign.md section 4): icon (click to enlarge) |
- *  name | I: its card line | II: only what changes | the state pips; on a chooser, its one button or its reason. No
- *  paragraph, no tag, no hover box: the row is the whole text. <!--PERKROW:path--> expands it for `path`. */
-const PERKROW_TPL = '<div class="phc-perk-row" data-perk="{{X.key}}" data-held="{{X.held}}" style="{{X.style}}"><sc-if value="{{X.has}}"><img data-zoom="{{X.name}}" data-zoom-text="{{X.zoomText}}" class="phc-icon" src="{{X.icon}}" alt="{{X.alt}}" style="width: 32px; height: 32px; flex: none; object-fit: contain; border-radius: 6px; background: #10151F; border: 1px solid #232D3F"></sc-if><sc-if value="{{X.none}}"><span aria-hidden="true" style="width: 32px; height: 32px; flex: none; box-sizing: border-box; display: grid; place-items: center; border-radius: 6px; border: 1px dashed #3B475D; font-size: var(--fs-sub); color: #7F8BA1">?</span></sc-if><span class="phc-perk-name" style="{{X.nameStyle}}">{{X.name}}</span><span class="phc-perk-t1" style="{{X.t1Style}}"><b style="color: #A3AEC2">I</b> {{X.s1}}</span><sc-if value="{{X.hasS2}}"><span class="phc-perk-t2" style="{{X.t2Style}}"><b style="color: #A3AEC2">II</b> {{X.s2}}</span></sc-if><span class="phc-perk-state" role="img" aria-label="{{X.stateLabel}}" style="flex: none; display: inline-flex; gap: 5px; align-items: center; padding: 0 4px"><sc-for list="{{X.pips}}" as="xp"><span style="{{xp.style}}"></span></sc-for></span><sc-if value="{{X.hasWhy}}"><span class="phc-perk-why" style="flex: none; font-size: var(--fs-sub); font-weight: 700; color: #A3AEC2">{{X.why}}</span></sc-if><sc-if value="{{X.hasBtn}}"><button type="button" class="phc-perk-act phc-lu-choice" data-perk-act="{{X.key}}" onClick="{{X.act}}" aria-label="{{X.actAria}}" style="{{X.actStyle}}">{{X.actLabel}}</button></sc-if></div>';
+/** A perk as ONE card (docs/design/handoffs/2026-11-18-skill-screens-redesign.md section 4; 0.33, Leon on live 0.32.0:
+ *  "go down a line instead of putting I and II in one line ... Put a border radius around the I and II icon ... When a
+ *  perk level is taken ... that whole line changes colour"): a head row (icon, click to enlarge | name | the state pips;
+ *  on a chooser, its one button or its reason), then its tiers full width beneath, one line each, each starting with
+ *  its rounded chip [I] / [II]; a tier held is its whole line in the skill's ink with a tick, a tier not held is muted.
+ *  The ONE perk-tier component: the skill's "?" page, the level-up's Perk step chooser and the sheet's PERKS tab expand
+ *  it (<!--PERKROW:path-->). No paragraph, no tag, no hover box: the card is the whole text. */
+const perkTierTpl = (k, label, cls) => '<span class="' + cls + ' phc-perk-tier" data-tier="' + label + '" data-tier-held="{{X.' + k + '.held}}" style="{{X.' + k + '.style}}"><span class="phc-tier-chip" aria-hidden="true" style="{{X.' + k + '.chipStyle}}">' + label + '</span><span class="phc-tier-text" style="min-width: 0">{{X.' + k + '.text}}</span><sc-if value="{{X.' + k + '.isHeld}}"><span class="phc-tier-tick" role="img" aria-label="held" style="flex: none; font-weight: 700">✓</span></sc-if></span>';
+const PERKROW_TPL = '<div class="phc-perk-row" data-perk="{{X.key}}" data-held="{{X.held}}" style="{{X.style}}"><div class="phc-perk-head" style="display: flex; align-items: center; gap: 10px; min-width: 0"><sc-if value="{{X.has}}"><img data-zoom="{{X.name}}" data-zoom-text="{{X.zoomText}}" class="phc-icon" src="{{X.icon}}" alt="{{X.alt}}" style="width: 32px; height: 32px; flex: none; object-fit: contain; border-radius: 6px; background: #10151F; border: 1px solid #232D3F"></sc-if><sc-if value="{{X.none}}"><span aria-hidden="true" style="width: 32px; height: 32px; flex: none; box-sizing: border-box; display: grid; place-items: center; border-radius: 6px; border: 1px dashed #3B475D; font-size: var(--fs-sub); color: #7F8BA1">?</span></sc-if><span class="phc-perk-name" style="{{X.nameStyle}}">{{X.name}}</span><span class="phc-perk-state" role="img" aria-label="{{X.stateLabel}}" style="flex: none; display: inline-flex; gap: 5px; align-items: center; padding: 0 4px"><sc-for list="{{X.pips}}" as="xp"><span style="{{xp.style}}"></span></sc-for></span><sc-if value="{{X.hasWhy}}"><span class="phc-perk-why" style="flex: none; font-size: var(--fs-sub); font-weight: 700; color: #A3AEC2">{{X.why}}</span></sc-if><sc-if value="{{X.hasBtn}}"><button type="button" class="phc-perk-act phc-lu-choice" data-perk-act="{{X.key}}" onClick="{{X.act}}" aria-label="{{X.actAria}}" style="{{X.actStyle}}">{{X.actLabel}}</button></sc-if></div><div class="phc-perk-tiers" style="display: flex; flex-direction: column; gap: 3px; min-width: 0">' + perkTierTpl('t1', 'I', 'phc-perk-t1') + '<sc-if value="{{X.hasS2}}">' + perkTierTpl('t2', 'II', 'phc-perk-t2') + '</sc-if></div></div>';
 /** A fork option as ONE row ("?" page): icon | name | its one line | its cost line, if it has one. */
 const FORKROW_TPL = '<div class="phc-fork-row" data-fork-opt="{{X.key}}" style="{{X.style}}"><img data-zoom="{{X.name}}" data-zoom-text="{{X.text}}" class="phc-icon" src="{{X.icon}}" alt="" style="width: 32px; height: 32px; flex: none; object-fit: contain"><span style="{{X.nameStyle}}">{{X.name}}</span><span class="phc-fork-line" style="flex: 1 1 auto; min-width: 0; font-size: var(--fs-body); line-height: 1.35; color: #E7EBF3">{{X.text}}</span><sc-if value="{{X.hasCost}}"><span class="phc-fork-cost" style="flex: none; font-size: var(--fs-sub); font-weight: 700; color: #A3AEC2">{{X.cost}}</span></sc-if></div>';
 const PERK_OF = {}; ENGINE_PERKS.forEach((p) => { PERK_OF[p.id] = p; });
@@ -200,21 +207,24 @@ const perkInk = (p) => { const k = p && p.skills && SK[p.skills[0]], a = k && AT
 export function perkRow(id, o = {}) {
   const p = PERK_OF[id] || { name: id, tiers: {} }, T = p.tiers || {}, s1 = cap1((T.I && T.I.short) || ''), s2 = cap1((T.II && T.II.short) || '');
   const held = o.held === 'II' ? 2 : o.held === 'I' ? 1 : 0, ink = o.ink || perkInk(p), icon = iconOr(PERK_ART[id], p.name, ink), act = o.act || null;
+  // a tier's line: held, the skill's ink (the line, its chip's ring, a tick); not held, muted
+  const tier = (n, text) => { const on = held >= n, c = on ? ink : '#A3AEC2';
+    return { text, held: on ? 'yes' : 'no', isHeld: on,
+      style: 'display: flex; align-items: baseline; gap: 8px; min-width: 0; font-size: var(--fs-body); line-height: 1.4; color: ' + c + (on ? '; font-weight: 600' : ''),
+      chipStyle: 'flex: none; box-sizing: border-box; min-width: 28px; padding: 0 6px; border-radius: 6px; text-align: center; font-size: var(--fs-sub); font-weight: 700; line-height: 1.5; border: 1px solid ' + (on ? ink : '#3B475D') + '; color: ' + c + (on ? '; background: rgba(255, 255, 255, 0.04)' : '') }; };
   return { key: id, name: p.name, icon, has: true, none: false, alt: p.name + ' perk icon (Wick)', zoomText: cap1((T.I && T.I.text) || p.text || ''),
-    s1, s2, hasS2: !!s2, held: held ? (held === 2 ? 'II' : 'I') : 'none', stateLabel: held === 2 ? 'Tier II' : held ? 'Tier I' : 'Not taken',
+    s1, s2, hasS2: !!s2, t1: tier(1, s1), t2: tier(2, s2), held: held ? (held === 2 ? 'II' : 'I') : 'none', stateLabel: held === 2 ? 'Tier II' : held ? 'Tier I' : 'Not taken',
     pips: [0, 1].map((i) => ({ key: i, style: 'display: block; width: 9px; height: 9px; transform: rotate(45deg); box-sizing: border-box; ' + (i < held ? 'background: ' + ink : 'border: 1px solid #5A6781') })),
     why: o.why || '', hasWhy: !!o.why, hasBtn: !!act, actLabel: act ? act.label : '', act: act ? act.click : () => {}, actAria: act ? act.aria || act.label : '',
     actStyle: 'flex: none; min-height: 32px; padding: 0 14px; border-radius: 999px; font-family: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer; white-space: nowrap; '
       + (o.on ? 'border: 0; background: #FFFFFF; color: #0A0D13' : 'border: 1px solid #FFFFFF; background: transparent; color: #FFFFFF'),
-    nameStyle: 'flex: 0 0 170px; min-width: 0; font-size: var(--fs-body); font-weight: 700; line-height: 1.3; color: ' + (held ? ink : '#E7EBF3'),
-    t1Style: 'flex: 1 1 auto; min-width: 0; font-size: var(--fs-body); line-height: 1.35; color: #E7EBF3',
-    t2Style: 'flex: 0 1 auto; min-width: 0; font-size: var(--fs-body); line-height: 1.35; color: #C9D3E3',
-    style: 'display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 4px 10px; border-radius: 8px; background: ' + (o.on ? '#1C2536' : '#0A0D13') + '; border: 1px solid ' + (o.on ? '#FFFFFF' : '#232D3F') + (o.why ? '; opacity: 0.55' : '') };
+    nameStyle: 'flex: 1 1 auto; min-width: 0; font-size: var(--fs-body); font-weight: 700; line-height: 1.3; color: ' + (held ? ink : '#E7EBF3'),
+    style: 'display: flex; flex-direction: column; gap: 6px; min-width: 0; padding: 6px 10px 8px; border-radius: 8px; background: ' + (o.on ? '#1C2536' : '#0A0D13') + '; border: 1px solid ' + (o.on ? '#FFFFFF' : '#232D3F') + (o.why ? '; opacity: 0.55' : '') };
 }
 /** One fork option's row ("?" page): from the engine's doorForkView option. */
 export function forkRow(op, skill, ink) {
   const cost = op.cost || '';
-  return { key: op.id, name: op.name, text: op.text, icon: forkIconOf(op.id, skill), cost, hasCost: !!cost,
+  return { key: op.id, name: op.name, text: op.text, icon: forkIconOf(op.id, skill, op.name), cost, hasCost: !!cost,
     nameStyle: 'flex: 0 0 170px; min-width: 0; font-size: var(--fs-body); font-weight: 700; line-height: 1.3; color: ' + (op.picked ? ink : op.built ? '#E7EBF3' : '#7F8BA1'),
     style: 'display: flex; align-items: center; gap: 12px; min-height: 40px; padding: 4px 10px; border-radius: 8px; background: #0A0D13; border: 1px solid ' + (op.picked ? ink : '#232D3F') + (op.built ? '' : '; opacity: 0.7') };
 }
@@ -307,7 +317,7 @@ export function attrPageVals(self) {
   } };
 }
 const CALL_BLANK = { has: false, name: '', tip: '', now: '', inkStyle: '' }, FOLD_BLANK = { open: false, expanded: 'false', chev: '▸', toggle: () => {}, headStyle: '', chevStyle: '', id: '' };
-const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', slot: '', line: '', steps: [], ladderFold: FOLD_BLANK, perksFold: FOLD_BLANK, forksFold: FOLD_BLANK, call: CALL_BLANK, feed: { has: false, text: '', style: '' }, ptsLine: '', inkStyle: '', title: '', name: '', img: '', alt: '', pictured: '', speaker: '', intro: '', loreRows: [], loreStyle: '', loreHeadStyle: '', foldHeadStyle: '', quote: [], perks: [], passives: [], hasAlwaysOn: false, perkHelp: '', m: {}, combos: [], hasCombos: false, forks: [], hasForks: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
+const EP_BLANK = { zoom: () => {}, openAttr: () => {}, attrName: '', attrLabel: '', attrStyle: '', slot: '', line: '', steps: [], ladderFold: FOLD_BLANK, perksFold: FOLD_BLANK, forksFold: FOLD_BLANK, call: CALL_BLANK, feed: { has: false, text: '', style: '' }, ptsLine: '', inkStyle: '', title: '', name: '', img: '', alt: '', pictured: '', speaker: '', intro: '', loreRows: [], hasLoreRows: false, loreStyle: '', loreHeadStyle: '', foldHeadStyle: '', quote: [], perks: [], passives: [], hasAlwaysOn: false, perkHelp: '', m: {}, combos: [], hasCombos: false, forks: [], hasForks: false, boxStyle: '', nameStyle: '', quoteStyle: '' };
 export const epBtnStyle = (ink, extra) => 'display: grid; place-items: center; width: 28px; height: 28px; flex: none; padding: 0; border-radius: 50%; border: 1px solid ' + ink + '; background: rgba(10, 13, 19, 0.85); color: ' + ink + '; font-family: inherit; font-size: var(--fs-body); font-weight: 700; line-height: 1; cursor: pointer' + (extra ? '; ' + extra : '');
 export const epRgba = (hex, a) => 'rgba(' + [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(', ') + ', ' + a + ')';
 export function masteredVals(self, m, ink, skillName, pts) {
@@ -415,6 +425,8 @@ export function epccgVals(self, ptsOf, who, opt) {
       style: "margin: 0; font-family: 'Spectral', serif; line-height: 1.5; " + (stage ? 'font-size: var(--fs-body); color: #A3AEC2; letter-spacing: 0.02em' : 'font-size: 17px; font-style: italic; color: #E7EBF3') }; }),
     speaker: '— ' + e.speaker, intro: e.intro, loreStyle,
     loreRows: [['high', 'At high levels:', e.high], ['good', 'Good for:', e.good], ['bad', 'Bad for:', e.bad]].filter((x) => x[2]).map(([key, head, text]) => ({ key, head, text })),
+    // 0.33 (Leon: "Put a black box around the 3 high level - good for - bad for text to separated them from the lore text"): the three in one dark box (the template's .phc-ep-lorebox)
+    hasLoreRows: !!(e.high || e.good || e.bad),
     loreHeadStyle: "font-family: 'Chakra Petch', sans-serif; font-size: var(--fs-sub); font-weight: 700; letter-spacing: 0.08em; color: " + ink,
     perks: e.perks.map((p) => perkRow(p.id, { held: heldOf(p.id), ink })),
     // rules 1.78 item 6609: the door's passive steps (a door verb with no action: Threads, Two Bonds), one row each, its

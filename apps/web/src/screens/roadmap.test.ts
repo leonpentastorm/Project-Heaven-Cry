@@ -2,6 +2,7 @@
 // placed on points 1 to 10 by the one helper the three screens share. Reads the data, not sentences.
 import { describe, expect, it, vi } from 'vitest';
 import { SKILL, ladderCaps, ladderStepAt, ladderSchedule } from '@engine';
+import { proseTip } from '../game/actionTip';
 vi.stubGlobal('location', { search: '', hash: '' });
 const { D, roadMap, rowPoints, nextLine, headLine, rowText } = await import('./shared');
 
@@ -71,7 +72,10 @@ describe('the road map of every skill', () => {
     expect(at(10)).toEqual([...per, 'row:every 2', 'mastered:at 10']);
     // the perk step names the two perks once (level 3); later steps say "Perk", the names in the hover
     expect(r.steps[2].lines.find((l: any) => l.kind === "perk")!.text).toMatch(/^Perk: .+ or .+$/);
-    for (const n of ladderSchedule('will_power').perk_steps.slice(1)) { const l = r.steps[n - 1].lines.find((x: any) => x.kind === 'perk')!; expect(l.text).toBe('Perk'); expect(l.tip).toMatch(/^Perk: .+ or .+, or a Tier II · /); }
+    for (const n of ladderSchedule('will_power').perk_steps.slice(1)) { const l = r.steps[n - 1].lines.find((x: any) => x.kind === 'perk')!; expect(l.text).toBe('Perk'); expect(l.tip).toMatch(/^Perk: .+ or .+, or a Tier II\n/);
+      // 0.33 (Leon: "Hover for the perk need proper new line for each perk"): the hover card puts each perk on its own line, its name the label
+      const card = proseTip(l.tip), named = card.lines.filter((x) => x.label && x.label !== 'Perk').map((x) => x.label);
+      expect(named.length).toBeGreaterThanOrEqual(2); expect(new Set(named).size).toBe(named.length); }
   });
   it('capped rows (0.31.11; rules 1.70 item 5540): Pain Threshold elemental resistance to its cap (10 at +6% a point), Durability plates held to the pool cap, Faith Hymn wait to its floor', () => {
     const shown = (id: string, re: RegExp) => roadMap(id).steps.filter((t: any) => t.lines.some((l: any) => re.test(l.text))).map((t: any) => t.n);

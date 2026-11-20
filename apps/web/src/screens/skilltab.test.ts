@@ -146,6 +146,12 @@ describe('S3: every skill\'s page has the same layout parts', () => {
     // the character's own tier fills the pips
     const held = epccgVals(holder({ epccg: 'durability' }), () => 5, { skills: { durability: 5 }, attrs: { endurance: 5 }, perks: [{ id: 'bulwark', tier: 'II' }] }).ep.perks.find((x: any) => x.key === 'bulwark');
     expect(held.held).toBe('II'); expect(held.pips.every((x: any) => x.style.includes('background:'))).toBe(true);
+    // 0.33 (Leon: "When a perk level is taken like I out of II, that whole line changes colour"): a tier held is its whole
+    // line in the skill's ink with a tick; a tier not held is muted, no tick
+    const one = epccgVals(holder({ epccg: 'durability' }), () => 5, { skills: { durability: 5 }, attrs: { endurance: 5 }, perks: [{ id: 'bulwark', tier: 'I' }] }).ep.perks.find((x: any) => x.key === 'bulwark');
+    expect(one.t1.isHeld).toBe(true); expect(one.t1.style).toContain('#F65157'); expect(one.t1.chipStyle).toContain('#F65157');
+    expect(one.t2.isHeld).toBe(false); expect(one.t2.style).toContain('#A3AEC2'); expect(one.t2.style).not.toContain('#F65157');
+    expect(held.t1.isHeld && held.t2.isHeld).toBe(true);
   });
   it('an alpha with forks has the Forks fold, one row an option with its one line; a beta or gamma has none', () => {
     const v = epccgVals(holder({ epccg: 'durability' })).ep;
