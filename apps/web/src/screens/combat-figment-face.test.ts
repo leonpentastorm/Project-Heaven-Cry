@@ -50,4 +50,25 @@ describe('a Figment\'s face', () => {
     expect(el.querySelector('[role="tabpanel"] img[src="' + url + '"]')).toBeTruthy(); // the held Figment's group header
     await React.act(async () => { root.unmount(); }); el.remove();
   });
+  // 0.33 (Leon on live 0.32.0: "Figment movement do not have the pathdrawing like normal movement"): a held Figment's Move
+  // row, a tile hovered two steps from it, draws the route arrows a unit's own Move draws, from the Figment's tile
+  it('a Figment\'s Move draws its path as a unit\'s Move does (the same arrows, from where the Figment stands)', () => {
+    const f = figFight([{ skills: { visualization: 5 }, level: 5, weapon: 'service_pistol' }], [{ tier: 'soldier', at: '9,4', classic: true }]);
+    const u = f.turn(f.pc); f.picture(u, 'beast', '3,4');
+    const fig: any = f.figments(f.unit(u.id))[0];
+    G = f.g; snap = view();
+    const L = new CombatLogic({}) as any; L.setState({ action: 'ow:' + fig.id + ':move', hover: null }); L.renderVals();
+    expect(L._flow?.d.id).toBe('ow:' + fig.id + ':move');
+    // a tile the flow offers two steps from the Figment (the engine's choices)
+    const cheb = (k: string) => Math.max(Math.abs(+k.split(',')[0] - 3), Math.abs(+k.split(',')[1] - 4));
+    const two = [...L._flow.marks.choice].find((k: any) => cheb(k) === 2) as string; expect(two).toBeTruthy();
+    L.setState({ hover: two });
+    const r = L.renderVals();
+    const arrows = r.tiles.filter((t: any) => t.hasArrow);
+    expect(arrows.length).toBeGreaterThan(0);
+    expect(arrows.some((t: any) => t.key === fig.pos)).toBe(false); // none on the Figment's own token
+    expect(arrows.every((t: any) => cheb(t.key) <= 2)).toBe(true);
+    L.setState({ action: 'ow:' + fig.id + ':move', hover: null });
+    expect(L.renderVals().tiles.some((t: any) => t.hasArrow)).toBe(false);
+  });
 });

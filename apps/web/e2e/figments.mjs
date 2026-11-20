@@ -71,6 +71,18 @@ await p.locator('[role="tab"][data-tab="figments"]').click({ timeout: 30000 }).c
 const hound = F.find((x) => x.name === 'Hound'), wall = F.find((x) => x.name !== 'Hound');
 const rows = await p.evaluate((id) => [...document.querySelectorAll('[data-act^="ow:' + id + ':"]')].map((e) => e.getAttribute('data-act')), hound.id);
 ok('the Hound\'s rows on the FIGMENTS tab: ' + rows.map((r) => r.split(':').pop()).join(', '), ['move', 'figment_strike', 'figment_pounce', 'let_go'].every((v) => rows.includes('ow:' + hound.id + ':' + v)));
+// 0.33 (Leon: "Figment movement do not have the pathdrawing like normal movement"): the Hound's Move, a tile two steps off
+// hovered: the route's arrows on the map, as a unit's own Move draws them
+{ await p.locator('[data-act="ow:' + hound.id + ':move"]').first().click({ timeout: 10000 }).catch(() => {}); await settle(p, 250);
+  const [hx, hy] = hound.pos.split(',').map(Number), mapW = (await G()).combat.map.w;
+  const dest = await p.evaluate(({ hx, hy }) => { const cb = window.__phc.getState().game.combat, taken = new Set(cb.units.filter((u) => !u.dead).map((u) => u.pos)), bad = new Set([...(cb.map.solid || []), ...(cb.map.cover || []), ...(cb.map.full || [])]);
+    for (const [dx, dy] of [[2, 0], [-2, 0], [0, 2], [0, -2], [2, 2], [-2, 2], [2, -2], [-2, -2]]) { const k = (hx + dx) + ',' + (hy + dy); if (hx + dx >= 0 && hy + dy >= 0 && hx + dx < cb.map.w && hy + dy < cb.map.h && !taken.has(k) && !bad.has(k)) return k; } return null; }, { hx, hy });
+  const [dx, dy] = (dest || '0,0').split(',').map(Number);
+  await p.locator('.phc-grid button.phc-tok').nth(dy * mapW + dx).hover({ timeout: 10000 }).catch(() => {}); await settle(p, 250);
+  const arrows = await p.evaluate(() => [...document.querySelectorAll('.phc-grid button.phc-tok span[aria-hidden="true"]')].filter((s) => /^[→←↓↑↘↙↗↖]$/.test((s.textContent || '').trim())).length);
+  await p.screenshot({ path: OUT + 'figments-move-path.png' }).catch(() => {});
+  ok('0.33: the Hound\'s Move draws its path (' + arrows + ' arrows to ' + dest + ')', !!dest && arrows >= 1);
+  await p.keyboard.press('Escape'); await settle(p, 200); }
 // the tab's groups: PICTURE, then one per held Figment headed by its name and the engine's HP
 const tabText = ((await p.locator('body').textContent()) || '').toUpperCase();
 const head = (x) => (x.name + ' · HP ' + Math.max(0, Math.round(x.hp)) + '/' + x.maxHp).toUpperCase();

@@ -1044,6 +1044,14 @@ export class CombatLogic extends DCLogic {
     // a pick step this screen renders itself: the Outburst's Begin / Snap (the flow leaves a step with a renderer to its panel)
     const bsStep = flow ? flow.d.picks.find((st) => st.renderer === 'begin-snap') || null : null, bsOpt = (id) => ((bsStep && (bsStep.options || []).find((o) => o.id === id)) || { label: id }).label;
     this._flow = flow;
+    // 0.33 (Leon: "Figment movement do not have the pathdrawing like normal movement"): a held Figment's Move (an owned
+    // unit's 'ow:<id>:move' row) draws its route as a unit's own Move does: the same arrows (arrowsOf), the engine's route
+    // (routeHazards) from where the Figment stands, on a tile the flow offers.
+    const owMove = flow && /^ow:[^:]+:move$/.test(flow.d.id) ? cb.units.find((x) => x.id === flow.d.id.split(':')[1] && !x.dead) || null : null;
+    if (owMove && S.hover && S.hover !== owMove.pos && flow.marks.choice.has(S.hover)) {
+      const r = hoverMemo(this).get(g, ['route', owMove.id, S.hover, 'move'], () => routeHazards(cb, owMove, S.hover, 'move'));
+      if (r) { arrowsOf(r.route, owMove.pos); delete route[owMove.pos]; }
+    }
     this._pk = pkE ? { e: pkE, P: pkP, V: pkV, target: flow && flow.picks.targetId } : null;
     /** The row a picked action belongs to: its own, or its parent's (a technique's pad row, Hold a shot). */
     const rowSel = flow && flow.d.parent ? flow.d.parent : S.action;
