@@ -2601,7 +2601,7 @@ bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/g
 f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/gear/2026-11-19-unique-melee-bow/web-build-check.json
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
-fa7c969e249bbd88f492a87c181bdf7502e90c77948fa9766c9d6ec41e512bde  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
+73b25bb54cbc47d3855de37aefb6b4e8e7eb6ba6ae8390d9319d294984abc1e9  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
 1006204c5e813723abfb237b9be15ccb822febfcdcff4f3180aba731f6e9d711  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
@@ -2611,14 +2611,17 @@ d4641f47d5040bc171d64875d4fcc1c2ecba189d92b185a39c076e39d07b6bd0  art/_archive/g
 286412b753dd9a9019ec948ffc696afc90f209376321b75d4b00056fe56c687f  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/native.png
 05f5795c496ca6a5d3d38af2950120edd8c26e1b4334b9de52fab848efa79180  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/prompt.txt
 e5b76e865ec4c31a4dec099e4b32396681ac2ca1fe691d634e90910a39dbcee4  art/_archive/gear/2026-11-20-reset-continuation/claim.json
-a3592f7459e334185eae9f2c10b2a85854aebaac857b9b505a0740a0a382870f  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
+48a478d205271d5fbe2d1b2108afc8706faf9425f95d03dd39a7334992ef8d9f  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
+7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--celestial.png
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png
-0815a99ada5d8b26490171a3595baa14da9dc9edc62ac6908ac7f592c09e1c61  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+e20cf4bd3989bb9031e35482bc90a442a2676411e12e7ac0a872afcea548b94e  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
-5b93d00e62c0a645f646e334431107a84e74321c3ed16583f026f048c04d50c9  art/_archive/gear/2026-11-20-reset-continuation/queue.json
-163fddd88e51fa15697e5892bdc3ebc1d624970b61420a80303449f864f52b80  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
-dde1338ba959a9f0376bdb3cb6e7dc7dd3e2392b860bf347e66b86bce854fdc9  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
+168eacaf58de5ab21209d23d70b50461f35738943c01711a3ae1e93426acb535  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
+4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-20-reset-continuation/source-brief.md
+0d05f58b44ec65030dbf330cad1d517c758fffaa9ed19d0ff59e24548e4d5f3f  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/armour-ballistic_helmet--celestial.png
 68a55e5cd15f7b8ce6323d6e3686ce906a281b75fb107ae8dc205d93a01c4a41  art/_archive/gear/2026-11-20-reset-continuation/sources/v1/armour-ballistic_helmet--relic.png
 2c6492a6359aa99556e2f66b6efccbdfc7425edab13e2f1203e724e265ab1517  art/_archive/gear/2026-11-20-reset-continuation/standard-reference-sheet.jpg
 8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/_archive/icons/perks/2026-11-12/both-hands.png
@@ -6216,7 +6219,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-35fa3a8f26fe528bccccbf667c24307f6f69ab7e4e93273bf1c3498b28a8d772  art/catalog.json
+c0a9823d7b680370fc70240f301f0cd2f3f14d2220ad7692e2c654d627387933  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -7782,6 +7785,7 @@ fa3450ae9155e8f9908ec07d807eeafb463a325b26b26d2c0fd0b6d5dd1434b0  art/icons/gear
 e116897b56e3393681643694064631e8a68b1da14c9795d66387657369b5d270  art/icons/gear/armour-armoured_greaves--relic.png
 fb960809ab40e72d1ceb6c00a35824825eb38dadfb660993bd789e6b459d7056  art/icons/gear/armour-armoured_greaves.png
 c171a27223a1bf4a108f774695087d2fc3d2074789e196f0661a740013f20e0a  art/icons/gear/armour-assault_helm.png
+7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555  art/icons/gear/armour-ballistic_helmet--celestial.png
 ba956e786eefe290c100a9f5f7645bdbc306bef2a21f5cb9b1979255c453de84  art/icons/gear/armour-ballistic_helmet--fine.png
 7d0b4e1842a954e689e6a3ebe9c3a50f47f3ec573b5fc0ba7a7bfb8797019a53  art/icons/gear/armour-ballistic_helmet--masterwork.png
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/icons/gear/armour-ballistic_helmet--relic.png
@@ -7905,6 +7909,7 @@ ef9e24676611074d1faf3a53f50fa440b8b995fa2fba1b1a67d9a2f9ef6308d9  art/icons/gear
 b2e104b4806a2448a3635d1785d8fdc084d50528c7b1b352651daf3530a3ee1e  art/icons/gear/exports/128/armour-armoured_greaves--relic.png
 1ffed7d92ce544c3b1db16d066c1f575d580a4d07b945ed904f6528f6e320b49  art/icons/gear/exports/128/armour-armoured_greaves.png
 d724f9bc30ad7704feabce337382ec4a5857fabcff41a52612f629b6fe9a80d6  art/icons/gear/exports/128/armour-assault_helm.png
+037db9ad3536c72e2a43d9a2cc3e9c34d05a33b6305511fc33beb6159eb87576  art/icons/gear/exports/128/armour-ballistic_helmet--celestial.png
 254ce419565c009d745313e49858602a284b22754c791885a809baffe0e4e2c8  art/icons/gear/exports/128/armour-ballistic_helmet--fine.png
 9d91382329b06b1a6e4c91309a30e3d8fd138127c513ff71963e56c705724182  art/icons/gear/exports/128/armour-ballistic_helmet--masterwork.png
 c1cbd3264fda3eaa44a8167b0b0e3a4ec8b898f479792d33af106bd78bf48c07  art/icons/gear/exports/128/armour-ballistic_helmet--relic.png
@@ -8300,6 +8305,7 @@ c6e8a9984412e5384aa78fd58f7d14bf921bae491d2ccd59b055a24caf27562c  art/icons/gear
 309d06bfb91d322eaad99fc9210b0e5f59e6f1bfe932d9cfd6d1527b14e48150  art/icons/gear/exports/256/armour-armoured_greaves--relic.png
 51a80c2689f4cdd28ceea6ff14897aa82d324c87e11f81afa27a29ee86cff0ec  art/icons/gear/exports/256/armour-armoured_greaves.png
 13607f68b4362963a9d3d7385c4b62f3b4433996b196896ae2f941bc37aecd84  art/icons/gear/exports/256/armour-assault_helm.png
+a5117efe6321ad1620ad8f555d3c376e4f87587e9c03939e5ee21e2b58142e6d  art/icons/gear/exports/256/armour-ballistic_helmet--celestial.png
 16e0b290697f567235e6f9c1576005ac3f4d0677a6da8347ecd850e4a1fea283  art/icons/gear/exports/256/armour-ballistic_helmet--fine.png
 0c5e47601376a78d339bfbd6c74cb1e79ece4c1fbf49586c0446d23551fda078  art/icons/gear/exports/256/armour-ballistic_helmet--masterwork.png
 eb99d89e80575cde2cd59b2f165c998dfd582f52be8ca2cfed8a642a2609cd58  art/icons/gear/exports/256/armour-ballistic_helmet--relic.png
@@ -8695,6 +8701,7 @@ a77c1a6513f9c28a8cddbac3319bea0200128fc5353920ba3dc439787c38d690  art/icons/gear
 2017d741bfbeddf85c21b1febf3ec8c805d6efbdbda1f8488e0352384e9544c5  art/icons/gear/exports/32/armour-armoured_greaves--relic.png
 8d27d20659df0ff6f8c4568b59e50b05fe88c51c710906bfa746fc654bb51b35  art/icons/gear/exports/32/armour-armoured_greaves.png
 0626b89e343eefe753920d095181f8b3095c1f2377e7931d6b348baf37d4f009  art/icons/gear/exports/32/armour-assault_helm.png
+b4d198862aee3c43c831565fd686f56770911287ce25bb14c1c52807addaccdd  art/icons/gear/exports/32/armour-ballistic_helmet--celestial.png
 589e6f3fda6d54c0876e1c07c8ff6a33472ed1aa2e6bd5bc11753dfa5e20abe9  art/icons/gear/exports/32/armour-ballistic_helmet--fine.png
 5c1a46c8e9e065277dc198dba745ede296379b016eb83a16e4e43ecc9deba720  art/icons/gear/exports/32/armour-ballistic_helmet--masterwork.png
 cadc70e44deecc66e5e7c6707f10fa6bad668b9e4c8c2e330aa4d1a7e93f0715  art/icons/gear/exports/32/armour-ballistic_helmet--relic.png
@@ -9090,6 +9097,7 @@ c26ff0b5b227232c1b4aab88a892c62567562cc94de167aa2225924b6434c16a  art/icons/gear
 41740fbba5ff1731a04b1f4011e0a9b8d04655ef76998e84a18a700041db60d8  art/icons/gear/exports/64/armour-armoured_greaves--relic.png
 ebd97980a230a37090fa84e7a760292d568cb68bd87d8e3d4bcd55d840efecf3  art/icons/gear/exports/64/armour-armoured_greaves.png
 7fcfffc97bdb969db04b0e1959fd76d2ed5760bad646e425fa5b6002ac5f6cac  art/icons/gear/exports/64/armour-assault_helm.png
+a142976ce9a3add58f461be6d9bc2ad4dc9b189e980e280fb0a276355d4fd436  art/icons/gear/exports/64/armour-ballistic_helmet--celestial.png
 5f6b3bf739ae57c0adc2536115b1a8a32f8b794c087c998795d731f91b013b7b  art/icons/gear/exports/64/armour-ballistic_helmet--fine.png
 8c40fafa00f1f9479db943ece255f7adb9612d2f2e76359d372a530c3c68f0a9  art/icons/gear/exports/64/armour-ballistic_helmet--masterwork.png
 5bcc24c7b011ebec51d23cedaab6c0ef2988538f1188c9112bd7654d5e6c65eb  art/icons/gear/exports/64/armour-ballistic_helmet--relic.png

@@ -62,6 +62,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-ballistic_helmet--celestial",
+      "path": "art/icons/gear/armour-ballistic_helmet--celestial.png",
+      "sha256": "7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555",
+      "label": "Ballistic Helmet — Celestial",
+      "family": "armour-ballistic_helmet",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/armour-ballistic_helmet--celestial.png",
+        "sha256": "0d05f58b44ec65030dbf330cad1d517c758fffaa9ed19d0ff59e24548e4d5f3f"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--celestial.png",
+        "sha256": "7c348dda24e12e8a7ba845ce5d1d28daecc3e2af3a778d05d12cbc2fe4715555"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--celestial.txt",
+        "sha256": "3a58ad3e06d34c90f40e83cf124e5df9953f6e55653a6289209da63a813bc7a1"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-ballistic_helmet.png",
+          "sha256": "7358ee39e955f8f5362faee1f96608313272f0cc164d0c7ca6b22c5755460d2f"
+        },
+        {
+          "path": "art/icons/gear/armour-ballistic_helmet--relic.png",
+          "sha256": "cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/native.png",
+          "sha256": "f563f98f5775e55e5c80741a6779bdf120a1eb4a36ed4dec3f543574028db712"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-ballistic_helmet--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-ballistic_helmet--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-ballistic_helmet--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-ballistic_helmet--celestial.png"
+      },
+      "export_hashes": {
+        "256": "a5117efe6321ad1620ad8f555d3c376e4f87587e9c03939e5ee21e2b58142e6d",
+        "128": "037db9ad3536c72e2a43d9a2cc3e9c34d05a33b6305511fc33beb6159eb87576",
+        "64": "a142976ce9a3add58f461be6d9bc2ad4dc9b189e980e280fb0a276355d4fd436",
+        "32": "b4d198862aee3c43c831565fd686f56770911287ce25bb14c1c52807addaccdd"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-ballistic_helmet",
+      "outline": {
+        "solid_alpha_iou": 0.9772683637326625,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 24
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
