@@ -8,6 +8,7 @@ import './helpers/yard16';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { survivalRoom, startRun, chooseNode } from './helpers/survival';
 import { Rec } from './helpers/replay';
+import { HIDDEN_ATTACK } from '../src/tactics';
 import { previewAttack, RULES, SKILL, condOn, apply, beginTurn, moveOptions, basicActions, DOOR_TABS, doorTabsOf, actionsFor, refOf, type Unit } from '../src';
 import { resOf, seenByFoes, hideBlock, HIDE_WHY } from '../src/tactics';
 import { applyCond } from '../src/magic';
@@ -298,16 +299,14 @@ describe('the moments your side sees (rules 1.56 items 8 and 13): Shadow gained 
     expect(shadow(f, u)).toBe(had - 1);
     expect(fxSince(f, n).some((e: any) => e.k === 'stance' && e.what === 'shadow_loss' && e.target === u.id)).toBe(true);
   });
-  it('an attack from Hidden (rules 1.82 item 7012): no FOUND, still Hidden, the tile told to the foes', () => {
+  it('an attack from Hidden: FOUND (how: attack) goes to your own side only', () => {
     const f = fightWith([door(1)], [{}]); foeAt(f, 0, '6,4', true);
     const u = f.turn(f.pc); at(f, u, '1,4');
     f.act({ type: 'combat/hide', unitId: u.id } as any);
     const n = f.cb.fxSeq || 0;
     f.act({ type: 'combat/attack', unitId: u.id, targetId: f.foe.id, mode: 'shot' } as any);
     const ev = found(f, n, u.id);
-    // rules 1.82 item 7012 (Silent, Leon's later word): an attack from Hidden no longer reveals its maker: no FOUND, the
-    // attacker stays Hidden and its tile is told to the foes (a Break still reveals: its own row, tested in this file)
-    expect(ev.length).toBe(0); expect(f.unit(u.id).hidden).toBe(true); expect(f.cb.seenAt?.foe?.[u.id]).toBe(f.unit(u.id).pos);
+    expect(ev.length).toBe(1); expect(ev[0].how).toBe('attack'); expect(ev[0].only).toBe('pc');
   });
   it('a hit on a Hidden unit: FOUND (how: hit), naming who hit it', () => {
     const f = fightWith([door(1), {}], [{}]); foeAt(f, 0, '14,5', true);
@@ -333,7 +332,9 @@ describe('the moments your side sees (rules 1.56 items 8 and 13): Shadow gained 
 });
 
 describe('rules 1.82 item 7012: an attack from Hidden gives the tile away; a silent one does not', () => {
-  it('a loud shot from Hidden: still Hidden, the foes know the tile, said once; a silent weapon: nothing told', () => {
+  it('with the switch at tile (it ships at reveal): a loud shot from Hidden: still Hidden, the foes know the tile, said once; a silent weapon: nothing told', () => {
+    const was = HIDDEN_ATTACK.gives; HIDDEN_ATTACK.gives = 'tile';
+    try {
     const shoot = (weapon?: string) => {
       const f = fightWith([{ ...door(1), ...(weapon ? { weapon } : {}) }], [{}]); foeAt(f, 0, '6,4', true);
       const u = f.turn(f.pc); at(f, u, '1,4'); f.act({ type: 'combat/hide', unitId: u.id } as any);
@@ -343,5 +344,7 @@ describe('rules 1.82 item 7012: an attack from Hidden gives the tile away; a sil
     const loud = shoot(); expect(loud.u.hidden).toBe(true); expect(loud.f.cb.seenAt?.foe?.[loud.u.id]).toBe(loud.u.pos);
     expect(loud.f.cb.log.filter((l: string) => l.includes('gives its position away')).length).toBe(1);
     const quiet = shoot('whisper_smg'); expect(quiet.u.hidden).toBe(true); expect(quiet.f.cb.seenAt?.foe?.[quiet.u.id]).toBe(quiet.was);
+    } finally { HIDDEN_ATTACK.gives = was; }
   });
+  it('the switch ships at reveal (the rule before) until Leon says', () => { expect(HIDDEN_ATTACK.gives).toBe('reveal'); });
 });

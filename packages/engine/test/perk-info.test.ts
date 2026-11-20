@@ -11,7 +11,7 @@ const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 
 describe('perks used from another action have no button of their own', () => {
   it('no item whose lane registers a handler but no actions keeps the data\'s default button (it would run nothing)', () => {
-    const dead = allItems().filter((i) => { const h = handlerOf(i.key); return !!h && !(h.actions || []).length && !h.noDefaultActions && defaultActions(i).length > 0; }).map((i) => i.key);
+    const dead = allItems().filter((i) => { const h = handlerOf(i.key); return !!h && !(h.actions || []).length && !h.noDefaultActions && !h.dataActions && defaultActions(i).length > 0; /* (dataActions: the lane keeps a story half beside the data's actions, which run: rules 1.82 item 7010) */ }).map((i) => i.key);
     expect(dead).toEqual([]);
   });
   it('Overdraw, Pure Heart and The Twin Pays: no action entry anywhere; listed to read, with where they are used and the uses left', () => {

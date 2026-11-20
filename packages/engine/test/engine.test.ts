@@ -212,6 +212,7 @@ describe('weapons v2', () => {
     expect(u.armour).toBe(10 + 2); expect(u.attack).toBe(mod(c.skills.dexterity || 0) + 2); // medium armour + helmet; masterwork +2
     u.ap = 9; u.ammo = 0; u.mags = [7]; expect(reload(cb, u)).toBeNull(); expect(u.ap).toBe(8); // quick-release: 1 AP
     const d1 = u.dur!; u.ap = 9; resolveAttack(cb, { state: 3 }, u, e, 'shot', c); expect(u.dur).toBeLessThan(d1);
+    u.held = { ...(u.held || { perks: [], traits: [] }), perks: [...(u.held?.perks || []), { id: 'field_repair', tier: 'I' }] } as any; // rules 1.82 item 7008: Field Repair is a perk
     u.dur = 10; u.proficiency = 3; u.parts = 1; u.ap = 9; expect(fieldRepair(cb, u)).toBeNull(); expect(u.dur).toBeGreaterThan(10); expect(u.parts).toBe(0);
     u.dur = 0; expect(previewAttack(cb, u, e, 'shot').why).toMatch(/Broken/);
   });

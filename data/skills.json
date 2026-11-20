@@ -1553,7 +1553,7 @@
         "numbers": {
           "feed": 0.01,
           "defense": 1,
-          "defense_from": 1
+          "defense_from": 2
         },
         "rows": [
           {

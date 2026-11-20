@@ -384,7 +384,7 @@
       "trait:factory_made#self_repair": "free",
       "trait:field_medic#thrown_stim": "allowed",
       "trait:grenadiers_arm#hurl": "free",
-      "trait:grenadiers_arm#hurl_object": "free",
+      "class:fighter.hurl#hurl": "free",
       "trait:heretic#stolen_fire": "free",
       "trait:holo_drama_addict#drama": "allowed",
       "trait:live_to_fight_another_day#retreat": "allowed",

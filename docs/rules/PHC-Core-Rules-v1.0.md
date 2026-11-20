@@ -13597,12 +13597,16 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
 7011. **Athletics' Defense from the first point** (Waiting on Leon 19, built as the agility draft says; **call made for
       Leon**; supersedes rules 1.73's "each from 2" and rules 1.77 item 6517 d): +**1** Defense a point of Athletics from
       the **first** point (`skills.json athletics per_point.numbers.defense_from` **1**, was 2; PROVISIONAL), before the
-      armour's dodge and never under 0 with it (`character.ts athDefense`). It moves the enemy yardstick: a Soldier's
-      chance to hit the plain rifleman falls from 65% to 60% at every reference level (`test/balance/step1-fit`, which now
-      reads the switch). **Owed to the balance lane:** the enemy table's refit back to 65 (not done here: no balance number
-      is fitted in this lane). Setting `defense_from` back to 2 restores the old rule exactly.
+      armour's dodge and never under 0 with it (`character.ts athDefense`). **Built and shipped OFF** (`defense_from` 2,
+      the rule before): at 1 it moves the enemy yardstick (a Soldier's chance to hit the plain rifleman 65% to 60% at
+      every reference level; `test/balance/step1-fit` reads the switch), fails the defence guard
+      (`test/balance/defence-measure`: the idle pair's first Down 4.3 rounds against 4.2 at most), and the Survival guard
+      seed no longer clears its stage. **Owed to the balance lane:** the enemy table's refit, then the switch to 1 (one
+      data word). No balance number is fitted in this lane.
 7012. **Silent, by Leon's later word** (Waiting on Leon 21; closes rules 1.77 item 6517 a; every line below a **call made
-      for Leon**, reversible by one switch, `rules.json combat.hidden_attack.gives`: `tile` ON, `reveal` the rule before):
+      for Leon**, behind one switch, `rules.json combat.hidden_attack.gives`: `tile` the new rule, `reveal` the rule
+      before; **built and shipped at `reveal`**: at `tile` seven tests that pin the reveal move and the Operative must be
+      measured first: the balance lane, then Leon's word turns it on):
       **acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not.** One function,
       `tactics.ts attackFromHidden`, at every site where an attack used to reveal its maker (the shot and the strike,
       the throw, the launcher's shot, Pressure's suppressing fire, the bare-handed opener, an Outburst's Release): the
