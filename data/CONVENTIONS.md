@@ -34,6 +34,7 @@ Every rule-bearing item carries both:
   - `{"op":"tn_mod","context":"<string>","value":n}`
   - `{"op":"two_dice","when":"attack_roll","keep":"<worse|better>"}` an attack rolls a second d20 and keeps the worse or the better
   - `{"op":"grant_action","action":"<id>","ap":n,"uses":"<at_will|per_scene|per_rest|per_session>"}`
+    (optional `"text"`: the action's own card, when the item's `text` says more than this action, as a door that grants two moves; its numbers are `{=.field}` placeholders of the grant itself)
   - `{"op":"resource","resource":"<echo|ammo|mana|core|mp|flux|strain|faith>","value":n,"when":"<trigger>"}`
   - `{"op":"condition","condition":"<id>","target":"<self|target|ally|area>","when":"<trigger>"}`
   - `{"op":"narrator","note":"<what the Narrator must judge>"}` for anything the engine can't adjudicate

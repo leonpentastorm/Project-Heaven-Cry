@@ -50,7 +50,8 @@ const TARGETING = (e: any): ActionDef['target'] => {
 // A grant_action may carry, besides `ap` and `uses`: `res` (resources it costs, by id), `if` (the holder's predicates:
 // the action is greyed while one fails), `reach` {tiles, sight, side, self, if} (who it may go at: it builds the pick
 // list and the refusal), `pick` (a closed list, or 'words', 'squad', 'designs', 'gamma'), `pick_label`, `limit` {per, n}
-// (its use window), `tab` (rules 1.77: a door's tab its row sits on: shadow, tend, figments), `prayer` ('whisper' | 'hymn': prayed through faith.ts, its slot, wait, dice and Witnessed; `tier`
+// (its use window), `text` (0.33: the action's own card, when the item's text covers more than this action: a door's
+// two moves, a kit's one verb; a data text like any other, its numbers placeholders of its own fields), `tab` (rules 1.77: a door's tab its row sits on: shadow, tend, figments), `prayer` ('whisper' | 'hymn': prayed through faith.ts, its slot, wait, dice and Witnessed; `tier`
 // for a Hymn's gate) and nested `effects`. A door verb's (item kind `verb`) nested item ops run as the action's own
 // effects when it succeeds (on a ctx shaped as `acted`'s); another item's nested `when: "acted"` effects are lifted
 // onto the item (collect.ts liftActed).
@@ -163,6 +164,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     if (g.res) d.res = Object.values(g.res).some(isNumberBlock) ? (h) => Object.fromEntries(Object.entries(g.res).map(([k, v]) => [k, holderNumber(h, v as any) ?? 0])) : { ...g.res }; // rules 1.33: a number block (a ladder: Mend cheaper from Empathy 9)
     if (typeof reach?.tiles === 'number' && !reach.beyond) d.range = reach.tiles; // (reach.beyond: the reach decides, not a plain range)
     if (reach && reach.tiles != null) d.reachTiles = (h) => holderNumber(h, reach.tiles); // rules 1.65 item 5108.2: the reach's own number for this holder (a ladder too), for the shading
+    if (typeof g.text === 'string' && g.text) d.text = g.text; // 0.33: a grant's own card (Challenge, Slam, Breath), when its item's text is a whole door or a whole kit
     if (g.pick) { d.pick = g.pick; if (g.pick_label) d.pickLabel = g.pick_label; }
     if (typeof g.site === 'string') d.site = g.site;
     if (g.prayer) d.prayer = g.prayer;
@@ -372,9 +374,13 @@ function pickOptions(h: Holder, d: ActionDef): PickOption[] {
   return [];
 }
 function defaultEngine(info: ItemInfo, d: ActionDef): boolean {
-  void d; const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
-  const nested = info.effects.filter((e) => e?.op === 'grant_action').flatMap((e) => (e.effects || []).filter((x: any) => x?.when !== 'acted'));
-  const all = [...own, ...nested]; if (!all.length) return info.effects.some((e) => e?.op === 'grant_action' && (e.effects || []).some((x: any) => x?.when === 'acted')); // rules 1.33: all lifted to acted: the engine's
+  const own = info.bound ? info.effects.filter((e) => e?.op !== 'grant_action' && e?.when !== 'acted') : [];
+  // 0.33: what THIS action runs (its own grant's effects, as defaultActions gives them), not every grant of the item: a
+  // door with two engine moves (Challenge, Slam) read "the Narrator decides the rest" from the other's ops
+  const grants = info.effects.filter((e) => e?.op === 'grant_action' && !e.gate_only), mine = grants.find((x, i) => (x.action || 'use' + i) === d.id);
+  const pool = mine ? [mine] : info.effects.filter((e) => e?.op === 'grant_action');
+  const nested = pool.flatMap((e) => (e.effects || []).filter((x: any) => x?.when !== 'acted'));
+  const all = [...own, ...nested]; if (!all.length) return pool.some((e) => (e.effects || []).some((x: any) => x?.when === 'acted')); // rules 1.33: all lifted to acted: the engine's
   // a door verb's item ops run by the item-ops runner (defaultActions: runOwnEffects), the engine's as much as a generic op
   return all.every((e) => { if (info.kind === 'verb' && isItemOp(e)) return true; const g = genericOf(e?.op); return !!(g?.runs && g.runs(e, info)); });
 }

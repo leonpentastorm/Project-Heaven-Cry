@@ -37,7 +37,8 @@ describe('the Attack tab as weapon blocks (part 2)', () => {
     expect(B[0].pips.length).toBe(B[0].pips.length && phys.PHYS_RULES.momentum.max); expect(B[1].meter).toMatch(/loaded/);
     // the rows: both blocks' plain attacks and pads, then Hold a shot
     expect(blockItems(B).map((x) => x[0])).toEqual(['tq:main:cut', 'tpad:main', 'tq:off:shot', 'tpad:off', 'twatch']);
-    expect(blockItems(B)[1][1]).toBe('Techniques · ' + B[0].usable);
+    // 0.33: the count is said once, by the row's cost ("2 of 3 now"), not again in its name ("Techniques · 22 of 2 now")
+    expect(blockItems(B)[1][1]).toBe('Techniques'); expect(blockItems(B)[1][2]).toMatch(new RegExp('^' + B[0].usable + ' of '));
   });
   it('the pad: one at a time, a weapon\'s groups or the Watches; the picked chip is pressed', () => {
     const f = physFight([{ weapon: 'combat_knife', off: 'service_pistol', known: ['lunge'] }], [{ at: 'D5' }]);
@@ -156,7 +157,7 @@ describe('a shield in the off hand: its own block, and Guard as its meter', () =
     // the rows: the main hand's, then the shield's pad under its own header
     const rows = blockItems(B);
     expect(rows.map((r: any) => r[0])).toEqual(['tq:main:cut', 'tpad:main', 'tpad:off']);
-    expect(rows[2][1]).toBe('Shield techniques · ' + sh.usable);
+    expect(rows[2][1]).toBe('Shield techniques'); expect(rows[2][2]).toBe(sh.usable + ' of ' + sh.total + ' now'); // 0.33: the count once, in the cost
     // the pad opens with both groups; a picked chip is a technique of the off hand
     const pad = padView(B, padOf('tpad:off'), null)!;
     expect(pad.groups.flatMap((gr: any) => gr.chips).find((c: any) => c.id === 'shield_bash').action).toBe('tq:off:shield_bash');
