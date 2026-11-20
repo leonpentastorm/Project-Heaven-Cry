@@ -3,17 +3,21 @@
 // art's safe rect and moved by the pointer, the big title fitted to the window, a menu with Wick as the selector,
 // press -> Wick says hello -> slide. Wick is the artist's five clips (art/mascot/wick-anim): run, stop, idle, hello, wave.
 import React from 'react';
-import { ART } from '../screens/shared';
-import { startProvingGround } from '../game/provingGround';
+import { ART } from '../game/art';
 import { forgetSession, getState, go, hostRoom, joinRoom, lastRoom, listSessions, removeFromLibrary, resumeSession, setName, subscribe } from '../game/store';
-import { exportCharacter, importCharacter } from '../game/charfile';
 import { openReport } from '../game/report';
 import { GAME_VERSION } from '../version';
 import { sfx, onUiPrefs, reducedMotion } from '../game/sfx';
 import { voicePrefs, onVoice, loadVoice, detectInstalled } from '../game/voice';
 import { askConfirm, dialogOpen } from '../game/dialog';
 import { SettingsBody } from '../game/settings';
-import { CREDITS, licenceUrl } from '../game/credits';
+import { lazyModule, useLazy, withLazy } from '../game/lazy';
+// The client load lane (0.33): what the title needs of the engine-side code loads on demand (the title is in the boot
+// chunk, the engine is not): the Proving Ground's start, the character files and the credits (the OST table).
+const PG = lazyModule(() => import('../game/provingGround'));
+const CHARFILE = lazyModule(() => import('../game/charfile'));
+const CREDITS_MOD = lazyModule(() => import('../game/credits'));
+const startProvingGround = (archetype?: string, opts?: { friends?: boolean }) => withLazy(PG, (m) => m.startProvingGround(archetype, opts));
 import { playTitleMusic, stopTitleMusic } from '../game/titleMusic';
 import { LAYERS, clamp, layerShift, titleGeometry } from './geometry';
 import { tipProps } from '../game/actionTip';
@@ -450,6 +454,7 @@ function NamePanel({ after }: { after: null | string }) {
 /** PROVING GROUND: alone (as it always was), or with friends (the room code shown big once inside). */
 function ProvingPanel() {
   const st = React.useSyncExternalStore(subscribe, getState), named = !!st.me.name.trim();
+  useLazy(PG); // (loaded while the panel is open, so its buttons start at once)
   const card: React.CSSProperties = { ...btn, minHeight: 92, flex: '1 1 220px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', gap: 4, padding: '12px 16px', textAlign: 'left' };
   return <>
     <h2 style={h2}>The Proving Ground</h2>
@@ -474,10 +479,11 @@ function JoinPanel({ code, setCode }: { code: string; setCode: (c: string) => vo
 }
 function CharactersPanel() {
   const st = React.useSyncExternalStore(subscribe, getState);
+  useLazy(CHARFILE); // (in before a click, so Import's file picker opens inside the click)
   return <>
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
       <h2 style={{ ...h2, marginRight: 'auto' }}>Your characters · {st.library.length}</h2>
-      <button type="button" style={btn} onClick={() => importCharacter()} {...tipProps("Add a character file (.phc.zip) a friend sent you")}>Import</button>
+      <button type="button" style={btn} onClick={() => withLazy(CHARFILE, (m) => m.importCharacter())} {...tipProps("Add a character file (.phc.zip) a friend sent you")}>Import</button>
       <button type="button" style={primary} onClick={() => toCreate(null)}>Make a character</button>
     </div>
     {!st.library.length && <p style={{ margin: 0, color: ink.muted, lineHeight: 1.5 }}>None yet. Characters you lock in are kept in this browser and can be brought into any room. ⬇ downloads one as a file you can keep or send to a friend; Import adds one.</p>}
@@ -487,7 +493,7 @@ function CharactersPanel() {
           <img src={ART(c.portrait) || c.portrait} alt="" style={{ width: 56, height: 70, objectFit: 'cover', borderRadius: 8, background: '#000' }} />
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}><span style={{ fontWeight: 700 }}>{c.name}{(c as any).draft ? ' (draft)' : ''}</span><span style={{ fontSize: 'var(--fs-sub)', color: ink.muted }}>{c.origin || 'no origin'} · Classless</span></div>
           <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} onClick={() => toCreate(c)}>Open</button>
-          <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} aria-label={'Download ' + c.name + ' as a file'} {...tipProps("Download as a file to keep or send to a friend")} onClick={() => exportCharacter(c)}>⬇</button>
+          <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px' }} aria-label={'Download ' + c.name + ' as a file'} {...tipProps("Download as a file to keep or send to a friend")} onClick={() => withLazy(CHARFILE, (m) => m.exportCharacter(c))}>⬇</button>
           <button type="button" style={{ ...btn, minHeight: 36, padding: '0 10px', color: ink.muted }} aria-label={'Delete ' + c.name} onClick={() => { askConfirm({ title: 'Delete ' + c.name + '?', body: 'The character is removed from this browser. Export it first if you want to keep a copy.', confirm: 'Delete', danger: true }).then((ok) => { if (ok) removeFromLibrary(c.name); }); }}>✕</button>
         </div>
       ))}
@@ -523,6 +529,8 @@ function SettingsPanel() {
   </>;
 }
 function CreditsPanel() {
+  const cr = useLazy(CREDITS_MOD); if (!cr) return <h2 style={h2}>Credits</h2>;
+  const { CREDITS, licenceUrl } = cr;
   return <>
     <h2 style={h2}>Credits</h2>
     {CREDITS.map((g) => (

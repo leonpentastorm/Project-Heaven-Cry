@@ -7,7 +7,7 @@ let onMsg: (m: any) => void = () => {};
 vi.mock('./net', () => ({ connect: (_o: any, m: (x: any) => void) => { onMsg = m; return { send: () => {}, close: () => {}, state: 'open' }; } }));
 const turn = vi.fn(async () => { throw new Error('the Narrator was called'); });
 vi.mock('../narrator/anthropic', () => ({ anthropicProvider: () => ({ turn }), scriptedProvider: () => ({ turn }), polish: async () => '', MODELS: [{ id: 'claude-opus-5-5', label: 'Opus', input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 }] }));
-const store = await import('./store');
+const store = await import('./store'); await store.loadEngine(); // (the engine loads on demand since 0.33: in before the room is opened, as on a page that has warmed it)
 const tick = () => new Promise((r) => setTimeout(r, 0));
 
 describe('the Narrator in the Proving Ground', () => {

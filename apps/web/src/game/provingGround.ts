@@ -2,13 +2,15 @@
 // header need. The Proving Ground's panel (game/sandbox.tsx) is its own chunk, loaded when the Proving Ground opens
 // (the bundle split); it re-exports these.
 import { ARCHETYPES } from '@engine';
-import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke } from './store';
+import { act, hostRoom, getState, go, leaveRoom, forgetSession, poke, engineReady, loadEngine } from './store';
 import { askConfirm } from './dialog';
 
 // ---------- starting it ----------
 /** From the title: open a fresh room and go straight into the Proving Ground with a test character (or the host's
  *  locked-in ones, if the room already has some). */
 export function startProvingGround(archetype?: string, opts: { friends?: boolean } = {}) {
+  // (The engine first: hostRoom waits for it when it is not in yet, and the room must be open before the action below.)
+  if (!engineReady()) { if (!getState().me.name) { hostRoom(); return; } loadEngine().then(() => startProvingGround(archetype, opts), () => hostRoom()); return; }
   hostRoom();
   if (getState().role !== 'host') return;
   // Standalone: opened from the title, so leaving it closes the room (friends who joined go back to the title).

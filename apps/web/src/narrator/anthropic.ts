@@ -12,8 +12,8 @@ import { RULES_PROMPT, campaignPrompt, partyPrompt, memoryPrompt, turnPrompt, su
 import { rememberTurn } from './craft';
 import { FIGHT_SYSTEM, FIGHT_MAX_TOKENS, FIGHT_TIMEOUT_MS, fightAsk, fightTool, parseFightAnswer, scriptedFightAnswer, type FightResult } from './fight';
 import { MAX_LOOKUPS, REWRITE_TOOL, REWRITE_SYSTEM, rewriteAsk, POLISH_SYSTEM, polishAsk } from './prompts';
-/** The most one Narrator turn may cost, all rounds of lookups included (spec: The Narrator's memory). */
-export const COST_CEILING_USD = 0.5;
+import { MODELS, COST_CEILING_USD } from './models';
+export { MODELS, COST_CEILING_USD } from './models';
 const TOKENS = (s: string) => Math.ceil(s.length / 3.5);
 /** What a call's prompt costs at worst for this model (nothing cached; the stable blocks written to the 1-hour cache,
  * which costs twice the input price) and with the cache warm, plus a full reply. */
@@ -24,12 +24,6 @@ export function callEstimate(g: GameState, modelId: string, maxOut = 8000) {
   return { stable, turn, worstUsd: (stable * p.input * 2 + turn * p.input + maxOut * p.output) / 1e6, warmUsd: (stable * p.cacheRead + turn * p.input + maxOut * p.output) / 1e6 };
 }
 
-export const MODELS = [
-  { id: 'claude-opus-5-5', label: 'Claude Opus 5.5', input: 4, output: 20, cacheRead: 0.2, cacheWrite: 5 },
-  { id: 'claude-sonnet-5-5', label: 'Claude Sonnet 5.5', input: 2, output: 10, cacheRead: 0.2, cacheWrite: 2.5 },
-  { id: 'claude-haiku-5-5', label: 'Claude Haiku 5.5', input: 0.1, output: 0.5, cacheRead: 0.01, cacheWrite: 0.125 },
-  { id: 'claude-fable-5-1', label: 'Claude Fable 5.1', input: 10, output: 50, cacheRead: 0.25, cacheWrite: 12.5 },
-];
 
 export interface NarratorResult { turn: NarratorTurn; usage: { input: number; output: number; cacheRead: number; costUsd: number } }
 export interface RewriteResult { text: string; refused: string; usage?: NarratorResult['usage'] }

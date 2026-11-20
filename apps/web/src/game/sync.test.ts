@@ -16,7 +16,7 @@ vi.mock('./net', () => ({
 
 async function freshStore() {
   vi.resetModules(); links.length = 0; localStorage.clear();
-  const store = await import('./store');
+  const store = await import('./store'); await store.loadEngine(); // (the engine loads on demand since 0.33: in before the room is opened, as on a page that has warmed it)
   await new Promise((r) => setTimeout(r, 5)); // the store looks for a room to resume a beat after it loads: let that pass
   return store;
 }

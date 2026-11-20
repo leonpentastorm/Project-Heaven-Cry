@@ -7,11 +7,8 @@ import { active } from '@engine';
 import { DOORS, CLASS_DOORS, topDoor } from './doorView';
 import { TAB_NAME } from './commands';
 
-const LS = 'phc.tips';
-const seen: Set<string> = (() => { try { return new Set(JSON.parse(localStorage.getItem(LS) || '[]')); } catch { return new Set(); } })();
-const save = () => { try { localStorage.setItem(LS, JSON.stringify([...seen])); } catch { /* */ } };
-/** Settings: show every tip again. */
-export function resetTips() { seen.clear(); save(); }
+import { seen, saveSeen as save, resetTips } from './tipsSeen';
+export { resetTips };
 
 type St = ReturnType<typeof getState>;
 const mine = (st: St) => !!st.game && Object.values(st.game.characters).some((c: any) => c.owner === st.me.id);

@@ -85,7 +85,7 @@ describe('(c) hosting or joining again closes the old link (store.ts)', { timeou
   it('joinRoom twice: the first link is closed, its socket and keep-alive gone', async () => {
     vi.useRealTimers();
     vi.resetModules(); localStorage.clear();
-    const store = await import('./store');
+    const store = await import('./store'); await store.loadEngine(); // (the engine loads on demand since 0.33: in before the room is opened, as on a page that has warmed it)
     await new Promise((r) => setTimeout(r, 5));
     store.setName('Mai');
     store.joinRoom('ABCDEF');

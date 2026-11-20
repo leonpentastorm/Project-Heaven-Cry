@@ -7,6 +7,7 @@ let role: string | null = null, phase = 'story';
 vi.mock('./store', () => ({
   act: (a: any) => { calls.push(a); if (a.type === 'sandbox/end') phase = 'lobby'; }, hostRoom: () => { calls.push('hostRoom'); role = 'host'; }, getState: () => ({ role, game: { phase } }),
   go: (s: string) => calls.push('go:' + s), leaveRoom: () => calls.push('leaveRoom'), forgetSession: () => {}, poke: () => {}, toast: () => {},
+  engineReady: () => true, loadEngine: async () => ({}),
 }));
 vi.mock('./charfile', () => ({ importCharacter: async () => null }));
 vi.mock('./fx/FxLayer', () => ({ fxBusyUntil: () => 0 }));

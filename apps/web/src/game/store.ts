@@ -1,15 +1,36 @@
 // Client store. The host's browser holds the authoritative GameState, applies every action through the engine,
 // runs the AI Narrator with the host's key, and sends each player their filtered view through the room relay.
 // Guests send actions to the host and render the view they get back.
-import { type Action, type GameState, type Sheet, RuleError, apply, newGame, viewFor, votesOf, rerollFrom, migrateLoaded, fightRulingOf, gearPreview, previewAttack, withGame, makeView } from '@engine';
-import { FIGHT_TIMEOUT_MS } from '../narrator/fight';
-import { newRoomPlay, testRoom } from './modes';
-import { type NarratorProvider, scriptedProvider } from '../narrator/anthropic';
-import { type ProviderId, makeProvider, polishWith, providerInfo, notReadyReason } from '../narrator/providers';
+// The client load lane (0.33): this file is in the boot chunk and imports nothing of the engine or the game's data
+// but types, so the title shows without them. The engine and the data load on demand (loadEngine: game/storeEngine.ts);
+// every path that opens or runs a room awaits them first (hostRoom, joinRoom and so Continue, a saved game, the Proving
+// Ground and a taken-over tab), so act, the room link and migrateLoaded only ever run with the engine in.
+import type { Action, GameState, Sheet } from '@engine';
+import type { NarratorProvider } from '../narrator/anthropic';
+import { type ProviderId, providerInfo, notReadyReason } from '../narrator/providerList';
 import { connect, hop, type Conn } from './net';
 import { sentAct, answered, dropPending, hostAnswered, resetNet } from './netStats';
-import { DEFAULT_START, shownStart } from './starts';
 import { battlePace } from './combatSpeed';
+
+type Engine = typeof import('./storeEngine');
+let E: Engine | null = null, engineP: Promise<Engine> | null = null;
+/** Load the engine and the game's data (once; a failed load may be tried again). The preloader warms it after the
+ *  title's load (game/preload.ts), so it is normally in before the first click. */
+export function loadEngine(): Promise<Engine> {
+  if (E) return Promise.resolve(E);
+  return (engineP ||= import('./storeEngine').then((m) => (E = m), (e) => { engineP = null; throw e; }));
+}
+/** Is the engine in (the store's room paths run at once then, as they always did)? */
+export const engineReady = () => !!E;
+/** The engine side if it is in, else null (the problem report reads a room's run and cost through it). */
+export const loadedEngine = () => E;
+/** The engine, for code that only runs once a room is open (a room is never opened without it). */
+const eng = (): Engine => { if (!E) throw new Error('The engine is not loaded yet.'); return E; };
+/** Run f with the engine: at once when it is in (the same call stack, as before the split), else when it has loaded. */
+function withEngine(f: (e: Engine) => void) {
+  if (E) { f(E); return; }
+  loadEngine().then(f, (e) => { console.error(e); toast('The game could not load. Check the connection and reload the page.'); });
+}
 
 
 export type Screen = 'home' | 'create' | 'room' | 'main' | 'combat' | 'levelup' | 'ultimate' | 'run';
@@ -89,6 +110,9 @@ export function setNarrator(patch: Partial<ClientState['narrator']>) {
 // ---------- rooms ----------
 export function hostRoom(code = roomCode()) {
   if (!S.me.name) return toast('Enter your name first.');
+  withEngine((e) => hostNow(e, code));
+}
+function hostNow({ migrateLoaded, newGame, viewFor, shownStart, DEFAULT_START, newRoomPlay, testRoom }: Engine, code: string) {
   const saved: GameState | null = migrateLoaded(read(LS.game(code), null));
   hostState = saved || newGame(code, { id: S.me.id, name: S.me.name });
   // Classes 3.0 step 10b: a new room starts on the menu's first start, never on a hidden campaign (game/starts.ts, the
@@ -117,6 +141,9 @@ export function joinRoom(code: string) {
   if (!S.me.name) return toast('Enter your name first.');
   code = code.trim().toUpperCase();
   if (!/^[A-Z0-9]{6}$/.test(code)) return toast('Room codes are 6 letters and numbers.');
+  withEngine(() => joinNow(code));
+}
+function joinNow(code: string) {
   write(LS.room, { code, role: 'guest' });
   set({ role: 'guest', code, game: null, screen: 'room', conn: 'connecting' });
   conn?.close(); resetNet();
@@ -175,6 +202,7 @@ function onConn(state: Conn['state'], note = '') {
 }
 
 function onMessage(m: any, bytes = 0) {
+  const { migrateLoaded, viewFor } = eng();
   net.lastAt = Date.now(); net.last = String(m?.t || ''); net.got++;
   if (S.role === 'host') {
     if (m.t === 'snapshot' && m.state && (!hostState || m.state.v > hostState.v) && m.state.code === S.code) { hostState = migrateLoaded(m.state); set({ game: viewFor(hostState!, S.me.id), screen: screenFor(hostState!) }); }
@@ -220,7 +248,7 @@ function answerSync(pid: string, v: number) {
   if (!hostState || !pid || pid === S.me.id) return;
   const p = hostState.players.find((x) => x.id === pid); if (!p) return;
   if (!p.online) { runHost({ type: 'player/join', id: pid, name: p.name }, S.me.id, null); return; } // runHost sends everyone their view
-  if (v !== hostState.v) conn?.send({ t: 'view', pid, state: viewFor(hostState, pid), resync: true });
+  if (v !== hostState.v) conn?.send({ t: 'view', pid, state: eng().viewFor(hostState, pid), resync: true });
 }
 
 /** A guest sees the host close the Proving Ground: opened from the title, the room closes too (to the title); opened
@@ -258,6 +286,7 @@ export function act(a: Action) {
 
 function runHost(a: Action, by: string, nonce: string | null) {
   if (!hostState) return;
+  const { apply, viewFor, RuleError } = eng();
   const t0 = performance.now();
   try {
     hostState = apply(hostState, a, by);
@@ -302,6 +331,7 @@ function persist() { if (lsTimer != null) { clearTimeout(lsTimer); lsTimer = nul
  *  it (netStats.ts splits the guest's delay with it). */
 function broadcast(force: boolean, ack?: { pid: string; nonce: string; t0: number }) {
   if (!conn || !hostState) return;
+  const { viewFor } = eng();
   for (const p of hostState.players) {
     if (p.id === S.me.id) continue;
     const m: any = { t: 'view', pid: p.id, state: viewFor(hostState, p.id) };
@@ -315,12 +345,13 @@ function broadcast(force: boolean, ack?: { pid: string; nonce: string; t0: numbe
 // ---------- the AI Narrator (host only) ----------
 let narrating = false;
 export function provider(): NarratorProvider | null {
-  if (S.narrator.scripted) return scriptedProvider();
-  return makeProvider(S.narrator);
+  if (!E) return null; // (no room is open before the engine is in, and only a room's host asks)
+  if (S.narrator.scripted) return E.scriptedProvider();
+  return E.makeProvider(S.narrator);
 }
 async function maybeNarrate() {
   const g = hostState;
-  if (!g || narrating || !g.story.work || g.narrator.busy || g.narrator.error) return;
+  if (!g || !E || narrating || !g.story.work || g.narrator.busy || g.narrator.error) return;
   if (g.sandbox) return; // the Proving Ground never calls the Narrator
   if (g.settings.mode !== 'ai') return;
   const p = provider();
@@ -331,6 +362,7 @@ async function maybeNarrate() {
     const { turn, usage } = await p.turn(hostState!);
     runHost({ type: 'narrator/usage', ...usage }, S.me.id, null);
     // Keep the state from just before this turn: a reroll the room votes for goes back to it (spec: Rerolls and edits).
+    const { votesOf } = eng();
     const pre = hostState!, turnsBefore = votesOf(pre).turns.at(-1);
     runHost({ type: 'narrator/turn', turn }, S.me.id, null);
     // A turn the engine refused leaves the state as it was (busy): say so, or the story would wait for good.
@@ -359,6 +391,7 @@ async function maybeFightRule() {
   // so nothing is asked or told here (it showed a refusal toast at each run fight's start).
   if (g.run && g.run.state !== 'over') return;
   // The engine refuses attempts while no Narrator is connected: tell it when that changes (only in a fight).
+  const { fightRulingOf, apply, viewFor, FIGHT_TIMEOUT_MS } = eng();
   if (!g.sandbox && !!g.narrator.offline === narratorSetUp()) { runHost({ type: 'narrator/ready', ready: narratorSetUp() }, S.me.id, null); return; }
   const r = fightRulingOf(g.combat); if (!r || fightAsked === r.id) return;
   fightAsked = r.id;
@@ -382,7 +415,7 @@ async function maybeFightRule() {
 }
 export async function polishText(text: string, charName: string) {
   if (S.role !== 'host' || notReadyReason(S.narrator)) throw new Error('Only the host\'s key can polish.');
-  return polishWith(S.narrator, text, charName);
+  return (await loadEngine()).polishWith(S.narrator, text, charName);
 }
 
 // A refresh drops you back into your room (unless an invite link points somewhere else).
@@ -391,14 +424,14 @@ setTimeout(() => { const r = read(LS.room, null), invite = new URLSearchParams(l
 /** Testing hook: lets the end-to-end test swap in the scripted Narrator. */
 (globalThis as any).__phc = { getState, act, setNarrator, toast, go,
   /** The engine's gear preview for a character (the survival suite checks a shop card's numbers against it). */
-  gearPreview: (charId: string, inst: { id: string; rarity?: any }) => { const c = S.game?.characters?.[charId]; return c ? gearPreview(c, inst) : null; },
+  gearPreview: (charId: string, inst: { id: string; rarity?: any }) => { const c = S.game?.characters?.[charId]; return c ? eng().gearPreview(c, inst) : null; },
   /** Rules 1.54 item 5: the engine's make list for a character as this player sees it (the survival suite checks the
    * sheet's Make rows against it). */
-  makeView: (charId: string) => (S.game ? makeView(S.game, S.me.id, charId) : null),
+  makeView: (charId: string) => (S.game ? eng().makeView(S.game, S.me.id, charId) : null),
   /** Rules 1.51: the engine's to-hit terms of a unit's attack on a target in the fight under way (the survival suite
    * checks a starting boon is felt in the first fight). */
   attackTerms: (unitId: string, targetId: string, mode = 'shot') => { const g = S.game, cb = g?.combat, u = cb?.units.find((x) => x.id === unitId), t = cb?.units.find((x) => x.id === targetId); if (!g || !cb || !u || !t) return null;
-    return withGame(g, () => previewAttack(cb, u, t, mode as any).terms || []); },
+    const { withGame, previewAttack } = eng(); return withGame(g, () => previewAttack(cb, u, t, mode as any).terms || []); },
   /** The host's whole game (the e2e fog check compares a guest's view with it); null on a guest's computer. */
   truth: () => hostState,
   /** The room link now: this player's role, the link's state, the last message and how long ago, the game's version. */
@@ -410,7 +443,7 @@ setTimeout(() => { const r = read(LS.room, null), invite = new URLSearchParams(l
 let befores: Record<string, GameState> = {};
 function keepBefore(entryId: string, pre: GameState) {
   befores[entryId] = { ...pre, archive: undefined };
-  const keep = new Set(hostState ? votesOf(hostState).turns : []);
+  const keep = new Set(hostState ? eng().votesOf(hostState).turns : []);
   for (const k of Object.keys(befores)) if (!keep.has(k)) delete befores[k];
   if (hostState) { const code = hostState.code, copy = befores; idb().then((db) => { try { db?.transaction('games', 'readwrite').objectStore('games').put(copy, code + '#befores'); } catch { /* */ } }); }
 }
@@ -419,6 +452,8 @@ let carrying = false;
 /** A vote passed: the host's browser carries it out. A reroll goes back to the kept copy and asks the Narrator again;
  * an edit asks the Narrator to reword its own line, and it refuses anything that would change what happened. */
 async function carryOutVote() {
+  if (!E) return;
+  const { votesOf, rerollFrom, viewFor } = E;
   const o = hostState ? votesOf(hostState).open : null;
   if (!o || o.status === 'open' || carrying) return;
   if (o.status === 'failed') { runHost({ type: 'vote/close' }, S.me.id, null); return; }

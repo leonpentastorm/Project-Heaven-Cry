@@ -11,9 +11,11 @@ import { uiPrefs, setUiPrefs, onUiPrefs, sfx, preloadCombatSfx, type UiPrefs, ty
 import { voicePrefs, setVoicePrefs, onVoice } from './voice';
 import { VoiceSettings } from './voiceSettings';
 import { getCombatSpeed, setCombatSpeed, COMBAT_SPEED_EVENT, type CombatSpeed } from './combatSpeed';
-import { resetTips } from './tips';
+import { resetTips } from './tipsSeen';
 import { usePresence, presenceCls } from './presence';
-import { FightTabsPanel } from './fightTabsPanel';
+// The fight tabs' page reads the engine (the tabs a fight can show): its own chunk, loaded when the page is opened (the
+// client load lane, 0.33: the settings are on the title, which loads without the engine).
+const FightTabsPanel = React.lazy(() => import('./fightTabsPanel').then((m) => ({ default: m.FightTabsPanel })));
 
 export type SettingsTab = 'audio' | 'voice' | 'combat' | 'tabs' | 'display';
 export const SETTINGS_TABS: [SettingsTab, string][] = [['audio', 'Audio'], ['voice', 'Voice'], ['combat', 'Combat'], ['tabs', 'Fight tabs'], ['display', 'Display']];
@@ -139,7 +141,7 @@ export function SettingsBody({ tab: initial = 'audio', compact: compactProp = fa
         {tab === 'audio' && <AudioTab />}
         {tab === 'voice' && <VoiceSettings />}
         {tab === 'combat' && <CombatTab />}
-        {tab === 'tabs' && <FightTabsPanel />}
+        {tab === 'tabs' && <React.Suspense fallback={null}><FightTabsPanel /></React.Suspense>}
         {tab === 'display' && <DisplayTab />}
       </div>
     </div>
