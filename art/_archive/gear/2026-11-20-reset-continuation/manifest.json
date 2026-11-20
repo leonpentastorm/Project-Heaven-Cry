@@ -3165,6 +3165,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-adamantile_longsword--celestial",
+      "path": "art/icons/gear/weapon-adamantile_longsword--celestial.png",
+      "sha256": "91f5d4d13011b828850cf399939e76b74007c7b2e255cb19473acd807ad54530",
+      "label": "Adamantile Brigade Longsword — Celestial",
+      "family": "weapon-adamantile_longsword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-adamantile_longsword--celestial.png",
+        "sha256": "3cb86cc0dba1aa02d930f2ac9138330993446050160de892790ed553355b6fe7"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-adamantile_longsword--celestial.png",
+        "sha256": "91f5d4d13011b828850cf399939e76b74007c7b2e255cb19473acd807ad54530"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-adamantile_longsword--celestial.txt",
+        "sha256": "91a7607b880a4d72ebd51b6bd1b6d72336b0e66c2cec206c8b9380806cf32de0"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-adamantile_longsword.png",
+          "sha256": "ad3d5a066b7a82abac51c44692f6ad0f9fa4ee947c9de985c096fdc851f375e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-adamantile_longsword--relic.png",
+          "sha256": "58b65ce94da03c60e40ef86e075cfe6bc813df91696cdf8bb8bc695aad1dd0bf"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png",
+          "sha256": "bb86956b8cc82b894caeebe5fcd4452c8369e8a27a51cab46c9b1cd73661a678"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-adamantile_longsword--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-adamantile_longsword--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-adamantile_longsword--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-adamantile_longsword--celestial.png"
+      },
+      "export_hashes": {
+        "256": "391e485a84d7cc5bf4c75a2cca0395dd8c4c7971a013fd1991287edeef256798",
+        "128": "a728cae3c5309f3fcfbe13ae0ce09dd340e16cb3b3eb9a1085b8c31c4ca16e97",
+        "64": "2ff56ba0a1de33eeda79cea611737507f9e774e3b9ebc4897abb2228b8d3e446",
+        "32": "d0f23fbc6b01f53df0232da621f778e63ef674a9848493cb710bb17f19c17b85"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-adamantile_longsword",
+      "outline": {
+        "solid_alpha_iou": 0.9633063970023926,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 9
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
