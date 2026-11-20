@@ -576,6 +576,240 @@
         "art/icons/gear/exports/64/weapon-adamantile_longsword.png": "e592ce52df57e8a4a0b375b48e507a19725c2a4c04b740ab379746d0df6571eb",
         "art/icons/gear/exports/32/weapon-adamantile_longsword.png": "9c3519d231145ffc9793082557886e0573fa04235f1d34eed3566c3f3eac136f"
       }
+    },
+    {
+      "id": "shield-spiked_buckler",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Spiked buckler",
+        "path": "art/icons/gear/shield-spiked_buckler.png",
+        "sha256": "cdb395c131f9003a42f4c412da035f3a2801a2c963033c4edf39d0f94a384fcf",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/shield-spiked_buckler.png",
+          "128": "art/icons/gear/exports/128/shield-spiked_buckler.png",
+          "64": "art/icons/gear/exports/64/shield-spiked_buckler.png",
+          "32": "art/icons/gear/exports/32/shield-spiked_buckler.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+        "brief_number": 1,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/shield-spiked_buckler.png": "cdb395c131f9003a42f4c412da035f3a2801a2c963033c4edf39d0f94a384fcf",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png": "d5266a8b194d1b285c695b02b594484989848822cbb75320e7be8c196095583b",
+        "art/icons/gear/exports/256/shield-spiked_buckler.png": "7f2396c86d6ccfc45a06f349c1dd68ad7d3967db7b734b2f1a9f418d4c43a79d",
+        "art/icons/gear/exports/128/shield-spiked_buckler.png": "5f60bf6206b00591e170d08e68226a13528d2fce084614063467278f44b93285",
+        "art/icons/gear/exports/64/shield-spiked_buckler.png": "367d8d952fb9b987b1df1e166e168c9bf94258aef3f3fd8d50379626598e0283",
+        "art/icons/gear/exports/32/shield-spiked_buckler.png": "db35c9d5986dd791ee55ef37d69abfcf7d5bea9b9665ea654819bede66109185"
+      }
+    },
+    {
+      "id": "shield-boss_shield",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Boss shield",
+        "path": "art/icons/gear/shield-boss_shield.png",
+        "sha256": "3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/shield-boss_shield.png",
+          "128": "art/icons/gear/exports/128/shield-boss_shield.png",
+          "64": "art/icons/gear/exports/64/shield-boss_shield.png",
+          "32": "art/icons/gear/exports/32/shield-boss_shield.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+        "brief_number": 2,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/shield-boss_shield.png": "3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png": "e4594f2311e982ae2a4603db4c8c28e53d889d36fb7114e1625d49fccdcb113a",
+        "art/icons/gear/exports/256/shield-boss_shield.png": "9de24182069e0066d5a21a68959573620d7f7b7a5a843eaf79f91ff430606ad7",
+        "art/icons/gear/exports/128/shield-boss_shield.png": "2ea711901c5206da656acc4f679ddc8576f0e401d68f087ea1611ad2b87e7c1a",
+        "art/icons/gear/exports/64/shield-boss_shield.png": "60c7b023ba06cceee074fe1b53040711648dd9d5727ec6243461085f6f7a8167",
+        "art/icons/gear/exports/32/shield-boss_shield.png": "c1d113784ce519186f398dddf788b1966f4e24760c93c80569e48db1f2408389"
+      }
+    },
+    {
+      "id": "shield-ram_plate",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Ram plate",
+        "path": "art/icons/gear/shield-ram_plate.png",
+        "sha256": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/shield-ram_plate.png",
+          "128": "art/icons/gear/exports/128/shield-ram_plate.png",
+          "64": "art/icons/gear/exports/64/shield-ram_plate.png",
+          "32": "art/icons/gear/exports/32/shield-ram_plate.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+        "brief_number": 3,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/shield-ram_plate.png": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png": "267861bafac742616f7674fb1f0a1707952beb4490b4ddfa657a6b45cde8e846",
+        "art/icons/gear/exports/256/shield-ram_plate.png": "df98406ec3d0a0e79c6909fa8153eb7141b4fd18bc9acdd033b9537fa22a7182",
+        "art/icons/gear/exports/128/shield-ram_plate.png": "68e4dffc514d782c4acd218c5dc8f76fe61a249ce971df458ca48626bfa2149f",
+        "art/icons/gear/exports/64/shield-ram_plate.png": "659aa45bd6b088ed7bb58a530fea024a09c9533c930683ef7a246329be413d19",
+        "art/icons/gear/exports/32/shield-ram_plate.png": "c21b93663105f994abe313c6ce2a3e2243e404271213ebd7ecef667ad5656b15"
+      }
+    },
+    {
+      "id": "shield-deflector",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Deflector",
+        "path": "art/icons/gear/shield-deflector.png",
+        "sha256": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/shield-deflector.png",
+          "128": "art/icons/gear/exports/128/shield-deflector.png",
+          "64": "art/icons/gear/exports/64/shield-deflector.png",
+          "32": "art/icons/gear/exports/32/shield-deflector.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+        "brief_number": 4,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/shield-deflector.png": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png": "981d7ba5269c8a312538f46ac4bfc41098a1537ca27a533a18dd4c9a2e5c3c69",
+        "art/icons/gear/exports/256/shield-deflector.png": "41e370aedffa13eeb648d7995f498ae076b6b43680eec98cbc6000af78b00834",
+        "art/icons/gear/exports/128/shield-deflector.png": "86964cc7fc1962565ef30397ddf0737500261e8851bea0fb6f3b66f9b59f8335",
+        "art/icons/gear/exports/64/shield-deflector.png": "fe6b636bfd561f55ad0cc926c8e4fda0bd995a0726bd2cf9891ddc392ee0e492",
+        "art/icons/gear/exports/32/shield-deflector.png": "aed0ae2b797bf8990b111fcb1c4a2ae898bf51c7afda7093a8506f3f2d6b2c9a"
+      }
+    },
+    {
+      "id": "shield-bulwark_screen",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Bulwark screen",
+        "path": "art/icons/gear/shield-bulwark_screen.png",
+        "sha256": "56e0aec15b0b546122ee1565b8b1dc246e7a0ef0df4fcba68bab9bdeb4966dc0",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/shield-bulwark_screen.png",
+          "128": "art/icons/gear/exports/128/shield-bulwark_screen.png",
+          "64": "art/icons/gear/exports/64/shield-bulwark_screen.png",
+          "32": "art/icons/gear/exports/32/shield-bulwark_screen.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+        "brief_number": 5,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/shield-bulwark_screen.png": "56e0aec15b0b546122ee1565b8b1dc246e7a0ef0df4fcba68bab9bdeb4966dc0",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png": "643adb704e78fa71f8106ee942b6412a4a89aa6631a5560b1c602eae76ad5337",
+        "art/icons/gear/exports/256/shield-bulwark_screen.png": "061a13c6afc0c4591d7a967912316f4de4fa68b37779f063869b1230107aaea6",
+        "art/icons/gear/exports/128/shield-bulwark_screen.png": "c2771c62753c2d46c730615da6594c720ffcba7bede9d128192c18a68da84aa9",
+        "art/icons/gear/exports/64/shield-bulwark_screen.png": "6bfc564827b67b254e825c5a09a405a298c6d2238d0cac0d8b41d42ee63d31ba",
+        "art/icons/gear/exports/32/shield-bulwark_screen.png": "b9944febdaf49294d33aebba157aab2a49455fb6033d5f571e42a4a51ebe9a18"
+      }
+    },
+    {
+      "id": "shield-barrier_wall",
+      "origin_branch": "art/2026-11-19-melee-armour",
+      "origin_commit": "fb99282187819f5fedf48705ac2f8d4512d52337",
+      "catalog_entry": {
+        "label": "Barrier wall",
+        "path": "art/icons/gear/shield-barrier_wall.png",
+        "sha256": "2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803",
+        "width": 1024,
+        "height": 1024,
+        "background": "transparent",
+        "status": "review-candidate",
+        "production_approved": false,
+        "exports": {
+          "256": "art/icons/gear/exports/256/shield-barrier_wall.png",
+          "128": "art/icons/gear/exports/128/shield-barrier_wall.png",
+          "64": "art/icons/gear/exports/64/shield-barrier_wall.png",
+          "32": "art/icons/gear/exports/32/shield-barrier_wall.png"
+        },
+        "source_path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png",
+        "native_dimensions": [
+          1254,
+          1254
+        ],
+        "brief": "art/briefs/prompts-2026-11-19/07-shields-armour.md",
+        "brief_number": 6,
+        "collection": "2026-11-19-melee-armour",
+        "grade": "standard",
+        "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+      },
+      "files": {
+        "art/icons/gear/shield-barrier_wall.png": "2fb383052bce92864bb68fcab1a1460f284a9e04993c9fd0c902f4441648a803",
+        "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png": "b6f6fc809ac3f26cf41cc41a480a0cd3d1c156c543b1fd4d8a16e2804935c990",
+        "art/icons/gear/exports/256/shield-barrier_wall.png": "80bf819245564beb274150ae4df5243b1eda019aa33d21e2f256494417383ed8",
+        "art/icons/gear/exports/128/shield-barrier_wall.png": "17b6b12cc0b6793781b5dbd913a92108f6a3b3c630ffe798cee80e09a5f7c470",
+        "art/icons/gear/exports/64/shield-barrier_wall.png": "13e3f736929db44d1e77542974c272da3344b7b1fb3403f03ead945673ae6544",
+        "art/icons/gear/exports/32/shield-barrier_wall.png": "3eb65c787a4d88081ef03666237ae48424a7af756ff10373bc62bc54af29ec50"
+      }
     }
   ]
 }

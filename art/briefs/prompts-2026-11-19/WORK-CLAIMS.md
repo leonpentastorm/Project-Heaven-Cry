@@ -1,5 +1,14 @@
 # Active reset production — 20 November 2026
 
+Run `reset-20261120-165ac7984341` on `art/2026-11-20-reset-continuation`. First70:50 delivered,20 service-blocked/dependent. New shield claim7030619048: all four grades for `shield-spiked_buckler`, `shield-boss_shield`, `shield-ram_plate`, `shield-deflector`, `shield-bulwark_screen`, `shield-barrier_wall` (24). Exact94 IDs and current states: archive reset-continuation queue/claim/progress. Each selected picture is validated/committed/pushed before the next request. Imported Standards are unchanged prior work, not new pictures.
+
+Peer owns new armour56 (claim7029516545); its six kept gunFine requests are service-blocked and higher18 dependent. Do not retry them. Other new melee/shield grades require live claim and source checks. All candidates remain unapproved. Read live issue3 body and all comments, and inspect remote destinations before EVERY image.
+
+---
+Historical snapshot below; live issue3 supersedes it.
+
+# Active reset production — 20 November 2026
+
 Run `reset-20261120-165ac7984341` on `art/2026-11-20-reset-continuation`. First46:37 delivered,9 service-blocked/dependent. New claim7030148205: all four grades for `weapon-short_draw`, `weapon-long_draw`, `weapon-kemizuchi_side_sword`, `weapon-kemizuchi_sword_breaker`, `weapon-adamantile_plate_needle`, `weapon-adamantile_longsword` (24). Exact70 IDs and current states: archive reset-continuation queue/claim/progress. Each selected picture is validated/committed/pushed before the next request. Imported Standards are unchanged prior work, not new pictures.
 
 Peer owns new armour56 (claim7029516545); its six kept gunFine requests are service-blocked and higher18 dependent. Do not retry them. Other new melee/shield grades require live claim and source checks. All candidates remain unapproved. Read live issue3 body and all comments, and inspect remote destinations before EVERY image.

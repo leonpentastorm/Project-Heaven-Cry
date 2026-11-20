@@ -1985,5 +1985,665 @@
       "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_longsword.png"
     ],
     "depends_on": "weapon-adamantile_longsword--relic"
+  },
+  {
+    "id": "shield-spiked_buckler--fine",
+    "standard_id": "shield-spiked_buckler",
+    "grade": "fine",
+    "label": "Spiked Buckler — Fine",
+    "path": "art/icons/gear/shield-spiked_buckler--fine.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-spiked_buckler.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-spiked_buckler",
+    "family_references": [
+      "art/icons/gear/shield-spiked_buckler.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small round dark-steel shield face, heavy riveted circular rim with its existing short conical spikes, domed riveted central boss and one tall central spike, plus the brown leather grip strap visible outside the right rim. Preserve every original rim spike and rivet, the central spike height, round shape and strap silhouette.\n\nGrade: Fine. The same shield, newly kept. The dents are hammered out, the face refinished evenly in its own colour, the rim bright, the straps clean. Add one thin engraved line running just inside the rim all the way round. Nothing else is added; no emblem on the face.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. No original spike or rivet is removed or added. Fine rim engraving is inside the physical metal rim, never outside the silhouette. Masterwork rim inlay is bright brass. Relic puts its gilt ring around the EXISTING central boss and adds ONE small flush riveted repair plate on the lower-left shield face, inside the rim and separate from the boss. Celestial retains that repair's location but its plate is pale and immaculate. At Fine add ONLY the one uncoloured engraved rim line and remove old surface damage. No inlay colour, ring or repair is added yet; those later-grade notes are not Fine additions.",
+    "keep_line": "the same small round dark-steel shield face, heavy riveted circular rim with its existing short conical spikes, domed riveted central boss and one tall central spike, plus the brown leather grip strap visible outside the right rim. Preserve every original rim spike and rivet, the central spike height, round shape and strap silhouette.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png"
+    ]
+  },
+  {
+    "id": "shield-spiked_buckler--masterwork",
+    "standard_id": "shield-spiked_buckler",
+    "grade": "masterwork",
+    "label": "Spiked Buckler — Masterwork",
+    "path": "art/icons/gear/shield-spiked_buckler--masterwork.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-spiked_buckler.png",
+      "art/icons/gear/shield-spiked_buckler--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-spiked_buckler",
+    "family_references": [
+      "art/icons/gear/shield-spiked_buckler.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small round dark-steel shield face, heavy riveted circular rim with its existing short conical spikes, domed riveted central boss and one tall central spike, plus the brown leather grip strap visible outside the right rim. Preserve every original rim spike and rivet, the central spike height, round shape and strap silhouette.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the rim line with the item's accent colour (bright brass if it has no accent), a clear coloured ring just inside the rim. The rivets are polished brass; the face is a finer material in the same shape (planed close-fitted boards, or evenly painted steel with crisp edges); the viewport, boss or windows are re-made with sharp edges. Still no emblem.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. No original spike or rivet is removed or added. Fine rim engraving is inside the physical metal rim, never outside the silhouette. Masterwork rim inlay is bright brass. Relic puts its gilt ring around the EXISTING central boss and adds ONE small flush riveted repair plate on the lower-left shield face, inside the rim and separate from the boss. Celestial retains that repair's location but its plate is pale and immaculate. Masterwork adds ONLY the coloured rim inlay and finer materials. Do not add the later Relic ring or repair yet. No ornament or heraldry.",
+    "keep_line": "the same small round dark-steel shield face, heavy riveted circular rim with its existing short conical spikes, domed riveted central boss and one tall central spike, plus the brown leather grip strap visible outside the right rim. Preserve every original rim spike and rivet, the central spike height, round shape and strap silhouette.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png"
+    ],
+    "depends_on": "shield-spiked_buckler--fine"
+  },
+  {
+    "id": "shield-spiked_buckler--relic",
+    "standard_id": "shield-spiked_buckler",
+    "grade": "relic",
+    "label": "Spiked Buckler — Relic",
+    "path": "art/icons/gear/shield-spiked_buckler--relic.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-spiked_buckler.png",
+      "art/icons/gear/shield-spiked_buckler--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-spiked_buckler",
+    "family_references": [
+      "art/icons/gear/shield-spiked_buckler.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small round dark-steel shield face, heavy riveted circular rim with its existing short conical spikes, domed riveted central boss and one tall central spike, plus the brown leather grip strap visible outside the right rim. Preserve every original rim spike and rivet, the central spike height, round shape and strap silhouette.\n\nGrade: Relic. Keep the shape and the rim inlay. The face takes a warm, deep, battle-old patina, the inlay turns to dull old gold, and a flush gilt ring is set around the boss or the centre of the face. Add one old repair that tells a story: a riveted patch plate over an old breach, or one board replaced with a darker plank.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. No original spike or rivet is removed or added. Fine rim engraving is inside the physical metal rim, never outside the silhouette. Masterwork rim inlay is bright brass. Relic puts its gilt ring around the EXISTING central boss and adds ONE small flush riveted repair plate on the lower-left shield face, inside the rim and separate from the boss. Celestial retains that repair's location but its plate is pale and immaculate.",
+    "keep_line": "the same small round dark-steel shield face, heavy riveted circular rim with its existing short conical spikes, domed riveted central boss and one tall central spike, plus the brown leather grip strap visible outside the right rim. Preserve every original rim spike and rivet, the central spike height, round shape and strap silhouette.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png"
+    ],
+    "depends_on": "shield-spiked_buckler--masterwork"
+  },
+  {
+    "id": "shield-spiked_buckler--celestial",
+    "standard_id": "shield-spiked_buckler",
+    "grade": "celestial",
+    "label": "Spiked Buckler — Celestial",
+    "path": "art/icons/gear/shield-spiked_buckler--celestial.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-spiked_buckler.png",
+      "art/icons/gear/shield-spiked_buckler--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-spiked_buckler",
+    "family_references": [
+      "art/icons/gear/shield-spiked_buckler.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small round dark-steel shield face, heavy riveted circular rim with its existing short conical spikes, domed riveted central boss and one tall central spike, plus the brown leather grip strap visible outside the right rim. Preserve every original rim spike and rivet, the central spike height, round shape and strap silhouette.\n\nGrade: Celestial. Keep the shape, the rim inlay and the ring's place. The face becomes a pale, unmarked pearl-ivory, the rim and rivets the same. The rim inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Core windows keep their own colour.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. No original spike or rivet is removed or added. Fine rim engraving is inside the physical metal rim, never outside the silhouette. Masterwork rim inlay is bright brass. Relic puts its gilt ring around the EXISTING central boss and adds ONE small flush riveted repair plate on the lower-left shield face, inside the rim and separate from the boss. Celestial retains that repair's location but its plate is pale and immaculate. All metal and face materials read pale pearl-ivory; dark tones only in recess shadows. The rim inlay is a faint contained ivory-gold line, never a halo or bloom. Existing core windows stay cyan, exact circuits preserved.",
+    "keep_line": "the same small round dark-steel shield face, heavy riveted circular rim with its existing short conical spikes, domed riveted central boss and one tall central spike, plus the brown leather grip strap visible outside the right rim. Preserve every original rim spike and rivet, the central spike height, round shape and strap silhouette.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png"
+    ],
+    "depends_on": "shield-spiked_buckler--relic"
+  },
+  {
+    "id": "shield-boss_shield--fine",
+    "standard_id": "shield-boss_shield",
+    "grade": "fine",
+    "label": "Boss Shield — Fine",
+    "path": "art/icons/gear/shield-boss_shield--fine.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-boss_shield.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-boss_shield",
+    "family_references": [
+      "art/icons/gear/shield-boss_shield.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same upright rounded-rectangular shield of dark vertical wooden boards, thick steel outer rim with perimeter rivets, one large domed steel central boss with a riveted circular mounting flange, and original wood seams and corner profile. Preserve the boss diameter, all rivets, board divisions and entire outline.\n\nGrade: Fine. The same shield, newly kept. The dents are hammered out, the face refinished evenly in its own colour, the rim bright, the straps clean. Add one thin engraved line running just inside the rim all the way round. Nothing else is added; no emblem on the face.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is bright brass; the face stays close-fitted WOOD boards, not a newly all-metal face. At Relic the ONE old repair is a single darker replacement plank at the original leftmost board position; no extra patch or new board seam. Gilt ring surrounds the existing central boss. Celestial boards become pale unmarked ivory-toned wood in their same divisions, including the replacement board. At Fine add ONLY the one uncoloured engraved rim line and remove old surface damage. No inlay colour, ring or repair is added yet; those later-grade notes are not Fine additions.",
+    "keep_line": "the same upright rounded-rectangular shield of dark vertical wooden boards, thick steel outer rim with perimeter rivets, one large domed steel central boss with a riveted circular mounting flange, and original wood seams and corner profile. Preserve the boss diameter, all rivets, board divisions and entire outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png"
+    ]
+  },
+  {
+    "id": "shield-boss_shield--masterwork",
+    "standard_id": "shield-boss_shield",
+    "grade": "masterwork",
+    "label": "Boss Shield — Masterwork",
+    "path": "art/icons/gear/shield-boss_shield--masterwork.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-boss_shield.png",
+      "art/icons/gear/shield-boss_shield--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-boss_shield",
+    "family_references": [
+      "art/icons/gear/shield-boss_shield.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same upright rounded-rectangular shield of dark vertical wooden boards, thick steel outer rim with perimeter rivets, one large domed steel central boss with a riveted circular mounting flange, and original wood seams and corner profile. Preserve the boss diameter, all rivets, board divisions and entire outline.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the rim line with the item's accent colour (bright brass if it has no accent), a clear coloured ring just inside the rim. The rivets are polished brass; the face is a finer material in the same shape (planed close-fitted boards, or evenly painted steel with crisp edges); the viewport, boss or windows are re-made with sharp edges. Still no emblem.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is bright brass; the face stays close-fitted WOOD boards, not a newly all-metal face. At Relic the ONE old repair is a single darker replacement plank at the original leftmost board position; no extra patch or new board seam. Gilt ring surrounds the existing central boss. Celestial boards become pale unmarked ivory-toned wood in their same divisions, including the replacement board. Masterwork adds ONLY the coloured rim inlay and finer materials. Do not add the later Relic ring or repair yet. No ornament or heraldry.",
+    "keep_line": "the same upright rounded-rectangular shield of dark vertical wooden boards, thick steel outer rim with perimeter rivets, one large domed steel central boss with a riveted circular mounting flange, and original wood seams and corner profile. Preserve the boss diameter, all rivets, board divisions and entire outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png"
+    ],
+    "depends_on": "shield-boss_shield--fine"
+  },
+  {
+    "id": "shield-boss_shield--relic",
+    "standard_id": "shield-boss_shield",
+    "grade": "relic",
+    "label": "Boss Shield — Relic",
+    "path": "art/icons/gear/shield-boss_shield--relic.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-boss_shield.png",
+      "art/icons/gear/shield-boss_shield--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-boss_shield",
+    "family_references": [
+      "art/icons/gear/shield-boss_shield.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same upright rounded-rectangular shield of dark vertical wooden boards, thick steel outer rim with perimeter rivets, one large domed steel central boss with a riveted circular mounting flange, and original wood seams and corner profile. Preserve the boss diameter, all rivets, board divisions and entire outline.\n\nGrade: Relic. Keep the shape and the rim inlay. The face takes a warm, deep, battle-old patina, the inlay turns to dull old gold, and a flush gilt ring is set around the boss or the centre of the face. Add one old repair that tells a story: a riveted patch plate over an old breach, or one board replaced with a darker plank.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is bright brass; the face stays close-fitted WOOD boards, not a newly all-metal face. At Relic the ONE old repair is a single darker replacement plank at the original leftmost board position; no extra patch or new board seam. Gilt ring surrounds the existing central boss. Celestial boards become pale unmarked ivory-toned wood in their same divisions, including the replacement board.",
+    "keep_line": "the same upright rounded-rectangular shield of dark vertical wooden boards, thick steel outer rim with perimeter rivets, one large domed steel central boss with a riveted circular mounting flange, and original wood seams and corner profile. Preserve the boss diameter, all rivets, board divisions and entire outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png"
+    ],
+    "depends_on": "shield-boss_shield--masterwork"
+  },
+  {
+    "id": "shield-boss_shield--celestial",
+    "standard_id": "shield-boss_shield",
+    "grade": "celestial",
+    "label": "Boss Shield — Celestial",
+    "path": "art/icons/gear/shield-boss_shield--celestial.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-boss_shield.png",
+      "art/icons/gear/shield-boss_shield--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-boss_shield",
+    "family_references": [
+      "art/icons/gear/shield-boss_shield.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same upright rounded-rectangular shield of dark vertical wooden boards, thick steel outer rim with perimeter rivets, one large domed steel central boss with a riveted circular mounting flange, and original wood seams and corner profile. Preserve the boss diameter, all rivets, board divisions and entire outline.\n\nGrade: Celestial. Keep the shape, the rim inlay and the ring's place. The face becomes a pale, unmarked pearl-ivory, the rim and rivets the same. The rim inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Core windows keep their own colour.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is bright brass; the face stays close-fitted WOOD boards, not a newly all-metal face. At Relic the ONE old repair is a single darker replacement plank at the original leftmost board position; no extra patch or new board seam. Gilt ring surrounds the existing central boss. Celestial boards become pale unmarked ivory-toned wood in their same divisions, including the replacement board. All metal and face materials read pale pearl-ivory; dark tones only in recess shadows. The rim inlay is a faint contained ivory-gold line, never a halo or bloom. Existing core windows stay cyan, exact circuits preserved.",
+    "keep_line": "the same upright rounded-rectangular shield of dark vertical wooden boards, thick steel outer rim with perimeter rivets, one large domed steel central boss with a riveted circular mounting flange, and original wood seams and corner profile. Preserve the boss diameter, all rivets, board divisions and entire outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-boss_shield.png"
+    ],
+    "depends_on": "shield-boss_shield--relic"
+  },
+  {
+    "id": "shield-ram_plate--fine",
+    "standard_id": "shield-ram_plate",
+    "grade": "fine",
+    "label": "Ram Plate — Fine",
+    "path": "art/icons/gear/shield-ram_plate--fine.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-ram_plate.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-ram_plate",
+    "family_references": [
+      "art/icons/gear/shield-ram_plate.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.\n\nGrade: Fine. The same shield, newly kept. The dents are hammered out, the face refinished evenly in its own colour, the rim bright, the straps clean. Add one thin engraved line running just inside the rim all the way round. Nothing else is added; no emblem on the face.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses brass-orange #F68A38, preserving the original central orange stripe. Relic adds its small flush gilt ring around the centre point on the existing central reinforcing ridge, no new boss; the ONE repair is a small flush riveted patch on the lower-left flat side panel, inside the rim, without covering or bending the ridge. Celestial retains the same patch surface boundaries in pale material. At Fine add ONLY the one uncoloured engraved rim line and remove old surface damage. No inlay colour, ring or repair is added yet; those later-grade notes are not Fine additions.",
+    "keep_line": "the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png"
+    ]
+  },
+  {
+    "id": "shield-ram_plate--masterwork",
+    "standard_id": "shield-ram_plate",
+    "grade": "masterwork",
+    "label": "Ram Plate — Masterwork",
+    "path": "art/icons/gear/shield-ram_plate--masterwork.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-ram_plate.png",
+      "art/icons/gear/shield-ram_plate--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-ram_plate",
+    "family_references": [
+      "art/icons/gear/shield-ram_plate.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the rim line with the item's accent colour (bright brass if it has no accent), a clear coloured ring just inside the rim. The rivets are polished brass; the face is a finer material in the same shape (planed close-fitted boards, or evenly painted steel with crisp edges); the viewport, boss or windows are re-made with sharp edges. Still no emblem.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses brass-orange #F68A38, preserving the original central orange stripe. Relic adds its small flush gilt ring around the centre point on the existing central reinforcing ridge, no new boss; the ONE repair is a small flush riveted patch on the lower-left flat side panel, inside the rim, without covering or bending the ridge. Celestial retains the same patch surface boundaries in pale material. Masterwork adds ONLY the coloured rim inlay and finer materials. Do not add the later Relic ring or repair yet. No ornament or heraldry.",
+    "keep_line": "the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png"
+    ],
+    "depends_on": "shield-ram_plate--fine"
+  },
+  {
+    "id": "shield-ram_plate--relic",
+    "standard_id": "shield-ram_plate",
+    "grade": "relic",
+    "label": "Ram Plate — Relic",
+    "path": "art/icons/gear/shield-ram_plate--relic.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-ram_plate.png",
+      "art/icons/gear/shield-ram_plate--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-ram_plate",
+    "family_references": [
+      "art/icons/gear/shield-ram_plate.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.\n\nGrade: Relic. Keep the shape and the rim inlay. The face takes a warm, deep, battle-old patina, the inlay turns to dull old gold, and a flush gilt ring is set around the boss or the centre of the face. Add one old repair that tells a story: a riveted patch plate over an old breach, or one board replaced with a darker plank.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses brass-orange #F68A38, preserving the original central orange stripe. Relic adds its small flush gilt ring around the centre point on the existing central reinforcing ridge, no new boss; the ONE repair is a small flush riveted patch on the lower-left flat side panel, inside the rim, without covering or bending the ridge. Celestial retains the same patch surface boundaries in pale material.",
+    "keep_line": "the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png"
+    ],
+    "depends_on": "shield-ram_plate--masterwork"
+  },
+  {
+    "id": "shield-ram_plate--celestial",
+    "standard_id": "shield-ram_plate",
+    "grade": "celestial",
+    "label": "Ram Plate — Celestial",
+    "path": "art/icons/gear/shield-ram_plate--celestial.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-ram_plate.png",
+      "art/icons/gear/shield-ram_plate--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-ram_plate",
+    "family_references": [
+      "art/icons/gear/shield-ram_plate.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.\n\nGrade: Celestial. Keep the shape, the rim inlay and the ring's place. The face becomes a pale, unmarked pearl-ivory, the rim and rivets the same. The rim inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Core windows keep their own colour.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses brass-orange #F68A38, preserving the original central orange stripe. Relic adds its small flush gilt ring around the centre point on the existing central reinforcing ridge, no new boss; the ONE repair is a small flush riveted patch on the lower-left flat side panel, inside the rim, without covering or bending the ridge. Celestial retains the same patch surface boundaries in pale material. All metal and face materials read pale pearl-ivory; dark tones only in recess shadows. The rim inlay is a faint contained ivory-gold line, never a halo or bloom. Existing core windows stay cyan, exact circuits preserved.",
+    "keep_line": "the same tall rectangular dark-steel shield with angular clipped corners, four heavy riveted corner blocks, long raised vertical central reinforcing ridge carrying its thin brass-orange stripe, side-panel rivets and a brown leather grip visible at the right edge. Preserve all corner blocks, ridge, rivets, strap and top and bottom angular outline.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png"
+    ],
+    "depends_on": "shield-ram_plate--relic"
+  },
+  {
+    "id": "shield-deflector--fine",
+    "standard_id": "shield-deflector",
+    "grade": "fine",
+    "label": "Deflector — Fine",
+    "path": "art/icons/gear/shield-deflector--fine.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-deflector.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-deflector",
+    "family_references": [
+      "art/icons/gear/shield-deflector.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.\n\nGrade: Fine. The same shield, newly kept. The dents are hammered out, the face refinished evenly in its own colour, the rim bright, the straps clean. Add one thin engraved line running just inside the rim all the way round. Nothing else is added; no emblem on the face.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses muted cyan matching the core. All grades keep the original cyan window and its exact circuit lines, glass never ivory. Relic gilt ring sits on the existing hexagonal core FRAME, following that frame without covering the cyan glass or inventing a circular boss. The ONE repair is a small flush riveted metal patch on the lower-left face area, inside the rim, clear of core and cyan vertical trace. Celestial keeps that same repair boundary in immaculate pale material. At Fine add ONLY the one uncoloured engraved rim line and remove old surface damage. No inlay colour, ring or repair is added yet; those later-grade notes are not Fine additions.",
+    "keep_line": "the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png"
+    ]
+  },
+  {
+    "id": "shield-deflector--masterwork",
+    "standard_id": "shield-deflector",
+    "grade": "masterwork",
+    "label": "Deflector — Masterwork",
+    "path": "art/icons/gear/shield-deflector--masterwork.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-deflector.png",
+      "art/icons/gear/shield-deflector--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-deflector",
+    "family_references": [
+      "art/icons/gear/shield-deflector.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the rim line with the item's accent colour (bright brass if it has no accent), a clear coloured ring just inside the rim. The rivets are polished brass; the face is a finer material in the same shape (planed close-fitted boards, or evenly painted steel with crisp edges); the viewport, boss or windows are re-made with sharp edges. Still no emblem.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses muted cyan matching the core. All grades keep the original cyan window and its exact circuit lines, glass never ivory. Relic gilt ring sits on the existing hexagonal core FRAME, following that frame without covering the cyan glass or inventing a circular boss. The ONE repair is a small flush riveted metal patch on the lower-left face area, inside the rim, clear of core and cyan vertical trace. Celestial keeps that same repair boundary in immaculate pale material. Masterwork adds ONLY the coloured rim inlay and finer materials. Do not add the later Relic ring or repair yet. No ornament or heraldry.",
+    "keep_line": "the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png"
+    ],
+    "depends_on": "shield-deflector--fine"
+  },
+  {
+    "id": "shield-deflector--relic",
+    "standard_id": "shield-deflector",
+    "grade": "relic",
+    "label": "Deflector — Relic",
+    "path": "art/icons/gear/shield-deflector--relic.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-deflector.png",
+      "art/icons/gear/shield-deflector--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-deflector",
+    "family_references": [
+      "art/icons/gear/shield-deflector.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.\n\nGrade: Relic. Keep the shape and the rim inlay. The face takes a warm, deep, battle-old patina, the inlay turns to dull old gold, and a flush gilt ring is set around the boss or the centre of the face. Add one old repair that tells a story: a riveted patch plate over an old breach, or one board replaced with a darker plank.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses muted cyan matching the core. All grades keep the original cyan window and its exact circuit lines, glass never ivory. Relic gilt ring sits on the existing hexagonal core FRAME, following that frame without covering the cyan glass or inventing a circular boss. The ONE repair is a small flush riveted metal patch on the lower-left face area, inside the rim, clear of core and cyan vertical trace. Celestial keeps that same repair boundary in immaculate pale material.",
+    "keep_line": "the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png"
+    ],
+    "depends_on": "shield-deflector--masterwork"
+  },
+  {
+    "id": "shield-deflector--celestial",
+    "standard_id": "shield-deflector",
+    "grade": "celestial",
+    "label": "Deflector — Celestial",
+    "path": "art/icons/gear/shield-deflector--celestial.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-deflector.png",
+      "art/icons/gear/shield-deflector--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-deflector",
+    "family_references": [
+      "art/icons/gear/shield-deflector.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.\n\nGrade: Celestial. Keep the shape, the rim inlay and the ring's place. The face becomes a pale, unmarked pearl-ivory, the rim and rivets the same. The rim inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Core windows keep their own colour.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay uses muted cyan matching the core. All grades keep the original cyan window and its exact circuit lines, glass never ivory. Relic gilt ring sits on the existing hexagonal core FRAME, following that frame without covering the cyan glass or inventing a circular boss. The ONE repair is a small flush riveted metal patch on the lower-left face area, inside the rim, clear of core and cyan vertical trace. Celestial keeps that same repair boundary in immaculate pale material. All metal and face materials read pale pearl-ivory; dark tones only in recess shadows. The rim inlay is a faint contained ivory-gold line, never a halo or bloom. Existing core windows stay cyan, exact circuits preserved.",
+    "keep_line": "the same small pointed kite-shaped pale-steel shield, angular raised perimeter rim with rivets at its four directional tips, single central hexagonal cyan core window with its metal frame and thin cyan vertical trace above and below it, plus a brown leather strap visible at the right edge. Preserve the four-point kite outline, window, cyan colour and circuitry exactly, all rivets and strap.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png"
+    ],
+    "depends_on": "shield-deflector--relic"
+  },
+  {
+    "id": "shield-bulwark_screen--fine",
+    "standard_id": "shield-bulwark_screen",
+    "grade": "fine",
+    "label": "Bulwark Screen — Fine",
+    "path": "art/icons/gear/shield-bulwark_screen--fine.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-bulwark_screen.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-bulwark_screen",
+    "family_references": [
+      "art/icons/gear/shield-bulwark_screen.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall clipped-corner rectangular steel shield with thick perimeter frame and its rivets, exactly THREE hexagonal cyan core windows stacked vertically, original cyan circuit traces inside each window, thin cyan/ochre vertical conductor strips and single horizontal mid-face brace. Preserve all three separate windows, their exact frames, brace, traces and proportions.\n\nGrade: Fine. The same shield, newly kept. The dents are hammered out, the face refinished evenly in its own colour, the rim bright, the straps clean. Add one thin engraved line running just inside the rim all the way round. Nothing else is added; no emblem on the face.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is muted cyan; existing ochre conductor trim remains in place. Core glass and circuits remain their original cyan in every grade. Relic gilt ring follows the existing hexagonal FRAME of the MIDDLE core window, never adding a new boss or covering glass. The ONE repair is a small flush riveted patch on the lower-left metal face panel, clear of all windows, conductors and brace. Celestial keeps the same patch boundary in pale material, all three cores cyan. At Fine add ONLY the one uncoloured engraved rim line and remove old surface damage. No inlay colour, ring or repair is added yet; those later-grade notes are not Fine additions.",
+    "keep_line": "the same tall clipped-corner rectangular steel shield with thick perimeter frame and its rivets, exactly THREE hexagonal cyan core windows stacked vertically, original cyan circuit traces inside each window, thin cyan/ochre vertical conductor strips and single horizontal mid-face brace. Preserve all three separate windows, their exact frames, brace, traces and proportions.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png"
+    ]
+  },
+  {
+    "id": "shield-bulwark_screen--masterwork",
+    "standard_id": "shield-bulwark_screen",
+    "grade": "masterwork",
+    "label": "Bulwark Screen — Masterwork",
+    "path": "art/icons/gear/shield-bulwark_screen--masterwork.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-bulwark_screen.png",
+      "art/icons/gear/shield-bulwark_screen--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-bulwark_screen",
+    "family_references": [
+      "art/icons/gear/shield-bulwark_screen.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall clipped-corner rectangular steel shield with thick perimeter frame and its rivets, exactly THREE hexagonal cyan core windows stacked vertically, original cyan circuit traces inside each window, thin cyan/ochre vertical conductor strips and single horizontal mid-face brace. Preserve all three separate windows, their exact frames, brace, traces and proportions.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the rim line with the item's accent colour (bright brass if it has no accent), a clear coloured ring just inside the rim. The rivets are polished brass; the face is a finer material in the same shape (planed close-fitted boards, or evenly painted steel with crisp edges); the viewport, boss or windows are re-made with sharp edges. Still no emblem.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is muted cyan; existing ochre conductor trim remains in place. Core glass and circuits remain their original cyan in every grade. Relic gilt ring follows the existing hexagonal FRAME of the MIDDLE core window, never adding a new boss or covering glass. The ONE repair is a small flush riveted patch on the lower-left metal face panel, clear of all windows, conductors and brace. Celestial keeps the same patch boundary in pale material, all three cores cyan. Masterwork adds ONLY the coloured rim inlay and finer materials. Do not add the later Relic ring or repair yet. No ornament or heraldry.",
+    "keep_line": "the same tall clipped-corner rectangular steel shield with thick perimeter frame and its rivets, exactly THREE hexagonal cyan core windows stacked vertically, original cyan circuit traces inside each window, thin cyan/ochre vertical conductor strips and single horizontal mid-face brace. Preserve all three separate windows, their exact frames, brace, traces and proportions.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png"
+    ],
+    "depends_on": "shield-bulwark_screen--fine"
+  },
+  {
+    "id": "shield-bulwark_screen--relic",
+    "standard_id": "shield-bulwark_screen",
+    "grade": "relic",
+    "label": "Bulwark Screen — Relic",
+    "path": "art/icons/gear/shield-bulwark_screen--relic.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-bulwark_screen.png",
+      "art/icons/gear/shield-bulwark_screen--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-bulwark_screen",
+    "family_references": [
+      "art/icons/gear/shield-bulwark_screen.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall clipped-corner rectangular steel shield with thick perimeter frame and its rivets, exactly THREE hexagonal cyan core windows stacked vertically, original cyan circuit traces inside each window, thin cyan/ochre vertical conductor strips and single horizontal mid-face brace. Preserve all three separate windows, their exact frames, brace, traces and proportions.\n\nGrade: Relic. Keep the shape and the rim inlay. The face takes a warm, deep, battle-old patina, the inlay turns to dull old gold, and a flush gilt ring is set around the boss or the centre of the face. Add one old repair that tells a story: a riveted patch plate over an old breach, or one board replaced with a darker plank.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is muted cyan; existing ochre conductor trim remains in place. Core glass and circuits remain their original cyan in every grade. Relic gilt ring follows the existing hexagonal FRAME of the MIDDLE core window, never adding a new boss or covering glass. The ONE repair is a small flush riveted patch on the lower-left metal face panel, clear of all windows, conductors and brace. Celestial keeps the same patch boundary in pale material, all three cores cyan.",
+    "keep_line": "the same tall clipped-corner rectangular steel shield with thick perimeter frame and its rivets, exactly THREE hexagonal cyan core windows stacked vertically, original cyan circuit traces inside each window, thin cyan/ochre vertical conductor strips and single horizontal mid-face brace. Preserve all three separate windows, their exact frames, brace, traces and proportions.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png"
+    ],
+    "depends_on": "shield-bulwark_screen--masterwork"
+  },
+  {
+    "id": "shield-bulwark_screen--celestial",
+    "standard_id": "shield-bulwark_screen",
+    "grade": "celestial",
+    "label": "Bulwark Screen — Celestial",
+    "path": "art/icons/gear/shield-bulwark_screen--celestial.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-bulwark_screen.png",
+      "art/icons/gear/shield-bulwark_screen--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-bulwark_screen",
+    "family_references": [
+      "art/icons/gear/shield-bulwark_screen.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same tall clipped-corner rectangular steel shield with thick perimeter frame and its rivets, exactly THREE hexagonal cyan core windows stacked vertically, original cyan circuit traces inside each window, thin cyan/ochre vertical conductor strips and single horizontal mid-face brace. Preserve all three separate windows, their exact frames, brace, traces and proportions.\n\nGrade: Celestial. Keep the shape, the rim inlay and the ring's place. The face becomes a pale, unmarked pearl-ivory, the rim and rivets the same. The rim inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Core windows keep their own colour.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is muted cyan; existing ochre conductor trim remains in place. Core glass and circuits remain their original cyan in every grade. Relic gilt ring follows the existing hexagonal FRAME of the MIDDLE core window, never adding a new boss or covering glass. The ONE repair is a small flush riveted patch on the lower-left metal face panel, clear of all windows, conductors and brace. Celestial keeps the same patch boundary in pale material, all three cores cyan. All metal and face materials read pale pearl-ivory; dark tones only in recess shadows. The rim inlay is a faint contained ivory-gold line, never a halo or bloom. Existing core windows stay cyan, exact circuits preserved.",
+    "keep_line": "the same tall clipped-corner rectangular steel shield with thick perimeter frame and its rivets, exactly THREE hexagonal cyan core windows stacked vertically, original cyan circuit traces inside each window, thin cyan/ochre vertical conductor strips and single horizontal mid-face brace. Preserve all three separate windows, their exact frames, brace, traces and proportions.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-bulwark_screen.png"
+    ],
+    "depends_on": "shield-bulwark_screen--relic"
+  },
+  {
+    "id": "shield-barrier_wall--fine",
+    "standard_id": "shield-barrier_wall",
+    "grade": "fine",
+    "label": "Barrier Wall — Fine",
+    "path": "art/icons/gear/shield-barrier_wall--fine.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-barrier_wall.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-barrier_wall",
+    "family_references": [
+      "art/icons/gear/shield-barrier_wall.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.\n\nGrade: Fine. The same shield, newly kept. The dents are hammered out, the face refinished evenly in its own colour, the rim bright, the straps clean. Add one thin engraved line running just inside the rim all the way round. Nothing else is added; no emblem on the face.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is brass-orange matching the existing orange perimeter accent. All SIX cores stay cyan at every grade, with the same circuits; no extra windows. Relic puts the flush gilt ring around the existing centre point of the CENTRAL METAL SPINE, without covering glass and without adding a boss. The ONE repair is a small flush riveted plate on an existing lower-left outer metal corner panel, clear of glass and foot. Celestial keeps this same repair boundary in pale metal and a pale trace of the existing orange trim, no new holes or parts. At Fine add ONLY the one uncoloured engraved rim line and remove old surface damage. No inlay colour, ring or repair is added yet; those later-grade notes are not Fine additions.",
+    "keep_line": "the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png"
+    ]
+  },
+  {
+    "id": "shield-barrier_wall--masterwork",
+    "standard_id": "shield-barrier_wall",
+    "grade": "masterwork",
+    "label": "Barrier Wall — Masterwork",
+    "path": "art/icons/gear/shield-barrier_wall--masterwork.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-barrier_wall.png",
+      "art/icons/gear/shield-barrier_wall--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-barrier_wall",
+    "family_references": [
+      "art/icons/gear/shield-barrier_wall.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the rim line with the item's accent colour (bright brass if it has no accent), a clear coloured ring just inside the rim. The rivets are polished brass; the face is a finer material in the same shape (planed close-fitted boards, or evenly painted steel with crisp edges); the viewport, boss or windows are re-made with sharp edges. Still no emblem.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is brass-orange matching the existing orange perimeter accent. All SIX cores stay cyan at every grade, with the same circuits; no extra windows. Relic puts the flush gilt ring around the existing centre point of the CENTRAL METAL SPINE, without covering glass and without adding a boss. The ONE repair is a small flush riveted plate on an existing lower-left outer metal corner panel, clear of glass and foot. Celestial keeps this same repair boundary in pale metal and a pale trace of the existing orange trim, no new holes or parts. Masterwork adds ONLY the coloured rim inlay and finer materials. Do not add the later Relic ring or repair yet. No ornament or heraldry.",
+    "keep_line": "the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png"
+    ],
+    "depends_on": "shield-barrier_wall--fine"
+  },
+  {
+    "id": "shield-barrier_wall--relic",
+    "standard_id": "shield-barrier_wall",
+    "grade": "relic",
+    "label": "Barrier Wall — Relic",
+    "path": "art/icons/gear/shield-barrier_wall--relic.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-barrier_wall.png",
+      "art/icons/gear/shield-barrier_wall--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-barrier_wall",
+    "family_references": [
+      "art/icons/gear/shield-barrier_wall.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.\n\nGrade: Relic. Keep the shape and the rim inlay. The face takes a warm, deep, battle-old patina, the inlay turns to dull old gold, and a flush gilt ring is set around the boss or the centre of the face. Add one old repair that tells a story: a riveted patch plate over an old breach, or one board replaced with a darker plank.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is brass-orange matching the existing orange perimeter accent. All SIX cores stay cyan at every grade, with the same circuits; no extra windows. Relic puts the flush gilt ring around the existing centre point of the CENTRAL METAL SPINE, without covering glass and without adding a boss. The ONE repair is a small flush riveted plate on an existing lower-left outer metal corner panel, clear of glass and foot. Celestial keeps this same repair boundary in pale metal and a pale trace of the existing orange trim, no new holes or parts.",
+    "keep_line": "the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png"
+    ],
+    "depends_on": "shield-barrier_wall--masterwork"
+  },
+  {
+    "id": "shield-barrier_wall--celestial",
+    "standard_id": "shield-barrier_wall",
+    "grade": "celestial",
+    "label": "Barrier Wall — Celestial",
+    "path": "art/icons/gear/shield-barrier_wall--celestial.png",
+    "kind": "shield",
+    "references": [
+      "art/icons/gear/shield-barrier_wall.png",
+      "art/icons/gear/shield-barrier_wall--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "shield-barrier_wall",
+    "family_references": [
+      "art/icons/gear/shield-barrier_wall.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.6",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.\n\nGrade: Celestial. Keep the shape, the rim inlay and the ring's place. The face becomes a pale, unmarked pearl-ivory, the rim and rivets the same. The rim inlay gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Core windows keep their own colour.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The SECOND image supplies the preceding grade; retain its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork rim inlay is brass-orange matching the existing orange perimeter accent. All SIX cores stay cyan at every grade, with the same circuits; no extra windows. Relic puts the flush gilt ring around the existing centre point of the CENTRAL METAL SPINE, without covering glass and without adding a boss. The ONE repair is a small flush riveted plate on an existing lower-left outer metal corner panel, clear of glass and foot. Celestial keeps this same repair boundary in pale metal and a pale trace of the existing orange trim, no new holes or parts. All metal and face materials read pale pearl-ivory; dark tones only in recess shadows. The rim inlay is a faint contained ivory-gold line, never a halo or bloom. Existing core windows stay cyan, exact circuits preserved.",
+    "keep_line": "the same large upright rectangular wall shield with stepped top corners, thick orange-painted perimeter frame and its rivets, exactly SIX hexagonal cyan core windows in two columns and three rows, single central vertical reinforcing spine, two small foot brackets at the bottom and brown leather side handle visible at right. Preserve all six window frames and their distinct cyan circuit paths, original orange trim, all studs, feet and handle.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-barrier_wall.png"
+    ],
+    "depends_on": "shield-barrier_wall--relic"
   }
 ]
