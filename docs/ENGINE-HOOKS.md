@@ -1434,7 +1434,7 @@ Families: `body`, `brain`, `heart`.
 
 | name | signature or shape | what for |
 | --- | --- | --- |
-| `LOADOUT` | `LOADOUT: { budget: number; archetypes: { list: Archetype[]; left_out: Record<string, string> }; gun: { loaded: number; spare: number }; bow: { spare: number }; focuses:…` | The camp's numbers (`survival.json loadout`, PROVISIONAL). |
+| `LOADOUT` | `LOADOUT: { budget: number; archetypes: { list: Archetype[]; left_out: Record<string, string>; tag: string }; gun: { loaded: number; spare: number }; bow: { spare: number…` | The camp's numbers (`survival.json loadout`, PROVISIONAL; `archetypes.tag`: the role tag of the camp's rows, rules 1.93 item 8100). |
 | `RecRow` | `interface RecRow { when, skill, over, top, character, archetype, hands, focus, profile }` | A row of the Recommended weapon table (survival.json `loadout.recommended.weapon`): when it fits (`when` focus, `skill` over `over`, `top` an alpha skill on top), and what it gives: an archetype's free weapon,… |
 | `Archetype` | `interface Archetype { id, name, family, category, skip }` | A weapon archetype (survival.json `loadout.archetypes`; Leon, 14 Nov 2026): a weapons.json family as the data groups it (its mastery_family and category), less `skip`. |
 | `archetypeWeapons` | `archetypeWeapons(a: Archetype): string[]` | An archetype's weapons, cheapest first by priceOf at Standard (a tie by id): the first is its free weapon, the second the rack's better one. |

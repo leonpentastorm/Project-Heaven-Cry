@@ -811,7 +811,7 @@ for t in items("traits"):
         elif t.get("id") not in (tmap[x].get("excludes") or []):
             errors.append(f"traits:{t.get('id')}: excludes {x}, but {x} doesn't exclude it back")
 DMG_TYPES = {"physical", "elemental", "fire", "lightning", "emp", "sigil", "soul", "true"}
-WTAGS = {"electronic", "evoker_linked", "lever", "natural", "heavy"}  # the role tags (rules 1.91 item 7900; natural: item 7919; heavy: rules 1.92 item 8010)
+WTAGS = {"electronic", "evoker_linked", "lever", "natural", "heavy", "issue"}  # the role tags (rules 1.91 item 7900; natural: item 7919; heavy: rules 1.92 item 8010; issue: rules 1.93 item 8100)
 _HEAVY = (((data.get("rules") or {}).get("weapons_rules") or {}).get("heavy") or {})
 if _HEAVY.get("tag") != "heavy" or not isinstance(_HEAVY.get("movement"), (int, float)) or isinstance(_HEAVY.get("movement"), bool) or _HEAVY.get("movement") >= 0 or _HEAVY.get("provisional") is not True:
     errors.append("rules: weapons_rules.heavy needs tag 'heavy', a negative movement and provisional: true (rules 1.92 item 8010)")
@@ -2808,13 +2808,14 @@ if _sv is not None:
         # archetype's or named in left_out (so a new family cannot slip past the camp unseen); each has a weapon with a price.
         _ar = _lo.get("archetypes") or {}
         _fams = {(x.get("mastery_family"), x.get("category")) for x in _wid.values() if (x.get("price_credits") or 0) > 0 and not x.get("companion_only")}
+        if _ar.get("tag") not in WTAGS: errors.append(f"{_w}.archetypes.tag: {_ar.get('tag')!r} is not a role tag (rules 1.93 item 8100)")
         _seen_ar = set()
         for _a in _ar.get("list") or []:
             _aw = f"{_w}.archetypes.{_a.get('id')}"
             if _a.get("id") in _seen_ar: errors.append(f"{_aw}: an id twice")
             _seen_ar.add(_a.get("id"))
-            _ws = sorted([x for x in _wid.values() if x.get("mastery_family") == _a.get("family") and x.get("category") == _a.get("category") and x.get("id") not in (_a.get("skip") or []) and (x.get("price_credits") or 0) > 0], key=lambda x: (x["price_credits"], x["id"]))
-            if not _ws: errors.append(f"{_aw}: no priced weapon of family {_a.get('family')!r} and category {_a.get('category')!r}")
+            _ws = sorted([x for x in _wid.values() if x.get("mastery_family") == _a.get("family") and x.get("category") == _a.get("category") and x.get("id") not in (_a.get("skip") or []) and (x.get("price_credits") or 0) > 0 and _ar.get("tag") in (x.get("tags") or [])], key=lambda x: (x["price_credits"], x["id"]))
+            if not _ws: errors.append(f"{_aw}: no priced weapon of family {_a.get('family')!r} and category {_a.get('category')!r} with the role tag {_ar.get('tag')!r} (rules 1.93 item 8100)")
             for _x in _a.get("skip") or []:
                 if _x not in _wid: errors.append(f"{_aw}.skip: {_x!r} is not a weapon")
         _covered = {(a.get("family"), a.get("category")) for a in _ar.get("list") or []}

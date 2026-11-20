@@ -62,9 +62,9 @@ describe('rules 1.91 item 7920: the pools read tags and hold what the category f
     const now = itemsWith({ from: 'items', any: (SV.shop.stock.item_categories as string[]).map((k) => 'kind:' + k), none: ['kind:focus'], rolled: true }).filter((id) => !counter.has(id)).sort();
     expect(now).toEqual(old);
   });
-  it('the camp loadout\'s archetype weapons', () => {
+  it('the camp loadout\'s archetype weapons (rules 1.93 item 8100: the issue rows only)', () => {
     for (const a of SV.loadout.archetypes.list as any[]) {
-      const old = Object.keys(WEAPON).filter((id) => { const w: any = WEAPON[id]; return w.mastery_family === a.family && w.category === a.category && !w.variant_of && !(a.skip || []).includes(id) && priceOf(id) != null; })
+      const old = Object.keys(WEAPON).filter((id) => { const w: any = WEAPON[id]; return w.mastery_family === a.family && w.category === a.category && !w.variant_of && !(a.skip || []).includes(id) && priceOf(id) != null && (w.tags || []).includes(SV.loadout.archetypes.tag); })
         .sort((x, y) => (priceOf(x) || 0) - (priceOf(y) || 0) || (x < y ? -1 : 1));
       expect(archetypeWeapons(a), a.id).toEqual(old);
     }

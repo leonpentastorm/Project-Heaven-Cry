@@ -14657,3 +14657,19 @@ of 0.33 is renamed or removed.
 8046. **Numbers needed and not given** (handed back, never invented): the Smetanita sidearms' Pressure a hit adds (G16);
       Chezknov's Recoil cut on Bursts (G14); the revolvers' critical range (G2); every gun and bow second-skill effect's
       size (item 8035).
+
+### Rules 1.93 (the integration), 0.34: the camp's issue rack, the new rows' guard, and the lead's rulings on what stage B handed back (20 Nov 2026)
+
+The integration of Items 2.0 stage B (lane B1's 72 weapon rows) and the consolidation that follows it. Items 8100 to
+8129 are rules 1.93's. Every number here is the lead's; the PROVISIONAL ones are listed in item 8129.
+
+8100. **The camp's rack is the issue rack.** Survival's camp (rules 1.52) offers as its free weapon and on its weapon rack
+      only weapon rows that carry the role tag **`issue`** (`rules.json item_tag_kinds`, the `role` kind; a row's `tags`).
+      The camp's one pool reader (`run/loadout.ts archetypeWeapons`) asks for the tag beside the archetype's kind and
+      family; the rest of its order is unchanged (cheapest first by `priceOf`, a tie by id: the first is the free weapon,
+      the second the rack's better one). The tag is on exactly the 18 rows the camp offered in 0.33.0 (two an archetype:
+      `combat_knife`, `throwing_knives`; `ork_machete`, `maul`; `hand_wraps`, `knuckledusters`; `parlour_pistol`,
+      `service_pistol`; `drifter_revolver`, `frontier_hand_cannon`; `decrkm_smg`, `legion_pdw`; `lever_carbine`,
+      `hellraiser_service_rifle`; `sawn_off`, `coach_gun`; `recurve_bow`, `longbow`), so no camp list moves when new
+      rows join the pools; no rules 1.92 row carries it. The shop, the reward pick, loot and the Forge do not read the
+      tag (rules 1.91 item 7920 stands for them).

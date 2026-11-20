@@ -2643,7 +2643,7 @@
     { "id": "pattern", "about": "the row's real-pattern word; art and collections only, no rules reader" },
     { "id": "grade", "about": "the instance's grade (GearState.rarity; a unique's fixed grade); a row with no instance is standard" },
     { "id": "slot", "about": "the slot of equipment_slots.table the row is worn or held in (the row's slot; a weapon row with none: main_hand)" },
-    { "id": "role", "about": "words general code asks for, from the row's tags (lever, electronic, evoker_linked, natural; heavy: rules 1.92 item 8010, the Heavy word)" },
+    { "id": "role", "about": "words general code asks for, from the row's tags (lever, electronic, evoker_linked, natural; heavy: rules 1.92 item 8010, the Heavy word; issue: rules 1.93 item 8100, the camp's rack)" },
     { "id": "unique", "about": "true on a unique variants line (rules 1.91 item 7917): never rolled" }
   ],
   "equipment_slots": {

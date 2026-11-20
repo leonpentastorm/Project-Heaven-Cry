@@ -26,9 +26,9 @@ import { startOffer } from './stage';
 import { relicRow, worthOf, BOON_CAP } from './power';
 
 const SV: any = svJ;
-/** The camp's numbers (`survival.json loadout`, PROVISIONAL). */
+/** The camp's numbers (`survival.json loadout`, PROVISIONAL; `archetypes.tag`: the role tag of the camp's rows, rules 1.93 item 8100). */
 export const LOADOUT: {
-  budget: number; archetypes: { list: Archetype[]; left_out: Record<string, string> }; gun: { loaded: number; spare: number }; bow: { spare: number };
+  budget: number; archetypes: { list: Archetype[]; left_out: Record<string, string>; tag: string }; gun: { loaded: number; spare: number }; bow: { spare: number };
   focuses: string[]; focus_with: Record<string, { id: string; qty: number }[]>; counter: { skip: string[] }; stock: { ids: string[] }; max_qty: number;
   recommended: { focus_by_door: Record<string, string>; weapon: RecRow[]; buys: Record<string, string[]>; fill: string };
   /** The camp screen's backdrop, an art catalog id (optional; consolidation 0.29 ruling i, plan 10.D item 5). */
@@ -42,10 +42,10 @@ export interface RecRow { when?: 'focus'; skill?: string; over?: string; top?: s
  * it (its mastery_family and category), less `skip`. */
 export interface Archetype { id: string; name: string; family: string; category: string; skip?: string[] }
 /** An archetype's weapons, cheapest first by priceOf at Standard (a tie by id): the first is its free weapon, the second
- * the rack's better one. */
+ * the rack's better one. Rules 1.93 item 8100: only issue rows (the role tag `loadout.archetypes.tag`). */
 export function archetypeWeapons(a: Archetype): string[] {
-  // rules 1.91 item 7920: by tags (its kind, rolled: priced and no variant), then the row's mastery_family
-  return itemsWith({ from: 'weapons', all: ['kind:' + a.category], rolled: true }).filter((id) => (WEAPON[id] as any).mastery_family === a.family && !(a.skip || []).includes(id))
+  // rules 1.91 item 7920: by tags (its kind, the issue tag, rolled: priced and no variant), then the row's mastery_family
+  return itemsWith({ from: 'weapons', all: ['kind:' + a.category, 'role:' + LOADOUT.archetypes.tag], rolled: true }).filter((id) => (WEAPON[id] as any).mastery_family === a.family && !(a.skip || []).includes(id))
     .sort((x, y) => (priceOf(x) || 0) - (priceOf(y) || 0) || (x < y ? -1 : 1));
 }
 /** The camp's weapon rack by archetype (rules 1.52; Leon, 14 Nov): the free weapon (the archetype's most basic), the
