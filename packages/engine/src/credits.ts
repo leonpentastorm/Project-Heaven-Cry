@@ -3,7 +3,7 @@
 // the shop, the Forge and the trades of later steps pay out of it through `payCredits`, whose refusal is in words.
 // General: a campaign's rewards and a roguelike's missions use the same purse. (The shelved advanced class in
 // classes/j.ts keeps its own class-state credits; it moves here when it returns.)
-import { WEAPON, ITEM, RULES, ARMOUR_CLASSES } from './data';
+import { WEAPON, ITEM, RULES, ARMOUR_CLASSES, armourClassRowOf } from './data';
 import { RARITY, GRADES, type Character, type Rarity, roundsIdOf, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from './character';
 /** The grades in order (rules.json rarity `order`, rules 1.91 item 7905): what a variant's own grade is compared against. */
 const rarityOrder = (): string[] => GRADES;
@@ -51,7 +51,7 @@ function specialRoundPrice(cal: string, type: string, o: { sale?: boolean } = {}
 export function priceOf(id: string, rarity: Rarity = 'standard', mods: readonly string[] = [], o: { sale?: boolean } = {}): number | null {
   const r = roundsIdOf(id); if (r) return r.type ? specialRoundPrice(r.calibre, r.type, o) : ROUND_PRICE[r.calibre] > 0 ? ROUND_PRICE[r.calibre] : null;
   // rules 1.52: body armour of a class (`armour:<class>`) at the class's own price (rules.json combat armor.classes)
-  const ac = /^armour:(\d)$/.exec(id); if (ac) { const p = Number(ARMOUR_CLASSES[Number(ac[1])]?.price_credits); return p > 0 ? Math.round(p * (RARITY[rarity]?.price ?? 1)) : null; }
+  const ac = armourClassRowOf(id); if (ac || /^armour:\d+$/.test(id)) { const p = Number(ac?.price_credits); return p > 0 ? Math.round(p * (RARITY[rarity]?.price ?? 1)) : null; } // rules 1.93 item 8113: the one reader
   // rules 1.55: `mag:<weapon>:<rounds>` is a magazine holding that many rounds (`:0` an empty one), the same formula
   const m = /^mag:([^:]+)(?::(\d+))?$/.exec(id);
   if (m) { const w: any = WEAPON[m[1]], e = emptyMagPrice(m[1]), rp = w ? ROUND_PRICE[w.ammo] : 0; if (e == null || !rp) return null;

@@ -10,9 +10,9 @@ import { tilesN } from './log';
 import { fmtNumber } from './datatext';
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import familiesJ from '../../../data/families.json';
-import { WEAPON, ITEM, RULES, SKILL, ATTRS, ARMOUR_CLASSES } from './data';
+import { WEAPON, ITEM, RULES, SKILL, ATTRS, ARMOUR_CLASSES, armourClassNumOf } from './data';
 import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM, isShieldId, gradeWord, setGrade, ARMOUR_SLOT } from './character';
-import { itemTags, itemFamilyOf, FAMILY, tagOf, itemsWith, gradeFor } from './itemtags';
+import { itemTags, itemFamilyOf, FAMILY, tagOf, itemsWith, gradeFor, heldGrade, itemRowOf, familyStandardRow } from './itemtags';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia, rollWithPick, rollWithWords, type RollWithOffer } from './combat';
 import { priced } from './effects/cost';
 import { PROFILES, pairOf, statTerm } from './effects/output';
@@ -174,14 +174,14 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       ...variantLines(it),
     ] };
   }
-  const bodyCls = /^armour:(\d+)$/.exec(id), body = bodyCls ? ARMOUR_CLASSES[Number(bodyCls[1])] as any : null;
+  const bodyCls = armourClassNumOf(id), body = bodyCls != null ? ARMOUR_CLASSES[bodyCls] as any : null; // rules 1.93 item 8113
   if ((it && it.category === 'armour') || body) { // (rules 1.57: a shield is a weapon row, above)
     // Items 2.0 lane A3 (design section 6, the worn slots): a worn piece is previewed AT ITS GRADE (rules 1.91 item 7953:
     // the instance's grade at its slot in wornState, which the armour value reads through `arm`), and body armour
     // (`armour:<n>`, a class row) is a worn piece too: its class at the body slot, its grade at wornState.torso_outer
     const x = clone(c), slot = body ? ARMOUR_SLOT : String(it.slot || ''), graded = rarity !== 'standard' ? { [slot]: { rarity } } : {};
     const wsOf = (y: Character, st: Record<string, any>) => { const ws: any = { ...(y.wornState || {}) }; delete ws[slot]; Object.assign(ws, st); if (Object.keys(ws).length) y.wornState = ws; else delete y.wornState; };
-    if (body) { x.armourClass = Number(bodyCls![1]); wsOf(x, graded); }
+    if (body) { x.armourClass = bodyCls!; wsOf(x, graded); }
     else if (slot === 'off_hand') x.offHand = { id } as any; else if (slot) { x.worn = { ...(x.worn || {}), [slot]: id }; wsOf(x, graded); }
     const rng = rngFor('gear-preview', c.id + '#' + id), u = unitFromCharacter(x, '0,0', rng);
     // 0.33 (outside playtest of 0.32.0: a Padded undershirt read "Armour 0 → 1", the character's total): the piece's own
@@ -253,7 +253,7 @@ export function heldAgainst(c: Character, inst: GearInstance): { inst: GearInsta
   if (it?.slot === 'off_hand') return c.offHand && !WEAPON[c.offHand.id] ? { inst: { id: c.offHand.id }, slot: 'Off hand' } : null;
   // Items 2.0 lane A3: a worn piece against the piece worn there AT ITS GRADE (wornState), body armour against the class worn
   if (it?.slot && c.worn?.[it.slot]) return { inst: { id: c.worn[it.slot], rarity: c.wornState?.[it.slot]?.rarity }, slot: cap(String(it.slot).replace(/_/g, ' ')) };
-  if (/^armour:\d+$/.test(inst.id) && c.armourClass) return { inst: { id: 'armour:' + c.armourClass, rarity: c.wornState?.[ARMOUR_SLOT]?.rarity }, slot: 'Body armour' };
+  if (armourClassNumOf(inst.id) != null && c.armourClass) return { inst: { id: 'armour:' + c.armourClass, rarity: c.wornState?.[ARMOUR_SLOT]?.rarity }, slot: 'Body armour' };
   return null;
 }
 
@@ -304,13 +304,15 @@ export interface ItemCardV {
    *  item 10: the card names it only when its effect is built) */
   secondSkill: { id: string; name: string; built: boolean } | null;
   unique: boolean;
+  /** rules 1.93 item 8116: the modifier rows the row carries (`variant_mods`: a maker line's signature, a shield's follow,
+   *  the Open Hand), each with its own name and its own data text (its card line when it has one; the {=placeholder}
+   *  rule has filled the numbers at load). Words only: the rule is the modifier row's, read by the fight. */
+  carries: { id: string; name: string; text: string }[];
   /** the Weapon Art slot (rules 1.91 item 7918): null in this pass, and the card draws nothing for it */
   weaponArt: null;
 }
 const FORM_WORD: Record<string, string> = Object.fromEntries(Object.entries(((familiesJ as any).form_words || {}) as Record<string, unknown>).filter(([k, v]) => k !== 'about' && typeof v === 'string')) as Record<string, string>;
 const words = (s: string) => cap(String(s).replace(/_/g, ' '));
-/** The row behind an id (a weapon, an item, or body armour's class row `armour:<n>`). */
-const rowFor = (id: string): any => (WEAPON[id] as any) || (ITEM[id] as any) || (/^armour:(\d+)$/.test(id) ? ARMOUR_CLASSES[Number(id.slice(7))] : null) || null;
 /** Whether an id holds a grade: the grade step's own refusal (setGrade) asked on a scratch holder, so the card never keeps
  *  a second copy of what can be graded. */
 function holdsGrade(id: string): boolean {
@@ -320,11 +322,12 @@ function holdsGrade(id: string): boolean {
 const CARD = new Map<string, ItemCardV>();
 /** The item card's view-model for an instance (design section 6). Cheap (no scratch fight): every list of items may ask it. */
 export function itemCard(inst: { id: string; rarity?: Rarity | null }): ItemCardV {
-  const id = inst.id, grade = gradeFor(id, inst.rarity), key = id + '|' + grade, hit = CARD.get(key); if (hit) return hit;
-  const r = rowFor(id), tags = itemTags(id, { rarity: grade });
+  const id = inst.id, grade = heldGrade(id, inst.rarity), key = id + '|' + grade, hit = CARD.get(key); if (hit) return hit;
+  const r = itemRowOf(id), tags = itemTags(id, { rarity: grade });
   const fam = r ? itemFamilyOf(id) : null, fd = fam ? FAMILY[fam] : null, form = tagOf(id, 'form'), line = tagOf(id, 'line');
-  const famRows = fd ? itemsWith({ all: ['family:' + fd.id] }).filter((x) => !(rowFor(x) as any)?.variant_of) : [];
-  const pictures = [...new Set([id, ...baseChain(id), ...famRows.filter((x) => tagOf(x, 'form') === 'standard'), ...famRows])];
+  const famRows = fd ? itemsWith({ all: ['family:' + fd.id] }).filter((x) => !(itemRowOf(x) as any)?.variant_of) : [];
+  const std = fd ? familyStandardRow(fd.id) : null; // rules 1.93 item 8115: the one Standard row
+  const pictures = [...new Set([id, ...baseChain(id), ...(std ? [std] : []), ...famRows.filter((x) => tagOf(x, 'form') === 'standard'), ...famRows])];
   const sk = r?.second_skill ? String(r.second_skill) : null;
   const card: ItemCardV = {
     id, name: /^armour:\d+$/.test(id) && r ? (r.name || '') + ' armour' : nameOf(id), pictures, kind: tagOf(id, 'kind'),
@@ -333,9 +336,11 @@ export function itemCard(inst: { id: string; rarity?: Rarity | null }): ItemCard
     familyLine: fd ? fd.name + (form ? ', ' + (FORM_WORD[form] || words(form)) : '') : null,
     line, lineWord: line ? words(line) : null, tags,
     secondSkill: sk ? { id: sk, name: SKILL[sk]?.name || words(sk), built: false } : null,
-    unique: tags.includes('unique:true'), weaponArt: null,
+    unique: tags.includes('unique:true'),
+    carries: ((r?.variant_mods || []) as string[]).map((m) => { const mi: any = ITEM[m]; return mi ? { id: m, name: String(mi.name || m), text: String(mi.card?.text || mi.text || '') } : null; }).filter((x): x is { id: string; name: string; text: string } => !!x && !!x.text),
+    weaponArt: null,
   };
   CARD.set(key, card); return card;
 }
 /** A variant's bases, nearest first. */
-function baseChain(id: string): string[] { const out: string[] = []; let b = (rowFor(id) as any)?.variant_of; while (b && !out.includes(b)) { out.push(b); b = (rowFor(b) as any)?.variant_of; } return out; }
+function baseChain(id: string): string[] { const out: string[] = []; let b = (itemRowOf(id) as any)?.variant_of; while (b && !out.includes(b)) { out.push(b); b = (itemRowOf(b) as any)?.variant_of; } return out; }

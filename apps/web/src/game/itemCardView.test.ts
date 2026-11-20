@@ -3,11 +3,16 @@
 // item that holds no grade has neither; every word comes from the engine's view-model (itemCard).
 import { describe, it, expect } from 'vitest';
 import { WEAPON, ITEM, RARITY } from '@engine';
-import { cardOf, cardPicture, chainPicture, isPlaceholder, gradeBorder, gradeText, familyText, cardHoles } from './itemCardView';
+import { cardOf, cardPicture, chainPicture, isPlaceholder, gradeBorder, gradeText, familyText, cardHoles, carriesText } from './itemCardView';
 import { gearIconUri } from './gearIcons';
 import { markIcon } from './markIcon';
 
 describe('the item card (client half)', () => {
+  it('rules 1.93 item 8116: a maker line carries a signature: a line of the card, the modifier row name and data text', () => {
+    const k = cardOf('arsenal_piston_rifle'), m: any = (ITEM as any).mod_line_arsenal;
+    expect(carriesText(k)).toContain(m.name + ': ' + (m.card?.text || m.text));
+    expect(carriesText(cardOf('service_pistol'))).toEqual([]);
+  });
   it('every weapon and item row has a picture: its own, its chain\'s, or the placeholder', () => {
     for (const id of [...Object.keys(WEAPON), ...Object.keys(ITEM)]) expect(cardPicture(cardOf(id)), id).toMatch(/^(data:image|\/|https?:)/);
   });

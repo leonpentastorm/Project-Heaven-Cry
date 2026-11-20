@@ -32,6 +32,22 @@ def items(name):
         return d["items"]
     return d
 
+def armour_class_of(x, classes):
+    """Rules 1.93 item 8113: the one reader of a body armour id (`armour:<n>`, any number of digits): the class row of
+    that number among `classes` (rules.json armor.classes, a list), or None. The engine's twin is data.ts armourClassRowOf."""
+    m = re.fullmatch(r"armour:(\d+)", str(x or ""))
+    if not m: return None
+    return next((r for r in (classes or []) if isinstance(r, dict) and r.get("class") == int(m.group(1))), None)
+
+
+def grade_ladder():
+    """Rules 1.93 item 8119: the one grade ladder, the rules.json rarity rows in their `order` (character.ts GRADES), and the
+    grades a shop, a Forge or a ceiling may give (`sold` true: Celestial is a Boss reward only)."""
+    _rows = [(k, v) for k, v in (((data.get("rules") or {}).get("rarity")) or {}).items() if isinstance(v, dict)]
+    _rows.sort(key=lambda kv: kv[1].get("order", 0))
+    return [k for k, _ in _rows], [k for k, v in _rows if v.get("sold") is not False]
+
+
 def ids_of(lst):
     return {x.get("id") for x in lst if isinstance(x, dict)}
 
@@ -1492,7 +1508,7 @@ if isinstance(pat, dict) and pat.get("tags"):
 # Rules 1.9 drop tables (World Play 1.1, spec 14 items 691-700): data/loot_tables.json
 lt = data.get("loot_tables")
 if lt is not None:
-    RARITIES = {"standard", "fine", "masterwork", "relic", "celestial"}
+    RARITIES = set(grade_ladder()[0])  # rules 1.93 item 8119: the one ladder
     # the engine's enemy kinds (packages/engine/src/tactics.ts KINDS)
     FOE_KINDS = {"human", "robot", "crawler", "ork", "upper_realm", "cursed", "beast", "machine", "turret", "celestial", "drone"}
     tables = {t.get("id"): t for t in items("loot_tables") if isinstance(t, dict)}
@@ -2778,7 +2794,7 @@ if _sv is not None:
         _vv = _sv["vault"]
         if not (isinstance(_vv.get("guard_factor"), (int, float)) and _vv["guard_factor"] >= 1): errors.append("survival:vault.guard_factor: 1 or more (the guard is at least an Elite fight)")
         if not (isinstance(_vv.get("grade_up"), int) and _vv["grade_up"] >= 1): errors.append("survival:vault.grade_up: a whole number of grades, 1 or more")
-        if _vv.get("grade_max") not in ("fine", "masterwork", "relic"): errors.append("survival:vault.grade_max: fine, masterwork or relic (never Celestial)")
+        if _vv.get("grade_max") not in grade_ladder()[1][1:]: errors.append(f"survival:vault.grade_max: one of {grade_ladder()[1][1:]} (a sold grade above Standard; never Celestial)")
         if _vv.get("provisional") is not True: errors.append("survival:vault: provisional: true")
     # Rules 1.41 (build step 3): the run's start, the encounter generator's budget, templates and settings, the rewards.
     _tiers = {t.get("id") for t in (data.get("enemies") or {}).get("items", [])}
@@ -2849,11 +2865,11 @@ if _sv is not None:
             return None
         _classes = {c.get("class"): c for c in (_armour_classes(data.get("rules")) or [])}
         for _x in (_lo.get("stock") or {}).get("ids", []):
-            if _x.startswith("armour:") and _x[7:].isdigit(): _ok = (_classes.get(int(_x[7:])) or {}).get("price_credits", 0) > 0
+            if _x.startswith("armour:"): _ok = (armour_class_of(_x, list(_classes.values())) or {}).get("price_credits", 0) > 0
             else: _ok = ((_wid.get(_x) or _iid.get(_x) or {}).get("price_credits") or 0) > 0
             if not _ok: errors.append(f"{_w}.stock: {_x!r} has no price (priceOf)")
             # rules 1.55: the camp lists nothing over its budget, so every fixed stock id is priced within it
-            _p = (_classes.get(int(_x[7:])) or {}).get("price_credits", 0) if _x.startswith("armour:") and _x[7:].isdigit() else ((_wid.get(_x) or _iid.get(_x) or {}).get("price_credits") or 0)
+            _p = (armour_class_of(_x, list(_classes.values())) or {}).get("price_credits", 0) if _x.startswith("armour:") else ((_wid.get(_x) or _iid.get(_x) or {}).get("price_credits") or 0)
             if _ok and _num(_lo.get("budget")) and _p > _lo["budget"]: errors.append(f"{_w}.stock: {_x!r} costs {_p}, over the camp budget of {_lo['budget']} (rules 1.55)")
         for _x, _with in (_lo.get("focus_with") or {}).items():
             if _x not in (_lo.get("focuses") or []): errors.append(f"{_w}.focus_with: {_x!r} is not a free focus")
@@ -2944,9 +2960,9 @@ if _sv is not None:
         _rw = _sv["rewards"]
         for _k, _tbl in (_rw.get("rarity") or {}).items():
             for _rr in _tbl:
-                if _rr not in ("standard", "fine", "masterwork", "relic", "celestial"): errors.append(f"survival:rewards.rarity.{_k}: {_rr!r} is not a rarity")
+                if _rr not in grade_ladder()[0]: errors.append(f"survival:rewards.rarity.{_k}: {_rr!r} is not a rarity")
         for _rr in _rw.get("ceiling") or []:
-            if _rr not in ("standard", "fine", "masterwork", "relic"): errors.append(f"survival:rewards.ceiling: {_rr!r} (Celestial is never a ceiling)")
+            if _rr not in grade_ladder()[1]: errors.append(f"survival:rewards.ceiling: {_rr!r} (a sold grade: Celestial is never a ceiling)")
     if "tips" in _sv:
         for _k in ("fight", "elite", "gate", "boss", "shop", "forge", "training", "shrine", "event", "cache", "rest", "vault_guard", "vault"):
             if not isinstance(_sv["tips"].get(_k), str) or not _sv["tips"][_k].strip(): errors.append(f"survival:tips.{_k}: the hover card's text")
@@ -2963,7 +2979,7 @@ if _sv is not None:
     _all_ids = {i["id"] for i in items("items")} | {i["id"] for i in items("weapons")}
     _gu = _sv.get("grade_up")
     if _gu is not None:
-        for _r in ("fine", "masterwork", "relic"):
+        for _r in grade_ladder()[1][1:]:  # rules 1.93 item 8119: every sold grade above Standard
             if not _num((_gu.get("price") or {}).get(_r)) or _gu["price"][_r] <= 0: errors.append(f"survival:grade_up.price.{_r}: a price above 0")
         _pl = _gu.get("places") or {}
         if set(_pl) != {"shop", "forge"} or not all(_num(v) and 0 < v <= 1 for v in _pl.values()): errors.append("survival:grade_up.places: shop and forge, each a factor above 0 and at most 1")
@@ -3495,8 +3511,8 @@ if _vj is not None:
         _b = _v.get("base"); _bw, _bi = _wmap.get(_b), _imap.get(_b)
         # rules 1.91 items 7917, 7957: a worn armour piece, or a body armour class (armour:<n>), is a base too (the
         # uniques' armour lines); a class base is made into an items row of the armour kind by the loader
-        _bc = re.fullmatch(r"armour:(\d+)", str(_b or ""))
-        if _bc: _bi = next(({**r, "category": "armour", "slot": "torso_outer", "armour_class": r.get("class")} for r in _ACLS if str(r.get("class")) == _bc.group(1) and r.get("class")), None)
+        _bc = armour_class_of(_b, _ACLS)
+        if _bc and _bc.get("class"): _bi = {**_bc, "category": "armour", "slot": "torso_outer", "armour_class": _bc.get("class")}
         if not (_bw or (_bi and (_bi.get("focus") or (_bi.get("category") == "armour" and _bi.get("slot"))))): errors.append(f"{_w}: base '{_b}' is a weapon, a focus, a worn armour piece or a body armour class"); continue
         if not isinstance(_v.get("name"), str) or not _v["name"] or re.search(r"\d", _v["name"]): errors.append(f"{_w}: a variant has a name, with no number in it")
         if _v.get("rarity", "standard") not in _grades: errors.append(f"{_w}: rarity is one of {_grades}")

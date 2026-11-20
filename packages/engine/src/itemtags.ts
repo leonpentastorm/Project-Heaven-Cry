@@ -6,7 +6,7 @@
 // Nothing here prices, deals or rolls; `rolled` asks credits.ts priceOf, the one price.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import familiesJ from '../../../data/families.json';
-import { WEAPON, ITEM, RULES, ARMOUR_CLASSES } from './data';
+import { WEAPON, ITEM, RULES, ARMOUR_CLASSES, armourClassRowOf } from './data';
 import { priceOf } from './credits';
 import type { Rarity } from './character';
 
@@ -23,11 +23,13 @@ if (!ITEM_TAG_KINDS.length) throw new Error('data/rules.json item_tag_kinds is m
 const SLOT_IDS = new Set<string>((((RULES as any).equipment_slots?.table || []) as any[]).map((r) => r.id));
 const ARMOUR_SLOT: string = (RULES as any).equipment_slots?.armour_class_from || 'torso_outer';
 
-/** A row by id: a weapon row, an item row, or body armour's class row (`armour:<n>`), or null. */
-function rowOf(id: string): any | null {
+/** A row by id: a weapon row, an item row, or body armour's class row (`armour:<n>`, data.ts armourClassRowOf), or null.
+ * The one row reader for an id (rules 1.93 item 8113: the card and the preview read it too). */
+export function itemRowOf(id: string): any | null {
   const w: any = WEAPON[id] || (ITEM as any)[id]; if (w) return w;
-  const a = /^armour:(\d+)$/.exec(id); return a ? ARMOUR_CLASSES[Number(a[1])] || null : null;
+  return armourClassRowOf(id);
 }
+const rowOf = itemRowOf;
 /** A row's family (rules 1.91 item 7902): its `family`; a variant's base's; else its own id (a row with no family is
  * its own family). */
 export function itemFamilyOf(id: string): string {
@@ -44,8 +46,21 @@ export function familyForm(id: string): FamilyForm | null {
 export const fixedGradeOf = (id: string | null | undefined): Rarity | null => {
   const r: any = id ? rowOf(id) : null; return r?.unique ? ((r.variant_grade || 'standard') as Rarity) : null;
 };
-/** The grade an instance of `id` is given or holds: a unique's fixed grade, else `rarity`, else Standard. */
-export const gradeFor = (id: string, rarity?: Rarity | null): Rarity => fixedGradeOf(id) || rarity || 'standard';
+/** Why a weapon row takes no grade, in words, or null (the one copy, read by setGrade, the grade step's offers and
+ * refusals, and gradeFor): a thrown thing; a row whose `graded` is false (rules 1.93 item 8111: the mana weapons, fists,
+ * the bot items the data marks). An item row (armour, a focus, a quiver) answers through its own readers. */
+export function ungradedWhy(id: string | null | undefined): string | null {
+  const w: any = id ? WEAPON[id] : null; if (!w) return null;
+  if (w.category === 'thrown') return 'A thrown thing is not graded.';
+  if (w.graded === false) return 'The ' + w.name + ' takes no grade.';
+  return null;
+}
+/** The grade an instance of `id` is GIVEN (a pool, a shop's roll, a reward, a grant): a unique's fixed grade; Standard for
+ * a row the grade rule refuses (ungradedWhy, rules 1.93 item 8114); else `rarity`, else Standard. */
+export const gradeFor = (id: string, rarity?: Rarity | null): Rarity => fixedGradeOf(id) || (ungradedWhy(id) ? 'standard' : rarity) || 'standard';
+/** The grade an instance HOLDS (the card, the tags): a unique's fixed grade, else the grade it was saved with (rules 1.93
+ * item 8114: an instance saved at a grade before its row was refused keeps it), else Standard. */
+export const heldGrade = (id: string, rarity?: Rarity | null): Rarity => fixedGradeOf(id) || rarity || 'standard';
 
 const ROW_TAGS = new WeakMap<object, string[]>();
 /** The row's own tags (everything but the grade), kept per row object. */
@@ -64,7 +79,7 @@ function rowTags(id: string, r: any): string[] {
  * none), slot, role and unique, as `kind:value` strings. An id that is no row has none. */
 export function itemTags(id: string | null | undefined, inst?: { rarity?: Rarity | null } | null): string[] {
   const r = id ? rowOf(id) : null; if (!r) return [];
-  return [...rowTags(id!, r), 'grade:' + gradeFor(id!, inst?.rarity)];
+  return [...rowTags(id!, r), 'grade:' + heldGrade(id!, inst?.rarity)];
 }
 /** Rules 1.91 item 7916, rules 1.93 item 8110 (the one copy): an explosive charge is a weapon row with `explosive: true`
  * and the `kind:thrown` tag (the launchers are explosive and not thrown); `EXPLOSIVE_CHARGES` lists them in data order. */
@@ -89,4 +104,20 @@ export function tagsAnswer(id: string, q: ItemQuery): boolean {
 export function itemsWith(q: ItemQuery): string[] {
   const ids = [...(q.from !== 'items' ? Object.keys(WEAPON) : []), ...(q.from !== 'weapons' ? Object.keys(ITEM).filter((id) => q.from === 'items' || !WEAPON[id]) : [])];
   return ids.filter((id) => tagsAnswer(id, q));
+}
+
+/** Rules 1.93 item 8115: a family's Standard row: its rows that are no variant and no unique, the Standard form first,
+ * else the first in the data's order; null for an id that is no family or has no such row. The one copy (the item card's
+ * picture chain reads it, and the weapon-id reader below). */
+export function familyStandardRow(fam: string): string | null {
+  const f = FAMILY[fam]; if (!f) return null;
+  const rows = itemsWith({ all: ['family:' + f.id] }).filter((x) => { const r: any = rowOf(x); return r && !r.variant_of && !r.unique; });
+  return rows.find((x) => tagOf(x, 'form') === 'standard') || rows[0] || null;
+}
+/** Rules 1.93 item 8115: the weapon row a weapon id names, wherever a fight's enemy, an npc's place or a loot entry takes
+ * one: a weapon row's own id; a FAMILY id: that family's Standard row when it is a weapon; else null (the caller keeps its
+ * own fallback and says so). */
+export function weaponIdOf(id: unknown): string | null {
+  const k = String(id ?? '').trim(); if (!k) return null; if (WEAPON[k]) return k;
+  const s = familyStandardRow(k); return s && WEAPON[s] ? s : null;
 }

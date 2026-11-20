@@ -9,7 +9,7 @@ import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, checkMod, fmt, tabNavIndex, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
   ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls, perkRow } from './shared';
 import { RULES, ARMOUR_SLOT, armourOf } from '@engine';
-import { cardOf, cardHoles, gradeBorder, gradeText, familyText } from '../game/itemCardView';
+import { cardOf, cardHoles, gradeBorder, gradeText, familyText, carriesText } from '../game/itemCardView';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, levelUpDue, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER , STAGE_MULT , DESIGN_TEMPLATES, soulPicksLeft, gatedBy, FEELINGS } from '@engine';
 import { practiceView, feelingCodex, moduleGroups, markIconSrc, iconStyle } from '../game/feelingsView';
 import { hasPaintedArt, heartMarkKey } from '../game/heartIcons';
@@ -620,7 +620,7 @@ export class MainLogic extends DCLogic {
     const kitDef = c ? KITS[c.kit] || KITS.medic : null, side = c ? mainHandSide(c) : 'right';
     const ws = c ? c.weaponState || {} : {}, wd = c ? weaponDurOf(c) : 0, wmax = c ? maxDurOf(c.weapon, ws.rarity) : 0;
     const wear = (d, m) => (m ? (d <= 0 ? 'BROKEN' : d <= m * 0.25 ? 'worn ' + d + '/' + m : 'durability ' + d + '/' + m) : '');
-    const worn = c ? { [HAND_SLOT.main]: [(ws.name || (w.name === WEAPON[kitDef.weapon]?.name && kitDef.weaponName ? kitDef.weaponName : w.name)) + (ws.rarity && ws.rarity !== 'standard' ? ' · ' + ws.rarity.toUpperCase() : ''),
+    const worn = c ? { [HAND_SLOT.main]: [(ws.name || (w.name === WEAPON[kitDef.weapon]?.name && kitDef.weaponName ? kitDef.weaponName : w.name)) + (ws.rarity && ws.rarity !== 'standard' ? ' · ' + gradeText(cardOf(c.weapon, ws.rarity)) : ''), // rules 1.93 item 8119: the ladder's word
         [(typeof w.damage === 'number' ? w.damage + ' dmg' : 'damage varies') + (typeof w.range_tiles === 'number' ? ' · ' + w.range_tiles + ' tiles' : '') + (w.magazine ? ' · ' + loadedOf(c) + '/' + w.magazine + ' loaded' : ''), wear(wd, wmax),
           (ws.mods || []).map((m) => ITEM[m]?.name).filter(Boolean).join(', '), armsLine(c.weapon), skillLine(c, { id: c.weapon, rarity: ws.rarity, mods: ws.mods })].filter(Boolean).join(' · ')],
       // Items 2.0 lane A3 (design section 5, a screen fault): the body armour's Armour as the fight reads it (armourOf: the
@@ -689,7 +689,7 @@ export class MainLogic extends DCLogic {
     const cardTip = (id, st = {}) => { if (!id) return null; const k = cardOf(id, st.rarity), h = holes(id, st.rarity), wd = WEAPON[id], m = wd ? maxDurOf(id, st.rarity || 'standard') : 0, d = st.dur ?? m;
       const gun = colIds.includes(id) ? 'Collection (Gun Nut): parting with it takes a Dexterity check.' : '';
       return { title: st.name || k.name, sub: [h.grade, h.family || (k.kind || '').replace(/_/g, ' ')].filter(Boolean).join(' · '), img: h.img, glyph: '', lore: wd?.lore || '',
-        lines: [gun, ITEM[id]?.text || ''].filter(Boolean),
+        lines: [gun, ITEM[id]?.text || '', ...carriesText(k)].filter(Boolean), // rules 1.93 item 8116: the carried modifier rows' lines
         more: () => [gun, ...(c ? gearPreview(c, { id, rarity: st.rarity, mods: st.mods }).lines.map((l) => l.label + ': ' + l.value) : []),
           m ? 'Durability ' + d + ' / ' + m + (d <= 0 ? ' · BROKEN' : '') : '', wd ? armsLine(id) : '', wd?.requires ? 'Needs ' + Object.entries(wd.requires).map(([x, v]) => SK[x]?.name + ' ' + v).join(', ') : '',
           ITEM[id]?.text || ''].filter(Boolean) }; };

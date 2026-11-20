@@ -10,7 +10,7 @@
 // and the engine's reason), so the client builds no price, legality or choice.
 import '../datatext';
 import svJ from '../../../../data/survival.json';
-import { WEAPON, ITEM, ARMOUR_CLASSES } from '../data';
+import { WEAPON, ITEM, ARMOUR_CLASSES, armourClassNumOf } from '../data';
 import { type Character, type Rarity, type GearWhere, type PackItem, gearAt, setGrade, packOf, fitMod, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear, quiversOf, isQuiverItem,
   practiceOf, picksAt, nextPickAt, devotionXpOf, devotionLevelOf, devotionThreshold, DEVOTION_MAX_LEVEL, carriedGuns, gunAt, setGunMods, type GunWhere } from '../character';
 import { payCredits, earnCredits, cantPay, priceOf } from '../credits';
@@ -67,7 +67,7 @@ const LADDER: Rarity[] = SOLD_GRADES;
 const GRADE_WORD: Record<string, string> = Object.fromEntries(GRADES.map((r) => [r, gradeWord(r)]));
 /** Rules 1.91 item 7917: a unique's grade is its own (itemtags.ts fixedGradeOf): no step changes it. */
 const fixedWhy = (id: string): string | null => (fixedGradeOf(id) ? 'The ' + nameOf(id) + "'s grade is its own: no armourer changes it." : null);
-const nameOf = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || (/^armour:\d+$/.test(id) ? (ARMOUR_CLASSES[Number(id.slice(7))]?.name || '') + ' body armour' : id);
+const nameOf = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || (armourClassNumOf(id) != null ? (ARMOUR_CLASSES[armourClassNumOf(id)!]?.name || '') + ' body armour' : id);
 
 /** The actions of this file (the run reducer hands them here; game.ts Action lists them). */
 export type ProgressAction =

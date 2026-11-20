@@ -486,7 +486,10 @@ function detonate(h: Holder, rng: Rng, ch: { at: string; from: string; shape: st
   for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && tiles.includes(o.pos)) out += damageObject(cb, o.pos, dmg * DEMO, 0, u);
   return out || ' · it finds no one';
 }
-const explosiveOf = (u: Unit, want?: string) => (want && EXPLOSIVES.includes(want) && (u.throwables?.[want] || 0) > 0 ? want : EXPLOSIVES.find((x) => (u.throwables?.[x] || 0) > 0) || null);
+/** The charge set: the one asked for when carried; else the strongest carried (rules 1.93 item 8118: by the row's own
+ * damage, the data's order on a tie), so a satchel goes before a frag as a rule, not a list. */
+const chargeDmg = (id: string): number => { const d = (WEAPON[id] as any)?.damage; return typeof d === 'number' ? d : 0; };
+const explosiveOf = (u: Unit, want?: string) => (want && EXPLOSIVES.includes(want) && (u.throwables?.[want] || 0) > 0 ? want : EXPLOSIVES.filter((x) => (u.throwables?.[x] || 0) > 0).sort((a, b) => chargeDmg(b) - chargeDmg(a))[0] || null);
 const parseCharge = (choice?: string) => { const p = String(choice || 'circle').split(/[,\s]+/); return { shape: ['line', 'cone', 'circle'].includes(p[0]) ? p[0] : 'circle', item: p.find((x) => EXPLOSIVES.includes(x)), remote: p.includes('remote') || p.includes('trigger') }; };
 register({
   id: 'demolitionist', claims: [4],

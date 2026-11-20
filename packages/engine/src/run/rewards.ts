@@ -6,8 +6,8 @@ import '../datatext';
 import svJ from '../../../../data/survival.json';
 import { WEAPON, ITEM } from '../data';
 import { type Character, type PackItem, type Rarity, isGunId, quiversOf, FOCUS_IDS, FOCUS_DOOR, holds, packOf, kindOfDoor, roundsOf, drawnWeapon, QUIVER_ITEM, maxMp, coresCarried, evoChargeNow, carriesVisualizer, carriedGuns } from '../character';
-import { GRADES } from '../character';
-import { itemsWith, tagOf } from '../itemtags';
+import { GRADES, BARE_KIT } from '../character';
+import { itemsWith, tagOf, gradeFor } from '../itemtags';
 import { CORE_CHARGE, coreChargeOf, CORE_ITEM, VIS_CHARGE, visChargeNow } from '../magic';
 import { lootToPack } from '../containers';
 import { priceOf } from '../credits';
@@ -141,7 +141,9 @@ const RARITIES: Rarity[] = GRADES; // rules 1.91 item 7905: the one grade ladder
 /** The weapons and foci a pick or a shop can roll (rule 26; rules 1.91 item 7920, by tags): every weapon row with a price
  * that is not thrown, then every focus with a price; never a variant (rules 1.56 L4: loot, a shop or a campaign names one
  * by id). The one list (the shop's rolled gear is it, sorted). */
-export const rolledGear = (): string[] => [...itemsWith({ from: 'weapons', none: ['kind:thrown'], rolled: true }), ...itemsWith({ from: 'items', all: ['kind:focus'], rolled: true })];
+/** The rolled-gear pool (rules 1.91 item 7920, by tags): priced weapons that are not thrown, and foci; never a body's own
+ * weapon (rules 1.93 item 8117: the `role: natural` tag, and the bare hands, BARE_KIT's weapon). */
+export const rolledGear = (): string[] => [...itemsWith({ from: 'weapons', none: ['kind:thrown', 'role:natural'], rolled: true }).filter((id) => id !== BARE_KIT.weapon), ...itemsWith({ from: 'items', all: ['kind:focus'], rolled: true })];
 const PICKABLE: string[] = rolledGear();
 /** A pick's kind (its `kind:` tag: the row's category), for the "own kind" offer. */
 const categoryOf = (id: string): string | null => tagOf(id, 'kind');
@@ -246,7 +248,7 @@ export function weaponOffer(c: Character, node: { id: string; depth: number }, k
   let room = capRoom(c);
   const weapons: RunWeapon[] = ids.map((id) => {
     const rolled = o.grade || (rollTable(rng, { id: 'rarity', entries: Object.entries(table).map(([r, w]) => ({ item: r, weight: Number(w) })) })?.item || 'standard') as Rarity;
-    let rarity = o.grade || cappedRarity(rolled, stage), prop: string | undefined;
+    let rarity = gradeFor(id, o.grade || cappedRarity(rolled, stage)), prop: string | undefined; // rules 1.93 item 8114: a row the grade rule refuses is Standard (no Relic property)
     // rules 1.43 (rule 26): a Relic comes with its named property rolled, worth on the cap; none that fits: Masterwork
     if (rarity === 'relic' && id !== QUIVER_ITEM) { prop = rollProps(rng, id, room, 1)[0]; if (prop) room -= worthOf(prop); else rarity = 'masterwork'; }
     return { id, rarity, price: priceOf(id, rarity) || 0, ...(prop ? { prop } : {}) };

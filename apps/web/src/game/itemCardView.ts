@@ -35,6 +35,9 @@ export function gradeBorder(card: ItemCardV): string {
 export const gradeText = (card: ItemCardV): string => (card.graded ? (card.gradeWord.toUpperCase() + (card.marks ? ' ' + MARK.repeat(card.marks) : '')) : '');
 /** The family line under the name ("Cavalry blades, Dexterity · Officers"), '' when it has neither. */
 export const familyText = (card: ItemCardV): string => [card.familyLine, card.lineWord].filter(Boolean).join(' · ');
+/** Rules 1.93 item 8116: the lines of the modifier rows the row carries (a maker line's signature: "Arsenal action:
+ *  reloading costs 1 AP less"), each the engine's name and data text, in the order the row lists them. */
+export const carriesText = (card: ItemCardV): string[] => (card.carries || []).map((m) => m.name + ': ' + m.text);
 /** The second skill's line, only when its effect is built (design item 10). */
 export const secondSkillText = (card: ItemCardV): string => (card.secondSkill?.built ? 'Second skill: ' + card.secondSkill.name : '');
 

@@ -3,7 +3,7 @@
 // setting's named guard; its chest pays credits and a pick a grade above the stage's; after it the squad is back on its
 // lane. Every number is read from data/survival.json.
 import { describe, expect, it } from 'vitest';
-import { type GameState, apply, reachable, runNode, budgetFor, composeEncounter, nodeCredits, nodeXp, creditsOf, stageCeiling, vaultGrade, SETTING, ENC_BUDGET } from '../src';
+import { type GameState, apply, reachable, runNode, budgetFor, composeEncounter, nodeCredits, nodeXp, creditsOf, stageCeiling, vaultGrade, SETTING, ENC_BUDGET, gradeFor } from '../src';
 import { type Pc } from './helpers/replay';
 import { survivalRoom, startRun, ownerOf, leaveField, walkIn } from './helpers/survival';
 import svJ from '../../../data/survival.json';
@@ -74,7 +74,7 @@ describe('rules 1.48: the vault', () => {
     expect(x.run!.at).toBe(chest.id); expect(x.run!.state).toBe('reward');
     expect(creditsOf(x.characters.c1)).toBe(c0 + nodeCredits('vault', chest.depth, 1));
     expect(vaultGrade(1)).toBe('masterwork'); expect(stageCeiling(1)).toBe('fine'); expect(vaultGrade(2)).toBe('relic'); expect(vaultGrade(5)).toBe('relic');
-    for (const w of x.run!.offers!.c1.weapons) expect(['masterwork']).toContain(w.rarity);
+    for (const w of x.run!.offers!.c1.weapons) expect(w.rarity).toBe(gradeFor(w.id, 'masterwork')); // rules 1.93 item 8114: an ungraded row at Standard
     const w0 = x.run!.offers!.c1.weapons[0];
     x = apply(x, { type: 'run/pick', charId: 'c1', choice: 0 }, 'host');
     x = apply(x, { type: 'run/pick', charId: 'c2', choice: 1 }, 'p2'); // rules 1.54: no Materials card at the chest

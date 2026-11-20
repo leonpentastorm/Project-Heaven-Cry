@@ -55,7 +55,7 @@
 // ammunition carried before it), each stage's credits earned and spent, XP and level, grade steps, the vault.
 import { apply, reachable, runNode, runOptions, lastingFor, creditsOf, packOf, gearAt, wearAt, WEAPON, ITEM, pendingPerkSteps, maxHp,
   counterLines, linePrice, restockRoom, sellValue, gradePrice, nextGrade, GRADE_UP, relicRow, worthOf, capRoom, boonProblem, BOONS, alive, isStartBoon, lineOf, startOffer,
-  dist, standable, zoneMap, makeView, priceOf, ROUND_PRICE, RECIPES, coresCarried, loadoutLines, holds, gearEntry, equip, hasTag, tagOf } from '../../src';
+  dist, standable, zoneMap, makeView, priceOf, ROUND_PRICE, RECIPES, coresCarried, loadoutLines, holds, gearEntry, equip, hasTag, tagOf, GRADES } from '../../src';
 import { fxTaps } from '../../src/fxtap';
 import { allPendingDoorPicks } from '../../src/doorpicks';
 import { perkActionsFor } from '../../src';
@@ -157,8 +157,8 @@ export interface StageRow { stage: number; setting: string; earned: number[]; sp
 export interface StopRow { stage: number; depth: number; kind: string; lvl: number[]; hp: number; hpEach: number[]; rounds: (number | null)[]; cores: number[] }
 export interface RunResult { party: string; route: RoutePolicy; seed: string; how: string; stage: number; depth: number; cleared: number; fights: FightRow[]; stages: StageRow[]; errors: string[]; boons: string[][]; /** rules 1.51: each character's starting boon, and the levers on */ start?: (string | null)[]; levers?: string[]; /** P2 */ stops?: StopRow[]; members?: string[]; camp?: { credits: number[]; rounds: (number | null)[]; cores: number[]; armour: number[] } }
 
-const RANK = ['standard', 'fine', 'masterwork', 'relic', 'celestial'];
-const rankOf = (r: string) => RANK.indexOf(r || 'standard');
+/** The grade ladder (rules 1.93 item 8119: the one ladder, character.ts GRADES from the rarity rows). */
+const rankOf = (r: string) => (GRADES as string[]).indexOf(r || 'standard');
 /** Where a character's door item is: a caster's focus in the off hand, else the gun or blade in the main hand. */
 const doorWhere = (c: any): 'main' | 'off' => { const off = c.offHand?.id; return off && hasTag(off, 'kind:focus') ? 'off' : 'main'; };
 /** Rounds carried for the gun in the main hand (loaded, in magazines, loose), or null for no magazine gun. */

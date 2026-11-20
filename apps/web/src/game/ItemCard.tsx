@@ -6,7 +6,7 @@
 // gearPreview); itemCardView.ts says how it is drawn, the same as the sheet's template screens.
 import React from 'react';
 import type { ItemCardV, GearPreview } from '@engine';
-import { cardPicture, gradeBorder, gradeText, familyText, secondSkillText, isPlaceholder, MARK } from './itemCardView';
+import { cardPicture, gradeBorder, gradeText, familyText, secondSkillText, carriesText, isPlaceholder, MARK } from './itemCardView';
 import { shownLines } from './previewLines';
 
 const INK = { text: '#E7EBF3', muted: '#A3AEC2', white: '#FFFFFF' };
@@ -24,13 +24,14 @@ export function ItemPicture({ card, size, zoom, ink, round = 12, name }: { card:
 
 /** The name, the grade (word and marks: the frame never says it alone) and the family line. `nameSize` in px. */
 export function ItemHead({ card, name, nameSize = 19, align, extra }: { card: ItemCardV; name?: string; nameSize?: number; align?: 'center'; extra?: React.ReactNode }) {
-  const grade = gradeText(card), fam = familyText(card), second = secondSkillText(card);
+  const grade = gradeText(card), fam = familyText(card), second = secondSkillText(card); // rules 1.93 item 8116: carried modifier lines below
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0, alignItems: align === 'center' ? 'center' : undefined, textAlign: align }}>
       <span data-phc-card-name="" style={{ fontFamily: "'Spectral', serif", fontSize: nameSize, fontWeight: 600, lineHeight: 1.15 }}>{name || card.name}</span>
       {grade ? <span data-phc-grade={card.grade} style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.14em', color: card.marks ? INK.white : INK.muted }}>{grade}</span> : null}
       {fam ? <span data-phc-family="" style={{ fontSize: 'var(--fs-sub)', color: INK.muted }}>{fam}</span> : null}
       {second ? <span data-phc-second-skill="" style={{ fontSize: 'var(--fs-sub)', color: INK.muted }}>{second}</span> : null}
+      {carriesText(card).map((t, i) => <span key={i} data-phc-carries={card.carries[i].id} style={{ fontSize: 'var(--fs-sub)', color: INK.text, lineHeight: 1.3 }}>{t}</span>)}
       {extra}
     </div>
   );

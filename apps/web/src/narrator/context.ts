@@ -35,7 +35,7 @@ const CLASS_LINE = Object.values(CLASS).map((k: any) => k.name + ' (' + (ATTR as
 const WEAPON_IDS: string = (() => {
   const ws = (WEAPONS as any[]).filter((w) => !/smoke|flash/.test(w.id));
   const fams = [...new Set(ws.map((w) => w.family).filter(Boolean))];
-  return ws.filter((w) => !w.family).map((w) => w.id).join(', ') + '. Weapon families (wiki_lookup family:<id> for their weapon ids): ' + fams.join(', ');
+  return ws.filter((w) => !w.family).map((w) => w.id).join(', ') + '. Weapon families (a family id is accepted wherever a weapon id is and gives its standard form; wiki_lookup family:<id> lists its other forms): ' + fams.join(', ');
 })();
 const wikiClasses = () => wikiKinds().class.filter((id: string) => (CLASS as any)[id] || (ADV_LIVE && advancedActive(id)));
 const NEVER = ['advanced-classes', 'how-the-existing-material', 'open-questions'];

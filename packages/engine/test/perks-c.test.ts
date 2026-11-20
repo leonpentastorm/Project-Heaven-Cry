@@ -6,7 +6,7 @@ import { reactionsUsed } from '../src';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
   apply, moveUnit, resolveAttack, previewAttack, attackDamage, throwItem, applyDamage, applyCond, makeObject, d20, packOf, emitStory, condOn, refOf, positionsOf, endTurn, critMult,
-  type Unit, type Combat, type Character, TRAITS, perkActionsFor, PERK,
+  type Unit, type Combat, type Character, TRAITS, perkActionsFor, PERK, WEAPON,
 } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 
@@ -307,6 +307,13 @@ describe('Demolitionist', () => {
     s.g.rng.state = rngFor(19).state;
     const ck = s.g.checks.find((k) => !k.done)!; s.act({ type: 'check/roll', checkId: ck.id } as any);
     expect(s.g.checks.find((k) => k.id === ck.id)!.roll!.ok).toBe(false);
+  });
+  it('rules 1.93 item 8118: with no charge named, the strongest carried is set (by the row\'s damage: a satchel before a frag)', () => {
+    const f = fightWith([{ traits: ['demolitionist'] }], [{ at: 'G6' }]);
+    const u = f.turn(at(f.pc, '3,5')); u.throwables = { frag_grenade: 1, satchel_charge: 1 }; at(f.foe, '7,5'); f.foe.hp = f.foe.maxHp = 999;
+    expect((WEAPON as any).satchel_charge.damage).toBeGreaterThan((WEAPON as any).frag_grenade.damage);
+    f.act({ type: 'combat/perk', unitId: u.id, id: 'demolitionist', actionId: 'set_explosive', tile: '4,5', choice: 'line' } as any);
+    expect(f.pc.throwables).toEqual({ frag_grenade: 1, satchel_charge: 0 }); expect(logHas(f.cb, /shaped satchel charge/)).toBe(true);
   });
   it('on a trigger: set now, Detonate later', () => {
     const f = fightWith([{ traits: ['demolitionist'] }], [{ at: 'G6' }]);

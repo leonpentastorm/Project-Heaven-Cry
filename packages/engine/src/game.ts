@@ -12,7 +12,7 @@ import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT, migrateCharac
 import { migrateCharacterPerks, answerRepick } from './character';
 import { isGrade, setArmourClass } from './character';
 import { ARMOUR_CLASSES } from './data';
-import { gradeFor } from './itemtags';
+import { gradeFor, weaponIdOf } from './itemtags';
 import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
 import { migrateCharacterHp, HP_REV, setDevotionXp, devotionThreshold, migrateCharacterSigils, migrateCharacterSoul, migrateCharacterClass, migrateCharacterFocus, migrateCharacterMp, migrateCharacterItems, classPickError, isMedicChar, ADVANCED_SHELVED, migrateDesign, sameSchoolError, checkOutburstDesign, designShapeError, pairingError } from './character';
@@ -466,6 +466,12 @@ export interface Vote { id: string; kind: 'reroll' | 'edit'; entryId: string; no
 export class RuleError extends Error {}
 const fail = (m: string): never => { throw new RuleError(m); };
 const id = (g: GameState, p: string) => p + (++g.seq);
+/** Rules 1.93 item 8115: a weapon word the engine does not know (no weapon row, no weapon family): today's fallback, the
+ * neutral service pistol, said in the log (nothing is dropped silently); an empty word is the fallback without a line. */
+function unknownWeapon(g: GameState, w: unknown, who: unknown): string {
+  const k = String(w ?? '').trim(); if (k) push(g, { kind: 'system', text: 'No weapon "' + k.slice(0, 40) + '" is known: ' + String(who || 'it').slice(0, 40) + ' carries a service pistol.' });
+  return 'service_pistol';
+}
 const push = (g: GameState, e: Omit<Entry, 'id'>) => { g.story.entries.push({ id: id(g, 'e'), ...e }); if (g.story.entries.length > 400) (g.archive ||= []).push(...g.story.entries.splice(0, g.story.entries.length - 400)); };
 // Story-side item uses post their lines through the game's own push (effects/narrator.ts postStory).
 setStoryPoster((g: GameState, e: any) => { push(g, e); return g.story.entries.at(-1)!.id; });
@@ -1243,7 +1249,8 @@ function reduce(g: GameState, a: Action, by: string) {
 function giveLoot(g: GameState, l: NonNullable<NarratorTurn['loot']>[number]) {
   const c = g.characters[l?.charId]; if (!c || c.dead) return;
   const raw = Math.round(Number(l.qty) || 1), n = Math.max(1, Math.min(LOOT_QTY_MAX, Math.abs(raw))), pack = packOf(c).map((x) => ({ ...x }));
-  const id = String(l.item || '').trim(), label = String(l.name || '').trim();
+  const id0 = String(l.item || '').trim(), label = String(l.name || '').trim();
+  const id = !ITEM[id0] && weaponIdOf(id0) || id0; // rules 1.93 item 8115: a family id gives its Standard row
   if (raw < 0) {
     const want = label ? plotId(label) : id.startsWith('plot:') ? id : plotId(id.replace(/_/g, ' '));
     const i = pack.findIndex((x) => x.kind === 'plot' && (x.id === want || x.id === id || x.name.toLowerCase() === (label || id).toLowerCase()));
@@ -1672,7 +1679,7 @@ function startStoryFight(g: GameState, combat: NonNullable<NarratorTurn['combat'
   const t = { combat };
   const want = t.combat.map ? mapFor(g, t.combat.map) : null, map = want || zoneMap(g), same = map.id === zoneMap(g).id, pos = positionsOf(g);
   const pcs = Object.values(g.characters).filter((c) => !c.dead).map((c) => ({ c, pos: same ? pos[c.id] : undefined }));
-  let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] || HEART_CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: WEAPON[e.weapon] ? e.weapon : 'service_pistol', at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden, drops: cleanDrops((e as any).drops, { tables: campTables(g) }), ...(levelGiven(e.level) != null ? { level: levelGiven(e.level)! } : {}), ...(FIGHT_TOOLS.pinned && (e as any).fixed ? { fixed: (e as any).fixed } : {}) }));
+  let foes: any[] = t.combat.enemies.slice(0, 7).map((e) => ({ name: e.name || 'Hostile', tier: e.tier, caster: CASTER[(e as any).caster] || HEART_CASTER[(e as any).caster] ? (e as any).caster : undefined, weapon: weaponIdOf(e.weapon) || unknownWeapon(g, e.weapon, e.name || 'Hostile'), at: e.at || '', kind: e.kind, tags: e.tags, unaware: !!e.unaware, no_surrender: !!e.no_surrender, hidden: !!e.hidden, drops: cleanDrops((e as any).drops, { tables: campTables(g) }), ...(levelGiven(e.level) != null ? { level: levelGiven(e.level)! } : {}), ...(FIGHT_TOOLS.pinned && (e as any).fixed ? { fixed: (e as any).fixed } : {}) }));
   // Hostile people already on this map join the fight where they stand (a listed enemy with the same name is them).
   if (same) { const host = npcsOf(g).filter((n) => n.side === 'hostile' || foes.some((f) => f.name.toLowerCase() === n.name.toLowerCase()));
     const used = new Set<number>();
@@ -2565,7 +2572,7 @@ function applyNpcOp(g: GameState, op: NonNullable<NarratorTurn['npcs']>[number])
   }
   if (op.action === 'place') {
     const k = op.at ? keyOf(op.at, map) : null; if (!k || !free(k) || !op.name) return;
-    const tier = ENEMY_TIERS.includes(op.tier || '') ? op.tier! : 'minion', weapon = WEAPON[op.weapon || ''] ? op.weapon! : 'service_pistol';
+    const tier = ENEMY_TIERS.includes(op.tier || '') ? op.tier! : 'minion', weapon = weaponIdOf(op.weapon) || unknownWeapon(g, op.weapon, op.name);
     list.push({ id: 'n' + (++g.seq), name: op.name.slice(0, 40), side: op.side === 'hostile' ? 'hostile' : 'neutral', tier, weapon, pos: k, portrait: portraitFor(g, op.name) || undefined, facing: facingToward(k, partyCentre(g)),
       ...(op.kind && KINDS.includes(op.kind) ? { kind: op.kind } : {}), ...(Array.isArray(op.tags) ? { tags: op.tags.filter((x) => FOE_TAGS.includes(x)).slice(0, 6) } : {}), ...(op.hidden ? { hidden: true } : {}) });
     { const n = list[list.length - 1], d = cleanDrops(op.drops, { tables: campTables(g) }); if (d) n.drops = d; npcTalkFields(g, n, op); if (!n.avatar) { const av = avatarOf(g, n); if (av) n.avatar = av; } } // rules 1.7: a face, wants, knows, talk

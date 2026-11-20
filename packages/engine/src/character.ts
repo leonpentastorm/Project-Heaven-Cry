@@ -3,7 +3,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { numberOf } from './datatext';
 import patronsJ from '../../../data/patrons.json';
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, ladderSchedule, ELEMENTAL_CAP } from './data';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, armourClassNumOf, ladderSchedule, ELEMENTAL_CAP } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
 import { statQuery, setRankRule, setHandsRule, sheetSource, type HandInstance } from './effects/hooks';
 import type { StatId } from './effects/stats';
@@ -17,7 +17,8 @@ import { allPendingDoorPicks } from './doorpicks';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 import { feedOf } from './effects/feed';
-import { itemTags, hasTag, fixedGradeOf } from './itemtags';
+import { itemTags, hasTag, fixedGradeOf, ungradedWhy } from './itemtags';
+export { ungradedWhy } from './itemtags'; // rules 1.93 item 8114: the one copy lives beside gradeFor, which reads it
 
 export interface Sheet {
   name: string; portrait: string; origin: string;
@@ -225,7 +226,7 @@ const armOf = (r: Rarity): number => RARITY[r]?.arm ?? 1;
  * or a worn armour row (an items row of the armour kind with a slot) whose `graded` is not false. */
 export function gradedArmour(id: string | null | undefined): boolean {
   if (!id) return false;
-  const a = /^armour:(\d+)$/.exec(id); if (a) return Number(a[1]) > 0 && !!ARMOUR_CLASSES[Number(a[1])];
+  if (/^armour:\d+$/.test(id)) return !!armourClassNumOf(id); // rules 1.93 item 8113: the one reader (class 0 is bare)
   const r: any = ITEM[id]; return !!r && r.category === 'armour' && !!r.slot && r.slot !== 'off_hand' && r.graded !== false;
 }
 /** Write the state of the instance worn at a slot (rules 1.91 item 7953): kept only when not Standard; the field goes
@@ -1127,15 +1128,6 @@ export function gearAt(c: Character, where: GearWhere): { id: string; rarity: Ra
   { const qi = quiverAt(where); if (qi != null) { const q = quiversOf(c)[qi]; return q ? of(q.id, q) : null; } }
   const it = packOf(c)[where as number]; if (!it || isPlotItem(it) || isAmmoEntry(it) || it.mags || it.calibre) return null;
   return of(it.weapon || it.item || it.id, it);
-}
-/** Why a weapon row takes no grade, in words, or null (the one copy, read by setGrade and the grade step's offers and
- * refusals): a thrown thing; a row whose `graded` is false (rules 1.93 item 8111: the mana weapons, fists, the bot
- * items the data marks). An item row (armour, a focus, a quiver) answers through its own readers. */
-export function ungradedWhy(id: string | null | undefined): string | null {
-  const w: any = id ? WEAPON[id] : null; if (!w) return null;
-  if (w.category === 'thrown') return 'A thrown thing is not graded.';
-  if (w.graded === false) return 'The ' + w.name + ' takes no grade.';
-  return null;
 }
 /** Rules 1.43 (survival-spec 4.2 item 10): set the rarity of ONE carried weapon or focus instance (a hand, or a pack
  * line: one of a stack is split off), keeping its mods, name, property and identity (drill is per weapon id, so it is

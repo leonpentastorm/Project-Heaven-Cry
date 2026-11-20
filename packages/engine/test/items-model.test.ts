@@ -5,7 +5,7 @@
 // effects held while it is in a hand (through the reducer's gear/equip), the Forge's grade step refused (through the
 // reducer's run/upgrade); GearState.weapon_art never written.
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { type GameState, apply, RuleError, WEAPON, ITEM, VARIANT_MOD, RULES, RARITY, GRADES, SOLD_GRADES, gradeWord, isGrade, priceOf, packOf, setGrade,
+import { type GameState, apply, RuleError, BARE_KIT, WEAPON, ITEM, VARIANT_MOD, RULES, RARITY, GRADES, SOLD_GRADES, gradeWord, isGrade, priceOf, packOf, setGrade,
   itemTags, itemsWith, tagOf, hasTag, itemFamilyOf, familyForm, fixedGradeOf, FAMILY, ITEM_TAG_KINDS, expandVariants, lootToPack, rolledGear, archetypeWeapons,
   weaponTeaches, statQuery, bindGame, holds, armPenalty, meleeReachOf } from '../src';
 import variantsJ from '../../../data/variants.json';
@@ -51,7 +51,8 @@ describe('rules 1.91 item 7920: the pools read tags and hold what the category f
   // The filters as they were written before rules 1.91 (shop.ts GEAR_POOL and ITEM_POOL, rewards.ts PICKABLE,
   // loadout.ts archetypeWeapons, progress.ts forgeStock): the same lists in the same order mean the same seeded rolls.
   const oldPickable = [...Object.keys(WEAPON).filter((id) => (WEAPON[id] as any).category !== 'thrown'), ...Object.keys(ITEM).filter((id) => (ITEM[id] as any).focus)]
-    .filter((id) => priceOf(id) != null && !((WEAPON[id] || ITEM[id]) as any).variant_of);
+    .filter((id) => priceOf(id) != null && !((WEAPON[id] || ITEM[id]) as any).variant_of)
+    .filter((id) => id !== BARE_KIT.weapon && (WEAPON[id] as any)?.role !== 'natural'); // rules 1.93 item 8117: never a body's own weapon
   it('the reward pick and the shop\'s rolled gear', () => {
     expect(rolledGear()).toEqual(oldPickable);
     expect([...rolledGear()].sort()).toEqual([...oldPickable].sort());

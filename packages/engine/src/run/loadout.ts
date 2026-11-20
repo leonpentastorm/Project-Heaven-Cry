@@ -11,7 +11,7 @@
 // (`run/ready`); the host's close starts the run for everyone, an untouched loadout taking the Recommended one.
 import '../datatext';
 import svJ from '../../../../data/survival.json';
-import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME, COUNTED } from '../data';
+import { WEAPON, ITEM, SKILL, ARMOUR_CLASSES, CALIBRE_NAME, COUNTED, armourClassNumOf } from '../data';
 import { type Character, type PackItem, packOf, packKindOf, twoHands, equip, armourCap, armourGateWhy, requiresWhy, carriedKg, carryLimit, drawnWeapon, setQuivers, quiverHolds, QUIVER_ITEM, roundsIdOf, specialRoundName, isShieldId, levelUpDue } from '../character';
 import { grantGoods, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
@@ -85,7 +85,7 @@ function usableBeside(c: Character, id: string, bought = 0): boolean {
   const weapons = held.filter((h) => !!WEAPON[h] && (WEAPON[h] as any).category !== 'thrown');
   return !twoHands(c, id) || !weapons.some((h) => twoHands(c, h));
 }
-const nameOf = (id: string): string => { const a = /^armour:(\d)$/.exec(id); if (a) return 'Class ' + a[1] + ' body armour';
+const nameOf = (id: string): string => { const a = armourClassNumOf(id); if (a != null) return 'Class ' + a + ' body armour';
   const rd = roundsIdOf(id); if (rd) return specialRoundName(rd.calibre, rd.type) ?? (CALIBRE_NAME[rd.calibre] || rd.calibre) + ' rounds';
   const mg = /^mag:([^:]+)(:0)?/.exec(id); if (mg) return String((WEAPON[mg[1]] as any)?.name || mg[1]).replace(/ \(.*\)$/, '') + ' magazine' + (mg[2] ? ' (empty)' : '');
   return (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id; };
@@ -121,10 +121,10 @@ function rebuild(c: Character, p: LoadoutPick): string | null {
     const q = p.take[k], l = loadoutLines(c).find((x) => x.key === k);
     if (!l) { delete p.take[k]; continue; }
     spent += l.price * q;
-    const ac = /^armour:(\d)$/.exec(l.id), it: any = ITEM[l.id];
+    const ac = armourClassNumOf(l.id), it: any = ITEM[l.id];
     if (q > 1 && !usableBeside({ ...c, weapon: 'fists', offHand: null, pack: [lineGoods(l.id, 1)].flat() } as Character, l.id)) return nameOf(l.id) + ': one is used at a time.'; // rules 1.55
-    if (ac) {
-      const n = Number(ac[1]), cap = armourCap(c);
+    if (ac != null) {
+      const n = ac, cap = armourCap(c);
       if (q > 1 || c.armourClass) return 'Body armour is one piece: take one class.';
       if (cap != null && n > cap) return c.name + ' can wear Class ' + cap + ' at most.';
       const g = armourGateWhy(c, n); if (g) return g;
@@ -362,10 +362,10 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
     const t: Character = JSON.parse(JSON.stringify(c)), q: LoadoutPick = JSON.parse(JSON.stringify(p)); edit(q); return rebuild(t, q);
   };
   const preview = (id: string): GearPreview => {
-    const a = /^armour:(\d)$/.exec(id);
+    const a = armourClassNumOf(id);
     // Items 2.0 lane A3: body armour is previewed by the one gear preview (gearpreview.ts: its class worn, the level-scaled
     // armour the fight uses, its weight), named here as the camp names it
-    if (a) { const k = ARMOUR_CLASSES[Number(a[1])]; return { ...gearPreview(c, { id, rarity: 'standard' }), name: 'Class ' + a[1] + ' body armour (' + (k?.name || '') + ')', text: 'Worn on the torso. One class at a time.' }; }
+    if (a != null) { const k = ARMOUR_CLASSES[a]; return { ...gearPreview(c, { id, rarity: 'standard' }), name: 'Class ' + a + ' body armour (' + (k?.name || '') + ')', text: 'Worn on the torso. One class at a time.' }; }
     return gearPreview(c, { id, rarity: 'standard' });
   };
   const pickCard = (slot: 'weapon' | 'focus', id: string, group: string): LoadoutCardV => { const pv = preview(id), on = p[slot] === id;

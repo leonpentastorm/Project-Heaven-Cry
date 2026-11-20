@@ -17,6 +17,7 @@ import { OBJ } from '../objects';
 import { CASTER } from '../ai-sigil';
 import { HEART_CASTER } from '../ai-soul';
 import { rollTable } from '../loot';
+import { weaponIdOf } from '../itemtags';
 import { type Rng, rngFor, die, next, seedFrom } from '../rng';
 
 const SV: any = svJ;
@@ -208,7 +209,7 @@ function armed(p: Pick, rng: Rng, setting: SettingDef, fightKind: string, n: num
   }
   const cd: any = caster ? CASTER[caster] || HEART_CASTER[caster] : null;
   if (cd) { weapon = cd.weapon; name = cd.name; }
-  if (!WEAPON[weapon]) weapon = 'service_pistol';
+  weapon = weaponIdOf(weapon) || 'service_pistol'; // rules 1.93 item 8115: a family id is its Standard row
   const hp = sh.hp * scaleHp, dmg = sh.damage * scaleDmg;
   return { name, tier: p.tier, weapon, level: p.level, kind: kind === 'celestial' ? 'human' : kind, ...(caster ? { caster } : {}), ...(s.tags?.length ? { tags: [...s.tags] } : {}), ...(s.hidden ? { hidden: true } : {}),
     ...(hp !== 1 || dmg !== 1 ? { scale: { ...(hp !== 1 ? { hp } : {}), ...(dmg !== 1 ? { damage: dmg } : {}) } } : {}), spawn: s.spawn || 'far', cost: p.cost };
