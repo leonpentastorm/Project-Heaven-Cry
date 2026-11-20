@@ -32865,6 +32865,33 @@
       "collection": "2026-11-19-unique-melee-bow",
       "grade": "unique",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "shield-grudge_plate": {
+      "label": "Grudge Plate",
+      "path": "art/icons/gear/shield-grudge_plate.png",
+      "sha256": "cd9e47b961ec4a713542963f83de7f647e415abe50bbe7205e06ac5551740e7b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-grudge_plate.png",
+        "128": "art/icons/gear/exports/128/shield-grudge_plate.png",
+        "64": "art/icons/gear/exports/64/shield-grudge_plate.png",
+        "32": "art/icons/gear/exports/32/shield-grudge_plate.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-grudge_plate.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 18,
+      "collection": "2026-11-19-unique-melee-bow",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

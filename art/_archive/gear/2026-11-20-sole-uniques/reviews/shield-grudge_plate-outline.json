@@ -1,0 +1,10 @@
+{
+  "method": "Canvas alpha>=127 IoU after technical uniform framing, no forced silhouette or nonuniform warp",
+  "reference": "art/icons/gear/shield-boss_shield.png",
+  "iou": 0.9881597935450676,
+  "xor_pixels": 5891,
+  "exact_outline_pass": false,
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false
+}

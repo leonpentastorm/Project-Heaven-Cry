@@ -61,6 +61,68 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false
+    },
+    {
+      "id": "shield-grudge_plate",
+      "path": "art/icons/gear/shield-grudge_plate.png",
+      "sha256": "cd9e47b961ec4a713542963f83de7f647e415abe50bbe7205e06ac5551740e7b",
+      "label": "Grudge Plate",
+      "family": "08-unique-shields",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-grudge_plate.png",
+        "sha256": "8a2ca5fb3717d151fdc6aa17dfc2187ff648d6bbc90a03780e45bee0807556b5"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-sole-uniques/masters/v1/shield-grudge_plate.png",
+        "sha256": "cd9e47b961ec4a713542963f83de7f647e415abe50bbe7205e06ac5551740e7b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-sole-uniques/prompts/shield-grudge_plate.txt",
+        "sha256": "7e52a91f3e52e8e5ac27a0703deae776a9e8a714af8f571d3786471694eac87c"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-boss_shield.png",
+          "sha256": "3a7fc79cb8de925a892373de18227fc12183b458f5aab7e54c403b7871b95eb8"
+        },
+        {
+          "path": "art/icons/gear/shield-buckler.png",
+          "sha256": "1aeb92d2b419c48978476f314468c35639a89abe0732b5edf8cdbcc4d8510b9b"
+        },
+        {
+          "path": "art/icons/gear/shield-riot_shield.png",
+          "sha256": "be50f5e0eae8c794f4ba47ebc2e9d8d19f7a8a8cde211262e39c655d9195e8f0"
+        },
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-grudge_plate.png",
+        "128": "art/icons/gear/exports/128/shield-grudge_plate.png",
+        "64": "art/icons/gear/exports/64/shield-grudge_plate.png",
+        "32": "art/icons/gear/exports/32/shield-grudge_plate.png"
+      },
+      "export_hashes": {
+        "256": "e6f2f70a9ebfd552b176217b21d7515a7dee2aff5c63234d7af18f20a013b82a",
+        "128": "4bae4961017a5720bc76fab9acb6a2cd1fd2ee54b8c52b8cec9ccd6e222c2ce0",
+        "64": "03905de3cf5cb7f930587191a09c7bdf831e01881de789a26151e8d4e50bc368",
+        "32": "02c84ad5ce1452cba377b44b2edeee2065bde3bc7e7982a81ccac3c5b15b7c16"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false
     }
   ]
 }
