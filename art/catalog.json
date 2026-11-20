@@ -26825,6 +26825,42 @@
         "different_pixels_32": 11,
         "different_pixels_64": 39
       }
+    },
+    "armour-spotters_monocle--celestial": {
+      "label": "Spotter's monocle — Celestial",
+      "path": "art/icons/gear/armour-spotters_monocle--celestial.png",
+      "sha256": "8df7789f750635105231b5f579f4f4e44550ca0ce17664db35cf6b1160ad3eb1",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-spotters_monocle--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-spotters_monocle--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-spotters_monocle--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-spotters_monocle--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-spotters_monocle--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-spotters_monocle",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9548556591012596,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 45
+      }
     }
   },
   "survival_art": {
