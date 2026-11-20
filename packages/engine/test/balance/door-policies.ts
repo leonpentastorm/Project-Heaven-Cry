@@ -39,9 +39,9 @@
 //               that is not Prone and not a Boss, when the AP still pays two plain blows after; Breath (1 AP) once a
 //               turn with an AP left that buys no blow. Never Jab, Palm or Snatch, never a Flurry with a form (the
 //               rules forbid it). (A first version put a form on every blow: 3% clears against 68% plain; a strawman.)
-import { previewPerkAction, previewAttack, previewTechnique, techniquePad, TECHNIQUE, WEAPON, isMelee, dist, bindGame, paths, apForTiles, hideBlock, figmentsOf, canStand, RULES } from '../../src';
-import { POLICIES, optimised, tank, gunner, prayer, plainCands, techCands, best, fixOrMove, type Policy, type Ctx, type Step } from './policies';
-import { sigilRun, outburstRun, rigger, tactical, withFallback, keepRange } from './run-policies';
+import { previewPerkAction, previewAttack, previewTechnique, techniquePad, TECHNIQUE, WEAPON, isMelee, dist, bindGame, paths, apForTiles, hideBlock, figmentsOf, canStand, RULES, patronOf, previewPrayer } from '../../src';
+import { POLICIES, optimised, tank, gunner, prayer, prayerHarms, plainCands, techCands, best, fixOrMove, type Policy, type Ctx, type Step } from './policies';
+import { sigilRun, outburstRun, rigger, tactical, withFallback, keepRange, sigilHold } from './run-policies';
 
 const W = <T>(g: any, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
 const ok = (x: Ctx, s: Step | null) => (s && !x.banned.has(JSON.stringify(s.action)) ? s : null);
@@ -216,13 +216,29 @@ export const mender: Policy = (x) => {
 
 // ---------------------------------------------------------------------------------------------- Chaplain
 /** Measured switch (0.32): `sinner` names a sinner before the Hymn (CH_SINNER=0 leaves it out). */
-export const CHAPLAIN = { sinner: ((globalThis as any).process?.env || {}).CH_SINNER !== '0' };
+export const CHAPLAIN = { sinner: ((globalThis as any).process?.env || {}).CH_SINNER !== '0', rule: String(((globalThis as any).process?.env || {}).CH_SINNER || 'elite'), hp: Number(((globalThis as any).process?.env || {}).CH_SINNER_HP || 120) };
+/** Is the Chaplain's damaging Hymn prayable at this foe now (the engine's own prayer preview, at its standing)? */
+function hymnReady(x: Ctx, t: any): boolean {
+  const p: any = W(x.g, () => patronOf(x.c)); if (!p) return false;
+  return [...(p.hymns || [])].filter((h: any) => prayerHarms(h)).some((h: any) => { const pv: any = W(x.g, () => previewPrayer(x.g, x.c.id, 'hymn' as any, p.id + '.' + h.id, { targetId: t.id, tile: t.pos })); return !!pv?.ok && pv.mode === 'standing'; });
+}
+/** Whom the Chaplain names (0.33 balance lane, measured; CH_SINNER picks the rule): 'elite' an Elite or a Boss (0.32);
+ * 'hymn' an Elite or a Boss on a turn its Hymn is ready for it (the +20% is a prayer's, and a Hymn waits rounds);
+ * 'tough' any foe of CH_SINNER_HP or more on a turn its Hymn is ready for it. The nearest such foe not yet Judged. */
+function sinnerOk(x: Ctx, t: any): boolean {
+  const big = t.tier === 'elite' || t.tier === 'boss';
+  if (CHAPLAIN.rule !== 'hymn' && CHAPLAIN.rule !== 'tough') return big;
+  // the Hymn goes to the nearest foe it may be prayed at (policies.ts prayer): only that foe is named
+  const first = [...x.foes].sort((a, b) => dist(x.u.pos, a.pos) - dist(x.u.pos, b.pos)).find((f) => hymnReady(x, f));
+  if (first !== t) return false;
+  return CHAPLAIN.rule === 'hymn' ? big : big || t.hp >= CHAPLAIN.hp;
+}
 export const chaplain: Policy = (x) => {
   if (x.c?.classId && once(x, 'canticle')) { const s = verb(x, 'class:guardian.canticle', 'canticle'); if (s) return s; }
   // 0.32 (Faith 2: Name the Sinner, a Whisper that Judges; prayers deal more to a Judged foe): the nearest foe not yet
   // Judged is named first, once a turn, when the AP still pays the Hymn after (3); only an Elite or a Boss (measured:
   // naming every nearest foe cost the solo Chaplain 15 to 5 clears of 40; it pays only on a foe that lives for rounds)
-  if (CHAPLAIN.sinner && x.u.ap >= 4 && once(x, 'sinner')) for (const t of [...x.foes].filter((f) => !f.conds?.judged && (f.tier === 'elite' || f.tier === 'boss')).sort((a, b) => dist(x.u.pos, a.pos) - dist(x.u.pos, b.pos))) { const s = verb(x, 'skill:faith.2', 'name_the_sinner', { targetId: t.id }); if (s) return s; }
+  if (CHAPLAIN.sinner && x.u.ap >= 4 && once(x, 'sinner')) for (const t of [...x.foes].filter((f) => !f.conds?.judged && sinnerOk(x, f)).sort((a, b) => dist(x.u.pos, a.pos) - dist(x.u.pos, b.pos))) { const s = verb(x, 'skill:faith.2', 'name_the_sinner', { targetId: t.id }); if (s) return s; }
   return prayer({ ...x, opts: { ...(x.opts || {}), hymn: 'damage', whisper: 'rebuke' } });
 };
 /** 0.32: the SPARING Chaplain. It prays only when it is needed: an Elite or a Boss in the fight, three foes or more, or
@@ -256,7 +272,7 @@ export const monk: Policy = (x) => {
 
 // Every door's policy reloads tactically (rules 1.9: +1 AP, the magazine or speedloader kept in the pack), as a player
 // with a six-round revolver and few speedloaders does; refused (AP short), the speed reload.
-const T: Record<string, Policy> = { bulwark, breaker, skirmisher, operative, riggerRun, mender, chaplain, chaplainSparing, monk, sigilRunT: keepRange(sigilRun), outburstRunT: outburstRun };
+const T: Record<string, Policy> = { bulwark, breaker, skirmisher, operative, riggerRun, mender, chaplain, chaplainSparing, monk, sigilRunT: sigilHold(keepRange(sigilRun)), outburstRunT: outburstRun };
 for (const [k, p] of Object.entries(T)) { const t = withFallback(tactical(p)); (t as any).after = (p as any).after; (POLICIES as any)[k] = t; }
 // the party fit's controls (party-fit.ts CONTROL) play the same sheet without its door, with the same dry-gun fallback
 Object.assign(POLICIES, { tankDry: withFallback(tactical(tank)), gunnerDry: withFallback(tactical(gunner)) });

@@ -16,7 +16,7 @@
 //               the nearest foe and a Wall (else a Double) when the charge allows, swap a core when the charge is short,
 //               strike with the Figment (it walks to the foe first), then the pistol with the AP left.
 // Echo stays unplayed by every policy (survival-spec 13.9.6).
-import { SIGIL, previewAttack, previewPerkAction, glyphApOf, groundCap, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit, isMelee, paths, apForTiles, objectsOf, isPile, entryPack, PICKUP_AP } from '../../src';
+import { coverBonus, lineOfSight, isPressed, SIGIL, previewAttack, previewPerkAction, glyphApOf, groundCap, previewOutburstPlan, dist, alive, WEAPON, bindGame, heldMax, formsOf, figmentsOf, heldFigments, figmentCharge, projectionRange, canStand, unitSees, sideSeesUnit, isMelee, paths, apForTiles, objectsOf, isPile, entryPack, PICKUP_AP } from '../../src';
 import { POLICIES, sigil, sigilAfter, sigilLines, outburst, plain, plainCands, best, gunner, optimised, fixOrMove, type Policy, type Ctx, type Step } from './policies';
 import { pickedFork } from '../../src/doorpicks';
 import { obHeal } from './heal-measure';
@@ -63,6 +63,8 @@ function lineCost(x: Ctx, n: number): number { const u = x.u; return W2(x.g, () 
 function lineCharge(x: Ctx, words: string[]): number { const m = x.u.mg; return words.reduce((t, w) => t + (Number((SIGIL[w] as any)?.charge) || 1), 0) + Math.max(1, words.length - (m.coreSave || 0)); }
 /** Measured switches of the run's Sigil policy (0.32): `along` draws every Line straight away from the target and fires it back along itself (no step off the end). */
 export const SIGIL_RUN_OPTS = { along: ((globalThis as any).process?.env || {}).SIG_ALONG !== '0' };
+/** Measured (0.33): SIG_LONG=1 draws the longest Line the turn pays for, never the shortest that drops the target. */
+const SIG_LONG = ((globalThis as any).process?.env || {}).SIG_LONG === '1';
 export const SIGIL_RUN = { pistolSmall: 0, meleeShot: 0, cleanVent: 0, preSwap: 0, overclock: 0, short: 0 };
 export const sigilRun: Policy = (x) => {
   const u = x.u, m = u.mg, M = x.memo;
@@ -87,7 +89,7 @@ export const sigilRun: Policy = (x) => {
       const K = M.lineK || LINE_K, byN: Record<number, any> = {};
       for (const l of sigilLines(m.words, cap)) if (!byN[l.words.length] || l.est > byN[l.words.length].est) byN[l.words.length] = l;
       const ns = Object.keys(byN).map(Number).sort((a, b) => a - b), fits = ns.filter((n) => lineCost(x, n) <= u.ap + 1e-9);
-      let n = fits.find((q) => byN[q].est * K >= tgt.hp) ?? fits[fits.length - 1];
+      let n = (SIG_LONG ? undefined : fits.find((q) => byN[q].est * K >= tgt.hp)) ?? fits[fits.length - 1];
       if (n == null) { const s = pistolOn(x.foes); if (s) return s; n = ns[0]; }
       if (n != null) {
         // 4. the core swapped before the Line, when the Evoker can't pay for it
@@ -301,6 +303,59 @@ export const keepRange = (pol: Policy): Policy => { const t: Policy = (x) => {
   const melee = x.foes.filter((f) => isMelee(WEAPON[f.weapon]));
   if (melee.length && !x.memo.plan && Math.min(...melee.map((f) => dist(x.u.pos, f.pos))) <= KEEP) return pol({ ...x, opts: { ...(x.opts || {}), along: true } });
   return pol(x);
+}; (t as any).after = (pol as any).after; return t; };
+
+// ---------------------------------------------------------------------------------------------- the Sigilist holds cover (0.33)
+/** The 0.33 balance lane (docs/design/handoffs/0.33-LANE-BALANCE.md section 1): the Sigilist from cover, a stand-off
+ * under Suppress. Turn logs of the 0.33 solo Sigilist (5 of 40) showed: a caster knocked Prone (a Stopping Shot) asked
+ * to walk every turn and was refused "Stand up first" for ten rounds; Lines were walked out of cover into a sentry's
+ * Suppress and Burst (41 to 11 HP in one turn); the turn ended in the open with AP left. Each switch is measured
+ * (SIG_STAND, SIG_FROMCOVER, SIG_STANDOFF, SIG_ENDCOVER: 0 turns it off):
+ *   stand      Prone with AP and a foe: stand up first (the engine's own prone toggle);
+ *   fromCover  a new Line's last tile (where it Evokes and waits out the foes' turn) is first sought in cover from every
+ *              gun-armed foe that sees it (policies.ts sigil opts.fromCover);
+ *   standoff   Pressed (Pressure 2 or more), a step from a covered tile to one in the open is not taken: the Line is
+ *              drawn from where it stands, else the pistol, else a Vent or a core;
+ *   endCover   a turn that would end in the open, no Line under way, with the AP for it: a step to the nearest covered
+ *              tile that still sees no blade beside it. */
+const E33 = ((globalThis as any).process?.env || {});
+export const SIG033 = { predraw: E33.SIG_PREDRAW !== '0', poor: Number(E33.SIG_POOR ?? 30), stand: E33.SIG_STAND !== '0', fromCover: E33.SIG_FROMCOVER === '1', standoff: E33.SIG_STANDOFF !== '0', endCover: E33.SIG_ENDCOVER !== '0' };
+export const SIG033_N = { stood: 0, held: 0, endCover: 0, predraw: 0 };
+const gunFoe = (f: any) => { const w: any = WEAPON[f.weapon]; return !!f.caster || (!!w && !isMelee(w) && !!w.ammo); };
+/** Is this tile in cover from every gun-armed foe that sees it (none sees it: yes)? */
+export function coveredAt(x: Ctx, k: string): boolean {
+  return x.foes.filter(gunFoe).every((f) => !W(x.g, () => lineOfSight(x.cb, f.pos, k)) || W(x.g, () => coverBonus(x.cb, f.pos, k)) > 0);
+}
+const poorShot = (x: Ctx, s: Step): boolean => { const t = x.foes.find((f) => f.id === s.action.targetId); if (!t) return false; const pv: any = W(x.g, () => previewAttack(x.cb, x.u, t, s.action.mode || 'shot')); return !!pv?.ok && pv.pct < SIG033.poor; };
+export const sigilHold = (pol: Policy): Policy => { const t: Policy = (x) => {
+  const u = x.u;
+  if (SIG033.stand && u.prone && u.ap >= 1 && x.foes.length) { const s = ok(x, { action: { type: 'combat/prone' }, kind: 'setup', label: 'stand up' }); if (s) { SIG033_N.stood++; return s; } }
+  const x2 = SIG033.fromCover ? { ...x, opts: { ...(x.opts || {}), fromCover: (k: string) => coveredAt(x, k) } } : x;
+  let s = pol(x2);
+  if (SIG033.standoff && s && s.action.type === 'combat/move' && !x.memo.plan && isPressed(u) && coveredAt(x, u.pos) && !coveredAt(x, s.action.to)) {
+    SIG033_N.held++; x.banned.add(JSON.stringify(s.action));
+    const p = plainCands(x), b = best(x, p.cands, (c) => c.value); if (b) return b.step;
+    if ((u.mg?.flux || 0) > 0) { const v = ok(x, { action: { type: 'combat/vent' }, kind: 'setup', label: 'vent Flux (holding cover)' }); if (v) return v; }
+    return null;
+  }
+  // predraw: a turn that would end (or spend its AP on a pistol shot under SIG033.poor %) with no Line under way starts
+  // the next Line on the tile it stands on, when one fits there (Written in Advance: an Evoke after a turn ended with
+  // glyphs drawn deals more; the caster stays where it is)
+  if (SIG033.predraw && !x.memo.plan && x.foes.length && (!s || (s.action.type === 'combat/attack' && poorShot(x, s)))) {
+    const plan0 = x.memo.plan; let d: Step | null = null;
+    try { d = pol({ ...x2, opts: { ...(x2.opts || {}), hereOnly: true } }); } catch { d = null; }
+    if (d && d.action.type === 'combat/draw' && d.action.tile === u.pos) { SIG033_N.predraw++; return d; }
+    x.memo.plan = plan0;
+  }
+  if (SIG033.endCover && !s && !x.memo.plan && x.foes.length && u.ap >= 1 && !coveredAt(x, u.pos) && x.memo.endCover !== x.cb.round + ':' + x.cb.turn) {
+    x.memo.endCover = x.cb.round + ':' + x.cb.turn;
+    const P = W(x.g, () => paths(x.cb, u.pos, u.id)), taken = new Set(x.cb.units.filter((v: any) => v.id !== u.id && !v.dead).map((v: any) => v.pos));
+    const blade = (k: string) => x.foes.some((f) => isMelee(WEAPON[f.weapon]) && dist(f.pos, k) <= 1);
+    const to = Object.entries(P.dist as Record<string, number>).filter(([k, n]) => n > 0 && !taken.has(k) && apForTiles(n, u.bank || 0, u.movement) <= u.ap && !blade(k))
+      .sort((a, b) => a[1] - b[1]).find(([k]) => coveredAt(x, k));
+    if (to) { const m = ok(x, { action: { type: 'combat/move', to: to[0] }, kind: 'move', label: 'to cover (turn end)' }); if (m) { SIG033_N.endCover++; return m; } }
+  }
+  return s;
 }; (t as any).after = (pol as any).after; return t; };
 
 export const gunnerRun = withFallback(gunner);
