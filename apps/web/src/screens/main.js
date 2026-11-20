@@ -692,7 +692,7 @@ export class MainLogic extends DCLogic {
         lines: [gun, ITEM[id]?.text || '', ...carriesText(k)].filter(Boolean), // rules 1.93 item 8116: the carried modifier rows' lines
         more: () => [gun, ...(c ? gearPreview(c, { id, rarity: st.rarity, mods: st.mods }).lines.map((l) => l.label + ': ' + l.value) : []),
           m ? 'Durability ' + d + ' / ' + m + (d <= 0 ? ' · BROKEN' : '') : '', wd ? armsLine(id) : '', wd?.requires ? 'Needs ' + Object.entries(wd.requires).map(([x, v]) => SK[x]?.name + ' ' + v).join(', ') : '',
-          ITEM[id]?.text || ''].filter(Boolean) }; };
+          ...carriesText(k), ITEM[id]?.text || ''].filter(Boolean) }; }; // rules 1.93 item 8116: the carried modifier rows' lines
     const weaponTip = (id, st = {}) => (WEAPON[id] ? cardTip(id, st) : null);
     const itemTip = (id, st = {}) => (ITEM[id] ? cardTip(id, st) : null);
     const tips = {};
