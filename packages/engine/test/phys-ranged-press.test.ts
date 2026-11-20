@@ -201,7 +201,7 @@ describe('Warning Shot', () => {
   });
   it('a Hidden shooter is revealed by the report', () => {
     const f = fight('service_pistol'); nerves(f, -50); f.pc.hidden = true;
-    f.tech('warning_shot', { targetId: f.foe.id }); expect(f.pc.hidden).toBe(false);
+    f.tech('warning_shot', { targetId: f.foe.id }); expect(f.pc.hidden).toBe(true); expect(f.cb.seenAt?.foe?.[f.pc.id]).toBe(f.pc.pos); /* rules 1.86 item 7403: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */
   });
 });
 

@@ -143,7 +143,7 @@ describe('Cover Me (29)', () => {
     expect(f.unit(f.pc.id).ammo).toBe(ammo); expect(f.unit(f.pc.id).watch?.id).toBe('cover_me');
     // in range, a Hidden holder's covering round (a loud gun, no roll) gives it away
     const g = coverFight('service_pistol'); g.tech('cover_me', { allyId: g.pcs[1].id }); g.unit(g.pc.id).hidden = true;
-    g.turn(g.foe); attack(g, g.foe, g.pcs[1]); expect(heldShots(g)).toBe(1); expect(g.unit(g.pc.id).hidden).toBe(false); expect(g.unit(g.pc.id).shotsThisTurn).toBe(1);
+    g.turn(g.foe); attack(g, g.foe, g.pcs[1]); expect(heldShots(g)).toBe(1); expect(g.unit(g.pc.id).hidden).toBe(true); /* rules 1.86 item 7403: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */ expect(g.unit(g.pc.id).shotsThisTurn).toBe(1);
   });
   it('Precise: a shot that fells the attacker stops its attack', () => {
     const f = coverFight('ccec_marksman_rifle'); const ally = f.pcs[1]; f.tech('cover_me', { allyId: ally.id });

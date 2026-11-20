@@ -45,7 +45,7 @@ describe('Shadow on the fight map', () => {
   it('a real fight\'s events map to the moments, in the order the player made them: hide, a Shadow gained, tag, break', () => {
     const { fx } = realFight();
     const ms = fx.map((e) => shadowFxOf(e)).filter(Boolean);
-    expect(ms).toEqual(['hide', 'gain', 'tag', 'found', 'break']); // the rifle is loud: the shot reveals (found, how attack), then the Break
+    expect(ms).toEqual(['hide', 'gain', 'tag', 'break']); // rules 1.86 item 7403 (Silent ON): the loud rifle gives the tile away and keeps the shooter Hidden (no FOUND); the Break reveals it
     for (const e of fx) if (shadowFxOf(e)) expect(shadowBeat(e)).toBeGreaterThan(0);
     expect(shadowFxOf({ k: 'stance', what: 'prone' })).toBeNull(); expect(shadowFxOf({ k: 'shot' })).toBeNull();
   });
@@ -56,7 +56,7 @@ describe('Shadow on the fight map', () => {
     const seen: string[] = [];
     for (const e of fx) playFx(e); // as the queue gets them: one action's events together
     for (let k = 0; k < 60; k++) { vi.advanceTimersByTime(slow(100)); seen.push(...words(g.layer)); }
-    expect(traces()).toEqual(['hide', 'gain', 'tag', 'found', 'break']); // the loud shot tears the shadow off (REVEALED); the Break cuts
+    expect(traces()).toEqual(['hide', 'gain', 'tag', 'break']); // Silent ON: the shot tears nothing; the Break cuts, then tears the shadow off itself (REVEALED)
     const said = seen.join(' ');
     for (const w of [SHADOW_WORD.hide, SHADOW_WORD.gain, SHADOW_WORD.tag, SHADOW_WORD.break, FOUND_WORD.attack]) expect(said).toContain(w);
     vi.advanceTimersByTime(slow(SHADOW_MS.cut + SHADOW_MS.tear) + 3000);

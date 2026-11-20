@@ -54,13 +54,13 @@ describe('Shade', () => {
     };
     const f = run(adv('shade')); expect(f.unit(f.foe.id).dead).toBe(true); expect(f.pc.hidden).toBe(true); expect(logHas(f.cb, /Silent Kill/)).toBe(true);
     expect(f.pc.ambushUsed).toBe(1); // the ambush was spent: no new one until you hide again
-    const g = run({}); expect(g.pc.hidden).toBe(false);
+    const g = run({}); expect(g.pc.hidden).toBe(true); expect(g.cb.seenAt?.foe?.[g.pc.id]).toBe(g.pc.pos); /* rules 1.86 item 7403: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */
   });
   it('Silent Kill: a loud gunshot still gives you away (and the Narrator hears of it)', () => {
     const f = fightWith([adv('shade', { weapon: 'service_pistol' })], [{}]);
     const u = f.turn(f.pc); at(f, u, '3,2'); const foe = at(f, f.foe, '6,2'); foe.hp = 1; foe.def = -40; f.unit(u.id).hidden = true; f.unit(u.id).hideEntry = 1; seed(f, 10);
     act(f, f.unit(u.id), { type: 'combat/attack', targetId: foe.id, mode: 'shot' });
-    expect(f.pc.hidden).toBe(false); expect((f.cb.notes || []).some((n) => /loud gun/.test(n))).toBe(true);
+    expect(f.pc.hidden).toBe(true); expect(f.cb.seenAt?.foe?.[f.pc.id]).toBe(f.pc.pos); /* rules 1.86 item 7403: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */ /* under Silent ON the loud shot keeps the Shade Hidden (the tile is given away), so no Narrator note is owed (the Shade is shelved; its log line still says Silent Kill: listed in the 0.33 balance hand-off) */
   });
   it('Nightmare Mark: Mark (1 AP) for a Shade without the Assassin; the marked foe is Afraid for its own turn only', () => {
     const f = fightWith([adv('shade')], [{}]);

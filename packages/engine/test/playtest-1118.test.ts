@@ -208,7 +208,7 @@ describe('row 11: Ghost Kill only when no enemy\'s eyes reach you as the attack 
   it('from Hidden, with the victim\'s eyes on your tile, no Ghost Kill; with no eyes on you at all, Ghost Kill', () => {
     const seen = fight({ hidden: true });
     seen.f.act({ type: 'combat/attack', unitId: seen.u.id, targetId: seen.t.id, mode: 'shot' } as any);
-    expect(seen.f.unit(seen.t.id).hp).toBeLessThanOrEqual(0); expect(seen.f.unit(seen.u.id).hidden).toBeFalsy();
+    expect(seen.f.unit(seen.t.id).hp).toBeLessThanOrEqual(0); expect(seen.f.unit(seen.u.id).hidden).toBe(true); /* rules 1.86 item 7403: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */
     const dark = fight({ hidden: true, victimBlind: true });
     dark.f.act({ type: 'combat/attack', unitId: dark.u.id, targetId: dark.t.id, mode: 'shot' } as any);
     expect(dark.f.unit(dark.t.id).hp).toBeLessThanOrEqual(0); expect(dark.f.unit(dark.u.id).hidden).toBe(true);

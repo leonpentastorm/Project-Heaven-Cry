@@ -120,7 +120,7 @@ describe('combat Hidden, ambush and spotting (rules 1.3)', () => {
       const r = resolveAttack(f.cb, rngFor(19), pc, foe, 'shot', null);
       expect(r.crit).toBe(true); // 19 crits from Hidden
       expect(f.cb.log.at(-1)).toMatch(/AMBUSH/);
-      expect(pc.hidden).toBe(false); // a rifle isn't silent
+      expect(pc.hidden).toBe(true); // a rifle isn't silent: under rules 1.86 item 7403 (Silent ON) it gives the tile away and stays Hidden
       foe.dead = false; foe.hp = foe.maxHp; hide(f.cb, pc); at(f.cb, foe, 'B5'); pc.pos = '1,3';
       spotHidden(f.cb, rng(), foe);
       expect(pc.hidden).toBe(false);

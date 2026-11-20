@@ -213,7 +213,7 @@ describe('Lob: a carried grenade is its weapon', () => {
   });
   it('a Hidden thrower is revealed, as by today\'s Throw', () => {
     const f = nades({ frag_grenade: 1 }); f.pc.hidden = true;
-    expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull(); expect(f.pc.hidden).toBeFalsy();
+    expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull(); expect(f.pc.hidden).toBe(true); /* rules 1.86 item 7403: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */
   });
   it('smoke through Lob lays today\'s smoke and gives no Pressure', () => {
     const f = nades({ smoke_grenade: 1 }); const pv = f.pv('lob', { tile: '8,5', item: 'smoke_grenade' });

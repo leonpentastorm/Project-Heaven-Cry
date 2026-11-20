@@ -5269,7 +5269,7 @@
             {
               "op": "damage_vs",
               "when": "dealing",
-              "value": 0.2,
+              "value": 0.4,
               "if": {
                 "actor": "self",
                 "damage": [

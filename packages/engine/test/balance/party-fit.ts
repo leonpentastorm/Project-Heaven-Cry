@@ -17,6 +17,8 @@
 import { onHook } from '../../src/effects/hooks';
 import { ENC_BUDGET, WEAPON, isMelee, dist, RULES, COVER, SKILL } from '../../src';
 import { HIDDEN_ATTACK } from '../../src/tactics';
+import { SURPRISE } from '../../src/combat';
+import { CALL } from '../../src';
 import svJ from '../../../../data/survival.json';
 import { Rec } from '../helpers/replay';
 import { simRun, MEMBER, MEMBER_OLD, PARTIES } from './survival-run';
@@ -54,7 +56,8 @@ const SV: any = svJ;
 export const REVIVE_HP = 50;
 export function withLever<T>(lever: string | undefined, n: number, f: () => T): T {
   const ATH: any = (SKILL as any).athletics.per_point.numbers;
-  const was = { ath: ATH.defense_from, hid: HIDDEN_ATTACK.gives, cf: COVER.full, mem: RULES.combat.focus_memory.per_attacker, fin: RULES.combat.focus_memory.finish_share, ret: SV.run.dead_return_hp, p: ENC_BUDGET.pressurePerChar, m: ENC_BUDGET.maxFoes, s: ENC_BUDGET.share, steps: SV.map_size.steps };
+  const RALLY: any[] = (CALL as any)['call.rally'].steps.map((q: any) => q.numbers), BRIEF: any[] = (CALL as any)['call.brief'].steps.map((q: any) => q.numbers);
+  const was = { sur: SURPRISE.on, rally: RALLY.map((q) => ({ ...q })), brief: BRIEF.map((q) => ({ ...q })), ath: ATH.defense_from, hid: HIDDEN_ATTACK.gives, cf: COVER.full, mem: RULES.combat.focus_memory.per_attacker, fin: RULES.combat.focus_memory.finish_share, ret: SV.run.dead_return_hp, p: ENC_BUDGET.pressurePerChar, m: ENC_BUDGET.maxFoes, s: ENC_BUDGET.share, steps: SV.map_size.steps };
   try {
     if (lever === 'perhead') {
       const p1 = was.p[0], m1 = was.m[0], sh = (row: number[]) => row.map((_, i) => row[0] * (i + 1));
@@ -71,12 +74,14 @@ export function withLever<T>(lever: string | undefined, n: number, f: () => T): 
       if (k === 'mem') RULES.combat.focus_memory.per_attacker = arr[0]; if (k === 'fin') RULES.combat.focus_memory.finish_share = arr[0]; // rules 1.61 focus memory (item 4964)
       if (k === 'cf') COVER.full = arr[0]; // rules 1.61 cover beside you (item 4960): full cover's term
       if (k === 'ath') ATH.defense_from = arr[0]; // 0.33 balance lane: rules 1.82 item 7011's switch (Athletics' Defense from this point), in memory
+      if (k === 'sur') SURPRISE.on = !!arr[0]; // 0.33 balance lane: rules 1.82 item 7004's switch, in memory
+      if (k === 'calls0') { [[2, 0], [2, 1], [3, 1]].forEach(([a, p], i) => { RALLY[i].ap = a; RALLY[i].pressure = p; }); [[1, 1], [2, 1], [2, 2]].forEach(([a, b], i) => { BRIEF[i].first = a; BRIEF[i].second = b; }); } // 0.33 balance lane: Rally and Brief as before rules 1.86 item 7401, in memory
       if (k === 'hid') HIDDEN_ATTACK.gives = arr[0] ? 'tile' : 'reveal'; // 0.33 balance lane: rules 1.82 item 7012's switch (hid=1 tile, hid=0 reveal), in memory
       if (k === 'ms') SV.map_size.steps = was.steps.map((st: any, i: number) => ({ ...st, size: arr[i] ?? st.size })); // 0.32 fit: the map's size by step (rules 1.41 map_size), in memory
     }
     void n;
     return f();
-  } finally { ATH.defense_from = was.ath; HIDDEN_ATTACK.gives = was.hid; COVER.full = was.cf; RULES.combat.focus_memory.per_attacker = was.mem; RULES.combat.focus_memory.finish_share = was.fin; SV.run.dead_return_hp = was.ret; ENC_BUDGET.pressurePerChar = was.p; ENC_BUDGET.maxFoes = was.m; ENC_BUDGET.share = was.s; SV.map_size.steps = was.steps; }
+  } finally { SURPRISE.on = was.sur; RALLY.forEach((q, i) => Object.assign(q, was.rally[i])); BRIEF.forEach((q, i) => Object.assign(q, was.brief[i])); ATH.defense_from = was.ath; HIDDEN_ATTACK.gives = was.hid; COVER.full = was.cf; RULES.combat.focus_memory.per_attacker = was.mem; RULES.combat.focus_memory.finish_share = was.fin; SV.run.dead_return_hp = was.ret; ENC_BUDGET.pressurePerChar = was.p; ENC_BUDGET.maxFoes = was.m; ENC_BUDGET.share = was.s; SV.map_size.steps = was.steps; }
 }
 /** The cooperation wrapper (lever `focus`): the party's focus target is the visible foe lowest on HP (ties: the first
  * in the fight's order); a member first plays its policy against that foe alone, and only when that gives no attack
