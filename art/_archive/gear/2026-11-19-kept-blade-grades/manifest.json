@@ -8402,6 +8402,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-blackout_hood--celestial",
+      "path": "art/icons/gear/armour-blackout_hood--celestial.png",
+      "sha256": "673e6a48e2ad3ad7c5075fce766cdddeea42c064ea5e018600377ec8ec4f010a",
+      "label": "Blackout hood — Celestial",
+      "family": "armour-blackout_hood",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-blackout_hood--celestial.png",
+        "sha256": "6e250144546d4cf52bfbf92b7f5f6388c41e928dfff3bc4332012a532b249114"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-blackout_hood--celestial.png",
+        "sha256": "673e6a48e2ad3ad7c5075fce766cdddeea42c064ea5e018600377ec8ec4f010a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-blackout_hood--celestial.txt",
+        "sha256": "648f7e7676d3d6dea2c83c2c95ce5ddc01706e85a19eaa6cc9f2e09424e8a748"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-blackout_hood.png",
+          "sha256": "b9c6cb8fe201b0d9e8dfb84a2b9059fae5501ef2b87c0f9fe863cf9b3571413c"
+        },
+        {
+          "path": "art/icons/gear/armour-blackout_hood--relic.png",
+          "sha256": "4813535f2ab775b8a8d959b4465de94cd24ad5ae123a151c1776e23c249998a8"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-blackout_hood--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-blackout_hood--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-blackout_hood--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-blackout_hood--celestial.png"
+      },
+      "export_hashes": {
+        "256": "4453a386e6743aeb86d21a2833c27c509efbef3d1d2c172b7afbe4b4ae565a45",
+        "128": "6b1356ec18068d27e910dba2f864be8a224159df98eb584411e55aedf1906988",
+        "64": "268772829e4e9a033b9a3f2c31765679e90e57e73ee4a80d09776b45e3dbe040",
+        "32": "360eb358d61e8e4967bc5cfe53ca23f0a451460940b12b5dcc2dec6797d86274"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-blackout_hood",
+      "outline": {
+        "solid_alpha_iou": 0.9834691629637553,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
