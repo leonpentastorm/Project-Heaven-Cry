@@ -1,0 +1,90 @@
+{
+  "id": "fork.sigil.running_script",
+  "src": "/workspace/generated_images/exec-3d3bf9c4-c928-4986-b592-53d1532fd1ab.png",
+  "job": {
+    "id": "fork.sigil.running_script",
+    "number": 66,
+    "file": 3,
+    "path": "art/icons/forks/sigil-running-script.png",
+    "references": [
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-script-on-charcoal.png",
+      "art/icons/forks/sigil-running-script.png"
+    ],
+    "prompt": "Fictional RPG perk icon, a precise localized edit of the attached Wick image. Reference1 is the existing white icon shown on charcoal so you can SEE its shape; reference2 is the SAME original with transparent alpha. Preserve that exact crouching robot, its closed angular pixel eyes and small smiling pixel mouth, tilted rectangular screen, cape, chest cross, both hands and legs, original square-in-oval glyph, trailing chain shapes and every existing line. Keep exactly the SAME pose, proportions and placement. Add just one tiny new unfinished rune in thin white straight strokes in the empty gap above-right of the existing square glyph, near the drawing hand and stylus. An invented three-stroke rune with only half the last stroke drawn, pointing toward the stylus. No other additions. No redesign, no outline texture, spatter, glow, shading, speckling or changes to old marks. 1024square. Output pure white flat ink and genuine transparency, including every original dark interior cutout; the charcoal preview background is only for visibility, do not include any background. One image.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-script-on-charcoal.png": "b0ea08f93854243725596395646056b0249294166f11b9a3d4ddafa4fbfc8ed7",
+      "art/icons/forks/sigil-running-script.png": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
+    },
+    "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
+  },
+  "preflight": {
+    "id": "fork.sigil.running_script",
+    "own": "d928a3486a8b3b2a331a595e44d7d1f835aa2893",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "run": "sole-20261120-1615",
+    "latest_comment": 7044738722
+  },
+  "clock": {
+    "current_time": "2026-11-20 16:41:37 UTC"
+  },
+  "attempt": "066-sole-v2",
+  "review": "Inspect displayed result: closer original crouch and added three-stroke rune, but severe cutout alpha failure fills screen, torso separations and glyph interiors opaque white, with spatter. Original unchanged, no selection/count. Need alpha-faithful shape generation.",
+  "source_sha256": "3b90e57fba6a3113c943fba0f0496a74a42affd4b95e3c70de76841de019cf8f",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "native_mode": "RGBA",
+  "native_alpha_bbox": [
+    47,
+    119,
+    1125,
+    1170
+  ],
+  "references": [
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-script-on-charcoal.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v2/references/00-running-script-on-charcoal.png",
+      "sha256": "b0ea08f93854243725596395646056b0249294166f11b9a3d4ddafa4fbfc8ed7"
+    },
+    {
+      "original_path": "art/icons/forks/sigil-running-script.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v2/references/01-sigil-running-script.png",
+      "sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
+    }
+  ],
+  "technical_previews": {
+    "1024": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v2/preview-1024.png",
+      "sha256": "acea8784355353d9b78dbc48df4fe0f48f62b16f526fd8eab774475948b1a391"
+    },
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v2/preview-256.png",
+      "sha256": "a048436b88cc40d092007ac569f1c3d3ea68309a41eed90f0d184e0f21328dd6"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v2/preview-128.png",
+      "sha256": "78c135c36f317fd2b455cc66f8640a1d6566d9fdec76d8ac5af366fa341c80e6"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v2/preview-64.png",
+      "sha256": "c6421339bb523e5d3dab1a241a989785fd16c3eace9bc1bdb673d12ae050491d"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v2/preview-32.png",
+      "sha256": "4cc73de293ac5e0d898c0f4db60fc75c46dd5c31062975ed92bc51dc2b1edf3c"
+    }
+  },
+  "selected": false,
+  "count_contribution": 0,
+  "status": "quality-rejected",
+  "production_approved": false,
+  "implementation_ready": false
+}

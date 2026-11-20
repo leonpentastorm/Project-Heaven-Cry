@@ -8,7 +8,7 @@
       "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-script-on-charcoal.png",
       "art/icons/forks/sigil-running-script.png"
     ],
-    "prompt": "Fictional RPG perk icon, a precise localized edit of the attached Wick image. Reference1 is the existing white icon shown on charcoal so you can SEE its shape; reference2 is the SAME original with transparent alpha. Preserve that exact crouching robot, its closed angular pixel eyes and small smiling pixel mouth, tilted rectangular screen, cape, chest cross, both hands and legs, original square-in-oval glyph, trailing chain shapes and every existing line. Keep exactly the SAME pose, proportions and placement. Add just one tiny new unfinished rune in thin white straight strokes in the empty gap above-right of the existing square glyph, near the drawing hand and stylus. An invented three-stroke rune with only half the last stroke drawn, pointing toward the stylus. No other additions. No redesign, no outline texture, spatter, glow, shading, speckling or changes to old marks. 1024square. Output pure white flat ink and genuine transparency, including every original dark interior cutout; the charcoal preview background is only for visibility, do not include any background. One image.",
+    "prompt": "Precise fictional RPG vector-style mascot icon edit. Use attached ORIGINAL image1 shown on charcoal solely to see the original design. Image2 is its transparent original. Reproduce that exact crouching Wick pose and original square/oval glyph and trailing chain with one small half-completed three-stroke angular rune above-right of the square near the drawing hand. No other changes to shapes, pose, face or line weight. IMPORTANT output preparation: render the ink as SOLID BLACK on transparent alpha in this intermediate file, so every interior negative-space cutout is fully TRANSPARENT: screen surrounding pixel eyes, spaces between limbs and cape, chest cutout surrounding cross, square-glyph interior, oval-glyph interior and trailing-link interiors. No white paint or white underfill, no grey ink, no spatter or texture; hard confident single flat black silhouette and transparent holes. The game exporter will normalize inkRGB to purewhite without changing alpha. Exact originalcomposition, size, placement, tilted screen with angular pixel eyes and smiling mouth, two tiny upper-right screen fasteners, capelet, chest cross, left boot forward and right leg crouched. Only new tiny half-drawn three-straight-stroke rune beside existing glyph nearer stylus. One1024square PNG with genuine transparency. No background.",
     "status": "pending",
     "run": "sole-20261120-1615",
     "source_branch": "art/prompt-pack-01-04-2026-11-19",
@@ -19,7 +19,8 @@
       "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-script-on-charcoal.png": "b0ea08f93854243725596395646056b0249294166f11b9a3d4ddafa4fbfc8ed7",
       "art/icons/forks/sigil-running-script.png": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
     },
-    "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
+    "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+    "technical_export_note": "Intermediate flat black ink requested to preserve negative-space alpha; if faithful, exporter may normalize visible RGB to purewhite without modifying alpha or geometry. No code-created drawing or compositing."
   },
   {
     "id": "kit-rim-wall-corner",
