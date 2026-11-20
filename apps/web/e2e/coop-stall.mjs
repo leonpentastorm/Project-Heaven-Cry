@@ -43,7 +43,9 @@ async function relay() {
   check(!!sy && sy.from === 'g1' && sy.v === 2, 'the guest\'s check-in reaches the host with its version');
   host.send(JSON.stringify({ t: 'view', pid: 'g1', state: { v: 4, code }, resync: true })); await wait(200);
   check(guest.got.some((m) => m.t === 'view' && m.resync && m.state.v === 4), 'the host\'s answer arrives marked as a resync');
-  host.close(); await wait(300);
+  host.close();
+  // the room has the host down as gone when it tells the guest so (a fixed wait lost that race on a busy machine)
+  for (let t = 0; t < 40 && !guest.got.some((m) => m.t === 'host' && m.online === false); t++) await wait(100);
   guest.got.length = 0;
   guest.send(JSON.stringify({ t: 'sync', v: 4 })); await wait(200);
   check(!guest.got.some((m) => m.t === 'view'), 'host away, the guest up to date: the room sends nothing');

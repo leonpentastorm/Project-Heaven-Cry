@@ -30,12 +30,12 @@ export function NetLine({ game, role }: { game: GameState | null; role: 'host' |
   const late = !!p && performance.now() - p.at > PENDING_SHOWN_MS;
   return (
     <>
-      <div data-phc-netline="" aria-live="off" style={{ position: 'fixed', left: 8, bottom: 6, zIndex: 58, pointerEvents: 'none', padding: '2px 8px', borderRadius: 6, background: 'rgba(10,13,19,.72)', color: '#A3AEC2', fontSize: 11, letterSpacing: '0.04em', whiteSpace: 'nowrap', maxWidth: 'calc(100vw - 16px)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <div data-phc-netline="" aria-live="off" style={{ position: 'fixed', left: 8, bottom: 6, zIndex: 58, pointerEvents: 'none', padding: '2px 8px', borderRadius: 6, background: 'rgba(10,13,19,.72)', color: '#A3AEC2', fontSize: 'var(--fs-sub)', letterSpacing: '0.04em', whiteSpace: 'nowrap', maxWidth: 'calc(100vw - 16px)', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {netLineText(role, netSummary())}{p && role === 'guest' ? (late ? ' · no answer yet' : ' · sending…') : ''}
       </div>
       {p && role === 'guest' && !late && p.x != null && <div data-phc-sending="" aria-hidden="true" style={{ position: 'fixed', left: p.x - 14, top: p.y! - 14, width: 28, height: 28, zIndex: 66, pointerEvents: 'none' }}>
         <div className="phc-sending-ring" style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: '2px solid #FFFFFF', opacity: 0.85 }} />
-        <span style={{ position: 'absolute', left: 32, top: 4, padding: '1px 6px', borderRadius: 5, background: '#1C2536', border: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 11, fontWeight: 700, letterSpacing: '0.12em', whiteSpace: 'nowrap' }}>SENDING</span>
+        <span style={{ position: 'absolute', left: 32, top: 4, padding: '1px 6px', borderRadius: 5, background: '#1C2536', border: '1px solid #2E3A50', color: '#E7EBF3', fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', whiteSpace: 'nowrap' }}>SENDING</span>
         <style>{'@keyframes phcSendRing{0%{transform:scale(.6);opacity:.95}100%{transform:scale(1.25);opacity:.25}}.phc-sending-ring{animation:phcSendRing .7s ease-out infinite alternate}@media (prefers-reduced-motion: reduce){.phc-sending-ring{animation:none}}'}</style>
       </div>}
     </>
