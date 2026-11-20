@@ -1,0 +1,91 @@
+{
+  "id": "fork.sigil.running_script",
+  "src": "/workspace/generated_images/exec-c7c92746-36ce-4b76-a59e-60935e5cc6c3.png",
+  "job": {
+    "id": "fork.sigil.running_script",
+    "number": 66,
+    "file": 3,
+    "path": "art/icons/forks/sigil-running-script.png",
+    "references": [
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-on-white.png",
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-ink.png"
+    ],
+    "prompt": "Localized bitmap edit for a fictional RPG icon. Keep the entire attached original1024square crouching robot and every original glyph/line in exactly its current place, with exactly its current shape. Do not regenerate/redraw the character or old glyph. Add ONLY one tiny angular HALF-DRAWN RUNE in the gap beside the existing square-in-oval glyph, toward the drawing hand. The rune is an open angular zigzag made of THREE CONNECTED STRAIGHT segments; the third segment is only half its full length, trailing toward the stylus. Think one continuous angular broken line, about40pixels tall. It is NOT a set of parallel lines or speed marks; NO arcs/curves, no speed-line fan, no added movement. Tiny thin black strokes, visibly thinner than the existing glyph outline. Put this single incomplete rune nearx640,y650 beside the stylus but keep all oldmarks unchanged. Use black ink with transparent background and transparent interior holes, no white underpaint, grey, shading, glow or spatter. The black-on-white first reference and transparent second reference have the exact SAME source alpha; use that alpha directly everywhere except the one new small rune. Exporter only normalizes inkRGB towhite, no shape edits. Same canvas, no crop, scaling or repositioning.",
+    "status": "pending",
+    "run": "sole-20261120-1615",
+    "source_branch": "art/prompt-pack-01-04-2026-11-19",
+    "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "production_approved": false,
+    "implementation_ready": false,
+    "reference_sha256": {
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-on-white.png": "f52a57e66fdf4eef8eceb05d507abee9479fad1cc928f08e64fe47b13d8b6517",
+      "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-ink.png": "a83653b3bd73ad0b27f259b4b4c348beed7c0b171859b9ca25b616006bae7618"
+    },
+    "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+    "technical_export_note": "Intermediate flat black ink requested to preserve negative-space alpha; if faithful, exporter may normalize visible RGB to purewhite without modifying alpha or geometry. No code-created drawing or compositing."
+  },
+  "preflight": {
+    "id": "fork.sigil.running_script",
+    "own": "126e7ab4f3f30c70bd97b7f59bb6633100572d1a",
+    "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+    "original": "550f80c7dad612133638cb2edc7cf326d127c428",
+    "run": "sole-20261120-1615",
+    "latest_comment": 7045450156
+  },
+  "clock": {
+    "current_time": "2026-11-20 17:09:50 UTC"
+  },
+  "attempt": "066-sole-v5",
+  "review": "Reject inspected native: the new glyph has an opaque white rectangular backing and original negative-space areas (screen, chest, square/oval interiors) are opaque white instead of transparent. Native retains original-ish pose but cannot become correct white ink by RGB normalization. No selection/count, original untouched.",
+  "source_sha256": "e175839efe1529e325d852d768b77460c09862f2ed983d1b96fb21ba0f688d80",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "native_mode": "RGBA",
+  "native_alpha_bbox": [
+    49,
+    136,
+    1007,
+    1142
+  ],
+  "references": [
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-on-white.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v5/references/00-running-original-black-on-white.png",
+      "sha256": "f52a57e66fdf4eef8eceb05d507abee9479fad1cc928f08e64fe47b13d8b6517"
+    },
+    {
+      "original_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/references/running-original-black-ink.png",
+      "snapshot": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v5/references/01-running-original-black-ink.png",
+      "sha256": "a83653b3bd73ad0b27f259b4b4c348beed7c0b171859b9ca25b616006bae7618"
+    }
+  ],
+  "technical_previews": {
+    "1024": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v5/preview-1024.png",
+      "sha256": "b31762fac84a31e2d7fa722c0ed2fa74f85d625814a2b7c1d9fbef87b37dfc97"
+    },
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v5/preview-256.png",
+      "sha256": "f00c8b2b852c354addfa44a2068742c35216633fac2f7d12a871b58fc1f37d07"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v5/preview-128.png",
+      "sha256": "ee0b4aa9a127204fa535f4266d0e7984ebab401eae38ad44e04ffe29cf114cbd"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v5/preview-64.png",
+      "sha256": "d481c3ff8193c6ac2b3a6d822e2eca316688164dc0e650d051279c03605a96e6"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-sole-v5/preview-32.png",
+      "sha256": "48896fe92a2e6b5c5c5347339d2ebe717bc77deccfd086e5a305c5610c1b6715"
+    }
+  },
+  "selected": false,
+  "count_contribution": 0,
+  "status": "quality-rejected",
+  "production_approved": false,
+  "implementation_ready": false
+}
