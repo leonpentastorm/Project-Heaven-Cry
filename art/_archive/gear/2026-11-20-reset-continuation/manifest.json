@@ -4974,6 +4974,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_skinner--relic",
+      "path": "art/icons/gear/weapon-ork_skinner--relic.png",
+      "sha256": "3e4a24d5d2506817b16a3ba66531e0e030d30730a6d910a558a9dd3d1687e25b",
+      "label": "Ork Skinner — Relic",
+      "family": "weapon-ork_skinner",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-ork_skinner--relic.png",
+        "sha256": "3f636d680ea4684f20edad963aaaddd682db716acf07b30a36c3fdc8e9a0f944"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-ork_skinner--relic.png",
+        "sha256": "3e4a24d5d2506817b16a3ba66531e0e030d30730a6d910a558a9dd3d1687e25b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-ork_skinner--relic.txt",
+        "sha256": "781e5616858a03e9850a76430ffb42b4c60bef7d34b775bfa5a779a910ee7357"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_skinner.png",
+          "sha256": "780bde15cfd66b073d80dd8087e1a4f204af717f4392a4c6522bd46dc71f9886"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_skinner--masterwork.png",
+          "sha256": "0536aa1e437a63ca97a864016d167949ae3f7f81aa9338d2b2d181249f2df95a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_skinner.png",
+          "sha256": "569382b3a98782be292324aea7f73823628cbcb572ce026ff63b9db2ad7cc59b"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_skinner--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_skinner--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_skinner--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_skinner--relic.png"
+      },
+      "export_hashes": {
+        "256": "c2ee80215e3d86e8a95b0f03ff78bb607223d45b0d3960c90919f5c10a2d9ee9",
+        "128": "854eaa2099020f07196343eb5eea717c5530e9a3328775f1b0ab002185830231",
+        "64": "542c6097a985397c1991f0f7adbbf1468e791db523744dc845558986e915ab5b",
+        "32": "7533db2a0d97aa899da26a2b2015c08aec8f07718deedc16bac2efcb5ff34a9e"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-ork_skinner",
+      "outline": {
+        "solid_alpha_iou": 0.969750283768445,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 23
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
