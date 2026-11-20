@@ -84,6 +84,8 @@ describe('the Narrator and faith', () => {
     // tokens: the cap moves to 26.0k on purpose.
     // 0.30.0 (the tabs lane's Mana Shock and bare heart lines beside the shield lane's shields-as-weapons and follow
     // lines, each under the cap alone, together 6 tokens over): the cap moves to 26.1k on purpose.
-    expect(e.stable).toBeLessThan(26100);
+    // Items 2.0 B0 (rules 1.92 items 8012, 8022, 8035): six modifier rows join the Item ids line (mod_follow_strike, the
+    // three Ward rows, mod_line_arsenal, mod_siege_reload), 28 tokens: the cap moves to 26.2k on purpose.
+    expect(e.stable).toBeLessThan(26200);
   });
 });
