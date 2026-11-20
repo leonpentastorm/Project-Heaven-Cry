@@ -156,7 +156,7 @@ describe('row 7: the Break toggle is never shown on when it can\'t be used', () 
   });
 });
 
-import { chooseNode, upTurn } from './helpers/survival';
+import { chooseNode, upTurn, walkIn } from './helpers/survival';
 import { FIG_DOOR } from '../src';
 describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s blast is in the log', () => {
   it('in a Survival fight a Volatile Figment pictured through the reducer is destroyed by a foe and bursts: logged, and the run\'s kept tally credits the owner', () => {
@@ -165,11 +165,9 @@ describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s
     c.doorPicks = { ...(c.doorPicks || {}), [FIG_DOOR]: ['double'] }; // rules 1.70 item 5541: the form is learned at figment_forms
     c.pack = [...(c.pack || []), { id: 'standard_core', item: 'standard_core', name: 'Standard mana core', qty: 3, kind: 'ammo' }];
     g = apply(g, { type: 'figments/design', charId: 'c1', design: { id: 'v', name: 'Bomb', form: 'double', traits: ['volatile'] } } as any, 'host');
-    g = apply(g, { type: 'run/move', node: chooseNode(g, ['fight'])!.id } as any, 'host');
+    g = walkIn(apply(g, { type: 'run/move', node: chooseNode(g, ['fight'])!.id } as any, 'host'));
     const pc = g.combat.units.find((u: any) => u.charId === 'c1'), picture = (tile: string) => apply(g, { type: 'combat/perk', unitId: pc.id, id: 'verb:picture', choice: 'd:v', tile } as any, 'host');
-    g = picture('2,7'); // the first act is contact (rules 1.64 item 5011): the fight is joined, the picture waits for the turn
-    // (rules 1.82 item 7004: the foes are caught by surprise, so the character's turn is first and the picture is made)
-    if (!g.combat.units.some((u: any) => u.owned?.kind === 'figment')) { g = upTurn(g, pc.id); g = picture('2,7'); }
+    g = upTurn(g, pc.id); g = picture('2,7'); // rules 1.87: the fight is joined at once (walked in); play on to the character's turn, then the picture
     const fig = g.combat.units.find((u: any) => u.owned?.kind === 'figment'); expect(fig?.ctrl).toBe('c1');
     const [fx, fy] = fig.pos.split(',').map(Number), foe = g.combat.units.find((u: any) => u.side === 'foe' && !u.dead);
     foe.pos = (fx + 1) + ',' + fy; foe.hp = 5; foe.armour = 0; fig.hp = 1; g.combat.turn = g.combat.order.indexOf(foe.id);

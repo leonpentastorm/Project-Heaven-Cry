@@ -67,7 +67,7 @@ describe('rules 1.55: the field after a won Survival fight', () => {
 
   it('a field with nothing on it can be left at once; solo it is one Leave', () => {
     let g = startRun(survivalRoom('PHC-FIELD1', [DUO[0]], { test: true }), 'PHC-FIELD1');
-    g = apply(g, { type: 'run/move', node: reachable(g.run!).find((x) => x.kind === 'fight')!.id }, 'host');
+    g = walkIn(apply(g, { type: 'run/move', node: reachable(g.run!).find((x) => x.kind === 'fight')!.id }, 'host'));
     const x = clone(g); x.combat!.objects = (x.combat!.objects || []).filter((o: any) => o.kind !== 'pile');
     g = apply(apply(x, { type: 'run/skip' }, 'host'), { type: 'run/leave' }, 'host');
     expect(g.run!.state).toBe('reward');

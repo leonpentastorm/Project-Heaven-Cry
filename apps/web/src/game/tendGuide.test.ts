@@ -16,9 +16,10 @@ function fight() {
   med.skills.camaraderie = Math.max(med.skills.camaraderie || 0, 5); med.perks = [...(med.perks || []), { id: 'pull_together', tier: 'II' }]; // rules 1.75 item 6213: Guide is Pull Together II's
   const node = reachable(g.run).find((n: any) => n.kind === 'fight');
   for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by);
+  if (g.run.state === 'engage') g = apply(g, { type: 'run/engage', how: 'walk' }, 'host');
   const cb = g.combat, mu = cb.units.find((u: any) => u.charId === med.id), al = cb.units.find((u: any) => u.side === 'pc' && u.id !== mu.id);
   const [x, y] = mu.pos.split(',').map(Number); al.pos = x + ',' + (y + 1);
-  cb.turn = cb.order.indexOf(mu.id); delete cb.window; delete cb.approach; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5011: the fight set up by hand as joined
+  cb.turn = cb.order.indexOf(mu.id); delete cb.window; withGame(g, () => beginTurn(cb, g.rng)); mu.ap = 9; // rules 1.64 item 5011: the fight set up by hand
   return { g, mu, al };
 }
 const ID = 'pk:perk:pull_together#tend_guide';

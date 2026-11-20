@@ -5,6 +5,7 @@
 // those same words for a unit it can't pick (apps/web/src/screens/combat-unit-pick.test.ts).
 import { describe, it, expect } from 'vitest';
 import { apply, newGame, ARCHETYPES, beginTurn, withGame, reachable } from '../src';
+import { walkIn } from './helpers/survival';
 import tendingJ from '../../../data/tending.json';
 
 const RANGE: number = (tendingJ as any).bond.make_range;
@@ -15,7 +16,7 @@ function fight() {
   g = apply(g, { type: 'run/start', seed: 'PHC-0001' }, 'host');
   g = apply(g, { type: 'run/ready', close: true }, 'host');
   const node = reachable(g.run).find((n: any) => n.kind === 'fight') || reachable(g.run)[0];
-  if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, 'host');
+  if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, 'host'); g = walkIn(g);
   const cb = g.combat, mu = cb.units.find((u: any) => u.side === 'pc'), foes = cb.units.filter((u: any) => u.side === 'foe');
   cb.map = { ...cb.map, solid: [], cover: [], full: [], objects: [] }; cb.objects = [];
   mu.pos = '2,2'; foes[0].pos = (2 + RANGE) + ',2'; foes[1].pos = (3 + RANGE) + ',3'; for (const f of foes.slice(2)) f.pos = '1,' + (8 + foes.indexOf(f));

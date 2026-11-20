@@ -16,6 +16,7 @@ import { statQuery } from '../effects/hooks';
 import { rollVs, passFaces, TN, type RollPart, type RollResult } from '../rolls';
 import { FORM, formWhy, figmentCharge } from '../figments';
 import { itemAmount } from '../effects/amounts';
+import { visChargeNow } from '../magic';
 import { composeEncounter } from './encounter';
 import { type RunState, type RunNode, runSetting } from './state';
 import type { Rng } from '../rng';
@@ -48,7 +49,7 @@ export function scoutOf(chars: Character[]): { charId: string; name: string; for
     if (own > 0) take({ charId: c.id, name: c.name, bonus: own, line: fillAmbush(AMBUSH.words.scout, { name: c.name }) });
     for (const f of Object.values(FORM) as any[]) {
       const sc = f?.scouts; if (!sc || !(sc.bonus > 0)) continue;
-      if (formWhy(c, f.id) || !carriesVisualizer(c) || (c.visCharge || 0) < figmentCharge(f.id, [])) continue; // the Picture rule's needs, nothing spent
+      if (formWhy(c, f.id) || !carriesVisualizer(c) || visChargeNow(c) < figmentCharge(f.id, [])) continue; // the Picture rule's needs, nothing spent
       take({ charId: c.id, name: c.name, form: f.name, bonus: sc.bonus, line: fillAmbush(AMBUSH.words.scout_form, { name: c.name, form: f.name }) });
     }
   }

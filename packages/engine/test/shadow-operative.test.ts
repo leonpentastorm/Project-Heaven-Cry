@@ -61,7 +61,8 @@ describe('the verbs at work', () => {
     expect(() => use(f, u, 'shadow.disable', t.id)).toThrow(esc(grantOf('shadow.disable').reach.why.target_kind));
   });
   it('Still Breath (an Acuity perk since rules 1.74 item 6005; was Ingenuity 5): spot rolls against you lower by cover', () => {
-    expect((SKILL.ingenuity as any).unlocks['5'].effects).toEqual([]);
+    // rules 1.87 item 7512: Ingenuity 5 carries only the Scout (the ambush's scout bonus), never Still Breath again
+    expect((SKILL.ingenuity as any).unlocks['5'].effects.map((x: any) => x.stat || x.op)).toEqual(['ambush_scout']);
     const e = (PERK.still_breath as any).tiers.I.effects[0];
     expect(e).toMatchObject({ op: 'roll_mod', when: 'spot', if: { by_cover: ['here'] } });
     expect(e.value).toBeLessThan(0);

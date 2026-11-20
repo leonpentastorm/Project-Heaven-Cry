@@ -4,7 +4,7 @@
 // story at a shop. Field Surgery (the one injury treatment, with the field kit) works in a run the same way. Through the reducer.
 import { describe, expect, it } from 'vitest';
 import { type GameState, type RunNode, apply, RuleError, packOf, giveView, reachable, plateChoices, MODULE, runItemWhy, perkActionsFor, ITEM } from '../src';
-import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, walkIn } from './helpers/survival';
 
 const SEED = 'PHC-0001';
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
@@ -142,7 +142,8 @@ describe('the field kit treats a limb in a run (rules 1.61 addendum)', () => {
   });
   it('refused in a fight, and on the field after it', () => {
     const g0 = duo(), fight = reachable(g0.run!).find((n) => n.kind === 'fight')!;
-    let g = g0; for (let i = 0; i < 2 && g.run!.state !== 'fight'; i++) g = apply(g, { type: 'run/move', node: fight.id } as any, ownerOf(i));
+    let g = g0; for (let i = 0; i < 2 && g.run!.state !== 'fight' && g.run!.state !== 'engage'; i++) g = apply(g, { type: 'run/move', node: fight.id } as any, ownerOf(i));
+    g = walkIn(g);
     g = JSON.parse(JSON.stringify(g)); hurt(g);
     expect(refused(g, USE('c1', 'c1'))).toMatch(/Not in a fight/);
     const f: GameState = JSON.parse(JSON.stringify(apply(g, { type: 'run/skip' } as any, 'host'))); expect(f.run!.state).toBe('field');

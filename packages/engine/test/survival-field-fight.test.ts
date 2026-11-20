@@ -9,7 +9,7 @@
 // the fight closes (magicOut, Flux, the supply pack), then the picks.
 import { describe, it, expect } from 'vitest';
 import { apply, newGame, ARCHETYPES, reachable, RuleError, nodeXp, runNode, magazineWorth, paths, setDevotionXp, devotionThreshold, packOf, AIR_SPENT, SYPHON_DRAW, giveView, ITEM } from '../src';
-import { survivalRoom, startRun, ownerOf, leaveField, upTurn } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, leaveField, upTurn, walkIn } from './helpers/survival';
 
 const clone = (g: any) => JSON.parse(JSON.stringify(g));
 const refused = (g: any, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
@@ -24,6 +24,7 @@ function inFight(prep?: (g: any) => void) {
   g = clone(g); prep?.(g);
   const node = reachable(g.run).find((n: any) => n.kind === 'fight');
   for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by);
+  g = walkIn(g);
   expect(g.run.state).toBe('fight');
   return g;
 }
@@ -172,7 +173,7 @@ describe('rules 1.55 item 64: nothing harms a friend, nothing grows', () => {
     const c = g.characters.c1; c.sigils = [...new Set([...(c.sigils || []), 'fire', 'seek', 'spread'])];
     const n = reachable(g.run).find((x: any) => x.kind === 'fight');
     for (let i = 0; i < 2 && g.run.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
-    g = toField(g); g = upTurn(g, g.combat.units.find((x: any) => x.charId === 'c1').id);
+    g = walkIn(g); g = toField(g); g = upTurn(g, g.combat.units.find((x: any) => x.charId === 'c1').id);
     g.combat.units.find((x: any) => x.charId === 'c1').ap = 9; // the test's own placing: AP for the Line and its Evoke in one turn
     return g;
   }
@@ -213,7 +214,7 @@ describe('rules 1.55 item 64: nothing harms a friend, nothing grows', () => {
     let g: any = clone(startRun(survivalRoom('PHC-GROW4', SOUL, { test: true }), 'PHC-GROW4'));
     const n = reachable(g.run).find((x: any) => x.kind === 'fight');
     for (let i = 0; i < 2 && g.run.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
-    g = toField(g); g = upTurn(g, g.combat.units.find((x: any) => x.charId === 'c1').id);
+    g = walkIn(g); g = toField(g); g = upTurn(g, g.combat.units.find((x: any) => x.charId === 'c1').id);
     const u = g.combat.units.find((x: any) => x.charId === 'c1'), c = g.characters.c1, p0 = c.soulPractice || 0; u.ap = 9; // the test's own placing: a turn's AP for both
     g.combat.mana = 20; const cores0 = packOf(g.characters.c1).length;
     const cr = apply(g, { type: 'combat/crystallise', unitId: u.id }, 'host');
@@ -232,7 +233,7 @@ function soulField(seed: string) {
   let g: any = clone(startRun(survivalRoom(seed, [{ build: 'outburst', level: 1 }, { build: 'plain_gun', level: 1 }], { test: true }), seed));
   const n = reachable(g.run).find((x: any) => x.kind === 'fight');
   for (let i = 0; i < 2 && g.run.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
-  g = toField(g); return upTurn(g, g.combat.units.find((x: any) => x.charId === 'c1').id); // the caster's turn (rules 1.62 item 4906)
+  g = walkIn(g); g = toField(g); return upTurn(g, g.combat.units.find((x: any) => x.charId === 'c1').id); // the caster's turn (rules 1.62 item 4906)
 }
 
 describe('rules 1.55 item 47 (spec item 4136): the field\'s gathering is bounded by the meter (AP as in a fight)', () => {

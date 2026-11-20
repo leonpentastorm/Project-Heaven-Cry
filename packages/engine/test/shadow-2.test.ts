@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
-import { survivalRoom, startRun, chooseNode } from './helpers/survival';
+import { survivalRoom, startRun, chooseNode, walkIn } from './helpers/survival';
 import { Rec } from './helpers/replay';
 import { HIDDEN_ATTACK } from '../src/tactics';
 import { previewAttack, RULES, SKILL, condOn, apply, beginTurn, moveOptions, basicActions, DOOR_TABS, doorTabsOf, actionsFor, refOf, type Unit } from '../src';
@@ -219,7 +219,7 @@ describe('the Hide-spot measure (rules 1.56 item 4336): a spot to Hide from is i
       g0.characters.c1.skills.ingenuity = 1;
       const r = new Rec(startRun(g0, seed), [{ build: 'plain_gun', level: 1 }]);
       const node = chooseNode(r.g, ['fight']); if (!node) continue;
-      r.must({ type: 'run/move', node: node.id });
+      r.must({ type: 'run/move', node: node.id }); r.g = walkIn(r.g);
       const g = r.g, cb = g.combat; if (!cb) continue;
       const u = cb.units.find((x: Unit) => x.side === 'pc')!; n++;
       cb.turn = cb.order.indexOf(u.id); delete cb.window; withGame(g, () => beginTurn(cb, g.rng));

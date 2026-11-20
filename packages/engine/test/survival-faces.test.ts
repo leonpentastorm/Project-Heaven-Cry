@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { apply, reachable, composeEncounter, SETTINGS, type GameState } from '../src';
 import { type Pc } from './helpers/replay';
-import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, walkIn } from './helpers/survival';
 import assets from '../../../apps/web/src/game/assets.json';
 import svJ from '../../../data/survival.json';
 import enJ from '../../../data/enemies.json';
@@ -64,7 +64,7 @@ describe('Survival foe faces', () => {
     const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
     const g = startRun(survivalRoom('PHC-0001', DUO, { test: true }), 'PHC-0001');
     const node = reachable(g.run!).find((n) => n.kind === 'fight')!;
-    const go = (x: GameState) => { for (let i = 0; i < 2 && x.run!.state === 'map'; i++) x = apply(x, { type: 'run/move', node: node.id }, ownerOf(i)); return x; };
+    const go = (x: GameState) => { for (let i = 0; i < 2 && x.run!.state === 'map'; i++) x = apply(x, { type: 'run/move', node: node.id }, ownerOf(i)); return walkIn(x); };
     const x = go(JSON.parse(JSON.stringify(g))), y = go(JSON.parse(JSON.stringify(g)));
     expect(x.run!.state).toBe('fight');
     const foes = x.combat!.units.filter((u) => u.side === 'foe');

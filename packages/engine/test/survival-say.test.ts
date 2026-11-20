@@ -3,7 +3,7 @@
 // pending from before this fix is given back at the next action. Everything through the reducer, two players.
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, reachable, attemptWhy, viewFor } from '../src';
-import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, walkIn } from './helpers/survival';
 import type { Pc } from './helpers/replay';
 
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'plain_gun', level: 1 }];
@@ -13,7 +13,7 @@ function inFight(): GameState {
   let g = clone(startRun(survivalRoom('PHC-SAY', DUO, { test: true }), 'PHC-SAY'));
   const n = reachable(g.run!).find((x) => x.kind === 'fight')!;
   for (let i = 0; i < 2 && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
-  expect(g.run!.state).toBe('fight');
+  g = walkIn(g); expect(g.run!.state).toBe('fight');
   return g;
 }
 const turnUnit = (g: GameState) => { const cb = g.combat!; return cb.units.find((x) => x.id === cb.order[cb.turn])!; };

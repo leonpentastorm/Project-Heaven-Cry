@@ -3,7 +3,7 @@
 // reducer, the field left, the picks taken; stageView reads the offer the engine made.
 import { describe, expect, it } from 'vitest';
 import { apply, worthOf, capRoom, type GameState } from '@engine';
-import { survivalRoom, startRun, ownerOf, leaveField } from '../../../../packages/engine/test/helpers/survival';
+import { survivalRoom, startRun, ownerOf, leaveField, walkIn } from '../../../../packages/engine/test/helpers/survival';
 import { stageView } from './stageView';
 
 const DUO: any[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
@@ -12,7 +12,7 @@ function afterBoss(): GameState {
   const boss = r.nodes.find((x) => x.kind === 'boss')!, prev = r.nodes.find((x) => x.links.includes(boss.id))!;
   r.at = prev.id;
   let g = g0; for (let i = 0; i < DUO.length && g.run!.at !== boss.id; i++) g = apply(g, { type: 'run/move', node: boss.id }, ownerOf(i));
-  g = leaveField(apply(g, { type: 'run/skip' }, 'host'));
+  g = walkIn(g); g = leaveField(apply(g, { type: 'run/skip' }, 'host'));
   for (let i = 0; i < DUO.length; i++) g = apply(g, { type: 'run/pick', charId: 'c' + (i + 1), choice: 'materials' }, ownerOf(i));
   return g;
 }

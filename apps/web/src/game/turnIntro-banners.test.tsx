@@ -69,14 +69,14 @@ describe('the fight\'s big banners (rules 1.62 item 4900)', () => {
   }, 60_000);
   // Rules 1.87 item 7507 (Leon, 20 Nov 2026): a fight opened by an ambush roll shows SQUAD ADVANTAGE (won) or ENEMY
   // ADVANTAGE (lost, a solo fumble included) in place of BATTLE START, with the roll's sum and TN under it
-  it('an ambush opens with SQUAD ADVANTAGE or ENEMY ADVANTAGE, the roll's sum and TN under it', async () => {
+  it('an ambush opens with SQUAD ADVANTAGE or ENEMY ADVANTAGE, the roll’s sum and TN under it', async () => {
     const got: Record<string, any> = {};
     for (let s = 1; s <= 40 && !(got.won && got.lost); s++) {
-      let x = newGame('BANNERS', { id: 'host', name: 'Leon' }, 'banners'); (x as any).settings.play = 'survival'; (x as any).settings.test = true;
+      let x = newGame('BANNERS', { id: 'host', name: 'Leon' }, 'banners' + s); (x as any).settings.play = 'survival'; (x as any).settings.test = true;
       x = apply(x, { type: 'char/add', sheet: sheetFrom('sharpshooter', 'Gun') } as any, 'host');
       x = apply(x, { type: 'run/start', seed: 'PHC-' + String(s).padStart(4, '0') } as any, 'host'); x = apply(x, { type: 'run/ready', close: true } as any, 'host');
       const n = reachable((x as any).run).find((q: any) => q.kind === 'fight'); if (!n) continue;
-      const f = enter(x, n.id, 'ambush'), o = (f.combat as any).opening; got[o.won ? 'won' : 'lost'] ||= f;
+      const f = enter(x, n.id, 'ambush'), o = (f.combat as any)?.opening; if (o) got[o.won ? 'won' : 'lost'] ||= f;
     }
     expect(got.won && got.lost).toBeTruthy();
     const w = _test.fightCard(got.won, got.won.combat, 'host'), o = got.won.combat.opening;

@@ -8,6 +8,7 @@ import './helpers/yard16';
 import { SOUL_RULES, MANA_SHOCK, strainBurn, reachable, apply, newGame, ARCHETYPES, type Character, type GameState, type Unit, type Action } from '../src';
 import { storyWith, type CharSpec } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
+import { walkIn } from './helpers/survival';
 
 const SR: any = SOUL_RULES;
 const OVER: number = SR.strain.short_at_over;
@@ -212,7 +213,7 @@ describe('it ends with the fight, and is never charged outside one (item 4508)',
     let g: any = newGame('SHOCKF', { id: 'host', name: 'L' }, 'seed-f'); g.settings.play = 'survival'; g.settings.test = true;
     g = apply(g, { type: 'char/add', sheet: sheet('Medic', 'mender') } as any, 'host');
     g = apply(g, { type: 'run/start', seed: 'PHC-0003' } as any, 'host'); g = apply(g, { type: 'run/ready', close: true } as any, 'host');
-    const node = reachable(g.run).find((n: any) => n.kind === 'fight')!; g = apply(g, { type: 'run/move', node: node.id } as any, 'host');
+    const node = reachable(g.run).find((n: any) => n.kind === 'fight')!; g = apply(g, { type: 'run/move', node: node.id } as any, 'host'); g = walkIn(g);
     g = JSON.parse(JSON.stringify(g));
     const u0 = g.combat.units.find((x: any) => x.side === 'pc' && !x.companion); expect(u0.mg).toBeTruthy();
     u0.mg.strain = u0.mg.strainLimit + OVER; u0.mg.shock = true; // pushed there in the fight

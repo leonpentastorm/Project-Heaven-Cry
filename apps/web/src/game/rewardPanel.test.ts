@@ -12,7 +12,7 @@ import { rewardPanelView, payPieces } from './rewardPanelView';
 const DUO = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 function afterOneFight() {
   const r = new Rec(survivalRoom('PHC-T001', DUO, { test: true }), DUO); r.must({ type: 'run/start', seed: 'PHC-T001', camp: 'recommended' });
-  const node = chooseNode(r.g)!; for (let i = 0; i < DUO.length; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i));
+  const node = chooseNode(r.g)!; for (let i = 0; i < DUO.length; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i)); r.must({ type: 'run/engage', how: 'walk' });
   r.fight(40); expect(r.g.run.state).toBe('field');
   for (let i = 0; i < DUO.length && r.g.run.state === 'field'; i++) r.must({ type: 'run/leave' }, ownerOf(i));
   expect(r.g.run.state).toBe('reward');
@@ -53,7 +53,7 @@ describe('the map never eats a click (rules 1.64 R2)', () => {
     const me = ownerOf(0), whyAll = () => { const v = runView(r.g, me)!; return v.nodes.filter((n) => n.state !== 'reachable').map((n) => n.why); };
     // on the map: an unlit stop says it can't be reached (the engine's words)
     expect(whyAll().every((w) => typeof w === 'string' && w.length > 0)).toBe(true);
-    const node = chooseNode(r.g)!; for (let i = 0; i < DUO.length; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i));
+    const node = chooseNode(r.g)!; for (let i = 0; i < DUO.length; i++) r.must({ type: 'run/move', node: node.id }, ownerOf(i)); r.must({ type: 'run/engage', how: 'walk' });
     r.fight(40); expect(r.g.run.state).toBe('field');
     // the field: every stop says to leave the field first, and the view's blocked line is the same refusal
     const field = runMoveProblem(r.g, me, r.g.run.nodes[0].id);

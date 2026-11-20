@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, reachable, runNode, budgetFor, composeEncounter, nodeCredits, nodeXp, creditsOf, stageCeiling, vaultGrade, SETTING, ENC_BUDGET } from '../src';
 import { type Pc } from './helpers/replay';
-import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, leaveField, walkIn } from './helpers/survival';
 import svJ from '../../../data/survival.json';
 
 const SV: any = svJ;
@@ -62,7 +62,7 @@ describe('rules 1.48: the vault', () => {
     const g = started(), guard = g.run!.nodes.find((n) => n.kind === 'vault_guard')!, chest = runNode(g.run!, guard.links[0])!, fork = runNode(g.run!, guard.from)!;
     let x = standOn(g, fork.id);
     for (let i = 0; i < 2 && x.run!.at !== guard.id; i++) x = apply(x, { type: 'run/move', node: guard.id }, ownerOf(i));
-    expect(x.run!.state).toBe('fight'); expect(x.run!.stats.fights.at(-1)!.kind).toBe('vault_guard');
+    x = walkIn(x); expect(x.run!.state).toBe('fight'); expect(x.run!.stats.fights.at(-1)!.kind).toBe('vault_guard');
     const before = creditsOf(x.characters.c1);
     x = leaveField(apply(x, { type: 'run/skip' }, 'host'));
     expect(x.characters.c1.xp).toBe(nodeXp('vault_guard', guard.depth, 1));

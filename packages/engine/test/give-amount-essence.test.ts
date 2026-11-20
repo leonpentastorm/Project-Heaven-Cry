@@ -5,7 +5,7 @@
 // through the reducer with real actions; numbers read from the data.
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, RuleError, creditsOf, priceOf, sellValue, shopView, giveView, ITEM, SELL_RATE, reachable, magazineWorth, maxHp, type RunNode } from '../src';
-import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, walkIn } from './helpers/survival';
 import type { Pc } from './helpers/replay';
 
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'plain_gun', level: 1 }];
@@ -23,7 +23,7 @@ function inFight(prep?: (g: GameState) => void, seed = 'PHC-0283F'): GameState {
   let g = clone(startRun(survivalRoom(seed, DUO, { test: true }), seed));
   for (const c of Object.values(g.characters)) { c.weapon = 'service_pistol'; c.pack = [...(c.pack || []), ...magazineWorth('service_pistol')]; }
   prep?.(g);
-  const n = reachable(g.run!).find((x) => x.kind === 'fight')!; g = take(g, n); expect(g.run!.state).toBe('fight'); return g;
+  const n = reachable(g.run!).find((x) => x.kind === 'fight')!; g = walkIn(take(g, n)); expect(g.run!.state).toBe('fight'); return g;
 }
 const ESSENCE = Object.keys(ITEM).find((id) => (ITEM[id] as any).counts_into?.count === 'essence')!;
 const STIM = Object.keys(ITEM).find((id) => (ITEM[id] as any).use?.via === 'stim')!;

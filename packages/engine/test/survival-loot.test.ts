@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, apply, nodeCredits, sellValue, stageCeiling, WEAPON } from '../src';
 import svJ from '../../../data/survival.json';
-import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, leaveField, walkIn } from './helpers/survival';
 import { Rec, type Pc } from './helpers/replay';
 
 const SV: any = svJ;
@@ -20,7 +20,7 @@ function at(base: GameState, kind: string, depth: number, pcs: Pc[]): GameState 
   const n = r.nodes.find((x) => x.depth === depth && !x.gate)!, prev = r.nodes.find((x) => x.links.includes(n.id))!;
   n.kind = kind as any; r.at = prev.id; r.state = 'map';
   let g = g0; for (let i = 0; i < pcs.length && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
-  return g;
+  return walkIn(g);
 }
 const runs: Record<string, GameState> = {};
 const started = (seed: string, pcs: Pc[]) => (runs[seed + pcs.length] ||= startRun(survivalRoom(seed, pcs, { test: true }), seed));

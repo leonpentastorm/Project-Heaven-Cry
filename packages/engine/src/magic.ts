@@ -139,6 +139,8 @@ export { CORE_CHARGE, coreChargeOf };
 export const CORE_ITEM = 'standard_core';
 /** rules 1.34: a Visualizer's core (figments.json visualizer.charge). */
 export const VIS_CHARGE: number = (figmentsJ as any).visualizer?.charge ?? CORE_CHARGE;
+/** The Visualizer charge a character holds out of a fight (the one reading: its saved charge, full when none was saved yet). */
+export const visChargeNow = (c: Character): number => Math.max(0, Math.min(VIS_CHARGE, c.visCharge ?? VIS_CHARGE));
 export const SOUL_REACH = 4;
 // THE CONDITION TABLE is data/conditions.json, read by condtable.ts (engine foundations 2): names, families, saves,
 // durations and numbers. `rounds` counts the bearer's turn ends (a condition put on you during your own turn doesn't
@@ -203,7 +205,7 @@ export function magicOf(c: Character): MagicUnit | undefined {
     saves: { body: saveBonus(c, 'body'), brain: saveBonus(c, 'brain'), heart: saveBonus(c, 'heart') },
     debuff: strengthTable(c),
     // rules 1.34: the Visualizer (Figments' focus): in hand, carried, its own core's charge; the door's points
-    ...(carriesVisualizer(c) ? { visualizer: hasVisualizer(c), vcarry: true, vcharge: Math.max(0, Math.min(VIS_CHARGE, c.visCharge ?? VIS_CHARGE)), vchargeMax: VIS_CHARGE, vis: c.skills.visualization || 0 } : {}),
+    ...(carriesVisualizer(c) ? { visualizer: hasVisualizer(c), vcarry: true, vcharge: visChargeNow(c), vchargeMax: VIS_CHARGE, vis: c.skills.visualization || 0 } : {}),
     ...(() => { const wc = wordCostMods(c); return Object.keys(wc).length ? { wordCost: wc } : {}; })(),
     ...(() => { const mw = masteredWords(c); return mw.length ? { inflect: mw } : {}; })(),
   };

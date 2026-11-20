@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { type GameState, type PackItem, type Sheet, apply, RuleError, packOf, isGunId, gearLockWhy, sheetPack, sellValue, NODE_TIP, RECIPES, ITEM, WEAPON, priceOf, makeView, newGame, ARCHETYPES, isFocusId, inHands, nodeCredits, materialsView, placeView } from '../src';
 import svJ from '../../../data/survival.json';
-import { survivalRoom, startRun, ownerOf, leaveField } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, leaveField, walkIn } from './helpers/survival';
 import { counterLines, linePrice, ROUND_PRICE, SPECIAL_ROUND_ITEM, SPECIAL_CALIBRES } from '../src';
 import rulesJ from '../../../data/rules.json';
 const RJ: any = rulesJ;
@@ -22,7 +22,7 @@ function at(kind: string, o: { pcs?: Pc[]; seed?: string; prep?: (g: GameState) 
   n.kind = kind as any; r.at = prev.id; r.state = 'map';
   o.prep?.(g0);
   let g = g0; for (let i = 0; i < (o.pcs || DUO).length && g.run!.at !== n.id; i++) g = apply(g, { type: 'run/move', node: n.id }, ownerOf(i));
-  return g;
+  return walkIn(g);
 }
 const line = (item: string, qty: number, extra: Partial<PackItem> = {}): PackItem => ({ id: item, item, name: ITEM[item].name, qty, kind: 'loot', ...extra });
 const has = (g: GameState, cid: string, f: (x: PackItem) => boolean) => packOf(g.characters[cid]).filter(f).reduce((t, x) => t + x.qty, 0);

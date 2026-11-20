@@ -5,7 +5,7 @@ import { describe, it, expect } from 'vitest';
 import './helpers/yard16';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { type GameState, apply, reachable, litAt, unitSees, actionsFor } from '../src';
-import { survivalRoom, startRun, ownerOf } from './helpers/survival';
+import { survivalRoom, startRun, ownerOf, walkIn } from './helpers/survival';
 import { encounterMap } from '../src/run/encounter';
 import { rngFor } from '../src/rng';
 import { resOf, spotHidden } from '../src/tactics';
@@ -29,7 +29,7 @@ describe('dark maps (rules 1.76 item 6400)', () => {
     const seed = 'DARK-1';
     let g: GameState = startRun(survivalRoom(seed, [{ build: 'plain_gun', level: 1 }] as any, { test: true }), seed);
     const n: any = reachable(g.run!).find((x) => x.kind === 'fight');
-    g = apply(g, { type: 'run/move', node: n.id } as any, ownerOf(0));
+    g = walkIn(apply(g, { type: 'run/move', node: n.id } as any, ownerOf(0)));
     expect(SETTINGS.find((x) => x.id === n.setting).layout.dark).toBeFalsy();
     expect(!!g.combat!.map.dark).toBe(false);
   });

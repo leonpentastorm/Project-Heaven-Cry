@@ -28,6 +28,7 @@ function fight() {
   g = apply(g, { type: 'run/ready', close: true }, ME);
   const node = reachable(g.run).find((n: any) => n.kind === 'fight') || reachable(g.run)[0];
   if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, ME);
+  if (g.run.state === 'engage') g = apply(g, { type: 'run/engage', how: 'walk' }, ME); // rules 1.87
   const cb = g.combat, mu = cb.units.find((u: any) => u.side === 'pc'), foes = cb.units.filter((u: any) => u.side === 'foe');
   expect(foes.length).toBeGreaterThan(1);
   cb.map = { ...cb.map, solid: [], cover: [], full: [], objects: [] }; cb.objects = []; // open ground: reach is the only limit

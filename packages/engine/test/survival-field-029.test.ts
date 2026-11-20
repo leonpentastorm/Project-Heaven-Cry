@@ -6,7 +6,7 @@
 import { describe, it, expect } from 'vitest';
 import { PERK, apply, newGame, ARCHETYPES, reachable, RuleError, paths, dist, FIG_DOOR } from '../src';
 import tendingJ from '../../../data/tending.json';
-import { upTurn } from './helpers/survival';
+import { upTurn, walkIn } from './helpers/survival';
 
 const clone = (g: any) => JSON.parse(JSON.stringify(g));
 const refused = (g: any, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
@@ -21,6 +21,7 @@ function inFight(prep?: (g: any) => void) {
   g = clone(g); prep?.(g);
   const node = reachable(g.run).find((n: any) => n.kind === 'fight');
   for (const by of ['host', 'p2']) if (g.run.state === 'map') g = apply(g, { type: 'run/move', node: node.id }, by);
+  g = walkIn(g);
   expect(g.run.state).toBe('fight');
   return g;
 }

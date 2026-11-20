@@ -24,7 +24,7 @@ function room(): GameState {
 /** One step of the run toward the next fight's pay: walk to a fight, win it, leave its field, take the materials. */
 function step(g: GameState): GameState {
   const r: any = (g as any).run; let x = g;
-  if (r.state === 'map') { const n = reachable(r).find((q: any) => q.kind === 'fight') || reachable(r)[0]; for (const p of PLAYERS) if ((x as any).run.state === 'map') { try { x = apply(x, { type: 'run/move', node: n.id } as any, p); } catch { /* one way on: the first mark walked */ } } return x; }
+  if (r.state === 'map') { const n = reachable(r).find((q: any) => q.kind === 'fight') || reachable(r)[0]; for (const p of PLAYERS) if ((x as any).run.state === 'map') { try { x = apply(x, { type: 'run/move', node: n.id } as any, p); } catch { /* one way on: the first mark walked */ } } if ((x as any).run.state === 'engage') x = apply(x, { type: 'run/engage', how: 'walk' } as any, 'host'); return x; }
   if (r.state === 'fight') return apply(x, { type: 'run/skip' } as any, 'host');
   if (r.state === 'reward') { for (const c of Object.values(x.characters) as any[]) if ((x as any).run.offers?.[c.id]) x = apply(x, { type: 'run/pick', charId: c.id, choice: 'materials' } as any, c.owner);
     for (const c of Object.values(x.characters) as any[]) if ((x as any).run.lasting?.[c.id]) x = apply(x, { type: 'run/take', charId: c.id, choice: 0 } as any, c.owner); return x; }

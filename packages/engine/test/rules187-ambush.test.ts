@@ -110,6 +110,16 @@ describe('rules 1.87 item 7512: scouting before the choice', () => {
     // without a scout the line-up is not shown
     expect(engageView(atNode(1, [GUN, GUN])! as any, 'host')!.scout).toBeNull();
   });
+  it('a Figment form with scouts (the Eye) goes ahead when it could be pictured; never two scouts; no Visualizer, no scout', () => {
+    const RIG = { build: 'rigger', level: 1 } as any, g = atNode(1, [RIG])!, c = g.characters.c1, v = engageView(g as any, 'host')!;
+    expect(v.scout!.line).toBe(c.name + "'s Eye goes ahead");
+    expect(v.ambush.parts.filter((p) => p.label === AMBUSH.words.scout_term).map((p) => p.add)).toEqual([2]);
+    // with the Ingenuity door at 5 too: still one scout term, the best bonus
+    const both = atNode(1, [RIG], (r) => { r.characters.c1.skills = { ...r.characters.c1.skills, ingenuity: 5 }; })!;
+    expect(engageView(both as any, 'host')!.ambush.parts.filter((p) => p.label === AMBUSH.words.scout_term)).toHaveLength(1);
+    // the Visualizer's charge spent below the Eye's: nothing goes ahead (the Picture rule's needs, nothing spent)
+    const dry: any = atNode(1, [RIG])!; dry.characters.c1.visCharge = 0; expect(engageView(dry, 'host')!.scout).toBeNull();
+  });
   it('a held Ingenuity 5 from an old save scouts on load (the real load path)', () => {
     const g0: any = atNode(1, [GUN])!; g0.characters.c1.skills = { ...g0.characters.c1.skills, ingenuity: 6 };
     const g = migrateLoaded(JSON.parse(JSON.stringify(g0)));
