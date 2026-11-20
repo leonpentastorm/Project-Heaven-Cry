@@ -191,7 +191,8 @@
     "weapon-hellraiser_piston_knuckles--masterwork",
     "weapon-hellraiser_piston_knuckles--relic",
     "weapon-hellraiser_piston_knuckles--celestial",
-    "weapon-hellraiser_door_knocker--fine"
+    "weapon-hellraiser_door_knocker--fine",
+    "weapon-hellraiser_door_knocker--masterwork"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -237,7 +238,6 @@
     "weapon-short_bow--masterwork",
     "weapon-short_bow--relic",
     "weapon-short_bow--celestial",
-    "weapon-hellraiser_door_knocker--masterwork",
     "weapon-hellraiser_door_knocker--relic",
     "weapon-hellraiser_door_knocker--celestial",
     "weapon-throwing_darts--fine",
@@ -251,7 +251,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-20T06:58:21.238744+00:00",
+  "updated_utc": "2026-11-20T07:00:04.944705+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3,
   "quota_history": [
