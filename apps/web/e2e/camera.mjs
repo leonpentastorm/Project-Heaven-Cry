@@ -90,6 +90,23 @@ after = await G();
 ok('a click without a drag still acts (the unit walked to ' + ref(near) + '; at the click the panel was ' + panelAt + '; the unit is at ' + ref(meNow(after).pos) + ', AP ' + meNow(after).ap + ')', meNow(after).pos === near);
 await pause(p, 700);
 
+// 2b. (0.33, the roadmap's "camera jump after an illegal far click") a click on a tile out of reach, at the window's
+// edge (whole, then the half-cut one past it): the move is refused and the view stays where it is.
+{ await settle(); await myTurn().catch(() => {});
+  const mv = p.locator('[role="tabpanel"] button[data-act="move"]').first();
+  if ((await mv.getAttribute('aria-pressed').catch(() => null)) !== 'true') await mv.click({ timeout: 5000 }).catch(() => {});
+  await settle();
+  for (const [label, dx] of [['the last whole tile', 0], ['the half-cut tile past it', 1]]) {
+    const c0 = await cam(), k = (c0.tiles.x1 + dx) + ',' + c0.tiles.y1, b = await tileBox(k), pos0 = meNow(await G()).pos;
+    if (!b) { ok('2b: ' + label + ' (' + ref(k) + ') is on the page', false); continue; }
+    const vr = await p.locator('.phc-grid-scroll').boundingBox();
+    const x = Math.min(b.x + b.width / 2, vr.x + vr.width - 4), y = Math.min(b.y + b.height / 2, vr.y + vr.height - 4);
+    await p.mouse.click(x, y); await pause(p, 500); await settle();
+    const c1 = await cam(), moved = Math.round(Math.hypot(c1.frame.x - c0.frame.x, c1.frame.y - c0.frame.y));
+    ok('2b: a click on ' + label + ' (' + ref(k) + ', out of reach) leaves the unit where it is and the view still (it moved ' + moved + ' px)', meNow(await G()).pos === pos0 && moved <= 2);
+  }
+}
+
 // 3. The keys: arrows and WASD move the view, Home jumps back to your unit.
 await p.mouse.move(5, 500); await p.mouse.click(5, 500);
 c = await cam(); const k0 = c.frame;

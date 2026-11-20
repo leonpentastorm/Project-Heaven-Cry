@@ -31,7 +31,12 @@ export type CombatSfx = 'gun_pistol' | 'gun_revolver' | 'gun_magnum' | 'gun_smg'
 export type FaithSfx = 'miracle_sting'
   // 0.32 effects lane: the VICTORY fanfare and the DEFEAT sting (rules.json combat.cards.end), LEVEL UP's sting, a heal's
   // shimmer, a storm prayer's thunder (fx/faith.ts).
-  | 'victory_fanfare' | 'defeat_sting' | 'level_up' | 'heal_shimmer' | 'thunder';
+  | 'victory_fanfare' | 'defeat_sting' | 'level_up' | 'heal_shimmer' | 'thunder'
+  // 0.33: a bolt's own crack (apart from the thunder's roll), a prayer's wound landing (the divine impact), and each
+  // patron's own layer over a Hymn's choir (data/patrons.json items[].sound names one; fx/faith.ts plays it).
+  | 'lightning' | 'divine_hit' | PatronSfx;
+/** The patrons' layers: one each, over the shared choir (which patron plays which is data: patrons.json `sound`). */
+export type PatronSfx = 'patron_nerukhan' | 'patron_quartermaster' | 'patron_mask' | 'patron_toll' | 'patron_ember' | 'patron_overcast' | 'patron_matchmaker' | 'patron_weaver';
 /** The eight feeling families (data/feelings.json `families`). */
 export type FeelingFamily = 'warm' | 'cold' | 'sharp' | 'low' | 'bright' | 'hollow' | 'wild' | 'holy';
 export const FEELING_FAMILIES: FeelingFamily[] = ['warm', 'cold', 'sharp', 'low', 'bright', 'hollow', 'wild', 'holy'];
@@ -110,6 +115,10 @@ export const SFX_FILES: Partial<Record<Sfx, string | string[]>> = {
   miracle_sting: CB('miracle_sting'),
   // 0.32: sourced CC0 (credits in sfxCredits.ts; trimmed, faded, mono, levelled to -16 LUFS with a -3 dBFS limiter)
   victory_fanfare: CB('victory_fanfare'), defeat_sting: CB('defeat_sting'), level_up: CB('level_up'), heal_shimmer: CB('heal_shimmer'), thunder: CB('thunder'),
+  // 0.33: sourced CC0 (credits in sfxCredits.ts; masters and the ffmpeg lines in audio/README.md; levelled by tools/normalize_sfx.py)
+  lightning: CB('lightning'), divine_hit: CB('divine_hit'),
+  patron_nerukhan: CB('patron_nerukhan'), patron_quartermaster: CB('patron_quartermaster'), patron_mask: CB('patron_mask'), patron_toll: CB('patron_toll'),
+  patron_ember: CB('patron_ember'), patron_overcast: CB('patron_overcast'), patron_matchmaker: CB('patron_matchmaker'), patron_weaver: CB('patron_weaver'),
 };
 /** Combat sounds load when a game is on screen (preloadCombatSfx), not on the title screen's first key press. */
 const isCombatFile = (f: string) => f.startsWith('/sfx/cb/');
@@ -125,6 +134,8 @@ const STAND_IN: Partial<Record<CombatSfx, Sfx>> = {
   sg_join: 'toggle', sg_inflect: 'start', sg_study: 'start', spotlight_tear: 'melee',
   soul_breath_in: 'outburst', soul_breath_out: 'release', soul_sigh: 'release', soul_gasp: 'miss', soul_thump: 'outburst', soul_choir: 'outburst', soul_crack: 'short',
   miracle_sting: 'start', victory_fanfare: 'start', defeat_sting: 'back', level_up: 'start', heal_shimmer: 'start', thunder: 'overload',
+  lightning: 'evoke', divine_hit: 'hit', patron_nerukhan: 'start', patron_quartermaster: 'hit', patron_mask: 'start', patron_toll: 'start',
+  patron_ember: 'outburst', patron_overcast: 'overload', patron_matchmaker: 'start', patron_weaver: 'toggle',
 };
 /** The mix: how loud each event sits under the master UI volume. */
 const MIX: Partial<Record<Sfx, number>> = {
@@ -146,6 +157,7 @@ const MIX: Partial<Record<Sfx, number>> = {
   feel_pump_warm: 0.4, feel_pump_cold: 0.4, feel_pump_sharp: 0.38, feel_pump_low: 0.45, feel_pump_bright: 0.45, feel_pump_hollow: 0.45, feel_pump_wild: 0.4, feel_pump_holy: 0.4,
   feel_residue_warm: 0.28, feel_residue_cold: 0.28, feel_residue_sharp: 0.3, feel_residue_low: 0.3, feel_residue_bright: 0.28, feel_residue_hollow: 0.3, feel_residue_wild: 0.3, feel_residue_holy: 0.3,
   feel_unlock: 0.5, feel_revert: 0.35, feel_tick: 0.3, spotlight_tear: 0.55, miracle_sting: 0.55, sighted: 0.16, victory_fanfare: 0.5, defeat_sting: 0.45, level_up: 0.45, heal_shimmer: 0.35, thunder: 0.5,
+  lightning: 0.45, divine_hit: 0.45, patron_nerukhan: 0.32, patron_quartermaster: 0.35, patron_mask: 0.3, patron_toll: 0.35, patron_ember: 0.32, patron_overcast: 0.35, patron_matchmaker: 0.3, patron_weaver: 0.32,
   sigil_draw: 0.3, sigil_evoke: 0.4, sigil_core: 0.35, sigil_overload: 0.45, soul_hold: 0.35, heartbeat: 0.55, soul_release: 0.5, crystal: 0.35, vent: 0.3, draw: 0.35, evoke: 0.45, overload: 0.45, outburst: 0.45, release: 0.5, short: 0.55, shot: 0.5, hit: 0.45, miss: 0.3, reload: 0.4, melee: 0.45, down: 0.5, hover: 0.22, click: 0.45, start: 0.6, back: 0.4, slide: 0.35, slide_back: 0.35, error: 0.45, toggle: 0.35, tab: 0.35, wick_hello: 0.5, wick_steps: 0.5, stamp: 0.75 };
 const files = (s: Sfx) => { const f = SFX_FILES[s]; return f ? (Array.isArray(f) ? f : [f]) : []; };
 

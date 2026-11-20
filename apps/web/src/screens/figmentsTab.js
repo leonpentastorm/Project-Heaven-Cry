@@ -14,6 +14,7 @@ import { act, toast } from '../game/store';
 import { figmentIconUri, FIG_INK, FIG_LINE } from '../game/figmentIcons';
 import { groupedSection } from '../game/workshopGroups';
 import { doorLineOf } from '../game/doorView';
+import { forkChipsLine } from '../game/forkLine';
 
 const MUTED = '#7F8BA1', TEXT = '#E7EBF3';
 const chip = (on, off) => 'display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 0 10px 0 6px; border-radius: 999px; font-family: inherit; font-size: var(--fs-sub); font-weight: 700; cursor: ' + (off ? 'default; opacity: 0.5' : 'pointer')
@@ -22,7 +23,7 @@ const forms = (list, ink) => list.map((f) => ({ key: f.id, name: f.name, icon: f
 
 /** The values the FIGMENTS section reads (mg.fig.*). sc: the main screen (state figDraft). */
 export function figmentSectionVals(sc, g, c, rerender) {
-  const none = { show: false, ws: { groups: [] }, steps: [], newForms: [], nextForms: [], designs: [], ed: { open: false, forms: [], traits: [] } };
+  const none = { show: false, ws: { groups: [] }, steps: [], newForms: [], nextForms: [], designs: [], held: [], ed: { open: false, forms: [], traits: [] } };
   if (!c) return none;
   const p = c.skills?.visualization || 0, kept = c.figments || [];
   if (p < 1 && !kept.length) return none;
@@ -45,6 +46,11 @@ export function figmentSectionVals(sc, g, c, rerender) {
   const choose = pendingDoorPicks(c, FIG_DOOR).map((pd) => ({ key: pd.grant, head: 'CHOOSE · ' + pd.why,
     opts: pd.options.map((o) => ({ key: o.id, name: o.label, icon: figmentIconUri(o.icon, FIG_LINE), title: (figmentLookOf(o.id) || { text: '' }).text + (V.fightWhy ? ' · Choose after the fight.' : ''),
       style: chip(false, !!V.fightWhy), pick: () => (V.fightWhy ? toast('Choose after the fight.') : act({ type: 'door/pick', charId: c.id, door: FIG_DOOR, option: o.id })) })) }));
+
+  // 0.33 (TRIAGE row 10: "forks picked at camp did not show in the MAGIC tab"): what was chosen stays in sight here once
+  // the choice is made (the pending chips above go): the forms known, and the door's forks held (the engine's views)
+  const held = (L.known?.chosen || []).filter(Boolean).map((f) => ({ key: f.id, name: f.name, icon: figmentIconUri(f.icon, FIG_LINE), title: f.name + ': ' + f.text }));
+  const forkLine = forkChipsLine(c, L.door);
 
   // the designs kept
   const designs = V.designs.map((d) => ({ key: d.id, name: d.name, icon: figmentIconUri(d.look ? d.look.icon : '', FIG_LINE),
@@ -89,6 +95,7 @@ export function figmentSectionVals(sc, g, c, rerender) {
     newLine: latest ? 'New: ' + latest.text : '',
     hasNext: !!next, nextHead: next ? 'NEXT · VISUALIZATION ' + next.points : '', nextForms: [], hasNextForms: false, nextText: next ? next.text : '',
     hasChoose: choose.length > 0, choose,
+    hasHeld: held.length > 0 || !!forkLine, held, hasHeldForms: held.length > 0, heldHead: 'FORMS KNOWN · ' + held.length + ' / ' + (L.known?.n ?? held.length), forkLine, hasForkLine: !!forkLine,
     steps, designs, noDesigns: !designs.length, noDesignsText: V.designsMax ? 'No designs kept yet: a design is a form with its traits, named, ready to picture.' : (V.newWhy || ''),
     canNew, newWhy: canNew ? '' : V.newWhy || '', hasNewWhy: !canNew && !!V.newWhy,
     newDesign: () => { if (!canNew) return toast(V.newWhy || 'Not now.'); set({ id: null, name: '', form: firstOpen.id, traits: [] }); },

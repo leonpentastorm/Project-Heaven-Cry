@@ -114,6 +114,8 @@ describe('the FIGMENTS section on the MAGIC tab', () => {
       expect(v.choose.flatMap((c: any) => c.opts.map((x: any) => x.key))).not.toContain(o.key);
     }
     expect(v.hasChoose).toBe(false);
+    // 0.33 (TRIAGE row 10): once chosen, the forms stay in sight on the MAGIC tab (the choice chips are gone)
+    expect(v.hasHeld).toBe(true); expect(v.held.map((h: any) => h.key)).toEqual(chosen); expect(v.heldHead).toBe('FORMS KNOWN · ' + n + ' / ' + n);
     expect(figmentLadderView(at, G.characters[id]).known.chosen.map((f: any) => f.name)).toEqual(chosen.map((k) => FORM[k].name));
     // the forms learned are open in the design editor; every other form is greyed with the engine's words
     const dv = figmentDesignView(G.characters[id]);

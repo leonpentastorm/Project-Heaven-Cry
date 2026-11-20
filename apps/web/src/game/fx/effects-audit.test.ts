@@ -128,6 +128,13 @@ describe('effects audit', () => {
     expect(ROWS.length).toBeGreaterThan(30);
     // 0.33: Everyone Home's allies answer on their tokens (the Miracle's landing runs landOn)
     expect(ROWS.find((r) => r.action.includes('everyone_home'))!.fault).toBe('ok');
+    // 0.33 sound lane: every Hymn and Miracle plays its patron's own layer (data: patrons.json `sound`); a storm's bolt
+    // cracks apart from the thunder; a prayer's wound on a foe lands with the divine impact
+    for (const it of pj.items) for (const r of ROWS.filter((x) => x.group === 'prayer' && x.action.includes(it.id + '.') && !/REFUSED/.test(x.fault))) expect(r.sound).toContain(it.sound);
+    const row = (a: string) => ROWS.find((r) => r.action.includes(a))!;
+    expect(row('thunderclap').sound).toContain('lightning'); expect(row('thunderclap').sound).toContain('thunder');
+    expect(row('nerukhan.judgement').sound).toContain('divine_hit'); expect(row('whisper rebuke').sound).toContain('divine_hit');
+    expect(row('nerukhan.absolution').sound).not.toContain('divine_hit');
   }, 60000); // every prayer through the reducer: seconds on a quiet machine, past 5 s on a busy one
 
   // the Bond verbs that are perks since rules 1.75 (perks.json: the perk whose grant names tend_<verb>)

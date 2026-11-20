@@ -76,4 +76,14 @@ export const SFX_CREDITS: Credit[] = [
   { what: 'New thing get! (the LEVEL UP sting)', who: 'congusbongus', licence: 'CC0', url: 'https://opengameart.org/content/new-thing-get' },
   { what: "Magic Words + Healing Sound Effect: health_restore (a heal's shimmer)", who: 'Spring Spring', licence: 'CC0', url: 'https://opengameart.org/content/magic-words-healing-sound-effect' },
   { what: "Rain + Long Thunder (the storm prayers' thunderclap, cut from its first strike)", who: 'WuxiaScrub', licence: 'CC0', url: 'https://opengameart.org/content/rain-long-thunder' },
+  // 0.33 sound lane (20 Nov 2026): trimmed, layered, mono, levelled (-16 LUFS, a limiter, then tools/normalize_sfx.py); masters in audio/sfx/.
+  { what: "Electricity Sound Effects: spark (a storm bolt's crack, apart from the thunder)", who: "Brian MacIntosh (BMacZero)", licence: 'CC0', url: 'https://opengameart.org/content/electricity-sound-effects-0' },
+  { what: "100 CC0 SFX #2: thunder_01 (the bolt's crack, high-passed; Old Overcast's distant roll), hit_01 (the divine impact's thump), metal_hit_01 and wood_hit_01 (the Quartermaster's crate and stamp)", who: "rubberduck", licence: 'CC0', url: 'https://opengameart.org/content/100-cc0-sfx-2' },
+  { what: "Pleasing Bell Sound Effect (the divine impact's bell, pitched down, with an echo)", who: "Produced by Julie Damsgaard/Spring Spring/Spring Enterprises, https://spring-enterprises.neocities.org", licence: 'CC0', url: 'https://opengameart.org/content/pleasing-bell-sound-effect' },
+  { what: "4 Metal Dings/Rings: ding 1 (Holy Father Nerukhan's bell, pitched down)", who: "StarNinjas (https://opengameart.org/users/starninjas)", licence: 'CC0', url: 'https://opengameart.org/content/4-metal-dingsrings' },
+  { what: "Group giggling (the Laughing Mask's laughter)", who: "AuraVoice (nocturnalvanguard)", licence: 'CC0', url: 'https://opengameart.org/content/group-giggling' },
+  { what: "80 CC0 RPG SFX: item_coins_04 (the Toll-Keeper's coins), spell_fire_07 (Mother Ember's flare)", who: "rubberduck", licence: 'CC0', url: 'https://opengameart.org/content/80-cc0-rpg-sfx' },
+  { what: "Fireplace Sound loop (Mother Ember's hearth crackle)", who: "pagdev", licence: 'CC0', url: 'https://opengameart.org/content/fireplace-sound-loop' },
+  { what: "Bell Arpeggio 24 (the Matchmaker's vibraphone)", who: "The Cynic Project / cynicmusic.com / pixelsphere.org", licence: 'CC0', url: 'https://opengameart.org/content/bell-arpeggio-24' },
+  { what: "Ticking clock: four single ticks (the Counting Weaver's count)", who: "bart", licence: 'CC0', url: 'https://opengameart.org/content/ticking-clock' },
 ];

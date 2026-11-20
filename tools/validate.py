@@ -1407,6 +1407,9 @@ if isinstance(pat, dict) and pat.get("tags"):
             errors.append(f"patrons:{pid}: rule must be open or jealous")
         if not re.fullmatch(r"#[0-9A-Fa-f]{6}", str(p.get("accent") or "")):
             errors.append(f"patrons:{pid}: accent must be a #RRGGBB colour")
+        # 0.33 (rules 1.88, sound lane): the patron's own layer over a Hymn's choir (presentation; fx/faith.ts plays it)
+        if "sound" in p and p["sound"] not in _SFX_NAMES:
+            errors.append(f"patrons:{pid}: sound {p['sound']!r} is not a sound in apps/web/src/game/sfx.ts SFX_FILES")
         hy = p.get("hymns") or []
         if sorted(h.get("tier") for h in hy) != [1, 2, 3]:
             errors.append(f"patrons:{pid}: needs 3 Hymns at tiers 1, 2 and 3")

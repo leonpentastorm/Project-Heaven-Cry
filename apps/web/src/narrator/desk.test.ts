@@ -58,4 +58,28 @@ describe('rules 1.84: the Narrator\'s desk is the AI Narrator\'s tool', () => {
     expect((viewFor(g, 'p2').story.npcs || []).some((n) => n.name === 'Watcher on the wall')).toBe(false);
     expect(viewFor(g, 'p2').story.scene.hooks).toEqual([]);
   });
+  it("0.33: ground items, a trigger's spawn list and drops are rows from the tool's own shape (no JSON box), and the engine takes them", () => {
+    let g = room(); const F = Object.fromEntries(deskFields(g).map((f) => [f.key, f.schema])) as any;
+    // the shapes are the tool's own: a cache's loot row (for the ground and drops) and the npcs[] place shape's fields
+    const tool: any = submitTool(g).input_schema, row = tool.properties.objects.items.properties.items.items;
+    expect(F.ground.items.properties.items.items).toEqual(row);
+    expect(F.npcs.items.properties.drops.properties.items.items).toEqual(row);
+    expect(F.combat.anyOf[1].properties.enemies.items.properties.drops.properties.items.items).toEqual(row);
+    for (const [k, v] of Object.entries(F.triggers.items.properties.spawn.items.properties)) expect(v).toEqual(tool.properties.npcs.items.properties[k]);
+    // the AI's tool itself is not changed (it stays open: no token added to every call)
+    expect(tool.properties.ground.items.properties.items.items).toEqual({ type: 'object' });
+    // a row as the desk holds it (numbers typed as text, empty fields) is cleaned to the tool's shape
+    expect(clean(F.ground, [{ at: 'D4', items: [{ item: 'stim', qty: '2', rarity: '', name: '' }] }])).toEqual([{ at: 'D4', items: [{ item: 'stim', qty: 2 }] }]);
+    setDeskField('ground', [{ at: 'D4', items: [{ item: 'stim_injector', qty: '2' }] }]);
+    setDeskField('triggers', [{ action: 'place', when: 'enter', tiles: ['F6'], then: 'spawn', spawn: [{ name: 'Late guard', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: 'H6' }] }]);
+    setDeskField('npcs', [{ action: 'place', name: 'Quartermaster', side: 'neutral', tier: 'minion', weapon: 'service_pistol', at: 'J8', drops: { table: '', items: [{ item: 'stim', qty: '3' }] } }]);
+    const extra: any = deskTurn(g);
+    expect(extra.triggers[0].spawn[0]).toEqual({ name: 'Late guard', side: 'hostile', tier: 'minion', weapon: 'service_pistol', at: 'H6' });
+    expect(extra.npcs[0].drops).toEqual({ items: [{ item: 'stim', qty: 3 }] });
+    g = { ...g, story: { ...g.story, await: 'narrator', work: { kind: 'round' } } } as GameState;
+    g = apply(g, { type: 'narrator/turn', turn: { ...extra, narration: 'Things change in the yard.' } }, 'host');
+    expect(JSON.stringify((g.story.objects || []).filter((o: any) => o.kind === 'pile'))).toMatch(/stim_injector/);
+    expect(((g.story as any).triggers || []).some((t: any) => t.then === 'spawn' && t.spawn?.[0]?.name === 'Late guard')).toBe(true);
+    expect(npcsOf(g).find((n) => n.name === 'Quartermaster')?.drops).toEqual({ items: [{ item: 'stim', qty: 3 }] });
+  });
 });

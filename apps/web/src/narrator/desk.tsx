@@ -14,7 +14,7 @@
 // a guest's character there (rules 1.84 item 7203).
 import React from 'react';
 import { createPortal } from 'react-dom';
-import { SKILL, WEAPON, ITEM, refOf, narratorSeat, type GameState, type NarratorTurn } from '@engine';
+import { SKILL, WEAPON, ITEM, LOOT_TABLES, refOf, narratorSeat, type GameState, type NarratorTurn } from '@engine';
 import { submitTool } from './context';
 
 type Schema = { type?: string; enum?: any[]; items?: Schema; properties?: Record<string, Schema>; required?: string[]; anyOf?: Schema[]; description?: string; minimum?: number; maximum?: number };
@@ -41,9 +41,39 @@ const WORD: Record<string, string> = { charId: 'Who', tn: 'TN', at: 'Tile', to: 
   level_shift: 'Level shift', perkId: 'Perk', classId: 'Class', n: 'Amount' };
 const words = (k: string) => WORD[k] || k.replace(/_/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^./, (x) => x.toUpperCase());
 
+/** 0.33: the shapes the AI's tool leaves open but names, for the desk's rows. The tool keeps them open on purpose (every
+ * token of it is sent on every call); the shapes themselves are the tool's own, found where it does define them: the loot
+ * row is a cache's contents (objects[].items[]), a spawn row is the npcs[] place shape. Nothing here is a second copy of
+ * a rule: the engine checks every entry as it checks the AI's. Keyed by the words the tool's description uses. */
+function openShapes(tool: Schema): { loot: Schema | null; place: Schema | null; drops: Schema | null } {
+  const loot = tool.properties?.objects?.items?.properties?.items?.items || null;
+  const np = tool.properties?.npcs?.items || null;
+  // a spawn is placed: the place shape without its action, carrying, talk and drops (a spawned person is a plain one)
+  const place: Schema | null = np && np.properties ? { type: 'object', properties: Object.fromEntries(['name', 'side', 'tier', 'weapon', 'at', 'hidden', 'kind'].filter((k) => np.properties![k]).map((k) => [k, np.properties![k]])), required: ['name'] } : null;
+  const drops: Schema | null = loot ? { type: 'object', description: 'If they die: a loot table, or a short list of things (at most 4)', properties: { table: { type: 'string', description: 'A loot table id' }, items: { type: 'array', items: loot } } } : null;
+  return { loot, place, drops };
+}
+/** The tool's schema with each open shape it names filled in (a new tree; the tool is not changed). */
+function shaped(s: Schema, sh: ReturnType<typeof openShapes>, key = ''): Schema {
+  if (!s || typeof s !== 'object') return s;
+  const open = (x?: Schema) => !!x && x.type === 'object' && !x.properties;
+  const d = String(s.description || '');
+  if (s.type === 'array' && open(s.items)) {
+    if (/loot shape/.test(d) && sh.loot) return { ...s, items: sh.loot };
+    if (/place shape/.test(d) && sh.place) return { ...s, items: sh.place };
+  }
+  if (key === 'drops' && open(s) && /\{table\}/.test(d) && sh.drops) return sh.drops;
+  const out: Schema = { ...s };
+  if (s.properties) out.properties = Object.fromEntries(Object.entries(s.properties).map(([k, v]) => [k, shaped(v, sh, k)]));
+  if (s.items) out.items = shaped(s.items, sh);
+  if (s.anyOf) out.anyOf = s.anyOf.map((x) => shaped(x, sh));
+  return out;
+}
+
 /** The desk's fields: every property of the AI's submit_turn tool the template does not draw itself. */
 export function deskFields(g: GameState): { key: string; label: string; group: string; hint: string; schema: Schema }[] {
-  const props = (submitTool(g).input_schema as Schema).properties || {};
+  const tool = submitTool(g).input_schema as Schema, sh = openShapes(tool);
+  const props = Object.fromEntries(Object.entries(tool.properties || {}).map(([k, v]) => [k, shaped(v, sh)]));
   return Object.entries(props).filter(([k]) => !DESK_OWN.includes(k)).map(([key, schema]) => {
     const [group, label] = HEAD[key] || ['more', words(key)];
     return { key, label, group, hint: schema.description || (schema.anyOf || []).map((x) => x.description || '').join(' ').trim(), schema };
@@ -108,7 +138,7 @@ const box: React.CSSProperties = { minHeight: 32, maxWidth: '100%', padding: '0 
 const smallBtn: React.CSSProperties = { minHeight: 30, padding: '0 10px', borderRadius: 8, border: '1px solid ' + ink.line, background: 'transparent', color: ink.text, fontFamily: 'inherit', fontSize: 'var(--fs-sub)', fontWeight: 700, cursor: 'pointer' };
 const kick: React.CSSProperties = { fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', color: ink.muted };
 
-type Ctx = { g: GameState; chars: { value: string; label: string }[] };
+type Ctx = { g: GameState; chars: { value: string; label: string }[]; rarities?: string[] };
 /** A list the field's key offers (a datalist id), or a fixed list of choices. */
 function choicesFor(key: string, s: Schema, ctx: Ctx): { opts?: { value: string; label: string }[]; list?: string } {
   if (key === 'charId' || key === 'footnote') {
@@ -117,6 +147,9 @@ function choicesFor(key: string, s: Schema, ctx: Ctx): { opts?: { value: string;
   }
   if (key === 'skill' || key === 'skills') return { opts: Object.values(SKILL).map((k: any) => ({ value: k.id, label: k.name })).sort((a, b) => a.label.localeCompare(b.label)) };
   if (s.enum) return { opts: s.enum.map((x) => ({ value: String(x), label: x === '' ? '(none)' : x === 'none' && key === 'charId' ? 'Nobody' : String(x) })) };
+  // a loot row's rarity: the choices the turn's own loot[] field fixes (the same schema; the open rows leave it a word)
+  if (key === 'rarity' && ctx.rarities?.length) return { opts: ctx.rarities.map((x) => ({ value: x, label: x })) };
+  if (key === 'table') return { list: 'gm-dl-tables' };
   if (key === 'weapon') return { list: 'gm-dl-weapons' };
   if (key === 'item' || key === 'failItem') return { list: 'gm-dl-items' };
   if (['target', 'targetId', 'id', 'objId'].includes(key)) return { list: 'gm-dl-ids' };
@@ -174,7 +207,8 @@ function Obj({ s, v, set, ctx, path }: { s: Schema; v: any; set: (x: any) => voi
     {Object.entries(s.properties || {}).map(([k, ps]) => <Field key={k} k={k} s={ps} v={val[k]} set={(x) => set({ ...val, [k]: x })} ctx={ctx} path={path + '.' + k} />)}
   </div>;
 }
-/** A field whose shape the AI's tool leaves open (a spawn list, a drop table): written as JSON. */
+/** A field whose shape the AI's tool leaves open (a trait's value, anything still unshaped): written as JSON. Ground items,
+ * a trigger's spawn list and drops have their shape in the tool since 0.33 and are drawn as rows. */
 function Json({ label, hint, v, set, path }: { label: string; hint: string; v: any; set: (x: any) => void; path: string }) {
   const [txt, setTxt] = React.useState(v == null ? '' : typeof v === 'string' ? v : JSON.stringify(v));
   let bad = false; if (txt.trim()) { try { JSON.parse(txt); } catch { bad = true; } }
@@ -197,12 +231,14 @@ function DeskMore({ g }: { g: GameState }) {
   useDesk();
   const fields = React.useMemo(() => deskFields(g), [g.characters, g.campaign, g.story.zone]);
   const chars = Object.values(g.characters).map((c) => ({ value: c.id, label: c.name }));
-  const ctx: Ctx = { g, chars };
+  const rarities: string[] = (fields.find((f) => f.key === 'loot')?.schema as any)?.items?.properties?.rarity?.enum || [];
+  const ctx: Ctx = { g, chars, rarities };
   const ids = [...(g.story.npcs || []).map((n) => [n.id, n.name]), ...(g.story.objects || []).map((o) => [o.id, o.name]), ...chars.map((c) => [c.value, c.label])];
   const filled = (k: string) => clean(fields.find((f) => f.key === k)!.schema, extra[k]) !== undefined;
   return <div data-gm-more-fields="" style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
     <datalist id="gm-dl-weapons">{Object.keys(WEAPON).map((id) => <option key={id} value={id}>{(WEAPON as any)[id].name}</option>)}</datalist>
     <datalist id="gm-dl-items">{[...Object.keys(ITEM), ...Object.keys(WEAPON)].map((id) => <option key={id} value={id}>{((ITEM as any)[id] || (WEAPON as any)[id]).name}</option>)}</datalist>
+    <datalist id="gm-dl-tables">{Object.keys(LOOT_TABLES).map((id) => <option key={id} value={id} />)}</datalist>
     <datalist id="gm-dl-ids">{ids.map(([id, name]) => <option key={id} value={id}>{name}</option>)}</datalist>
     <span style={{ fontSize: 'var(--fs-sub)', lineHeight: 1.45, color: ink.muted }}>The rest of the turn: the same fields the AI Narrator fills. Leave a field empty and it is left out; the engine checks every one.</span>
     {GROUPS.map(([gid, head]) => { const fs = fields.filter((f) => f.group === gid); if (!fs.length) return null; const n = fs.filter((f) => filled(f.key)).length;
