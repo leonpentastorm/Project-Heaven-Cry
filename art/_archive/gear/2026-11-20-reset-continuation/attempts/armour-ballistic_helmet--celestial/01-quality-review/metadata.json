@@ -1,0 +1,47 @@
+{
+  "id": "armour-ballistic_helmet--celestial",
+  "job": {
+    "id": "armour-ballistic_helmet--celestial",
+    "standard_id": "armour-ballistic_helmet",
+    "grade": "celestial",
+    "label": "Ballistic Helmet \u2014 Celestial",
+    "path": "art/icons/gear/armour-ballistic_helmet--celestial.png",
+    "kind": "armour",
+    "references": [
+      "art/icons/gear/armour-ballistic_helmet.png",
+      "art/icons/gear/armour-ballistic_helmet--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "armour-ballistic_helmet",
+    "family_references": [
+      "art/icons/gear/armour-ballistic_helmet.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.7",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same rounded olive-grey ballistic shell, flat brow band and rectangular front mount, side riveted fittings, deep U-shaped face opening and dark padded liner. Preserve every edge, opening, stud and mounting part. No wearer.\n\nGrade: Celestial. Keep the shape, the stripe and the ornament's place. The piece becomes pale and unmarked: ivory cloth, pale hide, pearl-ivory plate. The stripe gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays. Lenses and filters keep their own colour. The focal part: the brow rim of the shell; the ornament at the chin-strap rivet.\n\nThe FIRST image locks the Standard silhouette, camera, proportions and margins. The SECOND image supplies the preceding grade; keep its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. Preserve exact part counts and negative spaces. All additions stay flush inside the existing silhouette. Fully transparent canvas, no lettering or external glow.\n\nRetain the Relic repair patch ONLY on the existing INNER padded liner, at its same location inside the face opening. Outer shell stays continuous flawless metal, with no sewn fabric or stitch holes on metal. Keep the tiny ornament on its same existing side rivet.",
+    "keep_line": "the same rounded olive-grey ballistic shell, flat brow band and rectangular front mount, side riveted fittings, deep U-shaped face opening and dark padded liner. Preserve every edge, opening, stud and mounting part. No wearer.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "depends_on": "armour-ballistic_helmet--relic"
+  },
+  "preflight": {
+    "id": "armour-ballistic_helmet--celestial",
+    "peer": "eab8df9b72f05642ba1fab4d6e9a4e89e231a07c",
+    "latest_comment": 7028694115,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 02:49:58 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-68052195-2a38-48f3-a2fd-585c8cef5a82.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/native.png",
+  "sha256": "f563f98f5775e55e5c80741a6779bdf120a1eb4a36ed4dec3f543574028db712",
+  "status": "unselected-quality-review",
+  "review_note": "Celestial lining remains brown rather than ivory cloth.",
+  "reference_hashes": {
+    "art/icons/gear/armour-ballistic_helmet.png": "7358ee39e955f8f5362faee1f96608313272f0cc164d0c7ca6b22c5755460d2f",
+    "art/icons/gear/armour-ballistic_helmet--relic.png": "cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}

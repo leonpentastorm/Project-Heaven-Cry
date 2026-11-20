@@ -2604,6 +2604,9 @@ f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/g
 fa7c969e249bbd88f492a87c181bdf7502e90c77948fa9766c9d6ec41e512bde  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
 1006204c5e813723abfb237b9be15ccb822febfcdcff4f3180aba731f6e9d711  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
+a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
+f563f98f5775e55e5c80741a6779bdf120a1eb4a36ed4dec3f543574028db712  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/native.png
+d4641f47d5040bc171d64875d4fcc1c2ecba189d92b185a39c076e39d07b6bd0  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/prompt.txt
 425ee58f62a3e76e13e08617c6b3d7a365d822b70a74c2652a663b5c2253c3ed  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/metadata.json
 286412b753dd9a9019ec948ffc696afc90f209376321b75d4b00056fe56c687f  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/native.png
 05f5795c496ca6a5d3d38af2950120edd8c26e1b4334b9de52fab848efa79180  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/prompt.txt
@@ -2612,7 +2615,7 @@ a3592f7459e334185eae9f2c10b2a85854aebaac857b9b505a0740a0a382870f  art/_archive/g
 cfcfcc0c96160296ec4c61ccccf2a82b774f653246e7b3d996627149488496b7  art/_archive/gear/2026-11-20-reset-continuation/masters/v1/armour-ballistic_helmet--relic.png
 0815a99ada5d8b26490171a3595baa14da9dc9edc62ac6908ac7f592c09e1c61  art/_archive/gear/2026-11-20-reset-continuation/progress.json
 0c5fbb790d6cd85d905bb018fe85a44e77af17f6faf624c7ce26f8c3ff3da5f6  art/_archive/gear/2026-11-20-reset-continuation/prompts/armour-ballistic_helmet--relic.txt
-e7ad7bceb8a88083c83c058a8955798ad751f05c654c34a93d662b9698c2e897  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+5b93d00e62c0a645f646e334431107a84e74321c3ed16583f026f048c04d50c9  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 163fddd88e51fa15697e5892bdc3ebc1d624970b61420a80303449f864f52b80  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 dde1338ba959a9f0376bdb3cb6e7dc7dd3e2392b860bf347e66b86bce854fdc9  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-20-reset-continuation/source-brief.md
