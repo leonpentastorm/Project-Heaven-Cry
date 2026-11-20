@@ -7910,6 +7910,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-cowl--celestial",
+      "path": "art/icons/gear/armour-cowl--celestial.png",
+      "sha256": "2c267e6c081b5b1ed9c610f035c07025fdca1448a8640f3436e3f98858d8e423",
+      "label": "Cowl — Celestial",
+      "family": "armour-cowl",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-cowl--celestial.png",
+        "sha256": "7a1514dc64734a165388bf47789bd8dbbaabde795c735dd735b4badb6e972087"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-cowl--celestial.png",
+        "sha256": "2c267e6c081b5b1ed9c610f035c07025fdca1448a8640f3436e3f98858d8e423"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-cowl--celestial.txt",
+        "sha256": "7bd92bc1ac3ebe5dd4e19e4233474c8f269bfcac72ff08f195b46039eac5f66a"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-cowl--celestial/v1/source.png",
+          "sha256": "cfbaa0d448c907ef8c136ee0017818a97275b9be18df5fd706054b00ad3bb75d"
+        },
+        {
+          "path": "art/icons/gear/armour-cowl.png",
+          "sha256": "a9d1a28e40f4433587bdd8aa3fd9d8c1617a11bf1f42ac8de4f49821ab3d7efa"
+        },
+        {
+          "path": "art/icons/gear/armour-cowl--relic.png",
+          "sha256": "1ff7a2100056b1faf1e1eda81e6f6d973e173c06e42e01dd9ffdf1c0a4f081f0"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-cowl--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-cowl--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-cowl--celestial.png"
+      },
+      "export_hashes": {
+        "256": "7b126dcc333264e1d70de349657dc02131a881ed1c7b33dce70ef0737b273b81",
+        "128": "a87546e9cbcf399bfc90b7f6193d6ec61b01ff6a8df02d79efdbd66a75f6c11e",
+        "64": "a966d410a30f82243c760c8a651b1c44ac7b0b5e0c4343bcc6c466eb09718e1b",
+        "32": "2b476f97bff318fc4e96e514f06f47f944c8974c0afd80aba14d01b1256646a5"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-cowl",
+      "outline": {
+        "solid_alpha_iou": 0.9742074019823981,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 40
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
