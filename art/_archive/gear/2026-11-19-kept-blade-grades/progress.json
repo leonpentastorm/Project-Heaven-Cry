@@ -203,7 +203,8 @@
     "weapon-throwing_javelins--masterwork",
     "weapon-throwing_javelins--relic",
     "weapon-throwing_javelins--celestial",
-    "weapon-lumeri_votive_torch--fine"
+    "weapon-lumeri_votive_torch--fine",
+    "weapon-lumeri_votive_torch--masterwork"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -249,7 +250,6 @@
     "weapon-short_bow--masterwork",
     "weapon-short_bow--relic",
     "weapon-short_bow--celestial",
-    "weapon-lumeri_votive_torch--masterwork",
     "weapon-lumeri_votive_torch--relic",
     "weapon-lumeri_votive_torch--celestial",
     "weapon-lumeri_cathedral_burner--fine",
@@ -267,7 +267,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-20T07:27:13.686598+00:00",
+  "updated_utc": "2026-11-20T07:29:20.945883+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3,
   "quota_history": [
