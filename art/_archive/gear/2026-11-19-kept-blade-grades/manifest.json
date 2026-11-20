@@ -11308,6 +11308,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_wreck_saw--relic",
+      "path": "art/icons/gear/weapon-ork_wreck_saw--relic.png",
+      "sha256": "cb6af16fe46cf881c21bd95a77d73180f6b7dc62e68514fea15179baa1c7e08d",
+      "label": "Wreck saw — Relic",
+      "family": "weapon-ork_wreck_saw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--relic.png",
+        "sha256": "d11d05e0ec115a0c2ff1628e5c28d87946ae93c223cacad2a4096c5757edab4d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_wreck_saw--relic.png",
+        "sha256": "cb6af16fe46cf881c21bd95a77d73180f6b7dc62e68514fea15179baa1c7e08d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_wreck_saw--relic.txt",
+        "sha256": "6b5a437de0785b4d62f292139bcb833e57e5fd790a21321c2717bfd2135ea39f"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-ork_wreck_saw--relic/v1/source.png",
+          "sha256": "e6573d82da5ae1321ca4f50aa6bc42c1ef4a9241eb63697e957680d79c8a941b"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+          "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_wreck_saw--masterwork.png",
+          "sha256": "ba141ac9fa41333ee978c92bb5f534e805ba1c6797ce7a3f25ebb6d1c6a23f09"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw--relic.png"
+      },
+      "export_hashes": {
+        "256": "422618aaa9dd18421eaa9251d74aee21590c2679afa02e1b0b5485c1b8beea6f",
+        "128": "1d43f33767f6860fea775f5a57cb30c4ea5e48403ead21eea3a49cdeba8eda79",
+        "64": "19e26b0ec5f36eaf79609ca894d07304799bf67f453a906831fc8fc3f0a2d1d5",
+        "32": "decdf00cd2115871869ef4ccffd5076ec479358d972350ebfbec59e48a7bcef8"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-ork_wreck_saw",
+      "outline": {
+        "solid_alpha_iou": 0.9417053817631574,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 15,
+        "different_pixels_64": 72
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
