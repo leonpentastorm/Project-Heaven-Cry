@@ -4,7 +4,7 @@
 
 Every extension point the engine already has. **Look here before you build** (`docs/ENGINE-GUIDE.md`, "Stop: before you build"): a new item, class move, system or screen is built FROM these; a name that is not here is either a typo, an invention, or a new primitive that a design spec must list under "Needs a new primitive" (and that `docs/design/rev4-primitives.md` may already have consolidated). Check a spec or a diff with `npm run built-from -- <spec.md | git range>`.
 
-Counts: 37 triggers, 102 predicates, 31 ops, 102 effect ops, 126 hooks, 3 never emitted, 18 profiles, 42 cost sites, 18 resources, 69 stats, 25 condition fields, 682 primitive exports, 2197 other exports, 129 fx kinds, 12 data fx kinds, 18 op-written context fields, 186 Unit fields, 63 Combat fields, 41 guards.
+Counts: 37 triggers, 102 predicates, 31 ops, 102 effect ops, 126 hooks, 3 never emitted, 18 profiles, 42 cost sites, 18 resources, 69 stats, 25 condition fields, 682 primitive exports, 2196 other exports, 129 fx kinds, 12 data fx kinds, 18 op-written context fields, 186 Unit fields, 63 Combat fields, 41 guards.
 
 Sections: (a) item ops, (b) the hook bus, (c) the primitives, (d) the guards.
 
@@ -395,14 +395,14 @@ A hook is heard by an item handler (`on: { <hook>: (ctx, h) => … }`), by an en
 | `weapon_actions` | a unit's weapon actions are listed (declared; nothing emits it yet) |  | **never emitted** | none |  |
 | `path_opts` | a walk's path options are opened by items (run, pass, jump, ignore difficult ground, known traps) | `u`, `runnable`, `pass`, `jump`, `ignoreDifficult` | combat.ts:941 | perks/a.ts:381 |  |
 | `hide` | a unit became hidden | `u`, `why` | sigil.ts:52 (+1) | faith.ts:825 (+7) |  |
-| `spot` | a unit tries to spot a hidden one: the die, the modifier, the TN, cancel | `by`, `u`, `die`, `mod`, `tn`, `cancel`, `close`, `outright` | tactics.ts:323 (+1) | classes/k.ts:124 (+8) | `spot` |
-| `spotted` | a hidden unit was revealed | `u`, `why` | magic.ts:1560 (+2) | perks/b.ts:628 (+1) |  |
+| `spot` | a unit tries to spot a hidden one: the die, the modifier, the TN, cancel | `by`, `u`, `die`, `mod`, `tn`, `cancel`, `close`, `outright` | tactics.ts:321 (+1) | classes/k.ts:124 (+8) | `spot` |
+| `spotted` | a hidden unit was revealed | `u`, `why` | sigil.ts:58 (+1) | perks/b.ts:628 (+1) |  |
 | `on_surrender` | a unit surrendered or was subdued | `t`, `by`, `why` | effects/damage.ts:119 (+2) | deeds.ts:193 (+4) |  |
-| `parley` | a parley in a fight is attempted (its TN, a refusal, the result) | `u`, `t`, `kind`, `text`, `tnAdd`, `via`, `cancel`, `result` | tactics.ts:380 | perks/g.ts:194 |  |
+| `parley` | a parley in a fight is attempted (its TN, a refusal, the result) | `u`, `t`, `kind`, `text`, `tnAdd`, `via`, `cancel`, `result` | tactics.ts:378 | perks/g.ts:194 |  |
 | `throw` | a thrown item is about to land (its AP, radius, cancel, caught) | `u`, `item`, `tile`, `ap`, `radius`, `cancel`, `caughtBy`, `preview`, `technique` | physical/ranged/thrown.ts:86 (+1) | perks/c.ts:99 (+2) |  |
 | `blessing_in` | a blessing reaches a unit: an item may handle it itself | `u`, `t`, `blessing`, `power`, `handled`, `out` | faith.ts:1226 (+1) | classes/k.ts:203 (+6) |  |
 | `trap_sprung` | a trap was sprung on a unit | `u`, `obj` | combat.ts:2419 | none |  |
-| `blast_landed` | a blast landed on a tile (who made it, the radius, who was in it) | `by`, `tile`, `item`, `radius`, `who` | tactics.ts:419 | physical/ranged/thrown.ts:163 |  |
+| `blast_landed` | a blast landed on a tile (who made it, the radius, who was in it) | `by`, `tile`, `item`, `radius`, `who` | tactics.ts:417 | physical/ranged/thrown.ts:163 |  |
 | `glyphs_per_tile` | how many glyphs a tile may hold for this caster | `u`, `tile`, `n` | sigil.ts:83 | classes/k.ts:360 |  |
 | `evoke_area` | a spell's area is being built (its depth may change) | `u`, `spell`, `pattern`, `depth` | sigil.ts:263 | none |  |
 | `spell_mult` | a Sigil spell's damage, healing or shield multiplier for one target | `u`, `t`, `spell`, `kind`, `mult` | sigil.ts:452 (+1) | none |  |
@@ -1490,7 +1490,7 @@ Families: `body`, `brain`, `heart`.
 | `pickToggle` | `pickToggle(mods: string[] \| null \| undefined, tgls: { id: string; itemKey: string; on: boolean; defaultOn: boolean }[], t: { id: string; itemKey: string; on: boolean; de…` | A switch chip clicked (Ricochet, the Open Hand's forms): the action's mods after it. |
 | `flowView` | `flowView(g: any, me: string \| null, cur: any, S: any, extra: Picks = {}): FlowView \| null` | The picked action on the flow, or null when it is not (no action, not this player's turn, a system with its own screen code). extra: picks a bespoke panel made (a perk's form, a pile's checklist). |
 
-#### Every other export, by file (2197)
+#### Every other export, by file (2196)
 
 The scan of every file in the engine's source: what the tables above do not show. Read the doc comment in the file before writing a second one.
 
@@ -1584,7 +1584,7 @@ The scan of every file in the engine's source: what the tables above do not show
 | `sigilgrowth.ts` | `STUDY`, `WORD_MASTERY`, `SigilGrowth`, `growthOf`, `thresholdN`, `picksEarned`, `evokeStudy`, `pendingPicks`, `knowsWord`, `addStudy`, `noteEvoke`, `copyWord`, `masterySync`, `learnable`, `learnStudied`, `noteToStudy`, `learnedElsewhere`, `WordTier`, `wordUses`, `wordTierOf`, `masteredWords`, `Inflection`, `inflectionOf`, `INFLECTION_STATS`, `inflectionValue`, `SigilGrowthView`, `sigilGrowthView` |
 | `sigilwords.ts` | `SigilFam`, `Dir`, `G`, `ENEMY_AI`, `SIGIL_GRAMMAR`, `SIGIL_ELEMENTS`, `SIGIL_REV`, `MAX_GLYPHS`, `MIN_GLYPHS`, `REPEAT_MULT`, `LINE_MULT`, `lineMult`, `LIM`, `W`, `groupOf`, `classOf`, `isSubject`, `isReach`, `isElement`, `isAffliction`, `isBoonWord`, `isWorking`, `count`, `perCopy`, `Spell`, `compileSpell`, `grammarError`, `startingWordsError`, `STARTING_DEFAULT`, `migrateWords` |
 | `spotlight.ts` | `SPOTLIGHT_FX`, `SpotlightKind`, `SPOTLIGHT_KINDS`, `SPOTLIGHT_PRIORITY`, `SpotlightFx`, `SpotlightInput`, `spotlightScene`, `markAction`, `clearAction`, `critMoment`, `spotlight` |
-| `tactics.ts` | `AmmoType`, `AMMO_TYPES`, `ammoId`, `damageTypeOf`, `isExplosive`, `radiusOf`, `dropHeldShot`, `isSilent`, `ReactKind`, `REACT_KINDS`, `ReactOpts`, `maxReactions`, `reactionsUsed`, `addReactBlock`, `reactBlocked`, `cueLive`, `reactionDonor`, `canReact`, `react`, `reactRefusal`, `loseReactions`, `refundReaction`, `heldShotPaid`, `payHeldShot`, `spendPaidShot`, `SightWord`, `SIGHT_WORDS`, `sightOf`, `TIER_NOTICE`, `seenByFoes`, `eyesOn`, `hide`, `FoundHow`, `foundFx`, `reveal`, `HIDDEN_ATTACK`, `hiddenAttackTileOnly`, `attackFromHidden`, `hideBlock`, `HIDE_WHY`, `hideAction`, `ambushReady`, `spotHidden`, `canSurrender`, `surrender`, `trySurrender`, `subdue`, `HEARING`, `PARLEY_VIA`, `ThreatenAlias`, `setThreaten`, `parley`, `throwRangeOf`, `throwItem`, `blast`, `PATRONS`, `PATRON`, `devotionOf`, `blessing`, `extinguish`, `escapeGrapple`, `recoverWeapon`, `COMPANION_KINDS`, `companionUnits`, `resOf`, `resGain`, `resSpend`, `FoeTraits`, `KINDS`, `FOE_TAGS`, `applyFoeTraits`, `deathMana` |
+| `tactics.ts` | `AmmoType`, `AMMO_TYPES`, `ammoId`, `damageTypeOf`, `isExplosive`, `radiusOf`, `dropHeldShot`, `isSilent`, `ReactKind`, `REACT_KINDS`, `ReactOpts`, `maxReactions`, `reactionsUsed`, `addReactBlock`, `reactBlocked`, `cueLive`, `reactionDonor`, `canReact`, `react`, `reactRefusal`, `loseReactions`, `refundReaction`, `heldShotPaid`, `payHeldShot`, `spendPaidShot`, `SightWord`, `SIGHT_WORDS`, `sightOf`, `TIER_NOTICE`, `seenByFoes`, `eyesOn`, `hide`, `FoundHow`, `foundFx`, `reveal`, `HIDDEN_ATTACK`, `attackFromHidden`, `hideBlock`, `HIDE_WHY`, `hideAction`, `ambushReady`, `spotHidden`, `canSurrender`, `surrender`, `trySurrender`, `subdue`, `HEARING`, `PARLEY_VIA`, `ThreatenAlias`, `setThreaten`, `parley`, `throwRangeOf`, `throwItem`, `blast`, `PATRONS`, `PATRON`, `devotionOf`, `blessing`, `extinguish`, `escapeGrapple`, `recoverWeapon`, `COMPANION_KINDS`, `companionUnits`, `resOf`, `resGain`, `resSpend`, `FoeTraits`, `KINDS`, `FOE_TAGS`, `applyFoeTraits`, `deathMana` |
 | `variants.ts` | `VariantMod`, `VariantLine`, `expandVariants` |
 | `world.ts` | `Trigger`, `NpcPlace`, `WorldEvent`, `KIND_DEFS`, `WORLD_KINDS`, `AVATAR_POOLS`, `TALK_RANGE`, `WORLD_AP`, `FAIL_HURT`, `HIDEABLE`, `kindKg`, `validAvatar`, `avatarOf`, `worldEvent`, `eventsSeen`, `onWorld`, `hazardEvents`, `freeNear`, `areaTiles`, `zoneHazards`, `liveHazards`, `setZoneHazards`, `applyHazardOp`, `zoneTriggers`, `applyTriggerOp`, `fireTrigger`, `enterTriggers`, `examineTriggers`, `objectiveTriggers`, `revealIds`, `revealNear`, `raiseAlarm`, `carryable`, `carriedOf`, `carry`, `putDown`, `dropFromDowned`, `landDropped`, `cleanItems`, `search`, `cacheView`, `pickupWorld`, `applyGroundOp`, `pileFog`, `previewOdds`, `tryApproach`, `approachResult`, `markWord`, `worldCond`, `talkAsk`, `TalkOption`, `talkOptions`, `npcView`, `approachOptions`, `cleanApproaches`, `npcTalkFields`, `walkStory`, `worldAfter`, `Marker`, `markersFor`, `HereObjective`, `hereCard`, `HazardTile`, `hazardTilesFor`, `hazardsFor`, `worldView` |
 | `yielding.ts` | `YIELD`, `canYield` |
