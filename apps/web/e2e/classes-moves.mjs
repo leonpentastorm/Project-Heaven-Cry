@@ -312,7 +312,8 @@ ok('Eye of the Storm armed: ' + (r || 'confirmed'), !r && fx.some((e) => e.k ===
 ok('its button reads ARMED', (await host.locator('[role="tabpanel"] button', { hasText: 'Eye of the Storm · ARMED' }).count()) > 0);
 await snap('12-eye-of-the-storm');
 // 0.31.0: a meter at 0 with nothing this fight is folded into the row's "+N" chip: open it (a click) before reading the row
-const bodyTxt = async () => { const more = host.locator('[aria-label="Your resources"] [data-meter-more]:visible');
+// (0.33, fitYouCard: a You card too tall for its share is drawn compact, and the chip rides the line of minis under HP)
+const bodyTxt = async () => { const more = host.locator('[data-meter-more]:visible');
   if (await more.count()) { await more.first().click().catch(() => {}); await settle(host, 250); }
   return (await host.locator('body').textContent()).replace(/\s+/g, ' '); };
 ok('the Channeler\'s panel reads Strain and MP', /STRAIN\s*\d+ \/ \d+/i.test(await bodyTxt()) && /MP\s*\d+ \/ \d+/.test(await bodyTxt()));

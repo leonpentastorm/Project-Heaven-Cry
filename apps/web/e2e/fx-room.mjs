@@ -1,6 +1,6 @@
 // The Effect testing room (Leon, 11 Nov 2026), the two-key codes, the AP the picked action will take, and a fight's last
 // blow playing in full.
-import { chromium, player, click, BASE, pause } from './lib.mjs';
+import { chromium, player, click, BASE, pause, fxIdle } from './lib.mjs';
 const browser = await chromium.launch(); const p = await player(browser, 'host');
 const ok = (label, v) => { console.log((v ? 'ok   ' : 'FAIL ') + label); if (!v) process.exitCode = 1; };
 const errors = []; p.on('pageerror', (e) => errors.push(String(e.message || e)));
@@ -50,7 +50,7 @@ await p.evaluate(() => { window.__phcFxTrace = []; });
 for (let i = 0; i < 6; i++) { const e = await act({ type: 'combat/attack', unitId: me.id, targetId: dummy.id }); if (e) await act({ type: /jam/.test(e) ? 'combat/clear' : 'combat/reload', unitId: me.id }); }
 g = await G();
 ok('after six actions: AP ' + g.combat.units.find((u) => u.id === me.id).ap + ', the dummy alive, the fight on', g.combat.units.find((u) => u.id === me.id).ap === 9 && !g.combat.units.find((u) => u.id === dummy.id).dead && !g.combat.over);
-await pause(p, 2500);
+await fxIdle(p, 60000); await pause(p, 300);
 {
   const T = await p.evaluate(() => { const t = window.__phcFxTrace || []; window.__phcFxTrace = undefined; return t; });
   const sh = (g.combat.fx || []).filter((e) => e.n > n0 && (e.k === 'shot' || e.k === 'melee') && !e.thrown && !e.object);

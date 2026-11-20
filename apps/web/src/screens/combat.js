@@ -299,7 +299,16 @@ export function fitYouCard() {
   if (key === youKey) return;
   youKey = key;
   root.classList.remove(YOU_TIGHT);
-  if (top.scrollHeight > top.clientHeight + 4) root.classList.add(YOU_TIGHT);
+  // The card's head (the portrait row, HP and the meters) against the box: what sits under the meters (the Bond strip)
+  // and the squad list under the card scroll in the same box by design. Measuring the whole box made any character with
+  // a squad list or a Bond strip compact at every window height, and the compact card hides the strip and the Echo row.
+  const card = top.querySelector(':scope > .phc-me-full');
+  const last = card && (card.querySelector(':scope > .phc-res') || card.querySelector(':scope > .phc-me-hp'));
+  // An explainer the player opened in the head (the Echo's, a .phc-a-drop) is not counted: opening it must not flip the
+  // card to compact, which hides the explainer and the button that closes it.
+  let drops = 0; if (last) for (const d of card.querySelectorAll('.phc-a-drop')) if (d.compareDocumentPosition(last) & 4) drops += d.getBoundingClientRect().height;
+  const need = last ? last.getBoundingClientRect().bottom - card.getBoundingClientRect().top - drops : 0;
+  if (need > top.clientHeight + 4) root.classList.add(YOU_TIGHT);
 }
 if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') window.addEventListener('resize', () => fitYouCard());
 ensureStyle('phc-combat-layout', LAYOUT_CSS);

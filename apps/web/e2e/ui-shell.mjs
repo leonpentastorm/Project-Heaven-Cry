@@ -273,6 +273,9 @@ if (fought) {
   ok('the combat header is one row', (await ch.evaluate((e) => e.getBoundingClientRect().height)) <= 64);
   // Echo in a fight (review of the UI pass): its own row under HP in the You card, with the (?) explainer; the small
   // line no longer carries it.
+  // 0.33 (fitYouCard): at 1440x900 MPAT's card head (portrait, HP, the HURTING strip, the meters) is taller than the
+  // column's share, so the card is drawn compact (no Echo row); the full card's rows are read in a window it fits
+  await host.setViewportSize({ width: 1440, height: 1100 }); await settle(host, 400);
   const ce = host.locator('.phc-me-full [data-phc-echo]');
   ok('the You card has the Echo row: ' + ((await ce.textContent().catch(() => '')) || '').replace(/\s+/g, ' ').trim(), (await ce.count()) === 1 && /ECHO/.test(await ce.textContent()) && /\/ 3/.test(await ce.textContent()));
   await ce.click(); await settle(host, 250);
@@ -282,6 +285,7 @@ if (fought) {
   const icons = await host.evaluate(() => [...document.querySelectorAll('[data-phc-float]')].map((b) => Math.round(b.getBoundingClientRect().width)));
   ok('in a fight the floating buttons are icons (' + icons.join(', ') + ' px wide)', icons.length === 2 && icons.every((w) => w <= 44));
   if (SHOTS) await host.screenshot({ path: SHOTS + '/shell-combat-1440.png' });
+  await host.setViewportSize({ width: 1440, height: 900 }); await settle(host, 300);
   await host.evaluate(() => window.__phc.go('main')); await settle(host, 600);
   ok('on the story screen during a fight: Back to the fight ›', (await host.locator('header [data-phc-tofight]').count()) === 1 && (await host.locator('header [data-phc-areamap]').count()) === 0);
   await host.locator('header [data-phc-tofight]').click(); await settle(host, 600);
