@@ -3295,6 +3295,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-spiked_buckler--masterwork",
+      "path": "art/icons/gear/shield-spiked_buckler--masterwork.png",
+      "sha256": "eb92a87b1a7c0810f1bd9fef72916e27a21ff269cb0006a6981bc4d9d5c70c07",
+      "label": "Spiked Buckler — Masterwork",
+      "family": "shield-spiked_buckler",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-spiked_buckler--masterwork.png",
+        "sha256": "790b4394c13af0a44a342b56894e913ad4685dd14401bdf87aeb995da7803274"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-spiked_buckler--masterwork.png",
+        "sha256": "eb92a87b1a7c0810f1bd9fef72916e27a21ff269cb0006a6981bc4d9d5c70c07"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-spiked_buckler--masterwork.txt",
+        "sha256": "18a2f970983224151acd197a9e786dd879e5c8f322c0198e8852f1f2960e8f90"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-spiked_buckler.png",
+          "sha256": "cdb395c131f9003a42f4c412da035f3a2801a2c963033c4edf39d0f94a384fcf"
+        },
+        {
+          "path": "art/icons/gear/shield-spiked_buckler--fine.png",
+          "sha256": "e42437c7702a968be91e06602f8e35ae8fa9934f8bbd0c2eb9b27246a91808e7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-spiked_buckler.png",
+          "sha256": "d5266a8b194d1b285c695b02b594484989848822cbb75320e7be8c196095583b"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-spiked_buckler--masterwork.png",
+        "128": "art/icons/gear/exports/128/shield-spiked_buckler--masterwork.png",
+        "64": "art/icons/gear/exports/64/shield-spiked_buckler--masterwork.png",
+        "32": "art/icons/gear/exports/32/shield-spiked_buckler--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "3965daa9f611042b7f8cc589b1afeaaa40549fcd5bd83c5d4da3eb5377b1e964",
+        "128": "3b20a29b94a362017974f36188fc55b652d94d50ca4653439ab6dbb8107e42f1",
+        "64": "91c53c84b5fd99847b7200869e8c0609cec4815f79bb31d56c529c1c37bdc4d0",
+        "32": "833c28dbd2a80d01fdc9ebc48aa8abc40f86403124684dbbe56a411dfd073dc4"
+      },
+      "grade": "masterwork",
+      "standard_id": "shield-spiked_buckler",
+      "outline": {
+        "solid_alpha_iou": 0.9879569808521851,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
