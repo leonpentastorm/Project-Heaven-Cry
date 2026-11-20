@@ -12288,6 +12288,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-throwing_javelins--relic",
+      "path": "art/icons/gear/weapon-throwing_javelins--relic.png",
+      "sha256": "45107d90d1ec0390fc1eaeda10161fe47b3155eafe4506e6a528f67b80bcb57d",
+      "label": "Throwing javelins — Relic",
+      "family": "weapon-throwing_javelins",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-throwing_javelins--relic.png",
+        "sha256": "9950249c3c3b17be2c3fc789c13a78c1d9c9b7701b699d4633d6dc9be8dd0aaa"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-throwing_javelins--relic.png",
+        "sha256": "45107d90d1ec0390fc1eaeda10161fe47b3155eafe4506e6a528f67b80bcb57d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-throwing_javelins--relic.txt",
+        "sha256": "896808a919a175c00c7b4921acafead92b68cd8493574c32b068cdb669d058d1"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-throwing_javelins--relic/v1/source.png",
+          "sha256": "8e6ddc9fc97c53ab78fe94c70aab768acb56b7991d21329380770954e3d3b8bc"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_javelins.png",
+          "sha256": "50f55c624c9d5e0e72a60eeb623182329ebe0a3f4f5c6000872e87cc6af53621"
+        },
+        {
+          "path": "art/icons/gear/weapon-throwing_javelins--masterwork.png",
+          "sha256": "3aca2654a89d6600486e7aa7b1e1c7c2a5f746997a6f5832f71981d3448a8240"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-throwing_javelins--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-throwing_javelins--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-throwing_javelins--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-throwing_javelins--relic.png"
+      },
+      "export_hashes": {
+        "256": "64bde8ce33a965d5ecdd1f7f05e03049d4d7a9e1f4ffe55b3e1cca0cad598411",
+        "128": "e9fee045d512a0a99c6b01200aeca2c1bbf21ffb2fe0b6434a1b53daf3dc3bb7",
+        "64": "c058d2e70fb5c7688d7027f3a4d3238de237324f5ccc8500d51a5f39f96d1edc",
+        "32": "ccb8f262b4ea8d147a3a335ad63ed58feb43dbd4e41fff5662b11f598775782f"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-throwing_javelins",
+      "outline": {
+        "solid_alpha_iou": 0.9617624791369135,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 36
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
