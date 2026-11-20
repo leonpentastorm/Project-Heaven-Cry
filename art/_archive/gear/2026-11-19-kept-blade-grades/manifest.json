@@ -8902,6 +8902,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-sight_visor--celestial",
+      "path": "art/icons/gear/armour-sight_visor--celestial.png",
+      "sha256": "11037abc538fff2d5cc011204f82e3218547e966bbf89874ff9692e043eeb2ad",
+      "label": "Sight visor — Celestial",
+      "family": "armour-sight_visor",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sight_visor--celestial.png",
+        "sha256": "9e6d0ecc432e3e425e3e6c412bd08ae22de1d75596b93a83cb6768eca1556ec9"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-sight_visor--celestial.png",
+        "sha256": "11037abc538fff2d5cc011204f82e3218547e966bbf89874ff9692e043eeb2ad"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-sight_visor--celestial.txt",
+        "sha256": "580f79a348901a4199bc5a086b0082431d734e8efda74f813e0dd8418e78ec77"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-sight_visor.png",
+          "sha256": "477c0f52e43494ba1432e0d9f0964cbc28cd7c5454367c531bbb9aff367b26a0"
+        },
+        {
+          "path": "art/icons/gear/armour-sight_visor--relic.png",
+          "sha256": "f41567b00f96e8592da7fe56b8b067830526729407f44dfcce9f86b33ad98b5d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sight_visor--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-sight_visor--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-sight_visor--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-sight_visor--celestial.png"
+      },
+      "export_hashes": {
+        "256": "bace277a0dec5aff9c95ea1d1cb83156e35a4f47985e6a8362916b26049d7cc4",
+        "128": "5f4e37c15c937ca761f5d306eb25f187c02c3cddec0ec2ec49b9ac9f6102053a",
+        "64": "eacba0ec4daf39b9844220159f2883340a78cd87efb65678a72f81fe75858279",
+        "32": "c56de8b005c2e11508026d051aa9bd5d68e517968efaa92f08ac6e958e3ddbcb"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-sight_visor",
+      "outline": {
+        "solid_alpha_iou": 0.9382334154321624,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 25,
+        "different_pixels_64": 79
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
