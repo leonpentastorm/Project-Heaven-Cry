@@ -271,6 +271,8 @@ Leon, 19 Nov: "we have the paid 5$ plan for cloudfare now so upgrade to whatever
 
 Nothing starts until Leon says so and 0.32 is live. Preconditions only; the contents live in the design files: `docs/design/proposals/2026-11-18-scout-items-2.0.md`, `docs/design/proposals/2026-11-19-items-2.0-families/`, `art/briefs/ART-REQUESTS-2026-11-19.md` and `art/briefs/prompts-2026-11-19/`.
 
+- **First step of Items 2.0: a light audit of unused artwork** (Leon, 20 Nov 2026: "a lot of artwork is replaced and just abandoned somewhere... see if anything can be used/reused"). List every file under `art/` (and `art/_archive/`) that no UI calls (no `art/catalog.json` id resolved by code or data), with a thumbnail sheet; propose reuse for the icon gaps first (0.32 left about 47 perks and 36 fork options on the initials placeholder; 11 removed perks' icons are orphaned). Leon picks; nothing is deleted. [M] [open; counted by filename 20 Nov 2026] [Leon 20 Nov]
+- **"Arts" in "items and arts" is Weapon Arts** (the rules system), not artwork (Leon, 20 Nov 2026). Weapon-side balance fits are done with Items 2.0 and Weapon Arts, not before.
 - **Ask Leon before starting.** [S] [open; from documents only] [SESSION-TODO M, N]
 - **First deliverable:** a design document with the family tables and a "Built from" table; one consolidated primitives list approved by the lead. [L] [open; from documents only] [SESSION-TODO N, X]
 - **Leon rules the staging** (A engine and screens, B content, C Weapon Arts). [S] [open; from documents only] [SESSION-TODO Q]
