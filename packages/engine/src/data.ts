@@ -134,7 +134,15 @@ export const COMBAT_XP: Record<string, number> = { easy: 25, standard: 50, hard:
 // ---------- weights (spec: Item weights; provisional) ----------
 export const ITEM: Record<string, { id: string; name: string; weight_kg: number; text?: string }> = Object.fromEntries((itemsJ as any).items.map((x: any) => [x.id, x]));
 // ---------- variants (rules 1.56 L4, data/variants.json): rows made at load from a base and its modifiers ----------
-const VARIANTS_MADE = expandVariants(variantsJ, WEAPON, ITEM);
+/** Rules 1.91 item 7957: a body armour class (`armour:<n>`, n > 0) as a variants line's base: an items row of the armour
+ * kind in the body slot (rules.json equipment_slots.armour_class_from) carrying the class (`armour_class`) and the class
+ * row's value, weight, price and tag fields; null for any other id. Wearing it as body armour is the uniques patch's. */
+function classBaseRow(id: string): any | null {
+  const m = /^armour:(\d+)$/.exec(id), r: any = m && Number(m[1]) > 0 ? ((RULES as any).combat?.armor?.classes || [])[Number(m[1])] : null; if (!r) return null;
+  return { id, name: r.name, category: 'armour', slot: (RULES as any).equipment_slots?.armour_class_from || 'torso_outer', armour_class: r.class, value: r.value, weight_kg: r.weight_kg, price_credits: r.price_credits,
+    ...(r.family ? { family: r.family } : {}), ...(r.form ? { form: r.form } : {}), ...(r.line ? { line: r.line } : {}), effects: [] };
+}
+const VARIANTS_MADE = expandVariants(variantsJ, WEAPON, ITEM, classBaseRow);
 for (const w of VARIANTS_MADE.weapons) WEAPON[w.id] = w;
 for (const it of VARIANTS_MADE.items) (ITEM as any)[it.id] = it;
 /** The modifier items the variants' effect kinds make (a `relic` row each, by id): effects/collect.ts holds them like a
@@ -151,8 +159,12 @@ const findKey = (o: any, k: string): any => { if (!o || typeof o !== 'object') r
 export const CALIBRE_NAME: Record<string, string> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.name]));
 export const ROUND_KG: Record<string, number> = Object.fromEntries((findKey(RULES, 'calibres')?.calibres || []).map((c: any) => [c.id, c.round_kg]));
 export const ARMOUR_KG: number[] = (findKey(RULES, 'armor')?.armor?.classes || []).map((c: any) => c.weight_kg || 0);
-/** The body armour classes (rules.json combat armor.classes): class, name, value, penalty, weight, price. */
-export const ARMOUR_CLASSES: { class: number; name: string; value: number; weight_kg: number; price_credits: number }[] = findKey(RULES, 'armor')?.armor?.classes || [];
+/** The body armour classes (rules.json combat armor.classes; rules 1.91 items 7950, 7951: the one copy): class, name,
+ * value, penalty (movement, dodge, no_sprint), weight, price, and the fields code reads in place of a class number
+ * (armoured, light_cap, forge_fit) and the tag fields (family, form). */
+export interface ArmourClassRow { class: number; name: string; value: number; penalty: { movement?: number; dodge?: number; no_sprint?: boolean }; weight_kg: number; price_credits: number;
+  armoured?: boolean; light_cap?: boolean; forge_fit?: boolean; family?: string; form?: string; line?: string }
+export const ARMOUR_CLASSES: ArmourClassRow[] = findKey(RULES, 'armor')?.armor?.classes || [];
 
 // ---------- magic (spec: Mana, rules 1.2) ----------
 export interface SigilDef { id: string; word: string; class: 'subject_element' | 'subject_effect' | 'form' | 'motion' | 'modifier'; charge: number; text: string; damage?: number; damage_type?: string; grand?: string; [k: string]: any }

@@ -214,7 +214,7 @@ export function giveView(g: GameState, me: string, charId?: string | null): Give
   for (const [id, f] of Object.entries(COUNTED)) { const n = c[f] || 0; if (n < 1) continue; const a = { type: 'gear/give' as const, charId: c.id, count: id }, use = USE_DOOR ? USE_DOOR(g, me, c.id, id) : null;
     rows.push({ key: 'count:' + id, kind: 'count', label: nameOfId(id), id, rarity: 'standard', qty: n, why: whys(a), action: a, ...(use ? { use } : {}) }); }
   const held: [string, string | undefined, string | undefined][] = [['main', c.weapon && c.weapon !== 'fists' ? c.weapon : undefined, c.weaponState?.rarity], ['off', c.offHand?.id, c.offHand?.rarity],
-    ...Object.entries(c.worn || {}).map(([slot, id]) => [slot, id, 'standard'] as [string, string, string])];
+    ...Object.entries(c.worn || {}).map(([slot, id]) => [slot, id, c.wornState?.[slot]?.rarity || 'standard'] as [string, string, string])]; // rules 1.91 item 7953: a worn piece's grade
   for (const [slot, id, rarity] of held) if (id) rows.push({ key: 'held:' + slot, kind: 'held', label: RARE(rarity) + nameOfId(id), id, rarity: rarity || 'standard', qty: 1, unequip: slot,
     why: Object.fromEntries(to.map((t) => [t.id, giveWhereProblem(g, false) || none])), action: { type: 'gear/give', charId: c.id } });
   for (const id of c.relics || []) { const a = { type: 'gear/give' as const, charId: c.id, relic: id }; rows.push({ key: 'relic:' + id, kind: 'never', label: relicRow(id)?.name || id, id, rarity: 'relic', qty: 1, why: whys(a), action: a }); }

@@ -369,7 +369,7 @@ register({
 // ---------- Banner Thread ----------
 // With no torso armour (Class 0, and nothing in the inner or lower torso slots: PROVISIONAL, audit 2): +2 Defense and
 // +1 Movement (as written; OPEN, audit 1: +1 tile per AP doubles speed at Agility 1).
-const torsoBare = (c: Character | null | undefined) => !!c && (c.armourClass || 0) === 0 && !c.worn?.inner_torso && !c.worn?.lower_torso && !(c.worn as any)?.torso_inner;
+const torsoBare = (c: Character | null | undefined) => !!c && (c.armourClass || 0) === 0 && !c.worn?.inner_torso && !c.worn?.lower_torso; // rules 1.91 item 7958: one key (a save's torso_inner is moved on load)
 register({
   id: 'banner_dancer.banner_thread', claims: 'all',
   stat: (h, stat) => (!torsoBare(h.c) ? 0 : stat === 'defense' ? 2 : stat === 'move' ? 1 : 0),

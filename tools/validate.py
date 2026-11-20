@@ -1783,7 +1783,8 @@ if isinstance(tq, dict):
     if hg.get("skill") not in skill_ids:
         errors.append(f"techniques: rules.gear_gates.heavy_armour.skill '{hg.get('skill')}' is not a skill")
     for cls_, need in (hg.get("classes") or {}).items():
-        if cls_ not in ("1", "2", "3", "4", "5") or not isinstance(need, int) or not 1 <= need <= 10:
+        # rules 1.91 item 7951: any class row of rules.json combat.armor.classes but None (class 6 the breacher plate)
+        if cls_ not in {str(r.get("class")) for r in ((((data.get("rules") or {}).get("combat") or {}).get("armor") or {}).get("classes") or []) if r.get("class")} or not isinstance(need, int) or not 1 <= need <= 10:
             errors.append(f"techniques: rules.gear_gates.heavy_armour.classes: '{cls_}': {need} is not an armour class with a skill level")
     # rules 1.57 (A1): shields are weapons.json rows with the Shield property; an items.json row has no phys block, no
     # either_hand (gone with the rows) and is never category shield
@@ -3430,6 +3431,7 @@ for _a in data["attributes"]["items"]:
     _want = {k["slot"]: k["id"] for k in data["skills"]["items"] if k["attribute"] == _a["id"]}
     if _a.get("skills") != _want: errors.append(f"attributes.json {_a['id']}: skills {_a.get('skills')} is not what skills.json says ({_want})")
 
+_ACLS = ((((data.get("rules") or {}).get("combat") or {}).get("armor") or {}).get("classes") or [])  # the body armour class rows (rules 1.91 item 7950)
 # Rules 1.56 (Balance 2.0), L4: variants (data/variants.json; packages/engine/src/variants.ts is the one loader). A
 # variant is a base weapon or focus and one or two modifiers of the closed list of kinds. Refused: a third modifier, an
 # unknown kind or form, a kind that does not fit the base, two of one kind, a total worth over worth_cap.
@@ -3487,7 +3489,11 @@ if _vj is not None:
         if _v.get("id") in _vseen or _v.get("id") in _wmap or _v.get("id") in _imap: errors.append(f"{_w}: a variant's id is its own (no other variant, weapon or item has it)")
         _vseen.add(_v.get("id"))
         _b = _v.get("base"); _bw, _bi = _wmap.get(_b), _imap.get(_b)
-        if not (_bw or (_bi and _bi.get("focus"))): errors.append(f"{_w}: base '{_b}' is a weapon or a focus"); continue
+        # rules 1.91 items 7917, 7957: a worn armour piece, or a body armour class (armour:<n>), is a base too (the
+        # uniques' armour lines); a class base is made into an items row of the armour kind by the loader
+        _bc = re.fullmatch(r"armour:(\d+)", str(_b or ""))
+        if _bc: _bi = next(({**r, "category": "armour", "slot": "torso_outer", "armour_class": r.get("class")} for r in _ACLS if str(r.get("class")) == _bc.group(1) and r.get("class")), None)
+        if not (_bw or (_bi and (_bi.get("focus") or (_bi.get("category") == "armour" and _bi.get("slot"))))): errors.append(f"{_w}: base '{_b}' is a weapon, a focus, a worn armour piece or a body armour class"); continue
         if not isinstance(_v.get("name"), str) or not _v["name"] or re.search(r"\d", _v["name"]): errors.append(f"{_w}: a variant has a name, with no number in it")
         if _v.get("rarity", "standard") not in _grades: errors.append(f"{_w}: rarity is one of {_grades}")
         _ms = _v.get("mods") or []
@@ -3548,6 +3554,13 @@ if [r.get("id") for r in _tbl] != list(_es.get("slots") or []): errors.append("r
 if len({r.get("key") for r in _tbl}) != len(_tbl) or sorted(r.get("order", -1) for r in _tbl) != list(range(len(_tbl))): errors.append("rules.json equipment_slots.table: each slot's saved key and order once")
 for _r in _tbl:
     if not all(isinstance(_r.get(x), str) and _r[x] for x in ("id", "key", "label")): errors.append(f"rules.json equipment_slots.table {_r.get('id')}: a slot has its id, saved key and label")
+# rules 1.91 item 7958: a slot's id is its saved key; every worn item row names a slot of the table
+for _r in _tbl:
+    if _r.get("id") != _r.get("key"): errors.append(f"rules.json equipment_slots.table {_r.get('id')}: a slot's id is its saved key ({_r.get('key')}; rules 1.91 item 7958)")
+_SLOT_KEYS = {r.get("key") for r in _tbl}
+for _it in items("items"):
+    if isinstance(_it, dict) and _it.get("slot") and _SLOT_KEYS and _it["slot"] not in _SLOT_KEYS: errors.append(f"items:{_it.get('id')}: slot '{_it['slot']}' is not a slot of rules.json equipment_slots.table")
+    if isinstance(_it, dict) and _it.get("graded") is False and _it.get("category") != "armour": errors.append(f"items:{_it.get('id')}: graded: false is for a worn armour piece (rules 1.91 item 7907)")
 _fam_doc = data.get("families") or {}
 _FORM_KINDS = _fam_doc.get("form_kinds") or {}
 _FORM_RULES = {k: v for k, v in (_fam_doc.get("form_rules") or {}).items() if isinstance(v, list)}
@@ -3565,6 +3578,28 @@ for _f in items("families"):
     if len(set(_fids)) != len(_fids) or not set(_fids) <= set(_FORM_KINDS.get(_f.get("form_kind")) or []): errors.append(f"{_w}: its forms are distinct forms of its kind ({_FORM_KINDS.get(_f.get('form_kind'))})")
     for _x in _f.get("forms") or []:
         if "teaches" in _x and _x["teaches"] not in _techs_all: errors.append(f"{_w} form {_x.get('id')}: teaches '{_x['teaches']}', not a technique")
+# rules 1.91 items 7950, 7951: the body armour class rows are the one copy: classes 0 to n-1 in order (appended, never
+# inserted), their numbers, the fields code reads (penalty.no_sprint, armoured, light_cap, forge_fit) and the tag fields
+_gear_forms = set(_FORM_KINDS.get("gear") or [])
+for _n, _c in enumerate(_ACLS):
+    _w = f"rules.json combat.armor.classes[{_n}]"
+    if _c.get("class") != _n: errors.append(f"{_w}: class is its place in the list ({_n}): a class is appended, never inserted")
+    if not isinstance(_c.get("name"), str) or not _c["name"]: errors.append(f"{_w}: a class has its name")
+    for _k in ("value", "weight_kg", "price_credits"):
+        if not num(_c.get(_k)) or _c[_k] < 0: errors.append(f"{_w}: {_k} is a number, 0 or more")
+    _pen = _c.get("penalty")
+    if not isinstance(_pen, dict) or set(_pen) - {"movement", "dodge", "no_sprint"}: errors.append(f"{_w}: penalty holds movement, dodge and no_sprint only")
+    elif ("no_sprint" in _pen and not isinstance(_pen["no_sprint"], bool)) or any(k in _pen and not num(_pen[k]) for k in ("movement", "dodge")): errors.append(f"{_w}: penalty movement and dodge are numbers, no_sprint true or false")
+    for _k in ("armoured", "light_cap", "forge_fit", "provisional"):
+        if _k in _c and not isinstance(_c[_k], bool): errors.append(f"{_w}: {_k} is true or false")
+    if _n == 0 and any(_c.get(k) for k in ("armoured", "light_cap", "forge_fit", "family", "form")): errors.append(f"{_w}: None is no armour (no family, not armoured, never fitted)")
+    if _n > 0 and ("family" not in _c or "form" not in _c): errors.append(f"{_w}: a class row carries its tag fields family and form (rules 1.91 item 7950)")
+    if "form" in _c and _gear_forms and _c["form"] not in _gear_forms: errors.append(f"{_w}: form '{_c['form']}' is one of the gear forms {sorted(_gear_forms)}")
+    if _c.get("family") in _FAM and _c.get("form") not in [x.get("id") for x in _FAM[_c["family"]].get("forms") or []]: errors.append(f"{_w}: form '{_c.get('form')}' is not a form of {_c['family']}")
+if _ACLS and sum(1 for _c in _ACLS if _c.get("light_cap")) != 1: errors.append("rules.json combat.armor.classes: one row is the light_cap (Forlorn Hope's 'at most Class I's')")
+if _ACLS and not any(_c.get("armoured") for _c in _ACLS): errors.append("rules.json combat.armor.classes: some row is armoured")
+_ffit = [_c.get("class") for _c in _ACLS if _c.get("forge_fit")]
+if _ffit and _ffit != list(range(1, len(_ffit) + 1)): errors.append("rules.json combat.armor.classes: the Forge fits class by class from 1 (forge_fit on 1 to n, none after a gap; rules 1.91 item 7952)")
 _ALPHA = {k["id"] for k in items("skills") if k.get("slot") == "alpha"}
 for _src in ("weapons", "items"):
     for _r in items(_src):

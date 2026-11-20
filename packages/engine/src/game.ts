@@ -10,7 +10,8 @@ import {
 } from './character';
 import { setFigmentDesign, dropFigmentDesign, FIG_DESIGN_IN_FIGHT, migrateCharacterFigments } from './figments';
 import { migrateCharacterPerks, answerRepick } from './character';
-import { isGrade } from './character';
+import { isGrade, setArmourClass } from './character';
+import { ARMOUR_CLASSES } from './data';
 import { gradeFor } from './itemtags';
 import { takeDoorPick, doorOption } from './doorpicks';
 import { drawGlyph, evoke as evokeSpell, scuff as scuffGlyph, vent as ventFlux, swapCore, beginOutburst, releaseOutburst, pumpOutburst, letGo, steadyHeart, feedOutburst, setHeartWatch, magicTurnEnd, migrateHeld, type HeldOutburst, syphon as syphonMana, crystallise as crystalliseCore, magicToCharacter, manaOf, MANA_START, CORE_CHARGE, coreChargeOf, VIS_CHARGE, noteDeaths, magicRoundTick, magicTurnStart, condTurnEnd, spellTargets, type Glyph, type Zone, type Trace, strikeTurret, evokeTargets, migrateStorySigil, secretFrom, SIGIL_REV, shockClear } from './magic';
@@ -4399,7 +4400,7 @@ function sandboxAction(g: GameState, a: SandboxAction, by: string) {
         if (a.type === 'sandbox/equip') err = sbEquip(c, a.idx, a.to);
         else if (a.type === 'sandbox/unequip') err = sbUnequip(c, a.slot);
         else if (a.type === 'sandbox/drop') { const pack = packOf(c).map((x) => ({ ...x })); if (!pack[a.idx]) err = 'Nothing there.'; else if ((err = partError(c, a.idx, pack[a.idx].qty))) { /* Gun Nut's Collector: a collection gun stays (item 369) */ } else { pack.splice(a.idx, 1); c.pack = pack; } }
-        else { const want = Math.max(0, Math.min(5, Math.round(a.armourClass))), cap = armourCap(c); if (cap != null && want > cap) fail(c.name + ' can wear Class ' + cap + ' at most (' + (TRAITS.find((x) => (c.traits || []).includes(x.id) && (x as any).effects?.some((e: any) => e.op === 'armor_class_max'))?.name || 'a trait') + ').'); { const ag = armourGateWhy(c, want); if (ag) fail(ag); } c.armourClass = want; } // heavy armour asks Pain Threshold (rules 1.13)
+        else { const want = Math.max(0, Math.min(ARMOUR_CLASSES.length - 1, Math.round(a.armourClass))), cap = armourCap(c); if (cap != null && want > cap) fail(c.name + ' can wear Class ' + cap + ' at most (' + (TRAITS.find((x) => (c.traits || []).includes(x.id) && (x as any).effects?.some((e: any) => e.op === 'armor_class_max'))?.name || 'a trait') + ').'); { const ag = armourGateWhy(c, want); if (ag) fail(ag); } setArmourClass(c, want); } // rules 1.91 items 7951, 7953: any class row; a new plate is Standard // heavy armour asks Pain Threshold (rules 1.13)
       });
       if (err) fail(err);
       return;

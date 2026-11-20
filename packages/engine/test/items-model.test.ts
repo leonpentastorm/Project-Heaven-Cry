@@ -26,7 +26,7 @@ describe('rules 1.91 items 7900, 7901: the tags', () => {
     expect(itemTags('sabre', { rarity: 'fine' })).toContain('grade:fine');
     expect(tagOf('evoker', 'kind')).toBe('focus'); expect(tagOf('evoker', 'slot')).toBe('off_hand');
     expect(itemTags('ballistic_helmet')).toEqual(expect.arrayContaining(['kind:armour', 'slot:head']));
-    expect(itemTags('armour:3')).toEqual(['kind:armour', 'family:armour:3', 'slot:torso_outer', 'grade:standard']);
+    expect(itemTags('armour:3')).toEqual(['kind:armour', 'family:vests', 'form:heavy', 'slot:torso_outer', 'grade:standard']); // rules 1.91 item 7950: the class row's tag fields (lane A2)
     expect(itemTags('no_such_thing')).toEqual([]);
     // a variant is its base's family
     const v = Object.keys(WEAPON).find((id) => (WEAPON[id] as any).variant_of)!;

@@ -794,63 +794,15 @@
     },
     "armor": {
       "set_by": "torso",
+      "classes_about": "Rules 1.91 items 7950, 7951: the one copy of body armour (the typed table in code is gone). A save stores the class number: a class is appended, never inserted. penalty.no_sprint: no Sprint; armoured: counts as armour where a target's armour is asked (a unit with no sheet: at least the smallest armoured value); light_cap: the row whose value caps 'armour counts as at most Class I's' (Forlorn Hope); forge_fit: the Forge fits it (rules 1.91 item 7952); family, form: the tag fields (item 7900).",
       "classes": [
-        {
-          "class": 0,
-          "name": "None",
-          "value": 0,
-          "penalty": {},
-          "weight_kg": 0,
-          "price_credits": 0
-        },
-        {
-          "class": 1,
-          "name": "Light",
-          "value": 5,
-          "penalty": {},
-          "weight_kg": 4,
-          "price_credits": 150
-        },
-        {
-          "class": 2,
-          "name": "Medium",
-          "value": 10,
-          "penalty": {},
-          "weight_kg": 8,
-          "price_credits": 400
-        },
-        {
-          "class": 3,
-          "name": "Heavy",
-          "value": 15,
-          "penalty": {
-            "movement": -0.5
-          },
-          "weight_kg": 12,
-          "price_credits": 900
-        },
-        {
-          "class": 4,
-          "name": "Assault",
-          "value": 20,
-          "penalty": {
-            "movement": -0.5,
-            "dodge": -1
-          },
-          "weight_kg": 18,
-          "price_credits": 1800
-        },
-        {
-          "class": 5,
-          "name": "Juggernaut",
-          "value": 25,
-          "penalty": {
-            "movement": -1,
-            "no_sprint": true
-          },
-          "weight_kg": 28,
-          "price_credits": 4000
-        }
+          { "class": 0, "name": "None", "value": 0, "penalty": {}, "weight_kg": 0, "price_credits": 0 },
+          { "class": 1, "name": "Light", "value": 5, "penalty": {}, "weight_kg": 4, "price_credits": 150, "light_cap": true, "forge_fit": true, "family": "vests", "form": "light" },
+          { "class": 2, "name": "Medium", "value": 10, "penalty": {}, "weight_kg": 8, "price_credits": 400, "armoured": true, "forge_fit": true, "family": "vests", "form": "standard" },
+          { "class": 3, "name": "Heavy", "value": 15, "penalty": { "movement": -0.5 }, "weight_kg": 12, "price_credits": 900, "armoured": true, "forge_fit": true, "family": "vests", "form": "heavy" },
+          { "class": 4, "name": "Assault", "value": 20, "penalty": { "movement": -0.5, "dodge": -1 }, "weight_kg": 18, "price_credits": 1800, "armoured": true, "forge_fit": true, "family": "plate", "form": "standard" },
+          { "class": 5, "name": "Juggernaut", "value": 25, "penalty": { "movement": -1, "no_sprint": true }, "weight_kg": 28, "price_credits": 4000, "armoured": true, "forge_fit": true, "family": "plate", "form": "heavy" },
+          { "class": 6, "name": "Breacher plate", "value": 18, "penalty": { "movement": -0.5 }, "weight_kg": 14, "price_credits": 1400, "armoured": true, "family": "plate", "form": "light", "provisional": true }
       ],
       "other_slots": "head, hands, footwear etc. carry per-item effects",
       "other_slot_items": null,
@@ -2695,7 +2647,7 @@
       "head",
       "head_accessory",
       "torso_outer",
-      "torso_inner",
+      "inner_torso",
       "lower_torso",
       "legs",
       "hands",
@@ -2705,14 +2657,14 @@
     ],
     "armour_class_from": "torso_outer",
     "source": "2020 sheet",
-    "table_about": "rules 1.91 item 7908: the one slot table (id, the saved key Character.worn is keyed by, the label, the order); read by the engine and the client. The saved key wins (inner_torso); the slots list's older torso_inner spelling is lane A2's to retire.",
+    "table_about": "rules 1.91 item 7908: the one slot table (id, the saved key Character.worn is keyed by, the label, the order); read by the engine and the client. The saved key wins: the inner torso slot is inner_torso (rules 1.91 item 7958; a save's older worn.torso_inner is moved on load).",
     "table": [
       { "id": "main_hand", "key": "main_hand", "label": "Main hand", "order": 0 },
       { "id": "off_hand", "key": "off_hand", "label": "Off hand", "order": 1 },
       { "id": "head", "key": "head", "label": "Head", "order": 2 },
       { "id": "head_accessory", "key": "head_accessory", "label": "Head accessory", "order": 3 },
       { "id": "torso_outer", "key": "torso_outer", "label": "Outer torso", "order": 4 },
-      { "id": "torso_inner", "key": "inner_torso", "label": "Inner torso", "order": 5 },
+      { "id": "inner_torso", "key": "inner_torso", "label": "Inner torso", "order": 5 },
       { "id": "lower_torso", "key": "lower_torso", "label": "Lower torso", "order": 6 },
       { "id": "legs", "key": "legs", "label": "Legs", "order": 7 },
       { "id": "hands", "key": "hands", "label": "Hands", "order": 8 },

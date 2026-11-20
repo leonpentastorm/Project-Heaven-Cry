@@ -10,7 +10,7 @@
 import './datatext';
 import modesJ from '../../../data/modes.json';
 import { ITEM, TRAITS } from './data';
-import { type Character, type PackItem, KITS, armourCap, startCollection, grantStartItems } from './character';
+import { type Character, type PackItem, KITS, armourCap, setArmourClass, startCollection, grantStartItems } from './character';
 
 /** A mode's (or a campaign's) fixed loadout (data/modes.json campaign `loadout`): a kit by id, or by the door skill. */
 export interface KitLoadout { kind?: 'kit'; kit?: string; by_door?: Record<string, string>; default?: string }
@@ -37,7 +37,7 @@ const traitItems = (c: Character): Set<string> => {
  * stims, nothing in the off hand; the pack keeps plot items and what traits give, and worn pieces traits give. */
 export function stripGear(c: Character): void {
   const keep = traitItems(c);
-  c.weapon = 'fists'; c.offHand = null; c.armourClass = 0; c.stims = 0; delete c.loaded; delete (c as any).loadedType; delete (c as any).mainState; delete c.quivers;
+  c.weapon = 'fists'; c.offHand = null; c.armourClass = 0; c.stims = 0; delete c.loaded; delete (c as any).loadedType; delete (c as any).mainState; delete c.quivers; delete c.wornState; // rules 1.91 item 7953: the grades go with the pieces
   c.pack = (c.pack || []).filter((x: PackItem) => x.kind === 'plot' || keep.has(x.item || x.id)).map((x) => ({ ...x }));
   c.worn = Object.fromEntries(Object.entries(c.worn || {}).filter(([, id]) => keep.has(id)));
 }
@@ -45,7 +45,7 @@ export function stripGear(c: Character): void {
  * stims, the pack; what it already holds from traits stays. Clears `bare`. */
 export function giveKit(c: Character, kitId: string): void {
   const kit = KITS[kitId] || KITS.soldier, had = (c.pack || []).map((x) => ({ ...x }));
-  c.kit = kitId; c.weapon = kit.weapon; c.armourClass = kit.armourClass; c.stims = kit.stims;
+  c.kit = kitId; c.weapon = kit.weapon; setArmourClass(c, kit.armourClass); c.stims = kit.stims; // rules 1.91 item 7953: a new plate
   c.offHand = kit.offHand ? { id: kit.offHand } : null;
   c.pack = [...kit.pack.map((x) => ({ ...x })), ...had.filter((x) => !kit.pack.some((k) => k.id === x.id))];
   { const cap = armourCap(c); if (cap != null && c.armourClass > cap) { (c.state ||= {}).armourDropped = c.armourClass; c.armourClass = cap; } }
