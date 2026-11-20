@@ -7844,6 +7844,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-cowl--relic",
+      "path": "art/icons/gear/armour-cowl--relic.png",
+      "sha256": "1ff7a2100056b1faf1e1eda81e6f6d973e173c06e42e01dd9ffdf1c0a4f081f0",
+      "label": "Cowl — Relic",
+      "family": "armour-cowl",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-cowl--relic.png",
+        "sha256": "b250a93051d1e34510d437db8712f8478e9a13abc6f76ac86b53131c36c48693"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-cowl--relic.png",
+        "sha256": "1ff7a2100056b1faf1e1eda81e6f6d973e173c06e42e01dd9ffdf1c0a4f081f0"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-cowl--relic.txt",
+        "sha256": "025136a86f5987f6d441cc014a56534e7b93e2ce46f268eb3820d8c7d4d71a28"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-cowl--relic/v1/source.png",
+          "sha256": "ca5fe5bc21a19a6b4a62a507beb4d99c8e56ad16c614ac899460ffdc37e8b3f3"
+        },
+        {
+          "path": "art/icons/gear/armour-cowl.png",
+          "sha256": "a9d1a28e40f4433587bdd8aa3fd9d8c1617a11bf1f42ac8de4f49821ab3d7efa"
+        },
+        {
+          "path": "art/icons/gear/armour-cowl--masterwork.png",
+          "sha256": "232afee8ff987ee00ebfbfa97e0bce0f308dd9b65fe5dddb8d82e61326ce53a2"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl--relic.png",
+        "128": "art/icons/gear/exports/128/armour-cowl--relic.png",
+        "64": "art/icons/gear/exports/64/armour-cowl--relic.png",
+        "32": "art/icons/gear/exports/32/armour-cowl--relic.png"
+      },
+      "export_hashes": {
+        "256": "f23e97e0c5a6b4592836623d61c7fcf4f5830103f6c124d4c32e82ace771c603",
+        "128": "9b5ce58e0f0e04b513495d16e4301734ece513bc6f399c5e6deac350005f37ae",
+        "64": "da00ec778cd1142dd147502052ca0f8b59789a92806d775b610adaceb6c60989",
+        "32": "b4a168c0f3ff065bc17631d96150634cc07325c1fe7f26bc8057a59a2e83ec60"
+      },
+      "grade": "relic",
+      "standard_id": "armour-cowl",
+      "outline": {
+        "solid_alpha_iou": 0.9833090587693418,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 25
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -26357,6 +26357,42 @@
         "different_pixels_32": 3,
         "different_pixels_64": 15
       }
+    },
+    "armour-cowl--relic": {
+      "label": "Cowl — Relic",
+      "path": "art/icons/gear/armour-cowl--relic.png",
+      "sha256": "1ff7a2100056b1faf1e1eda81e6f6d973e173c06e42e01dd9ffdf1c0a4f081f0",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-cowl--relic.png",
+        "128": "art/icons/gear/exports/128/armour-cowl--relic.png",
+        "64": "art/icons/gear/exports/64/armour-cowl--relic.png",
+        "32": "art/icons/gear/exports/32/armour-cowl--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-cowl--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-cowl",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9833090587693418,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 25
+      }
     }
   },
   "survival_art": {
