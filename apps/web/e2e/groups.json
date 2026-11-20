@@ -12,5 +12,5 @@
   "sigil15-strokes", "sigil15-growth", "sandbox-mp", "slate", "slate-music", "slate-stamp", "slate-title", "title", "resources", "fight-cards",
   "turn-card-side", "capture-skills", "capture-all"
  ],
- "serial": ["fx-room", "magic", "title", "resources", "capture-skills", "capture-all", "picking"]
+ "serial": ["fx-room", "magic", "title", "resources", "capture-skills", "capture-all", "picking", "voice", "shadow", "tending", "slate", "slate-title", "slate-music", "turn-card-side", "sigil15-growth"]
 }
