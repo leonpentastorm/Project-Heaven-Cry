@@ -180,7 +180,8 @@
     "armour-jump_boots--relic",
     "armour-jump_boots--celestial",
     "weapon-ork_snarl_knife--fine",
-    "weapon-ork_snarl_knife--masterwork"
+    "weapon-ork_snarl_knife--masterwork",
+    "weapon-ork_snarl_knife--relic"
   ],
   "remaining": [
     "weapon-ork_machete--masterwork",
@@ -226,7 +227,6 @@
     "weapon-short_bow--masterwork",
     "weapon-short_bow--relic",
     "weapon-short_bow--celestial",
-    "weapon-ork_snarl_knife--relic",
     "weapon-ork_snarl_knife--celestial",
     "weapon-ork_wreck_saw--fine",
     "weapon-ork_wreck_saw--masterwork",
@@ -251,7 +251,7 @@
   ],
   "production_approved": false,
   "coordination_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
-  "updated_utc": "2026-11-20T06:31:40.101670+00:00",
+  "updated_utc": "2026-11-20T06:33:37.609474+00:00",
   "reused_peer_candidates": 12,
   "archived_overlap_alternatives": 3,
   "quota_history": [

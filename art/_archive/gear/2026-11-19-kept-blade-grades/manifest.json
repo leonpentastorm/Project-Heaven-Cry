@@ -11060,6 +11060,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_snarl_knife--relic",
+      "path": "art/icons/gear/weapon-ork_snarl_knife--relic.png",
+      "sha256": "f9f99f9012ee74a3dd4c11426fbe7a1d474396118eb506861bd6becca9395557",
+      "label": "Snarl knife — Relic",
+      "family": "weapon-ork_snarl_knife",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_snarl_knife--relic.png",
+        "sha256": "69c1cc1f86315153c121f0a7b14a987d5ac6e86f26c15d462136d6662571de1d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_snarl_knife--relic.png",
+        "sha256": "f9f99f9012ee74a3dd4c11426fbe7a1d474396118eb506861bd6becca9395557"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_snarl_knife--relic.txt",
+        "sha256": "82fd4ab9c19adc4d2a85ff6819be2be66d493a3e5ebb094c4c5d271200fa81ea"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_snarl_knife.png",
+          "sha256": "4f2120d28cbbf5d3fef2f3379c4e878a362e6edd2a5ea3508b962836bdaa43d3"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_snarl_knife--masterwork.png",
+          "sha256": "e60a8f9bfac24f0da82bbb57ce5af2f0d4b3c1fdc17f0cd61d112c62609f0afa"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_snarl_knife--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_snarl_knife--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_snarl_knife--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_snarl_knife--relic.png"
+      },
+      "export_hashes": {
+        "256": "67161a9c78748bcfcb615b55a52edb252111ebbe8f55d8647b4e63a04bc97f57",
+        "128": "df23b2a2b840e2eebc46445113cbc13ac4e937a3fb77c96c8038e1bee85c8c33",
+        "64": "685a3bc67ee856ca4607f6666ec1e72c098b0f8c74e00cca0bc6e2a5ac743f67",
+        "32": "fdae2c1fa9cc3b90845f7fbcc8c2b8bf1f5466f16685cf269268bd15879772ae"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-ork_snarl_knife",
+      "outline": {
+        "solid_alpha_iou": 0.9586561058403691,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 12
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
