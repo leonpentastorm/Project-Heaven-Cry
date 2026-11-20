@@ -7,6 +7,8 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fitLevel, fitLine, fitCards, useTable, tableNow } from './fit';
 import { LEVELS } from './builds';
+import skillsJ from '../../../../data/skills.json';
+const ATH_FROM = Number((skillsJ as any).items.find((x: any) => x.id === 'athletics').per_point.numbers.defense_from ?? 2);
 
 const OUT = process.env.BALANCE_FIT_OUT, TABLE = process.env.BALANCE_FIT_TABLE;
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..'), fromRepo = (p: string) => (p.startsWith('/') ? p : resolve(REPO, p));
@@ -24,7 +26,9 @@ describe('the fit of the enemy table', () => {
       expect(c.elite.hitsToKillExact, 'Elite, level ' + lv).toBeGreaterThan(6); expect(c.elite.hitsToKill).toBeLessThanOrEqual(8);
       expect(c.boss.hitsToKill, 'Boss, level ' + lv).toBeGreaterThanOrEqual(20);
       expect(c.soldier.yardPct, 'the chance to hit a Soldier, level ' + lv).toBe(65);
-      expect(c.soldier.foePct, 'a Soldier\'s chance to hit the yardstick, level ' + lv).toBe(65);
+      // rules 1.82 item 7011: Athletics' Defense from its first point (skills.json defense_from 1, was 2) gives the yardstick
+      // one more Defense, 5 points off the foe's chance; the enemy table's refit to 65 is owed to the balance lane
+      expect(c.soldier.foePct, 'a Soldier\'s chance to hit the yardstick, level ' + lv).toBe(65 - 5 * (2 - ATH_FROM));
     }
   });
   (QUICK_RUN && !OUT ? it : it.skip)('quick run: every measurement of the fit builds (one fight each, level 6)', () => {

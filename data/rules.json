@@ -317,7 +317,7 @@
       "movement": "1 + 0.5*(agility-1) tiles per AP, minimum 0.5",
       "carry_kg": "20 + 5*(strength-1)",
       "defense": "10 + dodge",
-      "dodge": "max(0, mod(athletics))",
+      "dodge": "max(0, athletics points from skills.json athletics per_point.numbers.defense_from, x its defense, + the armour dodge) (rules 1.82 item 7011)",
       "counter_bonus": "max(0, mod(raw_power))",
       "injury_resist_pct": "10*(endurance-1)",
       "crit_damage_taken_pct": "-10*(perception-1) - 5*analysis (the skill named Acuity)",

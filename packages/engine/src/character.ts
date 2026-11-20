@@ -751,7 +751,10 @@ export const initiativeBonus = (c: Character) => fx(c, 'init', (A(c, 'agility') 
 export const overweightKg = (c: Character) => Math.max(0, Math.round((carriedKg(c).total - carryLimit(c)) * 100) / 100);
 export const overburdenPenalty = (c: Character) => Math.ceil(overweightKg(c) / 5);
 export const movement = (c: Character) => Math.max(0.5, fx(c, 'move', (1 + 0.5 * (A(c, 'agility') - 1) + (ARMOUR[c.armourClass]?.move || 0)) * (penalLimbs(c.injuries, statQuery({ c }, 'numb_limbs').add).some((i) => i.loc === 'leg') ? 0.5 : 1) - overburdenPenalty(c) + gearBonus(c, 'movement_bonus')));
-export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, mod(P(c, 'athletics')) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
+/** Athletics' Defense (skills.json athletics per_point.numbers: `defense` a point, from point `defense_from`; rules 1.82
+ * item 7011: from 1, was from 2, the agility draft, PROVISIONAL): before the armour's dodge, never under 0 with it. */
+const athDefense = (c: Character): number => { const n: any = (SKILL as any).athletics?.per_point?.numbers || {}, from = Number(n.defense_from ?? 2), per = Number(n.defense ?? 1); return Math.max(0, P(c, 'athletics') - (from - 1)) * per; };
+export const defense = (c: Character) => fx(c, 'defense', 10 + Math.max(0, athDefense(c) + (ARMOUR[c.armourClass]?.dodge || 0)) + gearBonus(c, 'defense_bonus')
   + (c.offHand && isShieldId(c.offHand.id) && (WEAPON[c.weapon] as any)?.grants?.effect?.op === 'defense_with_shield' ? (WEAPON[c.weapon] as any).grants.effect.value : 0));
 // The derived multipliers below are the Stat term of the one formula (effects/output.ts; data/rules.json output.profiles
 // and output.pairs hold the slopes and what each reads): 1 + attr × (Attribute − 1) + skill × Skill.

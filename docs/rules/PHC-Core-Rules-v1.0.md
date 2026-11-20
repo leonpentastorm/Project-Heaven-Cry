@@ -13594,3 +13594,10 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       kg (PROVISIONAL). **Grenadier's Arm** is moved onto the op (its own two throws in `perks/c.ts` are gone: one action,
       "Throw it", any unit but a Boss or a loose object, under the carry weight, the throwing range less a tile a 20 kg;
       its numbers unchanged).
+7011. **Athletics' Defense from the first point** (Waiting on Leon 19, built as the agility draft says; **call made for
+      Leon**; supersedes rules 1.73's "each from 2" and rules 1.77 item 6517 d): +**1** Defense a point of Athletics from
+      the **first** point (`skills.json athletics per_point.numbers.defense_from` **1**, was 2; PROVISIONAL), before the
+      armour's dodge and never under 0 with it (`character.ts athDefense`). It moves the enemy yardstick: a Soldier's
+      chance to hit the plain rifleman falls from 65% to 60% at every reference level (`test/balance/step1-fit`, which now
+      reads the switch). **Owed to the balance lane:** the enemy table's refit back to 65 (not done here: no balance number
+      is fitted in this lane). Setting `defense_from` back to 2 restores the old rule exactly.
