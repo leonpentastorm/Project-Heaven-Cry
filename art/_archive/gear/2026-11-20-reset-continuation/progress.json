@@ -33,7 +33,8 @@
     "weapon-broadback_sabre--masterwork",
     "weapon-legion_leaf_dagger--fine",
     "weapon-legion_leaf_dagger--masterwork",
-    "weapon-legion_leaf_dagger--relic"
+    "weapon-legion_leaf_dagger--relic",
+    "weapon-legion_leaf_dagger--celestial"
   ],
   "remaining": [
     "weapon-hellraiser_rotary--celestial",
@@ -45,7 +46,6 @@
     "weapon-dock_cutter--celestial",
     "weapon-broadback_sabre--relic",
     "weapon-broadback_sabre--celestial",
-    "weapon-legion_leaf_dagger--celestial",
     "weapon-legion_rank_sword--fine",
     "weapon-legion_rank_sword--masterwork",
     "weapon-legion_rank_sword--relic",
@@ -53,7 +53,7 @@
   ],
   "baseline_project_pictures": 327,
   "project_total": 871,
-  "updated_utc": "2026-11-20T04:02:03.303255+00:00",
+  "updated_utc": "2026-11-20T04:03:27.006187+00:00",
   "active_run_id": "reset-20261120-165ac7984341",
   "started_utc": "2026-11-20T02:44:45.333049+00:00",
   "successful_generation_attempts": 1,
