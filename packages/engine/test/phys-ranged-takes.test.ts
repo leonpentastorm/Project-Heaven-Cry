@@ -124,7 +124,7 @@ describe('Rout', () => {
     const f = fight({ weapon: 'service_pistol' }); f.press(f.foe, 2, f.pc); saves(); f.pc.hidden = true; f.pc.dexterity = 0; const d0 = f.pc.dur ?? 0;
     expect(f.tech('rout', { targetId: f.foe.id })).toBeNull();
     expect(f.pc.heat).toBe(1); // the round's 1 (a Take adds no Press Heat)
-    expect(f.pc.shotsThisTurn).toBe(1); expect(f.pc.hidden).toBe(false); if (f.pc.maxDur) expect(f.pc.dur).toBe(d0 - 1);
+    expect(f.pc.shotsThisTurn).toBe(1); expect(f.pc.hidden).toBe(true); /* rules 1.87 item 7503: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */ if (f.pc.maxDur) expect(f.pc.dur).toBe(d0 - 1);
     expect(f.fx('shot').at(-1)).toMatchObject({ unit: f.pc.id, rout: true });
     expect(term(f.pv('shot', { targetId: f.foe.id }), 0, 'recoil')).toBe(-1);
     const s = fight({ weapon: 'parlour_pistol' }); s.press(s.foe, 2, s.pc); saves(); s.pc.hidden = true;

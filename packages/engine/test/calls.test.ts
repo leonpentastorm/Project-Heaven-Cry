@@ -231,8 +231,8 @@ describe('Order (Authority)', () => {
 });
 
 describe('Rally (Charisma)', () => {
-  it('the three steps (rules 1.74 item 6043, re-stepped stronger: 2 AP; 2 AP and 1 Pressure shed; 3 AP and 1 Pressure shed), from calls.json', () => {
-    expect(RALLY.map((s: any) => [s.ap, s.pressure])).toEqual([[2, 0], [2, 1], [3, 1]]);
+  it('the three steps (rules 1.87 item 7501, re-stepped again: 3 AP; 3 AP and 1 Pressure shed; 3 AP and 2 Pressure shed), from calls.json', () => {
+    expect(RALLY.map((s: any) => [s.ap, s.pressure])).toEqual([[3, 0], [3, 1], [3, 2]]);
     for (const [pts, ap, shed] of [[1, RALLY[0].ap, RALLY[0].pressure], [4, RALLY[1].ap, RALLY[1].pressure], [8, RALLY[2].ap, RALLY[2].pressure]] as const) {
       const f = fight([speaker('charisma', pts), {}]); f.press(f.pcs[1], 2);
       expect(f.call('call.rally', { targetId: f.pcs[1].id })).toBeNull();
@@ -244,7 +244,7 @@ describe('Rally (Charisma)', () => {
 describe('Brief (Eloquence)', () => {
   const shoot = (f: ReturnType<typeof fight>) => f.act({ type: 'combat/attack', unitId: f.pcs[1].id, targetId: f.foe.id, mode: 'shot' } as any);
   const prone = (f: ReturnType<typeof fight>) => f.act({ type: 'combat/prone', unitId: f.pcs[1].id } as any);
-  // rules 1.74 item 6023: Brief re-stepped stronger (1: two actions 1 AP less each; 4: 2 then 1; 8: 2 and 2), read from calls.json
+  // rules 1.87 item 7501: Brief re-stepped again (1: 2 then 1; 4: 2 and 2; 8: 3 then 2), read from calls.json
   const STEPS = (CALLSJ as any).items.find((x: any) => x.id === 'call.brief').steps.map((s: any) => [s.numbers.first, s.numbers.second].filter((n: number) => n > 0));
   it('step 1: the next two actions cost less each; an action after them costs its own', () => {
     const f = fight([speaker('eloquence', 1), { weapon: 'service_pistol' }]);

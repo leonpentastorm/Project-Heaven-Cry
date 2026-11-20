@@ -1379,8 +1379,8 @@ By the speaker's points in the Call's skill:
 | Call | Skill | On | Step 1 (1 point) | Step 2 (3 points) | Step 3 (7 points) |
 |---|---|---|---|---|---|
 | **Order** | Authority | ally | They reload, stand up or pick up, now | or move their Movement (the tiles 1 AP walks them) | two different things of those |
-| **Rally** | Charisma | ally | They gain 1 AP | 1 AP, and they shed 1 Pressure | 2 AP, and they shed 1 Pressure |
-| **Brief** | Eloquence | ally | Their next action costs 1 AP less | their next two actions cost 1 AP less each | their next action costs 2 AP less, the one after 1 less |
+| **Rally** | Charisma | ally | They gain 1 AP | 1 AP, and they shed 1 Pressure | 2 AP, and they shed 1 Pressure *(Superseded by rules 1.86 item 7401: +3 AP / +3 AP and 1 Pressure less / +3 AP and 2 less, at 1 / 4 / 8 points)* |
+| **Brief** | Eloquence | ally | Their next action costs 1 AP less | their next two actions cost 1 AP less each | their next action costs 2 AP less, the one after 1 less *(Superseded by rules 1.86 item 7401: 2 then 1 / 2 and 2 / 3 then 2, at 1 / 4 / 8 points)* |
 | **Name It** | Lore Master | ally or self | +2 on all their saves until your next turn | +3, and a fresh save now against one condition on them | +4, the fresh save, and Shaken and Afraid end |
 | **Cue** | Reaction Speed | ally | One more reaction | or a step of 1 tile now, on that reaction | and they act straight after you in the order |
 | **Spot** | Vigilance | enemy (no save) | The next ally to attack it ignores its cover | and it isn't Hidden to them | the next two allies, at +1 to hit |
@@ -12975,7 +12975,7 @@ its Mastered perk at 10; a beta or gamma gives its per-point gain on every level
     Fact** (the story part kept) with an engine half: once a fight, your own Overload deals you no damage. PROVISIONAL.
 6023. **Eloquence** (gamma): every level +1 on Eloquence checks and Asks, +1 tile Brief reach (Persuasion in a fight
     harder to resist). The Call **Brief** is re-stepped stronger (ruling layer section 2 item 4): **1** their next two
-    actions cost 1 AP less each · **4** the next 2 AP less and the one after 1 less · **8** the next two 2 AP less each.
+    actions cost 1 AP less each · **4** the next 2 AP less and the one after 1 less · **8** the next two 2 AP less each. *(Superseded by rules 1.86 item 7401.)*
     Four perks: **Objection!** (I: expose a claim before listeners; II: and Burden of Proof's demand for evidence:
     Burden of Proof is removed and maps to it), **Opening Argument** (I: the pre-fight debate as before; II: your first
     Persuade, Threaten or Parley each fight costs 0 AP), **Overruled!** (kept), **Thinking Aloud** (I: after a Call,
@@ -13011,7 +13011,7 @@ place of the Expression sheet's sections 2 and 3)
     Improvisation has three perks for now. Mastered: Overhaul (kept). PROVISIONAL.
 6043. **Charisma** (gamma): every level +1 on Charisma checks, +1 tile Rally reach. The Call **Rally** is re-stepped
     stronger (ruling layer section 2 item 4): **1** +2 AP to an ally · **4** +2 AP and 1 Pressure less · **8** +3 AP and
-    1 Pressure less. Perks: **Smooth** (I: a failed lie only raises suspicion; II: and once a scene a lie found out can
+    1 Pressure less *(superseded by rules 1.86 item 7401)*. Perks: **Smooth** (I: a failed lie only raises suspicion; II: and once a scene a lie found out can
     be walked back with a second check), **Parley** (id `talks_broke_down`; I: before a fight, one attempt to talk the
     enemy down; II: a fight out of a talk won gives +2 AP on your first turn and every third after, and the first enemy
     to act hesitates in round 1; the lost-talk penalty is gone), **Crowd Pleaser** (kept), **Showman** (I: Picture costs
@@ -13132,7 +13132,7 @@ tiers on steps at 3 / 5 / 7 / 9, Mastered at 10). Removed perks map as each shee
 **Virtue (Faith, Conscience, Authority; the Chaplain)**
 
 6220. **Faith's ladder.** 1 the door (Whisper, once a turn; Devotion) · 2 **Name the Sinner** (a Whisper: a foe you see is
-    Judged for 2 rounds, no save; your patron's blows, your prayers' damage, are +20% on a Judged or Marked foe: Deliver
+    Judged for 2 rounds, no save; your patron's blows, your prayers' damage, are +20% on a Judged or Marked foe (+40% since rules 1.86 item 7402): Deliver
     the Sinner moved from 5 and given a verb) · 3 perk step, Hymns open (kept at 3: the sheet's open item 1, recommended
     no) · 4 fork one · 5 Witnessed · 6, 7 perk steps (the Miracle at 7 with Devotion 10) · 8 fork two · 9 perk step · 10
     Mastered Judgement Day. Every point: +10% Blessing power, saves against your prayers harder; the Hymn-wait row only on
@@ -13612,7 +13612,7 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       data word). No balance number is fitted in this lane.
 7012. **Silent, by Leon's later word** (Waiting on Leon 21; closes rules 1.77 item 6517 a; every line below a **call made
       for Leon**, behind one switch, `rules.json combat.hidden_attack.gives`: `tile` the new rule, `reveal` the rule
-      before; **built and shipped at `reveal`**: at `tile` seven tests that pin the reveal move and the Operative must be
+      before; **built and shipped at `reveal`** *(turned ON, `tile`, by rules 1.86 item 7403)*: at `tile` seven tests that pin the reveal move and the Operative must be
       measured first: the balance lane, then Leon's word turns it on):
       **acting from Hidden gives your tile away while you stay Hidden; a Silent attack does not.** One function,
       `tactics.ts attackFromHidden`, at every site where an attack used to reveal its maker (the shot and the strike,
@@ -13859,3 +13859,40 @@ PROVISIONAL.**
       `containers.ts COUNTED_ORDER` was already read from `items.json counts_into` (nothing to move).
 7411. **Engine lane: rules 1.33 item 2038 ("enemies do not Bond or Tend") is superseded** by item 7401: a row's `doors`
       block may give an enemy an Attuner and the Bond verbs.
+
+### Rules 1.87 (balance), the balance lane of 0.33 (20 Nov 2026)
+
+The part of the balance that Items 2.0 and Weapon Arts will not undo (`docs/design/handoffs/0.33-LANE-BALANCE.md`; the
+measures are `docs/design/handoffs/0.33-MEASURES.md`, the baseline those two systems are compared to). The weapon-side
+fits (the Dexterity melee line, gun ceilings with mods, the Figments and Rigger class lines, the Mender's solo kit) wait
+for those systems. Every number here is PROVISIONAL (section 14).
+
+7500. **balance: the Sigilist's simulator bot** (no rule changes; `test/balance/run-policies.ts sigilHold`). It stands up
+    when Prone (a Stopping Shot left it asking to walk, refused "Stand up first", for ten rounds), holds a covered tile
+    under Pressure instead of walking into the open, steps to cover at a turn's end, and starts its next Line on its own
+    tile when a turn would end idle (Written in Advance). Measured, 160 seeds solo: 14 of 160 clears before, 16 after;
+    a Line's last tile sought in cover (`SIG_FROMCOVER=1`) cost clears (5 of 80 against 9) and is off. The bot is not
+    the limit any more: see the hand-off. No class number moved because of the bot.
+7501. **balance: Rally and Brief re-stepped again** (proposals 2.1, 2.4; supersedes the steps of items 6023 and 6043 and
+    the table "The nine Calls"). At 3 AP a Call that gives back less than 3 AP slowed the squad's fight (the Calls
+    measure: 7.3 rounds against 7.0 with the leader's sidearm alone). **Rally:** 1 point +3 AP · 4 points +3 AP and 1
+    Pressure less · 8 points +3 AP and 2 Pressure less. **Brief:** 1 point the next action 2 AP less, the one after 1
+    less · 4 points the next two 2 AP less each · 8 points the next 3 less, the one after 2 less. AP a Call gives or saves
+    still counts in the turn's +3 of gained AP. An enemy's Rally (an Elite's and a Boss's, `enemies.json calls`) reads
+    the same rows and is stronger with them. The other seven Calls were measured and keep their strengths (the table is
+    in the measures).
+7502. **balance: Name the Sinner's price** (supersedes the +20% of item 6220). Naming an Elite or a Boss cost the solo
+    Chaplain 10 of 80 clears (33 not naming, 23 naming); naming only on a turn the Hymn is ready for that foe recovered
+    some (16 of 40 against 13 and 18) and every price was measured: Judged 2 rounds at +30% or +40%, 3 rounds at +20% or
+    +30%. **Your prayers deal 40% more to a Judged or Marked foe** (Judged stays 2 rounds): 35 of 80 against 33 not
+    naming; four 30 of 40 against 32. The player's rule is unchanged: name the Elite or the Boss.
+7503. **balance: Silent is ON** (`rules.json combat.hidden_attack.gives: tile`; item 7012 by Leon's later word): an attack
+    from Hidden that is not silent gives the attacker's tile away and keeps it Hidden. Measured, the nine doors at stage
+    1 on 40 seeds, solo and in four, with the switch at `reveal` and at `tile`: every door within 3 clears of its number
+    before the switch (the table is in the measures), so nothing the switch touches was tuned. The tests that pinned the
+    reveal now pin the tile (twelve, in ten files; the FOUND event of a reveal is pinned with the switch set to `reveal`).
+7504. **balance: Athletics' Defense from the first point, measured, still OFF** (item 7011; `defense_from` 2; it waits on
+    Leon). The defence guard's idle pair (two Soldiers on an idle caster and a rifleman, level 6), 40 fights: the first
+    Down after 4.9 rounds at 2 and 5.3 at 1 (the guard reads at most 4.2 on its own 4 fights, where it measured 4.3); the
+    mender pair 9.8 and 9.7 rounds, the supporter taking 55.6 and 50.7 a round. The yardstick's Soldier hits the plain
+    rifleman 65% at 2 and 60% at 1 (`test/balance/step1-fit`). Turning it on is one data word and the guard's bound.

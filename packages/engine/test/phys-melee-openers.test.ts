@@ -235,7 +235,7 @@ describe('Ambush (5)', () => {
     const pv = f.pv('ambush', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.attacks.length).toBe(0); expect(pv.momentum).toEqual({ now: 1, after: 1 });
     expect(f.tech('ambush', { targetId: f.foe.id })).toBeNull();
     expect(f.foe.hp).toBe(hp); expect(f.foe.conds?.grappled).toBe(1); expect(f.foe.conds?.silenced).toBe(1);
-    expect(f.momentum(f.pc)).toBe(1); expect(f.pc.hidden).toBe(false);
+    expect(f.momentum(f.pc)).toBe(1); expect(f.pc.hidden).toBe(true); /* rules 1.87 item 7503: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */
     const g = fight('fists', ['ambush'], 'A5', 'D5'); hide(g.pc); expect(g.tech('ambush', { targetId: g.foe.id })).toMatch(/Walk up/);
   });
 });

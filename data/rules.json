@@ -455,9 +455,9 @@
       "difficult_terrain_move_multiplier": 2
     },
     "hidden_attack": {
-      "gives": "reveal",
+      "gives": "tile",
       "line": "{unit} gives its position away, still unseen.",
-      "note": "rules 1.82 item 7012 (Silent; Leon's later word, a call made for him): an attack made from Hidden that is not silent gives the attacker's tile away to its foes and it stays Hidden (gives: tile); reveal: it is revealed (the rule before; the switch ships here, OFF, until the balance lane measures the Operative under it and Leon says). A silent attack gives nothing away. The Break keeps its own reveal (its toggle row). tactics.ts attackFromHidden"
+      "note": "rules 1.82 item 7012 (Silent; Leon's later word, a call made for him): an attack made from Hidden that is not silent gives the attacker's tile away to its foes and it stays Hidden (gives: tile); reveal: it is revealed (the rule before). ON since rules 1.87 item 7503: the 0.33 balance lane measured the nine doors under it, each within 3 clears of its number at reveal. A silent attack gives nothing away. The Break keeps its own reveal (its toggle row). tactics.ts attackFromHidden"
     },
     "hurl": {
       "unit_kg": {

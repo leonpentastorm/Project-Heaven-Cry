@@ -6,6 +6,7 @@
 //  - THE MEASURE (opt-in): SURVIVAL_SIM=1 plays the cells named in SIM_CELLS ("party:route,…"; default all) over
 //    SIM_SEEDS seeds (default 8) and writes every run to SIM_OUT (JSON) for survival-run-report.ts to tabulate.
 //    How to run it and what it printed: docs/design/handoffs/survival-steps-9-10.md.
+import { SURPRISE } from '../../src/combat';
 import { describe, expect, it } from 'vitest';
 import { writeFileSync, readFileSync } from 'node:fs';
 import { simRun, PARTIES, type RoutePolicy } from './survival-run';
@@ -60,6 +61,9 @@ describe.runIf(env.SURVIVAL_SIM)('Survival, simulated runs: the measure', () => 
   it('plays the cells and writes every run', () => {
     const cells = (env.SIM_CELLS ? String(env.SIM_CELLS).split(',') : Object.keys(PARTIES).flatMap((p) => ROUTES.map((r) => p + ':' + r))).map((x) => x.split(':'));
     const seeds = Number(env.SIM_SEEDS || 8), from = Number(env.SIM_FROM || 1), out: any[] = [];
+    // 0.33 balance lane, in memory: SIM_SUR=0 turns the surprise in the approach off (rules 1.82 item 7004's switch)
+    const sur0 = SURPRISE.on; if (env.SIM_SUR === '0') SURPRISE.on = false;
+    try {
     // a cell may carry flags after its route (P2): "party:route:nopickup" (the field left at once), ":nomake" (no
     // making, selling or maker); the party is then reported as "party+flags"
     for (const [party, route, flags] of cells) for (let i = from; i < from + seeds; i++) {
@@ -70,6 +74,7 @@ describe.runIf(env.SURVIVAL_SIM)('Survival, simulated runs: the measure', () => 
       (globalThis as any).console.log(party + ':' + route + ' SIM-' + i + ' ' + r.how + ' stage ' + r.stage + ' depth ' + r.depth + ' cleared ' + r.cleared + ' (' + Math.round((Date.now() - t) / 1000) + ' s)' + (r.errors.length ? ' ERR ' + r.errors.slice(0, 2).join(' | ') : ''));
       if (env.SIM_OUT) writeFileSync(env.SIM_OUT, JSON.stringify(out));
     }
+    } finally { SURPRISE.on = sur0; }
   }, 24 * 3600_000);
 });
 

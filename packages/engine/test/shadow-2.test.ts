@@ -298,7 +298,9 @@ describe('the moments your side sees (rules 1.56 items 8 and 13): Shadow gained 
     expect(shadow(f, u)).toBe(had - 1);
     expect(fxSince(f, n).some((e: any) => e.k === 'stance' && e.what === 'shadow_loss' && e.target === u.id)).toBe(true);
   });
-  it('an attack from Hidden: FOUND (how: attack) goes to your own side only', () => {
+  it('an attack from Hidden (the switch at reveal): FOUND (how: attack) goes to your own side only', () => {
+    const was0 = HIDDEN_ATTACK.gives; HIDDEN_ATTACK.gives = 'reveal'; // rules 1.87 item 7503: Silent ships ON (tile); the reveal path is pinned here
+    try {
     const f = fightWith([door(1)], [{}]); foeAt(f, 0, '6,4', true);
     const u = f.turn(f.pc); at(f, u, '1,4');
     f.act({ type: 'combat/hide', unitId: u.id } as any);
@@ -306,6 +308,7 @@ describe('the moments your side sees (rules 1.56 items 8 and 13): Shadow gained 
     f.act({ type: 'combat/attack', unitId: u.id, targetId: f.foe.id, mode: 'shot' } as any);
     const ev = found(f, n, u.id);
     expect(ev.length).toBe(1); expect(ev[0].how).toBe('attack'); expect(ev[0].only).toBe('pc');
+    } finally { HIDDEN_ATTACK.gives = was0; }
   });
   it('a hit on a Hidden unit: FOUND (how: hit), naming who hit it', () => {
     const f = fightWith([door(1), {}], [{}]); foeAt(f, 0, '14,5', true);
@@ -331,7 +334,7 @@ describe('the moments your side sees (rules 1.56 items 8 and 13): Shadow gained 
 });
 
 describe('rules 1.82 item 7012: an attack from Hidden gives the tile away; a silent one does not', () => {
-  it('with the switch at tile (it ships at reveal): a loud shot from Hidden: still Hidden, the foes know the tile, said once; a silent weapon: nothing told', () => {
+  it('with the switch at tile (it ships at tile since rules 1.87 item 7503): a loud shot from Hidden: still Hidden, the foes know the tile, said once; a silent weapon: nothing told', () => {
     const was = HIDDEN_ATTACK.gives; HIDDEN_ATTACK.gives = 'tile';
     try {
     const shoot = (weapon?: string) => {
@@ -345,5 +348,5 @@ describe('rules 1.82 item 7012: an attack from Hidden gives the tile away; a sil
     const quiet = shoot('whisper_smg'); expect(quiet.u.hidden).toBe(true); expect(quiet.f.cb.seenAt?.foe?.[quiet.u.id]).toBe(quiet.was);
     } finally { HIDDEN_ATTACK.gives = was; }
   });
-  it('the switch ships at reveal (the rule before) until Leon says', () => { expect(HIDDEN_ATTACK.gives).toBe('reveal'); });
+  it('the switch ships at tile (rules 1.87 item 7503: Silent ON by the word of Leon, measured by the 0.33 balance lane)', () => { expect(HIDDEN_ATTACK.gives).toBe('tile'); });
 });

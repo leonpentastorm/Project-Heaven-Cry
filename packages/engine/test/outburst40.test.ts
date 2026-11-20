@@ -206,7 +206,7 @@ describe('the new modules (section 4)', () => {
     const f = rig(['6,5']); const d = give(f.pc, { modules: ['linger', 'at_once'] }); begin(f, d, f.pc, { aim: '6,5' });
     const hp = f.foe.hp; f.turn(f.foe); expect(f.unit(f.foe.id).hp).toBe(hp - 5);
     const g = rig(); me(g).hidden = true; const e = give(g.pc, { modules: ['silent'] }); begin(g, e, g.pc, { aim: '6,5' }); expect(me(g).hidden).toBe(true);
-    const h = rig(); me(h).hidden = true; const k = give(h.pc, {}); begin(h, k, h.pc, { aim: '6,5' }); expect(me(h).hidden).toBe(false);
+    const h = rig(); me(h).hidden = true; const k = give(h.pc, {}); begin(h, k, h.pc, { aim: '6,5' }); expect(me(h).hidden).toBe(true); /* rules 1.87 item 7503: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */
   });
   it('Thread: a Buff release threads two allies; the next heal on one heals the other as much', () => {
     const f = rig(['9,9'], ['5,5', '5,6']); const [, a, b] = f.pcs; a.hp = 400; b.hp = 400;
