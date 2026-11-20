@@ -6,7 +6,7 @@ import { setLogMarker, remark, say, type LogMark, type LogSideMark } from './log
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf, ladderSchedule } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, noSprintClass, armourOf, oneHanded, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
   twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources, type Grip, focusIdOf, focusKindOf, type FocusKind } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
@@ -586,7 +586,7 @@ export function unitFromCharacter(c: Character, pos: string, rng: Rng): Unit {
     offWeapon: offW ? offW.id : null, ...(offW && offW.mods?.length ? { offMods: [...offW.mods] } : {}), offAmmo: offW ? Math.min(offW.loaded ?? magazineSize(offW.id, offW.mods) ?? 0, magazineSize(offW.id, offW.mods) ?? 0) : 0, // its own rounds (item 688)
     light: gearBonus(c, 'light'), darkSight: gearHas(c, 'dark_sight'), hazardImmune: gearEffects(c).filter((e) => e.op === 'hazard_immune').map((e) => e.hazard || ''),
     ignoreDifficult: gearHas(c, 'ignore_difficult'), unarmedBonus: gearBonus(c, 'unarmed_damage_bonus'), proficiency: c.skills.proficiency || 0,
-    parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || c.armourClass >= 5, strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => plainRounds(x, w.ammo)).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
+    parts: packOf(c).filter((x) => (x.item || x.id) === 'spare_parts').reduce((t, x) => t + x.qty, 0), dexterity: c.skills.dexterity || 0, athleticsPts: c.skills.athletics || 0, vision: visionOf(c), sensory: c.skills.sensory || 0, noSprint: overweightKg(c) > 0 || noSprintClass(c.armourClass), /* rules 1.91 item 7950: the class row's no_sprint */ strength: mod(c.skills.raw_power || 0), mags: [...spareMags(c)], loose: packOf(c).filter((x) => plainRounds(x, w.ammo)).reduce((t, x) => t + x.qty, 0), analysis: c.skills.analysis || 0,
     mg: magicOf(c), ...(c.perks?.length || c.traits?.length || c.classId || c.advancedClass || c.relics?.length || skillItemsOf(c.skills).length || heldOfChar(c).verbs?.length || heldOfChar(c).relics?.length ? { held: heldOfChar(c) } : {}), // rules 1.56: a fitted mod is held too
     ...pcExtras(c, w),
   };
@@ -799,7 +799,7 @@ onHook('damage_in', (ctx: any) => {
 });
 
 /** −2 to attacks when an injured arm holds the weapon: the main-hand arm, or either arm for a two-handed weapon. */
-export const armPenalty = (u: Unit, w: WeaponDef) => (penalLimbs(u.injuries, statQuery({ u }, 'numb_limbs').add).some((i) => i.loc === 'arm' && (!ONE_HANDED.includes(w.category) || i.side === (u.hand || 'right'))) ? -2 : 0); // rules 1.77 item 6513: Numb's ignored limb gives none
+export const armPenalty = (u: Unit, w: WeaponDef) => (penalLimbs(u.injuries, statQuery({ u }, 'numb_limbs').add).some((i) => i.loc === 'arm' && (!oneHanded(w) || i.side === (u.hand || 'right'))) ? -2 : 0); // rules 1.77 item 6513: Numb's ignored limb gives none
 
 export const alive = (u: Unit) => !u.dead && !u.downed && !u.surrendered;
 export const active = (cb: Combat) => cb.units.find((u) => u.id === (cb.window?.queue[0]?.unitId ?? cb.order[cb.turn]));
@@ -1404,12 +1404,13 @@ export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: n
 /** 'thrown' (rules 1.12): the held weapon is thrown: a ranged attack at throwing range with line of sight and cover,
  * whatever the weapon is; no rounds, Heat or Recoil. Only a technique makes one (physical/core.ts strike). */
 export type AttackMode = 'shot' | 'aimed' | 'melee' | 'burst' | 'auto' | 'thrown';
-/** A melee strike's reach in tiles before items change it: 2 for a weapon with reach_2, the lance, the Reach property
- * (rules 1.12: for a melee strike) or a reach weapon skill; else 1. The one place the rule is written (previewAttack
- * and the red area the client draws, actions.ts reachOf, both ask here). */
+/** A melee strike's reach in tiles before items change it: 2 for a weapon with the Reach property (phys.props `reach`;
+ * rules 1.12: for a melee strike) or the older `reach_2` (debt, rules 1.91 item 7913), or what its granted `reach` effect
+ * says; else 1. No id is tested. The one place the rule is written (previewAttack, the red area the client draws,
+ * actions.ts reachOf, and the perks that ask a unit's reach: Lunge, the Breaker's Lunge tile, all ask here). */
 export function meleeReachOf(att: Unit, mode: AttackMode): number {
   const w = WEAPON[att.weapon], useW = strikeWeapon(att, mode), fx: any = (w as any).grants?.effect || {};
-  return useW.properties?.includes('reach_2') || useW.id === 'lance' || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1;
+  return useW.properties?.includes('reach_2') || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1;
 }
 /** Range bands an optic adds against units: the gun's `bands` field with its mods' (rules 1.56: a red dot always; a
  * scope on an aimed shot, its `bands_modes`). */

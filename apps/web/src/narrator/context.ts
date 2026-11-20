@@ -5,7 +5,7 @@ import { PERK_GUIDANCE } from './perk-guidance';
 import { recentNarrationBlock, recentIds, lastTurnAudit } from './craft';
 import { beliefOf, devotionNow, devotionXpOf, faithView, dayOf, FAITH_MIN, FAITH_PATRON, DEVOTION_XP, NARRATOR_XP, PACT_COOLDOWN_DAYS, GATE, MIRACLE_FAITH, MIRACLE_COST_LEVELS } from '@engine';
 import { zoneHazards, zoneTriggers, carriedOf, type Approach } from '@engine';
-import { TECHNIQUE, readyTechniques, physOf, weaponTeaches } from '@engine';
+import { TECHNIQUE, readyTechniques, physOf, weaponTeaches, GRADES } from '@engine';
 import { holdersOf, briefOf, storyConds, rulingsPrompt, TAG_VOCAB, classRank, ADVANCED, advancedActive, type GameState, type Character, type Selection, memoryOf, selectMemory, recall, chapterDue, SCENES_PER_CHAPTER, npcsOf, momentsOpen, missionBrief, missionsCampaign, actOpening, epilogueJob, songOf, comboEligible, wikiLookup, wikiKinds, SIGIL, FEELING, hasEvoker, carriesEvoker, carriesEmanator, hasEmanator, mpNow, maxMp, evoChargeNow, coresCarried, manaBand, ITEM, SKILL, SKILLS, CLASS, ATTR, PERK, PERKS, TRAITS, WEAPONS, ENEMIES, eligibleClasses, mod, checkMod, maxHp, xpForLevel, mapBrief, zoneMap, positionsOf, refOf, storyObjects, OBJECT_KINDS, kindOf, campaignOf, pileEntries } from '@engine';
 import worldBible from '../../../../docs/lore/Narrators-World-Bible.md?raw';
 import sectorEarth from '../../../../docs/lore/Sector-Earth.md?raw';
@@ -194,7 +194,7 @@ MAP OBJECTS AND POINTS OF INTEREST
 - triggers[]: when enter (tiles or rect), examine (objId) or objective; then spawn (npcs[] place shapes), fight (spawn, then the fight, difficulty) or reveal (ids); text shows when it fires. Once each, without you; SINCE YOUR LAST TURN says what fired.
 
 LOOT
-- Give things with loot[] (an empty array otherwise): charId, an item id (a weapon id or an item id below), qty, and for weapons a rarity (standard, fine, masterwork, relic, celestial) and an optional in-world name. Be sparing: loot is earned (a locker opened, a reward); what the dead carry is the engine's (piles). Relic and celestial are rare events.
+- Give things with loot[] (an empty array otherwise): charId, an item id (a weapon id or an item id below), qty, and for weapons a rarity (${GRADES.join(', ')}) and an optional in-world name. Be sparing: loot is earned (a locker opened, a reward); what the dead carry is the engine's (piles). Relic and celestial are rare events.
 - Item ids: ${Object.keys(ITEM).filter((k) => !(ITEM[k] as any).variant_of).join(', ')}.
 - Plates teach magic: a sigil_plate has one Sigil word id in note (fire); a heart_plate has one Outburst lesson in note: a tone (fire, storm, frost, stone, gale, acid), a school or a module id. The player studies it for a scene to learn it. note is "" for anything else.
 - ground[] puts things on a tile (at, items[] in the loot shape plus mag:<weapon id> and rounds:<calibre>, hidden; at most 6 a turn, 12 items each): they join its pile.
@@ -481,7 +481,7 @@ export function turnSchema(g: GameState) {
     })] },
     endScene: { anyOf: [{ type: 'null' }, obj({ summary: { type: 'string' } })] },
     moves: { type: 'array', items: obj({ charId, to: { type: 'string' } }) },
-    loot: { type: 'array', items: obj({ charId, item: { type: 'string' }, qty: { type: 'integer' }, rarity: { type: 'string', enum: ['standard', 'fine', 'masterwork', 'relic', 'celestial'] }, name: { type: 'string' }, text: { type: 'string' }, note: { type: 'string' } }) },
+    loot: { type: 'array', items: obj({ charId, item: { type: 'string' }, qty: { type: 'integer' }, rarity: { type: 'string', enum: [...GRADES] }, name: { type: 'string' }, text: { type: 'string' }, note: { type: 'string' } }) },
     travel: { type: 'string', enum: ['', ...(campaignOf(g)?.zones.map((z) => z.id) || [])] },
     treat: { type: 'array', items: obj({ charId, loc: { type: 'string', enum: ['arm', 'leg', 'all'] } }) },
   });

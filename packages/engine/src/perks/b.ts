@@ -13,7 +13,7 @@ import { SKILL, WEAPON, ITEM } from '../data';
 import { say, type Combat, type Unit, dist, xy, key, refOf, keyOf as refKey, coverOf, coverTileFor, objectsOf, unitSees, eyeReach, visibility, active, alive, sideSees, moveUnit, resolveAttack, previewAttack, apForTiles, isMelee, lineOfSight, attackApCost } from '../combat';
 import { hide, reveal, seenByFoes, TIER_NOTICE, HIDE_WHY } from '../tactics';
 import { applyCond, condOn } from '../magic';
-import { type Character, ARMOUR, gearBonus, packOf, mod, checkMod, holdsShield } from '../character';
+import { type Character, bodyArmourValue, LIGHT_CAP, gearBonus, packOf, mod, checkMod, holdsShield } from '../character';
 import { blocksMove, blocksSight, coverKind, kindOf, type MapObject } from '../objects';
 import { die, type Rng } from '../rng';
 import { RuleError, zoneTags, positionsOf, npcsOf, senseLurkers } from '../game';
@@ -706,7 +706,7 @@ register({
   id: 'forlorn_hope', kind: 'trait', claims: [0, 1, 2],
   stat: (h, stat) => {
     if (stat !== 'armor' || !h.c) return 0;
-    const base = (ARMOUR[h.c.armourClass]?.value || 0) + gearBonus(h.c, 'armour_bonus'), cap = ARMOUR[1]?.value ?? 5;
+    const base = bodyArmourValue(h.c) + gearBonus(h.c, 'armour_bonus'), cap = LIGHT_CAP; // rules 1.91 item 7950: the light_cap row's value
     return base > cap ? cap - base : 0;
   },
   on: {

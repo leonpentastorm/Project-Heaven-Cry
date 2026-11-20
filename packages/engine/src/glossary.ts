@@ -5,6 +5,7 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { SKILLS, TRAITS, PERKS, WEAPONS, CLASSES, ENEMIES, ITEM, SKILL, ATTR, SIGILS, SCHOOLS, MODULES, TONES, SOUL_RULES } from './data';
 import { OBJECT_KINDS } from './objects';
+import { weaponTeaches } from './physical/data';
 import { CONDITION_ROWS } from './condtable';
 import { RANK_ATTR, RANK_LEVEL } from './character';
 import patronsJ from '../../../data/patrons.json';
@@ -35,7 +36,7 @@ function build(): WikiEntry[] {
   for (const p of PERKS as any[]) if (p.tier !== 'ultimate') add('perk:' + p.id, p.name, line(p.name + ' (' + p.tier + (p.skills?.length ? ', ' + p.skills.map((x: string) => SKILL[x]?.name || x).join(' + ') : '') + ').', who('perk:' + p.id, p.tier === 'acquired' ? 'II' : p.tier), p.text, p.deed ? 'Deed: ' + p.deed : ''));
   for (const w of WEAPONS as any[]) add('weapon:' + w.id, w.name, line(w.name + ': a ' + (w.hands || '') + ' ' + w.category + (w.ammo ? ' firing ' + w.ammo : '') + ', used with ' + (SKILL[w.skill]?.name || w.skill) + '.',
     w.grants ? 'Grants ' + w.grants.name + ': ' + w.grants.text : '',
-    w.phys ? 'Properties: ' + (w.phys.props.join(', ') || 'none') + '.' + (w.phys.teaches ? ' Lends the technique ' + (TQ.find((t: any) => t.id === w.phys.teaches)?.name || w.phys.teaches) + ' while held, and teaches it at drill mark I.' : '') : '', w.text, w.lore ? 'Lore: ' + w.lore : '', w.price_credits ? 'Price ' + w.price_credits + ' credits.' : ''));
+    w.phys ? 'Properties: ' + (w.phys.props.join(', ') || 'none') + '.' + (weaponTeaches(w.id) ? ' Lends the technique ' + (TQ.find((t: any) => t.id === weaponTeaches(w.id))?.name || weaponTeaches(w.id)) + ' while held, and teaches it at drill mark I.' : '') : '', w.text, w.lore ? 'Lore: ' + w.lore : '', w.price_credits ? 'Price ' + w.price_credits + ' credits.' : ''));
   for (const [id, it] of Object.entries(ITEM) as [string, any][]) add('item:' + id, it.name, line(it.name + ' (' + (it.category || 'item') + (it.slot ? ', ' + it.slot.replace(/_/g, ' ') : '') + ').', it.text, it.price_credits ? 'Price ' + it.price_credits + ' credits.' : ''));
   for (const c of CONDITION_ROWS) add('condition:' + c.id, c.name, line(c.name + ' (' + c.kind + ').', c.text));
   // Class Roster Revision 3: one base class per attribute; advanced classes are shelved (being rebuilt).

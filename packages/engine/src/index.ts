@@ -83,3 +83,5 @@ export { actionsFor, standingModsFor, kitSeenFor, previewDescriptor, sendDescrip
   PR, prayId, parsePrayId, oddsPct, prayOdds, PK, perkId, parsePerkId, perkCost, perkState, perkText,
   type ActionDescriptor, type TechParts, type DescGroup, type PickStep, type PickKind, type PickOption, type Picks, type DescCost, type DescriptorPreview, type PreviewLine, type GridMarks, type ActionSystem, type DescCtx } from './descriptors';
 export { tilesN } from './log'; // rules 1.66 item 5213: '1 tile', '3 tiles'
+export * from './itemtags';
+export { expandVariants, type VariantLine } from './variants';

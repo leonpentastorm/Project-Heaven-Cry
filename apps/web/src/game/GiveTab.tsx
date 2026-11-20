@@ -9,7 +9,8 @@ import { act, getState } from './store';
 import { giveView, giveProblem, type GiveRowV, type GiveViewV } from '@engine';
 import { AmountField } from './AmountField';
 import { registerMount } from '../dc/runtime';
-import { gearIconUri } from './gearIcons';
+import { ItemPicture } from './ItemCard';
+import { cardOf } from './itemCardView';
 import { FRAME_INK as I } from './FullScreenFrame';
 import ASSETS from './assets.json';
 
@@ -44,12 +45,12 @@ export function GiveTab({ compact = false }: { compact?: boolean } = {}) {
   const word = row.kind === 'credits' ? 'Give ' + amount.toLocaleString('en') + (amount === 1 ? ' credit' : ' credits') + ' to ' + target.name
     : row.kind === 'held' ? 'Put it in the pack' : row.kind === 'never' ? 'Yours to keep' : 'Give ' + (most > 1 ? amount + ' × ' + row.label.replace(/^\d+ × /, '') : row.label) + ' to ' + target.name; // one count: the amount (a stack's line says its own, "2 × …")
   const line = (r: GiveRowV) => {
-    const w = r.why[who], on = r.key === row.key, icon = r.kind === 'pack' || r.kind === 'count' || r.kind === 'held' ? gearIconUri(r.id, undefined, { large: true }) : '';
+    const w = r.why[who], on = r.key === row.key, item = r.kind === 'pack' || r.kind === 'count' || r.kind === 'held';
     return (
       <button key={r.key} type="button" data-phc-give-row={r.key} data-phc-give-why={w ? '' : undefined} aria-pressed={on} onClick={() => { setSel(r.key); setN(r.kind === 'credits' ? Math.min(100, Math.max(1, r.qty)) : 1); }}
         style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderRadius: 12, textAlign: 'left', fontFamily: 'inherit', cursor: 'pointer', color: w && r.kind !== 'held' ? I.muted : I.text,
           background: on ? I.raised : 'rgba(16,21,31,0.8)', border: '1px solid ' + (on ? I.white : I.line), opacity: w && r.kind === 'never' ? 0.7 : 1 }}>
-        <span style={{ width: 40, height: 40, flexShrink: 0, display: 'grid', placeItems: 'center' }}>{icon ? <img data-zoom={r.label} src={icon} alt="" width={36} height={36} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 18, color: I.muted }}>{r.kind === 'credits' ? '¤' : '—'}</span>}</span>
+        {item ? <ItemPicture card={cardOf(r.id, r.rarity)} size={40} zoom="" name={r.label} round={8} /> /* Items 2.0 lane A3: the one item card's picture */ : <span style={{ width: 40, height: 40, flexShrink: 0, display: 'grid', placeItems: 'center' }}><span style={{ fontSize: 18, color: I.muted }}>{r.kind === 'credits' ? '¤' : '—'}</span></span>}
         <span style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 2 }}>
           <span style={{ fontSize: 'var(--fs-body)', fontWeight: 600 }}>{r.label}{r.kind === 'held' ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted, fontWeight: 700, letterSpacing: '0.1em' }}> · IN HAND OR WORN</span> : null}</span>
           {r.kind === 'never' || (w && r.kind !== 'held') ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>{w}</span> : r.kind === 'held' ? <span style={{ fontSize: 'var(--fs-sub)', color: I.muted }}>Put it in your pack first.</span> : null}

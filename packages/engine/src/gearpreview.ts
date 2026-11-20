@@ -8,8 +8,11 @@
 // the game's dice, and is thrown away.
 import { tilesN } from './log';
 import { fmtNumber } from './datatext';
-import { WEAPON, ITEM, RULES, SKILL, ATTRS } from './data';
-import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM, isShieldId } from './character';
+import './datatext'; // fills the texts' {=placeholders} before any data is read
+import familiesJ from '../../../data/families.json';
+import { WEAPON, ITEM, RULES, SKILL, ATTRS, ARMOUR_CLASSES } from './data';
+import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM, isShieldId, gradeWord, setGrade, ARMOUR_SLOT } from './character';
+import { itemTags, itemFamilyOf, FAMILY, tagOf, itemsWith, gradeFor } from './itemtags';
 import { type Combat, type Unit, type AttackMode, unitFromCharacter, unitFromEnemy, previewAttack, attackApCost, volleyBaseAp, effectiveRange, layoutMap, isMelee, weaponVia, rollWithPick, rollWithWords, type RollWithOffer } from './combat';
 import { priced } from './effects/cost';
 import { PROFILES, pairOf, statTerm } from './effects/output';
@@ -24,7 +27,9 @@ export interface GearInstance { id: string; rarity?: Rarity; mods?: string[] }
 /** One number of a preview: `num` for comparing (null: a word, not a number); `better`: which way is better. */
 export interface PreviewLine { key: string; label: string; value: string; num: number | null; better?: 'higher' | 'lower' }
 /** What a card shows for an instance in this character's hands (all from the engine). */
-export interface GearPreview { id: string; name: string; kind: 'weapon' | 'thrown' | 'focus' | 'armour' | 'mod' | 'ammo' | 'item'; rarity: Rarity; category: string; lines: PreviewLine[]; traits: string[]; text: string }
+export interface GearPreview { id: string; name: string; kind: 'weapon' | 'thrown' | 'focus' | 'armour' | 'mod' | 'ammo' | 'item'; rarity: Rarity; category: string; lines: PreviewLine[]; traits: string[]; text: string;
+  /** Items 2.0 lane A3: the item card's view-model (what it is, its picture chain, grade, family, tags): `itemCard` */
+  card: ItemCardV }
 /** The compare panel: the instance against what the character would hold instead (`held`; null when nothing compares). */
 export interface GearCompare { held: GearPreview | null; next: GearPreview; rows: { key: string; label: string; held: string; next: string; diff: 'better' | 'worse' | 'same' | null; word: string }[]; slot: string | null }
 
@@ -114,7 +119,7 @@ const shown = (v: unknown): string => (typeof v === 'number' && Number.isFinite(
  * become; for ammunition and items their numbers in data. */
 export function gearPreview(c: Character, inst: GearInstance): GearPreview {
   const id = inst.id, rarity: Rarity = inst.rarity || 'standard', w: any = WEAPON[id], it: any = ITEM[id];
-  const base = { id, name: nameOf(id), rarity, text: String(w?.text || it?.text || '') };
+  const card = itemCard(inst), base = { id, name: card.name, rarity, text: String(w?.text || it?.text || ''), card };
   if (w && w.category === 'thrown') {
     return { ...base, kind: 'thrown', category: 'Thrown', traits: [...(w.properties || [])], lines: [
       ...(Number(w.damage) ? [{ key: 'damage', label: 'Damage', value: shown(w.damage), num: Number(w.damage), better: 'higher' as const }] : []),
@@ -169,21 +174,28 @@ export function gearPreview(c: Character, inst: GearInstance): GearPreview {
       ...variantLines(it),
     ] };
   }
-  if (it && it.category === 'armour') { // (rules 1.57: a shield is a weapon row, above)
-    const x = clone(c), slot = String(it.slot || '');
-    if (slot === 'off_hand') x.offHand = { id } as any; else if (slot) x.worn = { ...(x.worn || {}), [slot]: id };
+  const bodyCls = /^armour:(\d+)$/.exec(id), body = bodyCls ? ARMOUR_CLASSES[Number(bodyCls[1])] as any : null;
+  if ((it && it.category === 'armour') || body) { // (rules 1.57: a shield is a weapon row, above)
+    // Items 2.0 lane A3 (design section 6, the worn slots): a worn piece is previewed AT ITS GRADE (rules 1.91 item 7953:
+    // the instance's grade at its slot in wornState, which the armour value reads through `arm`), and body armour
+    // (`armour:<n>`, a class row) is a worn piece too: its class at the body slot, its grade at wornState.torso_outer
+    const x = clone(c), slot = body ? ARMOUR_SLOT : String(it.slot || ''), graded = rarity !== 'standard' ? { [slot]: { rarity } } : {};
+    const wsOf = (y: Character, st: Record<string, any>) => { const ws: any = { ...(y.wornState || {}) }; delete ws[slot]; Object.assign(ws, st); if (Object.keys(ws).length) y.wornState = ws; else delete y.wornState; };
+    if (body) { x.armourClass = Number(bodyCls![1]); wsOf(x, graded); }
+    else if (slot === 'off_hand') x.offHand = { id } as any; else if (slot) { x.worn = { ...(x.worn || {}), [slot]: id }; wsOf(x, graded); }
     const rng = rngFor('gear-preview', c.id + '#' + id), u = unitFromCharacter(x, '0,0', rng);
     // 0.33 (outside playtest of 0.32.0: a Padded undershirt read "Armour 0 → 1", the character's total): the piece's own
     // part, what it adds over that slot empty (the same unit build, the slot cleared), signed; a compare reads the same
-    const x0 = clone(c); if (slot === 'off_hand') x0.offHand = null as any; else if (slot) { const wn: any = { ...(x0.worn || {}) }; delete wn[slot]; x0.worn = wn; }
+    const x0 = clone(c); if (body) { x0.armourClass = 0; wsOf(x0, {}); } else if (slot === 'off_hand') x0.offHand = null as any; else if (slot) { const wn: any = { ...(x0.worn || {}) }; delete wn[slot]; x0.worn = wn; wsOf(x0, {}); }
     const u0 = unitFromCharacter(x0, '0,0', rngFor('gear-preview', c.id + '#' + id));
+    const kgOf = body ? Number(body.weight_kg ?? 0) : (it.weight_kg ?? 0);
     const own = (a: number, b: number) => Math.round(((a || 0) - (b || 0)) * 10) / 10, sgn = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '') + shown(Math.abs(n));
     const dDef = own(u.def, u0.def), dArm = own(u.armour, u0.armour), dInj = own(u.injResist || 0, u0.injResist || 0);
-    return { ...base, kind: 'armour', category: cap(String(it.category)) + (slot ? ' · ' + slot.replace(/_/g, ' ') : ''), traits: [], lines: [
+    return { ...base, kind: 'armour', category: body ? 'Body armour' : cap(String(it.category)) + (slot ? ' · ' + slot.replace(/_/g, ' ') : ''), traits: [], lines: [
       { key: 'def', label: 'Defense', value: sgn(dDef), num: dDef, better: 'higher' },
       { key: 'armour', label: 'Armour', value: sgn(dArm), num: dArm, better: 'higher' },
       { key: 'injury', label: 'Injury resistance', value: sgn(dInj) + '%', num: dInj, better: 'higher' },
-      { key: 'kg', label: 'Weight', value: (it.weight_kg ?? 0) + ' kg', num: it.weight_kg ?? 0, better: 'lower' },
+      { key: 'kg', label: 'Weight', value: kgOf + ' kg', num: kgOf, better: 'lower' },
       ...(maxDurOf(id, rarity) ? [{ key: 'dur', label: 'Durability (full)', value: shown(maxDurOf(id, rarity)), num: maxDurOf(id, rarity), better: 'higher' as const }] : []), // rules 1.50: a shield wears
     ] };
   }
@@ -239,7 +251,9 @@ export function heldAgainst(c: Character, inst: GearInstance): { inst: GearInsta
   }
   if (it?.category === 'quiver') { const q = quiversOf(c)[0]; return q ? { inst: { id: q.id, rarity: q.rarity, mods: q.mods }, slot: 'Worn quiver' } : null; } // rules 1.53
   if (it?.slot === 'off_hand') return c.offHand && !WEAPON[c.offHand.id] ? { inst: { id: c.offHand.id }, slot: 'Off hand' } : null;
-  if (it?.slot && c.worn?.[it.slot]) return { inst: { id: c.worn[it.slot] }, slot: cap(String(it.slot).replace(/_/g, ' ')) };
+  // Items 2.0 lane A3: a worn piece against the piece worn there AT ITS GRADE (wornState), body armour against the class worn
+  if (it?.slot && c.worn?.[it.slot]) return { inst: { id: c.worn[it.slot], rarity: c.wornState?.[it.slot]?.rarity }, slot: cap(String(it.slot).replace(/_/g, ' ')) };
+  if (/^armour:\d+$/.test(inst.id) && c.armourClass) return { inst: { id: 'armour:' + c.armourClass, rarity: c.wornState?.[ARMOUR_SLOT]?.rarity }, slot: 'Body armour' };
   return null;
 }
 
@@ -255,7 +269,73 @@ export function compareGear(c: Character, inst: GearInstance): GearCompare {
   });
   return { held, next, rows, slot: h?.slot || null };
 }
-/** A rarity's word ("Fine"), for a card. */
-export const rarityWord = (r: Rarity | null | undefined): string => cap(r || 'standard');
+/** A rarity's word ("Fine"), for a card: the grade row's own word (rules 1.91 item 7905, `rules.json rarity.<r>.name`). */
+export const rarityWord = (r: Rarity | null | undefined): string => gradeWord(r || 'standard');
 /** How many ornament marks a rarity carries on a card (`rules.json rarity.<r>.marks`). */
 export const rarityMarks = (r: Rarity | null | undefined): number => RARITY[r || 'standard']?.marks || 0;
+
+// ---------- THE ITEM CARD (Items 2.0 lane A3; design section 6) ----------
+/** What one item card says about an instance, the same on every screen that draws an item (the shop, the camp, the
+ * Forge, the rewards, the pack, the sheet's GEAR and ARMS tabs, the compare panel): what it is, where its picture comes
+ * from, its grade, its family and form, its maker line, its tags. Its numbers are `gearPreview`'s lines (a card for a
+ * character's hands carries them as `GearPreview.card`'s sibling `lines`); nothing here is a rule or a number of its own. */
+export interface ItemCardV {
+  id: string; name: string;
+  /** the picture chain (design section 6), the ids to draw from in order, the first with a picture wins: the item's own;
+   *  its variant's base; its family's rows (the Standard form first). The client ends the chain with the general
+   *  placeholder (markIcon), never an empty box. */
+  pictures: string[];
+  /** the `kind` tag (the row's raw category; body armour `armour`), or null for an id that is no row */
+  kind: string | null;
+  /** the instance's grade (a unique's fixed grade), its word and its marks (the rarity row's) */
+  grade: Rarity; gradeWord: string; marks: number;
+  /** whether the item holds a grade at all (the grade step's own test, character.ts setGrade): a card shows the grade word
+   *  and frame only then (a grenade, a stim, a magazine have none) */
+  graded: boolean;
+  /** the family (data/families.json) and the form, with their words; null when the row is in no family */
+  family: string | null; familyName: string | null; form: string | null; formWord: string | null;
+  /** "Cavalry blades, hybrid": the family's name and the form's word, or null */
+  familyLine: string | null;
+  /** the maker line (the `line` tag) and its words */
+  line: string | null; lineWord: string | null;
+  /** every tag of the instance (itemtags.ts itemTags) */
+  tags: string[];
+  /** the row's second skill (rules 1.91; R5: an alpha skill or none); `built` is false while no effect reads it (design
+   *  item 10: the card names it only when its effect is built) */
+  secondSkill: { id: string; name: string; built: boolean } | null;
+  unique: boolean;
+  /** the Weapon Art slot (rules 1.91 item 7918): null in this pass, and the card draws nothing for it */
+  weaponArt: null;
+}
+const FORM_WORD: Record<string, string> = Object.fromEntries(Object.entries(((familiesJ as any).form_words || {}) as Record<string, unknown>).filter(([k, v]) => k !== 'about' && typeof v === 'string')) as Record<string, string>;
+const words = (s: string) => cap(String(s).replace(/_/g, ' '));
+/** The row behind an id (a weapon, an item, or body armour's class row `armour:<n>`). */
+const rowFor = (id: string): any => (WEAPON[id] as any) || (ITEM[id] as any) || (/^armour:(\d+)$/.test(id) ? ARMOUR_CLASSES[Number(id.slice(7))] : null) || null;
+/** Whether an id holds a grade: the grade step's own refusal (setGrade) asked on a scratch holder, so the card never keeps
+ *  a second copy of what can be graded. */
+function holdsGrade(id: string): boolean {
+  const x = { weapon: id, weaponState: {}, offHand: null, pack: [], skills: {}, worn: {} } as unknown as Character;
+  return setGrade(x, 'main', gradeFor(id)) == null;
+}
+const CARD = new Map<string, ItemCardV>();
+/** The item card's view-model for an instance (design section 6). Cheap (no scratch fight): every list of items may ask it. */
+export function itemCard(inst: { id: string; rarity?: Rarity | null }): ItemCardV {
+  const id = inst.id, grade = gradeFor(id, inst.rarity), key = id + '|' + grade, hit = CARD.get(key); if (hit) return hit;
+  const r = rowFor(id), tags = itemTags(id, { rarity: grade });
+  const fam = r ? itemFamilyOf(id) : null, fd = fam ? FAMILY[fam] : null, form = tagOf(id, 'form'), line = tagOf(id, 'line');
+  const famRows = fd ? itemsWith({ all: ['family:' + fd.id] }).filter((x) => !(rowFor(x) as any)?.variant_of) : [];
+  const pictures = [...new Set([id, ...baseChain(id), ...famRows.filter((x) => tagOf(x, 'form') === 'standard'), ...famRows])];
+  const sk = r?.second_skill ? String(r.second_skill) : null;
+  const card: ItemCardV = {
+    id, name: /^armour:\d+$/.test(id) && r ? (r.name || '') + ' armour' : nameOf(id), pictures, kind: tagOf(id, 'kind'),
+    grade, gradeWord: gradeWord(grade), marks: rarityMarks(grade), graded: !!r && holdsGrade(id),
+    family: fd ? fd.id : null, familyName: fd ? fd.name : null, form, formWord: form ? FORM_WORD[form] || words(form) : null,
+    familyLine: fd ? fd.name + (form ? ', ' + (FORM_WORD[form] || words(form)) : '') : null,
+    line, lineWord: line ? words(line) : null, tags,
+    secondSkill: sk ? { id: sk, name: SKILL[sk]?.name || words(sk), built: false } : null,
+    unique: tags.includes('unique:true'), weaponArt: null,
+  };
+  CARD.set(key, card); return card;
+}
+/** A variant's bases, nearest first. */
+function baseChain(id: string): string[] { const out: string[] = []; let b = (rowFor(id) as any)?.variant_of; while (b && !out.includes(b)) { out.push(b); b = (rowFor(b) as any)?.variant_of; } return out; }

@@ -87,6 +87,7 @@
       "id": "evoker",
       "name": "Evoker",
       "category": "focus",
+      "weapon_art": null,
       "pack_kind": "focus",
       "weight_kg": 1.2,
       "adjudication": "engine",
@@ -147,6 +148,7 @@
       "id": "emanator",
       "name": "Emanator",
       "category": "focus",
+      "weapon_art": null,
       "pack_kind": "focus",
       "weight_kg": 0.4,
       "adjudication": "engine",
@@ -164,6 +166,7 @@
       "id": "attuner",
       "name": "Attuner",
       "category": "focus",
+      "weapon_art": null,
       "slot": "off_hand",
       "hands": "1H",
       "focus": {
@@ -181,6 +184,7 @@
       "id": "visualizer",
       "name": "Visualizer",
       "category": "focus",
+      "weapon_art": null,
       "weight_kg": 1.0,
       "adjudication": "engine",
       "provisional": true,
@@ -257,6 +261,7 @@
       "id": "quiver",
       "name": "Quiver",
       "category": "quiver",
+      "weapon_art": null,
       "weight_kg": 0.6,
       "price_credits": 120,
       "arrows": {
@@ -701,6 +706,11 @@
       "id": "field_helmet",
       "name": "Field helmet",
       "category": "armour",
+      "family": "helmets",
+      "form": "light",
+      "line": "frontier",
+      "graded": false,
+      "weapon_art": null,
       "weight_kg": 1.2,
       "price_credits": 120,
       "adjudication": "engine",
@@ -718,6 +728,10 @@
       "id": "ballistic_helmet",
       "name": "Ballistic helmet",
       "category": "armour",
+      "family": "helmets",
+      "form": "standard",
+      "line": "frontier",
+      "weapon_art": null,
       "weight_kg": 2,
       "price_credits": 350,
       "adjudication": "engine",
@@ -735,6 +749,11 @@
       "id": "night_goggles",
       "name": "Night-sight goggles",
       "category": "armour",
+      "family": "optics",
+      "form": "standard",
+      "line": "frontier",
+      "graded": false,
+      "weapon_art": null,
       "weight_kg": 0.6,
       "price_credits": 500,
       "adjudication": "engine",
@@ -751,6 +770,11 @@
       "id": "gas_mask",
       "name": "Gas mask",
       "category": "armour",
+      "family": "respirators",
+      "form": "standard",
+      "line": "frontier",
+      "graded": false,
+      "weapon_art": null,
       "weight_kg": 0.8,
       "price_credits": 150,
       "adjudication": "engine",
@@ -768,6 +792,10 @@
       "id": "padded_undershirt",
       "name": "Padded undershirt",
       "category": "armour",
+      "family": "undershirts",
+      "form": "light",
+      "line": "frontier",
+      "weapon_art": null,
       "weight_kg": 1,
       "price_credits": 80,
       "adjudication": "engine",
@@ -785,6 +813,10 @@
       "id": "trauma_plate",
       "name": "Trauma plate insert",
       "category": "armour",
+      "family": "undershirts",
+      "form": "heavy",
+      "line": "frontier",
+      "weapon_art": null,
       "weight_kg": 2,
       "price_credits": 400,
       "adjudication": "engine",
@@ -802,6 +834,11 @@
       "id": "utility_belt",
       "name": "Utility belt",
       "category": "armour",
+      "family": "belts",
+      "form": "light",
+      "line": "frontier",
+      "graded": false,
+      "weapon_art": null,
       "weight_kg": 0.6,
       "price_credits": 90,
       "adjudication": "engine",
@@ -819,6 +856,10 @@
       "id": "armoured_belt",
       "name": "Armoured belt",
       "category": "armour",
+      "family": "belts",
+      "form": "heavy",
+      "line": "frontier",
+      "weapon_art": null,
       "weight_kg": 1.5,
       "price_credits": 200,
       "adjudication": "engine",
@@ -836,6 +877,10 @@
       "id": "armoured_greaves",
       "name": "Armoured greaves",
       "category": "armour",
+      "family": "legwear",
+      "form": "heavy",
+      "line": "frontier",
+      "weapon_art": null,
       "weight_kg": 3,
       "price_credits": 300,
       "adjudication": "engine",
@@ -857,6 +902,11 @@
       "id": "runner_trousers",
       "name": "Runner's trousers",
       "category": "armour",
+      "family": "legwear",
+      "form": "light",
+      "line": "frontier",
+      "graded": false,
+      "weapon_art": null,
       "weight_kg": 0.8,
       "price_credits": 180,
       "adjudication": "engine",
@@ -874,6 +924,11 @@
       "id": "work_gloves",
       "name": "Work gloves",
       "category": "armour",
+      "family": "worn_gloves",
+      "form": "light",
+      "line": "frontier",
+      "graded": false,
+      "weapon_art": null,
       "weight_kg": 0.3,
       "price_credits": 40,
       "adjudication": "engine",
@@ -891,6 +946,10 @@
       "id": "combat_gloves",
       "name": "Combat gloves",
       "category": "armour",
+      "family": "worn_gloves",
+      "form": "heavy",
+      "line": "frontier",
+      "weapon_art": null,
       "weight_kg": 0.4,
       "price_credits": 220,
       "adjudication": "engine",
@@ -908,6 +967,11 @@
       "id": "field_boots",
       "name": "Field boots",
       "category": "armour",
+      "family": "boots",
+      "form": "light",
+      "line": "frontier",
+      "graded": false,
+      "weapon_art": null,
       "weight_kg": 1.2,
       "price_credits": 120,
       "adjudication": "engine",
@@ -924,6 +988,10 @@
       "id": "heavy_boots",
       "name": "Heavy boots",
       "category": "armour",
+      "family": "boots",
+      "form": "heavy",
+      "line": "frontier",
+      "weapon_art": null,
       "weight_kg": 2,
       "price_credits": 200,
       "adjudication": "engine",
@@ -957,6 +1025,8 @@
       "id": "prescription_glasses",
       "name": "Prescription glasses",
       "category": "armour",
+      "graded": false,
+      "weapon_art": null,
       "slot": "head_accessory",
       "weight_kg": 0.05,
       "stock": false, "sell": false,
@@ -970,6 +1040,8 @@
       "id": "smiling_mask",
       "name": "Smiling mask",
       "category": "armour",
+      "graded": false,
+      "weapon_art": null,
       "slot": "head",
       "weight_kg": 0.3,
       "stock": false, "sell": false,
@@ -1650,6 +1722,135 @@
             "mode": ["follow"]
           },
           "value": 0.4
+        }
+      ]
+    },
+    {
+      "id": "mod_follow_strike",
+      "name": "Strike follow",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Follow strike: ×{=effects.0.value} of the shield's blow. No Guard on a hit.",
+      "effects": [
+        {
+          "op": "damage_mult",
+          "when": "dealing",
+          "if": {
+            "with_this": true,
+            "mode": ["follow"]
+          },
+          "value": 0.6
+        }
+      ]
+    },
+    {
+      "id": "mod_ward_light",
+      "name": "Ward (light)",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Ward: each ranged or elemental hit on you while the shield is in your hand is {=effects.0.value|abs} less (none from a melee blow).",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "when": "taking",
+          "if": {
+            "with_this": true,
+            "damage": ["ranged", "elemental"],
+            "melee": false,
+            "by_hit": true
+          },
+          "value": -3
+        }
+      ]
+    },
+    {
+      "id": "mod_ward_standard",
+      "name": "Ward (standard)",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Ward: each ranged or elemental hit on you while the shield is in your hand is {=effects.0.value|abs} less (none from a melee blow).",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "when": "taking",
+          "if": {
+            "with_this": true,
+            "damage": ["ranged", "elemental"],
+            "melee": false,
+            "by_hit": true
+          },
+          "value": -5
+        }
+      ]
+    },
+    {
+      "id": "mod_ward_heavy",
+      "name": "Ward (heavy)",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Ward: each ranged or elemental hit on you while the shield is in your hand is {=effects.0.value|abs} less (none from a melee blow).",
+      "effects": [
+        {
+          "op": "damage_mod",
+          "when": "taking",
+          "if": {
+            "with_this": true,
+            "damage": ["ranged", "elemental"],
+            "melee": false,
+            "by_hit": true
+          },
+          "value": -7
+        }
+      ]
+    },
+    {
+      "id": "mod_line_arsenal",
+      "name": "Arsenal action",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "Central Command Arsenal: reloading this gun costs {=effects.0.value|abs} AP less.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": ["reload"],
+            "with_this": true
+          },
+          "value": -1
+        }
+      ]
+    },
+    {
+      "id": "mod_siege_reload",
+      "name": "Siege loader",
+      "category": "mod",
+      "weight_kg": 0,
+      "adjudication": "engine",
+      "provisional": true,
+      "text": "With Raw Power {=effects.0.if.self_skill.raw_power} or more, reloading this tube costs {=effects.0.value|abs} AP less.",
+      "effects": [
+        {
+          "op": "cost_mod",
+          "when": "cost",
+          "if": {
+            "action": ["reload"],
+            "with_this": true,
+            "self_skill": {
+              "raw_power": 5
+            }
+          },
+          "value": -1
         }
       ]
     },

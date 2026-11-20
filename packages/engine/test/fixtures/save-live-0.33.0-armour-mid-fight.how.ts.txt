@@ -1,0 +1,26 @@
+// Writes test/fixtures/save-live-0.33.0-armour-mid-fight.json with the engine at 547c4f92c (origin/main, the LIVE 0.33.0
+// build, 20 Nov 2026): a story room of two, c1 with a Fine sabre in hand, a Fine combat knife and a variant (the long
+// belly service rifle) in the pack, a ballistic helmet and a trauma plate worn, Heavy body armour (class 3); c2 with a
+// padded undershirt and armoured greaves worn and Medium body armour; then a fight against two Soldiers, saved in its
+// first round. The saved shape before Items 2.0 armour: worn pieces are ids only (no wornState). Run once (as a vitest
+// file in that engine's test/ folder, OUT=<path>); never regenerate.
+import { it } from 'vitest';
+import { writeFileSync } from 'node:fs';
+import { apply, packOf, ITEM, WEAPON, setGrade } from '../src';
+import { lootToPack } from '../src/containers';
+import { storyWith } from './helpers/perkfight';
+it('writes the fixture', () => {
+  const s = storyWith([{ weapon: 'sabre' }, { kit: 'medic' }], 'OLD-ARMOUR');
+  let g: any = JSON.parse(JSON.stringify(s.g));
+  const [a, b] = Object.keys(g.characters), c1 = g.characters[a], c2 = g.characters[b];
+  setGrade(c1, 'main', 'fine');
+  c1.pack = [...packOf(c1), ...lootToPack({ item: 'combat_knife', rarity: 'fine' }), ...lootToPack({ item: 'hellraiser_service_rifle.long_belly' })];
+  c1.armourClass = 3;
+  c2.armourClass = 2;
+  const wear = (who: string, id: string) => { const c = g.characters[who]; c.pack = [...packOf(c), { id, item: id, name: (ITEM as any)[id].name, qty: 1, kind: 'tool' }]; g = apply(g, { type: 'gear/equip', charId: who, idx: packOf(c).length - 1, to: 'worn' } as any, c.owner); };
+  wear(a, 'ballistic_helmet'); wear(a, 'trauma_plate'); wear(b, 'padded_undershirt'); wear(b, 'armoured_greaves');
+  void WEAPON;
+  const foe = (name: string) => ({ name, tier: 'soldier', weapon: 'hellraiser_service_rifle', no_surrender: true });
+  g = apply(g, { type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'Old armour', map: 'yard16', difficulty: 'standard', enemies: [foe('Near'), foe('Far')] } } } as any, 'host');
+  writeFileSync(process.env.OUT!, JSON.stringify(g));
+});

@@ -53,7 +53,8 @@ describe('the off hand asks what the main hand asks', () => {
 
 describe('heavy armour asks Pain Threshold', () => {
   it('Class 4 asks 3 and Class 5 asks 5 (provisional, in the data); lighter armour asks nothing', () => {
-    expect(PHYS_RULES.gear_gates.heavy_armour).toEqual({ skill: 'pain_threshold', classes: { 4: 3, 5: 5 } });
+    expect(PHYS_RULES.gear_gates.heavy_armour).toEqual({ skill: 'pain_threshold', classes: { 4: 3, 5: 5, 6: 2 } }); // rules 1.91 item 7951: the breacher plate (class 6) asks 2
+    expect(armourGateWhy({ skills: { pain_threshold: 1 } }, 6)).toBe('Class 6 armour needs Pain Threshold 2.');
     for (const cls of [0, 1, 2, 3]) expect(armourGateWhy({ skills: {} }, cls)).toBeNull();
     expect(armourGateWhy({ skills: { pain_threshold: 2, durability: 9 } }, 4)).toBe('Class 4 armour needs Pain Threshold 3.');
     expect(armourGateWhy({ skills: { pain_threshold: 3 } }, 4)).toBeNull();

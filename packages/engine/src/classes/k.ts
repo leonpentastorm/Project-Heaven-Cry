@@ -20,7 +20,7 @@ import {
   attackEvent,
 } from '../combat';
 import { WEAPON, SIGIL, SCHOOL, MODULE, SOUL_REV, SOUL_RULES } from '../data';
-import { mod, devotionXpOf, moduleSlots, packOf, packKindOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns } from '../character';
+import { mod, devotionXpOf, moduleSlots, packOf, packKindOf, maxHp, migrateDesign, checkOutburstDesign, readyDesigns, armouredClass, ARMOURED_FROM } from '../character';
 import {
   applyCond, condOn, endCond, harm, heal, shiftMana, drawGlyph, grammarError, findPattern, previewEvoke, planEvoke, evoke as evokeSpell,
   evokeCharge, designCost, designAp, designRange, previewOutburst, beginOutburst, releaseOutburst, stageMult, addStrain, manaBand, manaOf,
@@ -839,8 +839,8 @@ const owner = (cb: Combat, z: Zone) => unitById(cb, z.by);
 const earthed = (o: Unit, t: Unit) => t === o && has(o, 'grand_sigilist.earthed');
 /** Grand forms over the tile, of this owner. */
 const formsAt = (cb: Combat, o: Unit, k: string) => grandZones(cb, o).filter((z) => inZ(z, k));
-const MEDIUM_ARMOUR = 10;
-const armoured = (t: Unit, g: any) => { const c = t.charId ? g?.characters?.[t.charId] : null; return c ? (c.armourClass || 0) >= 2 : t.armour >= MEDIUM_ARMOUR; };
+// rules 1.91 item 7950: armoured is the class row's field; a unit with no sheet, at least the smallest armoured value
+const armoured = (t: Unit, g: any) => { const c = t.charId ? g?.characters?.[t.charId] : null; return c ? armouredClass(c.armourClass) : t.armour >= ARMOURED_FROM; };
 function staffOf(h: Holder) { const st = stateOf(h); if (st.staff && h.cb && !grandZones(h.cb, h.u!).some((z) => z.id === st.staff.zone)) { say(h.cb, 'The Grand form fades; ' + h.u!.name + ' takes the staff back.'); clearGrand(h); } return st.staff || null; }
 function clearGrand(h: Holder) {
   const st = stateOf(h), cb = h.cb!; if (!st.staff) return;

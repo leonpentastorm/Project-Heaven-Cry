@@ -9,6 +9,8 @@ import wpJ from '../../../data/world_play.json';
 import ltJ from '../../../data/loot_tables.json';
 import { WEAPON, ITEM, CALIBRE_NAME, RULES, COUNTED } from './data';
 import { type PackItem, type Character, magsOf, roundsOf, plotItem, maxDurOf, packKindOf, legacySpecialId } from './character';
+import { isGrade } from './character';
+import { gradeFor } from './itemtags';
 import { type MapObject, type CacheItem, makeObject } from './objects';
 
 const WP: any = wpJ;
@@ -188,7 +190,8 @@ export function lootToPack(l: { item?: string; qty?: number; rarity?: string; na
   if (!l || typeof l !== 'object') return [];
   const id = String(l.item || '').trim(), label = String(l.name || '').trim().slice(0, 60), q = Number(l.qty);
   const n = Math.max(1, Math.min(LOOT_QTY_MAX, Math.round(Math.abs(q) || 1)));
-  const rarity = ['standard', 'fine', 'masterwork', 'relic', 'celestial'].includes(l.rarity || '') ? (l.rarity as any) : 'standard';
+  // rules 1.91 items 7905, 7917: a grade of the one ladder; a unique's fixed grade whatever is asked
+  const rarity = gradeFor(String(l.item || '').trim(), isGrade(l.rarity) ? l.rarity : null);
   const lg = legacySpecialId(id); if (lg) return lootToPack({ ...l, item: lg }); // rules 1.56 (L2): a bare special round is rounds of the reference calibre
   const m = /^mag:(.+)$/i.exec(id), r = /^rounds:([^:]+)(?::([^:]+))?$/i.exec(id), rt = r?.[2] && AMMO_TYPE_IDS.has(r[2]) && r[2] !== 'standard' ? r[2] : null;
   if (r?.[2] && !rt) return [];

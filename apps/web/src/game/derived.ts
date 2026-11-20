@@ -1,7 +1,7 @@
 // The character sheet's derived lines (the story screen's Status tab, creation's Lock in step): every number is read
 // from the engine's own function, and every line names the attribute and skill behind it by the name the engine's data
 // gives (so a renamed or re-homed skill can't leave a stale line here).
-import { tilesN } from '@engine';
+import { tilesN, unitFromCharacter, rngFor } from '@engine';
 import {
   SKILL, ATTRS, newCharacter, maxHp, hpPerLevel, maxMp, defense, initiativeBonus, movement, visionOf, carryLimit, saveBonus, SAVE_SKILL_OF,
   healingMult, healReceivedMult, shieldReceivedMult, critMult, critTakenPct, ambushTakenPct, sigilRangeBonus, sigilCoreSaving, soulRangeBonus, readyDesigns,
@@ -24,6 +24,9 @@ export function derivedLines(c: Character): DerivedLine[] {
     { key: 'hp_level', k: 'HP per level', v: '+' + hpPerLevel(c), from: sk('pain_threshold') },
     { key: 'mp', k: 'Max MP', v: String(maxMp(c)), from: at('determination') + ' and ' + at('insight') }, // rules 1.24 (it was Virtue)
     { key: 'defense', k: 'Defense', v: String(defense(c)), from: sk('athletics') },
+    // Items 2.0 lane A3 (design section 5, a screen fault): the Armour the fight uses, as the fight builds it (the body
+    // armour and the worn pieces at their grades, scaled by level: combat.ts unitFromCharacter, the one unit build)
+    { key: 'armour', k: 'Armour', v: String(unitFromCharacter(c, '0,0', rngFor('sheet-armour', c.id)).armour), from: 'body armour and worn pieces' },
     { key: 'init', k: 'Initiative', v: signed(initiativeBonus(c)), from: and(at('agility'), sk('reaction_speed')) },
     { key: 'move', k: 'Movement', v: tilesN(movement(c)) + ' per AP', from: at('agility') },
     { key: 'vision', k: 'Vision', v: tilesN(visionOf(c)), from: and(at('perception'), sk('vigilant')) },

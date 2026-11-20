@@ -811,7 +811,10 @@ for t in items("traits"):
         elif t.get("id") not in (tmap[x].get("excludes") or []):
             errors.append(f"traits:{t.get('id')}: excludes {x}, but {x} doesn't exclude it back")
 DMG_TYPES = {"physical", "elemental", "fire", "lightning", "emp", "sigil", "soul", "true"}
-WTAGS = {"electronic", "evoker_linked", "lever"}
+WTAGS = {"electronic", "evoker_linked", "lever", "natural", "heavy"}  # the role tags (rules 1.91 item 7900; natural: item 7919; heavy: rules 1.92 item 8010)
+_HEAVY = (((data.get("rules") or {}).get("weapons_rules") or {}).get("heavy") or {})
+if _HEAVY.get("tag") != "heavy" or not isinstance(_HEAVY.get("movement"), (int, float)) or isinstance(_HEAVY.get("movement"), bool) or _HEAVY.get("movement") >= 0 or _HEAVY.get("provisional") is not True:
+    errors.append("rules: weapons_rules.heavy needs tag 'heavy', a negative movement and provisional: true (rules 1.92 item 8010)")
 for w in items("weapons"):
     if w.get("damage_type") is not None and w.get("damage_type") not in DMG_TYPES:
         errors.append(f"weapons:{w.get('id')}: damage_type {w.get('damage_type')} is not one of {sorted(DMG_TYPES)}")
@@ -1546,9 +1549,8 @@ if lt is not None:
     for k in ("spare_mags_max", "inline_max"):
         if not isinstance(lt.get(k), int) or lt[k] < 0:
             errors.append(f"loot_tables: {k} must be a whole number of 0 or more")
-    for w in lt.get("natural_weapons") or []:
-        if w not in wids:
-            errors.append(f"loot_tables: natural weapon {w} is not a weapon")
+    if "natural_weapons" in lt:
+        errors.append("loot_tables: natural_weapons is gone: a body's own weapon is a weapon row with the role tag natural (rules 1.91 item 7919)")
     rbt = lt.get("rolls_by_tier") or {}
     for tier in tiers:
         if not isinstance(rbt.get(tier), int) or rbt[tier] < 0:
@@ -1784,7 +1786,8 @@ if isinstance(tq, dict):
     if hg.get("skill") not in skill_ids:
         errors.append(f"techniques: rules.gear_gates.heavy_armour.skill '{hg.get('skill')}' is not a skill")
     for cls_, need in (hg.get("classes") or {}).items():
-        if cls_ not in ("1", "2", "3", "4", "5") or not isinstance(need, int) or not 1 <= need <= 10:
+        # rules 1.91 item 7951: any class row of rules.json combat.armor.classes but None (class 6 the breacher plate)
+        if cls_ not in {str(r.get("class")) for r in ((((data.get("rules") or {}).get("combat") or {}).get("armor") or {}).get("classes") or []) if r.get("class")} or not isinstance(need, int) or not 1 <= need <= 10:
             errors.append(f"techniques: rules.gear_gates.heavy_armour.classes: '{cls_}': {need} is not an armour class with a skill level")
     # rules 1.57 (A1): shields are weapons.json rows with the Shield property; an items.json row has no phys block, no
     # either_hand (gone with the rows) and is never category shield
@@ -2162,6 +2165,7 @@ REL = {"self", "ally", "side", "foe", "other", "none", "any"}
 # rules 1.56 (P15): self_holds' hands and body halves: the properties any weapon or off-hand item carries, and the
 # armour weight class names (rules.json combat.armor.classes)
 _THING_PROPS = {pr for _n in ("weapons", "items") for _i in items(_n) for pr in ((_i.get("phys") or {}).get("props") or [])}
+_ITEM_TAG_KIND_IDS = {k.get("id") for k in ((data.get("rules") or {}).get("item_tag_kinds") or []) if isinstance(k, dict)} - {"grade"}
 _ARMOUR_NAMES = sorted(str(_a.get("name", "")).lower() for _a in (((data.get("rules") or {}).get("combat") or {}).get("armor") or {}).get("classes") or [])
 def _hold_ok(v, p):
     if not isinstance(v, dict) or not v or not set(v) <= {"slot", "door", "item", "hands", "body"} or v.get("slot", "hand") not in ("hand", "person"): return False
@@ -2169,7 +2173,10 @@ def _hold_ok(v, p):
     if "door" in v and v["door"] not in (p.get("values") or ["evoker", "emanator"]): return False
     if "item" in v and not isinstance(v["item"], str): return False
     h, b = v.get("hands"), v.get("body")
-    if h is not None and not (isinstance(h, dict) and set(h) <= {"props", "only"} and isinstance(h.get("props"), list) and h["props"] and set(h["props"]) <= _THING_PROPS and isinstance(h.get("only", False), bool)): return False
+    # rules 1.91 item 7910: hands takes tags (kind:value, a kind of rules.json item_tag_kinds but grade) beside props
+    if h is not None and not (isinstance(h, dict) and set(h) <= {"props", "only", "tags"} and isinstance(h.get("props", []), list) and set(h.get("props", [])) <= _THING_PROPS
+                              and isinstance(h.get("tags", []), list) and all(isinstance(t, str) and ":" in t and t.split(":", 1)[0] in _ITEM_TAG_KIND_IDS for t in h.get("tags", []))
+                              and (h.get("props") or h.get("tags")) and isinstance(h.get("only", False), bool)): return False
     if b is not None and not (isinstance(b, dict) and set(b) == {"armour_at_most"} and (b["armour_at_most"] in _ARMOUR_NAMES or (isinstance(b["armour_at_most"], int) and not isinstance(b["armour_at_most"], bool)))): return False
     return any(x in v for x in ("door", "item", "hands", "body"))
 # rules 1.56 (P15): a technique that comes with a property only while the holder holds something (comes_while) names it
@@ -3427,6 +3434,7 @@ for _a in data["attributes"]["items"]:
     _want = {k["slot"]: k["id"] for k in data["skills"]["items"] if k["attribute"] == _a["id"]}
     if _a.get("skills") != _want: errors.append(f"attributes.json {_a['id']}: skills {_a.get('skills')} is not what skills.json says ({_want})")
 
+_ACLS = ((((data.get("rules") or {}).get("combat") or {}).get("armor") or {}).get("classes") or [])  # the body armour class rows (rules 1.91 item 7950)
 # Rules 1.56 (Balance 2.0), L4: variants (data/variants.json; packages/engine/src/variants.ts is the one loader). A
 # variant is a base weapon or focus and one or two modifiers of the closed list of kinds. Refused: a third modifier, an
 # unknown kind or form, a kind that does not fit the base, two of one kind, a total worth over worth_cap.
@@ -3484,11 +3492,26 @@ if _vj is not None:
         if _v.get("id") in _vseen or _v.get("id") in _wmap or _v.get("id") in _imap: errors.append(f"{_w}: a variant's id is its own (no other variant, weapon or item has it)")
         _vseen.add(_v.get("id"))
         _b = _v.get("base"); _bw, _bi = _wmap.get(_b), _imap.get(_b)
-        if not (_bw or (_bi and _bi.get("focus"))): errors.append(f"{_w}: base '{_b}' is a weapon or a focus"); continue
+        # rules 1.91 items 7917, 7957: a worn armour piece, or a body armour class (armour:<n>), is a base too (the
+        # uniques' armour lines); a class base is made into an items row of the armour kind by the loader
+        _bc = re.fullmatch(r"armour:(\d+)", str(_b or ""))
+        if _bc: _bi = next(({**r, "category": "armour", "slot": "torso_outer", "armour_class": r.get("class")} for r in _ACLS if str(r.get("class")) == _bc.group(1) and r.get("class")), None)
+        if not (_bw or (_bi and (_bi.get("focus") or (_bi.get("category") == "armour" and _bi.get("slot"))))): errors.append(f"{_w}: base '{_b}' is a weapon, a focus, a worn armour piece or a body armour class"); continue
         if not isinstance(_v.get("name"), str) or not _v["name"] or re.search(r"\d", _v["name"]): errors.append(f"{_w}: a variant has a name, with no number in it")
         if _v.get("rarity", "standard") not in _grades: errors.append(f"{_w}: rarity is one of {_grades}")
         _ms = _v.get("mods") or []
-        if not 1 <= len(_ms) <= 2: errors.append(f"{_w}: a variant has one or two modifiers, never {len(_ms)}")
+        # rules 1.91 item 7917: a unique line (unique: true) has its own effects, no modifier cap and no worth cap;
+        # `effects` only on a unique; weapon_art null until the Weapon Art patch (item 7918)
+        _uq = _v.get("unique", False)
+        if _uq not in (True, False): errors.append(f"{_w}: unique is true or absent")
+        if "effects" in _v and not _uq: errors.append(f"{_w}: effects belong to a unique line only (unique: true)")
+        if _v.get("weapon_art") is not None: errors.append(f"{_w}: weapon_art is null until the Weapon Art patch (rules 1.91 item 7918)")
+        for _ei, _e in enumerate(_v.get("effects") or []):
+            if not isinstance(_e, dict) or _e.get("op") not in OPS: errors.append(f"{_w} effect {_ei}: unknown op {_e.get('op') if isinstance(_e, dict) else _e}"); continue
+            if isinstance(_e.get("when"), str): check_trigger_effect(_e, f"{_w} effect {_ei}")
+            elif _e.get("op") == "stat_mod" and not declared_stat(_e.get("stat")): errors.append(f"{_w} effect {_ei}: stat '{_e.get('stat')}' is not declared (effects/stats.ts)")
+        if _uq and not (_v.get("effects") or _ms): errors.append(f"{_w}: a unique carries effects or modifiers")
+        if not _uq and not 1 <= len(_ms) <= 2: errors.append(f"{_w}: a variant has one or two modifiers, never {len(_ms)}")
         if len({m.get("kind") for m in _ms}) != len(_ms): errors.append(f"{_w}: two modifiers of one kind")
         _worth = 0
         _row = dict(_bw or _bi)
@@ -3509,7 +3532,99 @@ if _vj is not None:
                 else:
                     _row[_f["field"]] = _row[_f["field"]] + _f.get("sign", 1) * _val
                     if _row[_f["field"]] < 0: errors.append(f"{_w}: {_k['id']} takes {_f['field']} under 0")
-        if isinstance(_vcap, (int, float)) and _worth > _vcap + 1e-9: errors.append(f"{_w}: worth {round(_worth, 2)} is over worth_cap {_vcap}")
+        if not _uq and isinstance(_vcap, (int, float)) and _worth > _vcap + 1e-9: errors.append(f"{_w}: worth {round(_worth, 2)} is over worth_cap {_vcap}")
+
+# Rules 1.91 (Items 2.0 stage A), items 7900 to 7908, 7918: the tag kinds, the grade ladder, the slot table, the
+# families (data/families.json, read by packages/engine/src/physical/data.ts weaponTeaches and itemtags.ts) and every
+# row against its family and form; the hit skill one key; weapon_art null.
+_rules = data.get("rules") or {}
+_TAG_KINDS = [k.get("id") for k in (_rules.get("item_tag_kinds") or []) if isinstance(k, dict)]
+if not _TAG_KINDS: errors.append("rules.json item_tag_kinds: the closed list of item tag kinds is missing (rules 1.91 item 7900)")
+if len(set(_TAG_KINDS)) != len(_TAG_KINDS): errors.append("rules.json item_tag_kinds: a kind is listed once")
+for _k in _rules.get("item_tag_kinds") or []:
+    if not isinstance(_k, dict) or not isinstance(_k.get("about"), str) or not _k["about"]: errors.append(f"rules.json item_tag_kinds {_k}: a kind says what it is (about)")
+for _bad in ("explosive", "rarity"):
+    if _bad in _TAG_KINDS: errors.append(f"rules.json item_tag_kinds: no '{_bad}' kind (rules 1.91 item 7900: its value already has one home)")
+_rar = {k: v for k, v in (_rules.get("rarity") or {}).items() if isinstance(v, dict)}
+if sorted(v.get("order", -1) for v in _rar.values()) != list(range(len(_rar))): errors.append("rules.json rarity: each grade has its order, 0 to n-1, once (rules 1.91 item 7905)")
+for _k, _v in _rar.items():
+    if not isinstance(_v.get("name"), str) or not _v["name"]: errors.append(f"rules.json rarity.{_k}: a grade has its word (name)")
+    if not isinstance(_v.get("sold"), bool): errors.append(f"rules.json rarity.{_k}: sold is true or false")
+    if not num(_v.get("arm")) or _v["arm"] <= 0: errors.append(f"rules.json rarity.{_k}: arm is a number over 0 (rules 1.91 item 7906)")
+_es = _rules.get("equipment_slots") or {}
+_tbl = _es.get("table") or []
+if [r.get("id") for r in _tbl] != list(_es.get("slots") or []): errors.append("rules.json equipment_slots.table: one row per slot of the slots list, in its order (rules 1.91 item 7908)")
+if len({r.get("key") for r in _tbl}) != len(_tbl) or sorted(r.get("order", -1) for r in _tbl) != list(range(len(_tbl))): errors.append("rules.json equipment_slots.table: each slot's saved key and order once")
+for _r in _tbl:
+    if not all(isinstance(_r.get(x), str) and _r[x] for x in ("id", "key", "label")): errors.append(f"rules.json equipment_slots.table {_r.get('id')}: a slot has its id, saved key and label")
+# rules 1.91 item 7958: a slot's id is its saved key; every worn item row names a slot of the table
+for _r in _tbl:
+    if _r.get("id") != _r.get("key"): errors.append(f"rules.json equipment_slots.table {_r.get('id')}: a slot's id is its saved key ({_r.get('key')}; rules 1.91 item 7958)")
+_SLOT_KEYS = {r.get("key") for r in _tbl}
+for _it in items("items"):
+    if isinstance(_it, dict) and _it.get("slot") and _SLOT_KEYS and _it["slot"] not in _SLOT_KEYS: errors.append(f"items:{_it.get('id')}: slot '{_it['slot']}' is not a slot of rules.json equipment_slots.table")
+    if isinstance(_it, dict) and _it.get("graded") is False and _it.get("category") != "armour": errors.append(f"items:{_it.get('id')}: graded: false is for a worn armour piece (rules 1.91 item 7907)")
+_fam_doc = data.get("families") or {}
+_FORM_KINDS = _fam_doc.get("form_kinds") or {}
+_FORM_RULES = {k: v for k, v in (_fam_doc.get("form_rules") or {}).items() if isinstance(v, list)}
+_FAM = {}
+_techs_all = {t.get("id"): t for t in items("techniques") if isinstance(t, dict)}
+for _f in items("families"):
+    _w = f"families.json {_f.get('id')}"
+    if _f.get("id") in _FAM: errors.append(f"{_w}: a family id is unique")
+    _FAM[_f.get("id")] = _f
+    if not isinstance(_f.get("name"), str) or not _f["name"]: errors.append(f"{_w}: a family has its name")
+    if not isinstance(_f.get("line"), str) or not _f["line"]: errors.append(f"{_w}: a family has its maker line")
+    if _f.get("form_kind") not in _FORM_KINDS: errors.append(f"{_w}: form_kind is one of {sorted(_FORM_KINDS)}")
+    if _f.get("weapon_art") is not None: errors.append(f"{_w}: weapon_art is null until the Weapon Art patch (rules 1.91 item 7918)")
+    _fids = [x.get("id") for x in _f.get("forms") or []]
+    if len(set(_fids)) != len(_fids) or not set(_fids) <= set(_FORM_KINDS.get(_f.get("form_kind")) or []): errors.append(f"{_w}: its forms are distinct forms of its kind ({_FORM_KINDS.get(_f.get('form_kind'))})")
+    for _x in _f.get("forms") or []:
+        if "teaches" in _x and _x["teaches"] not in _techs_all: errors.append(f"{_w} form {_x.get('id')}: teaches '{_x['teaches']}', not a technique")
+# rules 1.91 items 7950, 7951: the body armour class rows are the one copy: classes 0 to n-1 in order (appended, never
+# inserted), their numbers, the fields code reads (penalty.no_sprint, armoured, light_cap, forge_fit) and the tag fields
+_gear_forms = set(_FORM_KINDS.get("gear") or [])
+for _n, _c in enumerate(_ACLS):
+    _w = f"rules.json combat.armor.classes[{_n}]"
+    if _c.get("class") != _n: errors.append(f"{_w}: class is its place in the list ({_n}): a class is appended, never inserted")
+    if not isinstance(_c.get("name"), str) or not _c["name"]: errors.append(f"{_w}: a class has its name")
+    for _k in ("value", "weight_kg", "price_credits"):
+        if not num(_c.get(_k)) or _c[_k] < 0: errors.append(f"{_w}: {_k} is a number, 0 or more")
+    _pen = _c.get("penalty")
+    if not isinstance(_pen, dict) or set(_pen) - {"movement", "dodge", "no_sprint"}: errors.append(f"{_w}: penalty holds movement, dodge and no_sprint only")
+    elif ("no_sprint" in _pen and not isinstance(_pen["no_sprint"], bool)) or any(k in _pen and not num(_pen[k]) for k in ("movement", "dodge")): errors.append(f"{_w}: penalty movement and dodge are numbers, no_sprint true or false")
+    for _k in ("armoured", "light_cap", "forge_fit", "provisional"):
+        if _k in _c and not isinstance(_c[_k], bool): errors.append(f"{_w}: {_k} is true or false")
+    if _n == 0 and any(_c.get(k) for k in ("armoured", "light_cap", "forge_fit", "family", "form")): errors.append(f"{_w}: None is no armour (no family, not armoured, never fitted)")
+    if _n > 0 and ("family" not in _c or "form" not in _c): errors.append(f"{_w}: a class row carries its tag fields family and form (rules 1.91 item 7950)")
+    if "form" in _c and _gear_forms and _c["form"] not in _gear_forms: errors.append(f"{_w}: form '{_c['form']}' is one of the gear forms {sorted(_gear_forms)}")
+    if _c.get("family") in _FAM and _c.get("form") not in [x.get("id") for x in _FAM[_c["family"]].get("forms") or []]: errors.append(f"{_w}: form '{_c.get('form')}' is not a form of {_c['family']}")
+if _ACLS and sum(1 for _c in _ACLS if _c.get("light_cap")) != 1: errors.append("rules.json combat.armor.classes: one row is the light_cap (Forlorn Hope's 'at most Class I's')")
+if _ACLS and not any(_c.get("armoured") for _c in _ACLS): errors.append("rules.json combat.armor.classes: some row is armoured")
+_ffit = [_c.get("class") for _c in _ACLS if _c.get("forge_fit")]
+if _ffit and _ffit != list(range(1, len(_ffit) + 1)): errors.append("rules.json combat.armor.classes: the Forge fits class by class from 1 (forge_fit on 1 to n, none after a gap; rules 1.91 item 7952)")
+_ALPHA = {k["id"] for k in items("skills") if k.get("slot") == "alpha"}
+for _src in ("weapons", "items"):
+    for _r in items(_src):
+        if not isinstance(_r, dict): continue
+        _w = f"{_src}:{_r.get('id')}"
+        _ph = _r.get("phys") or {}
+        if "weapon_art" in _r and _r["weapon_art"] is not None: errors.append(f"{_w}: weapon_art is null until the Weapon Art patch (rules 1.91 item 7918)")
+        if _src == "weapons" and "skill" in _r and _ph.get("hits_with") and _r["skill"] != _ph["hits_with"]: errors.append(f"{_w}: skill '{_r['skill']}' differs from phys.hits_with '{_ph['hits_with']}' (the hit skill is one key, rules 1.91 item 7904)")
+        if "second_skill" in _r and _r["second_skill"] is not None and _r["second_skill"] not in _ALPHA: errors.append(f"{_w}: second_skill is an alpha skill or null (R5, rules 1.91 item 7903)")
+        for _key in ("line", "pattern"):
+            if _key in _r and (not isinstance(_r[_key], str) or not _r[_key]): errors.append(f"{_w}: {_key} is a word")
+        if "graded" in _r and not isinstance(_r["graded"], bool): errors.append(f"{_w}: graded is true or false")
+        if "form" in _r and "family" not in _r: errors.append(f"{_w}: a form belongs to a family (family is missing)")
+        if "family" not in _r: continue
+        _fm = _FAM.get(_r["family"])
+        if not _fm: errors.append(f"{_w}: family '{_r['family']}' is not in families.json"); continue
+        _fx = next((x for x in _fm.get("forms") or [] if x.get("id") == _r.get("form")), None)
+        if not _fx: errors.append(f"{_w}: form '{_r.get('form')}' is not a form of {_r['family']} ({[x.get('id') for x in _fm.get('forms') or []]})"); continue
+        if _ph.get("teaches") and _ph.get("teaches") == _fx.get("teaches"): errors.append(f"{_w}: phys.teaches '{_ph['teaches']}' repeats its family's form; the technique lives on the family (rules 1.91 item 7902)")
+        _pats = _FORM_RULES.get(_r.get("form"))
+        if _pats and _fm.get("form_kind") == "melee" and not any(_ph.get("hits_with") == p.get("hits_with") and list(_ph.get("scales_with") or []) == list(p.get("scales_with") or []) for p in _pats):
+            errors.append(f"{_w}: a {_r.get('form')} form hits with and grows with one of {[(p.get('hits_with'), p.get('scales_with')) for p in _pats]} (rules 1.91 item 7903)")
 
 # Rules 1.56 (Balance 2.0), Bonds 2.0 slice 1 (spec item 4246): tending.json `bond` is what the Bond card shows
 # (screenViews.ts bondView); each number is a copy of an effect value of tend.threads or tend.bond, and those items'

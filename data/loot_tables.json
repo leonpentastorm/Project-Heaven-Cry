@@ -17,10 +17,6 @@
   "spare_mags_max": 2,
   "inline_max": 4,
   "qty_max": 20,
-  "natural_weapons": [
-    "fists",
-    "beast_bite"
-  ],
   "rolls_by_tier": {
     "vermin": 0,
     "minion": 1,

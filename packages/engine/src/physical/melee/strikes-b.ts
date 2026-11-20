@@ -17,6 +17,7 @@ import { say, type Combat, type Unit, alive, dist, lineOfSight, refOf, dropToPil
 import { applyDamage } from '../../effects/damage';
 import { RARITY } from '../../character';
 import { WEAPON } from '../../data';
+import { hasTag } from '../../itemtags';
 import { throwRangeOf } from '../../tactics';
 import { condOn, unitSave } from '../../magic';
 import { boundGame } from '../../effects/hooks';
@@ -159,15 +160,13 @@ technique({
 });
 
 // ---------- 14. Throw ----------
-/** Weapons that are part of the body: nothing to throw. */
-const NATURAL = new Set(['fists', 'beast_bite']);
 // Throw the weapon at a target in throwing range (Dexterity to hit). It lands in the pile on the target's tile.
 // Thrown: no penalty and full damage. Without Thrown: −2 to hit, ×0.7. Heavy: the target makes a Body save or is
 // knocked Prone.
 technique({
   id: 'throw',
-  // Only a weapon that is part of the body has nothing to throw; knuckledusters or a gauntlet can be thrown (×0.7, −2).
-  check: (t) => (NATURAL.has(t.weaponId) ? 'Nothing to throw: your hands are bare.' : null),
+  // Only a weapon that is part of the body (rules 1.91 item 7919: the role tag natural) has nothing to throw; knuckledusters or a gauntlet can be thrown (×0.7, −2).
+  check: (t) => (hasTag(t.weaponId, 'role:natural') ? 'Nothing to throw: your hands are bare.' : null),
   run(t) {
     const tgt = t.tgt; if (!tgt) return 'Pick a target.';
     if (tgt.id === t.u.id) return 'Pick someone else.';

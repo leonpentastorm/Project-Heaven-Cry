@@ -16,7 +16,8 @@ import { vowScope } from './standingVow';
 import React from 'react';
 import { act, getState } from './store';
 import { loadoutView, type LoadoutCardV, type LoadoutViewV, type CompareRowV, type CarryRowV } from '@engine';
-import { gearIconUri } from './gearIcons';
+import { ItemPicture } from './ItemCard';
+import { cardOf, familyText } from './itemCardView';
 import { tipProps, openTipOn } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
 import { campStepIconOf } from './doorArt';
@@ -53,9 +54,6 @@ const CSS = '.phc-camp ::-webkit-scrollbar{width:10px}.phc-camp ::-webkit-scroll
   // a stat row: label | value (| the better one's value); the label always shown, whole, wrapping
   + '.phc-camp-stats{margin:0;display:grid;gap:3px 10px;font-size:var(--fs-body);line-height:1.3}'
   + '.phc-camp-stats dt{color:#A3AEC2;overflow-wrap:break-word}.phc-camp-stats dd{margin:0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:break-word}';
-/** A card's picture: the one resolver (gearIcons.ts), which reads the engine's ids as they come (rounds, magazines,
- *  body armour of a class), the same picture the sheet's GEAR tab and the shop show. */
-const iconOf = (id: string): string => gearIconUri(id, undefined, { large: true });
 const head = (title: string, note?: string) => (
   <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, margin: '4px 0 12px' }}>
     <h2 style={{ margin: 0, fontFamily: "'Spectral', serif", fontWeight: 600, fontSize: 24 }}>{title}</h2>
@@ -63,11 +61,10 @@ const head = (title: string, note?: string) => (
     <span aria-hidden="true" style={{ flex: 1, height: 1, background: I.line, alignSelf: 'center' }} />
   </div>
 );
-const Icon = ({ src, size = 48, name = '', text = '' }: { src: string; size?: number; name?: string; text?: string }) => (
-  <span style={{ flexShrink: 0, width: size + 6, height: size + 6, display: 'grid', placeItems: 'center', borderRadius: 10, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
-    {src ? <img data-zoom={name} data-zoom-text={text} src={src} alt="" width={size} height={size} style={{ objectFit: 'contain' }} /> : <span style={{ color: I.muted }}>+</span>}
-  </span>
-);
+/** Items 2.0 lane A3: a camp card's picture is the one item card's (ItemCard.tsx: the picture chain, the placeholder, the
+ *  grade frame), with the family line under the name (Fam). */
+const Icon = ({ id, size = 48, name = '', text = '' }: { id: string; size?: number; name?: string; text?: string }) => <ItemPicture card={cardOf(id)} size={size + 6} zoom={text} name={name} round={10} />;
+const Fam = ({ id }: { id: string }) => { const f = familyText(cardOf(id)); return f ? <span data-phc-family="" style={{ fontSize: 'var(--fs-sub)', color: I.muted, ...wrap }}>{f}</span> : null; };
 const label = (s: string) => s.replace(/ \(.*\)$/, '');
 const cardBox = (on: boolean): React.CSSProperties => ({ display: 'flex', flexDirection: 'column', gap: 10, padding: 14, borderRadius: 14, minWidth: 0, color: I.text,
   background: on ? 'linear-gradient(180deg, rgba(44,56,78,0.98), rgba(28,37,54,0.98))' : 'linear-gradient(180deg, rgba(28,37,54,0.92), rgba(16,21,31,0.92))', border: on ? '2px solid ' + I.white : '1px solid ' + I.line });
@@ -96,9 +93,10 @@ function PickCard({ c, slot, charId, v }: { c: LoadoutCardV; slot: 'weapon' | 'f
         {...tipProps(c.why || (c.picked ? 'Yours, free. Press again to put it back.' : (c.text || c.name)))}
         style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10, padding: 14, minWidth: 0, textAlign: 'left', fontFamily: 'inherit', color: I.text, cursor: 'pointer', background: 'transparent', border: 0, borderRadius: 14, opacity: off ? 0.6 : 1 }}>
         <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0, width: '100%' }}>
-          <Icon src={iconOf(c.id)} name={c.name} text={c.text || ''} />
+          <Icon id={c.id} name={c.name} text={c.text || ''} />
           <span style={{ display: 'flex', flexDirection: 'column', gap: 3, ...wrap }}>
             <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 18, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{label(c.name)}</span>
+            <Fam id={c.id} />
             <span data-phc-camp-freetag="" style={{ fontSize: 'var(--fs-body)', fontWeight: 700, letterSpacing: '0.12em', color: I.ok }}>{c.picked ? '✓ YOURS · FREE' : 'FREE'}</span>
           </span>
         </div>
@@ -119,9 +117,10 @@ function ShelfCard({ c, charId, tag, compare: all }: { c: LoadoutCardV; charId: 
   return (
     <article data-phc-camp-card={c.key} {...tipProps(c.text ? c.name + '. ' + c.text : c.name)} style={{ ...cardBox(false), border: '1px solid ' + (c.taken ? '#7A879E' : I.line) }}>
       <div style={{ display: 'flex', gap: 10, alignItems: 'center', minWidth: 0 }}>
-        <Icon src={iconOf(c.id)} size={46} name={c.name} text={c.text || ''} />
+        <Icon id={c.id} size={46} name={c.name} text={c.text || ''} />
         <span style={{ display: 'flex', flexDirection: 'column', gap: 3, ...wrap }}>
           <span data-phc-camp-name="" style={{ fontFamily: "'Spectral', serif", fontSize: 17, fontWeight: 600, lineHeight: 1.15, ...wrap }}>{c.name}</span>
+          <Fam id={c.id} />
           {tag ? <span style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', color: I.muted }}>{tag}</span> : null}
         </span>
       </div>

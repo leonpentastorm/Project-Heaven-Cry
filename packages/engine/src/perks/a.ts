@@ -11,7 +11,7 @@ import { itemAmount } from '../effects/amounts';
 import { ELEMENTAL_TYPES } from '../effects/damage';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
-import { key, xy, dist, alive, unitSees, litAt, moveBlockers, objectsOf, damageObject, resolveAttack, attackDamage, isMelee, refOf, keyOf as refKey, emitFx, fxFell, checkOver, previewAttack } from '../combat';
+import { meleeReachOf, key, xy, dist, alive, unitSees, litAt, moveBlockers, objectsOf, damageObject, resolveAttack, attackDamage, isMelee, refOf, keyOf as refKey, emitFx, fxFell, checkOver, previewAttack } from '../combat';
 import { ARMOUR, mod, packOf, maxHp as maxHpOf } from '../character';
 import { WEAPON, SKILL } from '../data';
 import { applyCond, endCond, condOn, condSource, bodyDebuffs, condFamily, unitStrength } from '../magic';
@@ -29,7 +29,7 @@ const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const tierII = (h: Holder) => h.tier === 'II';
 /** A tile from a grid reference ("F6") or a key ("5,5"). */
 /** Melee reach of the unit's melee option (fists when it holds a gun): 1, or 2 with a reach weapon. */
-const reachOf = (u: Unit) => { const w: any = WEAPON[u.weapon]; if (!w || !isMelee(w)) return 1; return (w.properties || []).includes('reach_2') || w.id === 'lance' || w.grants?.effect?.op === 'reach' ? (w.grants?.effect?.op === 'reach' ? w.grants.effect.value : 2) : 1; };
+const reachOf = (u: Unit) => (WEAPON[u.weapon] ? meleeReachOf(u, 'melee') : 1); // rules 1.91 item 7913: the one reach reader (combat.ts)
 const magicSrc = (src: any) => ['sigil', 'soul', 'elemental'].includes(src?.type);
 const charState = (c: Character | null | undefined): Record<string, any> => (c ? (c.state ||= {}) : {});
 /** Read a character's item state without creating it (stat queries and previews must not change state). */

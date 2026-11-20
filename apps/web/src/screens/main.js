@@ -8,6 +8,8 @@ import { ZOOM_CSS } from '../game/mapZoom';
 import { DCLogic } from '../dc/runtime';
 import { D, ATTR, SK, IMG, mod, checkMod, fmt, tabNavIndex, epccgVals, lightboxVals, zoomer, epBtnStyle, masteredVals, bodyFigure, SLOT_PARTS, tokenVals, effectsOf, ART, ART_BIG, zoneOf, spriteOf, tileBg, spriteStyle, epRgba,
   ensureMotionCss, ensureStyle, motionRoot, closeAnim, modalCls, perkRow } from './shared';
+import { RULES, ARMOUR_SLOT, armourOf } from '@engine';
+import { cardOf, cardHoles, gradeBorder, gradeText, familyText } from '../game/itemCardView';
 import { SKILL, PERK, WEAPON, MAPS, CLASS, maxHp, maxMp, xpForLevel, defense, initiativeBonus, movement, healingMult, classRank, pendingPerkSteps, levelUpDue, ARMOUR, KITS, packOf, mainHandSide, injuryText, itemKg, carriedKg, carryLimit, loadedOf, ITEM, overweightKg, weaponDurOf, maxDurOf, RARITY, coverOf, difficultOf, magsOf, WEAPONS, zoneMap, positionsOf, refOf, notesAt, defaultObjects, kindOf, coverKind, blocksMove, isDifficult, SKILL as SKILLS_BY_ID, TN_LADDER , STAGE_MULT , DESIGN_TEMPLATES, soulPicksLeft, gatedBy, FEELINGS } from '@engine';
 import { practiceView, feelingCodex, moduleGroups, markIconSrc, iconStyle } from '../game/feelingsView';
 import { hasPaintedArt, heartMarkKey } from '../game/heartIcons';
@@ -32,7 +34,7 @@ import { SIGIL, SCHOOL, MODULE, maxSigilWords, MAX_GLYPHS, wordsKnownCap, evoCha
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, fluxMaxOf, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, SYPHON_DRAW, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, joinUri, starUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
-import { gearIconUri, GEAR_INK, packGearId, torsoGearId } from '../game/gearIcons';
+import { gearIconUri, GEAR_INK, packGearId } from '../game/gearIcons';
 import { glyphKeyNav } from '../game/glyphKeys';
 import { drawStrip, wordRows, wordClassName, patternPanel, evokeView, evokeClick, placedView, placedLegend, mergeTiles, glyphMark, strokeButtons, strokeLayer, wordMasteryChips, readableAt, traceMark } from '../game/sigilView';
 import { openMissionBoard } from '../game/missionBoard';
@@ -70,8 +72,15 @@ import { foldVals } from '../game/fold'; // 0.31.x: the fork card folds to one l
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 import { powerPct } from '../game/power'; // 0.32 B6: an Outburst's strength in percent
 import '../game/GiveTab'; // the 'give-inline' and 'give-tab' mounts this screen draws (registered there; the screen is its own chunk)
-const WORN_SLOT = { head: 'head', head_accessory: 'headAcc', inner_torso: 'inner', lower_torso: 'lower', legs: 'legs', hands: 'hands', footwear: 'feet' };
-const SLOT_TO_WORN = Object.fromEntries(Object.entries(WORN_SLOT).map(([a, b]) => [b, a]));
+// Items 2.0 lane A3 (rules 1.91 item 7908; design section 5): the sheet's slot rows are the engine's one slot table
+// (rules.json equipment_slots.table: id, the saved key, label, order); a slot whose rules are not written (the Veil:
+// equipment_slots.veil.rules null) is reserved and not drawn. A row's key is the saved key Character.worn is keyed by;
+// the hands and the body armour's slot (ARMOUR_SLOT) are not worn pieces; the hands' actions name 'main' and 'off'.
+const SLOT_TABLE = [...(RULES.equipment_slots?.table || [])].sort((a, b) => a.order - b.order);
+const SLOTS = SLOT_TABLE.filter((r) => RULES.equipment_slots?.[r.id]?.rules !== null).map((r) => [r.key, r.label.toUpperCase()]);
+const HAND_SLOT = { main: SLOT_TABLE[0]?.key, off: SLOT_TABLE[1]?.key }, PACK_SLOT = SLOT_TABLE[SLOT_TABLE.length - 1]?.key;
+/** The saved key of a worn piece's slot (a worn row names it), or null for a hand, the body armour and the pack. */
+const wornKey = (id) => (id && ![HAND_SLOT.main, HAND_SLOT.off, PACK_SLOT, ARMOUR_SLOT].includes(id) ? id : null);
 ensureMotionCss(); // the slide/pop classes (shared.js MOTION_CSS)
 // Main-screen extras: the dice verdict lands after the die does; the area map's planning marks breathe a little.
 ensureStyle('phc-resources', RES_CSS);
@@ -114,10 +123,7 @@ const TABLES = [['felt', 'Field felt', '#1F4D3A', '#123526'], ['oak', 'Mess-hall
   ['slate', 'Outpost slate', '#2B3138', '#1B2026'], ['hull', 'Ship hull', '#3A3F47', '#5B6270'], ['void', 'Black-hole glass', '#0B0F1E', '#AE9BFF']];
 const SKINS = [['ivory', 'Ivory', '#EFE6D2', '#8C7B5A', '#1A1A1A'], ['obsidian', 'Obsidian', '#15171C', '#6B7280', '#E7EBF3'], ['brass', 'Brass', '#C9A25A', '#6B4F1F', '#1A1208'],
   ['glass', 'Sigil glass', '#173640', '#8BDEEE', '#E7EBF3'], ['bone', 'Bone', '#D9CBB0', '#7A6A4F', '#3A2E20'], ['blood', 'Oil-red', '#7A1121', '#F65157', '#FFFFFF']];
-const ARMOUR_NAMES = ['No armour', 'Light (Class I)', 'Medium (Class II)', 'Heavy (Class III)', 'Assault (Class IV)', 'Juggernaut (Class V)'];
 const ROMAN = ['0', 'I', 'II', 'III', 'IV', 'V'];
-const SLOTS = [['main', 'MAIN HAND'], ['off', 'OFF HAND'], ['head', 'HEAD'], ['headAcc', 'HEAD ACC.'], ['outer', 'OUTER TORSO'], ['inner', 'INNER TORSO'], ['lower', 'LOWER TORSO'],
-  ['legs', 'LEGS'], ['hands', 'HANDS'], ['feet', 'FOOTWEAR'], ['veil', 'VEIL'], ['pack', 'BACKPACK']];
 const KIND = { weapon: 'WEAPON', ammo: 'AMMO', med: 'MED', tool: 'TOOL', focus: 'FOCUS', food: 'FOOD', loot: 'LOOT', plot: 'PLOT ITEM' };
 const REGIONS = [['OUTPOST-813', 'Barracks, infirmary, comms', 6, 8, 30, 30], ['SHIELD LINE', 'Where the five squads held', 40, 6, 40, 22], ['WRECK FIELD', '100 infantry robots, most still', 6, 44, 34, 40],
   ['ENGINEERS’ SHIP', 'Platinum hold, sealed hatch', 74, 34, 22, 20], ['B813', 'The black hole, overhead', 72, 76, 24, 18]];
@@ -613,22 +619,24 @@ export class MainLogic extends DCLogic {
     const kitDef = c ? KITS[c.kit] || KITS.medic : null, side = c ? mainHandSide(c) : 'right';
     const ws = c ? c.weaponState || {} : {}, wd = c ? weaponDurOf(c) : 0, wmax = c ? maxDurOf(c.weapon, ws.rarity) : 0;
     const wear = (d, m) => (m ? (d <= 0 ? 'BROKEN' : d <= m * 0.25 ? 'worn ' + d + '/' + m : 'durability ' + d + '/' + m) : '');
-    const worn = c ? { main: [(ws.name || (w.name === WEAPON[kitDef.weapon]?.name && kitDef.weaponName ? kitDef.weaponName : w.name)) + (ws.rarity && ws.rarity !== 'standard' ? ' · ' + ws.rarity.toUpperCase() : ''),
+    const worn = c ? { [HAND_SLOT.main]: [(ws.name || (w.name === WEAPON[kitDef.weapon]?.name && kitDef.weaponName ? kitDef.weaponName : w.name)) + (ws.rarity && ws.rarity !== 'standard' ? ' · ' + ws.rarity.toUpperCase() : ''),
         [(typeof w.damage === 'number' ? w.damage + ' dmg' : 'damage varies') + (typeof w.range_tiles === 'number' ? ' · ' + w.range_tiles + ' tiles' : '') + (w.magazine ? ' · ' + loadedOf(c) + '/' + w.magazine + ' loaded' : ''), wear(wd, wmax),
           (ws.mods || []).map((m) => ITEM[m]?.name).filter(Boolean).join(', '), armsLine(c.weapon), skillLine(c, { id: c.weapon, rarity: ws.rarity, mods: ws.mods })].filter(Boolean).join(' · ')],
-      outer: c.armourClass ? [(KITS[c.kit] && KITS[c.kit].armourClass === c.armourClass ? kitDef.armourName : (ARMOUR[c.armourClass]?.name || 'Body') + ' armour') + ' (Class ' + ROMAN[c.armourClass] + ')', 'Armour ' + (ARMOUR[c.armourClass]?.value || 0)] : null,
-      off: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] && !isShieldId(c.offHand.id) ? ['Paired attacks', armsLine(c.offHand.id), skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity })].filter(Boolean).join(' · ') : [skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity }), ((WEAPON[c.offHand.id] || ITEM[c.offHand.id])?.text || '').slice(0, 80)].filter(Boolean).join(' · ')] : null } : {};
-    if (c) for (const [slot, id] of Object.entries(c.worn || {})) if (WORN_SLOT[slot]) worn[WORN_SLOT[slot]] = [ITEM[id]?.name || id, (ITEM[id]?.text || '').replace(/^[^:]+: /, '')];
+      // Items 2.0 lane A3 (design section 5, a screen fault): the body armour's Armour as the fight reads it (armourOf: the
+      // class row's value at its grade, scaled by level), with its grade's word
+      [ARMOUR_SLOT]: c.armourClass ? [(KITS[c.kit] && KITS[c.kit].armourClass === c.armourClass ? kitDef.armourName : (ARMOUR[c.armourClass]?.name || 'Body') + ' armour') + ' (Class ' + ROMAN[c.armourClass] + ')', ['Armour ' + armourOf(c), gradeText(cardOf('armour:' + c.armourClass, c.wornState?.[ARMOUR_SLOT]?.rarity))].filter(Boolean).join(' · ')] : null,
+      [HAND_SLOT.off]: c.offHand ? [WEAPON[c.offHand.id]?.name || ITEM[c.offHand.id]?.name || c.offHand.id, WEAPON[c.offHand.id] && !isShieldId(c.offHand.id) ? ['Paired attacks', armsLine(c.offHand.id), skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity })].filter(Boolean).join(' · ') : [skillLine(c, { id: c.offHand.id, rarity: c.offHand.rarity }), ((WEAPON[c.offHand.id] || ITEM[c.offHand.id])?.text || '').slice(0, 80)].filter(Boolean).join(' · ')] : null } : {};
+    if (c) for (const [slot, id] of Object.entries(c.worn || {})) if (wornKey(slot)) worn[slot] = [ITEM[id]?.name || id, [gradeText(cardOf(id, c.wornState?.[slot]?.rarity)), (ITEM[id]?.text || '').replace(/^[^:]+: /, '')].filter(Boolean).join(' · ')];
     const pack = c ? sheetPack(c) : []; // the engine's list: the counted things (a stim, an Essence) flagged `counted`, with their sell note
-    worn.pack = c ? ['Pack', pack.length + (pack.length === 1 ? ' item' : ' items')] : null;
-    const hotParts = S.hotSlot ? (S.hotSlot === 'main' ? [side === 'left' ? 'lHand' : 'rHand'] : SLOT_PARTS[S.hotSlot] || []) : [];
-    const wornParts = Object.keys(worn).filter((k) => worn[k]).flatMap((k) => (k === 'main' ? [side === 'left' ? 'lHand' : 'rHand'] : SLOT_PARTS[k] || []));
+    worn[PACK_SLOT] = c ? ['Pack', pack.length + (pack.length === 1 ? ' item' : ' items')] : null;
+    const hotParts = S.hotSlot ? (S.hotSlot === HAND_SLOT.main ? [side === 'left' ? 'lHand' : 'rHand'] : SLOT_PARTS[S.hotSlot] || []) : [];
+    const wornParts = Object.keys(worn).filter((k) => worn[k]).flatMap((k) => (k === HAND_SLOT.main ? [side === 'left' ? 'lHand' : 'rHand'] : SLOT_PARTS[k] || []));
     const gearFig = bodyFigure({ worn: wornParts, hot: hotParts, mainSide: side, weapon: !!c, injuries: [] });
     // Rules 1.9 (Gear in a fight): in a fight gear changes cost AP and go through the fight's own checks (the combat
     // screen's pack); the sheet only points there, in the engine's words.
     const IN_FIGHT = gearLockWhy(g, c ? c.id : null), gearLocked = !!IN_FIGHT; // the engine's one gear gate (run/state.ts gearLockWhy: the camp, a fight)
-    const slots = SLOTS.map(([id, label]) => { const x = worn[id], removable = !!x && (id === 'off' || !!SLOT_TO_WORN[id]);
-      return { key: id, label, name: x ? x[0] : '—', note: x ? x[1] : '', canRemove: removable && !gearLocked, remove: () => act({ type: 'gear/unequip', charId: c.id, slot: id === 'off' ? 'off' : SLOT_TO_WORN[id] }), hover: () => this.setState({ hotSlot: id }), leave: () => this.setState({ hotSlot: null }),
+    const slots = SLOTS.map(([id, label]) => { const x = worn[id], removable = !!x && (id === HAND_SLOT.off || !!wornKey(id));
+      return { key: id, label, name: x ? x[0] : '—', note: x ? x[1] : '', canRemove: removable && !gearLocked, remove: () => act({ type: 'gear/unequip', charId: c.id, slot: id === HAND_SLOT.off ? 'off' : wornKey(id) }), hover: () => this.setState({ hotSlot: id }), leave: () => this.setState({ hotSlot: null }),
         style: 'display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 2px 8px; padding: 4px 6px; border-radius: 6px; font-size: var(--fs-sub); ' + (S.hotSlot === id ? 'background: #1C2536' : '') ,
         nameStyle: 'font-weight: ' + (x ? '600; color: #E7EBF3' : '400; color: #5B6577') }; });
     const kg = (x) => (Math.round(x * 1000) / 1000) + ' kg';
@@ -669,23 +677,24 @@ export class MainLogic extends DCLogic {
     const KG = c ? carriedKg(c) : { total: 0, weapon: 0, armour: 0, pack: 0 }, lim = c ? carryLimit(c) : 0, over = KG.total > lim;
     const gear = [];
     // ---------- Gear: hands as panels, the body's slots by name, the backpack; hover for details, click for actions ----------
-    const RW = (r) => (r && r !== 'standard' ? r.charAt(0).toUpperCase() + r.slice(1) : 'Standard');
-    const marks = (r) => '◆'.repeat(RARITY[r || 'standard']?.marks || 0);
-    // The item's picture (gearIcons.ts, the one resolver: the painted icon, large size, when there is one; else the monoline
-    // icon); else a glyph.
-    const artOf = (id) => gearIconUri(id, GEAR_INK, { large: true });
-    const glyphOf = (id) => { const wd = WEAPON[id], it = ITEM[id] || {}; if (wd) return ({ pistol: '⌐', revolver: '⌐', smg: '╤', rifle: '═', shotgun: '╦', heavy: '▬', bow: ')', light_melee: '†', heavy_melee: '⚒', unarmed: '✊', thrown: '●', mana: '✧', shield: '⛉' })[wd.category] || '⚔';
-      return it.category === 'light' ? '✦' : it.category === 'armour' ? '▣' : it.category === 'mod' ? '⚙' : '▪'; };
-    const tips = {};
+    // Items 2.0 lane A3 (design section 6): every item here is drawn as the one item card (game/itemCardView.ts, the
+    // engine's itemCard): the picture chain on its grade's frame (the general placeholder when none of the chain has a
+    // picture: never an empty box), the grade's word and marks, the family line; and a tip's numbers are the engine's
+    // gear preview (gearPreview, asked only for the tip that is open). Nothing is priced or counted here.
+    const holes = (id, rarity) => cardHoles(cardOf(id, rarity), { ink: GEAR_INK, large: true });
+    const artOf = (id, rarity) => (id ? holes(id, rarity).img : '');
     const colIds = c ? collectionOf(c) : []; // Gun Nut's collection (spec 14 item 369): tagged on its guns' tooltips
-    const weaponTip = (id, st = {}) => { const wd = WEAPON[id]; if (!wd) return null; const r = st.rarity || 'standard', m = maxDurOf(id, r), d = st.dur ?? m;
-      return { title: st.name || wd.name, sub: (RW(r) + ' ' + marks(r)).trim() + ' · ' + (wd.hands || '') + ' · ' + wd.category.replace('_', ' '), img: artOf(id), glyph: glyphOf(id),
-        lines: [colIds.includes(id) ? 'Collection (Gun Nut): parting with it takes a Dexterity check.' : '', (typeof wd.damage === 'number' ? wd.damage : typeof wd.damage === 'object' && wd.damage ? Object.values(wd.damage).join(' / ') : wd.damage) + ' damage' + (typeof wd.range_tiles === 'number' && wd.range_tiles > 1 ? ' · ' + wd.range_tiles + ' tiles' : '') + (wd.magazine ? ' · ' + wd.magazine + ' rounds' + (wd.ammo ? ' (' + wd.ammo + ')' : '') : ''),
-          m ? 'Durability ' + d + ' / ' + m + (d <= 0 ? ' · BROKEN' : d <= m * 0.25 ? ' · worn' : '') : '', (st.mods || []).length ? 'Mods: ' + st.mods.map((x) => ITEM[x]?.name || x).join(', ') : '', wd.mod_slots && wd.mod_slots.length ? 'Mod slots: ' + wd.mod_slots.join(', ') : '',
-          armsLine(id), wd.requires ? 'Needs ' + Object.entries(wd.requires).map(([k, v]) => SK[k]?.name + ' ' + v).join(', ') : '',
-          wd.weight_kg + ' kg · ' + Math.round((wd.price_credits || 0) * (RARITY[r]?.price || 1)) + ' credits'].filter(Boolean), lore: wd.lore || '' }; };
-    const itemTip = (id, extra = {}) => { const it = ITEM[id]; if (!it) return null;
-      return { title: it.name, sub: (it.slot ? it.slot.replace('_', ' ') : it.category || 'item'), img: artOf(id), glyph: glyphOf(id), lines: [it.text, it.weight_kg + ' kg' + (it.price_credits ? ' · ' + it.price_credits + ' credits' : '')].filter(Boolean), lore: '', ...extra }; };
+    /** A tip for an instance (`st`: its grade, mods, durability and name): the card's words now, the preview's lines when it opens. */
+    const cardTip = (id, st = {}) => { if (!id) return null; const k = cardOf(id, st.rarity), h = holes(id, st.rarity), wd = WEAPON[id], m = wd ? maxDurOf(id, st.rarity || 'standard') : 0, d = st.dur ?? m;
+      const gun = colIds.includes(id) ? 'Collection (Gun Nut): parting with it takes a Dexterity check.' : '';
+      return { title: st.name || k.name, sub: [h.grade, h.family || (k.kind || '').replace(/_/g, ' ')].filter(Boolean).join(' · '), img: h.img, glyph: '', lore: wd?.lore || '',
+        lines: [gun, ITEM[id]?.text || ''].filter(Boolean),
+        more: () => [gun, ...(c ? gearPreview(c, { id, rarity: st.rarity, mods: st.mods }).lines.map((l) => l.label + ': ' + l.value) : []),
+          m ? 'Durability ' + d + ' / ' + m + (d <= 0 ? ' · BROKEN' : '') : '', wd ? armsLine(id) : '', wd?.requires ? 'Needs ' + Object.entries(wd.requires).map(([x, v]) => SK[x]?.name + ' ' + v).join(', ') : '',
+          ITEM[id]?.text || ''].filter(Boolean) }; };
+    const weaponTip = (id, st = {}) => (WEAPON[id] ? cardTip(id, st) : null);
+    const itemTip = (id, st = {}) => (ITEM[id] ? cardTip(id, st) : null);
+    const tips = {};
     // Tooltips sit in a fixed layer at the screen's root (no column clips them): beside the hovered row, flipped left
     // when there's no room on the right, and growing down from the row in the top half of the screen, up from it below.
     const tipHandlers = (key) => ({ hover: (e) => { const r = e.currentTarget.getBoundingClientRect(), W = window.innerWidth, H = window.innerHeight;
@@ -714,26 +723,28 @@ export class MainLogic extends DCLogic {
       // rules 1.56: what is fitted to it (a mod) and a variant's modifiers, by the engine's preview lines, one chip each
       const fitted = id && !twoHanded && WEAPON[id] ? gearPreview(c, { id, rarity: r, mods: st.mods }).lines.filter((l) => /^(mod|variant):/.test(l.key)).map((l) => ({ key: l.key, label: l.label, tip: l.label + ': ' + l.value })) : [];
       return { key, side: ((isMain ? mainSide : mainSide === 'right' ? 'left' : 'right') + ' hand').toUpperCase(), tag: (isMain ? 'MAIN' : 'OFF') + (fk ? ' · ' + fk.toUpperCase() : ''), name: twoHanded ? 'Both hands: ' + (WEAPON[c.weapon]?.name || '') : id ? tips[key].title : 'Empty',
-        img: id ? artOf(id) : '', hasImg: !!(id && artOf(id)), noImg: !(id && artOf(id)), glyph: twoHanded ? '═' : id ? glyphOf(id) : '·', marks: id ? marks(r) : '', rarity: id ? RW(r) : '',
-        frameStyle: 'position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; border-radius: 10px; background: #0D1119; border: ' + (id ? (RARITY[r]?.marks ? 2 + RARITY[r].marks : 1) + 'px solid ' + (RARITY[r]?.marks ? '#E7EBF3' : '#3B475D') : '1px dashed #3B475D') + '; font-size: 40px; color: #5B6577; cursor: pointer',
+        img: id ? artOf(id, r) : '', hasImg: !!id, noImg: !id, glyph: twoHanded ? '═' : '·', marks: id ? '◆'.repeat(cardOf(id, r).graded ? cardOf(id, r).marks : 0) : '', rarity: id && cardOf(id, r).graded ? cardOf(id, r).gradeWord : '',
+        frameStyle: 'position: relative; display: grid; place-items: center; width: 100%; aspect-ratio: 1; border-radius: 10px; background: #0D1119; border: ' + (id ? gradeBorder(cardOf(id, r)) : '1px dashed #3B475D') + '; font-size: 40px; color: #5B6577; cursor: pointer',
         fitted, hasFitted: fitted.length > 0,
         nameStyle: 'font-size: var(--fs-sub); font-weight: 700; color: ' + (id || twoHanded ? '#E7EBF3' : '#5B6577'), ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length,
         noActText: gearLocked ? IN_FIGHT : twoHanded ? wordsOf(GW.two_hands, { weapon: mainName }) : 'Nothing in the pack fits here.' };
     };
     const hands = c ? (mainSide === 'right' ? [handCard('main'), handCard('off')] : [handCard('off'), handCard('main')]) : [];
-    const bodySlots = SLOTS.filter(([id]) => !['main', 'off', 'pack'].includes(id)).map(([id, label]) => {
-      const x = worn[id], wslot = SLOT_TO_WORN[id], wid = wslot && c?.worn?.[wslot], key = 'slot-' + id;
-      tips[key] = wid ? itemTip(wid) : id === 'outer' && c && c.armourClass ? { title: x[0], sub: 'outer torso · Armour Class', glyph: '▣', img: gearIconUri(torsoGearId(c.armourClass), GEAR_INK, { large: true }), lines: ['Armour ' + (ARMOUR[c.armourClass]?.value || 0) + ' against every hit.', 'Sets your Armour Class.'], lore: '' } : { title: 'Empty', sub: label.toLowerCase(), glyph: '·', img: '', lines: [id === 'veil' ? 'The Veil: a special equipment type; its rules aren\'t written yet.' : 'Wear a piece here from your backpack.'], lore: '' };
+    const bodySlots = SLOTS.filter(([id]) => ![HAND_SLOT.main, HAND_SLOT.off, PACK_SLOT].includes(id)).map(([id, label]) => {
+      const x = worn[id], wslot = wornKey(id), wid = wslot && c?.worn?.[wslot], key = 'slot-' + id;
+      // the worn piece (at its grade), or the body armour of the class worn (armour:<n>, at its grade), as the one item card
+      const bodyId = id === ARMOUR_SLOT && c?.armourClass ? 'armour:' + c.armourClass : null, inst = wid ? { id: wid, rarity: c.wornState?.[wslot]?.rarity } : bodyId ? { id: bodyId, rarity: c.wornState?.[ARMOUR_SLOT]?.rarity } : null;
+      tips[key] = inst ? { ...cardTip(inst.id, inst), ...(bodyId ? { title: x[0] } : {}) } : { title: 'Empty', sub: label.toLowerCase(), glyph: '·', img: '', lines: ['Wear a piece here from your backpack.'], lore: '' };
       const acts = gearLocked || !wslot ? [] : [...(wid ? [{ key: key + '-x', label: 'Take off', go: () => { act({ type: 'gear/unequip', charId: c.id, slot: wslot }); this.setState({ gearMenu: null }); } }] : []), ...cand((it) => ITEM[it.item || it.id]?.slot === wslot, 'Wear', 'worn')];
-      const icon = gearIconUri(wid || (id === 'outer' && c?.armourClass ? torsoGearId(c.armourClass) : ''));
-      return { key, label, name: x ? x[0] : '—', icon, hasIcon: !!icon, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length, noActText: gearLocked ? IN_FIGHT : id === 'outer' ? 'Armour Class comes from your kit for now.' : 'Nothing in the pack fits here.',
+      const icon = inst ? cardHoles(cardOf(inst.id, inst.rarity), { ink: GEAR_INK }).img : '';
+      return { key, label, name: x ? x[0] : '—', icon, hasIcon: !!icon, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0, noActs: !acts.length, noActText: gearLocked ? IN_FIGHT : id === ARMOUR_SLOT ? 'Armour Class comes from your kit for now.' : 'Nothing in the pack fits here.',
         hover2: () => this.setState({ hotSlot: id }),
         style: 'display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 2px 8px; align-items: center; padding: 5px 6px; border-radius: 6px; font-size: var(--fs-sub); cursor: pointer; width: 100%; text-align: left; color: inherit; font: inherit; border: 0; background: ' + (S.hotSlot === id || S.gearMenu === key ? '#1C2536' : 'transparent'),
         nameStyle: 'min-width: 0; overflow-wrap: break-word; line-height: 1.25; font-weight: ' + (x ? '600; color: #E7EBF3' : '400; color: #5B6577') };
     });
     // (backpack rows: hover for details, click for actions)
     const rigView = rig.map((r) => { const key = 'rig-' + r.key, it = r.src || {}, id = it.item || it.id;
-      tips[key] = (it.weapon && it.kind === 'weapon' ? weaponTip(it.weapon, it) : null) || (ITEM[id] && !it.mags && !it.calibre ? itemTip(id) : null) || { title: r.name, sub: r.tag.toLowerCase(), glyph: it.mags ? '▮' : it.calibre ? '⁝' : it.kind === 'plot' ? '◈' : '▪', img: it.mags || it.calibre ? gearIconUri(packGearId(it), GEAR_INK, { large: true }) : '', lines: [r.note, r.kg].filter(Boolean), lore: '' };
+      tips[key] = (it.weapon && it.kind === 'weapon' ? weaponTip(it.weapon, it) : null) || (ITEM[id] && !it.mags && !it.calibre ? itemTip(id, it) : null) || { title: r.name, sub: r.tag.toLowerCase(), glyph: '', img: cardHoles({ ...cardOf(packGearId(it) || id || ''), name: r.name }, { ink: GEAR_INK, large: true }).img, lines: [r.note, r.kg].filter(Boolean), lore: '' };
       const acts = [...r.acts.map((a) => ({ ...a, go: () => { a.go(); this.setState({ gearMenu: null }); } })), ...((it.mags || it.calibre) && canLoad && !gearLocked ? [{ key: 'load', label: 'Load magazines', go: () => { act({ type: 'gear/load', charId: c.id }); this.setState({ gearMenu: null }); } }] : [])];
       return { ...r, ...tipHandlers(key), ...menuFor(key), acts, hasActs: acts.length > 0 || r.hasGive, noActs: !acts.length && !r.hasGive, noActText: gearLocked ? IN_FIGHT : 'Nothing to do with it here yet.',
         img: tips[key].img, hasImg: !!tips[key].img, noImg: !tips[key].img, glyph: tips[key].glyph,
@@ -791,7 +802,7 @@ export class MainLogic extends DCLogic {
     const packBig = { open: !!S.packBig, openIt: () => this.setState({ packBig: true, gearMenu: null }), close: () => this.setState({ packBig: false }),
       count: packView.length + (packView.length === 1 ? ' line' : ' lines'), locked: gearLocked, lockedText: IN_FIGHT,
       groups: packTags.map((t) => ({ key: t, label: t, rows: packView.filter((r) => r.tag === t).map((r) => ({ ...r, bigActs: r.acts.map((x) => ({ ...x, go: () => { x.go(); } })), hasBigActs: r.acts.length > 0, noBigActs: !r.acts.length })) })) };
-    const TIP = S.tip && tips[S.tip.key];
+    const TIP0 = S.tip && tips[S.tip.key], TIP = TIP0 && TIP0.more ? { ...TIP0, lines: TIP0.more() } : TIP0; // the open tip's numbers (the gear preview) only
     const tipCard = TIP ? { ...TIP, lines: TIP.lines.map((t, i) => ({ key: i, t })), hasImg: !!TIP.img, noImg: !TIP.img, hasLore: !!TIP.lore,
       style: 'position: fixed; z-index: 40; left: ' + S.tip.x + 'px; ' + (S.tip.b != null ? 'bottom: ' + S.tip.b + 'px; max-height: calc(100vh - ' + (S.tip.b + 8) + 'px)' : 'top: ' + S.tip.y + 'px; max-height: calc(100vh - ' + ((S.tip.y || 0) + 8) + 'px)') + '; overflow: hidden; box-sizing: border-box; width: 260px; display: flex; flex-direction: column; gap: 6px; padding: 12px; border-radius: 12px; background: #10151F; border: 1px solid #3B475D; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6); pointer-events: none' } : null;
 

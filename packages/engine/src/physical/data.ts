@@ -4,6 +4,7 @@ import techniquesJ from '../../../../data/techniques.json';
 import { WEAPON, type WeaponDef } from '../data';
 import type { Character } from '../character';
 import { mod } from '../character';
+import { familyForm } from '../itemtags';
 import type { TechDef, TechSystem, TechGroup } from './types';
 import type { Combat, Unit } from '../combat';
 
@@ -21,8 +22,9 @@ export const weaponProps = (weaponId: string | null | undefined): string[] => we
 export const weaponSystem = (weaponId: string | null | undefined): TechSystem => weaponPhys(weaponId).system;
 export const hitsWith = (weaponId: string | null | undefined): string => weaponPhys(weaponId).hits_with;
 export const scalesWith = (weaponId: string | null | undefined): string[] => weaponPhys(weaponId).scales_with;
-/** The technique a weapon lends while held and teaches at drill mark I (null: none). */
-export const weaponTeaches = (weaponId: string | null | undefined): string | null => weaponPhys(weaponId).teaches || null;
+/** The technique a weapon lends while held and teaches at drill mark I (null: none). Rules 1.91 item 7902: the row's
+ * `phys.teaches` overrides; else its family's form's (data/families.json, the one copy of a form's technique). */
+export const weaponTeaches = (weaponId: string | null | undefined): string | null => weaponPhys(weaponId).teaches || (weaponId ? familyForm(weaponId)?.teaches : null) || null;
 /** A property's name and one-line meaning, for a "?" (rules.props). */
 export const propText = (prop: string): string => PHYS_RULES.props?.[prop] || '';
 export const groupsOf = (system: TechSystem): TechGroup[] => PHYS_RULES.groups[system];

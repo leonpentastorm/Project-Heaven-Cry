@@ -6,25 +6,25 @@
 // durability bar now → full in place of the numbers, and its button says Repair (the action `run/repair`).
 import React from 'react';
 import { act } from './store';
-import { gearIconUri } from './gearIcons';
+import { ItemPicture } from './ItemCard';
+import { cardOf } from './itemCardView';
 import { openTipOn, tipProps } from './actionTip';
 import { FRAME_INK as I } from './FullScreenFrame';
 import { WearBar, type WearData } from './WearBar';
 
 /** What an upgrade card draws: a services-shelf card (the shop) or a place's option card (the Forge), as one shape. */
-export interface UpgradeCardData { key: string; title: string; id?: string | null; price: number | null; why: string | null; note?: string; lines: { label: string; before: string; after: string }[]; action: { type: string; [k: string]: unknown }; wear?: WearData | null;
+export interface UpgradeCardData { key: string; title: string; id?: string | null; /** the instance's grade now (its picture's frame) */ rarity?: string | null; price: number | null; why: string | null; note?: string; lines: { label: string; before: string; after: string }[]; action: { type: string; [k: string]: unknown }; wear?: WearData | null;
   /** the button's word when the engine names one (the Forge's mod cards: Fit, Take off); else Upgrade, or Repair with `wear` */ verb?: string }
 
 /** One grade step as a large card (rules 1.46); `choice` marks its button as a place's option (data-phc-choice). */
 export function UpgradeCard({ s, onFocus, choice }: { s: UpgradeCardData; onFocus?: () => void; choice?: boolean }) {
-  const icon = s.id ? gearIconUri(s.id, undefined, { large: true }) : '', w = s.wear || null;
+  const w = s.wear || null;
   return (
     <article data-phc-service={s.key} data-phc-repair={w ? s.key : undefined} data-phc-service-why={s.why ? '' : undefined} tabIndex={0} onMouseEnter={onFocus} onFocus={onFocus} {...tipProps(s.why)}
       style={{ display: 'flex', flexDirection: 'column', gap: 12, minHeight: 236, padding: 18, borderRadius: 16, background: 'linear-gradient(180deg, rgba(28,37,54,0.96), rgba(16,21,31,0.96))', border: '1px solid ' + (s.why ? I.line : '#7A879E'), opacity: s.why ? 0.82 : 1 }}>
       <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-        <div style={{ flexShrink: 0, width: 80, height: 80, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}>
-          {icon ? <img data-zoom={s.title} data-zoom-text={s.note || ''} src={icon} alt="" width={72} height={72} style={{ objectFit: 'contain' }} /> : <span style={{ fontSize: 26, color: I.muted }}>▲</span>}
-        </div>
+        {/* Items 2.0 lane A3: the one item card's picture (ItemCard.tsx): the picture chain on the instance's grade frame */}
+        {s.id ? <ItemPicture card={cardOf(s.id, s.rarity)} size={80} zoom={s.note || ''} /> : <div style={{ flexShrink: 0, width: 80, height: 80, display: 'grid', placeItems: 'center', borderRadius: 12, background: 'radial-gradient(closest-side, rgba(231,235,243,0.14), rgba(231,235,243,0.02))' }}><span style={{ fontSize: 26, color: I.muted }}>▲</span></div>}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4, minWidth: 0 }}>
           <span style={{ fontFamily: "'Spectral', serif", fontSize: 20, fontWeight: 600, lineHeight: 1.2 }}>{s.title.split(': ')[0]}</span>
           {s.title.includes(': ') ? <span data-phc-step="" style={{ fontSize: 'var(--fs-sub)', fontWeight: 700, letterSpacing: '0.12em', color: I.white, textTransform: 'uppercase' }}>{s.title.split(': ').slice(1).join(': ')}</span> : null}

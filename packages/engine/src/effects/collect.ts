@@ -9,6 +9,7 @@ import shadowJ from '../../../../data/shadow.json';
 import tendingJ from '../../../../data/tending.json';
 import pressureJ from '../../../../data/pressure.json';
 import forksJ from '../../../../data/forks.json';
+import effectOpsJ from '../../../../data/effect_ops.json';
 import type { ItemInfo, ItemKind, Tier, ActiveEffect } from './types';
 
 const TRAIT: Record<string, any> = Object.fromEntries(TRAITS.map((t) => [t.id, t]));
@@ -26,8 +27,15 @@ export function _addRawItems(kind: 'perk' | 'trait' | 'relic' | 'verb', items: a
  * through the predicate `with_this`. Read from the data table itself, so a mod written as one data line is held with no
  * code (a quiver's enchantment is a mod too: it has no triggered effects). */
 const gearModRow = (id: string): any | null => { const x: any = (ITEM as any)[id]; return x && x.category === 'mod' ? x : null; };
+/** Rules 1.91 item 7956 (N4): the gear ops gearEffects sums for what is worn and held (effect_ops.json, tier `item`). */
+const GEAR_OPS = new Set<string>(((effectOpsJ as any).items || []).filter((o: any) => o?.tier === 'item').map((o: any) => o.id));
+/** Rules 1.91 item 7956 (N4): a worn armour row's effects the engine runs on a holder (every one that is not a gear op);
+ * [] for anything else, and for a piece that has only gear ops (every piece of 0.33). */
+export const wornHeldEffects = (id: string): any[] => { const x: any = (ITEM as any)[id]; return x && x.category === 'armour' && x.slot ? (x.effects || []).filter((e: any) => e && !GEAR_OPS.has(e.op)) : []; };
+/** A worn piece held as a relic item (N4): its row, when it has effects to hold. */
+const wornRow = (id: string): any | null => (wornHeldEffects(id).length ? (ITEM as any)[id] : null);
 // rules 1.56 L4: a variant's modifier item (data/variants.json, made at load by variants.ts) is held the same way
-const heldRelicRow = (id: string): any | null => EXTRA.relic[id] || gearModRow(id) || VARIANT_MOD[id] || null;
+const heldRelicRow = (id: string): any | null => EXTRA.relic[id] || gearModRow(id) || VARIANT_MOD[id] || wornRow(id) || null;
 export function _clearRawItems() { for (const k of Object.keys(EXTRA) as (keyof typeof EXTRA)[]) EXTRA[k] = {}; infoCache.clear(); itemsCache.clear(); }
 /** The data's door verbs: the `items` of kind `verb` of each system's file (Shadow, Tending, Figments, the Chaplain's
  * prayers: one line here as each file comes), and those added at run time (addItems('verb', …): a test's fixtures). */
@@ -146,7 +154,8 @@ function buildInfo(key: string, tier?: string): ItemInfo | null {
   if (kind === 'relic') {
     const x = heldRelicRow(id); if (!x) return null;
     // a mod's: its triggered effects (its `mod` marker is the slot, not a rule); a run relic's and a variant's modifier's: all
-    const effects = EXTRA.relic[id] || VARIANT_MOD[id] ? [...(x.effects || [])] : (x.effects || []).filter((e: any) => e && (typeof e.when === 'string' || e.op === 'grant_action'));
+    // rules 1.91 item 7956 (N4): a worn piece's: its effects that are not gear ops (gearEffects sums those)
+    const effects = EXTRA.relic[id] || VARIANT_MOD[id] ? [...(x.effects || [])] : !gearModRow(id) ? wornHeldEffects(id) : (x.effects || []).filter((e: any) => e && (typeof e.when === 'string' || e.op === 'grant_action'));
     // rules 1.56 (P14): a carried modifier (a gear mod row, a variant's) is a whole item: its grant_action is an action of its holder's (the Open
     // Hand's Breath), held while the instance is in a hand
     const act = !EXTRA.relic[id] && !!(gearModRow(id) || VARIANT_MOD[id]) && effects.some((e: any) => e?.op === 'grant_action'), g = act ? effects.find((e: any) => e?.op === 'grant_action') : null;
@@ -334,6 +343,7 @@ export function allItems(): ItemInfo[] {
   for (const id of Object.keys(EXTRA.relic)) out.push(itemInfo('relic:' + id)!);
   for (const id of Object.keys(ITEM)) if (gearModRow(id)) out.push(itemInfo('relic:' + id)!); // the weapon mods (rules 1.56)
   for (const id of Object.keys(VARIANT_MOD)) out.push(itemInfo('relic:' + id)!); // the variants' modifiers (rules 1.56 L4)
+  for (const id of Object.keys(ITEM)) if (wornRow(id)) out.push(itemInfo('relic:' + id)!); // the worn pieces held (rules 1.91 item 7956, N4)
   for (const v of allVerbs()) out.push(itemInfo('verb:' + v.id)!);
   return out.filter(Boolean);
 }

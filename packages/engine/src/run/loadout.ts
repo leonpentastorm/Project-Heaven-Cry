@@ -17,6 +17,7 @@ import { grantGoods, itemLabel } from '../containers';
 import { type GearPreview, gearPreview } from '../gearpreview';
 import { meBlock, type MeV } from './shopview';
 import { priceOf } from '../credits';
+import { itemsWith } from '../itemtags';
 import { counterLines, lineGoods, SHOP_DATA } from './shop';
 import { magazineWorth } from './rewards';
 import { stripGear } from '../loadout';
@@ -43,7 +44,8 @@ export interface Archetype { id: string; name: string; family: string; category:
 /** An archetype's weapons, cheapest first by priceOf at Standard (a tie by id): the first is its free weapon, the second
  * the rack's better one. */
 export function archetypeWeapons(a: Archetype): string[] {
-  return Object.keys(WEAPON).filter((id) => { const w: any = WEAPON[id]; return w.mastery_family === a.family && w.category === a.category && !w.variant_of && !(a.skip || []).includes(id) && priceOf(id) != null; })
+  // rules 1.91 item 7920: by tags (its kind, rolled: priced and no variant), then the row's mastery_family
+  return itemsWith({ from: 'weapons', all: ['kind:' + a.category], rolled: true }).filter((id) => (WEAPON[id] as any).mastery_family === a.family && !(a.skip || []).includes(id))
     .sort((x, y) => (priceOf(x) || 0) - (priceOf(y) || 0) || (x < y ? -1 : 1));
 }
 /** The camp's weapon rack by archetype (rules 1.52; Leon, 14 Nov): the free weapon (the archetype's most basic), the
@@ -361,8 +363,9 @@ export function loadoutView(g: G, me: string, charId?: string | null): LoadoutVi
   };
   const preview = (id: string): GearPreview => {
     const a = /^armour:(\d)$/.exec(id);
-    if (a) { const k = ARMOUR_CLASSES[Number(a[1])]; return { id, name: 'Class ' + a[1] + ' body armour (' + (k?.name || '') + ')', kind: 'armour', rarity: 'standard', category: 'Body armour', traits: [], text: 'Worn on the torso. One class at a time.',
-      lines: [{ key: 'armour', label: 'Armour', value: String(k?.value ?? 0), num: k?.value ?? 0, better: 'higher' }, { key: 'kg', label: 'Weight', value: (k?.weight_kg ?? 0) + ' kg', num: k?.weight_kg ?? 0, better: 'lower' }] }; }
+    // Items 2.0 lane A3: body armour is previewed by the one gear preview (gearpreview.ts: its class worn, the level-scaled
+    // armour the fight uses, its weight), named here as the camp names it
+    if (a) { const k = ARMOUR_CLASSES[Number(a[1])]; return { ...gearPreview(c, { id, rarity: 'standard' }), name: 'Class ' + a[1] + ' body armour (' + (k?.name || '') + ')', text: 'Worn on the torso. One class at a time.' }; }
     return gearPreview(c, { id, rarity: 'standard' });
   };
   const pickCard = (slot: 'weapon' | 'focus', id: string, group: string): LoadoutCardV => { const pv = preview(id), on = p[slot] === id;

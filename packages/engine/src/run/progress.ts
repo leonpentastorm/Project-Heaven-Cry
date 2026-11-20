@@ -10,7 +10,7 @@
 // and the engine's reason), so the client builds no price, legality or choice.
 import '../datatext';
 import svJ from '../../../../data/survival.json';
-import { WEAPON, ITEM } from '../data';
+import { WEAPON, ITEM, ARMOUR_CLASSES } from '../data';
 import { type Character, type Rarity, type GearWhere, type PackItem, gearAt, setGrade, packOf, fitMod, maxHp, maxDurOf, armourCap, armourGateWhy, wearAt, repairAt, type Wear, quiversOf, isQuiverItem,
   practiceOf, picksAt, nextPickAt, devotionXpOf, devotionLevelOf, devotionThreshold, DEVOTION_MAX_LEVEL, carriedGuns, gunAt, setGunMods, type GunWhere } from '../character';
 import { payCredits, earnCredits, cantPay, priceOf } from '../credits';
@@ -30,6 +30,8 @@ import { nextPools } from './stage';
 import type { GameState } from '../game';
 import { registerShopService, type ServiceCard } from './shop';
 import { gearPreview } from '../gearpreview';
+import { GRADES, SOLD_GRADES, gradeWord, gradedArmour, setArmourClass, ARMOUR_SLOT } from '../character';
+import { fixedGradeOf, itemsWith } from '../itemtags';
 import { useProblem, useNow } from '../give';
 
 const SV: any = svJ;
@@ -59,9 +61,13 @@ const TRADE: Record<string, TradeRow> = Object.fromEntries(TRADES.items.map((t) 
 const FORGE_SLOTS: number = SV.forge.slots, FIT: Record<string, number> = SV.armour_fit.price;
 /** Rules 1.55: the Forge's fee to fit, swap or take off a weapon mod (survival.json forge.fit): `rate` x the mod's price, at least `min`. */
 const MOD_FIT: { rate: number; min: number; extra_actions: string[] } = SV.forge.fit;
-const LADDER: Rarity[] = ['standard', 'fine', 'masterwork', 'relic'];
-const GRADE_WORD: Record<string, string> = { standard: 'Standard', fine: 'Fine', masterwork: 'Masterwork', relic: 'Relic', celestial: 'Celestial' };
-const nameOf = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || id;
+/** Rules 1.91 item 7905: the Forge's ladder is the grades a shop or the Forge ever gives (rules.json rarity `sold`), in
+ * order; a grade's word is its row's. */
+const LADDER: Rarity[] = SOLD_GRADES;
+const GRADE_WORD: Record<string, string> = Object.fromEntries(GRADES.map((r) => [r, gradeWord(r)]));
+/** Rules 1.91 item 7917: a unique's grade is its own (itemtags.ts fixedGradeOf): no step changes it. */
+const fixedWhy = (id: string): string | null => (fixedGradeOf(id) ? 'The ' + nameOf(id) + "'s grade is its own: no armourer changes it." : null);
+const nameOf = (id: string) => (WEAPON[id] as any)?.name || (ITEM[id] as any)?.name || (/^armour:\d+$/.test(id) ? (ARMOUR_CLASSES[Number(id.slice(7))]?.name || '') + ' body armour' : id);
 
 /** The actions of this file (the run reducer hands them here; game.ts Action lists them). */
 export type ProgressAction =
@@ -91,7 +97,9 @@ const notHere = (want: string) => 'You are not at ' + want + '.';
 const opensIn = (to: Rarity): number => { for (let s = 1; s <= 99; s++) if (LADDER.indexOf(stageCeiling(s)) >= LADDER.indexOf(to)) return s; return 99; };
 const gradeOpens = (to: Rarity) => 'Opens in stage ' + (to === 'relic' ? Math.max(GRADE_UP.relic_from_stage, opensIn(to)) : opensIn(to));
 /** Where a carried thing is, in a card's words. */
-const whereWord = (where: GearWhere) => (typeof where === 'number' ? 'In your pack' : where === 'main' ? 'In hand' : where === 'off' ? 'In your off hand' : where === 'quiver:0' ? 'Your worn quiver' : 'Your spare quiver');
+const whereWord = (where: GearWhere) => (typeof where === 'number' ? 'In your pack' : where === 'main' ? 'In hand' : where === 'off' ? 'In your off hand' : where === 'quiver:0' ? 'Your worn quiver' : String(where).startsWith('worn:') ? 'Worn' : 'Your spare quiver');
+/** Rules 1.91 item 7953: the worn instances that take a grade (each slot worn, and the body armour), as places a grade step names. */
+const wornWheres = (c: Character): GearWhere[] => [...(c.armourClass ? [ARMOUR_SLOT] : []), ...Object.keys(c.worn || {})].map((s) => ('worn:' + s) as GearWhere).filter((w) => !!gearAt(c, w));
 /** Rules 1.43: a visit begins as the party enters a safe node; the Forge rolls its stock, the Crossroads its trades, the
  * shrine its patron, each from the run's seed through the node's own stream (rule 12). */
 export function openVisit(g: GameState, n: { id: string; kind: string }): RunVisit {
@@ -129,7 +137,10 @@ export function upgradeProblem(g: GameState, c: Character, a: { where: GearWhere
   if (h.n.kind !== a.place) return 'This is not a ' + (a.place === 'forge' ? 'Forge' : 'shop') + '.';
   const it = gearAt(c, a.where); if (!it) return 'There is no weapon or focus there to upgrade.';
   if ((WEAPON[it.id] as any)?.category === 'thrown') return 'Thrown weapons can\'t be upgraded.';
+  { const f = fixedWhy(it.id); if (f) return f; }
   const to = nextGrade(it.rarity); if (!to) return 'The ' + GRADE_WORD[it.rarity] + ' ' + nameOf(it.id) + ' is as good as any armourer can make it.';
+  // rules 1.91 item 7955: armour takes the Forge's grade step only, and no Relic step in this pass
+  if (gradedArmour(it.id)) { if (a.place !== 'forge') return 'Only a Forge grades armour.'; if (to === 'relic') return 'Armour takes no Relic property yet: the ' + GRADE_WORD[it.rarity] + ' ' + nameOf(it.id) + ' is as good as the armourer makes it.'; }
   const ceil = stageCeiling(h.r.stage);
   if (LADDER.indexOf(to) > LADDER.indexOf(ceil) || (to === 'relic' && h.r.stage < GRADE_UP.relic_from_stage)) return gradeOpens(to);
   if (to === 'relic' && a.place !== GRADE_UP.relic_at) return 'Only a Forge makes a Relic.';
@@ -195,7 +206,8 @@ export function forgeStock(g: GameState, rng: ReturnType<typeof rngFor>): RunSto
   const chars = Object.values(g.characters).filter((c) => !c.dead);
   const want = [...new Set(chars.flatMap((c) => lastingFor(c)))];
   const archers = chars.some((c) => quiversOf(c).length); // rules 1.53: enchantments are stocked for a party that carries quivers
-  const any = (Object.values(ITEM) as any[]).filter((it) => (it.category === 'mod' || (it.category === 'armour' && it.slot)) && (archers || it.mod_slot !== 'enchantment') && priceOf(it.id) != null).map((it) => it.id);
+  // rules 1.91 item 7920: by tags (a mod, or a worn armour piece: a row with its slot), priced
+  const any = itemsWith({ from: 'items', any: ['kind:mod', 'kind:armour'] }).filter((id) => { const it: any = ITEM[id]; return (it.category === 'mod' || !!it.slot) && (archers || it.mod_slot !== 'enchantment') && priceOf(id) != null; });
   const out: string[] = [];
   for (const pool of [want, any.filter((id) => !want.includes(id))]) { const p = [...pool]; while (out.length < FORGE_SLOTS && p.length) out.push(p.splice(die(rng, p.length) - 1, 1)[0]); }
   return out.map((id) => ({ id, price: priceOf(id) || 0 }));
@@ -209,8 +221,11 @@ export function forgeProblem(g: GameState, c: Character, slot: number): string |
 }
 /** The next armour class the Forge fits for this character, and why it can't now (rule 44), or null when none is next. */
 export function fitOf(g: GameState, c: Character): { cls: number; price: number; why: string | null } | null {
-  const next = (c.armourClass || 0) + 1, price = FIT[String(next)];
-  if (price == null) return null;
+  // rules 1.91 item 7952: class by class to the last row the Forge fits (forge_fit); a class with no fitting price in
+  // survival.json armour_fit at its class row's own price (Juggernaut)
+  const next = (c.armourClass || 0) + 1, row = ARMOUR_CLASSES[next];
+  if (!row?.forge_fit) return null;
+  const price = FIT[String(next)] ?? row.price_credits;
   const h = here(g), cap = armourCap(c);
   const why = !h || h.n.kind !== 'forge' ? notHere('a Forge') : cap != null && next > cap ? c.name + ' can\'t wear armour heavier than class ' + cap + '.' : armourGateWhy(c, next) || cantPay(c, price);
   return { cls: next, price, why };
@@ -372,7 +387,8 @@ export function tradeProblem(g: GameState, c: Character, a: { trade: string; whe
   switch (t.do) {
     case 'grade': {
       const it = a.where != null ? gearAt(c, a.where) : null; if (!it) return 'Pick a weapon ' + c.name + ' carries.';
-      if (!maxDurOf(it.id, it.rarity)) return 'The off-books armourer works on weapons, not foci.';
+      if (!maxDurOf(it.id, it.rarity)) return 'The off-books armourer works on weapons, not foci or armour.'; // rules 1.91 item 7955
+      { const f = fixedWhy(it.id); if (f) return f; }
       const to = nextGrade(it.rarity); if (!to || to === 'relic') return 'The off-books armourer only upgrades to Fine or Masterwork.';
       const ceil = stageCeiling(h.r.stage); if (LADDER.indexOf(to) > LADDER.indexOf(ceil)) return gradeOpens(to);
       return cantPay(c, tradePrice(c, a));
@@ -426,7 +442,7 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
       const f = fitOf(g, c);
       if (!f) return c.name + ' wears the heaviest class the Forge fits.';
       if (f.why) return f.why;
-      payCredits(c, f.price); c.armourClass = f.cls;
+      payCredits(c, f.price); setArmourClass(c, f.cls); // rules 1.91 item 7953: a new plate, Standard
       say(c.name + ' is fitted for armour class ' + f.cls + ': ' + f.price + ' credits.', c.id); return null;
     }
     case 'run/fit_mod': {
@@ -505,8 +521,9 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
   const c = g.characters[charId], h = here(g); if (!c || !h) return [];
   const out: RunOption[] = [], k = h.n.kind, word = (r: Rarity) => GRADE_WORD[r];
   const wheres: GearWhere[] = ['main', 'off', ...packOf(c).map((_, i) => i), ...quiversOf(c).map((_, i) => ('quiver:' + i) as GearWhere)]; // rules 1.53: the carried quivers too
-  if (k === 'shop' || k === 'forge') for (const where of wheres) {
-    const it = gearAt(c, where); if (!it || (WEAPON[it.id] as any)?.category === 'thrown') continue;
+  // rules 1.91 item 7955: the Forge grades armour too (worn, body armour, and a graded piece in the pack); a shop does not
+  if (k === 'shop' || k === 'forge') for (const where of [...wheres, ...(k === 'forge' ? wornWheres(c) : [])]) {
+    const it = gearAt(c, where); if (!it || (WEAPON[it.id] as any)?.category === 'thrown' || (k !== 'forge' && gradedArmour(it.id))) continue;
     const to = nextGrade(it.rarity), at = whereWord(where);
     const base = { where, place: k as GradePlace };
     if (to === 'relic' && k === GRADE_UP.relic_at && !isQuiverItem(it.id)) {

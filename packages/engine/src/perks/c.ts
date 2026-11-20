@@ -19,7 +19,7 @@ import {
 } from '../combat';
 import { WEAPON, ITEM } from '../data';
 import { factorOf } from '../effects/output';
-import { mod, packOf, physicalMult, carryLimit, collectionOf, isGunId, carriedGuns, gunAt, setGunMods, type GunWhere } from '../character';
+import { mod, maxDurOf, packOf, physicalMult, carryLimit, collectionOf, isGunId, carriedGuns, gunAt, setGunMods, type GunWhere } from '../character';
 import { applyCond, condOn } from '../magic';
 import { throwItem, blast, radiusOf, canReact, react, refundReaction, throwRangeOf } from '../tactics';
 import { makeObject, kindOf, isTrap, blocksMove } from '../objects';
@@ -200,7 +200,7 @@ register({
   },
   brief: () => null,
 });
-const maxDur = (c: Character) => { const w: any = WEAPON[c.weapon]; return Math.round((w?.durability || 0) * ({ standard: 1, fine: 1.25, masterwork: 1.5, relic: 1.5, celestial: 1.5 } as any)[c.weaponState?.rarity || 'standard']); };
+const maxDur = (c: Character) => maxDurOf(c.weapon, c.weaponState?.rarity); // rules 1.91 item 7905: the one grade ladder (the typed multipliers are gone)
 
 // ---------- extra mod slots (Gun Nut, Blade Recluse, Overhaul) ----------
 // A weapon's extra slot is a second slot of a type it already has (plan 6b; PROVISIONAL): the mod goes in beside the one
@@ -466,7 +466,9 @@ register({
 // its blast shaped as a circle (its radius), a line or a 90° cone (2 × radius + 1 tiles, away from you) (PROVISIONAL);
 // detonate now, or on a trigger ("Detonate", 1 AP, PROVISIONAL). Ringing Ears: −2 Vigilant (the data's skill_mod);
 // checks the Narrator tags 'hearing' fail.
-const EXPLOSIVES = ['satchel_charge', 'frag_grenade', 'incendiary_grenade'];
+/** Rules 1.91 item 7916: an explosive charge is a row with `explosive: true` and category thrown (the launchers are
+ * explosive and not thrown), in data order. */
+const EXPLOSIVES: string[] = Object.keys(WEAPON).filter((id) => !!(WEAPON[id] as any).explosive && WEAPON[id].category === 'thrown');
 const DEMO = 1.3;
 function shapeTiles(cb: Combat, from: string, at: string, shape: string, r: number): string[] {
   const out: string[] = [], [ax, ay] = xy(at), [fx, fy] = xy(from), dx = Math.sign(ax - fx), dy = Math.sign(ay - fy), n = 2 * r + 1;
