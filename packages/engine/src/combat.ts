@@ -7,7 +7,7 @@ import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout'
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf, ladderSchedule } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
-  twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
+  twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources, type Grip, focusIdOf, focusKindOf, type FocusKind } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
@@ -223,6 +223,9 @@ export interface Unit {
   /** Rules 1.83 item 7100: an enemy's door wants (its rows' `doors.wants`, combat.ts armDoors): the held item actions and
    * prayers the enemy step (ai-doors.ts) weighs against a plain attack. */
   wants?: DoorWant[];
+  /** Rules 1.86 item 7400: what a unit with no character holds in a hand beyond its weapons (its rows' `doors.hands`:
+   * item ids, an Attuner); read only by unitGrip. */
+  holding?: string[];
   /** Rules 1.83 item 7104: the prayer sheet of a unit with no character (an enemy row's `doors.faith`): what faith.ts
    * reads in a character's place (its Faith, its patron, its Devotion). Never a character's. */
   sheet?: Record<string, any>;
@@ -672,6 +675,26 @@ function armDoors(u: Unit, blocks: any[]) {
   }
   if (hold.length) u.held = { perks: [], traits: [], items: hold };
   if (wants.length) u.wants = wants;
+  // rules 1.86 item 7400: what its rows put in its hands (`hands`: item ids); a focus there is its magic block's too, as
+  // a character's mg mirrors its hands (magic.ts: evoker, emanator, attuner), so the MP row's `needs` reads it
+  const hands = [...new Set(blocks.flatMap((b) => (Array.isArray(b.hands) ? b.hands : [])).filter((x: any) => typeof x === 'string'))] as string[];
+  if (hands.length) {
+    u.holding = hands;
+    for (const id of hands) { const k = focusKindOf(id); if (k && u.mg && k in MG_FOCUS) (u.mg as any)[k] = true; }
+  }
+}
+/** The magic block's focus flags (MagicUnit), by focus kind. */
+const MG_FOCUS: Partial<Record<FocusKind, true>> = { evoker: true, emanator: true, attuner: true };
+/** Rules 1.86 item 7400: what a unit with no character holds (character.ts Grip, read by gripHolds as a character's is):
+ * its weapon and off-hand weapon, its rows' `doors.hands`, and a focus of each kind its magic block names (an enemy
+ * Evoker's or Emanator's own). Nothing is carried beyond the hands; no armour class is known. */
+export function unitGrip(u: Unit): Grip {
+  const hands = [u.weapon, u.offWeapon, ...(u.holding || [])].filter((x): x is string => !!x);
+  for (const k of Object.keys(MG_FOCUS) as FocusKind[]) {
+    if (!(u.mg as any)?.[k] || hands.some((id) => focusKindOf(id) === k)) continue;
+    const id = focusIdOf(k); if (id) hands.push(id);
+  }
+  return { hands, carried: (ids) => hands.some((x) => ids.includes(x)), armourClass: null };
 }
 function armGuard(u: Unit, row: any) {
   const n = Number(row?.guard?.plates); if (!(n > 0)) return;

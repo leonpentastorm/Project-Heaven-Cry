@@ -13793,3 +13793,28 @@ number of the rules changes.
     reward panel says "Yours to take:" over a single card (`survival.json reward_panel.take_one`); the Bonds door line
     says "when you are hurt it takes 20% of the blow for you"; the Proving Ground says "No wave cleared yet" before the
     first; creation's Essence of Experience line says who can crack it (any focus in a hand), with no typed number.
+
+### Rules 1.86 (engine lane), 0.33: the engine leftovers of wave 1 (20 Nov 2026)
+
+The engine lane of 0.33 (hand-off `docs/design/handoffs/0.33-LANE-ENGINE.md`; branch `wip/0.33c-engine`). What the rules,
+enemy and polish lanes reported not built. Leon approved new engine pieces on 20 Nov 2026; each is listed in the hand-off.
+Items are numbered 7400 onward and carry the lane's name ("engine lane") for the integrator. **Every new number is
+PROVISIONAL.**
+
+7400. **Engine lane: what a unit with no character holds.** A unit with no character holds its weapon, its off-hand
+      weapon, what its rows' `doors` blocks put in its hands (`hands`: item or weapon ids), and a focus of each kind
+      its magic block names (an enemy Evoker's, an enemy Emanator's). The predicates `self_holds` and
+      `self_lacks_gear` read that for it, through the one reading a character's hands go through (`gripHolds`); it
+      carries nothing beyond its hands, and no armour weight class is known for it (a `body` test does not hold). A
+      focus put in its hands also sets its magic block's flag of that kind, as a character's mirrors its hands, so the
+      MP row's `needs` reads it. Nothing else changes: before this an enemy held nothing, and no enemy item read a
+      `self_holds` gate until item 7401.
+7401. **Engine lane: the Heart adept's Bond, Tug and Snap.** The Heart adept (`soul_casters heart_adept`) wears an
+      Attuner (`doors.hands`), holds Threads, Bond, Snap and Pull Together I (Tug) at Empathy 3, and wants: Snap on a
+      Bonded foe under **35%** of its HP (**6.5**), Tug on a Bonded foe farther than **4** tiles (**5.5**: into its Heart
+      Overwatch), Bond on a foe it sees (**5.5**), each once a turn; its Whisper of Health (7) stays first. Each runs
+      the verb's own data (the Heart save against its Empathy, Threads' share and echo, Snap's Soul damage and Daze,
+      Tug's MP from its heart). A new predicate `target_beyond` (and `actor_beyond`): the mirror of `_within`.
+7402. **Engine lane: the Heartfire elite Slams.** Its Guard row's Durability is **5** (was 3; its plates soak by it, as a
+      character's), and it wants Slam when two foes or more stand next to it (**5**, **+1** a foe, at least 2, once a
+      turn); Challenge's want is unchanged (two foes within 2 tiles, neither next to it, is still a Challenge).

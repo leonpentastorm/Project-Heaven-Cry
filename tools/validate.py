@@ -2014,6 +2014,23 @@ COND_HIT = {"own_attacks", "next_attack", "not_vs_source", "vs_source", "marker_
 # The 0.29 consolidation (SF4): a door line's numbers are {=placeholders} of its own row; the Sigil door's Line lengths
 # are copied to its row (door_numbers) and must equal the grammar's, and every door tab a door system file opens
 # (shadow.json, tending.json, figments.json `tab`) has a skill whose door_title names it on the fight screen.
+def check_enemy_doors(D, errors):
+    """Rules 1.83, 1.86 item 7400: an enemy row's doors block (a tier's, a caster archetype's, a tag's): `hands` names
+    item or weapon ids (what it holds in a hand: combat.ts unitGrip); a want's `item` is one it holds (`hold`)."""
+    E = D.get("enemies") or {}
+    ids = {x["id"] for x in D["items"]["items"]} | {x["id"] for x in D["weapons"]["items"]}
+    blocks = [(f"enemies:{r.get('id')}", r.get("doors")) for r in (E.get("items") or []) + (E.get("casters") or []) + (E.get("soul_casters") or [])]
+    blocks += [(f"enemies:ai.tag_doors.{k}", v) for k, v in ((E.get("ai") or {}).get("tag_doors") or {}).items()]
+    for w, b in blocks:
+        if not isinstance(b, dict): continue
+        for h in b.get("hands") or []:
+            if h not in ids: errors.append(f"{w}: doors.hands {h!r} is not an items.json or weapons.json id")
+        hold = set(b.get("hold") or [])
+        for x in b.get("wants") or []:
+            it = x.get("item")
+            if it and it not in hold and it.split("@")[0] not in {k.split("@")[0] for k in hold}: errors.append(f"{w}: a want's item {it!r} is not in doors.hold")
+
+
 def check_doors(D, errors):
     sk = {s["id"]: s for s in D["skills"]["items"]}
     g = D["sigils"]["grammar"]
@@ -3718,6 +3735,7 @@ for _pf in PLAYER_FILES:
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import text_numbers
 check_doors(data, errors)
+check_enemy_doors(data, errors)
 TEXT_NUMBERS = text_numbers.check(data, errors, sys.argv[2:])
 
 print("files:", ", ".join(f"{k}({len(items(k)) if k not in ('classes','rules') else ''})" for k in data))
