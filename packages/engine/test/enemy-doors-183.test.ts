@@ -171,7 +171,7 @@ describe('rules 1.83 item 7107: the bait reads Answers', () => {
   });
   it('the Soldier holds off the Answer while the Minion has still to act (Tester 1 a little more hurt): it goes at Tester 2', () => {
     const { f, a, b, s } = setup('soldier first');
-    f.unit(a.id).hp = Math.round(9999 * 0.7);
+    f.unit(a.id).hp = Math.round(9999 * 0.9); // a tenth more hurt: less than answer_hold (0.15)
     f.turn(s.id);
     expect(withGame(f.g, () => enemyIntent(f.cb, f.unit(s.id))).targetId).toBe(b.id);
   });

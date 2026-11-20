@@ -3199,7 +3199,8 @@ function enemyRank(cb: Combat, u: Unit, mode: 'melee' | 'shot', pcs: Unit[], rea
   if (top && aimOwner(top.t) !== tauntBy && !top.t.downed) {
     const rest = list.filter((x) => !x.t.downed && aimOwner(x.t) !== aimOwner(top.t));
     const nearer = d.near > 0 && rest.some((x) => x.far > top.far), fresher = rest.some((x) => x.fire > top.fire), worse = rest.some((x) => hurtShare(cb, x.t) > hurtShare(cb, top.t));
-    top.why = (top.aw || 0) < 0 ? 'bait' : top.healer ? 'healer' : d.id === 'nearest' && nearer ? 'nearest' : fresher ? 'spread' : worse ? 'wounded' : nearer ? 'nearest' : undefined;
+    const baited = (top.aw || 0) < 0 && rest.some((x) => key(x) - (x.aw || 0) < key(top) - (top.aw || 0)); // rules 1.83: the Answer's weight made the choice
+    top.why = baited ? 'bait' : top.healer ? 'healer' : d.id === 'nearest' && nearer ? 'nearest' : fresher ? 'spread' : worse ? 'wounded' : nearer ? 'nearest' : undefined;
     if (!top.why) delete top.why;
   }
   return list;
