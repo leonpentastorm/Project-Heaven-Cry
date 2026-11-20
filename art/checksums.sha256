@@ -2610,6 +2610,9 @@ d4641f47d5040bc171d64875d4fcc1c2ecba189d92b185a39c076e39d07b6bd0  art/_archive/g
 425ee58f62a3e76e13e08617c6b3d7a365d822b70a74c2652a663b5c2253c3ed  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/metadata.json
 286412b753dd9a9019ec948ffc696afc90f209376321b75d4b00056fe56c687f  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/native.png
 05f5795c496ca6a5d3d38af2950120edd8c26e1b4334b9de52fab848efa79180  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--relic/01-shell-patch-rejected/prompt.txt
+3b8e548b6cc6a5d6c9f4b98dbd5734d8e2be2e7f0e2fbb9440e4a48b81274ce6  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-adamantile_plate_needle--fine/01-quality-review/metadata.json
+dcd66d1b36749a45ff07ea29371af2975d06cd80a3e94be4acdba7a8595bc218  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-adamantile_plate_needle--fine/01-quality-review/native.png
+50d89063137ba49ab9b50311d1d4ed5b267e55aa91243232c3e0da3bca96c33e  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-adamantile_plate_needle--fine/01-quality-review/prompt.txt
 8e5487b7adbb3b9ec1d320bb231d028379bd1498f98f7cf5a201cdb11a18143a  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-hellraiser_servo_fist--masterwork/01-quality-review/metadata.json
 411bdbba113d40f3adf70e5295baac1479c01d05ed1cc353ec4a2bfa1049873e  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-hellraiser_servo_fist--masterwork/01-quality-review/native.png
 d06932a2d53ef91319eb3b845fceb19cdac32d871ed1506ea24ca56065e1f7b0  art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-hellraiser_servo_fist--masterwork/01-quality-review/prompt.txt
@@ -2728,7 +2731,7 @@ e51628adc6c4eb9cde2094ce046b1e3b4e2a81f0a63aac7b8724adc5483d04c1  art/_archive/g
 cd62e5bed220b91beda8116ec5bf6dfa4866617da899903595889dfa8f670f9b  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--fine.txt
 4a65080c0cedcbdb3ea86f567ca77cb1e81ba2114fd1393fa550676df9d30a5f  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--masterwork.txt
 31968ca9f19ce9acb8091c6cbb7d4b1f65f6a4ab15b589ccb764a081321972df  art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-trench_knife--relic.txt
-1b948bc89871b5c20db14a56b9382ead05ccb9a539e630724ac22efb54534c58  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+0a4dc1b57d9c65ab407b096b04dd36138480ab7cc187991dec28ba385a529548  art/_archive/gear/2026-11-20-reset-continuation/queue.json
 5afc1bdfb774cb038cc084e297a2b67f45e08399fbb01d6921d84fe0a556ac01  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-32px.png
 4603bb645dd0d46ed1c7b974b26b9412e2197793571a1a0c267dfd21a1268085  art/_archive/gear/2026-11-20-reset-continuation/reviews/armour-ballistic_helmet-64px.png
 deaf4e20e3843235790df048073620b0e76bfe152a29a7968d3c1860de696192  art/_archive/gear/2026-11-20-reset-continuation/reviews/weapon-broadback_sabre-32px.png

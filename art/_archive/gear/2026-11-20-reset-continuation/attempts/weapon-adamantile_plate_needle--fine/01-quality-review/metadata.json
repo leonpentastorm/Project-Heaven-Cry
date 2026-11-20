@@ -1,0 +1,47 @@
+{
+  "id": "weapon-adamantile_plate_needle--fine",
+  "job": {
+    "id": "weapon-adamantile_plate_needle--fine",
+    "standard_id": "weapon-adamantile_plate_needle",
+    "grade": "fine",
+    "label": "Adamantile Plate Needle \u2014 Fine",
+    "path": "art/icons/gear/weapon-adamantile_plate_needle--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-adamantile_plate_needle",
+    "family_references": [
+      "art/icons/gear/weapon-adamantile_plate_needle.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.\n\nGrade: Fine. The same blade, newly kept. The edge is freshly honed into one clean bright line along its whole length; the flat is polished so the old scratches are gone and the steel reads one step lighter (nails, welds, jags, saw notches and slots keep their shape); the grip wrap is tightened and clean; the guard and pommel are cleaned to a soft shine. Add one thin engraved line running along the spine or the fuller from the guard toward the point, no wider than the edge highlight. Nothing else is added.\n\nThe FIRST image locks the Standard silhouette, camera, proportions, exact part counts and margins. The portrait reference supplies brushwork only, no figure or scene. All additions stay flush inside the original silhouette. Fully transparent background. Masterwork inlay uses brass-orange #F68A38 along the same blade flat and retains the existing orange base accent. Keep the gilt crest boss as the existing maker fitting; the Relic ornament is only a tiny flush flourish on the existing wing surface, with no second crest or backing plate. No bell guard, widened blade or gem.",
+    "keep_line": "the same long narrow rigid four-sided diamond-section pointed blade with central bright ridge, two large angular flat plate guard wings with their rivets and small central gilt crest boss, long brown spiral-wrapped two-hand grip and faceted capped pommel. Preserve the thin blade width, wing shapes, rivets, crest and existing short brass-orange line at the blade base.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-adamantile_plate_needle.png"
+    ]
+  },
+  "preflight": {
+    "id": "weapon-adamantile_plate_needle--fine",
+    "peer": "7daac546843333acaf3a5110c670fbadf103690d",
+    "latest_comment": 7030378937,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 04:25:47 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-c42bca3d-7a88-483d-94fd-5eac1b245240.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-adamantile_plate_needle--fine/01-quality-review/native.png",
+  "sha256": "dcd66d1b36749a45ff07ea29371af2975d06cd80a3e94be4acdba7a8595bc218",
+  "status": "unselected-quality-review",
+  "review_note": "Fine adds new engraved flourishes on both guard wings; the Standard wings are plain.",
+  "reference_hashes": {
+    "art/icons/gear/weapon-adamantile_plate_needle.png": "2be4ff5ef64f6489739ab40862a9736fbd4d734708ddaaa4fa35c1473e76be13",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}
