@@ -9390,6 +9390,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-sealed_visor--celestial",
+      "path": "art/icons/gear/armour-sealed_visor--celestial.png",
+      "sha256": "1aac5900d216bd315fa7e182d31040c36d146f0cc9a973c3ee2cb713489cac69",
+      "label": "Sealed visor — Celestial",
+      "family": "armour-sealed_visor",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sealed_visor--celestial.png",
+        "sha256": "c8f058627193593661fe343c3c8ea9ed05496f2687453319befe9fe2918ad2d1"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-sealed_visor--celestial.png",
+        "sha256": "1aac5900d216bd315fa7e182d31040c36d146f0cc9a973c3ee2cb713489cac69"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-sealed_visor--celestial.txt",
+        "sha256": "e5c704b3abcafc3b9f54263d437bc85c3cc0e4377d0611aec74bf92ebb0b7f4f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-sealed_visor.png",
+          "sha256": "6b03c6bb25fea954fb32478df0042d8a8bb0a6091dcf1f1674dae5a3a5c6c532"
+        },
+        {
+          "path": "art/icons/gear/armour-sealed_visor--relic.png",
+          "sha256": "c71e62cf2d247bc1d0cd32d38a7cf76cdf33873c6457a17cebcada5af14fe983"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor--celestial.png"
+      },
+      "export_hashes": {
+        "256": "ccc75c122af1700b5babed2ce3b95b29df8bf3752d4a115dc7ad78795163af7b",
+        "128": "5d4b36800e818da170461fc4989fee7c89088c7defc8403acd34f94b22597fba",
+        "64": "9804ae5311e66b60e88a6ce1e24dbfb8a9c5d81d6acfe75591c7d36005f0743d",
+        "32": "e1e200b092436226452b31507445734ccb38d4300209bf118e689138f935621c"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-sealed_visor",
+      "outline": {
+        "solid_alpha_iou": 0.9834159839995616,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 23
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -27257,6 +27257,42 @@
         "different_pixels_32": 9,
         "different_pixels_64": 26
       }
+    },
+    "armour-sealed_visor--celestial": {
+      "label": "Sealed visor — Celestial",
+      "path": "art/icons/gear/armour-sealed_visor--celestial.png",
+      "sha256": "1aac5900d216bd315fa7e182d31040c36d146f0cc9a973c3ee2cb713489cac69",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-sealed_visor--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-sealed_visor--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-sealed_visor--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-sealed_visor--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-sealed_visor--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-sealed_visor",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9834159839995616,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 23
+      }
     }
   },
   "survival_art": {
