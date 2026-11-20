@@ -1039,10 +1039,6 @@
         "scales_with": [
           "strength"
         ],
-        "also_scales": [
-          "raw_power",
-          "dexterity"
-        ],
         "teaches": "bind"
       }
     },
@@ -3069,10 +3065,6 @@
         "scales_with": [
           "strength"
         ],
-        "also_scales": [
-          "raw_power",
-          "dexterity"
-        ],
         "teaches": "bash"
       },
       "variant_mods": [
@@ -3120,10 +3112,6 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "also_scales": [
-          "raw_power",
-          "dexterity"
         ],
         "teaches": "bind"
       },
@@ -3221,10 +3209,6 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "also_scales": [
-          "raw_power",
-          "dexterity"
         ],
         "teaches": "throw_down"
       },
@@ -3338,10 +3322,6 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "also_scales": [
-          "raw_power",
-          "dexterity"
         ],
         "teaches": "throw_down"
       },
@@ -3713,10 +3693,6 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "also_scales": [
-          "raw_power",
-          "dexterity"
         ]
       },
       "focus": {
@@ -4001,10 +3977,6 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "also_scales": [
-          "raw_power",
-          "dexterity"
         ]
       }
     },
@@ -4045,10 +4017,6 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "also_scales": [
-          "raw_power",
-          "dexterity"
         ]
       },
       "source": "rules 1.34 (figments-spec.md section 3): a Figment's own weapon, never on a loot table"
@@ -4090,10 +4058,6 @@
         "hits_with": "raw_power",
         "scales_with": [
           "strength"
-        ],
-        "also_scales": [
-          "raw_power",
-          "dexterity"
         ]
       },
       "source": "rules 1.34 (figments-spec.md section 3): a Figment's own weapon, never on a loot table"
