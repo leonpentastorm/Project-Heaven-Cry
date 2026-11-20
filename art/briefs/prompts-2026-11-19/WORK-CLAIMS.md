@@ -1,3 +1,5 @@
+> Current kept-grades20Nov: armour56 complete, own177selected. Next28 ShortBow/powered/thrown reservation7032212554, exact244-ID queue. Prior39 service-blocked/dependent retained without retry; no actual new quota. Seven existing Standard imports are unchanged and excluded from new counts.
+
 > Current kept-grades update20Nov: armour56 complete, own177selected; next WarPick4/WarHammer4 exact reservation7032134179. Queue216 with31 prior service-blocked/dependent. Peer PitchAxe/LegionSpear excluded. All remain review candidates.
 
 # Active56-armour extension —20November2026
