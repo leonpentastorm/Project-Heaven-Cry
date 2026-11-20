@@ -59,7 +59,8 @@ const signed = (n: number) => (n >= 0 ? '+' : '') + n;
  * check modifier (checkMod), and what its damage multiplier reads, in the words the damage breakdown labels it with
  * (character.ts weaponMultLabel). A melee weapon is read in melee, anything else as a shot or a throw. */
 function skillLines(c: Character, u: Unit, w: any): PreviewLine[] {
-  const sk = weaponVia(u, isMelee(w) ? 'melee' : 'shot'), sc = weaponMultLabel(w.id, { live: true }), mode: AttackMode = w.category === 'thrown' ? 'thrown' : isMelee(w) ? 'melee' : 'shot';
+  // group F item 2 (rules 1.86 item 7406): the mode first, so a thrown weapon reads the throw's skill as the attack does
+  const mode: AttackMode = w.category === 'thrown' ? 'thrown' : isMelee(w) ? 'melee' : 'shot', sk = weaponVia(u, mode), sc = weaponMultLabel(w.id, { live: true });
   return [
     { key: 'hits_with', label: 'Skill to hit', value: signed(checkMod(c, sk)) + ' (' + (SKILL[sk]?.name || sk) + ')', num: null },
     // op roll_with (rules 1.55): the skill an item lets the attack roll with instead, when it would (the fight's own choice, combat.ts rollWithPick)

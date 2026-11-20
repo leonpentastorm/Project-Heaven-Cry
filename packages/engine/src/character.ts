@@ -953,17 +953,30 @@ export interface HoldSpec { slot?: 'hand' | 'person'; /** a focus kind, the skil
 export interface FigmentDesign { id: string; name: string; form: string; traits: string[] }
 /** The doors whose focus `holds` knows: each kind's name and the skill it opens (FOCUS_IDS, FOCUS_DOOR). */
 export const FOCUS_DOORS: string[] = [...FOCUS_KINDS, ...FOCUS_KINDS.map((k) => FOCUS_DOOR[k])];
+/** Rules 1.86 (engine lane, item 7400): what a holder has, as `holds` reads it: the ids in its hands (bare fists are
+ * an empty hand), the ids anywhere on it (the hands and the pack), and its armour weight class (null: none known, so no
+ * `body` test holds). A character's is gripOf; a unit with no character has its own (combat.ts unitGrip: its weapon,
+ * its off-hand weapon, its row's `doors.hands` and the foci its magic block names). */
+export interface Grip { hands: string[]; carried: (ids: string[]) => boolean; armourClass: number | null }
+/** A character's grip (the one hands rule: inHands; the pack: carries). */
+export const gripOf = (c: Character): Grip => ({ hands: inHands(c), carried: (ids) => carries(c, ids), armourClass: c.armourClass });
 /** Does this character hold it (see HoldSpec)? */
-export function holds(c: Character, o: HoldSpec): boolean {
-  if (o.hands && !handsHold(c, o.hands)) return false;
-  if (o.body && !(c.armourClass <= armourClassOf(o.body.armour_at_most))) return false;
+export function holds(c: Character, o: HoldSpec): boolean { return gripHolds(gripOf(c), o); }
+/** Does this grip hold it (see HoldSpec): THE one reading, for a character and for a unit with no character alike. */
+export function gripHolds(g: Grip, o: HoldSpec): boolean {
+  if (o.hands && !handsHold(g.hands, o.hands)) return false;
+  if (o.body && !(g.armourClass != null && g.armourClass <= armourClassOf(o.body.armour_at_most))) return false;
   if (!o.door && !o.item) return !!(o.hands || o.body);
   // rules 1.54 (survival-spec 14.2 item 3): door `any`, any focus of the four kinds or a weapon that counts as one
   const k = o.door && o.door !== 'any' ? kindOfDoor(o.door) : null, ids = o.door === 'any' ? ALL_FOCUS_IDS : o.door ? (k ? FOCUS_IDS[k] : []) : o.item ? [o.item] : [];
   if (!ids.length) return false;
-  if ((o.slot || 'hand') === 'person') return carries(c, ids);
-  return inHands(c).some((x) => ids.includes(x));
+  if ((o.slot || 'hand') === 'person') return g.carried(ids);
+  return g.hands.some((x) => ids.includes(x));
 }
+/** The first focus id of a kind (a unit's magic block names a kind, not an id: combat.ts unitGrip). */
+export const focusIdOf = (k: FocusKind): string | undefined => FOCUS_IDS[k][0];
+/** The focus kind an id is (an Attuner: attuner), or null. */
+export const focusKindOf = (id: string): FocusKind | null => { const f = focusOf(id); return f ? kindOfDoor(String(f.door)) : null; };
 /** A thing's properties (a weapon's or an off-hand item's phys.props). */
 const thingProps = (id: string): string[] => (((WEAPON[id] as any)?.phys?.props || (ITEM[id] as any)?.phys?.props || []) as string[]);
 /** Rules 1.57 (A1, Leon, 16 Nov 2026): THE one test of "a shield": a weapons.json row with the Shield property
@@ -988,8 +1001,8 @@ export function shieldLineNow<T extends PackItem | null | undefined>(it: T): T {
 }
 /** Rules 1.56 (P15): the hands half of `holds`. Bare fists in the main hand and no off hand are empty hands; the off
  * hand under a two-handed weapon is filled by it. */
-function handsHold(c: Character, o: { props: string[]; only?: boolean }): boolean {
-  const filled = inHands(c).filter((id) => !!id && id !== 'fists'), want = o.props || [];
+function handsHold(hands: string[], o: { props: string[]; only?: boolean }): boolean {
+  const filled = hands.filter((id) => !!id && id !== 'fists'), want = o.props || [];
   const ok = (id: string) => !isFocusId(id) && want.every((p) => thingProps(id).includes(p));
   return o.only ? filled.every(ok) : filled.some(ok);
 }

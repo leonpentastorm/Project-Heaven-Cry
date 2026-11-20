@@ -10,7 +10,7 @@ import { survivalRoom, startRun, chooseNode } from './helpers/survival';
 import { Rec } from './helpers/replay';
 import { HIDDEN_ATTACK } from '../src/tactics';
 import { previewAttack, RULES, SKILL, condOn, apply, beginTurn, moveOptions, basicActions, DOOR_TABS, doorTabsOf, actionsFor, refOf, type Unit } from '../src';
-import { resOf, seenByFoes, hideBlock, HIDE_WHY } from '../src/tactics';
+import { resOf, seenByFoes, HIDE_WHY } from '../src/tactics';
 import { applyCond } from '../src/magic';
 import { onHook } from '../src/effects/hooks';
 import { price } from '../src/effects/cost';
@@ -47,7 +47,6 @@ describe('finding the door: Hide on the SHADOW tab, its refusals as data', () =>
   it('seen: the refusal names the fix (actions.json hide.why.seen); the row says the same and the reducer refuses with it', () => {
     const f = fightWith([door(1)], [{}]); foeAt(f, 0, '5,4');
     const u = f.turn(f.pc); at(f, u, '1,4');
-    expect(withGame(f.g, () => hideBlock(f.cb, f.unit(u.id)))).toBe(HIDE.why.seen);
     const row = withGame(f.g, () => basicActions(f.cb, f.unit(u.id), { g: f.g })).find((r) => r.id === 'hide');
     expect(row?.why).toBe(HIDE.why.seen);
     expect(() => f.act({ type: 'combat/hide', unitId: u.id } as any)).toThrow(HIDE.why.seen);
@@ -61,7 +60,7 @@ describe('finding the door: Hide on the SHADOW tab, its refusals as data', () =>
     expect(HIDE_WHY.marked).toBe(HIDE.why.marked);
     const g = fightWith([door(1)], [{}]); const v = g.turn(g.pc);
     withGame(g.g, () => applyCond(g.cb, g.g.rng, g.foe, g.unit(v.id), 'marked', undefined, undefined, { skipSave: true }));
-    expect(withGame(g.g, () => hideBlock(g.cb, g.unit(v.id)))).toBe(HIDE.why.marked);
+    expect(() => g.act({ type: 'combat/hide', unitId: v.id } as any)).toThrow(HIDE.why.marked); // the reducer's own refusal (group F item 11, rules 1.86)
   });
 });
 

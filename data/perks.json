@@ -7814,7 +7814,7 @@
       "excludes": [],
       "ap_cost": null,
       "uses": "at_will",
-      "text": "I: Tug: {=tiers.I.effects.0.ap} AP and {=tiers.I.effects.0.res.mp} MP, a unit Bonded to you that you see comes toward you: a friend {=tiers.I.effects.0.effects.4.tiles} tiles, willing; a foe makes a Body save or comes {=tiers.I.effects.0.effects.1.tiles} (a Boss {=tiers.I.effects.0.effects.2.tiles}) (needs an Attuner in hand). II: As Tier I, and Guide: {=tiers.II.effects.1.ap} AP and {=tiers.II.effects.1.res.mp} MP, a friend near you or Bonded in sight steps to a tile you pick, provoking nothing (needs an Attuner in hand).",
+      "text": "I: Tug: {=tiers.I.effects.0.ap} AP and {=tiers.I.effects.0.res.mp} MP, a unit Bonded to you that you see comes toward you: a friend {=tiers.I.effects.0.effects.3.tiles} tiles, willing; a foe makes a Body save or comes {=tiers.I.effects.0.effects.1.tiles} (a Boss {=tiers.I.effects.0.effects.1.boss_tiles}) (needs an Attuner in hand). II: As Tier I, and Guide: {=tiers.II.effects.1.ap} AP and {=tiers.II.effects.1.res.mp} MP, a friend near you or Bonded in sight steps to a tile you pick, provoking nothing (needs an Attuner in hand).",
       "effects": [
         {
           "op": "grant_action",
@@ -7858,29 +7858,11 @@
               "op": "displace",
               "how": "pull",
               "tiles": 2,
+              "boss_tiles": 1,
               "target": "target",
               "if": {
                 "target_has": [
                   "reeled"
-                ],
-                "target_not_tier": [
-                  "boss"
-                ]
-              },
-              "say": "{self} reels {target} in along the Bond{then}.",
-              "when": "acted"
-            },
-            {
-              "op": "displace",
-              "how": "pull",
-              "tiles": 1,
-              "target": "target",
-              "if": {
-                "target_has": [
-                  "reeled"
-                ],
-                "target_tier": [
-                  "boss"
                 ]
               },
               "say": "{self} reels {target} in along the Bond{then}.",
@@ -7938,7 +7920,7 @@
             }
           ],
           "ap_cost": null,
-          "text": "Tug: {=tiers.I.effects.0.ap} AP and {=tiers.I.effects.0.res.mp} MP, a unit Bonded to you that you see comes toward you: a friend {=tiers.I.effects.0.effects.4.tiles} tiles, willing; a foe makes a Body save or comes {=tiers.I.effects.0.effects.1.tiles} (a Boss {=tiers.I.effects.0.effects.2.tiles}) (needs an Attuner in hand).",
+          "text": "Tug: {=tiers.I.effects.0.ap} AP and {=tiers.I.effects.0.res.mp} MP, a unit Bonded to you that you see comes toward you: a friend {=tiers.I.effects.0.effects.3.tiles} tiles, willing; a foe makes a Body save or comes {=tiers.I.effects.0.effects.1.tiles} (a Boss {=tiers.I.effects.0.effects.1.boss_tiles}) (needs an Attuner in hand).",
           "short": "Tug: {=tiers.I.effects.0.ap} AP · a Bonded unit comes toward you",
           "effects": [
             {
@@ -7983,29 +7965,11 @@
                   "op": "displace",
                   "how": "pull",
                   "tiles": 2,
+                  "boss_tiles": 1,
                   "target": "target",
                   "if": {
                     "target_has": [
                       "reeled"
-                    ],
-                    "target_not_tier": [
-                      "boss"
-                    ]
-                  },
-                  "say": "{self} reels {target} in along the Bond{then}.",
-                  "when": "acted"
-                },
-                {
-                  "op": "displace",
-                  "how": "pull",
-                  "tiles": 1,
-                  "target": "target",
-                  "if": {
-                    "target_has": [
-                      "reeled"
-                    ],
-                    "target_tier": [
-                      "boss"
                     ]
                   },
                   "say": "{self} reels {target} in along the Bond{then}.",
@@ -8108,29 +8072,11 @@
                   "op": "displace",
                   "how": "pull",
                   "tiles": 2,
+                  "boss_tiles": 1,
                   "target": "target",
                   "if": {
                     "target_has": [
                       "reeled"
-                    ],
-                    "target_not_tier": [
-                      "boss"
-                    ]
-                  },
-                  "say": "{self} reels {target} in along the Bond{then}.",
-                  "when": "acted"
-                },
-                {
-                  "op": "displace",
-                  "how": "pull",
-                  "tiles": 1,
-                  "target": "target",
-                  "if": {
-                    "target_has": [
-                      "reeled"
-                    ],
-                    "target_tier": [
-                      "boss"
                     ]
                   },
                   "say": "{self} reels {target} in along the Bond{then}.",

@@ -4673,6 +4673,10 @@
         "arg": "number",
         "about": "actor stands within this many tiles of the holder"
       },
+      "actor_beyond": {
+        "arg": "number",
+        "about": "actor stands farther than this many tiles from the holder"
+      },
       "actor_sight": {
         "arg": "words",
         "about": "actor's sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named)",
@@ -4726,6 +4730,10 @@
       "target_within": {
         "arg": "number",
         "about": "target stands within this many tiles of the holder"
+      },
+      "target_beyond": {
+        "arg": "number",
+        "about": "target stands farther than this many tiles from the holder"
       },
       "target_sight": {
         "arg": "words",
@@ -4950,7 +4958,7 @@
       },
       "self_holds": {
         "arg": "hold",
-        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; and / or (rules 1.56, P15) {hands: {props: [..], only: true (every hand empty or holding a thing with all of them; a focus never) or false (one hand holds one)}, body: {armour_at_most: an armour class name (none, light, medium…) or number}}; every part named must hold; a unit with no character holds nothing; holds also reads door: any (any focus), which only recipes use: it is not a value here",
+        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; and / or (rules 1.56, P15) {hands: {props: [..], only: true (every hand empty or holding a thing with all of them; a focus never) or false (one hand holds one)}, body: {armour_at_most: an armour class name (none, light, medium…) or number}}; every part named must hold; a unit with no character holds its weapons, its rows doors.hands and the foci its magic block names (rules 1.86); holds also reads door: any (any focus), which only recipes use: it is not a value here",
         "values": [
           "evoker",
           "emanator",
@@ -5805,10 +5813,11 @@
           "tiles",
           "how",
           "to",
-          "willing"
+          "willing",
+          "boss_tiles"
         ],
         "changes_state": true,
-        "about": "push the target away from the holder (how: push) or pull it closer (pull); willing: true, the target comes of its own will (Tug on an ally: no forced-move refusal, the friend rule of the field included); to: \"cover\", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy's view first (Shadow's Fade, rules 1.32): no tile, nothing happens; to: \"tile\" (rules 1.33, Guide) moves it, willing, to the event's tile when that is at most `tiles` from it (how: guide); with no target named it is the holder that steps there (Shadow's Vault, rules 1.32)"
+        "about": "push the target away from the holder (how: push) or pull it closer (pull); willing: true, the target comes of its own will (Tug on an ally: no forced-move refusal, the friend rule of the field included); boss_tiles: how far a Boss of the other side goes (rules 1.86 item 7405; absent, a Boss holds: rules.json forced_movement.boss_holds); to: \"cover\", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy's view first (Shadow's Fade, rules 1.32): no tile, nothing happens; to: \"tile\" (rules 1.33, Guide) moves it, willing, to the event's tile when that is at most `tiles` from it (how: guide); with no target named it is the holder that steps there (Shadow's Vault, rules 1.32)"
       },
       "zone": {
         "on": [

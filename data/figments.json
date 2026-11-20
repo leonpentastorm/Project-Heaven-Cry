@@ -205,6 +205,10 @@
     "text": "A turret built from scrap: {=hp} HP, Defense {=defense}, armour {=armour}, it does not move. At each of your turn starts for {=rounds} rounds it makes its weapon's plain attack at the nearest enemy it can reach.",
     "adjudication": "engine", "provisional": true
   },
+  "owner_uses": {
+    "about": "Rules 1.86 item 7410 (engine lane; the consolidation line, rule 4): the item uses an owned unit can run for its owner (a data verb's `use` names an actions.json row of one of these reducer types). Each is one engine door (owned.ts OWNER_USES: its handler, checked against this list as the engine loads); the validator holds `use` to these types.",
+    "types": ["combat/stim"]
+  },
   "verbs": [
     {
       "id": "figment_strike", "name": "Strike", "site": "figment_strike", "attack": "melee", "reach": { "tiles": 1, "side": "foe" },

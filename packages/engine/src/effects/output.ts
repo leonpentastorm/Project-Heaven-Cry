@@ -57,13 +57,16 @@ export interface Profile {
    * of what a normal share (output.floor_reference: 4 in each Attribute and Skill of the pair) gets. Absent: no floor. */ floor?: number;
   /** Classes 3.0 (heal-shield-percent-spec.md section 4): the percent gate of a heal or shield of this profile: at least
    * this share of the target's max HP (counted up to mending.gate.hp). Absent or 0: no gate. */ min_pct?: number;
+  /** Rules 1.86 item 7403 (the lead's ruling, rules 1.34: a repair is not a heal): false, an amount of this profile that
+   * `mend` gives restores HP with no receiver healing multiplier, no heal cap and no heal hooks (healUnit `repair`).
+   * Absent: a heal. */ heal?: boolean;
 }
 /** The Attributes and Skills a Stat term reads (data/rules.json output.pairs). */
 export interface Pair { attrs: string[]; skills: string[] }
 const OUT: any = (RULES as any).output || {};
 /** The profiles (data/rules.json output.profiles). Today's slopes, one per system; `level` null everywhere but `mend`. */
 export const PROFILES: Record<string, Profile> = Object.fromEntries(Object.entries(OUT.profiles || {}).filter(([, p]) => p && typeof p === 'object').map(([id, p]: [string, any]) =>
-  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: typeof p.level === 'string' && p.level ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}), ...(Number.isFinite(p.floor) ? { floor: Number(p.floor) } : {}), ...(Number.isFinite(p.min_pct) ? { min_pct: Number(p.min_pct) } : {}) }]));
+  [id, { k: Number.isFinite(p.k) ? p.k : 1, attr: Number(p.attr) || 0, skill: Number(p.skill) || 0, level: typeof p.level === 'string' && p.level ? p.level : null, ...(p.pair ? { pair: String(p.pair) } : {}), ...(Number.isFinite(p.floor) ? { floor: Number(p.floor) } : {}), ...(Number.isFinite(p.min_pct) ? { min_pct: Number(p.min_pct) } : {}), ...(p.heal === false ? { heal: false } : {}) }]));
 /** Rules 1.27: the normal share a landed profile's floor is a share of (data/rules.json output.floor_reference). */
 const FLOOR_REF: { attribute: number; skill: number } = { attribute: Number(OUT.floor_reference?.attribute) || 4, skill: Number(OUT.floor_reference?.skill) || 4 };
 /** The pairs (data/rules.json output.pairs): which Attributes and Skills a Stat term reads. A weapon's own pair comes
@@ -273,6 +276,8 @@ function gatedRaw(spec: AmountSpec, by: Unit | null, ctx: AmountCtx, gate: numbe
 export function mend(cb: Combat | null, by: Unit | null, target: Unit, spec: AmountSpec & { kind: 'heal' | 'shield' }, ctx: AmountCtx & { /** the heal's kind for 'heal_in' (stim, sigil, soul, prayer…) */ healKind?: string; /** a shield that adds to the one standing */ stack?: boolean; /** Classes 3.0 P11: a shield on this layer, at most `holders` units carrying one giver's */ layer?: string; holders?: number; /** a Miracle: past the cap */ uncapped?: boolean } = {}): { amount: number; restored: number; revived: boolean; shield: number } {
   const gate = mendGate(spec, target, by), raw = gate > 0 ? gatedRaw(spec, by, ctx, gate) : amountOf(spec, by, ctx).raw;
   if (spec.kind === 'shield') { const v = grantShield(cb, target, raw, by, { stack: !!ctx.stack, ...(ctx.healKind ? { kind: ctx.healKind } : {}), ...(ctx.layer ? { layer: ctx.layer, holders: ctx.holders } : {}) }); return { amount: raw, restored: 0, revived: false, shield: v }; }
+  // rules 1.86 item 7403: a profile that is not a heal (a repair) restores through the same sink, as a repair
+  if (profileOf(spec.profile).heal === false) { const r = healUnit(cb, target, raw, by, ctx.healKind || 'repair', { repair: true }); return { amount: raw, restored: r.restored, revived: r.revived, shield: 0 }; }
   const cap = !ctx.uncapped && MEND_GATE.cap_pct != null ? Math.floor(MEND_GATE.cap_pct * target.maxHp) : undefined;
   const r = healUnit(cb, target, raw, by, ctx.healKind || 'heal', cap != null ? { cap } : {});
   return { amount: raw, restored: r.restored, revived: r.revived, shield: 0 };

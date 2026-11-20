@@ -23,10 +23,10 @@ import { uses } from './uses';
 import { setTriggerRunner, setAllItems, onHook, setSheetSource } from './hooks';
 import { allItems, instanceMods, rawItem as rawItemT, itemInfo as itemInfoT } from './collect';
 import { overworld, rngOf, unitsIn, tilesAround, tie, untie, tiedTo, tieKinds, tieCap, canStand, tiesOf as tiesOfK, type Area } from '../kit';
-import { holds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '../character';
+import { holds, gripHolds, FOCUS_DOORS, handProps, gearAt, kindOfDoor, FOCUS_IDS } from '../character';
 import { applyDamage } from './damage';
 import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
-import { say, dist, displace, emitFx, fxFell, checkOver, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
+import { unitGrip, say, dist, displace, emitFx, fxFell, checkOver, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
 import { WEAPON, SKILL, RULES } from '../data';
 import { magsOf, type PackItem } from '../character';
 import { restoreConds, applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
@@ -174,6 +174,8 @@ for (const who of ['self', 'actor', 'target'] as Who[]) {
   P(who + '_kind', 'words', who + '\'s kind is one of these (human, robot, crawler, ork…), or an owned unit\'s record kind (figment, machine: owned.ts ownedRecord)', (ev, v) => { const u = unitOf(ev, who); return !!u && kindsOf(u).some((k) => list(v).includes(k)); });
   P(who + '_not_kind', 'words', who + '\'s kind is none of these (as ' + who + '_kind)', (ev, v) => { const u = unitOf(ev, who); return !!u && !kindsOf(u).some((k) => list(v).includes(k)); });
   if (who !== 'self') P(who + '_within', 'number', who + ' stands within this many tiles of the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && !!u.pos && dist(u.pos, ev.self.pos) <= v; });
+  // rules 1.86 item 7401: the mirror of _within (an enemy's Tug wants a foe out of its reach)
+  if (who !== 'self') P(who + '_beyond', 'number', who + ' stands farther than this many tiles from the holder', (ev, v) => { const u = unitOf(ev, who); return !!u && !!u.pos && dist(u.pos, ev.self.pos) > v; });
   P(who + '_sight', 'words', who + '\'s sight to the other side: seen, unseen, in_view, out_of_view (tactics.ts sightOf; any of the words named)', (ev, v) => { const u = unitOf(ev, who); if (!u) return false; const s = sightOf(ev.cb, u); return list(v).some((w) => s.includes(w)); }, () => SIGHT_WORDS);
   if (who !== 'self') P(who + '_sees_self', 'bool', who + ' can (or cannot) see the holder: its eyes reach the holder\'s tile and the holder is not Hidden (shadow-spec 2.1)', (ev, v) => { const u = unitOf(ev, who); return !!u && (unitSees(ev.cb, u, ev.self.pos, undefined, ev.self) && !ev.self.hidden) === v; });
 }
@@ -232,8 +234,9 @@ const tieArg = (v: any): { kind: string; as: 'from' | 'to' | 'any' } => (typeof 
 for (const who of ['actor', 'target'] as Who[]) P(who + '_tied', 'tie', who + ' is tied to the holder by this kind (a kind, or {kind, as: from or to}: the unit\'s end of it)', (ev, v) => { const u = unitOf(ev, who), a = tieArg(v); return !!u && tiedTo(ev.cb, ev.self, u, a.kind, a.as); }, () => tieKinds().map((k) => k.id));
 // Classes 3.0 section 6: what the holder holds. {slot: hand | person, door: evoker | emanator} or {slot, item: <id>}
 // (character.ts holds: the one "focus in hand" test, which hasEvoker and hasEmanator are)
-const holdsOf = (ev: Ev, v: any): boolean => { const c = ev.h.c || charOfUnit(ev.self); return !!c && holds(c, v || {}); };
-P('self_holds', 'hold', 'the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; and / or (rules 1.56, P15) {hands: {props: [..], only: true (every hand empty or holding a thing with all of them; a focus never) or false (one hand holds one)}, body: {armour_at_most: an armour class name (none, light, medium…) or number}}; every part named must hold; a unit with no character holds nothing; holds also reads door: any (any focus), which only recipes use: it is not a value here', (ev, v) => holdsOf(ev, v), () => FOCUS_DOORS);
+// rules 1.86 item 7400: a unit with no character holds what its own grip says (combat.ts unitGrip)
+const holdsOf = (ev: Ev, v: any): boolean => { const c = ev.h.c || charOfUnit(ev.self); if (c) return holds(c, v || {}); return !!ev.self && !ev.self.charId && gripHolds(unitGrip(ev.self), v || {}); };
+P('self_holds', 'hold', 'the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; and / or (rules 1.56, P15) {hands: {props: [..], only: true (every hand empty or holding a thing with all of them; a focus never) or false (one hand holds one)}, body: {armour_at_most: an armour class name (none, light, medium…) or number}}; every part named must hold; a unit with no character holds its weapons, its rows doors.hands and the foci its magic block names (rules 1.86); holds also reads door: any (any focus), which only recipes use: it is not a value here', (ev, v) => holdsOf(ev, v), () => FOCUS_DOORS);
 P('self_lacks_gear', 'hold', 'the holder does not have it (as self_holds)', (ev, v) => !holdsOf(ev, v), () => FOCUS_DOORS);
 // Rules 1.43 (survival-spec 4.2 item 11), 1.56: a named property or a fitted mod on a gear instance (GearState.prop,
 // GearState.mods) works only while that instance is in a hand and only for what is made with it. The event's means: a door's (a Sigil's or an Outburst's roll
@@ -501,14 +504,14 @@ O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amoun
   const r = mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b), ...(typeof e.layer === 'string' ? { layer: e.layer, ...(typeof e.holders === 'number' ? { holders: e.holders } : {}) } : {}) });
   return mendShown(ev.cb, t, b.kind, r);
 });
-O('displace', ANY, true, ['tiles', 'how', 'to', 'willing'], 'push the target away from the holder (how: push) or pull it closer (pull); willing: true, the target comes of its own will (Tug on an ally: no forced-move refusal, the friend rule of the field included); to: "cover", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy\'s view first (Shadow\'s Fade, rules 1.32): no tile, nothing happens; to: "tile" (rules 1.33, Guide) moves it, willing, to the event\'s tile when that is at most `tiles` from it (how: guide); with no target named it is the holder that steps there (Shadow\'s Vault, rules 1.32)', (ev, e) => {
+O('displace', ANY, true, ['tiles', 'how', 'to', 'willing', 'boss_tiles'], 'push the target away from the holder (how: push) or pull it closer (pull); willing: true, the target comes of its own will (Tug on an ally: no forced-move refusal, the friend rule of the field included); boss_tiles: how far a Boss of the other side goes (rules 1.86 item 7405; absent, a Boss holds: rules.json forced_movement.boss_holds); to: "cover", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy\'s view first (Shadow\'s Fade, rules 1.32): no tile, nothing happens; to: "tile" (rules 1.33, Guide) moves it, willing, to the event\'s tile when that is at most `tiles` from it (how: guide); with no target named it is the holder that steps there (Shadow\'s Vault, rules 1.32)', (ev, e) => {
   if (e.to === 'cover') return toCover(ev, pick(ev, e), e);
   const t = pick(ev, e); if (!t) return;
   // to: "tile" moves the target (Guide, rules 1.33) or the holder itself (Shadow's Vault, rules 1.32: the one primitive for both)
   if (e.to === 'tile') { const at: string | null = ev.ctx.tile ?? null; if (!at || at === t.pos || dist(t.pos, at) > (e.tiles ?? 1)) return false; return displace(ev.cb, rngOf(ev.h, ev.ctx), t, { tile: at }, { by: ev.self, how: 'guide', source: ev.h.key, willing: true }).text || ''; }
   if (t === ev.self) return;
   const how = e.how === 'pull' ? 'pull' : 'push', to = how === 'pull' ? { toward: ev.self.pos, tiles: e.tiles } : { away: ev.self.pos, tiles: e.tiles };
-  const mv = displace(ev.cb, rngOf(ev.h, ev.ctx), t, to, { by: ev.self, how, source: ev.h.key, ...(e.willing === true ? { willing: true } : {}) });
+  const mv = displace(ev.cb, rngOf(ev.h, ev.ctx), t, to, { by: ev.self, how, source: ev.h.key, ...(e.willing === true ? { willing: true } : {}), ...(typeof e.boss_tiles === 'number' ? { bossTiles: e.boss_tiles } : {}) });
   // the row's say follows what happened (0.29.0 playtest: "Boss flies." over a Boss that never moved): a refused move says
   // the refusal in the forced move's own words (as magic.ts magicShove), a move that went nowhere says nothing
   if (!mv.moved && !ev.preview) { if (mv.stoppedBy === 'immune' || mv.stoppedBy === 'held' || mv.stoppedBy === 'nailed') say(ev.cb, t.name + ' holds its ground' + (mv.why ? ' (' + mv.why + ')' : '') + '.'); return false; }

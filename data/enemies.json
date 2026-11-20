@@ -543,13 +543,19 @@
           "modules": []
         }
       ],
-      "text": "A soldier who fights from the chest: Begins a Raw Heart bolt when it has the AP, Pumps with what it doesn't spend shooting, and lets it go at whoever walks into 4 tiles (Heart Overwatch). A Mending pulse for a hurt squadmate. It steadies or lets go before its heart burns (Strain limit 4). It keeps Mother Ember, and whispers Health over a squadmate under half its HP.",
+      "text": "A soldier who fights from the chest: Begins a Raw Heart bolt when it has the AP, Pumps with what it doesn't spend shooting, and lets it go at whoever walks into 4 tiles (Heart Overwatch). A Mending pulse for a hurt squadmate. It steadies or lets go before its heart burns (Strain limit 4). It keeps Mother Ember, and whispers Health over a squadmate under half its HP. It wears an Attuner: it Bonds a foe it sees, Tugs a Bonded foe out of its reach back toward it, and Snaps the Bond on one nearly done.",
       "doors": {
         "faith": { "patron": "mother_ember", "devotion": 3, "faith": 1 },
+        "hands": ["attuner"],
+        "hold": ["verb:tend.threads", "verb:tend.bond", "verb:tend.snap", "perk:pull_together@I"],
+        "skills": { "empathy": 3 },
         "wants": [
-          { "pray": "whisper", "id": "health", "want": 7, "if": { "target_hp_below": 0.5 }, "per_turn": 1 }
+          { "pray": "whisper", "id": "health", "want": 7, "if": { "target_hp_below": 0.5 }, "per_turn": 1 },
+          { "item": "verb:tend.snap", "action": "tend_snap", "want": 6.5, "if": { "target": "foe", "target_hp_below": 0.35 }, "per_turn": 1 },
+          { "item": "perk:pull_together", "action": "tend_tug", "want": 5.5, "if": { "target": "foe", "target_beyond": 4 }, "per_turn": 1 },
+          { "item": "verb:tend.bond", "action": "tend_bond", "want": 5.5, "if": { "target": "foe", "target_beyond": 4 }, "per_turn": 1 }
         ],
-        "source": "rules 1.83 item 7104",
+        "source": "rules 1.83 item 7104; rules 1.86 items 7400, 7401 (an Attuner in its hand: Bond, Tug, Snap)",
         "provisional": true
       },
       "provisional": true
@@ -593,14 +599,15 @@
           ]
         }
       ],
-      "text": "An elite with a sabre and a burning heart: it holds a Fire Outburst and walks into you, so its aura scorches whoever stands next to it; it drops a Heartfire burst on a cluster (Burning from stage 2; at stage 4 the fire spreads and the ground burns) or a Cinder wave into a line at close range, and an Ember mend on its own around it. One free Pump a round (as Empathy 3); Strain limit 5.",
-      "guard": { "plates": 3, "durability": 3, "provisional": true },
+      "text": "An elite with a sabre and a burning heart: it holds a Fire Outburst and walks into you, so its aura scorches whoever stands next to it; it drops a Heartfire burst on a cluster (Burning from stage 2; at stage 4 the fire spreads and the ground burns) or a Cinder wave into a line at close range, and an Ember mend on its own around it. One free Pump a round (as Empathy 3); Strain limit 5. Behind its plates it Challenges a crowd and Slams two who stand against it.",
+      "guard": { "plates": 3, "durability": 5, "provisional": true },
       "doors": {
         "hold": ["skill:durability.1"],
         "wants": [
-          { "item": "skill:durability.1", "action": "guard_challenge", "want": 4.5, "each": 1, "min": 2, "per_turn": 1 }
+          { "item": "skill:durability.1", "action": "guard_challenge", "want": 4.5, "each": 1, "min": 2, "per_turn": 1 },
+          { "item": "skill:durability.1", "action": "guard_slam", "want": 5, "each": 1, "min": 2, "per_turn": 1 }
         ],
-        "source": "rules 1.83 items 7100, 7101, 7102",
+        "source": "rules 1.83 items 7100, 7101, 7102; rules 1.86 item 7402 (Durability 5: Slam)",
         "provisional": true
       },
       "provisional": true

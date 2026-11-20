@@ -130,20 +130,25 @@ describe('effects audit', () => {
     expect(ROWS.find((r) => r.action.includes('everyone_home'))!.fault).toBe('ok');
   }, 60000); // every prayer through the reducer: seconds on a quiet machine, past 5 s on a busy one
 
+  // the Bond verbs that are perks since rules 1.75 (perks.json: the perk whose grant names tend_<verb>)
+  const PERK_OF_VERB: Record<string, string> = { settle: 'steady_hands', soothe: 'steady_hands', tug: 'pull_together', guide: 'pull_together', raise: 'nobody_left_behind' };
+  const PERK_VERBS_HELD: Record<string, string> = Object.fromEntries([...new Set(Object.values(PERK_OF_VERB))].map((p) => [p, 'II']));
   it('bonds and tending', () => {
-    const verbs: [string, string, string?][] = [['bond', 'ally'], ['mend', 'ally', 'bond'], ['shield', 'ally', 'bond'], ['touch', 'ally', 'bond'], ['settle', 'ally', 'bond'], ['soothe', 'ally', 'bond'], ['tug', 'ally', 'bond'], ['guide', 'ally', 'bond'], ['raise', 'downed', 'bond'], ['snap', 'ally', 'bond'], ['let_go', 'ally', 'bond'], ['bond', 'foe'], ['mend_self', 'self', 'bondfoe'], ['echo: foe hits the Bonded ally', 'hit', 'bond']];
+    const verbs: [string, string, string?][] = [['bond', 'ally'], ['mend', 'ally', 'bond'], ['shield', 'ally', 'bond'], ['settle', 'ally', 'bond'], ['soothe', 'ally', 'bond'], ['tug', 'ally', 'bond'], ['guide', 'ally', 'bond'], ['raise', 'downed', 'bond'], ['snap', 'ally', 'bond'], ['let_go', 'ally', 'bond'], ['bond', 'foe'], ['mend_self', 'self', 'bondfoe'], ['echo: foe hits the Bonded ally', 'hit', 'bond']];
     for (const [v, who, pre] of verbs) {
-      const f = fightWith([{ name: 'Medic', archetype: 'mender', skills: { empathy: 10 }, attrs: { insight: 10 }, offHand: 'attuner', weapon: 'service_pistol', level: 12 }, { name: 'Gun' }], [{ at: 'F6' }], { level: 12 });
+      // rules 1.75: Settle and Soothe (Steady Hands), Tug and Guide (Pull Together), Raise (Nobody Left Behind) are perks
+      // now; Touch was cut (the Leon-judged rulings). The Medic holds the three perks at tier II (rules 1.86 item 7408).
+      const f = fightWith([{ name: 'Medic', archetype: 'mender', skills: { empathy: 10, camaraderie: 10 }, attrs: { insight: 10 }, offHand: 'attuner', weapon: 'service_pistol', level: 12, perks: { ...PERK_VERBS_HELD } } as any, { name: 'Gun' }], [{ at: 'F6' }], { level: 12 });
       const [me, al] = f.pcs, foe = f.foe; me.pos = '2,5'; al.pos = '3,5'; foe.pos = '5,5'; (foe as any).sv = { heart: -99 };
       for (const u of f.cb.units) { u.conds = {}; u.shield = 0; delete (u as any).shields; }
       me.hp = Math.round(me.maxHp * 0.6); al.hp = Math.round(al.maxHp / 2);
       f.turn(me);
-      const perk = (id: string, t?: Unit) => { f.unit(me.id).ap = 9; f.act({ type: 'combat/perk', unitId: me.id, id: 'verb:tend.' + id, ...(t ? { targetId: t.id } : {}) } as any); };
+      const perk = (id: string, t?: Unit) => { f.unit(me.id).ap = 9; const pk = PERK_OF_VERB[id]; f.act({ type: 'combat/perk', unitId: me.id, id: pk ? 'perk:' + pk : 'verb:tend.' + id, ...(pk ? { actionId: 'tend_' + id } : {}), ...(t ? { targetId: t.id } : {}) } as any); };
       try { if (pre === 'bond') perk('bond', f.unit(al.id)); if (pre === 'bondfoe') perk('bond', f.unit(foe.id)); } catch { /* the row says it */ }
       if (who === 'downed') { const a = f.unit(al.id); a.hp = 0; (a as any).downed = true; }
       audit('bond', v + (pre ? ' (after Bond' + (pre === 'bondfoe' ? ' on a foe' : '') + ')' : ''), f as any, me.id, () => {
         if (who === 'hit') { f.unit(foe.id).pos = '4,5'; f.act({ type: 'combat/end-turn', unitId: me.id } as any); return; }
-        if (v === 'guide') { f.unit(me.id).ap = 9; f.act({ type: 'combat/perk', unitId: me.id, id: 'verb:tend.guide', targetId: al.id, tile: '3,4' } as any); return; }
+        if (v === 'guide') { f.unit(me.id).ap = 9; f.act({ type: 'combat/perk', unitId: me.id, id: 'perk:' + PERK_OF_VERB.guide, actionId: 'tend_guide', targetId: al.id, tile: '3,4' } as any); return; }
         perk(v, who === 'ally' || who === 'downed' ? f.unit(al.id) : who === 'foe' ? f.unit(foe.id) : undefined);
       });
     }

@@ -7,7 +7,7 @@ import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout'
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf, ladderSchedule } from './data';
 import techniquesJ from '../../../data/techniques.json';
 import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, ARMOUR, armourOf, ONE_HANDED, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
-  twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources } from './character';
+  twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources, type Grip, focusIdOf, focusKindOf, type FocusKind } from './character';
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
@@ -223,6 +223,9 @@ export interface Unit {
   /** Rules 1.83 item 7100: an enemy's door wants (its rows' `doors.wants`, combat.ts armDoors): the held item actions and
    * prayers the enemy step (ai-doors.ts) weighs against a plain attack. */
   wants?: DoorWant[];
+  /** Rules 1.86 item 7400: what a unit with no character holds in a hand beyond its weapons (its rows' `doors.hands`:
+   * item ids, an Attuner); read only by unitGrip. */
+  holding?: string[];
   /** Rules 1.83 item 7104: the prayer sheet of a unit with no character (an enemy row's `doors.faith`): what faith.ts
    * reads in a character's place (its Faith, its patron, its Devotion). Never a character's. */
   sheet?: Record<string, any>;
@@ -672,6 +675,26 @@ function armDoors(u: Unit, blocks: any[]) {
   }
   if (hold.length) u.held = { perks: [], traits: [], items: hold };
   if (wants.length) u.wants = wants;
+  // rules 1.86 item 7400: what its rows put in its hands (`hands`: item ids); a focus there is its magic block's too, as
+  // a character's mg mirrors its hands (magic.ts: evoker, emanator, attuner), so the MP row's `needs` reads it
+  const hands = [...new Set(blocks.flatMap((b) => (Array.isArray(b.hands) ? b.hands : [])).filter((x: any) => typeof x === 'string'))] as string[];
+  if (hands.length) {
+    u.holding = hands;
+    for (const id of hands) { const k = focusKindOf(id); if (k && u.mg && k in MG_FOCUS) (u.mg as any)[k] = true; }
+  }
+}
+/** The magic block's focus flags (MagicUnit), by focus kind. */
+const MG_FOCUS: Partial<Record<FocusKind, true>> = { evoker: true, emanator: true, attuner: true };
+/** Rules 1.86 item 7400: what a unit with no character holds (character.ts Grip, read by gripHolds as a character's is):
+ * its weapon and off-hand weapon, its rows' `doors.hands`, and a focus of each kind its magic block names (an enemy
+ * Evoker's or Emanator's own). Nothing is carried beyond the hands; no armour class is known. */
+export function unitGrip(u: Unit): Grip {
+  const hands = [u.weapon, u.offWeapon, ...(u.holding || [])].filter((x): x is string => !!x);
+  for (const k of Object.keys(MG_FOCUS) as FocusKind[]) {
+    if (!(u.mg as any)?.[k] || hands.some((id) => focusKindOf(id) === k)) continue;
+    const id = focusIdOf(k); if (id) hands.push(id);
+  }
+  return { hands, carried: (ids) => hands.some((x) => ids.includes(x)), armourClass: null };
 }
 function armGuard(u: Unit, row: any) {
   const n = Number(row?.guard?.plates); if (!(n > 0)) return;
@@ -2338,6 +2361,8 @@ export interface DisplaceOpts {
   how: DisplaceHow;
   /** What did it, for the 'forced_move' hook's `how` and for items that read it: 'shove', 'magic', 'knockback', 'drag', 'throw', a technique's id. */ source: string;
   /** The unit itself chose this move (its own teleport or swap): it is not forced, so Nailed, immunity and the hook don't stop it. */ willing?: boolean;
+  /** Rules 1.86 item 7405: how far an opponent's Boss goes by this move (the displace row's `boss_tiles`); absent, a Boss
+   *  holds (forced_movement.boss_holds). */ bossTiles?: number;
   /** Change nothing and fire nothing: say where it would end (a card's preview). */ preview?: boolean;
   /** false: no 'shove' effect event (the caller draws its own: a blink, a swap). An object: fields added to the event
    * (`magic: true`: no pusher is named, the screen draws no shoving arm). */ fx?: false | Record<string, any>;
@@ -2361,17 +2386,18 @@ export const isBoss = (u: Unit): boolean => BOSSES.tiers.includes(u.tier as stri
  *  the Taunted row's penalty to hit anyone else (conditions.json taunted, attack_mod not_vs_source). THE reading of Taunted
  *  for every target choice: the attack's refusal, the enemy AI and the healer focus. */
 export const tauntedBy = (u: Unit): string | null => (isBoss(u) ? null : condSource(u, 'taunted'));
-/** A Boss holds against an opponent's forced move (rules.json forced_movement.boss_holds), but for the items it names
- *  (Tug: its own row says how far a Boss goes). THE rule for every push, pull, throw, teleport and swap of a player's item. */
-const BOSS_HOLDS: { except: string[]; why: string } = (RULES as any).forced_movement.boss_holds;
-const bossHolds = (u: Unit, o: DisplaceOpts): boolean => isBoss(u) && !!o.by && o.by.side !== u.side && !BOSS_HOLDS.except.some((id) => o.source === id || o.source?.endsWith(':' + id));
+/** A Boss holds against an opponent's forced move (rules.json forced_movement.boss_holds): THE rule for every push, pull,
+ *  throw, teleport and swap of a player's item. Rules 1.86 item 7405: the one exception is the move's own `bossTiles`
+ *  (the displace row's `boss_tiles`: Tug's Bond), how far a Boss goes, read here and nowhere else. */
+const BOSS_HOLDS: { why: string } = (RULES as any).forced_movement.boss_holds;
+const bossHolds = (u: Unit, o: DisplaceOpts): boolean => isBoss(u) && !!o.by && o.by.side !== u.side;
 /** May this unit be moved against its will? null: yes. Otherwise why not (and `tiles`, which an item may have changed). */
 function forcedRefusal(cb: Combat, rng: Rng | null | undefined, u: Unit, o: DisplaceOpts, tiles: number, to?: string): { stoppedBy: 'nailed' | 'immune' | 'held' | null; why?: string; tiles: number } {
   if (o.willing) return { stoppedBy: null, tiles };
   if (harmHeld(cb, o.by, u, !o.preview)) return { stoppedBy: 'held', why: 'on the field', tiles }; // rules 1.55 item 68: on the field nobody moves a friend or a surrendered unit by force (the one harm gate, effects/hooks.ts)
   if (!FORCED[o.how].immunity) return { stoppedBy: null, tiles };
   if (u.nailed) return { stoppedBy: 'nailed', why: 'nailed in place', tiles };
-  if (bossHolds(u, o)) return { stoppedBy: 'immune', why: BOSS_HOLDS.why, tiles };
+  if (bossHolds(u, o)) { if (o.bossTiles == null) return { stoppedBy: 'immune', why: BOSS_HOLDS.why, tiles }; tiles = Math.min(tiles, Math.max(0, o.bossTiles)); }
   const im = immune({ u }, 'knockback'); if (im) return { stoppedBy: 'immune', why: im, tiles };
   // 'forced_move' {u, by, tiles, to, how, kind, pull, cancel}: an item may stop it (cancel) or change the distance (tiles).
   const fm: any = o.preview ? { cancel: false, tiles } : emit(cb, 'forced_move', { u, by: o.by, tiles, ...(to ? { to } : {}), how: o.source, kind: o.how, pull: o.how === 'pull', cancel: false, cb, rng });
@@ -2605,8 +2631,10 @@ export function fieldRepair(cb: Combat, u: Unit, o: { target?: Unit | null; way?
     say(cb, u.name + (t === u ? ' patches the weapon' : ' fixes ' + t.name + '\'s weapon') + ': +' + add + ' durability (' + t.dur + '/' + t.maxDur + ').'); return null;
   }
   if (!rp) return 'Needs the Field Repair perk.';
-  const n = Math.floor(amountOf(amountSpecOf(rp.key, 'repair'), u, { level: u.charId ? u.level : null }).raw);
-  const was = t.downed ? 0 : t.hp, up = !!t.downed; t.hp = Math.min(t.maxHp, was + n); if (up) setDowned(t, false);
+  // rules 1.86 item 7403: the one mend path (output.ts mend), its profile `repair` not a heal (rules 1.34: no receiver
+  // multiplier, no cap, no heal hooks); the amount is the block's own, at the repairer's level
+  const was = t.downed ? 0 : t.hp, up = !!t.downed;
+  mend(cb, u, t, { ...amountSpecOf(rp.key, 'repair'), kind: 'heal' }, { level: u.charId ? u.level : null });
   emitFx(cb, 'repair', { unit: u.id, target: t.id, at: t.pos, dur: 1400 }); emitFx(cb, 'heal', { target: t.id, at: t.pos, amount: t.hp - was, ...(up ? { revive: true } : {}) });
   say(cb, u.name + ' repairs ' + t.name + ' (' + label + '): +' + (t.hp - was) + ' HP' + (up ? ', back up' : '') + ' (' + t.hp + '/' + t.maxHp + ').');
   return null;

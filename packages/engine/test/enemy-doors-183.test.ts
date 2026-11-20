@@ -37,7 +37,8 @@ describe('rules 1.83 item 7100: the enemy door step runs a held item action thro
     const [a, b] = f.pcs, e = f.foes[0];
     expect((e.held as any)?.items).toContain('skill:durability.1');
     delete (e as any).mg; // no heart to work (the soul step comes before the door step: rules 1.83 item 7100)
-    Object.assign(a, { pos: '6,4', hp: 9999, maxHp: 9999 }); Object.assign(b, { pos: '6,6', hp: 9999, maxHp: 9999 }); Object.assign(e, { pos: '7,5' });
+    // two foes within Challenge's 2 tiles, neither next to it (two next to it would be Slam's: rules 1.86 item 7402)
+    Object.assign(a, { pos: '5,5', hp: 9999, maxHp: 9999 }); Object.assign(b, { pos: '9,5', hp: 9999, maxHp: 9999 }); Object.assign(e, { pos: '7,5' });
     orderAs(f, [a.id, e.id]);
     const intent = withGame(f.g, () => enemyIntent(f.cb, f.unit(e.id)));
     expect(intent.text).toMatch(/Challenge/);

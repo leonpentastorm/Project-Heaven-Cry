@@ -13793,3 +13793,69 @@ number of the rules changes.
     reward panel says "Yours to take:" over a single card (`survival.json reward_panel.take_one`); the Bonds door line
     says "when you are hurt it takes 20% of the blow for you"; the Proving Ground says "No wave cleared yet" before the
     first; creation's Essence of Experience line says who can crack it (any focus in a hand), with no typed number.
+
+### Rules 1.86 (engine lane), 0.33: the engine leftovers of wave 1 (20 Nov 2026)
+
+The engine lane of 0.33 (hand-off `docs/design/handoffs/0.33-LANE-ENGINE.md`; branch `wip/0.33c-engine`). What the rules,
+enemy and polish lanes reported not built. Leon approved new engine pieces on 20 Nov 2026; each is listed in the hand-off.
+Items are numbered 7400 onward and carry the lane's name ("engine lane") for the integrator. **Every new number is
+PROVISIONAL.**
+
+7400. **Engine lane: what a unit with no character holds.** A unit with no character holds its weapon, its off-hand
+      weapon, what its rows' `doors` blocks put in its hands (`hands`: item or weapon ids), and a focus of each kind
+      its magic block names (an enemy Evoker's, an enemy Emanator's). The predicates `self_holds` and
+      `self_lacks_gear` read that for it, through the one reading a character's hands go through (`gripHolds`); it
+      carries nothing beyond its hands, and no armour weight class is known for it (a `body` test does not hold). A
+      focus put in its hands also sets its magic block's flag of that kind, as a character's mirrors its hands, so the
+      MP row's `needs` reads it. Nothing else changes: before this an enemy held nothing, and no enemy item read a
+      `self_holds` gate until item 7401.
+7401. **Engine lane: the Heart adept's Bond, Tug and Snap.** The Heart adept (`soul_casters heart_adept`) wears an
+      Attuner (`doors.hands`), holds Threads, Bond, Snap and Pull Together I (Tug) at Empathy 3, and wants: Snap on a
+      Bonded foe under **35%** of its HP (**6.5**), Tug on a Bonded foe farther than **4** tiles (**5.5**: into its Heart
+      Overwatch), Bond on a foe it sees farther than **4** tiles (**5.5**; a Bond on any foe it saw cost the solo Bulwark 7
+      clears of 40, the 20-round stalls doubling), each once a turn; its Whisper of Health (7) stays first. Each runs
+      the verb's own data (the Heart save against its Empathy, Threads' share and echo, Snap's Soul damage and Daze,
+      Tug's MP from its heart). A new predicate `target_beyond` (and `actor_beyond`): the mirror of `_within`.
+7402. **Engine lane: the Heartfire elite Slams.** Its Guard row's Durability is **5** (was 3; its plates soak by it, as a
+      character's), and it wants Slam when two foes or more stand next to it (**5**, **+1** a foe, at least 2, once a
+      turn); Challenge's want is unchanged (two foes within 2 tiles, neither next to it, is still a Challenge).
+7403. **Engine lane: a repair goes through the one mend path, and is not a heal** (the lead's ruling; rules 1.34). Field
+      Repair's and Field Fix's repair of a machine or a Figment is the `mend` of its `repair` amount (profile `repair`,
+      `heal: false` in `rules.json output.profiles`): the same amount as before, with no healing-received bonus on the
+      receiver, no heal cap, and no heal hooks (nothing that answers a heal answers a repair). The second formula in
+      `fieldRepair` is gone. No number moves (before this, the repair was all of that already, by its own code).
+7404. **Engine lane: a prayer's numbers are its own data rows.** Every number `faith.ts` typed beside a prayer's run is
+      read from the prayer's own effect row in `patrons.json` (`fxNum`: Luck's and Guidance's bonus, Guidance's reveal
+      radius, Judgement's and the Saint's Verdict's multipliers and Stunned rounds, Resupply's Supply, Requisition
+      Approved's banked AP, Lucky Break's uses and bonus, Encore's Confused, Covering Fire's Pinned rounds and save,
+      Last Crossing's quarter and its Boss blow, Turned Back's half (its heal row's `share`, 0.5), Hearthlight's and Red
+      Thread's rounds, Feed the Fire's AP, the thunder's push, Lightning Rod's chain range and blow, the sky's Stunned,
+      Sweet Nothings' and Love Conquers' rounds and saves). A row with no number is an error, never a silent default.
+      No number moves; two log lines read the data's words ("above 25% of its HP"; "within the most a turn may bank").
+7405. **Engine lane: a Boss and forced moves are one rule.** `forced_movement.boss_holds` (rules 0.29 SF1): a Boss never
+      moves for an opponent's push, pull, throw, teleport or swap, with one exception, now general: a displace row's
+      `boss_tiles` moves an opponent's Boss at most that far (Tug: 1). The `except` list of item ids is gone; Tug's two
+      rows (one for a Boss) are one row. Grenadier's Arm's own Boss filter is gone (never reached: a Boss weighs nothing
+      liftable, `combat.hurl.never`). No behaviour moves. Left as it is, with the exact difference: `combat.hurl.never`
+      (tier `boss`) is a second reading of "a Boss" beside `bosses` (tiers and the kind `celestial`); reading `isBoss`
+      there would refuse a Celestial of another tier at the pick ("Nobody throws ...") where today it is lifted and the
+      throw is then refused by `boss_holds` (its AP spent, "holds its ground").
+7406. **Engine lane: the gaps lane's group F items, checked.** Item 2 (three readings of the striking weapon's skill):
+      the roll, its preview and the brain debuff read `weaponVia` already; the gear card now asks it with the weapon's own
+      mode, so a thrown weapon's card reads the throw's skill as the attack does. Item 10 (four token chips placed by
+      their own styles): one slot table (`apps/web/src/game/tokenSlots.ts`) places Pressure's pips, the Momentum counter,
+      the Sigil chip and the wisps; no chip moves on screen. Item 11: `shadow-2`'s two `hideBlock` calls are the reducer's
+      `combat/hide` refusal. Item 12 and the rest of 11: see the lane's hand-off (not built).
+7407. **Engine lane: the load door clears what removed handlers left.** `rules.json stale_state` names the keys
+      (character state `planted`, `holyBless`; the story's Blueprint `sketch`); a load deletes them (harmless before:
+      nothing read them).
+7408. **Engine lane: the effects audit's Mender holds the Bond perks** (Steady Hands, Pull Together, Nobody Left Behind at
+      tier II), so Settle, Soothe, Tug, Guide and Raise run in the harness; Touch is gone from its list (cut).
+7409. **Engine lane: Old Tales II's parley in a fight is already the engine's** (rules 1.75 item 6206: Speak the old tongue,
+      Commanded `hold` on an upper-realm being, no save). No attack-forbid condition is added: Commanded `hold` is the
+      piece that does it.
+7410. **Engine lane: the owned units' item uses are a data list** (`figments.json owner_uses.types`), read by the validator
+      and checked against `owned.ts OWNER_USES` as the engine loads; the validator no longer parses `owned.ts`.
+      `containers.ts COUNTED_ORDER` was already read from `items.json counts_into` (nothing to move).
+7411. **Engine lane: rules 1.33 item 2038 ("enemies do not Bond or Tend") is superseded** by item 7401: a row's `doors`
+      block may give an enemy an Attuner and the Bond verbs.
