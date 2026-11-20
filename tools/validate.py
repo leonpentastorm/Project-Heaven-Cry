@@ -2205,12 +2205,12 @@ if _swell is not None:
 # Classes 3.0 P3: a number block {base, per: [{of, value}], min?, max?}; in an item op its `of` names a source
 # (effects/triggers.ts sourceOf): res:<id>, event:<field>, self:/actor:/target:<field>.
 def _data_ref(of):
-    """Rules 1.70 item 5547 (P6): a data reference's value (datatext.ts dataRef: tech_rule:, rule:, cond:), or None."""
+    """Rules 1.70 item 5547 (P6): a data reference's value (datatext.ts dataRef: tech_rule:, rule:, cond:, cost:), or None."""
     import text_numbers as _tn
-    for ns, stem in (("tech_rule", "techniques"), ("rule", "rules"), ("cond", "conditions")):
+    for ns, stem in (("tech_rule", "techniques"), ("rule", "rules"), ("cond", "conditions"), ("cost", "actions")):
         if isinstance(data.get(stem), dict): _tn.REF_DATA[ns] = _tn._ref_of(ns, data[stem])
     return _tn.data_ref(of)
-SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed", "pick", "tech_rule", "rule", "cond"]  # feed: rules 1.60 (N3), a door's beta feed; pick: rules 1.60 (N2), 1 when the holder picked that fork option; tech_rule: rules 1.70 item 5547 (P6), a value of techniques.json rules; rule / cond (0.32 consolidation): a value of rules.json, of a conditions.json row (datatext.ts dataRef)
+SOURCE_SPACES = ["res", "event", "self", "actor", "target", "ties", "skill", "feed", "pick", "tech_rule", "rule", "cond", "cost"]  # feed: rules 1.60 (N3), a door's beta feed; pick: rules 1.60 (N2), 1 when the holder picked that fork option; tech_rule: rules 1.70 item 5547 (P6), a value of techniques.json rules; rule / cond (0.32 consolidation): a value of rules.json, of a conditions.json row (datatext.ts dataRef)
 # Rules 1.60 (Doors 3.0, N3): a beta's `feed` names the carrier of its alpha door's number (effects/feed.ts); its step is
 # per_point.numbers.feed (> 0), each carrier is fed by one beta only, and a `feed:<door>` source names an alpha skill fed so.
 FEED_DOORS = set()
@@ -2388,6 +2388,9 @@ if TRIG:
             if k not in (o.get("if") or {}): errors.append(f"{w}: why names '{k}', which is not one of its if's predicates")
     def _check_grant(g, w):
         _check_why(g, w)
+        # 0.33 (review: one copy of a price): a gate_only grant opens a basic action priced at its cost site; an `ap` on it
+        # would be a second copy of that price that nothing reads (a card reads the site through `cost:<action>.ap`)
+        if g.get("gate_only") and "ap" in g: errors.append(f"{w}: a gate_only grant_action carries no ap (the basic action's price is actions.json's; a text reads cost:<action>.ap)")
         r = g.get("reach")
         if r is not None:
             if not isinstance(r, dict): errors.append(f"{w}: a grant_action's reach is an object (tiles, sight, side, self, if, tied)")
@@ -2426,7 +2429,8 @@ if TRIG:
         # 0.29 wave-2 review MF1: a grant that names an actions.json cost site is priced by that site (its handler charges
         # it), so its own `ap` (what its text reads) must be the site's: one number, held equal here
         _cs = ((data.get("actions") or {}).get("costs") or {}).get(g.get("site")) if isinstance(g.get("site"), str) else None
-        if isinstance(_cs, dict) and isinstance(_cs.get("ap"), (int, float)) and g.get("ap") != _cs["ap"]: errors.append(f"{w}: its ap {g.get('ap')} is not its cost site '{g['site']}' ({_cs['ap']} AP, actions.json costs)")
+        # (0.33: a grant with a site may give no ap at all: effects/actions.ts then prices it from the site's own row)
+        if isinstance(_cs, dict) and isinstance(_cs.get("ap"), (int, float)) and "ap" in g and g.get("ap") != _cs["ap"]: errors.append(f"{w}: its ap {g.get('ap')} is not its cost site '{g['site']}' ({_cs['ap']} AP, actions.json costs)")
     def _walk_grant(o, w):
         if isinstance(o, dict):
             if o.get("op") == "grant_action": _check_grant(o, w)

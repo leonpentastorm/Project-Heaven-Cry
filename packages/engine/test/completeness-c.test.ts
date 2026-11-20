@@ -8,6 +8,9 @@ import {
   type GameState, type Combat, type Unit, type Sheet,
 } from '../src';
 import { fightWith, storyWith, sheetOf, withGame } from './helpers/perkfight';
+import actionsJ from '../../../data/actions.json';
+import perksJ from '../../../data/perks.json';
+import classesJ from '../../../data/classes.json';
 
 type F = ReturnType<typeof fightWith>;
 function rngFor(n: number): { state: number } { for (let s = 1; s < 100000; s++) { const r = { state: s }; if (d20(r) === n) return { state: s }; } throw new Error('no seed'); }
@@ -52,6 +55,26 @@ describe('Grenadier\'s Arm: objects', () => {
     f.act({ type: 'combat/perk', unitId: u.id, id: 'trait:grenadiers_arm', actionId: 'hurl', choice: 'o:cr', tile: '6,3' } as any); // rules 1.82 item 7010: the object op's hurl (choice: what is lifted, tile: where it lands)
     expect(f.foe.hp).toBeLessThan(hp); expect(logHas(f.cb, /hurls the crate/), f.cb.log.slice(-3).join(' | ')).toBe(true);
     expect(f.cb.objects!.find((o) => o.id === 'cr')!.pos).not.toBe('4,3');
+  });
+});
+
+describe('one copy of a price (0.33 review): a grant at a cost site with no AP of its own, a card that reads the site', () => {
+  it("Grenadier's Arm's hurl is a throw's price: actions.json costs.throw.ap moves it (Strained Arm's +1 on top)", () => {
+    const row = (actionsJ as any).costs.throw, was = row.ap;
+    const spent = () => {
+      const f = fightWith([{ traits: ['grenadiers_arm'], attrs: { strength: 5 } }], [{ at: 'O10' }]);
+      const u = f.turn(f.pc); u.pos = '3,3'; f.foe.pos = '6,3'; f.cb.objects = [makeObject('cr', 'crate', '4,3')]; f.unit(u.id).ap = 9;
+      f.act({ type: 'combat/perk', unitId: u.id, id: 'trait:grenadiers_arm', actionId: 'hurl', choice: 'o:cr', tile: '6,3' } as any);
+      return 9 - f.unit(u.id).ap;
+    };
+    try { expect(spent()).toBe(was + 1); row.ap = was + 1; expect(spent()).toBe(was + 2); } finally { row.ap = was; }
+  });
+  it("Field Repair's card shows the fight's own price (actions.json costs.field_repair), and Hurl's its move's ap_cost", () => {
+    const fr = (perksJ as any).items.find((p: any) => p.id === 'field_repair'), ap = (actionsJ as any).costs.field_repair.ap;
+    expect(fr.tiers.I.short.startsWith(ap + ' AP')).toBe(true); expect(fr.text.startsWith('I: ' + ap + ' AP')).toBe(true);
+    for (const g of [fr.effects[0], fr.tiers.I.effects[0], fr.tiers.II.effects[0]]) expect('ap' in g).toBe(false);
+    const hurl = (classesJ as any).base.flatMap((b: any) => b.gain || []).find((m: any) => m.id === 'hurl');
+    expect(hurl.text.startsWith(hurl.ap_cost + ' AP')).toBe(true); expect('ap' in hurl.effects[0]).toBe(false);
   });
 });
 

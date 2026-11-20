@@ -88,20 +88,21 @@ def lookup(root, path):
 # `rules` (tech_rule:), rules.json (rule:) and conditions.json's rows by id (cond:<id>.<path>); set by resolve_pack from the
 # pack it is given (or loaded from data/ when a caller renders one text alone)
 REF_DATA = {}
-REF_SPACES = ("tech_rule", "rule", "cond")
+REF_SPACES = ("tech_rule", "rule", "cond", "cost")
 def _ref_root(ns):
     if ns not in REF_DATA:
         import json, os
-        stem = {"tech_rule": "techniques", "rule": "rules", "cond": "conditions"}[ns]
+        stem = {"tech_rule": "techniques", "rule": "rules", "cond": "conditions", "cost": "actions"}[ns]
         REF_DATA[ns] = _ref_of(ns, json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", stem + ".json"), encoding="utf-8")))
     return REF_DATA[ns]
 def _ref_of(ns, obj):
     if ns == "tech_rule": return (obj or {}).get("rules") or {}
     if ns == "cond": return {c.get("id"): c for c in (obj or {}).get("items") or [] if isinstance(c, dict)}
+    if ns == "cost": return {**{a.get("id"): a for a in (obj or {}).get("items") or [] if isinstance(a, dict)}, **((obj or {}).get("costs") or {})}
     return obj or {}
 def data_ref(of):
     """A data reference's value (datatext.ts dataRef): tech_rule:<path> reads techniques.json rules, rule:<path> rules.json,
-    cond:<id>.<path> a conditions.json row; None otherwise."""
+    cond:<id>.<path> a conditions.json row, cost:<action>.<field> an action's price row in actions.json; None otherwise."""
     ns, _, path = of.partition(":")
     if ns not in REF_SPACES: return None
     node = _ref_root(ns)

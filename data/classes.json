@@ -1006,12 +1006,11 @@
               "provisional": true
             }
           },
-          "text": "{=effects.0.ap} AP: lift a loose crate, barrel or lamp next to you, or a small foe you hold (Grappled or Bound), and throw it at a tile within {=effects.0.effects.0.range} tiles: it and whoever it lands on take {=amounts.hurl.base} damage and more by its weight. A barrel goes off where it lands.",
+          "text": "{=ap_cost} AP: lift a loose crate, barrel or lamp next to you, or a small foe you hold (Grappled or Bound), and throw it at a tile within {=effects.0.effects.0.range} tiles: it and whoever it lands on take {=amounts.hurl.base} damage and more by its weight. A barrel goes off where it lands.",
           "effects": [
             {
               "op": "grant_action",
               "action": "hurl",
-              "ap": 2,
               "site": "throw",
               "uses": "at_will",
               "pick": "hurlable",

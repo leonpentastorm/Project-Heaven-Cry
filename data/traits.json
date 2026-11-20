@@ -295,11 +295,11 @@
         "Long Throw: +{=effects.0.value} tiles of throwing range. You can also throw a person, a drone or an object next to you that weighs less than your carry weight, ally or enemy: it and whatever it lands on take damage that grows with its weight. Bosses can't be thrown."
       ],
       "downsides": [
-        "Strained Arm: every throw costs 1 AP more."
+        "Strained Arm: every throw costs {=effects.2.value} AP more."
       ],
       "notes": [],
       "narrator_hook": "the squadmate who needs to be on the other side of the gap right now.",
-      "text": "In the mess halls they arm-wrestle. In the field you throw: grenades, crates, Orks, the occasional squadmate.\n+ Long Throw: +{=effects.0.value} tiles of throwing range. You can also throw a person, a drone or an object next to you that weighs less than your carry weight, ally or enemy: it and whatever it lands on take damage that grows with its weight. Bosses can't be thrown.\n− Strained Arm: every throw costs 1 AP more.",
+      "text": "In the mess halls they arm-wrestle. In the field you throw: grenades, crates, Orks, the occasional squadmate.\n+ Long Throw: +{=effects.0.value} tiles of throwing range. You can also throw a person, a drone or an object next to you that weighs less than your carry weight, ally or enemy: it and whatever it lands on take damage that grows with its weight. Bosses can't be thrown.\n− Strained Arm: every throw costs {=effects.2.value} AP more.",
       "effects": [
         {
           "op": "stat_mod",
@@ -307,7 +307,7 @@
           "value": 2
         },
         {
-          "op": "grant_action", "action": "hurl", "ap": 2, "site": "throw", "uses": "at_will", "pick": "hurlable", "pick_label": "What to throw", "reach": {"tile": true, "sight": true}, "label": "Throw it",
+          "op": "grant_action", "action": "hurl", "site": "throw", "uses": "at_will", "pick": "hurlable", "pick_label": "What to throw", "reach": {"tile": true, "sight": true}, "label": "Throw it",
           "effects": [{"op": "object", "do": "hurl", "when": "acted", "range": "throw", "kg_per_tile": 20, "carry": true, "units": {}, "amount": "damage", "label": "Grenadier's Arm"}],
           "note": "rules 1.82 item 7010 (P14): a person, a drone or an object next to you, under your carry weight, to a tile within your throwing range less one a 20 kg (hurl.ts)"
         },

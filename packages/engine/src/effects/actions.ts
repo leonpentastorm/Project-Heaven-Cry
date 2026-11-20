@@ -25,7 +25,7 @@ import { SKILLS } from '../data';
 import { uses, scopeOf, usesLabel } from './uses';
 import { note, postStory, pendRuling, actingAs } from './narrator';
 import { overworld } from '../kit';
-import { price, whyNot, pay, setAp, resWhyNot, resPay, resLeft, brakeGiven, type Priced } from './cost';
+import { price, costOf as siteCost, whyNot, pay, setAp, resWhyNot, resPay, resLeft, brakeGiven, type Priced } from './cost';
 import { isNumberBlock, numberOf } from './amounts';
 import { doorFeed } from './feed';
 import { pickedFork } from '../doorpicks';
@@ -151,8 +151,11 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
     const ops = verb || !!g.prayer;
     const mine = ops ? effs.filter((e) => isItemOp(e) && !(g.prayer && !verb && e.when)) : [], rest = ops ? effs.filter((e) => !isItemOp(e)) : effs;
     const acts = !verb && (g.effects || []).some((e: any) => e?.when === 'acted'); // its ops are lifted onto the item (collect.ts liftActed) and run on the trigger acted
+    // 0.33 (review: one copy of a price): a grant that names its cost site and gives no AP (and its item none) is priced
+    // from the site's own row (actions.json), as the basic action is: Grenadier's Arm's hurl is a throw's price
+    const siteAp = apRaw == null && typeof g.site === 'string';
     const d: ActionDef = {
-      id, label, scope: Array.isArray(g.scope) ? g.scope.filter((x: string) => GRANT_SCOPES.includes(x)) : per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: (h) => apFromData(apRaw, h.u), uses: { per, n }, target,
+      id, label, scope: Array.isArray(g.scope) ? g.scope.filter((x: string) => GRANT_SCOPES.includes(x)) : per === 'out_of_combat' ? ['world', 'story'] : ['combat', 'world'], ap: siteAp ? () => siteCost(g.site) : (h) => apFromData(apRaw, h.u), uses: { per, n }, target,
       run: (h, args, rng) => {
         if (g.prayer && h.cb && h.u && PRAYER && !PRAYER.pray(h.cb, rng, h.u, g.prayer, info.name, g.tier)) return null; // no answer: the AP and the slot are spent
         const t = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) || null : null;

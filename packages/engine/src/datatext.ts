@@ -50,14 +50,19 @@ export function numberOf(x: number | NumberBlock, src: (of: string) => number = 
   return v;
 }
 // the data a reference's namespace reads (dataRef below)
-const REF_ROOTS: Record<string, () => any> = { tech_rule: () => (techniquesJ as any).rules, rule: () => rulesJ, cond: () => CONDS_BY_ID() };
+const REF_ROOTS: Record<string, () => any> = { tech_rule: () => (techniquesJ as any).rules, rule: () => rulesJ, cond: () => CONDS_BY_ID(), cost: () => COSTS() };
 let condsById: Record<string, any> | null = null;
 const CONDS_BY_ID = () => (condsById ||= Object.fromEntries(((conditionsJ as any).items || []).map((c: any) => [c.id, c])));
+// 0.33 (review: one copy of a price): `cost:<action>.<field>` reads an action's own price row, as effects/cost.ts reads it
+// (actions.json items by id, then its costs), so a text shows the price the fight charges (Field Repair's card)
+let costRows: Record<string, any> | null = null;
+const COSTS = () => (costRows ||= { ...Object.fromEntries(((actionsJ as any).items || []).map((a: any) => [a.id, a])), ...((actionsJ as any).costs || {}) });
 /** Rules 1.70 item 5547 (P6): THE resolver of a data reference a number block may name, a value that belongs to no item
  * (or to another file's row): `tech_rule:<path>`, a number of techniques.json `rules` (Cover Them's Guard cost reads
  * tech_rule:guard.interpose_cost); `rule:<path>`, a number of rules.json (the Shadow gains' shared limit reads
  * rule:shadow.door_gains_per_turn); `cond:<id>.<path>`, a number of a conditions.json row (Read Them's card reads
- * cond:read_them.effects.0.value). NaN for anything else (the validator refuses a reference that does not resolve).
+ * cond:read_them.effects.0.value); `cost:<action>.<field>`, an action's price row in actions.json (Field Repair's card reads
+ * cost:field_repair.ap). NaN for anything else (the validator refuses a reference that does not resolve).
  * effects/triggers.ts sourceOf and the texts below read it; tools/text_numbers.py data_ref is its Python twin. */
 export function dataRef(of: string): number {
   const i = of.indexOf(':'), ns = of.slice(0, i), path = of.slice(i + 1), root = REF_ROOTS[ns];

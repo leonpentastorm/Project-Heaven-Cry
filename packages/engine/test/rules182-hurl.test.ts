@@ -24,7 +24,7 @@ describe('rules 1.82 item 7010: Hurl (P14)', () => {
     const want = HURL.amounts.hurl.base + HURL.amounts.hurl.per[0].value * KG('crate');
     expect(999 - f.unit(m.id).hp).toBeGreaterThanOrEqual(Math.floor(want)); // × the physical Stat term
     expect(f.cb.objects!.find((o) => o.id === 'cr')!.pos).not.toBe('4,3');
-    expect(f.unit(u.id).ap).toBe(6 - HURL.effects[0].ap);
+    expect(f.unit(u.id).ap).toBe(6 - HURL.ap_cost); // the move's own ap_cost (the grant carries none: one copy, 0.33 review)
   });
   it('refused before anything is paid: beyond its range, a pillar (not loose), a held-less foe, a Soldier', () => {
     const { f, u } = rig(); const [m, s] = f.foes; m.pos = '3,4'; s.pos = '4,4';

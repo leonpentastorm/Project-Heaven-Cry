@@ -4,6 +4,7 @@
 import { describe, expect, it } from 'vitest';
 import { actionsFor, migrateLoaded, PERK } from '../src';
 import { fightWith } from './helpers/perkfight';
+import actionsJ from '../../../data/actions.json';
 
 const FR: any = (PERK as any).field_repair, OV: any = (PERK as any).overhaul;
 const rig = (o: { pts?: number; perks?: any } = {}) => {
@@ -23,7 +24,7 @@ describe('rules 1.82 item 7008: Field Repair, a perk', () => {
     const { f, mech, bot } = rig({ perks: { field_repair: 'I' } });
     f.act({ type: 'combat/repair', unitId: mech.id, targetId: bot.id } as any);
     expect(f.unit(bot.id).hp).toBe(20 + FR.amounts.repair.base); expect(f.unit(mech.id).parts).toBe(1);
-    expect(f.unit(mech.id).ap).toBe(6 - FR.tiers.I.effects[0].ap);
+    expect(f.unit(mech.id).ap).toBe(6 - (actionsJ as any).costs.field_repair.ap); // the cost site's price (the gate_only grant carries none: one copy, 0.33 review)
   });
   it('tier II: no spare part', () => {
     const { f, mech, bot } = rig({ pts: 5, perks: { field_repair: 'II' } });

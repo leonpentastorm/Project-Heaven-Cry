@@ -363,14 +363,14 @@ export function sourceOf(ev: Ev, of: string): number {
   if (ns === 'skill') return skillPts(ev, f); // rules 1.33: the holder's points in a skill (Share a Hit's 5% a point of Camaraderie)
   if (ns === 'feed') return doorFeed(ev.self, f); // rules 1.60 (N3): the holder's beta feed of a door, 1 + per_product x alpha x beta (effects/feed.ts)
   if (ns === 'pick') return pickedBy(ev, f) ? 1 : 0; // rules 1.60 (N2): 1 when the holder picked this fork option, else 0
-  if (ns === 'tech_rule' || ns === 'rule' || ns === 'cond') return dataRef(of); // rules 1.70 item 5547 (P6): a value of the data (datatext.ts dataRef: techniques.json rules, rules.json, a conditions.json row)
+  if (ns === 'tech_rule' || ns === 'rule' || ns === 'cond' || ns === 'cost') return dataRef(of); // rules 1.70 item 5547 (P6): a value of the data (datatext.ts dataRef: techniques.json rules, rules.json, a conditions.json row)
   return 0;
 }
 // rules 1.77 item 6509: the sheet's numbers (character.ts strainLimit, readyDesigns) read their `of` through this one
 // resolver: a holder with the character and no unit
 setSheetSource((c, of) => sourceOf({ ctx: {}, trig: TRIGGERS.acted, h: { key: '', c, info: null } as any, self: null as any, cb: null as any, actor: null, target: null, preview: true }, of));
 /** The namespaces a number block's `of` may name in an item op. */
-export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed', 'pick', 'tech_rule', 'rule', 'cond'];
+export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed', 'pick', 'tech_rule', 'rule', 'cond', 'cost'];
 /** The numeric fields of an item op that may be number blocks. */
 const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders', 'share', 'count'];
 /** Rules 1.33: `{choice}` in a word field (a condition's id, a limit's key) is the action's pick (a felt feeling). */

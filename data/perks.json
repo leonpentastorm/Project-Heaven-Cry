@@ -3954,14 +3954,17 @@
           "provisional": true
         }
       },
-      "text": "I: {=tiers.I.effects.0.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=numbers.repair_base|pct}% + {=numbers.repair_per_point|pct}% per Improvisation point above the first perk step of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, ten minutes and one charge restore half a weapon's durability. II: As I, with no spare part.",
+      "price": {
+        "about": "0.33 (review: one copy of a price): the card shows the fight's own price, actions.json costs.field_repair (Overhaul's action_cost changes what its holder pays)",
+        "ap": { "base": 0, "per": [ { "of": "cost:field_repair.ap", "value": 1 } ] }
+      },
+      "text": "I: {=price.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=numbers.repair_base|pct}% + {=numbers.repair_per_point|pct}% per Improvisation point above the first perk step of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, ten minutes and one charge restore half a weapon's durability. II: As I, with no spare part.",
       "effects": [
         {
           "op": "grant_action",
           "action": "field_repair",
           "uses": "at_will",
           "label": "Field Repair",
-          "ap": 2,
           "gate_only": true
         }
       ],
@@ -3974,15 +3977,14 @@
             }
           ],
           "ap_cost": null,
-          "text": "{=tiers.I.effects.0.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=numbers.repair_base|pct}% + {=numbers.repair_per_point|pct}% per Improvisation point above the first perk step of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, ten minutes and one charge restore half a weapon's durability.",
-          "short": "{=tiers.I.effects.0.ap} AP and a spare part: clear a jam, mend a weapon, repair a machine or Figment",
+          "text": "{=price.ap} AP and one spare part: on you, or an ally, machine or Figment next to you, clear a jam, restore {=numbers.repair_base|pct}% + {=numbers.repair_per_point|pct}% per Improvisation point above the first perk step of a weapon's durability, or repair a robot, drone, turret, Factory Made squadmate or Figment for {=amounts.repair.base}, more as you level (a Downed machine comes back up). Out of combat, ten minutes and one charge restore half a weapon's durability.",
+          "short": "{=price.ap} AP and a spare part: clear a jam, mend a weapon, repair a machine or Figment",
           "effects": [
             {
               "op": "grant_action",
               "action": "field_repair",
               "uses": "at_will",
               "label": "Field Repair",
-              "ap": 2,
               "gate_only": true
             }
           ]
@@ -4004,7 +4006,6 @@
               "uses": "at_will",
               "parts": 0,
               "label": "Field Repair",
-              "ap": 2,
               "gate_only": true
             }
           ],
@@ -11644,7 +11645,6 @@
           "uses": "at_will",
           "label": "Field Repair",
           "numbers_from": "perk:field_repair",
-          "ap": 1,
           "gate_only": true
         }
       ],
