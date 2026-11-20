@@ -1,6 +1,6 @@
 {
   "branch": "art/2026-11-19-kept-blade-grades",
-  "updated_utc": "2026-11-20T06:27:11.496729+00:00",
+  "updated_utc": "2026-11-20T07:25:13.705993+00:00",
   "ids": [
     "weapon-kemizuchi_duelling_blade--fine",
     "weapon-kemizuchi_duelling_blade--masterwork",
@@ -245,7 +245,23 @@
     "weapon-throwing_javelins--fine",
     "weapon-throwing_javelins--masterwork",
     "weapon-throwing_javelins--relic",
-    "weapon-throwing_javelins--celestial"
+    "weapon-throwing_javelins--celestial",
+    "weapon-lumeri_votive_torch--fine",
+    "weapon-lumeri_votive_torch--masterwork",
+    "weapon-lumeri_votive_torch--relic",
+    "weapon-lumeri_votive_torch--celestial",
+    "weapon-lumeri_cathedral_burner--fine",
+    "weapon-lumeri_cathedral_burner--masterwork",
+    "weapon-lumeri_cathedral_burner--relic",
+    "weapon-lumeri_cathedral_burner--celestial",
+    "weapon-whisper_pistol--fine",
+    "weapon-whisper_pistol--masterwork",
+    "weapon-whisper_pistol--relic",
+    "weapon-whisper_pistol--celestial",
+    "weapon-whisper_carbine--fine",
+    "weapon-whisper_carbine--masterwork",
+    "weapon-whisper_carbine--relic",
+    "weapon-whisper_carbine--celestial"
   ],
   "standards": [
     "weapon-kemizuchi_duelling_blade",
@@ -308,7 +324,11 @@
     "weapon-hellraiser_piston_knuckles",
     "weapon-hellraiser_door_knocker",
     "weapon-throwing_darts",
-    "weapon-throwing_javelins"
+    "weapon-throwing_javelins",
+    "weapon-lumeri_votive_torch",
+    "weapon-lumeri_cathedral_burner",
+    "weapon-whisper_pistol",
+    "weapon-whisper_carbine"
   ],
   "other_agent_proof_standards": [
     "weapon-katana",
@@ -323,9 +343,9 @@
     "weapon-legion_gladius"
   ],
   "peer_canonical_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
-  "target": 244,
-  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7032212554",
+  "target": 260,
+  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7033232334",
   "latest_implementer_commit": "7e1f6bd065b47ce6f9d9325629abdeaffba7b0e9",
-  "handoff_status": "active;armour56 complete;next28 shortbow/powered/thrown reserved;39 prior rejected/dependent",
+  "handoff_status": "active;armour56 complete;next16 Lumeri/Whisper reserved;43 prior rejected/dependent",
   "next_reset_utc": "2026-11-20T03:19:14Z"
 }

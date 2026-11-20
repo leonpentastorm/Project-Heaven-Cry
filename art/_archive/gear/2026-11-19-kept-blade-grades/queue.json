@@ -6823,5 +6823,497 @@
     "standard_status": "review-candidate",
     "current_data_item_present": false,
     "prepared_at_utc": "2026-11-20T06:26:26.615493+00:00"
+  },
+  {
+    "id": "weapon-lumeri_votive_torch--fine",
+    "standard_id": "weapon-lumeri_votive_torch",
+    "grade": "fine",
+    "label": "Lumeri votive torch — Fine",
+    "path": "art/icons/gear/weapon-lumeri_votive_torch--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lumeri_votive_torch.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lumeri_votive_torch",
+    "family_references": [
+      "art/icons/gear/weapon-lumeri_votive_torch.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.8",
+    "source_brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+    "source_brief_number": 9,
+    "keep_line": "the same single horizontal ivory-and-gold Lumeri lamp prop, large angular ivory loop grip at the left with its dark open centre, central round banded neck with its existing dark vents, elongated pointed lancet-window lantern at the right with all gold frame ribs and a single tiny warm amber candlelight INSIDE, one round ivory flask suspended below the middle with its gold equatorial band and single rivet, and the tight curled gold pipe under the right side. Preserve exactly the loop opening, lamp point and ribs, vent slots, flask shape, every band, rivet, handle contour and pipe loop. Ivory ceramic/painted steel and gold/brass fittings are the original material identity; muted Lumeri gold remains at its original bands. The tiny enclosed candlelight stays the same colour and size at all grades, never outside the lantern. No nozzle extension, external flame, tank, hose, second object or added symbol.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single horizontal ivory-and-gold Lumeri lamp prop, large angular ivory loop grip at the left with its dark open centre, central round banded neck with its existing dark vents, elongated pointed lancet-window lantern at the right with all gold frame ribs and a single tiny warm amber candlelight INSIDE, one round ivory flask suspended below the middle with its gold equatorial band and single rivet, and the tight curled gold pipe under the right side. Preserve exactly the loop opening, lamp point and ribs, vent slots, flask shape, every band, rivet, handle contour and pipe loop. Ivory ceramic/painted steel and gold/brass fittings are the original material identity; muted Lumeri gold remains at its original bands. The tiny enclosed candlelight stays the same colour and size at all grades, never outside the lantern. No nozzle extension, external flame, tank, hose, second object or added symbol.\n\nGrade: Fine. The same heavy weapon, refinished. An even, unscratched finish on the receiver, tube or tank, its edges bright, the scorch at the muzzle or rear flare cleaned to bare metal; grips and stock clean; hinges, bands and fittings freshly oiled. Add one thin engraved line along the largest flat side (the receiver, the length of the tube, or round the tank), following its edge. Nothing else is added.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Add only ONE thin uncoloured engraved contour along the largest existing slide/receiver side or lantern/flask body surface; no inlay colour, ornament, repair or new part. The already-present small lantern/candle ember remains its original amber/orange colour and size at every grade, contained behind the same ribs/window; no fire, smoke, ray or bloom outside.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-lumeri_votive_torch--masterwork",
+    "standard_id": "weapon-lumeri_votive_torch",
+    "grade": "masterwork",
+    "label": "Lumeri votive torch — Masterwork",
+    "path": "art/icons/gear/weapon-lumeri_votive_torch--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lumeri_votive_torch.png",
+      "art/icons/gear/weapon-lumeri_votive_torch--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lumeri_votive_torch",
+    "family_references": [
+      "art/icons/gear/weapon-lumeri_votive_torch.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.8",
+    "source_brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+    "source_brief_number": 9,
+    "keep_line": "the same single horizontal ivory-and-gold Lumeri lamp prop, large angular ivory loop grip at the left with its dark open centre, central round banded neck with its existing dark vents, elongated pointed lancet-window lantern at the right with all gold frame ribs and a single tiny warm amber candlelight INSIDE, one round ivory flask suspended below the middle with its gold equatorial band and single rivet, and the tight curled gold pipe under the right side. Preserve exactly the loop opening, lamp point and ribs, vent slots, flask shape, every band, rivet, handle contour and pipe loop. Ivory ceramic/painted steel and gold/brass fittings are the original material identity; muted Lumeri gold remains at its original bands. The tiny enclosed candlelight stays the same colour and size at all grades, never outside the lantern. No nozzle extension, external flame, tank, hose, second object or added symbol.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single horizontal ivory-and-gold Lumeri lamp prop, large angular ivory loop grip at the left with its dark open centre, central round banded neck with its existing dark vents, elongated pointed lancet-window lantern at the right with all gold frame ribs and a single tiny warm amber candlelight INSIDE, one round ivory flask suspended below the middle with its gold equatorial band and single rivet, and the tight curled gold pipe under the right side. Preserve exactly the loop opening, lamp point and ribs, vent slots, flask shape, every band, rivet, handle contour and pipe loop. Ivory ceramic/painted steel and gold/brass fittings are the original material identity; muted Lumeri gold remains at its original bands. The tiny enclosed candlelight stays the same colour and size at all grades, never outside the lantern. No nozzle extension, external flame, tank, hose, second object or added symbol.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), one continuous coloured stripe along the receiver, tube or tank. The grips, stock and shoulder rest are re-made in a finer material in exactly the same shapes; the bands, hinges, pins and fittings are polished brass or bright steel; every edge machined crisp. No wear, no scorch.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is the same muted Lumeri gold as the original bands, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet. The already-present small lantern/candle ember remains its original amber/orange colour and size at every grade, contained behind the same ribs/window; no fire, smoke, ray or bloom outside.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-lumeri_votive_torch--fine",
+    "standard_sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-lumeri_votive_torch--relic",
+    "standard_id": "weapon-lumeri_votive_torch",
+    "grade": "relic",
+    "label": "Lumeri votive torch — Relic",
+    "path": "art/icons/gear/weapon-lumeri_votive_torch--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lumeri_votive_torch.png",
+      "art/icons/gear/weapon-lumeri_votive_torch--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lumeri_votive_torch",
+    "family_references": [
+      "art/icons/gear/weapon-lumeri_votive_torch.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.8",
+    "source_brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+    "source_brief_number": 9,
+    "keep_line": "the same single horizontal ivory-and-gold Lumeri lamp prop, large angular ivory loop grip at the left with its dark open centre, central round banded neck with its existing dark vents, elongated pointed lancet-window lantern at the right with all gold frame ribs and a single tiny warm amber candlelight INSIDE, one round ivory flask suspended below the middle with its gold equatorial band and single rivet, and the tight curled gold pipe under the right side. Preserve exactly the loop opening, lamp point and ribs, vent slots, flask shape, every band, rivet, handle contour and pipe loop. Ivory ceramic/painted steel and gold/brass fittings are the original material identity; muted Lumeri gold remains at its original bands. The tiny enclosed candlelight stays the same colour and size at all grades, never outside the lantern. No nozzle extension, external flame, tank, hose, second object or added symbol.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single horizontal ivory-and-gold Lumeri lamp prop, large angular ivory loop grip at the left with its dark open centre, central round banded neck with its existing dark vents, elongated pointed lancet-window lantern at the right with all gold frame ribs and a single tiny warm amber candlelight INSIDE, one round ivory flask suspended below the middle with its gold equatorial band and single rivet, and the tight curled gold pipe under the right side. Preserve exactly the loop opening, lamp point and ribs, vent slots, flask shape, every band, rivet, handle contour and pipe loop. Ivory ceramic/painted steel and gold/brass fittings are the original material identity; muted Lumeri gold remains at its original bands. The tiny enclosed candlelight stays the same colour and size at all grades, never outside the lantern. No nozzle extension, external flame, tank, hose, second object or added symbol.\n\nGrade: Relic. Keep the shape and the inlay. The metal darkens to a warm deep patina (oiled bronze-brown, never rust), the grips worn smooth by years of hands, the inlay dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits beside it on the receiver, tube or tank. Add one old repair that tells a story: a band or bracket replaced in a different metal, a hose or strap mended with old wire, or a dented panel beaten back and riveted. It still works perfectly.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. One small flush ornamental scroll panel sits beside the inlay on an existing side surface, wholly within its original silhouette, no lettering or symbolic crest. ONE existing small fastener is replaced by a different-metal fastener in exactly its current hole and size as the old repair; no added pin or hardware. Patina is deep warm oiled bronze-brown, never fresh rust; original signature accent stays in place. The already-present small lantern/candle ember remains its original amber/orange colour and size at every grade, contained behind the same ribs/window; no fire, smoke, ray or bloom outside.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-lumeri_votive_torch--masterwork",
+    "standard_sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-lumeri_votive_torch--celestial",
+    "standard_id": "weapon-lumeri_votive_torch",
+    "grade": "celestial",
+    "label": "Lumeri votive torch — Celestial",
+    "path": "art/icons/gear/weapon-lumeri_votive_torch--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lumeri_votive_torch.png",
+      "art/icons/gear/weapon-lumeri_votive_torch--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lumeri_votive_torch",
+    "family_references": [
+      "art/icons/gear/weapon-lumeri_votive_torch.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.8",
+    "source_brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+    "source_brief_number": 9,
+    "keep_line": "the same single horizontal ivory-and-gold Lumeri lamp prop, large angular ivory loop grip at the left with its dark open centre, central round banded neck with its existing dark vents, elongated pointed lancet-window lantern at the right with all gold frame ribs and a single tiny warm amber candlelight INSIDE, one round ivory flask suspended below the middle with its gold equatorial band and single rivet, and the tight curled gold pipe under the right side. Preserve exactly the loop opening, lamp point and ribs, vent slots, flask shape, every band, rivet, handle contour and pipe loop. Ivory ceramic/painted steel and gold/brass fittings are the original material identity; muted Lumeri gold remains at its original bands. The tiny enclosed candlelight stays the same colour and size at all grades, never outside the lantern. No nozzle extension, external flame, tank, hose, second object or added symbol.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single horizontal ivory-and-gold Lumeri lamp prop, large angular ivory loop grip at the left with its dark open centre, central round banded neck with its existing dark vents, elongated pointed lancet-window lantern at the right with all gold frame ribs and a single tiny warm amber candlelight INSIDE, one round ivory flask suspended below the middle with its gold equatorial band and single rivet, and the tight curled gold pipe under the right side. Preserve exactly the loop opening, lamp point and ribs, vent slots, flask shape, every band, rivet, handle contour and pipe loop. Ivory ceramic/painted steel and gold/brass fittings are the original material identity; muted Lumeri gold remains at its original bands. The tiny enclosed candlelight stays the same colour and size at all grades, never outside the lantern. No nozzle extension, external flame, tank, hose, second object or added symbol.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; grips and stock ivory, a faint trace of the item's accent where its accent was. The inlay line and one seam (a receiver seam, a tube joint or a tank band) give a faint, contained ivory-gold light from inside. The muzzle, venturi or nozzle stays dark; a pilot flame stays its own small colour; nothing spills past the outline: no bloom, no halo, no rays, no sparks, no smoke.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Keep the prior Relic scroll panel and single contrasting-metal repair in exactly their positions and outlines, now pale clean material with faint seams. Preserve all dark ports/openings; light belongs only to the flush inlay and one original seam, not the muzzle or beyond the outline. The already-present small lantern/candle ember remains its original amber/orange colour and size at every grade, contained behind the same ribs/window; no fire, smoke, ray or bloom outside.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-lumeri_votive_torch--relic",
+    "standard_sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-lumeri_cathedral_burner--fine",
+    "standard_id": "weapon-lumeri_cathedral_burner",
+    "grade": "fine",
+    "label": "Lumeri cathedral burner — Fine",
+    "path": "art/icons/gear/weapon-lumeri_cathedral_burner--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lumeri_cathedral_burner",
+    "family_references": [
+      "art/icons/gear/weapon-lumeri_cathedral_burner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.8",
+    "source_brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+    "source_brief_number": 10,
+    "keep_line": "the same single upright ivory-and-gold cathedral-shaped assembly, TWO unequal-height long cylindrical spired columns with exactly their existing narrow dark arched openings, pointed finials, buttress tips, bands and round gilded fittings; the thick angular outer support frame with its round bolts and curved lower conduit loop; and the long diagonal staff from its pointed lower-left butt to the gold lancet lantern at upper-right. Preserve the two-column count and height difference, every spire and open arch, all ribs/bands/fittings, the support-frame silhouette, exposed conduit and exact diagonal overlap. The right lantern retains its existing small orange-amber ember within its lattice at every grade, never an external flame. Ivory surfaces and original gilt bands remain at their current places. No wearer, backpack straps, added machinery, extra column or new emblem.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single upright ivory-and-gold cathedral-shaped assembly, TWO unequal-height long cylindrical spired columns with exactly their existing narrow dark arched openings, pointed finials, buttress tips, bands and round gilded fittings; the thick angular outer support frame with its round bolts and curved lower conduit loop; and the long diagonal staff from its pointed lower-left butt to the gold lancet lantern at upper-right. Preserve the two-column count and height difference, every spire and open arch, all ribs/bands/fittings, the support-frame silhouette, exposed conduit and exact diagonal overlap. The right lantern retains its existing small orange-amber ember within its lattice at every grade, never an external flame. Ivory surfaces and original gilt bands remain at their current places. No wearer, backpack straps, added machinery, extra column or new emblem.\n\nGrade: Fine. The same heavy weapon, refinished. An even, unscratched finish on the receiver, tube or tank, its edges bright, the scorch at the muzzle or rear flare cleaned to bare metal; grips and stock clean; hinges, bands and fittings freshly oiled. Add one thin engraved line along the largest flat side (the receiver, the length of the tube, or round the tank), following its edge. Nothing else is added.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Add only ONE thin uncoloured engraved contour along the largest existing slide/receiver side or lantern/flask body surface; no inlay colour, ornament, repair or new part. The already-present small lantern/candle ember remains its original amber/orange colour and size at every grade, contained behind the same ribs/window; no fire, smoke, ray or bloom outside.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-lumeri_cathedral_burner--masterwork",
+    "standard_id": "weapon-lumeri_cathedral_burner",
+    "grade": "masterwork",
+    "label": "Lumeri cathedral burner — Masterwork",
+    "path": "art/icons/gear/weapon-lumeri_cathedral_burner--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+      "art/icons/gear/weapon-lumeri_cathedral_burner--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lumeri_cathedral_burner",
+    "family_references": [
+      "art/icons/gear/weapon-lumeri_cathedral_burner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.8",
+    "source_brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+    "source_brief_number": 10,
+    "keep_line": "the same single upright ivory-and-gold cathedral-shaped assembly, TWO unequal-height long cylindrical spired columns with exactly their existing narrow dark arched openings, pointed finials, buttress tips, bands and round gilded fittings; the thick angular outer support frame with its round bolts and curved lower conduit loop; and the long diagonal staff from its pointed lower-left butt to the gold lancet lantern at upper-right. Preserve the two-column count and height difference, every spire and open arch, all ribs/bands/fittings, the support-frame silhouette, exposed conduit and exact diagonal overlap. The right lantern retains its existing small orange-amber ember within its lattice at every grade, never an external flame. Ivory surfaces and original gilt bands remain at their current places. No wearer, backpack straps, added machinery, extra column or new emblem.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single upright ivory-and-gold cathedral-shaped assembly, TWO unequal-height long cylindrical spired columns with exactly their existing narrow dark arched openings, pointed finials, buttress tips, bands and round gilded fittings; the thick angular outer support frame with its round bolts and curved lower conduit loop; and the long diagonal staff from its pointed lower-left butt to the gold lancet lantern at upper-right. Preserve the two-column count and height difference, every spire and open arch, all ribs/bands/fittings, the support-frame silhouette, exposed conduit and exact diagonal overlap. The right lantern retains its existing small orange-amber ember within its lattice at every grade, never an external flame. Ivory surfaces and original gilt bands remain at their current places. No wearer, backpack straps, added machinery, extra column or new emblem.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), one continuous coloured stripe along the receiver, tube or tank. The grips, stock and shoulder rest are re-made in a finer material in exactly the same shapes; the bands, hinges, pins and fittings are polished brass or bright steel; every edge machined crisp. No wear, no scorch.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is the same muted Lumeri gold as the original bands, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet. The already-present small lantern/candle ember remains its original amber/orange colour and size at every grade, contained behind the same ribs/window; no fire, smoke, ray or bloom outside.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-lumeri_cathedral_burner--fine",
+    "standard_sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-lumeri_cathedral_burner--relic",
+    "standard_id": "weapon-lumeri_cathedral_burner",
+    "grade": "relic",
+    "label": "Lumeri cathedral burner — Relic",
+    "path": "art/icons/gear/weapon-lumeri_cathedral_burner--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+      "art/icons/gear/weapon-lumeri_cathedral_burner--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lumeri_cathedral_burner",
+    "family_references": [
+      "art/icons/gear/weapon-lumeri_cathedral_burner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.8",
+    "source_brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+    "source_brief_number": 10,
+    "keep_line": "the same single upright ivory-and-gold cathedral-shaped assembly, TWO unequal-height long cylindrical spired columns with exactly their existing narrow dark arched openings, pointed finials, buttress tips, bands and round gilded fittings; the thick angular outer support frame with its round bolts and curved lower conduit loop; and the long diagonal staff from its pointed lower-left butt to the gold lancet lantern at upper-right. Preserve the two-column count and height difference, every spire and open arch, all ribs/bands/fittings, the support-frame silhouette, exposed conduit and exact diagonal overlap. The right lantern retains its existing small orange-amber ember within its lattice at every grade, never an external flame. Ivory surfaces and original gilt bands remain at their current places. No wearer, backpack straps, added machinery, extra column or new emblem.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single upright ivory-and-gold cathedral-shaped assembly, TWO unequal-height long cylindrical spired columns with exactly their existing narrow dark arched openings, pointed finials, buttress tips, bands and round gilded fittings; the thick angular outer support frame with its round bolts and curved lower conduit loop; and the long diagonal staff from its pointed lower-left butt to the gold lancet lantern at upper-right. Preserve the two-column count and height difference, every spire and open arch, all ribs/bands/fittings, the support-frame silhouette, exposed conduit and exact diagonal overlap. The right lantern retains its existing small orange-amber ember within its lattice at every grade, never an external flame. Ivory surfaces and original gilt bands remain at their current places. No wearer, backpack straps, added machinery, extra column or new emblem.\n\nGrade: Relic. Keep the shape and the inlay. The metal darkens to a warm deep patina (oiled bronze-brown, never rust), the grips worn smooth by years of hands, the inlay dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits beside it on the receiver, tube or tank. Add one old repair that tells a story: a band or bracket replaced in a different metal, a hose or strap mended with old wire, or a dented panel beaten back and riveted. It still works perfectly.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. One small flush ornamental scroll panel sits beside the inlay on an existing side surface, wholly within its original silhouette, no lettering or symbolic crest. ONE existing small fastener is replaced by a different-metal fastener in exactly its current hole and size as the old repair; no added pin or hardware. Patina is deep warm oiled bronze-brown, never fresh rust; original signature accent stays in place. The already-present small lantern/candle ember remains its original amber/orange colour and size at every grade, contained behind the same ribs/window; no fire, smoke, ray or bloom outside.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-lumeri_cathedral_burner--masterwork",
+    "standard_sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-lumeri_cathedral_burner--celestial",
+    "standard_id": "weapon-lumeri_cathedral_burner",
+    "grade": "celestial",
+    "label": "Lumeri cathedral burner — Celestial",
+    "path": "art/icons/gear/weapon-lumeri_cathedral_burner--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+      "art/icons/gear/weapon-lumeri_cathedral_burner--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lumeri_cathedral_burner",
+    "family_references": [
+      "art/icons/gear/weapon-lumeri_cathedral_burner.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.8",
+    "source_brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+    "source_brief_number": 10,
+    "keep_line": "the same single upright ivory-and-gold cathedral-shaped assembly, TWO unequal-height long cylindrical spired columns with exactly their existing narrow dark arched openings, pointed finials, buttress tips, bands and round gilded fittings; the thick angular outer support frame with its round bolts and curved lower conduit loop; and the long diagonal staff from its pointed lower-left butt to the gold lancet lantern at upper-right. Preserve the two-column count and height difference, every spire and open arch, all ribs/bands/fittings, the support-frame silhouette, exposed conduit and exact diagonal overlap. The right lantern retains its existing small orange-amber ember within its lattice at every grade, never an external flame. Ivory surfaces and original gilt bands remain at their current places. No wearer, backpack straps, added machinery, extra column or new emblem.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single upright ivory-and-gold cathedral-shaped assembly, TWO unequal-height long cylindrical spired columns with exactly their existing narrow dark arched openings, pointed finials, buttress tips, bands and round gilded fittings; the thick angular outer support frame with its round bolts and curved lower conduit loop; and the long diagonal staff from its pointed lower-left butt to the gold lancet lantern at upper-right. Preserve the two-column count and height difference, every spire and open arch, all ribs/bands/fittings, the support-frame silhouette, exposed conduit and exact diagonal overlap. The right lantern retains its existing small orange-amber ember within its lattice at every grade, never an external flame. Ivory surfaces and original gilt bands remain at their current places. No wearer, backpack straps, added machinery, extra column or new emblem.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; grips and stock ivory, a faint trace of the item's accent where its accent was. The inlay line and one seam (a receiver seam, a tube joint or a tank band) give a faint, contained ivory-gold light from inside. The muzzle, venturi or nozzle stays dark; a pilot flame stays its own small colour; nothing spills past the outline: no bloom, no halo, no rays, no sparks, no smoke.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Keep the prior Relic scroll panel and single contrasting-metal repair in exactly their positions and outlines, now pale clean material with faint seams. Preserve all dark ports/openings; light belongs only to the flush inlay and one original seam, not the muzzle or beyond the outline. The already-present small lantern/candle ember remains its original amber/orange colour and size at every grade, contained behind the same ribs/window; no fire, smoke, ray or bloom outside.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-lumeri_cathedral_burner--relic",
+    "standard_sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-whisper_pistol--fine",
+    "standard_id": "weapon-whisper_pistol",
+    "grade": "fine",
+    "label": "Whisper pistol — Fine",
+    "path": "art/icons/gear/weapon-whisper_pistol--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_pistol.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Add only ONE thin uncoloured engraved contour along the largest existing slide/receiver side or lantern/flask body surface; no inlay colour, ornament, repair or new part.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-whisper_pistol--masterwork",
+    "standard_id": "weapon-whisper_pistol",
+    "grade": "masterwork",
+    "label": "Whisper pistol — Masterwork",
+    "path": "art/icons/gear/weapon-whisper_pistol--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_pistol.png",
+      "art/icons/gear/weapon-whisper_pistol--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is the existing muted slate-blue/steel-blue accent, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-whisper_pistol--fine",
+    "standard_sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-whisper_pistol--relic",
+    "standard_id": "weapon-whisper_pistol",
+    "grade": "relic",
+    "label": "Whisper pistol — Relic",
+    "path": "art/icons/gear/weapon-whisper_pistol--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_pistol.png",
+      "art/icons/gear/weapon-whisper_pistol--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. One small flush ornamental scroll panel sits beside the inlay on an existing side surface, wholly within its original silhouette, no lettering or symbolic crest. ONE existing small fastener is replaced by a different-metal fastener in exactly its current hole and size as the old repair; no added pin or hardware. Patina is deep warm oiled bronze-brown, never fresh rust; original signature accent stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-whisper_pistol--masterwork",
+    "standard_sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-whisper_pistol--celestial",
+    "standard_id": "weapon-whisper_pistol",
+    "grade": "celestial",
+    "label": "Whisper pistol — Celestial",
+    "path": "art/icons/gear/weapon-whisper_pistol--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_pistol.png",
+      "art/icons/gear/weapon-whisper_pistol--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Keep the prior Relic scroll panel and single contrasting-metal repair in exactly their positions and outlines, now pale clean material with faint seams. Preserve all dark ports/openings; light belongs only to the flush inlay and one original seam, not the muzzle or beyond the outline.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-whisper_pistol--relic",
+    "standard_sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-whisper_carbine--fine",
+    "standard_id": "weapon-whisper_carbine",
+    "grade": "fine",
+    "label": "Whisper carbine — Fine",
+    "path": "art/icons/gear/weapon-whisper_carbine--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_carbine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 5,
+    "keep_line": "the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Add only ONE thin uncoloured engraved contour along the largest existing slide/receiver side or lantern/flask body surface; no inlay colour, ornament, repair or new part.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-whisper_carbine--masterwork",
+    "standard_id": "weapon-whisper_carbine",
+    "grade": "masterwork",
+    "label": "Whisper carbine — Masterwork",
+    "path": "art/icons/gear/weapon-whisper_carbine--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_carbine.png",
+      "art/icons/gear/weapon-whisper_carbine--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 5,
+    "keep_line": "the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is the existing muted slate-blue/steel-blue accent, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-whisper_carbine--fine",
+    "standard_sha256": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-whisper_carbine--relic",
+    "standard_id": "weapon-whisper_carbine",
+    "grade": "relic",
+    "label": "Whisper carbine — Relic",
+    "path": "art/icons/gear/weapon-whisper_carbine--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_carbine.png",
+      "art/icons/gear/weapon-whisper_carbine--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 5,
+    "keep_line": "the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. One small flush ornamental scroll panel sits beside the inlay on an existing side surface, wholly within its original silhouette, no lettering or symbolic crest. ONE existing small fastener is replaced by a different-metal fastener in exactly its current hole and size as the old repair; no added pin or hardware. Patina is deep warm oiled bronze-brown, never fresh rust; original signature accent stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-whisper_carbine--masterwork",
+    "standard_sha256": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
+  },
+  {
+    "id": "weapon-whisper_carbine--celestial",
+    "standard_id": "weapon-whisper_carbine",
+    "grade": "celestial",
+    "label": "Whisper carbine — Celestial",
+    "path": "art/icons/gear/weapon-whisper_carbine--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_carbine.png",
+      "art/icons/gear/weapon-whisper_carbine--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 5,
+    "keep_line": "the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Keep the prior Relic scroll panel and single contrasting-metal repair in exactly their positions and outlines, now pale clean material with faint seams. Preserve all dark ports/openings; light belongs only to the flush inlay and one original seam, not the muzzle or beyond the outline.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-whisper_carbine--relic",
+    "standard_sha256": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false
   }
 ]

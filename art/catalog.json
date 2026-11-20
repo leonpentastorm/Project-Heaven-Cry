@@ -29182,6 +29182,98 @@
         "different_pixels_32": 10,
         "different_pixels_64": 38
       }
+    },
+    "weapon-lumeri_votive_torch": {
+      "label": "Votive torch",
+      "path": "art/icons/gear/weapon-lumeri_votive_torch.png",
+      "sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/09-weapon-lumeri_votive_torch.png"
+    },
+    "weapon-lumeri_cathedral_burner": {
+      "label": "Cathedral burner",
+      "path": "art/icons/gear/weapon-lumeri_cathedral_burner.png",
+      "sha256": "217dc4cca2f8fea118e707d8e36c66c583ed55d3212aeed5dc99e87d01516338",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_cathedral_burner.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_cathedral_burner.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_cathedral_burner.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_cathedral_burner.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-09",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-09/native/10-weapon-lumeri_cathedral_burner.png"
+    },
+    "weapon-whisper_pistol": {
+      "label": "Whisper pistol (Whisper, close)",
+      "path": "art/icons/gear/weapon-whisper_pistol.png",
+      "sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-whisper_pistol.png",
+        "128": "art/icons/gear/exports/128/weapon-whisper_pistol.png",
+        "64": "art/icons/gear/exports/64/weapon-whisper_pistol.png",
+        "32": "art/icons/gear/exports/32/weapon-whisper_pistol.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-06",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-06/native/04-weapon-whisper_pistol.png"
+    },
+    "weapon-whisper_carbine": {
+      "label": "Whisper carbine (Whisper, long)",
+      "path": "art/icons/gear/weapon-whisper_carbine.png",
+      "sha256": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-whisper_carbine.png",
+        "128": "art/icons/gear/exports/128/weapon-whisper_carbine.png",
+        "64": "art/icons/gear/exports/64/weapon-whisper_carbine.png",
+        "32": "art/icons/gear/exports/32/weapon-whisper_carbine.png"
+      },
+      "collection": "prompt-pack-2026-11-19-file-06",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "source_path": "art/_archive/prompt-pack/2026-11-19-file-06/native/05-weapon-whisper_carbine.png"
     }
   },
   "survival_art": {
