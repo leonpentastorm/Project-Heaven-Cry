@@ -22,9 +22,13 @@ def validate(selected=None, complete=False):
     catalog = json.loads((ROOT / 'art/catalog.json').read_text())['gear']
     text=(ROOT/'art/briefs/prompts-2026-11-19/08-grades-and-uniques.md').read_text()
     assert (BASE/'source-brief.md').read_text()==text, 'Brief changed; reconcile claim'
-    expected=set(json.loads((BASE/'claim.json').read_text())['ids'])
+    claim=json.loads((BASE/'claim.json').read_text())
+    expected=set(claim['ids'])
     assert len(queue)==len(expected)
-    assert expected == {standard+'--'+grade for standard in json.loads((BASE/'claim.json').read_text())['standards'] for grade in ('fine','masterwork','relic','celestial')}
+    if not claim.get('partial_grade_claim'):
+        assert expected == {standard+'--'+grade for standard in claim['standards'] for grade in ('fine','masterwork','relic','celestial')}
+    else:
+        assert all(j['standard_id'] in claim['standards'] and j['grade'] in ('fine','masterwork','relic','celestial') and j['id']==j['standard_id']+'--'+j['grade'] for j in queue)
     assert {j['id'] for j in queue} == expected
     delivered = {j['id'] for j in queue if j['status']=='delivered'}
     assert len(manifest['assets']) == len(delivered)
@@ -80,5 +84,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--asset')
     parser.add_argument('--complete', action='store_true')
+    parser.add_argument('--delivery-root', help='Repository-relative archive root for a separately claimed continuation lane')
     args = parser.parse_args()
+    if args.delivery_root:
+        BASE=(ROOT/args.delivery_root).resolve()
+        if not BASE.is_relative_to(ROOT/'art/_archive'):
+            parser.error('--delivery-root must be inside art/_archive')
     validate(args.asset, args.complete)

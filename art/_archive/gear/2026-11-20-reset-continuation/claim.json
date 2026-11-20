@@ -1,0 +1,42 @@
+{
+  "branch": "art/2026-11-20-reset-continuation",
+  "status": "claimed-waiting-reset",
+  "partial_grade_claim": true,
+  "standards": [
+    "armour-ballistic_helmet",
+    "weapon-throwing_knives",
+    "weapon-ork_rip_saw",
+    "weapon-hellraiser_servo_fist",
+    "weapon-hellraiser_rotary",
+    "weapon-purifier_flamer"
+  ],
+  "ids": [
+    "armour-ballistic_helmet--relic",
+    "armour-ballistic_helmet--celestial",
+    "weapon-throwing_knives--fine",
+    "weapon-throwing_knives--masterwork",
+    "weapon-throwing_knives--relic",
+    "weapon-throwing_knives--celestial",
+    "weapon-ork_rip_saw--fine",
+    "weapon-ork_rip_saw--masterwork",
+    "weapon-ork_rip_saw--relic",
+    "weapon-ork_rip_saw--celestial",
+    "weapon-hellraiser_servo_fist--fine",
+    "weapon-hellraiser_servo_fist--masterwork",
+    "weapon-hellraiser_servo_fist--relic",
+    "weapon-hellraiser_servo_fist--celestial",
+    "weapon-hellraiser_rotary--fine",
+    "weapon-hellraiser_rotary--masterwork",
+    "weapon-hellraiser_rotary--relic",
+    "weapon-hellraiser_rotary--celestial",
+    "weapon-purifier_flamer--fine",
+    "weapon-purifier_flamer--masterwork",
+    "weapon-purifier_flamer--relic",
+    "weapon-purifier_flamer--celestial"
+  ],
+  "shared_issue": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
+  "reservation_comment": 7026736883,
+  "baseline_commit": "7038c238175b7f224f9c0b72e7ea951e4ab73f67",
+  "reset_epoch": 1795142739,
+  "reset_vietnam": "2026-11-20T09:45:39+07:00"
+}

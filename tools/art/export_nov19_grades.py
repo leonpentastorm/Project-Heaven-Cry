@@ -95,6 +95,17 @@ def reviews(queue, manifest):
 
 
 def update_handoff(queue,progress):
+    if BASE.name != '2026-11-19-kept-blade-grades':
+        done=set(progress['delivered'])
+        ready=[j['id'] for j in queue if j['status']=='pending' and not j.get('generation_error') and all((ROOT/p).is_file() for p in j['references'])]
+        (BASE/'HANDOFF.md').write_text('# Reset continuation progress\n\n'
+            +f"Branch: `{progress['branch']}`. New deliveries: {len(done)}/{len(queue)}.\n\n"
+            +'Shared coordination: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Read START-HERE.md before extending this queue.\n\n'
+            +'All new entries remain review-candidate; production_approved:false and implementation_ready:false. Exact-outline review remains pending.\n\n'
+            +'Ready jobs: '+', '.join(ready)+'.\n\n'
+            +'Pending jobs: '+', '.join(progress['remaining'])+'.\n\n'
+            +'Quota state: '+json.dumps(progress.get('image_quota'),ensure_ascii=False)+'.\n')
+        return
     rejected = {j['id'] for j in queue if j['status']=='pending' and j.get('generation_error')}
     blocked = set(rejected)
     while True:
@@ -175,7 +186,7 @@ def export(asset_id, source):
         'exports': exports, 'source_path': rel(source_target),
         'native_dimensions': list(Image.open(source_target).size),
         'brief': job['brief'], 'brief_number': job['brief_number'],
-        'collection': '2026-11-19-kept-blade-grades', 'grade': job['grade'],
+        'collection': job.get('collection', '2026-11-19-kept-blade-grades'), 'grade': job['grade'],
         'origin': 'image_gen; technical alpha cleanup and uniform registration only',
         'standard_id': job['standard_id'], 'implementation_ready': False,
         'outline': outline_metrics(ROOT/f'art/icons/gear/{job["standard_id"]}.png',image),
@@ -219,5 +230,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--id', required=True)
     parser.add_argument('--source', type=Path, required=True)
+    parser.add_argument('--delivery-root', help='Repository-relative archive root for a separately claimed continuation lane')
     args = parser.parse_args()
+    if args.delivery_root:
+        BASE=(ROOT/args.delivery_root).resolve()
+        if not BASE.is_relative_to(ROOT/'art/_archive'):
+            parser.error('--delivery-root must be inside art/_archive')
     export(args.id, args.source)

@@ -1,0 +1,19 @@
+{
+  "commit": "7038c238175b7f224f9c0b72e7ea951e4ab73f67",
+  "baseline_project_pictures": 327,
+  "project_total": 871,
+  "prior_base_unique": 150,
+  "peer_exclusive_grades": 119,
+  "earlier_grade_proof_grades": 58,
+  "new_images_in_this_lane": 0,
+  "standard_reference_hashes": {
+    "art/icons/gear/armour-ballistic_helmet--masterwork.png": "7d0b4e1842a954e689e6a3ebe9c3a50f47f3ec573b5fc0ba7a7bfb8797019a53",
+    "art/icons/gear/armour-ballistic_helmet.png": "7358ee39e955f8f5362faee1f96608313272f0cc164d0c7ca6b22c5755460d2f",
+    "art/icons/gear/weapon-hellraiser_rotary.png": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
+    "art/icons/gear/weapon-hellraiser_servo_fist.png": "194e053129041c6456b705be701992e72d6ec8420a7901f10fe8cf0bf92bec00",
+    "art/icons/gear/weapon-ork_rip_saw.png": "c84615ce46a39d894b3d9df041db64b66f0ea1470ccd8f08b1e3c0ce2e940776",
+    "art/icons/gear/weapon-purifier_flamer.png": "f315ad1c1970249e94351f5e4c696af4109b5fc13f49400043d98586d8aec23f",
+    "art/icons/gear/weapon-throwing_knives.png": "8e36e35a0a48efd17166fe67d9ed3e47343497619dc16b865d1a9c41ca88e71e",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}

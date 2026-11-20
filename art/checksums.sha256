@@ -2600,6 +2600,16 @@ bc3a8cc42b0aaf5fdae25fcb6c6f93b5fa4189e9eac621530ef54b28dd2fdd6a  art/_archive/g
 2c50102a8d476a28c74fd6c1ab5ff12dbd2abdaa8ce271a0921c7fd377271c3c  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-rearguard.png
 f9a82b59166543b5559fc4b5e74d42b25949a6ac1204746a05c301894afd70ff  art/_archive/gear/2026-11-19-unique-melee-bow/sources/v1/weapon-windfall.png
 f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/gear/2026-11-19-unique-melee-bow/web-build-check.json
+f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
+5e7c1b99b12e111b6b330288b6902c9ce5985b518903f35b3ea54cd954d61345  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
+19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
+73cf610c3f912d13636886d529a688e888fd27e9e98455fea267e8f32c01003f  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
+639537db6977b1d156d101a7eb659f371801fd91bddc20a2c6266b5bb2cc95cd  art/_archive/gear/2026-11-20-reset-continuation/claim.json
+53de7df0005db72accd9695d7e90a068bd46a9762afa7454d1fb8bc10fb82861  art/_archive/gear/2026-11-20-reset-continuation/manifest.json
+db1dd911e54ddb640a4a9a261f5104031091fc2f2820ebf4e55e7dc47bdd744b  art/_archive/gear/2026-11-20-reset-continuation/progress.json
+cc8b1133f8aec3c9a07a992f236d01d6ac81dd5f4a206407bfe188886b750a0e  art/_archive/gear/2026-11-20-reset-continuation/queue.json
+59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-20-reset-continuation/source-brief.md
+2c6492a6359aa99556e2f66b6efccbdfc7425edab13e2f1203e724e265ab1517  art/_archive/gear/2026-11-20-reset-continuation/standard-reference-sheet.jpg
 8b257cb2e0ca18d4620a9c101f55520211333ff60b53157b49c50dab52ba6cd2  art/_archive/icons/perks/2026-11-12/both-hands.png
 bee60137688c6ac3615d3935ce9aadbb1937bc223cbcb791fa92572044cf2380  art/_archive/icons/perks/2026-11-12/exports/128/both-hands.png
 97cd6b0da1b3ba216fd374b114e5c0d403031407319cf465fc28e3ca1b39e4f6  art/_archive/icons/perks/2026-11-12/exports/256/both-hands.png
@@ -4811,7 +4821,6 @@ ad1c63c5da9e8985fa216f1022b6e3787608f15e5c7a9c429b134c8b895ecc39  art/_archive/p
 67e35e50ce8e6072ad9df1a5def5498615f64a3d7830f700740973f1f7127937  art/_archive/prompt-pack/2026-11-19-file-08/review/finish-candidates-small.jpg
 4d3bbac319fe93cbff7478a3ba0b995d5bbda9378cb3017b60be05cf1715cfe3  art/_archive/prompt-pack/2026-11-19-file-08/validate-grade-delivery.py
 04061e3d92d565bd69ce82cfcc3337e8edab78318b7750757f7951b9d231de40  art/_archive/prompt-pack/2026-11-19-file-10/HANDOFF.md
-b2017adde48eeb49da7903cd4b9b9d52ab123e3994a60275cfb5420cfdb19612  art/_archive/prompt-pack/2026-11-19-file-10/__pycache__/deliver.cpython-312.pyc
 0cfa6a57666b19aff58f58030540046381945c5e6b73c810bc804973264b60ac  art/_archive/prompt-pack/2026-11-19-file-10/checkpoint.py
 b80fc4aba309821801a8c67b5f8af625aaa543b4bf184558cd76c3d709d36fff  art/_archive/prompt-pack/2026-11-19-file-10/deliver.py
 b8d497a00d903ba99fab4bc101b3e2ac5c2bff8446f56d0a2ee6da5c669dd4c5  art/_archive/prompt-pack/2026-11-19-file-10/generation-failures/failure-10-1795065515411.json
@@ -6189,7 +6198,7 @@ c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/briefs/pro
 d35c91984152452f0484e327db6e6dadf34deaeab105bddf9b0dc9e4601323dd  art/briefs/prompts-2026-11-19/09-heavy-and-strange.md
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/briefs/prompts-2026-11-19/10-rifle-analogues.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/briefs/prompts-2026-11-19/README.md
-a3d0c731fcd5c7b8a2271b2e45a7df59ce8620977deaf7b104ebd8145bd9c763  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
+1195a0a3912aa458580815b5f07d3fb4842f621194ed62af5635b51f16560427  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
 f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/title-screen.md
 dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/title-screen/gaze-guide.jpg
 621ac2546d6520ab704ab84af7429b5f30c32309707fbe3d59ea7e5dec0bd0e5  art/briefs/title-screen/ref-spellsword-soul.webp
@@ -14453,7 +14462,7 @@ db27e0309aa0d98503c8a461c09ea1ecf1bfae303dd4f5f039c82fb5fb28b217  art/ui/title-s
 6de65e53e188ecbce5e1f2c19aabc745f5f6e06ee73f4bcbe82249108a8bdd0e  tools/art/export_m813_campaign.py
 1e6a2d66f1055ad808b4c3b4c48fb11d72a1ab605be5045bafd3e9cfec1d236f  tools/art/export_nov12_icons.py
 915192f411cd1b2a3238a67cd2cc4f1699184f6779e2e2c78d667b2eec54a6c8  tools/art/export_nov19_gear.py
-a9bdd83becb5539147ee4e9a302f05504c791ddbe4ee24c1ed1cd35836b884bf  tools/art/export_nov19_grades.py
+27c79c2525b2a646e3cd9d5cc605b08420bab14ee59671a9249a13e47ccc60b0  tools/art/export_nov19_grades.py
 d4a2f51c1061537c16e22479b0c751224d0a1acc49c856bb10dc902037e24843  tools/art/export_nov19_uniques.py
 d11fb5d194cac8e8fd09dc4bb4bc90bea07012599d2f5942081bf57923720ea5  tools/art/export_wick_animation.py
 757052865c1c16df6afaf6daf9f98e27144717590c6c3b6ab633524d9fb3376d  tools/art/export_wick_icon.py
@@ -14461,7 +14470,7 @@ a2654251dbea3b4a3d871e1e764c6bace9aa1d283d293e8b341a47e38d336330  tools/art/revi
 3130b4e5a2f8a4823e3b42e4ee106cee7b5aa18a562a63b8d6cf58a10513fc16  tools/validate_art.py
 be3c13261817510eb5083542b6e57a38ad76b7d47e285acf6bf7f71cd88c3e5d  tools/validate_gear_art.py
 41f66fed9aca0dbefc3678fe9e158d943fa62b74cc24fdfe18b0980c7db09d31  tools/validate_nov19_gear.py
-8f69ca3d6cf39c03fa80c34daabf9c4ad836c3d90fe438257dae0a4ebfbaaf20  tools/validate_nov19_grades.py
+c840a5af2738ef77d6f1f3d9ef3dabc120839aca5753da2084fa30725d2c38be  tools/validate_nov19_grades.py
 7d28e2d47d5445a31d7db5ec4b71f73ab5b3dac87de5035ccbaa595b65c2c32e  tools/validate_nov19_uniques.py
 8968c2fed8a28bf4df57e8f856dcb73049b62b7e05f59e28c508334728c79445  tools/validate_patrons.py
 2ac8f6982774592409f2f2c9bd109290ec1b773378b89ab897d1baaa2a8a7a17  tools/validate_wick_animation.py

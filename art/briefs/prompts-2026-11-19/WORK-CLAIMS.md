@@ -1,3 +1,16 @@
+# Scheduled restart claim — 20 November 2026
+
+This worker claims 22 pictures on `art/2026-11-20-reset-continuation`: Ballistic Helmet Relic/Celestial; all four grades for Throwing Knives, Ork Rip Saw, Hellraiser Servo Fist, Hellraiser Rotary and Purifier Flamer. Exact IDs and prompts: `art/_archive/gear/2026-11-20-reset-continuation/queue.json`. Shared reservation: issue 3 comment 7026736883. Automation is enabled for **20 November 2026 at 09:45:39 Vietnam time** and will generate and push each picture, then claim more eligible work until actual usage runs out again.
+
+Read [the ready-to-run handoff](../../_archive/gear/2026-11-20-reset-continuation/START-HERE.md). The other agent retains Gas Mask Relic/Celestial; their later reset is 10:19:14. Night Goggles all four and Gas Mask Fine/Masterwork are delivered. Earlier blade/axe and Drifter/Crossbow service-blocked jobs stay separate from quota and are not free repeated retries.
+
+**Still free at this checkpoint:** the four grades for weapon-parlour_pistol, weapon-lever_carbine, weapon-sawn_off, weapon-coach_gun, weapon-legion_bullpup, weapon-whisper_smg (24 pictures), plus new-Standard grades after checking actual sources and current claims. Check https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 before reserving exact jobs.
+
+Baseline327/871 is integrated (150 prior base/uniques +119 peer-exclusive grades +58 earlier grade-proof). This restart lane has zero new images so far. Sources, prior versions and alpha-cleaned imports are preserved; no approval or exact-outline pass is asserted.
+
+---
+Historical snapshots below; this section and the live mailbox take precedence.
+
 # Usage-limit handoff — 19 November 2026
 
 Current branch: `art/2026-11-19-kept-blade-grades`. Own119/128 selected grade candidates are pushed; peer58 are imported with originals/versioned alpha cleanup. Combined pinned count327/871 (150 previously audited base/unique +119 exclusive own grades +58 peer grades). Exports/shared imports/alternatives never count again.

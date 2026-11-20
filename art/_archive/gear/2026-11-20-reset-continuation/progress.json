@@ -1,0 +1,32 @@
+{
+  "branch": "art/2026-11-20-reset-continuation",
+  "status": "scheduled-waiting-reset",
+  "delivered": [],
+  "remaining": [
+    "armour-ballistic_helmet--relic",
+    "armour-ballistic_helmet--celestial",
+    "weapon-throwing_knives--fine",
+    "weapon-throwing_knives--masterwork",
+    "weapon-throwing_knives--relic",
+    "weapon-throwing_knives--celestial",
+    "weapon-ork_rip_saw--fine",
+    "weapon-ork_rip_saw--masterwork",
+    "weapon-ork_rip_saw--relic",
+    "weapon-ork_rip_saw--celestial",
+    "weapon-hellraiser_servo_fist--fine",
+    "weapon-hellraiser_servo_fist--masterwork",
+    "weapon-hellraiser_servo_fist--relic",
+    "weapon-hellraiser_servo_fist--celestial",
+    "weapon-hellraiser_rotary--fine",
+    "weapon-hellraiser_rotary--masterwork",
+    "weapon-hellraiser_rotary--relic",
+    "weapon-hellraiser_rotary--celestial",
+    "weapon-purifier_flamer--fine",
+    "weapon-purifier_flamer--masterwork",
+    "weapon-purifier_flamer--relic",
+    "weapon-purifier_flamer--celestial"
+  ],
+  "baseline_project_pictures": 327,
+  "project_total": 871,
+  "updated_utc": "2026-11-20T00:51:30.696250+00:00"
+}

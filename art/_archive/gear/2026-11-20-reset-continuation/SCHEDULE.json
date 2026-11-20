@@ -1,0 +1,7 @@
+{
+  "status": "enabled-confirmed",
+  "next_run_vietnam": "2026-11-20T09:45:39+07:00",
+  "next_run_utc": "2026-11-20T02:45:39Z",
+  "mode": "one-time exact scheduled execution",
+  "instruction": "Resume generation and push per picture; claim further free work continuously until the next actual image usage limit."
+}
