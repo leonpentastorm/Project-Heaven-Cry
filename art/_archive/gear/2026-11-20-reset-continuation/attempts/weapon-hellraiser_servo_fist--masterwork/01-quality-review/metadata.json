@@ -1,0 +1,47 @@
+{
+  "id": "weapon-hellraiser_servo_fist--masterwork",
+  "job": {
+    "id": "weapon-hellraiser_servo_fist--masterwork",
+    "standard_id": "weapon-hellraiser_servo_fist",
+    "grade": "masterwork",
+    "label": "Hellraiser Servo Fist \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-hellraiser_servo_fist--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-hellraiser_servo_fist.png",
+      "art/icons/gear/weapon-hellraiser_servo_fist--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-hellraiser_servo_fist",
+    "family_references": [
+      "art/icons/gear/weapon-hellraiser_servo_fist.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.9",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same chunky empty mechanical gauntlet with red armour panels and pale paint slashes, existing pointed knuckle plates, visible piston, dark hose loops and open rear cuff. Preserve every knuckle, spike, collar, hose route and cuff opening. No arm or wearer inside.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), one continuous stripe along the casing or plate. The grip or cuff is re-made in a finer, darker leather in the same shape; the bands, piston collars and bolts are polished brass or bright steel; every weld and nail keeps its place and shape, cleanly finished. Exact edges, no wear.\n\nThe FIRST image locks the Standard silhouette, camera, proportions and margins. The SECOND image supplies the preceding grade; keep its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. Preserve exact part counts and negative spaces. All additions stay flush inside the existing silhouette. Fully transparent canvas, no lettering or external glow.",
+    "keep_line": "the same chunky empty mechanical gauntlet with red armour panels and pale paint slashes, existing pointed knuckle plates, visible piston, dark hose loops and open rear cuff. Preserve every knuckle, spike, collar, hose route and cuff opening. No arm or wearer inside.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "depends_on": "weapon-hellraiser_servo_fist--fine"
+  },
+  "preflight": {
+    "id": "weapon-hellraiser_servo_fist--masterwork",
+    "peer": "eab8df9b72f05642ba1fab4d6e9a4e89e231a07c",
+    "latest_comment": 7029157941,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 03:11:22 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-af2f0731-5c5f-4ef0-bc0c-c835e976cb3a.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-hellraiser_servo_fist--masterwork/01-quality-review/native.png",
+  "sha256": "411bdbba113d40f3adf70e5295baac1479c01d05ed1cc353ec4a2bfa1049873e",
+  "status": "unselected-quality-review",
+  "review_note": "Masterwork inlay is gold; this item's existing faction accent requires red inlay.",
+  "reference_hashes": {
+    "art/icons/gear/weapon-hellraiser_servo_fist.png": "194e053129041c6456b705be701992e72d6ec8420a7901f10fe8cf0bf92bec00",
+    "art/icons/gear/weapon-hellraiser_servo_fist--fine.png": "c927804a01123dc4493c197ad0639487dfa7478151ddd0d244395792abef8eeb",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}
