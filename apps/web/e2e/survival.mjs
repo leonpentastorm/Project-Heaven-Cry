@@ -80,6 +80,20 @@ const screen = () => p.evaluate(() => window.__phc.getState().screen);
 function nextR(r) { let t = (r.state = (r.state + 0x6d2b79f5) | 0); t = Math.imul(t ^ (t >>> 15), t | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
 const dieSeed = (v) => { for (let s = 1; s < 1e7; s++) { const r = { state: s }; if (1 + Math.floor(nextR(r) * 20) === v) return s; } return 1; };
 const D18 = dieSeed(18);
+// Items 2.0 lane A3 (design section 6): every item drawn is the one item card. Its picture is never an empty box (the
+// chain's picture or the general placeholder, loaded), and a grade's frame is never alone: the card it sits in says the
+// grade's word. ITEM_SHOTS (a folder): the place at 1280 x 720 and 1600 x 900, for the lead's look.
+const ITEM_SHOTS = process.env.ITEM_SHOTS ? process.env.ITEM_SHOTS.replace(/\/?$/, '/') : null;
+const itemCards = async (where) => {
+  const r = await p.evaluate(() => { const pics = [...document.querySelectorAll('[data-phc-item-pic]')], bad = [];
+    for (const e of pics) { const im = e.querySelector('img'); if (!im || !im.getAttribute('src') || (im.complete && !im.naturalWidth)) bad.push('empty: ' + e.getAttribute('data-phc-item-pic')); }
+    for (const e of document.querySelectorAll('[data-phc-grade-frame]')) { const g = e.getAttribute('data-phc-grade-frame'); if (g === 'standard') continue; const box = e.closest('[data-phc-item-card], [data-phc-pick], [data-phc-service], [data-phc-choice], article, button');
+      if (!box || !box.querySelector('[data-phc-grade="' + g + '"], [data-phc-step]')) bad.push('a ' + g + ' frame with no word: ' + e.getAttribute('data-phc-item-pic')); }
+    return { n: pics.length, bad }; });
+  ok('Items 2.0 A3, ' + where + ': ' + r.n + ' item pictures, none empty, no grade frame without its word' + (r.bad.length ? ' (' + r.bad.slice(0, 4).join('; ') + ')' : ''), !r.bad.length);
+  if (ITEM_SHOTS) { for (const [w, hh] of [[1280, 720], [1600, 900]]) { await p.setViewportSize({ width: w, height: hh }); await p.mouse.move(2, 2); await settle(p, 500); await p.screenshot({ path: ITEM_SHOTS + where.replace(/[^a-z0-9]+/gi, '-') + '-' + w + '.png' }); } await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300); }
+  return r;
+};
 const shot = async (name) => { await p.waitForFunction(() => !document.querySelector('.phc-cb-dock'), null, { timeout: 30000 }).catch(() => {}); await settle(p, 1200); return p.screenshot({ path: OUT + name + '.png' }); };
 
 // ---------- the lobby: a character, then Start the run ----------
@@ -157,6 +171,7 @@ const KN = FREE('light_blades'), knife = await numIn('[data-phc-camp-card="stock
 await p.locator('[data-phc-camp-more="stock:' + KN + '"]').click(); await settle(p, 300);
 ok('a second weapon from the rack at its price (' + knife + '): it goes in the pack', (await me0()).pack.some((x) => x.weapon === KN) && knife === WPN[KN].price_credits);
 await p.screenshot({ path: OUT + 'survival-camp-1280.png' });
+await itemCards('camp');
 if (process.env.CAMP_SHOT) { await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 500); await p.screenshot({ path: process.env.CAMP_SHOT }); await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300); } // the camp at 1920, on request
 await sidePanels(p, 'the camp');
 // Leon, 15 Nov: the camp's top bar (the budget, Next) stays in sight however far the camp is scrolled; nothing on a card
@@ -359,6 +374,7 @@ const o1 = r.offers[c.id], wcard = p.locator('[data-phc-offer="' + c.id + '"] [d
 }
 await p.mouse.move(2, 2);
 await shot('survival-reward-pick');
+await itemCards('rewards');
 if (TOP) copyFileSync(OUT + 'survival-reward-pick.png', TOP + 'top-lootcards.png');
 await sidePanels(p, 'the rewards');
 // ---------- rules 1.64: the reward panel (Leon: players zoomed into the map never saw the rewards above it) ----------
@@ -515,6 +531,7 @@ async function shopChecks() {
   const magShelf = WPN[m0.weapon]?.reload === 'magazine' ? await p.locator('[data-phc-shelf="magazines"] [data-phc-card]').count() : 2;
   ok('rules 1.55: a Magazines shelf: a full and an empty magazine for the gun in hand (' + magShelf + ' cards)', magShelf >= 2 && (WPN[m0.weapon]?.reload !== 'magazine' || await p.locator('[data-phc-card="mag:' + m0.weapon + ':0"]').count() === 1));
   await settle(p, 1400); await p.screenshot({ path: OUT + 'survival-shop-1280.png' });
+  await itemCards('shop');
   ok('at 1280: nothing clipped, nothing overlaps (' + (await fitsCheck()).join('; ') + ')', !(await fitsCheck()).length);
   // buy ammunition
   const me = Object.values((await G()).characters)[0];
@@ -533,6 +550,7 @@ async function shopChecks() {
   await p.locator('[data-phc-card="' + gun.key + '"]').hover();
   ok('hovering a card fills the compare panel (holding against this)', await p.locator('[data-phc-compare]').count() === 1);
   await settle(p, 400); await p.screenshot({ path: OUT + 'survival-shop-gear-1280.png' });
+  await itemCards('shop-gear-compare');
   // a purse too short says why
   const credits = Object.values((await G()).characters)[0].credits, dear = gear.filter((x) => x.price > credits).sort((a, b) => b.price - a.price)[0];
   if (dear) {
@@ -601,6 +619,7 @@ async function shopChecks() {
       // an action there goes through its real button; Escape closes it
       await p.locator('[data-phc-pack]').scrollIntoViewIfNeeded(); await p.mouse.move(2, 2); await settle(p, 300);
       await p.locator('[data-phc-pack]').screenshot({ path: OUT + 'pack-docked.png' });
+      await itemCards('sheet-gear');
       const order = await p.evaluate(() => { const y = (s) => document.querySelector(s)?.getBoundingClientRect().top ?? null; return [y('[data-phc-gear-sec="worn"]'), y('[data-phc-pack]'), y('[data-phc-make]')]; });
       ok('the GEAR tab: in hand and worn, then the Backpack, then Make (' + order.map(Math.round).join(' < ') + ')', !order.includes(null) && order[0] < order[1] && order[1] < order[2]);
       await p.locator('[data-phc-gear-head="pack"]').click(); await settle(p, 200);
@@ -679,6 +698,7 @@ async function shopChecks() {
   const up = ups.find((x) => !x.why && x.key !== 'grade:main') || ups.find((x) => !x.why);
   ok('the Upgrade tab: a card per weapon or focus, each with its price here and what changes (' + ups.map((x) => x.key + ' ' + x.price + (x.why ? ' refused' : '')).join(', ') + ')', !!up && up.lines > 0);
   await settle(p, 400); await p.screenshot({ path: OUT + 'survival-shop-upgrade-1280.png' });
+  await itemCards('shop-upgrade');
   if (up) {
     const u0 = Object.values((await G()).characters)[0].credits;
     await p.locator('[data-phc-service="' + up.key + '"] [data-phc-upgrade-go]').click();
@@ -758,6 +778,7 @@ while (guard++ < 40) {
           && await p.locator('[data-phc-tab="give"]').count() === 0 && !!(await p.locator('[data-phc-keeper-portrait]').getAttribute('src').catch(() => '')));
         await p.mouse.move(2, 2); // no hover card over the shot
         await settle(p, 900); await p.screenshot({ path: OUT + 'survival-place-' + k + '-1280.png' });
+        if (k === 'forge') await itemCards('forge');
         const bad1 = await placeFits(); await p.setViewportSize({ width: 1920, height: 1080 }); await settle(p, 700); await p.screenshot({ path: OUT + 'survival-place-' + k + '-1920.png' });
         const bad2 = await placeFits(); await p.setViewportSize({ width: 1280, height: 720 }); await settle(p, 300);
         ok('… at 1280 and 1920 nothing is clipped, overlapping or covered (' + [...bad1, ...bad2].join('; ') + ')', !bad1.length && !bad2.length);

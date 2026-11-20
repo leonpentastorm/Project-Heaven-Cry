@@ -16,7 +16,7 @@ import { GiveTab } from './GiveTab';
 import { AmountField } from './AmountField';
 import { UpgradeCard } from './UpgradeCard';
 import { ItemCard, ItemPicture } from './ItemCard';
-import { cardOf } from './itemCardView';
+import { cardOf, gradeText } from './itemCardView';
 
 const A = ASSETS as Record<string, string>;
 const art = (k: string) => (k ? A[k + '-lg'] || A[k] || '' : '');
@@ -75,8 +75,8 @@ function Compare({ v, focus }: { v: ShopViewV; focus: { id: string; rarity: Rari
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 'var(--fs-sub)', fontWeight: 600 }}>
         <span style={{ color: I.muted }}>Item</span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}><ItemPicture card={cmp.held.card} size={32} round={6} />{cmp.held.name}</span>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}><ItemPicture card={cmp.next.card} size={32} round={6} />{cmp.next.name}</span>
+        <span data-phc-item-card={cmp.held.card.id} style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}><ItemPicture card={cmp.held.card} size={32} round={6} /><span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>{cmp.held.name}{gradeText(cmp.held.card) ? <span data-phc-grade={cmp.held.card.grade} style={{ fontSize: 11, letterSpacing: '0.12em', color: cmp.held.card.marks ? I.white : I.muted }}>{gradeText(cmp.held.card)}</span> : null}</span></span>
+        <span data-phc-item-card={cmp.next.card.id} style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}><ItemPicture card={cmp.next.card} size={32} round={6} /><span style={{ display: 'flex', flexDirection: 'column', minWidth: 0 }}>{cmp.next.name}{gradeText(cmp.next.card) ? <span data-phc-grade={cmp.next.card.grade} style={{ fontSize: 11, letterSpacing: '0.12em', color: cmp.next.card.marks ? I.white : I.muted }}>{gradeText(cmp.next.card)}</span> : null}</span></span>
       </div>
       {cmp.rows.map((r) => (
         <div key={r.key} data-phc-cmp={r.key} style={{ display: 'grid', gridTemplateColumns: '1fr 0.85fr 1.25fr', gap: 8, fontSize: 'var(--fs-sub)', alignItems: 'baseline', paddingTop: 6, borderTop: '1px solid ' + I.line }}>

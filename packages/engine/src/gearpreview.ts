@@ -8,6 +8,7 @@
 // the game's dice, and is thrown away.
 import { tilesN } from './log';
 import { fmtNumber } from './datatext';
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import familiesJ from '../../../data/families.json';
 import { WEAPON, ITEM, RULES, SKILL, ATTRS, ARMOUR_CLASSES } from './data';
 import { type Character, type Rarity, RARITY, kindOfDoor, mod, checkMod, weaponMultLabel, weaponMult, specialRoundName, magazineSize, gearNum, maxDurOf, quiverHolds, quiversOf, roundsIdOf, SPECIAL_ROUND_ITEM, isShieldId, gradeWord, setGrade, ARMOUR_SLOT } from './character';
