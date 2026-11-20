@@ -7662,6 +7662,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-assault_helm--celestial",
+      "path": "art/icons/gear/armour-assault_helm--celestial.png",
+      "sha256": "f38be6149b0516edbd0641ae218fc24d5cfacec7e8d40aa75517163d87d1c237",
+      "label": "Assault Helm — Celestial",
+      "family": "armour-assault_helm",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-assault_helm--celestial.png",
+        "sha256": "5aa48aee68e0b1eb9d9006a2cbf94365122ce840fcb01fc2612e3f06450d5e39"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-assault_helm--celestial.png",
+        "sha256": "f38be6149b0516edbd0641ae218fc24d5cfacec7e8d40aa75517163d87d1c237"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-assault_helm--celestial.txt",
+        "sha256": "02f8edd128df714ba741d07271c026ddb82e8a0558dc50481cd3b0cd9f28e3ef"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-assault_helm.png",
+          "sha256": "c171a27223a1bf4a108f774695087d2fc3d2074789e196f0661a740013f20e0a"
+        },
+        {
+          "path": "art/icons/gear/armour-assault_helm--relic.png",
+          "sha256": "da6898489781ca001e01c1e806ba7b5136b52ab983bd2cda5b3b3d4af81610c8"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm--celestial.png"
+      },
+      "export_hashes": {
+        "256": "5a4077feefa807b35b2fd30020d66466e799e8d2a2f96ad7c1f4fa31baf20ffa",
+        "128": "166aa9e91eb68e3d7142f06f95b12186b5336a31677f704d196606f76d22aa27",
+        "64": "09a3cd8749bd64acd8751bdcbea2f5731434ff1d9bed96a14addca9553a2c592",
+        "32": "cb7a2c5bc2c1793adfb2081075469dbcfd46f708337608d2ed023a8a7d029b69"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-assault_helm",
+      "outline": {
+        "solid_alpha_iou": 0.959540841610825,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 17,
+        "different_pixels_64": 58
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
