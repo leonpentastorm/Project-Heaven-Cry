@@ -909,8 +909,16 @@ export class CombatLogic extends DCLogic {
     const st = getState(), g = st.game, me = st.me.id;
     // HP follows the effects (fx/play.ts fxShownHp): a bar falls when its hit plays, not when the state arrives.
     const F0 = fightNow(g), onField = F0.open; // rules 1.55 item 61: the field's header and its Give; every turn rule is the fight's (rules 1.62 item 4906)
+    // (the same held HPs on the same fight give the same copy back: what the screen asks per fight, the action list
+    // included, is asked once per beat, not on every render while the effects play; the outside code review's
+    // performance work)
     const cb = (() => { const c0 = F0.cb, shown = c0 ? fxShownHp(g) : null;
-      return c0 && shown && shown.size ? { ...c0, units: c0.units.map((u) => (shown.has(u.id) && !u.dead ? { ...u, hp: Math.min(u.maxHp, shown.get(u.id)) } : u)) } : c0; })();
+      if (!(c0 && shown && shown.size)) return c0;
+      const key = [...shown].map(([id, hp]) => id + ':' + hp).join(',');
+      if (this._shownCb && this._shownCb.c0 === c0 && this._shownCb.key === key) return this._shownCb.cb;
+      const held = { ...c0, units: c0.units.map((u) => (shown.has(u.id) && !u.dead ? { ...u, hp: Math.min(u.maxHp, shown.get(u.id)) } : u)) };
+      this._shownCb = { c0, key, cb: held };
+      return held; })();
     // A new unit's turn starts clean: a spell (or its aim) picked for the last unit never carries over to this one.
     const curId = cb && active(cb) ? active(cb).id : null;
     const newTurn = curId !== this._curId;
@@ -969,7 +977,13 @@ export class CombatLogic extends DCLogic {
     // Rules 1.61 item 4961: the cover word on a tile is the engine's (tileCover, built on the one cover rule, coverFor):
     // against the foe chosen as the target, else the nearest foe the squad sees. The screen decides nothing.
     const coverSeen = new Set(foes.filter((f) => !f.downed && !isUnseenId(f.id)).map((f) => f.id)), coverFoe = S.target && coverSeen.has(S.target) ? S.target : null, coverWalls = sightBlockers(cb);
-    const coverWord = (k) => { const c = tileCover(cb, k, 'pc', coverFoe, coverSeen, coverWalls); return !c ? '' : ' · ' + (c.grade === 'full' ? 'Full cover' : c.grade === 'half' ? 'Half cover' : c.grade === 'blocked' ? 'Out of the line of fire' : 'No cover') + ' from ' + c.foe + (c.mod ? ' (−' + c.mod + ' to its shots)' : ''); };
+    // (asked for every tile on every render, a mouse move included: kept per fight state and foe, the outside code
+    // review's performance work)
+    const coverKey = [coverFoe || '', [...coverSeen].join(',')].join('|');
+    if (!this._cover || this._cover.cb !== cb || this._cover.key !== coverKey) this._cover = { cb, key: coverKey, m: new Map() };
+    const coverMemo = this._cover.m;
+    const coverWord = (k) => { let w = coverMemo.get(k); if (w === undefined) { w = coverWordNow(k); coverMemo.set(k, w); } return w; };
+    const coverWordNow = (k) => { const c = tileCover(cb, k, 'pc', coverFoe, coverSeen, coverWalls); return !c ? '' : ' · ' + (c.grade === 'full' ? 'Full cover' : c.grade === 'half' ? 'Half cover' : c.grade === 'blocked' ? 'Out of the line of fire' : 'No cover') + ' from ' + c.foe + (c.mod ? ' (−' + c.mod + ' to its shots)' : ''); };
     const ATTACKS = ATTACK_MODES; // the old attack rows (a companion, a puppet or the drone keeps them: game/techView.ts)
     const attackMode = ATTACKS.includes(S.action) ? S.action : 'shot';
     const pv = mineTurn && tgtUnit && ATTACKS.includes(S.action) ? targetAttackPreview(g, cb, cur, tgtUnit, attackMode, S.mods, getState().me.id) : null; // with the switches the attack carries (a Break)

@@ -50,9 +50,26 @@ await fxIdle(); await pause(800);
 
 const metric = async () => { const { metrics } = await cdp.send('Performance.getMetrics'); return (metrics.find((m) => m.name === 'ScriptDuration')?.value || 0) * 1000; };
 const snap = () => p.evaluate(() => ({ parts: { ...(window.__phcRenders || {}) }, screen: window.__phcRenderCount || 0, screenMs: window.__phcRenderMs || 0, items: window.__phcMemoWhy ? window.__phcMemoWhy().renders : 0 }));
+// --profile toast|hover|move|enemy: a CPU profile of that scenario while it is measured, the heaviest functions by self
+// and total time (build with --minify false for readable names: npx vite build --minify false).
+const PROF = opt('--profile', '');
+async function profiled(run) {
+  await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await cdp.send('Profiler.start');
+  const n = await run();
+  const { profile } = await cdp.send('Profiler.stop');
+  const byId = new Map(profile.nodes.map((x) => [x.id, x])), parent = new Map();
+  for (const x of profile.nodes) for (const c of x.children || []) parent.set(c, x.id);
+  const name = (x) => (x.callFrame.functionName || '(anon)') + ' ' + (x.callFrame.url.split('/').pop() || '') + ':' + x.callFrame.lineNumber;
+  const self = new Map(), total = new Map();
+  profile.samples.forEach((id, i) => { const d = profile.timeDeltas[i] || 0; const x = byId.get(id); self.set(name(x), (self.get(name(x)) || 0) + d);
+    const seen = new Set(); for (let y = id; y != null; y = parent.get(y)) { const k = name(byId.get(y)); if (seen.has(k)) continue; seen.add(k); total.set(k, (total.get(k) || 0) + d); } });
+  const top = (m) => [...m.entries()].filter(([k]) => !/^\((idle|root|program)\)/.test(k)).sort((a, b) => b[1] - a[1]).slice(0, 40).map(([k, v]) => (v / 1000).toFixed(0).padStart(6) + ' ms  ' + k).join('\n');
+  console.log('self:\n' + top(self) + '\ntotal:\n' + top(total));
+  return n;
+}
 async function measure(name, run) {
   const s0 = await snap(), m0 = await metric();
-  const n = await run();
+  const n = PROF === name ? await profiled(run) : await run();
   const s1 = await snap(), m1 = await metric();
   const parts = {}; for (const k of new Set([...Object.keys(s0.parts), ...Object.keys(s1.parts)])) { const d = (s1.parts[k] || 0) - (s0.parts[k] || 0); if (d) parts[k] = d; }
   const over = Object.entries(parts).filter(([k]) => k !== 'App').reduce((a, [, v]) => a + v, 0);
@@ -65,23 +82,6 @@ const out = [];
 out.push(await measure('toast', async () => { for (let i = 0; i < 5; i++) { await p.evaluate((i) => window.__phc.toast?.('Probe ' + i, true), i); await pause(120); } return 5; }));
 const box = await p.evaluate(() => { const r = document.querySelector('.phc-grid-scroll').getBoundingClientRect(); return { x: r.left, y: r.top, w: r.width, h: r.height }; });
 out.push(await measure('hover', async () => { for (let k = 0; k < 4; k++) await p.mouse.move(k % 2 ? box.x + 40 : box.x + box.w - 60, box.y + box.h / 2 + (k % 2 ? 20 : -20), { steps: 20 }); await p.mouse.move(4, 880); return 80; }));
-// --profile hover|move|enemy: a CPU profile of that scenario run again, the heaviest functions by self and total time
-// (build with --minify false for readable names: npx vite build --minify false).
-const PROF = opt('--profile', '');
-if (PROF) {
-  const run = { hover: async () => { for (let k = 0; k < 4; k++) await p.mouse.move(k % 2 ? box.x + 40 : box.x + box.w - 60, box.y + box.h / 2 + (k % 2 ? 20 : -20), { steps: 20 }); await p.mouse.move(4, 880); } }[PROF];
-  await cdp.send('Profiler.enable'); await cdp.send('Profiler.setSamplingInterval', { interval: 200 }); await cdp.send('Profiler.start');
-  await run();
-  const { profile } = await cdp.send('Profiler.stop');
-  const byId = new Map(profile.nodes.map((n) => [n.id, n])), parent = new Map();
-  for (const n of profile.nodes) for (const c of n.children || []) parent.set(c, n.id);
-  const name = (n) => (n.callFrame.functionName || '(anon)') + ' ' + (n.callFrame.url.split('/').pop() || '') + ':' + n.callFrame.lineNumber;
-  const self = new Map(), total = new Map(); let all = 0;
-  profile.samples.forEach((id, i) => { const d = profile.timeDeltas[i] || 0; all += d; const n = byId.get(id); self.set(name(n), (self.get(name(n)) || 0) + d);
-    const seen = new Set(); for (let x = id; x != null; x = parent.get(x)) { const k = name(byId.get(x)); if (seen.has(k)) continue; seen.add(k); total.set(k, (total.get(k) || 0) + d); } });
-  const top = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 40).map(([k, v]) => (v / 1000).toFixed(0).padStart(6) + ' ms  ' + k).join('\n');
-  console.log('self:\n' + top(self) + '\ntotal:\n' + top(total));
-}
 out.push(await measure('move', async () => {
   let n = 0;
   for (let i = 0; i < 5; i++) {

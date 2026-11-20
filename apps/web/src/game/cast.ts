@@ -88,9 +88,22 @@ export function castMany(g: GameState | null, list: { key: string; current: stri
   return out;
 }
 
-/** A fight's units with every non-player face cast (images as URLs). Returns the same fight when nothing changes. */
+/** The last cast of each fight object, by the game it was cast in: a cast is a pure answer for the same game, fight and
+ *  art (faces, once given, are KEPT), so the same object comes back. A screen that renders again on a mouse move then
+ *  holds the same fight, and what it asks of the engine per fight (the action list, commands.ts listFor) is asked once
+ *  (the outside code review's performance work: every hover cast the fight anew and asked the engine again). */
+const CAST = new WeakMap<object, { g: GameState | null; art: (n: string) => string; out: any }>();
+/** A fight's units with every non-player face cast (images as URLs). Returns the same fight when nothing changes, and
+ *  the same cast for the same game and fight. */
 export function castFight<T extends { units: any[] }>(g: GameState | null, cb: T | null | undefined, art: (n: string) => string): T | null | undefined {
   if (!cb) return cb;
+  const hit = CAST.get(cb);
+  if (hit && hit.g === g && hit.art === art) return hit.out;
+  const out = castFightNow(g, cb, art);
+  CAST.set(cb, { g, art, out });
+  return out;
+}
+function castFightNow<T extends { units: any[] }>(g: GameState | null, cb: T, art: (n: string) => string): T {
   // World Play 1.7: robots, drones, machines and beasts keep their own art (a robot looks like a robot); only people are cast.
   const npcs = cb.units.filter((u) => u.side !== 'pc' && !THING_KINDS.has(u.kind));
   const faces = castMany(g, npcs.map((u) => ({ key: u.npcId || u.id, current: (u.img && (art(u.img) || u.img)) || null, tags: npcTags(u.name, u.tier, u.weapon) })));

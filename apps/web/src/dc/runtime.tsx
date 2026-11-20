@@ -195,7 +195,7 @@ function firstDiff(a: any, b: any, path: string, depth: number): string | null {
   return path;
 }
 type Box = { item: any; fns: Record<string, (...a: any[]) => any> };
-const MEMO = new WeakMap<ElNode, { deps: string[]; boxes: Map<React.Key, Box> }>();
+const MEMO = new WeakMap<ElNode, { deps: string[]; boxes: Map<React.Key, Box>; last?: any[] }>();
 /** The holes a list's body reads from outside its own item (their full paths): part of what decides a re-render. */
 function outerHoles(n: ElNode, as: string): string[] {
   const out = new Set<string>(), local = new Set([as, '$index']);
@@ -239,7 +239,10 @@ const MemoItem = React.memo(function MemoItem({ kids, scope, as, index, item, bo
 });
 function renderMemoList(n: ElNode, list: any[], as: string, scope: any): React.ReactNode {
   let m = MEMO.get(n); if (!m) { m = { deps: outerHoles(n, as), boxes: new Map() }; MEMO.set(n, m); }
-  const deps = m.deps.map((p) => get(scope, p));
+  // The outside values, as the same array as last render when they are equal: every item compares them, and the same
+  // array is equal at once (676 deep comparisons a render on the big map; the outside code review's performance work).
+  let deps = m.deps.map((p) => get(scope, p));
+  if (m.last && same(m.last, deps, 2)) deps = m.last; else m.last = deps;
   return list.map((item, i) => {
     const key: React.Key = item && typeof item === 'object' && item.key != null ? item.key : i;
     let box = m!.boxes.get(key); if (!box) { box = { item, fns: {} }; m!.boxes.set(key, box); }
@@ -279,7 +282,7 @@ const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
 /** A React component for one screen: a parsed template plus a logic class. */
 export function makeScreen<P>(template: string, Logic: new (props: P) => DCLogic<P>) {
   const nodes = parseTemplate(template);
-  return function Screen(props: P & { tick?: number }) {
+  const Screen = function Screen(props: P & { tick?: number }) {
     const [, force] = React.useReducer((x: number) => x + 1, 0);
     const ref = React.useRef<DCLogic<P> | null>(null);
     if (!ref.current) ref.current = new Logic(props);
@@ -294,4 +297,7 @@ export function makeScreen<P>(template: string, Logic: new (props: P) => DCLogic
     RENDERS.ms += now() - t0;
     return out;
   };
+  // A logic that reads the store's toast in its values (static readsToast) renders again for a toast alone (App.tsx).
+  (Screen as any).readsToast = !!(Logic as any).readsToast;
+  return Screen;
 }

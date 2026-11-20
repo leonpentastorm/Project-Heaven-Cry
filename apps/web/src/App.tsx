@@ -31,12 +31,26 @@ import { ModeCentre } from './game/modeCentre';
  *  another screen), so a screen change never flashes an empty page. The chunks a player can reach next are loaded
  *  ahead of time (game/preload.ts warmNext), so the wait is normally nothing. */
 type Shown = { screen: Screen; tick: ClientState; C: React.ComponentType<any> };
+/** Whether the store's change from a to b is only its toast (a poke, with nothing changed, is not: it asks for a render). */
+function onlyToast(a: ClientState, b: ClientState): boolean {
+  if (a === b || a.toast === b.toast) return false;
+  for (const k of Object.keys(b) as (keyof ClientState)[]) if (k !== 'toast' && a[k] !== b[k]) return false;
+  return Object.keys(a).length === Object.keys(b).length;
+}
+/** The screen, rendered again only when the state it is drawn with (or the screen) changes. */
+const ScreenHost = React.memo(function ScreenHost({ C: Comp, tick }: { C: React.ComponentType<any>; tick: ClientState }) { return <Comp tick={tick} />; });
 function useShownScreen(st: ClientState): Shown | null {
   const [, bump] = React.useReducer((x: number) => x + 1, 0);
   const shown = React.useRef<Shown | null>(null);
   const C = loadedScreen(st.screen), sb = !!st.game?.sandbox;
   const ready = C !== undefined && (!sb || !!loadedSandbox());
-  if (ready) shown.current = { screen: st.screen, tick: st, C: C || (Title as any) };
+  if (ready) {
+    // A store change that is only a toast (the toast is App's own) keeps the state the screen was drawn with, so the
+    // screen does not render again for it; a screen that reads the toast (its logic's static readsToast) still does.
+    const Comp = C || (Title as any), prev = shown.current;
+    const keep = !!prev && prev.screen === st.screen && prev.C === Comp && !Comp.readsToast && onlyToast(prev.tick, st);
+    shown.current = { screen: st.screen, tick: keep ? prev!.tick : st, C: Comp };
+  }
   const want = ready ? null : st.screen + (sb ? '+sandbox' : '');
   React.useEffect(() => {
     if (!want) return;
@@ -60,10 +74,12 @@ const RENDERS_BY: Record<string, number> = {};
 if (typeof window !== 'undefined') (window as any).__phcRenders = RENDERS_BY;
 const tally = (name: string) => { RENDERS_BY[name] = (RENDERS_BY[name] || 0) + 1; };
 /** An overlay with its renders counted. */
-function counted<P extends object>(name: string, Comp: React.ComponentType<P>): React.ComponentType<P> {
-  const W = (p: P) => { tally(name); return React.createElement(Comp, p); };
+function counted<P extends object>(name: string, Comp: React.ComponentType<P>): React.ComponentType<P & { v: number }> {
+  const W = ({ v: _v, ...p }: P & { v: number }) => { tally(name); return React.createElement(Comp, p as P); };
   W.displayName = name;
-  return W;
+  // Memoised: an overlay renders again when its props change or the store changed in anything but its toast (v), never
+  // for a toast alone or App's own transition state (the outside code review's performance work).
+  return React.memo(W) as any;
 }
 const C = {
   Music: counted('Music', Music), NarratorVoice: counted('NarratorVoice', NarratorVoice), VotePanel: counted('VotePanel', VotePanel),
@@ -72,7 +88,7 @@ const C = {
   MissionLayer: counted('MissionLayer', MissionLayer), PlaytestTools: counted('PlaytestTools', PlaytestTools), Tips: counted('Tips', Tips),
   SettingsHost: counted('SettingsHost', SettingsHost), DialogHost: counted('DialogHost', DialogHost),
 };
-function CSandbox({ C: Panel, ...p }: { C: React.ComponentType<any> } & Record<string, any>) { tally('Sandbox'); return <Panel {...p} />; }
+const CSandbox = React.memo(function CSandbox({ C: Panel, v: _v, ...p }: { C: React.ComponentType<any>; v: number } & Record<string, any>) { tally('Sandbox'); return <Panel {...p} />; });
 
 onVoice(poke);
 installButtonSounds();
@@ -80,6 +96,10 @@ export function App() {
   const st = React.useSyncExternalStore(subscribe, getState);
   tally('App');
   const shown = useShownScreen(st), screen = shown?.screen ?? st.screen, Screen = shown?.C;
+  // v: a count of the store's changes other than a toast alone (the overlays' memo reads it).
+  const seen = React.useRef<{ st: ClientState; v: number }>({ st, v: 0 });
+  if (seen.current.st !== st) seen.current = { st, v: seen.current.v + (onlyToast(seen.current.st, st) ? 0 : 1) };
+  const v = seen.current.v;
   const tr = useScreenTransition(screen, st.game?.phase);
   const Sandbox = st.game?.sandbox ? loadedSandbox() : null; // (the Proving Ground's tools: their own chunk, screenLoad.ts)
   React.useEffect(() => { warmNext(screen); }, [screen]);
@@ -123,7 +143,7 @@ export function App() {
   return (
     <>
       {/* key: a fresh logic instance per screen and character, so local state never leaks between them */}
-      <div key={'w' + screen} ref={tr.wrap} className={tr.inCls || undefined}>{shown && Screen && <Screen key={screen + (shown.tick.levelupChar || '')} tick={shown.tick} />}</div>
+      <div key={'w' + screen} ref={tr.wrap} className={tr.inCls || undefined}>{shown && Screen && <ScreenHost key={screen + (shown.tick.levelupChar || '')} C={Screen} tick={shown.tick} />}</div>
       {/* The screen that just left: a frozen copy playing its out animation (never clickable). */}
       <div ref={tr.ghostHolder} aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 55, pointerEvents: 'none', overflow: 'hidden', display: tr.ghost ? 'block' : 'none' }} />
       {tr.ghost === 'combat-in' && !reducedMotion() && <div aria-hidden="true" style={{ position: 'fixed', inset: 0, zIndex: 56, pointerEvents: 'none', overflow: 'hidden' }}>
@@ -131,23 +151,23 @@ export function App() {
         <div style={{ position: 'absolute', top: '-20%', bottom: '-20%', left: '30%', width: '22%', background: 'linear-gradient(90deg, transparent, rgba(246, 81, 87, 0.85) 40%, #FFFFFF 50%, rgba(246, 81, 87, 0.85) 60%, transparent)', animation: 'phcSlash .5s cubic-bezier(.5,0,.3,1) .22s both' }} />
         {/* (The fight's title is the FIGHT card of the turn banners, game/turnIntro.tsx: one card, not two.) */}
       </div>}
-      {st.role && <C.Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
-      {st.role && <C.NarratorVoice game={st.game || null} />}
-      {st.role && <C.VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
-      {st.role === 'host' && <C.MemoryPanel game={st.game || null} isHost side="left" compact />}
-      {screen === 'main' && <C.StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
-      {st.role && <C.FxLayer game={st.game || null} screen={screen} />}
-      {st.role && <C.TurnIntro game={st.game || null} meId={st.me.id} screen={screen} />}
+      {st.role && <C.Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} v={v} />}
+      {st.role && <C.NarratorVoice game={st.game || null} v={v} />}
+      {st.role && <C.VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} v={v} />}
+      {st.role === 'host' && <C.MemoryPanel game={st.game || null} isHost side="left" compact v={v} />}
+      {screen === 'main' && <C.StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} v={v} />}
+      {st.role && <C.FxLayer game={st.game || null} screen={screen} v={v} />}
+      {st.role && <C.TurnIntro game={st.game || null} meId={st.me.id} screen={screen} v={v} />}
       {/* Spotlight cut-ins (decision 113): torn eye strips over a blurred screen, z-index 64. */}
-      {st.role && <C.CutInLayer game={st.game || null} screen={screen} />}
-      {st.role && Sandbox && <CSandbox C={Sandbox} game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={screen} />}
-      {st.role && <C.ModeCentre game={st.game || null} screen={screen} />}
-      {st.role && <C.MissionLayer game={st.game || null} screen={screen} />}
-      <C.PlaytestTools />
-      <C.Tips />
+      {st.role && <C.CutInLayer game={st.game || null} screen={screen} v={v} />}
+      {st.role && Sandbox && <CSandbox C={Sandbox} v={v} game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={screen} />}
+      {st.role && <C.ModeCentre game={st.game || null} screen={screen} v={v} />}
+      {st.role && <C.MissionLayer game={st.game || null} screen={screen} v={v} />}
+      <C.PlaytestTools v={v} />
+      <C.Tips v={v} />
       {/* The settings cog (every header's ⚙) and the in-game dialogs (never the browser's confirm/prompt/alert). */}
-      <C.SettingsHost />
-      <C.DialogHost />
+      <C.SettingsHost v={v} />
+      <C.DialogHost v={v} />
       {barP.shown && <div data-phc-conn-bar="" style={{ position: 'fixed', top: barTop + 8, left: 0, right: 0, zIndex: 60, display: 'flex', justifyContent: 'center', padding: '0 12px', pointerEvents: 'none' }}>
         <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 12px', maxWidth: 'min(680px, 100%)', padding: '8px 14px', borderRadius: 10, background: '#1C2536', border: '1px solid #2E3A50', boxShadow: '0 8px 30px rgba(0,0,0,.45)', color: '#E7EBF3', fontSize: 'var(--fs-sub)', textAlign: 'center' }}>
           <span>{barP.shown}</span>
