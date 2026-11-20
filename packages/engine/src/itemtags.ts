@@ -4,6 +4,7 @@
 // `itemsWith` (the rows whose tags answer a query, in table order: weapons first, then items). The families
 // (data/families.json) are read here too: a row's family is its `family`, its base's for a variant, or its own id.
 // Nothing here prices, deals or rolls; `rolled` asks credits.ts priceOf, the one price.
+import './datatext'; // fills the texts' {=placeholders} before any data is read
 import familiesJ from '../../../data/families.json';
 import { WEAPON, ITEM, RULES, ARMOUR_CLASSES } from './data';
 import { priceOf } from './credits';
@@ -29,9 +30,9 @@ function rowOf(id: string): any | null {
 }
 /** A row's family (rules 1.91 item 7902): its `family`; a variant's base's; else its own id (a row with no family is
  * its own family). */
-export function familyOf(id: string): string {
+export function itemFamilyOf(id: string): string {
   const r = rowOf(id); if (!r) return id;
-  return r.family || (r.variant_of ? familyOf(r.variant_of) : id);
+  return r.family || (r.variant_of ? itemFamilyOf(r.variant_of) : id);
 }
 /** The family form a row is (its family's row of its `form`), or null (no family, or no such form). */
 export function familyForm(id: string): FamilyForm | null {
@@ -52,7 +53,7 @@ function rowTags(id: string, r: any): string[] {
   const hit = ROW_TAGS.get(r); if (hit) return hit;
   const armour = /^armour:\d+$/.test(id), out: string[] = [];
   const kind = armour ? 'armour' : r.category; if (kind) out.push('kind:' + kind);
-  out.push('family:' + familyOf(id));
+  out.push('family:' + itemFamilyOf(id));
   for (const k of ['form', 'line', 'pattern']) if (typeof r[k] === 'string' && r[k]) out.push(k + ':' + r[k]);
   const slot = armour ? ARMOUR_SLOT : SLOT_IDS.has(r.slot) ? r.slot : WEAPON[id] ? 'main_hand' : null; if (slot) out.push('slot:' + slot);
   for (const t of (r.tags || []) as string[]) out.push('role:' + t);

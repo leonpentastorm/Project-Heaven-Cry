@@ -4958,7 +4958,7 @@
       },
       "self_holds": {
         "arg": "hold",
-        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; and / or (rules 1.56, P15) {hands: {props: [..], only: true (every hand empty or holding a thing with all of them; a focus never) or false (one hand holds one)}, body: {armour_at_most: an armour class name (none, light, medium…) or number}}; every part named must hold; a unit with no character holds its weapons, its rows doors.hands and the foci its magic block names (rules 1.86); holds also reads door: any (any focus), which only recipes use: it is not a value here",
+        "about": "the holder has it: {slot: hand or person, door: a focus kind (evoker, emanator, attuner, visualizer) or the skill it opens (brain_power, will_power, empathy, visualization)} (a focus) or {slot, item: an item id}; and / or (rules 1.56, P15) {hands: {props: [..], tags: [kind:value item tags, rules 1.91 item 7910], only: true (every hand empty or holding a thing with all of them; a focus never) or false (one hand holds one)}, body: {armour_at_most: an armour class name (none, light, medium…) or number}}; every part named must hold; a unit with no character holds its weapons, its rows doors.hands and the foci its magic block names (rules 1.86); holds also reads door: any (any focus), which only recipes use: it is not a value here",
         "values": [
           "evoker",
           "emanator",
