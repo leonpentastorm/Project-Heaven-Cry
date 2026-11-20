@@ -11246,6 +11246,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_wreck_saw--masterwork",
+      "path": "art/icons/gear/weapon-ork_wreck_saw--masterwork.png",
+      "sha256": "ba141ac9fa41333ee978c92bb5f534e805ba1c6797ce7a3f25ebb6d1c6a23f09",
+      "label": "Wreck saw — Masterwork",
+      "family": "weapon-ork_wreck_saw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--masterwork.png",
+        "sha256": "ae9e42f0d0a8f828646b45413d8d592c2946a9b5736f1fd9754001601921a296"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-ork_wreck_saw--masterwork.png",
+        "sha256": "ba141ac9fa41333ee978c92bb5f534e805ba1c6797ce7a3f25ebb6d1c6a23f09"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-ork_wreck_saw--masterwork.txt",
+        "sha256": "c0bbdb17311ca2126cd639ce37e0d708bf9f801198f9fb3f0badbbf060281799"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_wreck_saw.png",
+          "sha256": "e272205cec29553d355f07fd39a927d092e052e71865d35e5e24da25fdae060d"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_wreck_saw--fine.png",
+          "sha256": "1b97fe1e892376933d74932eb444a98a54e8a7c5b7d16a18af20fa468c92b6a3"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "78addcb9903b42cd1ffd1cbcff0a7d8ef3a7be71f8a0240c25a2b139d549e002",
+        "128": "65c0257ee18dc3b613779f6f0a6f381cedfd2d2cf64a087f38e5f779521b0b39",
+        "64": "fa25a6ba84ebcfcc0887450739616cddc42b8d20a625a72f584f694cc31da6bb",
+        "32": "49b3624631c87e8bf6c2344dee0e67c1d2e4e64b0da4d075c61890810e06fff3"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-ork_wreck_saw",
+      "outline": {
+        "solid_alpha_iou": 0.968053603613698,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 32
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

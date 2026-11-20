@@ -28498,6 +28498,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 35
       }
+    },
+    "weapon-ork_wreck_saw--masterwork": {
+      "label": "Wreck saw — Masterwork",
+      "path": "art/icons/gear/weapon-ork_wreck_saw--masterwork.png",
+      "sha256": "ba141ac9fa41333ee978c92bb5f534e805ba1c6797ce7a3f25ebb6d1c6a23f09",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_wreck_saw--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_wreck_saw--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_wreck_saw--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_wreck_saw--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-ork_wreck_saw--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.9",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-ork_wreck_saw",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.968053603613698,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 32
+      }
     }
   },
   "survival_art": {
