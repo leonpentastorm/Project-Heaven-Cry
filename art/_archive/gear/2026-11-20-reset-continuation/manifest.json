@@ -4245,6 +4245,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-deflector--celestial",
+      "path": "art/icons/gear/shield-deflector--celestial.png",
+      "sha256": "1fddf7b46982924b37e462afc73f966b019a075400bc426f3c810559aeecd85e",
+      "label": "Deflector — Celestial",
+      "family": "shield-deflector",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-deflector--celestial.png",
+        "sha256": "d5278f977f8f53dd67d2fd1331265e7b21c2d48e418afd1bd86b823ea14f1998"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-deflector--celestial.png",
+        "sha256": "1fddf7b46982924b37e462afc73f966b019a075400bc426f3c810559aeecd85e"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-deflector--celestial.txt",
+        "sha256": "1361b4ff49b8ab02a5fad5ba8f4447e4f2d74f2db3d8ba5d6a298c778f77e140"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-deflector.png",
+          "sha256": "435212a51f37ca10799a6a65d78d44ef837e15a6c2f1921a34662fe93fbd88e4"
+        },
+        {
+          "path": "art/icons/gear/shield-deflector--relic.png",
+          "sha256": "9c51f84922ec29aa589cf5c28c7feb99e30ad5e943ffb73400f61cc39c43e6c7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-deflector.png",
+          "sha256": "981d7ba5269c8a312538f46ac4bfc41098a1537ca27a533a18dd4c9a2e5c3c69"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-deflector--celestial.png",
+        "128": "art/icons/gear/exports/128/shield-deflector--celestial.png",
+        "64": "art/icons/gear/exports/64/shield-deflector--celestial.png",
+        "32": "art/icons/gear/exports/32/shield-deflector--celestial.png"
+      },
+      "export_hashes": {
+        "256": "2ec6a2a11905859d50383dd6eb132bf934027f4149d35c9e6b8b8721d131a06b",
+        "128": "202f9155e47426695661f9fa27d1ad36ca863122d8b21f24f277704689149ea5",
+        "64": "c5777ce6c4526e40d51e845032fdacdeffc0d6ef59739b919ae0f2e11a458489",
+        "32": "16330edfafb2d5946db7c909f89e212d5c930080fc1d051693dd8214a6b4ec73"
+      },
+      "grade": "celestial",
+      "standard_id": "shield-deflector",
+      "outline": {
+        "solid_alpha_iou": 0.9624340681683937,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 42
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
