@@ -7534,6 +7534,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-assault_helm--masterwork",
+      "path": "art/icons/gear/armour-assault_helm--masterwork.png",
+      "sha256": "d04a5ca71a656e1e65265d3390bf3aa9c9309fcc3f5051bd03f5db557da0108b",
+      "label": "Assault Helm — Masterwork",
+      "family": "armour-assault_helm",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-assault_helm--masterwork.png",
+        "sha256": "324a5f94da96349dfaae092be2cb1d2c27d2bd86ee18c38336764fe505c901a7"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-assault_helm--masterwork.png",
+        "sha256": "d04a5ca71a656e1e65265d3390bf3aa9c9309fcc3f5051bd03f5db557da0108b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-assault_helm--masterwork.txt",
+        "sha256": "9d087accb8e29a3e5d40f8ddc5463853ccac66b23976a229a696e45e8ff0aae3"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-assault_helm.png",
+          "sha256": "c171a27223a1bf4a108f774695087d2fc3d2074789e196f0661a740013f20e0a"
+        },
+        {
+          "path": "art/icons/gear/armour-assault_helm--fine.png",
+          "sha256": "fb653c2ee0b33577df115de18c4225d2c29932385f03c48e670be820583df86a"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "c8bb48696d5ba5f289139da13cb3b2c7449a6d43d456eef7b860dc3b58bc4c7e",
+        "128": "b5fdb7bb0156e8c31e6487a299f1324904c5be508d28f6081853dec8d67b7d20",
+        "64": "d356e953fed59748fabe3aca064f7d042cb7da280c9c6e908e84b8876db2434c",
+        "32": "6721662e5fd53197e8f87343156a545e79c76808454e0487b2bcbecc8c3dbc84"
+      },
+      "grade": "masterwork",
+      "standard_id": "armour-assault_helm",
+      "outline": {
+        "solid_alpha_iou": 0.9857479504617674,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 22
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -26177,6 +26177,42 @@
         "different_pixels_32": 5,
         "different_pixels_64": 25
       }
+    },
+    "armour-assault_helm--masterwork": {
+      "label": "Assault Helm — Masterwork",
+      "path": "art/icons/gear/armour-assault_helm--masterwork.png",
+      "sha256": "d04a5ca71a656e1e65265d3390bf3aa9c9309fcc3f5051bd03f5db557da0108b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-assault_helm--masterwork.png",
+        "128": "art/icons/gear/exports/128/armour-assault_helm--masterwork.png",
+        "64": "art/icons/gear/exports/64/armour-assault_helm--masterwork.png",
+        "32": "art/icons/gear/exports/32/armour-assault_helm--masterwork.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-assault_helm--masterwork.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.7",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "masterwork",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "armour-assault_helm",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9857479504617674,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 22
+      }
     }
   },
   "survival_art": {
