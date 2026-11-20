@@ -1218,7 +1218,7 @@ cb1d624847f2d9a02857276e1cafe089eadaa95d07f0898c775ac81e516ed215  art/_archive/g
 3eac3fda01e0762f89228cc10388d22ea4dc5df1e378dd96633ea0b7fdd5dce8  art/_archive/gear/2026-11-13-complete/superseded/weapon-repeating_crossbow.png
 ad9a3c1af898c86b3ffebb596997cabc58a73eff7a37c063f040ec8d32cf1383  art/_archive/gear/2026-11-13-complete/superseded/weapon-service_pistol.png
 6407fd50f2683907aa95fe89bd1f8f1fd807696d50d9fa24960b0bea7535d4a9  art/_archive/gear/2026-11-13-complete/validation.json
-174c4925bc7db1646cfd14476c20593e9298acb2a6cc2f3f159ad68c36b58a69  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
+808d52be3e891a5b111c3256605f891d164dcbfd5a6135acd4118e8735813e14  art/_archive/gear/2026-11-19-kept-blade-grades/HANDOFF.md
 cfe0b7165b9763268d0236c6c4e2d3115516495eb909f41cfb8621beee42e813  art/_archive/gear/2026-11-19-kept-blade-grades/START-HERE-2026-11-20.md
 8ee34c72311bf68773c6853ab0bb7d25b31c2b57e8143486cfbd5f27578d9e64  art/_archive/gear/2026-11-19-kept-blade-grades/TOMORROW.md
 dc45fc3c9fb69cc8ef2a2ab30aaefdfe979447725ab1cf53391fc2ffe47c8ca4  art/_archive/gear/2026-11-19-kept-blade-grades/VALIDATION.md
@@ -1268,7 +1268,7 @@ fc0015df7842df8bc7bb64e546b7ce8b9626c55a00e82191aa89fcfe24553913  art/_archive/g
 92fc75a484072b41309c32335821d40131d155d6e3a41849b2d893858c371069  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-lance--masterwork/v1/source.png
 22906ee9381018309eb833d86ebb12c55b1cb4cb0f722ef324355bc83aa7858f  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-maul--celestial/v1/prompt.txt
 575fb7d6bc0c99635fdada4ee31d00efed280073f5c3e696ae804baa1dda5a53  art/_archive/gear/2026-11-19-kept-blade-grades/attempts/weapon-maul--celestial/v1/source.png
-6aa7dd25dc1c8dffd7a997fe3a604c846b4db8ba35f9f50e01aef275b22b62c1  art/_archive/gear/2026-11-19-kept-blade-grades/claim.json
+d0349531c6685fe57dd97343d51cafce1eb5cb76ee87e5b5f42e37e33fe18b85  art/_archive/gear/2026-11-19-kept-blade-grades/claim.json
 c85caf34dd96f8630ecde071f73cd42adc39e89b94ef7a25c7cdfed15d9b2813  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/COUNT-SNAPSHOT.json
 4dc13099aa7a109829182aaf23125f74011eb235e2aac131897db73d7f905870  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/new-armour-claim-2026-11-20.json
 3998a534a3f1709a913533242268422bc5d8bfaa587c341ce2965c0f22eec16c  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/original-file-status-550f80c7d.md
@@ -1804,7 +1804,7 @@ eb8b141554761006b8581f7a57662acabd1761f25f9c2ed1d4cccefb1c5d81f8  art/_archive/g
 bf9c6c4814231d06c0adeed62bff137aea68c0c8bf19cf75515c7563f384fd83  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/previous-catalog.json
 b5f1523416070b0b5f160c5302459638a6db01bf5b847d4acf8cf477abdff328  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/reviews/peer-grades-32px.png
 dbb1aafbe37565e046673de34a3247e68fb692baad55ff0278162b7a464daff0  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/peer-import-v2/reviews/peer-grades-64px.png
-2eea6e18f9ca3f764d0b4a912782cf48ce9f41e853b3f09ddea79055cb3d4c39  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/resume-2026-11-20.json
+58cda08bcdff7760cf0ad4e1f12375456743e6763f2a727f233cf462c1eae5e5  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/resume-2026-11-20.json
 044bcb3acbe2570fed447d162620ed8d095c65b15fd95817ff77a99b8c76c495  art/_archive/gear/2026-11-19-kept-blade-grades/coordination/reused-peer-candidates.json
 7a9915bd04ab12bb5f7d1c949f0108a46b3a5f0afc30f5482b61c258ff5e4591  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/armour-gas_mask--relic.json
 b774bc137eca033ec42ecd6518111e63c4456eb5f732382ced35a063a2f460fe  art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-coach_gun--fine--1795145382032.json
@@ -1942,11 +1942,15 @@ dab3bbbdf442bc217948fd60eee32f838a211d1eb1fe57e133a194b9c3d5e740  art/_archive/g
 876ce07be45081a7e7314efc77aead7926e1ade2d7a48c37f2d7dac89b8aa268  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--fine.png
 ba81a9c5882c4017f7fe9d1f9941078a582c6d3c9345609f2ea7d16fdebfd36e  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--masterwork.png
 9b36f752a3f17b24c47de7d956ab451043d216ca9d97ee734691013ea43c4ab9  art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-striking_gloves--relic.png
-e94b3cc398d4b2ab2817ce39780ee899b271768e481f3a18d7114857cb6ae409  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
+afa2c51e7c0250f8c8fe6539d54758a23aad90a882ef21d1944ba61fc06b2c9f  art/_archive/gear/2026-11-19-kept-blade-grades/progress.json
 7072283c256a7cd34d750cfe09118d83631509ed58760961580028abc78f6bf8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--celestial.txt
 048ccfc688b5412dd99ae31c3119eaae6f4126ba06c421f73ccb095a68e03315  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--fine.txt
 109c7d7ccd649f9b5ca60c47fa35ef9a7c9308c47c1c903dba426028fbf7b521  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--masterwork.txt
 fd47a4a8d8f636a91b8cb892baa1b4d8664d5eb22743f80f5b496826bbe9a1f8  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-armoured_greaves--relic.txt
+02f8edd128df714ba741d07271c026ddb82e8a0558dc50481cd3b0cd9f28e3ef  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-assault_helm--celestial.txt
+0f5a84400142c21642149c7c340a19f3e6a5ba548351a273d94dc631ee966030  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-assault_helm--fine.txt
+b4819c288c7610d2ac2c47decd3fac0ef54712db463c0d71bae75faba53d48ce  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-assault_helm--masterwork.txt
+d4ff90812c9c72754bbc58bb12613824f9bf807581a38b386f4893eb63143bc9  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-assault_helm--relic.txt
 688f3775f0cd3a25ad5229063c8f4c2c6245959d53c31d01fd0529b80cbba70a  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-combat_gloves--celestial.txt
 f7df0d4fefb63cd475e2309db73c7ca1dab7350585d375de28046eadbff30c3b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-combat_gloves--fine.txt
 b2a42cbcc8b6a4858f27dd163e98a4f5a580b3a282942c35aeb632484b333ef5  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-combat_gloves--masterwork.txt
@@ -2107,7 +2111,7 @@ bee7477a9e07b82ad229c32541939deea912fb45b3155a89d95d7db1a2a39834  art/_archive/g
 3dea41ecea9988023656c2dbfa4e527fcb8194d71b6aea386f1ed9f9e6294d0b  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--fine.txt
 684d47c91ba4301ee4c3f08b30bcf0f4e1883952dbc341a5852a161ae3effafd  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--masterwork.txt
 50a61f4ac3a7e5f5690ba802260fb911300852923bddd0fd2e750b56d2123871  art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-whisper_smg--relic.txt
-783d6d40ade19ceaa9958cc15e2bb6b2bda4b25384b95092794ba2a1c12c4163  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
+1c8226024311b1b3729c32363bb1c89fd248cf1ad7ceab5b89e5dc664337b057  art/_archive/gear/2026-11-19-kept-blade-grades/queue.json
 40590eb9b576e9d16899ba703041c16e3244a5a4fd689355e53adc4dd536d2fb  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-32px.png
 9b9c6401e3920bb264df0cc7aad2ea9bf468b2b079f3eeb7efd87a219275fa67  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-armoured_greaves-64px.png
 af4fa8f3f8c3c7daf478f364efacd200b0938e8a33b900e2467eaf8819baee94  art/_archive/gear/2026-11-19-kept-blade-grades/reviews/armour-combat_gloves-32px.png

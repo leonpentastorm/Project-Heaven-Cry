@@ -1,7 +1,7 @@
 {
   "owner": "kept-grades-20261120-031914Z",
   "branch": "art/2026-11-19-kept-blade-grades",
-  "status": "active-started-preflight-waiting-exact-reset",
+  "status": "active-production",
   "reset_epoch": 1795144754,
   "reset_utc": "2026-11-20T03:19:14Z",
   "reset_local": "2026-11-20T10:19:14+07:00",
@@ -109,5 +109,21 @@
   },
   "start_comment": 7029255401,
   "start_utc": "2026-11-20T03:17:12.973967+00:00",
-  "invocation_id": "kept-20261120-mwoeq1o9"
+  "invocation_id": "kept-20261120-mwoeq1o9",
+  "initial26_outcome": {
+    "delivered": [
+      "armour-gas_mask--relic",
+      "armour-gas_mask--celestial"
+    ],
+    "rejected_fine_standards": [
+      "weapon-parlour_pistol",
+      "weapon-lever_carbine",
+      "weapon-sawn_off",
+      "weapon-coach_gun",
+      "weapon-legion_bullpup",
+      "weapon-whisper_smg"
+    ],
+    "higher_dependent": 18
+  },
+  "next_claim": "coordination/new-armour-claim-2026-11-20.json"
 }

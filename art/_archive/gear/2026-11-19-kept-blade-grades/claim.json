@@ -153,7 +153,11 @@
     "weapon-whisper_smg--fine",
     "weapon-whisper_smg--masterwork",
     "weapon-whisper_smg--relic",
-    "weapon-whisper_smg--celestial"
+    "weapon-whisper_smg--celestial",
+    "armour-assault_helm--fine",
+    "armour-assault_helm--masterwork",
+    "armour-assault_helm--relic",
+    "armour-assault_helm--celestial"
   ],
   "standards": [
     "weapon-kemizuchi_duelling_blade",
@@ -193,7 +197,8 @@
     "weapon-sawn_off",
     "weapon-coach_gun",
     "weapon-legion_bullpup",
-    "weapon-whisper_smg"
+    "weapon-whisper_smg",
+    "armour-assault_helm"
   ],
   "other_agent_proof_standards": [
     "weapon-katana",
@@ -208,8 +213,8 @@
     "weapon-legion_gladius"
   ],
   "peer_canonical_commit": "2d9d2fb50bebd81e98e279f2981c72d921fc6e99",
-  "target": 152,
-  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7027017190",
+  "target": 156,
+  "latest_claim_comment": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3#issuecomment-7029516545",
   "latest_implementer_commit": "7e1f6bd065b47ce6f9d9325629abdeaffba7b0e9",
   "handoff_status": "reserved-waiting-quota-reset;26 eligible jobs (GasMask2+guns24),7 earlier rejected/dependent; no active production START",
   "next_reset_utc": "2026-11-20T03:19:14Z"
