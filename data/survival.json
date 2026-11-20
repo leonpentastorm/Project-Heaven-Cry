@@ -437,6 +437,10 @@
     "rite": 10,
     "token_max_worth": 8,
     "tokens_per_stage": 1,
+    "consume_about": "Rules 1.89 (Leon, 20 Nov 2026): the altar opens what a character carries for anyone, focus in a hand or not: each row is an item consumed on yourself through the item's own use (its effects and their limit; the XP is the item's own field), and it is not the shrine's one thing.",
+    "consume": [
+      { "item": "essence_of_experience", "label": "Consume at the altar", "detail": "Anyone, focus or not: the shrine opens the Essence and you absorb it. Not the shrine's one thing." }
+    ],
     "provisional": true
   },
   "lasting": {

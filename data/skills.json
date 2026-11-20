@@ -211,7 +211,7 @@
                     "k": "guard_move",
                     "move": "slam"
                   },
-                  "say": "{self} slams the plates outward.",
+                  "say": "{self} slams the plates outward{then}.",
                   "if": {
                     "no_door_pick": [
                       "fork.guard.stand_fast"
@@ -220,6 +220,7 @@
                 },
                 {
                   "op": "displace",
+                  "label": "Slam",
                   "when": "acted",
                   "how": "push",
                   "tiles": 1,
@@ -237,6 +238,7 @@
                 },
                 {
                   "op": "displace",
+                  "label": "Slam",
                   "when": "acted",
                   "how": "push",
                   "tiles": 2,
@@ -288,7 +290,8 @@
                     "door_pick": [
                       "fork.guard.stand_fast"
                     ]
-                  }
+                  },
+                  "say": "{self}'s shockwave rocks them{then}."
                 }
               ]
             }
@@ -2235,7 +2238,7 @@
           "name": "Mastery 1",
           "category": "Combat Interaction",
           "mastery": 1,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Ghost Kill: drop a foe while no enemy's eyes reach you and you sink back into Hidden (once a turn; not while Marked).",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Ghost Kill: drop a foe while no enemy's eyes reach you and no enemy sees you as you strike, and you sink back into Hidden (once a turn; not while Marked).",
           "player": "Ghost Kill: a kill no enemy sees puts you back in Hidden (once a turn)",
           "effects": [
             {
@@ -2249,7 +2252,8 @@
               "when": "attack_roll",
               "if": {
                 "self_sight": [
-                  "in_view"
+                  "in_view",
+                  "seen"
                 ]
               }
             },

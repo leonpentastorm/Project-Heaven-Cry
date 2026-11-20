@@ -13919,3 +13919,62 @@ Presentation and the Narrator's desk (`docs/design/handoffs/0.33-LANE-SOUND.md`)
     chips go; the FIGMENTS section now shows the forms known ("FORMS KNOWN · 2 / 2") and the door's forks held (TRIAGE row 10).
 7605. **Sound lane: the Confirm button's SPACE hint stays on one line** in the button's own dark ink, and is dropped
     when the button row is too narrow to hold it.
+
+### Rules 1.89 (bugs-engine), 0.33: the outside playtest of live 0.32.0, the rules side (20 Nov 2026)
+
+Five outside playtest reports of live 0.32.0 (`docs/playtests/2026-11-20-outside-0.32/`), each claim reproduced
+through the reducer before anything changed (`docs/design/handoffs/0.33-LANE-BUGS-ENGINE.md`). The lane's items are
+7700 to 7715. Every number here is PROVISIONAL; none is new.
+
+7700. **bugs-engine: a Guard soak is soaked damage.** The run's fight tally counts what a character's Guard plates took
+    off a hit (the `guard` event, why `soak`, its `soaked`) in SOAKED, beside its shield and armour (rules 1.66 item
+    5210). The fight summary read 0 for a tank whose plates ate every blow.
+7701. **bugs-engine: the follow strike and a fumble** (a call made for Leon). Rules 1.58 item 4523 stands: a follows
+    item strikes after a main-hand melee technique whether its first roll hit or missed (Leon's design: "the shield
+    attacks from the off hand when you attack with the main hand"). A **natural 1** on that first roll (a fumble) makes
+    no follow, and the log says so ("Buckler does not follow: the swing fumbled."); a follow says what it followed
+    ("Buckler follows the hit:", "Buckler follows the miss:").
+7702. **bugs-engine: a granted action is named by its own label.** A skill's or item's `grant_action` with a `label`
+    (Durability's Challenge and Slam) is logged by it ("uses Challenge"), never by the item's name ("uses Guard").
+7703. **bugs-engine: a push or pull says itself.** An item op `displace` whose row has no `say` of its own logs the move
+    in a line, as `deal` logs its blow ("Slam: Trooper is pushed 1 tile."). Slam's Off Balance row names each Body
+    save (`{then}`); Stand Fast's shockwave the same.
+7704. **bugs-engine: a free walk before contact spends no discount.** A walk the approach makes free (rules 1.64 item
+    5008) is told to the items at 0 AP, so a first-move discount (Glass Runner's Runner) is kept for the fight's first
+    paid move. A discount an item makes on a move (`move_cost`) is a discount, not a debt: the tiles paid for are the
+    walk's own price, never fewer than 0 ("-2 paid-for tiles" is gone).
+7705. **bugs-engine: Ghost Kill asks every hostile eye.** The kill's attack must be made with no enemy's eyes reaching
+    you **and** no enemy seeing you (the sight words `in_view` or `seen` at the roll forbid it); a sensed or revealed
+    killer is not a ghost.
+7706. **bugs-engine: special rounds by name and out of a fight.** A rounds line of a special type is named by its type
+    (specialRoundName: "Armour-piercing rounds (.32 Decrkm)"), never as the plain rounds. The backpack offers "Load into
+    the gun" for it out of a fight (`gear/ammo`, rules 1.56 item 4167); the rounds the gun held go back into the pack as
+    rounds of their own type (they were lost). In a fight a special round is still chambered with Load Special; Load a
+    magazine still fills from plain loose rounds only.
+7707. **bugs-engine: one preview line for a blow's armour.** A technique's preview line (a ranged Break's, a Strike's)
+    says the target's armour as the attack card does ("73 damage − armour 5").
+7708. **bugs-engine: Sigil Savant's Rigid in a mission** (a call made for Leon). With no long rest yet, the first fight
+    fixes the practised words (the words known as the mission began, at most Max Sigil words); a word learned later is
+    drawn after the next long rest (a Survival rest node). Muscle Memory and Practise words are the trait's actions in a
+    run (scope `run`), as before.
+7709. **bugs-engine: the Line and the ground are two numbers.** The MAGIC sheet shows "Line length" as Max Sigil words
+    capped at 4 (rules 1.4 item 2) and "Glyphs on the ground" as Max Sigil words (rule 1.4 item 3): a fifth glyph at
+    Intelligence 7 is legal on the ground and never in one Line.
+7710. **bugs-engine: an Evoke short of charge.** Its preview never reads below 0 charge; it says what it is short of.
+    The Draw row's AP is the glyph's own price now (Running Hand II's first-glyph cut, Muscle Memory), not the base.
+7711. **bugs-engine: the field's round.** The fight's header on a run's field reads the field's own round ("Round 1 of
+    3"), so "Won in 4 rounds" is never beside ROUND 5.
+7712. **bugs-engine: the next point's fork.** A level-up skill row's line is what its next point gives; a fork it names
+    says its points ("At 8: Spill or Headlong").
+7713. **bugs-engine: Essence of Experience at the altar** (Leon, 20 Nov 2026). Outside a fight only a character with a
+    focus in a hand cracks an Essence, as before. In a Survival run, a shrine's altar also opens it for anyone, focus or
+    not: the shrine's `consume` rows (`survival.json shrine.consume`, the item named in data) are consumed on yourself
+    through the item's own use (its `xp_grant`, its once-a-rest limit). It is not the shrine's one thing (a call made
+    for Leon). The item's card says where it can be used.
+7714. **bugs-engine: not changed, intentional.** A gun emptied in one fight starts the next one as it was left (Leon, 20
+    Nov 2026: "no empty gun keep it like that it's intentional"): no top-up between fights.
+7715. **bugs-engine: Echo in a fight is not built.** The body's "spend 1 Echo to reroll any d20 you rolled" leaves open
+    what a fight needs: which d20s (attacks, saves forced on you in a foe's turn, death saves, a Burst's several rolls),
+    when the choice is offered (the engine resolves a roll and all it sets off, a jam, an Answer, a Riposte, in one
+    action; a reroll after seeing it needs a held roll the reducer does not have), what a reroll undoes (a natural 1's
+    jam and Heat), and how a Survival run, which has no sessions, refills it. Listed for Leon.

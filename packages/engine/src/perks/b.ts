@@ -58,8 +58,6 @@ function sweep(h: Holder, cb: Combat, r: number, needLos: boolean, why: string) 
   const u = h.u; if (!u || !alive(u) || ow(cb)) return;
   for (const v of cb.units) if (v.side !== u.side && v.hidden && !v.dead && dist(u.pos, v.pos) <= r && (!needLos || losNoVeil(cb, u.pos, v.pos))) reveal(cb, v, why + ': ' + u.name + ' knows where they are');
 }
-/** Bank-tile fix after a move whose AP an item cut: the tiles bought stay in the bank as if the AP had been paid. */
-function fixBank(h: Holder, ctx: any) { const s = stateOf(h); if (ctx.u === h.u && s.bankFix) { if (ctx.how === 'move') h.u!.bank = (h.u!.bank || 0) + s.bankFix; s.bankFix = 0; } }
 const carriesToolbox = (c: Character | null | undefined) => !!c && packOf(c).some((x) => (x.item || x.id) === 'toolbox' && x.qty > 0);
 
 // =====================================================================================================================
@@ -460,10 +458,9 @@ register({
       if (ctx.u !== h.u || ctx.how !== 'move' || ctx.ap <= 0) return;
       const sc = straightCharge(ctx.cb, h.u!, ctx.from, ctx.route, h); if (!sc || sc.tiles < 3) return;
       if (!uses(h).take('per_turn')) return;
-      const save = Math.min(ctx.ap, CHARGE_AP_CAP); ctx.ap -= save; const s = stateOf(h); s.bankFix = (s.bankFix || 0) + save * h.u!.movement;
+      const save = Math.min(ctx.ap, CHARGE_AP_CAP); ctx.ap -= save; // rules 1.89: the bank counts the walk's own price (combat.ts moveUnit): no fix of its own
       log(ctx.cb, h.u!.name + ' charges ' + sc.target.name + ' (Charge!: ' + save + ' AP of the move is free).');
     },
-    moved: (ctx, h) => fixBank(h, ctx),
   },
   brief: () => null,
 });

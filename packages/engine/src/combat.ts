@@ -2144,6 +2144,9 @@ export function movePlan(cb: Combat, u: Unit, to: string, how: 'move' | 'sprint'
   // (ap mutable; free: the tiles are not banked against; skipOA/skipOW: no opportunity attacks / no Overwatch).
   const ap0 = ap; // the move's own price, before a free step or an item changes it
   if (o.free) ap = 0;
+  // rules 1.89 (outside playtest 0.32.0: Glass Runner spent on a free walk before contact): a walk the approach makes free
+  // (price: rules.json combat.approach.free) is told to the items at 0 AP, so no discount is spent on it
+  else if (cb.approach && how === 'move' && ap > 0 && priced({ cb, u }, 'move', ap).free) ap = 0;
   const mc: any = emit(cb, 'move_cost', { u, from: u.pos, to, route, tiles, how, ap, skipOA: !!o.free && !o.oa, skipOW: false, free: !!o.free, cb, mods: cb.mods || [], ...(o.preview ? { preview: true } : {}) });
   ap = o.free ? 0 : how === 'move' ? priced({ cb, u }, 'move', Math.max(0, mc.ap), undefined, { to, tiles }).ap : Math.max(0, mc.ap); // (a Sprint and a Disengage passed the `cost` hook when they were priced above) a free step stays free whatever the ground adds (the items were told it is free before they priced it)
   { const no = whyNot(cb, u, ap, { as: { type: 'combat/move', how } }); if (no) return no; }
@@ -2201,7 +2204,9 @@ export function moveUnit(cb: Combat, u: Unit, to: string, rng?: Rng, how: 'move'
   // The bank: tiles paid for and not walked carry over (a walk cut short keeps them).
   // A move an item made free (priced a paid move at 0 AP: Run and Gun, rules 1.30 item 1811) keeps the bank as it was.
   // A cut the `cost` hook made (Shadow Run, rules 1.32) is a discount, not a debt: the bank counts the walk's price before it.
-  if (how === 'move' && !mc.free && !(ap0 > 0 && ap === 0)) u.bank = bank0 + (ap > 0 && ap < apPre ? apPre : ap) * u.movement - walked;
+  // Rules 1.89 (outside playtest 0.32.0: Glass Runner's free AP left "-2 paid-for tiles"): a cut an item made on
+  // move_cost is a discount too; the bank counts the walk's own price (ap0), and is never below 0.
+  if (how === 'move' && !mc.free && !(ap0 > 0 && ap === 0)) { const basis = ap > 0 && ap < apPre ? apPre : ap; u.bank = Math.max(0, bank0 + (ap > 0 && basis < ap0 ? ap0 : basis) * u.movement - walked); }
   say(cb, u.name + (how === 'sprint' ? ' sprints' : how === 'disengage' ? ' disengages' : ' moves') + ' to ' + refOf(end) + ' (' + walked + (walked === 1 ? ' tile' : ' tiles') + (walked < tiles ? ' of ' + tiles : '') + ', ' + ap + ' AP)' + sprung + '.');
   if (u.side === 'pc' && !u.dead) { spotTraps(objectsOf(cb), u.pos, u.vigilant || 0, u.name, (l) => say(cb, l)); spotHazards(cb, u); }
   if (!u.dead && (cb.zones || []).length) sigilSpot(cb, u);

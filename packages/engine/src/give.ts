@@ -145,7 +145,9 @@ const limitOf = (e: any): { per: ReturnType<typeof scopeOf>; n: number } | null 
 const useKey = (id: string, k: number) => 'use:' + id + '#' + k;
 /** Why this use of an item `via: effects` can't be made, in words, or null. A stim (`via: stim`) is judged by the stim's
  * own rule (game.ts). */
-export function useProblem(g: GameState, by: string, a: UseAction): string | null {
+/** o.waiveNeeds (rules 1.89): a place that stands in for what the item's user needs (Survival's shrine: an Essence of
+ * Experience consumed there wants no focus in a hand); never from a player's action, only from the place's own path. */
+export function useProblem(g: GameState, by: string, a: UseAction, o: { waiveNeeds?: boolean } = {}): string | null {
   if ((g.phase === 'combat' && g.combat && !g.combat.over && !g.combat.field) || g.run?.state === 'fight') return 'Not in a fight: use it after the fight.'; // rules 1.55 item 45: the field is no fight
   const u = useOf(a.item); if (!u) return "That can't be used here.";
   const c = g.characters[a.charId]; if (!c || c.owner !== by) return 'Not your character.';
@@ -153,7 +155,7 @@ export function useProblem(g: GameState, by: string, a: UseAction): string | nul
   if (haveOf(c, a.item) < 1) return c.name + ' has no ' + nameOfId(a.item) + '.';
   const t = g.characters[String(a.targetId || '')]; if (!t) return 'Use it on whom?';
   if (t.dead) return t.name + ' is dead.';
-  const need = needsProblem(c, a.item); if (need) return need;
+  const need = o.waiveNeeds ? null : needsProblem(c, a.item); if (need) return need;
   const fx: any[] = (ITEM[a.item] as any)?.effects || [];
   for (const [k, e] of fx.entries()) {
     if (!USE_OPS[e?.op]) return nameOfId(a.item) + ' needs the Narrator: ' + ((ITEM[a.item] as any)?.text || '');
@@ -164,8 +166,8 @@ export function useProblem(g: GameState, by: string, a: UseAction): string | nul
 }
 /** Use it (rules 1.55 item 58): one out of the user's count, each effect's limit taken on the receiver, the line said
  * (`say`), then each effect run by its use op. Returns null, or the refusal in words (nothing changes). */
-export function useNow(g: GameState, by: string, a: UseAction, say: (line: string, c: Character) => void): string | null {
-  const no = useProblem(g, by, a); if (no) return no;
+export function useNow(g: GameState, by: string, a: UseAction, say: (line: string, c: Character) => void, o: { waiveNeeds?: boolean } = {}): string | null {
+  const no = useProblem(g, by, a, o); if (no) return no;
   const c = g.characters[a.charId], t = g.characters[a.targetId!], fx: any[] = (ITEM[a.item] as any)?.effects || [];
   spendOne(c, a.item);
   for (const [k, e] of fx.entries()) { const l = limitOf(e); if (l) uses({ key: useKey(a.item, k), c: t, g }).take(l.per, l.n); }

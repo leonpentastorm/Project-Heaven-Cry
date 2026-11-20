@@ -573,7 +573,9 @@ export function partError(c: Character, idx: number, qty = 1): string | null {
 export const magsOf = (weapon: string, n: number, unit = WEAPON[weapon]?.reload_unit || 'magazine'): PackItem => ({ id: 'mag:' + weapon, name: (WEAPON[weapon]?.name.replace(/ \(.*\)$/, '') || weapon) + ' ' + unit, qty: n, kind: 'ammo', weapon, mags: Array(n).fill(WEAPON[weapon]?.magazine || 0) });
 /** A pack line of loose rounds of a calibre (the one shape of a rounds line); with `type`, special rounds of that
  * calibre (rules 1.56, L2: `ammoType` on the line, as a typed arrow line has). */
-export const roundsOf = (calibre: string, n: number, type?: string | null): PackItem => ({ id: 'rounds:' + calibre + (type ? ':' + type : ''), name: (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre, ...(type ? { ammoType: type } : {}) });
+// (rules 1.89, outside playtest 0.32.0: bought armour-piercing rounds were named as the plain ones) a special round's
+// line is named by its type (specialRoundName, the one name of a special round)
+export const roundsOf = (calibre: string, n: number, type?: string | null): PackItem => ({ id: 'rounds:' + calibre + (type ? ':' + type : ''), name: (type ? specialRoundName(calibre, type) : null) || (CALIBRE_NAME[calibre] || calibre) + ' rounds', qty: n, kind: 'ammo', calibre, ...(type ? { ammoType: type } : {}) });
 // ---------- special rounds by calibre (rules 1.56, L2) ----------
 const SRP: any = (RULES as any).weapons_rules?.special_round_price || {};
 /** The calibres special rounds are made and sold in (`weapons_rules.special_round_price.calibres`). */

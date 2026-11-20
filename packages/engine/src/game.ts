@@ -975,7 +975,10 @@ function reduce(g: GameState, a: Action, by: string) {
       if (type === 'standard') { c!.loadedType = null; push(g, { kind: 'system', text: c!.name + ' loads standard rounds.' }); return; }
       // rules 1.56 (L2): rounds of the gun's own calibre of that type (or enhanced rounds, which fit any gun)
       if (!specialRoundsFor(packOf(c!), w!.ammo)[type]) fail('You carry no ' + type.replace(/_/g, '-') + ' rounds for the ' + w!.name.toLowerCase() + '.');
-      const took = takeSpecialRounds(packOf(c!), w!.ammo, type, magazineSize(c!.weapon, c!.weaponState?.mods) ?? w!.magazine!), n = took.took; c!.loaded = n; c!.loadedType = type; c!.pack = took.pack;
+      const took = takeSpecialRounds(packOf(c!), w!.ammo, type, magazineSize(c!.weapon, c!.weaponState?.mods) ?? w!.magazine!), n = took.took;
+      // rules 1.89 (outside playtest 0.32.0): the rounds the gun held go back to the pack as rounds of their own type, never lost
+      { const was = Math.max(0, Number(c!.loaded ?? magazineSize(c!.weapon, c!.weaponState?.mods) ?? w!.magazine ?? 0)); /* (missing: full) */ if (was > 0) packAdd(took.pack, roundsOf(w!.ammo!, was, c!.loadedType || null)); }
+      c!.loaded = n; c!.loadedType = type; c!.pack = took.pack;
       push(g, { kind: 'system', text: c!.name + ' loads ' + n + ' ' + type.replace(/_/g, '-') + ' rounds.' }); return;
     }
     case 'levelup/perk-repick': { // rules 1.70 item 5538: an old save's free re-pick of a skill's perk steps

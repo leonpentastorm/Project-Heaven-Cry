@@ -30,6 +30,7 @@ import { nextPools } from './stage';
 import type { GameState } from '../game';
 import { registerShopService, type ServiceCard } from './shop';
 import { gearPreview } from '../gearpreview';
+import { useProblem, useNow } from '../give';
 
 const SV: any = svJ;
 /** The grade ladder (survival.json grade_up): prices, the places and their factors, the Relic's place and stage, the chit. */
@@ -42,7 +43,11 @@ export const TRAIN: { drill: number; study: number; practice: number; devotion: 
 export const TRAINING: { drill: number; study: number; practice: number; extra_price: number; most: number } = SV.training;
 /** The shrine's numbers (survival.json shrine): the rite's Devotion XP (rules 1.54 item 10: its own key; the campaigns'
  * rites keep patrons.json gain.rite_kept), the token's most worth and how many a stage. */
-export const SHRINE: { rite: number; token_max_worth: number; tokens_per_stage: number } = SV.shrine;
+export const SHRINE: { rite: number; token_max_worth: number; tokens_per_stage: number; /** rules 1.89: what anyone may consume at the altar (an item the shrine opens, focus or not) */ consume?: { item: string; label: string; detail: string }[] } = SV.shrine;
+/** Rules 1.89: the shrine's consume row for an item, or null. */
+const consumeRow = (item: string | undefined) => (SHRINE.consume || []).find((x) => x.item === item) || null;
+/** The XP an item grants by its own effect (its `xp_grant` op's value), for the option's words; 0 when none. */
+const itemXp = (item: string): number => Number((((ITEM[item] as any)?.effects || []) as any[]).find((e) => e?.op === 'xp_grant')?.value) || 0;
 /** The armour-or-item picks (survival.json lasting). */
 export const LASTING: { offer: number; min: number; fill: string[]; chit_gate: number; chit_from_stage: number; chit_odds: number } = SV.lasting;
 /** The Crossroads' trades (survival.json trades). */
@@ -68,7 +73,7 @@ export type ProgressAction =
    * the main hand's extra slot (Gun Nut, Blade Recluse, Overhaul: the perk's own action), or takes `mod` off a gun, for a fee */
   | { type: 'run/fit_mod'; charId: string; idx: number; where?: 'off' | number; extra?: boolean } | { type: 'run/unfit_mod'; charId: string; mod: string; where?: 'off' | number }
   | { type: 'run/train'; charId: string; train: 'drill' | 'study' | 'practice' | 'devotion'; weapon?: string }
-  | { type: 'run/shrine'; charId: string; choice: 'rite' | 'piece' | 'token' }
+  | { type: 'run/shrine'; charId: string; choice: 'rite' | 'piece' | 'token' | 'consume'; /** rules 1.89: the consume row's item */ item?: string }
   | { type: 'run/trade'; charId: string; trade: string; where?: GearWhere; weapon?: string; train?: 'devotion' | 'study' | 'practice'; pick?: number }
   | { type: 'run/take'; charId: string; choice: number | 'none' };
 /** Where the reducer writes a line of the log (game.ts push). */
@@ -324,8 +329,10 @@ export function tokenFor(g: GameState, c: Character): string | null {
   return can.length ? can[die(rngFor(r.seed, (r.at || '') + '#token#' + c.id), can.length) - 1].id : null;
 }
 /** Why this shrine offer can't be taken now, or null (rule 46). */
-export function shrineProblem(g: GameState, c: Character, choice: string): string | null {
+export function shrineProblem(g: GameState, c: Character, choice: string, item?: string): string | null {
   const h = here(g); if (!h || h.n.kind !== 'shrine') return notHere('a shrine');
+  // rules 1.89: consuming at the altar is not the shrine's one thing; the item's own use, with the altar for a focus
+  if (choice === 'consume') { const row = consumeRow(item); if (!row) return 'Nothing of that kind is consumed here.'; return useProblem(g, c.owner, { type: 'gear/use', charId: c.id, item: row.item, targetId: c.id }, { waiveNeeds: true }); }
   if (h.v.did[c.id]) return 'One thing per shrine. ' + c.name + ' has taken it.';
   const faithful = beliefOf(c).kind === 'faithful', p = FAITH_PATRON[h.v.patron || ''];
   if (choice === 'rite') return faithful ? null : c.name + ' is an Atheist: take a piece of lore or the token instead.';
@@ -447,7 +454,8 @@ export function progressAction(g: GameState, a: ProgressAction, by: string, say:
       return null;
     }
     case 'run/shrine': {
-      const no = shrineProblem(g, c, a.choice); if (no) return no;
+      const no = shrineProblem(g, c, a.choice, a.item); if (no) return no;
+      if (a.choice === 'consume') return useNow(g, c.owner, { type: 'gear/use', charId: c.id, item: consumeRow(a.item)!.item, targetId: c.id }, (line, t) => say(line, t.id), { waiveNeeds: true });
       const h = here(g)!, p = FAITH_PATRON[h.v.patron!];
       if (a.choice === 'piece') { const err = grantPiece(g, c, p.id, 'a shrine of ' + p.name); if (err) return err; }
       if (a.choice === 'rite') shiftDevotion(g, null, c, SHRINE.rite, 'a rite kept at a shrine of ' + p.name);
@@ -540,6 +548,8 @@ export function runOptions(g: GameState, charId: string): RunOption[] {
     const p = FAITH_PATRON[h.v.patron || ''], tok = tokenFor(g, c);
     out.push({ group: 'shrine', key: 'rite', label: 'Keep a rite: Devotion +' + SHRINE.rite + ' XP', detail: 'For those with a patron.', price: 0, why: shrineProblem(g, c, 'rite'), action: { type: 'run/shrine', charId, choice: 'rite' }, bar: trainBar(c, 'devotion', SHRINE.rite) });
     out.push({ group: 'shrine', key: 'piece', label: 'A piece of ' + (p?.name || 'the patron') + '\'s lore', detail: 'For an Atheist: learn the next of its Hymns, prayed by dice.', price: 0, why: shrineProblem(g, c, 'piece'), action: { type: 'run/shrine', charId, choice: 'piece' } });
+    // rules 1.89: the altar's consume rows (survival.json shrine.consume): anyone, focus or not, for the item's own XP
+    for (const row of SHRINE.consume || []) { const xp = itemXp(row.item); out.push({ group: 'shrine', key: 'consume:' + row.item, label: row.label + ': ' + nameOf(row.item) + (xp ? ' (+' + xp + ' XP)' : ''), detail: row.detail, price: 0, why: shrineProblem(g, c, 'consume', row.item), action: { type: 'run/shrine', charId, choice: 'consume', item: row.item } }); }
     out.push({ group: 'shrine', key: 'token', label: 'The token' + (tok ? ': ' + relicRow(tok)!.name : ''), detail: tok ? relicRow(tok)!.text + ' Uses ' + worthOf(tok) + ' boon room; you have ' + capRoom(c) + '.' : 'A small blessing for the run.', price: 0, why: shrineProblem(g, c, 'token'), action: { type: 'run/shrine', charId, choice: 'token' } });
   }
   if (k === 'event') for (const id of h.v.trades || []) {

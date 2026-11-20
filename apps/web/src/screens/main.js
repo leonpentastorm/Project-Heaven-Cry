@@ -28,7 +28,7 @@ import { weaponActions, verdictFor, markFor, ADVANCED, collectionOf, COMPANION_K
 import { doorEmblemOf, classPortraitOf, moveIconOf, uiMarkOf } from '../game/doorArt';
 import { usesLine, emblemOf, classMoves as classMovesOf, advancedMoves, attributeProgress, classLabel, heldClassId } from '../game/classView';
 import { castFight, castMany, npcFace, npcTags, takenCards } from '../game/cast';
-import { SIGIL, SCHOOL, MODULE, maxSigilWords, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, hasMpFocus, carriesEvoker, carriesEmanator, focusHand, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
+import { SIGIL, SCHOOL, MODULE, maxSigilWords, MAX_GLYPHS, wordsKnownCap, evoChargeNow, coresCarried, hasEvoker, hasEmanator, hasMpFocus, carriesEvoker, carriesEmanator, focusHand, FOCUS_IDS, NEEDS_EVOKER, NEEDS_EMANATOR, mpNow, strainLimit, moduleSlots, readyDesigns, glyphAp, soulCostSaving, soulCastAp, soulRangeBonus,
   magicOf, designCost, designAp, designRange, manaBand, MANA_START, fluxMaxOf, CORE_CHARGE, storyCb, previewEvoke, previewOutburst, spellTargets, dist, standable, condName,
   vent as mgVent, swapCore as mgSwapCore, scuff as mgScuff, syphon as mgSyphon, SYPHON_DRAW, crystallise as mgCrystallise, drawGlyph, releaseOutburst, glyphApOf } from '@engine';
 import { glyphUri, scratchUri, heartUri, joinUri, starUri, SIGIL_INK, SOUL_INK } from '../game/glyphs';
@@ -211,7 +211,9 @@ function magicVals(self, g, c) {
     canFree: canFree && !fight, freeLabel: picking === 'free' ? 'Close' : 'Take a free word (' + GV.free + ')', openFree: () => self.setState({ mgLearn: picking === 'free' ? null : 'free' }),
     why: studyWhy, hasWhy: !!studyWhy, picking: !!picking, pickHead: picking === 'free' ? 'A FREE WORD (MASTERY): IT IGNORES THE CAP' : 'LEARN A WORD · ' + GV.known + ' / ' + GV.cap + ' KNOWN', pick: pickWs,
     hasToStudy: GV.toStudy.length > 0, toStudy: GV.toStudy.filter((x) => SIGIL[x]).map((id) => ({ key: id, word: SIGIL[id].word, img: glyphUri(id, SIGIL_INK), title: SIGIL[id].text })) };
-  const sigStats = [['Line length', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (for old words that were retired)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', evoC ? N.charge + ' / ' + CORE_CHARGE + ' · ' + handShort(evoAt) : handShort(evoAt)],
+  // rules 1.89 (outside playtest 0.32.0: "Line length 5" beside Overclock's "already 4"): a Line holds at most
+  // MAX_GLYPHS whatever Max Sigil words is; Max Sigil words itself is how many of your glyphs stand on the ground (rules 1.4)
+  const sigStats = [['Line length', String(Math.min(MAX_GLYPHS, maxSigilWords(c)))], ['Glyphs on the ground', String(maxSigilWords(c))], ...(c.sigilFree ? [['Free words owed (for old words that were retired)', String(c.sigilFree)]] : []), ['Known words', words.length + ' / ' + wordsKnownCap(c)], ['Evoker', evoC ? N.charge + ' / ' + CORE_CHARGE + ' · ' + handShort(evoAt) : handShort(evoAt)],
     ['Spare cores', String(N.cores)], ['Flux', ((fmax) => N.flux + ' / ' + fmax + (N.flux >= fmax - 1 ? ' · vent soon' : ''))(fluxMaxOf(N.cu || c, N.cu ? g.combat : null, g))], ['Glyph AP', String(glyphAp(c))]].map(([k, v]) => ({ k, v }));
   // Outbursts: MP, Strain, the designs ready, and the heart workshop.
   const mpMax = maxMp(c), mpPct = Math.round(N.mp / Math.max(1, mpMax) * 100);
@@ -647,6 +649,8 @@ export class MainLogic extends DCLogic {
           else if (def.slot === 'off_hand') acts.push({ key: 'o', label: 'Off hand', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'off' }) });
           else if (def.category === 'armour') acts.push({ key: 'w', label: 'Wear', go: () => act({ type: 'gear/equip', charId: c.id, idx: pi, to: 'worn' }) });
           else if (def.category === 'mod') acts.push({ key: 'f', label: 'Fit', go: () => act({ type: 'gear/mod', charId: c.id, idx: pi }) });
+          // rules 1.89 (outside playtest 0.32.0): special rounds load into the gun out of a fight (gear/ammo; the engine refuses in words)
+          else if (it.calibre && it.ammoType && g.phase !== 'combat') acts.push({ key: 'l', label: 'Load into the gun', go: () => act({ type: 'gear/ammo', charId: c.id, ammo: it.ammoType }) });
           else if (it.kind === 'plot') { // a plot item: hand it to someone in the party, or drop it
             Object.values(g.characters).filter((x) => x.id !== c.id && !x.dead).forEach((x) => acts.push({ key: 'g' + x.id, label: 'Give to ' + x.name, go: () => act({ type: 'gear/give', charId: c.id, idx: pi, to: x.id }) }));
             acts.push({ key: 'd', label: 'Drop', go: () => act({ type: 'gear/drop', charId: c.id, idx: pi }) }); }

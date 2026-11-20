@@ -729,7 +729,8 @@ function techPreviewOf(x: DescCtx, t: { hand: string; id: string; item?: string 
   const name = (id: string) => x.seen.units.find((v) => v.id === id)?.name || id;
   const lines: PreviewLine[] = [];
   // rules 1.58 (F-c): the off hand's follow strike is the engine's own entry (follow: true), its second line: "then Buckler · 47% · 4"
-  const dmgOf = (q: any) => (q.dmg && q.dmg.total != null ? ' · ' + Math.floor(q.dmg.total) + ' damage' : '');
+  // rules 1.89 (outside playtest 0.32.0: a ranged Break read 80 and dealt 75): the target's armour as the attack card says it
+  const dmgOf = (q: any) => (q.dmg && q.dmg.total != null ? ' · ' + Math.floor(q.dmg.total) + ' damage' + (q.dmg.armour ? ' − armour ' + q.dmg.armour : '') : '');
   for (const a of pv.attacks || []) { const q: any = a.pv; if (!q) continue;
     if (a.follow) lines.push({ k: 'odds', text: 'then ' + (WEAPON[a.item]?.name || 'the off hand') + ' · ' + (q.ok ? q.pct + '%' + dmgOf(q) : /reach/i.test(q.why || '') ? 'out of reach' : q.why || 'can\'t follow') });
     else lines.push({ k: 'odds', text: name(a.target) + ': ' + (q.ok ? 'hit ' + q.pct + '% · need ' + q.need + dmgOf(q) : q.why || 'can\'t attack') }); }
@@ -949,8 +950,12 @@ const MAGIC: ActionSystem = {
     const out: ActionDescriptor[] = [scuffRow], evoWhy = mg.evoker ? null : NEEDS_EVOKER, emaWhy = mg.emanator ? null : NEEDS_EMANATOR, sypWhy = mpHeld ? null : NEEDS_MP_FOCUS;
     const apNote = (a: 'vent' | 'core', n: number) => { const base = SPELL_AP[a]; return n < base ? (a === 'vent' ? ' Bleed the Flux' : 'Core Change') + ' lowers the cost from ' + base + ' to ' + n + ' AP. ' : ''; };
     if (words.length || mg.evoker) {
-      const gAp = glyphApOf(u), vAp = safe(() => ventAp(u, cb), SPELL_AP.vent), cAp = safe(() => coreAp(u, cb), SPELL_AP.core);
-      const wordOpts = words.map((w) => { const p: any = safe(() => withGame(x.g, () => previewDraw(cb, u, w, u.pos)), { ok: false, why: 'Not now.' } as any); return { id: w, label: w.toUpperCase(), why: p.ok ? null : p.why || 'Not now.' }; });
+      const vAp = safe(() => ventAp(u, cb), SPELL_AP.vent), cAp = safe(() => coreAp(u, cb), SPELL_AP.core);
+      const drawPv = words.map((w) => safe(() => withGame(x.g, () => previewDraw(cb, u, w, u.pos)), { ok: false, why: 'Not now.' } as any) as any);
+      const wordOpts = words.map((w, i) => { const p = drawPv[i]; return { id: w, label: w.toUpperCase(), why: p.ok ? null : p.why || 'Not now.' }; });
+      // rules 1.89 (outside playtest 0.32.0: Draw read 0.8 AP and spent 0.3 under Running Hand II): the row's AP is the
+      // glyph's own price now (previewDraw: the glyph_cost hook's discounts), the first word that can be drawn
+      const gAp = drawPv.find((p) => p.ok)?.cost?.ap ?? glyphApOf(u);
       out.push(D('draw', 'sigils', 'Draw a glyph', gAp, apT(gAp), 'Pick a word on the glyph keyboard, then click your own tile. A tile holds one glyph. Step and draw again to walk a Line of 2 to 4 glyphs in a straight row. Each glyph costs its word\'s charge from your Evoker and adds its Flux.', evoWhy,
         { picks: [{ key: 'word', kind: 'option', renderer: 'glyph-keyboard', prompt: 'Pick a word.', options: wordOpts }, { key: 'stroke', kind: 'custom', renderer: 'stroke', prompt: 'Which stroke it goes into.', optional: true }, { key: 'tile', kind: 'tile', prompt: 'Click your own tile to draw.', choices: [u.pos], auto: true }], preview: 'sigil' }));
       out.push(D('evoke', 'sigils', 'Evoke', SPELL_AP.evoke, apT(SPELL_AP.evoke), 'Fire a Line of glyphs. It needs a Subject and at least one other word. Where you stand aims it: from an end, it fires along the Line; from the side, across it. Charge ' + mg.charge + '/' + coreChargeOf({ u, cb }) + '.', evoWhy,

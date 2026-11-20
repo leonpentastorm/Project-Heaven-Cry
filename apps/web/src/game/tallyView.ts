@@ -8,7 +8,7 @@ export interface TallyV { scope: 'fight' | 'stage' | 'run'; caption: string; rou
 /** The columns, in order: the heading and the row's field. */
 export const TALLY_COLS: { head: string; key: 'dealt' | 'taken' | 'healed' | 'absorbed' | 'kills' | 'downs'; tip: string }[] = [
   { head: 'Dealt', key: 'dealt', tip: 'Damage dealt to foes' }, { head: 'Taken', key: 'taken', tip: 'Damage taken' }, { head: 'Healed', key: 'healed', tip: 'HP of healing given to the squad' },
-  { head: 'Soaked', key: 'absorbed', tip: 'Damage the character\'s shield soaked' }, { head: 'Kills', key: 'kills', tip: 'Foes dropped' }, { head: 'Downs', key: 'downs', tip: 'Times the character went down' },
+  { head: 'Soaked', key: 'absorbed', tip: 'Damage the character\'s shield, armour and Guard plates soaked' }, { head: 'Kills', key: 'kills', tip: 'Foes dropped' }, { head: 'Downs', key: 'downs', tip: 'Times the character went down' },
 ];
 /** A tally as table rows, in the squad's order. */
 export function tallyView(t: FightTally, scope: TallyV['scope'], caption: string): TallyV {

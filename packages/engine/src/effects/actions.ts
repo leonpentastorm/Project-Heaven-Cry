@@ -155,7 +155,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
       run: (h, args, rng) => {
         if (g.prayer && h.cb && h.u && PRAYER && !PRAYER.pray(h.cb, rng, h.u, g.prayer, info.name, g.tier)) return null; // no answer: the AP and the slot are spent
         const t = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) || null : null;
-        if (rest.length || (!mine.length && !acts)) defaultRun(h, rest, args, rng); // rules 1.33: a grant whose effects are all `when: acted` (lifted onto the item) is the engine's: no Narrator note
+        if (rest.length || (!mine.length && !acts)) defaultRun(h, rest, args, rng, typeof g.label === 'string' ? g.label : undefined); // rules 1.33: a grant whose effects are all `when: acted` (lifted onto the item) is the engine's: no Narrator note
         if (mine.length && h.cb && h.u) runOwnEffects(h, mine, { u: h.u, t, action: id, tile: args.tile || null, toggles: [], mode: null, ...(args.choice != null ? { choice: args.choice } : {}), ...(rng ? { rng } : {}) }); // the action's own rng (rules 1.86: an enemy's door verb runs outside a bound game in a bare fight)
         return null;
       },
@@ -195,7 +195,7 @@ export function defaultActions(info: ItemInfo): ActionDef[] {
 }
 
 /** Run what the generic runners can, and give the Narrator the rest. Returns null (never refuses). */
-function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: number }): null {
+function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: number }, name?: string): null {
   let line = '', rest = false;
   for (const e of effs) {
     const g = genericOf(e?.op);
@@ -203,7 +203,8 @@ function defaultRun(h: Holder, effs: any[], args: ActionArgs, rng: { state: numb
     else rest = true;
   }
   const who = h.u?.name || h.c?.name || 'Someone', tgt = args.targetId && h.cb ? h.cb.units.find((x) => x.id === args.targetId) : null;
-  const what = who + ' uses ' + h.info.name + (tgt ? ' on ' + tgt.name : '') + (args.text ? ': "' + args.text.slice(0, 200) + '"' : '') + line + '.';
+  // rules 1.89 (outside playtest 0.32.0: Challenge said "uses Guard"): a grant with its own label is named by it
+  const what = who + ' uses ' + (name || h.info.name) + (tgt ? ' on ' + tgt.name : '') + (args.text ? ': "' + args.text.slice(0, 200) + '"' : '') + line + '.';
   if (h.cb) say(h.cb, what);
   const ask = (tgt ? 'on ' + tgt.name + '. ' : '') + (args.npc ? 'with ' + args.npc + '. ' : '') + (args.text ? '"' + args.text.slice(0, 160) + '" ' : '') + h.info.text;
   if (!h.cb) { const eid = postStory(h, (args.npc ? args.npc + ': ' : '') + (args.text || 'uses ' + h.info.name + '.')); const g = h.g ?? boundGame(); if (g && h.c) pendRuling(g, h.c, h.key, ask, eid || undefined); }

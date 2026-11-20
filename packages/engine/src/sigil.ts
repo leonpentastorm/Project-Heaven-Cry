@@ -1402,7 +1402,7 @@ export function patternAt(cb: Combat, tile: string, u?: Unit | null, stroke?: st
     words, shape: typeof p === 'string' ? (comp.length ? 'none' : null) : p.shape, tiles: typeof p === 'string' ? comp : p.tiles, valid: !why, why: why || null,
     side: start?.side || null, readable: !!u && words.every((w) => u.mg?.words.includes(w)),
     capLeft: u ? Math.max(0, groundCap(u, cb) - mine) : 0, lineLeft: Math.max(0, Math.min(MAX_GLYPHS, m?.maxWords ?? MAX_GLYPHS) - words.length),
-    costNow: { charge: m?.charge ?? 0, ap: u?.ap ?? 0, flux: m?.flux ?? 0 }, costAfter: { charge: (m?.charge ?? 0) - charge, ap: (u?.ap ?? 0) - SPELL_AP.evoke, flux: m?.flux ?? 0, evokeCharge: charge },
+    costNow: { charge: m?.charge ?? 0, ap: u?.ap ?? 0, flux: m?.flux ?? 0 }, costAfter: { /* rules 1.89 (outside playtest 0.32.0: "Charge 0 → -1"): never below 0; `short` is what the Evoker lacks */ charge: Math.max(0, (m?.charge ?? 0) - charge), short: Math.max(0, charge - (m?.charge ?? 0)), ap: (u?.ap ?? 0) - SPELL_AP.evoke, flux: m?.flux ?? 0, evokeCharge: charge },
     overloadWarning: !!m && !!u && m.flux >= fluxMaxOf(u, cb) ? 'Your Evoker is at ' + m.flux + ' Flux: the next glyph overloads it. Vent first (1 AP).' : null,
     spell: typeof p === 'string' || why ? null : compileSpell(p.words),
     /** Rules 1.10: the stroke under the tile (its id, tiles in the order drawn, who started it); null for an old 1.4 glyph. */

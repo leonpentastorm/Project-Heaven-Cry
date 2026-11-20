@@ -521,7 +521,7 @@ const blessingAgain = (cb: Combat, rng: Rng, by: Unit, t: Unit, bl: any, power: 
 // Sigil Savant (trait). Muscle Memory: one chosen word (c.state.sigil_savant.word, set once with the Perks action)
 // draws for 0 charge and 1 AP less (floor 0.5); it still adds 1 Flux and Evoke's charge is still paid (plan 6a-19).
 // Rigid: you only draw words you practised at your last long rest, at most Max Sigil words (plan 6a-19: teeth), plus
-// the Muscle Memory word. Until the first long rest every known word counts as practised. Both actions work in a Survival
+// the Muscle Memory word. Until the first long rest (since rules 1.89: or the first fight) every known word counts as practised. Both actions work in a Survival
 // run too (row 16 of the outside playtest: a run's rest node is a long rest, so Rigid bit there while both were refused).
 // =====================================================================================================================
 const knownWords = (c: Character) => [...new Set([...(c.sigils || [])])];
@@ -561,6 +561,12 @@ register({
     },
     rest: (ctx, h) => {
       const c = charOf(h); if (!c || ctx.kind !== 'long' || !(ctx.chars || []).some((x: Character) => x.id === c.id)) return;
+      const st = savant(c); if (!Array.isArray(st.practised)) st.practised = knownWords(c).slice(0, Math.floor(maxSigilWords(c)));
+    },
+    // rules 1.89 (outside playtest 0.32.0: words learned mid-run drew freely before any rest): with no rest yet, the
+    // first fight fixes the practised list (the words known as the mission began); a word learned later waits for a rest
+    combat_start: (_ctx, h) => {
+      const c = charOf(h); if (!c || !h.u) return;
       const st = savant(c); if (!Array.isArray(st.practised)) st.practised = knownWords(c).slice(0, Math.floor(maxSigilWords(c)));
     },
   },

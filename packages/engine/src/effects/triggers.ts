@@ -504,7 +504,7 @@ O('mend', ANY, true, ['amount', 'layer', 'holders'], 'heal or shield by an amoun
   const r = mend(ev.cb, ev.self, t, { ...specOf(b), kind: b.kind }, { who: ev.h.c || null, healKind: b.heal_kind || 'perk', counts: countsOf(ev, b), ...(typeof e.layer === 'string' ? { layer: e.layer, ...(typeof e.holders === 'number' ? { holders: e.holders } : {}) } : {}) });
   return mendShown(ev.cb, t, b.kind, r);
 });
-O('displace', ANY, true, ['tiles', 'how', 'to', 'willing', 'boss_tiles'], 'push the target away from the holder (how: push) or pull it closer (pull); willing: true, the target comes of its own will (Tug on an ally: no forced-move refusal, the friend rule of the field included); boss_tiles: how far a Boss of the other side goes (rules 1.86 item 7405; absent, a Boss holds: rules.json forced_movement.boss_holds); to: "cover", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy\'s view first (Shadow\'s Fade, rules 1.32): no tile, nothing happens; to: "tile" (rules 1.33, Guide) moves it, willing, to the event\'s tile when that is at most `tiles` from it (how: guide); with no target named it is the holder that steps there (Shadow\'s Vault, rules 1.32)', (ev, e) => {
+O('displace', ANY, true, ['tiles', 'how', 'to', 'willing', 'boss_tiles'], 'push the target away from the holder (how: push) or pull it closer (pull); willing: true, the target comes of its own will (Tug on an ally: no forced-move refusal, the friend rule of the field included); boss_tiles: how far a Boss of the other side goes (rules 1.86 item 7405; absent, a Boss holds: rules.json forced_movement.boss_holds); to: "cover", the unit (the self unless target: is named) steps of its own will onto the nearest free tile next to standing cover within tiles (default its Movement), one out of every enemy\'s view first (Shadow\'s Fade, rules 1.32): no tile, nothing happens; to: "tile" (rules 1.33, Guide) moves it, willing, to the event\'s tile when that is at most `tiles` from it (how: guide); with no target named it is the holder that steps there (Shadow\'s Vault, rules 1.32)', (ev, e, label) => {
   if (e.to === 'cover') return toCover(ev, pick(ev, e), e);
   const t = pick(ev, e); if (!t) return;
   // to: "tile" moves the target (Guide, rules 1.33) or the holder itself (Shadow's Vault, rules 1.32: the one primitive for both)
@@ -515,6 +515,9 @@ O('displace', ANY, true, ['tiles', 'how', 'to', 'willing', 'boss_tiles'], 'push 
   // the row's say follows what happened (0.29.0 playtest: "Boss flies." over a Boss that never moved): a refused move says
   // the refusal in the forced move's own words (as magic.ts magicShove), a move that went nowhere says nothing
   if (!mv.moved && !ev.preview) { if (mv.stoppedBy === 'immune' || mv.stoppedBy === 'held' || mv.stoppedBy === 'nailed') say(ev.cb, t.name + ' holds its ground' + (mv.why ? ' (' + mv.why + ')' : '') + '.'); return false; }
+  // rules 1.89 (outside playtest 0.32.0: Slam's push went unsaid): a push or pull whose row has no `say` of its own says
+  // the move in a line, as `deal` says its blow
+  if (!e.say && mv.moved && !ev.preview) say(ev.cb, label + ': ' + t.name + ' is ' + (how === 'pull' ? 'pulled ' : 'pushed ') + mv.moved + ' tile' + (mv.moved === 1 ? '' : 's') + (mv.text || '') + '.');
   return mv.text || '';
 });
 O('zone', ANY, true, ['kind', 'at', 'within', 'rounds', 'pool', 'clear'], 'lay a zone the holder owns (P10): kind (a data zone kind: magic.ts DATA_ZONE_KINDS), at (self, target or tile: the event\'s), within (its radius: a square), rounds, pool (what it has to give); clear: true ends the holder\'s zones of that kind (nothing said when it had none)', (ev, e) => {

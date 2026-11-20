@@ -161,7 +161,10 @@ export class LevelUpLogic extends DCLogic {
     const forkPend = (id) => { const v = (() => { try { return doorForkView(c, id); } catch { return null; } })(); return v ? v.steps.filter((s) => s.pending) : []; };
     const skillRow = (s) => {
       const p = c.skills[s.id] || 0, a = ATTR[s.attr], ink = a.ink, why = canRaise(c, 'skill', s.id), x = pend[s.id], fp = forkPend(s.id);
-      const nxt = nextLine(s.id, p, c), [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
+      // rules 1.89 (outside playtest 0.32.0: Raw Power 7's row read "Spill or Headlong" beside the level-4 fork's chip):
+      // the line is the NEXT point's, so a fork it names says its points ("At 8: ...")
+      const nxt0 = nextLine(s.id, p, c), forkNext = (() => { try { const st = roadMap(s.id, c).steps[p]; return !!st && st.lines.some((l) => l.kind === 'fork'); } catch { return false; } })();
+      const nxt = nxt0 && forkNext ? 'At ' + (p + 1) + ': ' + nxt0 : nxt0, [tag, slotWords] = SLOT_WORD[s.slot] || ['', ''];
       // a refused +1: its reason on this row only, with a way to fix it when an Attribute point would ("Raise Agility")
       // the need is the engine's structure (raiseNeed, rules 1.71 item 5606), never its sentence read back
       const needAttr = !!raiseNeed(c, 'skill', s.id) && !!c.unspent.attr && !canRaise(c, 'attr', a.id);
