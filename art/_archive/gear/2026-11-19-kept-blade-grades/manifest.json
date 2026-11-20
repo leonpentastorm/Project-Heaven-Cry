@@ -10130,6 +10130,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-rig_belt--celestial",
+      "path": "art/icons/gear/armour-rig_belt--celestial.png",
+      "sha256": "a05265c9886c3d7e5ee32219b449a8188a72911bcca9da24174cb6326473ce6b",
+      "label": "Rig belt — Celestial",
+      "family": "armour-rig_belt",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-rig_belt--celestial.png",
+        "sha256": "971495dc32c118dd69842839d0b011e2aa46e052d0c871e7934ef4e4e48e2308"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-rig_belt--celestial.png",
+        "sha256": "a05265c9886c3d7e5ee32219b449a8188a72911bcca9da24174cb6326473ce6b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-rig_belt--celestial.txt",
+        "sha256": "8f7064d297f29104b01c104d9872b9b7c592d02eed2ee275d47b8c0e20cc334c"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-19-kept-blade-grades/attempts/armour-rig_belt--celestial/v1/source.png",
+          "sha256": "c806760bc4bc5e881f58e722041daca2dd76e89dde9135ef5afdb2e23858b5a7"
+        },
+        {
+          "path": "art/icons/gear/armour-rig_belt.png",
+          "sha256": "44bd233e33a7f498cb19cd94101e71a0e5e1cbbdb12c4a1e9a60d4b656a63269"
+        },
+        {
+          "path": "art/icons/gear/armour-rig_belt--relic.png",
+          "sha256": "dfb1c1918d806fb46823ba1c891f68cd1a0cb3f4f42fb7ab365ff3ddc62a7499"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-rig_belt--celestial.png",
+        "128": "art/icons/gear/exports/128/armour-rig_belt--celestial.png",
+        "64": "art/icons/gear/exports/64/armour-rig_belt--celestial.png",
+        "32": "art/icons/gear/exports/32/armour-rig_belt--celestial.png"
+      },
+      "export_hashes": {
+        "256": "2b81bee3d25759b9a2250c828ab42a5c2935fc28d548fd6ef14cd47be1453c34",
+        "128": "603324570f3898ea05ca77782aa5e5da1b4583d58db0dc06621f9292c75afad9",
+        "64": "88ada3d9b84519f4c2609b9346109e10ca501ab0e603c2ac89b190f4efa4102e",
+        "32": "3f97a8217ff89e27cbe9d6206d36c8f53692e9d9c95e84bcfdceb4bf053efd05"
+      },
+      "grade": "celestial",
+      "standard_id": "armour-rig_belt",
+      "outline": {
+        "solid_alpha_iou": 0.954979873355147,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 54
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
