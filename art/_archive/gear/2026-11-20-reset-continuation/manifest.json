@@ -5565,6 +5565,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-pitch_axe--relic",
+      "path": "art/icons/gear/weapon-pitch_axe--relic.png",
+      "sha256": "219b5cf055b455311d90158b0f61751fbe274c5ca37a844f7b6fe9f82194afdf",
+      "label": "Pitch Axe — Relic",
+      "family": "weapon-pitch_axe",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-pitch_axe--relic.png",
+        "sha256": "208ecb37733b9225af0a9f1685e5a2639e8487e93c148747e9ded0b6f108d970"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-pitch_axe--relic.png",
+        "sha256": "219b5cf055b455311d90158b0f61751fbe274c5ca37a844f7b6fe9f82194afdf"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-pitch_axe--relic.txt",
+        "sha256": "a3e57c604d161c0cde549511d5cca666956e91069d3318d3db1e98ca84a4d183"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-pitch_axe.png",
+          "sha256": "764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b"
+        },
+        {
+          "path": "art/icons/gear/weapon-pitch_axe--masterwork.png",
+          "sha256": "81527455654aa025bce0e219096658a87d2f76e023221acc66ddc03707ac14c8"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png",
+          "sha256": "22b4dc28c0c3d3f7945546bd3a752c11fcce29798618561b279ad238784a078c"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-pitch_axe--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-pitch_axe--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-pitch_axe--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-pitch_axe--relic.png"
+      },
+      "export_hashes": {
+        "256": "5a6a1147dd4675af3e1b3e8bcd25edd54b943124f8a1e13630dc679fb90680be",
+        "128": "463e71834ab8d25831af9cb5a6b4e2d5082b7380ac36ab2510611d02c5f6b5f8",
+        "64": "e71901e39db1252bee3f7526ce35843269fe727a8706bdedb99cb8bd20587945",
+        "32": "f0d91d648d9897b177dd97d38d395a5da6c5ea1fbb15d6e506f6e38f4b7941ce"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-pitch_axe",
+      "outline": {
+        "solid_alpha_iou": 0.9375659215406077,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 24
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
