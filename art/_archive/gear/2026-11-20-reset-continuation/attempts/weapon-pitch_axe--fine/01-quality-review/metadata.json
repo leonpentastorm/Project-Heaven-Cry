@@ -1,0 +1,47 @@
+{
+  "id": "weapon-pitch_axe--fine",
+  "job": {
+    "id": "weapon-pitch_axe--fine",
+    "standard_id": "weapon-pitch_axe",
+    "grade": "fine",
+    "label": "Pitch Axe \u2014 Fine",
+    "path": "art/icons/gear/weapon-pitch_axe--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-pitch_axe.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-pitch_axe",
+    "family_references": [
+      "art/icons/gear/weapon-pitch_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.\n\nGrade: Fine. The same weapon, newly kept. The head is cleaned of grime, its cutting edge, point or striking face bright; the haft is oiled smooth, its bands and wraps tightened. Add one thin engraved line on the cheek of the head that follows the head's own outline a little inside it. Nothing else is added.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork uses bright brass inlay on the existing axe cheek line. Keep one flared bit and one short rear spike; no second blade or crossing head. The haft stays straight walnut with its original diameter. No feather, bead, tribal motif or extra hardware. Remove surface rust, dents and old scratches, while keeping actual jags, nails, notches and seams. No added ornament, patch or repair at these grades.",
+    "keep_line": "the same narrow blackened steel axe head with a single flared cutting bit on the left and one short squared rear spike, riveted socket collar, long straight slim brown walnut haft, brown leather spiral grip wrap and small rounded metal butt knob. Preserve the exact connected head/socket/shaft alignment, bit shape, rear spike angle, collar rivet, shaft length and grip turns.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-20-reset-continuation",
+    "reference_sources": [
+      "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-pitch_axe.png"
+    ]
+  },
+  "preflight": {
+    "id": "weapon-pitch_axe--fine",
+    "peer": "70cb66f7621ccc3f295e3d76b77b945c0a48eafe",
+    "latest_comment": 7031713947,
+    "run": "reset-20261120-165ac7984341"
+  },
+  "clock": {
+    "current_time": "2026-11-20 05:53:00 UTC"
+  },
+  "source_original": "/workspace/generated_images/exec-a7e923bf-0296-45d3-88e1-d2935c180d91.png",
+  "source_path": "art/_archive/gear/2026-11-20-reset-continuation/attempts/weapon-pitch_axe--fine/01-quality-review/native.png",
+  "sha256": "34b04eccab8ee4f2caaab8e78e9aa723a1364b11602ff46a902ae15235948793",
+  "status": "unselected-quality-review",
+  "review_note": "Fine axe cheek line is already brass/gold inlay rather than an uncoloured engraved incision.",
+  "reference_hashes": {
+    "art/icons/gear/weapon-pitch_axe.png": "764c878300209ab68ed19c7784ac79f6c47ec343fec81b7c229f288fb356213b",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  }
+}
