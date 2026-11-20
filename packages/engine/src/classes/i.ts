@@ -52,7 +52,7 @@ import { condMods } from '../condtable';
 const inFight = (h: Holder) => !!h.cb && !!h.u && !overworld(h.cb);
 const myTurn = (h: Holder) => !!h.cb && !!h.u && h.cb.order[h.cb.turn] === h.u.id && !h.cb.window;
 const foeOf = (a: Unit, b: Unit) => a.side !== b.side;
-import { isBoss } from '../combat'; // one reading of a Boss (rules.json bosses)
+import { isBoss, meleeReachOf } from '../combat'; // one reading of a Boss (rules.json bosses)
 /** Story-level item state (outlives fights: inscriptions, stored spells, a Gift, an Inspire waiting for its roll). */
 function keep(h: Holder): Record<string, any> {
   const g = h.g, id = h.c?.id || h.u?.charId; if (!g?.story || !id) return {};
@@ -275,7 +275,7 @@ register({
 // Momentum (0-5): +1 per melee hit (combat.ts); it carries from turn to turn, a Finisher spends it, and it is gone after
 // the fight (units are rebuilt). Lunge's handler adds the other half: +1 per tile closed on the target since the turn began, counted at
 // the first melee attack, at most +2 a turn (PROVISIONAL reading of "toward a target"); Lunge's own tiles don't count.
-const reachOf = (u: Unit) => { const w: any = WEAPON[u.weapon]; if (!w || !isMelee(w)) return 1; return (w.properties || []).includes('reach_2') || w.id === 'lance' || w.grants?.effect?.op === 'reach' ? (w.grants?.effect?.op === 'reach' ? w.grants.effect.value : 2) : 1; };
+const reachOf = (u: Unit) => (WEAPON[u.weapon] ? meleeReachOf(u, 'melee') : 1); // rules 1.91 item 7913: the one reach reader (combat.ts)
 const meleeAp = (u: Unit) => attackApCost(isMelee(WEAPON[u.weapon]) ? WEAPON[u.weapon] : WEAPON.fists, 'melee');
 /** Where to stand for a Lunge on t: the reachable tile within 2 (path) in melee reach of t, the shortest walk first. */
 function lungeTile(cb: Combat, u: Unit, t: Unit): string | null {

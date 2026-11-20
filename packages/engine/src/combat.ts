@@ -1404,12 +1404,13 @@ export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: n
 /** 'thrown' (rules 1.12): the held weapon is thrown: a ranged attack at throwing range with line of sight and cover,
  * whatever the weapon is; no rounds, Heat or Recoil. Only a technique makes one (physical/core.ts strike). */
 export type AttackMode = 'shot' | 'aimed' | 'melee' | 'burst' | 'auto' | 'thrown';
-/** A melee strike's reach in tiles before items change it: 2 for a weapon with reach_2, the lance, the Reach property
- * (rules 1.12: for a melee strike) or a reach weapon skill; else 1. The one place the rule is written (previewAttack
- * and the red area the client draws, actions.ts reachOf, both ask here). */
+/** A melee strike's reach in tiles before items change it: 2 for a weapon with the Reach property (phys.props `reach`;
+ * rules 1.12: for a melee strike) or the older `reach_2` (debt, rules 1.91 item 7913), or what its granted `reach` effect
+ * says; else 1. No id is tested. The one place the rule is written (previewAttack, the red area the client draws,
+ * actions.ts reachOf, and the perks that ask a unit's reach: Lunge, the Breaker's Lunge tile, all ask here). */
 export function meleeReachOf(att: Unit, mode: AttackMode): number {
   const w = WEAPON[att.weapon], useW = strikeWeapon(att, mode), fx: any = (w as any).grants?.effect || {};
-  return useW.properties?.includes('reach_2') || useW.id === 'lance' || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1;
+  return useW.properties?.includes('reach_2') || (mode === 'melee' && (useW as any).phys?.props?.includes('reach')) || (useW === w && fx.op === 'reach') ? (fx.op === 'reach' && useW === w ? fx.value : 2) : 1;
 }
 /** Range bands an optic adds against units: the gun's `bands` field with its mods' (rules 1.56: a red dot always; a
  * scope on an aimed shot, its `bands_modes`). */

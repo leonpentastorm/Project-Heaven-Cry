@@ -7,10 +7,10 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { type GameState, apply, RuleError, WEAPON, ITEM, VARIANT_MOD, RULES, RARITY, GRADES, SOLD_GRADES, gradeWord, isGrade, priceOf, packOf, setGrade,
   itemTags, itemsWith, tagOf, hasTag, itemFamilyOf, familyForm, fixedGradeOf, FAMILY, ITEM_TAG_KINDS, expandVariants, lootToPack, rolledGear, archetypeWeapons,
-  weaponTeaches, statQuery, bindGame, holds } from '../src';
+  weaponTeaches, statQuery, bindGame, holds, armPenalty, meleeReachOf } from '../src';
 import variantsJ from '../../../data/variants.json';
 import svJ from '../../../data/survival.json';
-import { storyWith } from './helpers/perkfight';
+import { storyWith, fightWith } from './helpers/perkfight';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import type { Pc } from './helpers/replay';
 
@@ -122,6 +122,7 @@ const FIX = { kinds: (variantsJ as any).kinds, items: [{ id: FIX_ID, name: 'Test
 const DUO: Pc[] = [{ build: 'plain_gun', level: 1 }, { build: 'sigil', level: 1 }];
 const refused = (g: GameState, a: any, by = 'host') => { try { apply(g, a, by); } catch (e) { expect(e).toBeInstanceOf(RuleError); return (e as Error).message; } throw new Error('expected a refusal: ' + a.type); };
 const clone = (g: GameState): GameState => JSON.parse(JSON.stringify(g));
+const W = <T,>(g: GameState, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
 
 describe('rules 1.91 item 7917: the unique-ready variants line (a test-only fixture row; zero uniques ship)', () => {
   beforeAll(() => {
@@ -174,5 +175,24 @@ describe('rules 1.91 item 7917: the unique-ready variants line (a test-only fixt
     expect(refused(g, { type: 'run/upgrade', charId: 'c1', where: 'main', place: 'forge' })).toBe('The Test Teeth\'s grade is its own: no armourer changes it.');
     const c = clone(g).characters.c1;
     expect(setGrade(c, 'main', 'celestial')).toBe('Its grade is its own: Relic.');
+  });
+});
+
+describe('rules 1.91 items 7911 to 7914: the two intended changes', () => {
+  it('one-handed is the row\'s hands: an off-arm injury costs a one-handed weapon nothing, a two-handed one -2', () => {
+    const f = fightWith([{ kit: 'soldier' }], [{ tier: 'soldier' }]), u: any = f.pc;
+    W(f.g, () => {
+      u.hand = 'right'; u.injuries = [{ loc: 'arm', side: 'left' }];
+      for (const id of ['ork_machete', 'legion_pdw', 'sawn_off', 'spellslinger_pistol', 'evoker_blade', 'emanator_gauntlet', 'emanator_katana', 'sabre']) expect(armPenalty(u, WEAPON[id]), id).toBe(0);
+      for (const id of ['maul', 'hellraiser_service_rifle']) expect(armPenalty(u, WEAPON[id]), id).toBe(-2);
+      u.injuries = [{ loc: 'arm', side: 'right' }];
+      expect(armPenalty(u, WEAPON.ork_machete)).toBe(-2);
+    });
+  });
+  it('one reach reader: the Reach property, the older reach_2, no id; the grand staff and the banner reach 2', () => {
+    const f = fightWith([{ kit: 'soldier' }], [{ tier: 'soldier' }]), u: any = f.pc;
+    W(f.g, () => {
+      for (const [id, r] of [['lance', 2], ['glaive', 2], ['grand_staff', 2], ['bot_thread_banner', 2], ['sabre', 1], ['service_pistol', 1]] as const) { u.weapon = id; expect(meleeReachOf(u, 'melee'), id).toBe(r); }
+    });
   });
 });
