@@ -3394,7 +3394,13 @@
     "keep_line": "the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.",
     "status": "pending",
     "production_approved": false,
-    "depends_on": null
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-coach_gun--fine--1795145382032.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-coach_gun--fine--1795145382032.json",
+      "request_id": "0b871811-e0f7-4ca2-8e0c-a17b60e564d8"
+    }
   },
   {
     "id": "weapon-coach_gun--masterwork",
