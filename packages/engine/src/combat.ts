@@ -1925,13 +1925,13 @@ export function contactCheck(cb: Combat, rng: Rng, o: { acting?: boolean } = {})
   joinFight(cb, rng, by); return true;
 }
 /** Rules 1.82 item 7004 (rules.json combat.initiative.surprise_round): a surprise in the approach. Its switch, its log lines. */
-export const SURPRISE: { on: boolean; lines: { side: string; immune: string; ap: string } } = { on: !!(RULES as any).combat.initiative.surprise_round?.on, lines: (RULES as any).combat.initiative.surprise_round?.lines || { side: '', immune: '', ap: '' } };
+export const SURPRISE: { on: boolean; springs: string[]; lines: { side: string; immune: string; ap: string } } = { on: !!(RULES as any).combat.initiative.surprise_round?.on, springs: (RULES as any).combat.initiative.surprise_round?.springs || ['pc', 'foe'], lines: (RULES as any).combat.initiative.surprise_round?.lines || { side: '', immune: '', ap: '' } };
 const sayWords = (t: string, u: Unit | null, n?: number) => t.replace(/\{unit\}/g, u?.name || '').replace(/\{n\}/g, String(n ?? ''));
 /** Rules 1.82 item 7004: the side that did not make contact, when it saw nobody of the side that did, is surprised: each
  * of its units loses round 1 (waitRound 2), but one whose `surprise_immune` holds while a unit of the contact side stands
  * within its Vision (Tremor), and one with `surprise_ap`, which keeps its first turn with that many AP (Shoot First). */
 function surpriseSide(cb: Combat, by: { side: 'pc' | 'foe'; unseen: boolean } | null): void {
-  if (!SURPRISE.on || !by || !by.unseen) return;
+  if (!SURPRISE.on || !by || !by.unseen || !SURPRISE.springs.includes(by.side)) return; // `springs`: the sides that may catch the other (data)
   const caught: Unit[] = [], them = cb.units.filter((t) => t.side === by.side && alive(t));
   for (const u of cb.units) {
     if (u.side === by.side || !alive(u) || u.downed) continue;

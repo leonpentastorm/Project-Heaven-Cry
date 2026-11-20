@@ -483,6 +483,8 @@
         "exception": "perk says so",
         "built": true,
         "on": true,
+        "springs": ["pc"],
+        "springs_note": "Leon, 20 Nov 2026: only the squad springs a surprise for now (a class with no scouting tool had no answer to a Hidden foe taking the whole squad's first turn). Add \"foe\" to let a Hidden foe's unseen attack catch the squad again.",
         "lines": {
           "side": "Caught by surprise: {units} lose their first turn.",
           "immune": "{unit} felt them coming: not caught by surprise (Tremor).",

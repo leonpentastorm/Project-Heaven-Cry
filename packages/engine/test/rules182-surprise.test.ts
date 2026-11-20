@@ -2,7 +2,7 @@
 // A fight joined by an attack from a unit the other side did not see takes the other side's first turn (waitRound 2),
 // both sides; Tremor holds while an attacker stands within Vision, Shoot First keeps the first turn at its AP. Through the
 // reducer: a Survival fight opened unseen (rules 1.64), joined by a character's action or by a Hidden foe's attack.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import { type GameState, apply, active, APPROACH, SURPRISE, turnAp } from '../src';
 import { survivalRoom, startRun, ownerOf } from './helpers/survival';
 import { reachable } from '../src';
@@ -46,6 +46,14 @@ describe('rules 1.82 item 7004: surprise in the approach', () => {
     expect(cb.units.find((x) => x.id === u.id)!.ap).toBeLessThan(full);
     expect(cb.log.some((l) => l === u.name + ' ' + APPROACH.acts_log)).toBe(false);
   });
+  it('as shipped only the squad springs a surprise (Leon, 20 Nov 2026): a Hidden foe\'s unseen attack takes nobody\'s turn', () => {
+    expect(SURPRISE.springs).toEqual(['pc']);
+    const p = pcOf(step(ambushed())); expect(p.waitRound || 0).toBeLessThan(2); expect(p.surprised).toBeFalsy();
+  });
+});
+describe('rules 1.82 item 7004, the foe side switched on in data (springs holds "foe")', () => {
+  beforeAll(() => { SURPRISE.springs = ['pc', 'foe']; });
+  afterAll(() => { SURPRISE.springs = ['pc']; });
   it('a Hidden foe\'s attack nobody saw catches the squad: the character loses round 1', () => {
     const n = step(ambushed()), cb = n.combat!, p = pcOf(n);
     expect(cb.approach).toBeUndefined(); expect(p.waitRound).toBe(2); expect(p.surprised).toBe(true);

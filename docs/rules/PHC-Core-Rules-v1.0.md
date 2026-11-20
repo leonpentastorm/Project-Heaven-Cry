@@ -13539,6 +13539,10 @@ number is PROVISIONAL; every rule here is `adjudication: engine` unless it says.
       `adjudication: engine`. The old surprise round's `ambushers_ap` is not read (an ambusher acts on its own turn with
       the AP it has, item 1501). A story fight's own ambush rules (unaware foes, an attack in the open) are unchanged.
       One function, `combat.ts surpriseSide`.
+      **Leon, 20 Nov 2026 (overrides "both sides" above):** only the squad springs a surprise for now
+      (`surprise_round.springs`: `["pc"]`): a class with no scouting tool had no answer to a Hidden foe taking the whole
+      squad's first turn. A Hidden foe's unseen attack still joins the fight; it takes nobody's turn. Adding `"foe"` to
+      `springs` restores it; Tremor and Shoot First only matter then.
 7005. **Praying from holy ground** (prayer-2.0 item 17; closes rules 1.78 item 6607's last part; the seat, P3 on a zone,
       a new engine piece): a zone kind's row may list prayers under `seat` (`rules.json zones.kinds`); a unit of the
       zone's side counts such a prayer **from each of the zone's tiles as if it stood there**: its sight and its range
