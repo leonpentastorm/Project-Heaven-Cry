@@ -28157,6 +28157,42 @@
         "different_pixels_32": 6,
         "different_pixels_64": 14
       }
+    },
+    "shield-ram_plate--fine": {
+      "label": "Ram Plate — Fine",
+      "path": "art/icons/gear/shield-ram_plate--fine.png",
+      "sha256": "bf20b38fcdac948ad4323d33c30d91095c5da9cec5c30eab0e5af45db8a7b633",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-ram_plate--fine.png",
+        "128": "art/icons/gear/exports/128/shield-ram_plate--fine.png",
+        "64": "art/icons/gear/exports/64/shield-ram_plate--fine.png",
+        "32": "art/icons/gear/exports/32/shield-ram_plate--fine.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-ram_plate--fine.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.6",
+      "collection": "2026-11-20-reset-continuation",
+      "grade": "fine",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "shield-ram_plate",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.99296114078829,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 11
+      }
     }
   },
   "survival_art": {

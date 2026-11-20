@@ -3772,6 +3772,69 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "shield-ram_plate--fine",
+      "path": "art/icons/gear/shield-ram_plate--fine.png",
+      "sha256": "bf20b38fcdac948ad4323d33c30d91095c5da9cec5c30eab0e5af45db8a7b633",
+      "label": "Ram Plate — Fine",
+      "family": "shield-ram_plate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/shield-ram_plate--fine.png",
+        "sha256": "dc6f09b6458f8c8377ea01ac3ff25a2274c88fe903598ee546c3ef168767bbcd"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/shield-ram_plate--fine.png",
+        "sha256": "bf20b38fcdac948ad4323d33c30d91095c5da9cec5c30eab0e5af45db8a7b633"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/shield-ram_plate--fine.txt",
+        "sha256": "2185941af4a5c408d8fbdeb5ed87d2771f32bcd4cf5e5781c151e39be6947944"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/shield-ram_plate.png",
+          "sha256": "f3cc5e38a2589d5290d5fb37df18df9c0c746c4b8df4e68fd2bac33da5854599"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/shield-ram_plate.png",
+          "sha256": "267861bafac742616f7674fb1f0a1707952beb4490b4ddfa657a6b45cde8e846"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/shield-ram_plate--fine.png",
+        "128": "art/icons/gear/exports/128/shield-ram_plate--fine.png",
+        "64": "art/icons/gear/exports/64/shield-ram_plate--fine.png",
+        "32": "art/icons/gear/exports/32/shield-ram_plate--fine.png"
+      },
+      "export_hashes": {
+        "256": "30682e591a65d93f37f9566636daf6060433799b25b93ce3830f5bc01e82c4ef",
+        "128": "2fa7ff21a56e944a2654956e3e19cd3bb6435f9cab4bc4db0c3eacc864988a0a",
+        "64": "39b9a863f66ed5a25a24864cd1c0b885cbe01b076cf26690b5bb76472ecbaea8",
+        "32": "40b6b00d4913a65987417884f883e1defb7b68100fd3a48ce1b00780e3dbe588"
+      },
+      "grade": "fine",
+      "standard_id": "shield-ram_plate",
+      "outline": {
+        "solid_alpha_iou": 0.99296114078829,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 11
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
