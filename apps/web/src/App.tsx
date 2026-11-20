@@ -52,10 +52,33 @@ function useShownScreen(st: ClientState): Shown | null {
   return shown.current;
 }
 
+// ---------- render counts (the outside code review's performance work) ----------
+// How many times each part of the page has rendered: window.__phcRenders (App, every overlay below, the Proving
+// Ground's panel); the screens count their own (window.__phcRenderCount, dc/runtime.tsx). tools/perf/fight_render_probe.mjs
+// reads them.
+const RENDERS_BY: Record<string, number> = {};
+if (typeof window !== 'undefined') (window as any).__phcRenders = RENDERS_BY;
+const tally = (name: string) => { RENDERS_BY[name] = (RENDERS_BY[name] || 0) + 1; };
+/** An overlay with its renders counted. */
+function counted<P extends object>(name: string, Comp: React.ComponentType<P>): React.ComponentType<P> {
+  const W = (p: P) => { tally(name); return React.createElement(Comp, p); };
+  W.displayName = name;
+  return W;
+}
+const C = {
+  Music: counted('Music', Music), NarratorVoice: counted('NarratorVoice', NarratorVoice), VotePanel: counted('VotePanel', VotePanel),
+  MemoryPanel: counted('MemoryPanel', MemoryPanel), StoryScroll: counted('StoryScroll', StoryScroll), FxLayer: counted('FxLayer', FxLayer),
+  TurnIntro: counted('TurnIntro', TurnIntro), CutInLayer: counted('CutInLayer', CutInLayer), ModeCentre: counted('ModeCentre', ModeCentre),
+  MissionLayer: counted('MissionLayer', MissionLayer), PlaytestTools: counted('PlaytestTools', PlaytestTools), Tips: counted('Tips', Tips),
+  SettingsHost: counted('SettingsHost', SettingsHost), DialogHost: counted('DialogHost', DialogHost),
+};
+function CSandbox({ C: Panel, ...p }: { C: React.ComponentType<any> } & Record<string, any>) { tally('Sandbox'); return <Panel {...p} />; }
+
 onVoice(poke);
 installButtonSounds();
 export function App() {
   const st = React.useSyncExternalStore(subscribe, getState);
+  tally('App');
   const shown = useShownScreen(st), screen = shown?.screen ?? st.screen, Screen = shown?.C;
   const tr = useScreenTransition(screen, st.game?.phase);
   const Sandbox = st.game?.sandbox ? loadedSandbox() : null; // (the Proving Ground's tools: their own chunk, screenLoad.ts)
@@ -108,23 +131,23 @@ export function App() {
         <div style={{ position: 'absolute', top: '-20%', bottom: '-20%', left: '30%', width: '22%', background: 'linear-gradient(90deg, transparent, rgba(246, 81, 87, 0.85) 40%, #FFFFFF 50%, rgba(246, 81, 87, 0.85) 60%, transparent)', animation: 'phcSlash .5s cubic-bezier(.5,0,.3,1) .22s both' }} />
         {/* (The fight's title is the FIGHT card of the turn banners, game/turnIntro.tsx: one card, not two.) */}
       </div>}
-      {st.role && <Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
-      {st.role && <NarratorVoice game={st.game || null} />}
-      {st.role && <VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
-      {st.role === 'host' && <MemoryPanel game={st.game || null} isHost side="left" compact />}
-      {screen === 'main' && <StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
-      {st.role && <FxLayer game={st.game || null} screen={screen} />}
-      {st.role && <TurnIntro game={st.game || null} meId={st.me.id} screen={screen} />}
+      {st.role && <C.Music game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
+      {st.role && <C.NarratorVoice game={st.game || null} />}
+      {st.role && <C.VotePanel game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} />}
+      {st.role === 'host' && <C.MemoryPanel game={st.game || null} isHost side="left" compact />}
+      {screen === 'main' && <C.StoryScroll count={n} lastId={lastId} busy={!!st.game?.narrator.busy} />}
+      {st.role && <C.FxLayer game={st.game || null} screen={screen} />}
+      {st.role && <C.TurnIntro game={st.game || null} meId={st.me.id} screen={screen} />}
       {/* Spotlight cut-ins (decision 113): torn eye strips over a blurred screen, z-index 64. */}
-      {st.role && <CutInLayer game={st.game || null} screen={screen} />}
-      {st.role && Sandbox && <Sandbox game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={screen} />}
-      {st.role && <ModeCentre game={st.game || null} screen={screen} />}
-      {st.role && <MissionLayer game={st.game || null} screen={screen} />}
-      <PlaytestTools />
-      <Tips />
+      {st.role && <C.CutInLayer game={st.game || null} screen={screen} />}
+      {st.role && Sandbox && <CSandbox C={Sandbox} game={st.game || null} meId={st.me.id} isHost={st.role === 'host'} screen={screen} />}
+      {st.role && <C.ModeCentre game={st.game || null} screen={screen} />}
+      {st.role && <C.MissionLayer game={st.game || null} screen={screen} />}
+      <C.PlaytestTools />
+      <C.Tips />
       {/* The settings cog (every header's ⚙) and the in-game dialogs (never the browser's confirm/prompt/alert). */}
-      <SettingsHost />
-      <DialogHost />
+      <C.SettingsHost />
+      <C.DialogHost />
       {barP.shown && <div data-phc-conn-bar="" style={{ position: 'fixed', top: barTop + 8, left: 0, right: 0, zIndex: 60, display: 'flex', justifyContent: 'center', padding: '0 12px', pointerEvents: 'none' }}>
         <div role="status" className={presenceCls('phc-a-drop', barP.closing)} style={{ pointerEvents: 'auto', display: 'flex', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: '6px 12px', maxWidth: 'min(680px, 100%)', padding: '8px 14px', borderRadius: 10, background: '#1C2536', border: '1px solid #2E3A50', boxShadow: '0 8px 30px rgba(0,0,0,.45)', color: '#E7EBF3', fontSize: 'var(--fs-sub)', textAlign: 'center' }}>
           <span>{barP.shown}</span>

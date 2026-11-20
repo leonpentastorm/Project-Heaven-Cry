@@ -268,8 +268,13 @@ export class DCLogic<P = any, S = any> {
 }
 
 /** How many times any screen has rendered (window.__phcRenderCount): the map-hover probe and tests read it. */
-export const RENDERS = { count: 0 };
-if (typeof window !== 'undefined') Object.defineProperty(window, '__phcRenderCount', { get: () => RENDERS.count, configurable: true });
+export const RENDERS = { count: 0, ms: 0 };
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, '__phcRenderCount', { get: () => RENDERS.count, configurable: true });
+  /** The time the screens' renders took (their values and template, not React's own work after), ms in all. */
+  Object.defineProperty(window, '__phcRenderMs', { get: () => RENDERS.ms, configurable: true });
+}
+const now = () => (typeof performance !== 'undefined' ? performance.now() : 0);
 
 /** A React component for one screen: a parsed template plus a logic class. */
 export function makeScreen<P>(template: string, Logic: new (props: P) => DCLogic<P>) {
@@ -283,7 +288,10 @@ export function makeScreen<P>(template: string, Logic: new (props: P) => DCLogic
     inst.props = props;
     inst._update = force;
     let vals: any;
+    const t0 = now();
     try { vals = inst.renderVals(); } catch (e) { console.error(e); return <pre style={{ color: '#F65157', padding: 24, whiteSpace: 'pre-wrap' }}>{String((e as Error).stack || e)}</pre>; }
-    return renderTemplate(nodes, vals);
+    const out = renderTemplate(nodes, vals);
+    RENDERS.ms += now() - t0;
+    return out;
   };
 }
