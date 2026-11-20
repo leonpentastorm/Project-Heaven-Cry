@@ -8340,6 +8340,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "armour-blackout_hood--relic",
+      "path": "art/icons/gear/armour-blackout_hood--relic.png",
+      "sha256": "4813535f2ab775b8a8d959b4465de94cd24ad5ae123a151c1776e23c249998a8",
+      "label": "Blackout hood — Relic",
+      "family": "armour-blackout_hood",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/armour-blackout_hood--relic.png",
+        "sha256": "c3e46b572dcda426bde3ae22a358794bca69ad3e4a1dbfec059b36ae9fdfa5de"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/armour-blackout_hood--relic.png",
+        "sha256": "4813535f2ab775b8a8d959b4465de94cd24ad5ae123a151c1776e23c249998a8"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/armour-blackout_hood--relic.txt",
+        "sha256": "c4e7ec729e598bdf8367d7f9cb739a85d04f489e97645b53edb30499533c6800"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/armour-blackout_hood.png",
+          "sha256": "b9c6cb8fe201b0d9e8dfb84a2b9059fae5501ef2b87c0f9fe863cf9b3571413c"
+        },
+        {
+          "path": "art/icons/gear/armour-blackout_hood--masterwork.png",
+          "sha256": "32134cfbe0c6ec0b97b712b9f8de3f47ea44a6094f9c06e2d44e2b410e88b668"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/armour-blackout_hood--relic.png",
+        "128": "art/icons/gear/exports/128/armour-blackout_hood--relic.png",
+        "64": "art/icons/gear/exports/64/armour-blackout_hood--relic.png",
+        "32": "art/icons/gear/exports/32/armour-blackout_hood--relic.png"
+      },
+      "export_hashes": {
+        "256": "14e27682f52a86d3d93220b4586caa274d5e804f4a92278ca4056d7d5caebdd1",
+        "128": "13cdd379ae7cc22a7338178565a217ed2bb78e063d08ff9d879193e6e3501027",
+        "64": "5e4f98e63e0e43625d6ee594e11179aa24b7ee225acfdde1fe25039f485b315a",
+        "32": "937b354e5ed4ae5d95f464e95d0865619e946b5f18c69e1900b1a0e0df3d7020"
+      },
+      "grade": "relic",
+      "standard_id": "armour-blackout_hood",
+      "outline": {
+        "solid_alpha_iou": 0.9867187318680809,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 17
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
