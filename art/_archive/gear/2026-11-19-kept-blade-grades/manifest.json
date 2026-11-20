@@ -12540,6 +12540,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-lumeri_votive_torch--relic",
+      "path": "art/icons/gear/weapon-lumeri_votive_torch--relic.png",
+      "sha256": "1a443d3e865ae5c1ab1af16f19a651d7282c7fd5ee6e7f1cfc53c338f1577ef6",
+      "label": "Lumeri votive torch — Relic",
+      "family": "weapon-lumeri_votive_torch",
+      "source": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/sources/v1/weapon-lumeri_votive_torch--relic.png",
+        "sha256": "7c3904e64dfb851f5a3cc5333543e4cfae029cce731337ad4e9882f15b31e65a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/masters/v1/weapon-lumeri_votive_torch--relic.png",
+        "sha256": "1a443d3e865ae5c1ab1af16f19a651d7282c7fd5ee6e7f1cfc53c338f1577ef6"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-19-kept-blade-grades/prompts/weapon-lumeri_votive_torch--relic.txt",
+        "sha256": "eb2150741e34ba7c4b806e93f9195c55581e4c9db9a6d5cfaa1ae58baed53351"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-lumeri_votive_torch.png",
+          "sha256": "2f96a16ad9215078e6c285fe573f14ac50777cd5dfd6b43fcf4885bc3e5ce122"
+        },
+        {
+          "path": "art/icons/gear/weapon-lumeri_votive_torch--masterwork.png",
+          "sha256": "76f459c3ba49996ce56d9a9b9f4e587e1e2b95bd9bf7b98fdf1ec9660ed8a862"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-lumeri_votive_torch--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-lumeri_votive_torch--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-lumeri_votive_torch--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-lumeri_votive_torch--relic.png"
+      },
+      "export_hashes": {
+        "256": "575a7b0006c64c65efc475da1cc3617f5a4a67b97e0e6425731bd352184da616",
+        "128": "4013b5e512e649c4df35a6b3fc20ad325eac49786be6a617d46538ac48d0bfe3",
+        "64": "1a413b4c2c024f33b138b22d805b2687c48f60a66abb4ba253dd927690b3c1f8",
+        "32": "4fbd93e93f2b50ec19dba2e9151e5a91e7065fb73ae14b77e972cb0fdea4960b"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-lumeri_votive_torch",
+      "outline": {
+        "solid_alpha_iou": 0.9626860244484553,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 27
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
