@@ -36,7 +36,7 @@ export function forkCard(c: any, door: string, o: { inFight?: boolean; only?: nu
     // an option not built yet shows its rule in words like any other (its data `why` is a designer's note, never a player's line)
     const opts = s.options.map((op) => {
       const can = s.pending && op.built, armKey = c.id + '|' + op.id, armed = ARMED === armKey;
-      return { key: op.id, name: op.name + (op.picked ? ' ✓' : ''), text: op.text, icon: forkIconOf(op.id, v.skill), picked: op.picked, canPick: can,
+      return { key: op.id, name: op.name + (op.picked ? ' ✓' : ''), text: op.text, icon: forkIconOf(op.id, v.skill, op.name), picked: op.picked, canPick: can,
         label: o.inFight ? 'After the fight' : armed ? 'Confirm: keep ' + op.name + ' for good' : 'Choose ' + op.name,
         pick: () => {
           if (!can) return; if (o.inFight) { toast('Choose after the fight.'); return; }

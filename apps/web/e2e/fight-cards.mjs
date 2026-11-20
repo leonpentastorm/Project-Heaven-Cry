@@ -91,8 +91,20 @@ await pause(p, 1500);
 
 // ---------- won: VICTORY, with the run's line of what follows ----------
 const fx1 = await p.evaluate(() => window.__fxT.length);
-ok('the fight is won (run/skip, the test room\'s)', (await act({ type: 'run/skip' })) === null);
+// 0.33 (Leon on live 0.32.0: "It still take like legit 30 second after you kill the last enemy for victory to show up"):
+// won by a real last kill, not run/skip: the falling foe side's sight effects the squad's view never holds came after the
+// kill, and the panel waited for them by its 20 s safety net. Set-up by hand (as fog-victory.test.ts): every foe but one
+// fallen, the last on 1 HP beside the squad's character; then its real strike.
+for (let i = 0; i < 30; i++) { const up = await p.evaluate(() => { const cb = window.__phc.getState().game.combat, u = cb && cb.units.find((x) => x.id === cb.order[cb.turn]); return !!(u && u.charId) && !(window.__phcHold?.() > performance.now()); }); if (up) break; await pause(p, 500); }
+const kill = await p.evaluate(() => { const g = window.__phc.truth(), cb = g.combat, pc = cb.units.find((x) => x.id === cb.order[cb.turn] && x.charId); if (!pc) return null; const [px, py] = pc.pos.split(',').map(Number);
+  const foes = cb.units.filter((x) => x.side === 'foe' && !x.dead); for (const f of foes.slice(1)) { f.hp = 0; f.dead = true; }
+  const last = foes[0], taken = new Set(cb.units.filter((v) => !v.dead && v !== last).map((v) => v.pos)), bad = new Set([...(cb.map.solid || []), ...(cb.map.cover || []), ...(cb.map.full || [])]);
+  last.hp = 1; last.hidden = false; last.pos = [[1, 0], [0, 1], [-1, 0], [0, -1]].map(([dx, dy]) => (px + dx) + ',' + (py + dy)).find((k) => !taken.has(k) && !bad.has(k)); pc.ap = 9; return { pc: pc.id, last: last.id }; });
+let killAt = 0;
+if (kill) for (let k = 0; k < 6; k++) { killAt = await p.evaluate(() => performance.now()); await act({ type: 'combat/attack', unitId: kill.pc, targetId: kill.last, mode: 'melee' }); if ((await G()).run?.state === 'field') break; }
+if ((await G()).run?.state !== 'field') { console.log('(the strike did not end it: run/skip)'); killAt = 0; ok('the fight is won (run/skip, the test room\'s)', (await act({ type: 'run/skip' })) === null); }
 ok('VICTORY comes up when it is won', await waitCard('victory'));
+{ const v = (await cards('victory'))[0]; ok('0.33: VICTORY within 2.5 s of the last kill (' + (killAt ? ((v.t - killAt) / 1000).toFixed(2) + ' s' : 'no real kill') + ')', !!killAt && !!v && v.t - killAt <= 2500); }
 await pause(p, 260); await p.screenshot({ path: SHOTS + '/card-victory.png' });
 { const v = (await cards('victory'))[0], lastFx = await p.evaluate(() => window.__fxT.at(-1)?.t || 0);
   ok('… with what follows, from data (' + v?.after + ')', v?.after === SVD.run.after_fight.won && v.text.includes(SVD.run.after_fight.won));

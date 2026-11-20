@@ -459,7 +459,11 @@ export function TurnIntro({ game, meId, screen }: { game: GameState | null; meId
     if (!endDue()) return; // (after the fight effect above: a phase change's clearAll never cancels this one's wait)
     const cbE = anyCb!, stream = combatStreamKey(game)!, won = endOf(cbE) === 'win';
     endShown.current = overKey; endPending.current = true; setEndFlag(true);
-    const efx = (cbE.fx || []) as any[], lastFx = cbE.fxSeq || (efx.length ? efx[efx.length - 1].n : 0), clock = fxClock.current;
+    // The last effect THIS page holds (0.33, Leon: "30 seconds after you kill the last enemy for victory to show up"): the
+    // player's view is the engine's fog (fog.ts), and the falling foe's side losing sight of the squad and its Figments
+    // ('sight', only: 'foe') is numbered after everything the squad sees. fxSeq counts those too, so the clock, which
+    // only reaches what this page plays, never got there and the panel waited for the safety net below.
+    const efx = (cbE.fx || []) as any[], lastFx = efx.length ? efx[efx.length - 1].n : cbE.fxSeq || 0, clock = fxClock.current;
     const until = Date.now() + 20000 * fightPace(); // a safety net only: the card waits for the fight's last effect
     const still = () => { const { game: g2, screen: sc } = live.current; return !!endOf(g2?.combat) && sc === 'combat' && combatStreamKey(g2) === stream; };
     const tryShow = () => {

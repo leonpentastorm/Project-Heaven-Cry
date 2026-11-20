@@ -13,7 +13,7 @@
 
 
 
-<div class="phc-lu-body">
+<div class="phc-lu-body" style="{{split.bodyStyle}}">
 <section aria-label="Level up" style="min-width: 0; display: flex; flex-direction: column">
 <div style="display: flex; flex-wrap: wrap; align-items: flex-end; gap: 6px 4px">
 <div role="tablist" aria-label="Families" class="phc-lu-tabs" style="display: flex; gap: 4px"><sc-for list="{{famTabs}}" as="ft" hint-placeholder-count="3"><button type="button" role="tab" class="phc-lu-tab" data-fam="{{ft.key}}" aria-selected="{{ft.selected}}" onClick="{{ft.pick}}" style="{{ft.style}}">{{ft.name}}<sc-if value="{{ft.hasWait}}" hint-placeholder-val="{{false}}"><span style="font-size: var(--fs-sub); color: #FFFFFF">{{ft.wait}}</span></sc-if></button></sc-for></div>
@@ -53,7 +53,7 @@
 </section>
 </sc-for>
 </section>
-
+<div role="separator" class="phc-lu-split" tabindex="0" aria-orientation="vertical" aria-label="Width of the class column (drag, or the arrow keys)" aria-valuenow="{{split.now}}" aria-valuemin="{{split.min}}" aria-valuemax="{{split.max}}" onPointerDown="{{split.down}}" onKeyDown="{{split.key}}" onDoubleClick="{{split.reset}}"><span aria-hidden="true" class="phc-lu-split-grip"></span></div>
 <aside aria-label="Your class" class="phc-slide-in-right phc-lu-class" style="min-width: 0; display: flex; flex-direction: column; gap: 12px; padding: 12px 14px; border-radius: 14px; background: #10151F; border: 1px solid #232D3F">
 <button type="button" class="phc-fold-h phc-lu-class-fold" data-fold="{{cls.fold.id}}" onClick="{{cls.fold.toggle}}" aria-expanded="{{cls.fold.expanded}}" style="{{cls.fold.headStyle}}"><span aria-hidden="true" style="{{cls.fold.chevStyle}}">{{cls.fold.chev}}</span><sc-if value="{{cls.has}}"><img src="{{cls.icon}}" alt="" style="width: 22px; height: 22px; flex: none"></sc-if><span class="phc-lu-class-line" style="font-size: var(--fs-body); font-weight: 700; line-height: 1.3">{{cls.line}}</span></button>
 <sc-if value="{{cls.fold.open}}" hint-placeholder-val="{{true}}">

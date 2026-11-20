@@ -88,6 +88,20 @@ describe('every descriptor group renders and confirms on the one action flow', (
     expect(done).toEqual(expect.arrayContaining(['move', 'attack', 'utility', 'faith', 'calls']));
     root.unmount();
   }, 30000); // about 2.5 s alone; over 5 s beside the whole suite on a loaded machine (13 Nov 2026)
+  it('Space presses Confirm: the chosen attack is sent', async () => {
+    const { u } = fight('acts-space', 'sharpshooter', 'medic');
+    const { el, root } = await mount();
+    const space = async () => { await React.act(async () => { window.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', code: 'Space', bubbles: true, cancelable: true })); }); };
+    const d = actionsFor(G, u.id, ME).find((x) => x.group === 'attack' && confirmable(x, u.id))!;
+    const { picks } = confirmable(d, u.id)!, want = sendDescriptor(G, u.id, d.id, picks, ME)!;
+    await click(el.querySelector('[role="tab"][data-tab="attack"]'));
+    await click(el.querySelector('button[data-act="' + d.id + '"]'));
+    for (const k of Object.keys(picks)) { const t = G.combat!.units.find((x) => x.id === picks[k])!; const tok = tokenOf(el, t.name); if (tok) await click(tok); }
+    expect(confirmBtn(el).disabled).toBe(false);
+    const n = sent.length; await space();
+    expect(sent.slice(n).some((a) => a.type === want.type)).toBe(true);
+    root.unmount();
+  }, 30000);
   it('Class moves (a Bulwark, id defender)', async () => {
     const { u } = fight('acts-b', 'bulwark', 'medic', (c) => { c.classId = 'defender'; c.level = 12; c.attrs.durability = 8; });
     const { el, root } = await mount();

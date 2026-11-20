@@ -6,7 +6,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { ARCHETYPES, apply, viewFor, isUnseenId, newGame, reachable, survivalRun, RULES, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, viewFor, isUnseenId, newGame, reachable, survivalRun, RULES, makeFigment, withGame, standable, type GameState, type Sheet } from '@engine';
 import { TurnIntro, _test, EV_FX_AT, EV_TURN } from './turnIntro';
 import { combatStreamKey } from './fx/FxLayer';
 
@@ -123,6 +123,42 @@ describe('the fight\'s big banners (rules 1.62 item 4900)', () => {
     expect(log.indexOf('field')).toBeGreaterThan(log.indexOf('victory'));
     expect(log.indexOf('turn')).toBeGreaterThan(log.indexOf('field'));
     window.removeEventListener(EV_TURN, onTurn);
+    await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
+  }, 60_000);
+  // 0.33 (Leon on live 0.32.0: "It still take like legit 30 second after you kill the last enemy for victory to show up
+  // sometime (tested with a visualizer class)"). The cause: the player's view is the engine's fog, and the last foe's side
+  // losing sight of the squad and its Figments ('sight', only: 'foe') is numbered after the kill; the panel waited for
+  // fxSeq, which this page's effects clock never reaches, so it came by the 20 s safety net. Through the reducer: a real
+  // last kill with a Figment on the map, the page given its own view, the clock reaching every effect that view holds.
+  it('the last foe killed with a Figment out: VICTORY within 2 s of the last effect the page plays (not the safety net)', async () => {
+    vi.useFakeTimers();
+    const el = document.createElement('div'); document.body.appendChild(el); const root = createRoot(el);
+    const draw = async (x: GameState) => { await React.act(async () => { root.render(React.createElement(TurnIntro as any, { game: x, meId: 'host', screen: x.phase === 'combat' ? 'combat' : 'main' })); }); };
+    const clockTo = async (x: GameState) => { const fx: any[] = (x.combat as any).fx || [];
+      for (const e of fx) await React.act(async () => { window.dispatchEvent(new CustomEvent(EV_FX_AT, { detail: { stream: combatStreamKey(x), n: e.n } })); }); };
+    let g = camp(); await draw(viewFor(g, 'host') as GameState);
+    g = apply(g, { type: 'run/move', node: reachable((g as any).run).find((n: any) => n.kind === 'fight')!.id } as any, 'host');
+    await draw(viewFor(g, 'host') as GameState); await clockTo(viewFor(g, 'host') as GameState);
+    await React.act(async () => { vi.advanceTimersByTime(8000); });
+    const pcU = () => (g.combat as any).units.find((u: any) => u.side === 'pc' && u.charId);
+    for (let k = 0; k < 12 && (g.combat as any).order[(g.combat as any).turn] !== pcU().id; k++) g = apply(g, { type: 'combat/end-turn', unitId: (g.combat as any).order[(g.combat as any).turn] } as any, 'host');
+    // set-up by hand (not the rule under test, as fog-victory.test.ts): a Figment beside the shooter, every foe but one
+    // already fallen, the last on 1 HP next to the squad
+    const cb: any = g.combat, pc = pcU(), [px, py] = pc.pos.split(',').map(Number);
+    const free = (d: number[][]) => d.map(([dx, dy]) => (px + dx) + ',' + (py + dy)).find((k) => standable(cb.map, k) && !cb.units.some((u: any) => !u.dead && u.pos === k))!;
+    const fig = withGame(g, () => makeFigment(cb, (g as any).rng, pc, 'beast', [], free([[1, 1], [-1, 1], [1, -1], [-1, -1]]), { charge: 1 })); expect(typeof fig).not.toBe('string');
+    const foes = cb.units.filter((u: any) => u.side === 'foe'); for (const f of foes.slice(1)) { f.hp = 0; f.dead = true; }
+    const last = foes[0]; last.hp = 1; last.hidden = false; last.pos = free([[1, 0], [0, 1], [-1, 0], [0, -1]]); pc.ap = 9;
+    for (let k = 0; k < 6 && !(g.combat as any).field; k++) g = apply(g, { type: 'combat/attack', unitId: pc.id, targetId: last.id, mode: 'melee' } as any, 'host');
+    expect((g as any).run.state).toBe('field');
+    const v = viewFor(g, 'host') as GameState, vfx: any[] = (v.combat as any).fx;
+    // the cause, pinned: the view's last effect comes before the fight's count (the foe side's sight, not the squad's)
+    expect(vfx[vfx.length - 1].n).toBeLessThan((v.combat as any).fxSeq);
+    expect((g.combat as any).fx.filter((e: any) => e.n > vfx[vfx.length - 1].n).every((e: any) => e.k === 'sight' && e.only === 'foe')).toBe(true);
+    await draw(v); await clockTo(v);
+    let at = -1;
+    for (let t = 0; t < 100 && at < 0; t++) { await React.act(async () => { vi.advanceTimersByTime(100); }); if (big(el)?.getAttribute('data-phc-card') === 'victory') at = (t + 1) * 100; }
+    expect(at).toBeGreaterThan(0); expect(at).toBeLessThanOrEqual(2000);
     await React.act(async () => { root.unmount(); }); el.remove(); vi.useRealTimers();
   }, 60_000);
 });

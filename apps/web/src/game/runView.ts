@@ -58,6 +58,11 @@ export function nodeTip(g: GameState, n: RunNode): string {
   return wordOf(n) + ' · stop ' + n.depth + ' of ' + MAP_DATA.rows + '. ' + (where ? where + '. ' : '') + base + nums;
 }
 
+/** The Survival boons a character holds (its relics that are boons: a Boss's, the camp's, a graft, a token), each with its
+ *  name, its text from data (numbers filled at load) and its worth: the run board and the sheet's PERKS tab read this. */
+export function boonsOf(c: { relics?: string[] } | null | undefined): { id: string; name: string; text: string; worth: number; camp: boolean }[] {
+  return ((c && c.relics) || []).map((id) => relicRow(id) as any).filter((x) => x && /^(boon|start|graft|token)\./.test(x.id)).map((x) => ({ id: x.id, name: x.name, text: x.text, worth: x.worth, camp: isStartBoon(x.id) }));
+}
 export function runView(g: GameState, me: string): RunViewV | null {
   const r = g.run; if (!r) return null;
   // rules 1.64: a stop is lit (goable) only while the run is on its map; in any other state nothing pulses and a click says the engine's reason
@@ -75,7 +80,7 @@ export function runView(g: GameState, me: string): RunViewV | null {
   const party: PartyV[] = Object.values(g.characters).map((c) => {
     const p = pl(c.owner);
     return { id: c.id, name: c.name, level: c.level, hp: Math.max(0, c.hp), maxHp: maxHp(c), credits: creditsOf(c), initials: p?.initials || '?', color: p?.color || '#A3AEC2', mine: c.owner === me, levelUp: levelUpDue(c),
-      boons: (c.relics || []).map((id) => relicRow(id) as any).filter((x) => x && /^(boon|start|graft|token)\./.test(x.id)).map((x) => ({ id: x.id, name: x.name, text: x.text, worth: x.worth, camp: isStartBoon(x.id) })), worth: runWorth(c) + ' of ' + BOON_CAP,
+      boons: boonsOf(c), worth: runWorth(c) + ' of ' + BOON_CAP,
       classLine: 'Level ' + c.level + (c.classId ? '' : ' · classless'), wear: wearView(c, 'main'), weapon: itemName(c.weapon),
       worn: (['off', ...packOf(c).map((_, i) => i)] as ('off' | number)[]).map((where) => ({ x: wearAt(c, where), w: wearView(c, where) })).filter((q) => q.x && q.w && q.w.state !== 'sound').map((q) => ({ name: q.x!.name, w: q.w! })) };
   });

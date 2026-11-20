@@ -16,7 +16,7 @@
 <footer style="font-size: var(--fs-sub); color: #A3AEC2">{{ep.speaker}}</footer>
 </blockquote>
 <p class="phc-ep-intro" style="{{ep.loreStyle}}">{{ep.intro}}</p>
-<sc-for list="{{ep.loreRows}}" as="lr" hint-placeholder-count="3"><p class="phc-ep-lorerow" data-lore="{{lr.key}}" style="{{ep.loreStyle}}"><span style="{{ep.loreHeadStyle}}">{{lr.head}}</span> {{lr.text}}</p></sc-for>
+<sc-if value="{{ep.hasLoreRows}}" hint-placeholder-val="{{true}}"><div class="phc-ep-lorebox" aria-label="At high levels, good for, bad for" style="display: flex; flex-direction: column; gap: 4px; margin-top: 2px; padding: 8px 12px; border-radius: 8px; background: #0A0D13; border: 1px solid #232D3F"><sc-for list="{{ep.loreRows}}" as="lr" hint-placeholder-count="3"><p class="phc-ep-lorerow" data-lore="{{lr.key}}" style="{{ep.loreStyle}}"><span style="{{ep.loreHeadStyle}}">{{lr.head}}</span> {{lr.text}}</p></sc-for></div></sc-if>
 </div>
 </section>
 <p class="phc-ep-line" style="margin: 0; font-size: var(--fs-body); line-height: 1.4; color: #E7EBF3; border-top: 1px solid #232D3F; padding-top: 10px">{{ep.line}}</p>

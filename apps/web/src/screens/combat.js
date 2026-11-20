@@ -171,6 +171,10 @@ const COMBAT_CSS = [
   '.phc-yt{transform:skewX(-14deg);animation:phcYtIn calc(.42s * var(--phc-k, 1)) cubic-bezier(.2,.8,.2,1) both}.phc-yt>*{transform:skewX(14deg)}',
   '.phc-yt::after{content:"";position:absolute;top:0;bottom:0;left:0;width:30%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:phcYtShine calc(.9s * var(--phc-k, 1)) ease-out calc(.35s * var(--phc-k, 1)) both;pointer-events:none}',
   '.phc-cb-act{transition:transform .12s ease-out,box-shadow .12s ease-out,background-color .12s}',
+  // The Space key's hint on Confirm: drawn by CSS so the button's text stays "Confirm" (suites and readers find it by its text);
+  // only where a keyboard is likely (a fine pointer).
+  '@media (pointer:fine){.phc-cb-confirm button.phc-cb-act:first-child::after{content:"SPACE";margin-left:8px;padding:1px 6px;border:1px solid currentColor;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.08em;opacity:.6;vertical-align:middle}}',
+
   '.phc-key-code::before{content:attr(data-code)}', // (the two-key code is drawn, not text: a button's name stays its name)
   '.phc-cb-act:not(:disabled):hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.18)}',
   '.phc-cb-act:not(:disabled):active{transform:translateY(1px) scale(.985);box-shadow:none;transition-duration:.04s}',
@@ -327,7 +331,7 @@ if (typeof window !== 'undefined' && typeof window.addEventListener === 'functio
   // Every turn: bring the acting unit's tile into view (and zoom on it when it is yours).
   window.addEventListener('phc:focus-tile', (e) => { const d = (e && e.detail) || {}; if (onScreen()) focusTile(d.key, !!d.mine); });
   // Keys 1–9 flip the action tabs on your turn (the row wraps onto a second line when the tabs don't fit); a resize refits the grid beside the pinned action column.
-  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); LIVE.camKey(e); } });
+  window.addEventListener('keydown', (e) => { if (LIVE && onScreen()) { LIVE.packKey(e); LIVE.confirmKey(e); LIVE.panelKey(e); LIVE.numKey(e); LIVE.zoomKey(e); LIVE.camKey(e); } });
   // Ctrl or ⌘ with the wheel over the map sizes the map (not the page). Non-passive, so the page zoom is held back there.
   window.addEventListener('wheel', (e) => { if (!LIVE || !onScreen() || !(e.ctrlKey || e.metaKey) || !e.target || typeof e.target.closest !== 'function' || !e.target.closest('.phc-grid-scroll, .phc-mapzoom')) return;
     e.preventDefault(); const now = Date.now(); if (now - (LIVE._wheelAt || 0) < 90) return; LIVE._wheelAt = now; LIVE.zoomBy(e.deltaY < 0 ? 'in' : 'out'); }, { passive: false });
@@ -694,6 +698,16 @@ export class CombatLogic extends DCLogic {
   }
   /** H or \ (not while typing, not under a dialog or the turn card): hide or show the column. */
   /** The backpack (rules 1.9, Gear in a fight): B opens and closes it, Escape closes it. */
+  // Space is Confirm (Leon, 20 Nov 2026): it presses the fight's own Confirm button, so whatever that button would do
+  // (and refuse) is what Space does. Never while typing, under a dialog or a cut-in; the key never scrolls the page here.
+  confirmKey(e) {
+    if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || !(e.key === ' ' || e.code === 'Space')) return;
+    if (typingIn(e.target) || typingIn(document.activeElement) || document.querySelector('[data-phc-cutin], [aria-modal="true"]')) return;
+    if (!getState().game?.combat) return;
+    e.preventDefault(); if (e.repeat) return;
+    const b = document.querySelector('.phc-cb-confirm button.phc-cb-act');
+    if (b && !b.disabled && !b.hidden) b.click();
+  }
   packKey(e) {
     if (!e || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.repeat) return;
     // Another dialog over the fight (Settings, an in-game question): its keys are its own (the backpack is a dialog too).
@@ -1059,6 +1073,14 @@ export class CombatLogic extends DCLogic {
     // a pick step this screen renders itself: the Outburst's Begin / Snap (the flow leaves a step with a renderer to its panel)
     const bsStep = flow ? flow.d.picks.find((st) => st.renderer === 'begin-snap') || null : null, bsOpt = (id) => ((bsStep && (bsStep.options || []).find((o) => o.id === id)) || { label: id }).label;
     this._flow = flow;
+    // 0.33 (Leon: "Figment movement do not have the pathdrawing like normal movement"): a held Figment's Move (an owned
+    // unit's 'ow:<id>:move' row) draws its route as a unit's own Move does: the same arrows (arrowsOf), the engine's route
+    // (routeHazards) from where the Figment stands, on a tile the flow offers.
+    const owMove = flow && /^ow:[^:]+:move$/.test(flow.d.id) ? cb.units.find((x) => x.id === flow.d.id.split(':')[1] && !x.dead) || null : null;
+    if (owMove && S.hover && S.hover !== owMove.pos && flow.marks.choice.has(S.hover)) {
+      const r = hoverMemo(this).get(g, ['route', owMove.id, S.hover, 'move'], () => routeHazards(cb, owMove, S.hover, 'move'));
+      if (r) { arrowsOf(r.route, owMove.pos); delete route[owMove.pos]; }
+    }
     this._pk = pkE ? { e: pkE, P: pkP, V: pkV, target: flow && flow.picks.targetId } : null;
     /** The row a picked action belongs to: its own, or its parent's (a technique's pad row, Hold a shot). */
     const rowSel = flow && flow.d.parent ? flow.d.parent : S.action;

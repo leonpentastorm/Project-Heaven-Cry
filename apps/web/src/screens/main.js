@@ -63,6 +63,9 @@ import { approachOptions, sigilGrowthView, canLayGrandForms, makeView, giveView,
 import { groupedSection, sigilWordGroups } from '../game/workshopGroups';
 import { forkSheetCard } from '../game/forkView'; // rules 1.60: each door's forks under its skill on the SKILLS tab (the engine's doorForkView)
 import { fromSkillsOf } from '../game/skillUnlocks'; // 0.31.9: the PERKS menu's FROM YOUR SKILLS
+import { boonsOf } from '../game/runView'; // 0.33: the PERKS menu's FROM BOONS (the run board reads the same)
+import { boonArt } from '../game/boonIcons';
+import { iconOr } from '../game/markIcon';
 import { foldVals } from '../game/fold'; // 0.31.x: the fork card folds to one line (the shared fold, remembered)
 import { fmtNum } from '../game/numbers'; // rules 1.36: HP and damage readouts through the one formatter
 import { powerPct } from '../game/power'; // 0.32 B6: an Outburst's strength in percent
@@ -586,7 +589,12 @@ export class MainLogic extends DCLogic {
     const fromSkills = fromSkillsOf(c, SKILL);
     const pkRedraw = () => this.setState({ foldTick: Date.now() });
     const pkFold = { traits: foldVals('sheet:perks:traits', { byRule: true, redraw: pkRedraw }), perks: foldVals('sheet:perks:perks', { byRule: true, redraw: pkRedraw }),
-      skills: foldVals('sheet:perks:skills', { byRule: true, redraw: pkRedraw }),  };
+      skills: foldVals('sheet:perks:skills', { byRule: true, redraw: pkRedraw }), boons: foldVals('sheet:perks:boons', { byRule: true, redraw: pkRedraw }) };
+    // 0.33 (Leon: "Add a 'from boons' tab for the perk tab that show the boons taken"): the Survival boons this character's
+    // run holds (game/runView.ts boonsOf: name, its text from data, numbers filled), each with its icon (the artist's
+    // white ink, else its name's mark); in words when there is no run or no boon yet
+    const boons = c && g.run ? boonsOf(c).map((b) => ({ key: b.id, name: b.name, text: b.text, icon: iconOr(boonArt(b.id), b.name, '#E7EBF3'), sub: (b.camp ? 'From the camp · ' : '') + 'Worth ' + b.worth })) : [];
+    const noBoonsLine = !(g && g.run) ? 'No run under way. Boons come with a Survival run: one from its camp, and three to choose from after each Boss.' : 'No boons yet. Each Boss of the run offers three to choose from.';
     // The class and its moves (spec: Classes; game/classView.ts): every rank's move, held or locked with what it takes,
     // who runs it and the uses left, under the emblem, the rank and the class attribute's progress (II at 5, III at 8).
     const klass = c ? classOf(c) : null, clsEm = emblemOf(heldClassId(c));
@@ -1581,7 +1589,7 @@ export class MainLogic extends DCLogic {
       echoV, barsA, barsB, echo, pc, multi: mine.length > 1, myChars, bars, tabs, coreTabs, sheetSkills, tabSkills: S.tab === 'skills', tabStatus: S.tab === 'status', tabPerks: S.tab === 'perks', tabGear: S.tab === 'gear', tabBio: S.tab === 'bio', tabMagic: S.tab === 'magic', mg: magicVals(this, g, c), tabArms: S.tab === 'arms', ar: S.tab === 'arms' ? armsTabVals(this, g, c) : { has: false }, tabFaith: S.tab === 'faith', fa: S.tab === 'faith' ? faithTabVals(this, g, c) : { has: false },
       zoomPc: () => this.setState({ card: true }), cardOpen: !!S.card && !!c, closeCard: () => closeAnim(this, 'card', () => this.setState({ card: false })), cardCls: modalCls(this, 'card'), zoomPcBig: zoomer(this, pc.img, pc.name, 'portrait'),
       fx: fxList, noFx: !fxList.length, canLevel: !!lvlUp, toLevelUp: () => go('levelup', { levelupChar: c.id }), levelLabel: c && c.level >= 3 && !c.classId ? '★ Earn your class' : c && c.unspent && c.unspent.skill + c.unspent.attr + c.unspent.core === 0 && pendingPerkSteps(c).length ? 'Level up' : 'Level up', // what is due (levelUpDue): points, or only a perk step (a skill at Mastery 1 from creation)
-      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, fromSkills, hasFromSkills: fromSkills.length > 0, noFromSkills: !fromSkills.length, pkFold, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, mk, gs, packBig, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
+      status, rep, statusFig, injuries, noInjuries: !injuries.length, hpLine: c ? fmtNum(c.hp) + ' / ' + fmtNum(hpMax) + ' HP' + (c.dead ? ' · DEAD' : '') : '', traits, noTraits: !traits.length, perks, noPerks: !perks.length, fromSkills, hasFromSkills: fromSkills.length > 0, noFromSkills: !fromSkills.length, boons, hasBoons: boons.length > 0, noBoons: !boons.length, noBoonsLine, pkFold, classMoves, hasClass: !!classHead, classHead: classHead || {}, mp, hasMp: !!top, gear, gearFig, slots, rig, hands, bodySlots, rigView: packView, plotView, mk, gs, packBig, hasPlot: plotView.length > 0, tipOpen: !!tipCard, tipCard: tipCard || { lines: [] }, noRig: !packView.length, backpackImg: '',
       canLoad, cantLoad: !canLoad || g.phase === 'combat', loadMags: () => act({ type: 'gear/load', charId: c.id }),
       load: c ? 'Carrying ' + KG.total + ' kg of ' + lim + ' kg' + (over ? ' · OVER THE LIMIT' : '') + ' (weapon ' + kg(KG.weapon) + ', armour ' + kg(KG.armour) + ', pack ' + kg(KG.pack) + ')' : '', loadStyle: 'font-size: var(--fs-sub); color: ' + (over ? '#F65157' : '#A3AEC2'), bio,
       hero, stream, pushes,
