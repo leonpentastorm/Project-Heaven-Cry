@@ -1054,6 +1054,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-purifier_flamer--fine",
+      "path": "art/icons/gear/weapon-purifier_flamer--fine.png",
+      "sha256": "d1b189772c1b64292a91459eaf1b73e5862fe659b559aa8a1e721a6447ca1340",
+      "label": "Purifier Flamer — Fine",
+      "family": "weapon-purifier_flamer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/sources/v1/weapon-purifier_flamer--fine.png",
+        "sha256": "80affb65fe0dd3e74aaf15c4e1fa89a279e0907d4b02f6e897e3819fd00e6ca0"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/masters/v1/weapon-purifier_flamer--fine.png",
+        "sha256": "d1b189772c1b64292a91459eaf1b73e5862fe659b559aa8a1e721a6447ca1340"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-20-reset-continuation/prompts/weapon-purifier_flamer--fine.txt",
+        "sha256": "34b44343820f0e3cc2266fba8e5e5c31e3f2eedc9089206b866d8a1f7eb03fea"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-purifier_flamer.png",
+          "sha256": "f315ad1c1970249e94351f5e4c696af4109b5fc13f49400043d98586d8aec23f"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-purifier_flamer--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-purifier_flamer--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-purifier_flamer--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-purifier_flamer--fine.png"
+      },
+      "export_hashes": {
+        "256": "0d164158710b140cb6080944885591a75805bab8f73bad68b2d7c666045fa1d7",
+        "128": "717300322eb5428fdf38cb3018a15b1cf274c3780f1f0500acecb77d2fb9a3b0",
+        "64": "77b280de0e3d6c9dba8bc6cff4b67eb8796e62ce1a9af0ac904cecf09a26f408",
+        "32": "0b8e15b23c72a64b8838923d566a5db09e1d2dc445a0a348b92e76cd38238f60"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-purifier_flamer",
+      "outline": {
+        "solid_alpha_iou": 0.9706246456793123,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 17
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

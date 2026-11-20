@@ -18,18 +18,18 @@
     "weapon-hellraiser_servo_fist--celestial",
     "weapon-hellraiser_rotary--fine",
     "weapon-hellraiser_rotary--masterwork",
-    "weapon-hellraiser_rotary--relic"
+    "weapon-hellraiser_rotary--relic",
+    "weapon-purifier_flamer--fine"
   ],
   "remaining": [
     "weapon-hellraiser_rotary--celestial",
-    "weapon-purifier_flamer--fine",
     "weapon-purifier_flamer--masterwork",
     "weapon-purifier_flamer--relic",
     "weapon-purifier_flamer--celestial"
   ],
   "baseline_project_pictures": 327,
   "project_total": 871,
-  "updated_utc": "2026-11-20T03:25:19.852247+00:00",
+  "updated_utc": "2026-11-20T03:29:14.281854+00:00",
   "active_run_id": "reset-20261120-165ac7984341",
   "started_utc": "2026-11-20T02:44:45.333049+00:00",
   "successful_generation_attempts": 1,
