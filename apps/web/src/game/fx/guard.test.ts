@@ -142,10 +142,11 @@ describe("Guard 2.0 slice 1: the door's moves on the map (rules 1.56; skills.jso
     // rules 1.73: the turned critical is Numb II's, Retort the Bulwark's rank II
     const f = physFight([{ weapon: 'hellraiser_service_rifle', known: [], skills: { durability: 5, dexterity: 0 }, perks: { numb: 'II' }, classId: 'defender', level: 6, attrs: { endurance: 5 } } as any], [{ tier: 'soldier', weapon: 'maul' }, { tier: 'soldier', weapon: 'maul' }]);
     f.cb.objects = []; f.put(f.pc, 'C3'); const [a, b] = f.cb.units.filter((u) => u.side === 'foe');
-    f.put(a, 'D3'); f.put(b, 'B3'); for (const u of [a, b]) { const x = f.unit(u.id); x.hp = x.maxHp = 900; }
+    f.put(a, 'D3'); f.put(b, 'B3'); for (const u of [a, b]) { const x = f.unit(u.id); x.hp = x.maxHp = 999999; } // rules 1.98 item 8350: Slam deals the plates' weight now; the foes stand to strike back
     f.cb.order = [f.pc.id, ...f.cb.order.filter((id) => id !== f.pc.id)]; f.cb.round = 1; f.turn(f.pc);
     const me = f.unit(f.pc.id); me.hp = me.maxHp; me.armour = 0; me.res!.guard = 5;
     f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_slam' } as any);
+    f.unit(f.pc.id).res!.guard = 3; // rules 1.98 item 8350: Slam spent every plate; the wall raises more before it Challenges
     f.act({ type: 'combat/perk', unitId: f.pc.id, id: 'skill:durability.1', actionId: 'guard_challenge', targetId: a.id } as any); // rules 1.60: Challenge names a foe
     const foe = f.unit(a.id); f.put(foe, 'D3'); f.turn(foe); rig({ die: 20 });
     f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(a.id), f.unit(f.pc.id), 'melee', null, { noAp: true })); rig(null);

@@ -912,7 +912,7 @@
 "build/tank/allin/L6/taken/elite": "hit o:weapon/shot:17+0x3.84v0 i:P1:weapon/physical:49 => P1 hp567>518",
 "build/tank/allin/L6/taken/minion": "hit o:weapon/shot:12+0x3.657v0 i:P1:weapon/physical:27 => P1 hp567>540",
 "build/tank/allin/L6/taken/soldier": "hit o:weapon/shot:18+0x2.852v0 i:P1:weapon/physical:35 => P1 hp567>532",
-"build/tank/allin/L6/taken/vermin": "hit o:weapon/melee:11+0x1.828v0 i:P1:weapon/physical:4 o:physical/item:2+0x1v0 i:F1:physical/physical:2 => P1 hp567>563, F1 hp33>31",
+"build/tank/allin/L6/taken/vermin": "hit o:weapon/melee:11+0x1.828v0 i:P1:weapon/physical:4 i:F1:weapon/physical:160 => P1 hp567>563, F1 hp33>0 dead",
 "build/tank/allin/L6/tech/lunge": "o:weapon/melee:12+0x4.465v0 i:F3:weapon/physical:74 o:weapon/melee:12+0x3.26v0 i:F3:weapon/physical:41 => F3 hp308>193",
 "build/tank/allin/L9/plain/boss": "pv 105.524 a28 m0.27 | hit o:weapon/melee:12+0x8.794v0 i:F5:weapon/physical:106 => F5 hp3941>3835",
 "build/tank/allin/L9/plain/elite": "pv 105.524 a28 m0.27 | hit o:weapon/melee:12+0x8.794v0 i:F4:weapon/physical:106 => F4 hp1153>1047",

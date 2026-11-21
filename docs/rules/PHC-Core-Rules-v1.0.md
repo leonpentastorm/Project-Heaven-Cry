@@ -15024,7 +15024,7 @@ played. As played after this revision:
       one with the weight, the others a plain blow. From Durability 5 every foe beside you is still shoved a tile and
       saves (Body) or is Off Balance, and the Stand Fast and Drive forks change that as before. **Pain Threshold 10:
       a Slam keeps 1 plate** (the beta's point 10, as Guts 10 and Athletics 10 in rules 1.97 item 8343). The foe's
-      armour applies; the blow is a hit for everything that reads one. Supersedes rules 1.56's Slam (2 plates, from
+      armour applies; it is weapon damage, but no attack roll is made (nothing that reads a roll or "on a hit" fires). Supersedes rules 1.56's Slam (2 plates, from
       Durability 5, no damage).
 8351. **Retort is a one-plate Slam on the striker** (the Bulwark's, rank II): a foe hits you in melee while you hold
       Guard: 1 plate and your reaction, no AP, and the striker takes the plain blow of your shield (or weapon) with no

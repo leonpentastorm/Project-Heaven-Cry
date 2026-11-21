@@ -168,6 +168,7 @@ export function plainBlow(cb: Combat, u: Unit, v: Unit, weight: number, label: s
   const dmg = landed(d.total + Math.max(0, weight), d.armour);
   const r = applyDamage(cb, v, dmg, { ...d.src, shield: true } as any);
   say(cb, '  ' + label + ': ' + v.name + ' takes ' + r.amount + (weight > 0 ? ' (the plates\' weight ' + Math.round(weight) + ')' : '') + (v.dead ? ' · killed' : v.hp === 0 ? ' · Downed' : '') + '.');
+  if (!r.prevented && (r.amount > 0 || r.downedHit)) emitFx(cb, 'hurt', { target: v.id, at: v.pos, dmg: r.downedHit ? 0 : r.amount, why: 'weapon', killed: v.hp === 0 || !!v.dead, by: u.id }); // seen as any hurt is (the deal op's shape)
   if (v.hp === 0 || v.dead) fxFell(cb, v);
   return r.amount;
 }
