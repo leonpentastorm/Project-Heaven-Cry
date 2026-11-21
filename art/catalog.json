@@ -34859,6 +34859,42 @@
         "different_pixels_32": 1,
         "different_pixels_64": 22
       }
+    },
+    "weapon-coach_gun--relic": {
+      "label": "Coach Gun — Relic",
+      "path": "art/icons/gear/weapon-coach_gun--relic.png",
+      "sha256": "2140a302170c24edf31b08f09f148e92d84011bc99a1b256a1d75112ab801aec",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-coach_gun--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-coach_gun--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-coach_gun--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-coach_gun--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-coach_gun--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.3",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-coach_gun",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9742270803193485,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 16
+      }
     }
   },
   "survival_art": {

@@ -3085,6 +3085,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-coach_gun--relic",
+      "path": "art/icons/gear/weapon-coach_gun--relic.png",
+      "sha256": "2140a302170c24edf31b08f09f148e92d84011bc99a1b256a1d75112ab801aec",
+      "label": "Coach Gun — Relic",
+      "family": "weapon-coach_gun",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-coach_gun--relic.png",
+        "sha256": "000e30eef78c017466a8bbfb888bef6b48358168083df290c7c623dce18d5d8c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-coach_gun--relic.png",
+        "sha256": "2140a302170c24edf31b08f09f148e92d84011bc99a1b256a1d75112ab801aec"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-coach_gun--relic.txt",
+        "sha256": "55c55f90a8e19c7e7b40ead4609adc1fb8791b49df04c804da22dad69e4f9a29"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-coach_gun.png",
+          "sha256": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5"
+        },
+        {
+          "path": "art/icons/gear/weapon-coach_gun--masterwork.png",
+          "sha256": "de7dc7847e02a58b56dd23c609f3b8bfe74bef5a6f00c8887a2c8ed5111a3fed"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-coach_gun--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-coach_gun--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-coach_gun--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-coach_gun--relic.png"
+      },
+      "export_hashes": {
+        "256": "91a9354b7d0ee9b8304b80a8a10c0b489d2f32175ccee92b53a2ae8656338d01",
+        "128": "2f95256b5b18a08581f05ad153381846127b6279c4afe6edfcd637aa1c6db320",
+        "64": "1fff9d6e69345534baa15eba9284fd44818a2ba0f3f22dfa9f9e7b8c255e946a",
+        "32": "00d62da355632f9e7c52cd585e83095fff07bbd3032811848c4489715e52610d"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-coach_gun",
+      "outline": {
+        "solid_alpha_iou": 0.9742270803193485,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 16
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
