@@ -12,6 +12,9 @@ export interface CallDef {
   id: string; name: string; skill: string; kind: CallKind; aim: CallAim;
   /** the save family a hindering Call is resisted with (none: it just works) */ save?: CallSave;
   text: string; steps: CallStep[]; adjudication: string; provisional?: boolean;
+  /** rules 1.98 item 8352 (ruling 32): a Call on yourself is made this many steps below your own (at least the first) */ self_step_less?: number;
+  /** rules 1.98 item 8352: a Call that lands gives its speaker this resource, by the speaker's points in the Call's skill
+   *  (the last step whose `from` is met), up to the pool's top (Warn's plates) */ feeds?: { resource: string; steps: { from: number; value: number }[] };
 }
 /** What the speaker (or the enemy AI) chose. `opt`: Order's things, joined by '+' ('reload', 'stand', 'pickup',
  * 'move'). `tile`: Order's move, Cue's step, Warn's named tile. `react`: made off the speaker's turn, on its reaction
@@ -62,7 +65,7 @@ export interface CallMarks {
   /** (the first Name It; unused since Leon's ruling of 10 Nov 2026) AP of loss cancelled at the next turn start (99: all of it) */ cancel?: { by: string; side: string; n: number };
   /** Cue: one more reaction */ cue?: { by: string; side: string; r: number };
   /** Spot: allies still to use it, who has, and who is using it now */ spot?: { by: string; side: string; r: number; left: number; users: string[]; live: string | null; hit: number; unhide: boolean };
-  /** Warn: the step before the next attack */ warn?: { by: string; side: string; r: number; tiles: number; hit: number; to?: string; used?: boolean; live?: string | null };
+  /** Warn: the step before the next attack */ warn?: { by: string; side: string; r: number; tiles: number; hit: number; to?: string; used?: boolean; /** the Call's id (its feeds) */ id?: string; live?: string | null };
   /** Threaten: AP lost at the next turn start; and no moving toward the speaker that turn */ apLoss?: { by: string; side: string; n: number }; cowed?: { by: string; side: string; fresh?: boolean };
   /** Taunt: the attack on the taunter costs more */ tauntAp?: { by: string; side: string; n: number };
 }

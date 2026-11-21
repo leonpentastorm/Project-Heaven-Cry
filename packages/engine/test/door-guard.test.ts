@@ -4,6 +4,7 @@
 import { describe, it, expect, afterEach } from 'vitest';
 import { doorLadderOf, biteAt, cashSumOf, keepsOf } from '../src';
 import { SKILL } from '../src/data';
+import { CALL } from '../src';
 import { guardSoak } from '../src/physical/core';
 import { physFight, rig } from './helpers/physfight';
 import { resolveAttack } from '../src/combat';
@@ -63,5 +64,30 @@ describe('Retort (item 8351): the Bulwark one-plate Slam on the striker', () => 
     const line = f.cb.log.find((l) => /plates' weight/.test(l))!;
     expect(line).toContain('Retort'); expect(Number(/weight (\d+)\)/.exec(line)?.[1])).toBe(weight);
     expect(999999 - f.unit(a.id).hp).toBeGreaterThan(weight);
+  });
+});
+
+describe('Warn feeds the wall, and works alone (item 8352)', () => {
+  const warn = (sensory: number, self: boolean) => {
+    const f = physFight([{ skills: { sensory, durability: 4, raw_power: 0 } }, {}], [{ weapon: 'sabre' }]);
+    f.put(f.pcs[0], '5,2'); f.put(f.pcs[1], '6,2'); f.put(f.foe, '7,2'); f.cb.order = [...f.pcs.map((u) => u.id), f.foe.id];
+    const me = f.unit(f.pc.id); me.res!.guard = 0; f.turn(f.pc);
+    const who = self ? f.pcs[0] : f.pcs[1];
+    if (self) f.put(f.foe, '6,3');
+    f.act({ type: 'combat/call', unitId: f.pc.id, id: 'call.warn', targetId: who.id } as any);
+    const step = f.unit(who.id).call?.warn?.tiles;
+    f.turn(f.foe); rig({ hit: true, die: 12 });
+    f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), f.unit(who.id), 'melee', null)); rig(null);
+    return { f, me: f.unit(f.pc.id), step };
+  };
+  const feed = (pts: number) => [...(CALL as any)['call.warn'].feeds.steps].reverse().find((x: any) => pts >= x.from)?.value ?? 0;
+  it('a Warn that lands gives the speaker plates by its Sensory, up to its Reach', () => {
+    for (const pts of [1, 2, 6]) expect(warn(pts, false).me.res!.guard).toBe(Math.min(feed(pts), warn(pts, false).me.resMax!.guard!));
+  });
+  it('alone, Warn is made on yourself at the step below your own (at least the first)', () => {
+    const steps = (CALL as any)['call.warn'].steps, less = (CALL as any)['call.warn'].self_step_less;
+    const r = warn(4, true), ally = warn(4, false);
+    expect(ally.step).toBe(steps[1].numbers.tiles);
+    expect(r.step).toBe(steps[Math.max(0, 1 - less)].numbers.tiles);
   });
 });

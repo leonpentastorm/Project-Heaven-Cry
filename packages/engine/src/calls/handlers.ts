@@ -215,7 +215,7 @@ call({
       t.note('Before the next attack on ' + t.tgt.name + ', they step up to ' + plural(tiles, 'tile') + ' clear' + (t.args.tile ? ' (to the named tile)' : '') + (hit ? '; that attack is at ' + hit + ' to hit' : '') + '. Until the start of your next turn.');
       return null;
     }
-    callMarks(t.tgt).warn = { by: t.u.id, side: t.u.side, r: t.cb.round, tiles, hit, ...(t.args.tile ? { to: t.args.tile } : {}) };
+    callMarks(t.tgt).warn = { by: t.u.id, side: t.u.side, r: t.cb.round, tiles, hit, id: t.def.id, ...(t.args.tile ? { to: t.args.tile } : {}) };
     return null;
   },
 });

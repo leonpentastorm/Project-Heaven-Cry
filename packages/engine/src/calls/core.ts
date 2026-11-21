@@ -11,7 +11,7 @@ import { say, unsay, type Combat, type Unit, alive, emitFx, checkOver, active, d
 import { charOfUnit, emit, bindGame } from '../effects/hooks';
 import { grantPerkAp } from '../effects/ap';
 import { applyCond, condOn, unitStrength, withVia } from '../magic';
-import { canReact, react, refundReaction } from '../tactics';
+import { canReact, react, refundReaction, resGain } from '../tactics';
 import type { Rng } from '../rng';
 import { turnStamp, ownSideOnly } from '../physical/core';
 import type { Call, CallArgs, CallDef, CallHandler, CallMarks, CallPadEntry, CallPreview } from './types';
@@ -108,6 +108,7 @@ function newPreview(cb: Combat, u: Unit, def: CallDef, args: CallArgs): CallPrev
 }
 function buildCall(cb: Combat, u: Unit, def: CallDef, args: CallArgs, tgt: Unit, rng: Rng, preview: boolean): Call {
   const pv = newPreview(cb, u, def, args); pv.target = tgt.id;
+  if (tgt === u && def.self_step_less) pv.step = Math.max(1, pv.step - def.self_step_less); // rules 1.98 item 8352: on yourself, the step below
   const st = def.steps[Math.max(0, pv.step - 1)];
   return { cb, u, c: charOfUnit(u), def, args, tgt, rng, preview, pv, level: pv.level, step: pv.step, react: !!args.react, tnAdd: 0,
     num: (k, fb = 0) => (typeof st?.numbers?.[k] === 'number' ? st.numbers[k] : fb), note: (text) => { pv.notes.push(text); } };
@@ -246,4 +247,14 @@ export function callView(u: Unit, me: 'pc' | 'foe'): Unit {
   if (!cut) return u;
   const x = { ...u }; if (Object.keys(out).length) x.call = out as CallMarks; else delete x.call;
   return x;
+}
+
+/** Rules 1.98 item 8352: what a Call that landed feeds its speaker (calls.json `feeds`: Warn's plates), by the speaker's
+ *  points in the Call's skill, up to the pool's top. The gain, 0 when it feeds nothing. */
+export function callFeed(cb: Combat, u: Unit, def: CallDef | undefined): number {
+  const f = def?.feeds; if (!f || !alive(u)) return 0;
+  const pts = callLevel(u, def!), row = [...f.steps].reverse().find((x) => pts >= x.from); if (!row) return 0;
+  const got = resGain(u, f.resource, row.value);
+  if (got) say(cb, '  ' + u.name + ' reads the blow: +' + got + ' ' + f.resource + ' (' + def!.name + ').');
+  return got;
 }

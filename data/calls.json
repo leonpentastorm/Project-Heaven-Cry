@@ -297,8 +297,17 @@
       "name": "Warn",
       "skill": "sensory",
       "kind": "helping",
-      "aim": "ally",
-      "text": "Warn an ally about the next weapon attack on them. Just before it is rolled they step out of the way, for no AP and without provoking an opportunity attack: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. The warning lasts until the start of your next turn.",
+      "aim": "self-or-ally",
+      "self_step_less": 1,
+      "feeds": {
+        "resource": "guard",
+        "steps": [
+          { "from": 2, "value": 1 },
+          { "from": 6, "value": 2 }
+        ],
+        "source": "rules 1.98 item 8352 (body.json sensory points 2 and 6): a Warn that lands raises the speaker's plates, up to its Reach"
+      },
+      "text": "Warn an ally, or yourself, about the next weapon attack on them. On yourself it is made at the step below your own (at least the first). From Sensory {=feeds.steps.0.from}, a Warn that lands (the warned one steps) gives you {=feeds.steps.0.value} Guard plate, {=feeds.steps.1.value} from Sensory {=feeds.steps.1.from}, up to your Reach. Just before it is rolled they step out of the way, for no AP and without provoking an opportunity attack: to a tile you named, or else to the nearest tile that gets them clear. An attack that can no longer reach them is wasted. The warning lasts until the start of your next turn.",
       "steps": [
         {
           "at": 1,

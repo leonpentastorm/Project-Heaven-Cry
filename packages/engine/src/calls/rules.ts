@@ -5,7 +5,8 @@ import { say, type Combat, type Unit, alive, previewAttack, moveBlock, moveUnit,
 import { onHook } from '../effects/hooks';
 import { briefCredit } from '../effects/ap';
 import { condSource } from '../magic';
-import { CALL_RULES } from './data';
+import { CALL_RULES, CALL } from './data';
+import { callFeed } from './core';
 import { pay, apFor } from '../effects/cost';
 
 /** A mark made in round r still stands: through that round and the next, until its speaker's next turn starts
@@ -61,6 +62,7 @@ onHook('attack_target', (ctx: any, cb) => {
     const from = tgt.pos;
     if (moveUnit(cb, tgt, to, ctx.rng, 'move', { free: true, shortest: true, part: true }) || tgt.pos === from) return;
     say(cb, '(' + tgt.name + ' was warned and steps clear.)');
+    { const by = cb.units.find((x) => x.id === wn.by); if (by && wn.id) callFeed(cb, by, CALL[wn.id]); } // rules 1.98 item 8352: the Warn landed
     if (alive(tgt) && !previewAttack(cb, att, tgt, ctx.mode, { free: true }).ok) {
       ctx.cancel = true; ctx.why = tgt.name + ' was warned and is no longer there';
       if (!ctx.free && paid.ok && alive(att)) pay(cb, att, Math.min(apFor(cb, att), paid.ap)); // the attack was made at where they stood: its AP is spent
