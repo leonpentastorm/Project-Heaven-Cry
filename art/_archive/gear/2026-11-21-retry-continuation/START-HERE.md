@@ -1,3 +1,7 @@
+# Current keptgun24 expansion
+
+559/871 pushed. Lane74grades:46selected/28pending. Runsole-20261121-0109 samebranch. New24keptgunclaim7061326470, firstweapon-parlour_pistol--fine. Prior4pending ShortBow; 3identicalnewFineinputrejections retained. Alloriginalpromptwords/sourceerrors/metadata preserved; everynewpicture candidatefalseapproval. Exactids+refs inqueue, claimcomments inclaim.json. Readliveissue3+allcomments andremotedeliveries beforeEVERYgeneration, pushEVERYselectedpicture. Noquotaresponseyet. Currentdevelope83f37bb proposalcurveonly.
+
 # Current bow expansion
 
 551/871 pushed, lane50grades:38selected/12pending. Run sole-20261121-0109, samebranch. New9bowgrade claim7056379228, firstweapon-short_bow--fine. Other3pending are flamergrades, faithfulretryreservation persists. Exact prompt/ref/hash/source/error provenance in queue+attempts. Allnative/earlierversionspreserved, approvalsfalse. Read currentissue3+allcomments+remote deliveries beforeeveryrender; noquotaresponseyet. Do not use stalehistoricalcounts below.

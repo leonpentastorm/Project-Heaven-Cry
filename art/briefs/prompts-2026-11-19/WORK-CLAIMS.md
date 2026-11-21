@@ -1,3 +1,7 @@
+## Keptgun24 expansion7061326470
+
+Runsole-20261121-0109 claims all4grades of ParlourPistol,LeverCarbine,SawnOff,CoachGun,LegionBullpup,WhisperSMG. Exact74queue46selected/28pending, total559/871. Other284missinggear require freshclaims. Nootherproducer.
+
 ## Bow expansion7056379228
 
 Sole run claims ShortBow4,Crossbow3,RepeatingCrossbow2 exactIDs in current50queue.38selected/12pending;551/871 total.3flamergrades stillreserved;other308missinggear outsidecurrentqueue.

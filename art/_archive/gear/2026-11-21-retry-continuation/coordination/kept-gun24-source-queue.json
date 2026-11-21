@@ -1,0 +1,608 @@
+[
+  {
+    "id": "weapon-parlour_pistol--fine",
+    "standard_id": "weapon-parlour_pistol",
+    "grade": "fine",
+    "label": "Parlour Pistol \u2014 Fine",
+    "path": "art/icons/gear/weapon-parlour_pistol--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-parlour_pistol.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-parlour_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-parlour_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+    "keep_line": "the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-parlour_pistol--fine--1795145062151.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-parlour_pistol--fine--1795145062151.json",
+      "request_id": "56ae837a-a224-4099-a83d-3fbcf0ab51ac"
+    }
+  },
+  {
+    "id": "weapon-parlour_pistol--masterwork",
+    "standard_id": "weapon-parlour_pistol",
+    "grade": "masterwork",
+    "label": "Parlour Pistol \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-parlour_pistol--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-parlour_pistol.png",
+      "art/icons/gear/weapon-parlour_pistol--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-parlour_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-parlour_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The new receiver inlay is bright brass. Keep it narrow; preserve the original accents.",
+    "keep_line": "the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-parlour_pistol--fine"
+  },
+  {
+    "id": "weapon-parlour_pistol--relic",
+    "standard_id": "weapon-parlour_pistol",
+    "grade": "relic",
+    "label": "Parlour Pistol \u2014 Relic",
+    "path": "art/icons/gear/weapon-parlour_pistol--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-parlour_pistol.png",
+      "art/icons/gear/weapon-parlour_pistol--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-parlour_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-parlour_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. Use just one repair: one existing pin replaced by a different dark steel, not an extra patch plate, band or wrap. Keep preexisting cloth/stock wraps in place.",
+    "keep_line": "the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-parlour_pistol--masterwork"
+  },
+  {
+    "id": "weapon-parlour_pistol--celestial",
+    "standard_id": "weapon-parlour_pistol",
+    "grade": "celestial",
+    "label": "Parlour Pistol \u2014 Celestial",
+    "path": "art/icons/gear/weapon-parlour_pistol--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-parlour_pistol.png",
+      "art/icons/gear/weapon-parlour_pistol--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-parlour_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-parlour_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The body, stock/grip and fittings become pale pearl-ivory in their existing shapes; keep a faint trace of original accent at its existing position. Preserve the scroll panel; do not add bloom outside the silhouette.",
+    "keep_line": "the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-parlour_pistol--relic"
+  },
+  {
+    "id": "weapon-lever_carbine--fine",
+    "standard_id": "weapon-lever_carbine",
+    "grade": "fine",
+    "label": "Lever Carbine \u2014 Fine",
+    "path": "art/icons/gear/weapon-lever_carbine--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lever_carbine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lever_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-lever_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+    "keep_line": "the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-lever_carbine--fine--1795145177391.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-lever_carbine--fine--1795145177391.json",
+      "request_id": "0fc8148e-a161-47ed-96b1-077dc1cde539"
+    }
+  },
+  {
+    "id": "weapon-lever_carbine--masterwork",
+    "standard_id": "weapon-lever_carbine",
+    "grade": "masterwork",
+    "label": "Lever Carbine \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-lever_carbine--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lever_carbine.png",
+      "art/icons/gear/weapon-lever_carbine--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lever_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-lever_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The new receiver inlay is bright brass. Keep it narrow; preserve the original accents.",
+    "keep_line": "the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-lever_carbine--fine"
+  },
+  {
+    "id": "weapon-lever_carbine--relic",
+    "standard_id": "weapon-lever_carbine",
+    "grade": "relic",
+    "label": "Lever Carbine \u2014 Relic",
+    "path": "art/icons/gear/weapon-lever_carbine--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lever_carbine.png",
+      "art/icons/gear/weapon-lever_carbine--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lever_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-lever_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. Use just one repair: one existing pin replaced by a different dark steel, not an extra patch plate, band or wrap. Keep preexisting cloth/stock wraps in place.",
+    "keep_line": "the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-lever_carbine--masterwork"
+  },
+  {
+    "id": "weapon-lever_carbine--celestial",
+    "standard_id": "weapon-lever_carbine",
+    "grade": "celestial",
+    "label": "Lever Carbine \u2014 Celestial",
+    "path": "art/icons/gear/weapon-lever_carbine--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lever_carbine.png",
+      "art/icons/gear/weapon-lever_carbine--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lever_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-lever_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The body, stock/grip and fittings become pale pearl-ivory in their existing shapes; keep a faint trace of original accent at its existing position. Preserve the scroll panel; do not add bloom outside the silhouette.",
+    "keep_line": "the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-lever_carbine--relic"
+  },
+  {
+    "id": "weapon-sawn_off--fine",
+    "standard_id": "weapon-sawn_off",
+    "grade": "fine",
+    "label": "Sawn-off \u2014 Fine",
+    "path": "art/icons/gear/weapon-sawn_off--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-sawn_off.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-sawn_off",
+    "family_references": [
+      "art/icons/gear/weapon-sawn_off.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+    "keep_line": "the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sawn_off--fine--1795145285032.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sawn_off--fine--1795145285032.json",
+      "request_id": "6a7215ba-eaa7-4dab-90fc-20c29dc92803"
+    }
+  },
+  {
+    "id": "weapon-sawn_off--masterwork",
+    "standard_id": "weapon-sawn_off",
+    "grade": "masterwork",
+    "label": "Sawn-off \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-sawn_off--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-sawn_off.png",
+      "art/icons/gear/weapon-sawn_off--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-sawn_off",
+    "family_references": [
+      "art/icons/gear/weapon-sawn_off.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The new receiver inlay is muted ochre matching its existing three side daubs. Keep it narrow; preserve the original accents.",
+    "keep_line": "the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-sawn_off--fine"
+  },
+  {
+    "id": "weapon-sawn_off--relic",
+    "standard_id": "weapon-sawn_off",
+    "grade": "relic",
+    "label": "Sawn-off \u2014 Relic",
+    "path": "art/icons/gear/weapon-sawn_off--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-sawn_off.png",
+      "art/icons/gear/weapon-sawn_off--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-sawn_off",
+    "family_references": [
+      "art/icons/gear/weapon-sawn_off.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. Use just one repair: one existing pin replaced by a different dark steel, not an extra patch plate, band or wrap. Keep preexisting cloth/stock wraps in place.",
+    "keep_line": "the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-sawn_off--masterwork"
+  },
+  {
+    "id": "weapon-sawn_off--celestial",
+    "standard_id": "weapon-sawn_off",
+    "grade": "celestial",
+    "label": "Sawn-off \u2014 Celestial",
+    "path": "art/icons/gear/weapon-sawn_off--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-sawn_off.png",
+      "art/icons/gear/weapon-sawn_off--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-sawn_off",
+    "family_references": [
+      "art/icons/gear/weapon-sawn_off.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The body, stock/grip and fittings become pale pearl-ivory in their existing shapes; keep a faint trace of original accent at its existing position. Preserve the scroll panel; do not add bloom outside the silhouette.",
+    "keep_line": "the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-sawn_off--relic"
+  },
+  {
+    "id": "weapon-coach_gun--fine",
+    "standard_id": "weapon-coach_gun",
+    "grade": "fine",
+    "label": "Coach Gun \u2014 Fine",
+    "path": "art/icons/gear/weapon-coach_gun--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-coach_gun.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-coach_gun",
+    "family_references": [
+      "art/icons/gear/weapon-coach_gun.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+    "keep_line": "the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-coach_gun--fine--1795145382032.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-coach_gun--fine--1795145382032.json",
+      "request_id": "0b871811-e0f7-4ca2-8e0c-a17b60e564d8"
+    }
+  },
+  {
+    "id": "weapon-coach_gun--masterwork",
+    "standard_id": "weapon-coach_gun",
+    "grade": "masterwork",
+    "label": "Coach Gun \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-coach_gun--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-coach_gun.png",
+      "art/icons/gear/weapon-coach_gun--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-coach_gun",
+    "family_references": [
+      "art/icons/gear/weapon-coach_gun.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The new receiver inlay is bright brass. Keep it narrow; preserve the original accents.",
+    "keep_line": "the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-coach_gun--fine"
+  },
+  {
+    "id": "weapon-coach_gun--relic",
+    "standard_id": "weapon-coach_gun",
+    "grade": "relic",
+    "label": "Coach Gun \u2014 Relic",
+    "path": "art/icons/gear/weapon-coach_gun--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-coach_gun.png",
+      "art/icons/gear/weapon-coach_gun--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-coach_gun",
+    "family_references": [
+      "art/icons/gear/weapon-coach_gun.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. Use just one repair: one existing pin replaced by a different dark steel, not an extra patch plate, band or wrap. Keep preexisting cloth/stock wraps in place.",
+    "keep_line": "the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-coach_gun--masterwork"
+  },
+  {
+    "id": "weapon-coach_gun--celestial",
+    "standard_id": "weapon-coach_gun",
+    "grade": "celestial",
+    "label": "Coach Gun \u2014 Celestial",
+    "path": "art/icons/gear/weapon-coach_gun--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-coach_gun.png",
+      "art/icons/gear/weapon-coach_gun--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-coach_gun",
+    "family_references": [
+      "art/icons/gear/weapon-coach_gun.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The body, stock/grip and fittings become pale pearl-ivory in their existing shapes; keep a faint trace of original accent at its existing position. Preserve the scroll panel; do not add bloom outside the silhouette.",
+    "keep_line": "the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-coach_gun--relic"
+  },
+  {
+    "id": "weapon-legion_bullpup--fine",
+    "standard_id": "weapon-legion_bullpup",
+    "grade": "fine",
+    "label": "Legion Bullpup \u2014 Fine",
+    "path": "art/icons/gear/weapon-legion_bullpup--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_bullpup.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_bullpup",
+    "family_references": [
+      "art/icons/gear/weapon-legion_bullpup.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+    "keep_line": "the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-legion_bullpup--fine--1795145475884.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-legion_bullpup--fine--1795145475884.json",
+      "request_id": "b72d3dbe-fa10-4d75-8d8b-0d7aff5364b6"
+    }
+  },
+  {
+    "id": "weapon-legion_bullpup--masterwork",
+    "standard_id": "weapon-legion_bullpup",
+    "grade": "masterwork",
+    "label": "Legion Bullpup \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-legion_bullpup--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_bullpup.png",
+      "art/icons/gear/weapon-legion_bullpup--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_bullpup",
+    "family_references": [
+      "art/icons/gear/weapon-legion_bullpup.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The new receiver inlay is bright brass. Keep it narrow; preserve the original accents.",
+    "keep_line": "the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-legion_bullpup--fine"
+  },
+  {
+    "id": "weapon-legion_bullpup--relic",
+    "standard_id": "weapon-legion_bullpup",
+    "grade": "relic",
+    "label": "Legion Bullpup \u2014 Relic",
+    "path": "art/icons/gear/weapon-legion_bullpup--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_bullpup.png",
+      "art/icons/gear/weapon-legion_bullpup--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_bullpup",
+    "family_references": [
+      "art/icons/gear/weapon-legion_bullpup.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. Use just one repair: one existing pin replaced by a different dark steel, not an extra patch plate, band or wrap. Keep preexisting cloth/stock wraps in place.",
+    "keep_line": "the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-legion_bullpup--masterwork"
+  },
+  {
+    "id": "weapon-legion_bullpup--celestial",
+    "standard_id": "weapon-legion_bullpup",
+    "grade": "celestial",
+    "label": "Legion Bullpup \u2014 Celestial",
+    "path": "art/icons/gear/weapon-legion_bullpup--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_bullpup.png",
+      "art/icons/gear/weapon-legion_bullpup--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_bullpup",
+    "family_references": [
+      "art/icons/gear/weapon-legion_bullpup.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The body, stock/grip and fittings become pale pearl-ivory in their existing shapes; keep a faint trace of original accent at its existing position. Preserve the scroll panel; do not add bloom outside the silhouette.",
+    "keep_line": "the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-legion_bullpup--relic"
+  },
+  {
+    "id": "weapon-whisper_smg--fine",
+    "standard_id": "weapon-whisper_smg",
+    "grade": "fine",
+    "label": "Whisper SMG \u2014 Fine",
+    "path": "art/icons/gear/weapon-whisper_smg--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_smg.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_smg",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_smg.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same compact dark angular suppressed submachine gun pointing up-right, one long fat plain suppressor with a dark circular end, small receiver with short top rail and low sights, straight slightly slanted magazine below and ahead of the grip, separate pistol grip and rectangular trigger guard, short angular rear stock with a small riveted blue-grey side plate. Preserve suppressor length/diameter, muzzle opening, magazine angle, grip/guard opening, stock shape, rivets, sights and exactly the small blue-grey stock plate. No second magazine or new ports, no muzzle light.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+    "keep_line": "the same compact dark angular suppressed submachine gun pointing up-right, one long fat plain suppressor with a dark circular end, small receiver with short top rail and low sights, straight slightly slanted magazine below and ahead of the grip, separate pistol grip and rectangular trigger guard, short angular rear stock with a small riveted blue-grey side plate. Preserve suppressor length/diameter, muzzle opening, magazine angle, grip/guard opening, stock shape, rivets, sights and exactly the small blue-grey stock plate. No second magazine or new ports, no muzzle light.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_smg--fine--1795145562611.json",
+      "request_id": "890725b2-bbba-422d-9dc8-8dfca94617b4"
+    }
+  },
+  {
+    "id": "weapon-whisper_smg--masterwork",
+    "standard_id": "weapon-whisper_smg",
+    "grade": "masterwork",
+    "label": "Whisper SMG \u2014 Masterwork",
+    "path": "art/icons/gear/weapon-whisper_smg--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_smg.png",
+      "art/icons/gear/weapon-whisper_smg--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_smg",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_smg.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same compact dark angular suppressed submachine gun pointing up-right, one long fat plain suppressor with a dark circular end, small receiver with short top rail and low sights, straight slightly slanted magazine below and ahead of the grip, separate pistol grip and rectangular trigger guard, short angular rear stock with a small riveted blue-grey side plate. Preserve suppressor length/diameter, muzzle opening, magazine angle, grip/guard opening, stock shape, rivets, sights and exactly the small blue-grey stock plate. No second magazine or new ports, no muzzle light.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The new receiver inlay is muted blue-grey matching its existing stock plate. Keep it narrow; preserve the original accents.",
+    "keep_line": "the same compact dark angular suppressed submachine gun pointing up-right, one long fat plain suppressor with a dark circular end, small receiver with short top rail and low sights, straight slightly slanted magazine below and ahead of the grip, separate pistol grip and rectangular trigger guard, short angular rear stock with a small riveted blue-grey side plate. Preserve suppressor length/diameter, muzzle opening, magazine angle, grip/guard opening, stock shape, rivets, sights and exactly the small blue-grey stock plate. No second magazine or new ports, no muzzle light.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-whisper_smg--fine"
+  },
+  {
+    "id": "weapon-whisper_smg--relic",
+    "standard_id": "weapon-whisper_smg",
+    "grade": "relic",
+    "label": "Whisper SMG \u2014 Relic",
+    "path": "art/icons/gear/weapon-whisper_smg--relic.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_smg.png",
+      "art/icons/gear/weapon-whisper_smg--masterwork.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_smg",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_smg.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same compact dark angular suppressed submachine gun pointing up-right, one long fat plain suppressor with a dark circular end, small receiver with short top rail and low sights, straight slightly slanted magazine below and ahead of the grip, separate pistol grip and rectangular trigger guard, short angular rear stock with a small riveted blue-grey side plate. Preserve suppressor length/diameter, muzzle opening, magazine angle, grip/guard opening, stock shape, rivets, sights and exactly the small blue-grey stock plate. No second magazine or new ports, no muzzle light.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. Use just one repair: one existing pin replaced by a different dark steel, not an extra patch plate, band or wrap. Keep preexisting cloth/stock wraps in place.",
+    "keep_line": "the same compact dark angular suppressed submachine gun pointing up-right, one long fat plain suppressor with a dark circular end, small receiver with short top rail and low sights, straight slightly slanted magazine below and ahead of the grip, separate pistol grip and rectangular trigger guard, short angular rear stock with a small riveted blue-grey side plate. Preserve suppressor length/diameter, muzzle opening, magazine angle, grip/guard opening, stock shape, rivets, sights and exactly the small blue-grey stock plate. No second magazine or new ports, no muzzle light.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-whisper_smg--masterwork"
+  },
+  {
+    "id": "weapon-whisper_smg--celestial",
+    "standard_id": "weapon-whisper_smg",
+    "grade": "celestial",
+    "label": "Whisper SMG \u2014 Celestial",
+    "path": "art/icons/gear/weapon-whisper_smg--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_smg.png",
+      "art/icons/gear/weapon-whisper_smg--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_smg",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_smg.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker\u2019s signature parts are: the same compact dark angular suppressed submachine gun pointing up-right, one long fat plain suppressor with a dark circular end, small receiver with short top rail and low sights, straight slightly slanted magazine below and ahead of the grip, separate pistol grip and rectangular trigger guard, short angular rear stock with a small riveted blue-grey side plate. Preserve suppressor length/diameter, muzzle opening, magazine angle, grip/guard opening, stock shape, rivets, sights and exactly the small blue-grey stock plate. No second magazine or new ports, no muzzle light.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The body, stock/grip and fittings become pale pearl-ivory in their existing shapes; keep a faint trace of original accent at its existing position. Preserve the scroll panel; do not add bloom outside the silhouette.",
+    "keep_line": "the same compact dark angular suppressed submachine gun pointing up-right, one long fat plain suppressor with a dark circular end, small receiver with short top rail and low sights, straight slightly slanted magazine below and ahead of the grip, separate pistol grip and rectangular trigger guard, short angular rear stock with a small riveted blue-grey side plate. Preserve suppressor length/diameter, muzzle opening, magazine angle, grip/guard opening, stock shape, rivets, sights and exactly the small blue-grey stock plate. No second magazine or new ports, no muzzle light.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-whisper_smg--relic"
+  }
+]
