@@ -1,0 +1,64 @@
+{
+  "head": "d45cdaf2b600821abfe3b8bcc5bf1b4edfb976c0",
+  "job": {
+    "id": "weapon-legion_bullpup--fine",
+    "standard_id": "weapon-legion_bullpup",
+    "grade": "fine",
+    "label": "Legion Bullpup — Fine",
+    "path": "art/icons/gear/weapon-legion_bullpup--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-legion_bullpup.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-legion_bullpup",
+    "family_references": [
+      "art/icons/gear/weapon-legion_bullpup.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with THREE diagonal vent grooves, exactly as visible in the Standard, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+    "keep_line": "the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with three diagonal vent grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "242ee0ace9aa2ba6bd87754216c2677ee8ac9e0e7321c3356f07f439baabe44a",
+    "standard_sha256": "3dc7d695c6eb6c2698fa797c62cb8e81159f117c8cbfca317632d8cdc62581a1",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-legion_bullpup--fine--1795145475884.json",
+      "response": {
+        "id": "weapon-legion_bullpup--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID b72d3dbe-fa10-4d75-8d8b-0d7aff5364b6. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    },
+    "prior_last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-legion_bullpup--fine--1795145475884.json",
+      "request_id": "b72d3dbe-fa10-4d75-8d8b-0d7aff5364b6"
+    },
+    "prompt_revisions": [
+      {
+        "previous_prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+        "previous_prompt_sha256": "242ee0ace9aa2ba6bd87754216c2677ee8ac9e0e7321c3356f07f439baabe44a",
+        "reason": "Correct inherited keep-line factual error: actual Standard shows THREE diagonal vent grooves, not five. Exact actual part-count preservation, no content reduction."
+      }
+    ],
+    "prior_keep_line": "the same olive-grey angular bullpup rifle on a shallow muzzle-up-right diagonal, straight rear butt with small pale stripe, rectangular magazine behind the forward grip/trigger group, large integral angular carry handle with its long open window, stepped vented receiver/fore-end with five diagonal grooves, short straight barrel and compact plain muzzle. Preserve exact magazine position and length, grip/guard openings, carry-handle window, vents, panel seams, pins and the existing pale stock stripe. No forward magazine, no new optic or coloured mark.",
+    "active_prompt_sha256": "29927d83ab7b7e1c9eebeb77004a2aebe6e76db4eb2cfcbc32fbe8c50c0a8f68"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-legion_bullpup.png": "3dc7d695c6eb6c2698fa797c62cb8e81159f117c8cbfca317632d8cdc62581a1",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7061326470,
+  "clock": {
+    "current_time": "2026-11-21 10:42:59 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7061326470,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

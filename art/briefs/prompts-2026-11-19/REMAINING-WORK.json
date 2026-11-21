@@ -1,7 +1,7 @@
 {
-  "selected": 562,
+  "selected": 563,
   "requested": 871,
-  "remaining": 309,
+  "remaining": 308,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 407,
+      "selected": 408,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 249,
+    "grade": 248,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 45,
+    "service-blocked-or-preceding-grade-dependent": 44,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -621,14 +621,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-coach_gun--celestial.png",
       "standard": "weapon-coach_gun",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-legion_bullpup--fine",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-legion_bullpup--fine.png",
-      "standard": "weapon-legion_bullpup",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2567,7 +2559,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-coach_gun--relic",
+  "last_delivered": "weapon-legion_bullpup--fine",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

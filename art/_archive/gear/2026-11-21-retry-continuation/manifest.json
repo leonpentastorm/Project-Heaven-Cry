@@ -3147,6 +3147,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_bullpup--fine",
+      "path": "art/icons/gear/weapon-legion_bullpup--fine.png",
+      "sha256": "ea28ed4172671bbdf8b46a512cbca82dec71591a0a0e5ab1acfec7e70089a397",
+      "label": "Legion Bullpup — Fine",
+      "family": "weapon-legion_bullpup",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-legion_bullpup--fine.png",
+        "sha256": "4f306f31085b13887f996cb7828612ee7f444e14489f4186f01bf51652fa4f3a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-legion_bullpup--fine.png",
+        "sha256": "ea28ed4172671bbdf8b46a512cbca82dec71591a0a0e5ab1acfec7e70089a397"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-legion_bullpup--fine.txt",
+        "sha256": "6e68d4df9d63ec95d04f3ce4b6f5962f436aead1c4f9ecbc002f0fe2424090af"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_bullpup.png",
+          "sha256": "3dc7d695c6eb6c2698fa797c62cb8e81159f117c8cbfca317632d8cdc62581a1"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_bullpup--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_bullpup--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_bullpup--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_bullpup--fine.png"
+      },
+      "export_hashes": {
+        "256": "55a76b09019058158deeb09a5d52dc0c4cf214448b6d7099bd799f7a9c53c071",
+        "128": "83f4591eaefe99b816912ab62853bbab1ba8bdd0299cb08827b5d063cee67171",
+        "64": "5527831c004282abd925fddf50817423b6dc1cab3db84d16dc3baa9d19aa95ad",
+        "32": "2c82a04d399a21f762ce917932cc6956973f14c155a5636a199641f093f3b762"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-legion_bullpup",
+      "outline": {
+        "solid_alpha_iou": 0.9548462064251538,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 25
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

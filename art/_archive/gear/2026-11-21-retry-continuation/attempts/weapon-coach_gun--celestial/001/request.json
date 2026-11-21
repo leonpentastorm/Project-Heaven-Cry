@@ -1,0 +1,45 @@
+{
+  "head": "d45cdaf2b600821abfe3b8bcc5bf1b4edfb976c0",
+  "job": {
+    "id": "weapon-coach_gun--celestial",
+    "standard_id": "weapon-coach_gun",
+    "grade": "celestial",
+    "label": "Coach Gun — Celestial",
+    "path": "art/icons/gear/weapon-coach_gun--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-coach_gun.png",
+      "art/icons/gear/weapon-coach_gun--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-coach_gun",
+    "family_references": [
+      "art/icons/gear/weapon-coach_gun.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The body, stock/grip and fittings become pale pearl-ivory in their existing shapes; keep a faint trace of original accent at its existing position. Preserve the scroll panel; do not add bloom outside the silhouette.",
+    "keep_line": "the same short side-by-side double-barrel coach gun pointing up-right, two full round parallel dark steel barrels with brass retaining band and dark muzzle bores, two exposed curved hammers, compact brown-and-brass receiver with a round hinge pivot, oval trigger guard with two curved triggers, reddish walnut shoulder stock with brass buttplate and an existing pale cloth wrap at the stock wrist, and short walnut fore-end. Preserve the barrel pair spacing and lengths, every hammer, pivot, trigger, guard opening, stock/wrap and fitting exactly. No new magazine, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-coach_gun--relic",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "ac3df70f4f09c5284ee29632ac2eb09f740234bdbacee4fb1184fb78d3c329e6",
+    "standard_sha256": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5",
+    "retry_authorized_by_user": true
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-coach_gun.png": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5",
+    "art/icons/gear/weapon-coach_gun--relic.png": "2140a302170c24edf31b08f09f148e92d84011bc99a1b256a1d75112ab801aec",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7061326470,
+  "clock": {
+    "current_time": "2026-11-21 10:41:52 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7061326470,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}
