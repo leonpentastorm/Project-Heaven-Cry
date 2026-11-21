@@ -115,3 +115,10 @@ The Bites in the bible JSON were set so each door's biggest hit landed under one
 | Guard (Slam) | 2 | about 3 | every turn; the wall's reward is the soak |
 
 Unanswered and left as the game has them today: a solo shooter's pips shed each turn; Guard's plates fill in one action. The "felt" lines that named a digit count are rewritten to say what the player gets.
+
+## J. Leon's second set of rulings on the doors (21 Nov 2026)
+
+59. **Two Emanators.** An Emanator, or an Emanator-enabled weapon such as the Emanator katana, in each hand lets a character **begin two Outbursts in one turn**. Filling both takes more turns than filling one; a double Release is worth about 9 to 10 plain attacks. (One hand: about 5 a turn, ruling 55.)
+60. **Guard fills fast late in the game, and that is fine.** The place its plates get spent is the advanced class: its skills remove Guard in exchange for a benefit, so a late-game wall spawns plates, does something with them, and spawns more. In 0.34 Guard keeps its quick fill; the base door's Slam stays modest. Noted for the advanced classes.
+61. **Prayer's cash-out is the Hymn.** **The Miracle is rarer than a Weapon Art and should break every scale.** **Its once-a-session limit is removed**: a faith build tuned to the point of two Miracles in a five-hour session is hard to reach and is rewarded for it. Its price stays (Faith 7 and Devotion 10 to call it; it costs five levels of Devotion), and that price is the limit.
+62. **Shadow's full Break is worth about 9, and it must take real set-up time to get there**, "or else it will be stealth archer all over the place again". The meter fills over turns of staying unseen without attacking (first rule: no more than 2 Shadow a turn from every source, so the full meter of 5 takes about three turns; a Break on a part-filled meter pays for what it holds and no more).
