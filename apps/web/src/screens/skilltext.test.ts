@@ -53,7 +53,7 @@ describe('the player texts in skills.json', () => {
         const m = /New moves?(?: from Hidden)?: ([^.]*)\./.exec(u.player || '');
         if (m) for (const item of m[1].split(/, | and /)) expect(item, s.id + ' at ' + n + ': ' + item).toMatch(/^[A-Z][\w ]+ \([^)]+\)$/);
       }
-      if (s.feed) { expect(s.per_point.rows[0].text, s.id + ': a beta\'s first row is its door line').toMatch(/\{=per_point\.numbers\.feed\b/); expect(feedBlock(s.id, null)!.head).toMatch(/^Feeds /); }
+      if (s.feed) { expect(s.per_point.rows[0].text, s.id + ': a beta\'s first row is its door line').toMatch(/\{=per_point\.numbers\.feed(_flat)?\b/); expect(feedBlock(s.id, null)!.head).toMatch(/^Feeds /); }
     });
   }
 });

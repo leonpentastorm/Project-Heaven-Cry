@@ -2,7 +2,7 @@
 // while a Line is built, where to stand, the area, delivery, burst, who is affected, fizzle, and placed magic. Every
 // number comes from the engine's preview; these tests check the screen says it.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, evoke, SIGIL, LINE_MULT, type Sheet, type Combat, type Unit, type MapDef } from '@engine';
+import { ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, evoke, SIGIL, lineMultFor, compileSpell, type Sheet, type Combat, type Unit, type MapDef } from '@engine';
 import { drawStrip, wordRows, shortWhy, WORD_ROWS, patternPanel, evokeView, evokeClick, placedView, placedLegend, spellSummary, arrowOf, actionPreviewTiles } from './sigilView';
 import { GLYPH_PATHS, glyphSvg } from './glyphs';
 
@@ -62,7 +62,7 @@ describe('while building (spec 9.2)', () => {
     expect(p.words.map((w) => w.word)).toEqual(['SEEK', 'CONDENSE']); expect(p.verdict).toMatch(/Needs a Subject/);
     walk(cb, rng, u, ['fire'], ['4,5']);
     p = patternPanel(cb, '3,5', u, knowsNone)!;
-    expect(p.valid).toBe(true); expect(p.shape).toBe('Line of 3'); expect(p.verdict).toMatch(/^✓ A spell: FIRE, a bolt, range 8, core ×1.5/);
+    expect(p.valid).toBe(true); expect(p.shape).toBe('Line of 3'); expect(p.verdict).toMatch(/^✓ A spell: FIRE, a bolt, range 8, one target/); // rules 1.100 item 8372
     expect(p.capLeft).toBe(1); expect(p.lineLeft).toBe(1);
     expect(p.stats.map((s) => s.k)).toEqual(['Charge', 'AP', 'Flux']);
     expect(p.stats[0].after).toMatch(/\(−3\)$/); // 3 glyphs fire for 3 charge
@@ -77,7 +77,7 @@ describe('while building (spec 9.2)', () => {
     expect(p.words.map((w) => w.word)).toEqual(['SHOCK', 'SEEK']);
   });
   it('spell summaries read the compiled numbers', () => {
-    expect(spellSummary(['fire', 'fire', 'condense'])).toBe('FIRE, Touch (1 tile, or yourself), core ×1.5, repeats ×0.9');
+    expect(spellSummary(['fire', 'fire', 'condense'])).toBe('FIRE, Touch (1 tile, or yourself), one target, repeats ×0.9');
     expect(spellSummary(['shock', 'seek', 'chain'])).toMatch(/chains 2 times|chains 1 time/);
   });
 });
@@ -111,7 +111,7 @@ describe('Evoke (spec 9.3–9.8)', () => {
     expect(v.facing).toMatch(/^→ \(along/); expect(v.area.has('8,5')).toBe(true); expect(v.tiles['9,5'].layer).toMatch(/rgba\(79, 200, 223/);
     expect(v.tiles['5,5'].marks.some((m) => m.key === 'path0' && m.text === '→')).toBe(true);
     const row = v.affected.find((a) => a.unit === e.id)!;
-    const two = Math.round((SIGIL as any).fire.damage * LINE_MULT[2]); // rules 1.95: FIRE's row (30 x the factor) × the Line multiplier of 2 glyphs
+    const two = Math.round((SIGIL as any).fire.damage * lineMultFor(u, compileSpell(['fire', 'seek']))); // FIRE's row × the Line's cash-out (rules 1.100 item 8371)
     expect(row.tag).toBe('ENEMY'); expect(row.text).toMatch(new RegExp('^−' + two + ' HP · 95% to hit'));
     expect(v.payload).toBeNull();
     const k = evokeClick(v, cb, u, '8,5', {}); expect(k.choice!.aims).toEqual(['8,5']);
@@ -179,7 +179,7 @@ describe('the preview gaps of batch 1 (spec 9.7, 9.9; items 480)', () => {
     const { cb, u, rng } = setup(['fire', 'seek', 'leech'], ['8,5']); u.hp = 300;
     walk(cb, rng, u, ['fire', 'leech', 'seek'], L3);
     const v = evokeView(cb, u, '2,5', { aims: ['8,5'] });
-    const half = Math.floor(Math.round((SIGIL as any).fire.damage * LINE_MULT[3]) / 2); // rules 1.95: half of FIRE's row × the Line of 3
+    const half = Math.floor(Math.round((SIGIL as any).fire.damage * lineMultFor(u, compileSpell(['fire', 'leech', 'seek']))) / 2); // half of FIRE's row × the Line's cash-out (rules 1.100 item 8371)
     expect(v.leech).toMatchObject({ heal: half, restored: half });
     const row = v.affected.find((a) => a.key === 'leech')!; expect(row.extra).toBe(true); expect(row.text).toMatch(new RegExp('LEECH: \\+' + half + ' HP if every hit lands'));
     expect(v.tiles['2,5'].marks.some((m) => m.text === '+' + half + ' HP')).toBe(true);

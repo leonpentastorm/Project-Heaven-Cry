@@ -2,7 +2,7 @@
 // groups (copied words first), the known-to-study list, word chips with use counts and stars, inflections greyed until
 // earned; the collapsible, grouped workshop (open state remembered); a sigil mark on the area map and its panel.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, positionsOf, standable, zoneMap, refOf, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, positionsOf, standable, zoneMap, refOf, wordsKnownCap, type GameState, type Sheet } from '@engine';
 
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, location: { search: '', hash: '' }, innerWidth: 1400, innerHeight: 900 });
 vi.stubGlobal('location', { search: '', hash: '' });
@@ -54,15 +54,16 @@ describe('the Magic tab: study and learning (rules 1.10.2)', () => {
   });
   it('a pick with the cap full is banked, and says so; a free word ignores the cap', () => {
     const { c, L } = start();
-    c().sigils = ['fire', 'seek', 'arc', 'ward', 'mend']; c().sigilGrowth.study = 6; // cap 4 + Brain Power 1 = 5
+    const cap = wordsKnownCap(c()); // rules 1.100 item 8373: 4 + 3 a Brain Power point
+    c().sigils = ['fire', 'seek', 'arc', 'ward', 'mend', 'acid', 'spark', 'freeze', 'stone', 'gale'].slice(0, cap); c().sigilGrowth.study = 6;
     let r = L.renderVals();
-    expect(r.mg.st.canLearn).toBe(false); expect(r.mg.st.why).toMatch(/banked: you know 5 words, the most Brain Power allows \(5\)/);
+    expect(r.mg.st.canLearn).toBe(false); expect(r.mg.st.why).toMatch(new RegExp('banked: you know ' + cap + ' words, the most Brain Power allows [(]' + cap + '[)]'));
     c().sigilGrowth.free = 1; r = L.renderVals();
     expect(r.mg.st.canFree).toBe(true); expect(r.mg.st.freeLabel).toBe('Take a free word (1)');
     r.mg.st.openFree(); r = L.renderVals();
     expect(r.mg.st.pickHead).toMatch(/FREE WORD/);
     r.mg.st.pick.groups.find((g: any) => g.key === 'reach').items[0].pick();
-    expect(c().sigils.length).toBe(6); expect(c().sigilGrowth.free).toBe(0);
+    expect(c().sigils.length).toBe(cap + 1); expect(c().sigilGrowth.free).toBe(0);
   });
 });
 

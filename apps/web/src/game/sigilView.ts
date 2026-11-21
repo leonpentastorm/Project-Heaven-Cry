@@ -213,7 +213,7 @@ export function spellSummary(words: string[]): string {
   const how = sp.missile === 'bolt' ? 'a bolt, range ' + sp.range : sp.missile === 'lob' ? 'a lob, range ' + sp.range : sp.missile === 'appear' ? 'appears at the target, range ' + sp.range : sp.missile === 'relay' ? 'through an ally within ' + sp.range : 'Touch (1 tile, or yourself)';
   const parts = [how];
   if (sp.missiles > 1) parts.push(sp.missiles + ' missiles');
-  if (sp.condense) parts.push('core ×' + round2(sp.coreMult));
+  if (sp.condense) parts.push(sp.coreMult !== 1 ? 'core ×' + round2(sp.coreMult) : 'one target'); // rules 1.100 item 8372: CONDENSE has no strength of its own
   if (sp.spread) parts.push('radius ' + sp.radius + ' ×' + sp.radiusMult);
   if (sp.push) parts.push('cone ' + sp.coneLen + ' ×' + sp.coneMult);
   if (sp.chain) parts.push('chains ' + sp.chain + (sp.chain === 1 ? ' time' : ' times'));
