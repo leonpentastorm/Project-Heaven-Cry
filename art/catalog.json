@@ -35048,6 +35048,33 @@
       "collection": "2026-11-21-retry-uniques",
       "grade": "unique",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-in_triplicate": {
+      "label": "In Triplicate (Legion bullpup)",
+      "path": "art/icons/gear/weapon-in_triplicate.png",
+      "sha256": "58164159a8d0fce18dd158c9e15ce7476dddd4b7357a266b5c4fb89bf6ae7a8b",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-in_triplicate.png",
+        "128": "art/icons/gear/exports/128/weapon-in_triplicate.png",
+        "64": "art/icons/gear/exports/64/weapon-in_triplicate.png",
+        "32": "art/icons/gear/exports/32/weapon-in_triplicate.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-in_triplicate.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 8,
+      "collection": "2026-11-21-retry-uniques",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {

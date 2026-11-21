@@ -204,6 +204,73 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false
+    },
+    {
+      "id": "weapon-in_triplicate",
+      "path": "art/icons/gear/weapon-in_triplicate.png",
+      "sha256": "58164159a8d0fce18dd158c9e15ce7476dddd4b7357a266b5c4fb89bf6ae7a8b",
+      "label": "In Triplicate (Legion bullpup)",
+      "family": "unique-in_triplicate",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-in_triplicate.png",
+        "sha256": "4a2d328a48ff288da5a615818dccce5fed3e423819138f002ed7e0869962a82c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/masters/v1/weapon-in_triplicate.png",
+        "sha256": "58164159a8d0fce18dd158c9e15ce7476dddd4b7357a266b5c4fb89bf6ae7a8b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-in_triplicate.txt",
+        "sha256": "724aad7060c43fcffec01aa028d91560236237eb6729d60354aa616acf3309a7"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_bullpup.png",
+          "sha256": "3dc7d695c6eb6c2698fa797c62cb8e81159f117c8cbfca317632d8cdc62581a1"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-uniques/references/line-icons/weapon-legion_bullpup.png",
+          "sha256": "fa8e958543f59f7d0ae03a791fb986a4e3cfb7b85d65a6a00eaefd6b4bebc8c0"
+        },
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-legion_bullpup.png",
+          "sha256": "3dc7d695c6eb6c2698fa797c62cb8e81159f117c8cbfca317632d8cdc62581a1"
+        },
+        {
+          "path": "art/icons/weapons/legion_bullpup.svg",
+          "sha256": "b7ab195d2599f96dd5cd1d58e8f86cf3b122380b0dfb3388129a64e392bc716c"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-in_triplicate.png",
+        "128": "art/icons/gear/exports/128/weapon-in_triplicate.png",
+        "64": "art/icons/gear/exports/64/weapon-in_triplicate.png",
+        "32": "art/icons/gear/exports/32/weapon-in_triplicate.png"
+      },
+      "export_hashes": {
+        "256": "775c076981d3813139e9ad444c74e0a1fb55b436804f15afedb2af04bca2d097",
+        "128": "da07f2cb4a2a2b680cf02def8f6a053ab00cea37e46860695d67f27351ec8584",
+        "64": "9028e1d3399b92ea80a1c94d8a90612943c8bcc986ea766c70e19e88a40005ea",
+        "32": "71c1391ef3ac2276556708fd5742f88db2cc2bb0eefcaa08429b65d322b6ce07"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false
     }
   ]
 }
