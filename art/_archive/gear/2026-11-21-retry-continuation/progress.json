@@ -18,6 +18,7 @@
     "weapon-short_draw--relic",
     "weapon-long_draw--relic",
     "weapon-kemizuchi_side_sword--relic",
+    "weapon-ork_cleaver_glaive--relic",
     "weapon-dock_cutter--celestial",
     "weapon-broadback_sabre--celestial",
     "weapon-short_draw--celestial",
@@ -27,7 +28,6 @@
   "remaining": [
     "weapon-purifier_flamer--masterwork",
     "weapon-purifier_flamer--relic",
-    "weapon-ork_cleaver_glaive--relic",
     "weapon-hellraiser_rotary--celestial",
     "weapon-purifier_flamer--celestial",
     "weapon-ork_cleaver_glaive--celestial"
@@ -45,6 +45,6 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T02:23:07.585359+00:00",
-  "project_distinct_count": 533
+  "updated_utc": "2026-11-21T02:24:45.730525+00:00",
+  "project_distinct_count": 534
 }

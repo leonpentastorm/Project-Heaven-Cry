@@ -1335,6 +1335,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_cleaver_glaive--relic",
+      "path": "art/icons/gear/weapon-ork_cleaver_glaive--relic.png",
+      "sha256": "68671ad7d655e4cf9f0956310f790882331d69c9cc136b135492e6ee5b5a936b",
+      "label": "Ork Cleaver Glaive — Relic",
+      "family": "weapon-ork_cleaver_glaive",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-ork_cleaver_glaive--relic.png",
+        "sha256": "c548ade1e098e92ae5e08449f952c1692524a9b76f1814a922b7c962745fe013"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-ork_cleaver_glaive--relic.png",
+        "sha256": "68671ad7d655e4cf9f0956310f790882331d69c9cc136b135492e6ee5b5a936b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-ork_cleaver_glaive--relic.txt",
+        "sha256": "8803a39dc0230b08a79f0301fdea3e2a632cbf809cfd1403597593a7b711f29a"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_cleaver_glaive.png",
+          "sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_cleaver_glaive--masterwork.png",
+          "sha256": "09be7beeebd22a9bae4aba1b9c0f80e4a5323dac57f4c63073ad6694ee7cf556"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png",
+          "sha256": "1d0e20b248d040c349b9a4c36ae7c20b1aefe9c0a4f13e6fe5566dfbabd64b75"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_cleaver_glaive--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_cleaver_glaive--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_cleaver_glaive--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_cleaver_glaive--relic.png"
+      },
+      "export_hashes": {
+        "256": "990195e21b46148a63eed5e7530cbe286f050dc51ea1ae1d14b53cab1f0a1c8e",
+        "128": "7d7252558008f25018f215370107777b349b788b3a189884a71212130315c480",
+        "64": "59544fd3c71c8174a246640249ee4f83dd42657ba95099cbecf6d7ae4f647039",
+        "32": "0f3423848185615faa97d1920c517142858a18003233221747241a27dfa359e9"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-ork_cleaver_glaive",
+      "outline": {
+        "solid_alpha_iou": 0.9585175129580182,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 28
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
