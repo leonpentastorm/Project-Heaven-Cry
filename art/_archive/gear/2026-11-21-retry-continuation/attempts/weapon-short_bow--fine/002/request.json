@@ -1,0 +1,61 @@
+{
+  "head": "6d89ec075c4711c6ce6c5c7e83e8ac2002578f35",
+  "job": {
+    "id": "weapon-short_bow--fine",
+    "standard_id": "weapon-short_bow",
+    "grade": "fine",
+    "label": "Short bow — Fine",
+    "path": "art/icons/gear/weapon-short_bow--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-short_bow.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-short_bow",
+    "family_references": [
+      "art/icons/gear/weapon-short_bow.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.4",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 16,
+    "keep_line": "the same single short deep D-curved ash bow, upper nock at upper-left and lower nock at lower-right of its gentle diagonal, thick short limbs tapering to rounded nocks, broad spirally rawhide-wrapped grip on the curved right side and a single straight taut dark string closing the D on the left. Preserve the exact limb curvature, wood facets, nock-end cord bindings, rawhide overlaps, open interior and string endpoints; the nocks do not curl or reflex. Pale ash and natural tan rawhide, no coloured maker accent. No arrow, quiver or added hardware.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single short deep D-curved ash bow, upper nock at upper-left and lower nock at lower-right of its gentle diagonal, thick short limbs tapering to rounded nocks, broad spirally rawhide-wrapped grip on the curved right side and a single straight taut dark string closing the D on the left. Preserve the exact limb curvature, wood facets, nock-end cord bindings, rawhide overlaps, open interior and string endpoints; the nocks do not curl or reflex. Pale ash and natural tan rawhide, no coloured maker accent. No arrow, quiver or added hardware.\n\nGrade: Fine. The same piece, newly kept. Bow: the limbs are smoothed and oiled, the sinew or cord wraps fresh, the string new and taut; crossbow: the prod polished and the stock clean; quiver: the leather cleaned and conditioned, the stitching neat. Add one thin carved line along the face of each limb (along the side of the stock on a crossbow; down the long face of the quiver, stitched). Nothing else is added. No arrow or bolt unless the Standard has one.\n\nFIRST attachment locks the actual Standard silhouette, interior negative spaces, part count, camera, pose, scale, registration and framing. The portrait supplies Heavenprint brushwork only: no person, scene, extra object or borrowed equipment. Fully transparent canvas, minimum50px clear margin, all material changes inside the original outline. These are exterior inventory paintings, no diagrams or cutaways. Add only the class’s ONE thin uncoloured carved/engraved line (one per matching limb or set member); no coloured inlay, ornament, repair or added part yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:26:26.615493+00:00",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-short_bow--fine--1795156080226.json",
+      "request_id": "9d0d2afe-999b-41e1-821e-4adf56f0eb10"
+    },
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-short_bow--fine--1795156080226.json",
+      "response": {
+        "id": "weapon-short_bow--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 9d0d2afe-999b-41e1-821e-4adf56f0eb10. safety_violations=[violence].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"input\\\",\\n      \\\"categories\\\": [\\n        \\\"violence\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    },
+    "original_prompt_sha256": "0249d96c6daed699d281920244aa2a377aa919d395363a30dda05f392f456376",
+    "retry_authorized_by_user": true
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-short_bow.png": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 2,
+  "claim_comment": 7056379228,
+  "clock": {
+    "current_time": "2026-11-21 03:25:58 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7056572039,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "b9f2d29f1cb81fa5a7d29148bbef44ca5595eaff"
+}
