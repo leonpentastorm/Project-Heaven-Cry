@@ -313,6 +313,7 @@ export function mendSized(cb: Combat | null, by: Unit | null, target: Unit, kind
  *  (physical/guard.ts registers it; this file can't import the lane). `blow`: {weight: the resource whose spent units add their
  *  plates' weight to the faced foe's blow, ring_base: more foes struck a whole S(n), most_foes}. */
 let BLOW: ((cb: Combat, u: Unit, blow: any, args: { targetId?: string }, name: string) => void) | null = null;
+/** The physical lane registers the blow here as it loads (physical/guard.ts). */
 export const setGrantBlow = (f: typeof BLOW) => { BLOW = f; };
 /** The blow, for an item op's amount block that names one (Retort's `blow`: units spent fixed). False when no lane registered it. */
 export const runBlow = (cb: Combat, u: Unit, blow: any, args: { targetId?: string }, name: string): boolean => { if (!BLOW) return false; BLOW(cb, u, blow, args, name); return true; };
