@@ -15,12 +15,14 @@
     "references": [
       "art/icons/gear/weapon-crossbow.png",
       "art/icons/gear/weapon-repeating_crossbow.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png"
+    ],
+    "reference_sources": [
       "art/sprites/objects/fuel-drum.png",
       "art/sprites/objects/tool-rack.png",
-      "art/sprites/objects/field-lamp.png",
-      "art/portraits/world/new-faces/orren-vask.png"
+      "art/sprites/objects/field-lamp.png"
     ],
-    "reference_sources": [],
     "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
     "brief_number": 17,
     "source_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/new-standard-imports/2026-11-19-file-06-queue.json",
@@ -38,10 +40,34 @@
     "expected_reference_hashes": {
       "art/icons/gear/weapon-crossbow.png": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
       "art/icons/gear/weapon-repeating_crossbow.png": "d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
+    },
+    "unpacked_required_references": [
+      "art/icons/gear/weapon-crossbow.png",
+      "art/icons/gear/weapon-repeating_crossbow.png",
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "unpacked_reference_hashes": {
+      "art/icons/gear/weapon-crossbow.png": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b",
+      "art/icons/gear/weapon-repeating_crossbow.png": "d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68",
       "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
       "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
       "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819",
       "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+    },
+    "reference_packing": {
+      "operation": "Native-size contact strip; original RGB/alpha source files unchanged, no crop or rescale. Original transparency composited on #10151F for reference viewing only. Count0.",
+      "source_hashes": {
+        "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+        "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+        "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+      },
+      "packed_path": "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "packed_sha256": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
     }
   },
   {
@@ -59,13 +85,14 @@
     "references": [
       "art/icons/gear/weapon-hellraiser_rotary.png",
       "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png",
-      "art/sprites/objects/fuel-drum.png",
-      "art/sprites/objects/tool-rack.png",
-      "art/sprites/objects/field-lamp.png",
-      "art/portraits/world/new-faces/orren-vask.png"
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png"
     ],
     "reference_sources": [
-      "art/icons/weapons/hellraiser_rotary.svg"
+      "art/icons/weapons/hellraiser_rotary.svg",
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
     "brief_number": 6,
@@ -83,10 +110,34 @@
     "expected_reference_hashes": {
       "art/icons/gear/weapon-hellraiser_rotary.png": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
       "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png": "88f1ef18e82cda5fcde95bc98f810de9dc0e78c2c67b9a64f8a4d9cb2e43dbd4",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
+    },
+    "unpacked_required_references": [
+      "art/icons/gear/weapon-hellraiser_rotary.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png",
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "unpacked_reference_hashes": {
+      "art/icons/gear/weapon-hellraiser_rotary.png": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
+      "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png": "88f1ef18e82cda5fcde95bc98f810de9dc0e78c2c67b9a64f8a4d9cb2e43dbd4",
       "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
       "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
       "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819",
       "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+    },
+    "reference_packing": {
+      "operation": "Native-size contact strip; original RGB/alpha source files unchanged, no crop or rescale. Original transparency composited on #10151F for reference viewing only. Count0.",
+      "source_hashes": {
+        "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+        "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+        "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+      },
+      "packed_path": "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "packed_sha256": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
     }
   }
 ]

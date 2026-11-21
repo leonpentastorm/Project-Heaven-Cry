@@ -51,6 +51,9 @@ if lane.exists():
 unique_lane=ROOT/'art/_archive/gear/2026-11-21-retry-uniques/progress.json'
 if unique_lane.exists():
     unique_progress=json.loads(unique_lane.read_text());unique_progress['project_distinct_count']=state['selected'];unique_lane.write_text(json.dumps(unique_progress,indent=2)+'\n')
+standard_lane=ROOT/'art/_archive/gear/2026-11-21-retry-standards/progress.json'
+if standard_lane.exists():
+    standard_progress=json.loads(standard_lane.read_text());standard_progress['project_distinct_count']=state['selected'];standard_lane.write_text(json.dumps(standard_progress,indent=2)+'\n')
 main=ROOT/'art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md'
 history=main.read_text().split('# Historical20November handoff',1)[-1]
 main.write_text('# Current21November continuation\n\n'+str(state['selected'])+'/871 selected. Active lane art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md, run sole-20261121-0109. '

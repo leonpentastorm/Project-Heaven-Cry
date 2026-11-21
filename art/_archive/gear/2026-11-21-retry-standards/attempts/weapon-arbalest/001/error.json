@@ -1,0 +1,9 @@
+{
+  "id": "weapon-arbalest",
+  "error": "`referenced_image_paths` must contain at most 5 paths",
+  "clock": {
+    "current_time": "2026-11-21 11:29:13 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "request_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-arbalest/001/request.json"
+}

@@ -1,0 +1,10 @@
+{
+  "operation": "Native-size contact strip; original RGB/alpha source files unchanged, no crop or rescale. Original transparency composited on #10151F for reference viewing only. Count0.",
+  "source_hashes": {
+    "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+    "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+    "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+  },
+  "packed_path": "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+  "packed_sha256": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f"
+}
