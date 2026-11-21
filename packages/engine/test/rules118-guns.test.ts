@@ -3,6 +3,7 @@
 // as before; an enemy's Burst is the one its table was fitted with; Mag Dump is three rolls at most, each −4 more; the
 // long rifle's bolt (Shot 3 AP, Aimed Shot 4 AP, +1 AP on every technique that fires it); the weapon numbers.
 // The measurements are test/balance/guns-measure.test.ts; the report is docs/design/handoffs/damage-step-guns.md.
+import { scaledWeapon } from './helpers/scale';
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { WEAPON, TECHNIQUE, attackApCost, cycleAp, burstRolls, burstCool, techniqueAp, previewAttack, previewTechnique, type Unit } from '../src';
@@ -102,11 +103,12 @@ describe('rules 1.18: the long rifle\'s bolt', () => {
 describe('rules 1.18: the weapon numbers', () => {
   it('the guns rules 1.18 renumbered, and the automatic guns whose Burst lost a roll (a record of the numbers, re-recorded on purpose)', () => {
     const d = (id: string) => (WEAPON[id] as any).damage;
-    expect(d('long_rifle')).toBe(28); expect(d('adamantile_battle_rifle')).toBe(18 /* rules 1.95 (the scale): was 18 */); expect(d('ccec_marksman_rifle')).toBe(20 /* rules 1.95 (the scale): was 20 */); // long_rifle: rules 1.60 item 4644 (48 → 47)
-    expect(d('core_rifle')).toBe(29); expect(d('blackpoint_700')).toBe(66); expect(d('frontier_hand_cannon')).toBe(38);
-    expect(d('hellraiser_service_rifle')).toBe(30); expect(d('lever_carbine')).toBe(32); expect(d('legion_bullpup')).toBe(28); expect(d('hellraiser_lmg')).toBe(25); // not changed
-    expect(d('decrkm_smg')).toBe(19); expect(d('legion_pdw')).toBe(20); expect(d('whisper_smg')).toBe(16); expect(d('mandestra_drum_gun')).toBe(19); expect(d('decrkm_autopistol')).toBe(17);
-    expect(d('brigade_auto_shotgun')).toEqual({ within_4: 40, within_8: 24 });
+    // the record of rules 1.18's numbers (long_rifle: rules 1.60 item 4644, 48 to 47), each x the factor since rules 1.95
+    // (scale.factor, weapon rows: half up to a whole number)
+    const was: Record<string, number> = { long_rifle: 47, adamantile_battle_rifle: 30, ccec_marksman_rifle: 33, core_rifle: 29, blackpoint_700: 66, frontier_hand_cannon: 38,
+      hellraiser_service_rifle: 30, lever_carbine: 32, legion_bullpup: 28, hellraiser_lmg: 25, decrkm_smg: 19, legion_pdw: 20, whisper_smg: 16, mandestra_drum_gun: 19, decrkm_autopistol: 17 };
+    for (const [id, v] of Object.entries(was)) expect(d(id), id).toBe(scaledWeapon(v));
+    expect(d('brigade_auto_shotgun')).toEqual({ within_4: scaledWeapon(40), within_8: scaledWeapon(24) });
   });
   // (rules 1.94: the guards that no automatic sidearm out-hits the service pistol and that no 2-AP rifle shot passes 33
   // are withdrawn as limits, Leon 21 Nov 2026)

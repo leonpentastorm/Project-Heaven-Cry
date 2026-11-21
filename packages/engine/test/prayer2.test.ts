@@ -39,6 +39,7 @@ function chap(o: Opt = {}) {
      * kept above harm by a shield (a shield that holds does not break the song). */
     nextTurn() {
       const r0 = f.cb.round; this.me.shield = 99999;
+      for (const x of [this.a1, this.a2]) if (!x.downed) x.shield = 99999; // rules 1.95: the level-12 foes' turns between would drop the level-1 allies the verses are read on (the enemy damage column); a shield keeps the fixture standing
       for (let i = 0; i < 12 && !(f.cb.round > r0 && f.cb.order[f.cb.turn] === me.id); i++) {
         const id = f.cb.order[f.cb.turn], u = f.unit(id); if (u.side !== 'pc') break;
         f.act({ type: 'combat/end-turn', unitId: id } as Action, f.g.characters[u.charId!]?.owner || 'host');

@@ -10,6 +10,8 @@
 //                      gone; the rest of rules 1.23 is in rules123-defence.test.ts)
 //   shields            the bigger one stands; a point of shield is a point of HP (taken after armour)
 // The old bands (percent of a Soldier-turn) were withdrawn as limits (rules 1.94); balance/heal-measure.test.ts measures.
+import { scaled } from './helpers/scale';
+import { MEND_GATE } from '../src/effects/output';
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import {
@@ -33,7 +35,7 @@ function rig(spec: CharSpec = {}, o: { level?: number } = {}) {
 }
 type F = ReturnType<typeof rig>;
 /** Rules 1.36: the percent gate of a 2-AP heal or shield: 20% (× the action's own multipliers) of the target's max HP, counted to 145 × scale at the giver's level; it rounds up. */
-const gateOf = (t: Unit, own: number, by: Unit) => Math.ceil(0.2 * own * Math.min(t.maxHp, 145 * scaleOf(by.level)));
+const gateOf = (t: Unit, own: number, by: Unit) => Math.ceil(0.2 * own * Math.min(t.maxHp, MEND_GATE.hp! * scaleOf(by.level))); // rules 1.95: the gate's HP is data's (90)
 const me = (f: F) => f.unit(f.pc.id), ally = (f: F) => f.unit(f.pcs[1].id);
 const give = (u: Unit, d: Partial<OutburstDesign>): string => { const id = 'd' + (u.mg!.designs.length + 1); u.mg!.designs.push({ id, name: 'Test ' + id, school: 'buff', option: 'heal', modules: [], ...d } as OutburstDesign); return id; };
 const A = (f: F, a: Record<string, any>) => f.act({ unitId: f.pc.id, ...a } as any);
@@ -51,25 +53,25 @@ describe('rules 1.20: the level factor', () => {
     const f = rig({}, { level: 12 }); expect(me(f).mg!.mend).toBe(mendFactor(12));
     const foe = f.foe; foe.mg = heartMagic(foe, HEART_CASTERS[0]); expect(foe.mg!.mend).toBeUndefined();
     const d: any = { id: 'x', school: 'buff', option: 'heal', modules: [] };
-    expect(outburstHeal(foe.mg!, d, 1)).toBe(BUFF_HEAL_ENEMY * foe.mg!.healMult); expect(BUFF_HEAL_ENEMY).toBe(18);
-    expect((SIGIL.mend as any).heal_enemy).toBe(15 /* rules 1.95 (the scale): was 15 */); expect((SIGIL.ward as any).shield_enemy).toBe(18 /* rules 1.95 (the scale): was 18 */);
+    expect(outburstHeal(foe.mg!, d, 1)).toBe(BUFF_HEAL_ENEMY * foe.mg!.healMult); expect(BUFF_HEAL_ENEMY).toBe(scaled(30)); // rules 1.95: the enemy bases take the factor too
+    expect((SIGIL.mend as any).heal_enemy).toBe(scaled(25)); expect((SIGIL.ward as any).shield_enemy).toBe(scaled(30));
   });
 });
 
 describe('rules 1.20: Sigil', () => {
   it('MEND and WARD (rules 1.36: 15 and 4.3), × the Sigil boon\'s Stat × the level factor, through the percent gate', () => {
-    expect((SIGIL.mend as any).heal).toBe(9); expect((SIGIL.ward as any).shield).toBe(2.58 /* rules 1.95 (the scale): was 2.58 */);
+    expect((SIGIL.mend as any).heal).toBe(scaled(15)); expect((SIGIL.ward as any).shield).toBe(scaled(4.3)); // rules 1.95: 15 and 4.3 x the factor
     const f = rig({ ...SIG }, { level: 12 }), u = me(f), rng = seed(); u.mg!.words = ['mend', 'ward', 'seek']; u.mg!.sigilMult = 2; u.mg!.sigilBoon = 2; u.mg!.healMult = 1.5; ally(f).hp = 100; ally(f).pos = '8,5'; // rules 1.26: a boon reads the landed sigil_mend Stat (sigilBoon)
     withGame(f.g, () => {
       u.pos = '5,5'; expect(drawGlyph(f.cb, rng, u, 'mend')).toBeFalsy(); u.pos = '4,5'; expect(drawGlyph(f.cb, rng, u, 'seek')).toBeFalsy();
       expect(evoke(f.cb, rng, u, '4,5', '8,5')).toBeNull();
     });
-    expect(ally(f).hp).toBe(271 /* rules 1.95 (the scale): was 100 + Math.max(Math.round(15 * 2 * mendFactor(12)), gateOf(ally(f), 1, me(f))) */); // Healing given no longer counts (sigil_mend.k carries it)
+    expect(ally(f).hp).toBe(100 + Math.max(Math.round((SIGIL.mend as any).heal * 2 * mendFactor(12)), gateOf(ally(f), 1, me(f)))); // Healing given no longer counts (sigil_mend.k carries it)
     withGame(f.g, () => {
       u.pos = '5,6'; expect(drawGlyph(f.cb, rng, u, 'ward')).toBeFalsy(); u.pos = '4,6'; expect(drawGlyph(f.cb, rng, u, 'seek')).toBeFalsy(); ally(f).pos = '8,6';
       expect(evoke(f.cb, rng, u, '4,6', '8,6')).toBeNull();
     });
-    expect(ally(f).shield).toBe(Math.max(Math.round(4.3 * 2 * mendFactor(12)), gateOf(ally(f), 1, me(f)))); // two glyphs: the gate (20% of the target, counted to 145 × scale) holds it
+    expect(ally(f).shield).toBe(Math.max(Math.round((SIGIL.ward as any).shield * 2 * mendFactor(12)), gateOf(ally(f), 1, me(f)))); // two glyphs: the gate (20% of the target, counted to 145 × scale) holds it
   });
 });
 
@@ -88,40 +90,40 @@ describe('MEND\'s base by who casts it (truth pass 3)', () => {
 
 describe('rules 1.20: the Outburst', () => {
   it('the Buff heal is 11.3 × the Outburst\'s heal Stat (soul_mend, rules 1.36) × the stage multiplier × the level factor, through the gate', () => {
-    expect(BUFF_HEAL).toBe(6.78); expect((SCHOOL.buff as any).heal).toBe(6.78);
-    const f = rig({}, { level: 6 }); me(f).mg!.soulBoon = 2; ally(f).hp = 100; const want = Math.floor(Math.max(11.3 * 2 * 1.2 * mendFactor(6), gateOf(ally(f), 1.2, me(f))));
+    expect(BUFF_HEAL).toBe(scaled(11.3)); expect((SCHOOL.buff as any).heal).toBe(BUFF_HEAL);
+    const f = rig({}, { level: 6 }); me(f).mg!.soulBoon = 2; ally(f).hp = 100; const want = Math.floor(Math.max(BUFF_HEAL * 2 * 1.2 * mendFactor(6), gateOf(ally(f), 1.2, me(f))));
     const d = give(me(f), {}); A(f, { type: 'combat/outburst', design: d, hold: true }); A(f, { type: 'combat/pump' }); A(f, { type: 'combat/pump' });
-    const pv = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '4,5')); expect(pv.affected[0].heal).toBe(58 /* rules 1.95 (the scale): was want */);
-    A(f, { type: 'combat/release', aim: '4,5' }); expect(ally(f).hp).toBe(158 /* rules 1.95 (the scale): was 100 + want */);
+    const pv = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '4,5')); expect(pv.affected[0].heal).toBe(want);
+    A(f, { type: 'combat/release', aim: '4,5' }); expect(ally(f).hp).toBe(100 + want);
   });
   it('in a shape each ally is healed for ×0.4; the shape\'s damage multiplier is not used', () => {
     expect(BOON_AREA).toBe(0.4); expect((SCHOOL.buff as any).area_mult).toBe(0.4);
     const f = rig(); me(f).mg!.soulBoon = 10; ally(f).hp = 100; me(f).hp = 100;
     const d = give(me(f), { modules: ['aura'] }); A(f, { type: 'combat/outburst', design: d, hold: true }); A(f, { type: 'combat/pump' }); A(f, { type: 'combat/release' });
-    expect(ally(f).hp).toBe(127 /* rules 1.95 (the scale): was 100 + Math.floor(11.3 * 10 * 1.0 * 0.4) */); expect(me(f).hp).toBe(127 /* rules 1.95 (the scale): was 100 + Math.floor(11.3 * 10 * 1.0 * 0.4) */); // 45 each
+    expect(ally(f).hp).toBe(100 + Math.floor(BUFF_HEAL * 10 * 1.0 * 0.4)); expect(me(f).hp).toBe(100 + Math.floor(BUFF_HEAL * 10 * 1.0 * 0.4)); // 45 each
   });
   it('Inverse and Shell have shield bases of their own: the Damage base does not move them', () => {
-    expect((MODULE.inverse as any).shield).toBe(4.2); expect((MODULE.shell as any).shield).toBe(2.4 /* rules 1.95 (the scale): was 2.4 */); // rules 1.36: Inverse under the Mender's Tending shield
+    expect((MODULE.inverse as any).shield).toBe(scaled(7)); expect((MODULE.shell as any).shield).toBe(scaled(4)); const INV = (MODULE.inverse as any).shield, SHELL = (MODULE.shell as any).shield; // rules 1.36: Inverse under the Mender's Tending shield
     const f = rig({}, { level: 20 }), m = me(f).mg!; m.soulMult = 2; m.soulBoon = 2; // rules 1.26: a Soul shield reads the landed soul_mend Stat (soulBoon)
     const inv: any = { id: 'i', school: 'damage', modules: ['inverse'] }, wave: any = { id: 'w', school: 'damage', modules: ['inverse', 'wave'] }, bolt: any = { id: 'b', school: 'damage', modules: [] };
     const was = [inverseShield(m, inv, 1.4), shellShield(m, bolt, 1.4)];
-    expect(was[0]).toBeCloseTo(569.706144 /* rules 1.95 (the scale): was 7 * 2 * 1.4 * mendFactor(20) */, 5); expect(was[1]).toBeCloseTo(4 * 2 * 1.4 * mendFactor(20), 5);
+    expect(was[0]).toBeCloseTo(INV * 2 * 1.4 * mendFactor(20), 5); expect(was[1]).toBeCloseTo(SHELL * 2 * 1.4 * mendFactor(20), 5);
     expect(inverseShield(m, wave, 1.4)).toBeCloseTo(was[0] * 0.4, 5);
     m.soulBase = SOUL_DAMAGE * 3; expect([inverseShield(m, inv, 1.4), shellShield(m, bolt, 1.4)]).toEqual(was); // three times the damage: the same shields
     m.soulBase = SOUL_DAMAGE;
     const d = give(me(f), { school: 'damage', option: undefined, modules: ['inverse'] }); A(f, { type: 'combat/outburst', design: d, hold: true }); A(f, { type: 'combat/pump' }); A(f, { type: 'combat/release', aim: '4,5' });
-    expect(ally(f).shield).toBe(Math.floor(Math.max(7 * 2 * 1.0 * mendFactor(20), gateOf(ally(f), 1, me(f)))));
+    expect(ally(f).shield).toBe(Math.floor(Math.max(INV * 2 * 1.0 * mendFactor(20), gateOf(ally(f), 1, me(f)))));
   });
   it('Love heals a share of the Buff school\'s heal (×0.25 in the shape, ×0.15 alone), not a share of the damage', () => {
     expect((FEELING.love.pour as any).heal_share).toBe(0.25); expect((FEELING.love.pour as any).lone_heal_share).toBe(0.15);
     expect((FEELING.love.pour as any).heal_of_power).toBeUndefined();
     const f = rig(), m = me(f).mg!; m.soulBoon = 4; const bolt: any = { id: 'b', school: 'damage', modules: [] };
-    const a = loveHeal(m, bolt, 2), lone = loveHeal(m, bolt, 2, true); expect(a).toBeCloseTo(13.56 /* rules 1.95 (the scale): was 11.3 * 4 * 2 * 0.25 */, 5); expect(lone).toBeCloseTo(8.136 /* rules 1.95 (the scale): was 11.3 * 4 * 2 * 0.15 */, 5);
+    const a = loveHeal(m, bolt, 2), lone = loveHeal(m, bolt, 2, true); expect(a).toBeCloseTo(BUFF_HEAL * 4 * 2 * 0.25, 5); expect(lone).toBeCloseTo(BUFF_HEAL * 4 * 2 * 0.15, 5);
     m.soulMult = 9; m.soulBase = 999; expect(loveHeal(m, bolt, 2)).toBe(a);
     // on a healing Outburst: each ally it reaches heals a quarter more
     const g = rig(); me(g).mg!.soulBoon = 10; ally(g).hp = 100;
     const d = give(me(g), {}); A(g, { type: 'combat/outburst', design: d, hold: true }); A(g, { type: 'combat/pump', feeling: 'love' }); A(g, { type: 'combat/release', aim: '4,5' });
-    expect(ally(g).hp).toBe(100 + Math.floor(11.3 * 10 * 1.1) + Math.floor(11.3 * 10 * 1.1 * 0.25)); // 124 + 31
+    expect(ally(g).hp).toBe(100 + Math.floor(BUFF_HEAL * 10 * 1.1) + Math.floor(BUFF_HEAL * 10 * 1.1 * 0.25));
   });
   it('the class moves: Will Shield left (rules 1.31: the Chaplain\'s Ward); the Bard\'s Mend is Brimming (rules 1.33)', () => {
     expect(CLASS_MOVE_POOL['guardian.will_shield']).toBeUndefined();
@@ -134,12 +136,12 @@ describe('rules 1.20: prayer', () => {
   const hymn = (p: string, id: string) => (FAITH_PATRON[p].hymns as any[]).find((h) => h.id === id);
   it('the bases', () => {
     const w = (id: string) => (WHISPERS as any[]).find((q) => q.id === id);
-    expect(val(w('health'), 'heal')).toBe(5.1); expect(val(w('protection'), 'shield')).toBe(6 /* rules 1.95 (the scale): was 6 */); // rules 1.36
-    expect(val(hymn('mother_ember', 'warm_hands'), 'heal')).toBe(17 /* rules 1.95 (the scale): was 17 */); expect(val(hymn('nerukhan', 'saints_shield'), 'shield')).toBe(34); // rules 1.22: 13 and 16 (10 and 12 here), for a Hymn that waits on its cooldown
-    expect(val(hymn('nerukhan', 'absolution'), 'heal')).toBe(19); expect(val(hymn('mother_ember', 'hearthlight'), 'heal')).toBe(9); expect(val(hymn('toll_keeper', 'coin_for_the_ferry'), 'heal')).toBe(11); // rules 1.36: × 28/13
-    expect(val(FAITH_PATRON.mother_ember.miracle, 'shield')).toBe(17);
-    expect(FAITH_PATRON.mother_ember.intervention.effects[0]).toMatchObject({ value: 7, per_devotion: 2.1 }); // rules 1.36: it takes the heal Level term
-    for (const [h, s] of [[val(w('health'), 'heal'), val(w('protection'), 'shield')], [28, 34]]) expect(s / h).toBeCloseTo(1.2, 1); // a shield is 1.2 times the heal of the same cost
+    expect(val(w('health'), 'heal')).toBe(scaled(8.5)); expect(val(w('protection'), 'shield')).toBe(scaled(10)); // rules 1.95: each base x the factor // rules 1.36
+    expect(val(hymn('mother_ember', 'warm_hands'), 'heal')).toBe(scaled(28)); expect(val(hymn('nerukhan', 'saints_shield'), 'shield')).toBe(scaled(34)); // rules 1.22: 13 and 16 (10 and 12 here), for a Hymn that waits on its cooldown
+    expect(val(hymn('nerukhan', 'absolution'), 'heal')).toBe(scaled(19)); expect(val(hymn('mother_ember', 'hearthlight'), 'heal')).toBe(scaled(9)); expect(val(hymn('toll_keeper', 'coin_for_the_ferry'), 'heal')).toBe(scaled(11)); // rules 1.36: × 28/13
+    expect(val(FAITH_PATRON.mother_ember.miracle, 'shield')).toBe(scaled(17));
+    expect(FAITH_PATRON.mother_ember.intervention.effects[0]).toMatchObject({ value: scaled(7), per_devotion: scaled(2.1) }); // rules 1.36: it takes the heal Level term
+    for (const [h, s] of [[val(w('health'), 'heal'), val(w('protection'), 'shield')], [scaled(28), scaled(34)]]) expect(s / h).toBeCloseTo(1.2, 1); // a shield is 1.2 times the heal of the same cost
   });
 });
 

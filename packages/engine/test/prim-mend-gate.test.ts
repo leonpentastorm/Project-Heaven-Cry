@@ -17,7 +17,7 @@ describe('the percent gate and the cap (switched on by data in step 7b, rules 1.
   });
   it('a block\'s min_pct: at least that share of the target\'s max HP (rounded up), counted up to gate_hp, before the own multipliers', () => {
     const t: any = { maxHp: 133 };
-    expect(mendGate({ kind: 'heal', base: 1, min_pct: 0.2 }, t)).toBe(18 /* rules 1.95 (the scale): was Math.ceil(0.2 * 133) */);
+    expect(mendGate({ kind: 'heal', base: 1, min_pct: 0.2 }, t)).toBe(Math.ceil(0.2 * Math.min(133, MEND_GATE.hp!))); // rules 1.95: counted up to the gate's 90 at level 1
     expect(mendGate({ kind: 'heal', base: 1, min_pct: 0.2, gate_hp: 100 }, t)).toBe(20);
     expect(mendGate({ kind: 'heal', base: 1, min_pct: 0.2, gate_hp: null }, t)).toBe(Math.ceil(0.2 * 133));
     const g = opsFight({}), cb = g.combat, [u, al] = pcs(g);
@@ -25,7 +25,7 @@ describe('the percent gate and the cap (switched on by data in step 7b, rules 1.
       al.healRecv = 1; al.hp = 1; const want = Math.ceil(0.2 * Math.min(al.maxHp, 100));
       expect(mend(cb, u, al, { kind: 'heal', base: 1, min_pct: 0.2, gate_hp: 100 }).restored).toBe(want);
       al.hp = 1; expect(mend(cb, u, al, { kind: 'heal', base: 1, min_pct: 0.2, gate_hp: 100 }, { mults: [{ v: 2, label: 'own' }] }).restored).toBe(want * 2); // the own multipliers come after the gate
-      al.hp = 1; expect(mend(cb, u, al, { kind: 'heal', base: 999, min_pct: 0.2, gate_hp: 100 }).restored).toBe(Math.min(al.maxHp - 1, Math.floor(0.5 * al.maxHp))); // over the gate: the formula, held to the cap (rules 1.36)
+      al.hp = 1; expect(mend(cb, u, al, { kind: 'heal', base: 999, min_pct: 0.2, gate_hp: 100 }).restored).toBe(al.maxHp - 1); // over the gate: the formula; rules 1.95 (ruling A10): no half-bar cap, the bar fills
       al.shieldRecv = 1; al.shield = 0; expect(mend(cb, u, al, { kind: 'shield', base: 1, min_pct: 0.2, gate_hp: 100 }).shield).toBe(want); // shields too
     });
   });

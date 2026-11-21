@@ -10,3 +10,5 @@ export const F: number = bible.factor;
 export const scaled = (old: number): number => { const v = old * F; return v >= 10 ? Math.round(v) : Math.round(v * 100) / 100; };
 /** scale.factor.rounding.amount_base: two places (the output formula floors at the end). */
 export const scaledBase = (old: number): number => Math.round(old * F * 100) / 100;
+/** scale.factor.rounding.weapon_row: half up to a whole number, never under 1 (a row with no own factor of its own). */
+export const scaledWeapon = (old: number): number => Math.max(1, Math.floor(old * F + 0.5));

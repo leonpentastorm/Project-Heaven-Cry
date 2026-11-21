@@ -16,6 +16,10 @@ import {
   type Sheet, type Combat, type Unit, type MapDef, type OutburstDesign,
 } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
+import { scaled } from './helpers/scale';
+import { SIGIL, SCHOOL } from '../src/data';
+import { MEND_GATE } from '../src/effects/output';
+const WD = (w: string): number => (SIGIL as any)[w].damage;
 
 // ---------- Sigil ----------
 const arch = (id: string) => ARCHETYPES.find((a: any) => a.id === id)!;
@@ -53,12 +57,12 @@ describe('Sigil: the Line multiplier (rules 1.17)', () => {
     for (const n of [2, 3, 4]) expect(SIGIL_GRAMMAR.line_mult.text).toContain('×' + LINE_MULT[n] + ' ');
   });
   it('a character\'s Line multiplies its damage by its length, in the preview and in the hit', () => {
-    const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(34 /* rules 1.95 (the scale): was Math.round(30 * LINE_MULT[2]) */); // 56
-    const b = sigil(['fire', 'condense', 'seek']); expect(cast(b, ['fire', 'condense', 'seek'])).toBe(52 /* rules 1.95 (the scale): was Math.round(30 * 1.5 * LINE_MULT[3]) */); // 87
+    const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(Math.round(WD('fire') * LINE_MULT[2])); // rules 1.95: FIRE's row (30 x the factor)
+    const b = sigil(['fire', 'condense', 'seek']); expect(cast(b, ['fire', 'condense', 'seek'])).toBe(Math.round(WD('fire') * 1.5 * LINE_MULT[3]));
     // 4 glyphs: STONE 35 in full (Sigil), FIRE at half (Elemental), CONDENSE ×1.5, the Line ×1.8
     const c = sigil(['stone', 'fire', 'condense', 'seek']);
     draw(c.cb, c.rng, c.u, ['stone', 'fire', 'condense', 'seek'], ['5,5', '4,5', '3,5', '2,5']);
-    const pv = previewEvoke(c.cb, c.u, '2,5', c.e.pos); expect(pv.affected[0].dmg).toBe(Math.round(35 * 1.5 * LINE_MULT[4]) + Math.round(15 * 1.5 * LINE_MULT[4]));
+    const pv = previewEvoke(c.cb, c.u, '2,5', c.e.pos); expect(pv.affected[0].dmg).toBe(Math.round(WD('stone') * 1.5 * LINE_MULT[4]) + Math.round(WD('fire') * 0.5 * 1.5 * LINE_MULT[4])); // rules 1.95: the rows, FIRE at half
     const hp = c.e.hp; expect(evoke(c.cb, c.rng, c.u, '2,5', c.e.pos)).toBeNull(); expect(hp - c.e.hp).toBe(pv.affected[0].dmg);
   });
   it('damage only: the Line multiplier does not touch a heal (MEND 15 since rules 1.36, under the gate)', () => {
@@ -157,11 +161,11 @@ describe('Outburst: what rules 1.17 set and still stands', () => {
     g.foe.level = 9; expect(withGame(g.g, () => previewOutburstPlan(g.cb, me(g), e, '6,5')).affected[0].roll!.bonus).toBe(even - 3);
   });
   it('Love with no ally in the shape heals the most wounded ally in reach, or you (rules 1.20: ×0.15 of the Buff school\'s heal at that multiplier)', () => {
-    const love = Math.floor(11.3 * 10 * heldMult(null, heart().pc, { stage: 1, felt: ['love'] }) * 0.15); // the heal Stat ×10 here, so the number is readable (rules 1.36: 11.3, the Outburst's own Stat)
+    const love = Math.floor((SCHOOL as any).buff.heal * 10 * heldMult(null, heart().pc, { stage: 1, felt: ['love'] }) * 0.15); // rules 1.95: the Buff school's heal row (11.3 x the factor) // the heal Stat ×10 here, so the number is readable (rules 1.36: 11.3, the Outburst's own Stat)
     const f = heart(); me(f).mg!.soulBoon = 10; me(f).hp = 400; const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'love');
     const plan = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
-    expect(plan.affected.find((a) => a.unit === f.pc.id)!.heal).toBe(11 /* rules 1.95 (the scale): was love */);
-    release(f); expect(me(f).hp).toBe(411 /* rules 1.95 (the scale): was 400 + love */);
+    expect(plan.affected.find((a) => a.unit === f.pc.id)!.heal).toBe(love);
+    release(f); expect(me(f).hp).toBe(400 + love);
     const g = heart(['6,5'], ['3,6']); me(g).mg!.soulBoon = 10; me(g).hp = 450; g.unit(g.pcs[1].id).hp = 300; const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'love'); release(g);
     expect(g.unit(g.pcs[1].id).hp).toBe(300 + love); expect(me(g).hp).toBe(450); // the ally was hurt worse
   });
@@ -183,11 +187,11 @@ describe('Outburst: the modules that were repriced (rules 1.17)', () => {
   });
   it('At Once ×0.8, Return\'s second hit ×0.3, Quiet +5 MP (Shell and Inverse have shield bases of their own since rules 1.20)', () => {
     expect((MODULE.at_once as any).damage_mult).toBe(0.8); expect((MODULE.return as any).second_mult).toBe(0.3);
-    expect((MODULE.shell as any).shield).toBe(2.4); expect((MODULE.inverse as any).shield).toBe(4.2 /* rules 1.95 (the scale): was 4.2 */); expect(MODULE.quiet.cost).toBe(5); // rules 1.36: Inverse 7
+    expect((MODULE.shell as any).shield).toBe(scaled(4)); expect((MODULE.inverse as any).shield).toBe(scaled(7)); // rules 1.95: 4 and 7 x the factor expect(MODULE.quiet.cost).toBe(5); // rules 1.36: Inverse 7
     const a = heart(); begin(a, give(a.pc, { modules: ['at_once'] }), { aim: '6,5' }); expect(lost(a.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 0.8));
     const r = heart(); begin(r, give(r.pc, { modules: ['return'] }), { aim: '6,5' }); expect(lost(r.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8) + Math.floor(SOUL_DAMAGE * 0.8 * 0.3));
     const pr = heart(); const dr = give(pr.pc, { modules: ['return'] }); expect(withGame(pr.g, () => previewOutburstPlan(pr.cb, me(pr), dr, '6,5')).affected[0].dmg).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 1.3));
-    const s = heart(); begin(s, give(s.pc, { modules: ['shell'] }), { aim: '6,5' }); expect(me(s).shield).toBe(1 /* rules 1.95 (the scale): was Math.floor(4 * 0.8) */); // rules 1.20: 4 × the Soul multiplier × the stage multiplier
-    const i = heart(['12,5'], ['4,5']); begin(i, give(i.pc, { modules: ['inverse'] }), { aim: '4,5' }); expect(i.unit(i.pcs[1].id).shield).toBe(Math.ceil(0.2 * 0.8 * 145)); // rules 1.36: 7 × the Soul multiplier × the stage multiplier, under the gate (20% × the stage, counted to 145)
+    const s = heart(); begin(s, give(s.pc, { modules: ['shell'] }), { aim: '6,5' }); expect(me(s).shield).toBe(Math.floor(scaled(4) * 0.8)); // rules 1.20: 4 × the Soul multiplier × the stage multiplier
+    const i = heart(['12,5'], ['4,5']); begin(i, give(i.pc, { modules: ['inverse'] }), { aim: '4,5' }); expect(i.unit(i.pcs[1].id).shield).toBe(Math.ceil(0.2 * 0.8 * MEND_GATE.hp!)); // rules 1.95: counted to the gate's 90 // rules 1.36: 7 × the Soul multiplier × the stage multiplier, under the gate (20% × the stage, counted to 145)
   });
 });

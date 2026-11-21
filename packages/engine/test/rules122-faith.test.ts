@@ -9,6 +9,7 @@
 //   Witnessed        the +2 of a patron that likes kills is earned by a kill and spent by the next attack roll
 //   the numbers      Rebuke 20; Lightning Rod 56 and 23; Judgement 56; Warm Hands 13, Saint's Shield 16, Absolution 9
 // The measurements behind the numbers are test/balance/faith-measure.test.ts (the cheap targets run in `npm run balance`).
+import { scaled } from './helpers/scale';
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { previewPrayer, previewAttack, resolveAttack, applyDamage, faithView, fulfilVow, hymnWait, prayerCooldown, prayerDamage, blessingPower, mendFactor, prayerMendDial, surrender, condOn, d20,
@@ -59,14 +60,17 @@ const sheet = (faith: number, virtue: number): Character => ({ skills: { faith }
 
 describe('the data (rules 1.22): the numbers the spec gives', () => {
   it('Rebuke 20; Lightning Rod 56 and 23; Judgement 56 and ×1.3; Thunderclap 20; Warm Hands 13, Saint\'s Shield 16, Absolution 9', () => {
-    expect(prayerDamage(WHISPER.rebuke)).toBe(12); expect(WHISPER.rebuke.text).toMatch(/12 Soul damage/); // rules 1.95 (the scale): was /20 Soul damage/
-    const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(56); expect(eff(l, 'chain_damage').value).toBe(23); expect(l.text).toMatch(/56 lightning damage.*for 23 ×/);
-    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(56); expect(eff(j, 'vs_status_damage').mult).toBe(1.3); expect(j.text).toMatch(/56 Soul damage.*30% more/);
-    expect(prayerDamage(hymn('old_overcast', 'thunderclap'))).toBe(20);
-    expect(eff(hymn('mother_ember', 'warm_hands'), 'heal').value).toBe(28); // rules 1.36 (the card no longer prints the base: the engine's preview shows the number)
-    expect(eff(hymn('nerukhan', 'saints_shield'), 'shield').value).toBe(34); expect(hymn('nerukhan', 'saints_shield').text).toMatch(/shield of 34 ×/);
-    expect(eff(hymn('nerukhan', 'absolution'), 'heal').value).toBe(19); expect(hymn('nerukhan', 'absolution').text).toMatch(/heals 19 ×/);
-    expect(eff(WHISPER.health, 'heal').value).toBe(8.5); expect(eff(WHISPER.protection, 'shield').value).toBe(10); // rules 1.36: the Whispers' new bases
+    // rules 1.95: every base is the spec's number x the factor (scale.factor), and every card reads its row
+    const R = (re: string) => new RegExp(re);
+    expect(prayerDamage(WHISPER.rebuke)).toBe(scaled(20)); expect(WHISPER.rebuke.text).toMatch(R(prayerDamage(WHISPER.rebuke) + ' Soul damage'));
+    const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(scaled(56)); expect(eff(l, 'chain_damage').value).toBe(23); // the jump: not in the bible's walk (step 1 hand-off)
+    expect(l.text).toMatch(R(prayerDamage(l) + ' lightning damage.*for ' + eff(l, 'chain_damage').value + ' ×'));
+    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(scaled(56)); expect(eff(j, 'vs_status_damage').mult).toBe(1.3); expect(j.text).toMatch(R(prayerDamage(j) + ' Soul damage.*30% more'));
+    expect(prayerDamage(hymn('old_overcast', 'thunderclap'))).toBe(scaled(20));
+    expect(eff(hymn('mother_ember', 'warm_hands'), 'heal').value).toBe(scaled(28)); // rules 1.36 (the card no longer prints the base: the engine's preview shows the number)
+    const ss = eff(hymn('nerukhan', 'saints_shield'), 'shield').value; expect(ss).toBe(scaled(34)); expect(hymn('nerukhan', 'saints_shield').text).toMatch(R('shield of ' + ss + ' ×'));
+    const ab = eff(hymn('nerukhan', 'absolution'), 'heal').value; expect(ab).toBe(scaled(19)); expect(hymn('nerukhan', 'absolution').text).toMatch(R('heals ' + ab + ' ×'));
+    expect(eff(WHISPER.health, 'heal').value).toBe(scaled(8.5)); expect(eff(WHISPER.protection, 'shield').value).toBe(scaled(10)); // rules 1.36: the Whispers' bases
   });
   it('the cooldown\'s numbers, Hold the Gate\'s own wait, and a moment written on every vow', () => {
     expect(FAITH_RULES.prayer.hymn.cooldown_rule).toMatchObject({ base: 9, per_faith: 0.75, per_virtue: 0.25, floor: 3, min_wait: 2, vow_cut: 1, vow_cuts_per_hymn: 1 });
@@ -216,14 +220,14 @@ describe('Witnessed and a patron that likes kills (item 1288)', () => {
 describe('the refitted prayers land their numbers (items 1281, 1285, 1286)', () => {
   it('Rebuke 20 × Blessing power; Judgement 56 ×; Lightning Rod 56 and 23 to one more', () => {
     const h = holy(); const bp = h.me.blessPower!; let was = h.foe.hp; // the fight's own Blessing power (rules 1.26: it reads Virtue, which the helper raises after the fight began)
-    h.pray('whisper', 'rebuke', { targetId: h.foe.id }); expect(was - h.foe.hp).toBe(14 /* rules 1.95 (the scale): was Math.round(20 * bp) */); was = h.foe.hp;
-    h.pray('hymn', 'judgement', { targetId: h.foe.id }); expect(was - h.foe.hp).toBe(40 /* rules 1.95 (the scale): was Math.round(56 * bp) */);
+    h.pray('whisper', 'rebuke', { targetId: h.foe.id }); expect(was - h.foe.hp).toBe(Math.round(prayerDamage(WHISPER.rebuke) * bp)); was = h.foe.hp;
+    h.pray('hymn', 'judgement', { targetId: h.foe.id }); expect(was - h.foe.hp).toBe(Math.round(prayerDamage(hymn('nerukhan', 'judgement')) * bp));
     const o = holy({ patron: 'old_overcast' }); for (const u of [o.foe, o.foe2]) u.armour = 0; const w1 = o.foe.hp, w2 = o.foe2.hp;
-    o.pray('hymn', 'lightning_rod', { targetId: o.foe.id }); expect(w1 - o.foe.hp).toBe(Math.round(56 * bp)); expect(w2 - o.foe2.hp).toBe(Math.round(23 * bp));
+    o.pray('hymn', 'lightning_rod', { targetId: o.foe.id }); expect(w1 - o.foe.hp).toBe(Math.round(prayerDamage(hymn('old_overcast', 'lightning_rod')) * bp)); expect(w2 - o.foe2.hp).toBe(Math.round(eff(hymn('old_overcast', 'lightning_rod'), 'chain_damage').value * bp));
   });
   it('Warm Hands heals 28 × Blessing power × the level factor; Saint\'s Shield is 34 × (rules 1.36)', () => {
     const h = holy({ patron: 'mother_ember' }); const bp = h.me.blessPower!, m = mendFactor(h.c.level); // the fight's own Blessing power
-    h.ally.hp = 1000; h.pray('hymn', 'warm_hands', { targetId: h.ally.id }); expect(h.ally.hp - 1000).toBe(30 /* rules 1.95 (the scale): was Math.round(28 * bp * prayerMendDial() * m) */); // rules 1.27: Faith's heal dial
-    const n = holy(); n.pray('hymn', 'saints_shield', { targetId: n.ally.id }); expect(n.ally.shield).toBe(35 /* rules 1.95 (the scale): was Math.floor(34 * n.me.blessPower! * prayerMendDial() * m) */); // the shield sink floors
+    h.ally.hp = 1000; h.pray('hymn', 'warm_hands', { targetId: h.ally.id }); expect(h.ally.hp - 1000).toBe(Math.round(eff(hymn('mother_ember', 'warm_hands'), 'heal').value * bp * prayerMendDial() * m)); // rules 1.27: Faith's heal dial
+    const n = holy(); n.pray('hymn', 'saints_shield', { targetId: n.ally.id }); expect(n.ally.shield).toBe(Math.floor(eff(hymn('nerukhan', 'saints_shield'), 'shield').value * n.me.blessPower! * prayerMendDial() * m)); // the shield sink floors
   });
 });

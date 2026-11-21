@@ -12,6 +12,7 @@
 // Judgement 56 (42 in rules 1.22, 50 before), Lightning Rod 56 and 23 (42 and 17; 50 and 20). The rules they follow are unchanged and are still pinned here,
 // with the numbers of rules 1.22; test/rules122-faith.test.ts pins the new revision.
 // The measurements behind the numbers are test/balance/faith-measure.test.ts (the cheap targets run in `npm run balance`).
+import { scaled } from './helpers/scale';
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { clearPrayerLimits, previewPrayer, FAITH_PATRON, WHISPER, WHISPERS, FAITH_FX, ATHEIST_TN, WHISPER_FAITH, prayerDamage, d20, resolveAttack, condOn, type Combat, type Unit, type Character, type Action } from '../src';
@@ -48,13 +49,13 @@ function holy(o: Opt = {}) {
 describe('the data (rules 1.21): the numbers the spec gives', () => {
   it('seven Whispers; Rebuke is 20 Soul at an enemy (rules 1.22; it was 15)', () => {
     expect(WHISPERS.length).toBe(7);
-    const r = WHISPER.rebuke; expect(r.target).toBe('enemy'); expect(prayerDamage(r)).toBe(12); expect(eff(r, 'stat_mod').damage_type).toBe('soul'); expect(r.scales_with).toBe('blessing_power');
+    const r = WHISPER.rebuke; expect(r.target).toBe('enemy'); expect(prayerDamage(r)).toBe(scaled(20)); expect(eff(r, 'stat_mod').damage_type).toBe('soul'); expect(r.scales_with).toBe('blessing_power');
   });
   it('Judgement 56 and ×1.3; Lightning Rod 56 and 23 (12 Nov 2026; 42, and 42 and 17, in rules 1.22); Thunderclap 20 within 2; The Saints\' Verdict 130 and ×2', () => {
-    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(34); expect(eff(j, 'vs_status_damage').mult).toBe(1.3);
-    const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(34 /* rules 1.95 (the scale): was 34 */); expect(eff(l, 'chain_damage').value).toBe(23); expect(eff(l, 'chain_damage').range).toBe(2);
-    const t = hymn('old_overcast', 'thunderclap'); expect(prayerDamage(t)).toBe(12 /* rules 1.95 (the scale): was 12 */); expect(eff(t, 'stat_mod').radius).toBe(2); expect(eff(t, 'stat_mod').damage_type).toBe('lightning');
-    const v = FAITH_PATRON.nerukhan.miracle; expect(prayerDamage(v)).toBe(130); expect(eff(v, 'damage_mult').value).toBe(2);
+    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(scaled(56)); // rules 1.95: each prayer's base x the factor expect(eff(j, 'vs_status_damage').mult).toBe(1.3);
+    const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(scaled(56)); expect(eff(l, 'chain_damage').value).toBe(23); // the jump's 23: not in the bible's walk (step 1 hand-off, for the lead) expect(eff(l, 'chain_damage').range).toBe(2);
+    const t = hymn('old_overcast', 'thunderclap'); expect(prayerDamage(t)).toBe(scaled(20)); expect(eff(t, 'stat_mod').radius).toBe(2); expect(eff(t, 'stat_mod').damage_type).toBe('lightning');
+    const v = FAITH_PATRON.nerukhan.miracle; expect(prayerDamage(v)).toBe(scaled(130)); expect(eff(v, 'damage_mult').value).toBe(2);
   });
   it('Lucky Break 2 rerolls, Foreknowing 2 attacks, Feed the Fire +2 AP, Cut Short every other round at most', () => {
     expect(eff(hymn('the_laughing_mask', 'lucky_break'), 'reroll').uses).toBe(2);
@@ -63,11 +64,11 @@ describe('the data (rules 1.21): the numbers the spec gives', () => {
     expect(eff(hymn('counting_weaver', 'cut_short'), 'condition').again_after_rounds).toBe(2);
   });
   it('every card says its own number', () => {
-    expect(WHISPER.rebuke.text).toMatch(/12 Soul damage/); // rules 1.95 (the scale): was /20 Soul damage/
-    expect(hymn('nerukhan', 'judgement').text).toMatch(/56 Soul damage.*30% more/);
-    expect(hymn('old_overcast', 'lightning_rod').text).toMatch(/56 lightning damage.*for 23 ×/);
-    expect(hymn('old_overcast', 'thunderclap').text).toMatch(/20 lightning damage/);
-    expect(FAITH_PATRON.nerukhan.miracle.text).toMatch(/130 Soul damage/);
+    expect(WHISPER.rebuke.text).toMatch(new RegExp(prayerDamage(WHISPER.rebuke) + ' Soul damage')); // the card reads its row
+    expect(hymn('nerukhan', 'judgement').text).toMatch(new RegExp(prayerDamage(hymn('nerukhan', 'judgement')) + ' Soul damage.*30% more'));
+    expect(hymn('old_overcast', 'lightning_rod').text).toMatch(new RegExp(prayerDamage(hymn('old_overcast', 'lightning_rod')) + ' lightning damage.*for ' + eff(hymn('old_overcast', 'lightning_rod'), 'chain_damage').value + ' ×'));
+    expect(hymn('old_overcast', 'thunderclap').text).toMatch(new RegExp(prayerDamage(hymn('old_overcast', 'thunderclap')) + ' lightning damage'));
+    expect(FAITH_PATRON.nerukhan.miracle.text).toMatch(new RegExp(prayerDamage(FAITH_PATRON.nerukhan.miracle) + ' Soul damage'));
     expect(hymn('the_laughing_mask', 'lucky_break').text).toMatch(/next 2 failed attack rolls/);
     expect(hymn('counting_weaver', 'foreknowing').text).toMatch(/next 2 attacks/);
     expect(hymn('mother_ember', 'feed_the_fire').text).toMatch(/\+2 AP/);
@@ -80,13 +81,13 @@ describe('Rebuke, the seventh Whisper (item 1260)', () => {
     const h = holy(); const pw = h.me.blessPower!, ap = h.me.ap, mana = h.cb.mana ?? 0;
     expect(pw).toBeGreaterThan(1); // rules 1.26: Blessing power is the landed profile on Virtue and Faith
     h.pray('whisper', 'rebuke', { targetId: h.foe.id });
-    expect(h.foe.hp).toBe(1986 /* rules 1.95 (the scale): was 2000 - Math.round(20 * pw) */); // with 12 armour on the target
+    expect(h.foe.hp).toBe(2000 - Math.round(prayerDamage(WHISPER.rebuke) * pw)); // with 12 armour on the target
     expect(h.me.ap).toBe(ap - 1); expect(h.cb.mana).toBe(mana - 5);
     expect(logHas(h.cb, /whispers a prayer.*Rebuke/)).toBe(true); expect(h.cb.log.filter((l) => /Rebuke/.test(l)).some((l) => /d20/.test(l))).toBe(false);
     expect((h.cb.fx || []).filter((e: any) => e.k === FAITH_FX.prayer).length).toBe(1);
   });
   it('it grows with Blessing power (Faith, and Virtue since rules 1.26) and with nothing else', () => {
-    let last = 0; for (const faith of [3, 5, 10]) { const h = holy({ faith, devotion: 3 }); h.pray('whisper', 'rebuke', { targetId: h.foe.id }); const dmg = 2000 - h.foe.hp; expect(dmg, 'Faith ' + faith).toBe(12 /* rules 1.95 (the scale): was Math.round(20 * h.me.blessPower!) */); expect(dmg).toBeGreaterThan(last); last = dmg; }
+    let last = 0; for (const faith of [3, 5, 10]) { const h = holy({ faith, devotion: 3 }); h.pray('whisper', 'rebuke', { targetId: h.foe.id }); const dmg = 2000 - h.foe.hp; expect(dmg, 'Faith ' + faith).toBe(Math.round(prayerDamage(WHISPER.rebuke) * h.me.blessPower!)); expect(dmg).toBeGreaterThan(last); last = dmg; }
     const lo = holy({ devotion: 0 }), hi = holy({ devotion: 10 }); lo.pray('whisper', 'rebuke', { targetId: lo.foe.id }); hi.pray('whisper', 'rebuke', { targetId: hi.foe.id });
     expect(lo.foe.hp).toBe(hi.foe.hp); // Devotion does not move it
   });
