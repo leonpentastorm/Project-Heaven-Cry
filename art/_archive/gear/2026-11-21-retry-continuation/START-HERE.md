@@ -1,3 +1,7 @@
+# Current bow expansion
+
+551/871 pushed, lane50grades:38selected/12pending. Run sole-20261121-0109, samebranch. New9bowgrade claim7056379228, firstweapon-short_bow--fine. Other3pending are flamergrades, faithfulretryreservation persists. Exact prompt/ref/hash/source/error provenance in queue+attempts. Allnative/earlierversionspreserved, approvalsfalse. Read currentissue3+allcomments+remote deliveries beforeeveryrender; noquotaresponseyet. Do not use stalehistoricalcounts below.
+
 # Expanded21November retry continuation
 
 536/871 pushed. Same run sole-20261121-0109, samebranch. Exact queue now41grades:23delivered,18pending (3flamer+15newpeergrades). Expanded claim comment7055981184. First new job weapon-war_pick--fine. Alloriginalpeerprompts/errors preserved in coordination; current issue3+allcomments and remotecatalogs govern beforeeveryrender. Allcandidate flagsfalse. Actualquota notyetreturned. Userretryauthorization persists;0.30holds remain, authorizedScrapSentinel replacementdelivered.

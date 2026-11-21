@@ -1,3 +1,7 @@
+## Bow expansion7056379228
+
+Sole run claims ShortBow4,Crossbow3,RepeatingCrossbow2 exactIDs in current50queue.38selected/12pending;551/871 total.3flamergrades stillreserved;other308missinggear outsidecurrentqueue.
+
 ## Expanded15gradeclaim
 
 Run sole-20261121-0109, issuecomment7055981184: OrkMachete Masterwork/Relic/Celestial; WarAxe,WarPick,WarHammer all4grades. Exactids/refs/prompts in current41queue.23selected/18pending, total536/871.3flamergrades retainreservation.

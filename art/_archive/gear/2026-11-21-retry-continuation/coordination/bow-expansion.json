@@ -1,0 +1,14 @@
+{
+  "ids": [
+    "weapon-short_bow--fine",
+    "weapon-short_bow--masterwork",
+    "weapon-short_bow--relic",
+    "weapon-short_bow--celestial",
+    "weapon-crossbow--masterwork",
+    "weapon-crossbow--relic",
+    "weapon-crossbow--celestial",
+    "weapon-repeating_crossbow--relic",
+    "weapon-repeating_crossbow--celestial"
+  ],
+  "sources": "ExistingShortBow peerqueue; exactFile08 BaseG/A3.4 for crossbows with actualStandard keep lines. Prior error records retained."
+}

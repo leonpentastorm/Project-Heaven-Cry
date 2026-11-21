@@ -5,6 +5,7 @@
   "partial_grade_claim": true,
   "standards": [
     "weapon-broadback_sabre",
+    "weapon-crossbow",
     "weapon-dock_cutter",
     "weapon-hellraiser_rotary",
     "weapon-kemizuchi_side_sword",
@@ -13,6 +14,8 @@
     "weapon-ork_cleaver_glaive",
     "weapon-ork_machete",
     "weapon-purifier_flamer",
+    "weapon-repeating_crossbow",
+    "weapon-short_bow",
     "weapon-short_draw",
     "weapon-war_axe",
     "weapon-war_hammer",
@@ -59,7 +62,16 @@
     "weapon-war_hammer--fine",
     "weapon-war_hammer--masterwork",
     "weapon-war_hammer--relic",
-    "weapon-war_hammer--celestial"
+    "weapon-war_hammer--celestial",
+    "weapon-short_bow--fine",
+    "weapon-short_bow--masterwork",
+    "weapon-short_bow--relic",
+    "weapon-short_bow--celestial",
+    "weapon-crossbow--masterwork",
+    "weapon-crossbow--relic",
+    "weapon-crossbow--celestial",
+    "weapon-repeating_crossbow--relic",
+    "weapon-repeating_crossbow--celestial"
   ],
   "first": "weapon-legion_spear--masterwork",
   "retry_authorization": "AUTHORIZATION.md",
@@ -107,13 +119,27 @@
     "weapon-war_hammer--fine": 7055981184,
     "weapon-war_hammer--masterwork": 7055981184,
     "weapon-war_hammer--relic": 7055981184,
-    "weapon-war_hammer--celestial": 7055981184
+    "weapon-war_hammer--celestial": 7055981184,
+    "weapon-short_bow--fine": 7056379228,
+    "weapon-short_bow--masterwork": 7056379228,
+    "weapon-short_bow--relic": 7056379228,
+    "weapon-short_bow--celestial": 7056379228,
+    "weapon-crossbow--masterwork": 7056379228,
+    "weapon-crossbow--relic": 7056379228,
+    "weapon-crossbow--celestial": 7056379228,
+    "weapon-repeating_crossbow--relic": 7056379228,
+    "weapon-repeating_crossbow--celestial": 7056379228
   },
   "expansion_history": [
     {
       "comment": 7055981184,
       "count": 15,
       "first": "weapon-war_pick--fine"
+    },
+    {
+      "comment": 7056379228,
+      "count": 9,
+      "first": "weapon-short_bow--fine"
     }
   ]
 }

@@ -45,7 +45,16 @@
   "remaining": [
     "weapon-purifier_flamer--masterwork",
     "weapon-purifier_flamer--relic",
-    "weapon-purifier_flamer--celestial"
+    "weapon-purifier_flamer--celestial",
+    "weapon-short_bow--fine",
+    "weapon-short_bow--masterwork",
+    "weapon-short_bow--relic",
+    "weapon-short_bow--celestial",
+    "weapon-crossbow--masterwork",
+    "weapon-crossbow--relic",
+    "weapon-crossbow--celestial",
+    "weapon-repeating_crossbow--relic",
+    "weapon-repeating_crossbow--celestial"
   ],
   "baseline_project_pictures": 512,
   "project_total": 871,
@@ -62,5 +71,5 @@
   ],
   "updated_utc": "2026-11-21T03:02:33.391321+00:00",
   "project_distinct_count": 551,
-  "total": 41
+  "total": 50
 }
