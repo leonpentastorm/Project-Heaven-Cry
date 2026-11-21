@@ -24,7 +24,7 @@
 // A weapon whose `requires` the gun or blade build does not meet (the longbow's Raw Power 3, the Spellslinger's pistol's
 // Brain Power 3, the censer gun's Faith 3, the mana arms) is measured with that skill raised to its need and the
 // weapon put in hand after the build is made: an "as if", marked on its row.
-// The yardstick is the contract's 100%: the plain rifle (service rifle, plain shots, normal share, standard grade) at
+// The yardstick is the 100% unit: the plain rifle (service rifle, plain shots, normal share, standard grade) at
 // the loop's 13 tiles, walking allowed (guns-measure.ts rifleYard).
 import { runCell, figures, MAP_ID, atYardPin, yardPc } from './sim';
 import { BUILD, BUILDS } from './builds';

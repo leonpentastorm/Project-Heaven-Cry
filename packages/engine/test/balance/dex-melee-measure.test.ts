@@ -2,7 +2,7 @@
 // RULES 1.63 (0.31, Pressure is Dexterity's): the Dexterity melee builds on the shooting range and in Survival's stage 1.
 // The yard (sim.ts runFight: one target with a Soldier's numbers at the character's level and 5,000 HP, 13 tiles off,
 // that never acts; 8 turns; the walk in counted): damage a turn as a percent of the plain rifle (guns-measure.ts
-// rifleYard, the contract's 100%), the Pressure pips laid on the target a character turn (the rises of its meter), and the
+// rifleYard, the 100% unit), the Pressure pips laid on the target a character turn (the rises of its meter), and the
 // share of fights in which the target reaches Pressed, Suppressed and Broken. Rows: the combat knife and the striking
 // gloves (door-builds.ts dex_knife, dex_monk) with no perk steps, with both Dexterity alpha perks, and with both and the
 // forks (Walk It In, Lockdown); the sabre in the same hands is the Dexterity blade line. Stage 1: survival-run.ts

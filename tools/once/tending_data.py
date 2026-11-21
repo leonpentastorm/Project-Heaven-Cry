@@ -1,5 +1,8 @@
 """Classes 3.0 step 7 (rules 1.33: Tending, Bonds and the Mender): writes the system's data from bonds-spec.md.
 
+HISTORY: rules 1.94 (21 Nov 2026) withdrew rules.json `balance` and its lines; this one-off script's balance step no
+longer applies and is not to be re-run as written.
+
 Run once from the repo root: python3 tools/once/tending_data.py. Idempotent (it rewrites the rows it owns). It writes:
 data/tending.json (new: the Bond numbers and the verbs), the Attuner and the focus blocks (items.json), the `tend` profile,
 the tie kind `bond` and the balance lines (rules.json), the MP row's needs (actions.json), the condition rows (bonded,

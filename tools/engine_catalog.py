@@ -623,7 +623,7 @@ def header(rel):
 
 def section_d():
     T = 'packages/engine/test/'
-    files = sorted(f for f in os.listdir(os.path.join(ROOT, T)) if re.match(r'(lint-.*|golden-.*|amount-literals|test-lint|balance-contract|item-ops|replay-hash|suite-shape|text-number-truth|datatext|fog-view|descriptors|actions|shared-state|engine-hooks)\.test\.ts$', f))
+    files = sorted(f for f in os.listdir(os.path.join(ROOT, T)) if re.match(r'(lint-.*|golden-.*|amount-literals|test-lint|item-ops|replay-hash|suite-shape|text-number-truth|datatext|fog-view|descriptors|actions|shared-state|engine-hooks)\.test\.ts$', f))
     rows = []
     for f in files:
         env = env_of(T + f); stem = f[:-len('.test.ts')]

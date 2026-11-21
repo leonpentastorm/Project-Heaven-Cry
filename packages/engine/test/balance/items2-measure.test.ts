@@ -1,10 +1,10 @@
 // @ts-nocheck (a measuring tool, like the rest of test/balance)
 // THE ITEMS 2.0 WEAPON TABLE (0.34.0; docs/design/handoffs/0.34-WEAPON-MEASURES.md). Every weapon row a player can hold,
-// old and new, measured with the project's own ceiling tools against the plain rifle (guns-measure.ts rifleYard, the
+// old and new, measured with the project's own measuring tools against the plain rifle (guns-measure.ts rifleYard, the
 // yardstick at its pin): guns by guns-measure.ts weaponRows (the optimised gun build, best of the four rotations), melee
 // by melee-measure.test.ts's build rule (the optimised blade build; Dexterity rows in the Dexterity twin; here also a
 // Durability twin for shields, class Defender, since shields hit with Durability). Two columns: level 1, normal share,
-// standard grade ("no investment"), level 10 normal share Masterwork (l10n), and level 10, all in, Masterwork (the tools' own ceiling build), bare and with each
+// standard grade ("no investment"), level 10 normal share Masterwork (l10n), and level 10, all in, Masterwork (the tools' own all-in build), bare and with each
 // mod slot filled by the mod that measures best (measures-032.ts modRow's greedy method, extended to melee).
 // Nothing here changes a number in data.
 //

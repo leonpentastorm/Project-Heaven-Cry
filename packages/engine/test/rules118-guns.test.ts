@@ -1,4 +1,4 @@
-// Rules revision 1.18 (balance pass, the guns step): the guns' ceiling. What the spec section says, pinned on the
+// Rules revision 1.18 (balance pass, the guns step; its ceiling withdrawn as a limit by rules 1.94). What the spec section says, pinned on the
 // engine: a character's Burst is three rounds and two rolls (the second at −4; Quick −3; a braced Heavy weapon −1), 2 Heat
 // as before; an enemy's Burst is the one its table was fitted with; Mag Dump is three rolls at most, each −4 more; the
 // long rifle's bolt (Shot 3 AP, Aimed Shot 4 AP, +1 AP on every technique that fires it); the weapon numbers.

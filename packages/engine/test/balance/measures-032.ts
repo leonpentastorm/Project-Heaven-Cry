@@ -14,7 +14,7 @@
 //             Ork machete, Raw Power) alone, with Afterword in the off hand, with the Buckler in the off hand; the follow's
 //             -2 as built and set to 0 in memory; % of the plain rifle's turn (guns-measure.ts gunRow, the optimised
 //             policy, 8 turns on the range).
-//   feeds     rules 1.60's beta feed (skills.json per_point.numbers.feed, 0.01 for all nine): the contract's systems all
+//   feeds     rules 1.60's beta feed (skills.json per_point.numbers.feed, 0.01 for all nine): the measured systems all
 //             in (refit-measure.ts measure) with every feed as built and with every feed at 0.
 // Nothing here changes a number in data: an in-memory setting is put back in a finally.
 import { runFight } from './sim';
@@ -90,7 +90,7 @@ export function feedRows(level: number, n: number) {
 }
 
 // ---------------------------------------------------------------------------------------------- guns with mods fitted
-// The guns' line with their mods fitted (the ROADMAP's "ceilings with mods fitted"; the method of
+// The guns' line with their mods fitted (once the ROADMAP's "ceilings with mods fitted", a line withdrawn by rules 1.94; the method of
 // docs/design/proposals/2026-11-mods-today.md section 6): the optimised gun build (opt_gun's sheet, Masterwork) with
 // the gun's slots filled one at a time, each slot taking the mod that measures best on top of what is fitted (the
 // sheet's own fitMod), against the same gun bare; % of the plain rifle's turn on the range, the same seeds.

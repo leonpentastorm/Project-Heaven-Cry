@@ -2,7 +2,7 @@
 // FIGMENTS (Classes 3.0 step 8, rules 1.34; docs/design/figments-spec.md section 7). A Figment's worth a turn =
 //   D  the damage the owner's side deals through its AP (the Figments' attacks and the owner's own shots with the AP left)
 //   S  the damage enemies spent on its Figments (each Soldier-turn of it is one rifle-turn: the soak), capped at 0.6 of
-//      what the enemies dealt in all (the contract's cap: enemy fire is finite)
+//      what the enemies dealt in all (the reading's cap: enemy fire is finite)
 // as a percent of the normal-share plain rifle's turn at the same level (refit-measure.ts yardOf; S through
 // soldierTurnAt). The policy (the spec's): picture a Beast (else the best form opened) next to the nearest enemy and a
 // Wall (else a Double) between the owner and it, strike with the Beast, Overclock it when the class has it, shoot with

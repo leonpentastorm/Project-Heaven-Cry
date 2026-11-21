@@ -1,6 +1,6 @@
 // @ts-nocheck (a measuring tool; see refit-measure.test.ts)
-// THE RE-FIT (balance pass stage b, rules 1.26; docs/design/handoffs/balance-refit.md). One row for each system that
-// has a ceiling (docs/design/balance-contract.md), measured with the instruments the earlier steps built, at any level,
+// THE RE-FIT (balance pass stage b, rules 1.26; docs/design/handoffs/balance-refit.md). One row for each system the
+// balance contract once held (docs/design/balance-contract.md; withdrawn as limits by rules 1.94), measured with the instruments the earlier steps built, at any level,
 // for a normal share and all in, as a percent of the normal-share plain rifle's turn at the same level (heals: of one
 // Soldier-turn). Nothing new is measured here: each row calls the step's own tool.
 //

@@ -40,7 +40,7 @@ export function faithBuild(patron: string): string {
   return id;
 }
 /** Rules 1.31 (Classes 3.0 step 5): the Faith build as a DOOR user: the same sheet with no class (an "as if": the rules
- * give it the Chaplain at level 3; this measures what the door alone gives, the contract's whisper and hymn rows). */
+ * give it the Chaplain at level 3; this measures what the door alone gives, the systems measure's whisper and hymn rows). */
 export function doorFaithBuild(patron: string): string {
   const id = 'faith_door:' + patron;
   if (!BUILD[id]) { const def = { ...BUILD[faithBuild(patron)], id, label: 'Faith door (' + (FAITH_PATRON[patron]?.name || patron) + '; no class: an as if)', tweak: (c: any) => { c.classId = null; } }; BUILDS.push(def); BUILD[id] = def; }

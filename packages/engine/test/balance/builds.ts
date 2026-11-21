@@ -192,13 +192,13 @@ export function spendLevel(def: BuildDef, variant: Variant, C: () => any, act: (
   takeForks(def, C, act);
   return notWanted;
 }
-/** Rules 1.56 (Balance 2.0; Leon, 15 Nov 2026): perk steps sit ON TOP of a class's damage line. The balance contract
- * measures the line, so it builds with no perk steps (`STEPS.perks = false`); every other measure takes them. */
+/** Rules 1.56 (Balance 2.0; Leon, 15 Nov 2026): perk steps sit ON TOP of a class's own damage. The systems measure
+ * (systems-measure.test.ts, once the balance contract) reads it with no perk steps by default (`STEPS.perks = false`); every other measure takes them. */
 export const STEPS: { perks: boolean; forks: string[] } = { perks: true, forks: [] };
 /** Rules 1.56: a door's open choices (the Figment forks, door/pick): the build's preferred option first, else the first.
  * Rules 1.60 (the data forks, data/forks.json): a fork is a reward on top of the line and a style the build chooses, so
  * a data fork is taken only when it is named: by the build (`forks`) or by a measure (STEPS.forks); never by default
- * (the replays and the contract play the doors with no fork). */
+ * (the replays and the systems measure play the doors with no fork). */
 export function takeForks(def: BuildDef, C: () => any, act: (a: any) => void) {
   for (let guard = 0; guard < 10; guard++) {
     const want = [...STEPS.forks, ...(((def as any).forks || []) as string[])];

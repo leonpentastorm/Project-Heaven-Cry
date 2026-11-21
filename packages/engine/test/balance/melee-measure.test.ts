@@ -6,7 +6,7 @@
 // character's level and 5,000 HP, 13 tiles off, that never acts: the walk in is counted). A weapon that hits with
 // Dexterity is measured in the same build with Dexterity in Raw Power's place (and the class the rules give it,
 // Marksman), so a sabre is not judged in a Strength build's hands. The percent is its damage a turn over the plain
-// rifle's (service rifle, plain shots, normal share, same level): the contract's 100%. Nothing here is a guard.
+// rifle's (service rifle, plain shots, normal share, same level): the 100% unit. Nothing here is a guard.
 //
 //   MELEE_MEASURE=1 npx vitest run --root packages/engine test/balance/melee-measure.test.ts --silent=false
 //   MELEE_MEASURE_N=12   MELEE_MEASURE_LEVELS=1,5,10,20   MELEE_MEASURE_VARIANTS=normal,allin   MELEE_MEASURE_RARITY=masterwork

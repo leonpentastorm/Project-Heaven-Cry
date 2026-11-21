@@ -9,7 +9,7 @@ import { BUILD, BUILDS } from './builds';
 import { WEAPON } from '../../src';
 
 export const G_LEVELS = [1, 3, 6, 9, 12, 20];
-/** The guns that matter for the ceiling (the full run's default list): every gun that measured over 120% before rules
+/** The guns the full run reads by default: every gun that measured over 120% before rules
  * 1.18 or after it, the yardstick's own rifle, and one of each family that sits far under it. */
 export const TOP_GUNS = ['hellraiser_service_rifle', 'long_rifle', 'legion_bullpup', 'adamantile_battle_rifle', 'ccec_marksman_rifle', 'core_rifle', 'lever_carbine', 'frontier_hand_cannon', 'hellraiser_lmg', 'crossbow', 'decrkm_smg', 'blackpoint_700', 'breacher_tube'];
 /** Guns whose price is their ammunition (40 credits a round or more): allowed the full 150% (Leon, 11 Nov 2026). */
@@ -40,7 +40,7 @@ export function gunRow(what: string, build: string, variant: string, level: numb
 }
 export const gline = (r: GRow) => r.what + ' L' + r.level + ' ' + r.variant + ': ' + r.perTurn + ' a turn · ' + r.pctRifle + '% · hit ' + r.hitPct + '% · ' + r.dmgPerHit + ' a hit · ' + r.shotsPerTurn + ' rolls a turn · crit share ' + r.critShare + '% · biggest ' + r.bigHit + (r.errors ? ' · ERRORS ' + r.errors : '');
 
-/** The ways a gun is played (one row each; the ceiling of a weapon is the best of them). */
+/** The ways a gun is played (one row each; a weapon's reading is the best of them). */
 export const ROTATIONS: { id: string; label: string; policy: string; opts?: any }[] = [
   { id: 'plain', label: 'plain shots only', policy: 'plain' },
   { id: 'step1', label: 'the simulator\'s optimised policy (as the step-1 report ran it)', policy: 'optimised' },

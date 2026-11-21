@@ -43,7 +43,7 @@ reg({ id: 'dex_monk', label: 'Dexterity monk', policy: 'monk', weapon: 'striking
  * forks at 4 and 8 (data/forks.json ids; builds.ts takeForks takes a named fork first) and the perk steps in the door's
  * beta and gamma skills (the four-perk lists of rules 1.73 to 1.75; builds.ts takePerks takes the first one offered of
  * the list). Each door build is its base build with these picks (registered as door_<base>); the base builds, which the
- * contract and the golden tables play, are not touched. Why each:
+ * systems measure and the golden tables play, are not touched. Why each:
  *   bulwark     Provoke (the first foe on the plates is Taunted: a solo tank wants the hits on its plates) then Drive
  *               (Slam floors and gives plates back); Close Guard first (it left the door for Pain Threshold in 0.32: the
  *               policy walks beside the lowest ally for it), then Second Wind.

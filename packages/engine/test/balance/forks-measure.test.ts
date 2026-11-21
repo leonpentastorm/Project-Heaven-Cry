@@ -12,7 +12,7 @@ import { FEEDS } from '../../src/effects/feed';
 
 const ON = process.env.FORKS_MEASURE === '1';
 const LEVELS: number[] = (RULES as any).measure.levels, N = 6, GUNS = ['adamantile_battle_rifle', 'long_rifle', 'hellraiser_service_rifle'];
-// the contract rows a door's forks can move, and the options of that door the builds can take
+// the systems-measure rows a door's forks can move, and the options of that door the builds can take
 const ROWS: Record<string, string[]> = {
   gun: ['fork.pressure.converging_fire', 'fork.pressure.walk_it_in', 'fork.pressure.through_the_gap', 'fork.pressure.lockdown'],
   blade: ['fork.momentum.rolling_start', 'fork.momentum.grindstone'],

@@ -17,7 +17,7 @@ const LEVELS = (process.env.REFIT_LEVELS || R_LEVELS.join(',')).split(',').map(N
 const WHICH = process.env.REFIT_SYSTEMS ? process.env.REFIT_SYSTEMS.split(',') : SYSTEMS;
 
 describe('the re-fit measurements', () => {
-  (ON ? it : it.skip)('every system with a ceiling, as a percent of the normal-share plain rifle', () => {
+  (ON ? it : it.skip)('every system, as a percent of the normal-share plain rifle', () => {
     const res: any = {}; let errors = 0;
     for (const lv of LEVELS) { const yard = yardOf(lv, N); for (const v of VARIANTS) { const t = Date.now(); const r = measure(lv, v, N, WHICH, yard); res[lv + ':' + v] = r; errors += r.errors; console.log('[refit] L' + lv + ' ' + v + ' (' + (Date.now() - t) + ' ms) ' + JSON.stringify(r)); } }
     const cols = LEVELS.flatMap((l) => VARIANTS.map((v) => l + ':' + v));

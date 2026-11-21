@@ -1,6 +1,6 @@
 // @ts-nocheck (a measuring tool)
-// The Tending and Mender lines' measures (rules 1.33, 1.36), shared by tending-measure.test.ts (the report) and the balance
-// contract's guard (rules 1.38). The sheet: bonds-spec.md section 7.
+// The Tending and Mender lines' measures (rules 1.33, 1.36), shared by tending-measure.test.ts (the report) and the systems
+// measure (systems-measure.test.ts; the balance contract's guard of rules 1.38, withdrawn by rules 1.94). The sheet: bonds-spec.md section 7.
 import { storyWith, withGame } from '../helpers/perkfight';
 import { beginTurn, previewAttack } from '../../src';
 import { runPerkAction, perkActionId } from '../../src/effects/actions';

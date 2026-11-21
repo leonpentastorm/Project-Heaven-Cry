@@ -1,7 +1,7 @@
 // @ts-nocheck (a measuring tool, like the rest of test/balance)
 // THE CASTER POLICIES OF THE RUN SIMULATOR (rules 1.51 item 8; survival-spec section 13.6). What a sensible caster does
 // each turn in a Survival run. They wrap the balance pass's policies (policies.ts), which stay as they are: the golden
-// tables, the replays and the balance contract are played by those, so nothing they measure moves. Every choice here
+// tables, the replays and the systems measure are played by those, so nothing they measure moves. Every choice here
 // is a player's, made from the engine's own previews; every number is the engine's.
 //
 //   sigilRun    the Sigil policy, and never a pass with AP to spend: a whole Line is Evoked as soon as it is (the Sigil

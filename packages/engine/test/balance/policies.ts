@@ -282,11 +282,11 @@ export const sigil: Policy = (x) => {
     }
     return null;
   };
-  // opts.noCover (the run's Sigil policy, 0.32 simulator lane; off for the contract and the golden tables): a SEEK bolt
+  // opts.noCover (the run's Sigil policy, 0.32 simulator lane; off for the systems measure and the golden tables): a SEEK bolt
   // rolls against cover (rules 1.61 item 4960) from the Line's tiles, so a Line is only drawn where no tile of it gives
   // the target cover; when none is in reach this turn, as before
   const clear = (ts: string[] | null) => !!ts && (!o.noCover || ts.every((k) => !W(x.g, () => coverBonus(x.cb, k, tgt.pos))));
-  // opts.fromCover (the run's Sigil policy, 0.33 balance lane; off for the contract and the golden tables): the Line's
+  // opts.fromCover (the run's Sigil policy, 0.33 balance lane; off for the systems measure and the golden tables): the Line's
   // last tile, where the caster stands when it Evokes and through the foes' turn, is first sought in cover from every
   // gun-armed foe that sees it (o.fromCover(k): the caller's test); then as before
   const passes: { clear: boolean; cov: boolean }[] = o.fromCover ? (o.noCover ? [{ clear: true, cov: true }, { clear: false, cov: true }, { clear: true, cov: false }, { clear: false, cov: false }] : [{ clear: false, cov: true }, { clear: false, cov: false }])
@@ -492,7 +492,7 @@ export const calls: Policy = (x) => {
   return plain(x);
 };
 
-// ---------- the gunner (rules 1.18: the guns' ceiling; guns-measure.test.ts) ----------
+// ---------- the gunner (rules 1.18; guns-measure.test.ts) ----------
 // The optimised policy, played the way someone who knows guns plays the range:
 //   1. the set-ups a gun build has are used once: Brace a weapon that braces (it never walks again), a Bead on the target;
 //   2. the best expected damage for its AP among the plain shot, the ready techniques and, with a gun in each hand,

@@ -18,7 +18,6 @@ const env = process.env;
 const r1 = (n: number) => Math.round(n * 10) / 10, pct = (a: number, b: number) => (b > 0 ? Math.round((100 * a) / b) : 0);
 const GUNLIST = () => Object.values(WEAPON).filter((w: any) => w.phys?.system === 'ranged' && w.category !== 'thrown' && !w.companion_only).map((w: any) => w.id as string);
 const MELEELIST = () => Object.values(WEAPON).filter((w: any) => w.phys?.system === 'melee' && !w.companion_only).map((w: any) => w.id as string);
-const CEILING = 145, MELEE_LINE = 165;
 
 describe('the niche rows (0.29 P2)', () => {
   it('a held shooter fires from where it stands: the band ground and the held policy play a fight without errors', () => {
@@ -96,30 +95,29 @@ describe('the niche rows (0.29 P2)', () => {
     let md = '';
     const sits = [...new Set(rows.map((q) => q.situation))].filter((s) => !/\+mod/.test(s));
     for (const v of variants) {
-      md += '\n## ' + (v === 'normal' ? 'Normal share' : 'All in') + ' (Masterwork, ' + n + ' fights a cell, 8 turns)\n\nThe plain rifle a turn (the 100%): ' + levels.map((l) => 'L' + l + ' ' + r1(yard[l].perTurn)).join(' · ') + '. A cell: % of it at L' + levels.join(' / L') + '; **bold** over the ceiling (' + CEILING + ' guns, ' + MELEE_LINE + ' melee); (a) an as-if hand.\n';
+      md += '\n## ' + (v === 'normal' ? 'Normal share' : 'All in') + ' (Masterwork, ' + n + ' fights a cell, 8 turns)\n\nThe plain rifle a turn (the 100%): ' + levels.map((l) => 'L' + l + ' ' + r1(yard[l].perTurn)).join(' · ') + '. A cell: % of it at L' + levels.join(' / L') + '; (a) an as-if hand.\n';
       const cats = [...new Set(rows.filter((q) => q.variant === v).map((q) => (WEAPON[q.weapon] as any).category))];
       for (const cat of cats) {
         const ws = [...new Set(rows.filter((q) => q.variant === v && (WEAPON[q.weapon] as any).category === cat).map((q) => q.weapon))];
         const ss = sits.filter((s) => rows.some((q) => q.variant === v && q.situation === s && ws.includes(q.weapon)));
         md += '\n### ' + cat + '\n\n| Weapon | ' + ss.join(' | ') + ' |\n|---|' + ss.map(() => '---').join('|') + '|\n';
         for (const w of ws) md += '| ' + (WEAPON[w]?.name || w) + (rows.some((q) => q.weapon === w && q.asIf) ? ' (a)' : '') + ' | ' + ss.map((s) => { const xs = levels.map((lv) => rows.find((q) => q.weapon === w && q.situation === s && q.level === lv && q.variant === v));
-          if (xs.every((q) => !q)) return '–'; const line = /melee/.test(cat) || cat === 'unarmed' || (/next to|walk in/.test(s)) ? MELEE_LINE : CEILING; return xs.map((q) => (q ? (q.pct > line ? '**' + q.pct + '**' : String(q.pct)) : '–')).join(' / '); }).join(' | ') + ' |\n';
+          if (xs.every((q) => !q)) return '–'; return xs.map((q) => (q ? String(q.pct) : '–')).join(' / '); }).join(' | ') + ' |\n';
       }
       // each class's best cell, and whether it is the best of all classes there
-      md += '\n### Each class\'s best cell (' + (v === 'normal' ? 'normal share' : 'all in') + '): its best weapon, the situation where it reads highest (mean over the levels), and the class that is best there\n\n| Class | Best weapon | Situation | Mean % | Best in game there? (the top class and weapon there) | Cells over the ceiling (all situations) |\n|---|---|---|---|---|---|\n';
+      md += '\n### Each class\'s best cell (' + (v === 'normal' ? 'normal share' : 'all in') + '): its best weapon, the situation where it reads highest (mean over the levels), and the class that is best there\n\n| Class | Best weapon | Situation | Mean % | Best in game there? (the top class and weapon there) |\n|---|---|---|---|---|\n';
       const meanOf = (w: string, s: string) => { const xs = rows.filter((q) => q.weapon === w && q.situation === s && q.variant === v); return xs.length === levels.length ? xs.reduce((t, q) => t + q.pct, 0) / xs.length : null; };
       const top: Record<string, { w: string; m: number; cat: string }> = {};
       for (const s of sits) for (const w of [...new Set(rows.map((q) => q.weapon))]) { const m = meanOf(w, s); if (m == null) continue; if (!top[s] || m > top[s].m) top[s] = { w, m, cat: (WEAPON[w] as any).category }; }
       for (const cat of cats) {
         let b: any = null; for (const s of sits) for (const w of [...new Set(rows.filter((q) => (WEAPON[q.weapon] as any).category === cat).map((q) => q.weapon))]) { const m = meanOf(w, s); if (m != null && (!b || m > b.m)) b = { w, s, m }; }
         if (!b) continue;
-        const over = rows.filter((q) => q.variant === v && (WEAPON[q.weapon] as any).category === cat && !/\+mod/.test(q.situation) && q.pct > ((/melee/.test(cat) || cat === 'unarmed') ? MELEE_LINE : CEILING)).map((q) => (WEAPON[q.weapon]?.name || q.weapon) + ' ' + q.situation + ' L' + q.level + ' ' + q.pct);
-        md += '| ' + cat + ' | ' + (WEAPON[b.w]?.name || b.w) + ' | ' + b.s + ' | ' + Math.round(b.m) + ' | ' + (top[b.s].cat === cat ? 'yes' : 'no: ' + top[b.s].cat + ' (' + (WEAPON[top[b.s].w]?.name || top[b.s].w) + ' ' + Math.round(top[b.s].m) + ')') + ' | ' + (over.length ? over.slice(0, 6).join('; ') + (over.length > 6 ? ' (+' + (over.length - 6) + ')' : '') : 'none') + ' |\n';
+        md += '| ' + cat + ' | ' + (WEAPON[b.w]?.name || b.w) + ' | ' + b.s + ' | ' + Math.round(b.m) + ' | ' + (top[b.s].cat === cat ? 'yes' : 'no: ' + top[b.s].cat + ' (' + (WEAPON[top[b.s].w]?.name || top[b.s].w) + ' ' + Math.round(top[b.s].m) + ')') + ' |\n';
       }
     }
     if (modRows.length) {
       md += '\n## Mods: each gun class\'s best gun at its best band, every legal mod alone, then the best of each slot together (' + variants[0] + ', % of the plain rifle at L' + levels.join(' / L') + '; gain: mean points over the bare gun)\n\n| Class | Gun | Situation | Mods | Cells | Gain |\n|---|---|---|---|---|---|\n';
-      for (const q of modRows) md += '| ' + q.cls + ' | ' + (WEAPON[q.weapon]?.name || q.weapon) + ' | ' + q.sit + ' | ' + (q.bare ? '(bare)' : q.mods.map((m: string) => ITEM[m]?.name || m).join(' + ') + (q.set ? ' **(the best legal set)**' : '')) + ' | ' + q.cells.map((c: number) => (c > CEILING ? '**' + c + '**' : c)).join(' / ') + ' | ' + (q.bare ? '-' : (q.gain >= 0 ? '+' : '') + r1(q.gain)) + ' |\n';
+      for (const q of modRows) md += '| ' + q.cls + ' | ' + (WEAPON[q.weapon]?.name || q.weapon) + ' | ' + q.sit + ' | ' + (q.bare ? '(bare)' : q.mods.map((m: string) => ITEM[m]?.name || m).join(' + ') + (q.set ? ' **(the best legal set)**' : '')) + ' | ' + q.cells.join(' / ') + ' | ' + (q.bare ? '-' : (q.gain >= 0 ? '+' : '') + r1(q.gain)) + ' |\n';
     }
     if (hyp.length) { md += '\n## HYPOTHETICAL: the paired hand cannon with a modded off hand (not measurable today: a paired attack drops the off hand\'s mods). Paired at 6 tiles × (single with the set ÷ single bare, both at ' + hyp[0].sit + ')\n\n| Level | Paired at 6, bare | Single at 6, bare | Single at ' + hyp[0].sit + ': bare, with ' + hyp[0].mods.join(' + ') + ' | Hypothetical paired, both hands modded |\n|---|---|---|---|---|\n';
       for (const h of hyp) md += '| ' + h.level + ' | ' + h.paired + ' | ' + h.single + ' | ' + h.bareAt + ', ' + h.singleModded + ' | **' + h.hypothetical + '** (estimate) |\n'; }

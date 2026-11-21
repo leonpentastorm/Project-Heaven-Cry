@@ -33,7 +33,7 @@ export function pattern(what: string, build: string, variant: string, level: num
     spellPerTurn: r1(spell / Math.max(1, c.turns)), allPerTurn: r1(c.dmg / Math.max(1, c.turns)), bigHit: c.bigHit, bigWhat: c.bigHitWhat,
     pctRifle: pct(spell / Math.max(1, c.turns), y.normal), pctAll: pct(c.dmg / Math.max(1, c.turns), y.normal), pctOwnRifle: pct(spell / Math.max(1, c.turns), y[variant]), errors: c.errors };
 }
-/** THE PEAK (one copy: magic-measure, outburst-measure and the contract's obPeak read it): the biggest Release, one turn
+/** THE PEAK (one copy: magic-measure, outburst-measure and the systems measure's obPeak read it): the biggest Release, one turn
  * from a quiet heart. When it can't be cast in turn 1 (the turn holds the Begin and the Pumps), the same over two turns,
  * and then ONE Release is counted: the first lands on turn 2, so the row is that Release's damage over its two turns
  * (0.32 fit, rules 1.81 item 6903: since rules 1.70 the Strain limit is Composure's and lower, so the policy fires a second
