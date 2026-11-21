@@ -34031,6 +34031,42 @@
         "different_pixels_32": 3,
         "different_pixels_64": 26
       }
+    },
+    "weapon-war_pick--relic": {
+      "label": "War pick — Relic",
+      "path": "art/icons/gear/weapon-war_pick--relic.png",
+      "sha256": "f66556f6f6adf2bde268ff0c42c5ecde68b487c65d09efac50ed52fb9cff41cf",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_pick--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-war_pick--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-war_pick--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-war_pick--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-war_pick--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.2",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-war_pick",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.8858378521141291,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 59
+      }
     }
   },
   "survival_art": {

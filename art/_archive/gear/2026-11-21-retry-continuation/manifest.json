@@ -1651,6 +1651,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_pick--relic",
+      "path": "art/icons/gear/weapon-war_pick--relic.png",
+      "sha256": "f66556f6f6adf2bde268ff0c42c5ecde68b487c65d09efac50ed52fb9cff41cf",
+      "label": "War pick — Relic",
+      "family": "weapon-war_pick",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-war_pick--relic.png",
+        "sha256": "ecad3cb9371d89fbed52f175b619b34c92eeb4b5b908f68d91a4056f2fdea770"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--relic.png",
+        "sha256": "f66556f6f6adf2bde268ff0c42c5ecde68b487c65d09efac50ed52fb9cff41cf"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_pick--relic.txt",
+        "sha256": "481c7c515ab83a68f6f0642c869be5fa9bd11cde1335b57478171f33d81a0669"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-war_pick.png",
+          "sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7"
+        },
+        {
+          "path": "art/icons/gear/weapon-war_pick--masterwork.png",
+          "sha256": "d2d630bd80da3119bb73609f1a580a50cfc1bc440f410e4fd554f1c0bdcd3d34"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-war_pick--relic/001/native.png",
+          "sha256": "714b1f54736448110bdd4462aaff690a74cbdfa59acde81c972fed742a4c68d9"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_pick--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-war_pick--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-war_pick--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-war_pick--relic.png"
+      },
+      "export_hashes": {
+        "256": "0944ed62b210aa209b9dc0d94236601be1e3fd9d427f28af19da77576f827746",
+        "128": "e15d69c24f1fe55c5fec5580719d8e9ea17d3f8406e25692e2317f9373461f08",
+        "64": "b6b4b2b0a0073096301673154d52b4718d7216879ee23e7ed7a91887b2dc64a7",
+        "32": "9fd8422baf17a5dba4e5c1e3034ac8dd12bb0a80350db229236c8f8e8472e999"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-war_pick",
+      "outline": {
+        "solid_alpha_iou": 0.8858378521141291,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 59
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

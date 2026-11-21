@@ -1,7 +1,7 @@
 {
-  "selected": 538,
+  "selected": 539,
   "requested": 871,
-  "remaining": 333,
+  "remaining": 332,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 383,
+      "selected": 384,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 273,
+    "grade": 272,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 69,
+    "service-blocked-or-preceding-grade-dependent": 68,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -549,14 +549,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-war_axe--celestial.png",
       "standard": "weapon-war_axe",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-war_pick--relic",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-war_pick--relic.png",
-      "standard": "weapon-war_pick",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2759,7 +2751,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-war_pick--masterwork",
+  "last_delivered": "weapon-war_pick--relic",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {
