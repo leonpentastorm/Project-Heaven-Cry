@@ -3205,6 +3205,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-coach_gun--celestial",
+      "path": "art/icons/gear/weapon-coach_gun--celestial.png",
+      "sha256": "173164aa3c6c67ce7e576cecfcccad288bd48cabdfe706a2b7a5e89c93c7d62e",
+      "label": "Coach Gun — Celestial",
+      "family": "weapon-coach_gun",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-coach_gun--celestial.png",
+        "sha256": "6c662870b7a26bf576e9769c42a172534234f22993169d44df346ead4e5372a3"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-coach_gun--celestial.png",
+        "sha256": "173164aa3c6c67ce7e576cecfcccad288bd48cabdfe706a2b7a5e89c93c7d62e"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-coach_gun--celestial.txt",
+        "sha256": "067c9b66ea3e963d10b30d7a7b9519295ae13ae094bbee7de3a17691ab6bfc08"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-coach_gun.png",
+          "sha256": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5"
+        },
+        {
+          "path": "art/icons/gear/weapon-coach_gun--relic.png",
+          "sha256": "2140a302170c24edf31b08f09f148e92d84011bc99a1b256a1d75112ab801aec"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-coach_gun--celestial/002/native.png",
+          "sha256": "85de17e6518c46d7ad16715ec3dc44cb89f94003c1b9b3c3a240ab4404289320"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-coach_gun--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-coach_gun--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-coach_gun--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-coach_gun--celestial.png"
+      },
+      "export_hashes": {
+        "256": "7531edb5ecedd0aa95a8b1305226c366a0de87f10756b07044b4a01d75798e83",
+        "128": "29c76df303ebc0d79ec04a021f658e9640a7422ea3d97ccb2d3476ffb3c9f254",
+        "64": "9319b147d97dcc003c6ab159d3192e018ece2848f5c8c648f0a2b935e5f0936a",
+        "32": "2ccededda8136046cffc6ec71c085c5a4c4c5427efbe06fbe08c60ca326dc831"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-coach_gun",
+      "outline": {
+        "solid_alpha_iou": 0.9577599708060274,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 25
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
