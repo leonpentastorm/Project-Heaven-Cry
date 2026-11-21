@@ -1,0 +1,16 @@
+[
+  {
+    "source": "art/icons/weapons/legion_bullpup.svg",
+    "sha256": "b7ab195d2599f96dd5cd1d58e8f86cf3b122380b0dfb3388129a64e392bc716c",
+    "render": "art/_archive/gear/2026-11-21-retry-uniques/references/line-icons/weapon-legion_bullpup.png",
+    "render_sha256": "fa8e958543f59f7d0ae03a791fb986a4e3cfb7b85d65a6a00eaefd6b4bebc8c0",
+    "operation": "Inkscape SVG rasterization only, currentColor ivory on dark review background; original SVG/path geometry unchanged; reference-only/count0"
+  },
+  {
+    "source": "art/icons/weapons/parlour_pistol.svg",
+    "sha256": "3cea751c28d99721d71aaeebbb44979e2720782ca8a5b57ab8eb28d229bcc573",
+    "render": "art/_archive/gear/2026-11-21-retry-uniques/references/line-icons/weapon-parlour_pistol.png",
+    "render_sha256": "0cf22b1b8cb757fe417170b240a50d0db6ebf3f34e62df9f57c822636854884a",
+    "operation": "Inkscape SVG rasterization only, currentColor ivory on dark review background; original SVG/path geometry unchanged; reference-only/count0"
+  }
+]

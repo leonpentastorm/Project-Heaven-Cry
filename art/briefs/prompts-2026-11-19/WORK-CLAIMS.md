@@ -1,3 +1,7 @@
+## Unique2 expansion7061761756
+
+Solerunsole-20261121-0109 exclusivelyreservesweapon-in_triplicate,weapon-encore. Uniquequeue5/3selected/2pending;grade74/51selected/23pending. Total567/871,other279missinggear outsideexactclaims.
+
 ## Unique3 claim7061559992
 
 Runsole-20261121-0109 reserves GrandmothersTeeth,LastCrossing,Reveille exactIDs/newroot art/_archive/gear/2026-11-21-retry-uniques.564/871;firstLastCrossing.74gradequeue51selected/23pending retained. Other281missinggear requirefreshclaims.
