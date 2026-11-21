@@ -1,7 +1,7 @@
 {
-  "selected": 513,
+  "selected": 514,
   "requested": 871,
-  "remaining": 358,
+  "remaining": 357,
   "counts": {
     "icons_tiles": {
       "selected": 87,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 359,
+      "selected": 360,
       "total": 656
     },
     "uniques": {
@@ -26,13 +26,13 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 297,
+    "grade": 296,
     "unique": 9,
     "held-portrait": 1
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 93,
+    "service-blocked-or-preceding-grade-dependent": 92,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5,
     "0.30-HOLD": 1
@@ -703,14 +703,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-war_axe--celestial.png",
       "standard": "weapon-war_axe",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-legion_spear--relic",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-legion_spear--relic.png",
-      "standard": "weapon-legion_spear",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2961,6 +2953,6 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-legion_spear--masterwork",
+  "last_delivered": "weapon-legion_spear--relic",
   "current_run": "sole-20261121-0109"
 }

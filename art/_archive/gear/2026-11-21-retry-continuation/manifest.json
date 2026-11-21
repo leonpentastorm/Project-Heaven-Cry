@@ -66,6 +66,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-legion_spear--relic",
+      "path": "art/icons/gear/weapon-legion_spear--relic.png",
+      "sha256": "2b36f36187d79fcd53db9ac7df5278914983dbc4967c1cec4d3bb48fbb044a47",
+      "label": "Legion Spear — Relic",
+      "family": "weapon-legion_spear",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-legion_spear--relic.png",
+        "sha256": "78a8b2dc53ebb72c6026699b5fd6df30045e52f21ce818a10cd6fc702dc62157"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-legion_spear--relic.png",
+        "sha256": "2b36f36187d79fcd53db9ac7df5278914983dbc4967c1cec4d3bb48fbb044a47"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-legion_spear--relic.txt",
+        "sha256": "0ee8a69a867d749dbe29ba0fd5c99e9914b92b0442cd75e0b12dc90146b80fc5"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-legion_spear.png",
+          "sha256": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287"
+        },
+        {
+          "path": "art/icons/gear/weapon-legion_spear--masterwork.png",
+          "sha256": "e942b565b8fe93e6129a27a5be5f11060eac5fd71b86e8bf8b65ffd5b184502c"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-legion_spear.png",
+          "sha256": "7260ce6282468891bb8a310b25d6bf0779fc218f52404ae26073317cd0226bd5"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-legion_spear--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-legion_spear--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-legion_spear--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-legion_spear--relic.png"
+      },
+      "export_hashes": {
+        "256": "131e708fa0af059e52e64973d6878a5522047988e67032ce7e23f8d96b9157e4",
+        "128": "5a8ff5fe046d6b78bb7a25daa1d613f7afbf0ade2136896aca7ea4592ad4f7e6",
+        "64": "cc3accc689ab7ca0b23bfdd49921b379d05adc54ad51fe507e69810eda2470f6",
+        "32": "fbe82d21e47703dcc438fd98f2287718deb15c4e4879cc38cd73a95a92e6e6ee"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-legion_spear",
+      "outline": {
+        "solid_alpha_iou": 0.8573014196458941,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

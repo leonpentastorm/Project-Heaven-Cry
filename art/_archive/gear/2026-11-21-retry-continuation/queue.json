@@ -13,7 +13,8 @@
     ],
     "family": "weapon-legion_spear",
     "family_references": [
-      "art/icons/gear/weapon-legion_spear.png"
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/icons/gear/weapon-legion_spear--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.2",
@@ -51,13 +52,14 @@
     ],
     "family": "weapon-legion_spear",
     "family_references": [
-      "art/icons/gear/weapon-legion_spear.png"
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/icons/gear/weapon-legion_spear--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.2",
     "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Relic. Keep the shape and the inlay. The head darkens to a warm deep patina, the inlay to dull old gold, and the socket where head meets haft carries one small flush gilt ornament ring. Add one old repair that tells a story: the haft spliced near the grip and bound with old cord, or a cracked cheek held by two hand-set rivets. The edge, point or face is still bright and true.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. Add ONE short repair near the existing grip, bound with old cord INSIDE the original shaft/grip silhouette; no new protruding knot, collar or metal patch. Preserve the two Masterwork flush shaft strips. The ONE tiny gilt ornament ring is inlaid on the EXISTING socket collar, no extra disc or backing plate. The head inlay becomes old gold; surface patina is warm deep oiled brown, not rust.",
     "keep_line": "the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.",
-    "status": "pending",
+    "status": "delivered",
     "production_approved": false,
     "collection": "2026-11-21-retry-continuation",
     "reference_sources": [
@@ -84,7 +86,8 @@
     ],
     "family": "weapon-legion_spear",
     "family_references": [
-      "art/icons/gear/weapon-legion_spear.png"
+      "art/icons/gear/weapon-legion_spear.png",
+      "art/icons/gear/weapon-legion_spear--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.2",
@@ -189,7 +192,8 @@
     ],
     "family": "weapon-purifier_flamer",
     "family_references": [
-      "art/icons/gear/weapon-purifier_flamer.png"
+      "art/icons/gear/weapon-purifier_flamer.png",
+      "art/icons/gear/weapon-purifier_flamer--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.8",
@@ -223,7 +227,8 @@
     ],
     "family": "weapon-dock_cutter",
     "family_references": [
-      "art/icons/gear/weapon-dock_cutter.png"
+      "art/icons/gear/weapon-dock_cutter.png",
+      "art/icons/gear/weapon-dock_cutter--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -326,7 +331,8 @@
     ],
     "family": "weapon-kemizuchi_side_sword",
     "family_references": [
-      "art/icons/gear/weapon-kemizuchi_side_sword.png"
+      "art/icons/gear/weapon-kemizuchi_side_sword.png",
+      "art/icons/gear/weapon-kemizuchi_side_sword--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -363,7 +369,8 @@
     ],
     "family": "weapon-ork_cleaver_glaive",
     "family_references": [
-      "art/icons/gear/weapon-ork_cleaver_glaive.png"
+      "art/icons/gear/weapon-ork_cleaver_glaive.png",
+      "art/icons/gear/weapon-ork_cleaver_glaive--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -400,7 +407,8 @@
     ],
     "family": "weapon-purifier_flamer",
     "family_references": [
-      "art/icons/gear/weapon-purifier_flamer.png"
+      "art/icons/gear/weapon-purifier_flamer.png",
+      "art/icons/gear/weapon-purifier_flamer--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.8",
@@ -430,7 +438,8 @@
     ],
     "family": "weapon-dock_cutter",
     "family_references": [
-      "art/icons/gear/weapon-dock_cutter.png"
+      "art/icons/gear/weapon-dock_cutter.png",
+      "art/icons/gear/weapon-dock_cutter--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -463,7 +472,9 @@
     ],
     "family": "weapon-broadback_sabre",
     "family_references": [
-      "art/icons/gear/weapon-broadback_sabre.png"
+      "art/icons/gear/weapon-broadback_sabre.png",
+      "art/icons/gear/weapon-broadback_sabre--fine.png",
+      "art/icons/gear/weapon-broadback_sabre--masterwork.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -566,7 +577,8 @@
     ],
     "family": "weapon-kemizuchi_side_sword",
     "family_references": [
-      "art/icons/gear/weapon-kemizuchi_side_sword.png"
+      "art/icons/gear/weapon-kemizuchi_side_sword.png",
+      "art/icons/gear/weapon-kemizuchi_side_sword--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -599,7 +611,8 @@
     ],
     "family": "weapon-ork_cleaver_glaive",
     "family_references": [
-      "art/icons/gear/weapon-ork_cleaver_glaive.png"
+      "art/icons/gear/weapon-ork_cleaver_glaive.png",
+      "art/icons/gear/weapon-ork_cleaver_glaive--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -632,7 +645,10 @@
     ],
     "family": "weapon-hellraiser_rotary",
     "family_references": [
-      "art/icons/gear/weapon-hellraiser_rotary.png"
+      "art/icons/gear/weapon-hellraiser_rotary.png",
+      "art/icons/gear/weapon-hellraiser_rotary--fine.png",
+      "art/icons/gear/weapon-hellraiser_rotary--masterwork.png",
+      "art/icons/gear/weapon-hellraiser_rotary--relic.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.8",
@@ -666,7 +682,8 @@
     ],
     "family": "weapon-purifier_flamer",
     "family_references": [
-      "art/icons/gear/weapon-purifier_flamer.png"
+      "art/icons/gear/weapon-purifier_flamer.png",
+      "art/icons/gear/weapon-purifier_flamer--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.8",
@@ -696,7 +713,8 @@
     ],
     "family": "weapon-dock_cutter",
     "family_references": [
-      "art/icons/gear/weapon-dock_cutter.png"
+      "art/icons/gear/weapon-dock_cutter.png",
+      "art/icons/gear/weapon-dock_cutter--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -729,7 +747,9 @@
     ],
     "family": "weapon-broadback_sabre",
     "family_references": [
-      "art/icons/gear/weapon-broadback_sabre.png"
+      "art/icons/gear/weapon-broadback_sabre.png",
+      "art/icons/gear/weapon-broadback_sabre--fine.png",
+      "art/icons/gear/weapon-broadback_sabre--masterwork.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -828,7 +848,8 @@
     ],
     "family": "weapon-kemizuchi_side_sword",
     "family_references": [
-      "art/icons/gear/weapon-kemizuchi_side_sword.png"
+      "art/icons/gear/weapon-kemizuchi_side_sword.png",
+      "art/icons/gear/weapon-kemizuchi_side_sword--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
@@ -861,7 +882,8 @@
     ],
     "family": "weapon-ork_cleaver_glaive",
     "family_references": [
-      "art/icons/gear/weapon-ork_cleaver_glaive.png"
+      "art/icons/gear/weapon-ork_cleaver_glaive.png",
+      "art/icons/gear/weapon-ork_cleaver_glaive--fine.png"
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.1",
