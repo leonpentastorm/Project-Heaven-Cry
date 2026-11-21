@@ -3329,6 +3329,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-short_bow--fine",
+      "path": "art/icons/gear/weapon-short_bow--fine.png",
+      "sha256": "1615fb0c059f6891cb58e5d8f80541a766716c787ef10385e3edb8c61fc29d80",
+      "label": "Short bow — Fine",
+      "family": "weapon-short_bow",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_bow--fine.png",
+        "sha256": "e64a9d3e7edfedef09eca426155b213e532610ea83488443f9cb2d27d0347192"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_bow--fine.png",
+        "sha256": "1615fb0c059f6891cb58e5d8f80541a766716c787ef10385e3edb8c61fc29d80"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_bow--fine.txt",
+        "sha256": "0cdf87fa26b9a6076e8083da8b1bb3e27ac977253de5ec0f3aae0c5098c10794"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-short_bow.png",
+          "sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-short_bow--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-short_bow--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-short_bow--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-short_bow--fine.png"
+      },
+      "export_hashes": {
+        "256": "31036f5ba32aff69d4337b2c8ad2157a29631f7467e60218b20cd147f6c4c4ab",
+        "128": "81bc04210d24c37bdcdcc50b23ec35aed4b697fea4e74e4206cdd0f897c58bde",
+        "64": "01eeb6f66721c64bd4afb720e7aa53dedbd927e319f4fcc672e87cba7796cac2",
+        "32": "ea65591d12b60fc0ddae39721351fc4e85db7ba40cc41923f434e9188a91bbe5"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-short_bow",
+      "outline": {
+        "solid_alpha_iou": 0.8491235497495137,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 12,
+        "different_pixels_64": 61
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

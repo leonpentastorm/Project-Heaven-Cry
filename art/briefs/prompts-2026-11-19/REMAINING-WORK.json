@@ -1,7 +1,7 @@
 {
-  "selected": 570,
+  "selected": 571,
   "requested": 871,
-  "remaining": 301,
+  "remaining": 300,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 410,
+      "selected": 411,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 246,
+    "grade": 245,
     "unique": 4
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 42,
+    "service-blocked-or-preceding-grade-dependent": 41,
     "awaits-missing-requested-standard": 208
   },
   "live_claims": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
@@ -2048,14 +2048,6 @@
       "eligible_for_retry": false
     },
     {
-      "id": "weapon-short_bow--fine",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-short_bow--fine.png",
-      "standard": "weapon-short_bow",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
       "id": "weapon-short_bow--masterwork",
       "kind": "grade",
       "path": "art/icons/gear/weapon-short_bow--masterwork.png",
@@ -2502,7 +2494,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-service_pistol--fine",
+  "last_delivered": "weapon-short_bow--fine",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

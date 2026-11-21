@@ -44,6 +44,7 @@
     "weapon-war_hammer--masterwork",
     "weapon-war_hammer--relic",
     "weapon-war_hammer--celestial",
+    "weapon-short_bow--fine",
     "weapon-crossbow--masterwork",
     "weapon-crossbow--relic",
     "weapon-crossbow--celestial",
@@ -57,7 +58,6 @@
     "weapon-service_pistol--fine"
   ],
   "remaining": [
-    "weapon-short_bow--fine",
     "weapon-short_bow--masterwork",
     "weapon-short_bow--relic",
     "weapon-short_bow--celestial",
@@ -527,8 +527,8 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T15:54:56.692742+00:00",
-  "project_distinct_count": 570,
+  "updated_utc": "2026-11-21T16:01:11.059877+00:00",
+  "project_distinct_count": 571,
   "total": 94,
   "service_block": {
     "returned_code": "moderation_blocked",
