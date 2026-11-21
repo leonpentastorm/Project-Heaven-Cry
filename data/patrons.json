@@ -126,7 +126,7 @@
         "base": 12,
         "per_devotion": 2.4
       },
-      "text": "While you are Witnessed, your patron acts on its own when its trigger happens, and then Witnessed ends. It can happen once a fight, or twice from Devotion 7. Its damage is {=amount.base} + {=amount.per_devotion} × your Devotion, × your Blessing power; Mother Ember's healing is her own (her card says it)."
+      "text": "While you are Witnessed, your patron acts on its own when its trigger happens, and then Witnessed ends. It can happen once a fight, or twice from Devotion 7. Its damage, and Mother Ember's healing, is the patron's own number plus a share for each level of your Devotion, × your Blessing power (each patron's card says it)."
     },
     "provisional": true
   },

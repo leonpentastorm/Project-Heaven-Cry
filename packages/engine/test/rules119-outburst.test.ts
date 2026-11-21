@@ -50,7 +50,7 @@ describe('rules 1.19: the stage table and the Damage base', () => {
     expect((SOUL_RULES as any).cycle.provisional).toBe(true);
   });
   it('a character\'s Damage base is 37 (rules 1.56, fitted with no perk steps: spec item 4201; 31 in rules 1.26, 40 from 12 Nov, 36 before); an enemy caster\'s is 24', () => {
-    expect(SOUL_DAMAGE).toBe(37); expect(SOUL_DAMAGE_ENEMY).toBe(24); expect((SOUL_RULES as any).damage.provisional).toBe(true);
+    expect(SOUL_DAMAGE).toBe(22); expect(SOUL_DAMAGE_ENEMY).toBe(24); expect((SOUL_RULES as any).damage.provisional).toBe(true);
     const f = heart(); const foe = f.foe; foe.mg = heartMagic(foe, HEART_CASTERS[0]); expect(foe.mg!.soulBase).toBeUndefined();
   });
 });

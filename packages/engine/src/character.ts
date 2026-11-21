@@ -3,7 +3,6 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { numberOf } from './datatext';
 import patronsJ from '../../../data/patrons.json';
-import conditionsJ from '../../../data/conditions.json';
 import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, armourClassNumOf, ladderSchedule, ELEMENTAL_CAP, attrDerived } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
 import { statQuery, setRankRule, setHandsRule, sheetSource, type HandInstance } from './effects/hooks';
@@ -16,6 +15,7 @@ const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
 import { allPendingDoorPicks } from './doorpicks';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
+import { CONDITION_ROWS } from './condtable';
 import { startingWordsError, STARTING_DEFAULT, migrateWords, SIGIL_REV } from './sigilwords';
 import { feedOf } from './effects/feed';
 import { itemTags, hasTag, fixedGradeOf, ungradedWhy } from './itemtags';
@@ -775,7 +775,7 @@ export const oneHanded = (w: { hands?: string } | null | undefined): boolean => 
 export const mainHandSide = (c: Pick<Sheet, 'identity'>): 'left' | 'right' => (/^l/i.test(c.identity?.hand || '') ? 'left' : 'right');
 /** Rules 1.95 (the scale; scale.json factor.walk.typed_old_scale): the torso's line reads the Bleeding row (its tick and
  * its rounds, data/conditions.json), never a number of its own. */
-const BLEED_ROW: any = ((conditionsJ as any).items as any[]).find((x) => x.id === 'bleeding') || {};
+const BLEED_ROW: any = (CONDITION_ROWS as any[]).find((x) => x.id === 'bleeding') || {};
 export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP next turn', torso: 'Bleeding: ' + (BLEED_ROW.amounts?.tick?.base ?? 0) + ' damage a turn for ' + (BLEED_ROW.duration?.rounds ?? 0) + ' rounds; a stim stops it', arm: '−2 to attacks with that arm, until treated', leg: 'Half Movement, until treated' };
 
 // ---------- derived stats (spec: Derived stats) ----------

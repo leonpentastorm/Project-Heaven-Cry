@@ -1,0 +1,483 @@
+{
+ "doors": {
+  "guard": {
+   "weapon": "ram_plate",
+   "profile": "melee",
+   "l1": {
+    "standard": 44.646006807692316,
+    "fine": 51.34290782884616
+   },
+   "l20": {
+    "relic": 3534.475538942307,
+    "celestial": 4123.554795432692
+   },
+   "l1_points": 7
+  },
+  "momentum": {
+   "weapon": "ork_wreck_saw",
+   "profile": "melee",
+   "l1": {
+    "standard": 69.44934392307692,
+    "fine": 79.86674551153845
+   },
+   "l20": {
+    "relic": 5498.073060576923,
+    "celestial": 6414.418570673077
+   },
+   "l1_points": 7
+  },
+  "pressure": {
+   "weapon": "long_rifle",
+   "profile": "gun",
+   "l1": {
+    "standard": 53.79231292615385,
+    "fine": 61.86115986507692
+   },
+   "l20": {
+    "relic": 4258.558106653846,
+    "celestial": 4968.317791096154
+   },
+   "l1_points": 7
+  },
+  "shadow": {
+   "weapon": "long_rifle",
+   "profile": "gun",
+   "l1": {
+    "standard": 53.79231292615385,
+    "fine": 61.86115986507692
+   },
+   "l20": {
+    "relic": 4258.558106653846,
+    "celestial": 4968.317791096154
+   },
+   "l1_points": 7
+  },
+  "sigils": {
+   "weapon": null,
+   "profile": "sigil",
+   "l1": {
+    "standard": 49.43076923076923,
+    "fine": 56.84538461538461
+   },
+   "l20": {
+    "relic": 3913.2692307692296,
+    "celestial": 4565.480769230768
+   },
+   "l1_points": 7
+  },
+  "figments": {
+   "weapon": "figment_claws",
+   "profile": "figment",
+   "l1": {
+    "standard": 33.64615384615385,
+    "fine": 38.69307692307692
+   },
+   "l20": {
+    "relic": 2663.653846153846,
+    "celestial": 3107.596153846154
+   },
+   "l1_points": 7
+  },
+  "bonds": {
+   "weapon": null,
+   "profile": "flat",
+   "l1": {
+    "standard": 19.85422153846154,
+    "fine": 22.832354769230772
+   },
+   "l20": {
+    "relic": 1571.7925384615382,
+    "celestial": 1833.7579615384614
+   },
+   "l1_points": 7
+  },
+  "outbursts": {
+   "weapon": null,
+   "profile": "soul",
+   "l1": {
+    "standard": 47.64461538461539,
+    "fine": 54.7913076923077
+   },
+   "l20": {
+    "relic": 3771.8653846153843,
+    "celestial": 4400.509615384615
+   },
+   "l1_points": 7
+  },
+  "prayer": {
+   "weapon": null,
+   "profile": "flat",
+   "l1": {
+    "standard": 63.15600738461538,
+    "fine": 72.62940849230768
+   },
+   "l20": {
+    "relic": 4999.850584615382,
+    "celestial": 5833.159015384613
+   },
+   "l1_points": 7
+  }
+ },
+ "hp": [
+  {
+   "level": 1,
+   "endurance": 1,
+   "pain_threshold": 0,
+   "hp": 60
+  },
+  {
+   "level": 5,
+   "endurance": 1,
+   "pain_threshold": 0,
+   "hp": 139
+  },
+  {
+   "level": 10,
+   "endurance": 1,
+   "pain_threshold": 0,
+   "hp": 396
+  },
+  {
+   "level": 15,
+   "endurance": 1,
+   "pain_threshold": 0,
+   "hp": 1121
+  },
+  {
+   "level": 20,
+   "endurance": 1,
+   "pain_threshold": 0,
+   "hp": 3160
+  },
+  {
+   "level": 1,
+   "endurance": 1,
+   "pain_threshold": 5,
+   "hp": 78
+  },
+  {
+   "level": 5,
+   "endurance": 1,
+   "pain_threshold": 5,
+   "hp": 181
+  },
+  {
+   "level": 10,
+   "endurance": 1,
+   "pain_threshold": 5,
+   "hp": 515
+  },
+  {
+   "level": 15,
+   "endurance": 1,
+   "pain_threshold": 5,
+   "hp": 1458
+  },
+  {
+   "level": 20,
+   "endurance": 1,
+   "pain_threshold": 5,
+   "hp": 4108
+  },
+  {
+   "level": 1,
+   "endurance": 1,
+   "pain_threshold": 10,
+   "hp": 96
+  },
+  {
+   "level": 5,
+   "endurance": 1,
+   "pain_threshold": 10,
+   "hp": 223
+  },
+  {
+   "level": 10,
+   "endurance": 1,
+   "pain_threshold": 10,
+   "hp": 634
+  },
+  {
+   "level": 15,
+   "endurance": 1,
+   "pain_threshold": 10,
+   "hp": 1794
+  },
+  {
+   "level": 20,
+   "endurance": 1,
+   "pain_threshold": 10,
+   "hp": 5056
+  },
+  {
+   "level": 1,
+   "endurance": 4,
+   "pain_threshold": 0,
+   "hp": 90
+  },
+  {
+   "level": 5,
+   "endurance": 4,
+   "pain_threshold": 0,
+   "hp": 204
+  },
+  {
+   "level": 10,
+   "endurance": 4,
+   "pain_threshold": 0,
+   "hp": 568
+  },
+  {
+   "level": 15,
+   "endurance": 4,
+   "pain_threshold": 0,
+   "hp": 1576
+  },
+  {
+   "level": 20,
+   "endurance": 4,
+   "pain_threshold": 0,
+   "hp": 4360
+  },
+  {
+   "level": 1,
+   "endurance": 4,
+   "pain_threshold": 5,
+   "hp": 117
+  },
+  {
+   "level": 5,
+   "endurance": 4,
+   "pain_threshold": 5,
+   "hp": 266
+  },
+  {
+   "level": 10,
+   "endurance": 4,
+   "pain_threshold": 5,
+   "hp": 739
+  },
+  {
+   "level": 15,
+   "endurance": 4,
+   "pain_threshold": 5,
+   "hp": 2049
+  },
+  {
+   "level": 20,
+   "endurance": 4,
+   "pain_threshold": 5,
+   "hp": 5668
+  },
+  {
+   "level": 1,
+   "endurance": 4,
+   "pain_threshold": 10,
+   "hp": 144
+  },
+  {
+   "level": 5,
+   "endurance": 4,
+   "pain_threshold": 10,
+   "hp": 327
+  },
+  {
+   "level": 10,
+   "endurance": 4,
+   "pain_threshold": 10,
+   "hp": 909
+  },
+  {
+   "level": 15,
+   "endurance": 4,
+   "pain_threshold": 10,
+   "hp": 2521
+  },
+  {
+   "level": 20,
+   "endurance": 4,
+   "pain_threshold": 10,
+   "hp": 6976
+  },
+  {
+   "level": 1,
+   "endurance": 7,
+   "pain_threshold": 0,
+   "hp": 120
+  },
+  {
+   "level": 5,
+   "endurance": 7,
+   "pain_threshold": 0,
+   "hp": 270
+  },
+  {
+   "level": 10,
+   "endurance": 7,
+   "pain_threshold": 0,
+   "hp": 740
+  },
+  {
+   "level": 15,
+   "endurance": 7,
+   "pain_threshold": 0,
+   "hp": 2030
+  },
+  {
+   "level": 20,
+   "endurance": 7,
+   "pain_threshold": 0,
+   "hp": 5560
+  },
+  {
+   "level": 1,
+   "endurance": 7,
+   "pain_threshold": 5,
+   "hp": 156
+  },
+  {
+   "level": 5,
+   "endurance": 7,
+   "pain_threshold": 5,
+   "hp": 350
+  },
+  {
+   "level": 10,
+   "endurance": 7,
+   "pain_threshold": 5,
+   "hp": 963
+  },
+  {
+   "level": 15,
+   "endurance": 7,
+   "pain_threshold": 5,
+   "hp": 2639
+  },
+  {
+   "level": 20,
+   "endurance": 7,
+   "pain_threshold": 5,
+   "hp": 7228
+  },
+  {
+   "level": 1,
+   "endurance": 7,
+   "pain_threshold": 10,
+   "hp": 192
+  },
+  {
+   "level": 5,
+   "endurance": 7,
+   "pain_threshold": 10,
+   "hp": 431
+  },
+  {
+   "level": 10,
+   "endurance": 7,
+   "pain_threshold": 10,
+   "hp": 1185
+  },
+  {
+   "level": 15,
+   "endurance": 7,
+   "pain_threshold": 10,
+   "hp": 3249
+  },
+  {
+   "level": 20,
+   "endurance": 7,
+   "pain_threshold": 10,
+   "hp": 8896
+  },
+  {
+   "level": 1,
+   "endurance": 10,
+   "pain_threshold": 0,
+   "hp": 150
+  },
+  {
+   "level": 5,
+   "endurance": 10,
+   "pain_threshold": 0,
+   "hp": 335
+  },
+  {
+   "level": 10,
+   "endurance": 10,
+   "pain_threshold": 0,
+   "hp": 913
+  },
+  {
+   "level": 15,
+   "endurance": 10,
+   "pain_threshold": 0,
+   "hp": 2485
+  },
+  {
+   "level": 20,
+   "endurance": 10,
+   "pain_threshold": 0,
+   "hp": 6760
+  },
+  {
+   "level": 1,
+   "endurance": 10,
+   "pain_threshold": 5,
+   "hp": 195
+  },
+  {
+   "level": 5,
+   "endurance": 10,
+   "pain_threshold": 5,
+   "hp": 435
+  },
+  {
+   "level": 10,
+   "endurance": 10,
+   "pain_threshold": 5,
+   "hp": 1186
+  },
+  {
+   "level": 15,
+   "endurance": 10,
+   "pain_threshold": 5,
+   "hp": 3230
+  },
+  {
+   "level": 20,
+   "endurance": 10,
+   "pain_threshold": 5,
+   "hp": 8788
+  },
+  {
+   "level": 1,
+   "endurance": 10,
+   "pain_threshold": 10,
+   "hp": 240
+  },
+  {
+   "level": 5,
+   "endurance": 10,
+   "pain_threshold": 10,
+   "hp": 536
+  },
+  {
+   "level": 10,
+   "endurance": 10,
+   "pain_threshold": 10,
+   "hp": 1460
+  },
+  {
+   "level": 15,
+   "endurance": 10,
+   "pain_threshold": 10,
+   "hp": 3976
+  },
+  {
+   "level": 20,
+   "endurance": 10,
+   "pain_threshold": 10,
+   "hp": 10816
+  }
+ ]
+}

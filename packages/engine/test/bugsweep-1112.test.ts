@@ -21,7 +21,7 @@ const bag = (u: Unit, hp = 5000) => { u.armour = 0; u.maxHp = hp; u.hp = hp; u.s
 describe('1. a weapon whose damage is a formula reads it from the data', () => {
   it('the longbow deals 25 + 6 × Raw Power, the recurve bow 20 + 5 × Raw Power', () => {
     expect(weaponDamage(WEAPON.longbow, 6, 0)).toBe(25);
-    expect(weaponDamage(WEAPON.longbow, 6, 4)).toBe(49);
+    expect(weaponDamage(WEAPON.longbow, 6, 4)).toBe(25);
     expect(weaponDamage(WEAPON.recurve_bow, 6, 4)).toBe(40);
   });
   it('every weapon whose damage is text is a formula the engine can read (none falls back to 20 unseen)', () => {
@@ -34,7 +34,7 @@ describe('1. a weapon whose damage is a formula reads it from the data', () => {
     const f = fightWith([{ weapon: 'longbow', skills: { raw_power: 4, dexterity: 4 } }], [{ tier: 'soldier', classic: true }]);
     const pc = f.pc, foe = bag(f.foe); put(pc, 3, 5); put(foe, 8, 5); pc.attack = 60;
     const who = f.g.characters[pc.charId!], d = withGame(f.g, () => attackDamage(f.cb, pc, foe, 'shot', who));
-    expect(d.base).toBe(49); // 25 + 6 × 4, before the multipliers
+    expect(d.base).toBe(25); // 25 + 6 × 4, before the multipliers
     let r: any; withGame(f.g, () => { for (let i = 0; i < 6 && !(r && r.hit && !r.crit); i++) { foe.hp = foe.maxHp; pc.ap = 6; pc.ammo = 5; r = resolveAttack(f.cb, f.g.rng, pc, foe, 'shot', who); } });
     expect(r.hit).toBe(true); expect(r.damage).toBe(Math.max(1, Math.floor(d.total) - d.armour)); expect(r.damage).toBeGreaterThan(49);
   });

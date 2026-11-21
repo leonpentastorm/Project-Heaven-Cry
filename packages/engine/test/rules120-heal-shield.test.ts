@@ -51,14 +51,14 @@ describe('rules 1.20: the level factor', () => {
     const f = rig({}, { level: 12 }); expect(me(f).mg!.mend).toBe(mendFactor(12));
     const foe = f.foe; foe.mg = heartMagic(foe, HEART_CASTERS[0]); expect(foe.mg!.mend).toBeUndefined();
     const d: any = { id: 'x', school: 'buff', option: 'heal', modules: [] };
-    expect(outburstHeal(foe.mg!, d, 1)).toBe(BUFF_HEAL_ENEMY * foe.mg!.healMult); expect(BUFF_HEAL_ENEMY).toBe(30);
+    expect(outburstHeal(foe.mg!, d, 1)).toBe(BUFF_HEAL_ENEMY * foe.mg!.healMult); expect(BUFF_HEAL_ENEMY).toBe(18);
     expect((SIGIL.mend as any).heal_enemy).toBe(25); expect((SIGIL.ward as any).shield_enemy).toBe(30);
   });
 });
 
 describe('rules 1.20: Sigil', () => {
   it('MEND and WARD (rules 1.36: 15 and 4.3), × the Sigil boon\'s Stat × the level factor, through the percent gate', () => {
-    expect((SIGIL.mend as any).heal).toBe(15); expect((SIGIL.ward as any).shield).toBe(4.3);
+    expect((SIGIL.mend as any).heal).toBe(9); expect((SIGIL.ward as any).shield).toBe(4.3);
     const f = rig({ ...SIG }, { level: 12 }), u = me(f), rng = seed(); u.mg!.words = ['mend', 'ward', 'seek']; u.mg!.sigilMult = 2; u.mg!.sigilBoon = 2; u.mg!.healMult = 1.5; ally(f).hp = 100; ally(f).pos = '8,5'; // rules 1.26: a boon reads the landed sigil_mend Stat (sigilBoon)
     withGame(f.g, () => {
       u.pos = '5,5'; expect(drawGlyph(f.cb, rng, u, 'mend')).toBeFalsy(); u.pos = '4,5'; expect(drawGlyph(f.cb, rng, u, 'seek')).toBeFalsy();
@@ -88,7 +88,7 @@ describe('MEND\'s base by who casts it (truth pass 3)', () => {
 
 describe('rules 1.20: the Outburst', () => {
   it('the Buff heal is 11.3 × the Outburst\'s heal Stat (soul_mend, rules 1.36) × the stage multiplier × the level factor, through the gate', () => {
-    expect(BUFF_HEAL).toBe(11.3); expect((SCHOOL.buff as any).heal).toBe(11.3);
+    expect(BUFF_HEAL).toBe(6.78); expect((SCHOOL.buff as any).heal).toBe(6.78);
     const f = rig({}, { level: 6 }); me(f).mg!.soulBoon = 2; ally(f).hp = 100; const want = Math.floor(Math.max(11.3 * 2 * 1.2 * mendFactor(6), gateOf(ally(f), 1.2, me(f))));
     const d = give(me(f), {}); A(f, { type: 'combat/outburst', design: d, hold: true }); A(f, { type: 'combat/pump' }); A(f, { type: 'combat/pump' });
     const pv = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '4,5')); expect(pv.affected[0].heal).toBe(want);
@@ -101,7 +101,7 @@ describe('rules 1.20: the Outburst', () => {
     expect(ally(f).hp).toBe(100 + Math.floor(11.3 * 10 * 1.0 * 0.4)); expect(me(f).hp).toBe(100 + Math.floor(11.3 * 10 * 1.0 * 0.4)); // 45 each
   });
   it('Inverse and Shell have shield bases of their own: the Damage base does not move them', () => {
-    expect((MODULE.inverse as any).shield).toBe(7); expect((MODULE.shell as any).shield).toBe(4); // rules 1.36: Inverse under the Mender's Tending shield
+    expect((MODULE.inverse as any).shield).toBe(4.2); expect((MODULE.shell as any).shield).toBe(4); // rules 1.36: Inverse under the Mender's Tending shield
     const f = rig({}, { level: 20 }), m = me(f).mg!; m.soulMult = 2; m.soulBoon = 2; // rules 1.26: a Soul shield reads the landed soul_mend Stat (soulBoon)
     const inv: any = { id: 'i', school: 'damage', modules: ['inverse'] }, wave: any = { id: 'w', school: 'damage', modules: ['inverse', 'wave'] }, bolt: any = { id: 'b', school: 'damage', modules: [] };
     const was = [inverseShield(m, inv, 1.4), shellShield(m, bolt, 1.4)];
@@ -134,7 +134,7 @@ describe('rules 1.20: prayer', () => {
   const hymn = (p: string, id: string) => (FAITH_PATRON[p].hymns as any[]).find((h) => h.id === id);
   it('the bases', () => {
     const w = (id: string) => (WHISPERS as any[]).find((q) => q.id === id);
-    expect(val(w('health'), 'heal')).toBe(8.5); expect(val(w('protection'), 'shield')).toBe(10); // rules 1.36
+    expect(val(w('health'), 'heal')).toBe(5.1); expect(val(w('protection'), 'shield')).toBe(10); // rules 1.36
     expect(val(hymn('mother_ember', 'warm_hands'), 'heal')).toBe(28); expect(val(hymn('nerukhan', 'saints_shield'), 'shield')).toBe(34); // rules 1.22: 13 and 16 (10 and 12 here), for a Hymn that waits on its cooldown
     expect(val(hymn('nerukhan', 'absolution'), 'heal')).toBe(19); expect(val(hymn('mother_ember', 'hearthlight'), 'heal')).toBe(9); expect(val(hymn('toll_keeper', 'coin_for_the_ferry'), 'heal')).toBe(11); // rules 1.36: × 28/13
     expect(val(FAITH_PATRON.mother_ember.miracle, 'shield')).toBe(17);

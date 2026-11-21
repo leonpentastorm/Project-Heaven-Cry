@@ -54,7 +54,7 @@ describe('rules 1.24: Max MP is Determination\'s and Insight\'s', () => {
     expect(maxMp(char({ determination: 10, insight: 10 }))).toBe(1000);
   });
   it('Virtue gives no MP: a build that only prays has the bare 100, and a caster needs no Virtue', () => {
-    expect(maxMp(char({ virtue: 10 }))).toBe(100); expect(maxMpOld(char({ virtue: 10 }))).toBe(1000);
+    expect(maxMp(char({ virtue: 10 }))).toBe(40); expect(maxMpOld(char({ virtue: 10 }))).toBe(1000);
     expect(maxMp(char({ determination: 7, virtue: 1 }))).toBe(maxMp(char({ determination: 7, virtue: 7 })));
   });
   it('the data says the same, and says it is provisional', () => {
@@ -163,7 +163,7 @@ describe('rules 1.24: who pays MP for a Pump', () => {
 describe('rules 1.24: old saves', () => {
   it('an Emanator keeps its share of the pool, once: half stays half, full stays full', () => {
     const c = char({ virtue: 5, determination: 3, insight: 2 }, { mp: 250 }); delete c.mpRev;
-    expect(maxMpOld(c)).toBe(500); expect(maxMp(c)).toBe(275);
+    expect(maxMpOld(c)).toBe(500); expect(maxMp(c)).toBe(72);
     const notes = migrateCharacterMp(c);
     expect(c.mp).toBe(138); expect(c.mpRev).toBe(MP_REV); expect(notes).toEqual([c.name + '\'s Emanator now holds up to 275 MP (it was 500): Max MP comes from Determination and Insight now, not Virtue (rules 1.24).']);
     expect(migrateCharacterMp(c)).toEqual([]); expect(c.mp).toBe(138);
@@ -181,7 +181,7 @@ describe('rules 1.24: old saves', () => {
     const u0 = g0.combat.units.find((x: Unit) => x.side === 'pc'); u0.mg.mp = 200; u0.mg.mpMax = 400;
     const g = apply(g0, { type: 'combat/prone', unitId: u0.id } as any, 'host');
     const u = g.combat!.units.find((x: Unit) => x.side === 'pc')!;
-    expect(g.characters[c.id].mpRev).toBe(MP_REV); expect(maxMp(g.characters[c.id])).toBe(175);
+    expect(g.characters[c.id].mpRev).toBe(MP_REV); expect(maxMp(g.characters[c.id])).toBe(52);
     expect(u.mg!.mpMax).toBe(175); expect(u.mg!.mp).toBe(88); expect(g.characters[c.id].mp).toBe(88);
     expect(g.story.entries.some((e: any) => /Emanator now holds up to 175 MP \(it was 400\)/.test(e.text || ''))).toBe(true);
   });

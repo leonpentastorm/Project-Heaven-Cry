@@ -177,7 +177,7 @@ describe('Factory Made', () => {
     withGame(f.g, () => { u.hp = 50; const r = healUnit(f.cb, u, 40, null, 'stim'); expect(r.restored).toBe(Math.floor(Math.floor(40 * (u.healRecv || 1)) * 0.5)); });
     f.unit(u.id).parts = 1; f.unit(u.id).hp = 40;
     pcAct(f, { type: 'combat/perk', id: 'factory_made', actionId: 'self_repair' });
-    expect(f.pc.hp).toBe(80); expect(f.pc.parts).toBe(0);
+    expect(f.pc.hp).toBe(64); expect(f.pc.parts).toBe(0);
     withGame(f.g, () => { f.pc.hp = f.pc.maxHp; expect(applyDamage(f.cb, f.pc, 10, { by: f.foe, type: 'sigil', dmgType: 'lightning' }).dealt).toBe(20); });
   });
   it('a healing Blessing works at half power (halved once, not twice)', () => {
@@ -190,7 +190,7 @@ describe('Factory Made', () => {
     const s = storyWith([{ traits: ['factory_made'], skills: { proficiency: 3 } }]);
     const c = s.g.characters[s.chars[0].id]; c.hp = 20; c.pack = [...(c.pack || []), { id: 'spare_parts', item: 'spare_parts', qty: 1 } as any];
     s.act({ type: 'story/perk', charId: c.id, id: 'factory_made', actionId: 'repair_story' });
-    expect(s.g.characters[c.id].hp).toBe(50);
+    expect(s.g.characters[c.id].hp).toBe(38);
   });
 });
 

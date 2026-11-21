@@ -48,10 +48,10 @@ function holy(o: Opt = {}) {
 describe('the data (rules 1.21): the numbers the spec gives', () => {
   it('seven Whispers; Rebuke is 20 Soul at an enemy (rules 1.22; it was 15)', () => {
     expect(WHISPERS.length).toBe(7);
-    const r = WHISPER.rebuke; expect(r.target).toBe('enemy'); expect(prayerDamage(r)).toBe(20); expect(eff(r, 'stat_mod').damage_type).toBe('soul'); expect(r.scales_with).toBe('blessing_power');
+    const r = WHISPER.rebuke; expect(r.target).toBe('enemy'); expect(prayerDamage(r)).toBe(12); expect(eff(r, 'stat_mod').damage_type).toBe('soul'); expect(r.scales_with).toBe('blessing_power');
   });
   it('Judgement 56 and ×1.3; Lightning Rod 56 and 23 (12 Nov 2026; 42, and 42 and 17, in rules 1.22); Thunderclap 20 within 2; The Saints\' Verdict 130 and ×2', () => {
-    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(56); expect(eff(j, 'vs_status_damage').mult).toBe(1.3);
+    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(34); expect(eff(j, 'vs_status_damage').mult).toBe(1.3);
     const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(56); expect(eff(l, 'chain_damage').value).toBe(23); expect(eff(l, 'chain_damage').range).toBe(2);
     const t = hymn('old_overcast', 'thunderclap'); expect(prayerDamage(t)).toBe(20); expect(eff(t, 'stat_mod').radius).toBe(2); expect(eff(t, 'stat_mod').damage_type).toBe('lightning');
     const v = FAITH_PATRON.nerukhan.miracle; expect(prayerDamage(v)).toBe(130); expect(eff(v, 'damage_mult').value).toBe(2);

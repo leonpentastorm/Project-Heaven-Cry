@@ -219,7 +219,7 @@
 "special/interpose/elite/armour-class-5": "hit P2 res.guard1>0 res.momentum1>0; F1 ap0>6 res.momentum1>2 // P2 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true | crit P2 res.guard1>0 res.momentum1>0; F1 ap0>6 res.momentum1>2",
 "special/interpose/soldier/armour-class-0": "hit P2 res.guard1>0 res.momentum1>0; F1 ammo24>23 ap0>7 heat0>1 // P2 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 | crit P2 res.guard1>0 res.momentum1>0; F1 ammo24>23 ap0>7 heat0>1",
 "special/interpose/soldier/armour-class-3": "hit P2 res.guard1>0 res.momentum1>0; F1 ammo24>23 ap0>7 heat0>1 // P2 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 | crit P2 res.guard1>0 res.momentum1>0; F1 ammo24>23 ap0>7 heat0>1",
-"special/interpose/soldier/armour-class-5": "hit P2 res.guard1>0; F1 ammo24>23 ap0>7 heat0>1 // P2 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 | crit P2 res.guard1>0 res.momentum1>0; F1 ammo24>23 ap0>7 heat0>1",
+"special/interpose/soldier/armour-class-5": "hit P2 res.guard1>0 res.momentum1>0; F1 ammo24>23 ap0>7 heat0>1 // P2 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1 | crit P2 res.guard1>0 res.momentum1>0; F1 ammo24>23 ap0>7 heat0>1",
 "special/order/spell/elemental/110/flat-negative-50": "-",
 "special/order/spell/elemental/110/mult-0.75+vs-0.2": "-",
 "special/order/spell/elemental/110/mult-1.1+vs-0.1-0.2+flat-3": "-",

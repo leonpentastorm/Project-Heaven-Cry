@@ -92,7 +92,7 @@ describe('each system on the range, measured (rules.json measure; reported, neve
     ];
     for (const [what, mult, n] of shapes) say(what + ': ' + mult + ' a target on ' + n + ' targets = ' + (mult * n).toFixed(2) + ' single hits (read as worth ' + (1 + A.extra_target_share * (n - 1)).toFixed(2) + ')');
     say('CHAIN: 1 + ' + (SIGIL.chain as any).jump_mult + ' on ' + A.cluster.chain + ' targets');
-    const frag = Math.max(1, Math.floor((WEAPON.frag_grenade as any).damage * (RULES as any).output.factors.thrown) - (ENEMY.soldier as any).armour);
+    const frag = Math.max(1, Math.floor((WEAPON.frag_grenade as any).damage * (RULES as any).output.profiles.thrown.k) - (ENEMY.soldier as any).armour); // rules 1.95: the thrown factor folds into the thrown profile's k (a reading)
     say('a thrown frag on a Soldier at level 1: ' + frag + ' a target, ' + (frag * A.cluster.r2).toFixed(1) + ' on ' + A.cluster.r2 + ' targets');
   });
 });

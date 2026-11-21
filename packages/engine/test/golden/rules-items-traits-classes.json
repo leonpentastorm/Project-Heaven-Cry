@@ -171,6 +171,7 @@
 "item/class/marksman@III/ally-taken": "n1  || n1  || n1  || n1  || n1 ",
 "item/class/marksman@III/marksman.killzone/overwatch_double": "n0 P1 +watch",
 "item/class/marksman@III/marksman.killzone/overwatch_double_aimed": "n0 P1 +watch",
+"item/class/marksman@III/marksman.special_ammo/load_hollow_point/then-shot": "n1  || n1  || n1  || n1  || n1 ",
 "item/class/marksman@III/taken": "n1  || n1  || n1  || n1  || n1 ",
 "item/class/marksman@III/taken-blow": "n1  || n1  || n1  || n1  || n1 ",
 "item/class/marksman@III/taken-crit": "n2  || n2  || n3 P1 bleed0>3 || n2  || n3 P1 bleed0>3",

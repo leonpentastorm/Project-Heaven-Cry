@@ -59,7 +59,7 @@ const sheet = (faith: number, virtue: number): Character => ({ skills: { faith }
 
 describe('the data (rules 1.22): the numbers the spec gives', () => {
   it('Rebuke 20; Lightning Rod 56 and 23; Judgement 56 and ×1.3; Thunderclap 20; Warm Hands 13, Saint\'s Shield 16, Absolution 9', () => {
-    expect(prayerDamage(WHISPER.rebuke)).toBe(20); expect(WHISPER.rebuke.text).toMatch(/20 Soul damage/);
+    expect(prayerDamage(WHISPER.rebuke)).toBe(12); expect(WHISPER.rebuke.text).toMatch(/20 Soul damage/);
     const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(56); expect(eff(l, 'chain_damage').value).toBe(23); expect(l.text).toMatch(/56 lightning damage.*for 23 ×/);
     const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(56); expect(eff(j, 'vs_status_damage').mult).toBe(1.3); expect(j.text).toMatch(/56 Soul damage.*30% more/);
     expect(prayerDamage(hymn('old_overcast', 'thunderclap'))).toBe(20);

@@ -35,7 +35,7 @@ describe('the Open Hand: the glove family (rules 1.56, the unarmed fighter)', ()
   it('every glove row carries the Open Hand; bare fists keep their 10 and carry nothing yet (slice 4)', () => {
     for (const id of ['hand_wraps', 'knuckledusters', 'striking_gloves', 'iron_mitts', 'kemizuchi_strikers', 'hellraiser_servo_fist'])
       expect((WEAPON as any)[id].variant_mods, id).toEqual(['open_hand']);
-    expect((WEAPON as any).fists.damage).toBe(10); expect((WEAPON as any).fists.variant_mods).toBeUndefined();
+    expect((WEAPON as any).fists.damage).toBe(6); expect((WEAPON as any).fists.variant_mods).toBeUndefined();
     expect((WEAPON as any).fists.grants).toBeUndefined(); expect((WEAPON as any).knuckledusters.grants).toBeUndefined(); // the narrator ops are retired
     expect((ITEM as any).open_hand.category).toBe('mod'); expect((ITEM as any).open_hand.price_credits).toBeUndefined(); // never stocked
   });

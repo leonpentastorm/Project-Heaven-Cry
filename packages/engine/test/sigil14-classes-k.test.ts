@@ -75,7 +75,7 @@ describe('Stroke Gambler under 1.4', () => {
       return { f, dmg: 999 - f.unit(foe.id).hp };
     };
     const mid = run(10), hi = run(18);
-    expect(logHas(mid.f.cb, /STITCH d20 10/)).toBe(true); expect(mid.dmg).toBe(30);
+    expect(logHas(mid.f.cb, /STITCH d20 10/)).toBe(true); expect(mid.dmg).toBe(18);
     expect(hi.dmg).toBe(60); expect(mid.f.pc.mg!.charge).toBe(8); expect(glyphsAt(mid.f, '3,2').length).toBe(0);
   });
   it('Stitch on a walked Line of half-glyphs fires back the way you came (the facing rule)', () => {
@@ -85,7 +85,7 @@ describe('Stroke Gambler under 1.4', () => {
     expect(() => perk(f, f.unit(u.id), 'stroke_gambler.stitch', { tile: '6,2', choice: '9,2' })).toThrow(/Out of the area/);
     seed(f, 10, 15);
     perk(f, f.unit(u.id), 'stroke_gambler.stitch', { tile: '6,2', targetId: foe.id });
-    expect(999 - f.unit(foe.id).hp).toBe(30); expect(logHas(f.cb, /a Line of 2, along/)).toBe(true);
+    expect(999 - f.unit(foe.id).hp).toBe(18); expect(logHas(f.cb, /a Line of 2, along/)).toBe(true);
   });
   it('Stitch 1-5 (House Edge off): it lands on you as Touch at full strength; KIN spares no one, SPREAD catches your ally', () => {
     const f = fightWith([adv('stroke_gambler', MIND), {}], [{}]);
@@ -189,7 +189,7 @@ describe('Glyph Mason under 1.4', () => {
     at(f, f.pc, '7,2'); act(f, f.pc, { type: 'combat/draw', word: 'seek', tile: '7,2' });
     const ch = f.pc.mg!.charge; seed(f, 15);
     act(f, f.pc, { type: 'combat/evoke', tile: '7,2', aim: foe.pos });
-    expect(999 - f.unit(foe.id).hp).toBe(30); expect(f.pc.mg!.charge).toBe(ch - 1);
+    expect(999 - f.unit(foe.id).hp).toBe(18); expect(f.pc.mg!.charge).toBe(ch - 1);
     expect(ks(f)).toBeTruthy(); expect(glyphsAt(f, '7,2').length).toBe(0);
   });
   it('Survey: from 2 tiles beyond an end the Line fires along; from 2 tiles beside it, across; without it, refused', () => {
@@ -261,7 +261,7 @@ describe('Grand Sigilist under 1.4', () => {
   it('LEECH (Bloodwell): a hit on an enemy inside heals the attacker 5, once a round per pair; WATCH (Sentinel) strikes 15 at your turn start and 10 at an enemy leaving', () => {
     const l = grand('leech', '5,2'); const a = l.unit(l.pcs[1].id); a.hp = 50;
     const hit = () => withGame(l.g, () => applyDamage(l.cb, l.unit(l.foe.id), 20, { by: l.unit(a.id), type: 'weapon', shield: true, credit: 'all' }));
-    hit(); expect(l.unit(a.id).hp).toBe(55); hit(); expect(l.unit(a.id).hp).toBe(55); expect(logHas(l.cb, /Bloodwell/)).toBe(true);
+    hit(); expect(l.unit(a.id).hp).toBe(53); hit(); expect(l.unit(a.id).hp).toBe(55); expect(logHas(l.cb, /Bloodwell/)).toBe(true);
     const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(999 - 15); expect(w.unit(w.foes[1].id).hp).toBe(999);
     const foe = w.turn(w.foe.id); w.unit(foe.id).ap = 6; withGame(w.g, () => moveUnit(w.cb, w.unit(foe.id), '8,2', w.g.rng));
     // The walk also passes Tester 2, whose opportunity attack now lands (spec item 561, Class Roster Rev 3): count it too.

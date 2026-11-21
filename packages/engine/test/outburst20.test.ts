@@ -292,7 +292,7 @@ describe('shapes: Bolt, Wave, Burst, Aura, Lance, with their areas (section 7)',
 describe('holding is gameplay: the aura, Heart Overwatch, Resonance, Feeding (section 6)', () => {
   it('the aura: holding an elemental Outburst, adjacent enemies take 5 Elemental and the stage-1 rider at your turn start', () => {
     const f = rig(['4,5', '9,5']); const d = give(f.pc, { tone: 'frost' }); begin(f, d);
-    f.turn(f.pc); expect(lost(f.foes[0])).toBe(5); expect(condOn(f.foes[0], 'slowed')).toBe(true); expect(lost(f.foes[1])).toBe(0);
+    f.turn(f.pc); expect(lost(f.foes[0])).toBe(3); expect(condOn(f.foes[0], 'slowed')).toBe(true); expect(lost(f.foes[1])).toBe(0);
     expect(fx(f.cb, 'aura_tick').at(-1)).toMatchObject({ tone: 'frost', targets: [f.foes[0].id] });
     const g = rig(['4,5']); const r = give(g.pc, {}); begin(g, r); g.turn(g.pc); expect(lost(g.foe)).toBe(0); // Raw: no aura
   });

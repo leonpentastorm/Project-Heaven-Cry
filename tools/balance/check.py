@@ -43,11 +43,32 @@ REF_INLINE = re.compile(r'@([a-z_]+)\.([A-Za-z0-9_]+(?:\.[A-Za-z0-9_\-]+)*)')
 
 # ------------------------------------------------------------------------------------------------ data (read only)
 _DATA = {}
+# "Today" is the data the bible was written against: data/ at the commit named in tools/balance/bible/TODAY (the last
+# commit before step 1 of the build). Once a step applies the bible to data/, the tree's data/ is the bible's own numbers,
+# so reading it as "today" would apply the factor twice. `--today-from-tree` reads data/ in the tree instead (a drafter
+# writing against the tree as it is).
+TODAY_REV = None
+if '--today-from-tree' in sys.argv: sys.argv.remove('--today-from-tree')
+elif os.path.exists(os.path.join(BIBLE_DIR, 'TODAY')) or os.path.exists(os.path.join(ROOT, 'tools', 'balance', 'bible', 'TODAY')):
+    _tp = os.path.join(BIBLE_DIR, 'TODAY') if os.path.exists(os.path.join(BIBLE_DIR, 'TODAY')) else os.path.join(ROOT, 'tools', 'balance', 'bible', 'TODAY')
+    TODAY_REV = open(_tp, encoding='utf-8').read().split()[0]
 def data(name):
     if name not in _DATA:
-        with open(os.path.join(ROOT, 'data', name), encoding='utf-8') as f:
-            _DATA[name] = json.load(f)
+        if TODAY_REV:
+            import subprocess
+            txt = subprocess.run(['git', '-C', ROOT, 'show', '%s:data/%s' % (TODAY_REV, name)], capture_output=True, check=True).stdout.decode('utf-8')
+            _DATA[name] = json.loads(txt)
+        else:
+            with open(os.path.join(ROOT, 'data', name), encoding='utf-8') as f:
+                _DATA[name] = json.load(f)
     return _DATA[name]
+def data_files():
+    """The data/*.json names "today" holds."""
+    if TODAY_REV:
+        import subprocess
+        out = subprocess.run(['git', '-C', ROOT, 'ls-tree', '--name-only', TODAY_REV, 'data/'], capture_output=True, check=True).stdout.decode('utf-8')
+        return sorted(os.path.basename(x) for x in out.split() if x.endswith('.json'))
+    return sorted(f for f in os.listdir(os.path.join(ROOT, 'data')) if f.endswith('.json'))
 _TOK = re.compile(r'([^.\[\]]+)|\[([^\]]*)\]')
 def getpath(obj, path):
     """A dotted path with [n] or [id] selectors: 'combat.armor.classes[2].value', 'items[stone].damage'."""
@@ -1169,8 +1190,8 @@ def t_factor():
                 elif isinstance(v, (dict, list)): walk_(v, p, f)
         elif isinstance(o, list):
             for i, v in enumerate(o): walk_(v, path + '[%s]' % ((v.get('id') if isinstance(v, dict) and v.get('id') else i)), f)
-    for f in sorted(os.listdir(os.path.join(ROOT, 'data'))):
-        if f.endswith('.json') and f != 'weapons.json': walk_(data(f), '', f)
+    for f in data_files():
+        if f != 'weapons.json': walk_(data(f), '', f)
     def new(f, p, v):
         if (f, p) in sp:
             sh = sp[(f, p)]['share']
@@ -1356,7 +1377,23 @@ TABLES = collections.OrderedDict([('factor', t_factor), ('weapons', t_weapons), 
                                   ('spend', t_spend), ('calendar', t_calendar), ('pacing', t_pacing), ('budget', t_budget), ('squad', t_squad), ('costs', t_costs)])
 SCALE_TABLES = ['factor', 'weapons', 'columns', 'profiles', 'hp', 'mp', 'plate', 'grades', 'margins', 'caps']
 
+def export_scale():
+    """`--export-scale`: the readings step 1's proving test compares the engine with (09-build-order step 1): every door's
+    plain hit at level 1 (7/7, Standard and Fine) and at level 20 (10/10, Relic and Celestial), the weapon it is, and
+    character HP. Read only; it prints JSON."""
+    ds, _ = doors(); dg = S.s['digits']; l1, l20 = dg['l1_specialist'], dg['l20_specialist']
+    A1, S1 = num(l1['attribute']), num(l1['skill']); out = {'doors': {}, 'hp': []}
+    for d in ds:
+        ref = d.d['plain']
+        out['doors'][d.id] = {'weapon': ref.get('weapon'), 'profile': plain_profile(d), 'l1': {g: d.plain(1, A1, S1, g) for g in l1['grades']},
+                              'l20': {g: d.plain(20, 10, 10, g) for g in l20['grades']}, 'l1_points': A1}
+    for e in (1, 4, 7, 10):
+        for pt in (0, 5, 10):
+            for L in (1, 5, 10, 15, 20): out['hp'].append({'level': L, 'endurance': e, 'pain_threshold': pt, 'hp': S.hp(L, e, pt)})
+    print(json.dumps(out, indent=1))
+
 def main(argv):
+    if '--export-scale' in argv: export_scale(); return 0
     if '--tables' in argv:
         if S is None: print('WAITING: scale.json does not load: %s' % B.errors); return 0
         want = [a for a in argv if a != '--tables']

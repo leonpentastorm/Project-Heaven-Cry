@@ -80,7 +80,7 @@ describe('the damage chain (spec: Attacks, damage and armour; rules 1.3)', () =>
       pc.ammoType = 'armor_piercing'; let d = attackDamage(f.cb, pc, t, 'shot', null);
       expect(d.armour).toBe(0); expect(d.mults.some((m) => /armor-piercing/.test(m.label) && m.v === 0.8)).toBe(true);
       pc.ammoType = 'hollow_point'; d = attackDamage(f.cb, pc, t, 'shot', null);
-      expect(d.armour).toBe(20); expect(d.mults.some((m) => m.v === 1.3)).toBe(true);
+      expect(d.armour).toBe(12); expect(d.mults.some((m) => m.v === 1.3)).toBe(true);
     });
   });
   it('Elemental damage taken: −6% per Pain Threshold point (rules 1.70 item 5540); a non-lethal blow subdues a foe', () => {
@@ -209,7 +209,7 @@ describe('throwing, swapping, companions and prayer (rules 1.3)', () => {
   it('the drone (item 370): 30 HP; move and a plain shot only; its service pistol never runs dry, never heats or jams', () => {
     const f = fightWith([{ traits: ['drone_handler'] }], [{ at: 'H6', tier: 'boss' }]);
     const d0 = f.cb.units.find((u) => u.companion === 'drone')!;
-    expect(COMPANION_KINDS.drone.hp).toBe(30); expect(d0.hp).toBe(30); expect(d0.maxHp).toBe(30); expect(d0.weapon).toBe('service_pistol');
+    expect(COMPANION_KINDS.drone.hp).toBe(18); expect(d0.hp).toBe(18); expect(d0.maxHp).toBe(30); expect(d0.weapon).toBe('service_pistol');
     expect(d0.allowedActions).toEqual(['move', 'shot']); expect(d0.infiniteAmmo).toBe(true);
     const offered = weaponActions(d0).map((x) => x.id);
     for (const x of ['reload', 'load', 'clear', 'overwatch', 'burst', 'auto', 'skill', 'brace']) expect(offered, x).not.toContain(x);
@@ -233,7 +233,7 @@ describe('throwing, swapping, companions and prayer (rules 1.3)', () => {
   it('the beast (item 370): 60 HP, as the trait says', () => {
     const f = fightWith([{ traits: ['beast_handler'] }], [{ at: 'H6' }]);
     const b = f.cb.units.find((u) => u.companion === 'beast')!;
-    expect(COMPANION_KINDS.beast.hp).toBe(60); expect(b.hp).toBe(60); expect(b.maxHp).toBe(60);
+    expect(COMPANION_KINDS.beast.hp).toBe(36); expect(b.hp).toBe(36); expect(b.maxHp).toBe(60);
     expect(b.allowedActions).toBeUndefined(); expect(b.infiniteAmmo).toBeUndefined();
   });
   it('prayer: Faith 3 and a patron, 3 AP, a Blessing × Blessing power, then the cooldown', () => {

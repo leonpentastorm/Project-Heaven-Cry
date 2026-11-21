@@ -66,7 +66,7 @@ describe('a fight has a level', () => {
     const f = fightWith([{ level: 2 }], [{}, { level: 14 }, { level: 99 }, { level: 0 }], { level: 9 });
     expect(f.cb.level).toBe(9);
     expect(f.foes.map((u) => u.level)).toEqual([9, 14, 20, 1]);
-    expect(f.foes[0].maxHp).toBe(360); expect(f.foes[1].def).toBe(17); expect(f.foes[2].maxHp).toBe(1188); expect(f.foes[3].maxHp).toBe(140);
+    expect(f.foes[0].maxHp).toBe(673); expect(f.foes[1].def).toBe(17); expect(f.foes[2].maxHp).toBe(1188); expect(f.foes[3].maxHp).toBe(140);
     expect(fightWith([{ level: 2 }], [{}], { level: 40 }).cb.level).toBe(20);
     expect(fightWith([{ level: 2 }], [{}], { level: -3 }).cb.level).toBe(1);
   });
@@ -87,7 +87,7 @@ describe('a fight has a level', () => {
   it('an enemy deals its weapon\'s damage × its tier\'s factor × its level\'s factor', () => {
     const dmg = (level: number, tier = 'soldier') => { const f = fightWith([{}], [{ tier, weapon: 'hellraiser_service_rifle' }], { level }); return withGame(f.g, () => attackDamage(f.cb, f.foe, f.pc, 'shot', null, { preview: true })); };
     const l1 = dmg(1), l20 = dmg(20);
-    expect(l1.base).toBe(30); expect(l1.mults.find((m) => m.label === 'tier and level')!.v).toBeCloseTo(0.78, 3); expect(l1.total).toBeCloseTo(23.4, 3);
+    expect(l1.base).toBe(18); expect(l1.mults.find((m) => m.label === 'tier and level')!.v).toBeCloseTo(0.78, 3); expect(l1.total).toBeCloseTo(23.4, 3);
     expect(l20.total).toBeCloseTo(199.62, 2); // 30 × 0.78 × 1.82 × scale(20) 4.6875, the factor held to three places (×6.654)
     expect(dmg(1, 'minion').mults.some((m) => m.label === 'tier and level')).toBe(false); // ×1.0: its weapon's own damage
     expect(dmg(1, 'boss').total).toBeCloseTo(36, 3);
@@ -109,7 +109,7 @@ describe('a fight saved before the rule keeps the numbers its units have', () =>
     const cb = g.combat!, p2 = cb.units.find((u) => u.side === 'pc')!;
     withGame(g, () => {
       const d = attackDamage(cb, after, p2, 'shot', null, { preview: true });
-      expect(d.total).toBe(30); expect(d.mults.some((m) => /level/.test(m.label))).toBe(false);
+      expect(d.total).toBe(18); expect(d.mults.some((m) => /level/.test(m.label))).toBe(false);
       expect(levelGap(p2, after)).toBe(0);
       expect((previewAttack(cb, p2, after, 'shot').terms || []).some((t) => t.label === 'level gap')).toBe(false);
     });

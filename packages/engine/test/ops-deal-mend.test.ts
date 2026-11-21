@@ -11,7 +11,7 @@ describe('the generic deal and mend ops', () => {
   it('deal: the block\'s base × the Stat term of its profile from the holder\'s sheet, through the hook, armour by its type, the sink', () => {
     const f = fightWith([{ skills: { raw_power: 5 }, attrs: { strength: 5 } }, {}], [{}]);
     const [me] = f.pcs, foe = f.foes[0], c = f.g.characters[me.charId!], op = genericOf('deal')!, h: any = { key: 'perk:test', cb: f.cb, u: me, c, g: f.g, info: { name: 'Test' } };
-    expect(physicalMult(c)).toBe(1.65);
+    expect(physicalMult(c)).toBe(1.682625);
     withGame(f.g, () => {
       bag(foe); op.run!(h, { op: 'deal', amount: { kind: 'damage', base: 30, profile: 'flat', type: 'true' }, target: 'enemy' }, { targetId: foe.id }, f.g.rng); expect(foe.hp).toBe(5000 - 30);
       bag(foe); op.run!(h, { op: 'deal', amount: { kind: 'damage', base: 30, profile: 'physical', type: 'physical' }, target: 'enemy' }, { targetId: foe.id }, f.g.rng); expect(foe.hp).toBe(5000 - Math.floor(30 * 1.65));

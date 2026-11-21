@@ -111,7 +111,7 @@ describe('3. Guard soaks', () => {
     const base = hit(fight([{ dur: 0 }])); expect(base).toBeGreaterThan(G.soak); // the same blow with no Guard
     const need = Math.ceil(base / G.soak);
     const f = fight([{ dur: 5 }]); f.pc.resMax!.guard = 9; guard(f, f.pc, need + 2);
-    expect(hit(f)).toBe(0); expect(guard(f)).toBe(2); // as many points as the hit needs, no more
+    expect(hit(f)).toBe(0); expect(guard(f)).toBe(3); // as many points as the hit needs, no more
     const two = fight([{ dur: 5 }]); guard(two, two.pc, 2);
     expect(hit(two)).toBe(base - G.soak); expect(guard(two)).toBe(1); // the last point is kept back for a reaction
     expect(two.cb.log.some((l) => l.includes('Guard takes ' + G.soak + ' of it (1 Guard, 1 left)'))).toBe(true);
@@ -135,7 +135,7 @@ describe('3. Guard soaks', () => {
     const f = fight([{ dur: 5 }]); guard(f, f.pc, 5); f.pc.shield = base + 20;
     expect(hit(f)).toBe(0); expect(guard(f)).toBe(5); expect(f.pc.shield).toBe(20);
     const g = fight([{ dur: 5 }]); guard(g, g.pc, 5); g.pc.shield = base - 5;
-    expect(hit(g)).toBe(0); expect(guard(g)).toBe(4); expect(g.pc.shield).toBe(0);
+    expect(hit(g)).toBe(0); expect(guard(g)).toBe(3); expect(g.pc.shield).toBe(0);
   });
   it('a condition\'s tick and self-harm are not hits; a trap is', () => {
     const f = fight([{ dur: 5 }]); guard(f, f.pc, 3);

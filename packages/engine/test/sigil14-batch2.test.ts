@@ -87,7 +87,7 @@ describe('gap 16: a Stack fires all around its caster, not around the Stack (ite
     const [far, near] = f.foes; f.unit(far.id).pos = '4,4'; f.unit(near.id).pos = '1,4';
     const pv = plan(f, '3,5', '4,4'); expect(pv.ok).toBe(false); // next to the Stack, 2 from the caster
     expect(pv.area).toContain('3,5'); expect(pv.area).toContain('1,4'); expect(pv.area).not.toContain('4,4');
-    evoke(f, '3,5', '1,4'); expect(500 - f.unit(near.id).hp).toBe(45); expect(f.unit(far.id).hp).toBe(500); // FIRE × CONDENSE 1.5
+    evoke(f, '3,5', '1,4'); expect(500 - f.unit(near.id).hp).toBe(27); expect(f.unit(far.id).hp).toBe(500); // FIRE × CONDENSE 1.5
   });
 });
 
@@ -110,7 +110,7 @@ describe('gap 17: the Sigil skill unlocks are items the engine runs (items 482-4
     const c1 = f.pc.mg!.charge; line(f, ['fire', 'seek'], ['4,5', '3,5']); expect(c1 - f.pc.mg!.charge).toBe(4); // no more +2
     expect(logHas(f.cb, /Overclock: \+2 charge on CONDENSE/)).toBe(true);
     const pv = plan(f, '3,5', '8,5'); expect(pv.ok).toBe(true); expect(pv.pattern!.words).toEqual(['condense', 'fire', 'seek']);
-    evoke(f, '3,5', '8,5'); expect(500 - f.foe.hp).toBe(45); expect(f.pc.mg!.maxWords).toBe(2); // the glyph left the ground
+    evoke(f, '3,5', '8,5'); expect(500 - f.foe.hp).toBe(27); expect(f.pc.mg!.maxWords).toBe(2); // the glyph left the ground
     const four = rig(['fire', 'seek'], ['8,5'], { skills: { brain_power: 3 }, maxWords: 4 });
     expect(() => perk(four, 'skill:brain_power.2', 'overclock')).toThrow(/already 4/);
   });

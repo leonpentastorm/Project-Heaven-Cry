@@ -229,7 +229,7 @@ describe('Reach (spec: Reach)', () => {
   it('ARC: a lob over everything ×0.8; SENSE: it appears, ×0.6, no sight needed', () => {
     const { cb, u, e, allies, rng } = setup(['fire', 'arc'], [{ at: '8,5' }], { allies: ['6,5'] });
     draw(cb, rng, u, ['fire', 'arc'], ['4,5', '3,5']);
-    const pv = previewEvoke(cb, u, '3,5', e.pos); expect(pv.missiles[0].arc).toEqual({ from: '4,5', to: e.pos }); expect(pv.targets).toEqual([e.id]); expect(pv.affected[0].dmg).toBe(24);
+    const pv = previewEvoke(cb, u, '3,5', e.pos); expect(pv.missiles[0].arc).toEqual({ from: '4,5', to: e.pos }); expect(pv.targets).toEqual([e.id]); expect(pv.affected[0].dmg).toBe(14);
     void allies;
     const s = setup(['fire', 'sense'], [{ at: '8,5' }]); s.cb.map = { ...s.cb.map, solid: ['6,4', '6,5', '6,6'] }; draw(s.cb, s.rng, s.u, ['fire', 'sense'], ['4,5', '3,5']);
     expect(lineOfSight(s.cb, '3,5', s.e.pos)).toBe(false);
@@ -300,7 +300,7 @@ describe('Burst (spec: Burst)', () => {
     const pv = previewEvoke(cb, u, '3,5', '5,5');
     expect(pv.missiles[0].burst.tiles).toContain('5,5'); expect(pv.missiles[0].burst.tiles).toContain('7,5');
     const hit = pv.affected.filter((a) => !a.kinSpared).map((a) => a.unit); expect(hit).toContain(es[0].id); expect(hit).toContain(es[1].id); expect(hit).not.toContain(es[3].id);
-    expect(pv.affected.find((a) => a.unit === es[0].id)!.dmg).toBe(21);
+    expect(pv.affected.find((a) => a.unit === es[0].id)!.dmg).toBe(13);
     const t = setup(['fire', 'push', 'spread'], [{ at: '6,5' }]); draw(t.cb, t.rng, t.u, ['fire', 'spread', 'push'], ['5,5', '4,5', '3,5']);
     const tv = previewEvoke(t.cb, t.u, '3,5', '6,5'); expect(tv.affected.find((a) => a.unit === t.e.id)!.dmg).toBe(21); // 0.7 beats 0.6
   });
@@ -325,7 +325,7 @@ describe('Subjects (spec: the words)', () => {
   it('ACID: 15 Elemental and Corroded (no save): 5 at the start of each turn, Defense −2, a Body save at the end of each turn ends it', () => {
     const { cb, u, e, rng } = setup(['acid', 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, ['acid', 'condense'], ['4,5', '3,5']);
     const def = e.def, hp = e.hp; evoke(cb, rng, u, '3,5', e.pos);
-    expect(hp - e.hp).toBe(23); expect(condOn(e, 'corroded')).toBe(true); expect(e.def).toBe(def - 2);
+    expect(hp - e.hp).toBe(14); expect(condOn(e, 'corroded')).toBe(true); expect(e.def).toBe(def - 2);
     const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(5);
     e.sv = { body: 99, brain: 0, heart: 0 }; e.condFresh = []; condTurnEnd(cb, e, seed()); expect(condOn(e, 'corroded')).toBe(false); expect(e.def).toBe(def);
   });
@@ -409,7 +409,7 @@ describe('Subjects (spec: the words)', () => {
   it('RAISE: a wall on each empty tile it covers (30 HP, blocks moving and sight, 3 rounds); one RAISE working per caster', () => {
     const { cb, u, e, rng } = setup(['raise', 'seek', 'spread'], [{ at: '12,5' }]);
     draw(cb, rng, u, ['raise', 'spread', 'seek'], ['5,5', '4,5', '3,5']); evoke(cb, rng, u, '3,5', '9,5');
-    const walls = cb.objects!.filter((o) => o.kind === 'sigil_wall'); expect(walls.length).toBe(25); expect(walls[0].hp).toBe(30);
+    const walls = cb.objects!.filter((o) => o.kind === 'sigil_wall'); expect(walls.length).toBe(25); expect(walls[0].hp).toBe(18);
     expect(lineOfSight(cb, '3,5', '12,5')).toBe(false); e.ap = 9; expect(moveUnit(cb, e, '9,5', rng)).toBeTruthy();
     expect(fx(cb, 'wall_raised')[0].tiles.length).toBe(25);
     draw(cb, rng, u, ['raise', 'seek'], ['5,8', '4,8']); u.pos = '4,8'; evoke(cb, rng, u, '4,8', '6,8');
@@ -477,7 +477,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
     draw(cb, rng, u, ['fire', 'stay', 'spread', 'kin'], ['5,5', '4,5', '3,5', '2,5']);
     const hp = e.hp; evoke(cb, rng, u, '2,5', u.pos);
     const z = cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(z.left).toBe(2); expect(e.hp).toBe(hp);
-    e.ap = 9; moveUnit(cb, e, '4,5', rng); expect(hp - e.hp).toBe(18);
+    e.ap = 9; moveUnit(cb, e, '4,5', rng); expect(hp - e.hp).toBe(11);
     const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(e.hp).toBe(hp2); // once a round
     cb.round++; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(9);
     const ah = allies[0].hp; allies[0].ap = 9; moveUnit(cb, allies[0], '1,6', rng); expect(allies[0].hp).toBe(ah); // KIN
@@ -486,7 +486,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
   it('Wall of fire: FIRE · ARC · STAY · SPREAD, 14 the first time; STAY + PULL is a whirlpool', () => {
     const { cb, u, e, rng } = setup(['fire', 'arc', 'stay', 'spread'], [{ at: '12,12' }]);
     draw(cb, rng, u, ['fire', 'stay', 'spread', 'arc'], ['6,5', '5,5', '4,5', '3,5']); evoke(cb, rng, u, '3,5', '9,5');
-    e.pos = '12,5'; e.ap = 9; const hp = e.hp; moveUnit(cb, e, '11,5', rng); expect(hp - e.hp).toBe(14);
+    e.pos = '12,5'; e.ap = 9; const hp = e.hp; moveUnit(cb, e, '11,5', rng); expect(hp - e.hp).toBe(9);
     const w = setup(['bind', 'stay', 'pull', 'seek'], [{ at: '12,12' }]); draw(w.cb, w.rng, w.u, ['bind', 'stay', 'pull', 'seek'], ['6,5', '5,5', '4,5', '3,5']);
     w.cb.zones = []; evoke(w.cb, w.rng, w.u, '3,5', '9,5');
     w.e.pos = '9,5'; magicTurnStart(w.cb, w.rng, w.e); expect(w.e.pos).toBe('6,5');
@@ -500,7 +500,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
     allies[0].pos = '6,6'; allies[0].ap = 9; moveUnit(cb, allies[0], '6,5', rng); expect(cb.zones!.some((x) => x.kind === 'trap')).toBe(true);
     allies[0].pos = '7,7';
     const hp = e.hp, ah = allies[0].hp; e.pos = '8,5'; e.ap = 9; moveUnit(cb, e, '6,5', rng);
-    expect(hp - e.hp).toBe(18); expect(ah - allies[0].hp).toBe(18); // friendly fire: the ally stood within 2
+    expect(hp - e.hp).toBe(11); expect(ah - allies[0].hp).toBe(11); // friendly fire: the ally stood within 2
     expect(cb.zones!.some((x) => x.kind === 'trap')).toBe(false); expect(fx(cb, 'trap_sprung').length).toBe(1);
     const s = setup(['fire', 'wait'], [{ at: '12,5' }]); draw(s.cb, s.rng, s.u, ['fire', 'wait'], ['4,5', '3,5']); evoke(s.cb, s.rng, s.u, '3,5', '5,5');
     s.e.pos = '6,5'; (s.e as any).tier = 'boss'; s.e.ap = 9; moveUnit(s.cb, s.e, '7,5', s.rng);
@@ -519,7 +519,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
   it('WATCH: a turret casts at the nearest creature it can reach at the start of your turns, ×0.5 (Tesla tower 15 then 11); scuff or a hit destroys it; 1 per caster', () => {
     const { cb, u, es, rng } = setup(['shock', 'seek', 'watch', 'chain'], [{ at: '12,5' }, { at: '14,5' }]);
     draw(cb, rng, u, ['shock', 'watch', 'chain', 'seek'], ['5,5', '4,5', '3,5', '2,5']); evoke(cb, rng, u, '2,5', '10,5');
-    const z = cb.zones!.find((x) => x.kind === 'turret')!; expect(z.tiles).toEqual(['10,5']); expect(z.hp).toBe(10); expect(z.def).toBe(10); expect(z.left).toBe(2);
+    const z = cb.zones!.find((x) => x.kind === 'turret')!; expect(z.tiles).toEqual(['10,5']); expect(z.hp).toBe(6); expect(z.def).toBe(6); expect(z.left).toBe(2);
     const hp = es.map((e) => e.hp); magicTurnStart(cb, rng, u);
     expect(es.map((e, i) => hp[i] - e.hp)).toEqual([15, 11]); expect(fx(cb, 'turret_shot').length).toBe(1);
     es[0].pos = '10,5'; es[0].ap = 9; expect(scuff(cb, es[0])).toBeNull(); expect(cb.zones!.some((x) => x.kind === 'turret')).toBe(false); expect(fx(cb, 'turret_destroyed').length).toBe(1);
@@ -649,7 +649,7 @@ describe('old saves (item 441)', () => {
     delete (cb as any).sigilV; migrateSigil(cb);
     expect(cb.glyphs).toEqual([]); expect(cb.zones![0].kind).toBe('field'); expect(cb.zones![0].words).toEqual(['fire', 'stay']);
     expect(cb.log.some((l) => /old glyphs/.test(l))).toBe(true);
-    const e = cb.units.find((x) => x.side === 'foe')!; e.pos = '6,7'; e.ap = 9; const hp = e.hp; moveUnit(cb, e, '6,6', rng); expect(hp - e.hp).toBe(30); // full the first time (item 422)
+    const e = cb.units.find((x) => x.side === 'foe')!; e.pos = '6,7'; e.ap = 9; const hp = e.hp; moveUnit(cb, e, '6,6', rng); expect(hp - e.hp).toBe(18); // full the first time (item 422)
   });
   it('characters: RETURN goes (one free word at the next rest); two starting words with no Reach word swap the non-Subject one for SEEK', () => {
     expect(migrateWords(['fire', 'return', 'condense']).words).toEqual(['fire', 'condense']);

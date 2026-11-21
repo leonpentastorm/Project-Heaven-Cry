@@ -231,7 +231,7 @@ describe('Grand Sigilist', () => {
     f.turn(f.pc.id); expect(f.pc.hp).toBe(mine);
   });
   it('WARD (dome) shields allies and MEND (spring) heals them at turn start', () => {
-    const f = grand('ward'); const ally = f.turn(f.pcs[1].id); expect(ally.shield).toBe(20); expect(condOn(ally, 'guarded')).toBe(true);
+    const f = grand('ward'); const ally = f.turn(f.pcs[1].id); expect(ally.shield).toBe(12); expect(condOn(ally, 'guarded')).toBe(true);
     const g = grand('mend'); g.unit(g.pcs[1].id).hp = 50; expect(g.turn(g.pcs[1].id).hp).toBeGreaterThan(50);
   });
   it('GALE (cyclone) shots through it −5; LIGHT enemies inside −2; PUSH (Gust) blows an enemy starting inside 1 tile outward', () => {
@@ -370,7 +370,7 @@ describe('Vessel', () => {
   });
   it('Release (rules 1.5): one strike ends every form, +15 Soul × each form\'s stage multiplier; Empty Hand fists strike for 20', () => {
     const f = fightWith([adv('vessel', { ...SOUL, weapon: 'fists' })], [{}]); const u = f.turn(f.pc); at(f, u, '3,2'); const foe = tough(at(f, f.foe, '4,2'), -40); f.unit(u.id).ap = 9;
-    expect(withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), foe, 'melee')).dmg!.terms[0].v).toBe(10);
+    expect(withGame(f.g, () => previewAttack(f.cb, f.unit(u.id), foe, 'melee')).dmg!.terms[0].v).toBe(14);
     perk(f, f.unit(u.id), 'vessel.inner_charge', { choice: 'surge' }); seed(f, 10);
     perk(f, f.pc, 'vessel.release_strike', { targetId: foe.id });
     expect(logHas(f.cb, /RELEASE \(1 form, 15\)/)).toBe(true);

@@ -182,7 +182,7 @@ describe('row 8: a Figment\'s damage and kills are its owner\'s, and Volatile\'s
     expect(blasted).toEqual(['foe-0', 'foe-1']);
     g = apply(g, { type: 'run/skip' } as any, 'host'); // the fight ends through the reducer: runFightOver keeps the tally
     const t = g.run.stats.fights.at(-1).tally;
-    expect(Object.keys(t.chars)).toEqual(['c1']); expect(t.chars.c1.dealt).toBe(40); expect(t.chars.c1.kills).toBe(2);
+    expect(Object.keys(t.chars)).toEqual(['c1']); expect(t.chars.c1.dealt).toBe(24); expect(t.chars.c1.kills).toBe(2);
     expect(t.other.dealt).toBe(0);
   });
 });

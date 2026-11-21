@@ -97,7 +97,7 @@ describe('the quiver in a fight', () => {
   it('a shot names its arrow: that count falls by one, and its rider applies (armour-piercing ignores armour, ×0.8)', () => {
     const f = bowFight({ standard: 10, armor_piercing: 2 }); rig({ hit: true, die: 12 });
     const plain = f.pv('shot', { targetId: f.foe.id }).attacks[0].pv.dmg!, ap = f.pv('shot', { targetId: f.foe.id, ammo: 'armor_piercing' }).attacks[0].pv.dmg!;
-    expect(plain.armour).toBe(5); expect(ap.armour).toBe(0);
+    expect(plain.armour).toBe(3); expect(ap.armour).toBe(0);
     expect(ap.total).toBeCloseTo(plain.total * 0.8, 5);
     const hp = f.foe.hp, a0 = f.pc.ap;
     expect(f.tech('shot', { targetId: f.foe.id, ammo: 'armor_piercing' })).toBeNull();
@@ -138,7 +138,7 @@ describe('the quiver in a fight', () => {
     const before = JSON.stringify(f.cb), pv = f.pv('aimed_shot', { targetId: f.foe.id, ammo: 'hollow_point' });
     expect(JSON.stringify(f.cb)).toBe(before);
     expect(pv.ok).toBe(true); expect(pv.rounds).toBe(1); expect(pv.notes).toContain('Arrow: hollow-point (4 in the quiver).');
-    const d = pv.attacks[0].pv.dmg!; expect(d.armour).toBe(10); // hollow-point: armour counts double
+    const d = pv.attacks[0].pv.dmg!; expect(d.armour).toBe(6); // hollow-point: armour counts double
     const hp = f.foe.hp;
     expect(f.tech('aimed_shot', { targetId: f.foe.id, ammo: 'hollow_point' })).toBeNull();
     expect(hp - f.foe.hp).toBe(Math.max(1, Math.floor(d.total) - d.armour)); expect(f.pc.quiver).toEqual({ standard: 4, hollow_point: 3 });

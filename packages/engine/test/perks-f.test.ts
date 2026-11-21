@@ -417,7 +417,7 @@ describe('Drone Handler', () => {
     expect(f.turn(d).ap).toBe(3);
     f.turn(f.pc); f.pc.ap = 9; f.pc.parts = 2; d.hp = 10; d.pos = '2,6';
     pcAct(f, { type: 'combat/perk', id: 'drone_handler', actionId: 'repair_drone', targetId: d.id });
-    expect(f.unit(d.id).hp).toBe(30); expect(f.pc.parts).toBe(1);
+    expect(f.unit(d.id).hp).toBe(18); expect(f.pc.parts).toBe(1);
   });
   it('Tethered: destroyed means Shaken until it\'s rebuilt after a rest with a drone frame', () => {
     const f = fight([{ traits: ['drone_handler'] }]); const d = f.pcs.find((u) => u.companion === 'drone')!;

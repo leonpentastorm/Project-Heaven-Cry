@@ -205,7 +205,7 @@ describe('approaches with consequences (section 4)', () => {
     expect(hp0 - rook(g).hp).toBe(35);
     g = place([A({ fail: 'hurt', tn: 20 })]); g = set(g, (x) => { x.characters[rook(x).id].armourClass = 2; x.characters[rook(x).id].worn = {}; }); // armour 10
     const hp1 = rook(g).hp; g = ap(g, { type: 'poi/try', charId: rook(g).id, objId: thing(g).id, idx: 0 }); g = roll(g, 'fail');
-    expect(hp1 - rook(g).hp).toBe(40);
+    expect(hp1 - rook(g).hp).toBe(44);
     // alarm: every hidden hostile in the zone, revealed and alerted.
     g = place([A({ fail: 'alarm' })]); g = turn(g, { npcs: [{ action: 'place', name: 'Sleeper', side: 'hostile', tier: 'minion', weapon: 'fists', at: 'O11', hidden: true, tags: ['unaware'] }] });
     g = ap(g, { type: 'poi/try', charId: rook(g).id, objId: thing(g).id, idx: 0 }); g = roll(g, 'fail');

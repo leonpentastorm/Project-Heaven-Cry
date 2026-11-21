@@ -99,7 +99,7 @@ describe('gap 1: the 29 words no reducer test drew, each drawn and Evoked throug
   });
   it('SENSE: appears at a target out of sight, ×0.6 (FIRE 18)', () => {
     const f = rig(['fire', 'sense'], ['8,5']); f.cb.map = { ...f.cb.map, solid: ['6,4', '6,5', '6,6'] } as any;
-    line(f, ['fire', 'sense'], L2); evoke(f, '3,5', '8,5'); expect(500 - f.foe.hp).toBe(18);
+    line(f, ['fire', 'sense'], L2); evoke(f, '3,5', '8,5'); expect(500 - f.foe.hp).toBe(11);
   });
   it('PULL: BIND · SEEK · PULL drags the target 3 tiles toward you', () => {
     const f = rig(['bind', 'seek', 'pull'], ['10,5']); line(f, ['bind', 'pull', 'seek'], L3);
@@ -122,7 +122,7 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
     const row = withGame(f.g, () => placedMagic(f.cb, 'pc')).find((z) => z.kind === 'turret')!;
     expect(row.reach).toContain('10,5'); expect(row.next).toEqual([f.pcs[1].id]);
     f.turn(f.pc);
-    expect(500 - f.pcs[1].hp).toBe(15); expect(500 - f.foes[0].hp).toBe(11); expect(f.foes[1].hp).toBe(500);
+    expect(500 - f.pcs[1].hp).toBe(9); expect(500 - f.foes[0].hp).toBe(11); expect(f.foes[1].hp).toBe(500);
   });
   it('Safe Tesla post, SHOCK · WATCH · CHAIN · KIN: zaps the enemy next to it 15, chains forward 11, never your side', () => {
     const f = rig(['shock', 'watch', 'chain', 'kin'], ['8,5', '10,5'], ['7,6']); line(f, ['shock', 'watch', 'chain', 'kin'], L4);
@@ -141,7 +141,7 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
   it('Acid rain, ACID · ARC · STAY · SPREAD: strikes once (15 × 0.8 × 0.6 = 7), then a 5 × 5 field; the one it struck, starting a turn in it, takes × 0.5 = 4 (+ 5 Corroded)', () => {
     const f = rig(['acid', 'arc', 'stay', 'spread'], ['9,6']); line(f, ['acid', 'arc', 'stay', 'spread'], L4);
     evoke(f, '3,5', '9,5');
-    const z = f.cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(f.foe.hp).toBe(493);
+    const z = f.cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(f.foe.hp).toBe(496);
     f.cb.round++; f.turn(f.foe); // the next round: the strike counted as this round's bite
     expect(493 - f.foe.hp).toBe(4 + 5); // the field ×0.5, and Corroded (from the strike) bites 5
     expect(condOn(f.foe, 'corroded')).toBe(true); expect(logHas(f.cb, /caught in .*ACID field/)).toBe(true);
@@ -196,7 +196,7 @@ describe('gaps 3–4: the Delivery and Burst mixes', () => {
     evoke(f, '3,5', '9,4', { aims: ['9,4', '9,7'] });
     const fields = f.cb.zones!.filter((z) => z.kind === 'field' && z.by === f.pc.id);
     expect(fields.map((z) => z.tiles)).toEqual([['9,4'], ['9,7']]);
-    f.foe.pos = '9,7'; f.turn(f.foe); expect(500 - f.foe.hp).toBe(30);
+    f.foe.pos = '9,7'; f.turn(f.foe); expect(500 - f.foe.hp).toBe(18);
   });
   it('WAIT + TWICE: two hidden traps; stepping on one sets it off at full strength', () => {
     const f = rig(['fire', 'seek', 'wait', 'twice'], ['14,9']); line(f, ['fire', 'wait', 'twice', 'seek'], L4);
@@ -204,7 +204,7 @@ describe('gaps 3–4: the Delivery and Burst mixes', () => {
     const traps = f.cb.zones!.filter((z) => z.kind === 'trap' && z.by === f.pc.id);
     expect(traps.map((z) => z.tiles[0])).toEqual(['9,4', '9,7']); expect(traps.every((z: any) => z.hidden)).toBe(true);
     f.foe.pos = '9,4'; f.turn(f.foe);
-    expect(500 - f.foe.hp).toBe(30); expect(f.cb.zones!.filter((z) => z.kind === 'trap').map((z) => z.tiles[0])).toEqual(['9,7']);
+    expect(500 - f.foe.hp).toBe(18); expect(f.cb.zones!.filter((z) => z.kind === 'trap').map((z) => z.tiles[0])).toEqual(['9,7']);
   });
   it('CHAIN + LEECH: you heal from every jump (30 + 23 dealt → 26); the preview shows the heal before you Evoke (gap 6)', () => {
     const f = rig(['fire', 'seek', 'chain', 'leech'], ['8,5', '10,5']); f.pc.hp = 300; line(f, ['fire', 'chain', 'leech', 'seek'], L4);

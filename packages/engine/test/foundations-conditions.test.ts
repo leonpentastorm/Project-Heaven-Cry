@@ -71,7 +71,7 @@ describe('applyCond: the one door', () => {
     const x = field(); x.put('bleeding'); expect(x.t.bleed).toBe(condDef('bleeding')!.rounds);
     const hp0 = x.t.hp; let bites = 0;
     withGame(x.f.g, () => { for (let i = 0; i < 5; i++) { const was = x.t.hp; bleedTick(x.cb, x.t); if (x.t.hp < was) bites++; } });
-    expect(bites).toBe(3); expect(x.t.bleed).toBe(0); expect(hp0 - x.t.hp).toBe(15); expect(debuffsOf(x.t)).toEqual([]);
+    expect(bites).toBe(3); expect(x.t.bleed).toBe(0); expect(hp0 - x.t.hp).toBe(9); expect(debuffsOf(x.t)).toEqual([]);
   });
   it('knocked Prone ends Braced however it lands; dropping by choice keeps it (review, item 1583); standing, kneeling and dropping are the unit\'s own (setProne): nobody is asked', () => {
     let x = field(); setBraced(x.t, true); x.put('prone'); expect([x.t.prone, x.t.braced]).toEqual([true, false]);

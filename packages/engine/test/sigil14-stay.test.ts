@@ -47,7 +47,7 @@ describe('STAY (item 422): one strike, then the field', () => {
     draw(cb, rng, u, ['fire', 'stay', 'seek'], ['4,5', '3,5', '2,5']);
     const pv = previewEvoke(cb, u, '2,5', '9,5');
     expect(pv.ok).toBe(true); expect(pv.targets).toEqual([e.id]); expect(pv.missiles[0].placed).toBe('field'); expect(pv.missiles[0].burst.tiles).toEqual(['9,5']);
-    const a = pv.affected.find((x) => x.unit === e.id)!; expect(a.mult).toBe(1); expect(a.dmgAfterArmour).toBe(30);
+    const a = pv.affected.find((x) => x.unit === e.id)!; expect(a.mult).toBe(1); expect(a.dmgAfterArmour).toBe(18);
     const hp = e.hp; expect(evoke(cb, rng, u, '2,5', '9,5')).toBeNull();
     expect(hp - e.hp).toBe(30);
     const z: any = cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles).toEqual(['9,5']); expect(z.ever[e.id]).toBe(true);
@@ -59,7 +59,7 @@ describe('STAY (item 422): one strike, then the field', () => {
     let hp = a.hp; magicTurnStart(cb, rng, a); expect(a.hp).toBe(hp); // the strike was this round's
     hp = a.hp; a.ap = 9; moveUnit(cb, a, '9,6', rng); moveUnit(cb, a, '9,5', rng); expect(a.hp).toBe(hp); // still this round
     cb.round++;
-    hp = a.hp; magicTurnStart(cb, rng, a); expect(hp - a.hp).toBe(15); // starts its turn there: half
+    hp = a.hp; magicTurnStart(cb, rng, a); expect(hp - a.hp).toBe(9); // starts its turn there: half
     a.ap = 9; moveUnit(cb, a, '9,6', rng); hp = a.hp; moveUnit(cb, a, '9,5', rng); expect(a.hp).toBe(hp); // once per round
     cb.round++; a.ap = 9; moveUnit(cb, a, '9,6', rng); hp = a.hp; moveUnit(cb, a, '9,5', rng); expect(hp - a.hp).toBe(15); // walks back in: half
     a.pos = '9,8';
@@ -71,7 +71,7 @@ describe('STAY (item 422): one strike, then the field', () => {
     draw(cb, rng, u, ['fire', 'stay', 'spread', 'kin'], ['5,6', '4,6', '3,6', '2,6']);
     allies[0].pos = '3,6'; e.pos = '4,6'; u.pos = '2,6';
     const hp = e.hp, ah = allies[0].hp, uh = u.hp; expect(evoke(cb, rng, u, '2,6', u.pos)).toBeNull();
-    expect(hp - e.hp).toBe(18); expect(allies[0].hp).toBe(ah); expect(u.hp).toBe(uh);
+    expect(hp - e.hp).toBe(11); expect(allies[0].hp).toBe(ah); expect(u.hp).toBe(uh);
     cb.round++; const h2 = e.hp; magicTurnStart(cb, rng, e); expect(h2 - e.hp).toBe(9);
     magicTurnStart(cb, rng, allies[0]); expect(allies[0].hp).toBe(ah);
   });
@@ -81,7 +81,7 @@ describe('STAY (item 422): one strike, then the field', () => {
     draw(cb, rng, u, ['fire', 'wait', 'stay', 'spread'], ['5,5', '4,5', '3,5', '2,5']); expect(evoke(cb, rng, u, '2,5', '6,5')).toBeNull();
     expect(cb.zones!.some((z) => z.kind === 'field')).toBe(false);
     const hp = a.hp; a.pos = '8,5'; a.ap = 9; moveUnit(cb, a, '6,5', rng);
-    expect(hp - a.hp).toBe(18); expect(cb.zones!.some((z) => z.kind === 'trap')).toBe(false);
+    expect(hp - a.hp).toBe(11); expect(cb.zones!.some((z) => z.kind === 'trap')).toBe(false);
     const z: any = cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(z.ever[a.id]).toBe(true);
     cb.round++; const h2 = a.hp; magicTurnStart(cb, rng, a); expect(h2 - a.hp).toBe(9);
     const hb = b.hp; b.pos = '8,6'; b.ap = 9; moveUnit(cb, b, '7,6', rng); expect(hb - b.hp).toBe(18);

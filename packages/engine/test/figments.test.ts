@@ -24,7 +24,7 @@ describe('figments: the data', () => {
     expect(FOCUS_IDS.visualizer).toContain('visualizer');
     expect(ACT.resources.vcharge.path).toBe('mg.vcharge');
     for (const s of ['picture', 'let_go', 'figment_strike', 'figment_pounce', 'figment_cut', 'figment_stare']) expect(typeof cost(s)).toBe('number');
-    expect(R.output.profiles.figment.level).toBe('deal'); expect(R.output.factors.figment).toBeGreaterThan(0);
+    expect(R.output.profiles.figment.level).toBe('deal'); expect(R.output.factors).toBeUndefined(); // rules 1.95: the Figment factor folds into the profile's k
     for (const t of (ENEMIESJ as any).items) expect('owned_weight' in t && 'double_save' in t).toBe(true);
   });
   it('the ladder (rules 1.56; rules 1.70 item 5541: forms are learned, never opened by a level): held 1 at 1, 2 at 5, 3 at 7; forms known 2 at 1, +1 a point, all ten at 9', () => {
@@ -86,7 +86,7 @@ describe('figments: rules 1.34 section 2', () => {
   it('rule 5: acting through: your AP, d20 + your Visualization modifier, its weapon on the figment profile at your level x the Figment factor', () => {
     const f = beastFight(); let u = f.turn(f.pc); f.picture(u, 'beast', SPOT); u = f.unit(u.id); f.foe.pos = '4,4';
     const b = f.figments(u)[0], prof = R.output.profiles.figment;
-    expect(b.attack).toBe(mod(5)); expect(b.lvlDmg).toBeCloseTo(prof.k * levelFactor(prof.level, 5) * R.output.factors.figment, 3);
+    expect(b.attack).toBe(mod(5)); expect(b.lvlDmg).toBeCloseTo(prof.k * levelFactor(prof.level, 5), 3);
     expect(b.maxHp).toBe(Math.round(FORM.beast.hp * statTerm('figment_hp', [], [5]) * lvl(5).hp_mult)); // rules 1.36: its maker's Visualization, the level's hp_mult
     const ap = u.ap; f.order(u, b, 'figment_strike', { targetId: f.foe.id }); u = f.unit(u.id);
     expect(ap - u.ap).toBe(cost('figment_strike'));

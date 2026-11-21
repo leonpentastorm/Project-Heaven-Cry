@@ -85,7 +85,7 @@ describe('the stacking rule: own multipliers multiply; target bonuses add, are c
   it('x1.3 with +50% is x1.95; the bonuses are held at -90% at least, with no top (rules 1.95)', () => {
     const T = (...v: number[]) => v.map((x) => ({ v: x, label: 't' }));
     expect(stackDamage(T(1.3, 1.5), [])).toEqual({ mult: 1.3 * 1.5, vsMult: 1, total: 1.3 * 1.5 });
-    expect(stackDamage([], T(0.15, 0.3)).vsMult).toBe(1 + (0.15 + 0.3)); expect(stackDamage([], T(0.7, 0.6)).vsMult).toBe(1 + 0.7 + 0.6); // rules 1.95: no top expect(stackDamage([], T(-0.5, -0.6)).vsMult).toBe(1 + -0.9);
+    expect(stackDamage([], T(0.15, 0.3)).vsMult).toBe(1 + (0.15 + 0.3)); expect(stackDamage([], T(0.7, 0.6)).vsMult).toBe(1 + 0.7 + 0.6); expect(stackDamage([], T(-0.5, -0.6)).vsMult).toBe(1 + -0.9); // rules 1.95: no top
     expect(stackDamage(T(2), T(0.5)).total).toBe(3);
   });
 });
