@@ -2585,6 +2585,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-repeating_crossbow--relic",
+      "path": "art/icons/gear/weapon-repeating_crossbow--relic.png",
+      "sha256": "28517e7e4b75f28be7a97067fdc6acefbb5f7153a4e6179562c608df3b3587b2",
+      "label": "Repeating Crossbow — Relic",
+      "family": "weapon-repeating_crossbow",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-repeating_crossbow--relic.png",
+        "sha256": "d8b20891d36882a5f074f362cefcdc11bf70fbcc47017c2b75802ebfba238243"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-repeating_crossbow--relic.png",
+        "sha256": "28517e7e4b75f28be7a97067fdc6acefbb5f7153a4e6179562c608df3b3587b2"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-repeating_crossbow--relic.txt",
+        "sha256": "4957c76ee6aa3ba4c2599992f75b7996a29df8885493a7fe551651482abe4fa3"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-repeating_crossbow.png",
+          "sha256": "d8537ef569454a7fcac82f1edc3a1372ea2a9ef4f43823a6df872572e84b5c68"
+        },
+        {
+          "path": "art/icons/gear/weapon-repeating_crossbow--masterwork.png",
+          "sha256": "e06c8aea7c5e68b4ec4394caf49472b35cfe52b16b5e3a2521c6b50677c6f6c7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-repeating_crossbow--relic/002/native.png",
+          "sha256": "52a2c7892f46ec3e1e02dc7a515c1509690fdd00ed43264518c39ea78a2d4c2c"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-repeating_crossbow--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-repeating_crossbow--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-repeating_crossbow--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-repeating_crossbow--relic.png"
+      },
+      "export_hashes": {
+        "256": "76cd473fd22c8a52764482fed221af840ba57574498f33651ac5ccb70c003a5f",
+        "128": "5e736e30c6de8c5c26831c8dcc88dc905e806f5c60821b40b94500b97f1fc833",
+        "64": "92a0c255b517d8bca23bab53e34a1c9c457372b0d3c676d3b88b8dddf439bb46",
+        "32": "975a41942f5ac1dd60d6427ff3af762cdb865c3d31b7a1eba5df14273eba1b00"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-repeating_crossbow",
+      "outline": {
+        "solid_alpha_iou": 0.9477749452365293,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 10,
+        "different_pixels_64": 39
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

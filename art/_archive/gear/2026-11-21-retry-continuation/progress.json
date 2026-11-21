@@ -42,7 +42,8 @@
     "weapon-war_hammer--relic",
     "weapon-war_hammer--celestial",
     "weapon-crossbow--masterwork",
-    "weapon-crossbow--relic"
+    "weapon-crossbow--relic",
+    "weapon-repeating_crossbow--relic"
   ],
   "remaining": [
     "weapon-purifier_flamer--masterwork",
@@ -53,7 +54,6 @@
     "weapon-short_bow--relic",
     "weapon-short_bow--celestial",
     "weapon-crossbow--celestial",
-    "weapon-repeating_crossbow--relic",
     "weapon-repeating_crossbow--celestial"
   ],
   "baseline_project_pictures": 512,
@@ -69,7 +69,7 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T03:15:31.746034+00:00",
-  "project_distinct_count": 553,
+  "updated_utc": "2026-11-21T03:21:36.225001+00:00",
+  "project_distinct_count": 554,
   "total": 50
 }
