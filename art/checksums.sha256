@@ -3584,6 +3584,8 @@ f0e037fed20b2c1e2ea914d2bd80e7a81a29726f7d7539e2508e8d338db092bf  art/_archive/g
 a8a73cd16e61bb7daccd41f82bf4e33998eb17e66108b13736662b5e4b864d12  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--relic/001/request.json
 51d279337ebfab6cb0668765e915bfe41da43980807198fb2a4ca9c0f99e94ac  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--relic/001/review.json
 0845af2956fc0b6c534ea45cff426026946b3646574202e1ff5c922b59b2bdd2  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--relic/001/source.json
+08489c4c114ef12161dbc53c32cd2d1b2ed152409ce139a39ad226269b82cb88  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-decrkm_autopistol--masterwork/001/error.json
+4b713c99e89bb374ff10a4156735720fc034fedafa5a5f5f868fc639d4b5b2d8  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-decrkm_autopistol--masterwork/001/request.json
 87eff57b08b61b8e5ad57c82319f8e1e2dd7b9186995df2718315475848755f0  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-dock_cutter--celestial/001/native.png
 0c3adf9403e86d13528d08aac1e412baa178ba2132aac3bbcd118ad70702114e  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-dock_cutter--celestial/001/request.json
 7e081b95ab8f9f1ac599a97ca76b62284772c1c6cb6be5b2e90254534555b38e  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-dock_cutter--celestial/001/review.json
@@ -3666,6 +3668,8 @@ ef1e57b66733eb22ca3ef078e1d3997e6d427c66f31ec0212aba28c9a9133181  art/_archive/g
 ece90ddac782d3e7ecfc78f050cb5f496f911334cbd26f3fac66991b7d02537e  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-long_draw--relic/001/request.json
 ae17a60882bcb243c281b14a30e668a715000667c4733c70e71af00ebfd47a6d  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-long_draw--relic/001/review.json
 9fcad8617318de721ba90f257bbe49d1ad64ffa765a3c013eb2551621ac8a0d2  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-long_draw--relic/001/source.json
+748e65b44f0efb2335cb20c50a0bf05a1c20bfad5d00112d8598bf5059a83d53  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-magistrate_pistol--masterwork/001/error.json
+bbf54fdaa7ceb4d9344571be4cbca37717503fb8bb418fe9773bea2a874a4e79  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-magistrate_pistol--masterwork/001/request.json
 8982f798cb8efa990e2afce144c4857b9a554a9b9a81ff1f5fdadfff73f5ab03  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_cleaver_glaive--celestial/001/native.png
 bcd5f0863227bf70dc0860eb7f2d216d8a35dca33b8ce7d223c4a58cb47ce077  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_cleaver_glaive--celestial/001/request.json
 5e9529f870ab52f75eca6f878792cf84b573eca2b7e73744ad9d724c13eb18ae  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_cleaver_glaive--celestial/001/review.json
@@ -3738,6 +3742,8 @@ d8b20891d36882a5f074f362cefcdc11bf70fbcc47017c2b75802ebfba238243  art/_archive/g
 0c093528997a2c1da699c16bca8516db956ed173ff253e704bf5fd5ac20b119e  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-sawn_off--fine/003/request.json
 fa88d52348fa310a13c6a063f0ab45447bf6aa4ac27d444d3c25ddabb6a9c3a8  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-sawn_off--fine/004/error.json
 9196cbd785e1f04446c1a65fe1ba30d9185d0bf1f6593f8d483d79892bff6276  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-sawn_off--fine/004/request.json
+fa93c1003f73f3406d65bae438de78d5eecf0d1c802bcff46b9d2d1ad84b4023  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-service_pistol--fine/001/error.json
+7fb3e0e03bb6f28c1f48c0fc2c8b460140667d100d666b318a0b46e4b34ee6e3  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-service_pistol--fine/001/request.json
 81f25f008c9a15039e6869901629ba16675b5c9df612f2a6f79f7399babf7661  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--fine/001/error.json
 5b5200f085d6cf113ff4ad652c792a04e4c0d39029b79e9a762dcc03925289df  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--fine/001/request.json
 abd3f529e67422c8e4d56f42651f6cbf22bb50606a785e8aaa41d3caa32c66ff  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--fine/002/error.json
@@ -3822,6 +3828,10 @@ ecad3cb9371d89fbed52f175b619b34c92eeb4b5b908f68d91a4056f2fdea770  art/_archive/g
 4d78e5c39927541f9e89fa4b6201a886ade7c3067e9105625d3eb79e3cd4c6c9  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-war_pick--relic/002/request.json
 94507532b394a91177e519eb40a86109b6f6f32ae82668332caaf4468e7b9846  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-war_pick--relic/002/review.json
 daad444a8cad83bafe85bab1f51c64e93d744ba00fbb7394f2efd239bd58940d  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-war_pick--relic/002/source.json
+ecfcd3a94724b702d7430fccd670b36e7e692fb333a686f2622df6a9b8ce350d  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_carbine--fine/001/error.json
+49a342fda8b3b38cb3f916c0fe8ef35cd87cc2de468fddab58bbc34d5323a2d2  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_carbine--fine/001/request.json
+d6e12db16f7a434f2ed7cd70a3d5c44e150902e9aa36b94230b6ef8c9d7b2a0d  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_pistol--masterwork/001/error.json
+91ce47df30f62916ce21f4f3a636e9fae4f484ab1a9c3decd10b2712393596b4  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_pistol--masterwork/001/request.json
 8a1d3f03597b343c3a133829865ccf47b2eed639a25aeeb3d0d486970aa445fd  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_smg--fine/001/error.json
 61ab02126a10b80b45e2f14c423156ccee5edc0c152575dd7965365cd8ecff01  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_smg--fine/001/request.json
 052564e05c45f57ea8f9f12f07b93b4467e0d37c09df4a8d14d622f8e6ee6b9d  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_smg--fine/002/error.json

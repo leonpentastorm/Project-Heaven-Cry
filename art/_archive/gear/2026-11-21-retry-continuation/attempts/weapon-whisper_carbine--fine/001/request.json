@@ -1,0 +1,62 @@
+{
+  "head": "bbd8383d5f04ee23bef43fc393a5c74ce7b40192",
+  "job": {
+    "id": "weapon-whisper_carbine--fine",
+    "standard_id": "weapon-whisper_carbine",
+    "grade": "fine",
+    "label": "Whisper carbine — Fine",
+    "path": "art/icons/gear/weapon-whisper_carbine--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_carbine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 5,
+    "keep_line": "the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing side-view Whisper carbine at its existing gentle diagonal, long thick cylindrical barrel/suppressor body with its dark open muzzle at right, angular receiver with long recessed side channel and exactly the same bands, screws and seams, short rectangular lower magazine at centre, small trigger inside its rectangular guard, and brown thumbhole stock at the left with its large open oval and tiny blank slate-blue buttplate tag. Preserve the small top-mounted short optic in its existing position with its muted blue-green lens, stock opening, magazine dimensions, all screws/bands, receiver edges and precise view. Wood brown, dark steel and original slate-blue tag/lens stay in place; no new rail, sight, front grip, stock adjustment, second object, text or light outside the item.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Add only ONE thin uncoloured engraved contour along the largest existing slide/receiver side or lantern/flask body surface; no inlay colour, ornament, repair or new part.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": null,
+    "standard_sha256": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_carbine--fine--1795160984675.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_carbine--fine--1795160984675.json",
+      "request_id": "a86f848c-32f6-48f4-840d-6f400678b827"
+    },
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "3c3d1c7c941001853fd6405178503e63ba7439ddff3e04171528047cbe17d9d3",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_carbine--fine--1795160984675.json",
+      "response": {
+        "id": "weapon-whisper_carbine--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID a86f848c-32f6-48f4-840d-6f400678b827. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-whisper_carbine.png": "23ab8e8ec66842439effcacc3a9626d52eb29c82c56f8508226678e63642d664",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7062296286,
+  "clock": {
+    "current_time": "2026-11-21 12:07:38 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7062296286,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

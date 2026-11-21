@@ -1,0 +1,64 @@
+{
+  "head": "bbd8383d5f04ee23bef43fc393a5c74ce7b40192",
+  "job": {
+    "id": "weapon-magistrate_pistol--masterwork",
+    "standard_id": "weapon-magistrate_pistol",
+    "grade": "masterwork",
+    "label": "Magistrate pistol repaint — Masterwork",
+    "path": "art/icons/gear/weapon-magistrate_pistol--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-magistrate_pistol.png",
+      "art/icons/gear/weapon-magistrate_pistol--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-magistrate_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-magistrate_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 3,
+    "keep_line": "the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single long slim right-facing level side-view Magistrate pistol repaint, narrow straight dark steel upper body ending in its existing short bright muzzle ring and dark bore, original small front/rear sight profiles, side seams and pins, slender rounded trigger guard and curved trigger, and pale ivory grip scales with their TWO round pins and one small blank horizontal brass plaque. Preserve the exact upper-body length and height, grip outline/angle, guard curvature and open gap, muzzle ring, sight positions, pin count and blank plaque placement. Original dark steel, ivory scales and brass fittings remain the material identity; no coloured maker accent beyond existing brass. No added suppressor, stock, optic, symbol, text or external glow.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is bright brass, matching the original brass fittings, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-magistrate_pistol--fine",
+    "standard_sha256": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-magistrate_pistol--masterwork--1795161461802.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-magistrate_pistol--masterwork--1795161461802.json",
+      "request_id": "5e41c9fb-9f58-490e-a773-d19764ecda06"
+    },
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "04be50a8c4e258ab60bb2c88f244ebf5f5fe75e4023f4825c681c91cbce85411",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-magistrate_pistol--masterwork--1795161461802.json",
+      "response": {
+        "id": "weapon-magistrate_pistol--masterwork",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 5e41c9fb-9f58-490e-a773-d19764ecda06. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-magistrate_pistol.png": "a85e2abd11caebca3b7fa3a7d7797a550057a17ce8fd248d0a297c808f47fe3d",
+    "art/icons/gear/weapon-magistrate_pistol--fine.png": "e7e7407b4a76c5a8626b04e1240df4a4fe3f835f944ee7e7522b6936c58ec1bb",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7062296286,
+  "clock": {
+    "current_time": "2026-11-21 12:03:47 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7062296286,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}
