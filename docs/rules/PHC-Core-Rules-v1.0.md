@@ -15009,3 +15009,31 @@ As played after this revision:
       and their solo forms, Guts' +1 on saves against Fear (its point 1), the classes' rank moves beyond Brace, the
       keeps tags beyond today's, the Momentum and Pressure Marks (step 3), and an enemy caster's spell Margins by its
       tier. Until each is built it keeps its 0.33 rule.
+
+### Rules 1.98 (the Guard door), 0.34: one lane of the total rebalance: Slam and Retort pay the plates' weight, Warn feeds the wall (21 Nov 2026)
+
+One door, one lane (ruling M): Durability's door, Guard, after rules 1.97. Every number is the bible's
+(`tools/balance/bible/body.json` endurance door; rulings 32, 34, 45, 60, 63 and 73). Everything is PROVISIONAL until
+played. As played after this revision:
+
+8350. **Slam is Guard's cash-out from Durability 1** (its gate moves from 5). It spends every plate you hold (at least
+      1) and needs no roll: the foe you face takes a plain blow with your shield (in either hand; with no shield, the
+      weapon in your hand), with no Margins, plus the plates' weight: one plate's soak (read before Pain Threshold's
+      feed) x Durability's Bite x S(n) for n plates spent (rules 1.96 item 8326; Guard's step is 1, so S(n) is n).
+      Its ring strikes 1 + S(n) rounded down foes beside you in all, at most 8 (Cleave's count, ruling 45): the faced
+      one with the weight, the others a plain blow. From Durability 5 every foe beside you is still shoved a tile and
+      saves (Body) or is Off Balance, and the Stand Fast and Drive forks change that as before. **Pain Threshold 10:
+      a Slam keeps 1 plate** (the beta's point 10, as Guts 10 and Athletics 10 in rules 1.97 item 8343). The foe's
+      armour applies; the blow is a hit for everything that reads one. Supersedes rules 1.56's Slam (2 plates, from
+      Durability 5, no damage).
+8351. **Retort is a one-plate Slam on the striker** (the Bulwark's, rank II): a foe hits you in melee while you hold
+      Guard: 1 plate and your reaction, no AP, and the striker takes the plain blow of your shield (or weapon) with no
+      roll plus one plate's weight (ruling 34's "1 +"). Supersedes rules 1.73 item 5836's half of the blow thrown back.
+8352. **Warn feeds the wall, and works alone.** A Warn that lands (the warned one steps) gives you 1 Guard plate from
+      Sensory 2, 2 from Sensory 6, up to your Reach. Warn may be made on yourself, at the step below your own (at least
+      the first) (ruling 32). Supersedes rules 1.70's Warn for an ally only.
+8353. **Not in this revision** (for the lead, listed in `docs/design/handoffs/0.34-REBALANCE-DOOR-guard.md`): the Push
+      Overbrace (its AP price and how long the extra plate stands are not in the bible), Guard's Marks and their gifts
+      (step 3), the Bulwark's Hold Their Eyes and Reforge in their new form, the rank levels 3, 5 and 15, the solo
+      forms of Interpose, Cover Them and Stand Behind Me, and the Guard keeps tags. Until each is built it keeps its
+      0.33 rule.
