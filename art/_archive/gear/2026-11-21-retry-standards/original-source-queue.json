@@ -1,0 +1,35 @@
+[
+  {
+    "source_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/new-standard-imports/2026-11-19-file-06-queue.json",
+    "row": {
+      "n": 17,
+      "id": "arbalest",
+      "title": "Arbalest (Crossbows, long)",
+      "path": "art/icons/gear/weapon-arbalest.png",
+      "refs": [
+        "art/icons/gear/weapon-crossbow.png",
+        "art/icons/gear/weapon-repeating_crossbow.png"
+      ],
+      "paint": "A heavy frontier arbalest: one bolt that goes through a door. Pose: horizontal like a rifle, the prod at the right turned slightly toward the viewer, filling about 85% of the canvas width. Silhouette: a very thick laminated steel prod, much wider and deeper than the crossbow's, bound to the stock with iron bands; a long rifle-like stock; a stirrup at the front; at the rear a squared toothed crank box with a short handle, in place of the crossbow's windlass; one heavy square-headed bolt lying loaded in the groove. Materials: dark steel prod with hammered facets, plain oiled wood stock, a thick rope-and-cable string, iron fittings; no colour accent.\nAt 32 px: against the crossbow, the prod is far thicker and wider and the crank is a toothed box; against the repeating crossbow, no magazine box on top.\nAvoid: a magazine, a scope, ornament or inlay, a loose bolt beside it, a hand on the crank.",
+      "needs": false,
+      "span": 0.85
+    }
+  },
+  {
+    "source_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/new-standard-imports/2026-11-19-file-09-queue.json",
+    "row": {
+      "n": 6,
+      "id": "hellraiser_twin_rotary",
+      "title": "Twin rotary (invented: built from one pattern's parts; paste no pattern clause)",
+      "path": "art/icons/gear/weapon-hellraiser_twin_rotary.png",
+      "refs": [
+        "art/icons/gear/weapon-hellraiser_rotary.png",
+        "art/icons/weapons/hellraiser_rotary.svg"
+      ],
+      "paint": "An invented combined weapon: two six-barrel electrically driven rotary machine guns mounted side by side as one carried weapon, the heaviest gun a person carries. The combination is ours; each of the two guns is drawn from the real six-barrel rotary pattern's own parts. Pose: diagonal, muzzles up and right, about 90% of the canvas width. Silhouette, each gun: a cluster of six long barrels held by a front clamp and a mid clamp, a round drive motor housing behind them, and a feeder on the side of each housing taking a flexible armoured feed chute. The two guns are joined by a twin cradle, with a crossbar carry handle on top and a pair of spade grips with a thumb trigger at the rear; the two chutes curve back to one large squared ammunition box worn as a backpack, drawn as part of the same object. No drum under the guns. Materials: heavy dark steel and black, the barrel tips scorched. Maker's touch: oxide-red paint on the twin cradle.\nAt 32 px: two rings of barrels side by side and two long curving chutes; no drum.",
+      "pattern": false,
+      "needs": false,
+      "span": 0.89
+    }
+  }
+]

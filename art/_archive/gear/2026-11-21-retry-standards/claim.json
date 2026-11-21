@@ -1,0 +1,12 @@
+{
+  "run": "sole-20261121-0109",
+  "branch": "art/2026-11-20-reset-continuation",
+  "status": "active",
+  "expected_count": 2,
+  "ids": [
+    "weapon-arbalest",
+    "weapon-hellraiser_twin_rotary"
+  ],
+  "first": "weapon-arbalest",
+  "comment": 7061913827
+}

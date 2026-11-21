@@ -33,7 +33,7 @@ def dump(path, data):
     path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + '\n')
 
 
-def normalize(source, kind):
+def normalize(source, kind, span=None):
     image = Image.open(source).convert('RGBA')
     # Technical alpha cleanup only. Preserve painted RGB and source separately.
     alpha = image.getchannel('A').point(lambda n: 0 if n < 8 else (255 if n >= 248 else n))
@@ -44,7 +44,7 @@ def normalize(source, kind):
     if not box:
         raise ValueError('Empty source')
     image = image.crop(box)
-    limit = 870 if kind == 'shield' else 820
+    limit = round(1024*span) if span is not None else (870 if kind == 'shield' else 820)
     image.thumbnail((limit, limit), Image.Resampling.LANCZOS)
     canvas = Image.new('RGBA', (1024, 1024))
     canvas.paste(image, ((1024 - image.width) // 2, (1024 - image.height) // 2))
@@ -86,6 +86,9 @@ def reviews(queue, manifest):
 
 
 def update_handoff(queue, progress):
+    if BASE.name == '2026-11-21-retry-standards':
+        (BASE/'HANDOFF.md').write_text('# Current new Standard candidates\n\n'+str(len(progress['delivered']))+'/'+str(len(queue))+' selected, run sole-20261121-0109, same artbranch. Remaining: '+', '.join(progress['remaining'])+'. Allapprovalflagsfalse, native/prompt/refhashes retained. SourceStandards are newrequestedpictures, noimportsoroldrepaints counted. Readliveissue3+allcomments+remotedeliveries beforeEVERYrender, pushEVERYpicture. Gradefollowers mustuse selectednewmaster, notlegacyreference. Actualquota: '+str(progress.get('image_quota'))+'.\n')
+        return
     done, remaining = progress['delivered'], progress['remaining']
     next_job = remaining[0] if remaining else 'none — finish final handoff/checks'
     (BASE / 'HANDOFF.md').write_text(
@@ -128,7 +131,7 @@ def export(asset_id, source):
     if source_target.exists() and sha(source_target) != sha(source):
         raise ValueError('A different source already exists; preserve it')
     shutil.copy2(source, source_target)
-    image = normalize(source_target, job['kind'])
+    image = normalize(source_target, job['kind'], job.get('span'))
     image.save(target)
     master = BASE / f'masters/v1/{asset_id}.png'
     master.parent.mkdir(parents=True, exist_ok=True)
@@ -148,11 +151,11 @@ def export(asset_id, source):
     asset = {
         'label': job['label'], 'path': rel(target), 'sha256': sha(target),
         'width': 1024, 'height': 1024, 'background': 'transparent',
-        'status': 'review-candidate', 'production_approved': False,
+        'status': 'review-candidate', 'production_approved': False, 'implementation_ready': False,
         'exports': exports, 'source_path': rel(source_target),
         'native_dimensions': list(Image.open(source_target).size),
         'brief': job['brief'], 'brief_number': job['brief_number'],
-        'collection': '2026-11-19-melee-armour', 'grade': 'standard',
+        'collection': BASE.name, 'grade': 'standard',
         'origin': 'image_gen; technical crop/alpha separation/uniform downsample only',
     }
     catalog = ROOT / 'art/catalog.json'
@@ -166,7 +169,7 @@ def export(asset_id, source):
         'reference_sources': [record(ROOT / p) for p in job.get('reference_sources', [])],
         'native_dimensions': asset['native_dimensions'], 'exports': exports,
         'export_hashes': {size: sha(ROOT / p) for size, p in exports.items()},
-        'grade': 'standard', 'status': 'review-candidate', 'production_approved': False,
+        'grade': 'standard', 'status': 'review-candidate', 'production_approved': False, 'implementation_ready': False,
     })
     dump(BASE / 'manifest.json', manifest)
     job['status'] = 'delivered'
@@ -181,12 +184,16 @@ def export(asset_id, source):
     sys.path.insert(0, str(ROOT / 'tools'))
     from rehash_art_checksums import main
     main()
-    print(f'Exported {asset_id}: {len(progress["delivered"])}/39')
+    print(f'Exported {asset_id}: {len(progress["delivered"])}/{len(queue)}')
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--id', required=True)
     parser.add_argument('--source', type=Path, required=True)
+    parser.add_argument('--delivery-root', type=Path)
     args = parser.parse_args()
+    if args.delivery_root:
+        BASE = (ROOT / args.delivery_root).resolve()
+        BASE.relative_to(ROOT / 'art/_archive/gear')
     export(args.id, args.source)

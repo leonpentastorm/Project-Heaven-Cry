@@ -1,0 +1,9 @@
+[
+  {
+    "source": "art/icons/weapons/hellraiser_rotary.svg",
+    "source_sha256": "165a3d41b54779f6ca47f13ade9b9ac8822f788275aff03eb8d352bd59372023",
+    "reference_render": "art/_archive/gear/2026-11-21-retry-standards/references/line-icons/hellraiser_rotary.png",
+    "sha256": "88f1ef18e82cda5fcde95bc98f810de9dc0e78c2c67b9a64f8a4d9cb2e43dbd4",
+    "operation": "TechnicalSVG rasterization only, originalpaths unchanged, count0"
+  }
+]

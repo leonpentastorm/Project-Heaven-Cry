@@ -1,0 +1,11 @@
+{
+  "status": "drawing",
+  "delivered": [],
+  "remaining": [
+    "weapon-arbalest",
+    "weapon-hellraiser_twin_rotary"
+  ],
+  "image_quota": null,
+  "project_distinct_count": 568,
+  "branch": "art/2026-11-20-reset-continuation"
+}

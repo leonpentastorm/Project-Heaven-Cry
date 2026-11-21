@@ -1,0 +1,3 @@
+# Two new Standard candidates
+
+Runsole-20261121-0109 samebranch,568/871 atclaim. Exact2newStandardIDs arbalest andhellraiser_twin_rotary, noexistingdestination/catalogentry. Allactualfamilyrefsready; namedrepaintprerequisites remainpendingelsewhere andarenotbypassed. Currentbriefblocks/entrypaint copiedexact with truthfulfictionalgamecontext. Sourcebriefsnapshots included, noPatternclause forinventedTwinRotaryorArbalest. Newmastersunlockfourgrades each,butfuturegradesstillneedexactclaims. Native/prompts/refhashes/exports preserved; allreviewcandidateapprovalflagsfalse. Readliveissue3+allcomments+remote deliveries beforeEVERYimage; pushEVERYpicture. Noquota/reset.

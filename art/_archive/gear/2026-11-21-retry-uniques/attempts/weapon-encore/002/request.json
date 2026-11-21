@@ -1,0 +1,67 @@
+{
+  "head": "b8f218db478366ee43966b1a1e72f0d91368b56d",
+  "job": {
+    "id": "weapon-encore",
+    "data_id": "encore",
+    "label": "Encore (two-shot derringer)",
+    "path": "art/icons/gear/weapon-encore.png",
+    "kind": "weapon",
+    "grade": "unique",
+    "family": "unique-encore",
+    "family_references": [
+      "art/icons/gear/weapon-parlour_pistol.png"
+    ],
+    "reference_sources": [
+      "art/icons/gear/weapon-parlour_pistol.png",
+      "art/icons/weapons/parlour_pistol.svg"
+    ],
+    "references": [
+      "art/icons/gear/weapon-parlour_pistol.png",
+      "art/_archive/gear/2026-11-21-retry-uniques/references/line-icons/weapon-parlour_pistol.png",
+      "art/icons/gear/weapon-afterword.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": 10,
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The object is a fictional nonfunctional prop from Project Heaven Cry, shown only from one exterior view. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique two-shot over-and-under pocket pistol, side profile, muzzle to the right, drawn to fill the frame like a full pistol: two stacked short barrels, a small ornate frame with a spur trigger and a curved ivory grip. The impossible material: the two barrels are rolled stage-curtain velvet in deep red #B83243, hardened like steel, the nap of the velvet still visible, the folds of the curtain running down their length. The story detail: a tiny carved cameo of a plain smiling face in profile set in the grip (a carved face only, not a mask, no eyes painted in), and a faded blank ticket stub tucked under the grip's lower screw. Playful, polished, a little sinister.\nAvoid: letters on the ticket, a jester or clown, a ribbon hanging loose, confetti.\n\nA tiny fictional stage prop, isolated in a right-facing profile. The two SHORT cylinders are red curtain velvet with stiff drape folds, no metal on their broad faces. One comes exactly above the other. A small curved ivory grip carries a tiny carved profile cameo and a blank torn-paper stub under one pin. Use restrained theatre red and aged walnut-brown metal. A complete painted inventory object, shown as a static nonfunctional fantasy prop.",
+    "status": "pending",
+    "production_approved": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "b34128c84ffbea5ecac8df1badc04e6dc59cf40622381246a2886607218059bb",
+    "prior_generation_error": {
+      "path": "art/_archive/prompt-pack/2026-11-19-file-08-uniques/generation-failures/failure-10-1795073291201.json",
+      "response": {
+        "n": 10,
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 66e5b125-bdc9-40ef-8e81-ece8c78c80c2. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+        "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The object is a fictional nonfunctional prop from Project Heaven Cry, shown only from one exterior view. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique two-shot over-and-under pocket pistol, side profile, muzzle to the right, drawn to fill the frame like a full pistol: two stacked short barrels, a small ornate frame with a spur trigger and a curved ivory grip. The impossible material: the two barrels are rolled stage-curtain velvet in deep red #B83243, hardened like steel, the nap of the velvet still visible, the folds of the curtain running down their length. The story detail: a tiny carved cameo of a plain smiling face in profile set in the grip (a carved face only, not a mask, no eyes painted in), and a faded blank ticket stub tucked under the grip's lower screw. Playful, polished, a little sinister.\nAvoid: letters on the ticket, a jester or clown, a ribbon hanging loose, confetti.\n\nA tiny fictional stage prop, isolated in a right-facing profile. The two SHORT cylinders are red curtain velvet with stiff drape folds, no metal on their broad faces. One comes exactly above the other. A small curved ivory grip carries a tiny carved profile cameo and a blank torn-paper stub under one pin. Use restrained theatre red and aged walnut-brown metal. A complete painted inventory object, shown as a static nonfunctional fantasy prop.",
+        "refs": [
+          "art/icons/gear/weapon-parlour_pistol.png",
+          "art/icons/weapons/parlour_pistol.svg"
+        ]
+      }
+    },
+    "reference_catalog_hashes": {
+      "art/icons/gear/weapon-parlour_pistol.png": "0c1368d1206cd634f28b22e78a67d53a5d540dbcb26739b7c98cd7e804eaefd0",
+      "art/icons/gear/weapon-afterword.png": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-parlour_pistol.png": "0c1368d1206cd634f28b22e78a67d53a5d540dbcb26739b7c98cd7e804eaefd0",
+    "art/_archive/gear/2026-11-21-retry-uniques/references/line-icons/weapon-parlour_pistol.png": "0cf22b1b8cb757fe417170b240a50d0db6ebf3f34e62df9f57c822636854884a",
+    "art/icons/gear/weapon-afterword.png": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "reference_source_hashes": {
+    "art/icons/gear/weapon-parlour_pistol.png": "0c1368d1206cd634f28b22e78a67d53a5d540dbcb26739b7c98cd7e804eaefd0",
+    "art/icons/weapons/parlour_pistol.svg": "3cea751c28d99721d71aaeebbb44979e2720782ca8a5b57ab8eb28d229bcc573"
+  },
+  "attempt": 2,
+  "claim_comment": 7061761756,
+  "clock": {
+    "current_time": "2026-11-21 11:18:45 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7061761756,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}
