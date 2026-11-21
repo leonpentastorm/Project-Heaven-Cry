@@ -2143,6 +2143,72 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_axe--celestial",
+      "path": "art/icons/gear/weapon-war_axe--celestial.png",
+      "sha256": "73333f6842ea8e62a32f9e93cb83410a17c454dff2df298716365257e798cab7",
+      "label": "War Axe — Celestial",
+      "family": "weapon-war_axe",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-war_axe--celestial.png",
+        "sha256": "45ffd1da08e80202ea548c46b897558160501e062f9285371c1753d6a21fcf3a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_axe--celestial.png",
+        "sha256": "73333f6842ea8e62a32f9e93cb83410a17c454dff2df298716365257e798cab7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_axe--celestial.txt",
+        "sha256": "93d2cc39ec674afb788e5a9c3fb6d79e15f5bc1199673f886afcb4876e96d51f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-war_axe.png",
+          "sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770"
+        },
+        {
+          "path": "art/icons/gear/weapon-war_axe--relic.png",
+          "sha256": "11f1962e9cba70d7f4d1ea32ceb28d86b94d9753ad497cbf277c8cb932fcfdaf"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-war_axe--celestial/001/native.png",
+          "sha256": "f7b89b1680f5baa0d5624c88bd2dcadf53f62cb4f27538a091ef068be8d419a9"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_axe--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-war_axe--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-war_axe--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-war_axe--celestial.png"
+      },
+      "export_hashes": {
+        "256": "82c3f4ece3f9125ebc352279e4c0c5ad3f3f999b5c16bc13cf1fd462215ab20c",
+        "128": "2e7253cd648d86e9a98d8fbae4411761d4c97b2d71b67be03443b4e3f64aecc4",
+        "64": "5983eeab7bf6bd52724551f63e0d62c66ce0e36208607ea7f547e0022fe55ac1",
+        "32": "103240450669527aa856d57a999526f8c4d4b7ac5258baaaca4224b3a0fa0524"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-war_axe",
+      "outline": {
+        "solid_alpha_iou": 0.8866361640386299,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 13,
+        "different_pixels_64": 58
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

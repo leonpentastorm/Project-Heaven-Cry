@@ -1,0 +1,55 @@
+{
+  "head": "950bc63ea59075b4aede96f2012b327b80540184",
+  "job": {
+    "id": "weapon-war_axe--celestial",
+    "standard_id": "weapon-war_axe",
+    "grade": "celestial",
+    "label": "War Axe — Celestial",
+    "path": "art/icons/gear/weapon-war_axe--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_axe.png",
+      "art/icons/gear/weapon-war_axe--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-war_axe--celestial/001/native.png"
+    ],
+    "family": "weapon-war_axe",
+    "family_references": [
+      "art/icons/gear/weapon-war_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, pose, exact scale and margins. The portrait is brushwork only, no figure or scene. The second image is the preceding grade candidate, preserving the earlier surface additions. Full transparency, no cast shadow or decorative frame.\n\nQUALITY CORRECTION: The fourth reference is an unselected Celestial draft. Keep its pale head/ivory wood and contained head inlay, but restore TWO omitted features from the SECOND reference (selected Relic): (1) the TWO narrow surface-flush metal inlay strips running side-by-side along the upper wood haft between the first socket band and the next middle band, in the same positions and lengths, now clean pearl-ivory metal with visible edges against the pale wood; (2) the ONE existing cord binding around the lower-middle repaired haft section, in exactly the same location and outline, now clean ivory cord around a seamless pale repair. Retain the socket ornament ring, all original rivets and cross-bands, both head openings and the entire asymmetric head and square butt. All additions from preceding grades remain; no extra repair, no projecting new metal part, no glow outside. Do not omit the two flush haft strips or the single cord repair.",
+    "keep_line": "the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-war_axe--relic",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "e9ed641b9367aef4d732b57389d445e860de639f071261ef2c13fb5b8562d76f",
+    "standard_sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770",
+    "retry_authorized_by_user": true,
+    "prompt_revisions": [
+      {
+        "previous_prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, pose, exact scale and margins. The portrait is brushwork only, no figure or scene. The second image is the preceding grade candidate, preserving the earlier surface additions. Full transparency, no cast shadow or decorative frame.",
+        "previous_prompt_sha256": "e9ed641b9367aef4d732b57389d445e860de639f071261ef2c13fb5b8562d76f",
+        "reason": "Quality correction: first Celestial draft omitted two Masterwork haft strips and Relic cord repair."
+      }
+    ],
+    "active_prompt_sha256": "c3f330be9d2e588bded88793bd482af26dd2413fbd7f8d45e28726af23152b89"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-war_axe.png": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770",
+    "art/icons/gear/weapon-war_axe--relic.png": "11f1962e9cba70d7f4d1ea32ceb28d86b94d9753ad497cbf277c8cb932fcfdaf",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-war_axe--celestial/001/native.png": "f7b89b1680f5baa0d5624c88bd2dcadf53f62cb4f27538a091ef068be8d419a9"
+  },
+  "attempt": 2,
+  "claim_comment": 7055981184,
+  "clock": {
+    "current_time": "2026-11-21 02:54:38 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7056106119,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "d1e74279046a5df79b0ac6a507dd00b13748398b"
+}
