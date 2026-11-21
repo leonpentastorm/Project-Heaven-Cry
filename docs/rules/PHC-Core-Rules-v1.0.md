@@ -629,24 +629,24 @@ Hostiles get 6 AP, roll initiative with their attack bonus, and deal their weapo
 
 | Weapon | Type | Damage | Range | Magazine | Heat limit | Modes | Weight |
 |---|---|---|---|---|---|---|---|
-| Service pistol (.32 Decrkm) | Pistol | 20 | 8 | 12 | 6 | single | 1 kg |
-| Drifter revolver | Revolver | 28 | 10 | 6 | 6 | single | 1.5 kg |
-| Decrkm SMG (.32 Decrkm) | SMG | 19 (rules 1.18; was 15) | 8 | 30 | 10 | single, burst, auto | 3 kg |
-| Hellraiser service rifle | Rifle | 30 | 16 | 24 | 8 | single, burst, auto | 4 kg |
-| Lever carbine | Rifle | 32 | 14 | 8 | 6 | single | 3.5 kg |
-| Lumeri scattergun | Shotgun | 40 within 4 tiles, 25 within 8 | 8 | 6 | 6 | single | 4 kg |
-| Long rifle | Rifle | 47 (rules 1.60 item 4644; was 48, and 50 before rules 1.18). A Shot costs 3 AP, an Aimed Shot 4 | 30 | 5 | 6 | single | 6 kg |
-| .700 Blackpoint anti-materiel | Heavy | 66 (rules 1.18; was 90), ignores 10 armour | 40 | 3 | 3 | single; must be braced or prone | 15 kg |
-| Hellraiser LMG | Heavy | 25 | 18 | 100 | 14 | burst, auto; −2 to hit unless emplaced | 10 kg |
-| Recurve bow | Bow | 20 + 5 × Raw Power | 14 | quiver of 40 | none | single | 1.5 kg |
-| Crossbow | Bow | 55 | 16 | 1 | none | single | 4 kg |
-| Combat knife | Light melee | 15 (thrown: 6 tiles) | 1 | none | none | none | 0.5 kg |
-| Sabre | Light melee | 20 | 1 | none | none | none | 1.5 kg |
-| Ork machete | Heavy melee | 35 | 1 | none | none | none | 3 kg |
-| Maul | Heavy melee | 45 | 1 | none | none | none | 7 kg |
-| Lance | Heavy melee, polearm | 32 | 2 | none | none | none | 3 kg |
-| Gloves or bare fists | Unarmed | 10 | 1 | none | none | none | 0 kg |
-| Frag grenade | Thrown | 40 to everyone within 2 tiles | throwing range | none | none | none | 0.5 kg |
+| Service pistol (.32 Decrkm) | Pistol | 12 | 8 | 12 | 6 | single | 1 kg |
+| Drifter revolver | Revolver | 17 | 10 | 6 | 6 | single | 1.5 kg |
+| Decrkm SMG (.32 Decrkm) | SMG | 11 (rules 1.95; was 19; rules 1.18; was 15) | 8 | 30 | 10 | single, burst, auto | 3 kg |
+| Hellraiser service rifle | Rifle | 18 | 16 | 24 | 8 | single, burst, auto | 4 kg |
+| Lever carbine | Rifle | 19 | 14 | 8 | 6 | single | 3.5 kg |
+| Lumeri scattergun | Shotgun | 24 within 15 tiles, 25 within 8 | 8 | 6 | 6 | single | 4 kg |
+| Long rifle | Rifle | 28 (rules 1.95; was 47; rules 1.60 item 4644; was 48, and 50 before rules 1.18). A Shot costs 3 AP, an Aimed Shot 4 | 30 | 5 | 6 | single | 6 kg |
+| .700 Blackpoint anti-materiel | Heavy | 40 (rules 1.95; was 66; rules 1.18; was 90), ignores 10 armour | 40 | 3 | 3 | single; must be braced or prone | 15 kg |
+| Hellraiser LMG | Heavy | 15 | 18 | 100 | 14 | burst, auto; −2 to hit unless emplaced | 10 kg |
+| Recurve bow | Bow | 21 (rules 1.95: the draw is on the skill term; was 20 + 5 × Raw Power) | 14 | quiver of 40 | none | single | 1.5 kg |
+| Crossbow | Bow | 33 | 16 | 1 | none | single | 4 kg |
+| Combat knife | Light melee | 9 (rules 1.95; was 15; thrown: 6 tiles) | 1 | none | none | none | 0.5 kg |
+| Sabre | Light melee | 12 | 1 | none | none | none | 1.5 kg |
+| Ork machete | Heavy melee | 21 | 1 | none | none | none | 3 kg |
+| Maul | Heavy melee | 27 | 1 | none | none | none | 7 kg |
+| Lance | Heavy melee, polearm | 19 | 2 | none | none | none | 3 kg |
+| Gloves or bare fists | Unarmed | 6 | 1 | none | none | none | 0 kg |
+| Frag grenade | Thrown | 24 to everyone within 2 tiles | throwing range | none | none | none | 0.5 kg |
 | Smoke grenade | Thrown | blocks sight within 3 tiles for 2 rounds | throwing range | none | none | none | 0.5 kg |
 | Flashbang | Thrown | Blinded for 1 round within 2 tiles (Body save) | throwing range | none | none | none | 0.5 kg |
 
@@ -758,18 +758,18 @@ Range is in tiles. Mag is the magazine (or "loose", for loading round by round).
 
 | Type | Dmg | Range | Mag | Heat | Modes | Kg | Price | Mods |
 |---|---|---|---|---|---|---|---|---|
-| ✓ Service pistol (.32 Decrkm) | 20 | 8 | 12 | 6 | single | 1 | 250 | optic, muzzle, magazine |
-| Decrkm auto-pistol | 17 (rules 1.18; was 14) | 6 | 20 | 8 | single, burst | 1.2 | 500 | optic, muzzle, magazine |
-| Parlour pistol | 16 | 4 | 2 (loose) | 4 | single | 0.4 | 150 | none |
-| ✓ Drifter revolver | 28 | 10 | 6 (speedloader) | 6 | single | 1.5 | 350 | optic |
-| Magistrate heavy pistol (revolver) | 26 | 8 | 7 | 5 | single | 1.4 | 450 | optic, muzzle, magazine |
-| Frontier hand cannon (.50) | 38 (rules 1.18; was 40) | 8 | 5 (speedloader) | 4 | single | 2.2 | 800 | optic |
-| Snub revolver † | 26 | 6 | 5 | 5 | single | 1 | 300 | optic |
-| Whisper pistol † | 15 | 6 | 10 (loose) | 6 | single | 0.9 | 600 | none |
-| Mandestra drum pistol † | 18 | 6 | 40 | 9 | single, burst | 2 | 800 | optic, muzzle, magazine |
-| Smetanita pocket pistol † | 15 | 4 | 6 (loose) | 5 | single | 0.4 | 200 | none |
-| Smetanita service pistol † | 21 | 8 | 10 | 6 | single | 1 | 350 | optic, muzzle, magazine |
-| Smetanita hand cannon † | 36 | 8 | 6 | 4 | single | 2 | 850 | optic |
+| ✓ Service pistol (.32 Decrkm) | 12 | 8 | 12 | 6 | single | 1 | 250 | optic, muzzle, magazine |
+| Decrkm auto-pistol | 10 (rules 1.95; was 17; rules 1.18; was 14) | 6 | 20 | 8 | single, burst | 1.2 | 500 | optic, muzzle, magazine |
+| Parlour pistol | 10 | 4 | 2 (loose) | 4 | single | 0.4 | 150 | none |
+| ✓ Drifter revolver | 17 | 10 | 6 (speedloader) | 6 | single | 1.5 | 350 | optic |
+| Magistrate heavy pistol (revolver) | 16 | 8 | 7 | 5 | single | 1.4 | 450 | optic, muzzle, magazine |
+| Frontier hand cannon (.50) | 23 (rules 1.95; was 38; rules 1.18; was 40) | 8 | 5 (speedloader) | 4 | single | 2.2 | 800 | optic |
+| Snub revolver † | 16 | 6 | 5 | 5 | single | 1 | 300 | optic |
+| Whisper pistol † | 9 | 6 | 10 (loose) | 6 | single | 0.9 | 600 | none |
+| Mandestra drum pistol † | 11 | 6 | 40 | 9 | single, burst | 2 | 800 | optic, muzzle, magazine |
+| Smetanita pocket pistol † | 9 | 4 | 6 (loose) | 5 | single | 0.4 | 200 | none |
+| Smetanita service pistol † | 13 | 8 | 10 | 6 | single | 1 | 350 | optic, muzzle, magazine |
+| Smetanita hand cannon † | 22 | 8 | 6 | 4 | single | 2 | 850 | optic |
 
 Weapon skills and lore:
 - **Service pistol · Snap Shot:** swap to it and fire in one action for 2 AP. *"Issued to everyone, trusted by no one, carried by all of them."*
@@ -783,15 +783,15 @@ Weapon skills and lore:
 
 | Type | Hands | Dmg | Range | Mag | Heat | Modes | Kg | Price | Mods |
 |---|---|---|---|---|---|---|---|---|---|
-| ✓ Decrkm SMG | 2H | 19 (rules 1.18; was 15) | 8 | 30 | 10 | single, burst, auto | 3 | 600 | optic, muzzle, magazine, underbarrel |
-| Legion PDW | 1H | 20 (rules 1.18; was 16) | 8 | 25 | 9 | burst, auto | 2.2 | 750 | optic, muzzle, magazine |
-| Whisper SMG | 2H | 16 (rules 1.18; was 13) | 7 | 30 | 12 | single, burst, auto | 3.2 | 900 | optic, magazine (built-in suppressor) |
-| Mandestra drum-gun | 2H | 19 (rules 1.18; was 15) | 7 | 70 (drum) | 10 | auto | 4.5 | 1,100 | optic, underbarrel |
-| Decrkm carbine † | 2H | 21 | 12 | 30 | 10 | single, burst, auto | 3.6 | 800 | optic, muzzle, magazine, underbarrel |
-| Whisper carbine † | 2H | 19 | 11 | 30 | 12 | single, burst, auto | 3.8 | 1,400 | optic, magazine |
-| Mandestra drum rifle † | 2H | 21 | 11 | 90 | 12 | single, burst, auto | 6 | 1,700 | optic, underbarrel |
-| Chezknov machine carbine † | 2H | 20 | 9 | 30 | 10 | single, burst, auto | 3 | 850 | optic, muzzle, magazine, underbarrel |
-| Arsenal courier PDW † | 1H | 19 | 8 | 20 | 9 | single, burst, auto | 2 | 800 | optic, muzzle, magazine |
+| ✓ Decrkm SMG | 2H | 11 (rules 1.95; was 19; rules 1.18; was 15) | 8 | 30 | 10 | single, burst, auto | 3 | 600 | optic, muzzle, magazine, underbarrel |
+| Legion PDW | 1H | 12 (rules 1.95; was 20; rules 1.18; was 16) | 8 | 25 | 9 | burst, auto | 2.2 | 750 | optic, muzzle, magazine |
+| Whisper SMG | 2H | 10 (rules 1.95; was 16; rules 1.18; was 13) | 7 | 30 | 12 | single, burst, auto | 3.2 | 900 | optic, magazine (built-in suppressor) |
+| Mandestra drum-gun | 2H | 11 (rules 1.95; was 19; rules 1.18; was 15) | 7 | 70 (drum) | 10 | auto | 4.5 | 1,100 | optic, underbarrel |
+| Decrkm carbine † | 2H | 13 | 12 | 30 | 10 | single, burst, auto | 3.6 | 800 | optic, muzzle, magazine, underbarrel |
+| Whisper carbine † | 2H | 11 | 11 | 30 | 12 | single, burst, auto | 3.8 | 1,400 | optic, magazine |
+| Mandestra drum rifle † | 2H | 13 | 11 | 90 | 12 | single, burst, auto | 6 | 1,700 | optic, underbarrel |
+| Chezknov machine carbine † | 2H | 12 | 9 | 30 | 10 | single, burst, auto | 3 | 850 | optic, muzzle, magazine, underbarrel |
+| Arsenal courier PDW † | 1H | 11 | 8 | 20 | 9 | single, burst, auto | 2 | 800 | optic, muzzle, magazine |
 
 - **Decrkm SMG · Spray and Pray:** full auto costs 3 AP instead of 4. *"Thirty rounds of opinion."*
 - **Legion PDW · Clear the Room:** bursts get +2 to hit within 3 tiles. *"The Thousand World Legion's door-kicker."*
@@ -802,26 +802,26 @@ Weapon skills and lore:
 
 | Type | Dmg | Range | Mag | Heat | Modes | Kg | Price | Mods |
 |---|---|---|---|---|---|---|---|---|
-| ✓ Hellraiser service rifle | 30 | 16 | 24 | 8 | single, burst, auto | 4 | 900 | all four |
-| ✓ Lever carbine | 32 | 14 | 8 (loose) | 6 | single | 3.5 | 700 | optic, muzzle |
-| Adamantile battle rifle | 30 (rules 1.18; was 38) | 18 | 15 | 6 | single, burst | 5 | 1,300 | all four |
-| CCEC marksman rifle | 33 (rules 1.18; was 40) | 22 | 10 | 6 | single | 4.5 | 1,600 | optic, muzzle, magazine |
-| ✓ Long rifle | 47 (rules 1.60 item 4644; was 48, and 50 before rules 1.18); Shot 3 AP, Aimed Shot 4 AP | 30 | 5 (loose) | 6 | single | 6 | 1,400 | optic, muzzle |
-| Legion bullpup | 28 | 14 | 30 | 8 | single, burst, auto | 3.4 | 1,100 | optic, muzzle, magazine |
-| Legion marksman rifle † | 32 | 20 | 15 | 6 | single | 4.2 | 1,500 | optic, muzzle, magazine |
-| Hellraiser trench carbine † | 28 | 11 | 20 | 8 | single, burst, auto | 3.2 | 800 | optic, muzzle, magazine, underbarrel |
-| Adamantile carbine † | 28 | 13 | 15 | 6 | single, burst | 3.8 | 1,000 | optic, muzzle, magazine, underbarrel |
-| Adamantile heavy rifle † | 36 (rules 1.94 item 8201) | 22 | 8 | 5 | single | 6.5 | 2,000 | optic, muzzle, magazine, underbarrel |
-| ADCorp short carbine † | 27 | 12 | 30 | 8 | single, burst, auto | 3 | 1,000 | optic, muzzle, magazine |
-| ADCorp line rifle † | 30 | 16 | 30 | 8 | single, burst, auto | 3.8 | 1,300 | optic, muzzle, magazine, underbarrel |
-| ADCorp designated rifle † | 34 (rules 1.94 item 8201) | 22 | 15 | 6 | single | 4.6 | 1,800 | optic, muzzle, magazine |
-| Chezknov battle rifle † | 31 | 17 | 20 | 7 | single, burst | 4.4 | 1,400 | optic, muzzle, magazine, underbarrel |
-| Chezknov precision rifle † | 35 (rules 1.94 item 8201) | 24 | 5 | 5 | single | 5 | 1,900 | optic, muzzle, magazine |
-| Arsenal piston rifle † | 30 | 16 | 30 | 8 | single, burst, auto | 3.6 | 1,250 | optic, muzzle, magazine, underbarrel |
-| Arsenal heavy rifle † | 38 (rules 1.94 item 8201) | 20 | 10 | 5 | single | 6 | 2,100 | optic, muzzle, magazine, underbarrel |
-| Albert Town brush carbine † | 31 | 12 | 6 (loose) | 6 | single | 3.2 | 650 | optic, muzzle |
-| Albert Town service rifle † | 32 | 18 | 8 (loose) | 6 | single | 4 | 950 | optic, muzzle |
-| Albert Town stalking rifle † | 44 (Shot 3 AP, Aimed Shot 4 AP) | 28 | 4 (loose) | 6 | single | 5.5 | 1,500 | optic, muzzle |
+| ✓ Hellraiser service rifle | 18 | 16 | 24 | 8 | single, burst, auto | 4 | 900 | all four |
+| ✓ Lever carbine | 19 | 14 | 8 (loose) | 6 | single | 3.5 | 700 | optic, muzzle |
+| Adamantile battle rifle | 18 (rules 1.95; was 30; rules 1.18; was 38) | 18 | 15 | 6 | single, burst | 5 | 1,300 | all four |
+| CCEC marksman rifle | 20 (rules 1.95; was 33; rules 1.18; was 40) | 22 | 10 | 6 | single | 4.5 | 1,600 | optic, muzzle, magazine |
+| ✓ Long rifle | 28 (rules 1.95; was 47; rules 1.60 item 4644; was 48, and 50 before rules 1.18); Shot 3 AP, Aimed Shot 4 AP | 30 | 5 (loose) | 6 | single | 6 | 1,400 | optic, muzzle |
+| Legion bullpup | 17 | 14 | 30 | 8 | single, burst, auto | 3.4 | 1,100 | optic, muzzle, magazine |
+| Legion marksman rifle † | 19 | 20 | 15 | 6 | single | 4.2 | 1,500 | optic, muzzle, magazine |
+| Hellraiser trench carbine † | 17 | 11 | 20 | 8 | single, burst, auto | 3.2 | 800 | optic, muzzle, magazine, underbarrel |
+| Adamantile carbine † | 17 | 13 | 15 | 6 | single, burst | 3.8 | 1,000 | optic, muzzle, magazine, underbarrel |
+| Adamantile heavy rifle † | 22 (rules 1.95; was 36; rules 1.94 item 8201) | 22 | 8 | 5 | single | 6.5 | 2,000 | optic, muzzle, magazine, underbarrel |
+| ADCorp short carbine † | 16 | 12 | 30 | 8 | single, burst, auto | 3 | 1,000 | optic, muzzle, magazine |
+| ADCorp line rifle † | 18 | 16 | 30 | 8 | single, burst, auto | 3.8 | 1,300 | optic, muzzle, magazine, underbarrel |
+| ADCorp designated rifle † | 20 (rules 1.95; was 34; rules 1.94 item 8201) | 22 | 15 | 6 | single | 4.6 | 1,800 | optic, muzzle, magazine |
+| Chezknov battle rifle † | 19 | 17 | 20 | 7 | single, burst | 4.4 | 1,400 | optic, muzzle, magazine, underbarrel |
+| Chezknov precision rifle † | 21 (rules 1.95; was 35; rules 1.94 item 8201) | 24 | 5 | 5 | single | 5 | 1,900 | optic, muzzle, magazine |
+| Arsenal piston rifle † | 18 | 16 | 30 | 8 | single, burst, auto | 3.6 | 1,250 | optic, muzzle, magazine, underbarrel |
+| Arsenal heavy rifle † | 23 (rules 1.95; was 38; rules 1.94 item 8201) | 20 | 10 | 5 | single | 6 | 2,100 | optic, muzzle, magazine, underbarrel |
+| Albert Town brush carbine † | 19 | 12 | 6 (loose) | 6 | single | 3.2 | 650 | optic, muzzle |
+| Albert Town service rifle † | 19 | 18 | 8 (loose) | 6 | single | 4 | 950 | optic, muzzle |
+| Albert Town stalking rifle † | 26 (rules 1.95; was 44; Shot 3 AP, Aimed Shot 4 AP) | 28 | 4 (loose) | 6 | single | 5.5 | 1,500 | optic, muzzle |
 
 - **Service rifle · Suppressing Fire:** 3 AP; mark a 3-tile line until your next turn. Enemies shooting from or moving through it are at −2, and the first one to move through it takes a shot from you. *"The Hellraisers' answer to every frontier."*
 - **Lever carbine · Work the Lever:** after a hit, your next shot this turn costs 1 AP less. *"Old, honest, and never needs a battery."*
@@ -834,15 +834,15 @@ Weapon skills and lore:
 
 | Type | Hands | Dmg (within 4 / within 8) | Range | Mag | Heat | Modes | Kg | Price | Mods |
 |---|---|---|---|---|---|---|---|---|---|
-| ✓ Lumeri scattergun | 2H | 40 / 25 | 8 | 6 (loose) | 6 | single | 4 | 650 | optic, underbarrel |
-| Coach gun | 2H | 45 / 25 | 6 | 2 (loose) | 4 | single, both barrels | 3.5 | 400 | none |
-| Sawn-off | 1H | 42 / 15 | 6 | 2 (loose) | 4 | single, both barrels | 2 | 300 | none |
-| Brigade auto-shotgun | 2H | 40 / 24 (rules 1.18; was 35 / 20) | 8 | 12 | 9 | single, burst | 5 | 1,500 | optic, magazine, underbarrel |
-| Fowling gun † | 2H | 40 / 30 | 10 | 2 (loose) | 4 | single | 4 | 600 | none |
-| Brigade shot pistol † | 1H | 38 / 14 | 5 | 5 (loose) | 6 | single | 1.8 | 900 | none |
-| Brigade drum shotgun † | 2H | 40 / 24 | 8 | 20 | 11 | single, burst | 6.5 | 2,400 | optic, magazine, underbarrel |
-| Lumeri hand scatter † | 1H | 36 / 15 | 5 | 3 (loose) | 4 | single | 1.8 | 450 | none |
-| Lumeri long scatter † | 2H | 40 / 30 | 10 | 6 (loose) | 6 | single | 4.8 | 950 | optic, underbarrel |
+| ✓ Lumeri scattergun | 2H | 24 / 15 | 8 | 6 (loose) | 6 | single | 4 | 650 | optic, underbarrel |
+| Coach gun | 2H | 27 / 15 | 6 | 2 (loose) | 4 | single, both barrels | 3.5 | 400 | none |
+| Sawn-off | 1H | 25 / 9 | 6 | 2 (loose) | 4 | single, both barrels | 2 | 300 | none |
+| Brigade auto-shotgun | 2H | 24 / 14 (rules 1.95; was 40 / 24; rules 1.18; was 35 / 20) | 8 | 12 | 9 | single, burst | 5 | 1,500 | optic, magazine, underbarrel |
+| Fowling gun † | 2H | 24 / 18 | 10 | 2 (loose) | 4 | single | 4 | 600 | none |
+| Brigade shot pistol † | 1H | 23 / 8 | 5 | 5 (loose) | 6 | single | 1.8 | 900 | none |
+| Brigade drum shotgun † | 2H | 24 / 14 | 8 | 20 | 11 | single, burst | 6.5 | 2,400 | optic, magazine, underbarrel |
+| Lumeri hand scatter † | 1H | 22 / 9 | 5 | 3 (loose) | 4 | single | 1.8 | 450 | none |
+| Lumeri long scatter † | 2H | 24 / 18 | 10 | 6 (loose) | 6 | single | 4.8 | 950 | optic, underbarrel |
 
 - **Scattergun · Door Key:** 2 AP; breaks a door, or deals double damage to cover. *"The Church calls it a key."*
 - **Coach gun · Both Barrels:** 3 AP; both shells in one attack, +50% damage. *"Two arguments, one conclusion."*
@@ -853,22 +853,22 @@ Weapon skills and lore:
 
 | Type | Dmg | Range | Ammo | Heat | Kg | Price | Notes |
 |---|---|---|---|---|---|---|---|
-| ✓ Hellraiser LMG | 25 | 18 | 100 rifle (box) | 14 | 10 | 2,500 | −2 unless emplaced |
-| Hellraiser rotary | 22 | 16 | 200 rifle (belt) | 20 | 18 | 4,500 | auto only; −1 Movement |
-| ✓ .700 Blackpoint | 66 (rules 1.18; was 90), ignores 10 armour | 40 | 3 (.700) | 3 | 15 | 4,000 | braced or prone |
-| Smetanita thumper (grenade launcher) | 40, radius 2 | 14 | 6 grenades (loose) | 4 | 4.5 | 1,800 | |
-| Breacher tube (rocket launcher) | 110 on the tile, 60 radius 1 | 16 | 1 rocket (loose) | none | 8 | 3,000 | 3 AP to reload |
-| Purifier flamer | 20 + Burning, 3-tile cone | 3 | fuel canister (10 bursts) | none | 12 | 2,200 | flame ignores half cover |
-| Satchel charge | 120, radius 2 | placed adjacent | consumable | none | 3 | 600 | 2 AP to place; 1 AP to detonate (or a 1–3 round timer) *(Superseded by rules 1.3 (item 95) as built: placing it sets it off at once)* |
-| Smetanita snub launcher † | 36, radius 2 | 10 | 1 40 mm grenade (loose) | 3 | 2.5 | 1,100 | PROVISIONAL (rules 1.92) |
-| Smetanita drum launcher † | 40, radius 2 | 14 | 12 40 mm grenade (loose) | 6 | 8 | 3,200 | PROVISIONAL (rules 1.92) |
-| Legion throwaway tube † | 90 on the tile, 60 radius 1 | 12 | 1 rocket (loose) | none | 4 | 700 | PROVISIONAL (rules 1.92); 3 AP to reload; reloadable (single use is owed, item 8033) |
-| Legion siege tube † | 130 on the tile, 60 radius 1 | 20 | 1 rocket (loose) | none | 12 | 4,500 | PROVISIONAL (rules 1.92); 3 AP to reload |
-| Lumeri votive torch † | 16 + Burning, 3-tile cone | 2 | 6 fuel canister (loose) | none | 6 | 1,200 | PROVISIONAL (rules 1.92) |
-| Lumeri cathedral burner † | 24 + Burning, 3-tile cone | 4 | 16 fuel canister (loose) | none | 18 | 3,800 | PROVISIONAL (rules 1.92) |
-| Hellraiser spinner † | 20 | 12 | 100 rifle | 16 | 11 | 3,000 | PROVISIONAL (rules 1.92); no Spin Up, no emplacement penalty |
-| Hellraiser twin rotary † | 22 | 16 | 400 rifle | 28 | 30 | 8,000 | PROVISIONAL (rules 1.92); −2 unless emplaced |
-| Blackpoint carbine † | 54, ignores 10 armour | 28 | 3 .700 | 3 | 9 | 2,600 | PROVISIONAL (rules 1.92); braced or prone |
+| ✓ Hellraiser LMG | 15 | 18 | 100 rifle (box) | 14 | 10 | 2,500 | −2 unless emplaced |
+| Hellraiser rotary | 13 | 16 | 200 rifle (belt) | 20 | 18 | 4,500 | auto only; −1 Movement |
+| ✓ .700 Blackpoint | 40 (rules 1.95; was 66; rules 1.18; was 90), ignores 10 armour | 40 | 3 (.700) | 3 | 15 | 4,000 | braced or prone |
+| Smetanita thumper (grenade launcher) | 24, radius 2 | 14 | 6 grenades (loose) | 4 | 4.5 | 1,800 | |
+| Breacher tube (rocket launcher) | 33 on the tile, 60 radius 1 | 16 | 1 rocket (loose) | none | 8 | 3,000 | 3 AP to reload |
+| Purifier flamer | 12 + Burning, 3-tile cone | 3 | fuel canister (10 bursts) | none | 12 | 2,200 | flame ignores half cover |
+| Satchel charge | 54, radius 2 | placed adjacent | consumable | none | 3 | 600 | 2 AP to place; 1 AP to detonate (or a 1–3 round timer) *(Superseded by rules 1.3 (item 95) as built: placing it sets it off at once)* |
+| Smetanita snub launcher † | 22, radius 2 | 10 | 1 40 mm grenade (loose) | 3 | 2.5 | 1,100 | PROVISIONAL (rules 1.92) |
+| Smetanita drum launcher † | 24, radius 2 | 14 | 12 40 mm grenade (loose) | 6 | 8 | 3,200 | PROVISIONAL (rules 1.92) |
+| Legion throwaway tube † | 27 on the tile, 60 radius 1 | 12 | 1 rocket (loose) | none | 4 | 700 | PROVISIONAL (rules 1.92); 3 AP to reload; reloadable (single use is owed, item 8033) |
+| Legion siege tube † | 39 on the tile, 60 radius 1 | 20 | 1 rocket (loose) | none | 12 | 4,500 | PROVISIONAL (rules 1.92); 3 AP to reload |
+| Lumeri votive torch † | 10 + Burning, 3-tile cone | 2 | 6 fuel canister (loose) | none | 6 | 1,200 | PROVISIONAL (rules 1.92) |
+| Lumeri cathedral burner † | 14 + Burning, 3-tile cone | 4 | 16 fuel canister (loose) | none | 18 | 3,800 | PROVISIONAL (rules 1.92) |
+| Hellraiser spinner † | 12 | 12 | 100 rifle | 16 | 11 | 3,000 | PROVISIONAL (rules 1.92); no Spin Up, no emplacement penalty |
+| Hellraiser twin rotary † | 13 | 16 | 400 rifle | 28 | 30 | 8,000 | PROVISIONAL (rules 1.92); −2 unless emplaced |
+| Blackpoint carbine † | 32, ignores 10 armour | 28 | 3 .700 | 3 | 9 | 2,600 | PROVISIONAL (rules 1.92); braced or prone |
 
 - **LMG · Emplace:** 1 AP to set up: no −2, +1 to hit, and you can't move until you pack up (1 AP). *"The Hellraisers' favourite sentence: 'hold here.'"*
 - **Rotary · Spin Up:** the first full auto each fight costs +1 AP; after that, full auto costs 3. *"Ground near it stops being ground."*
@@ -882,12 +882,12 @@ Weapon skills and lore:
 
 | Type | Dmg | Range | Ammo | Kg | Price | Needs |
 |---|---|---|---|---|---|---|
-| ✓ Recurve bow | 20 + 5 × Raw Power | 14 | quiver of 40 | 1.5 | 300 | |
+| ✓ Recurve bow | 21 (rules 1.95: the draw is on the skill term; was 20 + 5 × Raw Power) | 14 | quiver of 40 | 1.5 | 300 | |
 | Longbow | 25 + 6 × Raw Power | 20 | quiver of 40 | 2 | 450 | Raw Power 3 |
-| ✓ Crossbow | 55 | 16 | 1 bolt | 4 | 500 | |
-| Repeating crossbow | 22 | 10 | 6 bolts | 3.5 | 700 | |
-| Short bow † | 24 (no Raw Power term) | 10 | quiver of 40 | 1 | 200 |  |
-| Arbalest † | 72; Shot 3 AP, Aimed Shot 4 AP | 20 | 1 bolt | 6 | 900 | Raw Power 3 |
+| ✓ Crossbow | 33 | 16 | 1 bolt | 4 | 500 | |
+| Repeating crossbow | 13 | 10 | 6 bolts | 3.5 | 700 | |
+| Short bow † | 14 (rules 1.95; was 24; no Raw Power term) | 10 | quiver of 40 | 1 | 200 |  |
+| Arbalest † | 40; Shot 3 AP, Aimed Shot 4 AP | 20 | 1 bolt | 6 | 900 | Raw Power 3 |
 
 - **Recurve · Nock and Loose:** if you haven't moved this turn, your second arrow costs 1 AP. *"Quiet, cheap, and it never jams."*
 - **Longbow · Arc:** indirect shot at −2, like Lob. *"Over the wall and through the roof."*
@@ -898,29 +898,29 @@ Weapon skills and lore:
 
 | Type | Dmg | Kg | Price | Notes |
 |---|---|---|---|---|
-| ✓ Combat knife | 15 | 0.5 | 60 | thrown 6 tiles *(rules 1.12: every thrown weapon reaches your Throwing range, 6 + 0.5 × Dexterity; the per-weapon tiles here and on the next two rows are not used)* |
-| Throwing knives (set of 4) | 12 | 0.8 | 80 | thrown 6 tiles |
-| Hatchet | 22 | 1 | 120 | thrown 5 tiles |
-| Legion gladius | 19 | 1.3 | 300 | |
-| ✓ Sabre | 20 | 1.5 | 400 | |
-| Kemizuchi duelling blade | 19, +1 accuracy | 1.2 | 550 | item 5527 (was 24) |
-| Katana (rules 1.32) | 20 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
-| Afterword (rules 1.58) | 15 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4534) |
-| Trench knife † | 18 | 0.7 | 150 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
-| Dock cutter † | 21 | 1.6 | 350 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
-| Legion leaf-dagger † | 16 | 0.6 | 200 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
-| Short draw † | 18 | 1 | 400 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
-| Kemizuchi side-sword † | 21 | 1.4 | 600 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
-| Pitch axe † | 17 | 0.8 | 100 | Dexterity / Agility; thrown; PROVISIONAL (rules 1.92) |
-| Legion spear † | 22 | 2.5 | 450 | Dexterity / Agility; 2H; reach 2; PROVISIONAL (rules 1.92) |
-| War pick † | 18 | 1.2 | 300 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
-| War hammer † | 23 | 2.5 | 400 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
-| Plate needle † | 24 | 2 | 800 | Dexterity / Agility; 2H; PROVISIONAL (rules 1.92) |
-| Adamantile longsword † | 23 | 1.8 | 750 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
-| Ork skinner † | 17 | 0.8 | 120 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
-| Ork snarl knife † | 22 | 1.5 | 900 | Dexterity / Agility; ignores 5 armour; PROVISIONAL (rules 1.92) |
-| Throwing darts † | 9 | 0.3 | 60 | Dexterity / Agility; thrown; PROVISIONAL (rules 1.92) |
-| Throwing javelins † | 24 | 2 | 200 | Dexterity / Agility; thrown; PROVISIONAL (rules 1.92) |
+| ✓ Combat knife | 9 | 0.5 | 60 | thrown 6 tiles *(rules 1.12: every thrown weapon reaches your Throwing range, 6 + 0.5 × Dexterity; the per-weapon tiles here and on the next two rows are not used)* |
+| Throwing knives (set of 4) | 7 | 0.8 | 80 | thrown 6 tiles |
+| Hatchet | 13 | 1 | 120 | thrown 5 tiles |
+| Legion gladius | 11 | 1.3 | 300 | |
+| ✓ Sabre | 12 | 1.5 | 400 | |
+| Kemizuchi duelling blade | 11, +1 accuracy | 1.2 | 550 | item 5527 (was 24) |
+| Katana (rules 1.32) | 12 | 1.4 | 500 | lends Draw Cut; PROVISIONAL (items 1950 to 1952) |
+| Afterword (rules 1.58) | 9 | 0.4 | 700 | follows in the off hand (5e): its follow ×0.25 and Bleeding once a turn; rolls in shop gear and weapon picks from the 700 band; PROVISIONAL (item 4534) |
+| Trench knife † | 11 | 0.7 | 150 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Dock cutter † | 13 | 1.6 | 350 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Legion leaf-dagger † | 10 | 0.6 | 200 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| Short draw † | 11 | 1 | 400 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| Kemizuchi side-sword † | 13 | 1.4 | 600 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Pitch axe † | 10 | 0.8 | 100 | Dexterity / Agility; thrown; PROVISIONAL (rules 1.92) |
+| Legion spear † | 13 | 2.5 | 450 | Dexterity / Agility; 2H; reach 2; PROVISIONAL (rules 1.92) |
+| War pick † | 11 | 1.2 | 300 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| War hammer † | 14 | 2.5 | 400 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Plate needle † | 14 | 2 | 800 | Dexterity / Agility; 2H; PROVISIONAL (rules 1.92) |
+| Adamantile longsword † | 14 | 1.8 | 750 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Ork skinner † | 10 | 0.8 | 120 | Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| Ork snarl knife † | 13 | 1.5 | 900 | Dexterity / Agility; ignores 5 armour; PROVISIONAL (rules 1.92) |
+| Throwing darts † | 5 | 0.3 | 60 | Dexterity / Agility; thrown; PROVISIONAL (rules 1.92) |
+| Throwing javelins † | 14 | 2 | 200 | Dexterity / Agility; thrown; PROVISIONAL (rules 1.92) |
 
 - **Combat knife · Finish It:** +50% damage against a target that is Dazed, Stunned, Bleeding or Downed. *"Every kit has one. Every story ends with one."*
 - **Throwing knives · Fan of Knives:** 3 AP; one throw each at up to two targets. *"Four problems, four solutions."*
@@ -934,20 +934,20 @@ Weapon skills and lore:
 
 | Type | Hands | Dmg | Reach | Kg | Price |
 |---|---|---|---|---|---|
-| ✓ Ork machete | 1H (was 2H) | 35 | 1 | 3 | 250 |
-| War axe | 2H | 40 | 1 | 3.5 | 500 |
-| Adamantile greatsword | 2H | 42 | 1 | 4 | 900 |
-| ✓ Maul | 2H | 45 | 1 | 7 | 450 |
-| ✓ Lance | 2H | 32 | 2 | 3 | 500 |
-| Glaive | 2H | 36 | 2 | 3.5 | 650 |
-| Ork rip-saw | 2H | 38, ignores 5 armour | 1 | 6 | 1,400 (fuel) |
-| Lowland chopper † | 1H | 33 | 1 | 2.2 | 220 |
-| Broadback sabre † | 1H | 36 | 1 | 2.4 | 450 |
-| Legion rank sword † | 1H | 34 | 1 | 2.2 | 400 |
-| Long draw † | 2H | 41 | 1 | 3 | 800 |
-| Kemizuchi sword-breaker † | 1H | 33 | 1 | 2 | 650 |
-| Ork cleaver-glaive † | 2H | 37 | 2 | 4.5 | 700 |
-| Ork wreck saw † | 2H | 46, ignores 5 armour | 1 | 9 | 2,400 |
+| ✓ Ork machete | 1H (was 2H) | 21 | 1 | 3 | 250 |
+| War axe | 2H | 24 | 1 | 3.5 | 500 |
+| Adamantile greatsword | 2H | 25 | 1 | 4 | 900 |
+| ✓ Maul | 2H | 27 | 1 | 7 | 450 |
+| ✓ Lance | 2H | 19 | 2 | 3 | 500 |
+| Glaive | 2H | 22 | 2 | 3.5 | 650 |
+| Ork rip-saw | 2H | 23, ignores 5 armour | 1 | 6 | 1,400 (fuel) |
+| Lowland chopper † | 1H | 20 | 1 | 2.2 | 220 |
+| Broadback sabre † | 1H | 22 | 1 | 2.4 | 450 |
+| Legion rank sword † | 1H | 20 | 1 | 2.2 | 400 |
+| Long draw † | 2H | 25 | 1 | 3 | 800 |
+| Kemizuchi sword-breaker † | 1H | 20 | 1 | 2 | 650 |
+| Ork cleaver-glaive † | 2H | 22 | 2 | 4.5 | 700 |
+| Ork wreck saw † | 2H | 28, ignores 5 armour | 1 | 9 | 2,400 |
 
 - **Machete · Chop Through:** after a kill, a free strike at another adjacent enemy. *"Orks don't make tools. They make machetes."*
 - **War axe · Bite the Plate:** a hit lowers the target's armour by 5 for the fight (to −10 at most). *"Plate is just a slower kind of skin."*
@@ -961,19 +961,19 @@ Weapon skills and lore:
 
 | Type | Dmg | Kg | Price | Needs |
 |---|---|---|---|---|
-| ✓ Gloves or bare fists | 10 | 0 | 40 (gloves) | |
-| Hand wraps | 14 | 0.1 | 30 | *(rules 1.56, the unarmed fighter)* |
-| Knuckledusters | 20 | 0.3 | 120 | *(rules 1.56, the unarmed fighter: was 16 and 60)* |
-| Striking gloves | 17 | 0.3 | 120 | Dexterity *(rules 1.56, the unarmed fighter)* |
-| Iron mitts | 25 | 1.2 | 500 | *(rules 1.56, the unarmed fighter)* |
-| Kemizuchi strikers | 19 | 0.4 | 500 | Dexterity *(rules 1.56, the unarmed fighter)*; item 5527 (was 21) |
-| Hellraiser servo-fist | 30 | 2.5 | 1,200 | Raw Power 3 (rules 1.13; was Proficiency 3) |
-| Bite and claws | 18 | 0 | none | a beast companion's own weapon: never carried, bought or dropped (not one of the 3 types) |
-| Figment claws | 30 | 0 | none | a Beast Figment's own weapon (rules 1.34): never carried, bought or dropped |
-| Figment edge | 25 | 0 | none | a Blade Figment's own weapon (rules 1.34): never carried, bought or dropped |
-| Weighted gloves † | 22 | 0.8 | 300 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
-| Hellraiser piston knuckles † | 24 | 1.5 | 900 | Raw Power 3; Dexterity / Agility; PROVISIONAL (rules 1.92) |
-| Hellraiser door knocker † | 34 | 5 | 2,200 | Raw Power 3; Raw Power / Strength; PROVISIONAL (rules 1.92) |
+| ✓ Gloves or bare fists | 6 | 0 | 40 (gloves) | |
+| Hand wraps | 8 | 0.1 | 30 | *(rules 1.56, the unarmed fighter)* |
+| Knuckledusters | 12 | 0.3 | 120 | *(rules 1.56, the unarmed fighter: was 16 and 60)* |
+| Striking gloves | 10 | 0.3 | 120 | Dexterity *(rules 1.56, the unarmed fighter)* |
+| Iron mitts | 15 | 1.2 | 500 | *(rules 1.56, the unarmed fighter)* |
+| Kemizuchi strikers | 11 | 0.4 | 500 | Dexterity *(rules 1.56, the unarmed fighter)*; item 5527 (was 21) |
+| Hellraiser servo-fist | 18 | 2.5 | 1,200 | Raw Power 3 (rules 1.13; was Proficiency 3) |
+| Bite and claws | 11 | 0 | none | a beast companion's own weapon: never carried, bought or dropped (not one of the 3 types) |
+| Figment claws | 18 | 0 | none | a Beast Figment's own weapon (rules 1.34): never carried, bought or dropped |
+| Figment edge | 15 | 0 | none | a Blade Figment's own weapon (rules 1.34): never carried, bought or dropped |
+| Weighted gloves † | 13 | 0.8 | 300 | Dexterity / Strength; PROVISIONAL (rules 1.92) |
+| Hellraiser piston knuckles † | 14 | 1.5 | 900 | Raw Power 3; Dexterity / Agility; PROVISIONAL (rules 1.92) |
+| Hellraiser door knocker † | 20 | 5 | 2,200 | Raw Power 3; Raw Power / Strength; PROVISIONAL (rules 1.92) |
 
 - **Fists · Grapple:** 2 AP; the target can't move until it breaks free (its Athletics or Raw Power check against your Raw Power check). *"Everyone's first weapon."*
 - **Knuckledusters · Rabbit Punch:** 1 AP jab for half damage. *"A bar argument that brought friends."* *(Superseded by rules 1.56, the unarmed fighter: Rabbit Punch and the fists' Grapple are retired; the Open Hand's Jab and the Grapple technique replace them.)*
@@ -1001,14 +1001,14 @@ Guns and light blades use Dexterity; heavy melee and bare hands use Raw Power. T
 
 | Type | Hands | Dmg | Range | Feeds on | Kg | Price | Needs |
 |---|---|---|---|---|---|---|---|
-| Science Team core rifle | 2H | 29 (rules 1.18; was 32) Elemental, ignores armour | 16 | a mana core: 1 charge a shot | 5 | 2,600 | Dexterity 3 (rules 1.13; was Proficiency 3) |
-| Spellslinger's pistol | 1H | 22 | 8 | .32 Decrkm, sigil-etched magazines | 1.1 | 1,500 | Brain Power 3 to inscribe |
-| Evoker blade | 1H | 26 | 1 | counts as an Evoker | 1.8 | 2,400 | Brain Power 3 |
-| Emanator gauntlet | 1H | 18 + one element | 1 | counts as an Emanator | 1.5 | 2,200 | Will Power 3 |
-| Emanator katana (rules 1.38) | 1H | 26 | 1 | counts as an Emanator | 1.8 | 2,400 | Will Power 3 |
-| Lumeri censer gun | 2H | 30 / 18 (shotgun) | 8 | shells, or blessed shells | 4.5 | 2,000 | Faith 3 |
-| Mana-thread banner | 2H | 24 | 2 | none | 3 | 1,800 | Empathy 3 (rules 1.13; was Camaraderie 3) |
-| Grand staff | 2H | 24 | 1  *(its melee strike reaches 2: the Reach property, rules 1.12)*| counts as an Evoker | 2.5 | 2,400 | Brain Power 3 |
+| Science Team core rifle | 2H | 17 (rules 1.95; was 29; rules 1.18; was 32) Elemental, ignores armour | 16 | a mana core: 1 charge a shot | 5 | 2,600 | Dexterity 3 (rules 1.13; was Proficiency 3) |
+| Spellslinger's pistol | 1H | 13 | 8 | .32 Decrkm, sigil-etched magazines | 1.1 | 1,500 | Brain Power 3 to inscribe |
+| Evoker blade | 1H | 16 | 1 | counts as an Evoker | 1.8 | 2,400 | Brain Power 3 |
+| Emanator gauntlet | 1H | 11 + one element | 1 | counts as an Emanator | 1.5 | 2,200 | Will Power 3 |
+| Emanator katana (rules 1.38) | 1H | 16 | 1 | counts as an Emanator | 1.8 | 2,400 | Will Power 3 |
+| Lumeri censer gun | 2H | 18 / 11 (rules 1.95; was 30 / 18; shotgun) | 8 | shells, or blessed shells | 4.5 | 2,000 | Faith 3 |
+| Mana-thread banner | 2H | 14 | 2 | none | 3 | 1,800 | Empathy 3 (rules 1.13; was Camaraderie 3) |
+| Grand staff | 2H | 14 | 1  *(its melee strike reaches 2: the Reach property, rules 1.12)*| counts as an Evoker | 2.5 | 2,400 | Brain Power 3 |
 
 Each hit from mana arms releases mana: +1 on the ambient mana meter, like enhanced rounds.
 
@@ -1026,15 +1026,15 @@ from either hand, and in the off hand is not a second weapon. Its Defense and Mo
 
 | Type | Dmg | Kg | Price | Hands | Needs |
 |---|---|---|---|---|---|
-| Buckler | 15 | 2 | 200 | 1H | *(PROVISIONAL, rules 1.60 item 4616: the main hand's blow; its follow ×0.4, 6 as before)* |
-| Legion riot shield | 20 | 7 | 700 | 1H | *(PROVISIONAL, rules 1.60 item 4616: its follow ×0.4, 8 as before)* |
-| Pavise | 20 | 10 | 1,200 | 1H | *(PROVISIONAL, rules 1.57: the lead's ruling; rules 1.60 item 4616: its follow ×0.4, 8 as before; rules 1.92 item 8011: Heavy, and buyable; its Plant is cut)* |
-| Spiked buckler † | 20 | 2.5 | 350 | 1H | Strike family, light; +1 Defense; PROVISIONAL (rules 1.92) |
-| Boss shield † | 25 | 6 | 800 | 1H | Strike family, standard; +1 Defense; PROVISIONAL (rules 1.92) |
-| Ram plate † | 30 | 11 | 1,300 | 1H | Strike family, heavy; Heavy; +1 Defense; PROVISIONAL (rules 1.92) |
-| Deflector † | 12 | 2 | 450 | 1H | Ward family, light; +1 Defense; PROVISIONAL (rules 1.92) |
-| Bulwark screen † | 15 | 6 | 950 | 1H | Ward family, standard; +2 Defense; PROVISIONAL (rules 1.92) |
-| Barrier wall † | 15 | 11 | 1,500 | 1H | Ward family, heavy; Heavy; +2 Defense; PROVISIONAL (rules 1.92) |
+| Buckler | 9 | 2 | 200 | 1H | *(PROVISIONAL, rules 1.60 item 4616: the main hand's blow; its follow ×0.4, 6 as before)* |
+| Legion riot shield | 12 | 7 | 700 | 1H | *(PROVISIONAL, rules 1.60 item 4616: its follow ×0.4, 8 as before)* |
+| Pavise | 12 | 10 | 1,200 | 1H | *(PROVISIONAL, rules 1.57: the lead's ruling; rules 1.60 item 4616: its follow ×0.4, 8 as before; rules 1.92 item 8011: Heavy, and buyable; its Plant is cut)* |
+| Spiked buckler † | 12 | 2.5 | 350 | 1H | Strike family, light; +1 Defense; PROVISIONAL (rules 1.92) |
+| Boss shield † | 15 | 6 | 800 | 1H | Strike family, standard; +1 Defense; PROVISIONAL (rules 1.92) |
+| Ram plate † | 18 | 11 | 1,300 | 1H | Strike family, heavy; Heavy; +1 Defense; PROVISIONAL (rules 1.92) |
+| Deflector † | 7 | 2 | 450 | 1H | Ward family, light; +1 Defense; PROVISIONAL (rules 1.92) |
+| Bulwark screen † | 9 | 6 | 950 | 1H | Ward family, standard; +2 Defense; PROVISIONAL (rules 1.92) |
+| Barrier wall † | 9 | 11 | 1,500 | 1H | Ward family, heavy; Heavy; +2 Defense; PROVISIONAL (rules 1.92) |
 
 ##### 7.12 Off-hand items: 7 types
 
@@ -3100,11 +3100,11 @@ An enemy's numbers are its tier's row at level 1, raised by its level's row (`da
 
 | Tier | HP | Armour | Defense | Attack bonus | Damage factor | Movement | Endurance | Spare magazines |
 |---|---|---|---|---|---|---|---|---|
-| Vermin | 15 | 0 | 10 | +0 | ×0.5 | 2 | 1 | 0 |
-| Minion | 70 | 0 | 10 | +1 | ×1.0 | 1.5 | 1 | 1 |
-| Soldier | 140 | 5 | 11 | +3 | ×0.78 | 1.5 | 3 | 2 |
-| Elite | 240 | 10 | 12 | +5 | ×1.05 | 2 | 5 | 3 |
-| Boss | 820 *(rules 1.23; was 960)* | 10 | 13 | +6 | ×1.2 | 2 | 7 | 4 |
+| Vermin | 9.0 | 0 | 8 | +0 | ×0.64 | 2 | 1 | 0 |
+| Minion | 42 | 0 | 9 | +1 | ×1.28 | 1.5 | 1 | 1 |
+| Soldier | 84 | 3.0 | 11 | +3 | ×0.9984 | 1.5 | 3 | 2 |
+| Elite | 144 | 6.0 | 14 | +5 | ×1.344 | 2 | 5 | 3 |
+| Boss | 492 * (rules 1.95; was 820 *; rules 1.23; was 960)* | 6.0 | 15 | +6 | ×1.536 | 2 | 7 | 4 |
 
 *Rules 1.25, how each tier shares its fire:* Vermin and Minions take the nearest; Soldiers spread their fire, one each, the near ones first; Elites and Bosses go for the wounded and hunt the healer. The numbers are in "Rules revision 1.25".
 
@@ -3113,25 +3113,25 @@ An enemy's numbers are its tier's row at level 1, raised by its level's row (`da
 | Level | HP | Armour | Defense | Attack bonus | Damage |
 |---|---|---|---|---|---|
 | 1 | ×1.00 | ×1.00 | +0 | +0 | ×1.00 |
-| 2 | ×1.1154 | ×1.0841 | +0 | +0 | ×1.0632 |
-| 3 | ×1.3037 | ×1.2251 | +1 | +0 | ×1.1801 |
-| 4 | ×1.4492 | ×1.3667 | +1 | +0 | ×1.2607 |
-| 5 | ×1.6557 | ×1.5283 | +2 | +0 | ×1.401 |
-| 6 | ×1.8514 | ×1.7038 | +2 | +1 | ×1.516 |
-| 7 | ×2.0784 | ×1.8749 | +3 | +1 | ×1.7005 |
-| 8 | ×2.2904 | ×2.0906 | +3 | +1 | ×1.8446 |
-| 9 | ×2.5695 | ×2.3359 | +4 | +1 | ×2.0689 |
-| 10 | ×2.851 | ×2.6031 | +4 | +2 | ×2.2666 |
-| 11 | ×3.2151 | ×2.8685 | +5 | +2 | ×2.5605 |
-| 12 | ×3.5661 | ×3.1972 | +5 | +2 | ×2.8283 |
-| 13 | ×3.9717 | ×3.5701 | +6 | +3 | ×3.1908 |
-| 14 | ×4.416 | ×3.9694 | +6 | +3 | ×3.6717 |
-| 15 | ×4.9375 | ×4.4134 | +6 | +4 | ×4.2204 |
-| 16 | ×5.4899 | ×4.9072 | +6 | +4 | ×4.8459 |
-| 17 | ×6.1384 | ×5.4563 | +6 | +5 | ×5.5927 |
-| 18 | ×6.8251 | ×6.0667 | +6 | +5 | ×6.4459 |
-| 19 | ×7.6308 | ×6.7454 | +6 | +6 | ×7.42 |
-| 20 | ×8.4844 | ×7.5 | +6 | +6 | ×8.5312 |
+| 2 | ×1.297 | ×1.2143 | +0 | +0 | ×1.2336 |
+| 3 | ×1.6823 | ×1.4745 | +0 | +0 | ×1.5218 |
+| 4 | ×2.182 | ×1.7904 | +0 | +0 | ×1.8773 |
+| 5 | ×2.8302 | ×2.1741 | +0 | +0 | ×2.3159 |
+| 6 | ×3.6709 | ×2.6399 | +0 | +0 | ×2.8569 |
+| 7 | ×4.7613 | ×3.2056 | +0 | +0 | ×3.5243 |
+| 8 | ×6.1756 | ×3.8925 | +0 | +0 | ×4.3476 |
+| 9 | ×8.01 | ×4.7266 | +0 | +0 | ×5.3633 |
+| 10 | ×10.3893 | ×5.7395 | +0 | +0 | ×6.6162 |
+| 11 | ×13.4754 | ×6.9693 | +0 | +0 | ×8.1618 |
+| 12 | ×17.4781 | ×8.4627 | +0 | +0 | ×10.0685 |
+| 13 | ×22.6699 | ×10.2761 | +0 | +0 | ×12.4206 |
+| 14 | ×29.4038 | ×12.478 | +0 | +0 | ×15.3222 |
+| 15 | ×38.138 | ×15.1518 | +0 | +0 | ×18.9017 |
+| 16 | ×49.4665 | ×18.3986 | +0 | +0 | ×23.3174 |
+| 17 | ×64.1602 | ×22.341 | +0 | +0 | ×28.7646 |
+| 18 | ×83.2185 | ×27.1283 | +0 | +0 | ×35.4843 |
+| 19 | ×107.9379 | ×32.9413 | +0 | +0 | ×43.7739 |
+| 20 | ×140.0 | ×40.0 | +0 | +0 | ×54.0 |
 
 HP and armour are rounded to the nearest whole number. **Damage:** an enemy deals its weapon's damage × its tier's damage factor × its level's damage factor (it used to deal the weapon's damage with no multiplier). Everything else on the tier (Movement, AP, Endurance, spare magazines, techniques, Calls) does not change with level.
 
