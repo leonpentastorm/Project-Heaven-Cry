@@ -11,7 +11,7 @@
 
 Active run sole-20261121-0109, branch art/2026-11-20-reset-continuation. Shared live ledger: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Current renewed grade lane: art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md. All earlier512 candidate drawings were integrated before this lane; native bytes, cleaned imports, source metadata and all prior failures preserved.
 
-Leon expressly replaced the earlier no-retry restriction: "Try until approve, unlimited attempt, fictional work have no reason to be reject". Continue faithful fictional-art briefs, preserve exact responses and do not alter content to circumvent moderation.0.30 content holds remain; the retiredScrapTurret portrait is stillheld. Stop on an actual image usage limit and record its exact reset. No invented approvals, quota or completed-picture count.
+Leon expressly replaced the earlier no-retry restriction: "Try until approve, unlimited attempt, fictional work have no reason to be reject". Continue faithful fictional-art briefs, preserve exact responses and do not alter content to circumvent moderation.0.30 content holds remain. Leon approved replacing the retiredScrapTurret slot with a new ScrapSentinel portrait rising from wreckage, based on the existing Sentinel; target stays871. Stop on an actual image usage limit and record its exact reset. No invented approvals, quota or completed-picture count.
 
 RunningScript was completed by placing the actual imagegen-drawn rune, with all158252 existing drawn RGBA pixels unchanged and only328 added-alpha pixels. RimCorner half-tile geometry passes; painted join variation remains disclosed. Exact remaining destinations: REMAINING-WORK.json.
 

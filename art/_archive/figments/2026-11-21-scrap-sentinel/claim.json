@@ -1,0 +1,17 @@
+{
+  "run": "sole-20261121-0109",
+  "branch": "art/2026-11-20-reset-continuation",
+  "status": "active",
+  "ids": [
+    "figment-scrap-sentinel"
+  ],
+  "paths": [
+    "art/portraits/figments/figment-scrap-sentinel.png"
+  ],
+  "replacement_slot": "File01#009",
+  "authorization": {
+    "question": "Should the retired Scrap Turret slot become a new Scrap Sentinel portrait rising from wreckage, using the existing Sentinel portrait as its reference?",
+    "answer": "Yes, replace that slot with Scrap Sentinel",
+    "date": "2026-11-21"
+  }
+}

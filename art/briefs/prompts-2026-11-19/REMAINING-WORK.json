@@ -28,14 +28,14 @@
     "standard": 51,
     "grade": 284,
     "unique": 9,
-    "held-portrait": 1
+    "portrait-replacement": 1
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
     "service-blocked-or-preceding-grade-dependent": 80,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5,
-    "0.30-HOLD": 1
+    "ready-user-authorized-replacement": 1
   },
   "live_claims": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
   "records": [
@@ -2843,12 +2843,19 @@
       "eligible_for_retry": false
     },
     {
-      "id": "figment-scrap-turret",
-      "kind": "held-portrait",
-      "path": "art/portraits/figments/figment-scrap-turret.png",
-      "status": "0.30-HOLD",
-      "eligible_for_generation": false,
-      "hold_source": "art/_archive/nine-doors/2026-11-16/art-hold-list-0.30.md"
+      "id": "figment-scrap-sentinel",
+      "kind": "portrait-replacement",
+      "path": "art/portraits/figments/figment-scrap-sentinel.png",
+      "catalog_family": "figments",
+      "status": "ready-user-authorized-replacement",
+      "eligible_for_generation": true,
+      "replaces_requested_id": "figment-scrap-turret",
+      "replaces_requested_path": "art/portraits/figments/figment-scrap-turret.png",
+      "authorization": {
+        "question": "Should the retired Scrap Turret slot become a new Scrap Sentinel portrait rising from wreckage, using the existing Sentinel portrait as its reference?",
+        "answer": "Yes, replace that slot with Scrap Sentinel",
+        "date": "2026-11-21"
+      }
     }
   ],
   "retry_authorization": {
@@ -2858,5 +2865,25 @@
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
   "last_delivered": "weapon-dock_cutter--celestial",
-  "current_run": "sole-20261121-0109"
+  "current_run": "sole-20261121-0109",
+  "scope_replacements": [
+    {
+      "old_request": {
+        "id": "figment-scrap-turret",
+        "kind": "held-portrait",
+        "path": "art/portraits/figments/figment-scrap-turret.png",
+        "status": "0.30-HOLD",
+        "eligible_for_generation": false,
+        "hold_source": "art/_archive/nine-doors/2026-11-16/art-hold-list-0.30.md"
+      },
+      "new_id": "figment-scrap-sentinel",
+      "new_path": "art/portraits/figments/figment-scrap-sentinel.png",
+      "authorization": {
+        "question": "Should the retired Scrap Turret slot become a new Scrap Sentinel portrait rising from wreckage, using the existing Sentinel portrait as its reference?",
+        "answer": "Yes, replace that slot with Scrap Sentinel",
+        "date": "2026-11-21"
+      },
+      "count_change": 0
+    }
+  ]
 }

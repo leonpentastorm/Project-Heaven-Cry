@@ -13,10 +13,10 @@ parser=argparse.ArgumentParser();parser.add_argument('--delivered',required=True
 path=BRIEFS/'REMAINING-WORK.json';state=json.loads(path.read_text())
 matches=[r for r in state['records'] if r['id']==args.delivered];assert len(matches)==1,'Not an outstanding requested picture'
 row=matches[0];catalog=json.loads((ROOT/'art/catalog.json').read_text());gear=catalog['gear']
-entry=gear[args.delivered];assert entry['path']==row['path']
+entry=catalog[row.get('catalog_family','gear')][args.delivered];assert entry['path']==row['path']
 assert hashlib.sha256((ROOT/entry['path']).read_bytes()).hexdigest()==entry['sha256']
 assert entry['status']=='review-candidate' and entry['production_approved'] is entry['implementation_ready'] is False
-kind={'grade':'grades','standard':'new_repaint_standards','unique':'uniques'}[row['kind']]
+kind={'grade':'grades','standard':'new_repaint_standards','unique':'uniques','portrait-replacement':'icons_tiles'}[row['kind']]
 state['records'].remove(row);state['selected']+=1;state['remaining']-=1;state['counts'][kind]['selected']+=1
 text=(BRIEFS/'08-grades-and-uniques.md').read_text()
 stems=re.findall(r'`((?:weapon|armour|shield|focus|quiver)-[a-z0-9_]+)`',text.split('## C3.')[1].split('## C4.')[0])
@@ -39,11 +39,11 @@ table='\n'.join('| '+name+' | '+str(c['selected'])+' | '+str(c['total'])+' |' fo
     +'Active run sole-20261121-0109, branch art/2026-11-20-reset-continuation. Shared live ledger: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . '
     +'Current renewed grade lane: art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md. All earlier512 candidate drawings were integrated before this lane; native bytes, cleaned imports, source metadata and all prior failures preserved.\n\n'
     +'Leon expressly replaced the earlier no-retry restriction: "Try until approve, unlimited attempt, fictional work have no reason to be reject". '
-    +'Continue faithful fictional-art briefs, preserve exact responses and do not alter content to circumvent moderation.0.30 content holds remain; the retiredScrapTurret portrait is stillheld. '
+    +'Continue faithful fictional-art briefs, preserve exact responses and do not alter content to circumvent moderation.0.30 content holds remain. Leon approved replacing the retiredScrapTurret slot with a new ScrapSentinel portrait rising from wreckage, based on the existing Sentinel; target stays871. '
     +'Stop on an actual image usage limit and record its exact reset. No invented approvals, quota or completed-picture count.\n\n'
     +'RunningScript was completed by placing the actual imagegen-drawn rune, with all158252 existing drawn RGBA pixels unchanged and only328 added-alpha pixels. '
     +'RimCorner half-tile geometry passes; painted join variation remains disclosed. Exact remaining destinations: REMAINING-WORK.json.\n\n'
-    +'Each image is shown, inspected, exported1024RGBA+256/128/64/32, validated and separately pushed. Per-image live claims/remote deliveries prevent duplicates. '
+    +'Each image is shown, inspected, exported to its mode-specific master and UI sizes, validated and separately pushed. Per-image live claims/remote deliveries prevent duplicates. '
     +'Develop stays untouched. Targeted delivery checks cover actual materialized files; whole historical-library validation remains limited by this sparse checkout.\n')
 lane=ROOT/'art/_archive/gear/2026-11-21-retry-continuation/progress.json'
 if lane.exists():

@@ -1,3 +1,7 @@
+##21November explicit replacement claim
+
+Run sole-20261121-0109 exclusively claims figment-scrap-sentinel at art/portraits/figments/figment-scrap-sentinel.png, replacing retired File01#009 only. User answer: "Yes, replace that slot with Scrap Sentinel". ExistingSentinel unchanged; exact queue/claim in art/_archive/figments/2026-11-21-scrap-sentinel. Current526/871. Existing26grade claim remains active with14delivered,12pending.
+
 # ACTIVE renewed grade claim
 
 Run sole-20261121-0109, exact26 IDs in art/_archive/gear/2026-11-21-retry-continuation/claim.json, issue3claim7055037202. FirstLegionSpearMasterwork.512/871 selected; user explicitly superseded earlier no-retry restriction. Preserve all previous native/prompts/errors; no artistic approval fabricated; holdsremain. All currentclaims checked beforeeveryrender.
