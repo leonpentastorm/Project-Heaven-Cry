@@ -665,6 +665,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-short_draw--celestial",
+      "path": "art/icons/gear/weapon-short_draw--celestial.png",
+      "sha256": "e131722e0bbea33e70199971ff1be5371487fdec62bfe46c2c9923ba0bd4c706",
+      "label": "Short Draw — Celestial",
+      "family": "weapon-short_draw",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_draw--celestial.png",
+        "sha256": "9140c3a9f0c9fdc19fc1fd90a8e6e0df02cf7de7ae8aa9828a555b013ce37a47"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_draw--celestial.png",
+        "sha256": "e131722e0bbea33e70199971ff1be5371487fdec62bfe46c2c9923ba0bd4c706"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--celestial.txt",
+        "sha256": "5534e1eaa6ca4d6ddc882ace2c4ce1cf75a460d85ea9e122031a60dcfa9271a9"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-short_draw.png",
+          "sha256": "1c03568b71751f093978788917e768c26df2a156e1f573a9dc0d262d6956d08f"
+        },
+        {
+          "path": "art/icons/gear/weapon-short_draw--relic.png",
+          "sha256": "e2fefbf30d2b3bd8413b9e3a60fde3a85ed17a0bf532ca6b6ffc933a82f1f7db"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-short_draw.png",
+          "sha256": "251886e2fa6aaee22e844d498239ef610edcec77d15ca25d062a1962eab8e082"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-short_draw--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-short_draw--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-short_draw--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-short_draw--celestial.png"
+      },
+      "export_hashes": {
+        "256": "1a13dd9b6548a4014455cb0094a7884cd054db2c12e2e685e55010aa93df6ee9",
+        "128": "9a5f706904f0052f0a630b92104f7e9b7a87bf191ef972b78fe8e74716b97189",
+        "64": "a34cb21c37181924296e848d366b50147a8075cb7ec39ca49f3d0944b08cadb8",
+        "32": "6ef342a242b10038ad6d552366298b1619648f08eee842d193185013e1a7cdac"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-short_draw",
+      "outline": {
+        "solid_alpha_iou": 0.9476392710883838,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 27
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

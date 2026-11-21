@@ -1,7 +1,7 @@
 {
-  "selected": 522,
+  "selected": 523,
   "requested": 871,
-  "remaining": 349,
+  "remaining": 348,
   "counts": {
     "icons_tiles": {
       "selected": 87,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 368,
+      "selected": 369,
       "total": 656
     },
     "uniques": {
@@ -26,13 +26,13 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 288,
+    "grade": 287,
     "unique": 9,
     "held-portrait": 1
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 84,
+    "service-blocked-or-preceding-grade-dependent": 83,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5,
     "0.30-HOLD": 1
@@ -559,14 +559,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-broadback_sabre--celestial.png",
       "standard": "weapon-broadback_sabre",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-short_draw--celestial",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-short_draw--celestial.png",
-      "standard": "weapon-short_draw",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2889,6 +2881,6 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-short_draw--relic",
+  "last_delivered": "weapon-short_draw--celestial",
   "current_run": "sole-20261121-0109"
 }
