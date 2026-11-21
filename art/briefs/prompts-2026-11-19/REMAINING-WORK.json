@@ -1,7 +1,7 @@
 {
-  "selected": 550,
+  "selected": 551,
   "requested": 871,
-  "remaining": 321,
+  "remaining": 320,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 395,
+      "selected": 396,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 261,
+    "grade": 260,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 57,
+    "service-blocked-or-preceding-grade-dependent": 56,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -495,14 +495,6 @@
       "status": "service-blocked-or-reference-dependent",
       "eligible_for_retry": false,
       "existing_old_painting_does_not_satisfy_repaint": false
-    },
-    {
-      "id": "weapon-war_pick--celestial",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-war_pick--celestial.png",
-      "standard": "weapon-war_pick",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
     },
     {
       "id": "weapon-parlour_pistol--fine",
@@ -2663,7 +2655,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-ork_machete--celestial",
+  "last_delivered": "weapon-war_pick--celestial",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

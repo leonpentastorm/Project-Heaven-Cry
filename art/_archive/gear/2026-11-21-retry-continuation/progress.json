@@ -36,6 +36,7 @@
     "weapon-war_pick--fine",
     "weapon-war_pick--masterwork",
     "weapon-war_pick--relic",
+    "weapon-war_pick--celestial",
     "weapon-war_hammer--fine",
     "weapon-war_hammer--masterwork",
     "weapon-war_hammer--relic",
@@ -44,8 +45,7 @@
   "remaining": [
     "weapon-purifier_flamer--masterwork",
     "weapon-purifier_flamer--relic",
-    "weapon-purifier_flamer--celestial",
-    "weapon-war_pick--celestial"
+    "weapon-purifier_flamer--celestial"
   ],
   "baseline_project_pictures": 512,
   "project_total": 871,
@@ -60,7 +60,7 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T03:00:33.666471+00:00",
-  "project_distinct_count": 550,
+  "updated_utc": "2026-11-21T03:02:33.391321+00:00",
+  "project_distinct_count": 551,
   "total": 41
 }
