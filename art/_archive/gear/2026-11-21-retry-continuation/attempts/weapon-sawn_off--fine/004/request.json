@@ -1,0 +1,55 @@
+{
+  "head": "2a72e81b405752483fda232d172d3ab574d8f051",
+  "job": {
+    "id": "weapon-sawn_off--fine",
+    "standard_id": "weapon-sawn_off",
+    "grade": "fine",
+    "label": "Sawn-off — Fine",
+    "path": "art/icons/gear/weapon-sawn_off--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-sawn_off.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-sawn_off",
+    "family_references": [
+      "art/icons/gear/weapon-sawn_off.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+    "keep_line": "the same stockless cut-down double-barrel shotgun pointing up-right with two short side-by-side dark steel barrels and dark muzzle bores, two exposed curved hammers, small brass side fitting with three ochre diagonal daubs, rounded trigger guard and short downward-curved dark grip wrapped in red-brown cloth with a riveted metal heel plate. Preserve all barrel spacing, hammer shapes, bore openings, pivot screws, daub positions, grip wrap routes and compact proportions. Do not add a shoulder stock or extend the barrels.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "6e41daca3a8514f9d2cef2fb1efac11819f99ae48e3c1d325ae34d69044f7cb7",
+    "standard_sha256": "182449097f5759e63b764a0c3e22615aec2f9f69cf7967c48f7045a92765aabc",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sawn_off--fine--1795145285032.json",
+      "response": {
+        "id": "weapon-sawn_off--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 6a7215ba-eaa7-4dab-90fc-20c29dc92803. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    },
+    "prior_last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-sawn_off--fine--1795145285032.json",
+      "request_id": "6a7215ba-eaa7-4dab-90fc-20c29dc92803"
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-sawn_off.png": "182449097f5759e63b764a0c3e22615aec2f9f69cf7967c48f7045a92765aabc",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 4,
+  "claim_comment": 7061326470,
+  "clock": {
+    "current_time": "2026-11-21 11:59:54 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7062209401,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

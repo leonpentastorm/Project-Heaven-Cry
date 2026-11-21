@@ -7,6 +7,7 @@
     "weapon-broadback_sabre",
     "weapon-coach_gun",
     "weapon-crossbow",
+    "weapon-decrkm_autopistol",
     "weapon-dock_cutter",
     "weapon-hellraiser_rotary",
     "weapon-kemizuchi_side_sword",
@@ -14,17 +15,21 @@
     "weapon-legion_spear",
     "weapon-lever_carbine",
     "weapon-long_draw",
+    "weapon-magistrate_pistol",
     "weapon-ork_cleaver_glaive",
     "weapon-ork_machete",
     "weapon-parlour_pistol",
     "weapon-purifier_flamer",
     "weapon-repeating_crossbow",
     "weapon-sawn_off",
+    "weapon-service_pistol",
     "weapon-short_bow",
     "weapon-short_draw",
     "weapon-war_axe",
     "weapon-war_hammer",
     "weapon-war_pick",
+    "weapon-whisper_carbine",
+    "weapon-whisper_pistol",
     "weapon-whisper_smg"
   ],
   "ids": [
@@ -101,7 +106,24 @@
     "weapon-whisper_smg--fine",
     "weapon-whisper_smg--masterwork",
     "weapon-whisper_smg--relic",
-    "weapon-whisper_smg--celestial"
+    "weapon-whisper_smg--celestial",
+    "weapon-whisper_pistol--masterwork",
+    "weapon-whisper_pistol--relic",
+    "weapon-whisper_pistol--celestial",
+    "weapon-whisper_carbine--fine",
+    "weapon-whisper_carbine--masterwork",
+    "weapon-whisper_carbine--relic",
+    "weapon-whisper_carbine--celestial",
+    "weapon-service_pistol--fine",
+    "weapon-service_pistol--masterwork",
+    "weapon-service_pistol--relic",
+    "weapon-service_pistol--celestial",
+    "weapon-magistrate_pistol--masterwork",
+    "weapon-magistrate_pistol--relic",
+    "weapon-magistrate_pistol--celestial",
+    "weapon-decrkm_autopistol--masterwork",
+    "weapon-decrkm_autopistol--relic",
+    "weapon-decrkm_autopistol--celestial"
   ],
   "first": "weapon-legion_spear--masterwork",
   "retry_authorization": "AUTHORIZATION.md",
@@ -182,7 +204,24 @@
     "weapon-whisper_smg--fine": 7061326470,
     "weapon-whisper_smg--masterwork": 7061326470,
     "weapon-whisper_smg--relic": 7061326470,
-    "weapon-whisper_smg--celestial": 7061326470
+    "weapon-whisper_smg--celestial": 7061326470,
+    "weapon-whisper_pistol--masterwork": 7062296286,
+    "weapon-whisper_pistol--relic": 7062296286,
+    "weapon-whisper_pistol--celestial": 7062296286,
+    "weapon-whisper_carbine--fine": 7062296286,
+    "weapon-whisper_carbine--masterwork": 7062296286,
+    "weapon-whisper_carbine--relic": 7062296286,
+    "weapon-whisper_carbine--celestial": 7062296286,
+    "weapon-service_pistol--fine": 7062296286,
+    "weapon-service_pistol--masterwork": 7062296286,
+    "weapon-service_pistol--relic": 7062296286,
+    "weapon-service_pistol--celestial": 7062296286,
+    "weapon-magistrate_pistol--masterwork": 7062296286,
+    "weapon-magistrate_pistol--relic": 7062296286,
+    "weapon-magistrate_pistol--celestial": 7062296286,
+    "weapon-decrkm_autopistol--masterwork": 7062296286,
+    "weapon-decrkm_autopistol--relic": 7062296286,
+    "weapon-decrkm_autopistol--celestial": 7062296286
   },
   "expansion_history": [
     {
@@ -200,5 +239,32 @@
       "count": 24,
       "first": "weapon-parlour_pistol--fine"
     }
-  ]
+  ],
+  "expansions": [
+    {
+      "comment": 7062296286,
+      "ids": [
+        "weapon-whisper_pistol--masterwork",
+        "weapon-whisper_pistol--relic",
+        "weapon-whisper_pistol--celestial",
+        "weapon-whisper_carbine--fine",
+        "weapon-whisper_carbine--masterwork",
+        "weapon-whisper_carbine--relic",
+        "weapon-whisper_carbine--celestial",
+        "weapon-service_pistol--fine",
+        "weapon-service_pistol--masterwork",
+        "weapon-service_pistol--relic",
+        "weapon-service_pistol--celestial",
+        "weapon-magistrate_pistol--masterwork",
+        "weapon-magistrate_pistol--relic",
+        "weapon-magistrate_pistol--celestial",
+        "weapon-decrkm_autopistol--masterwork",
+        "weapon-decrkm_autopistol--relic",
+        "weapon-decrkm_autopistol--celestial"
+      ],
+      "first": "weapon-magistrate_pistol--masterwork",
+      "original_source": "coordination/final-gun17-source-queue.json"
+    }
+  ],
+  "expected_count": 91
 }
