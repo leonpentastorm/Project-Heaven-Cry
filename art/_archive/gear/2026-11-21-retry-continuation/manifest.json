@@ -2081,6 +2081,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_axe--relic",
+      "path": "art/icons/gear/weapon-war_axe--relic.png",
+      "sha256": "11f1962e9cba70d7f4d1ea32ceb28d86b94d9753ad497cbf277c8cb932fcfdaf",
+      "label": "War Axe — Relic",
+      "family": "weapon-war_axe",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-war_axe--relic.png",
+        "sha256": "081194ff05481c2b84ab8ddaff7dabe83163030e89c00cc3f46913d7d8b8400a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_axe--relic.png",
+        "sha256": "11f1962e9cba70d7f4d1ea32ceb28d86b94d9753ad497cbf277c8cb932fcfdaf"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_axe--relic.txt",
+        "sha256": "bee7477a9e07b82ad229c32541939deea912fb45b3155a89d95d7db1a2a39834"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-war_axe.png",
+          "sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770"
+        },
+        {
+          "path": "art/icons/gear/weapon-war_axe--masterwork.png",
+          "sha256": "4f731c97ffb5e54dc613d16474c9d8222ab90593ba05aec49a812b10ad5358cf"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_axe--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-war_axe--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-war_axe--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-war_axe--relic.png"
+      },
+      "export_hashes": {
+        "256": "e2ff221ca0dfafa5c55a92934f96fd273bfdea35d63d9c3310774b63524db628",
+        "128": "80b7131e569aa578589637ac5030c3021e6ce963ee11ece0c96b8fb814d11526",
+        "64": "d4a2b11de73052ea1d9766ee5aeb3aed9aeffffd7b234958f0b4a144bad92b1e",
+        "32": "a5e613590f6c9630113ef854432612fd57d8e0d5eed4a18491c2d183f80ee4c9"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-war_axe",
+      "outline": {
+        "solid_alpha_iou": 0.90463865753975,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 54
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
