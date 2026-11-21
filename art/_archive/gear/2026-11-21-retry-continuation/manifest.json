@@ -1899,6 +1899,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_hammer--celestial",
+      "path": "art/icons/gear/weapon-war_hammer--celestial.png",
+      "sha256": "70875ca056dfd010dab0a3779bd11d5ce641486372db95f7e873550c7eaefc01",
+      "label": "War hammer — Celestial",
+      "family": "weapon-war_hammer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-war_hammer--celestial.png",
+        "sha256": "23a7d44b0fc9d3d7979ccc81b0de417ece50361ec9d7b674e48a90596df83b25"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_hammer--celestial.png",
+        "sha256": "70875ca056dfd010dab0a3779bd11d5ce641486372db95f7e873550c7eaefc01"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_hammer--celestial.txt",
+        "sha256": "b45fa449f4683b4dbe952f1b63293a91679f69df1938f360f637cc9edd492f8d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-war_hammer.png",
+          "sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f"
+        },
+        {
+          "path": "art/icons/gear/weapon-war_hammer--relic.png",
+          "sha256": "7eacb22db97de65df2dab6ea6129e50fc35f1c0943e599c0b3fd8d1f08230bad"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_hammer--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-war_hammer--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-war_hammer--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-war_hammer--celestial.png"
+      },
+      "export_hashes": {
+        "256": "170d0aa24981a6b1d5fec5e328f7c7f472a681d79c1bcf542d98c0a90df74aac",
+        "128": "d3b2b9acbd6f07ff355017c7e9ef49011bc5ece32adec70c9d3fcb2327843168",
+        "64": "c5f9749e958342d1647b4c7d170779c759f768b2fa6ed0bc9d2ca06d8de4409d",
+        "32": "ef95564b5e2742094029776989013ca1e74792d2fc31d7a1b36e32cdcdc97696"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-war_hammer",
+      "outline": {
+        "solid_alpha_iou": 0.9321061194163688,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 3,
+        "different_pixels_64": 38
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

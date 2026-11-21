@@ -1,0 +1,9 @@
+{
+  "base": "1401b82e5c3c4a6b1886a95bec40e83197e287f7",
+  "head": "d1e74279046a5df79b0ac6a507dd00b13748398b",
+  "changed_files": [
+    "docs/design/proposals/2026-11-21-study/besm.md",
+    "docs/design/proposals/2026-11-21-study/sword-world-guess.md"
+  ],
+  "art_impact": "Two added proposed design-study docs only; no asset, prompt, style, item ID or hold changes."
+}

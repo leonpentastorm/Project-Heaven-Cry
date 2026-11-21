@@ -1,7 +1,7 @@
 {
-  "selected": 542,
+  "selected": 543,
   "requested": 871,
-  "remaining": 329,
+  "remaining": 328,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 387,
+      "selected": 388,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 269,
+    "grade": 268,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 65,
+    "service-blocked-or-preceding-grade-dependent": 64,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -557,14 +557,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-war_pick--celestial.png",
       "standard": "weapon-war_pick",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-war_hammer--celestial",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-war_hammer--celestial.png",
-      "standard": "weapon-war_hammer",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2727,7 +2719,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-war_hammer--relic",
+  "last_delivered": "weapon-war_hammer--celestial",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {
