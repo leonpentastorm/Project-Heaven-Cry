@@ -1,0 +1,9 @@
+{
+  "id": "weapon-ork_cleaver_glaive--masterwork",
+  "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID bc5009a1-5b84-4ebc-9f09-ecad98597ead. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+  "clock": {
+    "current_time": "2026-11-21 02:15:44 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "request_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_cleaver_glaive--masterwork/001/request.json"
+}
