@@ -1,0 +1,63 @@
+{
+  "repository_full_name": "leonpentastorm/Project-Heaven-Cry",
+  "base": "287a08b7c715b93b6b494a8ce3b92e214adf7317",
+  "head": "cc52d3d808da0aebdddf40b7f75070eeb70c50bd",
+  "status": "ahead",
+  "ahead_by": 1,
+  "behind_by": 0,
+  "total_commits": 1,
+  "too_large": null,
+  "base_commit": {
+    "sha": "287a08b7c715b93b6b494a8ce3b92e214adf7317",
+    "url": "https://api.github.com/repos/leonpentastorm/Project-Heaven-Cry/commits/287a08b7c715b93b6b494a8ce3b92e214adf7317",
+    "html_url": "https://github.com/leonpentastorm/Project-Heaven-Cry/commit/287a08b7c715b93b6b494a8ce3b92e214adf7317"
+  },
+  "merge_base_commit": {
+    "sha": "287a08b7c715b93b6b494a8ce3b92e214adf7317",
+    "url": "https://api.github.com/repos/leonpentastorm/Project-Heaven-Cry/commits/287a08b7c715b93b6b494a8ce3b92e214adf7317",
+    "html_url": "https://github.com/leonpentastorm/Project-Heaven-Cry/commit/287a08b7c715b93b6b494a8ce3b92e214adf7317"
+  },
+  "files": [
+    {
+      "filename": "docs/design/proposals/2026-11-21-study/5e.md",
+      "status": "added",
+      "additions": 189,
+      "deletions": 0,
+      "changes": 189,
+      "previous_filename": null
+    },
+    {
+      "filename": "docs/design/proposals/2026-11-21-study/bg3.md",
+      "status": "added",
+      "additions": 111,
+      "deletions": 0,
+      "changes": 111,
+      "previous_filename": null
+    },
+    {
+      "filename": "docs/design/proposals/2026-11-21-study/pf1-owlcat.md",
+      "status": "added",
+      "additions": 95,
+      "deletions": 0,
+      "changes": 95,
+      "previous_filename": null
+    },
+    {
+      "filename": "docs/design/proposals/2026-11-21-study/pf2.md",
+      "status": "added",
+      "additions": 177,
+      "deletions": 0,
+      "changes": 177,
+      "previous_filename": null
+    },
+    {
+      "filename": "docs/design/proposals/2026-11-21-the-curve.md",
+      "status": "modified",
+      "additions": 104,
+      "deletions": 76,
+      "changes": 180,
+      "previous_filename": null
+    }
+  ],
+  "art_impact": "No prompt, asset, style, gear-ID or art-hold changes; proposed design-study documents only."
+}

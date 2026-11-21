@@ -1,0 +1,59 @@
+{
+  "id": "figment-scrap-sentinel",
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "authorization": {
+    "question": "Should the retired Scrap Turret slot become a new Scrap Sentinel portrait rising from wreckage, using the existing Sentinel portrait as its reference?",
+    "answer": "Yes, replace that slot with Scrap Sentinel",
+    "date": "2026-11-21"
+  },
+  "replaces_requested_id": "figment-scrap-turret",
+  "count_change": 1,
+  "native_sha256": "f8bb593e05924ba608a08becf2f6f064e2946d7aa46322549176fe8c297bc40d",
+  "reference_hashes": {
+    "art/icons/skills/visualization.png": "c3c6257a2625c397a8d8bab15f17424bd151cac07c56518a81a2ad906c02386c",
+    "art/icons/skills/analysis.png": "b746a62dcc588de49be26714f2c634284250813495dfcd1c1b33760ac83fb9ba",
+    "art/icons/skills/charisma.png": "614e3223586fecb810fdfd2782e5ae2c9b9d3caef695763e95bb22806218478b",
+    "art/portraits/figments/figment-sentinel.png": "5f7ab2004dca80514d1380952b9c6438aa5e262761bebe4ba6530c1309b6b7d1",
+    "art/portraits/figments/figment-wall.png": "f2350f7b64cba4c03e46413c1839b681825d677d95e5fe972c12f3a820cd3c75"
+  },
+  "prompt_sha256": "03e4f2778adc3d132a2340b258e678431a3c4e3e0f43806c5c19bfb19690e766",
+  "technical_transform": {
+    "source_bbox_threshold3": [
+      173,
+      175,
+      974,
+      1173
+    ],
+    "background_normalization": "Only pixels with every RGB channel <=3 set to pure black; native unchanged",
+    "uniform_scale": 0.45636127652972475,
+    "resized_dimensions": [
+      366,
+      455
+    ],
+    "placement": [
+      217,
+      252
+    ],
+    "target_center": [
+      400,
+      480
+    ],
+    "target_max_radius": 246
+  },
+  "visual_review": "Tall slender Sentinel matches the existing one-lens, one continuous right-facing barrel and exactly three braced legs; all three feet rise from a low compact plate wreckage base. Cream and petrol-blue, fraying bot-flecks, no face or living anatomy. Native framing normalized by uniform scaling for complete circular-token coverage. All artistic approvals remain pending.",
+  "file_hashes": {
+    "art/portraits/figments/figment-scrap-sentinel.png": "3e4fc29e1b9d61b1b3b329c757cafefd27591e671b0a95a762f6c4c9c7cb8a26",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/sources/v1/native.png": "f8bb593e05924ba608a08becf2f6f064e2946d7aa46322549176fe8c297bc40d",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/attempts/001/native.png": "f8bb593e05924ba608a08becf2f6f064e2946d7aa46322549176fe8c297bc40d",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/prompt.txt": "1d025026cefbc82069095924daca6434dbaed006d4aa060020a26339373dfcb9",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/masters/v1/master.png": "3e4fc29e1b9d61b1b3b329c757cafefd27591e671b0a95a762f6c4c9c7cb8a26",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/token-review.png": "e041444e99db2caae0b2e17bf405fb697e52a540fe93641e2034bb2ca686b8ac",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/exports/128.png": "ac56707169f9d48a44853bbe9dcb794db97402f3bb85a5aa7b0a6ecda54e613b",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/exports/256.png": "2dc2e70effb35b4549b160fac86817c80c4c6fd2b2edcd8ef8096c3e45b1bf40",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/exports/32.png": "8fb66031d2acc2a54ac1180440f36eb6f313b019ce10ee6e292223fcb2d3a9bf",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/exports/40.png": "7ef728d724e3deb5d6a2a645ade4978e17c5dd03d7065681ad50a67f1613785e",
+    "art/_archive/figments/2026-11-21-scrap-sentinel/exports/64.png": "8e9fe13921535ed8372906b948211235edf32ba9b61a36920dfd8a257a5b4c3e"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "job": {
+    "id": "figment-scrap-sentinel",
+    "kind": "portrait-replacement",
+    "path": "art/portraits/figments/figment-scrap-sentinel.png",
+    "catalog_family": "figments",
+    "status": "pending",
+    "eligible_for_generation": true,
+    "replaces_requested_id": "figment-scrap-turret",
+    "replaces_requested_path": "art/portraits/figments/figment-scrap-turret.png",
+    "authorization": {
+      "question": "Should the retired Scrap Turret slot become a new Scrap Sentinel portrait rising from wreckage, using the existing Sentinel portrait as its reference?",
+      "answer": "Yes, replace that slot with Scrap Sentinel",
+      "date": "2026-11-21"
+    },
+    "references": [
+      "art/icons/skills/visualization.png",
+      "art/icons/skills/analysis.png",
+      "art/icons/skills/charisma.png",
+      "art/portraits/figments/figment-sentinel.png",
+      "art/portraits/figments/figment-wall.png"
+    ],
+    "prompt": "Create one finished PHC Heavenprint abstract Figment portrait for the fictional RPG Project Heaven Cry. This is fictional game illustration, not a real device or technical drawing. Match the attached Figment Sentinel and Wall portraits, borrowing the attached skill portraits only for tactile gouache and broken directional ink marks. Subject: Scrap Sentinel, a once-a-scene Figment Sentinel standing up out of a wreckage pile or barricade. Preserve the recognizable existing Sentinel form: a tall slender cream-fleck spire on exactly three braced legs, one round nonliving lens and one long straight barrel clamped on pointing right, no hands, no face. Show the moment it has risen: the three legs are planted among a compact low cluster of angular scrap plates, with the lower spire and scrap edges fraying into small cream flecks and square mana-bot motes that stream upward into the standing body. The compact wreckage is a base, the tall thin Sentinel is the dominant silhouette. Keep the barrel visibly attached, continuous and physically coherent, one opening at its right end; one short broken pointing line beyond the muzzle. No squat turret body, no rounded welded cowl, no tank, no living figure, no clothes, no text, symbols or logos. Made thing, not a person; nanobots are invented mana in this setting. Opaque cream gouache and broken directional ink on pure black, small cream flecks and squares like filings, denser where solid, at least one edge fraying into drifting motes. Moderate internal abstraction, readable silhouette and weight, not a cubist puzzle. Palette black #000000, neutral cream #F2E5C8 and ONLY Expression deep petrol-blue (#075369, lighter #14758B and darker #033443) for every remaining mark and shadow. No unrelated undertones, glow or gradients. Vertical 4:5 portrait, opaque pure-black background, intended master 800x1000 PNG. Keep the ENTIRE painted subject including wreckage, barrel, cue and motes inside a central circle of diameter 560px centered at x400,y480 in the intended master, with a 32px radial safety margin; corners and surrounding field pure black. Match the Sentinel reference's subject scale and spacious framing. Strong silhouette at a 40px circular token crop. One portrait, no border, no contact sheet."
+  },
+  "head": "06e48affc9c90e0d7fd631f0c305d657bd400195",
+  "reference_hashes": {
+    "art/icons/skills/visualization.png": "c3c6257a2625c397a8d8bab15f17424bd151cac07c56518a81a2ad906c02386c",
+    "art/icons/skills/analysis.png": "b746a62dcc588de49be26714f2c634284250813495dfcd1c1b33760ac83fb9ba",
+    "art/icons/skills/charisma.png": "614e3223586fecb810fdfd2782e5ae2c9b9d3caef695763e95bb22806218478b",
+    "art/portraits/figments/figment-sentinel.png": "5f7ab2004dca80514d1380952b9c6438aa5e262761bebe4ba6530c1309b6b7d1",
+    "art/portraits/figments/figment-wall.png": "f2350f7b64cba4c03e46413c1839b681825d677d95e5fe972c12f3a820cd3c75"
+  },
+  "heads": [
+    "06e48affc9c90e0d7fd631f0c305d657bd400195",
+    "3f50be29283f413056b49024914c1b12cda9f359",
+    "cc52d3d808da0aebdddf40b7f75070eeb70c50bd"
+  ],
+  "latest_comment": 7055620419,
+  "clock": {
+    "current_time": "2026-11-21 02:06:41 UTC"
+  },
+  "run": "sole-20261121-0109"
+}

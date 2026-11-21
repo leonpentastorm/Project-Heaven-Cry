@@ -1,10 +1,10 @@
 {
-  "selected": 526,
+  "selected": 527,
   "requested": 871,
-  "remaining": 345,
+  "remaining": 344,
   "counts": {
     "icons_tiles": {
-      "selected": 87,
+      "selected": 88,
       "total": 88
     },
     "new_repaint_standards": {
@@ -27,15 +27,13 @@
   "by_kind": {
     "standard": 51,
     "grade": 284,
-    "unique": 9,
-    "portrait-replacement": 1
+    "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
     "service-blocked-or-preceding-grade-dependent": 80,
     "awaits-missing-requested-standard": 208,
-    "service-blocked": 5,
-    "ready-user-authorized-replacement": 1
+    "service-blocked": 5
   },
   "live_claims": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
   "records": [
@@ -2841,21 +2839,6 @@
       "status": "awaits-missing-requested-standard",
       "standard": "weapon-chezknov_machine_carbine",
       "eligible_for_retry": false
-    },
-    {
-      "id": "figment-scrap-sentinel",
-      "kind": "portrait-replacement",
-      "path": "art/portraits/figments/figment-scrap-sentinel.png",
-      "catalog_family": "figments",
-      "status": "ready-user-authorized-replacement",
-      "eligible_for_generation": true,
-      "replaces_requested_id": "figment-scrap-turret",
-      "replaces_requested_path": "art/portraits/figments/figment-scrap-turret.png",
-      "authorization": {
-        "question": "Should the retired Scrap Turret slot become a new Scrap Sentinel portrait rising from wreckage, using the existing Sentinel portrait as its reference?",
-        "answer": "Yes, replace that slot with Scrap Sentinel",
-        "date": "2026-11-21"
-      }
     }
   ],
   "retry_authorization": {
@@ -2864,7 +2847,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-dock_cutter--celestial",
+  "last_delivered": "figment-scrap-sentinel",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

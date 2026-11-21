@@ -1,10 +1,10 @@
 # Current sole-artist production
 
-**526/871 (60.4%) selected review candidates.** Last delivery: `weapon-dock_cutter--celestial`. Imports, exports, components, rejected attempts and archived alternatives add0. Artistic/implementation approvals remainfalse.
+**527/871 (60.5%) selected review candidates.** Last delivery: `figment-scrap-sentinel`. Imports, exports, components, rejected attempts and archived alternatives add0. Artistic/implementation approvals remainfalse.
 
 | Requested work | Selected | Total |
 | --- | ---: | ---: |
-| icons_tiles | 87 | 88 |
+| icons_tiles | 88 | 88 |
 | new_repaint_standards | 53 | 104 |
 | grades | 372 | 656 |
 | uniques | 14 | 23 |
@@ -15,4 +15,4 @@ Leon expressly replaced the earlier no-retry restriction: "Try until approve, un
 
 RunningScript was completed by placing the actual imagegen-drawn rune, with all158252 existing drawn RGBA pixels unchanged and only328 added-alpha pixels. RimCorner half-tile geometry passes; painted join variation remains disclosed. Exact remaining destinations: REMAINING-WORK.json.
 
-Each image is shown, inspected, exported1024RGBA+256/128/64/32, validated and separately pushed. Per-image live claims/remote deliveries prevent duplicates. Develop stays untouched. Targeted delivery checks cover actual materialized files; whole historical-library validation remains limited by this sparse checkout.
+Each image is shown, inspected, exported to its mode-specific master and UI sizes, validated and separately pushed. Per-image live claims/remote deliveries prevent duplicates. Develop stays untouched. Targeted delivery checks cover actual materialized files; whole historical-library validation remains limited by this sparse checkout.
