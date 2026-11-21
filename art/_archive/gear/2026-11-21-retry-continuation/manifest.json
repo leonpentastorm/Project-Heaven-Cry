@@ -1201,6 +1201,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-broadback_sabre--celestial",
+      "path": "art/icons/gear/weapon-broadback_sabre--celestial.png",
+      "sha256": "a595e6537483204a35e9d6ab52cceae4136d7c6ffde4bfd189e604962ed391c7",
+      "label": "Broadback Sabre — Celestial",
+      "family": "weapon-broadback_sabre",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-broadback_sabre--celestial.png",
+        "sha256": "f0108c5fd10150e56657ad11e398ecebd7bc86828abaeb5715eb13d035be5173"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-broadback_sabre--celestial.png",
+        "sha256": "a595e6537483204a35e9d6ab52cceae4136d7c6ffde4bfd189e604962ed391c7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--celestial.txt",
+        "sha256": "e2059fb182a1ff5ce8fc89518dd982c62c1d75ddcfdc0b4b2027c67228a6f1be"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-broadback_sabre.png",
+          "sha256": "1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7"
+        },
+        {
+          "path": "art/icons/gear/weapon-broadback_sabre--relic.png",
+          "sha256": "f9e0b792793b88c70344251eaa6fcee135319fe64bd454ed1f8b7c2e6b453fb5"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-broadback_sabre.png",
+          "sha256": "17be737f3c5a31ff812f7ab1292d566d89a2aad30f53edbce73dbd019ca86580"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-broadback_sabre--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-broadback_sabre--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-broadback_sabre--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-broadback_sabre--celestial.png"
+      },
+      "export_hashes": {
+        "256": "cf37cceee2f1fd96d0a2c61f7ff1d40bd3ce834ed4735e13c7383f35fab1608f",
+        "128": "69f1318a1a41ce3bff41e24285e5640545514682f63a85f305fcc769fbc27a65",
+        "64": "9f492aedb84f9893ca1c46ba9fa258b330b1934d2f128c805474dfc98a769d3b",
+        "32": "ee6b4a45fc64863ed5f3b710412de342f6dcf5d5e5e33bf40fed1868242527c7"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-broadback_sabre",
+      "outline": {
+        "solid_alpha_iou": 0.957566552199818,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 4,
+        "different_pixels_64": 30
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
