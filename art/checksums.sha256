@@ -3514,6 +3514,10 @@ e0ca4ec468fb8582b7be239bdb55cd21a034954333e4f898c0262574d59b2bd2  art/_archive/g
 049c3d37a67e3b7cecc4e6da18c2683f243e71fd02745068beb5a499b17d1c6a  art/_archive/gear/2026-11-21-retry-continuation/AUTHORIZATION.md
 2a99bb49c94b9f548574aa9384ac470cddd98f357496a1783369b22a03b81fc3  art/_archive/gear/2026-11-21-retry-continuation/HANDOFF.md
 1a52c05cab71a778d6fbdc076a33dcc17580063399a0869cc8969d806fcb9ec8  art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md
+514fce8ebc67edbd9707e67539724c98e56c189a6815126aef6df0192575eb9c  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--celestial/001/native.png
+08089273760c8cdfeb095edbd7f117acae85021ce547caccad9848a278441b5b  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--celestial/001/request.json
+9239066499a7883adcf2316ee6681f38cc4aea5bc8ebb75df7bbffed19d85177  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--celestial/001/review.json
+866589ff38dd3b9d57b325220b3b52d61dfc8d9b6c0bdca82b62d6b83607ec53  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--celestial/001/source.json
 af39032d5e0cb12a6c662b3343b8dc14860b8a785d58d8a5c3186455bc1fb09b  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--masterwork/001/native.png
 72f7c0eeff9ed4fa38afb3faa6d768b7d5c60b561fc8ee5835958fff5acc8182  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--masterwork/001/request.json
 c16628b1fac7471a0c0b4aa7d0d738ace0958d6d1fee5e77330527daf68951e4  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--masterwork/001/review.json
@@ -3524,7 +3528,7 @@ cc2a1d7dab5add88d1d1e7b0501ad2d9710772f1913e0ce0db7d41396bfb3942  art/_archive/g
 a3f44daca7e4a7f1e00f7558726d529a5f7328ca5a1f6c3b8f78ac12a376aedc  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--relic/001/source.json
 f484dc88e521976c461a9f6551f299f8a100f9097604187611aed7e6ec69c1dd  art/_archive/gear/2026-11-21-retry-continuation/claim.json
 f0e30f9e57469f4e9907f37fee5a55a8a195e632622d552112a794d719293f31  art/_archive/gear/2026-11-21-retry-continuation/functions-delivery.js
-44d0b32897823f6aa0b873b94a52f0d92be48e63c8b42b53903a1e26bd02437d  art/_archive/gear/2026-11-21-retry-continuation/functions-driver.js
+834a160f2708a6f3ed95d5f1bf9f08409a4552c5300bf0ac8ef8c13415816095  art/_archive/gear/2026-11-21-retry-continuation/functions-driver.js
 c3b89699484fac67ad9a609319fac5119938208a6d18fe8f7217f276ea0395bc  art/_archive/gear/2026-11-21-retry-continuation/manifest.json
 e942b565b8fe93e6129a27a5be5f11060eac5fd71b86e8bf8b65ffd5b184502c  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-legion_spear--masterwork.png
 2b36f36187d79fcd53db9ac7df5278914983dbc4967c1cec4d3bb48fbb044a47  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-legion_spear--relic.png
@@ -3532,7 +3536,7 @@ e942b565b8fe93e6129a27a5be5f11060eac5fd71b86e8bf8b65ffd5b184502c  art/_archive/g
 f77ab8ab9bb3a879f586d231345a10d7423f0f8390068836947c1772c272b97f  art/_archive/gear/2026-11-21-retry-continuation/progress.json
 49de6738736eb8ec6f9c0b0c8f8fdf3c46d3a918ad257f06d292cdf363d9976c  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-legion_spear--masterwork.txt
 0ee8a69a867d749dbe29ba0fd5c99e9914b92b0442cd75e0b12dc90146b80fc5  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-legion_spear--relic.txt
-213860ae071043daa5e76d19c78bb12e7439eed268eb72c52e632ad2dd732503  art/_archive/gear/2026-11-21-retry-continuation/queue.json
+cab4fa15bd7a1be4dfd40f3da197407a6292cdf6efa544c2978c35a0df2e7af2  art/_archive/gear/2026-11-21-retry-continuation/queue.json
 4cab40491762bba2f2a9dae3e0bf5251b75f950cef43196b991d958c496ceb56  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-legion_spear-32px.png
 fb5860d38797d80a52772898bf235a29bdd40fc08767358d3c9a5b1ff85e30eb  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-legion_spear-64px.png
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/_archive/gear/2026-11-21-retry-continuation/source-brief.md

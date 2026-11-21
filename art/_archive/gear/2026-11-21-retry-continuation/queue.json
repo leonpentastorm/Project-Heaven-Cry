@@ -3,7 +3,7 @@
     "id": "weapon-legion_spear--masterwork",
     "standard_id": "weapon-legion_spear",
     "grade": "masterwork",
-    "label": "Legion Spear — Masterwork",
+    "label": "Legion Spear \u2014 Masterwork",
     "path": "art/icons/gear/weapon-legion_spear--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -42,7 +42,7 @@
     "id": "weapon-legion_spear--relic",
     "standard_id": "weapon-legion_spear",
     "grade": "relic",
-    "label": "Legion Spear — Relic",
+    "label": "Legion Spear \u2014 Relic",
     "path": "art/icons/gear/weapon-legion_spear--relic.png",
     "kind": "weapon",
     "references": [
@@ -76,13 +76,14 @@
     "id": "weapon-legion_spear--celestial",
     "standard_id": "weapon-legion_spear",
     "grade": "celestial",
-    "label": "Legion Spear — Celestial",
+    "label": "Legion Spear \u2014 Celestial",
     "path": "art/icons/gear/weapon-legion_spear--celestial.png",
     "kind": "weapon",
     "references": [
       "art/icons/gear/weapon-legion_spear.png",
       "art/icons/gear/weapon-legion_spear--relic.png",
-      "art/portraits/world/new-faces/orren-vask.png"
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_spear--celestial/001/native.png"
     ],
     "family": "weapon-legion_spear",
     "family_references": [
@@ -91,7 +92,7 @@
     ],
     "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
     "brief_number": "A3.2",
-    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. ALL head metal, socket, crossbar if present, two flush shaft strips and butt cap become pale PEARL-IVORY. The wood haft becomes immaculate pale IVORY WOOD, and ALL leather/cord including grip and repair binding becomes IVORY HIDE/CORD. Charcoal only in crevice shadows. Keep the Relic repair and socket ornament in their same places. The head inlay and socket seam emit only a thin contained ivory-gold line; no halo or external light.",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. ALL head metal, socket, crossbar if present, two flush shaft strips and butt cap become pale PEARL-IVORY. The wood haft becomes immaculate pale IVORY WOOD, and ALL leather/cord including grip and repair binding becomes IVORY HIDE/CORD. Charcoal only in crevice shadows. Keep the Relic repair and socket ornament in their same places. The head inlay and socket seam emit only a thin contained ivory-gold line; no halo or external light.\n\nQUALITY CORRECTION: the FOURTH attached image is the previous Celestial draft. Keep its pale ivory finish and existing shape. It accidentally omitted BOTH thin flush rectangular metal inlay strips on the exposed upper shaft immediately below the socket. Restore BOTH at their exact lengths and positions from the SECOND image (Relic), but render the strips as pale PEARL-IVORY METAL with two subtle straight crevice-shadow seams so the two insets remain visible against ivory wood. They are inlaid flush within the existing shaft, never raised rails or attached bars. Do not erase them into an undivided wood shaft. Keep all other Celestial changes, original stop-bar rivets, socket ornament and existing repair. This correction changes surface details only; no outline or camera changes.",
     "keep_line": "the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.",
     "status": "pending",
     "production_approved": false,
@@ -104,13 +105,22 @@
     "retry_authorized_by_user": true,
     "original_prompt_sha256": "d42b589c87796486e79ad01e1bd68378a58cc6bfb33ebc1c9238827446fc88ba",
     "run": "sole-20261121-0109",
-    "standard_sha256": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287"
+    "standard_sha256": "52c7ca0b556572d7ed8c22e0753c71c1fa78c217197fda55c8152b359f970287",
+    "prompt_revisions": [
+      {
+        "attempt": 1,
+        "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same small straight pointed leaf-shaped steel spearhead with raised central midrib, short transverse rectangular two-rivet stop bar, cylindrical socket, long thin straight pale-ash shaft, olive-grey spiral grip wrap and small plain iron butt cap with its single rivet. Preserve both crossbar rivets, stop-bar length, leaf point, shaft diameter and all original fittings.\n\nGrade: Celestial. Keep the shape, the inlay and the ornament's place. The head turns to a pale, unmarked pearl-ivory metal, the haft to a pale ivory wood without a knot or flaw. The inlay line on the head and the seam of the socket give a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nThe FIRST image locks the Standard shape, all part counts, negative spaces, camera, pose and margins. The SECOND image is the selected preceding grade, whose additions are retained. The portrait controls brushwork only. Transparent canvas with no ground, background haze or cast shadow. No faction accent: Masterwork head inlay is bright brass. Preserve the original plain Legion issue geometry; the grip stays darker olive-grey at Masterwork and becomes ivory at Celestial. No pennant, winged guard, extra spear point, cone or new fitting. ALL head metal, socket, crossbar if present, two flush shaft strips and butt cap become pale PEARL-IVORY. The wood haft becomes immaculate pale IVORY WOOD, and ALL leather/cord including grip and repair binding becomes IVORY HIDE/CORD. Charcoal only in crevice shadows. Keep the Relic repair and socket ornament in their same places. The head inlay and socket seam emit only a thin contained ivory-gold line; no halo or external light.",
+        "sha256": "d42b589c87796486e79ad01e1bd68378a58cc6bfb33ebc1c9238827446fc88ba",
+        "reason": "accepted render but missing both flush shaft inlays"
+      }
+    ],
+    "active_prompt_sha256": "ea408ba41ce8f39634112492f07ec359c5b5a7c865f2862dacfa072855c6fc4d"
   },
   {
     "id": "weapon-short_draw--fine",
     "standard_id": "weapon-short_draw",
     "grade": "fine",
-    "label": "Short Draw — Fine",
+    "label": "Short Draw \u2014 Fine",
     "path": "art/icons/gear/weapon-short_draw--fine.png",
     "kind": "weapon",
     "references": [
@@ -146,7 +156,7 @@
     "id": "weapon-long_draw--fine",
     "standard_id": "weapon-long_draw",
     "grade": "fine",
-    "label": "Long Draw — Fine",
+    "label": "Long Draw \u2014 Fine",
     "path": "art/icons/gear/weapon-long_draw--fine.png",
     "kind": "weapon",
     "references": [
@@ -182,7 +192,7 @@
     "id": "weapon-purifier_flamer--masterwork",
     "standard_id": "weapon-purifier_flamer",
     "grade": "masterwork",
-    "label": "Purifier Flamer — Masterwork",
+    "label": "Purifier Flamer \u2014 Masterwork",
     "path": "art/icons/gear/weapon-purifier_flamer--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -217,7 +227,7 @@
     "id": "weapon-dock_cutter--masterwork",
     "standard_id": "weapon-dock_cutter",
     "grade": "masterwork",
-    "label": "Dock Cutter — Masterwork",
+    "label": "Dock Cutter \u2014 Masterwork",
     "path": "art/icons/gear/weapon-dock_cutter--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -255,7 +265,7 @@
     "id": "weapon-short_draw--masterwork",
     "standard_id": "weapon-short_draw",
     "grade": "masterwork",
-    "label": "Short Draw — Masterwork",
+    "label": "Short Draw \u2014 Masterwork",
     "path": "art/icons/gear/weapon-short_draw--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -288,7 +298,7 @@
     "id": "weapon-long_draw--masterwork",
     "standard_id": "weapon-long_draw",
     "grade": "masterwork",
-    "label": "Long Draw — Masterwork",
+    "label": "Long Draw \u2014 Masterwork",
     "path": "art/icons/gear/weapon-long_draw--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -321,7 +331,7 @@
     "id": "weapon-kemizuchi_side_sword--masterwork",
     "standard_id": "weapon-kemizuchi_side_sword",
     "grade": "masterwork",
-    "label": "Kemizuchi Side Sword — Masterwork",
+    "label": "Kemizuchi Side Sword \u2014 Masterwork",
     "path": "art/icons/gear/weapon-kemizuchi_side_sword--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -359,7 +369,7 @@
     "id": "weapon-ork_cleaver_glaive--masterwork",
     "standard_id": "weapon-ork_cleaver_glaive",
     "grade": "masterwork",
-    "label": "Ork Cleaver Glaive — Masterwork",
+    "label": "Ork Cleaver Glaive \u2014 Masterwork",
     "path": "art/icons/gear/weapon-ork_cleaver_glaive--masterwork.png",
     "kind": "weapon",
     "references": [
@@ -397,7 +407,7 @@
     "id": "weapon-purifier_flamer--relic",
     "standard_id": "weapon-purifier_flamer",
     "grade": "relic",
-    "label": "Purifier Flamer — Relic",
+    "label": "Purifier Flamer \u2014 Relic",
     "path": "art/icons/gear/weapon-purifier_flamer--relic.png",
     "kind": "weapon",
     "references": [
@@ -428,7 +438,7 @@
     "id": "weapon-dock_cutter--relic",
     "standard_id": "weapon-dock_cutter",
     "grade": "relic",
-    "label": "Dock Cutter — Relic",
+    "label": "Dock Cutter \u2014 Relic",
     "path": "art/icons/gear/weapon-dock_cutter--relic.png",
     "kind": "weapon",
     "references": [
@@ -462,7 +472,7 @@
     "id": "weapon-broadback_sabre--relic",
     "standard_id": "weapon-broadback_sabre",
     "grade": "relic",
-    "label": "Broadback Sabre — Relic",
+    "label": "Broadback Sabre \u2014 Relic",
     "path": "art/icons/gear/weapon-broadback_sabre--relic.png",
     "kind": "weapon",
     "references": [
@@ -501,7 +511,7 @@
     "id": "weapon-short_draw--relic",
     "standard_id": "weapon-short_draw",
     "grade": "relic",
-    "label": "Short Draw — Relic",
+    "label": "Short Draw \u2014 Relic",
     "path": "art/icons/gear/weapon-short_draw--relic.png",
     "kind": "weapon",
     "references": [
@@ -534,7 +544,7 @@
     "id": "weapon-long_draw--relic",
     "standard_id": "weapon-long_draw",
     "grade": "relic",
-    "label": "Long Draw — Relic",
+    "label": "Long Draw \u2014 Relic",
     "path": "art/icons/gear/weapon-long_draw--relic.png",
     "kind": "weapon",
     "references": [
@@ -567,7 +577,7 @@
     "id": "weapon-kemizuchi_side_sword--relic",
     "standard_id": "weapon-kemizuchi_side_sword",
     "grade": "relic",
-    "label": "Kemizuchi Side Sword — Relic",
+    "label": "Kemizuchi Side Sword \u2014 Relic",
     "path": "art/icons/gear/weapon-kemizuchi_side_sword--relic.png",
     "kind": "weapon",
     "references": [
@@ -601,7 +611,7 @@
     "id": "weapon-ork_cleaver_glaive--relic",
     "standard_id": "weapon-ork_cleaver_glaive",
     "grade": "relic",
-    "label": "Ork Cleaver Glaive — Relic",
+    "label": "Ork Cleaver Glaive \u2014 Relic",
     "path": "art/icons/gear/weapon-ork_cleaver_glaive--relic.png",
     "kind": "weapon",
     "references": [
@@ -635,7 +645,7 @@
     "id": "weapon-hellraiser_rotary--celestial",
     "standard_id": "weapon-hellraiser_rotary",
     "grade": "celestial",
-    "label": "Hellraiser Rotary — Celestial",
+    "label": "Hellraiser Rotary \u2014 Celestial",
     "path": "art/icons/gear/weapon-hellraiser_rotary--celestial.png",
     "kind": "weapon",
     "references": [
@@ -672,7 +682,7 @@
     "id": "weapon-purifier_flamer--celestial",
     "standard_id": "weapon-purifier_flamer",
     "grade": "celestial",
-    "label": "Purifier Flamer — Celestial",
+    "label": "Purifier Flamer \u2014 Celestial",
     "path": "art/icons/gear/weapon-purifier_flamer--celestial.png",
     "kind": "weapon",
     "references": [
@@ -703,7 +713,7 @@
     "id": "weapon-dock_cutter--celestial",
     "standard_id": "weapon-dock_cutter",
     "grade": "celestial",
-    "label": "Dock Cutter — Celestial",
+    "label": "Dock Cutter \u2014 Celestial",
     "path": "art/icons/gear/weapon-dock_cutter--celestial.png",
     "kind": "weapon",
     "references": [
@@ -737,7 +747,7 @@
     "id": "weapon-broadback_sabre--celestial",
     "standard_id": "weapon-broadback_sabre",
     "grade": "celestial",
-    "label": "Broadback Sabre — Celestial",
+    "label": "Broadback Sabre \u2014 Celestial",
     "path": "art/icons/gear/weapon-broadback_sabre--celestial.png",
     "kind": "weapon",
     "references": [
@@ -772,7 +782,7 @@
     "id": "weapon-short_draw--celestial",
     "standard_id": "weapon-short_draw",
     "grade": "celestial",
-    "label": "Short Draw — Celestial",
+    "label": "Short Draw \u2014 Celestial",
     "path": "art/icons/gear/weapon-short_draw--celestial.png",
     "kind": "weapon",
     "references": [
@@ -805,7 +815,7 @@
     "id": "weapon-long_draw--celestial",
     "standard_id": "weapon-long_draw",
     "grade": "celestial",
-    "label": "Long Draw — Celestial",
+    "label": "Long Draw \u2014 Celestial",
     "path": "art/icons/gear/weapon-long_draw--celestial.png",
     "kind": "weapon",
     "references": [
@@ -838,7 +848,7 @@
     "id": "weapon-kemizuchi_side_sword--celestial",
     "standard_id": "weapon-kemizuchi_side_sword",
     "grade": "celestial",
-    "label": "Kemizuchi Side Sword — Celestial",
+    "label": "Kemizuchi Side Sword \u2014 Celestial",
     "path": "art/icons/gear/weapon-kemizuchi_side_sword--celestial.png",
     "kind": "weapon",
     "references": [
@@ -872,7 +882,7 @@
     "id": "weapon-ork_cleaver_glaive--celestial",
     "standard_id": "weapon-ork_cleaver_glaive",
     "grade": "celestial",
-    "label": "Ork Cleaver Glaive — Celestial",
+    "label": "Ork Cleaver Glaive \u2014 Celestial",
     "path": "art/icons/gear/weapon-ork_cleaver_glaive--celestial.png",
     "kind": "weapon",
     "references": [
