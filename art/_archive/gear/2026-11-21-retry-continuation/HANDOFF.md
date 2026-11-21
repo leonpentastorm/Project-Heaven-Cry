@@ -1,13 +1,13 @@
 # Reset continuation progress
 
-Branch: `art/2026-11-20-reset-continuation`. New deliveries: 45/50.
+Branch: `art/2026-11-20-reset-continuation`. New deliveries: 46/50.
 
 Shared coordination: https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3 . Read START-HERE.md before extending this queue.
 
 All new entries remain review-candidate; production_approved:false and implementation_ready:false. Exact-outline review remains pending.
 
-Ready jobs: weapon-purifier_flamer--celestial, weapon-short_bow--fine.
+Ready jobs: weapon-short_bow--fine.
 
-Pending jobs: weapon-purifier_flamer--celestial, weapon-short_bow--fine, weapon-short_bow--masterwork, weapon-short_bow--relic, weapon-short_bow--celestial.
+Pending jobs: weapon-short_bow--fine, weapon-short_bow--masterwork, weapon-short_bow--relic, weapon-short_bow--celestial.
 
 Quota state: null.

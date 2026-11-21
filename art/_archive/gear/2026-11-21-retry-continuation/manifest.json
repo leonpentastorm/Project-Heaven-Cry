@@ -2903,6 +2903,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-purifier_flamer--celestial",
+      "path": "art/icons/gear/weapon-purifier_flamer--celestial.png",
+      "sha256": "9d8bb1a06b4dc149d1b99ec613a5f68fe1e73bd8e595e8b3f7ad358280ef3aee",
+      "label": "Purifier Flamer — Celestial",
+      "family": "weapon-purifier_flamer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-purifier_flamer--celestial.png",
+        "sha256": "8c5760e7db6b7040239e0dced9b56d96503c491a4e1fe101d1b19946baaecf8b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-purifier_flamer--celestial.png",
+        "sha256": "9d8bb1a06b4dc149d1b99ec613a5f68fe1e73bd8e595e8b3f7ad358280ef3aee"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-purifier_flamer--celestial.txt",
+        "sha256": "d662e5fe1e004f123911df470f3da256998e57d98c060168abc720ea9c9062e2"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-purifier_flamer.png",
+          "sha256": "f315ad1c1970249e94351f5e4c696af4109b5fc13f49400043d98586d8aec23f"
+        },
+        {
+          "path": "art/icons/gear/weapon-purifier_flamer--relic.png",
+          "sha256": "d2300db7fde2209025b54a8975329b6b0290663e2d9b7e6b238b3a7d08d35fca"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-purifier_flamer--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-purifier_flamer--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-purifier_flamer--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-purifier_flamer--celestial.png"
+      },
+      "export_hashes": {
+        "256": "01f2f41735c6470e6d002cccf2033a90b44642ae982357f677de210dd05c2e03",
+        "128": "afccbeb13219287ecc516eb2f14e87e8d30e072f682916c5c930da36f825881b",
+        "64": "c596ad82c4c5df3ad4662e0f91983e1398e0192e143070696ef4e615dab7af47",
+        "32": "a44ee782cae9826cf6e0dc91c9cc116a4a15cebb7cf2acb10ad837e379925212"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-purifier_flamer",
+      "outline": {
+        "solid_alpha_iou": 0.9484792019360776,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 31
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
