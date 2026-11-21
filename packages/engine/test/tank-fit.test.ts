@@ -42,12 +42,12 @@ describe('T.2 Guard soaks rules.guard.soak a point, against a real enemy attack'
       const f = fight(7, { foeAt: 'D5', foeWeapon: 'maul' }); guard(f, n); rig({ hit: true, die: 12 }); (f.char(f.pc) as any).phys.answers = []; // Retort off (rules 1.56 Guard 2.0): it spends Guard after the blow
       const t = f.unit(f.pc.id), hp = t.hp; f.turn(f.foe);
       f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), t, 'melee', null, { noAp: true }));
-      return { lost: hp - f.unit(f.pc.id).hp, left: guard(f) };
+      return { lost: hp - f.unit(f.pc.id).hp, left: guard(f), soak: f.bound(() => phys.guardSoak(f.unit(f.pc.id))) };
     };
     const bare = blow(0), held = blow(5), spent = 5 - held.left;
-    expect(bare.lost).toBeGreaterThan(G.soak);
+    expect(bare.lost).toBeGreaterThan(held.soak); // rules 1.95: a plate soaks the row's soak x the Guard door's Stat x the deal column (phys.guardSoak, the one copy)
     expect(spent).toBeGreaterThan(0); expect(held.left).toBeGreaterThanOrEqual(G.keep_back);
-    expect(held.lost).toBe(Math.max(0, bare.lost - spent * G.soak));
+    expect(held.lost).toBe(Math.max(0, bare.lost - spent * held.soak));
   });
 });
 

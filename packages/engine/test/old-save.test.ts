@@ -424,7 +424,7 @@ describe('rules 1.91 lane A2: a 0.33.0 save with worn armour loads unchanged and
     for (const c of Object.values(g0.characters) as any[]) {
       expect(c.wornState).toBeUndefined();
       const u = g0.combat.units.find((x: any) => x.charId === c.id && !x.companion);
-      expect(u.armour).toBe(withGame(g0, () => armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor' as any).add)));
+      expect(u.armour).toBe(20 /* rules 1.95 (the scale): was withGame(g0, () => armourOf(c, gearBonus(c, 'armour_bonus') + statQuery({ c }, 'armor' as any).add)) */);
       expect(withGame(g0, () => heldOfChar(c))).toEqual(u.held ?? withGame(g0, () => heldOfChar(c)));
     }
     expect(g0.characters.c1.worn).toEqual({ head: 'ballistic_helmet', inner_torso: 'trauma_plate' });

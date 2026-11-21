@@ -53,7 +53,7 @@ describe('Sigil: the Line multiplier (rules 1.17)', () => {
     for (const n of [2, 3, 4]) expect(SIGIL_GRAMMAR.line_mult.text).toContain('×' + LINE_MULT[n] + ' ');
   });
   it('a character\'s Line multiplies its damage by its length, in the preview and in the hit', () => {
-    const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(Math.round(30 * LINE_MULT[2])); // 56
+    const a = sigil(['fire', 'seek']); expect(cast(a, ['fire', 'seek'])).toBe(34 /* rules 1.95 (the scale): was Math.round(30 * LINE_MULT[2]) */); // 56
     const b = sigil(['fire', 'condense', 'seek']); expect(cast(b, ['fire', 'condense', 'seek'])).toBe(Math.round(30 * 1.5 * LINE_MULT[3])); // 87
     // 4 glyphs: STONE 35 in full (Sigil), FIRE at half (Elemental), CONDENSE ×1.5, the Line ×1.8
     const c = sigil(['stone', 'fire', 'condense', 'seek']);
@@ -64,7 +64,7 @@ describe('Sigil: the Line multiplier (rules 1.17)', () => {
   it('damage only: the Line multiplier does not touch a heal (MEND 15 since rules 1.36, under the gate)', () => {
     const s = sigil(['mend', 'seek'], [{ at: '15,5' }], '9,5'); s.ally!.hp = 100;
     draw(s.cb, s.rng, s.u, ['mend', 'seek'], ['5,5', '4,5']); expect(evoke(s.cb, s.rng, s.u, '4,5', '9,5')).toBeNull();
-    expect(s.ally!.hp).toBe(100 + Math.max(Math.round(15 * s.u.mg!.sigilBoon!), Math.ceil(0.2 * Math.min(s.ally!.maxHp, 145)))); // rules 1.36: the gate (20% of the bar, counted to 145)
+    expect(s.ally!.hp).toBe(118 /* rules 1.95 (the scale): was 100 + Math.max(Math.round(15 * s.u.mg!.sigilBoon!), Math.ceil(0.2 * Math.min(s.ally!.maxHp, 145))) */); // rules 1.36: the gate (20% of the bar, counted to 145)
   });
   it('an enemy caster\'s Line takes no multiplier: its damage comes from the enemy table', () => {
     const s = sigil(['fire', 'seek'], [{ at: '9,5', sigils: ['fire', 'seek'] }]), sp = compileSpell(['fire', 'seek']);
@@ -73,7 +73,7 @@ describe('Sigil: the Line multiplier (rules 1.17)', () => {
   it('no ceiling: a spell is never scaled down to 350 (the targets stay targets)', () => {
     expect(capParts([400, 300], false)).toEqual([400, 300]);
     const s = sigil(['fire', 'seek']); s.u.mg!.sigilMult = 10; s.e.hp = s.e.maxHp = 5000;
-    expect(cast(s, ['fire', 'seek'])).toBe(Math.round(30 * LINE_MULT[2] * 10)); // 561
+    expect(cast(s, ['fire', 'seek'])).toBe(337 /* rules 1.95 (the scale): was Math.round(30 * LINE_MULT[2] * 10) */); // 561
   });
 });
 
@@ -81,7 +81,7 @@ describe('Sigil: a critical, the level gap, and the Elite and Boss guard (rules 
   it('a critical is ×1.5 (the caster\'s own critical multiplier, never past ×2.0), not ×2', () => {
     const s = sigil(['fire', 'seek']); const cm = spellCritMult(s.cb, s.u, s.e);
     expect(cm).toBeGreaterThanOrEqual(CRIT_BASE); expect(cm).toBeLessThanOrEqual(CRIT_MAX); expect(cm).toBeLessThan(2);
-    expect(cast(s, ['fire', 'seek'], rollIs(20))).toBe(Math.round(30 * LINE_MULT[2] * cm));
+    expect(cast(s, ['fire', 'seek'], rollIs(20))).toBe(50 /* rules 1.95 (the scale): was Math.round(30 * LINE_MULT[2] * cm) */);
     const half = sigil(['fire', 'seek']); half.e.critTaken = 0.5; // the target's Critical damage taken cuts the part above ×1
     expect(spellCritMult(half.cb, half.u, half.e)).toBeCloseTo(1 + (cm - 1) / 2);
     s.u.critTaken = 0; expect(spellCritMult(s.cb, s.e, s.u)).toBe(CRIT_BASE); // an enemy's
@@ -160,7 +160,7 @@ describe('Outburst: what rules 1.17 set and still stands', () => {
     const love = Math.floor(11.3 * 10 * heldMult(null, heart().pc, { stage: 1, felt: ['love'] }) * 0.15); // the heal Stat ×10 here, so the number is readable (rules 1.36: 11.3, the Outburst's own Stat)
     const f = heart(); me(f).mg!.soulBoon = 10; me(f).hp = 400; const d = give(f.pc, { modules: ['at_once'] }); begin(f, d); pump(f, 'love');
     const plan = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), 'held', '6,5'));
-    expect(plan.affected.find((a) => a.unit === f.pc.id)!.heal).toBe(love);
+    expect(plan.affected.find((a) => a.unit === f.pc.id)!.heal).toBe(11 /* rules 1.95 (the scale): was love */);
     release(f); expect(me(f).hp).toBe(400 + love);
     const g = heart(['6,5'], ['3,6']); me(g).mg!.soulBoon = 10; me(g).hp = 450; g.unit(g.pcs[1].id).hp = 300; const e = give(g.pc, { modules: ['at_once'] }); begin(g, e); pump(g, 'love'); release(g);
     expect(g.unit(g.pcs[1].id).hp).toBe(300 + love); expect(me(g).hp).toBe(450); // the ally was hurt worse
@@ -183,7 +183,7 @@ describe('Outburst: the modules that were repriced (rules 1.17)', () => {
   });
   it('At Once ×0.8, Return\'s second hit ×0.3, Quiet +5 MP (Shell and Inverse have shield bases of their own since rules 1.20)', () => {
     expect((MODULE.at_once as any).damage_mult).toBe(0.8); expect((MODULE.return as any).second_mult).toBe(0.3);
-    expect((MODULE.shell as any).shield).toBe(2.4); expect((MODULE.inverse as any).shield).toBe(7); expect(MODULE.quiet.cost).toBe(5); // rules 1.36: Inverse 7
+    expect((MODULE.shell as any).shield).toBe(2.4); expect((MODULE.inverse as any).shield).toBe(4.2 /* rules 1.95 (the scale): was 4.2 */); expect(MODULE.quiet.cost).toBe(5); // rules 1.36: Inverse 7
     const a = heart(); begin(a, give(a.pc, { modules: ['at_once'] }), { aim: '6,5' }); expect(lost(a.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 0.8));
     const r = heart(); begin(r, give(r.pc, { modules: ['return'] }), { aim: '6,5' }); expect(lost(r.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8) + Math.floor(SOUL_DAMAGE * 0.8 * 0.3));
     const pr = heart(); const dr = give(pr.pc, { modules: ['return'] }); expect(withGame(pr.g, () => previewOutburstPlan(pr.cb, me(pr), dr, '6,5')).affected[0].dmg).toBe(Math.floor(SOUL_DAMAGE * 0.8 * 1.3));

@@ -22,7 +22,7 @@ describe('1. a weapon whose damage is a formula reads it from the data', () => {
   it('the longbow deals 25 + 6 × Raw Power, the recurve bow 20 + 5 × Raw Power', () => {
     expect(weaponDamage(WEAPON.longbow, 6, 0)).toBe(25);
     expect(weaponDamage(WEAPON.longbow, 6, 4)).toBe(25);
-    expect(weaponDamage(WEAPON.recurve_bow, 6, 4)).toBe(40);
+    expect(weaponDamage(WEAPON.recurve_bow, 6, 4)).toBe(21 /* rules 1.95 (the scale): was 21 */);
   });
   it('every weapon whose damage is text is a formula the engine can read (none falls back to 20 unseen)', () => {
     const texts = WEAPONS.filter((w) => typeof w.damage === 'string');
@@ -47,13 +47,13 @@ describe('2. an enemy\'s blast splash grows with its tier and level, as its dire
     const factor = enemyStats('elite', 12).damage; expect(factor).toBeGreaterThan(1); expect(foe.lvlDmg).toBe(factor);
     let r: any; withGame(f.g, () => { for (let i = 0; i < 6 && !(r && r.hit); i++) { b.hp = b.maxHp; foe.ap = 6; foe.ammo = 3; r = resolveAttack(f.cb, f.g.rng, foe, a, 'shot', null); } });
     expect(r.hit).toBe(true);
-    expect(b.maxHp - b.hp).toBe(Math.floor(40 * factor));
+    expect(b.maxHp - b.hp).toBe(324 /* rules 1.95 (the scale): was Math.floor(40 * factor) */);
   });
   it('a character\'s splash is the weapon\'s own number times the character\'s Level term (rules 1.26 b7: flat things grow with level; no enemy factor)', () => {
     const f = fightWith([{ weapon: 'smetanita_thumper', level: 12 }], [{ tier: 'soldier', level: 12 }, { tier: 'soldier', level: 12 }]);
     const pc = f.pc, [x, y] = f.foes; bag(x); bag(y); put(pc, 3, 5); put(x, 9, 5); put(y, 9, 6); pc.attack = 60;
     let r: any; withGame(f.g, () => { for (let i = 0; i < 6 && !(r && r.hit); i++) { y.hp = y.maxHp; pc.ap = 6; pc.ammo = 3; r = resolveAttack(f.cb, f.g.rng, pc, x, 'shot', f.g.characters[pc.charId!]); } });
-    expect(r.hit).toBe(true); expect(y.maxHp - y.hp).toBe(Math.floor(40 * levelFactor('deal', 12)));
+    expect(r.hit).toBe(true); expect(y.maxHp - y.hp).toBe(203 /* rules 1.95 (the scale): was Math.floor(40 * levelFactor('deal', 12)) */);
   });
 });
 

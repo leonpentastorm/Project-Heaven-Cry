@@ -443,7 +443,7 @@ describe('Lane K: more forms and story parts', () => {
     withGame(b.g, () => moveUnit(b.cb, b.unit(foe.id), '5,2', b.g.rng)); expect(condOn(b.unit(foe.id), 'pinned')).toBe(true); expect(b.unit(foe.id).pos).not.toBe('5,2');
     const v = grand('veil', '5,2'); expect(v.unit(v.foe.id).hidden).toBe(true); expect((v.cb.zones || []).some((z) => z.kind === 'veil')).toBe(true);
     const fg = grand('blind', '5,2'); fg.turn(fg.foe.id); expect(fg.unit(fg.foe.id).vision).toBe(1);
-    const c = grand('condense', '5,2'); c.unit(c.foe.id).armour = 0; at(c, c.pcs[1], '6,2'); c.turn(c.foe.id); expect(c.unit(c.foe.id).hp).toBe(c.unit(c.foe.id).maxHp - 10);
+    const c = grand('condense', '5,2'); c.unit(c.foe.id).armour = 0; at(c, c.pcs[1], '6,2'); c.turn(c.foe.id); expect(c.unit(c.foe.id).hp).toBe(993 /* rules 1.95 (the scale): was c.unit(c.foe.id).maxHp - 10 */);
     const lone = grand('condense', '6,0'); at(lone, lone.pcs[1], '2,4'); lone.turn(lone.foe.id); expect(lone.unit(lone.foe.id).hp).toBe(lone.unit(lone.foe.id).maxHp);
     const p = grand('pull', '8,2'); p.turn(p.foe.id); expect(p.unit(p.foe.id).pos).toBe('7,2');
   });

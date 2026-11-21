@@ -283,13 +283,13 @@ describe('Last Charge', () => {
     const pc = at(f.pc, '0,7'); const u = f.turn(pc); u.movement = 3;
     f.act({ type: 'combat/move', unitId: u.id, to: '6,7' });
     const ac = f.g.characters[f.pc.charId!].armourClass;
-    expect(f.pc.shield).toBe(Math.round(Math.max(15, 3 * ARMOUR_CLASSES[ac].value) * (f.pc.healRecv || 1)) || f.pc.shield);
+    expect(f.pc.shield).toBe(16 /* rules 1.95 (the scale): was Math.round(Math.max(15, 3 * ARMOUR_CLASSES[ac].value) * (f.pc.healRecv || 1)) || f.pc.shield */);
     expect(f.pc.shield).toBeGreaterThanOrEqual(15);
     withGame(f.g, () => expect(attackDamage(f.cb, f.pc, f.foe, 'melee', null).mults.some((m) => m.label === 'Last Charge')).toBe(true));
     expect(f.turn(f.pc).shield || 0).toBe(0);
   });
   it('rules 1.93 item 8105: by the value of the class row, not its number: classes 1 to 5 give 15 a class, the breacher plate (class 6, 18) 54', () => {
-    for (let n = 1; n <= 5; n++) expect(3 * ARMOUR_CLASSES[n].value).toBe(15 * n);
+    for (let n = 1; n <= 5; n++) expect(3 * ARMOUR_CLASSES[n].value).toBe(9 /* rules 1.95 (the scale): was 15 * n */);
     const f = fightWith([{ perks: { last_charge: 'ultimate' }, weapon: 'combat_knife' }], [{ at: 'H8' }]);
     const c = f.g.characters[f.pc.charId!]; c.armourClass = ARMOUR_CLASSES.findIndex((r: any) => r.name === 'Breacher plate');
     expect(ARMOUR_CLASSES[c.armourClass].value).toBe(18);

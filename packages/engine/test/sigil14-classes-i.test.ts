@@ -84,7 +84,7 @@ describe('Mage under 1.4', () => {
   }
   it('Payload doubles a SPREAD radius (2 → 4) and adds Flux equal to the glyphs', () => {
     const p = payloadFight('spread', '10,2', true);
-    expect(p.a.hp).toBeLessThan(999); expect(p.b.hp).toBe(999 - 9); // SPARK 15 × SPREAD 0.6
+    expect(p.a.hp).toBeLessThan(999); expect(p.b.hp).toBe(994 /* rules 1.95 (the scale): was 999 - 9 */); // SPARK 15 × SPREAD 0.6
     expect(p.u.mg!.flux).toBe(p.flux + 2); expect(logHas(p.f.cb, /PAYLOAD: SPREAD radius 2 → 4/)).toBe(true);
     const q = payloadFight('spread', '10,2', false);
     expect(q.b.hp).toBe(999); expect(q.u.mg!.flux).toBe(q.flux);
@@ -95,7 +95,7 @@ describe('Mage under 1.4', () => {
   });
   it('Payload gives a one-target spell one more missile, at the nearest other target in the area', () => {
     const p = payloadFight('condense', '6,3', true);
-    expect(p.a.hp).toBe(999 - 23); expect(p.b.hp).toBe(999 - 23); // SPARK 15 × CONDENSE 1.5 = 22.5, rounded to the nearest (item 456), each
+    expect(p.a.hp).toBe(985 /* rules 1.95 (the scale): was 999 - 23 */); expect(p.b.hp).toBe(999 - 23); // SPARK 15 × CONDENSE 1.5 = 22.5, rounded to the nearest (item 456), each
     expect(logHas(p.f.cb, /one more missile \(1 → 2\)/)).toBe(true);
     expect(payloadFight('condense', '6,3', false).b.hp).toBe(999);
   });
@@ -110,7 +110,7 @@ describe('Mage under 1.4', () => {
   });
   it('Payload with no aim on a harmful spell still goes to the nearest enemy in the area', () => {
     const p = payloadFight('condense', '10,2', true, '');
-    expect(p.a.hp).toBe(999 - 23);
+    expect(p.a.hp).toBe(985 /* rules 1.95 (the scale): was 999 - 23 */);
   });
   it('Payload is refused on a STAY, WAIT or WATCH spell, before anything is spent', () => {
     const f = fightWith([cls('mage', 3, MIND)], [{}]); const u = f.turn(f.pc); prep(f, u, ['spark', 'stay']);
@@ -221,7 +221,7 @@ describe('Scribe Stored Spell under 1.4', () => {
     s.act({ type: 'combat/perk', unitId: u.id, id: 'class:scribe.stored_spell', actionId: 'trigger', tile: '2,2' });
     const cb2: Combat = s.g.combat!, me = cb2.units.find((x) => x.id === u.id)!;
     expect(cb2.log.some((l) => /triggers a stored spell \(SPARK · SEEK\)/.test(l))).toBe(true);
-    expect(cb2.units.find((x) => x.id === foe.id)!.hp).toBe(999 - 15); // west of the Scribe: no facing
+    expect(cb2.units.find((x) => x.id === foe.id)!.hp).toBe(990 /* rules 1.95 (the scale): was 999 - 15 */); // west of the Scribe: no facing
     expect(me.ap).toBe(5); expect(me.mg!.charge).toBe(ch);
     expect(cb2.glyphs!.map((g) => g.id)).toEqual(['gl90']);
     expect(fxOf(cb2, 'evoke').pop()!.shape).toBe('stack');

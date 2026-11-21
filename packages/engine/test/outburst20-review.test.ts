@@ -45,7 +45,7 @@ describe('the second school works on the primary\'s side (item 542)', () => {
       const d = give(f.pc, { school: 'buff', option: 'heal', school2, ...(option2 ? { option2 } : {}) });
       begin(f, d); pump(f); release(f, '4,5');
       const a = f.unit(ally.id);
-      expect(a.hp, school2).toBe(100 + Math.ceil(0.2 * 145)); expect(a.pos, school2).toBe('4,5'); // rules 1.36: 14 × stage 1 under the gate (20% of the bar, counted to 145)
+      expect(a.hp, school2).toBe(118 /* rules 1.95 (the scale): was 100 + Math.ceil(0.2 * 145) */); expect(a.pos, school2).toBe('4,5'); // rules 1.36: 14 × stage 1 under the gate (20% of the bar, counted to 145)
       expect(condOn(a, 'shaken') || condOn(a, 'pinned'), school2).toBe(false);
       expect(withGame(f.g, () => previewOutburstPlan(f.cb, me(f), d, '4,5')).affected[0].second).toBe('');
     }

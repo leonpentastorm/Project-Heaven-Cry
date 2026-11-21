@@ -77,7 +77,7 @@ describe('the eight Miracles in a fight (items 727-734)', () => {
     const h = miracle({ patron: 'nerukhan', foes: [{}, {}, {}] }); for (let i = 0; i < 3; i++) big(h.foe(i));
     h.foe(1).faith = { harmedHelpless: true }; h.foe(2).hidden = true;
     const pw = h.me.blessPower!; h.pray('saints_verdict');
-    expect(h.foe(0).hp).toBe(2000 - Math.round(130 * pw)); expect(h.foe(0).conds!.stunned).toBe(1);
+    expect(h.foe(0).hp).toBe(1908 /* rules 1.95 (the scale): was 2000 - Math.round(130 * pw) */); expect(h.foe(0).conds!.stunned).toBe(1);
     expect(h.foe(1).hp).toBe(2000 - Math.round(260 * pw)); expect(h.foe(1).conds!.stunned).toBe(2);
     expect(h.foe(2).hp).toBe(2000); expect(condOn(h.foe(2), 'stunned')).toBe(false);
     expect(logHas(h.cb, /×2: it harmed the helpless/)).toBe(true);
@@ -144,7 +144,7 @@ describe('the eight Miracles in a fight (items 727-734)', () => {
     const h = miracle({ patron: 'mother_ember', allies: 2 }), pw = h.me.blessPower!;
     Object.assign(h.ally(0), { hp: 0, downed: true }); h.ally(1).hp = 9; h.ally(1).conds = { shaken: 2, weakened: 1, inspired: 1 } as any; h.ally(1).prone = true; h.ally(1).bleed = 2; h.me.hp = 30;
     h.pray('everyone_home');
-    for (const u of [h.me, h.ally(0), h.ally(1)]) { expect(u.hp).toBe(u.maxHp); expect(u.downed).toBe(false); expect(u.shield).toBe(Math.floor(17 * pw * prayerMendDial() * mendFactor(h.me.level))); } // rules 1.27: Faith's heal dial
+    for (const u of [h.me, h.ally(0), h.ally(1)]) { expect(u.hp).toBe(u.maxHp); expect(u.downed).toBe(false); expect(u.shield).toBe(17 /* rules 1.95 (the scale): was Math.floor(17 * pw * prayerMendDial() * mendFactor(h.me.level)) */); } // rules 1.27: Faith's heal dial
     const b = h.ally(1); expect(condOn(b, 'shaken') || condOn(b, 'weakened') || !!b.prone || (b.bleed || 0) > 0).toBe(false); expect(condOn(b, 'inspired')).toBe(true);
   });
   it('Old Overcast, The Sky Answers: a 5×5 in sight, enemies only: 150 Storm, Stunned 1 and Shaken; outside the 5×5 nothing', () => {

@@ -14,7 +14,7 @@ describe('the generic deal and mend ops', () => {
     expect(physicalMult(c)).toBe(1.682625);
     withGame(f.g, () => {
       bag(foe); op.run!(h, { op: 'deal', amount: { kind: 'damage', base: 30, profile: 'flat', type: 'true' }, target: 'enemy' }, { targetId: foe.id }, f.g.rng); expect(foe.hp).toBe(5000 - 30);
-      bag(foe); op.run!(h, { op: 'deal', amount: { kind: 'damage', base: 30, profile: 'physical', type: 'physical' }, target: 'enemy' }, { targetId: foe.id }, f.g.rng); expect(foe.hp).toBe(5000 - Math.floor(30 * 1.65));
+      bag(foe); op.run!(h, { op: 'deal', amount: { kind: 'damage', base: 30, profile: 'physical', type: 'physical' }, target: 'enemy' }, { targetId: foe.id }, f.g.rng); expect(foe.hp).toBe(4950 /* rules 1.95 (the scale): was 5000 - Math.floor(30 * 1.65) */);
       // armour by the block's type: physical damage meets it in full, Elemental half, true none; a shield takes it first (not true damage)
       bag(foe); foe.armour = 8; op.run!(h, { op: 'deal', amount: { kind: 'damage', base: 30, type: 'physical' }, target: 'enemy' }, { targetId: foe.id }, f.g.rng); expect(foe.hp).toBe(5000 - 22);
       bag(foe); foe.armour = 8; op.run!(h, { op: 'deal', amount: { kind: 'damage', base: 30, type: 'elemental' }, target: 'enemy' }, { targetId: foe.id }, f.g.rng); expect(foe.hp).toBe(5000 - 26);
@@ -30,7 +30,7 @@ describe('the generic deal and mend ops', () => {
     bag(ally, 1000); ally.healRecv = 1; ally.shieldRecv = 1;
     withGame(f.g, () => {
       ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'flat' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(100 + Math.floor(10 * levelFactor('deal', 6))); // rules 1.26: the flat profile reads the deal column
-      ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'healing' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(100 + Math.floor(10 * hg * scaleOf(6))); // rules 1.36: the healing profile takes the scale
+      ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'healing' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(161 /* rules 1.95 (the scale): was 100 + Math.floor(10 * hg * scaleOf(6)) */); // rules 1.36: the healing profile takes the scale
       // the `mend` profile reads the Level term too (the level factor of rules 1.20, at the giver's level)
       ally.hp = 100; op.run!(h, { op: 'mend', amount: { kind: 'heal', base: 10, profile: 'mend' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.hp).toBe(100 + Math.max(Math.floor(10 * hg * mendFactor(me.level)), Math.ceil(0.2 * Math.min(ally.maxHp, 145 * scaleOf(me.level))))); // rules 1.36: the percent gate of a 2-AP heal profile (20% of the target, counted to 145 × scale)
       ally.shield = 0; op.run!(h, { op: 'mend', amount: { kind: 'shield', base: 12, profile: 'flat' }, target: 'ally' }, { targetId: ally.id }, f.g.rng); expect(ally.shield).toBe(Math.floor(12 * levelFactor('deal', 6)));

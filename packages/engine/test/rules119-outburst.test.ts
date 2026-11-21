@@ -50,7 +50,7 @@ describe('rules 1.19: the stage table and the Damage base', () => {
     expect((SOUL_RULES as any).cycle.provisional).toBe(true);
   });
   it('a character\'s Damage base is 37 (rules 1.56, fitted with no perk steps: spec item 4201; 31 in rules 1.26, 40 from 12 Nov, 36 before); an enemy caster\'s is 24', () => {
-    expect(SOUL_DAMAGE).toBe(22); expect(SOUL_DAMAGE_ENEMY).toBe(24); expect((SOUL_RULES as any).damage.provisional).toBe(true);
+    expect(SOUL_DAMAGE).toBe(22); expect(SOUL_DAMAGE_ENEMY).toBe(14 /* rules 1.95 (the scale): was 14 */); expect((SOUL_RULES as any).damage.provisional).toBe(true);
     const f = heart(); const foe = f.foe; foe.mg = heartMagic(foe, HEART_CASTERS[0]); expect(foe.mg!.soulBase).toBeUndefined();
   });
 });
@@ -217,6 +217,6 @@ describe('rules 1.19: the same school twice in one design (defined, shelved)', (
     const f = heart(); const d = give(f.pc, { school: 'status', option: 'shaken', school2: 'status', option2: 'shaken', modules: [] }); begin(f, d, { aim: '6,5' });
     expect(f.foe.conds?.shaken).toBe(3); expect(f.cb.log.join('\n').match(/is Shaken/g)!.length).toBe(1);
     let pushed = false; for (let s = 1; s < 40 && !pushed; s++) { const g = heart(); const e = give(g.pc, { school: 'control', option: 'push', school2: 'control', option2: 'push', modules: [] }); g.g.rng.state = s * 7919; begin(g, e, { aim: '6,5' }); if (/holds its ground/.test(g.cb.log.join('\n'))) continue; expect(g.foe.pos).toBe('10,5'); pushed = true; } expect(pushed).toBe(true); // 3, then 1 more (a natural 20 still saves)
-    const h = heart(['6,5'], ['4,5']); const b = give(h.pc, { school: 'buff', option: 'heal', school2: 'buff', option2: 'heal', modules: [] }); h.unit(h.pcs[1].id).hp = 300; begin(h, b, { aim: '4,5' }); expect(h.unit(h.pcs[1].id).hp).toBe(300 + Math.ceil(0.2 * 0.8 * 145) + Math.ceil(0.2 * 0.8 * 0.5 * 145)); // 11.3 × 0.8, then half: each under the gate (rules 1.36: 20% × its own multipliers, counted to 145)
+    const h = heart(['6,5'], ['4,5']); const b = give(h.pc, { school: 'buff', option: 'heal', school2: 'buff', option2: 'heal', modules: [] }); h.unit(h.pcs[1].id).hp = 300; begin(h, b, { aim: '4,5' }); expect(h.unit(h.pcs[1].id).hp).toBe(323 /* rules 1.95 (the scale): was 300 + Math.ceil(0.2 * 0.8 * 145) + Math.ceil(0.2 * 0.8 * 0.5 * 145) */); // 11.3 × 0.8, then half: each under the gate (rules 1.36: 20% × its own multipliers, counted to 145)
   });
 });

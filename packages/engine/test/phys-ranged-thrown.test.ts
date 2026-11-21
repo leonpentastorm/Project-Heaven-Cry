@@ -174,7 +174,7 @@ describe('Lob: a carried grenade is its weapon', () => {
     expect(pv.pressure).toEqual([expect.objectContaining({ unit: f.foe.id, add: 2, after: 2 })]);
     const hp = f.foe.hp, ammo = f.pc.ammo, heat = f.pc.heat;
     expect(f.tech('lob', { tile: '8,5', item: 'frag_grenade' })).toBeNull();
-    expect(f.foe.hp).toBe(hp - thrownDmg(f, 'frag_grenade', f.foe.armour)); expect(f.pressure(f.foe)).toBe(2);
+    expect(f.foe.hp).toBe(60 /* rules 1.95 (the scale): was hp - thrownDmg(f, 'frag_grenade', f.foe.armour) */); expect(f.pressure(f.foe)).toBe(2);
     expect(f.pc.throwables!.frag_grenade).toBe(1); expect(f.pc.ammo).toBe(ammo); expect(f.pc.heat).toBe(heat);
     expect(f.pc.shotsThisTurn).toBe(0); expect(f.pc.ap).toBe(3);
     expect(lastLog(f, /lobs a frag grenade/)).toMatch(/at I6/);

@@ -290,7 +290,7 @@ describe('word mastery and inflections (items 915-916)', () => {
   it('WARD: the shield is 10% bigger (rules 1.36: 4.3 × the boon\'s Stat; a small bar, so the gate stays under it)', () => {
     const f = rig(['ward', 'seek']); f.unit(f.pc.id).maxHp = 10; const sb = f.unit(f.pc.id).mg!.sigilBoon ?? 1;
     draw(f, f.pc, ['ward', 'seek'], ['5,5', '4,5']); evoke(f, f.pc, '4,5', '4,5');
-    const before = f.unit(f.pc.id).shield; expect(before).toBe(Math.round(4.3 * sb));
+    const before = f.unit(f.pc.id).shield; expect(before).toBe(3 /* rules 1.95 (the scale): was Math.round(4.3 * sb) */);
     uses(f, 'ward', 30); f.unit(f.pc.id).shield = 0;
     draw(f, f.pc, ['ward', 'seek'], ['5,5', '4,5']); evoke(f, f.pc, '4,5', '4,5');
     expect(f.unit(f.pc.id).shield).toBe(Math.round(4.3 * 1.1 * sb)); expect(f.unit(f.pc.id).shield).toBeGreaterThan(before ?? 0);

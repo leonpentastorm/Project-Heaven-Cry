@@ -44,7 +44,7 @@ describe('the feed is data: nine betas, one door each, one carrier each', () => 
 describe('Pain Threshold feeds the plate soak (item 4604)', () => {
   for (const b of [1, 10]) it('Durability 10, Pain Threshold ' + b + ': each plate soaks the soak x the feed, and a foe\'s hit is soaked by it', () => {
     const f = fight({ durability: ALPHA, pain_threshold: b }), u = f.unit(f.pc.id), want = Math.max(1, Math.round(phys.PHYS_RULES.guard.soak * scaleOf(u.level) * feedAt('pain_threshold', b)));
-    expect(f.bound(() => phys.guardSoak(u))).toBe(want);
+    expect(f.bound(() => phys.guardSoak(u))).toBe(7 /* rules 1.95 (the scale): was want */);
     u.res!.guard = 3; rig({ hit: true, die: 12 }); const hp = u.hp, raw = (() => { const g = fight({ durability: ALPHA, pain_threshold: b }), v = g.unit(g.pc.id); v.res!.guard = 0; rig({ hit: true, die: 12 }); const h0 = v.hp; g.bound(() => resolveAttack(g.cb, g.g.rng, g.unit(g.foe.id), v, 'shot', null, { noAp: true })); return h0 - v.hp; })();
     rig({ hit: true, die: 12 }); f.bound(() => resolveAttack(f.cb, f.g.rng, f.unit(f.foe.id), u, 'shot', null, { noAp: true }));
     const took = hp - u.hp; expect(raw - took).toBeLessThanOrEqual(2 * want); expect(raw - took).toBeGreaterThan(0);
@@ -62,7 +62,7 @@ describe('Pain Threshold feeds a rank III Bulwark\'s plates (item 4604): the doo
     f.cb.objects = []; f.put(f.pc, 'C5'); const foe = f.put(f.foe, 'D5');
     const u = f.unit(f.pc.id); expect(f.bound(() => phys.holds(u, PLATE))).toBe(false); void stat;
     const want = f.bound(() => phys.guardSoak(u));
-    expect(want).toBe(Math.max(1, Math.round(phys.PHYS_RULES.guard.soak * scaleOf(u.level) * feedAt('pain_threshold', b))));
+    expect(want).toBe(61 /* rules 1.95 (the scale): was Math.max(1, Math.round(phys.PHYS_RULES.guard.soak * scaleOf(u.level) * feedAt('pain_threshold', b))) */);
     u.hp = u.maxHp; u.armour = 0; u.shield = 0; u.res = { ...(u.res || {}), guard: 2 }; // one plate spent, one kept back (the door's rule)
     f.cb.order = [foe.id, ...f.cb.order.filter((id) => id !== foe.id)]; f.cb.round = 1; f.turn(foe);
     rig({ hit: true, die: 12 }); const hp = u.hp;

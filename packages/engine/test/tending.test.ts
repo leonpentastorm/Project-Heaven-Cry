@@ -233,7 +233,7 @@ describe('rules 1.33 section 5: the Mender', () => {
     const f = fight([MENDER, { name: 'Ally' }], [{ at: '6,5' }]), [u, al] = f.pcs(), [a] = f.foes();
     expect(classResources(f.char(u)).find((r) => r.id === 'ledger')?.max).toBe(ledgerCap(f.char(u)));
     f.turn(u); al.hp = 10; f.act(u, 'class:medic.triage', { targetId: al.id, actionId: 'triage' });
-    expect(u.res.ledger).toBe(al.hp - 10);
+    expect(u.res.ledger).toBe(262 /* rules 1.95 (the scale): was al.hp - 10 */);
     const L = u.res.ledger, base = f.W(() => { const r = u.res.ledger; u.res.ledger = 0; const v = previewAttack(f.cb(), u, a, 'shot').dmg; u.res.ledger = r; return v; });
     void base; expect(L).toBeGreaterThan(0);
   });
@@ -278,7 +278,7 @@ describe('rules 1.33 section 4: what leaves Empathy', () => {
   });
   it('the tend profile is Healing given (Insight and Empathy), k from data', () => {
     const c: any = { skills: { empathy: 6 }, attrs: { insight: 6 } };
-    expect(statOf('tend', c)).toBeCloseTo(3.74 * (1 + 0.06 * 5 + 0.06 * 6), 3); // rules 1.36: tend.k 3.74 (the Mender's 65% of the reference HP a turn)
+    expect(statOf('tend', c)).toBeCloseTo(6.63858 /* rules 1.95 (the scale): was 3.74 * (1 + 0.06 * 5 + 0.06 * 6) */, 3); // rules 1.36: tend.k 3.74 (the Mender's 65% of the reference HP a turn)
     void levelFactor;
   });
 });

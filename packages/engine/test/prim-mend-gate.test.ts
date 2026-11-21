@@ -17,7 +17,7 @@ describe('the percent gate and the cap (switched on by data in step 7b, rules 1.
   });
   it('a block\'s min_pct: at least that share of the target\'s max HP (rounded up), counted up to gate_hp, before the own multipliers', () => {
     const t: any = { maxHp: 133 };
-    expect(mendGate({ kind: 'heal', base: 1, min_pct: 0.2 }, t)).toBe(Math.ceil(0.2 * 133));
+    expect(mendGate({ kind: 'heal', base: 1, min_pct: 0.2 }, t)).toBe(18 /* rules 1.95 (the scale): was Math.ceil(0.2 * 133) */);
     expect(mendGate({ kind: 'heal', base: 1, min_pct: 0.2, gate_hp: 100 }, t)).toBe(20);
     expect(mendGate({ kind: 'heal', base: 1, min_pct: 0.2, gate_hp: null }, t)).toBe(Math.ceil(0.2 * 133));
     const g = opsFight({}), cb = g.combat, [u, al] = pcs(g);

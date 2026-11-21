@@ -17,44 +17,39 @@ const sheet = (): Sheet => { const a = ARCHETYPES[0]; return { name: 'Tester', p
 const withStats = (attrs: Record<string, number>, skills: Record<string, number>) => { const c = newCharacter('c1', 'p1', sheet()); Object.assign(c.attrs, attrs); Object.assign(c.skills, skills); c.perks = []; c.traits = []; c.classId = null as any; return c; };
 
 describe('the data (rules.json output): the profiles of rules 1.26 (the re-fit)', () => {
-  it('three shapes: aimed (no slope, a Level term), landed (0.06 a point, a slope), flat (k 1, the deal column); each k re-pins its system', () => {
-    const P = (RULES as any).output.profiles;
+  it('rules 1.95 (the cards, ruling A4): every damage and heal profile has the slopes 0.1 an Attribute point and 0.05 a Skill point, the weapon and flat profiles none; k re-pins each system', () => {
     for (const [id, p] of Object.entries(PROFILES)) {
-      const shape = P[id].shape;
-      expect(['aimed', 'landed', 'flat', 'struck', undefined], id).toContain(shape);
-      if (shape === 'aimed') { expect(p.attr, id).toBe(0); expect(p.skill, id).toBe(0); }
-      // rules 1.56 (Balance 2.0, L6): a character's melee blow; an Attribute slope (the weapon's scales_with), never a skill one
-      if (shape === 'struck') { expect(p.attr, id).toBeGreaterThan(0); expect(p.skill, id).toBe(0); expect(p.level, id).toBe('deal'); expect(p.k * (1 + p.attr * 6), id + ': Attribute 7 re-pinned to the weapon profile').toBeCloseTo(PROFILES.weapon.k, 4); }
-      if (shape === 'landed') { expect(p.attr, id).toBe(0.06); expect(p.skill, id).toBe(0.06); }
-      if (shape === 'flat') expect([p.k, p.attr, p.skill, p.level]).toEqual([1, 0, 0, 'deal']);
+      if (id === 'weapon' || id === 'flat') { expect([p.attr, p.skill], id).toEqual([0, 0]); continue; }
+      expect([p.attr, p.skill], id).toEqual([0.1, 0.05]); expect(p.k, id).toBeGreaterThan(0);
     }
-    // Leon: no damage slope on rolled attacks (skill buys accuracy, level buys damage)
-    for (const id of ['weapon', 'sigil', 'soul']) { expect(PROFILES[id].attr + PROFILES[id].skill, id).toBe(0); expect(PROFILES[id].level, id).toBe('deal'); }
-    for (const id of ['mend', 'blessing_mend', 'sigil_mend', 'soul_mend']) expect(PROFILES[id].level, id).toBe('mend');
+    expect([PROFILES.flat.k, PROFILES.flat.level]).toEqual([1, 'deal']);
+    for (const id of ['mend', 'blessing_mend', 'sigil_mend', 'soul_mend', 'healing', 'tend', 'repair']) expect(PROFILES[id].level, id).toBe('mend');
+    for (const id of ['melee', 'gun', 'bow', 'thrown', 'weapon', 'physical', 'guard', 'sigil', 'figment', 'soul', 'blessing']) expect(PROFILES[id].level, id).toBe('deal');
+    expect((RULES as any).output.combine.rule).toBe('multiply'); expect((RULES as any).output.factors).toBeUndefined();
     expect((RULES as any).output.provisional).toBe(true);
   });
-  it('the pairs: which Attribute and Skill each Stat term reads (Blessing power reads Virtue since rules 1.26)', () => {
+  it('the pairs: which Attribute and Skill each Stat term reads (rules 1.95, ruling 31: one pair to a hit; the elemental line reads the Sigil pair)', () => {
     expect(PAIRS.physical).toEqual({ attrs: ['strength'], skills: ['raw_power'] }); expect(PAIRS.sigil).toEqual({ attrs: ['intelligence'], skills: ['brain_power'] });
-    expect(PAIRS.elemental).toEqual({ attrs: ['expression'], skills: ['visualization'] }); expect(PAIRS.soul).toEqual({ attrs: ['determination'], skills: ['will_power'] });
+    expect(PAIRS.elemental).toMatchObject({ attrs: ['intelligence'], skills: ['brain_power'] }); expect(PAIRS.soul).toEqual({ attrs: ['determination'], skills: ['will_power'] });
     expect(PAIRS.blessing).toEqual({ attrs: ['virtue'], skills: ['faith'] }); expect(PAIRS.healing).toEqual({ attrs: ['insight'], skills: ['empathy'] });
+    expect(PAIRS.figment).toMatchObject({ attrs: ['expression'], skills: ['visualization'] }); expect(PAIRS.guard).toMatchObject({ attrs: ['endurance'], skills: ['durability'] });
     expect(pairOf('mend')).toEqual(PAIRS.healing); expect(pairOf('nothing')).toEqual({ attrs: [], skills: [] }); expect(profileOf('nothing')).toEqual({ k: 1, attr: 0, skill: 0, level: null });
   });
-  it('Level: `deal` is the old plain rifle (k x deal) x the level scale (rules 1.36: 7.5^((level - 1)/19)); `mend` and `scale` are columns of their own', () => {
+  it('Level (rules 1.95): `deal` is 40^((level - 1)/19); `mend`, `mp` and `enemy_damage` are columns of their own; the scale column is gone and scaleOf reads deal', () => {
     const deal = (RULES as any).output.level.deal as number[]; expect(deal.length).toBe(20); expect(deal[0]).toBe(1);
-    for (let l = 2; l <= 20; l++) expect(deal[l - 1], 'level ' + l).toBeGreaterThanOrEqual(deal[l - 2]);
-    const old = [1.5, 1.6, 1.65, 1.75, 1.8, 1.9, 1.95, 2.05, 2.1, 2.2, 2.25, 2.35, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4]; // the plain rifle's weapon multiplier at a normal share, levels 1 to 20, before
-    for (let l = 1; l <= 20; l++) { expect(PROFILES.weapon.k * levelFactor('deal', l)).toBeCloseTo(old[l - 1] * scaleOf(l), 3); expect(levelFactor('deal', l)).toBeCloseTo(7.5 ** ((l - 1) / 19), 4); expect(levelFactor('mend', l)).toBe((RULES as any).output.level.mend[l - 1]); expect(mendFactor(l)).toBe(levelFactor('mend', l)); expect(levelOf('mend', l)).toBe(mendFactor(l)); expect(levelOf('weapon', l)).toBe(levelFactor('deal', l)); }
-    expect(levelFactor('mend', 1)).toBe(1); expect(levelFactor('scale', 1)).toBe(1); expect(levelFactor('scale', 20)).toBeCloseTo(7.5 / 1.6, 4);
+    for (let l = 1; l <= 20; l++) { expect(levelFactor('deal', l)).toBeCloseTo(40 ** ((l - 1) / 19), 3); expect(scaleOf(l)).toBe(levelFactor('deal', l)); expect(levelFactor('mend', l)).toBe((RULES as any).output.level.mend[l - 1]); expect(mendFactor(l)).toBe(levelFactor('mend', l)); expect(levelOf('mend', l)).toBe(mendFactor(l)); expect(levelOf('weapon', l)).toBe(levelFactor('deal', l)); }
+    for (let l = 2; l <= 20; l++) expect(deal[l - 1], 'level ' + l).toBeGreaterThan(deal[l - 2]);
+    expect(levelFactor('mend', 1)).toBe(1); expect(levelFactor('mp', 20)).toBeCloseTo(1 + 0.06 * 19, 4);
     expect(levelFactor('mend', null)).toBe(1); expect(levelFactor(null, 12)).toBe(1); expect(mendFactor(undefined)).toBe(1);
-    for (const p of ['physical', 'elemental', 'blessing', 'healing']) expect(levelOf(p, 20)).toBe(scaleOf(20)); // rules 1.36: the profiles with no column of their own take the scale
+    expect(() => levelFactor('scale', 3)).toThrow(/output.level.scale is missing/);
   });
   it('an enemy\'s healing and shields take no level factor from here (they grow through its own multipliers)', () => {
     expect(mendFactorOf({ side: 'foe', level: 20 } as Unit)).toBe(1); expect(mendFactorOf({ side: 'pc', level: 12 } as Unit)).toBe(levelFactor('mend', 12)); expect(mendFactorOf(null)).toBe(1);
   });
 });
 
-describe('the Stat term: k x (1 + attr x (Attribute - 1) + skill x Skill), read from the profiles', () => {
-  const T = (id: string, a: number, k: number) => { const p = PROFILES[id], n = PAIRS[p.pair || id] || { attrs: [], skills: [] }; return (1 + n.attrs.length * p.attr * (a - 1) + n.skills.length * p.skill * k) * p.k; };
+describe('the Stat term (rules 1.95): k x (1 + attr x (Attribute - 1)) x (1 + skill x Skill), read from the profiles', () => {
+  const T = (id: string, a: number, k: number) => { const p = PROFILES[id], n = PAIRS[p.pair || id] || { attrs: [], skills: [] }; return (1 + n.attrs.length * p.attr * (a - 1)) * (1 + n.skills.length * p.skill * k) * p.k; };
   it('every derived multiplier, for every Attribute 1 to 10 and Skill 0 to 10', () => {
     for (let a = 1; a <= 10; a++) for (let k = 0; k <= 10; k++) {
       const c = withStats({ strength: a, intelligence: a, expression: a, determination: a, insight: a, agility: a, virtue: a }, { raw_power: k, brain_power: k, visualization: k, will_power: k, empathy: k, faith: k, dexterity: k });
@@ -63,21 +58,20 @@ describe('the Stat term: k x (1 + attr x (Attribute - 1) + skill x Skill), read 
       expect(statOf('sigil', c)).toBe(sigilMult(c)); expect(statOf('mend', c)).toBe(healingMult(c)); expect(statOf('flat', c)).toBe(1);
     }
   });
-  it('a weapon\'s multiplier is the aimed profile\'s k for every weapon and every sheet (Leon, rules 1.26: skill buys accuracy, level buys damage)', () => {
+  it('a weapon\'s multiplier is its profile\'s Stat on the row\'s own pair (rules 1.95: the Attribute and the skill it hits with multiply)', () => {
     for (const w of Object.values(WEAPON) as any[]) {
       const ph = w.phys; if (!ph) continue;
       const skills: string[] = ph.also_scales?.length ? ph.also_scales : [ph.hits_with];
       const c = withStats(Object.fromEntries((ph.scales_with as string[]).map((x, i) => [x, 4 + i * 3])), Object.fromEntries(skills.map((x, i) => [x, 7 - i * 2])));
-      // rules 1.56 (Balance 2.0, L6): a melee row names the melee profile, which reads its scales_with Attribute only
       const p = PROFILES[ph.profile || 'weapon'], attrs = (ph.scales_with as string[]).map((x, i) => (ATTRS.some((a) => a.id === x) ? 4 + i * 3 : null)).filter((v) => v != null) as number[];
-      expect(weaponMult(c, w.id), w.id).toBeCloseTo(p.k * (1 + attrs.reduce((t, a) => t + p.attr * (a - 1), 0)), 9);
+      const sk = skills.map((x, i) => (ATTRS.some((a) => a.id === x) ? 0 : 7 - i * 2));
+      expect(weaponMult(c, w.id), w.id).toBeCloseTo(p.k * (1 + attrs.reduce((t, a) => t + p.attr * (a - 1), 0)) * (1 + sk.reduce((t, s) => t + p.skill * s, 0)), 9);
       if (!ph.profile) expect(weaponMult(c, w.id), w.id).toBe(PROFILES.weapon.k);
-      else expect({ melee: 'melee', ranged: 'gun' }[ph.system as string], w.id + ': a melee weapon names the melee profile, a gun the gun profile (rules 1.61)').toBe(ph.profile);
     }
-    const c = withStats({ strength: 6 }, { raw_power: 4 }); expect(weaponMult(c, 'no_such_weapon')).toBe(physicalMult(c)); expect(weaponMult(c, null)).toBe(1.7);
+    const c = withStats({ strength: 6 }, { raw_power: 4 }); expect(weaponMult(c, 'no_such_weapon')).toBe(physicalMult(c));
   });
   it('k multiplies the whole term', () => {
-    expect(statTerm({ k: 1.47, attr: 0, skill: 0.005, level: 'deal' }, [10], [10])).toBe((1 + 0.005 * 10) * 1.47); expect(statTerm({ k: 1, attr: 0.06, skill: 0.06, level: null }, [7], [7])).toBe(1 + 0.06 * 6 + 0.06 * 7);
+    expect(statTerm({ k: 1.47, attr: 0, skill: 0.005, level: 'deal' }, [10], [10])).toBeCloseTo((1 + 0.005 * 10) * 1.47, 12); expect(statTerm({ k: 1, attr: 0.06, skill: 0.06, level: null }, [7], [7])).toBeCloseTo((1 + 0.06 * 6) * (1 + 0.06 * 7), 12);
   });
 });
 

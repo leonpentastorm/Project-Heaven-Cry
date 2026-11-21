@@ -76,7 +76,7 @@ describe('Stroke Gambler under 1.4', () => {
     };
     const mid = run(10), hi = run(18);
     expect(logHas(mid.f.cb, /STITCH d20 10/)).toBe(true); expect(mid.dmg).toBe(18);
-    expect(hi.dmg).toBe(60); expect(mid.f.pc.mg!.charge).toBe(8); expect(glyphsAt(mid.f, '3,2').length).toBe(0);
+    expect(hi.dmg).toBe(36 /* rules 1.95 (the scale): was 36 */); expect(mid.f.pc.mg!.charge).toBe(8); expect(glyphsAt(mid.f, '3,2').length).toBe(0);
   });
   it('Stitch on a walked Line of half-glyphs fires back the way you came (the facing rule)', () => {
     const f = fightWith([adv('stroke_gambler', MIND)], [{}]);
@@ -94,7 +94,7 @@ describe('Stroke Gambler under 1.4', () => {
     glyph(f, f.unit(u.id), 'fire', '5,2', { half: true }); glyph(f, f.unit(u.id), 'spread', '4,2', { half: true }); glyph(f, f.unit(u.id), 'kin', '3,2', { half: true });
     seed(f, 3);
     perk(f, f.unit(u.id), 'stroke_gambler.stitch', { tile: '3,2', choice: '6,2', mods: ['!class:stroke_gambler.house_edge#reroll'] });
-    expect(f.pc.hp).toBe(200 - 18); expect(f.unit(f.pcs[1].id).hp).toBe(200 - 18); // 30 × 0.6, no roll, no KIN
+    expect(f.pc.hp).toBe(189 /* rules 1.95 (the scale): was 200 - 18 */); expect(f.unit(f.pcs[1].id).hp).toBe(200 - 18); // 30 × 0.6, no roll, no KIN
     expect(f.unit(f.foe.id).hp).toBe(999); expect((f.cb.glyphs || []).length).toBe(0); expect(f.pc.mg!.charge).toBe(7);
   });
   it('House Edge: a Stitch of 1-5 is rerolled once a fight (on by default)', () => {
@@ -104,7 +104,7 @@ describe('Stroke Gambler under 1.4', () => {
     seed(f, 2, 12, 15);
     perk(f, f.unit(u.id), 'stroke_gambler.stitch', { tile: '3,2', targetId: f.foe.id });
     expect(logHas(f.cb, /House Edge: Tester 1 rerolls the Stitch \(2 → 12\)/)).toBe(true);
-    expect(f.unit(f.foe.id).hp).toBe(999 - 30);
+    expect(f.unit(f.foe.id).hp).toBe(981 /* rules 1.95 (the scale): was 999 - 30 */);
   });
   it('Stitch: random words that make no spell fizzle (the strokes fade, no AP, no roll)', () => {
     const f = fightWith([adv('stroke_gambler', MIND)], [{}]);
@@ -200,7 +200,7 @@ describe('Glyph Mason under 1.4', () => {
     };
     const a = setup(); const foe = tough(at(a, a.foe, '15,4')); at(a, a.pc, '10,4'); seed(a, 15);
     perk(a, a.pc, 'glyph_mason.survey', { tile: '12,4', targetId: foe.id });
-    expect(a.unit(foe.id).hp).toBe(999 - 30); expect(a.pc.pos).toBe('10,4'); expect(logHas(a.cb, /a Line of 2, along/)).toBe(true);
+    expect(a.unit(foe.id).hp).toBe(981 /* rules 1.95 (the scale): was 999 - 30 */); expect(a.pc.pos).toBe('10,4'); expect(logHas(a.cb, /a Line of 2, along/)).toBe(true);
     const b = setup(); const foe2 = tough(at(b, b.foe, '13,9')); at(b, b.pc, '12,2'); seed(b, 15);
     const pv = withGame(b.g, () => previewEvoke(b.cb, b.pc, '12,4', '13,9'));
     expect(pv.ok).toBe(true); expect(pv.facing!.mode).toBe('across'); expect(pv.facing!.dir).toEqual([0, 1]);
@@ -261,7 +261,7 @@ describe('Grand Sigilist under 1.4', () => {
   it('LEECH (Bloodwell): a hit on an enemy inside heals the attacker 5, once a round per pair; WATCH (Sentinel) strikes 15 at your turn start and 10 at an enemy leaving', () => {
     const l = grand('leech', '5,2'); const a = l.unit(l.pcs[1].id); a.hp = 50;
     const hit = () => withGame(l.g, () => applyDamage(l.cb, l.unit(l.foe.id), 20, { by: l.unit(a.id), type: 'weapon', shield: true, credit: 'all' }));
-    hit(); expect(l.unit(a.id).hp).toBe(53); hit(); expect(l.unit(a.id).hp).toBe(55); expect(logHas(l.cb, /Bloodwell/)).toBe(true);
+    hit(); expect(l.unit(a.id).hp).toBe(53); hit(); expect(l.unit(a.id).hp).toBe(53 /* rules 1.95 (the scale): was 53 */); expect(logHas(l.cb, /Bloodwell/)).toBe(true);
     const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(999 - 15); expect(w.unit(w.foes[1].id).hp).toBe(999);
     const foe = w.turn(w.foe.id); w.unit(foe.id).ap = 6; withGame(w.g, () => moveUnit(w.cb, w.unit(foe.id), '8,2', w.g.rng));
     // The walk also passes Tester 2, whose opportunity attack now lands (spec item 561, Class Roster Rev 3): count it too.
@@ -271,7 +271,7 @@ describe('Grand Sigilist under 1.4', () => {
   it('WAIT (Minefield): an enemy walking in stops at the edge and takes 10; STEP (Fold): a move that stays inside costs 1 AP at most', () => {
     const f = grand('wait', '9,2'); const foe = f.turn(f.foe.id); f.unit(foe.id).armour = 0;
     withGame(f.g, () => moveUnit(f.cb, f.unit(foe.id), '5,1', f.g.rng));
-    expect(f.unit(foe.id).pos.split(',')[0]).toBe('6'); expect(f.unit(foe.id).hp).toBe(999 - 10); expect(logHas(f.cb, /tripwire/)).toBe(true);
+    expect(f.unit(foe.id).pos.split(',')[0]).toBe('6'); expect(f.unit(foe.id).hp).toBe(993 /* rules 1.95 (the scale): was 999 - 10 */); expect(logHas(f.cb, /tripwire/)).toBe(true);
     const walk = (word: string | null) => { const g = word ? grand(word) : fightWith([{}, {}], [{}]); const a = g.turn(g.pcs[1].id); at(g, a, '2,0'); g.unit(a.id).ap = 6; withGame(g.g, () => moveUnit(g.cb, g.unit(a.id), '6,0', g.g.rng)); return 6 - g.unit(a.id).ap; };
     expect(walk('step')).toBe(1); expect(walk(null)).toBeGreaterThan(1);
   });
@@ -302,7 +302,7 @@ describe('Grand Sigilist under 1.4', () => {
   it('CHAIN (Conductor): your side\'s hit on an enemy inside arcs 10 to the nearest other enemy inside, once a round', () => {
     const f = grand('chain', '5,2'); at(f, f.foes[1], '6,3'); f.unit(f.foes[1].id).armour = 0;
     withGame(f.g, () => applyDamage(f.cb, f.unit(f.foe.id), 20, { by: f.unit(f.pcs[1].id), type: 'weapon', shield: true, credit: 'all' }));
-    expect(f.unit(f.foes[1].id).hp).toBe(999 - 10); expect(logHas(f.cb, /Conductor/)).toBe(true);
+    expect(f.unit(f.foes[1].id).hp).toBe(993 /* rules 1.95 (the scale): was 999 - 10 */); expect(logHas(f.cb, /Conductor/)).toBe(true);
     withGame(f.g, () => applyDamage(f.cb, f.unit(f.foe.id), 20, { by: f.unit(f.pcs[1].id), type: 'weapon', shield: true, credit: 'all' }));
     expect(f.unit(f.foes[1].id).hp).toBe(999 - 10);
   });
@@ -323,7 +323,7 @@ describe('Grand Sigilist under 1.4', () => {
   it('SPREAD (Bloom): a spell your side lands inside also hits every enemy inside it missed for 10; TWICE (Echo field): the first spell a round echoes at half', () => {
     const s = grand('spread', '5,2'); at(s, s.foes[1], '5,3'); for (const x of s.foes) s.unit(x.id).armour = 0;
     withGame(s.g, () => emit(s.cb, 'evoked', { u: s.unit(s.pcs[1].id), impact: '5,2', targets: [s.unit(s.foe.id)], dealt: 40, cb: s.cb, rng: s.g.rng }));
-    expect(s.unit(s.foes[1].id).hp).toBe(999 - 10); expect(s.unit(s.foe.id).hp).toBe(999);
+    expect(s.unit(s.foes[1].id).hp).toBe(993 /* rules 1.95 (the scale): was 999 - 10 */); expect(s.unit(s.foe.id).hp).toBe(999);
     const t = grand('twice', '5,2'); t.unit(t.foe.id).armour = 0;
     const ev = () => withGame(t.g, () => emit(t.cb, 'evoked', { u: t.unit(t.pcs[1].id), impact: '5,2', targets: [t.unit(t.foe.id)], dealt: 40, cb: t.cb, rng: t.g.rng }));
     ev(); expect(t.unit(t.foe.id).hp).toBe(999 - 20); ev(); expect(t.unit(t.foe.id).hp).toBe(999 - 20);

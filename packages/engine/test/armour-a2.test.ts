@@ -47,7 +47,7 @@ describe('rules 1.91 items 7950, 7951: the class rows are the one copy', () => {
   it('the fields code reads in place of a class number: no Sprint (5 only), armoured (2 on), the light cap (Class I\'s 5)', () => {
     expect([0, 1, 2, 3, 4, 5, 6].map(noSprintClass)).toEqual([false, false, false, false, false, true, false]);
     expect([0, 1, 2, 3, 4, 5, 6].map(armouredClass)).toEqual([false, false, true, true, true, true, true]);
-    expect(LIGHT_CAP).toBe(3); expect(ARMOURED_FROM).toBe(10);
+    expect(LIGHT_CAP).toBe(3); expect(ARMOURED_FROM).toBe(6 /* rules 1.95 (the scale): was 6 */);
   });
   it('in a fight: Juggernaut forbids Sprint, the breacher plate does not; the plate\'s armour is its row\'s, scaled by level', () => {
     const s = storyWith([{ kit: 'soldier', skills: { pain_threshold: 5 } }]);

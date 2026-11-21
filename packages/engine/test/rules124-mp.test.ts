@@ -165,7 +165,7 @@ describe('rules 1.24: old saves', () => {
     const c = char({ virtue: 5, determination: 3, insight: 2 }, { mp: 250 }); delete c.mpRev;
     expect(maxMpOld(c)).toBe(500); expect(maxMp(c)).toBe(72);
     const notes = migrateCharacterMp(c);
-    expect(c.mp).toBe(138); expect(c.mpRev).toBe(MP_REV); expect(notes).toEqual([c.name + '\'s Emanator now holds up to 275 MP (it was 500): Max MP comes from Determination and Insight now, not Virtue (rules 1.24).']);
+    expect(c.mp).toBe(36 /* rules 1.95 (the scale): was 36 */); expect(c.mpRev).toBe(MP_REV); expect(notes).toEqual([c.name + '\'s Emanator now holds up to 275 MP (it was 500): Max MP comes from Determination and Insight now, not Virtue (rules 1.24).']);
     expect(migrateCharacterMp(c)).toEqual([]); expect(c.mp).toBe(138);
     const full = char({ virtue: 2, determination: 7, insight: 3 }, { mp: 200 }); delete full.mpRev; // the old all-in caster: 200 of 200
     migrateCharacterMp(full); expect(full.mp).toBe(maxMp(full)); expect(full.mp).toBe(600);
@@ -182,7 +182,7 @@ describe('rules 1.24: old saves', () => {
     const g = apply(g0, { type: 'combat/prone', unitId: u0.id } as any, 'host');
     const u = g.combat!.units.find((x: Unit) => x.side === 'pc')!;
     expect(g.characters[c.id].mpRev).toBe(MP_REV); expect(maxMp(g.characters[c.id])).toBe(52);
-    expect(u.mg!.mpMax).toBe(175); expect(u.mg!.mp).toBe(88); expect(g.characters[c.id].mp).toBe(88);
+    expect(u.mg!.mpMax).toBe(52 /* rules 1.95 (the scale): was 52 */); expect(u.mg!.mp).toBe(88); expect(g.characters[c.id].mp).toBe(88);
     expect(g.story.entries.some((e: any) => /Emanator now holds up to 175 MP \(it was 400\)/.test(e.text || ''))).toBe(true);
   });
 });

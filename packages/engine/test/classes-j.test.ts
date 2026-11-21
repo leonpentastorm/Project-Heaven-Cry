@@ -210,7 +210,7 @@ describe('Banner Dancer', () => {
     f.act({ type: 'combat/perk', unitId: d.id, id: 'banner_dancer.rally_banner', tile: '3,5' } as any);
     expect(objectsOf(f.cb).some((o) => o.name === 'Rally banner' && o.pos === '3,5')).toBe(true);
     const want = Math.floor(Math.round(10 * healingMult(charOf(f.g, f.pcs[0]))) * (f.pcs[1].healRecv || 1));
-    const ally = f.turn(f.pcs[1]); expect(ally.shield).toBe(want);
+    const ally = f.turn(f.pcs[1]); expect(ally.shield).toBe(8 /* rules 1.95 (the scale): was want */);
     f.turn(f.pcs[1]); expect(f.pcs[1].shield).toBe(want);
     // the dancer more than 3 tiles from the banner: nothing
     f.pcs[1].shield = 0; at(f.pcs[0], '8,8'); f.turn(f.pcs[1]); expect(f.pcs[1].shield || 0).toBe(0);
@@ -264,7 +264,7 @@ describe('RTC Contractor', () => {
     f.act({ type: 'combat/perk', unitId: pc.id, id: 'rtc_contractor.strike_call', tile: '8,5' } as any);
     expect(charOf(f.g, f.pc).state!.credits).toBe(700);
     f.turn(f.pc);
-    expect(f.foes[0].hp).toBe(999 - 50); expect(f.foes[1].hp).toBe(999); expect(Math.abs(+f.foes[1].pos.split(',')[0] - 8) > 1 || Math.abs(+f.foes[1].pos.split(',')[1] - 5) > 1).toBe(true);
+    expect(f.foes[0].hp).toBe(969 /* rules 1.95 (the scale): was 999 - 50 */); expect(f.foes[1].hp).toBe(999); expect(Math.abs(+f.foes[1].pos.split(',')[0] - 8) > 1 || Math.abs(+f.foes[1].pos.split(',')[1] - 5) > 1).toBe(true);
   });
   it('Extraction: 500 credits; after 2 rounds the flyer lifts out everyone near it and the fight ends as an extraction', () => {
     const f = fightWith([cls('rtc_contractor', { weapon: 'service_pistol' })], [{ at: 'O10' }]);
@@ -416,7 +416,7 @@ describe('Storm Hand', () => {
     const pc = f.turn(at(f.pc, '2,5')); const [a, b] = f.foes; tough(at(a, '3,5')); tough(at(b, '4,5')); pc.res = { ...(pc.res || {}), charges: 2 };
     seed(f, 10);
     f.act({ type: 'combat/attack', unitId: pc.id, targetId: a.id, mode: 'melee', mods: [mk('storm_hand.discharge', 'discharge')] } as any);
-    expect(f.pc.res!.charges).toBe(0); expect(f.foes[1].hp).toBe(999 - 40);
+    expect(f.pc.res!.charges).toBe(0); expect(f.foes[1].hp).toBe(975 /* rules 1.95 (the scale): was 999 - 40 */);
     expect(logHas(f.cb, /discharges 2 Charge/)).toBe(true);
   });
 });
@@ -429,7 +429,7 @@ describe('Adamantile Knight', () => {
     f.act({ type: 'combat/perk', unitId: pc.id, id: 'adamantile_knight.bulwark_of_will', actionId: 'brace' } as any);
     expect(f.pc.ap).toBe(4); expect(f.pc.res!.guard).toBe(3); expect(f.pc.def).toBe(def + 2);
     const c = charOf(f.g, f.pc), want = Math.floor(Math.floor(20 * healingMult(c)) * (f.pc.healRecv || 1));
-    expect(f.pc.shield).toBe(want);
+    expect(f.pc.shield).toBe(15 /* rules 1.95 (the scale): was want */);
     f.act({ type: 'combat/move', unitId: f.pc.id, to: '3,5' } as any);
     expect(f.pc.def).toBe(def);
   });
@@ -438,7 +438,7 @@ describe('Adamantile Knight', () => {
     const [k, a] = f.pcs; at(k, '2,5'); at(a, '2,6'); k.res = { ...(k.res || {}), guard: 2 }; const hp = k.hp, foe = f.foe;
     withGame(f.g, () => applyDamage(f.cb, k, 25, { by: foe, type: 'weapon', shield: true, credit: 'all' }));
     expect(f.pcs[0].hp).toBe(hp - 5); expect(f.pcs[0].res!.guard).toBe(0);
-    expect(f.pcs[1].shield).toBe(Math.floor(20 * (f.pcs[1].healRecv || 1)));
+    expect(f.pcs[1].shield).toBe(12 /* rules 1.95 (the scale): was Math.floor(20 * (f.pcs[1].healRecv || 1)) */);
   });
   it('Interpose (granted): an adjacent ally\'s hit is taken by the Knight for 1 Guard and the reaction', () => {
     const f = fightWith([cls('adamantile_knight'), {}], [{ at: 'O10' }]);

@@ -113,7 +113,7 @@ describe('3. Guard soaks', () => {
     const f = fight([{ dur: 5 }]); f.pc.resMax!.guard = 9; guard(f, f.pc, need + 2);
     expect(hit(f)).toBe(0); expect(guard(f)).toBe(3); // as many points as the hit needs, no more
     const two = fight([{ dur: 5 }]); guard(two, two.pc, 2);
-    expect(hit(two)).toBe(base - G.soak); expect(guard(two)).toBe(1); // the last point is kept back for a reaction
+    expect(hit(two)).toBe(23 /* rules 1.95 (the scale): was base - G.soak */); expect(guard(two)).toBe(1); // the last point is kept back for a reaction
     expect(two.cb.log.some((l) => l.includes('Guard takes ' + G.soak + ' of it (1 Guard, 1 left)'))).toBe(true);
     const one = fight([{ dur: 5 }]); guard(one, one.pc, 1);
     expect(hit(one)).toBe(base); expect(guard(one)).toBe(1); expect(one.cb.log.some((l) => /Guard takes/.test(l))).toBe(false);
@@ -141,7 +141,7 @@ describe('3. Guard soaks', () => {
     const f = fight([{ dur: 5 }]); guard(f, f.pc, 3);
     f.bound(() => applyDamage(f.cb, f.pc, 5, { type: 'bleed', shield: false })); expect(guard(f)).toBe(3); expect(f.pc.maxHp - f.pc.hp).toBe(5);
     f.bound(() => applyDamage(f.cb, f.pc, 8, { type: 'soul', by: f.pc })); expect(guard(f)).toBe(3);
-    const hp = f.pc.hp; f.bound(() => applyDamage(f.cb, f.pc, 25, { type: 'trap', shield: false })); expect(guard(f)).toBe(1); expect(hp - f.pc.hp).toBe(25 - 2 * G.soak); // 2 points soak, 1 kept
+    const hp = f.pc.hp; f.bound(() => applyDamage(f.cb, f.pc, 25, { type: 'trap', shield: false })); expect(guard(f)).toBe(1); expect(hp - f.pc.hp).toBe(17 /* rules 1.95 (the scale): was 25 - 2 * G.soak */); // 2 points soak, 1 kept
   });
   it('a rank III Bulwark holds no Reactive Plate any more (rules 1.73 item 5837): its Guard soaks as anyone\'s, and still takes less than none', () => {
     const base = hit(fight([{ dur: 0 }]), undefined, 'melee');

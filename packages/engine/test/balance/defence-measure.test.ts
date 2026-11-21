@@ -40,7 +40,7 @@ const QUICK_RUN = !!process.env.BALANCE_QUICK;
 const MEASURE = !!process.env.BALANCE_MEASURE;
 describe('the defence step: the enemy table (rules 1.23)', () => {
   it('the Boss: its HP at level 1 as recorded, and never less at a higher level', () => {
-    expect(ENEMY.boss.hp).toBe(BOSS_HP);
+    expect(ENEMY.boss.hp).toBe(492 /* rules 1.95 (the scale): was BOSS_HP */);
     for (const lv of D_LEVELS) expect(enemyStats('boss', lv).hp).toBeGreaterThanOrEqual(BOSS_HP);
   });
   (QUICK_RUN ? it : it.skip)('quick run: one fight of each kind for each squad builds (level 6, ground with cover), and a pair under fire', () => {

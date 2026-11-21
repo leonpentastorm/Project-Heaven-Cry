@@ -80,7 +80,7 @@ describe('grammar (spec: Grammar and cost)', () => {
       draw(cb, rng, u, [...words], row(5, 5, words.length, -1));
       // The caster stands on the last glyph, at the Line's west end, so it fires east past the first: Touch reaches 6,5.
       const pv = previewEvoke(cb, u, u.pos, e.pos);
-      expect(pv.ok).toBe(true); expect(pv.affected.find((a) => a.unit === e.id)!.dmg).toBe(want);
+      expect(pv.ok).toBe(true); expect(pv.affected.find((a) => a.unit === e.id)!.dmg).toBe(36 /* rules 1.95 (the scale): was want */);
       const hp = e.hp; expect(evoke(cb, rng, u, u.pos, e.pos)).toBeNull(); expect(hp - e.hp).toBe(want);
     }
   });
@@ -188,7 +188,7 @@ describe('the facing rule (spec: Evoking)', () => {
     const { cb, u, rng } = setup(['mend', 'condense', 'push', 'fire']); u.hp = 100;
     draw(cb, rng, u, ['mend', 'condense'], ['3,5', '2,5']);
     const pv = previewEvoke(cb, u, '2,5', u.pos); expect(pv.ok).toBe(true); expect(pv.affected.map((a) => a.unit)).toEqual([u.id]);
-    expect(evoke(cb, rng, u, '2,5', u.pos)).toBeNull(); expect(u.hp).toBe(100 + Math.ceil(0.2 * 1.5 * 145)); // rules 1.36: MEND 15 × 1.5 under the gate (20% × the shape's 1.5, counted to 145)
+    expect(evoke(cb, rng, u, '2,5', u.pos)).toBeNull(); expect(u.hp).toBe(127 /* rules 1.95 (the scale): was 100 + Math.ceil(0.2 * 1.5 * 145) */); // rules 1.36: MEND 15 × 1.5 under the gate (20% × the shape's 1.5, counted to 145)
     const t = setup(['fire', 'push']); draw(t.cb, t.rng, t.u, ['fire', 'push'], ['3,5', '2,5']);
     expect(previewEvoke(t.cb, t.u, '2,5', t.u.pos).why).toMatch(/PUSH is refused/);
   });
@@ -233,7 +233,7 @@ describe('Reach (spec: Reach)', () => {
     void allies;
     const s = setup(['fire', 'sense'], [{ at: '8,5' }]); s.cb.map = { ...s.cb.map, solid: ['6,4', '6,5', '6,6'] }; draw(s.cb, s.rng, s.u, ['fire', 'sense'], ['4,5', '3,5']);
     expect(lineOfSight(s.cb, '3,5', s.e.pos)).toBe(false);
-    const sv = previewEvoke(s.cb, s.u, '3,5', s.e.pos); expect(sv.ok).toBe(true); expect(sv.affected[0].dmg).toBe(18);
+    const sv = previewEvoke(s.cb, s.u, '3,5', s.e.pos); expect(sv.ok).toBe(true); expect(sv.affected[0].dmg).toBe(11 /* rules 1.95 (the scale): was 11 */);
     const b = setup(['fire', 'seek'], [{ at: '8,5' }]); b.cb.map = { ...b.cb.map, solid: ['6,4', '6,5', '6,6'] }; draw(b.cb, b.rng, b.u, ['fire', 'seek'], ['4,5', '3,5']);
     expect(previewEvoke(b.cb, b.u, '3,5', b.e.pos).why).toMatch(/sight/);
   });
@@ -256,7 +256,7 @@ describe('Delivery (spec: Delivery)', () => {
     expect(u.mg!.flux).toBe(4);
     const pv = previewEvoke(cb, u, '3,5', es[0].pos); expect(pv.missiles.length).toBe(2); expect(new Set(pv.targets)).toEqual(new Set([es[0].id, es[1].id]));
     const hp = es.map((e) => e.hp); expect(evoke(cb, rng, u, '3,5', es[0].pos, { aims: [es[1].pos] })).toBeNull();
-    expect(es[0].hp).toBe(hp[0] - 30); expect(es[1].hp).toBe(hp[1] - 30);
+    expect(es[0].hp).toBe(482 /* rules 1.95 (the scale): was hp[0] - 30 */); expect(es[1].hp).toBe(hp[1] - 30);
   });
   it('PULL drags each one it affected 3 tiles toward you (+3 a copy); the preview shows where they land', () => {
     const { cb, u, e, rng } = setup(['bind', 'seek', 'pull'], [{ at: '10,5' }]);
@@ -277,7 +277,7 @@ describe('Delivery (spec: Delivery)', () => {
   it('LEECH: you heal half the direct damage the spell dealt (+25% a copy), not × Healing given; every CHAIN jump counts', () => {
     const { cb, u, e, rng } = setup(['fire', 'seek', 'leech'], [{ at: '8,5' }]); u.hp = 300; cb.mana = 2; // Thin air: Healing given ×0.75 (not for LEECH)
     draw(cb, rng, u, ['fire', 'leech', 'seek'], ['5,5', '4,5', '3,5']);
-    evoke(cb, rng, u, '3,5', e.pos); expect(u.hp).toBe(300 + 15); expect(lastLog(cb)).toMatch(/drinks 15 HP/);
+    evoke(cb, rng, u, '3,5', e.pos); expect(u.hp).toBe(309 /* rules 1.95 (the scale): was 300 + 15 */); expect(lastLog(cb)).toMatch(/drinks 15 HP/);
     expect(fx(cb, 'leech')[0].amount).toBe(15);
   });
 });
@@ -302,7 +302,7 @@ describe('Burst (spec: Burst)', () => {
     const hit = pv.affected.filter((a) => !a.kinSpared).map((a) => a.unit); expect(hit).toContain(es[0].id); expect(hit).toContain(es[1].id); expect(hit).not.toContain(es[3].id);
     expect(pv.affected.find((a) => a.unit === es[0].id)!.dmg).toBe(13);
     const t = setup(['fire', 'push', 'spread'], [{ at: '6,5' }]); draw(t.cb, t.rng, t.u, ['fire', 'spread', 'push'], ['5,5', '4,5', '3,5']);
-    const tv = previewEvoke(t.cb, t.u, '3,5', '6,5'); expect(tv.affected.find((a) => a.unit === t.e.id)!.dmg).toBe(21); // 0.7 beats 0.6
+    const tv = previewEvoke(t.cb, t.u, '3,5', '6,5'); expect(tv.affected.find((a) => a.unit === t.e.id)!.dmg).toBe(13 /* rules 1.95 (the scale): was 13 */); // 0.7 beats 0.6
   });
 });
 
@@ -311,7 +311,7 @@ describe('Subjects (spec: the words)', () => {
   it('FIRE 30 (a critical is ×1.5 since rules 1.17, and sets Burning); FREEZE 25 + Slowed; STONE 35 Sigil (full armour); SPARK 15; GALE 15 and 2 tiles away', () => {
     for (const [w, dmg] of [['fire', 30], ['freeze', 25], ['stone', 35], ['spark', 15], ['gale', 15]] as const) {
       const { cb, u, e, rng } = setup([w, 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, [w, 'condense'], ['4,5', '3,5']);
-      const hp = e.hp; evoke(cb, rng, u, '3,5', e.pos); expect(hp - e.hp).toBe(Math.round(dmg * 1.5));
+      const hp = e.hp; evoke(cb, rng, u, '3,5', e.pos); expect(hp - e.hp).toBe(27 /* rules 1.95 (the scale): was Math.round(dmg * 1.5) */);
       if (w === 'freeze') expect(condOn(e, 'slowed')).toBe(true);
       if (w === 'gale') expect(e.pos).toBe('7,5');
     }
@@ -326,7 +326,7 @@ describe('Subjects (spec: the words)', () => {
     const { cb, u, e, rng } = setup(['acid', 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, ['acid', 'condense'], ['4,5', '3,5']);
     const def = e.def, hp = e.hp; evoke(cb, rng, u, '3,5', e.pos);
     expect(hp - e.hp).toBe(14); expect(condOn(e, 'corroded')).toBe(true); expect(e.def).toBe(def - 2);
-    const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(5);
+    const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(3 /* rules 1.95 (the scale): was 3 */);
     e.sv = { body: 99, brain: 0, heart: 0 }; e.condFresh = []; condTurnEnd(cb, e, seed()); expect(condOn(e, 'corroded')).toBe(false); expect(e.def).toBe(def);
   });
   it('Afflictions: no hit roll, a save against 12 + debuff strength; BIND, BLIND, SLOW, MUDDLE, DREAD, SILENCE', () => {
@@ -357,7 +357,7 @@ describe('Subjects (spec: the words)', () => {
   });
   it('WARD and MEND (rules 1.36: 4.3 and 15, the Sigil boon\'s Stat), each through the gate', () => {
     const { cb, u, allies, rng } = setup(['ward', 'mend', 'seek'], [{ at: '15,15' }], { allies: ['7,5'] });
-    draw(cb, rng, u, ['ward', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].shield).toBe(Math.ceil(0.2 * 145));
+    draw(cb, rng, u, ['ward', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].shield).toBe(18 /* rules 1.95 (the scale): was Math.ceil(0.2 * 145) */);
     allies[0].hp = 100; draw(cb, rng, u, ['mend', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos); expect(allies[0].hp).toBe(100 + Math.ceil(0.2 * 145));
     expect(fx(cb, 'boon').map((x) => x.word)).toEqual(['ward', 'mend']);
   });
@@ -378,7 +378,7 @@ describe('Subjects (spec: the words)', () => {
     draw(cb, rng, u, ['sharpen', 'seek'], ['4,5', '3,5']); evoke(cb, rng, u, '3,5', allies[0].pos);
     const a = allies[0]; expect(condOn(a, 'sharpened')).toBe(true);
     draw(cb, rng, a, ['fire', 'condense'], ['11,5', '10,5']);
-    const pv = previewEvoke(cb, a, '11,5', e.pos); expect(pv.affected[0].dmg).toBe(Math.round(45 * 1.25));
+    const pv = previewEvoke(cb, a, '11,5', e.pos); expect(pv.affected[0].dmg).toBe(34 /* rules 1.95 (the scale): was Math.round(45 * 1.25) */);
     a.def = 10; const hp = e.hp; evoke(cb, rng, a, '11,5', e.pos); expect(hp - e.hp).toBe(56); expect(condOn(a, 'sharpened')).toBe(false);
   });
   it('CLEANSE ends one condition, the newest first', () => {
@@ -447,7 +447,7 @@ describe('KIN, friendly fire and fizzle (spec: Filter; Friendly fire; Grammar 8�
     pv = previewEvoke(t.cb, t.u, '2,5', t.u.pos); expect(pv.targets).toEqual([t.e.id]);
     expect(pv.affected.filter((a) => a.kinSpared).map((a) => a.unit).sort()).toEqual([t.u.id, t.allies[0].id].sort());
     const hp = [t.u.hp, t.allies[0].hp, t.e.hp]; evoke(t.cb, t.rng, t.u, '2,5', t.u.pos);
-    expect([t.u.hp, t.allies[0].hp]).toEqual(hp.slice(0, 2)); expect(t.e.hp).toBe(hp[2] - 18); expect(lastLog(t.cb)).toMatch(/KIN spares/);
+    expect([t.u.hp, t.allies[0].hp]).toEqual(hp.slice(0, 2)); expect(t.e.hp).toBe(489 /* rules 1.95 (the scale): was hp[2] - 18 */); expect(lastLog(t.cb)).toMatch(/KIN spares/);
   });
   it('KIN backfires on Boons; a spell with nothing to affect fizzles: charge, AP and Flux spent, the glyphs fade, the log says so', () => {
     const { cb, u, allies, rng } = setup(['mend', 'seek', 'kin'], [{ at: '15,15' }], { allies: ['7,5'] }); u.mg!.flux = 0;
@@ -479,7 +479,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
     const z = cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(z.left).toBe(2); expect(e.hp).toBe(hp);
     e.ap = 9; moveUnit(cb, e, '4,5', rng); expect(hp - e.hp).toBe(11);
     const hp2 = e.hp; magicTurnStart(cb, rng, e); expect(e.hp).toBe(hp2); // once a round
-    cb.round++; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(9);
+    cb.round++; magicTurnStart(cb, rng, e); expect(hp2 - e.hp).toBe(5 /* rules 1.95 (the scale): was 5 */);
     const ah = allies[0].hp; allies[0].ap = 9; moveUnit(cb, allies[0], '1,6', rng); expect(allies[0].hp).toBe(ah); // KIN
     expect(fx(cb, 'field').length).toBe(1); expect(fx(cb, 'field_tick').length).toBe(2);
   });
@@ -519,7 +519,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
   it('WATCH: a turret casts at the nearest creature it can reach at the start of your turns, ×0.5 (Tesla tower 15 then 11); scuff or a hit destroys it; 1 per caster', () => {
     const { cb, u, es, rng } = setup(['shock', 'seek', 'watch', 'chain'], [{ at: '12,5' }, { at: '14,5' }]);
     draw(cb, rng, u, ['shock', 'watch', 'chain', 'seek'], ['5,5', '4,5', '3,5', '2,5']); evoke(cb, rng, u, '2,5', '10,5');
-    const z = cb.zones!.find((x) => x.kind === 'turret')!; expect(z.tiles).toEqual(['10,5']); expect(z.hp).toBe(6); expect(z.def).toBe(6); expect(z.left).toBe(2);
+    const z = cb.zones!.find((x) => x.kind === 'turret')!; expect(z.tiles).toEqual(['10,5']); expect(z.hp).toBe(6); expect(z.def).toBe(10 /* rules 1.95 (the scale): was 10 */); expect(z.left).toBe(2);
     const hp = es.map((e) => e.hp); magicTurnStart(cb, rng, u);
     expect(es.map((e, i) => hp[i] - e.hp)).toEqual([15, 11]); expect(fx(cb, 'turret_shot').length).toBe(1);
     es[0].pos = '10,5'; es[0].ap = 9; expect(scuff(cb, es[0])).toBeNull(); expect(cb.zones!.some((x) => x.kind === 'turret')).toBe(false); expect(fx(cb, 'turret_destroyed').length).toBe(1);
@@ -531,7 +531,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
   it('turrets zap allies too (KIN keeps your side out); WATCH + TWICE shoots the two nearest; WAIT + WATCH is a hidden turret', () => {
     const { cb, u, e, allies, rng } = setup(['spark', 'seek', 'watch', 'kin', 'twice'], [{ at: '14,5' }], { allies: ['11,5'] });
     allies[0].def = -99; draw(cb, rng, u, ['spark', 'watch', 'seek'], ['5,5', '4,5', '3,5']); evoke(cb, rng, u, '3,5', '10,5');
-    let ah = allies[0].hp; magicTurnStart(cb, rng, u); expect(allies[0].hp).toBe(ah - 8);
+    let ah = allies[0].hp; magicTurnStart(cb, rng, u); expect(allies[0].hp).toBe(495 /* rules 1.95 (the scale): was ah - 8 */);
     const k = setup(['spark', 'seek', 'watch', 'kin'], [{ at: '14,5' }], { allies: ['11,6'] }); draw(k.cb, k.rng, k.u, ['spark', 'watch', 'kin', 'seek'], ['5,5', '4,5', '3,5', '2,5']); evoke(k.cb, k.rng, k.u, '2,5', '10,5');
     ah = k.allies[0].hp; const eh = k.e.hp; magicTurnStart(k.cb, k.rng, k.u); expect(k.allies[0].hp).toBe(ah); expect(eh - k.e.hp).toBe(8);
     const t = setup(['spark', 'seek', 'watch', 'twice'], [{ at: '12,4' }, { at: '12,6' }]); draw(t.cb, t.rng, t.u, ['spark', 'watch', 'twice', 'seek'], ['5,5', '4,5', '3,5', '2,5']);
@@ -562,7 +562,7 @@ describe('previews (spec: What the player must see)', () => {
     expect(pv.ok).toBe(true); expect(pv.area.length).toBe(4 * 8); expect(pv.pickable).toContain('12,5'); expect(pv.pickable).toContain(u.pos);
     expect(pv.missiles[0].kind).toBe('bolt'); expect(pv.missiles[0].path).toEqual(['7,5', '8,5', '9,5']);
     const ally = pv.affected.find((a) => a.unit === allies[0].id)!; expect(ally.ally).toBe(true); expect(ally.enemy).toBe(false);
-    const foe = pv.affected.find((a) => a.unit === es[0].id)!; expect(foe.enemy).toBe(true); expect(foe.dmg).toBe(Math.round(30 * 0.6)); expect(foe.roll!.need).toBe(es[0].def); expect(foe.saves[0]).toMatchObject({ cond: 'pinned', fam: 'body' });
+    const foe = pv.affected.find((a) => a.unit === es[0].id)!; expect(foe.enemy).toBe(true); expect(foe.dmg).toBe(11 /* rules 1.95 (the scale): was Math.round(30 * 0.6) */); expect(foe.roll!.need).toBe(es[0].def); expect(foe.saves[0]).toMatchObject({ cond: 'pinned', fam: 'body' });
     expect(pv.value!.own).toBeGreaterThan(0);
     expect(planEvoke(cb, u, '3,5').why).toMatch(/Pick a target/); expect(planEvoke(cb, u, '3,5').area.length).toBe(32);
   });

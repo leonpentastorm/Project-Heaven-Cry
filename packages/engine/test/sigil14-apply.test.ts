@@ -46,7 +46,7 @@ describe('gap 1: the 29 words no reducer test drew, each drawn and Evoked throug
     for (const [w, dmg] of [['freeze', 25], ['shock', 30], ['stone', 35], ['gale', 15], ['acid', 15]] as const) {
       const f = rig([w, 'seek'], ['8,5']); line(f, [w, 'seek'], L2);
       evoke(f, '3,5', '8,5');
-      expect(500 - f.foe.hp, w).toBe(dmg);
+      expect(500 - f.foe.hp, w).toBe(15 /* rules 1.95 (the scale): was dmg */);
       if (w === 'freeze') expect(condOn(f.foe, 'slowed')).toBe(true);
       if (w === 'gale') expect(f.foe.pos).toBe('10,5');
       if (w === 'acid') {
@@ -73,7 +73,7 @@ describe('gap 1: the 29 words no reducer test drew, each drawn and Evoked throug
   });
   it('Boons: WARD (rules 1.36: 4.3, gated at 20% of the ally) shield on an ally; CLEANSE · SEEK ends the newest condition (the preview names it)', () => {
     const f = rig(['ward', 'seek', 'cleanse'], ['14,9'], ['8,5']); line(f, ['ward', 'seek'], L2);
-    evoke(f, '3,5', '8,5'); expect(f.pcs[1].shield).toBe(Math.ceil(0.2 * 145)); // the percent gate: 20% of the bar, counted to 145
+    evoke(f, '3,5', '8,5'); expect(f.pcs[1].shield).toBe(18 /* rules 1.95 (the scale): was Math.ceil(0.2 * 145) */); // the percent gate: 20% of the bar, counted to 145
     withGame(f.g, () => { applyCond(f.cb, f.g.rng, null, f.pcs[1], 'slowed', 3, undefined, { skipSave: true }); applyCond(f.cb, f.g.rng, null, f.pcs[1], 'pinned', 2, undefined, { skipSave: true }); });
     line(f, ['cleanse', 'seek'], L2);
     const pv = plan(f, '3,5', '8,5'); expect(pv.affected[0].notes).toEqual(['ends Pinned']);
@@ -122,7 +122,7 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
     const row = withGame(f.g, () => placedMagic(f.cb, 'pc')).find((z) => z.kind === 'turret')!;
     expect(row.reach).toContain('10,5'); expect(row.next).toEqual([f.pcs[1].id]);
     f.turn(f.pc);
-    expect(500 - f.pcs[1].hp).toBe(9); expect(500 - f.foes[0].hp).toBe(11); expect(f.foes[1].hp).toBe(500);
+    expect(500 - f.pcs[1].hp).toBe(9); expect(500 - f.foes[0].hp).toBe(7 /* rules 1.95 (the scale): was 7 */); expect(f.foes[1].hp).toBe(500);
   });
   it('Safe Tesla post, SHOCK · WATCH · CHAIN · KIN: zaps the enemy next to it 15, chains forward 11, never your side', () => {
     const f = rig(['shock', 'watch', 'chain', 'kin'], ['8,5', '10,5'], ['7,6']); line(f, ['shock', 'watch', 'chain', 'kin'], L4);
@@ -136,14 +136,14 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
     const pv = plan(f, '3,5', '5,5'); expect(pv.missiles[0].turret).toMatchObject({ range: 1, next: [f.pcs[1].id] });
     evoke(f, '3,5', '5,5');
     f.turn(f.pc);
-    expect(f.pcs[1].hp).toBe(400 + Math.ceil(0.2 * 0.5 * 145)); expect(logHas(f.cb, new RegExp('Tester 2 heals ' + Math.ceil(0.2 * 0.5 * 145)))).toBe(true);
+    expect(f.pcs[1].hp).toBe(409 /* rules 1.95 (the scale): was 400 + Math.ceil(0.2 * 0.5 * 145) */); expect(logHas(f.cb, new RegExp('Tester 2 heals ' + Math.ceil(0.2 * 0.5 * 145)))).toBe(true);
   });
   it('Acid rain, ACID · ARC · STAY · SPREAD: strikes once (15 × 0.8 × 0.6 = 7), then a 5 × 5 field; the one it struck, starting a turn in it, takes × 0.5 = 4 (+ 5 Corroded)', () => {
     const f = rig(['acid', 'arc', 'stay', 'spread'], ['9,6']); line(f, ['acid', 'arc', 'stay', 'spread'], L4);
     evoke(f, '3,5', '9,5');
     const z = f.cb.zones!.find((x) => x.kind === 'field')!; expect(z.tiles.length).toBe(25); expect(f.foe.hp).toBe(496);
     f.cb.round++; f.turn(f.foe); // the next round: the strike counted as this round's bite
-    expect(493 - f.foe.hp).toBe(4 + 5); // the field ×0.5, and Corroded (from the strike) bites 5
+    expect(493 - f.foe.hp).toBe(2 /* rules 1.95 (the scale): was 4 + 5 */); // the field ×0.5, and Corroded (from the strike) bites 5
     expect(condOn(f.foe, 'corroded')).toBe(true); expect(logHas(f.cb, /caught in .*ACID field/)).toBe(true);
   });
   it('Swap a friend, STEP · RELAY: your relay jumps to the tile you pick (no save for your side)', () => {

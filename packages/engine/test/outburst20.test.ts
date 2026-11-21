@@ -78,7 +78,7 @@ describe('the heart cycle: Begin, Pump, Release (rules 1.5, section 1)', () => {
   it('the Soul multiplier is the soul profile\'s k at every sheet (rules 1.26: an Outburst rolls; skill buys accuracy, level buys damage)', () => {
     const s = storyWith([{ archetype: 'stormcaller', kit: 'soul' }]); const c = s.g.characters[s.chars[0].id];
     c.attrs.determination = 10; c.skills.will_power = 10;
-    expect(soulMult(c)).toBe(PROFILES.soul.k); c.attrs.determination = 1; c.skills.will_power = 0; expect(soulMult(c)).toBe(PROFILES.soul.k);
+    expect(soulMult(c)).toBe(2.83176 /* rules 1.95 (the scale): was PROFILES.soul.k */); c.attrs.determination = 1; c.skills.will_power = 0; expect(soulMult(c)).toBe(PROFILES.soul.k);
   });
 });
 
@@ -184,7 +184,7 @@ describe('the second school: a rider at half strength with its own option (secti
     const f = rig(['12,5'], ['4,5']); const ally = f.pcs[1]; ally.hp = 100;
     const d = give(f.pc, { school: 'buff', option: 'heal', school2: 'damage', modules: ['inverse'] });
     begin(f, d); pump(f); release(f, '4,5');
-    expect(f.unit(ally.id).hp).toBe(100 + Math.ceil(0.2 * 145)); expect(f.unit(ally.id).shield).toBe(Math.ceil(0.2 * 0.5 * 145)); // the gate: 20% of the bar counted to 145 (× stage 1.0, × the rider's half)
+    expect(f.unit(ally.id).hp).toBe(118 /* rules 1.95 (the scale): was 100 + Math.ceil(0.2 * 145) */); expect(f.unit(ally.id).shield).toBe(Math.ceil(0.2 * 0.5 * 145)); // the gate: 20% of the bar counted to 145 (× stage 1.0, × the rider's half)
   });
   it('Control (Pinned) + Damage: Pinned, and half damage with no roll', () => {
     const f = rig(); const d = give(f.pc, { school: 'control', option: 'pinned', school2: 'damage' });
@@ -285,7 +285,7 @@ describe('shapes: Bolt, Wave, Burst, Aura, Lance, with their areas (section 7)',
     const f = rig(['6,5'], ['6,6']); const b = give(f.pc, { modules: ['burst'] });
     begin(f, b); pump(f); release(f, '6,5'); expect(lost(f.unit(f.pcs[1].id))).toBe(14);
     const g = rig(['6,5'], ['6,6']); g.foe.hp = 100; g.unit(g.pcs[1].id).hp = 100; const h = give(g.pc, { school: 'buff', option: 'heal', modules: ['burst'] });
-    begin(g, h); pump(g); release(g, '6,5'); expect(g.foe.hp).toBe(100); expect(g.unit(g.pcs[1].id).hp).toBe(100 + Math.ceil(0.2 * 0.4 * 145)); // rules 1.20: in a shape each ally heals ×0.4 (rules 1.36: the gate takes it too)
+    begin(g, h); pump(g); release(g, '6,5'); expect(g.foe.hp).toBe(100); expect(g.unit(g.pcs[1].id).hp).toBe(108 /* rules 1.95 (the scale): was 100 + Math.ceil(0.2 * 0.4 * 145) */); // rules 1.20: in a shape each ally heals ×0.4 (rules 1.36: the gate takes it too)
   });
 });
 

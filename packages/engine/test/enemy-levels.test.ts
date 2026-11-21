@@ -16,34 +16,28 @@ describe('the table (enemies.json: a tier\'s level 1 row raised by its level\'s 
   it('five tiers, weakest first, each with its level 1 numbers and a damage factor; all provisional', () => {
     expect(ENEMIES.map((e) => e.id)).toEqual(['vermin', 'minion', 'soldier', 'elite', 'boss']);
     const row = (id: string) => { const t = ENEMY[id]; return [t.hp, t.armour, t.defense, t.attack_bonus, t.damage]; };
-    expect(row('vermin')).toEqual([15, 0, 10, 0, 0.5]);
-    expect(row('minion')).toEqual([70, 0, 10, 1, 1]);
-    expect(row('soldier')).toEqual([140, 5, 11, 3, 0.78]);
-    expect(row('elite')).toEqual([240, 10, 12, 5, 1.05]);
-    expect(row('boss')).toEqual([820, 10, 13, 6, 1.2]); // rules 1.23: the Boss's HP refitted from 960
+    // rules 1.95 (the scale): HP and armour x0.6, the damage factor x1.28, Defense fixed by tier (8 / 9 / 11 / 14 / 15)
+    expect(row('vermin')).toEqual([9, 0, 8, 0, 0.64]);
+    expect(row('minion')).toEqual([42, 0, 9, 1, 1.28]);
+    expect(row('soldier')).toEqual([84, 3, 11, 3, 0.9984]);
+    expect(row('elite')).toEqual([144, 6, 14, 5, 1.344]);
+    expect(row('boss')).toEqual([492, 6, 15, 6, 1.536]);
     expect(ENEMIES.every((e: any) => e.provisional === true)).toBe(true); expect((ENEMY_LEVELS as any).provisional).toBe(true);
   });
   it('one row for each level 1 to 20; level 1 changes nothing', () => {
     expect(ENEMY_LEVELS.table.map((r) => r.level)).toEqual(Array.from({ length: 20 }, (_, i) => i + 1));
     expect(ENEMY_LEVELS.table[0]).toMatchObject({ hp_mult: 1, armour_mult: 1, defense_plus: 0, attack_plus: 0, damage_mult: 1 });
-    for (const t of ENEMIES) expect(enemyStats(t.id, 1)).toMatchObject({ level: 1, hp: t.hp, armour: t.armour, defense: t.defense, attack_bonus: t.attack_bonus, damage: t.damage });
+    for (const t of ENEMIES) expect(enemyStats(t.id, 1)).toMatchObject({ level: 1, hp: t.hp, armour: t.armour, defense: t.defense, attack_bonus: t.attack_bonus, damage: Math.round((t.damage ?? 1) * 1000) / 1000 });
   });
-  it('a Soldier at levels 1, 3, 6, 9, 12 and 20 (the spec\'s working table)', () => {
-    const at = (l: number) => { const s = enemyStats('soldier', l); return [s.hp, s.armour, s.defense, s.attack_bonus]; };
-    expect(at(1)).toEqual([140, 5, 11, 3]);
-    expect(at(3)).toEqual([183, 6, 12, 3]); // rules 1.36: HP and armour × scale(level)
-    expect(at(6)).toEqual([259, 9, 13, 4]);
-    expect(at(9)).toEqual([360, 12, 15, 4]);
-    expect(at(12)).toEqual([499, 16, 16, 5]);
-    expect(at(20)).toEqual([1188, 38, 17, 9]);
-    expect(enemyStats('soldier', 20).damage).toBeCloseTo(0.78 * 1.82 * scaleOf(20), 2);
-  });
-  it('the other tiers at the top: HP ×1.81, armour ×1.60, damage ×1.82, each × scale (rules 1.36); Defense +6, attack +6', () => {
-    expect(enemyStats('vermin', 20)).toMatchObject({ hp: 127, armour: 0, defense: 16, attack_bonus: 6 });
-    expect(enemyStats('minion', 20)).toMatchObject({ hp: 594, armour: 0, defense: 16, attack_bonus: 7 });
-    expect(enemyStats('elite', 12)).toMatchObject({ hp: 856, armour: 32, defense: 17, attack_bonus: 7 });
-    expect(enemyStats('boss', 20)).toMatchObject({ hp: 6957, armour: 75, defense: 19, attack_bonus: 12 });
-    expect(enemyStats('boss', 20).damage).toBeCloseTo(1.2 * 1.82 * scaleOf(20), 2);
+  it('rules 1.95: HP x 140^((L - 1)/19), armour x the deal column, damage x 54^((L - 1)/19); Defense and the attack bonus never grow', () => {
+    for (const t of ENEMIES) for (const l of [1, 3, 6, 9, 12, 20]) {
+      const s = enemyStats(t.id, l), r = ENEMY_LEVELS.table[l - 1];
+      expect(r.hp_mult).toBeCloseTo(140 ** ((l - 1) / 19), 3); expect(r.armour_mult).toBeCloseTo(scaleOf(l), 3); expect(r.damage_mult).toBeCloseTo(54 ** ((l - 1) / 19), 3);
+      expect(s.hp, t.id + ' ' + l).toBe(Math.round(t.hp * r.hp_mult));
+      expect(s.armour, t.id + ' ' + l).toBe(Math.round(t.armour * r.armour_mult));
+      expect([s.defense, s.attack_bonus]).toEqual([t.defense, t.attack_bonus]);
+      expect(s.damage).toBeCloseTo((t.damage ?? 1) * 54 ** ((l - 1) / 19), 2);
+    }
   });
   it('a level is held between 1 and 20, whole', () => {
     expect([clampEnemyLevel(0), clampEnemyLevel(-4), clampEnemyLevel(99), clampEnemyLevel(7.9), clampEnemyLevel('x'), clampEnemyLevel(undefined)]).toEqual([1, 1, 20, 7, 1, 1]);
@@ -58,7 +52,7 @@ describe('a fight has a level', () => {
     const f = fightWith([{ level: 3 }, { level: 6 }], [{}, { tier: 'elite' }]);
     expect(f.cb.level).toBe(4); expect(squadLevel(f.g)).toBe(4);
     expect(f.foes.map((u) => u.level)).toEqual([4, 4]);
-    expect(f.foes[0]).toMatchObject({ maxHp: enemyStats('soldier', 4).hp, def: 12, armour: enemyStats('soldier', 4).armour, attack: 3 });
+    expect(f.foes[0]).toMatchObject({ maxHp: enemyStats('soldier', 4).hp, def: ENEMY.soldier.defense, armour: enemyStats('soldier', 4).armour, attack: 3 }); // rules 1.95: Defense never grows
     expect(f.foes[1].maxHp).toBe(enemyStats('elite', 4).hp);
     expect(f.pcs.map((u) => u.level)).toEqual([3, 6]);
   });
@@ -66,7 +60,7 @@ describe('a fight has a level', () => {
     const f = fightWith([{ level: 2 }], [{}, { level: 14 }, { level: 99 }, { level: 0 }], { level: 9 });
     expect(f.cb.level).toBe(9);
     expect(f.foes.map((u) => u.level)).toEqual([9, 14, 20, 1]);
-    expect(f.foes[0].maxHp).toBe(673); expect(f.foes[1].def).toBe(17); expect(f.foes[2].maxHp).toBe(1188); expect(f.foes[3].maxHp).toBe(140);
+    expect(f.foes[0].maxHp).toBe(enemyStats('soldier', 9).hp); expect(f.foes[1].def).toBe(ENEMY.soldier.defense); expect(f.foes[2].maxHp).toBe(enemyStats('soldier', 20).hp); expect(f.foes[3].maxHp).toBe(enemyStats('soldier', 1).hp); // rules 1.95: Defense never grows
     expect(fightWith([{ level: 2 }], [{}], { level: 40 }).cb.level).toBe(20);
     expect(fightWith([{ level: 2 }], [{}], { level: -3 }).cb.level).toBe(1);
   });
@@ -87,10 +81,10 @@ describe('a fight has a level', () => {
   it('an enemy deals its weapon\'s damage × its tier\'s factor × its level\'s factor', () => {
     const dmg = (level: number, tier = 'soldier') => { const f = fightWith([{}], [{ tier, weapon: 'hellraiser_service_rifle' }], { level }); return withGame(f.g, () => attackDamage(f.cb, f.foe, f.pc, 'shot', null, { preview: true })); };
     const l1 = dmg(1), l20 = dmg(20);
-    expect(l1.base).toBe(18); expect(l1.mults.find((m) => m.label === 'tier and level')!.v).toBeCloseTo(0.78, 3); expect(l1.total).toBeCloseTo(23.4, 3);
-    expect(l20.total).toBeCloseTo(199.62, 2); // 30 × 0.78 × 1.82 × scale(20) 4.6875, the factor held to three places (×6.654)
-    expect(dmg(1, 'minion').mults.some((m) => m.label === 'tier and level')).toBe(false); // ×1.0: its weapon's own damage
-    expect(dmg(1, 'boss').total).toBeCloseTo(36, 3);
+    expect(l1.base).toBe(18); expect(l1.mults.find((m) => m.label === 'tier and level')!.v).toBeCloseTo(enemyStats('soldier', 1).damage, 3); expect(l1.total).toBeCloseTo(18 * enemyStats('soldier', 1).damage, 3);
+    expect(l20.total).toBeCloseTo(18 * enemyStats('soldier', 20).damage, 2); // rules 1.95: 18 (the rifle x0.6) x the tier's 0.9984 x 54 at level 20, the factor held to three places
+    expect(dmg(1, 'minion').mults.find((m) => m.label === 'tier and level')!.v).toBeCloseTo(ENEMY.minion.damage!, 3); // rules 1.95: the minion's factor is x1.28 now, no longer x1.0
+    expect(dmg(1, 'boss').total).toBeCloseTo(18 * ENEMY.boss.damage!, 3);
   });
 });
 
@@ -124,13 +118,15 @@ describe('a fight saved before the rule keeps the numbers its units have', () =>
 describe('Vermin: a tier under Minion', () => {
   it('15 HP, no armour, weak attacks, fast; no techniques, no Calls, no spare magazines, nothing from the drop tables', () => {
     const v: any = ENEMY.vermin;
-    expect(v).toMatchObject({ name: 'Vermin', hp: 15, armour: 0, damage: 0.5, movement: 2, spare_mags: 0, calls: [], call_level: 0, techniques: { melee: [], ranged: [] } });
+    expect(v).toMatchObject({ name: 'Vermin', hp: 9, armour: 0, damage: 0.64, movement: 2, spare_mags: 0, calls: [], call_level: 0, techniques: { melee: [], ranged: [] } });
     expect(LOOT.rolls_by_tier.vermin).toBe(0);
     expect(SANDBOX_TIERS.vermin.weapons.length).toBeGreaterThan(0);
   });
   it('a fight takes it; one hit kills one at equal level', () => {
     for (const level of [1, 9, 20]) {
-      const f = fightWith([{ level, weapon: 'hellraiser_service_rifle' }], [{ tier: 'vermin', weapon: 'beast_bite', at: 'H6' }, { tier: 'vermin', weapon: 'beast_bite' }]);
+      // rules 1.95: the enemy HP column is written for the stated attacker (world.json: the ceiling in its pair, the grade under the map's best)
+      const pts = level >= 15 ? 10 : level >= 10 ? 9 : level >= 5 ? 8 : 7, grade = level >= 20 ? 'relic' : level >= 9 ? 'masterwork' : 'standard';
+      const f = fightWith([{ level, weapon: 'hellraiser_service_rifle', attrs: { agility: pts }, skills: { dexterity: pts }, grade: { main: grade } }], [{ tier: 'vermin', weapon: 'beast_bite', at: 'H6' }, { tier: 'vermin', weapon: 'beast_bite' }]);
       expect(f.foes.every((u) => u.tier === 'vermin' && u.level === level && !u.techs && !u.calls)).toBe(true);
       const pc = f.turn(f.pc), foe = f.foe; pc.pos = '3,5'; foe.pos = '7,5';
       const r = withGame(f.g, () => resolveAttack(f.cb, rngFor(15), pc, foe, 'shot', null, { free: true }));
@@ -213,11 +209,12 @@ describe('companions are their owner\'s level', () => {
     return g.combat!.units.find((u) => u.companion === 'drone')!;
   };
   it('the drone\'s own block is its level 1 block; the level table raises it', () => {
-    expect(droneAt(1)).toMatchObject({ level: 1, maxHp: 30, hp: 30, def: 12, armour: 5, attack: 3, lvlDmg: 1 });
-    expect(droneAt(20)).toMatchObject({ level: 20, maxHp: 255, hp: 255, def: 18, armour: 38, attack: 9, lvlDmg: 8.531 }); // rules 1.36: × scale(20)
+    expect(droneAt(1)).toMatchObject({ level: 1, maxHp: 18, hp: 18, def: 12, armour: 3, attack: 3, lvlDmg: 1 });
+    const r20 = ENEMY_LEVELS.table[19]; // rules 1.95: HP x the enemy HP column, armour x deal, Defense and attack never grow
+    expect(droneAt(20)).toMatchObject({ level: 20, maxHp: Math.round(18 * r20.hp_mult), hp: Math.round(18 * r20.hp_mult), def: 12, armour: Math.round(3 * r20.armour_mult), attack: 3, lvlDmg: r20.damage_mult });
   });
   it('the HP it carried from before is kept, never raised by the table', () => {
-    expect(droneAt(20, 20)).toMatchObject({ maxHp: 255, hp: 20 });
+    expect(droneAt(20, 20)).toMatchObject({ maxHp: Math.round(18 * ENEMY_LEVELS.table[19].hp_mult), hp: 20 });
   });
 });
 
@@ -248,8 +245,8 @@ describe('the Proving Ground', () => {
     g = apply(g, { type: 'sandbox/fight' } as any, 'h1');
     const by = (tier: string) => g.combat!.units.find((u) => u.tier === tier)!;
     expect(by('soldier')).toMatchObject({ level: 7, maxHp: enemyStats('soldier', 7).hp });
-    expect(by('elite')).toMatchObject({ level: 12, maxHp: 856 }); // rules 1.36: × scale(level)
-    expect(by('vermin')).toMatchObject({ level: 20, maxHp: 127 });
+    expect(by('elite')).toMatchObject({ level: 12, maxHp: enemyStats('elite', 12).hp });
+    expect(by('vermin')).toMatchObject({ level: 20, maxHp: enemyStats('vermin', 20).hp });
     // into a running fight
     g = apply(g, { type: 'sandbox/spawn', tier: 'minion', weapon: 'fists', at: 'B2' } as any, 'h1');
     g = apply(g, { type: 'sandbox/spawn', tier: 'minion', weapon: 'fists', at: 'B3', level: 3 } as any, 'h1');

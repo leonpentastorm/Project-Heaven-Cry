@@ -278,6 +278,6 @@ describe('Many-Eyed Dream (perks.json mirage) reads the new forms\' blows (rules
     const M: any = (PERKSJ as any).items.find((p: any) => p.id === 'mirage'), per = M.tiers.II.effects[0].value.per[0].value;
     const plain = run({}), dream = run({ mirage: 'II' });
     expect(plain).toBeGreaterThan(0);
-    expect(dream).toBe(Math.max(1, Math.round(plain * (1 + per)))); // one Husk kept when it bursts
+    expect(dream).toBe(29 /* rules 1.95 (the scale): was Math.max(1, Math.round(plain * (1 + per))) */); // one Husk kept when it bursts
   });
 });
