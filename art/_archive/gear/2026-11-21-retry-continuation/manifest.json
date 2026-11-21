@@ -1531,6 +1531,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_pick--fine",
+      "path": "art/icons/gear/weapon-war_pick--fine.png",
+      "sha256": "090e9e686572b2583a094b0a1bc69151a1a9ecccd0ce2a63750534154def78b9",
+      "label": "War pick — Fine",
+      "family": "weapon-war_pick",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-war_pick--fine.png",
+        "sha256": "eb26344160dfbb4cf850833bc640dcab02e705583a18db6eeab63fc6ab1cc216"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--fine.png",
+        "sha256": "090e9e686572b2583a094b0a1bc69151a1a9ecccd0ce2a63750534154def78b9"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_pick--fine.txt",
+        "sha256": "bc68a83c56a8024aa509dbc18cd09734ffcdd82548d35c4442ec53dc05ea409f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-war_pick.png",
+          "sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_pick--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-war_pick--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-war_pick--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-war_pick--fine.png"
+      },
+      "export_hashes": {
+        "256": "6177bac7f1f4d7d6462141b09816b0d91cab48e0adec7603a6e1c02ca6b55aff",
+        "128": "aaf9c57140aefb2af8378af44a91b04e335eac572f81c6ee8fc1280aafa2698f",
+        "64": "f3a61206a43517165b682fa251ceda5f4d5cf11aae667e2b70ded3823c9379f7",
+        "32": "751a2f69705a972e63dccf5b36701a3c5f03b01f9137b5cf63ae50707755b1f7"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-war_pick",
+      "outline": {
+        "solid_alpha_iou": 0.9700438680811647,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 16
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
