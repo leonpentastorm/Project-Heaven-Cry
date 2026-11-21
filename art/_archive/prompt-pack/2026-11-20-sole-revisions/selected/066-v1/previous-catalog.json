@@ -1,0 +1,35 @@
+[
+  {
+    "family": "fork_icons",
+    "key": "fork-sigil-running_script",
+    "entry": {
+      "label": "Running Script",
+      "path": "art/icons/forks/sigil-running-script.png",
+      "sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+      "format": "png",
+      "mode": "wick",
+      "tint": "intelligence",
+      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #",
+      "slot": true,
+      "status": "review-candidate",
+      "production_approved": false,
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "implementation_ready": false,
+      "ink": "#FFFFFF",
+      "collection": "nine-doors-0.30",
+      "request_key": "0.30/fork.sigil.running_script",
+      "exports": {
+        "128": "art/icons/forks/exports/128/sigil-running-script.png",
+        "64": "art/icons/forks/exports/64/sigil-running-script.png",
+        "48": "art/icons/forks/exports/48/sigil-running-script.png",
+        "44": "art/icons/forks/exports/44/sigil-running-script.png",
+        "32": "art/icons/forks/exports/32/sigil-running-script.png",
+        "24": "art/icons/forks/exports/24/sigil-running-script.png"
+      },
+      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/fork-sigil-running_script/fork-sigil-running_script.png",
+      "previous_sha256": "41edd450b5dd38aca3af99f0675e0d6b6d06696865ce71332bab452c0993b17b"
+    }
+  }
+]

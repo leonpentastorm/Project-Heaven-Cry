@@ -7,7 +7,12 @@
     "fork.sigil.running_script",
     "kit-rim-wall-corner"
   ],
-  "status": "active",
+  "status": "delivered",
   "first": "fork.sigil.running_script",
-  "notes": "Sole-artist takeover explicitly authorized by Leon. Original destinations unchanged across owner/develop/source branches. Correct mapping File03#066 and File01#013. Scrap Turret held. No blocked request retry."
+  "notes": "Sole-artist takeover explicitly authorized by Leon. Original destinations unchanged across owner/develop/source branches. Correct mapping File03#066 and File01#013. Scrap Turret held. No blocked request retry.",
+  "completed_ids": [
+    "fork.sigil.running_script",
+    "kit-rim-wall-corner"
+  ],
+  "active_run": "sole-20261121-0109"
 }

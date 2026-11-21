@@ -1,0 +1,183 @@
+{
+  "id": "fork.sigil.running_script",
+  "number": 66,
+  "file": 3,
+  "path": "art/icons/forks/sigil-running-script.png",
+  "candidate": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/assembled-1024.png",
+    "sha256": "0bf965c0aa5b45c0da68963272c76bb2a8dae44cacbf8c5a6b7b3731385b8709"
+  },
+  "original": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/original-1024.png",
+    "sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca"
+  },
+  "component": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/generated-rune-31x50.png",
+    "sha256": "0a6a20c3db7d5f17d13a6b406511691aa8973259394761077ebfdba93618c3bf"
+  },
+  "imagegen_native": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/native.png",
+    "sha256": "7be587944768b44ec08657fe399df14c477d769240a99b5d6541883377180d60"
+  },
+  "imagegen_prompt": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/prompt.txt",
+    "sha256": "5faf3b32dd531b364d04931ac5d12f39adaba2d3c2abe79fcb7492968d193476"
+  },
+  "component_plan": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/component-plan.json",
+    "sha256": "d16e7f4c2415c7fc5a1f6423ea27b433ac4b22e40ce5097ab69661df003e903a"
+  },
+  "assembly_instruction": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/assembly-instruction.txt",
+    "sha256": "17bbdd30d455745a257c348c5a8e6d58997e193f1ec7dda6001f8347fa7f3f2a"
+  },
+  "previous_catalog": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/previous-catalog.json",
+    "sha256": "d8a4bbcd73d991f717269c21d6f2c01c70aa9ef27455782708335b93c58a1828"
+  },
+  "exports": {
+    "256": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/exports/256/sigil-running-script.png",
+      "sha256": "5b4aa6c404247a023846c66d9ffe2f1b077282681e29a04e8fc95df2dd5d23ad"
+    },
+    "128": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/exports/128/sigil-running-script.png",
+      "sha256": "54d6c4c350ae1b5f519e13cee1b3c927b158456e93ab7ca38a054969b850b4b5"
+    },
+    "64": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/exports/64/sigil-running-script.png",
+      "sha256": "bf87c0eb5c14b3e4cd6a721821377aa3e7072ec3708fdb4a578ea12239e076dc"
+    },
+    "56": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/exports/56/sigil-running-script.png",
+      "sha256": "915a257ceca541bda5148216eed7f322a6ba0379f301bb45c26472553b05591f"
+    },
+    "48": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/exports/48/sigil-running-script.png",
+      "sha256": "4556f9e86ea9c37771e0ce9e3e228d70a6c9f6d4aa421b9dc898c2066ed06e5b"
+    },
+    "44": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/exports/44/sigil-running-script.png",
+      "sha256": "316d37dcdafc8cbd7dbfc9157eabaf3fb2ffefd30656eaeea3a671b300b1ed43"
+    },
+    "40": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/exports/40/sigil-running-script.png",
+      "sha256": "b3d7296c3606aa4c86e49c064aaae79831b0fb39a59f56c58eb005d5da0d38ff"
+    },
+    "32": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/exports/32/sigil-running-script.png",
+      "sha256": "67475f921921a466b591e4c0ae4ebfab4bfe2f8ed2b0de9f965ba28f28026af6"
+    },
+    "24": {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/exports/24/sigil-running-script.png",
+      "sha256": "2dbda855ffeac49284a891cb67b7d37ac42530c2f7adb2ae7be2a04005f6a840"
+    }
+  },
+  "preview": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/preview-1024.png",
+    "sha256": "2bd26af25d6defd6d1f7c81d5dffc44bb63b000415847cf8968d7acd82af6b04"
+  },
+  "review": {
+    "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/before-after-review.png",
+    "sha256": "9ee96014edb81d1bbd698143e858d917e610c40d17acb47fc7e587bd16d718a5"
+  },
+  "placement": [
+    630,
+    620
+  ],
+  "proof": {
+    "original_nonzero_alpha_pixels": 158252,
+    "original_mark_rgba_pixels_changed": 0,
+    "outside_addition_rgba_pixels_changed": 0,
+    "existing_mark_overlap": 0,
+    "added_nonzero_alpha_pixels": 328
+  },
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "count_contribution": 1,
+  "origin": "image_gen-drawn rune component; user-authorized localized alpha composition, original marks byte-identical",
+  "production": {
+    "path": "art/icons/forks/sigil-running-script.png",
+    "sha256": "0bf965c0aa5b45c0da68963272c76bb2a8dae44cacbf8c5a6b7b3731385b8709"
+  },
+  "production_exports": {
+    "256": {
+      "path": "art/icons/forks/exports/256/sigil-running-script.png",
+      "sha256": "5b4aa6c404247a023846c66d9ffe2f1b077282681e29a04e8fc95df2dd5d23ad"
+    },
+    "128": {
+      "path": "art/icons/forks/exports/128/sigil-running-script.png",
+      "sha256": "54d6c4c350ae1b5f519e13cee1b3c927b158456e93ab7ca38a054969b850b4b5"
+    },
+    "64": {
+      "path": "art/icons/forks/exports/64/sigil-running-script.png",
+      "sha256": "bf87c0eb5c14b3e4cd6a721821377aa3e7072ec3708fdb4a578ea12239e076dc"
+    },
+    "56": {
+      "path": "art/icons/forks/exports/56/sigil-running-script.png",
+      "sha256": "915a257ceca541bda5148216eed7f322a6ba0379f301bb45c26472553b05591f"
+    },
+    "48": {
+      "path": "art/icons/forks/exports/48/sigil-running-script.png",
+      "sha256": "4556f9e86ea9c37771e0ce9e3e228d70a6c9f6d4aa421b9dc898c2066ed06e5b"
+    },
+    "44": {
+      "path": "art/icons/forks/exports/44/sigil-running-script.png",
+      "sha256": "316d37dcdafc8cbd7dbfc9157eabaf3fb2ffefd30656eaeea3a671b300b1ed43"
+    },
+    "40": {
+      "path": "art/icons/forks/exports/40/sigil-running-script.png",
+      "sha256": "b3d7296c3606aa4c86e49c064aaae79831b0fb39a59f56c58eb005d5da0d38ff"
+    },
+    "32": {
+      "path": "art/icons/forks/exports/32/sigil-running-script.png",
+      "sha256": "67475f921921a466b591e4c0ae4ebfab4bfe2f8ed2b0de9f965ba28f28026af6"
+    },
+    "24": {
+      "path": "art/icons/forks/exports/24/sigil-running-script.png",
+      "sha256": "2dbda855ffeac49284a891cb67b7d37ac42530c2f7adb2ae7be2a04005f6a840"
+    }
+  },
+  "run": "sole-20261121-0109",
+  "visual_review": "Inspected1024 and before/after160/64/44/32: original pose/old glyph/lineweight retained; one thin angular unfinished rune added nearer drawing hand, contained within original margins. No added Wick, speed lines, tint, glow or background.",
+  "earlier_technical_exports": [
+    {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/technical-v1-before-white-normalization/256/sigil-running-script.png",
+      "sha256": "071ef87105062d131bf428d031bcc43feb914e4399839df5159996a87dc118b2"
+    },
+    {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/technical-v1-before-white-normalization/128/sigil-running-script.png",
+      "sha256": "d3b846585fed78e68b945950f868a883dd21cb474db96a3ad0d9c9aa3828a8d1"
+    },
+    {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/technical-v1-before-white-normalization/64/sigil-running-script.png",
+      "sha256": "5116aa29b93f8f49fbf70b17996d750b7ba96458f0dc257d5caa8014d52ba02c"
+    },
+    {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/technical-v1-before-white-normalization/56/sigil-running-script.png",
+      "sha256": "4bed99975540d7904ea8cb9d273e6371b7ae75c97057bf2bf6ddb32fe59ba39c"
+    },
+    {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/technical-v1-before-white-normalization/48/sigil-running-script.png",
+      "sha256": "4e467b61a0790193f367defa199e31ee8c6c3408adaaa8db0e882216ad51955c"
+    },
+    {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/technical-v1-before-white-normalization/44/sigil-running-script.png",
+      "sha256": "c1d2fd4341110645572929d51d081b4635f5135c93649c630dbd4d374adb7b3a"
+    },
+    {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/technical-v1-before-white-normalization/40/sigil-running-script.png",
+      "sha256": "294ed65c6029399bc1fdc5a182c6b0cc8831cdc36ef8916679ad97975ac6ea76"
+    },
+    {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/technical-v1-before-white-normalization/32/sigil-running-script.png",
+      "sha256": "5be56cc861bfd849ed58342a2d1760417418b8adf30289d5580d86ae2fe8f4c4"
+    },
+    {
+      "path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/technical-v1-before-white-normalization/24/sigil-running-script.png",
+      "sha256": "57f0065183b7b3d4381b626130baa2449a6994708d01e55d1baee41f6838f3b5"
+    }
+  ],
+  "export_normalization": "AllRGB255, unchanged downsampled alpha; earlier technical exports preserved. This corrects hiddenRGB0 from PIL premultiplication without changing artwork or alpha."
+}

@@ -1,3 +1,7 @@
+# Current21November sole-artist checkpoint
+
+Run sole-20261121-0109. RunningScript delivered, total512/871. User explicitly authorizes renewed attempts on rejected fiction briefs; old no-retry rule superseded. Actual existing claims/bytes/errors preserved; claim exact further IDs before drawing. All candidate approvals false; ScrapTurret remains held.
+
 # Current sole-artist checkpoint
 
 Current sole artist511/871: all92 earlier missing deliveries now integrated with exact sources/metadata; imported work adds0. New sole deliveries ReturnClause,GrudgePlate,RimCorner are pushed. RunningScript alone remains eligible, generated rune ready pending explicit alternate-method instruction; all other pending jobs blocked/dependent/held. No actual new imagequota. Exact remaining IDs: REMAINING-WORK.json.

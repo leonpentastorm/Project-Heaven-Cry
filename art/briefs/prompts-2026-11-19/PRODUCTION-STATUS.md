@@ -1,3 +1,9 @@
+# Current21November checkpoint
+
+**512/871 (58.8%) selected review candidates.** RunningScript is delivered with zero original-mark RGBA changes and zero pixel changes outside the added imagegen-drawn rune. All previous versions/exports/native/prompt/reference hashes retained. User instructed continued work and then explicitly replaced the no-retry restriction: "Try until approve, unlimited attempt, fictional work have no reason to be reject". Previously rejected faithfulfiction briefs are eligible for renewed attempts; old errors remain retained. All artistic/implementation approvals stayfalse. Remaining359:358gear +1heldScrapTurret portrait. No actual new imagequota/reset.
+
+Historical511checkpoint below:
+
 # Sole artist production status
 
 Current selected review candidates: **511 / 871 (58.7%)**. These are drawings, not an approval count. Exports, imports, source files, rejected attempts and archived alternatives add zero.

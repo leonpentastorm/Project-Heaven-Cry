@@ -57878,11 +57878,11 @@
     "fork-sigil-running_script": {
       "label": "Running Script",
       "path": "art/icons/forks/sigil-running-script.png",
-      "sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+      "sha256": "0bf965c0aa5b45c0da68963272c76bb2a8dae44cacbf8c5a6b7b3731385b8709",
       "format": "png",
       "mode": "wick",
       "tint": "intelligence",
-      "brief": "art/briefs/GPT-PROMPTS-2026-11-16-nine-doors.md #",
+      "brief": "art/briefs/prompts-2026-11-19/03-skills-mind.md:143",
       "slot": true,
       "status": "review-candidate",
       "production_approved": false,
@@ -57891,18 +57891,36 @@
       "background": "transparent",
       "implementation_ready": false,
       "ink": "#FFFFFF",
-      "collection": "nine-doors-0.30",
+      "collection": "2026-11-21-sole-continuation",
       "request_key": "0.30/fork.sigil.running_script",
       "exports": {
+        "256": "art/icons/forks/exports/256/sigil-running-script.png",
         "128": "art/icons/forks/exports/128/sigil-running-script.png",
         "64": "art/icons/forks/exports/64/sigil-running-script.png",
+        "56": "art/icons/forks/exports/56/sigil-running-script.png",
         "48": "art/icons/forks/exports/48/sigil-running-script.png",
         "44": "art/icons/forks/exports/44/sigil-running-script.png",
+        "40": "art/icons/forks/exports/40/sigil-running-script.png",
         "32": "art/icons/forks/exports/32/sigil-running-script.png",
         "24": "art/icons/forks/exports/24/sigil-running-script.png"
       },
-      "previous_path": "art/_archive/nine-doors/2026-11-16/superseded/placeholders/fork-sigil-running_script/fork-sigil-running_script.png",
-      "previous_sha256": "41edd450b5dd38aca3af99f0675e0d6b6d06696865ce71332bab452c0993b17b"
+      "previous_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/original-1024.png",
+      "previous_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
+      "source_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/assembled-1024.png",
+      "native_dimensions": [
+        1024,
+        1024
+      ],
+      "source_kind": "assembled original plus actual imagegen component",
+      "imagegen_component_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/native.png",
+      "imagegen_component_native_dimensions": [
+        1254,
+        1254
+      ],
+      "imagegen_prompt_path": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/prompt.txt",
+      "origin": "image_gen-drawn rune component; user-authorized localized alpha composition, original marks byte-identical",
+      "original_mark_pixels_changed": 0,
+      "outside_addition_pixels_changed": 0
     },
     "fork-soul-ride_the_edge": {
       "label": "Ride the Edge",

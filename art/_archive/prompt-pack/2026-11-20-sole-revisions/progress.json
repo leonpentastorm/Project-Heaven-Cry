@@ -1,12 +1,12 @@
 {
   "delivered": [
-    "kit-rim-wall-corner"
-  ],
-  "remaining": [
+    "kit-rim-wall-corner",
     "fork.sigil.running_script"
   ],
-  "selected_count": 1,
-  "project_distinct_count": 511,
+  "remaining": [],
+  "selected_count": 2,
+  "project_distinct_count": 512,
   "project_total": 871,
-  "image_quota": null
+  "image_quota": null,
+  "run": "sole-20261121-0109"
 }

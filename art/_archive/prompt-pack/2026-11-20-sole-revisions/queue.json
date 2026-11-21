@@ -9,7 +9,7 @@
       "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v1/native.png"
     ],
     "prompt": "Make one small invented rune for fictional RPG game art: a flat black angular contour on fully transparent alpha, square canvas, centred and occupying the central60percent so its THREE strokes are clear. Use attached two-stroke angular hook as the starting shape. KEEP those first two joined segments, and ADD A THIRD SHORT straight diagonal stroke to its bottom endpoint. Third stroke rises toward the upper-left for only HALF the length of the first segment, then stops abruptly, unfinished. Thus FOUR vertices, THREE connected straight segments, exactly: long down-right diagonal, long straight down vertical, SHORT up-left diagonal. One connected open broken zigzag, no enclosed area, no letter, numeral or writing. Uniform thin black stroke, crisp flat shape, no rounded caps, no grey, texture, spatter, shadow, white underfill, matte or background. Do not include any robot, old glyph, frame or other mark. Transparent PNG. This is the isolated addon drawing only.",
-    "status": "pending",
+    "status": "delivered",
     "run": "sole-20261120-1615",
     "source_branch": "art/prompt-pack-01-04-2026-11-19",
     "source_commit": "550f80c7dad612133638cb2edc7cf326d127c428",
@@ -21,7 +21,8 @@
     },
     "original_sha256": "38a6e23cbcd5113f78a937fad44804cc23484481038e29abdd935aa462496cca",
     "technical_export_note": "Intermediate flat black ink requested to preserve negative-space alpha; if faithful, exporter may normalize visible RGB to purewhite without modifying alpha or geometry. No code-created drawing or compositing.",
-    "generation_mode": "delta-only overlay; no production composite without explicit alternate editing authorization"
+    "generation_mode": "delta-only overlay; no production composite without explicit alternate editing authorization",
+    "delivery": "art/_archive/prompt-pack/2026-11-20-sole-revisions/selected/066-v1/delivery.json"
   },
   {
     "id": "kit-rim-wall-corner",

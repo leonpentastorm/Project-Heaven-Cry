@@ -1,10 +1,10 @@
 {
-  "selected": 511,
+  "selected": 512,
   "requested": 871,
-  "remaining": 360,
+  "remaining": 359,
   "counts": {
     "icons_tiles": {
-      "selected": 86,
+      "selected": 87,
       "total": 88
     },
     "new_repaint_standards": {
@@ -28,7 +28,7 @@
     "standard": 51,
     "grade": 298,
     "unique": 9,
-    "icon-revision": 1,
+    "icon-revision": 0,
     "held-portrait": 1
   },
   "by_status": {
@@ -36,7 +36,6 @@
     "service-blocked-or-preceding-grade-dependent": 94,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5,
-    "generated-rune-ready-awaiting-explicit-alternate-editing-method-instruction": 1,
     "0.30-HOLD": 1
   },
   "live_claims": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
@@ -2957,15 +2956,6 @@
       "eligible_for_retry": false
     },
     {
-      "id": "fork.sigil.running_script",
-      "kind": "icon-revision",
-      "path": "art/icons/forks/sigil-running-script.png",
-      "status": "generated-rune-ready-awaiting-explicit-alternate-editing-method-instruction",
-      "eligible_for_generation": true,
-      "component_plan": "art/_archive/prompt-pack/2026-11-20-sole-revisions/attempts/066-rune-only-v2/component-plan.json",
-      "owner": "sole-20261120-1615"
-    },
-    {
       "id": "figment-scrap-turret",
       "kind": "held-portrait",
       "path": "art/portraits/figments/figment-scrap-turret.png",
@@ -2973,5 +2963,11 @@
       "eligible_for_generation": false,
       "hold_source": "art/_archive/nine-doors/2026-11-16/art-hold-list-0.30.md"
     }
-  ]
+  ],
+  "retry_authorization": {
+    "user_quote": "Try until approve, unlimited attempt, fictional work have no reason to be reject",
+    "replaces": "earlier no-retry instruction",
+    "run": "sole-20261121-0109",
+    "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
+  }
 }
