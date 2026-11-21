@@ -3387,6 +3387,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-short_bow--masterwork",
+      "path": "art/icons/gear/weapon-short_bow--masterwork.png",
+      "sha256": "683be7ec5522a93de4b9357d83eae64a99bb9e7295d634a1102d033a78bd3e23",
+      "label": "Short bow — Masterwork",
+      "family": "weapon-short_bow",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_bow--masterwork.png",
+        "sha256": "e57da72c22160751ca0c9292e6ba1baecc586c24eb3eb8153778302bf41db669"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_bow--masterwork.png",
+        "sha256": "683be7ec5522a93de4b9357d83eae64a99bb9e7295d634a1102d033a78bd3e23"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_bow--masterwork.txt",
+        "sha256": "8787f3486867e59f0382950512e0789e9dc51a3495ea69a01cb41b91ef2ebf42"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-short_bow.png",
+          "sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6"
+        },
+        {
+          "path": "art/icons/gear/weapon-short_bow--fine.png",
+          "sha256": "1615fb0c059f6891cb58e5d8f80541a766716c787ef10385e3edb8c61fc29d80"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-short_bow--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-short_bow--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-short_bow--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-short_bow--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "71c75b826c891d3e552b1cafae641cc80c73fcdb5fa450df1f2e7f3f88ff05eb",
+        "128": "5d6c2861e6c8e62a6fa3f7547ee0356f3bae88bc181f586c4eca93f05dfe2736",
+        "64": "d2f6f3adbbe7b9f84113e402631af437cd21aff53b1274481ae4372705464216",
+        "32": "a470c7751c667e52cefd25d586cb9b87c3306bd5d0cec0e71bbb9c415ac35abc"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-short_bow",
+      "outline": {
+        "solid_alpha_iou": 0.8461623158231902,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 64
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
