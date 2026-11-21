@@ -1,0 +1,59 @@
+{
+  "head": "bd0763fc4a0a91812f9469442ca864bf5e9c96b3",
+  "job": {
+    "id": "weapon-hellraiser_rotary--celestial",
+    "standard_id": "weapon-hellraiser_rotary",
+    "grade": "celestial",
+    "label": "Hellraiser Rotary — Celestial",
+    "path": "art/icons/gear/weapon-hellraiser_rotary--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-hellraiser_rotary.png",
+      "art/icons/gear/weapon-hellraiser_rotary--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-hellraiser_rotary",
+    "family_references": [
+      "art/icons/gear/weapon-hellraiser_rotary.png",
+      "art/icons/gear/weapon-hellraiser_rotary--fine.png",
+      "art/icons/gear/weapon-hellraiser_rotary--masterwork.png",
+      "art/icons/gear/weapon-hellraiser_rotary--relic.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.8",
+    "prompt": "This is a fictional Project Heaven Cry RPG inventory painting, not a real-world object.\n\nRepaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker's signature parts are: the same compact red-and-charcoal rotary prop, existing parallel barrel cluster and front support ring, boxy receiver, carry handle, short grip and large round red lower drum with pale slash accents. Preserve the precise barrel count, drum size, support rings, all openings and every faction part. Muzzles remain dark.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; grips and stock ivory, a faint trace of the item's accent where its accent was. The inlay line and one seam (a receiver seam, a tube joint or a tank band) give a faint, contained ivory-gold light from inside. The muzzle, venturi or nozzle stays dark; a pilot flame stays its own small colour; nothing spills past the outline: no bloom, no halo, no rays, no sparks, no smoke.\n\nThe FIRST image locks the Standard silhouette, camera, proportions and margins. The SECOND image supplies the preceding grade; keep its earlier surface additions. The portrait reference supplies brushwork only, no figure or scene. Preserve exact part counts and negative spaces. All additions stay flush inside the existing silhouette. Fully transparent canvas, no lettering or external glow.\n\nCelestial material priority: dark casing, dark grip and red/ochre paint in the keep line describe the Standard reference. The same geometry now becomes flawless pearl-ivory metal, ivory-hide grip/cuff and pale steel teeth/striking faces. Leave only a faint trace of the original faction accent at its exact original location. Every exposed metal part receives this clean pale finish; no bronze-brown patina survives. Recesses, holes, muzzles and vents stay dark inside, and the original tiny pilot flame retains its own colour. Retain each existing repair and ornament at the same position, in pale clean materials.\n\nAll formerly red-painted casing/drum/grip panels now read PEARL-IVORY with only a faint pink-red tint remaining in the exact original accent locations. No saturated red panels at this grade. The ivory receiver, barrels, drum, support bands and grips are flawless and unmarked; all six muzzle interiors remain dark. Retain the scrollwork location and the one replacement band in pale materials.",
+    "keep_line": "the same compact red-and-charcoal rotary prop, existing parallel barrel cluster and front support ring, boxy receiver, carry handle, short grip and large round red lower drum with pale slash accents. Preserve the precise barrel count, drum size, support rings, all openings and every faction part. Muzzles remain dark.",
+    "status": "pending",
+    "production_approved": false,
+    "collection": "2026-11-21-retry-continuation",
+    "depends_on": "weapon-hellraiser_rotary--relic",
+    "prior_generation_error": {
+      "type": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-20-reset-continuation/generation-failures/weapon-hellraiser_rotary--celestial.json"
+    },
+    "prior_lane": "art/_archive/gear/2026-11-20-reset-continuation",
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "7999c034e0937d3c2107abf079977bb3c063ca9aae7393f4e0912c3d75a5062a",
+    "run": "sole-20261121-0109",
+    "standard_sha256": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
+    "current_lane_error_history": [
+      {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-hellraiser_rotary--celestial/001/error.json",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID bec5a10a-c535-4355-b8cd-5cff5eb66071. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    ]
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-hellraiser_rotary.png": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0",
+    "art/icons/gear/weapon-hellraiser_rotary--relic.png": "bc370ab48da6731eeea43e8b7021b8c3b8629ec4e812ad108dd66108b676e81c",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 2,
+  "clock": {
+    "current_time": "2026-11-21 02:26:53 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7055817854,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "1401b82e5c3c4a6b1886a95bec40e83197e287f7"
+}

@@ -3067,7 +3067,7 @@ f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/g
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
 1c23860bb2798975c015d48a2c2ea6290c2887763fa05fb7add8c704691553f2  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
-04fa4b11d10bfcb93fc5edd1708e368979f4ad592a618893294f57bfc0c461d6  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
+d6842429d2aed2d2637aaea6f6c42f910567d756256d702aa84e4b42c33ad646  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
 f563f98f5775e55e5c80741a6779bdf120a1eb4a36ed4dec3f543574028db712  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/native.png
 d4641f47d5040bc171d64875d4fcc1c2ecba189d92b185a39c076e39d07b6bd0  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/prompt.txt
@@ -3528,7 +3528,7 @@ e0ca4ec468fb8582b7be239bdb55cd21a034954333e4f898c0262574d59b2bd2  art/_archive/g
 8a2ca5fb3717d151fdc6aa17dfc2187ff648d6bbc90a03780e45bee0807556b5  art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-grudge_plate.png
 05ec5670c5e5dd31f5c0b4ec1abec36becf03409804801ad7d6982d6f52d6dca  art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-return_clause.png
 049c3d37a67e3b7cecc4e6da18c2683f243e71fd02745068beb5a499b17d1c6a  art/_archive/gear/2026-11-21-retry-continuation/AUTHORIZATION.md
-f4b96bcdb006087b02fc38b43666b5006064cf6381d42085e6fcbf795437e7d3  art/_archive/gear/2026-11-21-retry-continuation/HANDOFF.md
+98c5e78d68433f6cd8536c01d2c2afd2ddace793933cd38e67a901f35153ae04  art/_archive/gear/2026-11-21-retry-continuation/HANDOFF.md
 1a52c05cab71a778d6fbdc076a33dcc17580063399a0869cc8969d806fcb9ec8  art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md
 f0108c5fd10150e56657ad11e398ecebd7bc86828abaeb5715eb13d035be5173  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-broadback_sabre--celestial/001/native.png
 4125c6a21dede181bd8563bbaf4fb853f5fddd2592cbae26b225f90b1a4ee706  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-broadback_sabre--celestial/001/request.json
@@ -3552,6 +3552,10 @@ b55d29f661408c087e02d81e9a3627822ce1f107bab6027328338a0d6ee1002b  art/_archive/g
 5a1d4b9f3d80c34641191c2bb881f7d9f1e4527eceea2c413d99343a6d07a659  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-dock_cutter--relic/001/source.json
 caa5929139fb81bffb2f5b72e5aeae944ba69e17261538f9c25b21c5bf5adc6d  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-hellraiser_rotary--celestial/001/error.json
 82a8100e8e8f21a7079878a6b87767fc2b3a36ce96c7643289eccc68f3923691  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-hellraiser_rotary--celestial/001/request.json
+34a03f4f952f445f73378e728cf0e83c4c7eab8a8ea0451e9a089fb967bba1b2  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-hellraiser_rotary--celestial/002/native.png
+2821ff505708f1ce3ee38437d97deaa2ed8214048baa63f443c2c5294f6d7975  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-hellraiser_rotary--celestial/002/request.json
+c9fe2a17b0e3bbdc7257e4e8072b1e1afa466f52a7e8bbc7eb584dd44caaa8fa  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-hellraiser_rotary--celestial/002/review.json
+d81a4bdb49b17b449ca6ee2f3abd6f6fc3c33d07190c0ee4a17afa018605115a  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-hellraiser_rotary--celestial/002/source.json
 94a70ec1f38ce670205856ca74470903f955fb41bcb4a6414ceb804a2edc6af6  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-kemizuchi_side_sword--celestial/001/native.png
 98cb1e4fd327e8f0da29520736f9b78aa86966b9c017ada9018993cd42cc4937  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-kemizuchi_side_sword--celestial/001/request.json
 7f397f9554d68b7e35fe16fa4e438624d3b7264050586afd086db1fb96cd5364  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-kemizuchi_side_sword--celestial/001/review.json
@@ -3638,12 +3642,13 @@ f484dc88e521976c461a9f6551f299f8a100f9097604187611aed7e6ec69c1dd  art/_archive/g
 73aa28b7a75cb8a2f70102a0913f76c335c9fcdf4aa55bff71e2a806575eea12  art/_archive/gear/2026-11-21-retry-continuation/coordination/develop-cc52d3d808da0aebdddf40b7f75070eeb70c50bd.json
 50599c48f6dd5181951f46d2dad9bc7eccef708af59327ace3bcf8e99c613674  art/_archive/gear/2026-11-21-retry-continuation/functions-delivery.js
 73c0e5365ff079e595070d570afc5d41e82ed55af837285e0e3ed1ed96d216a3  art/_archive/gear/2026-11-21-retry-continuation/functions-driver.js
-0f57918b8cec5d3ff27fc0b99c80de7c744f15166f28c25e4af0ae0e7c718ec6  art/_archive/gear/2026-11-21-retry-continuation/manifest.json
+af61e0ffe667f999bd6082354b0e9e6a197a1b6e7d27f5943208520034072586  art/_archive/gear/2026-11-21-retry-continuation/manifest.json
 a595e6537483204a35e9d6ab52cceae4136d7c6ffde4bfd189e604962ed391c7  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-broadback_sabre--celestial.png
 f9e0b792793b88c70344251eaa6fcee135319fe64bd454ed1f8b7c2e6b453fb5  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-broadback_sabre--relic.png
 8eaa2d4fb4c1e0412af761a46b36699a03f3af1628e0d2d2a9901fe0f49fdd62  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-dock_cutter--celestial.png
 764a2d1550f462917131044b47ca9df87b4505f62195dbf1e439294190c3e127  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-dock_cutter--masterwork.png
 272b3ed9c1f8844db4dcc0bb0f955ff1f4bd245c3a3d81ae235438b4f43a3ff5  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-dock_cutter--relic.png
+30125536110dfb54cc90a2e82f7a5c1fe152dba6a60b7179bc224d52d80ff0c7  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-hellraiser_rotary--celestial.png
 274ca5383c2501857a1ac76ceea54bb10f663006bb28593b524b4a5aa259b00b  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-kemizuchi_side_sword--celestial.png
 29b646987279ae97e1797083c3c5b058eb42411843b933f30ee7c524f4d54e2a  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-kemizuchi_side_sword--masterwork.png
 aa5089a9fc9ba1867e514622a8d7dd6580c5bea55041b7435b665d6d1b078ce9  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-kemizuchi_side_sword--relic.png
@@ -3662,12 +3667,13 @@ e131722e0bbea33e70199971ff1be5371487fdec62bfe46c2c9923ba0bd4c706  art/_archive/g
 d1ca6c1cae0fc8344f5c50709b9d9a1c5be30d5d929790f725f1e12eab3561b6  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_draw--masterwork.png
 e2fefbf30d2b3bd8413b9e3a60fde3a85ed17a0bf532ca6b6ffc933a82f1f7db  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_draw--relic.png
 447d6ba2adcac9c3669eb716e7b9fbe7c29ae54a0bf26bb53f2b963aa48285e9  art/_archive/gear/2026-11-21-retry-continuation/previous-queue-snapshot.json
-3cf65bf661606eeed2aeb5ed6b3df9245fcb0752e6252c903dc12ee988ae3fb6  art/_archive/gear/2026-11-21-retry-continuation/progress.json
+4d4518369d8cc7da31a7e3dd042afbb78599db42905dc0cf61d79bb4b2efd116  art/_archive/gear/2026-11-21-retry-continuation/progress.json
 e2059fb182a1ff5ce8fc89518dd982c62c1d75ddcfdc0b4b2027c67228a6f1be  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--celestial.txt
 11ccde30be710af79c602ced16bf0e2b7cf1592c8a43521c4582b32125fed74a  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--relic.txt
 d124ba5313218bb32cdb7e069f0a1b122282879edc89504edc543ab9c6fe1bb0  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-dock_cutter--celestial.txt
 b869dc55a70c9c19929c0bf48c908101dc437175b44cdaeeaf2f7dbd500fa71b  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-dock_cutter--masterwork.txt
 0faa747aef04d1486b196fa8b890bd501554c614cf95c04d803e53a9c6c4eb3f  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-dock_cutter--relic.txt
+19274a5870a5a3c1c89ebd43c2ca77bbfb2e868ea28987b21b5d1911470ddf65  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-hellraiser_rotary--celestial.txt
 a806c22f5d153c972276b0413d242df43fe3c85fedae30fc672ffe36448f9129  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-kemizuchi_side_sword--celestial.txt
 4da9eee71df7e442513f7c0bf3f36012d30aca7b2e53aa3feda499cc70aa4320  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-kemizuchi_side_sword--masterwork.txt
 00ba6e8bbdc3f31e55c540ddf4e044d3cae12538b21f360a451fadb5a8d2fc67  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-kemizuchi_side_sword--relic.txt
@@ -3685,11 +3691,13 @@ e1a8892c913d1c232fe308254803811581b37629a1b10ef3403363d65ab53971  art/_archive/g
 3290c14bb1674e21dc47d7367d5959cf134d0bb84e08bae20362e687758a5a15  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--fine.txt
 18c71b4bce195eb8d6a14ec272d3c889f7c35d70461deec9978a6c9e2050e68f  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--masterwork.txt
 a67f432fcf2c1d1feac4fad9adac6564928c745bf60ab367573fc59093b197e1  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--relic.txt
-d617b587aaa8795734e0fbd99447f3c0c34727ad52205d8715a4e4f67393a8ce  art/_archive/gear/2026-11-21-retry-continuation/queue.json
+2384d8edf4dffaf802d1d1c7461897e5a20054a48e06693b21e69d2272cb1a84  art/_archive/gear/2026-11-21-retry-continuation/queue.json
 6cde31ed81b8e5a107b264dd22bdd36abe9ea01b5ba46548afaf74d4f822a7ea  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-broadback_sabre-32px.png
 a296aaa10704f794668e90a1de0554f8c71762914c44c290bad3ca4aa9891172  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-broadback_sabre-64px.png
 b791d6b29d67ab56d9df5f87ecc8a6a68dd9c8acddf2d748f9026354e24949df  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-dock_cutter-32px.png
 ecb772d7e88e2c8e2b4c7dcee27544dd254a3b186f26928fbb7f84114ff01457  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-dock_cutter-64px.png
+4b633149ee0fcbf1c22640ee6ea0739babce5f66224f4faeaa5a8d063a79a003  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-hellraiser_rotary-32px.png
+cf9b5e2724614511590208ab8d6681141f8413cc82b3248602613d205f726270  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-hellraiser_rotary-64px.png
 3e4ba253483b0812693020033061f94696f020e5bafa16eab61c783a4e6dbdeb  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-kemizuchi_side_sword-32px.png
 2e5b1eb427e3152e0db423d7de9fe39af47940ba7db069b6338baca351b10ad9  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-kemizuchi_side_sword-64px.png
 ae548df75d0c99cbadcb551b6ac19937125eaaac83003f57f990ed36d5b59be2  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-legion_spear-32px.png
@@ -3706,6 +3714,7 @@ f0108c5fd10150e56657ad11e398ecebd7bc86828abaeb5715eb13d035be5173  art/_archive/g
 87eff57b08b61b8e5ad57c82319f8e1e2dd7b9186995df2718315475848755f0  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-dock_cutter--celestial.png
 fa8e2b5a609ee1dcf217a3142f0f3688d7bcd3f47a51696df38c18954f77de44  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-dock_cutter--masterwork.png
 ccbb152ff26dcd08776f849531c859fc631669dd66c8288c79477e821de3940a  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-dock_cutter--relic.png
+34a03f4f952f445f73378e728cf0e83c4c7eab8a8ea0451e9a089fb967bba1b2  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-hellraiser_rotary--celestial.png
 94a70ec1f38ce670205856ca74470903f955fb41bcb4a6414ceb804a2edc6af6  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-kemizuchi_side_sword--celestial.png
 1a95a1bf089c033516be5f1441fe2797be71ab5d0d3fadcb8d879f9b7f0845d7  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-kemizuchi_side_sword--masterwork.png
 eddfbd5796ef5f6d7779ee364d38ecec28a68e4ec500171ab3f2f1c4539c5997  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-kemizuchi_side_sword--relic.png
@@ -7882,9 +7891,9 @@ c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/briefs/pro
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/briefs/prompts-2026-11-19/08-grades-and-uniques.md
 d35c91984152452f0484e327db6e6dadf34deaeab105bddf9b0dc9e4601323dd  art/briefs/prompts-2026-11-19/09-heavy-and-strange.md
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/briefs/prompts-2026-11-19/10-rifle-analogues.md
-ed17f2bd6fa9e2053b30fe95530c30cf5b31dae5c1c74beba8ba049b59fe8cdb  art/briefs/prompts-2026-11-19/PRODUCTION-STATUS.md
+786d39e7fafc2533f4fe205a5ba362fc8e28c2e9eb348487d9956914433dd552  art/briefs/prompts-2026-11-19/PRODUCTION-STATUS.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/briefs/prompts-2026-11-19/README.md
-9952423daa31f4dbab8ff786a1e9d5868bdd334670c26abc244c3aa53addd09d  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
+38f83dad31eeb28c72144c942bb0bbe59414a49e7e703ba7b663da3d1c9ea254  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
 15a16bf0d5e3166a424a0812d48ccf869542577351a7381a2987e32557e37746  art/briefs/prompts-2026-11-19/SCRAP-SENTINEL-REPLACEMENT-2026-11-21.md
 2f4ad0863714494fe22495ea109addbc0fa79e69b6e5e87e49dd7df078a5d338  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
 f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/title-screen.md
@@ -7893,7 +7902,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-1a75fe6c668eca2cacb2a58ef5272fc885133701f1f517076bbea70af37cc3b3  art/catalog.json
+4d154268df137fa0a56990f4f175340d66c2463abfe71bfc3a9cc86d8936884d  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -10123,6 +10132,7 @@ c648f5c7c4dbc417af85225d8eb16c8a3769bf4163ab6a7a689fae55fd109c6e  art/icons/gear
 17dc5dc0dfa34e8741a772230fba04a6bb0583f6f838f40cd82f82f63aebb3d2  art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--masterwork.png
 9960d8045b827f29bfc645b07e76aa744e6c139f6da36b52d7cd04fe088efa1a  art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles--relic.png
 dce921428c89f8a840a17fc83f3f4d6914e048521a416e1a64070f917389c93c  art/icons/gear/exports/128/weapon-hellraiser_piston_knuckles.png
+c3eeade2f2397ca59e6c047c8a0ad50eb961ccfdab253e525eb54e1e4c63d001  art/icons/gear/exports/128/weapon-hellraiser_rotary--celestial.png
 7b03b17f0d322c34b6cf63f2ea011e6e68a262c9bd39ed117fba9c718ed68635  art/icons/gear/exports/128/weapon-hellraiser_rotary--fine.png
 80a83fbfa83ad6eea4037a7c7788b8646a617599a9267e4869477f0e3a0aadbe  art/icons/gear/exports/128/weapon-hellraiser_rotary--masterwork.png
 855ab11d8b663b7b2b6280d5b54636d32914837d30c643ea6bf174f5e90b0b9a  art/icons/gear/exports/128/weapon-hellraiser_rotary--relic.png
@@ -10742,6 +10752,7 @@ d830ada78da92e9c9ac19871e4eb36ce12df3ddded09cef123fd059d69273bcc  art/icons/gear
 9788c01b32a607d05a6d54aa73142e63eeb2f1a6e1fe7f1cc2305d09cdb833c0  art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--masterwork.png
 35be1b99f2639f85776147f2fecb4181139bbf78fea2cbde9991c36f63a3cb13  art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles--relic.png
 675c4d43e68c6e5020fc6d875b64d0a10a925dc48686d0e716160a822a9b094d  art/icons/gear/exports/256/weapon-hellraiser_piston_knuckles.png
+d652e9ae8643c3faa3c8cf38c7b1eb44934be3b09cabb566f64a7fa16ea99c75  art/icons/gear/exports/256/weapon-hellraiser_rotary--celestial.png
 6ca16f2d85f98caa0b9ef668107228c215ee7c86f0b75147807a0cb6f430a199  art/icons/gear/exports/256/weapon-hellraiser_rotary--fine.png
 be117ff01ffdcd756b50c01b548ee7b86069fcc9f566868ae05e7be3df45af39  art/icons/gear/exports/256/weapon-hellraiser_rotary--masterwork.png
 f94ae323549ec9bca3b72cf7a08f310725fc4dfd27a1e147554a190973b6ee84  art/icons/gear/exports/256/weapon-hellraiser_rotary--relic.png
@@ -11361,6 +11372,7 @@ e93dc2881e5157a32e6038fb2f61773aa6df6dba514aedcad2043263507e4810  art/icons/gear
 6981b89eb76740e27a0fd3fe89ad8a4a651a555cac1599b5336a2f1b84110cf5  art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--masterwork.png
 80d823abe7ce1aeac4d5a4189954a06e59d50efcfca117b893d072ee925020dc  art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles--relic.png
 14971404092beb287ce7a797e16529df693800e3d9e6d36f1479912ad6209212  art/icons/gear/exports/32/weapon-hellraiser_piston_knuckles.png
+c65207073718988574833b64f109338a7d07bb27c8ee07f346f938dac0e62f76  art/icons/gear/exports/32/weapon-hellraiser_rotary--celestial.png
 5ceb33eb5bd88227173b47ec6e34a2d9d2c5d8d805b5ead0a5e9beff4512b46f  art/icons/gear/exports/32/weapon-hellraiser_rotary--fine.png
 32f8af0dd55c1c81211a747f65c1759482516afc9c5ce96b8ef45ff145808f5b  art/icons/gear/exports/32/weapon-hellraiser_rotary--masterwork.png
 fdc27bcb34e94277602b759e05ce2e4df6aa96284738fcbd3c601697ce7b0694  art/icons/gear/exports/32/weapon-hellraiser_rotary--relic.png
@@ -11980,6 +11992,7 @@ dcbafca82b1053a75092d2153185cbe356b636441179ae4302a9327c58d30a23  art/icons/gear
 0c76f84ec0ed74ad76403a1a240cd2d3d18b9a46cecceb458b13559ab9883a1b  art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--masterwork.png
 c6c2ae8f8bf1f03c24acfd64de41041da21298a45ed7f1e4e249886e41bf0ee9  art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles--relic.png
 259c97865e4b08c414c56952ba91829f0b66c7d516aba0abfb2c6a722145ec4e  art/icons/gear/exports/64/weapon-hellraiser_piston_knuckles.png
+4f7182fdf5ad92a4c8f6dd405a559d392615e713851303b570f511c21cd1bd89  art/icons/gear/exports/64/weapon-hellraiser_rotary--celestial.png
 3474ac0bf1716c7320ab68945f9d2ec86ea356b8899be9e2256cc786acf35f32  art/icons/gear/exports/64/weapon-hellraiser_rotary--fine.png
 c1603fb145e42ddb63dba231c123d6408f79a596150a22fe23f89808e9678894  art/icons/gear/exports/64/weapon-hellraiser_rotary--masterwork.png
 3ad2a53fe40630695e3a6d67c570fd9188d39541e69d52ba9b0b19fe85b0049d  art/icons/gear/exports/64/weapon-hellraiser_rotary--relic.png
@@ -12412,6 +12425,7 @@ f965855cebd51de3220752141cf2c9bf3825d29ab798b8eda0ffa4ecf31a6758  art/icons/gear
 9a8b138f6d8988fae7fea21e8b534c985985948dc59e5be0ec50bdc3b90ebff5  art/icons/gear/weapon-hellraiser_piston_knuckles--masterwork.png
 faec4ede3318e251c18ac27e8724baa4abf4a248fcd4b9af2b6eb5602ce5eed5  art/icons/gear/weapon-hellraiser_piston_knuckles--relic.png
 68fbc1095dea7ba6eb74bc586dbcb0f7d01934e67c2fef828d3bd2e0741e0ef1  art/icons/gear/weapon-hellraiser_piston_knuckles.png
+30125536110dfb54cc90a2e82f7a5c1fe152dba6a60b7179bc224d52d80ff0c7  art/icons/gear/weapon-hellraiser_rotary--celestial.png
 21242efc2ec291373fe0c9845051cb1b25c18e907c76899a5735002bbb2f3682  art/icons/gear/weapon-hellraiser_rotary--fine.png
 008b521643a9d8755008780b6fda939793b26ac5e0c3c22a166ee9eb6c506872  art/icons/gear/weapon-hellraiser_rotary--masterwork.png
 bc370ab48da6731eeea43e8b7021b8c3b8629ec4e812ad108dd66108b676e81c  art/icons/gear/weapon-hellraiser_rotary--relic.png

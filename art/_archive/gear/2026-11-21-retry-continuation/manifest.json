@@ -1469,6 +1469,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-hellraiser_rotary--celestial",
+      "path": "art/icons/gear/weapon-hellraiser_rotary--celestial.png",
+      "sha256": "30125536110dfb54cc90a2e82f7a5c1fe152dba6a60b7179bc224d52d80ff0c7",
+      "label": "Hellraiser Rotary — Celestial",
+      "family": "weapon-hellraiser_rotary",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-hellraiser_rotary--celestial.png",
+        "sha256": "34a03f4f952f445f73378e728cf0e83c4c7eab8a8ea0451e9a089fb967bba1b2"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-hellraiser_rotary--celestial.png",
+        "sha256": "30125536110dfb54cc90a2e82f7a5c1fe152dba6a60b7179bc224d52d80ff0c7"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-hellraiser_rotary--celestial.txt",
+        "sha256": "19274a5870a5a3c1c89ebd43c2ca77bbfb2e868ea28987b21b5d1911470ddf65"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-hellraiser_rotary.png",
+          "sha256": "5dc0046d03ed00ebfd4ddba6756b31e6ee6fd70cd98ec7ea16dbc64c11f1cab0"
+        },
+        {
+          "path": "art/icons/gear/weapon-hellraiser_rotary--relic.png",
+          "sha256": "bc370ab48da6731eeea43e8b7021b8c3b8629ec4e812ad108dd66108b676e81c"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-hellraiser_rotary--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-hellraiser_rotary--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-hellraiser_rotary--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-hellraiser_rotary--celestial.png"
+      },
+      "export_hashes": {
+        "256": "d652e9ae8643c3faa3c8cf38c7b1eb44934be3b09cabb566f64a7fa16ea99c75",
+        "128": "c3eeade2f2397ca59e6c047c8a0ad50eb961ccfdab253e525eb54e1e4c63d001",
+        "64": "4f7182fdf5ad92a4c8f6dd405a559d392615e713851303b570f511c21cd1bd89",
+        "32": "c65207073718988574833b64f109338a7d07bb27c8ee07f346f938dac0e62f76"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-hellraiser_rotary",
+      "outline": {
+        "solid_alpha_iou": 0.9748852715124632,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 34
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
-  "selected": 535,
+  "selected": 536,
   "requested": 871,
-  "remaining": 336,
+  "remaining": 335,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 380,
+      "selected": 381,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 276,
+    "grade": 275,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 72,
+    "service-blocked-or-preceding-grade-dependent": 71,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -2321,14 +2321,6 @@
       "eligible_for_retry": false
     },
     {
-      "id": "weapon-hellraiser_rotary--celestial",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-hellraiser_rotary--celestial.png",
-      "standard": "weapon-hellraiser_rotary",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
       "id": "weapon-purifier_flamer--masterwork",
       "kind": "grade",
       "path": "art/icons/gear/weapon-purifier_flamer--masterwork.png",
@@ -2783,7 +2775,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-ork_cleaver_glaive--celestial",
+  "last_delivered": "weapon-hellraiser_rotary--celestial",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {
