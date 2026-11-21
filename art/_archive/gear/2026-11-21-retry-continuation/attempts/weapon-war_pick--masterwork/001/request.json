@@ -1,0 +1,51 @@
+{
+  "head": "55ac6ddaab2f400c87f892bb1073c9bdabf55a9c",
+  "job": {
+    "id": "weapon-war_pick--masterwork",
+    "standard_id": "weapon-war_pick",
+    "grade": "masterwork",
+    "label": "War pick — Masterwork",
+    "path": "art/icons/gear/weapon-war_pick--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_pick.png",
+      "art/icons/gear/weapon-war_pick--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_pick",
+    "family_references": [
+      "art/icons/gear/weapon-war_pick.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "source_brief": "art/briefs/prompts-2026-11-19/05-melee-forms.md",
+    "source_brief_number": 13,
+    "keep_line": "the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single dockside war pick on the lower-left grip to upper-right head diagonal, narrow long downward-curving square-section beak pointing viewer-left and small rectangular flat hammer face on the right, open dark curve beneath the beak, central head/haft socket, TWO long riveted iron cheek straps over the upper ash haft, original cross bands and round rivets, brown spiral leather grip, and polygonal butt cap with its dark open lanyard hole. Preserve every rivet, strap position, band, opening, exact beak curvature and proportions; no coloured maker accent. Do not convert it into an axe or mining pick.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line on the head with the item's accent colour (bright brass if it has no accent), so the head carries one clear coloured stripe. The haft becomes a finer, darker, straight-grained wood (or a finer steel tube where it is metal), with two flat metal strips laid along it below the head, flush with its surface; the butt cap and the socket are re-made in the same shapes with crisp edges. Exact edges, no wear.\n\nFIRST image locks actual Standard outline, negative spaces, parts, camera, diagonal, scale and framing. SECOND image is the preceding grade; retain its additions in their existing positions. Orren portrait supplies painted brushwork only; no person, scene or borrowed equipment. At least50px clear margins; background fully transparent; no external light or shadow. Every original opening remains dark and open. No coloured maker accent exists: bright brass inlay follows the prior thin cheek contour. Keep original straps/bands in place; two flat haft strips are surface-flush and entirely within the original haft silhouette. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-war_pick--fine",
+    "standard_sha256": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:20:24.239486+00:00",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "5221fbc72f18ceaf9b1a08d2cdfadff68fab285353fd03ca67a8f25527c78d0b",
+    "retry_authorized_by_user": true
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-war_pick.png": "bb51daf9b81012950397e5508d2edbf5adca8842233371433469d0eb8c8f91d7",
+    "art/icons/gear/weapon-war_pick--fine.png": "090e9e686572b2583a094b0a1bc69151a1a9ecccd0ce2a63750534154def78b9",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7055981184,
+  "clock": {
+    "current_time": "2026-11-21 02:34:48 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7055981184,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "1401b82e5c3c4a6b1886a95bec40e83197e287f7"
+}
