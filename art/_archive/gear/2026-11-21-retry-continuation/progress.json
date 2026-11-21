@@ -35,7 +35,16 @@
   "baseline_project_pictures": 512,
   "project_total": 871,
   "image_quota": null,
-  "attempts": [],
+  "attempts": [
+    {
+      "id": "weapon-short_draw--masterwork",
+      "attempt": 1,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--masterwork/001/error.json",
+      "count_contribution": 0,
+      "retry_authorized": true
+    }
+  ],
   "updated_utc": "2026-11-21T01:35:03.373418+00:00",
   "project_distinct_count": 516
 }

@@ -567,8 +567,9 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-short_draw--masterwork.png",
       "standard": "weapon-short_draw",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
+      "status": "new-service-rejection-recorded-retry-authorized",
+      "eligible_for_retry": true,
+      "error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--masterwork/001/error.json"
     },
     {
       "id": "weapon-short_draw--relic",

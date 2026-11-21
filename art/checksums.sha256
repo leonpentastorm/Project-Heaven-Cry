@@ -3534,6 +3534,8 @@ a3f44daca7e4a7f1e00f7558726d529a5f7328ca5a1f6c3b8f78ac12a376aedc  art/_archive/g
 5577c3a41ce2f79c9819f18136fe594936a15158f47b83ade1354597754941f3  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--fine/001/request.json
 2705f94dbd345c096dddaa1f51c4fa2e14f29cb8d9bb6471ac9c95c8a56e6571  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--fine/001/review.json
 6b89e44b71173f55909f6ec3fc2d74b9e113b914b7edd98215fa562d5098e085  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--fine/001/source.json
+912cf35a1259227827085cc4c1b509bef344496c49da0fc60f25c7dfe3b9c4d5  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--masterwork/001/error.json
+00a53366f5f0b8b9865624776721a01412f121d53d78821ea80dc295506580cd  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_draw--masterwork/001/request.json
 f484dc88e521976c461a9f6551f299f8a100f9097604187611aed7e6ec69c1dd  art/_archive/gear/2026-11-21-retry-continuation/claim.json
 f0e30f9e57469f4e9907f37fee5a55a8a195e632622d552112a794d719293f31  art/_archive/gear/2026-11-21-retry-continuation/functions-delivery.js
 834a160f2708a6f3ed95d5f1bf9f08409a4552c5300bf0ac8ef8c13415816095  art/_archive/gear/2026-11-21-retry-continuation/functions-driver.js
@@ -3543,12 +3545,12 @@ e942b565b8fe93e6129a27a5be5f11060eac5fd71b86e8bf8b65ffd5b184502c  art/_archive/g
 2b36f36187d79fcd53db9ac7df5278914983dbc4967c1cec4d3bb48fbb044a47  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-legion_spear--relic.png
 3e231bfe46b8e95957e86617cfe83597792a0a9e86db21eb3f9f84de86b624f3  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_draw--fine.png
 447d6ba2adcac9c3669eb716e7b9fbe7c29ae54a0bf26bb53f2b963aa48285e9  art/_archive/gear/2026-11-21-retry-continuation/previous-queue-snapshot.json
-00db2e6d3814e196b6a99f3d24b35e1e40900689f921f7eea08a4a51606575b9  art/_archive/gear/2026-11-21-retry-continuation/progress.json
+b2de7d8381ccad85aaabc579a7aa4f533f1f2cca0637c632c007496499f36304  art/_archive/gear/2026-11-21-retry-continuation/progress.json
 307693f6bb671a6f81490764f792132812fa25b7ab80526fb70a644c64e0391e  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-legion_spear--celestial.txt
 49de6738736eb8ec6f9c0b0c8f8fdf3c46d3a918ad257f06d292cdf363d9976c  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-legion_spear--masterwork.txt
 0ee8a69a867d749dbe29ba0fd5c99e9914b92b0442cd75e0b12dc90146b80fc5  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-legion_spear--relic.txt
 3290c14bb1674e21dc47d7367d5959cf134d0bb84e08bae20362e687758a5a15  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--fine.txt
-86b54bced5fdb9500a51fa25206317d6caf52ee6bf6ce2d747f5e558ee00c8c8  art/_archive/gear/2026-11-21-retry-continuation/queue.json
+7d9b24332092f158ad1f5a9fa1e49c43820c0d92932b2b357924e493e704f580  art/_archive/gear/2026-11-21-retry-continuation/queue.json
 ae548df75d0c99cbadcb551b6ac19937125eaaac83003f57f990ed36d5b59be2  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-legion_spear-32px.png
 22d5f76eb4a5e239b24539d823ab2d95fc5cbb47b2113c97a5136537ab5d2225  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-legion_spear-64px.png
 14374d28118c59a4bb75edb5cd3e0e59481d9705d88aa742728862599f93e5d9  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-short_draw-32px.png
@@ -7719,7 +7721,7 @@ d35c91984152452f0484e327db6e6dadf34deaeab105bddf9b0dc9e4601323dd  art/briefs/pro
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/briefs/prompts-2026-11-19/10-rifle-analogues.md
 1bd6584026a7b6e8243fda60584df12bb4e1d03198711ed2e2f44e030b4c2e64  art/briefs/prompts-2026-11-19/PRODUCTION-STATUS.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/briefs/prompts-2026-11-19/README.md
-5d2c2f6ae7f1af7c52bc691f03fd0802e59aef4b48ee37d8290eaf018a37e34e  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
+b89d8586ff7382c36667dd32182730517bf342e683192068d71c8b2372697bd6  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
 3550084946f2d9d5d524a070a54185f3434ceea7b73ba535d352510bae397e97  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
 f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/title-screen.md
 dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/title-screen/gaze-guide.jpg
