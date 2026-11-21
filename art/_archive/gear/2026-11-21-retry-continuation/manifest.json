@@ -2779,6 +2779,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-purifier_flamer--masterwork",
+      "path": "art/icons/gear/weapon-purifier_flamer--masterwork.png",
+      "sha256": "1fb290efab8b4835508d821eecf8fcc7f6d3170ced795742f6823e1617e26fec",
+      "label": "Purifier Flamer — Masterwork",
+      "family": "weapon-purifier_flamer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-purifier_flamer--masterwork.png",
+        "sha256": "b017509ac173f618825415e5ef20829e4015a4fb178cd7773f68beada1078e45"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-purifier_flamer--masterwork.png",
+        "sha256": "1fb290efab8b4835508d821eecf8fcc7f6d3170ced795742f6823e1617e26fec"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-purifier_flamer--masterwork.txt",
+        "sha256": "a8398cf42902af76a3b4be9bd02c0413e57b99b6fae4913769a284d0adb59527"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-purifier_flamer.png",
+          "sha256": "f315ad1c1970249e94351f5e4c696af4109b5fc13f49400043d98586d8aec23f"
+        },
+        {
+          "path": "art/icons/gear/weapon-purifier_flamer--fine.png",
+          "sha256": "d1b189772c1b64292a91459eaf1b73e5862fe659b559aa8a1e721a6447ca1340"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-purifier_flamer--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-purifier_flamer--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-purifier_flamer--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-purifier_flamer--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "37de0d57e4176c1c00aa857d8c57ab7de90221181fba41d950a6c1fd490c7804",
+        "128": "327033525edfceda6523171f4070ce3912a1e14700a0ff54e40f9cc11afce3ca",
+        "64": "3945a10e0aa44e9e5a5371911912791acf719898863830f9a687137645694660",
+        "32": "1a5342f896d86cb38bc6b46e8eb7c903292fed4dd9eec4331b67d310d3e3885c"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-purifier_flamer",
+      "outline": {
+        "solid_alpha_iou": 0.9479382683516459,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 32
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
