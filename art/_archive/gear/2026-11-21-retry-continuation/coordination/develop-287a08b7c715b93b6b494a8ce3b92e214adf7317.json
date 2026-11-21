@@ -1,0 +1,15 @@
+{
+  "base": "6f401b26ccadedbce887e00a911c04d5082b9bd5",
+  "head": "287a08b7c715b93b6b494a8ce3b92e214adf7317",
+  "files": [
+    "docs/design/proposals/2026-11-21-maps/check-ceilings.md",
+    "docs/design/proposals/2026-11-21-maps/check-curve.md",
+    "docs/design/proposals/2026-11-21-maps/check-cuts.md",
+    "docs/design/proposals/2026-11-21-maps/map-ceilings.md",
+    "docs/design/proposals/2026-11-21-maps/map-curve.md",
+    "docs/design/proposals/2026-11-21-maps/map-cuts.md",
+    "docs/design/proposals/2026-11-21-the-curve.md"
+  ],
+  "art_brief_style_asset_changes": false,
+  "finding": "One new commit contains proposed map/design documentation only; no changes to current art prompts, refs, style or requested gear IDs. Continue exact claims."
+}
