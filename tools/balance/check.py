@@ -285,8 +285,8 @@ class Scale:
     def ga(self, G): return num(self.g(G)['acc'])
     def garm(self, G): return num(self.g(G)['arm'])
     def order(self): return self.s['grades']['order']
-    def cash(self, n):
-        env = dict(self.env); env.update({'grow': self.grow, 'n': n}); return ev(self.s['cash_out']['sum_formula'], env)
+    def cash(self, n, grow=None):
+        env = dict(self.env); env.update({'grow': self.grow if grow is None else grow, 'n': n}); return ev(self.s['cash_out']['sum_formula'], env)
     def hp(self, L, E, PT):
         h = self.s['hp']; env = dict(self.env); env.update({k: num(h[k]) for k in ('base', 'per_end', 'per_level', 'pt_pct')}); env.update(L=L, E=E, PT=PT)
         return ev(h['formula'], env)
@@ -397,6 +397,10 @@ class Door:
             if all(held.get(k, 0) >= num(v) for k, v in (pt.get('needs') or {}).items()): r = num(pt['reach'])
         return r
     def top_reach(self): return self.reach(10, {self.beta: 10, self.gamma: 10})
+    def grow(self):
+        """Ruling 63: the door's own compounding step (at least 1), or the scale's when the door states none."""
+        g = self.d.get('cash_grow')
+        return S.grow if g is None else num(g['value'] if isinstance(g, dict) and 'value' in g else g)
     def bite(self, alpha):
         b = None
         for p in range(1, int(alpha) + 1):
@@ -406,6 +410,7 @@ class Door:
         alpha = Sk if alpha is None else alpha
         e = dict(S.env); e.update(L=L, A=A, S=Sk, G=G, P=P, n=n, reach=self.reach(alpha, {self.beta: 10, self.gamma: 10}) or 0,
                                   bite=self.bite(alpha) or 0)
+        g = self.grow(); e['grow'] = g; e['cash'] = lambda n: S.cash(n, g)
         return e
     def plain(self, L, A, Sk, G):
         ref = self.d['plain']; e = self.env(L, A, Sk, G)
@@ -1090,7 +1095,14 @@ def full_c(d, co, Sk):
     there), in the door's own plain hits (L 20, A 10, Relic: C does not read them for any door but through plain itself)."""
     n = d.reach(Sk, {d.beta: 10, d.gamma: 10}) or 0
     e = d.env(20, 10, Sk, 'relic', n=n, alpha=Sk); e['plain'] = d.plain(20, 10, Sk, 'relic')
-    return ev(co['formula'], e) * ev(co.get('base', 'plain'), e) / e['plain'], n
+    sums = 1 + sum(num(co[k]['sum']['value']) for k in ((d.d.get('worth') or {}).get('with_sums') or []))   # ruling 64
+    return ev(co['formula'], e) * ev(co.get('base', 'plain'), e) / e['plain'] * sums, n
+def unit_floor(d, co, n):
+    """Ruling 63: a cash-out of n units is never worth less than one plain action plus a quarter for each unit spent."""
+    return 1 + num(S.s['cash_out']['unit_floor']) * n
+def part_c(d, co, Sk, n):
+    e = d.env(20, 10, Sk, 'relic', n=n, alpha=Sk); e['plain'] = d.plain(20, 10, Sk, 'relic')
+    return ev(co['formula'], e) * ev(co.get('base', 'plain'), e) / e['plain']
 def check_worth():
     """Rulings I and J (00-rulings.md): a full cash-out is worth, in the character's own plain attacks, the door's `worth`
     anchors at skill 1 and at skill 10; the full cash-out never falls from one point to the next (Law 1). A reading, set
@@ -1104,7 +1116,14 @@ def check_worth():
             c1, n1 = full_c(d, co, 1); c10, n10 = full_c(d, co, 10)
             row = [full_c(d, co, p)[0] for p in range(1, 11)]
             falls = [p for p in range(2, 11) if row[p - 1] < row[p - 2] - 1e-9]
-            ok = abs(c1 - num(w['at_1'])) <= 0.01 and abs(c10 - num(w['at_10'])) <= 0.01 and not falls
+            bites = sorted(set(d.bite(p) for p in range(1, 11)) - {None})
+            if len(bites) != 1: falls.append('%d Bites on the ladder (ruling 63: one)' % len(bites))
+            if d.grow() < 1: falls.append('a compounding step under 1 (ruling 63)')
+            low = ['%d units at skill %d: %.2f under %.2f' % (n, p, part_c(d, co, p, n), unit_floor(d, co, n))
+                   for p in range(1, 11) for n in range(int(num(co.get('min', 1))), int(d.reach(p, {d.beta: 10, d.gamma: 10}) or 0) + 1)
+                   if part_c(d, co, p, n) < unit_floor(d, co, n) - 1e-9]
+            if low: falls.append('under the unit floor: ' + '; '.join(low[:4]))
+            ok = abs(c10 - num(w['at_10'])) <= 0.01 and not falls and (abs(c1 - num(w['at_1'])) <= 0.01 or w.get('at_1_follows'))
             result('i', 'PASS' if ok else 'FAIL', 'WORTH %s: a full %s is %.2f plain attacks at skill 1 (Reach %s; the table %s) and %.2f at 10 (Reach %s; the table %s); by point %s%s'
                    % (d.id, w['cash_out'], c1, fmt(n1), fmt(num(w['at_1']), 2), c10, fmt(n10), fmt(num(w['at_10']), 2), ' / '.join('%.2f' % x for x in row),
                       (': falls at %s' % falls) if falls else ''))

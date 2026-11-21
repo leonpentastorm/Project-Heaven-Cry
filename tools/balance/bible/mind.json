@@ -91,25 +91,27 @@
             "ambush_for_the_lead": "the fresh ambush's +50% is in the door's own sum (the shadow:ambush term above): a full Break from a fresh ambush at skill 10 is 9 x 1.5 = 13.5 plain shots, not 9; ruling 62 names 9 for the Break; kept as it is (a reward is not cut), for the lead"
           }
         },
+        "cash_grow": {"value": 1.4629, "why": "Ruling 63 (00-rulings.md section K): a door's Bite never falls as its Reach grows and a cash-out is never worth less than the plain action it replaces, so the door has ONE Bite and its own compounding step. The step is the one that meets both anchors of section I with one Bite: S(n) at the skill-10 Reach over S(n) at the skill-1 Reach equals the anchors' ratio (solved, not chosen); the Bite then meets the skill-10 worth."},
         "worth": {
           "at_1": 3,
           "at_10": 9,
           "cash_out": "break",
           "unit": "the character's own plain attacks: shots",
-          "formula": "1 + bite x S(n)",
-          "ruling": "I table; ruling 62 (about 9, and the meter takes about three turns unseen to fill)",
-          "shape": "rising: Bite at 1 from the skill-1 anchor, at 9 (held at 10) from the skill-10 anchor, at 6 the compounding between (b1 x (b9 / b1)^(5/8)); nothing a player holds is ever worth less",
+          "formula": "(1 + bite x S(n)) x (1 + the ambush)",
+          "ruling": "I table; ruling 62 (about 9, and the meter takes about three turns unseen to fill); ruling 64 (the 9 is the full Break from a fresh ambush, the ambush included; so is the 3)",
+          "shape": "ruling 63: one Bite (0.4061) on the door's own step 1.4629; nothing a player holds is ever worth less, and a part-filled cash-out is never under one plain action plus a quarter a unit",
+          "with_sums": ["ambush"],
           "by_point": [
-            "1: Reach 2, Bite 0.909, a full break 3.00",
-            "2: Reach 2, Bite 0.909, a full break 3.00",
-            "3: Reach 2, Bite 0.909, a full break 3.00",
-            "4: Reach 3, Bite 0.909, a full break 4.31",
-            "5: Reach 3, Bite 0.909, a full break 4.31",
-            "6: Reach 3, Bite 1.010, a full break 4.68",
-            "7: Reach 4, Bite 1.010, a full break 6.42",
-            "8: Reach 4, Bite 1.010, a full break 6.42",
-            "9: Reach 4, Bite 1.075, a full break 6.77",
-            "10: Reach 5, Bite 1.075, a full break 9.00"
+            "1: Reach 2, Bite 0.4061, a full break 3.00",
+            "2: Reach 2, Bite 0.4061, a full break 3.00",
+            "3: Reach 2, Bite 0.4061, a full break 3.00",
+            "4: Reach 3, Bite 0.4061, a full break 4.30",
+            "5: Reach 3, Bite 0.4061, a full break 4.30",
+            "6: Reach 3, Bite 0.4061, a full break 4.30",
+            "7: Reach 4, Bite 0.4061, a full break 6.21",
+            "8: Reach 4, Bite 0.4061, a full break 6.21",
+            "9: Reach 4, Bite 0.4061, a full break 6.21",
+            "10: Reach 5, Bite 0.4061, a full break 9.00"
           ]
         },
         "push": {"point": 8, "name": "Last Shade", "reach_plus": 1,
@@ -157,10 +159,8 @@
             "1": {
                   "exists": "the door: Break, Go to Ground, First Shade, Tagged, Unseen Hand; Tag, Stalk",
                   "reach": 2,
-                  "bite": 0.909,
                   "new": "the meter holds 2 (was 1); the Bite on the cash-out sum",
-                  "bite_why": "the skill-1 anchor: a full break at Reach 2 worth 3.000 shots: (3.000 - 1) / S(2) 2.2000 = 0.909",
-                  "felt": "your first Break spends two Shadow from the dark: three shots in one, and you were never targeted while you built it"
+                  "bite": 0.4061, "bite_why": "ruling 63: the door's one Bite, fitted to the skill-10 worth (9 plain attacks) on its own step 1.4629; held at every point", "felt": "your first Break from a fresh ambush spends two Shadow: three shots in one, and you were never targeted while you built it"
             },
             "2": {
                   "exists": "Lift, Decoy; +1 to the roll foes need to spot you (every 2 points)",
@@ -179,7 +179,7 @@
                   "felt": "three Shadow: a Break worth more than four shots"
             },
             "5": {"exists": "Fade, Douse, Scout", "felt": "vanish in plain sight, and put out the lamp that showed you"},
-            "6": {"exists": "perk step; Cut the Strap; spot +1", "bite": 1.01, "bite_why": "between the anchors (rule I: the steps between follow the compounding): 0.909 x (1.075 / 0.909)^(5/8) = 1.010", "felt": "every Shadow you spend bites harder: a Break of three nearly five shots"},
+            "6": {"exists": "perk step; Cut the Strap; spot +1", "felt": "a perk step: the hunter's perk, chosen; every Shadow keeps its weight"},
             "7": {
                   "exists": "perk step; Open Seam",
                   "reach": 4,
@@ -193,7 +193,7 @@
                   "new": "the Push: Last Shade",
                   "felt": "one Shadow past your Reach for the deepest Break of the fight, and a turn in the open after it"
             },
-            "9": {"exists": "perk step; Timing, Parting Cut", "bite": 1.075, "bite_why": "the skill-10 anchor: a full break at Reach 5 (skill 10) worth 9.000 shots: (9.000 - 1) / S(5) 7.4416 = 1.075 (held from 9 to 10)", "felt": "the last Shadow of a full meter is worth more than a shot on its own: a Break of four nearly seven shots"},
+            "9": {"exists": "perk step; Timing, Parting Cut", "felt": "a perk step: the hunter's perk grows; a full Break of four from the dark about six shots"},
             "10": {
                    "exists": "Mastered: Vanishing Act; spot +1",
                    "reach": 5,
@@ -355,6 +355,7 @@
             "why": "ruling 40: each creature caught takes its share of the whole spell (words.spread_words), capped a hit; the total, every foe of the largest room, printed"
           }
         },
+        "cash_grow": {"value": 1.5376, "why": "Ruling 63 (00-rulings.md section K): a door's Bite never falls as its Reach grows and a cash-out is never worth less than the plain action it replaces, so the door has ONE Bite and its own compounding step. The step is the one that meets both anchors of section I with one Bite: S(n) at the skill-10 Reach over S(n) at the skill-1 Reach equals the anchors' ratio (solved, not chosen); the Bite then meets the skill-10 worth."},
         "worth": {
           "at_1": 1.976,
           "at_10": 11,
@@ -362,18 +363,18 @@
           "unit": "the character's own plain attacks: plain hits (one STONE glyph each)",
           "formula": "bite x S(n)",
           "ruling": "I table; ruling 58 (a two-glyph Line repeated every turn sits a little under an Outburst turn of the same skill; only the all-in Line reaches about 11)",
-          "shape": "rising: Bite at 1 from the skill-1 anchor, at 9 (held at 10) from the skill-10 anchor, at 6 the compounding between (b1 x (b9 / b1)^(5/8)); nothing a player holds is ever worth less",
+          "shape": "ruling 63: one Bite (0.7787) on the door's own step 1.5376; nothing a player holds is ever worth less, and a part-filled cash-out is never under one plain action plus a quarter a unit",
           "by_point": [
-            "1: Reach 2, Bite 0.898, a full evoke 1.98",
-            "2: Reach 2, Bite 0.898, a full evoke 1.98",
-            "3: Reach 2, Bite 0.898, a full evoke 1.98",
-            "4: Reach 3, Bite 0.898, a full evoke 3.27",
-            "5: Reach 3, Bite 0.898, a full evoke 3.27",
-            "6: Reach 3, Bite 1.226, a full evoke 4.46",
-            "7: Reach 4, Bite 1.226, a full evoke 6.58",
-            "8: Reach 4, Bite 1.226, a full evoke 6.58",
-            "9: Reach 4, Bite 1.478, a full evoke 7.93",
-            "10: Reach 5, Bite 1.478, a full evoke 11.00"
+            "1: Reach 2, Bite 0.7787, a full evoke 1.98",
+            "2: Reach 2, Bite 0.7787, a full evoke 1.98",
+            "3: Reach 2, Bite 0.7787, a full evoke 1.98",
+            "4: Reach 3, Bite 0.7787, a full evoke 3.82",
+            "5: Reach 3, Bite 0.7787, a full evoke 3.82",
+            "6: Reach 3, Bite 0.7787, a full evoke 3.82",
+            "7: Reach 4, Bite 0.7787, a full evoke 6.65",
+            "8: Reach 4, Bite 0.7787, a full evoke 6.65",
+            "9: Reach 4, Bite 0.7787, a full evoke 6.65",
+            "10: Reach 5, Bite 0.7787, a full evoke 11.00"
           ],
           "derivation": "ruling 58: at skill 10 the all-in Line of five is 11, so Bite = 11 / S(5) = 1.478 and a two-glyph Line is 3.252; with one attack beside it (4 AP + 2 AP) the turn is 4.252 against an Outburst turn of 5 (a full Release, no AP left): 0.850 of it. The same share at skill 1 against the Outburst turn there (2.5 + one attack = 3.5): the Line is 0.850 x 3.5 - 1 = 1.976. PROVISIONAL: \"a little under\" read as the same share at both ends"
         },
@@ -491,10 +492,8 @@
             "1": {
                   "exists": "the door: draw, walk, Evoke (the Evoker opens it)",
                   "reach": 2,
-                  "bite": 0.898,
                   "new": "the Line's length and the words held ride Brain Power (C19); the book of found spells",
-                  "bite_why": "the skill-1 anchor: a full evoke at Reach 2 worth 1.976 plain hits (one STONE glyph each): 1.976 / S(2) 2.2000 = 0.898",
-                  "felt": "a Line of two worth about two plain hits, and seven words to hold"
+                  "bite": 0.7787, "bite_why": "ruling 63: the door's one Bite, fitted to the skill-10 worth (11 plain attacks) on its own step 1.5376; held at every point", "felt": "a Line of two worth about two plain hits, and seven words to hold"
             },
             "2": {
                   "exists": "+1 tile Sigil reach, +1 round a glyph lasts (every 2)",
@@ -508,7 +507,7 @@
                   "felt": "Lines of three: more than three plain hits in one Evoke"
             },
             "5": {"exists": "Twin Draw; the second core saving", "felt": "two glyphs at a stroke, and a charge less again"},
-            "6": {"exists": "perk step; the every-2 row", "bite": 1.226, "bite_why": "between the anchors (rule I: the steps between follow the compounding): 0.898 x (1.478 / 0.898)^(5/8) = 1.226", "felt": "every glyph of every Line bites harder: a Line of three over four plain hits"},
+            "6": {"exists": "perk step; the every-2 row", "felt": "a perk step: the writer's perk, chosen; every glyph keeps its weight"},
             "7": {
                   "exists": "perk step",
                   "reach": 4,
@@ -522,7 +521,7 @@
                   "new": "the Push: Overclock (moved from 2)",
                   "felt": "one glyph past your Reach, and the hand that wrote it burns"
             },
-            "9": {"exists": "perk step; the third core saving", "bite": 1.478, "bite_why": "the skill-10 anchor: a full evoke at Reach 5 (skill 10) worth 11.000 plain hits (one STONE glyph each): 11.000 / S(5) 7.4416 = 1.478 (held from 9 to 10)", "felt": "the longest Line you write bites harder again: a Line of four about eight plain hits"},
+            "9": {"exists": "perk step; the third core saving", "felt": "a perk step: the writer's perk grows; a Line of four over six and a half plain hits"},
             "10": {
                    "exists": "Mastered: Clean Draw; the Junction; the every-2 row",
                    "reach": 5,
@@ -679,6 +678,7 @@
             "spends_bodies": "ruling 56: every Figment the Curtain uses is gone, its charge with it (no refund); the Figments that did not converge stay on the board"
           }
         },
+        "cash_grow": {"value": 1.0, "why": "Ruling 63 (00-rulings.md section K): a door's Bite never falls as its Reach grows and a cash-out is never worth less than the plain action it replaces, so the door has ONE Bite and its own compounding step. Its two anchors cannot both be met with any step of at least 1 (the skill-10 Reach over the skill-1 Reach is already more than the anchors' ratio), so every unit is worth the same (step 1) and the Bite is fitted to the skill-10 worth; the skill-1 worth follows (at_1_follows) and stays over one plain action plus a quarter a unit."},
         "worth": {
           "at_1": 2,
           "at_10": 5,
@@ -686,18 +686,19 @@
           "unit": "the character's own plain attacks: Figment strikes (a Beast's claws)",
           "formula": "bite x S(n)",
           "ruling": "I table; ruling 56 (the Figments' own attacks are the steady reward; the Curtain spends the Figments it uses)",
-          "shape": "falling: a unit is worth less as Reach grows, so Bite is set on the worth curve 2.000 x (5.000 / 2.000)^((p - 1) / 9) at every point where Reach or Bite steps (1, 4, 6, 7, 9, 10): the full cash-out climbs at every point; a part-filled one is worth a little less after a Reach step (for the lead)",
+          "shape": "ruling 63: one Bite (1.25) on the door's own step 1.0; nothing a player holds is ever worth less, and a part-filled cash-out is never under one plain action plus a quarter a unit",
+          "at_1_follows": true,
           "by_point": [
-            "1: Reach 1, Bite 2.000, a full curtain 2.00",
-            "2: Reach 1, Bite 2.000, a full curtain 2.00",
-            "3: Reach 1, Bite 2.000, a full curtain 2.00",
-            "4: Reach 2, Bite 1.234, a full curtain 2.71",
-            "5: Reach 2, Bite 1.234, a full curtain 2.71",
-            "6: Reach 2, Bite 1.512, a full curtain 3.33",
-            "7: Reach 3, Bite 1.012, a full curtain 3.68",
-            "8: Reach 3, Bite 1.012, a full curtain 3.68",
-            "9: Reach 3, Bite 1.241, a full curtain 4.52",
-            "10: Reach 4, Bite 0.931, a full curtain 5.00"
+            "1: Reach 1, Bite 1.25, a full curtain 1.25",
+            "2: Reach 1, Bite 1.25, a full curtain 1.25",
+            "3: Reach 1, Bite 1.25, a full curtain 1.25",
+            "4: Reach 2, Bite 1.25, a full curtain 2.50",
+            "5: Reach 2, Bite 1.25, a full curtain 2.50",
+            "6: Reach 2, Bite 1.25, a full curtain 2.50",
+            "7: Reach 3, Bite 1.25, a full curtain 3.75",
+            "8: Reach 3, Bite 1.25, a full curtain 3.75",
+            "9: Reach 3, Bite 1.25, a full curtain 3.75",
+            "10: Reach 4, Bite 1.25, a full curtain 5.00"
           ]
         },
         "push": {"point": 8, "name": "Overhold", "reach_plus": 1,
@@ -753,31 +754,25 @@
             "1": {
                   "exists": "the door: Picture, Redraw, Let go, Glimmer, Cash in; 2 forms known",
                   "reach": 1,
-                  "bite": 2.0,
                   "new": "the Curtain (ruling 18: a cash-out from point 1)",
-                  "bite_why": "the skill-1 anchor: a full curtain at Reach 1 worth 2.000 Figment strikes (a Beast's claws): 2.000 / S(1) 1.0000 = 2.000",
-                  "felt": "one Figment on the field, and a Curtain worth two of its strikes when it is about to fall"
+                  "bite": 1.25, "bite_why": "ruling 63: the door's one Bite, fitted to the skill-10 worth (5 plain attacks) on its own step 1.0; held at every point", "felt": "one Figment on the field, and a Curtain worth a strike and a quarter when it is about to fall"
             },
             "2": {"exists": "Cash in; a form known (each point from here)", "felt": "a third form to Picture, and your charge back when you need it"},
             "3": {"exists": "perk step; two ready designs, one trait", "felt": "a perk, and two designs to Picture at a stroke"},
             "4": {
                   "exists": "fork: Hard Light or Sharp Light",
                   "reach": 2,
-                  "bite": 1.234,
                   "new": "two held (today's at 5 moves here)",
-                  "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(3/9) = 2.715 at Reach 2: 2.715 / S(2) 2.2000 = 1.234",
-                  "felt": "two Figments at once: a Curtain of two worth nearly three strikes"
+                  "felt": "two Figments at once: a Curtain of two worth two and a half strikes"
             },
             "5": {"exists": "three ready designs", "felt": "a third design, and a fifth form"},
-            "6": {"exists": "perk step", "bite": 1.512, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(5/9) = 3.326 at Reach 2: 3.326 / S(2) 2.2000 = 1.512", "felt": "every Figment in a Curtain bites harder: a Curtain of two over three strikes"},
+            "6": {"exists": "perk step", "felt": "a perk step: the dreamer's perk, chosen; every Figment in a Curtain keeps its weight"},
             "7": {
                   "exists": "perk step; two traits a design",
                   "reach": 3,
-                  "bite": 1.012,
                   "needs": {
                         "proficiency": 4
                   },
-                  "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(6/9) = 3.684 at Reach 3: 3.684 / S(3) 3.6400 = 1.012",
                   "felt": "three held, once your Proficiency can feed them: a Curtain of three nearly four strikes"
             },
             "8": {
@@ -785,16 +780,14 @@
                   "new": "the Push: Overhold",
                   "felt": "one past your Reach, and it drinks your charge every turn it stands"
             },
-            "9": {"exists": "perk step; all ten forms known", "bite": 1.241, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(8/9) = 4.517 at Reach 3: 4.517 / S(3) 3.6400 = 1.241", "felt": "every form there is, and a Curtain of three worth four and a half strikes"},
+            "9": {"exists": "perk step; all ten forms known", "felt": "every form there is, and a Curtain of three still worth nearly four strikes"},
             "10": {
                    "exists": "Mastered: Solid Image; five ready designs",
                    "reach": 4,
-                   "bite": 0.931,
                    "needs": {
                           "proficiency": 7,
                           "charisma": 4
                    },
-                   "bite_why": "the skill-10 anchor: a full curtain at Reach 4 (skill 10) worth 5.000 Figment strikes (a Beast's claws): 5.000 / S(4) 5.3680 = 0.931",
                    "felt": "four held once your Proficiency is 7 and your Charisma 4: a Curtain of four worth five strikes, the whole board spent"
             }
           }

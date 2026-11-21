@@ -124,6 +124,7 @@
             "why": "every Bond spent at once is worth more than the one before it; counted in total across the Bonds it breaks (ruling 29)"
           }
         },
+        "cash_grow": {"value": 1.0, "why": "Ruling 63 (00-rulings.md section K): a door's Bite never falls as its Reach grows and a cash-out is never worth less than the plain action it replaces, so the door has ONE Bite and its own compounding step. Its two anchors cannot both be met with any step of at least 1 (the skill-10 Reach over the skill-1 Reach is already more than the anchors' ratio), so every unit is worth the same (step 1) and the Bite is fitted to the skill-10 worth; the skill-1 worth follows (at_1_follows) and stays over one plain action plus a quarter a unit."},
         "worth": {
           "at_1": 2,
           "at_10": 5,
@@ -131,18 +132,19 @@
           "unit": "the character's own plain attacks: plain attacks (a lone Snap at x1)",
           "formula": "bite x S(n), counted in total across the Bonds",
           "ruling": "I table (every turn)",
-          "shape": "falling: a unit is worth less as Reach grows, so Bite is set on the worth curve 2.000 x (5.000 / 2.000)^((p - 1) / 9) at every point where Reach or Bite steps (1, 4, 6, 7, 9, 10): the full cash-out climbs at every point; a part-filled one is worth a little less after a Reach step (for the lead)",
+          "shape": "ruling 63: one Bite (1.25) on the door's own step 1.0; nothing a player holds is ever worth less, and a part-filled cash-out is never under one plain action plus a quarter a unit",
+          "at_1_follows": true,
           "by_point": [
-            "1: Reach 1, Bite 2.000, a full snap_all 2.00",
-            "2: Reach 1, Bite 2.000, a full snap_all 2.00",
-            "3: Reach 1, Bite 2.000, a full snap_all 2.00",
-            "4: Reach 2, Bite 1.234, a full snap_all 2.71",
-            "5: Reach 2, Bite 1.234, a full snap_all 2.71",
-            "6: Reach 2, Bite 1.512, a full snap_all 3.33",
-            "7: Reach 3, Bite 1.012, a full snap_all 3.68",
-            "8: Reach 3, Bite 1.012, a full snap_all 3.68",
-            "9: Reach 3, Bite 1.241, a full snap_all 4.52",
-            "10: Reach 4, Bite 0.931, a full snap_all 5.00"
+            "1: Reach 1, Bite 1.25, a full snap_all 1.25",
+            "2: Reach 1, Bite 1.25, a full snap_all 1.25",
+            "3: Reach 1, Bite 1.25, a full snap_all 1.25",
+            "4: Reach 2, Bite 1.25, a full snap_all 2.50",
+            "5: Reach 2, Bite 1.25, a full snap_all 2.50",
+            "6: Reach 2, Bite 1.25, a full snap_all 2.50",
+            "7: Reach 3, Bite 1.25, a full snap_all 3.75",
+            "8: Reach 3, Bite 1.25, a full snap_all 3.75",
+            "9: Reach 3, Bite 1.25, a full snap_all 3.75",
+            "10: Reach 4, Bite 1.25, a full snap_all 5.00"
           ]
         },
         "verbs": {
@@ -313,10 +315,8 @@
             "1": {
               "exists": "the door: Bond, Mend, Mend Yourself, the Threads",
               "reach": 1,
-              "bite": 2.0,
               "new": "Snap moves here from 2 (tending.json:534-539 tend.snap requires 2 to 1), one Bond or all of them",
-              "bite_why": "the skill-1 anchor: a full snap_all at Reach 1 worth 2.000 plain attacks (a lone Snap at x1): 2.000 / S(1) 1.0000 = 2.000",
-              "felt": "you tie a foe and pull the thread the same turn: a Snap worth two plain attacks"
+              "bite": 1.25, "bite_why": "ruling 63: the door's one Bite, fitted to the skill-10 worth (5 plain attacks) on its own step 1.0; held at every point", "felt": "you tie a foe and pull the thread the same turn: a Snap worth a plain attack and a quarter"
             },
             "2": {
               "exists": "(Snap moved to 1)",
@@ -332,9 +332,7 @@
             "4": {
               "exists": "fork: Keep the Thread or Short Thread",
               "reach": 2,
-              "bite": 1.234,
-              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(3/9) = 2.715 at Reach 2: 2.715 / S(2) 2.2000 = 1.234",
-              "felt": "two Bonds: a foe and a friend, and Snap All worth nearly three plain attacks"
+              "felt": "two Bonds: a foe and a friend, and Snap All worth two and a half plain attacks"
             },
             "5": {
               "exists": "Shield",
@@ -344,18 +342,14 @@
             },
             "6": {
               "exists": "perk step; +3 Bond reach",
-              "bite": 1.512,
-              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(5/9) = 3.326 at Reach 2: 3.326 / S(2) 2.2000 = 1.512",
-              "felt": "every Bond you Snap is worth more, and you tie from further off: Snap All of two over three"
+              "felt": "a perk step, and you tie from further off; every Bond you Snap keeps its weight"
             },
             "7": {
               "exists": "perk step",
               "reach": 3,
-              "bite": 1.012,
               "needs": {
                 "camaraderie": 4
               },
-              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(6/9) = 3.684 at Reach 3: 3.684 / S(3) 3.6400 = 1.012",
               "felt": "a web of three once your Camaraderie is 4: Snap All nearly four plain attacks"
             },
             "8": {
@@ -365,24 +359,20 @@
             },
             "9": {
               "exists": "perk step",
-              "bite": 1.241,
               "new": "Mend and Shield cost 15% less MP (in place of the flat cut, tending.json res.mp.steps)",
               "numbers": {
                 "mp_cut_share": 0.15
               },
               "mp_cut_why": "ruling 49 (check.py (h)): at a quarter less a level-20 Mender paid a Mend for every 2 AP of a whole fight, so the MP was no choice. Ruling 52 keeps the 15% because check (h) needs it: at 25% the level-20 Mender carries 316.7 MP against a pressed fight of 289 (the pool alone)",
-              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(8/9) = 4.517 at Reach 3: 4.517 / S(3) 3.6400 = 1.241",
-              "felt": "Snap All of three worth four and a half plain attacks, and your Mends are cheaper"
+              "felt": "your Mends are cheaper, and Snap All of three still nearly four plain attacks"
             },
             "10": {
               "exists": "Mastered: Threads That Hold",
               "reach": 4,
-              "bite": 0.931,
               "needs": {
                 "camaraderie": 7,
                 "implication": 4
               },
-              "bite_why": "the skill-10 anchor: a full snap_all at Reach 4 (skill 10) worth 5.000 plain attacks (a lone Snap at x1): 5.000 / S(4) 5.3680 = 0.931",
               "felt": "the fourth Bond once your Camaraderie is 7 and your Insinuation 4: Snap All worth five plain attacks, a web nobody without the whole family can hold"
             }
           }
@@ -847,6 +837,7 @@
             "needs_primitive": "two held Outbursts at once (the engine holds one, magic.ts): not in 08-primitives.md; for the lead before step 2d"
           }
         },
+        "cash_grow": {"value": 1.0, "why": "Ruling 63 (00-rulings.md section K): a door's Bite never falls as its Reach grows and a cash-out is never worth less than the plain action it replaces, so the door has ONE Bite and its own compounding step. Its two anchors cannot both be met with any step of at least 1 (the skill-10 Reach over the skill-1 Reach is already more than the anchors' ratio), so every unit is worth the same (step 1) and the Bite is fitted to the skill-10 worth; the skill-1 worth follows (at_1_follows) and stays over one plain action plus a quarter a unit."},
         "worth": {
           "at_1": 2.5,
           "at_10": 5,
@@ -854,18 +845,19 @@
           "unit": "the character's own plain attacks: plain casts (the Damage design at x1)",
           "formula": "0.8 (the release floor) + bite x S(n)",
           "ruling": "I table; rulings 55 and 59 (steady, never underwhelming; one Emanator about 5 a turn, two about 9 to 10 for a double Release)",
-          "shape": "falling: a unit is worth less as Reach grows, so Bite is set on the worth curve 2.500 x (5.000 / 2.500)^((p - 1) / 9) at every point where Reach or Bite steps (1, 4, 6, 7, 9, 10): the full cash-out climbs at every point; a part-filled one is worth a little less after a Reach step (for the lead)",
+          "shape": "ruling 63: one Bite (0.84) on the door's own step 1.0; nothing a player holds is ever worth less, and a part-filled cash-out is never under one plain action plus a quarter a unit",
+          "at_1_follows": true,
           "by_point": [
-            "1: Reach 2, Bite 0.773, a full release 2.50",
-            "2: Reach 2, Bite 0.773, a full release 2.50",
-            "3: Reach 2, Bite 0.773, a full release 2.50",
-            "4: Reach 3, Bite 0.646, a full release 3.15",
-            "5: Reach 3, Bite 0.646, a full release 3.15",
-            "6: Reach 3, Bite 0.790, a full release 3.68",
-            "7: Reach 4, Bite 0.590, a full release 3.97",
-            "8: Reach 4, Bite 0.590, a full release 3.97",
-            "9: Reach 4, Bite 0.713, a full release 4.63",
-            "10: Reach 5, Bite 0.564, a full release 5.00"
+            "1: Reach 2, Bite 0.84, a full release 2.48",
+            "2: Reach 2, Bite 0.84, a full release 2.48",
+            "3: Reach 2, Bite 0.84, a full release 2.48",
+            "4: Reach 3, Bite 0.84, a full release 3.32",
+            "5: Reach 3, Bite 0.84, a full release 3.32",
+            "6: Reach 3, Bite 0.84, a full release 3.32",
+            "7: Reach 4, Bite 0.84, a full release 4.16",
+            "8: Reach 4, Bite 0.84, a full release 4.16",
+            "9: Reach 4, Bite 0.84, a full release 4.16",
+            "10: Reach 5, Bite 0.84, a full release 5.00"
           ]
         },
         "verbs": {
@@ -1104,9 +1096,7 @@
             "1": {
               "exists": "the door",
               "reach": 2,
-              "bite": 0.773,
-              "bite_why": "the skill-1 anchor: a full release at Reach 2 worth 2.500 plain casts (the Damage design at x1): (2.500 - 0.8) / S(2) 2.2000 = 0.773",
-              "felt": "the door, a taste: a heart worked to stage 2 is worth two and a half plain casts"
+              "bite": 0.84, "bite_why": "ruling 63: the door's one Bite, fitted to the skill-10 worth (5 plain attacks) on its own step 1.0; held at every point", "felt": "the door, a taste: a heart worked to stage 2 is worth nearly two and a half plain casts"
             },
             "2": {
               "exists": "Overdraw; modules Size and Quiet",
@@ -1119,9 +1109,7 @@
             "4": {
               "exists": "fork: Ride the Edge or Slow Burn; modules Bloom and Volley",
               "reach": 3,
-              "bite": 0.646,
-              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.500 x (5.000 / 2.500)^(3/9) = 3.151 at Reach 3: (3.151 - 0.8) / S(3) 3.6400 = 0.646",
-              "felt": "stage 3: a full Release worth three plain casts"
+              "felt": "stage 3: a full Release worth over three plain casts"
             },
             "5": {
               "exists": "Two Schools",
@@ -1129,18 +1117,14 @@
             },
             "6": {
               "exists": "perk step; a module slot",
-              "bite": 0.79,
-              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.500 x (5.000 / 2.500)^(5/9) = 3.676 at Reach 3: (3.676 - 0.8) / S(3) 3.6400 = 0.790",
-              "felt": "every Pump is worth more: a stage-3 Release over three and a half plain casts"
+              "felt": "a perk step and a module slot; every Pump keeps its weight"
             },
             "7": {
               "exists": "perk step",
               "reach": 4,
-              "bite": 0.59,
               "needs": {
                 "composure": 4
               },
-              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.500 x (5.000 / 2.500)^(6/9) = 3.967 at Reach 4: (3.967 - 0.8) / S(4) 5.3680 = 0.590",
               "felt": "stage 4 once your Composure is 4: a full Release about four plain casts"
             },
             "8": {
@@ -1150,19 +1134,15 @@
             },
             "9": {
               "exists": "perk step; a module slot",
-              "bite": 0.713,
-              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.500 x (5.000 / 2.500)^(8/9) = 4.627 at Reach 4: (4.627 - 0.8) / S(4) 5.3680 = 0.713",
-              "felt": "a full stage-4 Release worth four and a half plain casts"
+              "felt": "a perk step and a module slot; a full stage-4 Release still about four plain casts"
             },
             "10": {
               "exists": "Mastered: The Twin Pays",
               "reach": 5,
-              "bite": 0.564,
               "needs": {
                 "composure": 7,
                 "lore_master": 4
               },
-              "bite_why": "the skill-10 anchor: a full release at Reach 5 (skill 10) worth 5.000 plain casts (the Damage design at x1): (5.000 - 0.8) / S(5) 7.4416 = 0.564",
               "felt": "stage 5 once your Composure is 7 and your Lore Master 4: a full Release worth five plain casts; with a focus in each hand, two hearts at once"
             }
           }
@@ -1525,6 +1505,7 @@
             }
           }
         },
+        "cash_grow": {"value": 1.5905, "why": "Ruling 63 (00-rulings.md section K): a door's Bite never falls as its Reach grows and a cash-out is never worth less than the plain action it replaces, so the door has ONE Bite and its own compounding step. The step is the one that meets both anchors of section I with one Bite: S(n) at the skill-10 Reach over S(n) at the skill-1 Reach equals the anchors' ratio (solved, not chosen); the Bite then meets the skill-10 worth."},
         "worth": {
           "at_1": 2,
           "at_10": 7,
@@ -1532,18 +1513,18 @@
           "unit": "the character's own plain attacks: bare Hymns (Judgement at no Grace)",
           "formula": "1 + bite x S(n)",
           "ruling": "I table; ruling 61 (the Hymn is the cash-out; the Miracle is apart and its once-a-session limit is removed)",
-          "shape": "rising: Bite at 1 from the skill-1 anchor, at 9 (held at 10) from the skill-10 anchor, at 6 the compounding between (b1 x (b9 / b1)^(5/8)); nothing a player holds is ever worth less",
+          "shape": "ruling 63: one Bite (0.386) on the door's own step 1.5905; nothing a player holds is ever worth less, and a part-filled cash-out is never under one plain action plus a quarter a unit",
           "by_point": [
-            "1: Reach 2, Bite 0.455, a full hymn 2.00",
-            "2: Reach 2, Bite 0.455, a full hymn 2.00",
-            "3: Reach 2, Bite 0.455, a full hymn 2.00",
-            "4: Reach 3, Bite 0.455, a full hymn 2.66",
-            "5: Reach 3, Bite 0.455, a full hymn 2.66",
-            "6: Reach 3, Bite 0.650, a full hymn 3.37",
-            "7: Reach 4, Bite 0.650, a full hymn 4.49",
-            "8: Reach 4, Bite 0.650, a full hymn 4.49",
-            "9: Reach 4, Bite 0.806, a full hymn 5.33",
-            "10: Reach 5, Bite 0.806, a full hymn 7.00"
+            "1: Reach 2, Bite 0.386, a full hymn 2.00",
+            "2: Reach 2, Bite 0.386, a full hymn 2.00",
+            "3: Reach 2, Bite 0.386, a full hymn 2.00",
+            "4: Reach 3, Bite 0.386, a full hymn 2.98",
+            "5: Reach 3, Bite 0.386, a full hymn 2.98",
+            "6: Reach 3, Bite 0.386, a full hymn 2.98",
+            "7: Reach 4, Bite 0.386, a full hymn 4.53",
+            "8: Reach 4, Bite 0.386, a full hymn 4.53",
+            "9: Reach 4, Bite 0.386, a full hymn 4.53",
+            "10: Reach 5, Bite 0.386, a full hymn 7.00"
           ]
         },
         "hymn_wait": {
@@ -1669,10 +1650,8 @@
             "1": {
               "exists": "Whispers",
               "reach": 2,
-              "bite": 0.455,
               "new": "Grace; a Whisper may spend it (the cash-out from point 1)",
-              "bite_why": "the skill-1 anchor: a full hymn at Reach 2 worth 2.000 bare Hymns (Judgement at no Grace): (2.000 - 1) / S(2) 2.2000 = 0.455",
-              "felt": "two Grace saved: a prayer that spends them is worth twice its bare self"
+              "bite": 0.386, "bite_why": "ruling 63: the door's one Bite, fitted to the skill-10 worth (7 plain attacks) on its own step 1.5905; held at every point", "felt": "two Grace saved: a prayer that spends them is worth twice its bare self"
             },
             "2": {
               "exists": "Name the Sinner: a Whisper that Judges a foe; your prayers deal more to a Judged or Marked foe",
@@ -1699,9 +1678,7 @@
             },
             "6": {
               "exists": "perk step",
-              "bite": 0.65,
-              "bite_why": "between the anchors (rule I: the steps between follow the compounding): 0.455 x (0.806 / 0.455)^(5/8) = 0.650",
-              "felt": "every step of Grace is worth more: a Hymn of three over three bare Hymns"
+              "felt": "a perk step: the faithful's perk, chosen; every step of Grace keeps its weight"
             },
             "7": {
               "exists": "perk step",
@@ -1718,9 +1695,7 @@
             },
             "9": {
               "exists": "perk step",
-              "bite": 0.806,
-              "bite_why": "the skill-10 anchor: a full hymn at Reach 5 (skill 10) worth 7.000 bare Hymns (Judgement at no Grace): (7.000 - 1) / S(5) 7.4416 = 0.806 (held from 9 to 10)",
-              "felt": "a full Hymn of four worth more than five bare Hymns"
+              "felt": "a perk step: the faithful's perk grows; a full Hymn of four about four and a half bare Hymns"
             },
             "10": {
               "exists": "Mastered: Judgement Day",

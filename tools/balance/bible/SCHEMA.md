@@ -72,7 +72,7 @@ Top-level keys and what each holds. The file itself is the full example; `python
 | `armour` | `{formula, classes: {data, value_key, x}, cover}` | check (b) |
 | `grades` | `order`; `<grade>` `{dmg, acc, arm, mod_slots, properties}`; `prayer.standing_for` | `grade_dmg`, `grade_acc`, `grade_arm` |
 | `margins` | `step`, `per`, `per_perception`, `natural_20`, `skill_modifier` (data), `level_gap` (data) | check (a) |
-| `cash_out` | `grow`, `sum_formula` | `cash(n)` |
+| `cash_out` | `grow`, `sum_formula`, `unit_floor` (ruling 63) | `cash(n)`; a door's own `cash_grow` replaces `grow` in its cash-outs |
 | `stack` | `formula`, `multiplies`, `adds`, `sum_floor`, `scope.foe_mark.value` | check (a) |
 | `digits` | `l1_specialist`, `l20_specialist`, `plain_l1`, `plain_l20`, `full_cashout_l20`, `largest_turn_l20` | check (a) |
 | `caps.items.<id>` | `{today: "file:line", ruling: keep/remove/replace, by?, with?, why}` | `--tables caps` |
@@ -378,6 +378,8 @@ Filled example:
 | Where | Key | Meaning |
 | --- | --- | --- |
 | a door | `worth` | rulings I and J: `{at_1, at_10, cash_out, unit, formula, ruling, shape, by_point}`: the worth of one full cash-out of `cash_out` in the character's own plain attacks at skill 1 and at skill 10; every Bite on the alpha ladder is set from these two anchors (each point's `bite_why` shows its arithmetic). Check (i) WORTH fails when the Bites do not give the anchors or a point lowers the full cash-out |
+| a door | `cash_grow` | ruling 63: `{value, why}`, the door's own compounding step (at least 1; at 1 every unit is worth the same and S(n) is n); every `cash(n)` in the door's cash-outs and class moves reads it. The door's ladder holds ONE Bite (at point 1); check (i) fails a second Bite, a step under 1, or a part-filled cash-out under one plain action plus `scale.cash_out.unit_floor` a unit |
+| a door's `worth` | `at_1_follows`, `with_sums` | ruling 63: `at_1_follows` marks a door whose skill-1 worth follows from the skill-10 fit (its anchors cannot both be met); `with_sums` names the cash-out's sum terms the worth includes (Shadow's `ambush`, ruling 64) |
 | an alpha point | `bite_why` | the arithmetic that sets the Bite at that point |
 | a door's `plain` | `held` | ruling 54: the profiles of the weapons a cash-out may be made with (the Break, a Take); check (a) REPORTS the largest legal hit with the heaviest legal weapon of those profiles |
 | a cash-out | `per_turn` with `reading_of` | a second reading that lands more than once a turn (the double Release, ruling 59); check (i) prints its worth |

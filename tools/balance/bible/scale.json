@@ -256,9 +256,11 @@
   },
 
   "cash_out": {
-    "about": "Law 2: each unit spent in one cash-out is worth grow times the one before. S(n) is the sum; a door's cash-out formula (body, mind, soul .json) uses it as cash(n).",
+    "about": "Law 2: each unit spent in one cash-out is worth grow times the one before. S(n) is the sum; a door's cash-out formula (body, mind, soul .json) uses it as cash(n). Ruling 63: every door states its own step (door.cash_grow, at least 1; at 1 every unit is worth the same and S(n) is n); grow here is the law's first reading and the step of a cash-out no door owns.",
     "grow": 1.2,
-    "sum_formula": "(grow ** n - 1) / (grow - 1)",
+    "sum_formula": "n if grow == 1 else (grow ** n - 1) / (grow - 1)",
+    "unit_floor": 0.25,
+    "unit_floor_why": "ruling 63: a cash-out of n units is never worth less than one plain action plus a quarter for each unit spent (check (i) WORTH reads it at every point and every n)",
     "data": "rules.json output.cash_out.step"
   },
 

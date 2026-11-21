@@ -4,7 +4,7 @@ Merged from the "Needs a new primitive" tables of 01 to 07 and critic-consistenc
 
 Line numbers in `docs/ENGINE-HOOKS.md` and in code were read in `E:/phc-wt/rel030` on 21 Nov 2026.
 
-## 1. New pieces (13)
+## 1. New pieces (14)
 
 Pass 4 (section G of `00-rulings.md`, critic-consistency-3 kind 5): S11 and S18 leave this list (it held 15 under a heading of 13) (S11 is dropped, S18 becomes an extension of `cleanse`, section 2), and S17 reads a saved field, not history it does not have.
 
@@ -23,6 +23,7 @@ Pass 4 (section G of `00-rulings.md`, critic-consistency-3 kind 5): S11 and S18 
 | S14 | **`targets.past`** | a bool on a `line` target set: the units past the struck one | `TargetSet` / `selectUnits` (ENGINE-HOOKS:647, :651) | `gear_perks.signatures.anti_materiel` |
 | S15 | **`GearState.props`** | a list in place of `prop`, migrated on load (a Celestial holds two) | `GearState.prop` (`character.ts`; ENGINE-HOOKS:1516), `setGrade` (ENGINE-HOOKS:1310) | `scale.grades.relic`, `.celestial`; `gear_perks.grade_rows.props_list`; `gear_perks.properties` |
 | S17 | **`self_devotion`** (a standing predicate) | `{self_devotion: n}`: the saved field `devotionPeak` (section 2's saved fields; its load default is the standing the kept XP reads, `pacing.migration`) is at least n (ruling 33). It reads the field, never a history the save does not hold (critic-consistency-3 5.3, 6.4). The prayer Push is today's overreach piece (`patrons.json prayer.overreach`) gated at Faith 8, not S5: a Hymn tier is not a resource | none reads standing; the stat `devotion_xp` exists (ENGINE-HOOKS:542) | `scale.grades.prayer.reads`; `soul.attributes.virtue.door`, `.ladders`; `pacing.tracks.devotion.grade`; `pacing.migration` |
+| S19 | **A held Outburst belongs to its focus** (two Emanators; ruling 66) | the heart's `held` becomes one held Outburst for each Emanator in hand, keyed by the focus it was begun with (a Begin names the hand; Pump and Release act on that hand's Outburst); one Emanator is today's single `held`, so nothing changes for a one-handed caster. Strain, MP, the free stage a turn and the turn's swell stay the heart's (one pool, one limit). Its saved shape loads a 0.33 `held` as the main hand's | `MagicState.held` (`magic.ts:88`) and `hasEmanator` (`magic.ts:197`) | `soul.attributes.determination.door.cashouts.double_release` (ruling 59: a double Release about 9 to 10 plain attacks); `soul.attributes.determination.ladders.*.points.10` (Mastered: two hearts at once) |
 
 ## 2. Extensions (one key or one parameter of an existing piece; no closed list grows)
 
@@ -59,6 +60,6 @@ Pass 4 (section G of `00-rulings.md`, critic-consistency-3 kind 5): S11 and S18 
 
 ## 4. For the lead
 
-1. Approve each of the thirteen pieces above (S1 to S7, S9, S10, S13 to S15, S17) and the two family words `mark` and `gift` (section 2) before they are built (no-rebuild rule 1). Every one generalises the piece named; none adds a per-item branch.
+1. Approve each of the fourteen pieces above (S1 to S7, S9, S10, S13 to S15, S17, and S19, approved by ruling 66 after build step 1; it is built with the Outbursts in step 2d) and the two family words `mark` and `gift` (section 2) before they are built (no-rebuild rule 1). Every one generalises the piece named; none adds a per-item branch.
 2. S13 now carries drill Mark III (02 named it "for the lead" as a separate natural-20 range). If the lead refuses S13, Mark III falls back to "+1 to hit more with this weapon" (a `to_hit` term), and the revolvers' signature and `aimed_crit_min` stay as they are.
 3. The consolidation pass (no-rebuild rule 4) reads the diff of `docs/ENGINE-HOOKS.md` after step 2 and after step 5 of `09-build-order.md`.
