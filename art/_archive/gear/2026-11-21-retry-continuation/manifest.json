@@ -2271,6 +2271,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_machete--relic",
+      "path": "art/icons/gear/weapon-ork_machete--relic.png",
+      "sha256": "57c04feaf80b5e52f5d22a48c76513c003939e4a232705020e78ba9dfcc6f5c1",
+      "label": "Ork Machete — Relic",
+      "family": "weapon-ork_machete",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-ork_machete--relic.png",
+        "sha256": "19b888d4887a2c115fb69182e052251ed160d6be5aac63eac2a207d489b3230d"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-ork_machete--relic.png",
+        "sha256": "57c04feaf80b5e52f5d22a48c76513c003939e4a232705020e78ba9dfcc6f5c1"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-ork_machete--relic.txt",
+        "sha256": "aac6d6d1c2f52c5dca900a476a43bbe75a56159ffb163bfca51bd055f6a348a5"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_machete.png",
+          "sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_machete--masterwork.png",
+          "sha256": "61cc3dbc68fc2bf940e80fa60e480fc407e30889921baf4a54f720c21594ae9b"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_machete--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_machete--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_machete--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_machete--relic.png"
+      },
+      "export_hashes": {
+        "256": "f871ac9f18d69bf5620521c1afe92222c78faed73802a6119538f9a8da13f635",
+        "128": "c6534d223a333a7b0cc015370c2201ef846142fda9aa1e8f8acf5452f7011955",
+        "64": "e3aa6e45d8f177371808f2ea4a8deac5e05b87a903f2ea9eefe4766eef972440",
+        "32": "dda6457c9e43a1ce04dc42fa321619697186d5e89275716ffcd4e2af3287956f"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-ork_machete",
+      "outline": {
+        "solid_alpha_iou": 0.9568410658555747,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 26
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
