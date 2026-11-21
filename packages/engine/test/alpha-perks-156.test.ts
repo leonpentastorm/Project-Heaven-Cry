@@ -36,7 +36,8 @@ const open = (cb: any) => { cb.map = { ...cb.map, cover: [], full: [], solid: []
 
 /** A shooter (service rifle) at 2,5 against a big, easy soldier at 6,5, on the shooter's turn. */
 function gun(perks: Record<string, string> = {}, o: { skills?: Record<string, number> } = {}) {
-  const f = fightWith([{ perks, weapon: 'hellraiser_service_rifle', skills: o.skills }], [{ at: 'G6' }]); open(f.cb);
+  // rules 1.97 item 8341: a shooter lays pips up to its Dexterity Reach: a full one, so the cap never hides a pip
+  const f = fightWith([{ perks, weapon: 'hellraiser_service_rifle', skills: o.skills || { dexterity: 10, athletics: 7, reaction_speed: 4 } }], [{ at: 'G6' }]); open(f.cb);
   f.pc.pos = '2,5'; f.foe.pos = '6,5'; f.foe.hp = f.foe.maxHp = 5000; f.foe.def = -40; f.foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ f.foe.armour = 0;
   const u = f.turn(f.pc); u.ap = 9; f.g.rng.state = calm();
   const shoot = () => f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'shot' } as any);

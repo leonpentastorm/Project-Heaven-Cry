@@ -32,7 +32,7 @@ describe('ladderCaps: a capped per-point row shows only where it still adds', ()
   it('Durability: Guard plates held stop at the pool\'s cap for a non-Bulwark; a Bulwark\'s own pool moves it', () => {
     const i = rowOf('durability', 'guard_pool'); expect(i).toBeGreaterThanOrEqual(0);
     const c = made((x) => { x.classId = 'marksman'; }), last = ladderCaps('durability', c)[i];
-    expect(last).toBe(guardPool({ skills: { durability: 10 } }));
+    expect(guardPool(at(c, 'durability', 10))).toBe(guardPool(at(c, 'durability', last))); // rules 1.97 item 8340: the Reach steps (and the family gates) say where it stops
     expect(guardPool(at(c, 'durability', last + 1))).toBe(guardPool(at(c, 'durability', last)));
     expect(guardPool(at(c, 'durability', last))).toBeGreaterThan(guardPool(at(c, 'durability', last - 1)));
     // the Bulwark (id defender): the larger of its class pool and Durability's is what it holds, read the same way

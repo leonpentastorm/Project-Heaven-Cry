@@ -115,13 +115,13 @@ describe('Shield Bash', () => {
 
 describe('Raise Shield', () => {
   it('turns Momentum into Guard 1 for 1: all of it by default, the amount chosen, never past the pool', () => {
-    const f = fight({ m: 3, guard: 0 });
-    expect(f.pv('raise_shield')).toMatchObject({ ok: true, ap: 1, momentum: { now: 3, after: 0 }, guard: { now: 0, after: 3 } }); expect([f.momentum(f.pc), guard(f)]).toEqual([3, 0]);
-    expect(f.tech('raise_shield')).toBeNull(); expect([f.momentum(f.pc), guard(f), f.pc.ap]).toEqual([0, 3, 5]);
+    const f = fight({ m: 3, guard: 0 }), turned = Math.min(3, f.pc.resMax!.guard!); // never past the pool (Durability's Reach, rules 1.97 item 8340)
+    expect(f.pv('raise_shield')).toMatchObject({ ok: true, ap: 1, momentum: { now: 3, after: 3 - turned }, guard: { now: 0, after: turned } }); expect([f.momentum(f.pc), guard(f)]).toEqual([3, 0]);
+    expect(f.tech('raise_shield')).toBeNull(); expect([f.momentum(f.pc), guard(f), f.pc.ap]).toEqual([3 - turned, turned, 5]);
     expect(f.tech('raise_shield')).toBe('Your shield is already raised.');
     const one = fight({ m: 3, guard: 0 }); expect(one.pv('raise_shield', { opt: '1' }).guard).toEqual({ now: 0, after: 1 });
     expect(one.tech('raise_shield', { opt: '1' })).toBeNull(); expect([one.momentum(one.pc), guard(one)]).toEqual([2, 1]);
-    const top = phys.PHYS_RULES.guard.max, full = fight({ m: 3, guard: top - 1 }); expect(full.tech('raise_shield')).toBeNull(); expect([full.momentum(full.pc), guard(full)]).toEqual([2, top]); // the pool's cap (4 since rules 1.55 item 74)
+    const top = fight().pc.resMax!.guard!, full = fight({ m: 3, guard: top - 1 }); // rules 1.97 item 8340: the pool is Durability's Reach expect(full.tech('raise_shield')).toBeNull(); expect([full.momentum(full.pc), guard(full)]).toEqual([2, top]); // the pool's cap (4 since rules 1.55 item 74)
     const none = fight({ m: 2, dur: 0 }); expect(none.tech('raise_shield')).toBeNull(); expect(none.momentum(none.pc)).toBe(2); // no pool: nothing is turned, the shield is still raised
   });
   it('ranged attacks from the front are at −2 until your next turn; melee and shots from behind are not', () => {

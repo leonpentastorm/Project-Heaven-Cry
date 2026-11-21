@@ -15,6 +15,7 @@ import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlocked
 import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp, setStrikeRider, strikeRider, pairs, withOffHand, offWear, weaponVia } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
+import { uses } from '../effects/uses';
 import { doorOfResource, doorBeta, biteAt, cashSum, cashSumOf, keepsOf } from '../door';
 import { mod, holds as holdsGear, isShieldId, followsId, bodyArmourArm, momentumTop } from '../character';
 import type { Character } from '../character';
@@ -250,7 +251,7 @@ export function loseMomentum(cb: Combat, u: Unit, n: number): number {
 export function wearMomentum(cb: Combat, u: Unit, n: number, site = 'wear'): number {
   n = wearOf(u, 'momentum', n, { site }, cb); if (n <= 0) return 0; // rules 1.96 item 8327 (S6): the sheet's wear:momentum at this site
   const beta = doorBeta('momentum'), bn = beta?.per_point?.numbers || {}, pts = beta && !u.companion ? Number((charOfUnit(u)?.skills as any)?.[beta.id] || 0) : 0;
-  if (site === 'hit' && typeof bn.first_hit_free_from === 'number' && pts >= bn.first_hit_free_from && (u as any).hitFreeRound !== cb.round) { (u as any).hitFreeRound = cb.round; return 0; }
+  if (site === 'hit' && typeof bn.first_hit_free_from === 'number' && pts >= bn.first_hit_free_from && uses({ key: 'door:momentum.first_hit', u, c: null, cb, g: null } as any).first('hit', 'per_round')) return 0;
   if (site === 'walk' && typeof bn.walk_every_two_from === 'number' && pts >= bn.walk_every_two_from) n = feedCarry(u, 'momentum_walk', n / 2);
   return n > 0 ? loseMomentum(cb, u, n) : 0;
 }

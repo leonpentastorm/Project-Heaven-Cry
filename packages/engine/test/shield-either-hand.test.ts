@@ -6,6 +6,7 @@
 // come once, from whichever hand holds a shield. Every change goes through the reducer (gear/equip out of a fight,
 // combat/equip in one, combat/brace, combat/technique, combat/perk, combat/draw and combat/evoke, combat/attack).
 import { describe, it, expect, beforeEach } from 'vitest';
+import { doorLadderOf, reachAt } from '../src';
 import { phys, resolveAttack, WEAPON, RARITY, packOf, holds, gearEntry, migrateLoaded, actionsFor, RuleError, beginTurn, type Character, type Action } from '../src';
 import { physFight, rig } from './helpers/physfight';
 import { storyWith, withGame } from './helpers/perkfight';
@@ -87,7 +88,7 @@ describe('two shields: each shield\'s own effects add; Guard: +1 with one shield
     guard(f, 0); f.act({ type: 'combat/brace', unitId: f.pc.id } as any);
     return { def: u(f).def - base.def, move: u(f).movement - base.move, brace: gain.brace, braced: guard(f), tech: gain.guard, pool: u(f).resMax!.guard };
   };
-  it('the stacks (Durability 5: the pool is rules.guard.max)', () => {
+  it('the stacks (Durability 5: the pool is its Reach, rules 1.97 item 8340)', () => {
     const G = phys.PHYS_RULES.guard, D = (id: string) => (WEAPON as any)[id].effects.find((e: any) => e.op === 'defense_bonus').value;
     const M = (id: string) => (WEAPON as any)[id].effects.find((e: any) => e.op === 'movement_bonus')?.value ?? 0;
     const one = stack(['buckler']);
@@ -97,12 +98,12 @@ describe('two shields: each shield\'s own effects add; Guard: +1 with one shield
       expect(r.def, pair.join('+')).toBe(D(pair[0]) + D(pair[1]));
       expect(r.move, pair.join('+')).toBeCloseTo(M(pair[0]) + M(pair[1]), 6);
       expect(r.brace).toBe(G.brace_gain * G.two_shield_mult); expect(r.tech).toBe((G.gain_base + 4 * G.gain_per_point) * G.two_shield_mult);
-      expect(r.braced).toBe(Math.min(r.pool, r.brace)); expect(r.pool).toBe(G.max);
+      expect(r.braced).toBe(Math.min(r.pool, r.brace)); expect(r.pool).toBe(reachAt({ durability: 5 }, doorLadderOf('durability')!));
     }
   });
-  it('the pool\'s cap holds: Durability 3 with two shields braces to 3', () => {
+  it('the pool\'s cap holds: Durability 3 with two shields braces to its Reach', () => {
     const f = fight(['buckler', 'buckler'], { dur: 3 }); hold(f, 'buckler', 'main'); hold(f, 'buckler', 'off');
-    guard(f, 0); f.act({ type: 'combat/brace', unitId: f.pc.id } as any); expect(guard(f)).toBe(3);
+    guard(f, 0); f.act({ type: 'combat/brace', unitId: f.pc.id } as any); expect(guard(f)).toBe(reachAt({ durability: 3 }, doorLadderOf('durability')!));
   });
   it('the shield\'s techniques come once (one grant), and the Parry bonus once', () => {
     const f = fight(['buckler', 'riot_shield']); hold(f, 'buckler', 'main'); hold(f, 'riot_shield', 'off');

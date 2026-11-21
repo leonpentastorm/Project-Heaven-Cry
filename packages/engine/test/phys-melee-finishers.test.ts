@@ -1,7 +1,9 @@
 // Physical 2.0 (rules 1.12), the melee Finishers built by the melee lane: Cleave (21), Break (22), Run Through (23) and
 // Throw Down (24). Coup (20) is the lead's reference (phys-core.test.ts).
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, applyCond } from '../src';
+import { phys, applyCond, biteAt, doorLadderOf, cashSumOf, TECHNIQUE } from '../src';
+/** Rules 1.97 item 8342: a Finisher's cash-out factor for the PC's Raw Power Bite (less a step's bite_less), n chain steps spent. */
+const cashOf = (f: any, n: number, less = 0) => 1 + Math.max(0, biteAt(f.char(f.pc).skills, doorLadderOf('raw_power')!) - less) * cashSumOf('momentum', n);
 import { pullFree, moveBlock } from '../src/combat';
 import { physFight, rig } from './helpers/physfight';
 
@@ -128,10 +130,10 @@ describe('Break (22)', () => {
 
 describe('Run Through (23)', () => {
   const one = (weapon: string, m = 3, foes = [{ at: 'D5' }]) => { const f = fight(weapon, ['run_through'], foes, m); f.foes.forEach((x) => (f.unit(x.id).armour = 4)); return f; };
-  it('one strike at +20% per Momentum spent; a hit Pins the target until it spends 2 AP to pull free', () => {
+  it('one strike, the whole chain at the Bite less bite_less a step (rules 1.97 item 8342); a hit Pins the target until it spends 2 AP to pull free', () => {
     const f = one('kemizuchi_duelling_blade');
     const pv = f.pv('run_through', { targetId: f.foe.id }), cut = f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.dmg!.total;
-    expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cut * 1.6, 5); expect(pv.momentum).toEqual({ now: 3, after: 0 }); expect(pv.ends).toBe(true);
+    expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cut * cashOf(f, 3, (TECHNIQUE as any).run_through.numbers.bite_less), 5); expect(pv.momentum).toEqual({ now: 3, after: 0 }); expect(pv.ends).toBe(true);
     rig({ hit: true, die: 12 }); const hp = hpOf(f);
     expect(f.tech('run_through', { targetId: f.foe.id })).toBeNull();
     expect(hpOf(f)).toBe(hp - dealt(pv.attacks[0])); // preview == run
@@ -189,11 +191,11 @@ describe('Throw Down (24)', () => {
     expect(f.pv('throw_down', { targetId: f.foe.id }).ok).toBe(false);
     f.unit(f.pc.id).tech = { bind: { target: f.foe.id, pen: 2 } } as any; expect(f.pv('throw_down', { targetId: f.foe.id }).ok).toBe(true);
   });
-  it('slams it into a tile next to you: ×1 + 25% per Momentum, Prone, and the grapple ends; Bare needs no roll', () => {
+  it('slams it into a tile next to you: a Coup cash-out of the chain (rules 1.97 item 8342), Prone, and the grapple ends; Bare needs no roll', () => {
     const f = one('fists'); grab(f);
     const pv = f.pv('throw_down', { targetId: f.foe.id, tile: 'C4' }); expect(pv.ok).toBe(true);
     const cut = f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.dmg!.total;
-    expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cut * 1.75, 5); expect(pv.attacks[0].pv.pct).toBe(100);
+    expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(cut * cashOf(f, 3), 5); expect(pv.attacks[0].pv.pct).toBe(100);
     expect(pv.moves).toEqual([{ unit: f.foe.id, to: f.tile('C4') }]); expect(pv.momentum).toEqual({ now: 3, after: 0 }); expect(pv.ap).toBe(2);
     rig({ die: 1 }); const hp = hpOf(f); // a natural 1: Bare needs no roll
     expect(f.tech('throw_down', { targetId: f.foe.id, tile: 'C4' })).toBeNull();

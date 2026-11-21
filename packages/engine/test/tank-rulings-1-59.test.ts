@@ -4,14 +4,14 @@
 //      phys.scales_with) and nothing else: Durability moves the roll, never the damage
 //   T3 a shield's own strike scales with Endurance (Durability's attribute), and still hits with Durability
 //   T4 a shield in each hand doubles every Guard gain (rules.guard.two_shield_mult), the pool's cap unchanged
-//   T5 the Bulwark's pool by rank (classes.json defender resource.max_by_rank); everyone else rules.guard.max
+//   T5 (retired by rules 1.97 item 8340, ruling 43): the Bulwark's pool is the door's, Durability's Reach, at every rank
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, WEAPON, CLASS, classResources, type Unit } from '../src';
+import { phys, WEAPON, CLASS, classResources, doorLadderOf, reachAt, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
 
 beforeEach(() => rig(null));
 const G = phys.PHYS_RULES.guard;
-const R = (CLASS as any).defender.resource.max_by_rank as Record<string, number>;
+const reach = (dur: number) => reachAt({ durability: dur }, doorLadderOf('durability')!);
 
 /** One PC on C5 with `weapon` (a shield in the off hand when `off`), the foe on D5, the PC's turn; its Guard set to `g`. */
 function fight(o: { weapon: string; off?: string; dur: number; attrs?: Record<string, number>; g?: number; classId?: string; level?: number; skills?: Record<string, number> }) {
@@ -63,38 +63,29 @@ describe('T3: a shield\'s own strike scales with Endurance and hits with Durabil
 
 describe('T4: a shield in each hand doubles every Guard gain, under the pool', () => {
   it('Brace and the Guard technique through the reducer: one shield +1, two shields x two_shield_mult', () => {
-    const brace = (off?: string, weapon = 'buckler') => { const f = fight({ weapon, off, dur: 2, classId: 'defender', level: 12 }); f.unit(f.pc.id).res!.guard = 0; f.act({ type: 'combat/brace', unitId: f.pc.id } as any); return f.unit(f.pc.id).res!.guard; };
+    const brace = (off?: string, weapon = 'buckler') => { const f = fight({ weapon, off, dur: 2, classId: 'defender', level: 12 }); f.unit(f.pc.id).res!.guard = 0; f.unit(f.pc.id).resMax!.guard = 9; /* a deep pool: this test counts the gains */ f.act({ type: 'combat/brace', unitId: f.pc.id } as any); return f.unit(f.pc.id).res!.guard; };
     expect(brace(undefined, 'sabre')).toBe(G.brace_gain);
     expect(brace(undefined)).toBe(G.brace_gain + G.brace_shield_gain);
     expect(brace('riot_shield')).toBe(G.brace_gain * G.two_shield_mult);
-    const tech = (off?: string) => { const f = fight({ weapon: 'buckler', off, dur: 2, classId: 'defender', level: 12 }); (f.char(f.pc) as any).phys.known = ['guard']; f.unit(f.pc.id).res!.guard = 0; expect(f.tech('guard')).toBeNull(); return f.unit(f.pc.id).res!.guard; };
+    const tech = (off?: string) => { const f = fight({ weapon: 'buckler', off, dur: 2, classId: 'defender', level: 12 }); (f.char(f.pc) as any).phys.known = ['guard']; f.unit(f.pc.id).res!.guard = 0; f.unit(f.pc.id).resMax!.guard = 9; expect(f.tech('guard')).toBeNull(); return f.unit(f.pc.id).res!.guard; };
     expect(tech()).toBe(G.gain_base + G.gain_per_point + G.shield_gain);
     expect(tech('buckler')).toBe((G.gain_base + G.gain_per_point) * G.two_shield_mult);
   });
-  it('the cap is unchanged: Durability 3 with two shields (no class) braces to its pool of 3', () => {
+  it('the cap is unchanged: Durability 3 with two shields (no class) braces to its pool, its Reach', () => {
     const f = fight({ weapon: 'buckler', off: 'buckler', dur: 3 }); f.unit(f.pc.id).res!.guard = 0;
-    f.act({ type: 'combat/brace', unitId: f.pc.id } as any); expect(f.unit(f.pc.id).res!.guard).toBe(3);
+    f.act({ type: 'combat/brace', unitId: f.pc.id } as any); expect(f.unit(f.pc.id).res!.guard).toBe(reach(3));
   });
 });
 
-describe('T5: the Bulwark\'s Guard pool by rank', () => {
-  it('the data: 5, 6, 7 at ranks I to III, provisional; never below rules.guard.max', () => {
-    expect(R).toEqual({ '1': 5, '2': 6, '3': 7 }); expect((CLASS as any).defender.resource.provisional).toBe(true);
-    expect(Math.min(...Object.values(R))).toBeGreaterThanOrEqual(G.max);
-  });
-  it('the fight reads it: rank I at level 3, rank II at Endurance 5 and level 6, rank III at Endurance 8 and level 12; another class at Durability 7 keeps rules.guard.max', () => {
+describe('T5 (retired: rules 1.97 item 8340, ruling 43): the Bulwark holds the door pool at every rank', () => {
+  it('no rank pool in the data; the fight reads Durability Reach for the Bulwark and for anyone else', () => {
+    expect((CLASS as any).defender.resource.max_by_rank).toBeUndefined();
     const pool = (o: Partial<Parameters<typeof fight>[0]>) => fight({ weapon: 'sabre', dur: 7, ...o }).pc.resMax!.guard;
-    expect(pool({ classId: 'defender', level: 3, attrs: { endurance: 7 } })).toBe(R['1']);
-    expect(pool({ classId: 'defender', level: 6, attrs: { endurance: 7 } })).toBe(R['2']);
-    expect(pool({ classId: 'defender', level: 12, attrs: { endurance: 8 } })).toBe(R['3']);
-    expect(pool({ classId: 'fighter', level: 12, attrs: { endurance: 8 } })).toBe(G.max);
-    expect(pool({})).toBe(G.max);
-  });
-  it('a rank III Bulwark fills past four: Brace twice from 0 with a shield holds 6', () => {
-    const f = fight({ weapon: 'sabre', off: 'buckler', dur: 7, classId: 'defender', level: 12, attrs: { endurance: 8 } }); f.unit(f.pc.id).res!.guard = 0;
-    f.act({ type: 'combat/brace', unitId: f.pc.id } as any); const one = f.unit(f.pc.id).res!.guard;
-    expect(one).toBe(G.brace_gain + G.brace_shield_gain);
-    expect(classResources(f.char(f.pc)).find((r) => r.id === 'guard')!.max).toBe(R['3']);
+    expect(pool({ classId: 'defender', level: 3, attrs: { endurance: 7 } })).toBe(reach(7));
+    expect(pool({ classId: 'defender', level: 12, attrs: { endurance: 8 } })).toBe(reach(7));
+    expect(pool({ classId: 'fighter', level: 12, attrs: { endurance: 8 } })).toBe(reach(7));
+    const d = fight({ weapon: 'sabre', dur: 7, classId: 'defender', level: 12, attrs: { endurance: 8 } });
+    expect(classResources(d.char(d.pc)).find((r) => r.id === 'guard')!.max).toBe(reach(7));
   });
 });
 void ({} as Unit);

@@ -29,7 +29,9 @@ function fight(skills: Record<string, number>, o: { weapon?: string; foeAt?: str
   return f;
 }
 type F = ReturnType<typeof fight>;
-const feedAt = (beta: string, b: number) => 1 + STEP(beta) * ALPHA * b;
+/** Rules 1.96 item 8329 and 1.97 item 8344: 1 + feed_flat x B + feed x A x B (the flat term 0 where the beta names none). */
+const FLAT = (beta: string) => Number((SKILL as any)[beta].per_point.numbers.feed_flat) || 0;
+const feedAt = (beta: string, b: number) => 1 + FLAT(beta) * b + STEP(beta) * ALPHA * b;
 /** Rules 1.95 (scale.plate): a plate soaks the soak x the guard profile's Stat (Endurance and Durability) x the worn
  * armour's grade x the deal column x Pain Threshold's feed, each read from its row. */
 const plateWant = (f: any, u: Unit, b: number): number => { const c = f.char(u); return Math.max(1, Math.round(phys.PHYS_RULES.guard.soak * statOf('guard', { attrs: c.attrs, skills: c.skills }) * bodyArmourArm(c) * scaleOf(u.level) * feedAt('pain_threshold', b))); };
@@ -37,12 +39,13 @@ const plateWant = (f: any, u: Unit, b: number): number => { const c = f.char(u);
 describe('the feed is data: nine betas, one door each, one carrier each', () => {
   it('every beta feeds its attribute\'s alpha skill, its step is per_point.numbers.feed, and the numbers are provisional', () => {
     // (rules 1.70 item 5539, Leon's ruling: Composure no longer feeds Will Power's door; it gives the Strain limit by steps)
-    expect(FEEDS.map((x) => x.beta).sort()).toEqual(['analysis', 'athletics', 'camaraderie', 'conscience', 'guts', 'pain_threshold', 'proficiency', 'rumination']);
+    // (rules 1.97 item 8344: Guts no longer feeds a share of the chain's wear; its whole-number rules are below)
+    expect(FEEDS.map((x) => x.beta).sort()).toEqual(['analysis', 'athletics', 'camaraderie', 'conscience', 'pain_threshold', 'proficiency', 'rumination']);
     for (const x of FEEDS) { expect((SKILL as any)[x.door].slot).toBe('alpha'); expect((SKILL as any)[x.door].attribute).toBe((SKILL as any)[x.beta].attribute); expect(x.per).toBe(STEP(x.beta)); expect(x.row.provisional).toBe(true); }
     expect(new Set(FEEDS.map((x) => x.carrier)).size).toBe(FEEDS.length);
   });
-  it('x1 with no points in either skill; doubled at alpha 10 and beta 10 (per_point.numbers.feed 0.01)', () => {
-    for (const x of FEEDS) { expect(doorFeed({ skills: {} }, x.door)).toBe(1); expect(doorFeed({ skills: { [x.door]: 10, [x.beta]: 10 } }, x.door)).toBeCloseTo(1 + x.per * 100, 9); }
+  it('x1 with no points in either skill; at alpha 10 and beta 10: 1 + feed_flat x 10 + feed x 100', () => {
+    for (const x of FEEDS) { expect(doorFeed({ skills: {} }, x.door)).toBe(1); expect(doorFeed({ skills: { [x.door]: 10, [x.beta]: 10 } }, x.door)).toBeCloseTo(1 + x.flat * 10 + x.per * 100, 9); }
   });
 });
 
@@ -85,13 +88,13 @@ describe('Pain Threshold feeds a rank III Bulwark\'s plates (item 4604): the doo
   });
 });
 
-describe('Guts feeds the Momentum worn off by walking and by hits (item 4605)', () => {
-  it('Raw Power 10, Guts 10 (x2): a 2-tile walk wears 1 off; Guts 1 (x1.1): the same walk wears 2, and the kept fraction is carried', () => {
-    const hi = fight({ raw_power: ALPHA, guts: 10 }, { foeAt: 'H8' }); hi.momentum(hi.pc, 3);
+describe('Guts wears the chain in whole steps (rules 1.97 item 8344, in place of item 4605)', () => {
+  it('from walk_every_two_from a 2-tile walk wears 1 step; below it the same walk wears 2', () => {
+    const from = (SKILL as any).guts.per_point.numbers.walk_every_two_from;
+    const hi = fight({ raw_power: ALPHA, guts: from }, { foeAt: 'H8' }); hi.momentum(hi.pc, 3);
     hi.act({ type: 'combat/move', unitId: hi.pc.id, to: hi.tile('C3') } as any); expect(hi.momentum(hi.pc)).toBe(2);
-    const lo = fight({ raw_power: ALPHA, guts: 1 }, { foeAt: 'H8' }); lo.momentum(lo.pc, 3);
+    const lo = fight({ raw_power: ALPHA, guts: from - 1 }, { foeAt: 'H8' }); lo.momentum(lo.pc, 3);
     lo.act({ type: 'combat/move', unitId: lo.pc.id, to: lo.tile('C3') } as any); expect(lo.momentum(lo.pc)).toBe(1);
-    expect(lo.unit(lo.pc.id).feedCarry?.momentum_loss).toBeCloseTo(2 - 2 / feedAt('guts', 1), 9);
   });
 });
 

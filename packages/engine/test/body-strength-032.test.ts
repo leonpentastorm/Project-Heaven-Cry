@@ -84,7 +84,7 @@ describe('Headlong against the Breaker’s Charge Carries (rules 1.73 item 5807)
   it('a Breaker’s Charge paid by Headlong builds nothing; the same Charge paid in AP builds Charge Carries’ Momentum', () => {
     const CC = (classesJ as any).base.find((b: any) => b.id === 'fighter').gain.find((g: any) => g.id === 'charge_carries').effects[0].value;
     const run = (picks: string[], m: number) => {
-      const f = physFight([{ weapon: 'sabre', known: ['charge'], skills: { raw_power: 8, athletics: 4 }, attrs: { strength: 8 }, level: 12, classId: 'fighter', picks } as any], [{ at: '9,4', tier: 'boss' }]); f.cb.objects = [];
+      const f = physFight([{ weapon: 'sabre', known: ['charge'], skills: { raw_power: 8, athletics: 4, guts: 4 }, attrs: { strength: 8 }, level: 12, classId: 'fighter', picks } as any] /* rules 1.97 item 8340: Guts 4 opens Raw Power's step at 7, so the chain has room for both builds */, [{ at: '9,4', tier: 'boss' }]); f.cb.objects = [];
       const u = f.turn(f.pc); f.put(u, '5,4'); f.put(f.foe, '9,4'); big(f, f.foe); f.unit(u.id).ap = 9; f.unit(u.id).openerUsed = true; f.momentum(u, m); rig({ hit: true, die: 12 });
       expect(f.tech('charge', { targetId: f.foe.id })).toBeNull(); return f.momentum(f.unit(u.id));
     };

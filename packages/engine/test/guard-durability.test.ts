@@ -7,11 +7,13 @@
 //   6. lost when the fight ends; a hit on a unit holding Guard costs no Momentum
 import { scaled } from './helpers/scale';
 import { describe, it, expect, beforeEach } from 'vitest';
-import { phys, resolveAttack, previewAttack, applyDamage, classResources, guardPool, resourcesFor, viewFor, weaponActions, CLASS, type Unit } from '../src';
+import { phys, resolveAttack, previewAttack, applyDamage, classResources, guardPool, resourcesFor, viewFor, weaponActions, doorLadderOf, reachAt, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
 
 beforeEach(() => rig(null));
 const G = phys.PHYS_RULES.guard;
+/** Rules 1.97 item 8340: the pool is Durability's Reach on its door ladder (these fights hold no Pain Threshold or Sensory). */
+const reach = (dur: number) => reachAt({ durability: dur }, doorLadderOf('durability')!);
 type F = ReturnType<typeof fight>;
 /** PCs side by side from C5 (the first is the one under test), one foe on D5 unless placed, the first PC's turn. */
 function fight(specs: { dur?: number; weapon?: string; shield?: string; known?: string[]; classId?: string; skills?: Record<string, number> }[], o: { foeAt?: string; foeWeapon?: string } = {}) {
@@ -33,32 +35,31 @@ const hit = (f: F, tgt: Unit = f.pc, mode: 'melee' | 'shot' = 'shot') => { rig({
 
 describe('1. the pool', () => {
   it('the numbers are in the data, provisional', () => {
-    expect(G).toMatchObject({ max: 4, per_durability: 1, gain_base: 1, gain_per_point: 1, shield_gain: 1, brace_gain: 2, brace_shield_gain: 1, soak: scaled(6), keep_back: 1, interpose_durability: 3, interpose_cost: 1 });
+    expect(G).toMatchObject({ gain_base: 1, gain_per_point: 1, shield_gain: 1, brace_gain: 2, brace_shield_gain: 1, soak: scaled(6), keep_back: 1, interpose_durability: 3, interpose_cost: 1 });
   });
-  it('no Durability, no pool; the pool is the Durability points, rules.guard.max at most', () => {
-    expect(guardPool({ skills: {} })).toBe(0); expect(guardPool({ skills: { durability: 2 } })).toBe(2); expect(guardPool({ skills: { durability: 9 } })).toBe(G.max);
+  it('no Durability, no pool; the pool is the Durability Reach (rules 1.97 item 8340)', () => {
+    expect(guardPool({ skills: {} })).toBe(0); expect(guardPool({ skills: { durability: 2 } })).toBe(reach(2)); expect(guardPool({ skills: { durability: 9 } })).toBe(reach(9));
     expect(fight([{ dur: 0 }]).pc.resMax?.guard).toBeUndefined();
-    const f = fight([{ dur: 2 }]); expect(f.pc.resMax!.guard).toBe(2); expect(f.pc.res!.guard).toBe(0); // a fight starts with none
-    expect(fight([{ dur: 7 }]).pc.resMax!.guard).toBe(G.max);
+    const f = fight([{ dur: 2 }]); expect(f.pc.resMax!.guard).toBe(reach(2)); expect(f.pc.res!.guard).toBe(0); // a fight starts with none
+    expect(fight([{ dur: 7 }]).pc.resMax!.guard).toBe(reach(7));
   });
-  it('the Defender (the Bulwark) keeps its own pool, by its rank (rules 1.59 T5: classes.json resource.max_by_rank), with 1 Durability point, and with none', () => {
-    const R = (CLASS as any).defender.resource.max_by_rank;
-    expect(fight([{ dur: 1, classId: 'defender' }]).pc.resMax!.guard).toBe(R['1']);
-    const f = fight([{ dur: 0, classId: 'defender' }]); expect(f.pc.resMax!.guard).toBe(R['1']);
-    expect(classResources(f.char(f.pc)).filter((r) => r.id === 'guard')).toEqual([{ id: 'guard', max: R['1'], persist: false }]);
+  it('the Bulwark holds the door pool (rules 1.97 item 8340: its rank pool is retired, ruling 43), and none with no Durability', () => {
+    expect(fight([{ dur: 1, classId: 'defender' }]).pc.resMax!.guard).toBe(reach(1));
+    const f = fight([{ dur: 0, classId: 'defender' }]); expect(f.pc.resMax!.guard ?? 0).toBe(0);
+    expect(classResources(f.char(f.pc)).filter((r) => r.id === 'guard')).toEqual([{ id: 'guard', max: 0, persist: false }]);
   });
   it('a client\'s view carries the pool, and the engine\'s own view of it', () => {
     const f = fight([{ dur: 3 }]); guard(f, f.pc, 2);
     const u = viewFor(f.g, 'host').combat!.units.find((x) => x.id === f.pc.id)!;
-    expect(u.resMax!.guard).toBe(3); expect(u.res!.guard).toBe(2);
-    expect(f.bound(() => phys.physView(f.cb, f.pc, 'pc')).guard).toMatchObject({ now: 2, max: 3, gain: 3, soak: f.bound(() => phys.guardSoak(f.unit(f.pc.id))), shield: false }); // rules 1.95: the plate's soak on the unit's sheet (scale.plate)
+    expect(u.resMax!.guard).toBe(reach(3)); expect(u.res!.guard).toBe(2);
+    expect(f.bound(() => phys.physView(f.cb, f.pc, 'pc')).guard).toMatchObject({ now: 2, max: reach(3), gain: 3, soak: f.bound(() => phys.guardSoak(f.unit(f.pc.id))), shield: false }); // rules 1.95: the plate's soak on the unit's sheet (scale.plate)
     expect(f.bound(() => phys.physView(f.cb, f.foe, 'pc')).guard).toBeNull();
   });
 });
 
 describe('2. gained by Brace and by the Guard technique', () => {
   it('Brace: a flat 2 Guard whatever the Durability (the pool of Durability 1 holds 1 of it), for 1 AP, with any weapon', () => {
-    for (const [dur, want] of [[1, 1], [3, 2], [5, 2]]) {
+    for (const [dur, want] of [[1, Math.min(reach(1), G.brace_gain)], [3, Math.min(reach(3), G.brace_gain)], [5, Math.min(reach(5), G.brace_gain)]]) {
       const f = fight([{ dur }]);
       expect(weaponActions(f.pc).find((x) => x.id === 'brace')).toMatchObject({ ap: 1, why: null });
       f.act({ type: 'combat/brace', unitId: f.pc.id } as any);
@@ -70,10 +71,10 @@ describe('2. gained by Brace and by the Guard technique', () => {
     const f = fight([{ dur: 3, shield: 'riot_shield' }]); guard(f, f.pc, 0);
     expect(f.bound(() => phys.guardGain(f.pc))).toBe(4);
     expect(f.bound(() => phys.guardGain(f.pc, 'brace'))).toBe(3); // Brace: 2, 3 with a shield
-    f.act({ type: 'combat/brace', unitId: f.pc.id } as any); expect(guard(f)).toBe(3);
+    f.act({ type: 'combat/brace', unitId: f.pc.id } as any); expect(guard(f)).toBe(Math.min(reach(3), 3));
     const g = fight([{ dur: 5, shield: 'buckler' }]); guard(g, g.pc, 1);
-    g.act({ type: 'combat/brace', unitId: g.pc.id } as any); expect(guard(g)).toBe(4);
-    const two = fight([{ dur: 2, shield: 'riot_shield' }]); two.act({ type: 'combat/brace', unitId: two.pc.id } as any); expect(guard(two)).toBe(2); // the pool is the ceiling
+    g.act({ type: 'combat/brace', unitId: g.pc.id } as any); expect(guard(g)).toBe(Math.min(reach(5), 4));
+    const two = fight([{ dur: 2, shield: 'riot_shield' }]); two.act({ type: 'combat/brace', unitId: two.pc.id } as any); expect(guard(two)).toBe(reach(2)); // the pool is the ceiling
     const p = fight([{ dur: 2, shield: 'pavise' }]); expect(p.bound(() => phys.guardGain(p.pc))).toBe(3); // rules 1.57 (A1, the lead's ruling): the pavise is a shield row too
   });
   it('bracing only for Guard sets the stance, not the weapon: Recoil is halved only for a weapon that had Brace before', () => {
@@ -99,7 +100,7 @@ describe('2. gained by Brace and by the Guard technique', () => {
     const pv = f.pv('guard'); expect(pv.ok).toBe(true); expect(pv.guard).toEqual({ now: 0, after: 2 }); expect(pv.notes.join(' ')).toMatch(/\+2 Guard/);
     expect(guard(f)).toBe(0);
     expect(f.tech('guard')).toBeNull(); expect(guard(f)).toBe(2); expect(phys.guardUp(f.pc)).toBe(true);
-    const five = fight([{ dur: 5, known: ['guard'] }]); expect(five.tech('guard')).toBeNull(); expect(guard(five)).toBe(Math.min(G.max, G.gain_base + 4 * G.gain_per_point)); // where Brace gives 2 (the pool's cap since rules 1.55 item 74)
+    const five = fight([{ dur: 5, known: ['guard'] }]); expect(five.tech('guard')).toBeNull(); expect(guard(five)).toBe(Math.min(reach(5), G.gain_base + 4 * G.gain_per_point)); // where Brace gives 2 (the pool's cap since rules 1.55 item 74)
     const n = fight([{ dur: 0, known: ['guard'] }]); expect(n.pv('guard').guard).toBeUndefined(); expect(n.tech('guard')).toBeNull(); expect(guard(n)).toBe(0);
   });
 });
@@ -213,7 +214,7 @@ describe('5. Interpose from Durability 3', () => {
 describe('6. it is a fight\'s resource', () => {
   it('a new fight starts with none', () => {
     const f = fight([{ dur: 4 }]); guard(f, f.pc, 4);
-    expect(resourcesFor(f.char(f.pc))).toMatchObject({ res: { guard: 0 }, resMax: { guard: 4 } });
+    expect(resourcesFor(f.char(f.pc))).toMatchObject({ res: { guard: 0 }, resMax: { guard: reach(4) } });
   });
   it('a hit that Guard soaked part of costs no Momentum; the kept point alone protects nothing', () => {
     const f = fight([{ dur: 5 }]); f.momentum(f.pc, 2); guard(f, f.pc, 2); f.turn(f.foe);

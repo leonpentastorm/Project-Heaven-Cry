@@ -124,7 +124,7 @@ describe('shieldsView: a rank III Bulwark\'s plates are the door\'s (the Reactiv
 // Rules 1.73 item 5837: no Reactive Plate any more: the Ward is met first, then the door's plates.
 describe('shieldsView: a rank III Bulwark with two shields and a Ward, through the reducer', () => {
   const PLATE = 'class:defender.reactive_plate';
-  const R = (CLASS as any).defender.resource.max_by_rank as Record<string, number>;
+  void CLASS; // rules 1.97 item 8340: the Bulwark's pool is Durability's Reach (its rank pool retired)
   const perPlate = (): number => (Object.values(CLASS_MOVE_POOL) as any[]).find((m) => m.id === 'reactive_plate' && m.origin === 'defender').effects.find((e: any) => e.op === 'stat_mod').value;
   function tank() {
     rig(null);
@@ -144,7 +144,7 @@ describe('shieldsView: a rank III Bulwark with two shields and a Ward, through t
   it('the pool is the rank III one, Brace with two shields fills it as the view counts it, and a shot meets the Ward before the plates', () => {
     const { f, u, c, me, chap } = tank();
     expect(f.bound(() => phys.holds(u(), PLATE))).toBe(false);
-    expect(u().resMax!.guard).toBe(R['3']);
+    const full = u().resMax!.guard!; expect(full).toBeGreaterThan(0);
     // Brace through the reducer, two shields in hand: the view counts the plates the engine gave
     f.turn(me); u().res!.guard = 0; f.act({ type: 'combat/brace', unitId: me.id } as Action, 'host');
     const got = u().res!.guard!; expect(got).toBeGreaterThan(0);
@@ -153,7 +153,7 @@ describe('shieldsView: a rank III Bulwark with two shields and a Ward, through t
     u().res!.guard = u().resMax!.guard!;
     f.turn(chap); f.act({ type: 'combat/perk', unitId: chap.id, id: 'class:guardian.ward', actionId: 'ward', targetId: me.id } as Action, 'host'); clearPrayerLimits(c());
     expect(u().shields?.length).toBe(1); u().shields![0].n = 5;
-    const v = shieldsView(f.cb, u(), null, String), full = R['3'];
+    const v = shieldsView(f.cb, u(), null, String);
     expect(v.guard).toMatchObject({ plates: full, first: false });
     expect(v.entries.map((e) => [e.kind, e.name])).toEqual([['layer', 'Ward']]);
     const hp = u().hp; f.g.rng.state = rngFor(15, 10, 10, 10); c().ap = 6;

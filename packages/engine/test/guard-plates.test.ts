@@ -21,7 +21,8 @@ describe('the Guard event says why and how much', () => {
   it('Brace: why gain, no soaked', () => {
     const f = fight(3);
     f.act({ type: 'combat/brace', unitId: f.pc.id } as any);
-    expect(guardEvents(f).at(-1)).toMatchObject({ why: 'gain', was: 0, now: 2, max: 3 });
+    const max = f.unit(f.pc.id).resMax!.guard!; // rules 1.97 item 8340: Durability's Reach
+    expect(guardEvents(f).at(-1)).toMatchObject({ why: 'gain', was: 0, now: Math.min(max, phys.PHYS_RULES.guard.brace_gain), max });
     expect(guardEvents(f).at(-1).soaked).toBeUndefined();
   });
   it('a hit the Guard eats: why soak, soaked = the damage taken off, after the attack\'s own event', () => {

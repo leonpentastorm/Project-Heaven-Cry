@@ -435,7 +435,7 @@ describe('Adamantile Knight', () => {
     const f = fightWith([cls('adamantile_knight', { skills: { durability: 3 } })], [{ at: 'O10' }]);
     const pc = f.turn(at(f.pc, '2,5')); const def = pc.def; pc.ap = 6;
     f.act({ type: 'combat/perk', unitId: pc.id, id: 'adamantile_knight.bulwark_of_will', actionId: 'brace' } as any);
-    expect(f.pc.ap).toBe(4); expect(f.pc.res!.guard).toBe(3); expect(f.pc.def).toBe(def + 2);
+    expect(f.pc.ap).toBe(4); expect(f.pc.res!.guard).toBe(f.pc.resMax!.guard); expect(f.pc.def).toBe(def + 2); /* rules 1.97 item 8345: the Brace fills the wall to Durability's Reach */
     const c = charOf(f.g, f.pc), want = Math.floor(Math.floor(20 * healingMult(c)) * (f.pc.healRecv || 1));
     expect(f.pc.shield).toBe(15 /* rules 1.95 (the scale): was want */);
     f.act({ type: 'combat/move', unitId: f.pc.id, to: '3,5' } as any);
@@ -457,7 +457,7 @@ describe('Adamantile Knight', () => {
     expect(logHas(f.cb, /interposes for/)).toBe(true);
   });
   it('Unbroken: the first drop to 0 leaves 1 HP and +3 Guard; the second drops', () => {
-    const f = fightWith([cls('adamantile_knight')], [{ at: 'O10' }]);
+    const f = fightWith([cls('adamantile_knight', { skills: { durability: 7, pain_threshold: 4 } })], [{ at: 'O10' }]); // rules 1.97 item 8340: a pool of Durability's Reach that holds the +3
     const k = at(f.pc, '2,5'), foe = f.foe;
     withGame(f.g, () => applyDamage(f.cb, k, 9999, { by: foe, type: 'trap', shield: false, credit: 'all' }));
     expect(f.pc.hp).toBe(1); expect(f.pc.res!.guard).toBe(3); expect(f.pc.downed).toBe(false);

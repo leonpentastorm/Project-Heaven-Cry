@@ -108,7 +108,7 @@ describe('P2 and the batch rows: fixture items in data only', () => {
     expect(RESOURCES.pressure.setter).toBe('pressure'); expect(RESOURCES.mp.needs).toBeTruthy();
     const shot = (relics: string[]) => { const g = opsFight({ relics }), u = pcs(g)[0]; W(g, () => dice(HIT, () => A.resolveAttack(g.combat, g.rng, u, foes(g)[1], 'shot', charOf(g, u)))); return foes(g)[1].pressure || 0; };
     const base = shot([]), more = shot(['test_res_pressure']);
-    expect(more).toBe(Math.min(base + relic('test_res_pressure').effects[0].value, A.pressureCap(foes(opsFight({}))[1])));
+    const g0 = opsFight({}); expect(more).toBe(Math.min(base + relic('test_res_pressure').effects[0].value, W(g0, () => A.pressureCap(foes(g0)[1], pcs(g0)[0])))); // rules 1.97 item 8341: the shooter's Reach
     // MP: a holder without an Emanator gets nothing; with one, up to its max
     const g = opsFight({ relics: ['test_res_mp'] }), u = pcs(g)[0]; u.mg = { ...(u.mg || {}), mp: 10, mpMax: 25, emanator: null };
     W(g, () => dice(HIT, () => A.resolveAttack(g.combat, g.rng, u, foes(g)[0], 'melee', charOf(g, u)))); expect(pcs(g)[0].mg.mp).toBe(10);

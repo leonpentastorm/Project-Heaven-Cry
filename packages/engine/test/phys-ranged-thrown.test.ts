@@ -130,13 +130,14 @@ describe('Lob: Blast with a launcher', () => {
     expect(f.tech('lob', { tile: '12,6', line: 'blast' })).toBeNull();
     expect(f.pcs[1].hp).toBe(hp - blastDmg('smetanita_thumper', f.pcs[1].armour)); expect(f.pressure(f.pcs[1])).toBe(0);
   });
-  it('Pressure stops at the caps: an elite at 3, a boss at 2', () => {
+  it('Pressure stops at the caps (rules 1.97 item 8341: the thrower Reach less an elite 1 and a boss 2)', () => {
     const f = thumper([{ at: '12,6', tier: 'elite' }, { at: '13,7', tier: 'boss' }]);
-    f.press(f.foes[0], 2, f.pc); f.press(f.foes[1], 1, f.pc);
+    const ec = f.pcap(f.foes[0], f.pc), bc = f.pcap(f.foes[1], f.pc);
+    f.press(f.foes[0], Math.max(0, ec - 1), f.pc); f.press(f.foes[1], Math.max(0, bc - 1), f.pc);
     const pv = f.pv('lob', { tile: '12,6', line: 'blast' });
-    expect(pv.pressure!.find((p) => p.unit === f.foes[0].id)!.after).toBe(3); expect(pv.pressure!.find((p) => p.unit === f.foes[1].id)!.after).toBe(2);
+    expect(pv.pressure!.find((p) => p.unit === f.foes[0].id)!.after).toBe(ec); expect(pv.pressure!.find((p) => p.unit === f.foes[1].id)?.after ?? bc).toBe(bc);
     expect(f.tech('lob', { tile: '12,6', line: 'blast' })).toBeNull();
-    expect(f.pressure(f.foes[0])).toBe(3); expect(f.pressure(f.foes[1])).toBe(2);
+    expect(f.pressure(f.foes[0])).toBe(ec); expect(f.pressure(f.foes[1])).toBe(bc);
   });
   it('an enemy\'s blast stops a player at 3 (the enemy has no character: t.c is null)', () => {
     const f = physFight([{ weapon: RIFLE }], [{ at: '12,5', weapon: 'smetanita_thumper' }]);

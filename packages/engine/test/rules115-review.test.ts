@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
-  FIGHT_TOOLS, ENEMY, ENEMY_LEVELS, enemyStats, levelGiven, fightLevel, levelGap, farBelow, levelCompanion, unitFromEnemy, marginShareOf, marginsOf, RULES,
+  FIGHT_TOOLS, ENEMY, ENEMY_LEVELS, enemyStats, levelGiven, fightLevel, levelGap, farBelow, levelCompanion, unitFromEnemy, marginShareOf, marginsOf, tierMargins, RULES,
   attackDamage, previewAttack, resolveAttack, applyDamage, apply, npcsOf, squadLevel, d20, LOOT, PERKS, TRAITS, WEAPONS, RARITY, COMBAT_XP,
   newGame, ARCHETYPES, type GameState, type Unit, type Sheet,
 } from '../src';
@@ -149,7 +149,7 @@ describe('Margins (rules 1.96 item 8320): no floor and no cap of their own; the 
       const f = fightWith([{ level }], [{ tier, weapon: 'hellraiser_service_rifle' }]); const pc = f.pc, foe = f.foe; pc.pos = '3,5'; foe.pos = '7,5'; foe.ap = 6; pc.marginsTaken = 0;
       withGame(f.g, () => {
         const pv = previewAttack(f.cb, foe, pc, 'shot'); expect(pv.dmg!.share).toBe(MG.per);
-        const m = marginsOf(20 + pv.toHit!, pv.need!, true), want = Math.max(1, Math.floor(pv.dmg!.total * (1 + MG.per * m)) - pv.dmg!.armour), hp0 = pc.hp + (pc.shield || 0);
+        const m = tierMargins(foe, 20 + pv.toHit!, pv.need!, true), want /* rules 1.97 item 8346: a foe's Margins by its tier row */ = Math.max(1, Math.floor(pv.dmg!.total * (1 + MG.per * m)) - pv.dmg!.armour), hp0 = pc.hp + (pc.shield || 0);
         const r = resolveAttack(f.cb, rngFor(20), foe, pc, 'shot', null); expect(r.crit).toBe(true); expect(hp0 - pc.hp - (pc.shield || 0)).toBe(Math.min(hp0, want));
       });
     }

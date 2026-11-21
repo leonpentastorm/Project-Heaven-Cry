@@ -44,7 +44,7 @@ describe('the cash-outs (item 8342), through the reducer', () => {
     f.put(f.pc, 'D5'); f.foe.hp = f.foe.maxHp = 999999; f.unit(f.pc.id).ap = 9; f.momentum(f.pc, 3);
     const pv = f.pv('coup', { targetId: f.foe.id });
     const want = 1 + biteAt(skills, doorLadderOf('raw_power')!) * cashSumOf('momentum', 3);
-    expect(pv.attacks[0].pv.dmg.mults.find((m: any) => /cash-out/.test(m.label))?.v).toBeCloseTo(want, 6);
+    expect((pv.attacks[0].pv as any).dmg.mults.find((m: any) => /cash-out/.test(m.label))?.v).toBeCloseTo(want, 6);
     rig({ hit: true });
     expect(f.tech('coup', { targetId: f.foe.id })).toBeNull();
     expect(f.momentum(f.pc)).toBe(keepsOf(skills, 'momentum'));
@@ -71,7 +71,7 @@ describe('the cash-outs (item 8342), through the reducer', () => {
     expect(f.press(f.foe, 3, f.pc)).toBe(3);
     const pv = f.pv('dead_centre', { targetId: f.foe.id });
     const want = 1 + biteAt(skills, doorLadderOf('dexterity')!) * cashSumOf('pressure', 3);
-    expect(pv.attacks[0].pv.dmg.mults.find((m: any) => /cash-out/.test(m.label))?.v).toBeCloseTo(want, 6);
+    expect((pv.attacks[0].pv as any).dmg.mults.find((m: any) => /cash-out/.test(m.label))?.v).toBeCloseTo(want, 6);
     rig({ hit: true });
     expect(f.tech('dead_centre', { targetId: f.foe.id })).toBeNull();
     expect(f.pressure(f.foe)).toBe(beta('athletics').keeps);

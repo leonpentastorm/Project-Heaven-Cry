@@ -173,7 +173,7 @@ describe('Guard, the first fork: Provoke and Cover Them', () => {
   });
   it('rules 1.70 item 5547 (P6): Cover Them\'s Guard cost reads techniques.json rules.guard.interpose_cost (one copy)', () => {
     const G: any = (techniquesJ as any).rules.guard, was = G.interpose_cost;
-    const spent = () => { const r = cover(['fork.guard.cover_them'], { guard: 6 }), g0 = r.f.unit(r.me.id).res.guard; blow(r.f, r.foe, r.ally); return g0 - r.f.unit(r.me.id).res.guard; };
+    const spent = () => { const r = cover(['fork.guard.cover_them'], { guard: 6 }); r.f.unit(r.me.id).resMax.guard = 9; /* a deep pool: the plates the soak leaves are the same both times */ const g0 = r.f.unit(r.me.id).res.guard; blow(r.f, r.foe, r.ally); return g0 - r.f.unit(r.me.id).res.guard; };
     try {
       const one = spent(); G.interpose_cost = was + 1; const two = spent();
       expect(two - one).toBe(1);
@@ -325,8 +325,8 @@ describe('Pressure\'s forks: Converging Fire, Walk It In, Through the Gap, Lockd
     expect(laid[0] - laid[1]).toBe(FK['fork.pressure.walk_it_in'].effects[0].value);
   });
   function toCap(picks: string[], tier: string) {
-    const f = setUp([gun(picks)], tier); const cap = pressureCap(f.unit(f.foe.id));
-    f.press(f.foe, cap - 1);
+    const f = setUp([gun(picks)], tier); const cap = f.pcap(f.foe, f.pcs[0]); void pressureCap; // rules 1.97 item 8341: the shooter's Reach less the tier's offset
+    f.press(f.foe, cap - 1, f.pcs[0]);
     shoot(f, f.pcs[0]);
     return { f, u: f.unit(f.pcs[0].id), foe: f.unit(f.foe.id), cap };
   }

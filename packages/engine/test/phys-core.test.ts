@@ -4,6 +4,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { reactionsUsed } from '../src';
 import { phys, WEAPON, TECHNIQUES, TECHNIQUE, PHYS_RULES, resolveAttack, validateSheet, enemyIntent, enemyTurn } from '../src';
 import { physFight, rig } from './helpers/physfight';
+import { doorLadderOf, reachAt, biteAt, cashSumOf } from '../src';
 import { sheetOf } from './helpers/perkfight';
 
 const BUILT = ['cut', 'lunge', 'coup', 'riposte', 'shot', 'aimed_shot', 'suppress', 'dead_centre', 'overwatch', 'deny'];
@@ -31,8 +32,8 @@ describe('the data', () => {
 
 describe('Momentum and the chain', () => {
   const fight = () => { const f = physFight([{ weapon: 'sabre', known: ['lunge', 'coup', 'riposte'], skills: { athletics: 6, raw_power: 4 } }], [{ at: 'D5', tier: 'elite' }]); f.put(f.pc, 'C5'); f.turn(f.pc); return f; };
-  it('everyone holding a melee weapon has Momentum to 3', () => {
-    const f = fight(); expect(f.pc.resMax?.momentum).toBe(3); expect(f.momentum(f.pc)).toBe(1); // a fight starts with 1 (the Momentum rework)
+  it('everyone holding a melee weapon has Momentum to its Raw Power Reach (rules 1.97 item 8340)', () => {
+    const f = fight(); expect(f.pc.resMax?.momentum).toBe(reachAt({ raw_power: 4 }, doorLadderOf('raw_power')!)); expect(f.momentum(f.pc)).toBe(1); // a fight starts with 1 (the Momentum rework)
   });
   it('only the plain attack\'s hit gives 1; another technique\'s hit gives none, and there is no variety bonus', () => {
     const f = fight(); rig({ hit: true, die: 12 });
@@ -53,7 +54,7 @@ describe('Momentum and the chain', () => {
     f.momentum(f.pc, 3); f.foe.hp = f.foe.maxHp = 999;
     const pv = f.pv('coup', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.momentum).toEqual({ now: 3, after: 0 }); expect(pv.ends).toBe(true);
     const base = f.pv('cut', { targetId: f.foe.id }).attacks[0].pv.dmg!.total;
-    expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(base * 1.75, 0); // +25% a point
+    expect(pv.attacks[0].pv.dmg!.total).toBeCloseTo(base * (1 + biteAt({ raw_power: 4 }, doorLadderOf('raw_power')!) * cashSumOf('momentum', 3)), 0); // rules 1.97 item 8342: the chain on the cash-out sum
     const ap = f.pc.ap;
     expect(f.tech('coup', { targetId: f.foe.id })).toBeNull(); expect(f.momentum(f.pc)).toBe(0); expect(f.pc.ap).toBe(ap - 2);
     expect(f.tech('cut', { targetId: f.foe.id })).toMatch(/chain has ended/);
@@ -97,11 +98,13 @@ describe('Pressure', () => {
   it('Pressed is −1 to hit with ranged attacks only; the states and caps hold', () => {
     const f = fight();
     expect(f.press(f.foe, 2, f.pc)).toBe(2); expect(phys.pressureState(f.foe)).toBe('pressed');
-    expect(f.press(f.foe, 9, f.pc)).toBe(4); expect(phys.pressureState(f.foe)).toBe('broken');
+    expect(f.press(f.foe, 9, f.pc)).toBe(f.pcap(f.foe, f.pc)); // rules 1.97 item 8341: the shooter's Reach (a soldier: no offset)
     expect(f.press(f.pc, 9, f.foe)).toBe(3); // a player stops at Suppressed
     const pv = f.pv('shot', { targetId: f.foe.id }); expect(pv.attacks[0].pv.terms!.some((t) => t.label === 'Pressed' && t.v === -1)).toBe(true);
-    const e = fight({ tier: 'elite' }); expect(e.press(e.foe, 9, e.pc)).toBe(3);
-    const b = fight({ tier: 'boss' }); expect(b.press(b.foe, 9, b.pc)).toBe(2);
+    const e = fight({ tier: 'elite' }); expect(e.press(e.foe, 9, e.pc)).toBe(e.pcap(e.foe, e.pc));
+    const b = fight({ tier: 'boss' }); expect(b.press(b.foe, 9, b.pc)).toBe(b.pcap(b.foe, b.pc));
+    expect(e.pcap(e.foe, e.pc) - b.pcap(b.foe, b.pc)).toBe(1); // an Elite shakes off one pip, a Boss two
+    const k = fight(); expect(k.press(k.foe, 9, null as any)).toBe(phys.PHYS_RULES.pressure.max); expect(phys.pressureState(k.foe)).toBe('broken'); // a pip no unit lays: the rules row's max
     const m = physFight([{ weapon: 'sabre' }], [{ at: 'D5' }]); m.put(m.pc, 'C5'); m.turn(m.pc); m.press(m.pc, 2, m.foe);
     expect(m.pv('cut', { targetId: m.foe.id }).attacks[0].pv.terms!.some((t) => t.label === 'Pressed')).toBe(false);
   });
@@ -114,12 +117,12 @@ describe('Pressure', () => {
     expect(f.pc.ammo).toBe(a0 - 3); expect(f.pc.heat).toBe(h0 + 2); expect(f.pc.ap).toBe(3); expect(f.pressure(f.foe)).toBe(2);
     const g = fight(); rig({ hit: false, die: 5 }); g.tech('suppress', { targetId: g.foe.id }); expect(g.pressure(g.foe)).toBe(1);
   });
-  it('a Take needs a Pressed target, lowers its Pressure by 2, and is one a turn', () => {
+  it('a Take needs a Pressed target, spends all its Pressure (rules 1.97 item 8342), and is one a turn', () => {
     const f = fight({ tier: 'elite' }); rig({ hit: true, die: 12 });
     expect(f.tech('dead_centre', { targetId: f.foe.id })).toMatch(/isn't Pressed/);
     f.press(f.foe, 3, f.pc);
-    const pv = f.pv('dead_centre', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.pressure?.[0].after).toBe(1);
-    expect(f.tech('dead_centre', { targetId: f.foe.id })).toBeNull(); expect(f.pressure(f.foe)).toBe(1);
+    const pv = f.pv('dead_centre', { targetId: f.foe.id }); expect(pv.ok).toBe(true); expect(pv.pressure?.[0].after).toBe(0);
+    expect(f.tech('dead_centre', { targetId: f.foe.id })).toBeNull(); expect(f.pressure(f.foe)).toBe(0);
     f.press(f.foe, 3, f.pc); expect(f.tech('dead_centre', { targetId: f.foe.id })).toMatch(/One Take a turn/);
   });
   it('Pressure falls by 1 at the end of the unit\'s own turn; an enemy Suppressed loses 1 AP, a player none', () => {
@@ -365,11 +368,11 @@ describe('review fixes, beside what already exists', () => {
     const pc = () => g.combat!.units.find((u) => u.charId === c.id)!;
     g = apply(g, { type: 'sandbox/meter', unitId: pc().id, momentum: 2, pressure: 2 }, 'host');
     expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
-    // the 0.29 consolidation (SF5): the meter's Guard is clamped at the data's cap (techniques.json rules.guard.max), no typed number
+    // rules 1.97 item 8340: the meter's Guard is clamped at the unit's own pool (its Reach), no typed number
     g = apply(g, { type: 'sandbox/meter', unitId: pc().id, guard: 99 } as any, 'host');
-    expect(pc().res?.guard).toBe(phys.PHYS_RULES.guard.max); expect(pc().resMax?.guard).toBeLessThanOrEqual(phys.PHYS_RULES.guard.max);
+    expect(pc().res?.guard ?? 0).toBe(pc().resMax?.guard ?? 0);
     g = apply(g, { type: 'sandbox/technique', charId: c.id, id: 'coup' }, 'host'); // any tool rebuilds the fighter from its character
-    expect(pc().resMax?.momentum).toBe(3); expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
+    expect(pc().resMax?.momentum).toBe(reachAt(c.skills as any, doorLadderOf('raw_power')!) || PHYS_RULES.momentum.max); expect(pc().res?.momentum).toBe(2); expect(pc().pressure).toBe(2);
     expect(phys.techniquePad(g.combat!, pc(), 'main', g).flatMap((x) => x.entries.map((e) => e.id))).toContain('coup');
     g = apply(g, { type: 'sandbox/drill', charId: c.id, weaponId: 'sabre', amount: 300 }, 'host');
     expect(phys.physOf(g.characters[c.id]).known).toContain('riposte'); // the sabre's signature at mark I

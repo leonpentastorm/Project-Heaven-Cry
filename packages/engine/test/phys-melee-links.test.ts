@@ -126,7 +126,7 @@ describe('Guard (16)', () => {
     const pv = f.pv('guard'); expect(pv.ok).toBe(true); expect(pv.ap).toBe(1); expect(pv.momentum).toEqual({ now: 1, after: 1 }); // a Link spends none
   });
   it('the Defender takes Pressure on its Guard first', () => {
-    const f = physFight([{ weapon: 'sabre', classId: 'defender' }], [{ at: 'H7' }]); f.turn(f.pc);
+    const f = physFight([{ weapon: 'sabre', classId: 'defender', skills: { durability: 4 } }], [{ at: 'H7' }]); f.turn(f.pc); // rules 1.97 item 8340: the Bulwark's plates are Durability's Reach
     const u = f.unit(f.pc.id); expect(u.resMax?.guard).toBeGreaterThan(0); u.res!.guard = 2;
     expect(f.press(f.pc, 3, f.foe)).toBe(1); expect(f.unit(f.pc.id).res!.guard).toBe(0);
   });

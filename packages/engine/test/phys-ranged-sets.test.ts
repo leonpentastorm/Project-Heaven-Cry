@@ -161,13 +161,14 @@ describe('Spot (15)', () => {
     f.tech('shot', { targetId: f.foe.id }); expect(f.pressure(f.foe)).toBe(1); expect(f.foe.tech?.spotted?.used).toBe(false);
     rig({ hit: false, die: 3 }); techAs(f, f.pcs[1], 'shot', { targetId: f.foe.id }); expect(f.foe.tech?.spotted?.used).toBe(false); expect(f.pressure(f.foe)).toBe(1);
   });
-  it('the caps hold: a boss stops at 2, an elite at 3, a player at 3', () => {
+  it('the caps hold (rules 1.97 item 8341: a boss and an elite at the best Reach laid less their pressure_off), a player at 3', () => {
+    const top = (x: any) => Math.max(x.pcap(x.foe, x.pcs[0]), x.pcap(x.foe, x.pcs[1]));
     const b = squadFight('service_pistol', 'service_pistol', { tier: 'boss' }); rig({ hit: true, die: 12 });
-    b.tech('spot', { targetId: b.foe.id }); techAs(b, b.pcs[1], 'shot', { targetId: b.foe.id }); expect(b.pressure(b.foe)).toBe(2);
+    b.tech('spot', { targetId: b.foe.id }); techAs(b, b.pcs[1], 'shot', { targetId: b.foe.id }); expect(b.pressure(b.foe)).toBe(Math.min(top(b), 2));
     const b2 = squadFight('service_pistol', 'service_pistol', { tier: 'boss' }); rig({ hit: true, die: 12 }); b2.press(b2.foe, 1, b2.pcs[0]);
-    b2.tech('spot', { targetId: b2.foe.id }); techAs(b2, b2.pcs[1], 'shot', { targetId: b2.foe.id }); expect(b2.pressure(b2.foe)).toBe(2);
+    b2.tech('spot', { targetId: b2.foe.id }); techAs(b2, b2.pcs[1], 'shot', { targetId: b2.foe.id }); expect(b2.pressure(b2.foe)).toBe(top(b2));
     const e = squadFight('service_pistol', 'service_pistol', { tier: 'elite' }); rig({ hit: true, die: 12 }); e.press(e.foe, 2, e.pcs[0]);
-    e.tech('spot', { targetId: e.foe.id }); techAs(e, e.pcs[1], 'shot', { targetId: e.foe.id }); expect(e.pressure(e.foe)).toBe(3);
+    e.tech('spot', { targetId: e.foe.id }); techAs(e, e.pcs[1], 'shot', { targetId: e.foe.id }); expect(e.pressure(e.foe)).toBe(top(e));
     // an enemy spotter, an enemy ally's hit on a player at 2: the player stops at 3
     const p = physFight([{ weapon: 'service_pistol' }], [{ at: 'H5' }, { at: 'H7' }]); p.put(p.pc, 'C5'); p.put(p.foes[0], 'H5'); p.put(p.foes[1], 'H7'); calm(p); p.press(p.pc, 2, p.foes[0]);
     p.foes[0].techs = ['spot']; p.turn(p.foes[0]); expect(p.use(p.foes[0], 'spot', { targetId: p.pc.id })).toBeNull();
@@ -189,9 +190,9 @@ describe('Spot (15)', () => {
   });
   it('a Take\'s hit adds none and leaves the mark for the next hit', () => {
     const f = squadFight('service_pistol', 'service_pistol', { tier: 'elite' }); rig({ hit: true, die: 12 });
-    f.tech('spot', { targetId: f.foe.id }); f.press(f.foe, 3, f.pcs[0]);
+    f.tech('spot', { targetId: f.foe.id }); f.press(f.foe, 3, null as any); // rules 1.97 item 8341: a pip no unit lays, so the elite can be Suppressed
     expect(techAs(f, f.pcs[1], 'dead_centre', { targetId: f.foe.id })).toBeNull();
-    expect(f.pressure(f.foe)).toBe(1); expect(f.foe.tech?.spotted?.used).toBe(false);
+    expect(f.pressure(f.foe)).toBe(0); expect(f.foe.tech?.spotted?.used).toBe(false); // rules 1.97 item 8342: a Take spends every pip
   });
   it('refusals: no target, an ally, no ally to spot for; the preview changes nothing', () => {
     const f = squadFight('service_pistol', 'service_pistol');
@@ -242,7 +243,7 @@ describe('Brace (16)', () => {
     expect(spill.pressure(spill.foes[0])).toBe(3); expect(spill.pressure(spill.foes[1])).toBe(1);
     // an elite stops at 3 all the same
     const el = gunFight('hellraiser_service_rifle', ['brace', 'suppress'], { at: 'E4', tier: 'elite' }); rig({ hit: true, die: 12 }); el.press(el.foe, 1, el.pc);
-    el.tech('brace'); el.tech('suppress', { targetId: el.foe.id }); expect(el.pressure(el.foe)).toBe(3);
+    el.tech('brace'); el.tech('suppress', { targetId: el.foe.id }); expect(el.pressure(el.foe)).toBe(el.pcap(el.foe, el.pc)); // rules 1.97 item 8341: the shooter's Reach less 1
   });
   it('a Heavy weapon with no Brace today (the thumper, the breacher tube, the flamer) rests on half cover like any other (review fix)', () => {
     for (const w of ['smetanita_thumper', 'breacher_tube', 'purifier_flamer']) {

@@ -9,7 +9,8 @@
 //   f.press(f.foe, 2); f.momentum(f.pc, 3);   // set the meters
 import { fightWith, withGame, type CharSpec, type FoeSpec } from './perkfight';
 import { onHook } from '../../src/effects/hooks';
-import { phys, WEAPON, keyOf, moveUnit, endTurn, type TechArgs, type TechPreview, type Unit, type Character } from '../../src';
+import { phys, WEAPON, keyOf, moveUnit, endTurn, reachOfRes, type TechArgs, type TechPreview, type Unit, type Character } from '../../src';
+import { ENEMY } from '../../src/data';
 
 export interface PhysSpec extends CharSpec {
   /** techniques known and ready (free ones need no listing) */ known?: string[];
@@ -60,6 +61,15 @@ export function physFight(specs: PhysSpec[] = [{}], foes: FoeSpec[] = [{}], o: {
       return phys.pressureOf(f.unit(u.id));
     },
     pressure: (u: Unit) => phys.pressureOf(f.unit(u.id)),
+    /** Rules 1.97 item 8341: where a unit's Pressure stops when `by` lays it, read from the data: a player at the rules
+     *  row's player_max; a foe at the layer's Dexterity Reach (a unit with no sheet: the rules row's max) less its tier
+     *  row's pressure_off. */
+    pcap(u: Unit, by: Unit): number {
+      const R = phys.PHYS_RULES.pressure, x = f.unit(u.id), b = f.unit(by.id);
+      if (x.side === 'pc') return R.player_max;
+      const reach = b.charId ? reachOfRes(f.g.characters[b.charId].skills as any, 'pressure') : R.max;
+      return Math.max(0, reach - (Number((ENEMY as any)[x.tier || '']?.pressure_off) || 0));
+    },
     /** Set a unit's Momentum. */
     momentum(u: Unit, n?: number) { const x = f.unit(u.id); if (n != null) { phys.ensureMomentum(x); x.res!.momentum = n; } return phys.momentumOf(x); },
     /** Walk a unit with the engine's own move (reactions and Watches fire), with the game bound. */

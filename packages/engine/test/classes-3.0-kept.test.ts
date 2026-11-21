@@ -43,7 +43,7 @@ describe('Breaker: Momentum on a Shaken or Frightened enemy, once a turn, any we
   });
   /** The Breaker's Momentum after its hits on its own turn (cond on the target first, or none). */
   function momentumAfter(weapon: string, mode: 'melee' | 'shot', cond: string | null, hits: number, classId = 'fighter'): number {
-    const f = fightWith([cls(classId, 8, { weapon })], [{}]);
+    const f = fightWith([cls(classId, 8, { weapon, skills: { raw_power: 10, guts: 7, intimidation: 4 } })], [{}]); // rules 1.97 item 8340: a chain of Raw Power's top Reach, so the cap never hides a gain
     const u = f.turn(f.pc), t = f.foe; f.unit(t.id).pos = mode === 'melee' ? '5,2' : '9,2'; f.unit(u.id).pos = '4,2';
     t.hp = t.maxHp = 9999; f.unit(u.id).attack = 60; f.unit(u.id).ap = 9; if (f.unit(u.id).res?.momentum != null) f.unit(u.id).res!.momentum = 0; // from 0, so the cap never hides a gain
     f.g.rng.state = rngFor(15, 14, 13);

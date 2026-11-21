@@ -124,9 +124,9 @@ describe('Burst', () => {
     const f = gunner('hellraiser_service_rifle'); rig({ hit: false, die: 5 }); f.tech('burst', { targetId: f.foe.id });
     expect(seen.at(-1)).toEqual({ mode: 'burst', hits: [f.foe.id] });
   });
-  it('the caps hold: an elite stops at 3, a boss at 2, a player at 3', () => {
-    for (const [tier, cap] of [['elite', 3], ['boss', 2]] as const) {
-      const f = gunner('hellraiser_service_rifle', [], [{ at: 'H5', tier }]); rig({ hit: true, die: 12 }); f.unit(f.foe.id).hp = 999; f.press(f.foe, cap, f.pc);
+  it('the caps hold (rules 1.97 item 8341: an elite and a boss at the shooter Reach less their pressure_off), a player at 3', () => {
+    for (const tier of ['elite', 'boss'] as const) {
+      const f = gunner('hellraiser_service_rifle', [], [{ at: 'H5', tier }]), cap = f.pcap(f.foe, f.pc); rig({ hit: true, die: 12 }); f.unit(f.foe.id).hp = 999; f.press(f.foe, cap, f.pc);
       f.tech('burst', { targetId: f.foe.id }); expect(f.pressure(f.foe)).toBe(cap);
     }
     const g = gunner('sabre', [], [{ at: 'H5', tier: 'elite', weapon: 'hellraiser_service_rifle' }]); g.press(g.pc, 3, g.foe); g.unit(g.pc.id).hp = 999; g.turn(g.foe); rig({ hit: true, die: 12 });

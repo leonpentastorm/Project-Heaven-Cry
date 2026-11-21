@@ -79,8 +79,8 @@ describe('2. the melee numbers are in the data', () => {
       flurry: { mult: 0.6, strikes: 2, light_strikes: 3, later_hit: -1, bare_bonus: 1, thrown_targets: 2 }, hamstring: { damage_mult: 0.7, slow_rounds: 2 },
       bind: { range: 1, penalty: 2, heavy_penalty: 4 }, half_sword: { damage_mult: 0.8, armour_ignore: 10 }, throw: { unthrown_hit: 2, unthrown_mult: 0.7 },
       sidestep: { tiles: 1, light_tiles: 2 }, guard: { defense: 2 }, shove: { range: 1, reach_range: 2, tiles: 1, heavy_tiles: 2 }, trip: { save_penalty: 2 },
-      drag: { tiles: 1, hook_tiles: 2, hook_reach: 1 }, cleave: { adjacent: 1, heavy_apart: 2 }, break: { save_per_momentum: 1, stun_rounds: 1, armour_rounds: 1 },
-      run_through: { per_momentum_pct: 20, point_behind_pct: 50, reach_no_point_hit: 2, pull_free_ap: 2 }, throw_down: { per_momentum_pct: 25, tiles: 1, heavy_tiles: 2, occupant_pct: 50 },
+      drag: { tiles: 1, hook_tiles: 2, hook_reach: 1 }, cleave: { adjacent: 1, heavy_apart: 2 }, break: { stun_rounds: 1, armour_rounds: 1 }, // rules 1.97 item 8342: the save by the cash-out sum (save_per_momentum retired)
+      run_through: { bite_less: 0.05, point_behind_pct: 50, reach_no_point_hit: 2, pull_free_ap: 2 }, throw_down: { tiles: 1, heavy_tiles: 2, occupant_pct: 50 },
       parry: { ally_reach: 1, shield_bonus: 2, halve: 0.5, light_momentum: 1 }, keep_back: { reach_base: 1, reach_tiles: 2 },
     };
     for (const [id, nums] of Object.entries(want)) expect(TECHNIQUE[id].numbers, id).toMatchObject(nums);

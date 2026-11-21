@@ -9,7 +9,7 @@
 //   8. it carries from turn to turn   9. the maximums stand   10. enemies plan with it   11. the card shows it
 import { describe, it, expect, beforeEach } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
-import { phys, resolveAttack, startCombat, type Unit } from '../src';
+import { phys, resolveAttack, startCombat, momentumTop, type Unit } from '../src';
 import { physFight, rig } from './helpers/physfight';
 
 beforeEach(() => rig(null));
@@ -103,8 +103,8 @@ describe('3. a fight starts with 1 Momentum; the first Opener of a fight is free
     const f = fight('sabre', []);
     const cb = f.bound(() => startCombat('Start', 'yard16', [{ c: f.char(f.pc) }], [{ name: 'Blade', tier: 'elite', weapon: 'sabre' }, { name: 'Gun', tier: 'elite', weapon: 'service_pistol' }], 'standard', { state: 5 }));
     const pc = cb.units.find((u) => u.side === 'pc')!, blade = cb.units.find((u) => u.name === 'Blade')!, gun = cb.units.find((u) => u.name === 'Gun')!;
-    expect(pc.res?.momentum).toBe(1); expect(pc.resMax?.momentum).toBe(3);
-    expect(blade.res?.momentum).toBe(1); expect(gun.resMax?.momentum).toBeUndefined();
+    expect(pc.res?.momentum).toBe(1); expect(pc.resMax?.momentum).toBe(momentumTop(f.char(f.pc))); // rules 1.97 item 8340: Raw Power's Reach
+    expect(blade.res?.momentum).toBe(1); expect(blade.resMax?.momentum).toBe(phys.PHYS_RULES.momentum.max); expect(gun.resMax?.momentum).toBeUndefined(); // a unit with no sheet: the unbought chain
     expect(phys.PHYS_RULES.momentum.start).toBe(1);
   });
   it('the first Opener costs none; the second costs 1 and is refused without it', () => {
@@ -236,11 +236,11 @@ describe('8. Momentum carries from turn to turn', () => {
 });
 
 describe('9. the maximums are unchanged', () => {
-  it('3 for everyone (5 for a Fighter, by the data); the plain attack stops at the cap', () => {
-    expect(phys.PHYS_RULES.momentum).toMatchObject({ max: 3, fighter_max: 5 });
-    const f = fight('sabre', [], { m: 3 }); rig({ hit: true, die: 12 });
-    expect(f.pv('cut', { targetId: f.foe.id }).momentum).toEqual({ now: 3, after: 3 });
-    f.tech('cut', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(3);
+  it('the chain tops at Raw Power\'s Reach (rules 1.97 item 8340; the Breaker\'s 5 retired); the plain attack stops at the cap', () => {
+    expect(phys.PHYS_RULES.momentum.max).toBe(3); expect((phys.PHYS_RULES.momentum as any).fighter_max).toBeUndefined();
+    const top = momentumTop({ skills: SK } as any), f = fight('sabre', [], { m: top }); rig({ hit: true, die: 12 });
+    expect(f.pv('cut', { targetId: f.foe.id }).momentum).toEqual({ now: top, after: top });
+    f.tech('cut', { targetId: f.foe.id }); expect(f.momentum(f.pc)).toBe(top);
   });
 });
 
@@ -279,7 +279,7 @@ describe('11. the card and the hint', () => {
   it('the meter\'s hint states the rule in plain words', () => {
     const f = fight('sabre', []);
     const m = f.bound(() => phys.physView(f.cb, f.pc, 'pc')).momentum!;
-    expect(m).toMatchObject({ now: 1, max: 3 });
+    expect(m).toMatchObject({ now: 1, max: momentumTop(f.char(f.pc)) });
     expect(m.hint).toBe(phys.PHYS_RULES.momentum.texts.how); // rules 1.56: the hint is data (techniques.json rules.momentum.texts.how)
   });
 });

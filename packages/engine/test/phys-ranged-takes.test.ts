@@ -6,7 +6,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 // 1 always fails a save, 20 always makes it. The real roll is still drawn, so the seeded stream doesn't move.
 const D = vi.hoisted(() => ({ die: null as number | null }));
 vi.mock('../src/rng', async (orig) => { const m: any = await orig(); return { ...m, d20: (r: any) => { const v = m.d20(r); return D.die ?? v; } }; });
-import { phys, pullFree, landed, type Unit, type TechPreview } from '../src'; // landed: the one rounding of a blow (effects/output.ts; rules 1.61 made the test's old Math.round differ)
+import { phys, pullFree, landed, cashSumOf, type Unit, type TechPreview } from '../src'; // landed: the one rounding of a blow (effects/output.ts; rules 1.61 made the test's old Math.round differ)
 import { physFight, rig, type PhysSpec } from './helpers/physfight';
 import { gameText as snap, term, calm } from './helpers/physfight-ranged';
 
@@ -15,9 +15,11 @@ const TAKES = ['pin_down', 'rout', 'stopping_shot', 'storm', 'last_round'];
 interface Foe { at: string; tier?: string; weapon?: string }
 /** A PC (C3 by default, knowing every Take) against foes on row 3 of the yard; extra PCs stand where given. Every
  * meter, condition and HP is reset and it is the first PC's turn. */
-function fight(o: { weapon?: string; at?: string; foes?: Foe[]; pcs?: (PhysSpec & { at: string })[] } = {}) {
+/** Rules 1.97 item 8342: a Take's save is harder by S(n) of the pips it spends, rounded down. */
+const harder = (n: number) => Math.floor(cashSumOf('pressure', n) + 1e-9);
+function fight(o: { weapon?: string; at?: string; foes?: Foe[]; pcs?: (PhysSpec & { at: string })[]; skills?: Record<string, number> } = {}) {
   const foes = o.foes || [{ at: 'H3' }];
-  const f = physFight([{ weapon: o.weapon || 'service_pistol', known: TAKES, skills: { dexterity: 6 } }, ...(o.pcs || [])], foes.map((x) => ({ tier: 'soldier', ...x })));
+  const f = physFight([{ weapon: o.weapon || 'service_pistol', known: TAKES, skills: o.skills || { dexterity: 6 } }, ...(o.pcs || [])], foes.map((x) => ({ tier: 'soldier', ...x })));
   f.put(f.pc, o.at || 'C3'); (o.pcs || []).forEach((p, i) => f.put(f.pcs[i + 1], p.at)); foes.forEach((x, i) => f.put(f.foes[i], x.at));
   calm(f); for (const u of f.cb.units) delete u.apDebt;
   f.turn(f.pc); D.die = null; rig(null);
@@ -39,32 +41,33 @@ describe('the Takes, as the core runs them', () => {
     expect(f.pc.ap).toBe(6); expect(f.pc.ammo).toBe(1);
     expect(f.pad().find((g) => g.group === 'take')!.entries.filter((e) => TAKES.includes(e.id)).every((e) => e.built)).toBe(true);
   });
-  it('are one a turn, and the target loses 2 Pressure after, hit or miss; a Take\'s hit adds none', () => {
+  it('are one a turn, and the target loses every pip after, hit or miss (rules 1.97 item 8342); a Take\'s hit adds none', () => {
     const f = fight(); f.press(f.foe, 3, f.pc); rig({ hit: true, die: 12 }); saves();
-    expect(f.tech('stopping_shot', { targetId: f.foe.id })).toBeNull(); expect(f.pressure(f.foe)).toBe(1);
+    expect(f.tech('stopping_shot', { targetId: f.foe.id })).toBeNull(); expect(f.pressure(f.foe)).toBe(0);
     f.press(f.foe, 3, f.pc); expect(f.tech('pin_down', { targetId: f.foe.id })).toMatch(/One Take a turn/);
     const g = fight(); g.press(g.foe, 2, g.pc); rig({ hit: false, die: 3 });
     expect(g.tech('pin_down', { targetId: g.foe.id })).toBeNull(); expect(g.pressure(g.foe)).toBe(0);
   });
-  it('the caps: a boss at 2 is Pressed and goes to 0; an elite at 3 to 1; a player at 3 to 1', () => {
-    const b = fight({ foes: [{ at: 'H3', tier: 'boss' }] }); expect(b.press(b.foe, 9, b.pc)).toBe(2); rig({ hit: true, die: 12 }); saves();
+  it('the caps (rules 1.97 item 8341: the shooter Reach less the tier offset): a Take spends a boss and an elite to 0; a player too', () => {
+    const top = { dexterity: 10, athletics: 7, reaction_speed: 4 };
+    const b = fight({ foes: [{ at: 'H3', tier: 'boss' }], skills: top }); expect(b.press(b.foe, 9, b.pc)).toBe(b.pcap(b.foe, b.pc)); rig({ hit: true, die: 12 }); saves();
     expect(b.tech('pin_down', { targetId: b.foe.id })).toBeNull(); expect(b.pressure(b.foe)).toBe(0);
-    const e = fight({ foes: [{ at: 'H3', tier: 'elite' }] }); expect(e.press(e.foe, 9, e.pc)).toBe(3); rig({ hit: true, die: 12 }); saves();
-    expect(e.tech('stopping_shot', { targetId: e.foe.id })).toBeNull(); expect(e.pressure(e.foe)).toBe(1);
+    const e = fight({ foes: [{ at: 'H3', tier: 'elite' }], skills: top }); expect(e.press(e.foe, 9, e.pc)).toBe(e.pcap(e.foe, e.pc)); rig({ hit: true, die: 12 }); saves();
+    expect(e.tech('stopping_shot', { targetId: e.foe.id })).toBeNull(); expect(e.pressure(e.foe)).toBe(0);
     // an enemy uses a Take on a player
     const p = fight({ foes: [{ at: 'H3', tier: 'elite', weapon: 'service_pistol' }] }); p.foe.techs = ['stopping_shot'];
     expect(p.press(p.pc, 9, p.foe)).toBe(3); p.turn(p.foe); rig({ hit: true, die: 12 }); saves();
-    expect(p.use(p.foe, 'stopping_shot', { targetId: p.pc.id })).toBeNull(); expect(p.pressure(p.pc)).toBe(1);
+    expect(p.use(p.foe, 'stopping_shot', { targetId: p.pc.id })).toBeNull(); expect(p.pressure(p.pc)).toBe(0);
   });
 });
 
 describe('Pin Down', () => {
-  it('base: 3 AP, a round, ×0.7; a failed save Pins it for a round, and it is Stopped once', () => {
+  it('base: 3 AP, a round, a plain shot (rules 1.97 item 8342: the save harder by the pips); a failed save Pins it for a round, and it is Stopped once', () => {
     const f = fight(); f.press(f.foe, 2, f.pc); rig({ hit: true, die: 12 }); fails();
     const before = snap(f), pv = f.pv('pin_down', { targetId: f.foe.id });
     expect(snap(f)).toBe(before);
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(3); expect(pv.rounds).toBe(1);
-    expect(multOf(pv, 'Pin Down')).toBe(0.7); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['guts', 'athletics'], tn: 12 + 3 }]);
+    expect(multOf(pv, 'Pin Down')).toBeUndefined(); expect(pv.saves).toEqual([{ unit: f.foe.id, skills: ['guts', 'athletics'], tn: 12 + 3 + harder(2) }]);
     expect(pv.pressure?.find((x) => x.unit === f.foe.id)?.after).toBe(0);
     const a0 = f.pc.ammo, h0 = f.pc.heat;
     expect(f.tech('pin_down', { targetId: f.foe.id })).toBeNull();
@@ -85,11 +88,11 @@ describe('Pin Down', () => {
     const g = fight(); g.press(g.foe, 2, g.pc); rig({ hit: false, die: 3 }); fails();
     g.tech('pin_down', { targetId: g.foe.id }); expect(g.foe.conds?.pinned).toBeFalsy(); expect(g.pressure(g.foe)).toBe(0);
   });
-  it('Suppressed: the save is at −2', () => {
+  it('Suppressed: the save is at −2, and harder by the pips spent', () => {
     const f = fight(); f.press(f.foe, 3, f.pc);
-    expect(f.pv('pin_down', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + 3);
+    expect(f.pv('pin_down', { targetId: f.foe.id }).saves?.[0].tn).toBe(14 + 3 + harder(3));
   });
-  it('Auto: full damage; without it, ×0.7', () => {
+  it('Auto: a plain shot, as every weapon now (rules 1.97 item 8342)', () => {
     const f = fight({ weapon: 'decrkm_smg' }); f.press(f.foe, 2, f.pc);
     expect(multOf(f.pv('pin_down', { targetId: f.foe.id }), 'Pin Down')).toBeUndefined();
   });
@@ -170,7 +173,7 @@ describe('Rout', () => {
     expect(f.tech('rout', { targetId: f.foe.id })).toBeNull(); expect(at(f, f.foe)).toBe(f.tile('H3'));
     expect(f.cb.log.some((l) => /can't run/.test(l))).toBe(true);
   });
-  it('Blast: everyone Pressed in the radius saves or runs, and pays the Take\'s 2; the rest are left alone', () => {
+  it('Blast: everyone Pressed in the radius saves or runs, and loses every pip (a Take each); the rest are left alone', () => {
     const f = fight({ weapon: 'smetanita_thumper', foes: [{ at: 'H3' }, { at: 'I4' }, { at: 'H5' }, { at: 'L3' }] });
     const [a, b, c, d] = f.foes; f.press(a, 3, f.pc); f.press(b, 2, f.pc); f.press(d, 3, f.pc); fails();
     const pv = f.pv('rout', { targetId: a.id });
@@ -179,7 +182,7 @@ describe('Rout', () => {
     expect(f.tech('rout', { targetId: a.id })).toBeNull();
     expect(at(f, a)).not.toBe(f.tile('H3')); expect(at(f, b)).not.toBe(f.tile('I4'));
     expect(at(f, c)).toBe(f.tile('H5')); expect(at(f, d)).toBe(f.tile('L3')); // c isn't Pressed; d is outside the radius
-    expect(f.pressure(a)).toBe(1); expect(f.pressure(b)).toBe(0); expect(f.pressure(d)).toBe(3);
+    expect(f.pressure(a)).toBe(0); expect(f.pressure(b)).toBe(0); expect(f.pressure(d)).toBe(3);
     const n = fight({ foes: [{ at: 'H3' }, { at: 'I4' }] }); n.press(n.foes[0], 2, n.pc); n.press(n.foes[1], 2, n.pc);
     expect(n.pv('rout', { targetId: n.foes[0].id }).saves?.length).toBe(1); // no Blast: the target only
   });

@@ -28,7 +28,7 @@ describe('T.1 the Guard technique is Durability\'s own, with any weapon', () => 
     const e = f.pad().flatMap((g) => g.entries).find((x) => x.id === 'guard');
     expect(e).toMatchObject({ ok: true, ap: 1 });
     expect(f.tech('guard')).toBeNull();
-    expect(guard(f)).toBe(G.max); expect(f.unit(f.pc.id).ap).toBe(5);
+    expect(guard(f)).toBe(f.unit(f.pc.id).resMax!.guard); expect(f.unit(f.pc.id).ap).toBe(5); /* rules 1.97 item 8340: up to Durability's Reach */
     expect(f.tech('guard')).toMatch(/already on Guard/); // once a turn
     const none = fight(0); expect(none.pad().flatMap((g) => g.entries).some((x) => x.id === 'guard')).toBe(false);
     expect(none.tech('guard')).not.toBeNull();

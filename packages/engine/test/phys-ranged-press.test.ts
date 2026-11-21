@@ -191,10 +191,10 @@ describe('Warning Shot', () => {
     expect(h.tech('warning_shot', { targetId: h.foe.id })).toMatch(/^You can't see it|^You can't get a shot at/);
     expect(h.pc.ammo).toBe(12); expect(h.pc.ap).toBe(6);
   });
-  it('caps: a boss stops at 2; a player at 3; a preview changes nothing', () => {
-    const f = fight('service_pistol', [{ at: 'H5', tier: 'boss' }]); nerves(f, -50); f.press(f.foe, 2, f.pc);
-    unchanged(f, () => { expect(pressAfter(f.pv('warning_shot', { targetId: f.foe.id }), f.foe)).toBe(2); });
-    f.tech('warning_shot', { targetId: f.foe.id }); expect(f.pressure(f.foe)).toBe(2);
+  it('caps: a boss stops at the shooter Reach less its pressure_off (rules 1.97 item 8341); a player at 3; a preview changes nothing', () => {
+    const f = fight('service_pistol', [{ at: 'H5', tier: 'boss' }]), cap = f.pcap(f.foe, f.pc); nerves(f, -50); f.press(f.foe, cap, f.pc);
+    unchanged(f, () => { expect(pressAfter(f.pv('warning_shot', { targetId: f.foe.id }), f.foe)).toBe(cap); });
+    f.tech('warning_shot', { targetId: f.foe.id }); expect(f.pressure(f.foe)).toBe(cap);
     const g = fight('service_pistol', [{ at: 'H5', weapon: 'service_pistol' }]); g.unit(g.foe.id).techs = ['warning_shot'];
     g.turn(g.foe); g.press(g.pc, 3, g.foe); g.pc.sv = { body: 0, brain: 0, heart: -50 }; D.die = 1;
     expect(g.use(g.foe, 'warning_shot', { targetId: g.pc.id })).toBeNull(); expect(g.pressure(g.pc)).toBe(3);
@@ -254,11 +254,11 @@ describe('Flush', () => {
     const f = fight('service_pistol', [{ at: 'G6' }], { at: 'C6' }); f.pc.heat = heatLimit(f.pc, WEAPON.service_pistol) - 1;
     f.tech('flush', { targetId: f.foe.id }); expect(f.pc.jammed).toBe(true);
   });
-  it('caps: an elite stops at 3, a boss at 2, a player at 3; a preview changes nothing', () => {
-    const e = fight('service_pistol', [{ at: 'G6', tier: 'elite' }], { at: 'C6' }); e.press(e.foe, 2, e.pc);
-    unchanged(e, () => { expect(pressAfter(e.pv('flush', { targetId: e.foe.id }), e.foe)).toBe(3); });
-    e.tech('flush', { targetId: e.foe.id }); expect(e.pressure(e.foe)).toBe(3);
-    const b = fight('service_pistol', [{ at: 'G6', tier: 'boss' }], { at: 'C6' }); b.press(b.foe, 1, b.pc); b.tech('flush', { targetId: b.foe.id }); expect(b.pressure(b.foe)).toBe(2);
+  it('caps: an elite and a boss at the shooter Reach less their pressure_off (rules 1.97 item 8341), a player at 3; a preview changes nothing', () => {
+    const e = fight('service_pistol', [{ at: 'G6', tier: 'elite' }], { at: 'C6' }), ec = e.pcap(e.foe, e.pc); e.press(e.foe, ec - 1, e.pc);
+    unchanged(e, () => { expect(pressAfter(e.pv('flush', { targetId: e.foe.id }), e.foe)).toBe(ec); });
+    e.tech('flush', { targetId: e.foe.id }); expect(e.pressure(e.foe)).toBe(ec);
+    const b = fight('service_pistol', [{ at: 'G6', tier: 'boss' }], { at: 'C6' }), bc = b.pcap(b.foe, b.pc); b.press(b.foe, Math.max(0, bc - 1), b.pc); b.tech('flush', { targetId: b.foe.id }); expect(b.pressure(b.foe)).toBe(bc);
     // an enemy flushes a player: the PC on E5 against the crate at F5, the enemy on J5
     const p = fight('service_pistol', [{ at: 'J5', weapon: 'lumeri_scattergun' }], { at: 'E5' }); p.unit(p.foe.id).techs = ['flush'];
     p.turn(p.foe); p.press(p.pc, 2, p.foe);
@@ -278,12 +278,12 @@ describe('Mag Dump', () => {
     const pv = f.pv('mag_dump', { targetId: f.foe.id });
     expect(pv.ok).toBe(true); expect(pv.ap).toBe(4); expect(pv.rounds).toBe(12); expect(pv.attacks.length).toBe(3);
     expect(pv.attacks.map((a) => term({ attacks: [a] } as any, 0, 'Mag Dump') ?? 0)).toEqual([0, -4, -8]);
-    expect(pv.pressure!.every((x) => x.onHit)).toBe(true); expect(pressAfter(pv, f.foe)).toBe(3); // an elite stops at 3
+    expect(pv.pressure!.every((x) => x.onHit)).toBe(true); expect(pressAfter(pv, f.foe)).toBe(f.pcap(f.foe, f.pc)); // an elite stops at the shooter's Reach less 1 (rules 1.97 item 8341)
     rig({ hit: false, die: 5 });
     expect(f.tech('mag_dump', { targetId: f.foe.id })).toBeNull();
     expect(f.pc.ammo).toBe(0); expect(f.pc.ap).toBe(2); expect(f.pc.heat).toBe(lim - 1); expect(f.pressure(f.foe)).toBe(0);
     const g = fight('service_pistol', [{ at: 'G5', tier: 'elite' }]); rig({ hit: true, die: 12 }); g.foe.hp = 999; g.foe.maxHp = 999;
-    g.tech('mag_dump', { targetId: g.foe.id }); expect(g.pressure(g.foe)).toBe(3);
+    g.tech('mag_dump', { targetId: g.foe.id }); expect(g.pressure(g.foe)).toBe(g.pcap(g.foe, g.pc)); // rules 1.97 item 8341
   });
   it('rolls by what is left: 7 rounds is 2 rolls, 2 rounds is 1, and the whole magazine goes', () => {
     const f = fight('service_pistol'); f.pc.ammo = 7;
