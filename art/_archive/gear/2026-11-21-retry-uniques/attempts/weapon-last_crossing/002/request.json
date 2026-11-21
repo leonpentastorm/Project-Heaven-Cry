@@ -1,0 +1,68 @@
+{
+  "head": "ca4c93f172b7a1380e738617dbfe7f2fdfe9943c",
+  "job": {
+    "id": "weapon-last_crossing",
+    "data_id": "last_crossing",
+    "label": "Last Crossing (polearm)",
+    "path": "art/icons/gear/weapon-last_crossing.png",
+    "refs": [
+      "art/icons/gear/weapon-afterword.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/icons/gear/weapon-glaive.png",
+      "art/icons/weapons/glaive.svg"
+    ],
+    "reference_sources": [
+      "art/icons/gear/weapon-glaive.png",
+      "art/icons/weapons/glaive.svg"
+    ],
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. One single object, lit from the upper left, with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background, square 1024 x 1024 PNG with alpha; the object fills about 80 to 85% of the canvas, inside the central 90%. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. A blade, a bow, a shield or a piece of armour is invented, never a recognisable real-world make or emblem; a gun keeps the real-world pattern of its family exactly as described (layout, proportions, magazine, sights, stock and furniture) but carries no real name, logo, rollmark or marking. This is a unique item, one of a kind: it keeps the silhouette of its family so that at 32 px it still reads as that kind of weapon or armour, and it carries one story detail and one impossible material, painted with the richness of an heirloom, not the gilding of a parade piece. One accent colour (given below), as a muted local paint or a contained light inside the outline, never a bloom. The silhouette must be bold and readable at 64 px in a shop grid and 32 px in a backpack row. The item:\n\nA unique glaive belonging to the Toll-Keeper's ferrymen, on the 45 degree diagonal, nearly corner to corner: a long pole of dark weathered wood, and at its head a curved single-edged blade that is plainly an old oar's blade, sharpened along its curved side, with a small hook at its base. The impossible material: the oar blade is coated in a film of black water that never drips, still and glassy, holding a pale teal #79BDB6 reflection of a sky that is not there; no drop leaves it. The story detail: a single old coin wedged into a slot cut in the socket where blade meets pole, and the hasp of a coin box nailed beside it. Quiet, patient, oilskin-dark.\nAvoid: a skull, a scythe, drops or splashes, a boat, a hooded figure, a glow past the blade.\n\nProduction framing: one complete object or the specified pair as one inventory object on full transparency;50px minimum clear margin in1024square. Afterword establishes richness only, Orren establishes brushwork only. Match this entry’s own family painting and line icon for its silhouette; do not copy unrelated objects, figures, backgrounds or camera views from supporting references.",
+    "status": "pending",
+    "kind": "weapon",
+    "grade": "unique",
+    "references": [
+      "art/icons/gear/weapon-afterword.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/icons/gear/weapon-glaive.png",
+      "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/glaive.png"
+    ],
+    "family": "unique-last_crossing",
+    "family_references": [
+      "art/icons/gear/weapon-glaive.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": 3,
+    "original_queue": "art/_archive/gear/2026-11-19-unique-melee-bow/queue.json",
+    "original_prompt_sha256": "bb562b5d5a440d2627d881d36830bf96ca4aa745acddc458496bdc1f59824110",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-unique-melee-bow/generation-failures/weapon-last_crossing.json",
+      "response": {
+        "id": "weapon-last_crossing",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID b15b3cdb-0a84-4532-921f-746c4d91cd0c. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    },
+    "reference_catalog_hashes": {
+      "art/icons/gear/weapon-afterword.png": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb",
+      "art/icons/gear/weapon-glaive.png": "c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e"
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-afterword.png": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/icons/gear/weapon-glaive.png": "c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e",
+    "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/glaive.png": "7b8efe72fd8c57c71e44cde023b49775f2f5f014de442caac2bc2a1484d6f040"
+  },
+  "reference_source_hashes": {
+    "art/icons/gear/weapon-glaive.png": "c6e54c5d2f96f5c8dad00cbf0da2dc5bddb6aba60105ff52d8da91871818df1e",
+    "art/icons/weapons/glaive.svg": "669d61572a85ef235e26304feda7237ad72b64b454dc82e9e45ade4d091549e8"
+  },
+  "attempt": 2,
+  "claim_comment": 7061559992,
+  "clock": {
+    "current_time": "2026-11-21 11:01:49 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7061620703,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

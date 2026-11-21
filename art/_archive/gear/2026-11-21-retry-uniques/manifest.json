@@ -66,6 +66,73 @@
       "status": "review-candidate",
       "production_approved": false,
       "implementation_ready": false
+    },
+    {
+      "id": "weapon-reveille",
+      "path": "art/icons/gear/weapon-reveille.png",
+      "sha256": "0c28ae5fee403e34f02f90df84884d18d33b5785d38322bd301ad5c70d2bb586",
+      "label": "Reveille (maul)",
+      "family": "unique-reveille",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-reveille.png",
+        "sha256": "b77783a5dceb8834add0e54210b2542aa584cc3acce6014f1faa3f93133f116b"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/masters/v1/weapon-reveille.png",
+        "sha256": "0c28ae5fee403e34f02f90df84884d18d33b5785d38322bd301ad5c70d2bb586"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-uniques/prompts/weapon-reveille.txt",
+        "sha256": "c26d9102ae14eb798fbaa639fd6ba2bedefbcc418773ffac3b216fce31b8d65f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-afterword.png",
+          "sha256": "69943947b66b4c403cfb1cb3afe34100b01503b47324f1e0b14f8124a76f39fb"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        },
+        {
+          "path": "art/icons/gear/weapon-maul.png",
+          "sha256": "50f0d5620bd8dd5a51d0e676e69ebad5e586a47a01634ac17ac96d7a26da8dac"
+        },
+        {
+          "path": "art/_archive/gear/2026-11-19-unique-melee-bow/references/line-icons/maul.png",
+          "sha256": "59339c94346854c0c3470a448821f7d611df4efa1f188298ad77c0c5c0e0ccd2"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-maul.png",
+          "sha256": "50f0d5620bd8dd5a51d0e676e69ebad5e586a47a01634ac17ac96d7a26da8dac"
+        },
+        {
+          "path": "art/icons/weapons/maul.svg",
+          "sha256": "aaa37d22a4a5561d31fe6275fde8baff957fea12c50827826c2cab9e09fec16f"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-reveille.png",
+        "128": "art/icons/gear/exports/128/weapon-reveille.png",
+        "64": "art/icons/gear/exports/64/weapon-reveille.png",
+        "32": "art/icons/gear/exports/32/weapon-reveille.png"
+      },
+      "export_hashes": {
+        "256": "7cde909eaabf3f09e8123f1eb7201950012840bb624b3be3879685a5b0f587a4",
+        "128": "1a0917ffab3485be8378eccedb2857b3252cbb01414c6b06f66a4be77ae3bd97",
+        "64": "3980c88c95b48575517d8b21b91b604c4d09a9f90d67e58c4582072b958db51c",
+        "32": "be772d4be8b91dad160df5ea26595441b13e5923c29fec2d1b23fd0c5061ac26"
+      },
+      "grade": "unique",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false
     }
   ]
 }

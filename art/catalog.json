@@ -34994,6 +34994,33 @@
       "collection": "2026-11-21-retry-uniques",
       "grade": "unique",
       "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
+    },
+    "weapon-reveille": {
+      "label": "Reveille (maul)",
+      "path": "art/icons/gear/weapon-reveille.png",
+      "sha256": "0c28ae5fee403e34f02f90df84884d18d33b5785d38322bd301ad5c70d2bb586",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "implementation_ready": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-reveille.png",
+        "128": "art/icons/gear/exports/128/weapon-reveille.png",
+        "64": "art/icons/gear/exports/64/weapon-reveille.png",
+        "32": "art/icons/gear/exports/32/weapon-reveille.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-uniques/sources/v1/weapon-reveille.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": 5,
+      "collection": "2026-11-21-retry-uniques",
+      "grade": "unique",
+      "origin": "image_gen; technical crop/alpha separation/uniform downsample only"
     }
   },
   "survival_art": {
