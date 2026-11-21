@@ -1837,6 +1837,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_hammer--relic",
+      "path": "art/icons/gear/weapon-war_hammer--relic.png",
+      "sha256": "7eacb22db97de65df2dab6ea6129e50fc35f1c0943e599c0b3fd8d1f08230bad",
+      "label": "War hammer — Relic",
+      "family": "weapon-war_hammer",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-war_hammer--relic.png",
+        "sha256": "9c3340a0d534e80904b4a5042dad3b886f379ca2b0db3330710d010722cc4c51"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_hammer--relic.png",
+        "sha256": "7eacb22db97de65df2dab6ea6129e50fc35f1c0943e599c0b3fd8d1f08230bad"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_hammer--relic.txt",
+        "sha256": "89e96f47a5b724171475b16d48152c6e9853f08df6563a1d8a04fc38f7c90cf2"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-war_hammer.png",
+          "sha256": "c1957abdee8a3a2051230701a3fc3bc53115bd29b703bb3c10765a0024124e5f"
+        },
+        {
+          "path": "art/icons/gear/weapon-war_hammer--masterwork.png",
+          "sha256": "f198b06e6a02d5509dd869d376ff66174079c426a071646d6051d502709744f0"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_hammer--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-war_hammer--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-war_hammer--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-war_hammer--relic.png"
+      },
+      "export_hashes": {
+        "256": "2a788e55ebb3b10b454abceca88bc58fdcb04788740855b15d567f056dcae9f9",
+        "128": "d06b1494e186b59818469186e6721b2e0d05df928b7c1f8b8252057f72807cf4",
+        "64": "3f455bcbd564236a897acecf0101f44fa59ea9aec92044938f4900eac88c175b",
+        "32": "cbe13b882d66a303b7aca2a1e900db8372e3f96c5e98eda082c6ff685a54404f"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-war_hammer",
+      "outline": {
+        "solid_alpha_iou": 0.9472193531203918,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 5,
+        "different_pixels_64": 31
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
