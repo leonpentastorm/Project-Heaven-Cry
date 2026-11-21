@@ -133,3 +133,11 @@ Step 1 (the scale) is built and pushed at `566de7b1d` with the gate RED: 97 engi
 66. **Two Emanators:** approved as the smallest general piece: a held Outburst belongs to the focus it was begun with, so a character holds one for each Emanator in hand. Listed in 08-primitives.md.
 67. The exports `thrownDamage`, `attrDerived` and `bodyArmourArm` stand for now and are read at the consolidation step.
 68. **A test expectation is never re-recorded blind.** Each of the about 200 expectations re-recorded in step 1 is checked against its derivation; a test that proves a rule is rewritten to compute its expectation from data, not to hold a new typed number.
+
+## L. Rulings after build steps 1 and 2a (21 Nov 2026)
+
+Step 1 (the scale) is green at `31d900923`; lane 2a (the pieces: Margins, the door ladder, the cash-out source, res_max, wear, Grace, the mark and the gift) is green at `6b2637f2c`. The doors themselves (2b Body, 2c Mind, 2d Soul) are next, one after another.
+
+69. **Enemies and Margins:** an enemy's Margins are limited by its tier, as data on the tier row: vermin and minions take none (a natural 20 still adds its two), a Soldier at most one, an Elite two, a Boss as many as it rolls. A frail character with Defense 10 is hit, not deleted.
+70. **Door ids are the data's** (`sigil`, `outburst`, `bond`); the bible's plural names are aliases the checker resolves.
+71. **Every flat number an effect op carries outside the factor's walk** (armour_bonus, a mod's damage_mod, Lightning Rod's jump and the like) and **the texts that still hold an unbound old-scale number** are brought to the new scale in step 5 (data and the {=placeholder} rule), and step 7 proves none is left.
