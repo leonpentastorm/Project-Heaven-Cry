@@ -35246,6 +35246,42 @@
         "different_pixels_32": 20,
         "different_pixels_64": 70
       }
+    },
+    "weapon-short_bow--celestial": {
+      "label": "Short bow — Celestial",
+      "path": "art/icons/gear/weapon-short_bow--celestial.png",
+      "sha256": "f0b67d5050c357c5e2616ef5b3ebbc31ca6bcfc57dff8a38ba8f938c9da4cb59",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-short_bow--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-short_bow--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-short_bow--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-short_bow--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_bow--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.4",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-short_bow",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.8239719883091704,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 66
+      }
     }
   },
   "survival_art": {

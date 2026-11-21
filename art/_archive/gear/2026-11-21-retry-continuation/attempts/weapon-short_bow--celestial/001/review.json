@@ -1,0 +1,9 @@
+{
+  "id": "weapon-short_bow--celestial",
+  "selected_for_delivery": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "visual_review": "Native inspected against Standard and delivered Relic: D shape, nock endpoints/caps/bindings, taut straight string and spiral grip retained. Pale ivory wood, pale hide grip, pale silk string, pearl-ivory nock caps and small grip ferrule; both old inlay routes retained with contained ivory-gold inner light. Single prior lower-limb sinew repair remains exactly at same local site with pale binding seams visible. No arrow/quiver/projecting accessory or drawn aura. Native contains low-alpha edge debris; source bytes retained, versioned technical alpha<8 cleanup applied in pipeline. Registration/contour differences measured honestly; candidate only.",
+  "source_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--celestial/001/native.png"
+}

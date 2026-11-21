@@ -1,0 +1,61 @@
+{
+  "head": "3eb53d02f30bb8838d146d8d0576d1f6f801ee27",
+  "job": {
+    "id": "weapon-short_bow--celestial",
+    "standard_id": "weapon-short_bow",
+    "grade": "celestial",
+    "label": "Short bow — Celestial",
+    "path": "art/icons/gear/weapon-short_bow--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-short_bow.png",
+      "art/icons/gear/weapon-short_bow--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-short_bow",
+    "family_references": [
+      "art/icons/gear/weapon-short_bow.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.4",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 16,
+    "keep_line": "the same single short deep D-curved ash bow, upper nock at upper-left and lower nock at lower-right of its gentle diagonal, thick short limbs tapering to rounded nocks, broad spirally rawhide-wrapped grip on the curved right side and a single straight taut dark string closing the D on the left. Preserve the exact limb curvature, wood facets, nock-end cord bindings, rawhide overlaps, open interior and string endpoints; the nocks do not curl or reflex. Pale ash and natural tan rawhide, no coloured maker accent. No arrow, quiver or added hardware.",
+    "prompt": "Create the Celestial-finish cosmetic variant of the attached fictional RPG short bow inventory painting for Project Heaven Cry. This is a 2D digital game-art asset. FIRST attachment fixes Standard geometry and registration: a single deep D-shaped short bow, rounded nocks at upper-left and lower-right, broad spiral grip wrap on the curved right side, straight taut string closing the D on the left. Preserve exact limb curvature, every opening, nock/string endpoints, grip overlaps, pose, scale, camera and margins. SECOND is the preceding grade: retain its additions except the current material changes. THIRD is Heavenprint brushwork reference only, never a person or scene.\n\nGrade: Celestial. Keep the shape, the inlay and the ferrule's place. The wood becomes a pale ivory wood with no grain flaw, leather a pale hide, a string pale silk, the metal pearl-ivory. The inlay line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nKeep the prior Relic tiny grip ferrule and single lower-limb repair binding in EXACTLY their existing locations, shapes and seams. Pale ivory wood, pale-hide grip, pale-silk string and pearl-ivory caps/ferrule; no relocation or deletion of repair or ornament. Both limb inlay routes give only faint contained ivory-gold inner light; no halo or light outside the bow. Apply this grade only to the actual bow parts shown; no stock, quiver, arrow, added fittings or extra object. No curled/reflexed tips. Do not add, remove, resize or move any part or opening. Hand-painted opaque gouache and ink with broken directional strokes, selective dry-brush, charcoal shadows, warm ivory focal edges and upper-left light. Full transparent background,1024x1024RGBA, same framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logo, label, frame or border. Exterior painted illustration only, no diagram, measurements, assembly steps or operating instructions.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-short_bow--relic",
+    "standard_sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6",
+    "standard_status": "review-candidate",
+    "current_data_item_present": false,
+    "prepared_at_utc": "2026-11-20T06:26:26.615493+00:00",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "8b7be13fedd0c3a66db273a97917cd70052729451c47c0aafbd2077df4e0d6b2",
+    "retry_authorized_by_user": true,
+    "prompt_revisions": [
+      {
+        "previous_prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single short deep D-curved ash bow, upper nock at upper-left and lower nock at lower-right of its gentle diagonal, thick short limbs tapering to rounded nocks, broad spirally rawhide-wrapped grip on the curved right side and a single straight taut dark string closing the D on the left. Preserve the exact limb curvature, wood facets, nock-end cord bindings, rawhide overlaps, open interior and string endpoints; the nocks do not curl or reflex. Pale ash and natural tan rawhide, no coloured maker accent. No arrow, quiver or added hardware.\n\nGrade: Celestial. Keep the shape, the inlay and the ferrule's place. The wood becomes a pale ivory wood with no grain flaw, leather a pale hide, a string pale silk, the metal pearl-ivory. The inlay line gives a faint, contained ivory-gold light from inside, nothing past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST attachment locks the actual Standard silhouette, interior negative spaces, part count, camera, pose, scale, registration and framing. SECOND attachment is the preceding grade candidate: preserve its additions and their positions except the current grade’s material change. The portrait supplies Heavenprint brushwork only: no person, scene, extra object or borrowed equipment. Fully transparent canvas, minimum50px clear margin, all material changes inside the original outline. These are exterior inventory paintings, no diagrams or cutaways. Retain the preceding Relic ornament and single repair in exactly the same places and outline, now clean pale materials with their subtle seams visible. Original accent locations persist in paler/richer local material; only the inlay and one existing seam carry contained ivory-gold light. No light or shadow outside the item.",
+        "previous_sha256": "8b7be13fedd0c3a66db273a97917cd70052729451c47c0aafbd2077df4e0d6b2",
+        "reason": "Direct reference-first cosmetic edit of the actual bow. Exact grade paragraph and all required class-specific additions retained; original complete request preserved. Geometry controlled by Standard and previous-grade images.",
+        "changed_utc": "2026-11-21T16:02:25.095105+00:00"
+      }
+    ],
+    "active_prompt_sha256": "9174e4927d0a7bbb01a7e5ad08034d8b9ec8f866ae613feb48e25d3f38ed44ab",
+    "request_layout": "reference-first-cosmetic-direct"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-short_bow.png": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6",
+    "art/icons/gear/weapon-short_bow--relic.png": "3e5aad7721ecfcc82ac66c339fdc461cd2b478a15ba5af47bf5366f42a3f9baa",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7056379228,
+  "clock": {
+    "current_time": "2026-11-21 16:05:29 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7065244950,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

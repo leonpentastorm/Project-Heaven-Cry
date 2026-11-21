@@ -3511,6 +3511,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-short_bow--celestial",
+      "path": "art/icons/gear/weapon-short_bow--celestial.png",
+      "sha256": "f0b67d5050c357c5e2616ef5b3ebbc31ca6bcfc57dff8a38ba8f938c9da4cb59",
+      "label": "Short bow — Celestial",
+      "family": "weapon-short_bow",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_bow--celestial.png",
+        "sha256": "6718a15889ecd89fa84446caebe910114c32d3cf0a205aa83a69cc378744bdda"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_bow--celestial.png",
+        "sha256": "f0b67d5050c357c5e2616ef5b3ebbc31ca6bcfc57dff8a38ba8f938c9da4cb59"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_bow--celestial.txt",
+        "sha256": "d7f93c008a94e03866b6815105b8a7c289ee145b8bdcdfca685c422e1c182f7d"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-short_bow.png",
+          "sha256": "24a7c676794e9ea49928a490fc2b5c55833d5c77333cdbe2174b9240efeeb2a6"
+        },
+        {
+          "path": "art/icons/gear/weapon-short_bow--relic.png",
+          "sha256": "3e5aad7721ecfcc82ac66c339fdc461cd2b478a15ba5af47bf5366f42a3f9baa"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-short_bow--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-short_bow--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-short_bow--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-short_bow--celestial.png"
+      },
+      "export_hashes": {
+        "256": "7c6ddbc15f3fa7b67e691767abe8a241b02d5db9b7c29736390b4c229080a283",
+        "128": "330b9d498b45d842465e6f058f92e19863259e32b70204901064f8f15f8c567f",
+        "64": "8e1fb011e958d0c949d6798a2be1b6f79a9ba7c1c11bb79aba75dfb029492fc2",
+        "32": "01e26cb03dc3ca1a72b4eb5a5bbddee178e1ee37c5df7950edbbecc35b3fadf1"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-short_bow",
+      "outline": {
+        "solid_alpha_iou": 0.8239719883091704,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 11,
+        "different_pixels_64": 66
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
-  "selected": 573,
+  "selected": 574,
   "requested": 871,
-  "remaining": 298,
+  "remaining": 297,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 413,
+      "selected": 414,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 243,
+    "grade": 242,
     "unique": 4
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 39,
+    "service-blocked-or-preceding-grade-dependent": 38,
     "awaits-missing-requested-standard": 208
   },
   "live_claims": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
@@ -2048,14 +2048,6 @@
       "eligible_for_retry": false
     },
     {
-      "id": "weapon-short_bow--celestial",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-short_bow--celestial.png",
-      "standard": "weapon-short_bow",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
       "id": "weapon-arbalest--fine",
       "kind": "grade",
       "path": "art/icons/gear/weapon-arbalest--fine.png",
@@ -2478,7 +2470,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-short_bow--relic",
+  "last_delivered": "weapon-short_bow--celestial",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {
