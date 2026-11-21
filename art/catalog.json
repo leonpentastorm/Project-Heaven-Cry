@@ -35390,6 +35390,42 @@
         "different_pixels_32": 7,
         "different_pixels_64": 65
       }
+    },
+    "weapon-service_pistol--celestial": {
+      "label": "Service pistol repaint — Celestial",
+      "path": "art/icons/gear/weapon-service_pistol--celestial.png",
+      "sha256": "89ad4efdb0fa7176c6d5858974cb4a89467a97abe83b898682fa560406fc3d76",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-service_pistol--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-service_pistol--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-service_pistol--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-service_pistol--celestial.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-service_pistol--celestial.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.3",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "celestial",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-service_pistol",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.941127457747451,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 47
+      }
     }
   },
   "survival_art": {

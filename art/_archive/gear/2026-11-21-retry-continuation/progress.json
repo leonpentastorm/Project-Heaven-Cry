@@ -61,7 +61,8 @@
     "weapon-legion_bullpup--fine",
     "weapon-service_pistol--fine",
     "weapon-service_pistol--masterwork",
-    "weapon-service_pistol--relic"
+    "weapon-service_pistol--relic",
+    "weapon-service_pistol--celestial"
   ],
   "remaining": [
     "weapon-parlour_pistol--fine",
@@ -89,7 +90,6 @@
     "weapon-whisper_carbine--masterwork",
     "weapon-whisper_carbine--relic",
     "weapon-whisper_carbine--celestial",
-    "weapon-service_pistol--celestial",
     "weapon-magistrate_pistol--masterwork",
     "weapon-magistrate_pistol--relic",
     "weapon-magistrate_pistol--celestial",
@@ -527,8 +527,8 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T16:33:26.469066+00:00",
-  "project_distinct_count": 577,
+  "updated_utc": "2026-11-21T16:36:48.425405+00:00",
+  "project_distinct_count": 578,
   "total": 94,
   "service_block": {
     "returned_code": "moderation_blocked",

@@ -3765,6 +3765,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-service_pistol--celestial",
+      "path": "art/icons/gear/weapon-service_pistol--celestial.png",
+      "sha256": "89ad4efdb0fa7176c6d5858974cb4a89467a97abe83b898682fa560406fc3d76",
+      "label": "Service pistol repaint — Celestial",
+      "family": "weapon-service_pistol",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-service_pistol--celestial.png",
+        "sha256": "e7d173c3d608283bdb7fc2d5473078f953c88e7720d733e1354b68b015120ff0"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-service_pistol--celestial.png",
+        "sha256": "89ad4efdb0fa7176c6d5858974cb4a89467a97abe83b898682fa560406fc3d76"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-service_pistol--celestial.txt",
+        "sha256": "fa1efdac242514f6c4fc18967286476b9814a6aeff2dc7c88662e2fd3dd6835f"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/references/packed/weapon-service_pistol--celestial.png",
+          "sha256": "082d5b8e256ce17ac67b26c1e23864bedd017514bc849751f9d032c6a09818f3"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-service_pistol.png",
+          "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181"
+        },
+        {
+          "path": "art/icons/gear/weapon-service_pistol--relic.png",
+          "sha256": "b0336dae8a38f980423c97515048cc759d63dce7b6b16efd929fdd15f1b0929a"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-service_pistol--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-service_pistol--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-service_pistol--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-service_pistol--celestial.png"
+      },
+      "export_hashes": {
+        "256": "ef66f96637a9ac70acac8cb68036acd750d19ad7e11717f89006516b335a6b98",
+        "128": "962a0ec72c5f1b78a0ddf9454ab045bbc29b7487a1adfcfbbf25ff7801be5307",
+        "64": "08959d3a5e5c3a69d4f850aac4caa7bf774a6e2e49234ac3cbaf1347e06aeb57",
+        "32": "4975c8dd56ea4ef9079c766d7bfe706be7e3c34417e27b10b6dff5fc4de2958b"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-service_pistol",
+      "outline": {
+        "solid_alpha_iou": 0.941127457747451,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 47
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

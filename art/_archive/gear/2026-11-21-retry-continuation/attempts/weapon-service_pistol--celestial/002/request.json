@@ -1,0 +1,110 @@
+{
+  "head": "dd768f12daa0961954ca03512dd0c473583c21d3",
+  "job": {
+    "id": "weapon-service_pistol--celestial",
+    "standard_id": "weapon-service_pistol",
+    "grade": "celestial",
+    "label": "Service pistol repaint — Celestial",
+    "path": "art/icons/gear/weapon-service_pistol--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-continuation/references/packed/weapon-service_pistol--celestial.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-service_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-service_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "source_brief_number": 2,
+    "keep_line": "the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.",
+    "prompt": "Paint ONE Celestial Service Pistol inventory icon for the fictional RPG Project Heaven Cry. Only a2D digital painting. First attachment is a technical reference pair: LEFT Standard fixes exact visible geometry/pose/framing; RIGHT Relic supplies every prior surface addition and its position. Render one complete pistol only, no panel, label, second object or scene. Second attachment supplies Heavenprint brushwork only, no person.\n\nCelestial appearance: same silhouette and exact part/opening positions, THREE rear cuts and TWO grip pins. Pearl-ivory unmarked metal and ivory grip with a faint muted steel-blue trace only where the original grip inset was. Existing brass becomes pale warm gold-ivory. Keep the Relic flush scroll panel in its EXACT location and shape, now clean pale material with fine scroll seams; keep the SINGLE repaired lower grip pin in the same hole and size, pale cool silver contrasting subtly with the warmer upper pin. No repair/ornament is removed, moved, enlarged or added. The existing upper-side inlay route and ONE original frame seam have faint contained ivory-gold inner light, no wider than those thin surfaces. Muzzle and other openings remain dark. No light beyond the object, no halo or bloom.\n\nOpaque Heavenprint gouache/ink, directional broken brushstrokes, selective dry-brush, charcoal shadows, warm ivory focal edges and upper-left light. Single transparent SQUARE1024x1024RGBA canvas, same reference framing and at least50px clear margin. No ground, cast shadow, hand, figure, text, letters, numbers, logo, real brand, border, frame, smoke, flash or outside effects. Exterior artwork only; no diagram or instructions.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-service_pistol--relic",
+    "standard_sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": true,
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "70cd3c9bbfb0fb1889562687b7f5897397f89c4e71aaf13ca507651412a81251",
+    "retry_authorized_by_user": true,
+    "prompt_revisions": [
+      {
+        "previous_prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Keep the prior Relic scroll panel and single contrasting-metal repair in exactly their positions and outlines, now pale clean material with faint seams. Preserve all dark ports/openings; light belongs only to the flush inlay and one original seam, not the muzzle or beyond the outline.",
+        "previous_sha256": "70cd3c9bbfb0fb1889562687b7f5897397f89c4e71aaf13ca507651412a81251",
+        "reason": "Reference-first cosmetic editing for a grade-only task: exact visible geometry comes from the attached Standard, while the complete grade block and all following class-specific constraints are retained verbatim. Explicit item identity remains; every previous request is preserved.",
+        "changed_utc": "2026-11-21T15:57:02.212726+00:00"
+      },
+      {
+        "previous_prompt": "Create the Celestial-finish cosmetic variant of the attached fictional RPG service pistol inventory painting for Project Heaven Cry. This is a 2D digital game-art asset. FIRST attachment fixes the exact visible object geometry and registration: preserve its complete outline, every part and opening, camera, pose, scale and margins. Where a preceding grade is attached, retain its existing surface additions except for the finish changes specified below. The portrait supplies Heavenprint ink and gouache brushwork only, never a person or scene.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. Keep the prior Relic scroll panel and single contrasting-metal repair in exactly their positions and outlines, now pale clean material with faint seams. Preserve all dark ports/openings; light belongs only to the flush inlay and one original seam, not the muzzle or beyond the outline.\n\nApply surface changes only. Do not add, remove, move or resize a part or opening. Preserve the exact visible part counts, original maker accents and any lens/filter colours from the references. Hand-painted opaque gouache and ink, broken directional strokes, selective dry-brush, charcoal shadows, warm ivory focal edges and upper-left light. 1024x1024 RGBA, fully transparent background, same reference framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logo, label, frame, border or external effects. This is an exterior painted illustration only, with no technical diagram, internal mechanism, measurements, assembly steps or operating instructions.",
+        "previous_sha256": "717cd13c7a10457723849b046cd7aad5408e197cd682ea26247f37b043cb8ec2",
+        "reason": "Direct item-specific cosmetic edit, retaining exact grade block and all actual pistol-specific additions. Omit generic class alternatives for parts absent from the reference; no false renaming, all prior requests preserved.",
+        "changed_utc": "2026-11-21T16:07:58.702268+00:00"
+      },
+      {
+        "previous_prompt": "Create the Celestial-finish cosmetic variant of the attached fictional RPG service pistol inventory painting for Project Heaven Cry. This is a 2D digital game-art asset. FIRST attachment fixes exact Standard geometry and registration: preserve the complete visible pistol outline, every existing part and opening, right-facing level pose, camera, scale and margins. SECOND is the preceding grade: retain its surface additions except the specified current finish change. THIRD supplies Heavenprint ink and gouache brushwork only, never a person or scene.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nRetain the Relic scroll panel and single lower grip-pin repair at their EXACT positions and shapes, with subtle seams, now clean pale materials. Pearl-ivory metal, ivory grip with a faint steel-blue trace only where the original inset was. Keep both grip pins, three rear cuts and all dark openings. Faint ivory-gold inner light belongs only to the prior inlay and one original side seam; no light from the dark muzzle or outside the object. Apply those surface changes only to the actual pistol shown. Do not add, remove, resize or move a part or opening. Hand-painted opaque gouache and ink, broken directional strokes and selective dry-brush, charcoal shadows, warm ivory focal edges, upper-left light. Full transparent background,1024x1024RGBA, same framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logo, label, frame, border, flash, smoke or external glow. This is an exterior painted illustration only, no technical diagram, internal mechanism, measurements, assembly steps or operating instructions.",
+        "previous_sha256": "046ae12d2c671a116aa2cedbce1a62fb7b95d84540d73a9b30b26c4a3dc39507",
+        "previous_references": [
+          "art/icons/gear/weapon-service_pistol.png",
+          "art/icons/gear/weapon-service_pistol--relic.png",
+          "art/portraits/world/new-faces/orren-vask.png"
+        ],
+        "reason": "Clarify geometry-versus-finish reference roles in a single labelled technical pair. Both original images remain visible at full size with their original source hashes; item identity and complete grade/body constraints unchanged.",
+        "changed_utc": "2026-11-21T16:34:25.877903+00:00"
+      },
+      {
+        "previous_prompt": "Create one Celestial-finish cosmetic variant of the fictional RPG service pistol inventory painting for Project Heaven Cry. This is a2D digital game-art asset. FIRST attachment is a labelled TECHNICAL REFERENCE PAIR, not the output composition: LEFT panel is the exact Standard geometry/pose/framing master; RIGHT panel is the preceding grade with surface additions to retain. Both are unchanged full-size originals. Produce ONE complete object only, matching the LEFT geometry and the requested higher finish, retaining prior additions from the RIGHT. SECOND attachment supplies Heavenprint ink/gouache brushwork only, never a person or scene. No reference panel, label or second object in the output.\n\nGrade: Celestial. Keep the shape, the inlay and the scroll panel's place. The metal turns to a pale, unmarked pearl-ivory; the grip panels or stock are ivory, keeping a faint trace of the item's accent where its accent was. The inlay line and one seam (the ejection port, the cylinder gap or the receiver seam) give a faint, contained ivory-gold light from inside. The muzzle stays dark: no light from the barrel, no muzzle flash, nothing spilling past the outline: no bloom, no halo, no rays, no sparks.\n\nRetain the Relic scroll panel and single lower grip-pin repair at their EXACT positions and shapes, with subtle seams, now clean pale materials. Pearl-ivory metal, ivory grip with a faint steel-blue trace only where the original inset was. Keep both grip pins, three rear cuts and all dark openings. Faint ivory-gold inner light belongs only to the prior inlay and one original side seam; no light from the dark muzzle or outside the object. Apply those surface changes only to the actual pistol shown. Do not add, remove, resize or move a part or opening. Hand-painted opaque gouache and ink, broken directional strokes and selective dry-brush, charcoal shadows, warm ivory focal edges, upper-left light. Full transparent background,1024x1024RGBA, same framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logo, label, frame, border, flash, smoke or external glow. This is an exterior painted illustration only, no technical diagram, internal mechanism, measurements, assembly steps or operating instructions.",
+        "previous_sha256": "2ba3bd58446e948cffe91b9818b7aa4fb84482eb00d0809894d72ab1e7aadfd1",
+        "reason": "Express required Celestial finish as painted appearance, preserve all original additions and exact repair/ornament positions. Full source grade block and prior complete requests preserved.",
+        "changed_utc": "2026-11-21T16:34:25.920811+00:00"
+      }
+    ],
+    "active_prompt_sha256": "851a9aee49053456342704310c729afc3bfcd79ccececa6c603ba6c85739d6aa",
+    "request_layout": "reference-first-painted-appearance",
+    "reference_sources": [
+      "art/icons/gear/weapon-service_pistol.png",
+      "art/icons/gear/weapon-service_pistol--relic.png"
+    ],
+    "reference_source_hashes": {
+      "art/icons/gear/weapon-service_pistol.png": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+      "art/icons/gear/weapon-service_pistol--relic.png": "b0336dae8a38f980423c97515048cc759d63dce7b6b16efd929fdd15f1b0929a"
+    },
+    "reference_packing": {
+      "path": "art/_archive/gear/2026-11-21-retry-continuation/references/packed/weapon-service_pistol--celestial.png",
+      "sha256": "082d5b8e256ce17ac67b26c1e23864bedd017514bc849751f9d032c6a09818f3",
+      "dimensions": [
+        2048,
+        1072
+      ],
+      "method": "Two full-size1024x1024 originals composited over technical #10151F at (0,48)/(1024,48); no crop, resize or repaint. Original files unchanged.",
+      "sources": [
+        {
+          "path": "art/icons/gear/weapon-service_pistol.png",
+          "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181"
+        },
+        {
+          "path": "art/icons/gear/weapon-service_pistol--relic.png",
+          "sha256": "b0336dae8a38f980423c97515048cc759d63dce7b6b16efd929fdd15f1b0929a"
+        }
+      ],
+      "new_picture_count": 0
+    }
+  },
+  "reference_hashes": {
+    "art/_archive/gear/2026-11-21-retry-continuation/references/packed/weapon-service_pistol--celestial.png": "082d5b8e256ce17ac67b26c1e23864bedd017514bc849751f9d032c6a09818f3",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 2,
+  "claim_comment": 7062296286,
+  "clock": {
+    "current_time": "2026-11-21 16:35:42 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7065394773,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "265f4d5ef41a82ef56de65b789f417cc86b99079"
+}
