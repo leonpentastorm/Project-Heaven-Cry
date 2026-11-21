@@ -112,12 +112,8 @@
     "base": 22,
     "enemy_base": 14,
     "soul_mult": "1.55 x Level.deal (rules 1.26: the aimed profile; rules.json output.profiles.soul)",
-    "critical": {
-      "mult": 1.5,
-      "max": 2.0
-    },
     "provisional": true,
-    "text": "A character's Damage school starts from 37 (rules 1.56; 31 in rules 1.26, 40 on 12 Nov, 28 in rules 1.17, 20 before). An enemy caster's starts from 24, so that with the flatter stage table its Outbursts deal about what they dealt before. A natural 20 on a Bolt's or Lance's roll is a critical: ×1.5 damage, up to ×2.0 with everything on your sheet and gear.",
+    "text": "A character's Damage school starts from 37 (rules 1.56; 31 in rules 1.26, 40 on 12 Nov, 28 in rules 1.17, 20 before). An enemy caster's starts from 24, so that with the flatter stage table its Outbursts deal about what they dealt before. A Bolt's or Lance's roll takes Margins as a weapon's does (rules 1.96 item 8320): a natural 20 is a critical and two Margins, each added to the stage's multiplier.",
     "modes_note": "The Damage school's ways (finish, brand, drain) are the school's own `modes` (schools[damage].modes, 0.31.11), read by the engine and by the ways' lines."
   },
   "aura": {

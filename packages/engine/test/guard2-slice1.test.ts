@@ -41,7 +41,7 @@ describe('item 5, Set Against the Blow (Numb II since rules 1.73 item 5827): a c
   it('the same blow, critical and ordinary, holding the same Guard: the HP lost is the same (to rounding); no injury', () => {
     const lost = (crit: boolean, g: number) => { const f = fight(5, { perks: { numb: 'II' } }); guard(f, g); const t = tank(f), hp = t.hp; blow(f, t, { crit }); return { f, lost: hp - tank(f).hp }; };
     const crit = lost(true, 2), plain = lost(false, 2), bare = lost(true, 0), bareplain = lost(false, 0);
-    expect(perkEff('numb', 'II', 'Numb', 'damage_mult')).toMatchObject({ when: 'dealing', replaces: 'critical' });
+    expect(perkEff('numb', 'II', 'Numb', 'damage_mult')).toMatchObject({ when: 'dealing', replaces: 'Margins' }); // rules 1.96: the hit's Margins are taken away (the critical's multiplier is gone)
     expect(Math.abs(crit.lost - plain.lost), crit.f.cb.log.slice(-6).join(' | ') + ' // ' + plain.f.cb.log.slice(-4).join(' | ')).toBe(0);
     expect(bare.lost).toBeGreaterThan(bareplain.lost); // without Guard a critical still bites
     expect(moves(crit.f, 'crit_turned').length).toBe(1);

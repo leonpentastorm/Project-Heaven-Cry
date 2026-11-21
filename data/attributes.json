@@ -124,7 +124,7 @@
     },
     {
       "id": "perception",
-      "player": "+{=derived.0.per_point_above_1} tiles of vision · +{=derived.2.per_point_above_1|pct}% critical damage · {=derived.1.per_point_above_1}% critical damage taken",
+      "player": "+{=derived.0.per_point_above_1} tiles of vision · every Margin +{=derived.1.per_point|pct}% of the plain hit more",
       "name": "Perception",
       "core": "mind",
       "skills": {
@@ -139,14 +139,17 @@
           "per_point_above_1": 2
         },
         {
-          "stat": "crit_damage_taken_pct",
-          "formula": "−10% × (Perception − 1) − 5% × Acuity",
-          "per_point_above_1": -10
-        },
-        {
-          "stat": "mult_critical",
-          "formula": "1.5 + 0.03 × (Perception − 1) + 0.02 × Dexterity, to 2.0 at most (rules 1.15; provisional)",
-          "per_point_above_1": 0.03
+          "stat": "margin_share",
+          "formula": "rules 1.96 item 8320: each Margin adds rules.json rolls.margins.per + per_perception × Perception of the plain hit (26% at Perception 1, 35% at 10)",
+          "per_point": {
+            "base": 0,
+            "per": [
+              {
+                "of": "rule:rolls.margins.per_perception",
+                "value": 1
+              }
+            ]
+          }
         }
       ]
     },

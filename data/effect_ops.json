@@ -961,7 +961,7 @@
         "op": "mend",
         "amount": {
           "kind": "heal",
-          "base": 3.0,
+          "base": 3,
           "profile": "mend"
         },
         "target": "ally"
@@ -2204,20 +2204,20 @@
       }
     },
     {
-      "id": "crit_damage_mod",
+      "id": "margins_mod",
       "tier": "bespoke",
       "summary": "",
       "count": 1,
       "params": [
         "context",
-        "value_pct"
+        "value"
       ],
       "used_by": [
         "traits:one_shot"
       ],
       "example": {
-        "op": "crit_damage_mod",
-        "value_pct": 50,
+        "op": "margins_mod",
+        "value": 1,
         "context": "first_shot_if_not_moved"
       }
     },
@@ -3228,16 +3228,6 @@
       "params": [],
       "used_by": [
         "weapons:adamantile_battle_rifle"
-      ]
-    },
-    {
-      "id": "aimed_crit_min",
-      "tier": "weapon",
-      "summary": "Aimed shots crit on this roll or higher.",
-      "count": 1,
-      "params": [],
-      "used_by": [
-        "weapons:ccec_marksman_rifle"
       ]
     },
     {
@@ -5095,6 +5085,7 @@
           "vcharge",
           "shadow",
           "ledger",
+          "grace",
           "devotion_xp",
           "strain",
           "flux",
@@ -5119,6 +5110,7 @@
           "vcharge",
           "shadow",
           "ledger",
+          "grace",
           "devotion_xp",
           "strain",
           "flux",
@@ -5143,6 +5135,7 @@
           "vcharge",
           "shadow",
           "ledger",
+          "grace",
           "devotion_xp",
           "strain",
           "flux",
@@ -5167,6 +5160,7 @@
           "vcharge",
           "shadow",
           "ledger",
+          "grace",
           "devotion_xp",
           "strain",
           "flux",
@@ -5191,6 +5185,7 @@
           "vcharge",
           "shadow",
           "ledger",
+          "grace",
           "devotion_xp",
           "strain",
           "flux",
@@ -5215,6 +5210,7 @@
           "vcharge",
           "shadow",
           "ledger",
+          "grace",
           "devotion_xp",
           "strain",
           "flux",
@@ -5355,7 +5351,7 @@
           "replaces"
         ],
         "changes_state": false,
-        "about": "multiply the amount being dealt or taken (taking: round \"up\" rounds it up; pool: the holder's zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush) is taken out and this one stands in its place, so the two never multiply: Shadow's Break, rules 1.32)"
+        "about": "multiply the amount being dealt or taken (taking: round \"up\" rounds it up; pool: the holder's zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush; Margins: the hit counts none) is taken out and this one stands in its place, so the two never multiply: Shadow's Break, rules 1.32)"
       },
       "damage_mod": {
         "on": [
@@ -5513,7 +5509,8 @@
         ],
         "fields": [
           "resource",
-          "value"
+          "value",
+          "keeps"
         ],
         "changes_state": true,
         "about": "give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive); value \"all\" spends and \"zero\" loses all of it"

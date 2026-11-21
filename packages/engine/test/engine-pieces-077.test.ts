@@ -209,8 +209,8 @@ describe('a to-hit term carries its source label (item 6511): the fight shows st
 
 describe('a resource held by the fight (item 6512): Crystallise draws on the air through the price; Rite in the Field takes nothing', () => {
   const crystal = (tier: string | null, kills: number, mana = 20) => {
-    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', skills: { lore_master: 5 }, ...(tier ? { perks: { rite_in_the_field: tier } } : {}) } as any], Array.from({ length: kills + 1 }, (_, i) => ({ at: 'E' + (6 + i) })));
-    for (let i = 0; i < kills; i++) { const foe = f.foes.find((x: any) => !x.dead && !x.downed)!; foe.hp = 1; foe.def = -50; f.unit(f.pc.id).pos = '2,5'; foe.pos = '3,5'; f.unit(f.pc.id).ap = 9;
+    const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', skills: { lore_master: 5 }, attrs: { endurance: 7 }, ...(tier ? { perks: { rite_in_the_field: tier } } : {}) } as any], Array.from({ length: kills + 1 }, (_, i) => ({ at: 'E' + (6 + i) }))); // rules 1.96: Endurance 7 (the foes' opening shots now carry Margins and could drop a 60-HP caster before the test begins)
+    for (let i = 0; i < kills; i++) { const foe = f.foes.find((x: any) => !x.dead && !x.downed)!; foe.hp = 1; foe.def = -50; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ f.unit(f.pc.id).pos = '2,5'; foe.pos = '3,5'; f.unit(f.pc.id).ap = 9;
       for (let n = 0; n < 9 && !f.unit(foe.id).dead; n++, f.unit(f.pc.id).jammed = false) withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(f.pc.id), f.unit(foe.id), 'shot', null, { noAp: true }));
       f.unit(foe.id).pos = '12,' + (2 + i); }
     f.turn(f.pc); f.pc.ap = 9; f.cb.mana = mana; const cores = f.pc.mg!.coresMade;

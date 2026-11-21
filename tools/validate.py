@@ -3034,7 +3034,7 @@ if _sv is not None:
     _gf = ((data.get("rules") or {}).get("weapons_rules") or {}).get("gear_fields") or {}
     _GF = {k for k in _gf if k != "about"}
     for _k in _GF:
-        if (_gf[_k] or {}).get("combine") not in ("sum", "max"): errors.append(f"rules:weapons_rules.gear_fields.{_k}: combine is sum or max")
+        if (_gf[_k] or {}).get("combine") not in ("sum", "max", "min"): errors.append(f"rules:weapons_rules.gear_fields.{_k}: combine is sum, max or min")
     _rc = ((data.get("rules") or {}).get("weapons_rules") or {}).get("recoil") or {}
     if not (isinstance(_rc, dict) and _num(_rc.get("dex_relief_per")) and _rc["dex_relief_per"] > 0 and _num(_rc.get("braced_mult"))): errors.append("rules:weapons_rules.recoil: dex_relief_per (above 0) and braced_mult")
     _GUNCAT = {"pistol", "revolver", "smg", "rifle", "shotgun", "heavy", "bow"}

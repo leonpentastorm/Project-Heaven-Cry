@@ -30,7 +30,7 @@ const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 const at = (f: F, u: Unit, pos: string) => { f.unit(u.id).pos = pos; return f.unit(u.id); };
 const act = (f: F, u: Unit, a: any) => f.act({ unitId: u.id, ...a });
 const perk = (f: F, u: Unit, id: string, a: any = {}) => f.act({ type: 'combat/perk', unitId: u.id, id, ...a } as any);
-const tough = (u: Unit, def = -40) => { u.hp = u.maxHp = 999; u.def = def; u.armour = 0; return u; };
+const tough = (u: Unit, def = -40) => { u.hp = u.maxHp = 999; u.def = def; u.marginsTaken = -99; u.armour = 0; return u; }; // rules 1.96: the dummy takes no Margins (its tests are the moves')
 const adv = (id: string, extra: CharSpec = {}): CharSpec => ({ advancedClass: id, level: 5, ...extra });
 const SOUL = { archetype: 'stormcaller', kit: 'soul' } as const;
 const MIND = { archetype: 'sigilist', kit: 'sigil' } as const;
@@ -56,7 +56,7 @@ describe('Shade', () => {
   it('Silent Kill: a melee kill from Hidden keeps you Hidden; without the class you are revealed', () => {
     const run = (spec: CharSpec) => {
       const f = fightWith([{ ...spec, weapon: 'combat_knife' }], [{}]);
-      const u = f.turn(f.pc); at(f, u, '3,2'); const foe = at(f, f.foe, '4,2'); foe.hp = 1; foe.def = -40; f.unit(u.id).hidden = true; f.unit(u.id).hideEntry = 1; seed(f, 10);
+      const u = f.turn(f.pc); at(f, u, '3,2'); const foe = at(f, f.foe, '4,2'); foe.hp = 1; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ f.unit(u.id).hidden = true; f.unit(u.id).hideEntry = 1; seed(f, 10);
       act(f, f.unit(u.id), { type: 'combat/attack', targetId: foe.id, mode: 'melee' });
       return f;
     };
@@ -66,7 +66,7 @@ describe('Shade', () => {
   });
   it('Silent Kill: a loud gunshot still gives you away (and the Narrator hears of it)', () => {
     const f = fightWith([adv('shade', { weapon: 'service_pistol' })], [{}]);
-    const u = f.turn(f.pc); at(f, u, '3,2'); const foe = at(f, f.foe, '6,2'); foe.hp = 1; foe.def = -40; f.unit(u.id).hidden = true; f.unit(u.id).hideEntry = 1; seed(f, 10);
+    const u = f.turn(f.pc); at(f, u, '3,2'); const foe = at(f, f.foe, '6,2'); foe.hp = 1; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ f.unit(u.id).hidden = true; f.unit(u.id).hideEntry = 1; seed(f, 10);
     act(f, f.unit(u.id), { type: 'combat/attack', targetId: foe.id, mode: 'shot' });
     expect(f.pc.hidden).toBe(true); expect(f.cb.seenAt?.foe?.[f.pc.id]).toBe(f.pc.pos); /* rules 1.87 item 7503: Silent ON (hidden_attack.gives tile): a loud attack from Hidden gives the tile away and keeps you Hidden */ /* under Silent ON the loud shot keeps the Shade Hidden (the tile is given away), so no Narrator note is owed (the Shade is shelved; its log line still says Silent Kill: listed in the 0.33 balance hand-off) */
   });
@@ -276,7 +276,7 @@ describe('Grand Sigilist', () => {
     const g = fightWith([{ weapon: 'fists' }], [{}]); expect(f.pc.def).toBe(g.pc.def + 2);
   });
   it('Earthed: inside your own FIRE form your fists carry fire (half armour) and lava doesn\'t burn you', () => {
-    const f = grand('fire', '5,2', { weapon: 'fists' }); at(f, f.pc, '4,2'); const foe = at(f, f.foe, '5,2'); foe.armour = 10; foe.def = -40;
+    const f = grand('fire', '5,2', { weapon: 'fists' }); at(f, f.pc, '4,2'); const foe = at(f, f.foe, '5,2'); foe.armour = 10; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */
     const pv = withGame(f.g, () => previewAttack(f.cb, f.pc, f.unit(foe.id), 'melee'));
     expect(pv.dmg!.terms[0]?.v).toBeGreaterThanOrEqual(5);
   });
@@ -425,7 +425,7 @@ describe('Twinbound', () => {
     expect(cb().order[cb().order.indexOf(pc.id) + 1]).toBe(tw.id);
     s.act({ type: 'combat/end-turn', unitId: pc.id } as any);
     expect(cb().order[cb().turn]).toBe(tw.id); expect(f.unit(tw.id).ap).toBe(4);
-    const foe = cb().units.find((x) => x.side === 'foe')!; foe.hp = foe.maxHp = 999; foe.def = -40; const mp = f.unit(pc.id).mg!.mp;
+    const foe = cb().units.find((x) => x.side === 'foe')!; foe.hp = foe.maxHp = 999; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ const mp = f.unit(pc.id).mg!.mp;
     s.g.rng.state = rngFor(15);
     s.act({ type: 'combat/perk', unitId: tw.id, id: 'twinbound.call', actionId: 'twin_cast', choice: 'tw1', tile: foe.pos } as any);
     expect(f.unit(foe.id).hp).toBeLessThan(999); expect(f.unit(pc.id).mg!.mp).toBeLessThan(mp); expect(f.unit(tw.id).ap).toBe(2);

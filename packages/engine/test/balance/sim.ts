@@ -11,7 +11,7 @@
 //
 // A fight NEVER changes a rule or a number: the maps registered here (sim_open, sim_cover) are test-only tiles.
 import { apply, newGame, bindGame, MAPS, WEAPON, TECHNIQUE, alive, previewAttack, previewTechnique, techniquePad, pressureCap, isPressed, isSuppressed, maxHp } from '../../src';
-import { reactionsUsed } from '../../src';
+import { reactionsUsed, MARGINS } from '../../src';
 import { fxTaps } from '../../src/fxtap';
 import { onHook } from '../../src/effects/hooks';
 import { ENEMY, clampEnemyLevel, FEELING, RULES, PROFILES, statTerm } from '../../src';
@@ -83,7 +83,7 @@ export interface PcResult {
   build: string; variant: string; level: number; policy: string; maxHp: number;
   turns: number; lostTurns: number; lostRun: number; pressedTurns: number; suppressedTurns: number; apStart: number; apOver6: number; apOverWhy: Record<string, number>; apSpent: Record<string, number>; apUnspent: number; turns9: number;
   /** damage dealt as the effects stream reports it (not cut at the target's last HP), and the HP it actually removed */ dmg: number; hpRemoved: number; offTurnDmg: number;
-  attacks: number; hits: number; crits: number; critDmg: number; attackDmg: number;
+  attacks: number; hits: number; crits: number; critDmg: number; attackDmg: number; /** rules 1.96: the hits by their Margins, and the damage they dealt */ byMargins?: Record<number, { n: number; dmg: number }>;
   bigHit: number; bigHitWhat: string; bigHitCrit: boolean;
   turnDmg: number[]; bigAction: { dmg: number; hit: number; what: string; turn: number; price: Record<string, number> } | null;
   taken: number; foeAttacks: number; foeHits: number; downedRound: number | null; shieldTaken: number;
@@ -178,9 +178,9 @@ export function runFight(spec: FightSpec, opts: { log?: boolean; /** called afte
     // the step that opens the fight has no "before": everyone came in at full HP, with the meters the fight gave them
     const before = before0 || Object.fromEntries(cb.units.map((q: any) => [q.id, { hp: q.maxHp, shield: 0, ap: 0, downed: false, dead: false, res: after[q.id].res }]));
     // ----- damage, from the effects stream, set against the HP that left
-    const inst: { by: string | null; target: string; dmg: number; crit: boolean; what: string; attack: boolean; hit: boolean }[] = [];
+    const inst: { by: string | null; target: string; dmg: number; crit: boolean; what: string; attack: boolean; hit: boolean; margins?: number }[] = [];
     for (const ev of evs) {
-      if (ev.k === 'shot' || ev.k === 'melee') inst.push({ by: ev.unit, target: ev.target, dmg: ev.hit ? ev.dmg || 0 : 0, crit: !!ev.crit && !!ev.hit, hit: !!ev.hit, attack: true, what: (TECHNIQUE[ev.tech || ev.technique]?.name || ev.tech || ev.technique || (ev.unit === actor && step && step.kind !== 'attack' ? step.label : null) || (ev.mode === 'melee' ? 'plain cut' : ev.mode === 'aimed' ? 'aimed shot' : 'plain shot')) + ' (' + (WEAPON[ev.weapon]?.name || ev.weapon) + ')' });
+      if (ev.k === 'shot' || ev.k === 'melee') inst.push({ by: ev.unit, target: ev.target, dmg: ev.hit ? ev.dmg || 0 : 0, crit: !!ev.crit && !!ev.hit, hit: !!ev.hit, attack: true, margins: ev.hit ? ev.margins || 0 : 0, what: (TECHNIQUE[ev.tech || ev.technique]?.name || ev.tech || ev.technique || (ev.unit === actor && step && step.kind !== 'attack' ? step.label : null) || (ev.mode === 'melee' ? 'plain cut' : ev.mode === 'aimed' ? 'aimed shot' : 'plain shot')) + ' (' + (WEAPON[ev.weapon]?.name || ev.weapon) + ')' });
       else if (ev.k === 'hurt' && ev.dmg > 0) inst.push({ by: null, target: ev.target, dmg: ev.dmg, crit: false, hit: true, attack: false, what: String(ev.why || 'effect') });
       else if (ev.k === 'cond' && ev.target) { const s = sideOf[ev.target]; if (s === 'foe') { if (ev.resisted) R.foeCondsResisted++; else R.foeCondsOn++; } else if (P[ev.target]) { if (ev.resisted) P[ev.target].condsResisted++; else P[ev.target].condsOn++; } }
     }
@@ -199,7 +199,7 @@ export function runFight(spec: FightSpec, opts: { log?: boolean; /** called afte
         const by = i.by && P[i.by] ? i.by : !i.by && actor && !endTurn && P[actor] ? actor : !i.by && tu?.lastHitBy && P[tu.lastHitBy] ? tu.lastHitBy : i.by ? null : pcIds[0];
         if (!by || !P[by]) continue; const p = P[by];
         const what = (i.attack ? i.what : (by === actor && step ? step.label : i.what)) + (!i.attack && by === actor && spellCrit ? ', critical' : '');
-        if (i.attack) { p.attacks++; if (i.hit) { p.hits++; p.attackDmg += i.dmg; } if (i.crit) { p.crits++; p.critDmg += i.dmg; } }
+        if (i.attack) { p.attacks++; if (i.hit) { p.hits++; p.attackDmg += i.dmg; const b = (p.byMargins ||= {})[i.margins || 0] ||= { n: 0, dmg: 0 }; b.n++; b.dmg += i.dmg; } if (i.crit) { p.crits++; p.critDmg += i.dmg; } } // rules 1.96: hits by their Margins
         p.dmg += i.dmg; if (i.dmg > 0) { hitsOn[i.target] = (hitsOn[i.target] || 0) + 1; if (R.firstDmgRound == null) R.firstDmgRound = cb.round; }
         const own = by === actor && !endTurn;
         if (own && !i.attack && step && (step.kind === 'spell' || step.kind === 'prayer')) { const o = (oneSpell[i.target] ||= { by, dmg: 0, what }); o.dmg += i.dmg; }
@@ -359,7 +359,7 @@ export function plainPreview(pc: PcSpec, tier: string, lv: { level?: number; shi
   const fmode = /melee|unarmed/.test(WEAPON[t.weapon].category) ? 'melee' : 'shot';
   let back = W(g, () => previewAttack(cb, t, u, fmode));
   if (!back.ok && /Brace/i.test(back.why || '')) { t.braced = true; back = W(g, () => previewAttack(cb, t, u, fmode)); }
-  return { ok: pv.ok, why: pv.why, ap: pv.ap, pct: pv.pct, hit: pv.dmg ? Math.max(1, Math.floor(pv.dmg.total) - pv.dmg.armour) : 0, crit: pv.dmg ? Math.max(1, Math.floor(pv.dmg.total * pv.dmg.crit) - pv.dmg.armour) : 0, critMult: pv.dmg?.crit,
+  return { ok: pv.ok, why: pv.why, ap: pv.ap, pct: pv.pct, hit: pv.dmg ? Math.max(1, Math.floor(pv.dmg.total) - pv.dmg.armour) : 0, crit: pv.dmg ? Math.max(1, Math.floor(pv.dmg.total * (1 + pv.dmg.share * MARGINS.natural_20)) - pv.dmg.armour) : 0, critMult: pv.dmg ? 1 + pv.dmg.share * MARGINS.natural_20 : undefined, marginShare: pv.dmg?.share, total: pv.dmg?.total, armour: pv.dmg?.armour,
     foeLevel: t.level, foeHp: t.maxHp, foeDef: t.def, foeArmour: t.armour, pcHp: u.maxHp, pcDef: u.def, pcArmour: u.armour, guardMax: u.resMax?.guard || 0,
     foe: back.ok && back.dmg ? { pct: back.pct, raw: Math.floor(back.dmg.total), afterArmour: Math.max(1, Math.floor(back.dmg.total) - back.dmg.armour), ap: back.ap } : { why: back.why } };
 }
@@ -381,7 +381,7 @@ export function peakCard(pc: PcSpec, tier = 'boss') {
       let pv: any; try { pv = W(g, () => previewTechnique(cb, u, e.id, { targetId: t.id, tile: t.pos, ...(opt ? { opt } : {}) }, g)); } catch { break; }
       if (!pv.ok) { if (!opt && /Call the shot|Pick|Choose/i.test(pv.why || '')) continue; break; }
       const at = (pv.attacks || []).filter((a: any) => a.target === t.id && a.pv.ok && a.pv.dmg); if (!at.length) break;
-      const hit = at.reduce((n: number, a: any) => n + Math.max(1, Math.floor(a.pv.dmg.total) - a.pv.dmg.armour), 0), crit = at.reduce((n: number, a: any) => n + Math.max(1, Math.floor(a.pv.dmg.total * a.pv.dmg.crit) - a.pv.dmg.armour), 0);
+      const hit = at.reduce((n: number, a: any) => n + Math.max(1, Math.floor(a.pv.dmg.total) - a.pv.dmg.armour), 0), crit = at.reduce((n: number, a: any) => n + Math.max(1, Math.floor(a.pv.dmg.total * (1 + a.pv.dmg.share * MARGINS.natural_20)) - a.pv.dmg.armour), 0);
       out.push({ id: e.id, name: e.name, group: e.group, ap: pv.ap, rolls: at.length, pct: at[0].pv.pct, hit, crit, momentum: pv.momentum ? pv.momentum.now - pv.momentum.after : 0, momentumMax: momMax, rounds: pv.rounds || 0, needsPressed: !!TECHNIQUE[e.id]?.needs?.pressed, needsMomentum: TECHNIQUE[e.id]?.needs?.momentum || 0 });
       break;
     }

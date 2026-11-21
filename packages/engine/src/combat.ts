@@ -6,10 +6,10 @@ import { setLogMarker, remark, say, type LogMark, type LogSideMark } from './log
 import { MAP_LAYOUTS, readLayout, nearestFree, type MapSkin } from './maplayout';
 import { RULES, ENEMY, WEAPON, ITEM, COMBAT_XP, SKILLS, SKILL, SIGIL, type WeaponDef, ENEMY_LEVELS, ENEMY_AI, enemyStats, levelled, clampEnemyLevel, levelGiven, fightLevelOf, ladderSchedule } from './data';
 import techniquesJ from '../../../data/techniques.json';
-import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, noSprintClass, armourOf, oneHanded, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, critMult, CRIT_BASE, CRIT_MAX, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
-  twoHands, saveBonus, strengthTable, passiveVigilance, critTakenPct, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources, type Grip, focusIdOf, focusKindOf, type FocusKind } from './character';
+import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isShieldId, followsId, type Injury, noSprintClass, armourOf, oneHanded, loadedOf, spareMags, packOf, overweightKg, RARITY, maxDurOf, weaponDurOf, wearState, gearBonus, gearHas, gearEffects, gearNum, magazineSize, defense, healingMult, initiativeBonus, injuryResistPct, mainHandSide, maxHp, mod, movement, physicalMult, weaponMult, weaponMultLabel,
+  twoHands, saveBonus, strengthTable, passiveVigilance, marginsTakenOf, marginShareOf, marginsPlus, elementalTakenPct, ambushTakenPct, healReceivedMult, shieldReceivedMult, counterBonus, throwRange, ambushMult, blessingPower, stealthOf, classResources, type Grip, focusIdOf, focusKindOf, type FocusKind } from './character';
 import { type Rng, die } from './rng';
-import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
+import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms, marginsOf, marginsTerm } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
 import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, ambushReady, reveal, attackFromHidden, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk, CASTER } from './ai-sigil';
@@ -175,7 +175,7 @@ export interface Unit {
   /** Derived stats (spec: Derived stats) the damage chain reads: percent of critical, elemental and ambush damage not
    * taken, healing and shields received multiplier, Counter bonus, Throwing range, Ambush multiplier, Blessing power,
    * the Ingenuity modifier (spotting), and Stealth. */
-  critTaken?: number; elemTaken?: number; ambushTaken?: number; healRecv?: number; /** shields received (rules 1.13: Conscience) */ shieldRecv?: number; counter?: number; throwRange?: number; ambushMult?: number; blessPower?: number; ingMod?: number; stealth?: number;
+  /** rules 1.96 item 8321: Margins a hit on this unit counts more (negative: fewer; character.ts marginsTakenOf) */ marginsTaken?: number; elemTaken?: number; ambushTaken?: number; healRecv?: number; /** shields received (rules 1.13: Conscience) */ shieldRecv?: number; counter?: number; throwRange?: number; ambushMult?: number; blessPower?: number; ingMod?: number; stealth?: number;
   /** The ammo type loaded now (armour_piercing, hollow_point, incendiary, enhanced; null standard) and in each spare. */
   ammoType?: string | null; magTypes?: (string | null)[];
   /** Throwables carried (grenades, satchels): item id → count. Written back after the fight. */
@@ -605,7 +605,7 @@ function pcExtras(c: Character, w: WeaponDef): Partial<Unit> {
   return {
     sv: Object.fromEntries(fams.map((f) => [f, saveBonus(c, f)])) as any, dbf: strengthTable(c),
     ...(Object.keys(sk).length ? { sk } : {}),
-    critTaken: critTakenPct(c), elemTaken: elementalTakenPct(c), ambushTaken: ambushTakenPct(c), healRecv: healReceivedMult(c), shieldRecv: shieldReceivedMult(c), counter: counterBonus(c),
+    marginsTaken: marginsTakenOf(c), elemTaken: elementalTakenPct(c), ambushTaken: ambushTakenPct(c), healRecv: healReceivedMult(c), shieldRecv: shieldReceivedMult(c), counter: counterBonus(c),
     throwRange: throwRange(c), ambushMult: ambushMult(c), blessPower: blessingPower(c), ingMod: mod(c.skills.ingenuity || 0), stealth: stealthOf(c),
     kind, tags: ['humanoid', ...((c as any).tags || [])],
     ammoType: c.loadedType || null, ...(spare?.magTypes ? { magTypes: [...spare.magTypes] } : {}),
@@ -1394,7 +1394,7 @@ export interface AttackPreview { ok: boolean; why?: string; ap: number; toHit: n
   /** Every to-hit term by name (skill, weapon, range, Heat, cover, perks…): they sum to toHit. */
   terms?: Term[];
   /** The damage a hit would do before the target's armour: base, then each multiplier and flat add by name. */
-  dmg?: { base: number; terms: Term[]; mults: Term[]; total: number; crit: number; pierce: number; armour: number };
+  dmg?: { base: number; terms: Term[]; mults: Term[]; total: number; /** rules 1.96: the Margins counted, and what each adds (marginShareOf) */ margins: number; share: number; pierce: number; armour: number };
   /** The skill the attack rolls to hit with (rules 1.63): the striking weapon's own (weaponVia), or the one an item's
    * roll_with puts in its place (rollWithPick). The attack carries it as `via` (attack_roll, on_hit, on_miss, to_hit and
    * the damage's source): what the item-op predicate `rolled_with` reads. */
@@ -1513,7 +1513,7 @@ const charFor = (u: Unit): Character | null => { const G = boundGameRef(); retur
  * flat adds, situational self-multipliers (mults, multiplicative) and target-specific bonuses (vs: fractions that add
  * together and are capped at +100%, plan 6a-1; stackDamage). Special ammo (rules.json ammo_types), the Ambush
  * multiplier, Weakened and the target's Critical damage taken are applied here. */
-export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, o: { crit?: boolean; dmgMult?: number; preview?: boolean; ambush?: boolean; /** the skill the attack rolls with (previewAttack's `via`); left out, the striking weapon's own (weaponVia) */ via?: string } = {}) {
+export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode, who: Character | null, o: { crit?: boolean; /** rules 1.96 item 8320: the roll's Margins (marginsOf), a critical's among them */ margins?: number; dmgMult?: number; preview?: boolean; ambush?: boolean; /** the skill the attack rolls with (previewAttack's `via`); left out, the striking weapon's own (weaponVia) */ via?: string } = {}) {
   const w = WEAPON[att.weapon], melee = mode !== 'thrown' && (isMelee(w) || mode === 'melee'), useW = strikeWeapon(att, mode);
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? wearState(att.dur ?? att.maxDur, att.maxDur) !== 'sound' : false; // Worn or Broken (rules 1.50: the share from data)
@@ -1535,11 +1535,10 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   // rules 1.95: melee's own named multiplier (rules 1.26) is folded into the melee profile's k (data/rules.json output.profiles.melee)
   if (melee && useW === w && att.maxDur) M((att.dur ?? 1) <= 0 ? 0.5 : worn ? 0.9 : 1, (att.dur ?? 1) <= 0 ? 'broken' : 'worn');
   if (ammo?.damage_mult) M(ammo.damage_mult, ammo.id.replace(/_/g, '-') + ' rounds');
-  // Rules 1.15: a critical is ×1.5 (an enemy's too), to ×2.0 at most with everything together. An item adds to it through
-  // ctx.critBonus in 'damage_out' (One Shot's Breath Held); the ceiling is applied after the items have spoken.
-  const critOf = (bonus: number) => 1 + (Math.max(CRIT_BASE, Math.min(CRIT_MAX, (who ? critMult(who) : CRIT_BASE) + bonus)) - 1) * (1 - Math.min(1, Math.max(0, tgt.critTaken || 0)));
-  let critM = critOf(0); const critTerm: Term = { v: critM, label: 'critical' };
-  if (o.crit) mults.push(critTerm);
+  // Rules 1.96 item 8320 (S1, Margins): the roll's Margins (a critical's two among them) and the attacker's own, less the
+  // target's Margins taken; each adds its share of the plain hit to the cash-out factor (1 on a plain attack). An item
+  // adds Margins through ctx.margins in 'damage_out' (One Shot's Breath Held); the term is set after the items have spoken.
+  const marginTerm: Term = { v: 1, label: 'Margins' };
   if (o.ambush) M(att.ambushMult || 1.5, 'ambush');
   if (condOn(att, 'weakened')) M(condMods('weakened').dealtMult ?? 1, 'Weakened'); // the row's damage_dealt_pct (data/conditions.json)
   if (condOn(att, 'sharpened')) M(condMods('sharpened').nextAttackMult ?? 1, 'Sharpened'); // SHARPEN (rules 1.4)
@@ -1548,9 +1547,11 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const src = { by: att, type: 'weapon', melee, ranged: !melee, crit: !!o.crit, mode, weapon: useW.id, dmgType: damageTypeOf(useW, useW === w ? att.ammoType : null), explosive: isExplosive(useW), ambush: !!o.ambush, ammo: ammo?.id || null, via: o.via ?? weaponVia(att, mode), ...(tech ? { tech } : {}), ...(VOLLEY ? { volley: VOLLEY } : {}) }; // via (rules 1.63): the skill it was rolled with; tech and volley (rules 1.56): the technique it is made with and the volley it is made in, on the source too, so its kill says so (the item-op predicates mode, free_tech)
   // pierce / ignoreArmour: armour this attack ignores, set by a listener (a technique's strike, rules 1.12)
   // tech (rules 1.56, the Momentum chain 2.0): the technique the blow is made with, as on attack_roll and on_hit (`mode` and `free_tech` read it)
-  const ctx: any = { att, tgt, mode, melee, via: src.via, src, base, add: 0, mults, vs, crit: !!o.crit, preview: !!o.preview, tech, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, critBonus: 0, volley: VOLLEY }; // and the volley it is made in (rules 1.56, the unarmed fighter: the predicate mode)
+  const ctx: any = { att, tgt, mode, melee, via: src.via, src, base, add: 0, mults, vs, crit: !!o.crit, margins: (o.margins || 0) + (o.margins != null || o.crit ? marginsPlus(who) : 0), cash: 1, preview: !!o.preview, tech, cb, mods: cb.mods || [], pierce: 0, ignoreArmour: false, volley: VOLLEY }; // and the volley it is made in (rules 1.56, the unarmed fighter: the predicate mode)
   emit(cb, 'damage_out', ctx);
-  if (ctx.critBonus) { critM = critOf(ctx.critBonus); critTerm.v = critM; }
+  const mCount = ctx.noMargins ? 0 : Math.max(0, (ctx.margins || 0) + (tgt.marginsTaken || 0)), cashF = Number(ctx.cash) || 1;
+  marginTerm.v = marginsTerm(cashF, mCount, marginShareOf(who)); marginTerm.label = mCount ? (cashF !== 1 ? 'cash-out and ' : '') + mCount + (mCount === 1 ? ' Margin' : ' Margins') : 'cash-out';
+  if (marginTerm.v !== 1) mults.push(marginTerm);
   amt.add = ctx.add;
   const st = closeAmount(amt);
   if (vs.length) mults.push({ v: Math.round(st.vsMult * 100) / 100, label: 'against this target (' + vs.map((x) => x.label).join(', ') + ')' });
@@ -1559,7 +1560,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const ignoreAll = !!ctx.ignoreArmour || props.includes('ignores_armour') || !!ammo?.ignores_armor || fx.op === 'ignore_armour' && fx.value >= 99;
   const pierce = (ctx.pierce || 0) + Math.round(((fx.op === 'ignore_armour' ? fx.value : 0) + (props.includes('armor_ignore_5') ? 5 : 0) + (props.includes('armor_ignore_10') || props.includes('ignores_10_armour') ? 10 : 0)) * scaleOf(att.level)); // rules 1.36: armour in HP, × scale
   const armour = armourAgainst(tgt, 'full', { mult: ammo?.armor_mult || 1, pierce, ignore: ignoreAll });
-  return { base, terms: ctx.add ? [{ v: ctx.add, label: 'perks (flat)' }] : [], mults, vs, total, crit: critM, pierce, armour, src };
+  return { base, terms: ctx.add ? [{ v: ctx.add, label: 'perks (flat)' }] : [], mults, vs, total, margins: mCount, share: marginShareOf(who), pierce, armour, src };
 }
 
 /** A party crit for the spotlight (decision 113; spotlight.ts critMoment): a player's character or a companion lands a
@@ -1634,12 +1635,12 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   const fx: any = useW === w ? (w as any).grants?.effect || {} : {};
   const worn = att.maxDur ? wearState(att.dur ?? att.maxDur, att.maxDur) !== 'sound' : false; // Worn or Broken (rules 1.50: the share from data)
   showAttacker(cb, att, tgt); // rules 1.61 item 4963: the shot shows its shooter as it is fired (a Hidden one: after the roll, below, if it is revealed)
-  // The die, then items: 'attack_roll' {att, tgt, mode, die, toHit, need, critMin, noFumble, hit?} (die may be rerolled,
-  // critMin lowered; set hit to force the result).
+  // The die, then items: 'attack_roll' {att, tgt, mode, die, toHit, need, critMin, noFumble, hit?, margins?} (die may be
+  // rerolled, critMin lowered; set hit to force the result, margins to force its Margins: rules 1.96).
   // An ambush (spec: attacks from Hidden crit on 19-20 and use the Ambush multiplier): the first attack of each Hidden entry.
   const hiddenAmbush = ambushReady(att), ambush = (hiddenAmbush || !!opts.ambush) && tgt.side !== att.side;
   if (ambush && hiddenAmbush) att.ambushUsed = att.hideEntry || 1; // only an ambush from Hidden uses the entry's
-  const rc: any = { att, tgt, mode, die: rollD20(rng).die, toHit: pv.toHit, need: pv.need, critMin: Math.min(mode === 'aimed' ? (fx.op === 'aimed_crit_min' ? fx.value : 19) : 20, ambush ? 19 : 20), noFumble: false, ambush, hit: undefined as boolean | undefined, volley: VOLLEY, via: pv.via, tech: strikeTech(att), techAp: strikeTechAp(att) ?? (VOLLEY && VOLLEY_AP != null ? VOLLEY_AP : pv.ap), cb, rng, mods: cb.mods || [] };
+  const rc: any = { att, tgt, mode, die: rollD20(rng).die, toHit: pv.toHit, need: pv.need, critMin: Math.min(mode === 'aimed' ? 19 : 20, ambush ? 19 : 20, useW === w ? gearNum(w.id, att.mods, 'crit_range', mode) : 20), /* rules 1.96 item 8323 (S13): the weapon's crit_range */ noFumble: false, ambush, hit: undefined as boolean | undefined, volley: VOLLEY, via: pv.via, tech: strikeTech(att), techAp: strikeTechAp(att) ?? (VOLLEY && VOLLEY_AP != null ? VOLLEY_AP : pv.ap), cb, rng, mods: cb.mods || [] };
   emit(cb, 'attack_roll', rc);
   const roll = rc.die, total = roll + pv.toHit;
   const crit = roll === 20 || roll >= rc.critMin, fumble = roll === 1 && !rc.noFumble;
@@ -1672,12 +1673,12 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
     ...(!melee && mode !== 'thrown' && ammoId(att.ammoType) && ammoId(att.ammoType) !== 'standard' ? { round: ammoId(att.ammoType) } : {}),
     ...(!melee && typeof opts.extra === 'number' && opts.extra < 0 ? { step: opts.extra } : {}), // this roll's own to-hit step (a Burst's later roll: −4, −3, −1; an enemy's −1 or −2), for the screen
     ...(opts.fx || {}), ...(rc.fx || {}) });
-  let damage = 0, killed = false, injury = '';
+  let damage = 0, killed = false, injury = '', mg = 0;
   if (hit) {
-    const d = attackDamage(cb, att, tgt, mode, who, { crit, dmgMult: opts.dmgMult, ambush, via: pv.via });
-    damage = landed(d.total, d.armour);
+    const d = attackDamage(cb, att, tgt, mode, who, { crit, margins: typeof rc.margins === 'number' ? rc.margins : marginsOf(total, pv.need, crit), dmgMult: opts.dmgMult, ambush, via: pv.via }); // rules 1.96: 'attack_roll' may set the Margins as it may set the hit
+    damage = landed(d.total, d.armour); mg = d.margins;
     const r = applyDamage(cb, tgt, damage, { ...d.src, shield: true, downedFails: crit ? 2 : 1, credit: 'all', nonlethal: (cb.mods || []).includes('nonlethal') } as any);
-    damage = r.amount; killed = r.killed;
+    damage = r.amount; killed = r.killed; if (mg) ev.margins = mg; // rules 1.96: the hit's Margins, for the screen
     // rules 1.66 item 5210: what the target's armour and shield soaked rides on the shot (the run's tally reads it)
     if (cb.tape) { const soaked = Math.max(0, Math.floor(d.total) - landed(d.total, d.armour)) + (r.shielded || 0); if (soaked > 0) ev.absorbed = soaked; } // only a run's fight keeps a tape
     if (killed) { ev.dmg = damage; ev.killed = true; fxFell(cb, tgt); }
@@ -1711,7 +1712,7 @@ function resolveAttackInner(cb: Combat, rng: Rng, att: Unit, tgt0: Unit, mode: A
   if (stopped) injury = ' · stopped by cover' + damageCover(cb, pv.coverTile!, weaponDamage(useW, dist(att.pos, tgt.pos), who?.skills.raw_power || 0) * (who ? weaponMult(who, useW.id) : 1) * (fx.op === 'cover_damage_mult' ? fx.value : 1), 0, att);
   const verb = melee ? 'strikes' : mode === 'thrown' ? 'throws the ' + useW.name.toLowerCase() + ' at' : mode === 'aimed' ? 'takes an aimed shot at' : 'fires at';
   const line = att.name + ' ' + verb + ' ' + tgt.name + ': d20 ' + roll + ' ' + (pv.toHit >= 0 ? '+' : '−') + Math.abs(pv.toHit) + (pv.cover ? ' (incl. −' + pv.cover + ' cover)' : '') + ' = ' + total + ' vs ' + pv.need +
-    (fumble ? (tuned ? ' · natural 1, a miss; the weapon doesn\'t jam (Tuned)' : melee || !canJam(w) ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL, ' : ' · hit, ') + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss' + injury);
+    (fumble ? (tuned ? ' · natural 1, a miss; the weapon doesn\'t jam (Tuned)' : melee || !canJam(w) ? ' · fumble, −1 AP next turn' : ' · natural 1, the gun jams') : hit ? (crit ? ' · CRITICAL' : ' · hit') + (mg ? ' (' + mg + (mg === 1 ? ' Margin' : ' Margins') + ')' : '') + ', ' + damage + ' damage' + (killed ? (tgt.side === 'foe' ? ' · down for good' : ' · Downed') : '') + injury : ' · miss' + injury);
   say(cb, line);
   // After the line: 'on_hit' {att, tgt, mode, dmg, crit, killed} or 'on_miss' {att, tgt, mode, die, fumble} (a shot cover stopped is neither).
   // rules 1.56 (the Momentum chain 2.0): the hit carries its technique as the roll did (rc.tech), so `mode` and `free_tech` read it on `hit`

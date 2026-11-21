@@ -43,6 +43,23 @@ export const tierSave = (tier?: string | null): number => NPC_SAVE[tier || 'mini
 /** How hard what someone with no sheet does is to save against, by tier (rolls.npc_strength_by_tier). */
 export const tierStrength = (tier?: string | null): number => NPC_STRENGTH[tier || 'minion'] ?? 0;
 
+/** Rules 1.96 item 8320 (S1, Margins; data/rules.json rolls.margins): every full `step` a roll beats its number by is
+ * a Margin; a critical adds `natural_20` more. Each is worth `per` + `per_perception` x Perception of the plain hit,
+ * added to the cash-out factor. */
+const MG: any = R.margins;
+if (!MG || ![MG.step, MG.per, MG.per_perception, MG.natural_20].every((n) => typeof n === 'number')) throw new Error('data/rules.json rolls.margins needs step, per, per_perception and natural_20');
+/** The Margins' numbers (rules.json rolls.margins): step, per, per_perception, natural_20. */
+export const MARGINS: { step: number; per: number; per_perception: number; natural_20: number } = { step: MG.step, per: MG.per, per_perception: MG.per_perception, natural_20: MG.natural_20 };
+/** THE Margins of a roll that landed: full steps of the total over the number it had to meet, and a critical's two. A
+ * roll that did not land has none. */
+export const marginsOf = (total: number, need: number, crit: boolean, landed = true): number =>
+  landed ? Math.floor(Math.max(0, total - need) / MARGINS.step) + (crit ? MARGINS.natural_20 : 0) : 0;
+/** What one Margin adds to the cash-out factor for a roller of this Perception (a unit with no sheet: 0). */
+export const marginShare = (perception: number): number => MARGINS.per + MARGINS.per_perception * Math.max(0, perception || 0);
+/** THE Margins' term on a hit: the cash-out factor `cash` (1 for a plain action) plus each Margin's `share` (the
+ * roller's: character.ts marginShareOf). A count under 0 (the target's Margins taken) is 0. */
+export const marginsTerm = (cash: number, margins: number, share: number): number => cash + share * Math.max(0, margins);
+
 /** A save's family: Body, Brain or Heart. */
 export type Fam = 'body' | 'brain' | 'heart';
 /** One labelled term of a roll's modifier. */
@@ -56,6 +73,8 @@ export interface RollResult {
   total: number; tn: number;
   /** The roller made it. For a save: it RESISTS (what was done to it does not land). */ ok: boolean;
   /** A natural 1 or 20 (null otherwise, and always null when the roll does not use them). */ nat: 1 | 20 | null;
+  /** Rules 1.96 item 8320: the Margins of a roll that made it (marginsOf); 0 when it did not. A check reports them (the
+   *  Narrator reads "beat it by 8" as degree). */ margins?: number;
   /** Nothing was rolled: 'immune' (an item cancelled it: ok is true), 'auto' (an item passed it: ok is true),
    * 'no_save' (there is no save against it: ok is false). `why` says which item. */
   skipped?: 'immune' | 'no_save' | 'auto'; why?: string;
@@ -82,7 +101,7 @@ export function judge(kind: RollResult['kind'], rolled: { die: number; dice?: nu
   const parts = partsOf(mod), m = parts.reduce((t, p) => t + p.add, 0), die = rolled.die, total = die + m, useNat = o.nat !== false;
   const nat = useNat && die === 20 ? 20 : useNat && die === 1 ? 1 : null;
   const ok = nat === 20 || (nat !== 1 && (o.over ? total > tn : total >= tn));
-  const res: RollResult = { kind, die, ...(rolled.dice && rolled.dice.length > 1 ? { dice: rolled.dice } : {}), mod: m, parts, total, tn, ok, nat, ...(o.fam ? { fam: o.fam } : {}), text: '' };
+  const res: RollResult = { kind, die, ...(rolled.dice && rolled.dice.length > 1 ? { dice: rolled.dice } : {}), mod: m, parts, total, tn, ok, nat, margins: marginsOf(total, tn, nat === 20, ok), ...(o.fam ? { fam: o.fam } : {}), text: '' };
   res.text = rollText(res, o.lead ?? (o.fam ? o.fam + ' save' : ''));
   return res;
 }

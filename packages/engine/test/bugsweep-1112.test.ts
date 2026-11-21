@@ -8,7 +8,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   WEAPON, WEAPONS, ENEMY, ENEMY_LEVELS, weaponDamage, damageFormula, resolveAttack, hurtUnit, applyDamage, grantShield, blast, damageObject, objectsOf,
-  enemyStats, healingMult, levelFactor, harm, attackDamage, applyCond, condOn, endCond, phys, enemyPreference, BOSS_GUARD, unguarded, guardNextAction, pastShields, apply, type Unit,
+  enemyStats, healingMult, levelFactor, harm, attackDamage, applyCond, condOn, endCond, phys, enemyPreference, BOSS_GUARD, unguarded, guardNextAction, pastShields, apply, marginsOf, marginShareOf, type Unit,
 } from '../src';
 import { genericOf } from '../src/effects/hooks';
 import { amountBlock } from '../src/effects/amounts';
@@ -45,7 +45,9 @@ describe('1. a weapon whose damage is a formula reads it from the data', () => {
     expect(d.base).toBe((WEAPON.longbow as any).damage); // the row, before the multipliers
     expect(d.total).toBeGreaterThan(dw.total); // Raw Power 4 draws harder: the Stat reads it
     let r: any; withGame(f.g, () => { for (let i = 0; i < 6 && !(r && r.hit && !r.crit); i++) { foe.hp = foe.maxHp; pc.ap = 6; pc.ammo = 5; r = resolveAttack(f.cb, f.g.rng, pc, foe, 'shot', who); } });
-    expect(r.hit).toBe(true); expect(r.damage).toBe(Math.max(1, Math.floor(d.total) - d.armour));
+    // rules 1.96 item 8320: the hit adds its Margins (pc.attack 60 beats the Defense by many full steps) to the row's damage
+    const m = marginsOf(r.total, r.vs, r.crit) + (foe.marginsTaken || 0);
+    expect(r.hit).toBe(true); expect(r.damage).toBe(Math.max(1, Math.floor(d.total * (1 + marginShareOf(who) * Math.max(0, m))) - d.armour));
   });
 });
 

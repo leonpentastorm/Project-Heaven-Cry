@@ -189,7 +189,7 @@ describe('no item softens it either: a boon, a floor and a redirect stand aside 
 describe('it ends with the fight, and is never charged outside one (item 4508)', () => {
   it('the fight is won by a real kill: the Mana Shock is cleared and Strain set to the limit before the fighters go home', () => {
     const f = fight(); const u = shortNow(f); expect(u.mg!.shock).toBe(true);
-    f.end(); const fr = f.toFriend(); const foe = f.foe; foe.hp = 1; foe.def = -40; fr.ap = 9; fr.pos = '2,2'; foe.pos = '4,2';
+    f.end(); const fr = f.toFriend(); const foe = f.foe; foe.hp = 1; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ fr.ap = 9; fr.pos = '2,2'; foe.pos = '4,2';
     expect(f.u.mg!.shock).toBe(true); expect(f.u.mg!.strain).toBeGreaterThan(f.u.mg!.strainLimit); // still in it
     const from = at(f);
     for (let i = 0; i < 6 && f.g.combat && !f.g.combat.over && f.g.phase === 'combat'; i++) f.act({ type: 'combat/attack', unitId: fr.id, targetId: foe.id, mode: 'shot' });

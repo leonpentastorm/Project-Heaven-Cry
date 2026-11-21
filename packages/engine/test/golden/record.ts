@@ -28,7 +28,7 @@ const byId = (g: any, id: string) => units(g).find((u) => u.id === id);
 const r3 = (v: number) => Math.round(v * 1000) / 1000;
 /** Write a line, unless the action produced no number at all (a stance, a condition, a refusal that says nothing). */
 const put = (T: Table, key: string, line: string) => { if (line && line !== '=>') T[key] = line; };
-const pvLine = (pv: any) => (!pv.ok ? 'NO ' + String(pv.why || '').slice(0, 70) : 'pv ' + r3(pv.dmg?.total ?? 0) + ' a' + (pv.dmg?.armour ?? 0) + ' c' + r3(pv.dmg?.crit ?? 0) + (pv.dmg?.pierce ? ' p' + pv.dmg.pierce : ''));
+const pvLine = (pv: any) => (!pv.ok ? 'NO ' + String(pv.why || '').slice(0, 70) : 'pv ' + r3(pv.dmg?.total ?? 0) + ' a' + (pv.dmg?.armour ?? 0) + ' m' + r3(pv.dmg?.share ?? 0) + (pv.dmg?.pierce ? ' p' + pv.dmg.pierce : ''));
 const attackMode = (wid: string) => (isMeleeW(wid) ? 'melee' : 'shot');
 /** The actor at 3,5 (a gun, a spell) or 6,5 (a blade), the target at 7,5; everyone else out of the way. */
 function face(g: any, u: any, t: any, melee: boolean) { place(g, [[u, melee ? '6,5' : '3,5'], [t, '7,5']]); }

@@ -23,7 +23,7 @@ const seed = (f: { g: any }, n: number) => { f.g.rng.state = rngFor(n); };
 const at = (u: Unit, k: string) => { u.pos = k; return u; };
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 const charOf = (g: any, u: Unit): Character => g.characters[u.charId!];
-const tough = (u: Unit, def = 0) => { u.hp = u.maxHp = 999; u.def = def; u.armour = 0; u.injResist = 0; (u as any).sv = { body: -99, brain: -99, heart: -99 }; return u; };
+const tough = (u: Unit, def = 0) => { u.hp = u.maxHp = 999; u.def = def; u.marginsTaken = -99; /* rules 1.96: the dummy takes no Margins */ u.armour = 0; u.injResist = 0; (u as any).sv = { body: -99, brain: -99, heart: -99 }; return u; };
 const cls = (adv: string, extra: any = {}) => ({ advancedClass: adv, ...extra });
 const mk = (id: string, t: string) => 'class:' + id + '#' + t;
 const evoker = (u: Unit, words: string[], extra: any = {}) => { u.mg = { words, designs: [], evoker: true, emanator: false, charge: 10, cores: 0, coresMade: 0, flux: 0, mp: 0, mpMax: 0, strain: 0, held: null, cast: false, brain: 2, will: 0, sigilMult: 1, sigilBoon: 1, soulMult: 1, soulBoon: 1, deal: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 3, saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any; return u; };
@@ -87,7 +87,7 @@ describe('Blade Scribe under 1.4', () => {
   it('Three-Cut Script: a Burst applies at the last target (SPREAD catches the foe beside it, and an ally: friendly fire)', () => {
     const f = fightWith([cls('blade_scribe', { weapon: 'sabre' }), {}], [{ at: 'O10' }, { at: 'O11' }]);
     const pc = f.turn(at(f.pc, '2,5')); evoker(pc, ['fire', 'spread']); const [a, b] = foes(f.cb);
-    tough(at(a, '3,5'), -99); tough(at(b, '4,5'), -99); const ally = f.cb.units.find((u) => u.side === 'pc' && u !== pc)!; at(ally, '3,6'); ally.hp = ally.maxHp = 999; ally.def = -99;
+    tough(at(a, '3,5'), -99); tough(at(b, '4,5'), -99); const ally = f.cb.units.find((u) => u.side === 'pc' && u !== pc)!; at(ally, '3,6'); ally.hp = ally.maxHp = 999; ally.def = -99; ally.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */
     const hb = b.hp, ha = ally.hp; pc.ap = 9; f.g.rng.state = calm(16);
     f.act({ type: 'combat/perk', unitId: pc.id, id: 'blade_scribe.three_cut_script', targetId: a.id, choice: 'fire,spread,spread' } as any);
     expect(logHas(f.cb, /The script resolves on Foe 1/)).toBe(true);

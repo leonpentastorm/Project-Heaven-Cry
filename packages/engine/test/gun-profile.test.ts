@@ -13,7 +13,7 @@ const SEEDS = Array.from({ length: 16 }, (_, i) => 'G1-gun-' + i);
 function volley(agility: number, weapon = 'service_pistol') {
   return SEEDS.map((seed) => {
     const f = fightWith([{ weapon, attrs: { agility }, skills: { dexterity: 6 }, classId: null }], [{ tier: 'soldier', at: 'F6', classic: true }], { seed });
-    const foe = f.foe; foe.hp = foe.maxHp = 9999; foe.armour = 0; f.turn(f.pc);
+    const foe = f.foe; foe.hp = foe.maxHp = 9999; foe.armour = 0; foe.marginsTaken = -99; /* rules 1.96: no Margins, so the ratio is the profile's */ f.turn(f.pc);
     f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: foe.id, mode: 'shot' });
     return 9999 - f.unit(foe.id).hp;
   });

@@ -33,7 +33,7 @@ function setup(words: string[], foes: FoeAt[] = [{ at: '9,5' }], o: { map?: MapD
   cb.objects = [];
   const u = cb.units.find((x) => x.charId === 'c1')!, es = cb.units.filter((x) => x.side === 'foe'), allies = cb.units.filter((x) => x.side === 'pc' && x !== u);
   for (const x of [u, ...allies]) { x.ap = 99; x.mg!.words = [...words]; x.mg!.maxWords = 4; x.mg!.charge = 999; x.mg!.flux = -99; x.mg!.sigilMult = 1; x.mg!.sigilBoon = 1; x.mg!.deal = 1; x.mg!.elemMult = 1; x.mg!.healMult = 1; x.mg!.rangeBonus = 0; x.mg!.durBonus = 0; x.mg!.coreSave = 0; x.mg!.glyphAp = 1; x.hp = x.maxHp = 500; x.armour = 0; x.def = 10; }
-  for (const e of es) { e.def = -99; e.hp = e.maxHp = 500; e.armour = 0; e.sv = { body: -99, brain: -99, heart: -99 }; }
+  for (const e of es) { e.def = -99; e.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ e.hp = e.maxHp = 500; e.armour = 0; e.sv = { body: -99, brain: -99, heart: -99 }; }
   cb.mana = 15; // Normal air: Healing given ×1
   return { cb, u, e: es[0], es, allies, rng: seed() };
 }
@@ -328,7 +328,7 @@ describe('Subjects (spec: the words)', () => {
     expect(previewEvoke(a.cb, a.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(Math.round(WD('stone') * 1.5) - 10); // rules 1.95: the rows; Sigil damage takes full armour
     expect(previewEvoke(f.cb, f.u, '3,5', '5,5').affected[0].dmgAfterArmour).toBe(Math.round(WD('fire') * 1.5) - 5); // Elemental: half armour
     const c = setup(['fire', 'condense'], [{ at: '5,5' }]); draw(c.cb, c.rng, c.u, ['fire', 'condense'], ['4,5', '3,5']);
-    const hp = c.e.hp; evoke(c.cb, rollIs(20), c.u, '3,5', '5,5'); expect(hp - c.e.hp).toBe(Math.round(WD('fire') * 1.5 * 1.5)); expect(condOn(c.e, 'burning')).toBe(true); // FIRE's row × 1.5 (CONDENSE) × 1.5 (critical), rounded (rules 1.95: the row x the factor)
+    const hp = c.e.hp; evoke(c.cb, rollIs(20), c.u, '3,5', '5,5'); expect(hp - c.e.hp).toBe(Math.round(WD('fire') * 1.5)); /* rules 1.96: the critical's ×1.5 is gone (its two Margins are tested in rules117-magic; this fixture's foes take none) */ expect(condOn(c.e, 'burning')).toBe(true); // FIRE's row × 1.5 (CONDENSE) × 1.5 (critical), rounded (rules 1.95: the row x the factor)
   });
   it('ACID: 15 Elemental and Corroded (no save): 5 at the start of each turn, Defense −2, a Body save at the end of each turn ends it', () => {
     const { cb, u, e, rng } = setup(['acid', 'condense'], [{ at: '5,5' }]); draw(cb, rng, u, ['acid', 'condense'], ['4,5', '3,5']);
@@ -507,6 +507,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
     expect(fx(cb, 'trap_set')[0].only).toBe('pc');
     allies[0].pos = '6,6'; allies[0].ap = 9; moveUnit(cb, allies[0], '6,5', rng); expect(cb.zones!.some((x) => x.kind === 'trap')).toBe(true);
     allies[0].pos = '7,7';
+    allies[0].marginsTaken = -99; // rules 1.96: the ally the trap catches takes no Margins in this fixture (they are tested apart)
     const hp = e.hp, ah = allies[0].hp; e.pos = '8,5'; e.ap = 9; moveUnit(cb, e, '6,5', rng);
     expect(hp - e.hp).toBe(11); expect(ah - allies[0].hp).toBe(11); // friendly fire: the ally stood within 2
     expect(cb.zones!.some((x) => x.kind === 'trap')).toBe(false); expect(fx(cb, 'trap_sprung').length).toBe(1);
@@ -538,7 +539,7 @@ describe('what stays: fields, traps, turrets (spec: Delivery)', () => {
   });
   it('turrets zap allies too (KIN keeps your side out); WATCH + TWICE shoots the two nearest; WAIT + WATCH is a hidden turret', () => {
     const { cb, u, e, allies, rng } = setup(['spark', 'seek', 'watch', 'kin', 'twice'], [{ at: '14,5' }], { allies: ['11,5'] });
-    allies[0].def = -99; draw(cb, rng, u, ['spark', 'watch', 'seek'], ['5,5', '4,5', '3,5']); evoke(cb, rng, u, '3,5', '10,5');
+    allies[0].def = -99; allies[0].marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ draw(cb, rng, u, ['spark', 'watch', 'seek'], ['5,5', '4,5', '3,5']); evoke(cb, rng, u, '3,5', '10,5');
     const zap = Math.round(WD('spark') * 0.5); // rules 1.95: SPARK's row, a turret at half
     let ah = allies[0].hp; magicTurnStart(cb, rng, u); expect(allies[0].hp).toBe(ah - zap);
     const k = setup(['spark', 'seek', 'watch', 'kin'], [{ at: '14,5' }], { allies: ['11,6'] }); draw(k.cb, k.rng, k.u, ['spark', 'watch', 'kin', 'seek'], ['5,5', '4,5', '3,5', '2,5']); evoke(k.cb, k.rng, k.u, '2,5', '10,5');

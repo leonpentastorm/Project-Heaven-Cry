@@ -39,7 +39,7 @@ export interface CondDef {
   /** the data's id */ id: string; /** the name it is stored under (u.conds[key]; the id unless the row says otherwise) */ key: string;
   /** the word in "X is <name>" (the row's label, else its name) */ name: string; /** the row's own name */ title: string; text: string;
   /** the save family (debuffs only: a boon or a state has none) */ fam?: Fam; /** rounds (UNTIL: until its rule ends it) */ rounds: number;
-  boon?: boolean; /** a harm (the row's kind `debuff`): what may never touch a friend on the field (rules 1.55 item 64) */ harm?: boolean; /** it never ticks */ noTick?: boolean; /** nobody saves against it */ noSave?: boolean; engine: CondEngine; until?: string; mods: CondMods;
+  boon?: boolean; /** rules 1.96 item 8330 (ruling 41): the squad's one mark (on a foe) or one gift (on an attacker): laying one ends the other of its word on that unit */ squad?: 'mark' | 'gift'; /** a harm (the row's kind `debuff`): what may never touch a friend on the field (rules 1.55 item 64) */ harm?: boolean; /** it never ticks */ noTick?: boolean; /** nobody saves against it */ noSave?: boolean; engine: CondEngine; until?: string; mods: CondMods;
 }
 
 const HIT_CONTEXTS: HitContext[] = ['own_attacks', 'next_attack', 'not_vs_source', 'vs_source', 'marker_squad_vs_self', 'melee_vs_self', 'ranged_vs_self'];
@@ -65,6 +65,8 @@ function modsOf(row: any): CondMods {
   }
   return m;
 }
+/** Rules 1.96 item 8330 (ruling 41): the two words a row's `squad` may hold (cleanse's `family` takes them too). */
+export const SQUAD_WORDS = ['mark', 'gift'];
 /** The rows as the data has them (the wiki and the amounts read these; nothing else loads the file). */
 export const CONDITION_ROWS: any[] = (conditionsJ as any).items;
 /** The table, by storage key. */
@@ -77,9 +79,10 @@ function loadRow(row: any): void {
   if (!['table', 'flag', 'state'].includes(row.engine)) throw new Error('conditions.json: ' + row.id + ' has no `engine` (table, flag or state).');
   if (!until && !(row.duration?.rounds > 0)) throw new Error('conditions.json: ' + row.id + ' needs duration.rounds or duration.until.');
   const fam = ['body', 'brain', 'heart'].includes(row.family) && !row.boon ? (row.family as Fam) : undefined;
+  if (row.squad != null && !SQUAD_WORDS.includes(row.squad)) throw new Error('conditions.json: ' + row.id + ' squad is one of ' + SQUAD_WORDS.join(', ') + '.');
   if (row.save && !fam) throw new Error('conditions.json: ' + row.id + ' has a save and no family.');
   CONDS[key] = { id: row.id, key, name: row.label || row.name, title: row.name, text: row.text || '', ...(fam ? { fam } : {}), rounds: until ? UNTIL : row.duration.rounds,
-    ...(row.boon ? { boon: true } : {}), ...(row.kind === 'debuff' ? { harm: true } : {}), ...(until ? { noTick: true, until } : {}), ...(row.save ? {} : { noSave: true }), engine: row.engine, mods: modsOf(row) };
+    ...(row.boon ? { boon: true } : {}), ...(row.squad === 'mark' || row.squad === 'gift' ? { squad: row.squad } : {}), ...(row.kind === 'debuff' ? { harm: true } : {}), ...(until ? { noTick: true, until } : {}), ...(row.save ? {} : { noSave: true }), engine: row.engine, mods: modsOf(row) };
   if (key !== row.id) ALIAS[row.id] = key;
   for (const a of (row.aliases || []) as string[]) ALIAS[a] = key;
 }

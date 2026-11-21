@@ -13,6 +13,7 @@ import techniquesJ from '../../../data/techniques.json';
 import figmentsJ from '../../../data/figments.json';
 const wpGear = (worldPlayJ as any).gear;
 import { skillRollMod } from './effects/core';
+import { marginShare } from './rolls';
 import { allPendingDoorPicks } from './doorpicks';
 import { statOf, levelFactor, scaleOf, profileOf, pairOf } from './effects/output';
 import { CONDITION_ROWS } from './condtable';
@@ -860,10 +861,13 @@ export function weaponMultLabel(weaponId: string | null | undefined, o: { /** ru
 }
 /** Attribute and skill ids as words ("Agility and Dexterity"). */
 const namesOf =(ids: string[]): string => ids.map((id) => ATTRS.find((a) => a.id === id)?.name || SKILL[id]?.name || id).join(', ').replace(/, ([^,]*)$/, ' and $1');
-/** Rules 1.15 (provisional, item 1022): a critical is ×1.5, and nothing takes it past ×2.0, everything together. */
-export const CRIT_BASE = 1.5, CRIT_MAX = 2.0, CRIT_PER_PERCEPTION = 0.03, CRIT_PER_DEXTERITY = 0.02;
-/** The Critical multiplier: 1.5 + 3% × (Perception − 1) + 2% × Dexterity, then perks, traits and gear, to 2.0 at most. */
-export const critMult = (c: Character) => Math.max(CRIT_BASE, Math.min(CRIT_MAX, Math.round(fx(c, 'crit_damage', CRIT_BASE + CRIT_PER_PERCEPTION * (A(c, 'perception') - 1) + CRIT_PER_DEXTERITY * P(c, 'dexterity')) * 1000) / 1000)); // rules 1.12 (item 953): offence reads the alpha (it was Athletics)
+/** Rules 1.96 item 8320 (S1): the share each Margin adds to a hit this character lands (rolls.ts marginShare: 25% + 1%
+ * a point of Perception; a unit with no sheet reads 0). The critical's multiplier (rules 1.15's x1.5 to x2.0,
+ * CRIT_BASE, CRIT_MAX) is gone. */
+export const marginShareOf = (c: Character | null | undefined): number => marginShare(c ? A(c, 'perception') : 0);
+/** Margins a hit this character lands carries beyond its roll's (the stat `margins`: One Shot's Breath Held is its
+ * own handler; none in data today). */
+export const marginsPlus = (c: Character | null | undefined): number => (c ? fx(c, 'margins', 0) : 0);
 export const healingMult = (c: Character) => fx(c, 'mult_heal_given', statOf('healing', c)); // rules 1.13: healing given is Empathy's (it was Camaraderie's)
 /** Rules 1.24 (items 1340, 1341; PROVISIONAL): Max MP is 100 + 75 × (Determination − 1) + 25 × (Insight − 1): the
  * Outburst's own two attributes (Will Power's and Empathy's); 100 with neither raised, 1,000 with both at 10. Virtue
@@ -1246,8 +1250,11 @@ export const passive = (c: Character, skill: string, ctx: any = {}) => fx(c, `pa
 // ---------- derived stats the damage chain and the shared subsystems read (spec: Derived stats; rules 1.3) ----------
 /** Percentage reductions are capped at 60% (spec: Derived stats). Each returns the fraction NOT taken off (0..0.6). */
 const cap60 = (x: number) => Math.max(0, Math.min(0.6, x));
-/** Critical damage taken: −10% × (Perception − 1) − 5% × Acuity (the skill with the id 'analysis'). */
-export const critTakenPct = (c: Character) => cap60(fx(c, 'crit_taken', 0.1 * (A(c, 'perception') - 1) + 0.05 * P(c, 'analysis'))); // rules 1.13: Acuity's (the skill with the id 'analysis'); it was Durability's
+/** Rules 1.96 item 8321: Margins taken, a count a hit on this character adds to its Margins (negative: fewer). Acuity
+ * (the skill with the id 'analysis') takes one off at each of its per_point.numbers.margins_taken_at points (5 and
+ * 10: margins_taken_from, margins_taken_more_from), then the stat `margins_taken` (rules 1.13's critical damage taken, a share, is gone). */
+export const marginsTakenOf = (c: Character): number => fx(c, 'margins_taken', ACUITY_TAKEN.at.filter((n) => P(c, 'analysis') >= n).length * ACUITY_TAKEN.each);
+const ACUITY_TAKEN: { at: number[]; each: number } = (() => { const n: any = (SKILL as any).analysis?.per_point?.numbers || {}, at = [n.margins_taken_from, n.margins_taken_more_from]; if (!at.every((x) => typeof x === 'number') || typeof n.margins_taken_each !== 'number') throw new Error('data/skills.json analysis per_point.numbers needs margins_taken_from, margins_taken_more_from and margins_taken_each'); return { at, each: n.margins_taken_each }; })();
 /** Elemental damage taken: −10% × Pain Threshold. Below 0 it is damage taken extra (Paper, Oil in My Mind: +10% at
  * Pain Threshold 0), so only the 60% cap applies, not the floor. */
 
@@ -1742,7 +1749,7 @@ export function fitMod(c: Character, idx: number, where: GunWhere = 'main'): str
   c.pack = pack; return null;
 }
 // ---------- a weapon instance's numbers (rules 1.56, plan 0.29 primitive 2) ----------
-const GEAR_FIELDS: Record<string, { combine: 'sum' | 'max'; default?: number }> = (RULES as any).weapons_rules?.gear_fields || {};
+const GEAR_FIELDS: Record<string, { combine: 'sum' | 'max' | 'min'; default?: number }> = (RULES as any).weapons_rules?.gear_fields || {};
 /** A weapon instance's number (the gun and its fitted mods): one of the closed list of fields in data/rules.json
  * weapons_rules.gear_fields (recoil, magazine_pct, bands, silent, melee_damage). The weapon row's own value (else the
  * list's `default`) and each mod row's change, combined by the list's `combine` (sum: the weapon's plus every mod's; max:
@@ -1750,9 +1757,10 @@ const GEAR_FIELDS: Record<string, { combine: 'sum' | 'max'; default?: number }> 
  * unknown field throws. */
 export function gearNum(weaponId: string | null | undefined, mods: readonly string[] | null | undefined, field: string, mode?: string): number {
   const f = GEAR_FIELDS[field]; if (!f) throw new Error('gearNum: "' + field + '" is not in data/rules.json weapons_rules.gear_fields');
-  const w: any = weaponId ? WEAPON[weaponId] : null, own = typeof w?.[field] === 'number' ? w[field] : f.default ?? 0;
-  const vals = (mods || []).map((id) => ITEM[id] as any).filter((m) => m && typeof m[field] === 'number' && (!m[field + '_modes'] || (!!mode && m[field + '_modes'].includes(mode)))).map((m) => m[field] as number);
-  return f.combine === 'max' ? Math.max(own, ...vals) : vals.reduce((t, v) => t + v, own);
+  const inMode = (x: any) => !x[field + '_modes'] || (!!mode && x[field + '_modes'].includes(mode)); // rules 1.96: a row's own `_modes` as a mod's (crit_range)
+  const w: any = weaponId ? WEAPON[weaponId] : null, own = typeof w?.[field] === 'number' && inMode(w) ? w[field] : f.default ?? 0;
+  const vals = (mods || []).map((id) => ITEM[id] as any).filter((m) => m && typeof m[field] === 'number' && inMode(m)).map((m) => m[field] as number);
+  return f.combine === 'max' ? Math.max(own, ...vals) : f.combine === 'min' ? Math.min(own, ...vals) : vals.reduce((t, v) => t + v, own);
 }
 /** The mods fitted to the carried instance of this weapon (the main hand's, else the off hand's; none in the pack): what
  * a spare magazine of that weapon is sized by. */

@@ -12,6 +12,7 @@
 //   reactions: Pressed holds no Watch; Suppressed takes no opportunity attack either
 import { say, type Combat, type Unit, alive, dist, unitSees, emitFx, strikeWeapon, onFightStart } from '../combat';
 import { onHook, charOfUnit, growthHeld } from '../effects/hooks';
+import { wearOf } from '../effects/cost';
 import { condOn } from '../magic';
 import { WEAPON } from '../data';
 import { PHYS_RULES, TECHNIQUE, addDrill, drillMult } from './data';
@@ -61,7 +62,7 @@ onFightStart((cb) => {
 // come here (they are 'forced_move').
 onHook('moved', (ctx: any, cb) => {
   const u: Unit = ctx.u; if (!u || ctx.forced || ctx.part || !['move', 'sprint', 'disengage'].includes(ctx.how) || !(ctx.tiles > 0) || !momentumOf(u)) return;
-  wearMomentum(cb, u, ctx.tiles * (M().step_loss ?? 1)); // rules 1.60 item 4605: Guts divides it
+  wearMomentum(cb, u, ctx.tiles * (M().step_loss ?? 1), 'walk'); // rules 1.60 item 4605: Guts divides it
 });
 // Being hit: −1 for each damaging hit taken, from any source. Not while guarding: the Guard technique is up, the hit
 // was Parried, or the unit held Guard points as it arrived. A condition's own tick (Bleeding, Burning) and the harm a
@@ -71,7 +72,7 @@ onHook('damage_in', (ctx: any, cb) => {
   const u: Unit = ctx.t; if (ctx.phase !== 'after' || !u || !(ctx.dealt > 0) || !momentumOf(u)) return;
   if (ctx.self || NOT_A_HIT.has(ctx.src?.type)) return;
   if (guardUp(u) || ctx.parryWon || (ctx.guardSoaked || 0) > 0) return; // Guard points keep Momentum only on a hit they soaked part of (Leon, 10 Nov 2026: a kept point must not protect it for ever)
-  wearMomentum(cb, u, M().hit_loss ?? 1); // rules 1.60 item 4605: Guts divides it
+  wearMomentum(cb, u, M().hit_loss ?? 1, 'hit'); // rules 1.60 item 4605: Guts divides it
 });
 
 onHook('on_kill', (ctx: any, cb) => {
@@ -114,6 +115,7 @@ onHook('turn_end', (ctx: any, cb) => {
   if (coveredUnseen(cb, u)) { fall = P().decay_hidden; why = 'in cover and out of sight'; }
   else if (nearestFoe(cb, u) < ((u as any).nearFoe0 ?? 0)) { fall = P().decay_closing; why = 'closing in'; }
   for (const f of DECAY) fall = f(cb, u, fall);
+  fall = wearOf(u, 'pressure', fall, { site: 'turn_end' }, cb); // rules 1.96 item 8327 (S6): the sheet's wear:pressure
   // rules 1.60 item 4606 (the beta feeds: Athletics): the final fall, whichever value applied, x the Pressure fall's feed,
   // the fraction carried to the next turn's end
   if (fall > 0) fall += feedCarry(u, 'pressure_fall', fall * (feedOf(u, 'pressure_fall') - 1));

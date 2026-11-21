@@ -22,7 +22,7 @@ function rig(words: string[], foes: string[] = ['14,9'], o: { skills?: Record<st
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pcs.forEach((p, i) => { p.pos = i ? allies[i - 1] : '3,5'; });
   f.foes.forEach((e, i) => { e.pos = foes[i]; });
-  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; }
+  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; }
   const u = f.turn(f.pc); arm(u, words, o.maxWords ?? 4);
   f.g.rng.state = SEED;
   return f;

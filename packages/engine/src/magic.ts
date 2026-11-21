@@ -15,7 +15,7 @@ import { say, type Combat, type Unit, alwaysSeen, bossInTheOpen, dist, lineOfSig
 import { type Rng, die } from './rng';
 import { CONDS, condId, condMods, FLAG_CONDS, UNTIL, type CondDef } from './condtable';
 import { rawBleed, rawDazed, rawProne, rawHidden } from './unitstate';
-import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult, toHitAdd } from './rolls';
+import { rollSave, rollD20, judge, rollFx, SAVE_TN, tierSave, tierStrength, type RollResult, toHitAdd, marginsTerm } from './rolls';
 import { emit, boundGame, bindGame, statQuery, onHook, charOfUnit, growthHeld, harmHeld, ifFails } from './effects/hooks';
 import { FEELING, PLAIN_STEP, ONCE_EACH, RESIDUE_ROUNDS, feelDelta, feelingStep, strongestFeeling, residueAt, residueReaches, residueStand, residueFlag, lastHurtBy, SOUL_PRACTICE } from './feelings';
 import { apDebt } from './effects/ap';
@@ -330,6 +330,8 @@ export function condHit(u: Unit, tgt?: Unit | null, cb?: Combat | null): number 
   if (tgt) n -= residueStand(lc, tgt, 'defense');
   return n;
 }
+/** Rules 1.96 item 8330: the conditions a unit carries with this squad word (the mark, the gift). */
+export const squadOf = (u: Unit, word: string): string[] => Object.keys(u.conds || {}).filter((id) => condOn(u, id) && CONDS[id]?.squad === word);
 /** The body-family debuffs a unit carries now (Shrug It Off, Iron Stomach…), and any family's. */
 export const debuffsOf = (u: Unit, fam?: Fam) => [...Object.keys(u.conds || {}).filter((id) => condOn(u, id) && !isBoon(id) && (!fam || CONDS[id]?.fam === fam)),
   ...(!fam || fam === 'body' ? [...(u.bleed ? ['bleeding'] : []), ...(u.dazedNext ? ['dazed'] : []), ...(u.prone ? ['prone'] : [])] : [])];
@@ -389,6 +391,8 @@ export function applyCond(cb: Combat, rng: Rng, by: Unit | null, t: Unit, id0: s
     if (sv.ok) { emitFx(cb, 'cond', { target: t.id, at: t.pos, id, resisted: true }); if (sv.skipped) return ' · ' + t.name + ' ' + sv.text; emit(cb, 'cond_resisted', { by, t, id, cb }); return ' · ' + t.name + ' resists (' + sv.text + ')'; }
     saved = sv.skipped ? '' : sv.text;
   }
+  // rules 1.96 item 8330 (ruling 41): the squad's one mark and one gift: laying one ends the other of its word on the unit
+  if (def.squad) for (const o of Object.keys(t.conds || {})) if (o !== id && CONDS[o]?.squad === def.squad && condOn(t, o)) endCond(t, o, cb);
   if (id === 'marked' && t.hidden) { rawHidden(cb, t, false); delete t.hideEntry; (cb.sightWhy ||= {})[t.id] = 'reveal'; }
   const n = ca.rounds || rounds || def.rounds, had = condOn(t, id);
   emitFx(cb, 'cond', { target: t.id, at: t.pos, id, ...(FX_ELEMENT ? { element: FX_ELEMENT } : {}) });
@@ -643,9 +647,9 @@ export {
   enemyCast, enemyAvoidMagic, enemyMagic, evokeTargets, evokeMarks, enemyDefaultWords, ENEMY_MAX_WORDS, newestCondition, cleanseList, turretAim, MAX_GLYPHS, SIGIL_REV,
   STARTING_DEFAULT, SIGIL_GRAMMAR, SIGIL_ELEMENTS, type Pattern, type Spell, type EvokePreview, type EvokeOpts, type MissilePlan, type Affected, type Facing, type DrawPreview,
   evokeGrowth, strokeRuns, strokeOf, strokeOfGlyph, strokesOfGlyph, strokesAt, strokePick, strokeCandidates, tidyStrokes, fadePattern, glyphDrawer, junctionsFor, JUNCTION, type Stroke, type StrokeOption,
-  lineMult, LINE_MULT, lineMultFor, spellCritMult, spellGapToHit, lineGuards, capParts,
+  lineMult, LINE_MULT, lineMultFor, spellMargins, spellGapToHit, lineGuards, capParts,
 } from './sigil';
-import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS, spellCritMult, spellGapToHit } from './sigil';
+import { previewEvoke as previewEvokeS, scuff as scuffS, sigilTurnStart, sigilRoundTick, sigilEnter, dir8, tidyStrokes as tidyStrokesS, spellMargins, spellGapToHit } from './sigil';
 import { work } from './kit';
 /** The element of the spell resolving now, carried on its damage, miss and condition fx events (the FX layer reads it). */
 let FX_ELEMENT: string | null = null;
@@ -1405,7 +1409,7 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
   if (school === 'damage') {
     const mode = has('inverse') ? undefined : option, md: any = mode ? DMODE[mode] : null;
     // (its terms open: the school's amount, a second school's share, the way it strikes, the critical; the tone's bonus rides after them)
-    const oa = outburstTerms(m, d, sm), strike = (crit: number, plus: number): SpellAmount => ({ base: oa.base, mults: [...oa.mults, term(f, 'share'), term(damageModeMult(mode, t), 'way'), term(crit, 'critical')], ...(plus ? { plus } : {}) });
+    const oa = outburstTerms(m, d, sm), strike = (crit: number, plus: number): SpellAmount => ({ base: oa.base, mults: [...oa.mults, term(f, 'share'), term(damageModeMult(mode, t), 'way'), term(crit, 'Margins')], ...(plus ? { plus } : {}) });
     if (has('inverse')) { if (t.side !== u.side) return { landed: false, crit: false, line: '' }; const s = mendSized(cb, u, t, 'shield', inverseShield(m, d, sm) * f, ofChar(m) ? { of: 'soul_mend', own: sm * boonArea(m, d) * f } : null).shield; out.push(t.name + ' is shielded (' + s + ')'); return { landed: true, crit: false, line: '' }; }
     const ign = toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover');
     let crit = false; const hp0 = t.hp;
@@ -1417,7 +1421,8 @@ function schoolOn(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sch
       const rolled = adv ? 'd20 ' + r1 + ' and ' + r2 + ', Calm keeps ' + r : 'd20 ' + r;
       rollFx(cb, sr, u, { why: 'soul' });
       if (!sr.ok) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); out.push('misses ' + t.name + ' (' + rolled + ' → ' + tot + ' vs ' + t.def + ')'); return { landed: false, crit: false, line: '' }; }
-      crit = !adv && r >= (REL?.critFrom ?? 20); out.push('hits ' + t.name + ' (' + rolled + (crit ? ', CRITICAL' : '') + ')' + withElement(toneElement(tone), () => harm(cb, rng, u, t, strike(crit ? spellCritMult(cb, u, t) : 1, bonusDmg(tone, rs)), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
+      crit = !adv && r >= (REL?.critFrom ?? 20); const mg = spellMargins(cb, u, t, tot, crit); // rules 1.96 item 8320: the Margins add to the stage's multiplier (the critical's ×1.5 to ×2.0 is gone)
+      out.push('hits ' + t.name + ' (' + rolled + (crit ? ', CRITICAL' : '') + (mg.n ? ', ' + mg.n + (mg.n === 1 ? ' Margin' : ' Margins') : '') + ')' + withElement(toneElement(tone), () => harm(cb, rng, u, t, strike(mg.n && sm ? marginsTerm(sm, mg.n, mg.share) / sm : 1, bonusDmg(tone, rs)), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))));
       if (crit) noteCrit(cb, u, t, 'outburst'); // the spotlight's crit (decision 113): presentation only
     } else out.push((primary ? '' : 'and ') + withElement(toneElement(tone), () => harm(cb, rng, u, t, strike(1, primary ? bonusDmg(tone, rs) : 0), harmType(tone), TONE[tone]?.damage_type, armourKind(tone, rs))).replace(/^ · /, ''));
     // The ways to strike (rules 1.19): Brand marks the target for your side; Drain heals you for a share of the HP taken.

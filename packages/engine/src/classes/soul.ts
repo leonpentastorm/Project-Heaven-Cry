@@ -9,11 +9,11 @@ import { MODULE, TONE } from '../data';
 import { itemAmount } from '../effects/amounts';
 import { term } from '../effects/output';
 import {
-  harm, heal, applyCond, magicShove, condSkillMod, condHit, withElement, outburstDamage, toneRiders, applyToneRiders, toneElement, toneOf, spellCritMult, spellGapToHit,
+  harm, heal, applyCond, magicShove, condSkillMod, condHit, withElement, outburstDamage, toneRiders, applyToneRiders, toneElement, toneOf, spellMargins, spellGapToHit,
   stageMult, resonanceFor, RESONANCE_BONUS, RESONANCE_MAX,
 } from '../magic';
 import { type Rng } from '../rng';
-import { rollVs, toHitAdd } from '../rolls';
+import { rollVs, toHitAdd, marginsTerm } from '../rolls';
 
 const SKIP = ['armour_full', 'bonus_damage', 'ignore_cover', 'chain'];
 /** Armour a tone's damage counts at this rider stage: Raw none, an element half (Stone from stage 1: full). */
@@ -27,16 +27,16 @@ export const designRolls = (d: OutburstDesign) => { const f = (d.modules || []).
  * stage rs on an enemy it hits. f scales it (a half-strength rider: 0.5). Returns the log piece. */
 export function soulStrike(cb: Combat, rng: Rng, u: Unit, d: OutburstDesign, t: Unit, sm: number, rs: number, roll: boolean, f = 1): string {
   const m = u.mg!, tone = toneOf(d), el = toneElement(tone);
-  let crit = false, head = '';
+  let crit = false, head = '', mg = { n: 0, share: 0 };
   if (roll) {
     const homing = (d.modules || []).includes('homing'), ign = homing || toneRiders(tone, rs).riders.some((r) => r.rider === 'ignore_cover');
     const cover = ign ? 0 : coverBonus(cb, u.pos, t.pos);
     const sr = rollVs(cb, rng, { by: u, mod: m.will + (u.sk?.will_power ?? 0) + condSkillMod(u, 'will_power') + (homing ? 2 : 0) + condHit(u, t, cb) - cover + spellGapToHit(cb, u, t) + toHitAdd(cb, u, t, 'soul', { preview: false }), tn: t.def, why: 'soul' }); // rules 1.17: a spell's roll reads the level gap
     showAttacker(cb, u, t); // rules 1.61 item 4963
     if (!sr.ok) { emitFx(cb, 'miss', { unit: u.id, target: t.id, at: t.pos, by: 'soul' }); return 'misses ' + t.name + ' (' + sr.text + ')'; }
-    crit = sr.nat === 20; head = 'hits ' + t.name + ' (' + sr.text + (crit ? ', CRITICAL' : '') + ')';
+    crit = sr.nat === 20; mg = spellMargins(cb, u, t, sr.total, crit); head = 'hits ' + t.name + ' (' + sr.text + (crit ? ', CRITICAL' : '') + (mg.n ? ', ' + mg.n + (mg.n === 1 ? ' Margin' : ' Margins') : '') + ')';
   }
-  const dmg = outburstDamage(m, d, sm) * f * (crit ? spellCritMult(cb, u, t) : 1) + toneBonus(tone, rs); // rules 1.17: a spell's critical is ×1.5 to ×2.0
+  const dmg = outburstDamage(m, d, sm) * f * (mg.n && sm ? marginsTerm(sm, mg.n, mg.share) / sm : 1) + toneBonus(tone, rs); // rules 1.96 item 8320: the Margins add to the stage's multiplier (the critical's ×1.5 to ×2.0 is gone)
   let out = head + withElement(el, () => harm(cb, rng, u, t, dmg, tone === 'raw' ? 'soul' : 'elemental', TONE[tone]?.damage_type, toneArmour(tone, rs)));
   if (crit) noteCrit(cb, u, t, 'outburst'); // a rolled arc that crits cuts in like the primary strike (decision 113)
   if (tone !== 'raw' && t.side !== u.side && !t.dead) out += withElement(el, () => applyToneRiders(cb, rng, u, t, tone, rs, u.pos, SKIP));

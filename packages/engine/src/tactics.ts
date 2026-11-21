@@ -26,7 +26,7 @@ import { residueFlag } from './feelings';
 import { tilesAround, unitsIn, tiedTo } from './kit';
 import { rawHidden, setDowned, startHidden } from './unitstate';
 import { setCondRounds } from './magic';
-import { price, costOf, whyNot, pay, setAp, spend } from './effects/cost';
+import { price, costOf, whyNot, pay, setAp, spend, resMaxPlus } from './effects/cost';
 import { ownedRecord } from './owned';
 
 // ---------- damage types, special ammo, the damage bucket ----------
@@ -545,7 +545,7 @@ export function companionUnits(cb: Combat | null, c: Character, owner: Unit, tak
 export const resOf = (u: Unit, id: string) => u.res?.[id] ?? 0;
 export function resGain(u: Unit, id: string, n: number): number {
   if (!u.resMax || u.resMax[id] == null) return 0;
-  const was = resOf(u, id); (u.res ||= {})[id] = Math.max(0, Math.min(u.resMax[id], was + n)); return u.res[id] - was;
+  const was = resOf(u, id); (u.res ||= {})[id] = Math.max(0, Math.min(u.resMax[id] + resMaxPlus(u, id), was + n)); return u.res[id] - was; // rules 1.96 (S5): the top with the sheet's res_max
 }
 export function resSpend(u: Unit, id: string, n: number): boolean { return spend(u, id, n); } // the one door (effects/cost.ts)
 

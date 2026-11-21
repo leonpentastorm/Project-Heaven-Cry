@@ -1763,7 +1763,7 @@
       "accuracy": 0,
       "price_credits": 1600,
       "properties": [],
-      "text": "Aimed Shots score a critical hit on a roll of 18, 19 or 20.",
+      "text": "Aimed Shots score a critical hit (two Margins) on a roll of 18, 19 or 20.",
       "mastery_family": "rifles",
       "hands": "2H",
       "durability": 400,
@@ -1772,13 +1772,13 @@
         "muzzle",
         "magazine"
       ],
+      "crit_range": 18,
+      "crit_range_modes": [
+        "aimed"
+      ],
       "grants": {
         "name": "Steady Aim",
-        "text": "Aimed Shots score a critical hit on a roll of 18, 19 or 20.",
-        "effect": {
-          "op": "aimed_crit_min",
-          "value": 18
-        }
+        "text": "Aimed Shots score a critical hit (two Margins) on a roll of 18, 19 or 20."
       },
       "lore": "CCEC evidence: one round, one report.",
       "type": "ccec_marksman_rifle",

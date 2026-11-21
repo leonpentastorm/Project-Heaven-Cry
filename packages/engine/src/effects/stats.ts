@@ -39,7 +39,7 @@ export const IMMUNE_IDS = ['bleed', 'knockback', 'opportunity_attack', 'shove'] 
 export const STATS = {
   // ---- derived stats (character.ts `fx`: (base + adds) × mults)
   hp: 'Max HP (character.ts maxHp)', hp_per_level: 'HP gained a level (hpPerLevel)', mp_max: 'Max MP', move: 'Movement, tiles per AP', defense: 'Defense',
-  init: 'Initiative bonus', carry: 'Carry weight', injury_resist: 'Injury resistance, %', crit_damage: 'Critical damage multiplier', crit_taken: 'Critical damage taken',
+  init: 'Initiative bonus', carry: 'Carry weight', injury_resist: 'Injury resistance, %', margins: 'Margins added to a hit that lands (rules 1.96 item 8320)', margins_taken: 'Margins a hit on you counts more (negative: fewer; rules 1.96 item 8321)',
   counter: 'Counter chance', ambush_mult: 'Ambush damage multiplier', ambush_taken: 'Ambush damage taken', elemental_taken: 'Elemental damage taken',
   heal_received: 'Healing received multiplier', shield_received: 'Shields received multiplier', mult_heal_given: 'Healing given multiplier', mult_physical: 'Physical damage multiplier',
   blessing_power: 'Blessing power (faith.ts)', max_sigil_words: 'Sigil words known at once', glyph_ap: 'AP a glyph costs to draw', module_slots: 'Outburst module slots',
@@ -81,6 +81,8 @@ export const STAT_FAMILIES = {
   'skill:': 'a modifier to a d20 that uses this skill id (effects/core.ts skillRollMod)',
   'immune:': 'immunity to a condition id or one of IMMUNE_IDS (effects/core.ts immune; >0 is immune)',
   'save_': 'a save bonus: body, brain or heart (character.ts saveBonus)',
+  'res_max:': 'rules 1.96 item 8325 (08-primitives S5): added to the top of this resource (the Reach of a door, a Push for one action, a perk; effects/cost.ts resMaxPlus)',
+  'wear:': 'rules 1.96 item 8327 (08-primitives S6): added to what this resource loses at a wear site (a tile walked, a hit taken, the end of a turn; never below 0; effects/cost.ts wearOf); a move that keeps the counter answers it in its context',
   'ties_max:': 'Classes 3.0 P8: how many ties of this kind a unit may hold more than its kind\'s max (kit.ts tieCap)',
   'ties_keep:': 'Rules 1.33: >0, the ties of this kind the unit holds to its own side do not end when it goes Down (kit.ts; Empathy 10: ally Bonds hold)',
   'passive:': 'a passive score of this skill id (character.ts passive)',
@@ -91,7 +93,7 @@ export const STAT_FAMILIES = {
   'momentum_cost:': 'Momentum a Strike or an Opener costs, added to its price: a technique id or its group, strike or opener (physical/core.ts momentumCost; never below 0)',
 } as const;
 
-export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `momentum_cost:${string}` | `tech_num:${string}` | `ties_max:${string}` | `ties_keep:${string}`;
+export type StatId = PlainStatId | `ap_cost:${CostSite}` | `skill:${string}` | `immune:${string}` | `save_${'body' | 'brain' | 'heart'}` | `passive:${string}` | `technique:${string}` | `momentum_needed:${string}` | `momentum_cost:${string}` | `tech_num:${string}` | `ties_max:${string}` | `ties_keep:${string}` | `res_max:${string}` | `wear:${string}`;
 
 /** Is this string a declared stat id? (For data and tests; code is checked by the type.) */
 export function isStatId(id: string): id is StatId {

@@ -20,7 +20,7 @@ function rig(words: string[], foes: string[] = ['14,9'], spec: CharSpec = {}, al
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pcs.forEach((p, i) => { p.pos = i ? allies[i - 1] : '3,5'; });
   f.foes.forEach((e, i) => { e.pos = foes[i]; });
-  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; }
+  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; }
   const u = f.turn(f.pc); u.ap = 60; Object.assign(u.mg!, { evoker: true, words: [...words], charge: 999, glyphAp: 1, maxWords: 4, flux: 0, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0 });
   f.g.rng.state = SEED;
   return f;

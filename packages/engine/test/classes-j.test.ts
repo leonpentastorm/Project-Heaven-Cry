@@ -23,7 +23,7 @@ const seed = (f: { g: any }, n: number) => { f.g.rng.state = rngFor(n); };
 const at = (u: Unit, k: string) => { u.pos = k; return u; };
 const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 const charOf = (g: any, u: Unit): Character => g.characters[u.charId!];
-const tough = (u: Unit, def = 0) => { u.hp = u.maxHp = 999; u.def = def; u.armour = 0; u.injResist = 0; return u; };
+const tough = (u: Unit, def = 0) => { u.hp = u.maxHp = 999; u.def = def; u.marginsTaken = -99; u.armour = 0; u.injResist = 0; return u; }; // rules 1.96: the dummy takes no Margins (its tests are the moves')
 const cls = (adv: string, extra: any = {}) => ({ advancedClass: adv, ...extra });
 const mk = (id: string, t: string) => 'class:' + id + '#' + t;
 const evoker = (u: Unit, words: string[], extra: any = {}) => { u.mg = { words, designs: [], evoker: true, emanator: false, charge: 10, cores: 0, coresMade: 0, flux: 0, mp: 0, mpMax: 0, strain: 0, held: null, cast: false, brain: 2, will: 0, sigilMult: 1, sigilBoon: 1, soulMult: 1, soulBoon: 1, deal: 1, elemMult: 1, healMult: 1, maxWords: 3, glyphAp: 1, coreSave: 0, rangeBonus: 0, durBonus: 0, soulAp: 2, costSave: 0, soulRange: 0, syphon: 1, strainLimit: 3, saves: { body: 0, brain: 0, heart: 0 }, debuff: { body: 0, brain: 0, heart: 0 }, ...extra } as any; return u; };
@@ -173,7 +173,7 @@ describe('CCEC Ballistician', () => {
   });
   it('Weak Point: an Aimed shot at a Marked target ignores armour and crits on 18; armour is back after', () => {
     const f = fightWith([cls('ccec_ballistician', { weapon: 'long_rifle' })], [{ at: 'O10' }]);
-    const pc = f.turn(at(f.pc, '2,5')); const foe = tough(at(f.foe, '6,5')); foe.armour = 500; pc.ap = 9;
+    const pc = f.turn(at(f.pc, '2,5')); const foe = tough(at(f.foe, '6,5')); foe.armour = 500; foe.marginsTaken = 0; pc.ap = 9; // rules 1.96: this test's critical counts its Margins
     withGame(f.g, () => applyCond(f.cb, f.g.rng, pc, foe, 'marked', undefined, undefined, { skipSave: true }));
     seed(f, 18);
     f.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'aimed' } as any);

@@ -30,7 +30,7 @@ function heart(spec: CharSpec = {}) {
   const f = fightWith([{ ...SOUL, ...spec }], [{ tier: 'minion' }]);
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pc.pos = '3,5'; f.foe.pos = '6,5';
-  for (const x of [f.pc, f.foe]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.hidden = false; }
+  for (const x of [f.pc, f.foe]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.hidden = false; }
   Object.assign(f.pc.mg!, { emanator: true, mp: 1000, mpMax: 1000, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, freeUsed: 0, firstUsed: true, feelings: FEELINGS.map((x) => x.id) });
   const u = f.turn(f.pc); u.ap = 60;
   return f;

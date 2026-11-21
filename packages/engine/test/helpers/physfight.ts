@@ -18,10 +18,12 @@ export interface PhysSpec extends CharSpec {
   /** drill per weapon id */ drill?: Record<string, number>;
 }
 // Forced dice: one global listener, read from a module variable (each test file runs in its own worker).
-let RIG: { hit?: boolean; die?: number } | null = null;
-onHook('attack_roll', (ctx: any) => { if (!RIG) return; if (RIG.die != null) ctx.die = RIG.die; if (RIG.hit != null) ctx.hit = RIG.hit; });
-/** Force attack rolls: { hit: true | false } decides the result, { die: n } sets the d20. rig() frees the dice. */
-export const rig = (r: { hit?: boolean; die?: number } | null = null) => { RIG = r; };
+let RIG: { hit?: boolean; die?: number; margins?: number } | null = null;
+onHook('attack_roll', (ctx: any) => { if (!RIG) return; if (RIG.die != null) ctx.die = RIG.die; if (RIG.hit != null) ctx.hit = RIG.hit; if (RIG.hit != null || RIG.margins != null) ctx.margins = RIG.margins ?? 0; });
+/** Force attack rolls: { hit: true | false } decides the result, { die: n } sets the d20; a forced roll counts no Margins
+ * unless { margins: n } says how many (rules 1.96: the dice a test sets test their own rule; Margins have their own tests).
+ * rig() frees the dice. */
+export const rig = (r: { hit?: boolean; die?: number; margins?: number } | null = null) => { RIG = r; };
 
 export function physFight(specs: PhysSpec[] = [{}], foes: FoeSpec[] = [{}], o: { map?: string; seed?: string } = {}) {
   rig(null);

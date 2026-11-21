@@ -69,7 +69,7 @@ const BUILDS: [string, CharSpec, (f: any) => void][] = [
     if (id === 'infiltrator') { const u = f.unit(f.pc.id); u.hidden = true; u.res = { ...(u.res || {}), shadow: 2 }; }
   }] as [string, CharSpec, (f: any) => void]),
   ...PATRONS.map((p) => ['faithful of ' + p, { archetype: 'confessor', level: 12, attrs: { virtue: 10 }, skills: { faith: 10 } }, (f: any) => { const c = f.g.characters[f.pc.charId]; c.belief = { kind: 'faithful', patron: p }; c.patron = p; setDevotionXp(c, devotionThreshold(10)); c.devotion = 10; }] as [string, CharSpec, (f: any) => void]),
-  ['items', { archetype: 'field_medic' }, (f: any) => { f.g.characters[f.pc.charId].stims = 3; f.unit(f.pc.id).throwables = { frag_grenade: 2, smoke_grenade: 1 } as any; }],
+  ['items', { archetype: 'field_medic', level: 12 }, (f: any) => { f.g.characters[f.pc.charId].stims = 3; f.unit(f.pc.id).throwables = { frag_grenade: 2, smoke_grenade: 1 } as any; }],
 ];
 
 describe('rules 1.65: the picking contract', () => {

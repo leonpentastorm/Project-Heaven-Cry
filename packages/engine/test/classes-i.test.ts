@@ -391,7 +391,7 @@ describe('Channeler', () => {
   it('Heart Surge (rules 1.5): a held release fires one stage higher, and +1 Strain lands after it; once a turn', () => {
     const run = (mods: string[]) => {
       const f = fightWith([cls('channeler', 3, SOUL)], [{}], { seed: 'HS' });
-      const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); const foe = f.unit(f.foe.id); foe.hp = 999; foe.maxHp = 999; foe.def = -40; f.unit(u.id).ap = 9; f.unit(u.id).mg!.strainLimit = 20;
+      const u = f.turn(f.pc); line(f, [u, 3], [f.foe, 6]); const foe = f.unit(f.foe.id); foe.hp = 999; foe.maxHp = 999; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ f.unit(u.id).ap = 9; f.unit(u.id).mg!.strainLimit = 20;
       const d = f.pc.mg!.designs.find((x) => x.school === 'damage')!.id;
       act(f, f.unit(u.id), { type: 'combat/outburst', design: d }); act(f, f.unit(u.id), { type: 'combat/pump' }); act(f, f.unit(u.id), { type: 'combat/pump' });
       const s0 = f.pc.mg!.strain;

@@ -11,6 +11,7 @@ import { PHYS_RULES } from '../physical/data';
 import { register, stateOf, uses, note, postStory, has, modOn, statQuery, actionAp, applyDamage, healUnit, bankAp, emit, PERK_AP_CAP, type Holder } from '../effects';
 import { itemAmount, amountMult } from '../effects/amounts';
 import { term } from '../effects/output';
+import { rawItem } from '../effects/collect';
 import type { Combat, Unit } from '../combat';
 import type { Character } from '../character';
 import {
@@ -422,9 +423,11 @@ register({
 
 // ---------- One Shot ----------
 // Breath Held: if you haven't moved this turn, your first shot of the turn ignores half cover (full cover still blocks
-// sight) and its critical is +25% (rules 1.15: ×1.5 → ×1.75, never past ×2.0; PROVISIONAL, item 1022). Tunnel Vision (after a Breath Held
+// sight) and, if it hits, counts one more Margin (rules 1.96 item 8322; PROVISIONAL). Tunnel Vision (after a Breath Held
 // shot, until you next move; in the story too): no Vigilant checks (they fail; voice lines of Vigilant stay silent; no
 // spotting Hidden enemies), and ambushes on you do +50% damage. A new scene counts as moving (PROVISIONAL).
+/** Rules 1.96 item 8322: the Margins Breath Held adds (traits.json one_shot's margins_mod). */
+const ONE_SHOT_MARGINS: number = (() => { const e = ((rawItem('trait:one_shot')?.effects || []) as any[]).find((x) => x?.op === 'margins_mod'); if (typeof e?.value !== 'number') throw new Error('data/traits.json one_shot needs its margins_mod value'); return e.value; })();
 const breathOk = (u: Unit) => !u.moved && !u.firstShotTurn && !isMelee(WEAPON[u.weapon]);
 const tunnelOn = (h: Holder) => !!(h.c ? cs(h.c).tunnel : stateOf(h).tunnel);
 const setTunnel = (h: Holder, on: boolean) => { if (h.c) { if (on) charState(h.c).tunnel = true; else if (cs(h.c).tunnel) delete charState(h.c).tunnel; } else if (on) stateOf(h).tunnel = true; else delete stateOf(h).tunnel; };
@@ -438,7 +441,7 @@ register({
       st.breath = ctx.mode !== 'melee' && breathOk(ctx.att);
       if (st.breath) { setTunnel(h, true); say(h.cb, ctx.att.name + ' holds a breath (One Shot).'); }
     },
-    damage_out: (ctx, h) => { if (ctx.att === h.u && ctx.crit && !ctx.preview && stateOf(h).breath) ctx.critBonus = (ctx.critBonus || 0) + 0.25; }, // rules 1.15: +25% on the critical, inside the ×2.0 ceiling (combat.ts)
+    damage_out: (ctx, h) => { if (ctx.att === h.u && !ctx.preview && stateOf(h).breath) ctx.margins = (ctx.margins || 0) + ONE_SHOT_MARGINS; }, // rules 1.96 item 8322: Margins on that first shot if it hits (the row's margins_mod)
     on_hit: (ctx, h) => { if (ctx.att === h.u) stateOf(h).breath = false; },
     on_miss: (ctx, h) => { if (ctx.att === h.u) stateOf(h).breath = false; },
     moved: (ctx, h) => { if (ctx.u === h.u && !ctx.forced && tunnelOn(h)) setTunnel(h, false); },

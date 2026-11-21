@@ -18,7 +18,7 @@ import { say, objectAtLevel,
   active, paths, moveUnit, apForTiles, previewAttack, attackApCost, isMelee, effectiveRange, analyzeCost, levelGap, unguarded, guardNextAction, displace
 } from './combat';
 import { type Rng } from './rng';
-import { rollD20, rollVs, judge, rollFx, tierSave, tierStrength, CONTEST_BASE, toHitAdd } from './rolls';
+import { rollD20, rollVs, judge, rollFx, tierSave, tierStrength, CONTEST_BASE, toHitAdd, marginsOf, marginsTerm } from './rolls';
 import { emit, boundGame, onHook, growthHeld } from './effects/hooks';
 import { noteEvoke, copyWord, knowsWord, inflectionValue, inflectionOf, INFLECTION_STATS, STUDY, masteredWords as masteredOf } from './sigilgrowth';
 import type { Character } from './character';
@@ -27,7 +27,7 @@ import { itemAmount } from './effects/amounts';
 import { mendFactorOf, flatLevelOf } from './effects/mending';
 import { armourAgainst, landed, amountOf, term, gatedAmount, type AmountSpec } from './effects/output';
 import { AP_MAX } from './effects/ap';
-import { NEEDS_EVOKER, passiveVigilance, critMult, CRIT_BASE, maxSigilWords, attrCapAt } from './character';
+import { NEEDS_EVOKER, passiveVigilance, marginShareOf, marginsPlus, maxSigilWords, attrCapAt } from './character';
 import { ENEMY_LEVELS } from './data';
 import {
   type Glyph, type Zone, type SpellAmount, harm, heal, applyCond, condOn, endCond, isBoon, magicShove, flux, condSkillMod, condHit, unitSave, unitStrength, saveAgainst, strengthFor, withVia,
@@ -331,11 +331,12 @@ const SAVES: Record<string, Fam> = { body: 'body', brain: 'brain', heart: 'heart
 const linesGrow = (u: Unit | null | undefined) => !!u && !!(u.charId || (u as any).ctrl);
 /** A spell's Line multiplier for this caster (1 for an enemy caster, or a spell with no caster). */
 export const lineMultFor = (caster: Unit | null | undefined, sp: Spell): number => (linesGrow(caster) ? lineMult(sp.words.length) : 1);
-/** A spell's critical (rules 1.17: the same rule as a weapon's, rules 1.15): ×1.5, to ×2.0 at most with everything the
- * caster's sheet and gear give (critMult), cut by the target's Critical damage taken. An enemy's is ×1.5. */
-export function spellCritMult(cb: Combat | null, by: Unit | null | undefined, t: Unit): number {
+/** Rules 1.96 item 8320 (S1): a spell's Margins on its target, the same rule as a weapon's: full steps of its roll's
+ * total over the target's Defense, a critical's two, the caster's own (the stat `margins`), less the target's Margins
+ * taken; and the share each is worth (the caster's Perception; an enemy caster's 0). Replaces rules 1.17's critical. */
+export function spellMargins(cb: Combat | null, by: Unit | null | undefined, t: Unit, total: number, crit: boolean): { n: number; share: number } {
   const who = by && by.charId && !by.companion && !(cb as any)?.dry ? (boundGame()?.characters?.[by.charId] as Character | undefined) : undefined;
-  return 1 + ((who ? critMult(who) : CRIT_BASE) - 1) * (1 - Math.min(1, Math.max(0, t.critTaken || 0)));
+  return { n: Math.max(0, marginsOf(total, t.def, crit) + marginsPlus(who) + (t.marginsTaken || 0)), share: marginShareOf(who) };
 }
 /** A spell's roll to hit reads the level gap as a weapon's does (rules 1.17; rules 1.15, The level gap). */
 export const spellGapToHit = (cb: Combat | null, by: Unit | null | undefined, t: Unit): number => (by ? levelGap(by, t, cb) * ENEMY_LEVELS.gap.to_hit_per_level : 0);
@@ -1054,16 +1055,16 @@ function applyTo(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: 
 function applyToInner(cb: Combat, rng: Rng, by: Unit | null, side: 'pc' | 'foe', sp: Spell, t: Unit, a: Affected, o: { roll: boolean; origin: string; opts: EvokeOpts; skipHarm?: boolean }): { line: string; dealt: number; missed?: boolean } {
   let line = '', dealt = 0; const harmOk = !(t.downed || t.surrendered);
   if (sp.damaging && harmOk) {
-    let crit = false, r = 0;
+    let crit = false, r = 0, mg = { n: 0, share: 0 };
     if (o.roll && by) {
       r = rollD20(rng).die; const add = (emit(cb, 'spell_roll', { u: by, t, die: r, add: 0, kind: 'sigil', cb }) as any).add || 0, sr = judge('roll', { die: r }, (a.roll?.bonus ?? 0) + add, t.def), tot = sr.total;
-      crit = r === 20; rollFx(cb, sr, by, { why: 'sigil' }); showAttacker(cb, by, t); // rules 1.61 item 4963
+      crit = r === 20; if (sr.ok) mg = spellMargins(cb, by, t, tot, crit); rollFx(cb, sr, by, { why: 'sigil' }); showAttacker(cb, by, t); // rules 1.61 item 4963
       if (!sr.ok) { emitFx(cb, 'miss', { unit: by.id, target: t.id, at: t.pos, by: 'sigil', element: sp.element }); line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + ' misses ' + t.name + ' (d20 ' + r + ' → ' + tot + ' vs ' + t.def + (a.roll?.cover ? ', cover' : '') + ')'; return { line: line + nonDamage(cb, rng, by, side, sp, t, a, o, harmOk), dealt, missed: true }; }
     }
     const hp0 = t.hp + (t.shield || 0), sharp = by && condOn(by, 'sharpened') && o.roll && !['turret', 'trap', 'field'].includes(a.via) ? (W('sharpen') as any)?.damage_mult ?? 1.25 : 1;
     const parts = sigilParts(sp.subjects, sp.infl);
-    line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + (r ? ' hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + ')' : ' catches ' + t.name);
-    const lm = lineMultFor(by, sp), cm = crit ? spellCritMult(cb, by, t) : 1; // rules 1.17: the Line multiplier; a critical ×1.5 to ×2.0
+    line += ' · ' + sp.uniqueSubjects.filter(isElement).map((w) => w.toUpperCase()).join('·') + (r ? ' hits ' + t.name + ' (d20 ' + r + (crit ? ', CRITICAL' : '') + (mg.n ? ', ' + mg.n + (mg.n === 1 ? ' Margin' : ' Margins') : '') + ')' : ' catches ' + t.name);
+    const lm = marginsTerm(lineMultFor(by, sp), mg.n, mg.share), cm = 1; // rules 1.17: the Line multiplier; rules 1.96 item 8320: the Margins add to it (the critical's multiplier is gone)
     const raws = parts.map((p) => { const hk = by ? (emit(cb, 'spell_mult', { u: by, t, spell: sp, kind: 'damage', mult: 1, cb }) as any).mult ?? 1 : 1;
       return sigilDamageTerms(by?.mg, p.type, p.n, a.mult, lm, sharp, hk, cm); });
     // Rules 1.17: one Evoke never takes an Elite or a Boss of the caster's level (or higher) from full HP to nothing.

@@ -137,7 +137,9 @@ describe('a save written by the live build (origin/main, 0.22.0) loads and plays
     expect(g.phase).toBe('story');
     // the story goes on: 40 more lines push 40 more into the archive, after the 511 that were there
     const n0 = g.archive.length, e0 = g.story.entries.length;
-    for (let i = 0; i < 20 && g.phase === 'story'; i++) { g = step(g, { type: 'story/speak', text: 'After the bridge, ' + i + '.' }, 'host'); g = step(g, { type: 'narrator/turn', turn: { narration: 'And on, ' + i + '.' } }, 'host'); }
+    // rules 1.96: enemies roll Margins too, so the squad may fall on the bridge; then the Narrator tells the 40 lines alone
+    const speaks = (x: any) => { try { step(x, { type: 'story/speak', text: '.' }, 'host'); return true; } catch { return false; } };
+    for (let i = 0; i < 20 && g.phase === 'story'; i++) { g = speaks(g) ? step(g, { type: 'story/speak', text: 'After the bridge, ' + i + '.' }, 'host') : step(g, { type: 'narrator/turn', turn: { narration: 'Meanwhile, ' + i + '.' } }, 'host'); g = step(g, { type: 'narrator/turn', turn: { narration: 'And on, ' + i + '.' } }, 'host'); }
     expect(g.story.entries.length).toBeLessThanOrEqual(400);
     expect(g.archive.length + g.story.entries.length).toBeGreaterThanOrEqual(n0 + e0 + 40);
     expect(g.archive.slice(0, 5).map((e: any) => e.id)).toEqual(firstLines);

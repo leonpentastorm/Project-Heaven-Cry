@@ -21,7 +21,7 @@ const logHas = (cb: Combat, re: RegExp) => cb.log.some((l) => re.test(l));
 const at = (f: F, u: Unit, pos: string) => { f.unit(u.id).pos = pos; return f.unit(u.id); };
 const act = (f: F, u: Unit, a: any) => f.act({ unitId: u.id, ...a });
 const perk = (f: F, u: Unit, id: string, a: any = {}) => f.act({ type: 'combat/perk', unitId: u.id, id, ...a } as any);
-const tough = (u: Unit, def = -40) => { u.hp = u.maxHp = 999; u.def = def; u.armour = 0; u.injResist = 0; (u as any).sv = { body: -99, brain: -99, heart: -99 }; return u; };
+const tough = (u: Unit, def = -40) => { u.hp = u.maxHp = 999; u.def = def; u.marginsTaken = -99; /* rules 1.96: the dummy takes no Margins */ u.armour = 0; u.injResist = 0; (u as any).sv = { body: -99, brain: -99, heart: -99 }; return u; };
 const adv = (id: string, extra: CharSpec = {}): CharSpec => ({ advancedClass: id, level: 5, ...extra });
 const MIND = { archetype: 'sigilist', kit: 'sigil' } as const;
 const charOf = (f: { g: any }, u: Unit): Character => f.g.characters[u.charId!];
@@ -268,7 +268,7 @@ describe('Grand Sigilist under 1.4', () => {
     const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(999 - Math.floor(EN('sentinel'))); expect(w.unit(w.foes[1].id).hp).toBe(999);
     const foe = w.turn(w.foe.id); w.unit(foe.id).ap = 6; withGame(w.g, () => moveUnit(w.cb, w.unit(foe.id), '8,2', w.g.rng));
     // The walk also passes Tester 2, whose opportunity attack now lands (spec item 561, Class Roster Rev 3): count it too.
-    const oa = Number((w.cb.log.join(' ').match(/Tester 2 strikes Foe 1:[^·]*· (?:hit|CRITICAL), (\d+) damage/) || [])[1] || 0);
+    const oa = Number((w.cb.log.join(' ').match(/Tester 2 strikes Foe 1:[^·]*· (?:hit|CRITICAL)(?: \(\d+ Margins?\))?, (\d+) damage/) || [])[1] || 0);
     expect(w.unit(foe.id).hp).toBe(999 - Math.floor(EN('sentinel')) - Math.floor(EN('sentinel_leaving')) - oa); expect(logHas(w.cb, new RegExp('as it leaves · ' + Math.floor(EN('sentinel_leaving')) + ' damage'))).toBe(true);
   });
   it('WAIT (Minefield): an enemy walking in stops at the edge and takes 10; STEP (Fold): a move that stays inside costs 1 AP at most', () => {

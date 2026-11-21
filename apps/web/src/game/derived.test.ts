@@ -1,6 +1,6 @@
 // The character sheet's derived lines: every number is the engine's, and every line names the skill the rules read.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, SKILL, newCharacter, healingMult, healReceivedMult, shieldReceivedMult, saveBonus, critTakenPct, ambushTakenPct, sigilRangeBonus, sigilCoreSaving, soulRangeBonus, readyDesigns } from '@engine';
+import { ARCHETYPES, SKILL, newCharacter, healingMult, healReceivedMult, shieldReceivedMult, saveBonus, marginsTakenOf, ambushTakenPct, sigilRangeBonus, sigilCoreSaving, soulRangeBonus, readyDesigns } from '@engine';
 import { derivedLines, previewCharacter } from './derived';
 
 const make = (skills: Record<string, number>, attrs: Record<string, number> = {}) => {
@@ -18,7 +18,7 @@ describe('derivedLines', () => {
     expect(from.heal_received).toBe('Camaraderie');
     expect(from.shield_received).toBe('Conscience');
     expect(from.save_body).toBe('Guts'); expect(from.save_brain).toBe('Rumination'); expect(from.save_heart).toBe('Composure');
-    expect(from.crit_taken).toBe('Perception and ' + SKILL.analysis.name); expect(SKILL.analysis.name).toBe('Acuity');
+    expect(from.margins_taken).toBe(SKILL.analysis.name); expect(from.margin).toBe('Perception'); expect(SKILL.analysis.name).toBe('Acuity');
     expect(from.ambush_taken).toBe(SKILL.proficiency.name); expect(SKILL.proficiency.name).toBe('Improvisation');
     expect(from.sigil_range).toBe('Brain Power'); expect(from.sigil_cores).toBe('Brain Power');
     expect(from.soul_range).toBe('Will Power'); expect(from.ready_designs).toBe('Lore Master');
@@ -28,7 +28,7 @@ describe('derivedLines', () => {
     const cases: [string, string, (c: any) => string][] = [
       ['hp_pt', 'pain_threshold', (c) => '+' + Math.round((SKILL as any).pain_threshold.per_point.numbers.hp_pct * c.skills.pain_threshold * 100) + '%'], ['heal_given', 'empathy', (c) => '×' + Math.round(healingMult(c) * 100) / 100],
       ['heal_received', 'camaraderie', (c) => '×' + Math.round(healReceivedMult(c) * 100) / 100], ['shield_received', 'conscience', (c) => '×' + Math.round(shieldReceivedMult(c) * 100) / 100],
-      ['save_brain', 'rumination', (c) => '+' + saveBonus(c, 'brain')], ['crit_taken', 'analysis', (c) => '−' + Math.round(critTakenPct(c) * 100) + '%'],
+      ['save_brain', 'rumination', (c) => '+' + saveBonus(c, 'brain')], ['margins_taken', 'analysis', (c) => String(marginsTakenOf(c)).replace('-', '−')],
       ['ambush_taken', 'proficiency', (c) => '−' + Math.round(ambushTakenPct(c) * 100) + '%'], ['sigil_range', 'brain_power', (c) => '+' + sigilRangeBonus(c) + ' tiles'],
       ['sigil_cores', 'brain_power', (c) => sigilCoreSaving(c) + ' a Sigil'], ['soul_range', 'will_power', (c) => '+' + soulRangeBonus(c) + ' tiles'], ['ready_designs', 'lore_master', (c) => String(readyDesigns(c))],
     ];

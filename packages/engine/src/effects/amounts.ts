@@ -33,11 +33,11 @@ import { CONDITION_ROWS } from '../condtable';
 import feelingsJ from '../../../../data/feelings.json';
 import patronsJ from '../../../../data/patrons.json';
 import { classMove, rawItem } from './collect';
-import { amountOf, type AmountSpec, type Term } from './output';
+import { amountOf, pairOf, type AmountSpec, type Term } from './output';
 
 /** An item's `amounts` block as data writes it (data/CONVENTIONS.md "Amount blocks"): kind, base, per, profile, type, armour, mults. */
 export interface AmountBlock {
-  kind: 'damage' | 'heal' | 'shield'; base: number; per?: { of: string; value: number }[]; profile?: string;
+  kind: 'damage' | 'heal' | 'shield'; base: number; per?: { of: string; value: number }[]; profile?: string; /** rules 1.96 item 8329 (ruling 31): the pair (rules.json output.pairs) the Stat term reads, when not the profile's own */ pair?: string;
   type?: string; armour?: 'full' | 'half' | 'none'; mults?: Record<string, number>; provisional?: boolean; text?: string;
   /** Classes 3.0 step 5 (rules 1.31): the damage's element tag (its dmgType: lightning…), when it is not its type. */ element?: string;
   /** Rules 1.56 P1: the door a damage block's blow is made through (sigil, outburst, prayer, bond: magic.ts SPELL_DOORS), its src.door. */ door?: string;
@@ -80,7 +80,7 @@ export function amountBlock(key: string, name: string): AmountBlock {
 /** The block as the formula's spec (chain order; left raw: the sink floors it, as these sites always did). */
 export function amountSpecOf(key: string, name: string): AmountSpec {
   const b = amountBlock(key, name);
-  return { kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), round: 'none', ...(b.provisional ? { provisional: true } : {}) };
+  return { kind: b.kind, base: b.base, ...(b.per ? { per: b.per } : {}), ...(b.profile ? { profile: b.profile } : {}), ...(typeof b.pair === 'string' ? { pair: pairOf(b.pair) } : {}), ...(typeof b.door === 'string' ? { door: b.door } : {}), round: 'none', ...(b.provisional ? { provisional: true } : {}) }; // rules 1.96 item 8329: a block may name the pair it reads and the door it is made through
 }
 /** THE ONE HELPER: an item's amount from its data block, × the multipliers the caller names (in that order: the Stat
  * term from the unit first where the item has one). `counts` feeds the block's per-point parts. Raw (not floored). */

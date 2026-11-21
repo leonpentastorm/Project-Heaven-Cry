@@ -12,13 +12,13 @@ import { charOfUnit } from './hooks';
 /** One beta's feed: the beta, the door (its attribute's alpha skill), the carrier (the door's number it raises), its
  * product step (per_point.numbers.feed), the step at a doubled feed (per_point.numbers.feed_at_double: a TN, a share)
  * and the feed row (its texts; tied, how). */
-export interface Feed { beta: string; betaName: string; door: string; carrier: string; per: number; atDouble: number; row: any }
+export interface Feed { beta: string; betaName: string; door: string; carrier: string; per: number; /** rules 1.96 item 8329 (ruling 20): what each beta point adds on its own (per_point.numbers.feed_flat; 0 when absent) */ flat: number; atDouble: number; row: any }
 export const FEEDS: Feed[] = (SKILLS as any[]).filter((s) => s.feed).map((s) => {
   const door = (SKILLS as any[]).find((a) => a.attribute === s.attribute && a.slot === 'alpha');
   if (!door) throw new Error('skills.json ' + s.id + '.feed: its attribute has no alpha skill to feed.');
   const n = s.per_point?.numbers || {};
   if (typeof s.feed.carrier !== 'string' || !(n.feed > 0)) throw new Error('skills.json ' + s.id + ': a feed needs its carrier and per_point.numbers.feed.');
-  return { beta: s.id, betaName: s.name, door: door.id, carrier: s.feed.carrier, per: n.feed, atDouble: Number(n.feed_at_double) || 0, row: s.feed };
+  return { beta: s.id, betaName: s.name, door: door.id, carrier: s.feed.carrier, per: n.feed, flat: Number(n.feed_flat) || 0, atDouble: Number(n.feed_at_double) || 0, row: s.feed };
 });
 const BY_DOOR: Record<string, Feed> = Object.fromEntries(FEEDS.map((f) => [f.door, f]));
 export const FEED_BY_CARRIER: Record<string, Feed> = Object.fromEntries(FEEDS.map((f) => [f.carrier, f]));
@@ -33,8 +33,9 @@ function pts(x: any, sk: string): number {
   const c = x.companion ? null : charOfUnit(x);
   return Number(c ? (c.skills as any)?.[sk] : x[sk]) || 0;
 }
-/** THE FEED: 1 + per_point.numbers.feed x the door's alpha points x its beta's points (x1 for a door no beta feeds). */
-export function doorFeed(x: any, door: string): number { const f = BY_DOOR[door]; return f ? 1 + f.per * pts(x, door) * pts(x, f.beta) : 1; }
+/** THE FEED: 1 + feed_flat x the beta's points + per_point.numbers.feed x the door's alpha points x its beta's points
+ * (rules 1.96 item 8329, ruling 20: every beta point counts from the first; x1 for a door no beta feeds). */
+export function doorFeed(x: any, door: string): number { const f = BY_DOOR[door]; if (!f) return 1; const b = pts(x, f.beta); return 1 + f.flat * b + f.per * pts(x, door) * b; }
 /** The feed of the door whose number this carrier is. */
 export const feedOf = (x: any, carrier: string): number => doorFeed(x, feedRow(carrier).door);
 /** A whole step for a number that rounds (a TN, a reach): round(at_double x (feed - 1)), at_double the row's own number

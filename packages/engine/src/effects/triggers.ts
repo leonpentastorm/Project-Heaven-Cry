@@ -29,10 +29,10 @@ import { spawnOwned, unmakeOwned, ownerOf } from '../owned';
 import { unitGrip, say, dist, displace, emitFx, fxFell, checkOver, unitSees, sideSees, attackEvent, lineOfSight, enemyIntent, dropToPile, strikeRider } from '../combat';
 import { WEAPON, SKILL, RULES } from '../data';
 import { magsOf, type PackItem } from '../character';
-import { restoreConds, applyCond, endCond, condOn, condId, debuffsOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
+import { restoreConds, applyCond, endCond, condOn, condId, debuffsOf, squadOf, withVia, makeZone, zonesAt, endZones, DATA_ZONE_KINDS, saveAgainst, condHas } from '../magic';
 import { nextToCover, objectsAt, objectsOf, damageObject, refOf } from '../combat';
 import { objectIs, makeObject } from '../objects';
-import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS } from '../condtable';
+import { CONDITION_ROWS, condRowsVersion, COND_TABLE_STATS, SQUAD_WORDS } from '../condtable';
 import { isStatId } from './stats';
 import type { ItemInfo } from './types';
 import { charOfUnit, unitSkill } from './hooks';
@@ -50,7 +50,8 @@ import { mendShown } from './core'; // (a cycle core ↔ triggers: used at run t
 import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amounts';
 import { resOf } from '../tactics';
 import { patronIdOf } from '../belief'; // (no global hooks: faith.ts's load order stays as it was)
-import { resLeft } from './cost';
+import { resLeft, spentOf, spendAll } from './cost';
+import { cashSumOf } from '../door';
 import { dmgIs, DAMAGE_WORDS } from './dmgwords';
 import { hurlRun } from '../hurl';
 import { heldBy } from '../held';
@@ -363,6 +364,9 @@ export function sourceOf(ev: Ev, of: string): number {
   if (ns === 'skill') return skillPts(ev, f); // rules 1.33: the holder's points in a skill (Share a Hit's 5% a point of Camaraderie)
   if (ns === 'feed') return doorFeed(ev.self, f); // rules 1.60 (N3): the holder's beta feed of a door, 1 + per_product x alpha x beta (effects/feed.ts)
   if (ns === 'pick') return pickedBy(ev, f) ? 1 : 0; // rules 1.60 (N2): 1 when the holder picked this fork option, else 0
+  // rules 1.96 (08-primitives S3, S5): cash:<res>, S(n) of the units the action spent at its door's step; cash_share:<res>, S(n) / n; res_max:<res>, the top of the holder's pool
+  if (ns === 'cash' || ns === 'cash_share') { const n = spentOf(ev.self, f), S = cashSumOf(f, n); return ns === 'cash' ? S : n ? S / n : 0; }
+  if (ns === 'res_max') { const m = ev.self ? resMaxOf(ev.self, f, null, ev.cb) : 0; return Number.isFinite(m) ? m : 0; }
   if (ns === 'tech_rule' || ns === 'rule' || ns === 'cond' || ns === 'cost') return dataRef(of); // rules 1.70 item 5547 (P6): a value of the data (datatext.ts dataRef: techniques.json rules, rules.json, a conditions.json row)
   return 0;
 }
@@ -370,7 +374,7 @@ export function sourceOf(ev: Ev, of: string): number {
 // resolver: a holder with the character and no unit
 setSheetSource((c, of) => sourceOf({ ctx: {}, trig: TRIGGERS.acted, h: { key: '', c, info: null } as any, self: null as any, cb: null as any, actor: null, target: null, preview: true }, of));
 /** The namespaces a number block's `of` may name in an item op. */
-export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed', 'pick', 'tech_rule', 'rule', 'cond', 'cost'];
+export const SOURCE_SPACES = ['res', 'event', 'self', 'actor', 'target', 'ties', 'skill', 'feed', 'pick', 'tech_rule', 'rule', 'cond', 'cost', 'cash', 'cash_share', 'res_max'];
 /** The numeric fields of an item op that may be number blocks. */
 const NUM_FIELDS = ['value', 'value_pct', 'max', 'add', 'set', 'min', 'at_least', 'tiles', 'rounds', 'pool', 'within', 'holders', 'share', 'count'];
 /** Rules 1.33: `{choice}` in a word field (a condition's id, a limit's key) is the action's pick (a felt feeling). */
@@ -401,8 +405,8 @@ const pick = (ev: Ev, e: any): Unit | null => (e.target === 'actor' ? ev.actor :
 /** Who an op acts as: the holder, or (rules 1.33, `by: "source"` on a condition row's op) whoever gave the row. */
 const giverOfOp = (ev: Ev, e: any): Unit => (e.by === 'source' && ev.h.source && !ev.h.source.dead ? ev.h.source : ev.self);
 
-O('damage_mult', ['dealing', 'taking'], false, ['value', 'round', 'pool', 'replaces'], 'multiply the amount being dealt or taken (taking: round "up" rounds it up; pool: the holder\'s zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush) is taken out and this one stands in its place, so the two never multiply: Shadow\'s Break, rules 1.32)', (ev, e, label) => {
-  if (ev.trig.hook === 'damage_out') { if (typeof e.replaces === 'string') for (let i = ev.ctx.mults.length - 1; i >= 0; i--) if (ev.ctx.mults[i].label === e.replaces) ev.ctx.mults.splice(i, 1); ev.ctx.mults.push({ v: e.value, label }); return; }
+O('damage_mult', ['dealing', 'taking'], false, ['value', 'round', 'pool', 'replaces'], 'multiply the amount being dealt or taken (taking: round "up" rounds it up; pool: the holder\'s zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush; Margins: the hit counts none) is taken out and this one stands in its place, so the two never multiply: Shadow\'s Break, rules 1.32)', (ev, e, label) => {
+  if (ev.trig.hook === 'damage_out') { if (typeof e.replaces === 'string') for (let i = ev.ctx.mults.length - 1; i >= 0; i--) if (ev.ctx.mults[i].label === e.replaces) ev.ctx.mults.splice(i, 1); if (e.replaces === 'Margins') ev.ctx.noMargins = true; ev.ctx.mults.push({ v: e.value, label }); return; } // rules 1.96 item 8320: the Margins' term is set after the items speak, so replacing it takes the hit's Margins away
   const was = ev.ctx.dmg; let now = e.round === 'up' ? Math.ceil(was * e.value) : was * e.value;
   if (typeof e.pool === 'string' && ev.target) { // P10: a zone's pool caps what it prevents
     const z = zonesAt(ev.cb, ev.target.pos, e.pool, 'self', ev.self).find((x) => x.pool != null);
@@ -436,12 +440,13 @@ O('grant_ap', ['turn_ap', ...ANY.filter((t) => t !== 'turn_ap')], true, ['value'
   if (e.value < 0) { loseAp(u, -e.value); return; }
   if (e.bank) bankAp(u, e.value, label, ev.cb); else grantPerkAp(ev.cb, u, e.value, label);
 });
-O('resource', ANY, true, ['resource', 'value'], 'give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive); value "all" spends and "zero" loses all of it', (ev, e, label) => {
+O('resource', ANY, true, ['resource', 'value', 'keeps'], 'give (or take) a class resource (guard, momentum…), Echo, or any resource of data/actions.json `resources` (MP, Pressure…: through effects/cost.ts resGive); value "all" spends and "zero" loses all of it', (ev, e, label) => {
   const u = pick(ev, e); if (!u) return;
   if (e.resource === 'echo') { if (ev.h.c) gainEcho(ev.h.c, e.value, label); return; }
   const own = u.resMax?.[e.resource] != null || !RESOURCES[e.resource];
   // P3: "all" (spend all of it) and "zero" (lose all of it): take what the unit has now
-  const n = e.value === 'all' || e.value === 'zero' ? -(own ? resOf(u, e.resource) : resLeft(u, e.resource, ev.h.c, ev.cb)) : e.value;
+  if (e.value === 'all') { (ev as any).gain = -spendAll(u, e.resource, Number(e.keeps) || 0, ev.h.c, ev.cb); return; } // rules 1.96 item 8326 (S3): a spend of all, noted for cash:<res> (keeps: units left behind)
+  const n = e.value === 'zero' ? -(own ? resOf(u, e.resource) : resLeft(u, e.resource, ev.h.c, ev.cb)) : e.value;
   (ev as any).gain = own ? resGain(u, e.resource, n) : resGive(ev.cb, u, e.resource, n, { by: ev.self, c: ev.h.c, why: label });
 });
 /** The value of op `condition` that names the condition being put on (on cond_incoming: Take the Weight's "you take it
@@ -457,7 +462,7 @@ O('condition', ANY, true, ['condition', 'rounds', 'skip_save', 'via', 'by', 'sam
 });
 O('cleanse', ANY, true, ['condition', 'family', 'count', 'newest'], 'end conditions: the ones named, or a family\'s debuffs, or any debuff (count: how many; newest: true, the newest first, else in the order named)', (ev, e) => {
   const u = pick(ev, e); if (!u) return;
-  let ids = e.condition ? list(e.condition).map(condId).filter((id) => condHas(u, id)) : debuffsOf(u, e.family || undefined);
+  let ids = e.condition ? list(e.condition).map(condId).filter((id) => condHas(u, id)) : SQUAD_WORDS.includes(e.family) ? squadOf(u, e.family) : debuffsOf(u, e.family || undefined); // rules 1.96 item 8330: the family mark or gift is the squad's word
   if (e.newest) ids = [...ids].sort((a, b) => (u.condAt?.[b] || 0) - (u.condAt?.[a] || 0)); // rules 1.33 (Soothe): the newest first (condAt: the order they landed in)
   // rules 1.72 item 5700: each condition ended is shown (the cleanse's existing fx, `boon` word cleanse: the Sigil's, Clear Water's)
   const gone = ids.slice(0, e.count || ids.length);

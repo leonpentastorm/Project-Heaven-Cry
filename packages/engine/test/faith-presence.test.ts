@@ -191,7 +191,7 @@ describe('the widened triggers (items 742-743)', () => {
     const n1 = holy({ patron: 'the_laughing_mask' }); n1.me.conds = { witnessed: 99 } as any;
     n1.g.rng.state = rngFor(1); n1.bound(() => resolveAttack(n1.cb, n1.g.rng, n1.foe, n1.me, 'shot', null, { free: true, noAp: true }));
     expect(!!n1.foe.prone).toBe(true); expect(fx(n1.cb, FAITH_FX.intervention)[0]).toMatchObject({ trigger: 'enemy_misses_you', target: n1.foe.id, unit: n1.me.id });
-    const hit = holy({ patron: 'the_laughing_mask' }); hit.me.conds = { witnessed: 99 } as any; hit.me.def = -50;
+    const hit = holy({ patron: 'the_laughing_mask' }); hit.me.conds = { witnessed: 99 } as any; hit.me.def = -50; hit.me.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */
     hit.g.rng.state = rngFor(15); hit.bound(() => resolveAttack(hit.cb, hit.g.rng, hit.foe, hit.me, 'shot', null, { free: true, noAp: true }));
     expect(fx(hit.cb, FAITH_FX.intervention).length).toBe(0); expect(!!hit.foe.prone).toBe(false);
     const al = holy({ patron: 'the_laughing_mask' }); al.me.conds = { witnessed: 99 } as any;

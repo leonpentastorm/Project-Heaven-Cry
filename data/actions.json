@@ -508,6 +508,12 @@
       "path": "res.ledger",
       "max": "resMax.ledger"
     },
+    "grace": {
+      "name": "Grace",
+      "on": "unit",
+      "path": "res.grace",
+      "max": "resMax.grace"
+    },
     "devotion_xp": {
       "name": "Devotion XP",
       "on": "character",

@@ -38,7 +38,7 @@
     "concentration_risk",
     "counter",
     "creation_points",
-    "crit_damage_mod",
+    "margins_mod",
     "daily_upkeep",
     "damage_mod",
     "damage_taken_mod",
@@ -2161,22 +2161,22 @@
       "cost": null,
       "flavour": "Breathe out. Squeeze. Don't look away.",
       "upsides": [
-        "Breath Held: if you haven't moved this turn, your first shot ignores half cover and deals +{=effects.1.value_pct}% Critical Damage (a critical is never more than double damage)."
+        "Breath Held: if you haven't moved this turn, your first shot ignores half cover and, if it hits, counts {=effects.1.value} more Margin."
       ],
       "downsides": [
         "Tunnel Vision: after that shot, until you next move, your Vigilance checks fail, you can't spot Hidden enemies, and Ambushes deal +{=effects.3.value_pct}% damage to you."
       ],
       "notes": [],
       "narrator_hook": "the flanker you didn't see.",
-      "text": "Breathe out. Squeeze. Don't look away.\n+ Breath Held: if you haven't moved this turn, your first shot ignores half cover and deals +{=effects.1.value_pct}% Critical Damage (a critical is never more than double damage).\n− Tunnel Vision: after that shot, until you next move, your Vigilance checks fail, you can't spot Hidden enemies, and Ambushes deal +{=effects.3.value_pct}% damage to you.",
+      "text": "Breathe out. Squeeze. Don't look away.\n+ Breath Held: if you haven't moved this turn, your first shot ignores half cover and, if it hits, counts {=effects.1.value} more Margin.\n− Tunnel Vision: after that shot, until you next move, your Vigilance checks fail, you can't spot Hidden enemies, and Ambushes deal +{=effects.3.value_pct}% damage to you.",
       "effects": [
         {
           "op": "ignore_cover",
           "context": "first_shot_if_not_moved"
         },
         {
-          "op": "crit_damage_mod",
-          "value_pct": 25,
+          "op": "margins_mod",
+          "value": 1,
           "context": "first_shot_if_not_moved"
         },
         {

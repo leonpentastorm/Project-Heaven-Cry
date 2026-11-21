@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import { scaleOf,
   ENEMY, ENEMIES, ENEMY_LEVELS, enemyStats, clampEnemyLevel, fightLevelOf, fightLevel, levelGap, squadLevel, LOOT, SANDBOX_TIERS,
-  critMult, CRIT_BASE, CRIT_MAX, attackDamage, previewAttack, resolveAttack, applyDamage, apply, newGame, ARCHETYPES, npcsOf, COMBAT_XP, combatXp, d20,
+  marginShareOf, marginsOf, RULES, TRAITS, attackDamage, previewAttack, resolveAttack, applyDamage, apply, newGame, ARCHETYPES, npcsOf, COMBAT_XP, combatXp, d20,
   type Unit, type GameState, type Sheet,
 } from '../src';
 import { fightWith, storyWith, withGame, CLASSIC } from './helpers/perkfight';
@@ -165,35 +165,35 @@ describe('the level gap', () => {
   });
 });
 
-describe('critical hits: ×1.5, to ×2.0 at most', () => {
+describe('Margins (rules 1.96 item 8320: they replace the critical\'s multiplier)', () => {
+  const MG = (RULES as any).rolls.margins;
   const sheet = (attrs: Record<string, number>, skills: Record<string, number>, traits: string[] = []) => fightWith([{ attrs, skills, traits, weapon: 'hellraiser_service_rifle' }], [{ at: 'J6' }], { classic: true });
-  it('the floor: Perception 1 and no Dexterity is ×1.5; each point of Perception above 1 is +3%, each point of Dexterity +2%', () => {
-    expect([CRIT_BASE, CRIT_MAX]).toEqual([1.5, 2]);
-    const cm = (per: number, dex: number) => { const f = sheet({ perception: per }, { dexterity: dex }); return withGame(f.g, () => critMult(f.g.characters[f.pc.charId!])); };
-    expect(cm(1, 0)).toBe(1.5);
-    expect(cm(3, 4)).toBeCloseTo(1.64, 6); // the baseline's rifleman at level 1 (it was 2.4)
-    expect(cm(5, 10)).toBeCloseTo(1.82, 6); // and at level 20 (it was 2.9)
-    expect(cm(10, 10)).toBeCloseTo(1.97, 6);
+  it('a Margin is per + per_perception x Perception of the plain hit; Dexterity no longer touches it', () => {
+    const share = (per: number, dex: number) => { const f = sheet({ perception: per }, { dexterity: dex }); return withGame(f.g, () => marginShareOf(f.g.characters[f.pc.charId!])); };
+    expect(share(1, 0)).toBeCloseTo(MG.per + MG.per_perception, 9);
+    expect(share(10, 0)).toBeCloseTo(MG.per + 10 * MG.per_perception, 9);
+    expect(share(5, 10)).toBe(share(5, 0));
+    expect(marginsOf(13, 12, false)).toBe(0); expect(marginsOf(12 + MG.step, 12, false)).toBe(1); expect(marginsOf(12 + 2 * MG.step + 3, 12, true)).toBe(2 + MG.natural_20);
   });
-  it('the ceiling: Perception 10, Dexterity 10 and Breath Held together are ×2.0, not ×2.22', () => {
-    const f = sheet({ perception: 10 }, { dexterity: 10 }, ['one_shot']); const pc = f.turn(f.pc), foe = f.foe; pc.pos = '3,5'; foe.pos = '7,5'; foe.hp = foe.maxHp = 9999; foe.armour = 0; foe.critTaken = 0;
-    const plain = withGame(f.g, () => attackDamage(f.cb, pc, foe, 'shot', f.g.characters[pc.charId!], {})).total;
+  const natural20 = (perception: number, traits: string[] = []) => {
+    const f = sheet({ perception }, { dexterity: 0 }, traits); const pc = f.turn(f.pc), foe = f.foe; pc.pos = '3,5'; foe.pos = '7,5'; foe.hp = foe.maxHp = 999999; foe.armour = 0; foe.marginsTaken = 0;
+    const c = f.g.characters[pc.charId!];
+    const pv = withGame(f.g, () => previewAttack(f.cb, pc, foe, 'shot')) as any, plain = withGame(f.g, () => attackDamage(f.cb, pc, foe, 'shot', c, {})).total;
     f.g.rng.state = rngFor(20).state;
     f.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'shot' } as any);
-    const lost = 9999 - f.foe.hp;
-    expect(lost / plain).toBeGreaterThan(1.98); expect(lost / plain).toBeLessThanOrEqual(2.0001);
+    return { lost: 999999 - f.foe.hp, plain, m: marginsOf(20 + pv.toHit, pv.need, true), share: withGame(f.g, () => marginShareOf(c)) };
+  };
+  it('a natural 20 through the reducer: the plain hit x (1 + share x (its full steps over the Defense + two))', () => {
+    for (const per of [1, 10]) { const r = natural20(per); expect(r.m).toBeGreaterThanOrEqual(MG.natural_20); expect(r.lost).toBe(Math.floor(r.plain * (1 + r.share * r.m))); }
   });
-  it('a low sheet with Breath Held: +25% on the critical (×1.5 → ×1.75)', () => {
-    const f = sheet({ perception: 1 }, { dexterity: 0 }, ['one_shot']); const pc = f.turn(f.pc), foe = f.foe; pc.pos = '3,5'; foe.pos = '7,5'; foe.hp = foe.maxHp = 9999; foe.armour = 0; foe.critTaken = 0;
-    const plain = withGame(f.g, () => attackDamage(f.cb, pc, foe, 'shot', f.g.characters[pc.charId!], {})).total;
-    f.g.rng.state = rngFor(20).state;
-    f.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'shot' } as any);
-    expect((9999 - f.foe.hp) / plain).toBeGreaterThan(1.72); expect((9999 - f.foe.hp) / plain).toBeLessThanOrEqual(1.7501);
+  it('One Shot\'s Breath Held: one Margin more on that first shot (traits.json one_shot margins_mod)', () => {
+    const one = (TRAITS as any[]).find((t) => t.id === 'one_shot').effects.find((e: any) => e.op === 'margins_mod').value;
+    const r = natural20(1, ['one_shot']); expect(r.lost).toBe(Math.floor(r.plain * (1 + r.share * (r.m + one))));
   });
-  it('an enemy\'s critical is ×1.5 (it was ×2), less the target\'s Critical damage taken', () => {
+  it('an enemy\'s Margins are worth per (Perception 0), less the target\'s Margins taken', () => {
     const f = fightWith([{}], [{ weapon: 'hellraiser_service_rifle' }]); const pc = f.pc, foe = f.foe;
-    const crit = (taken: number) => { pc.critTaken = taken; return withGame(f.g, () => { const d = attackDamage(f.cb, foe, pc, 'shot', null, { crit: true }); return d.mults.find((m) => m.label === 'critical')!.v; }); };
-    expect(crit(0)).toBe(1.5); expect(crit(0.5)).toBe(1.25);
+    const term = (taken: number) => { pc.marginsTaken = taken; return withGame(f.g, () => { const d = attackDamage(f.cb, foe, pc, 'shot', null, { crit: true, margins: MG.natural_20 }); return d.mults.find((m) => /Margin/.test(m.label))?.v ?? 1; }); };
+    expect(term(0)).toBeCloseTo(1 + MG.per * MG.natural_20, 9); expect(term(-1)).toBeCloseTo(1 + MG.per * (MG.natural_20 - 1), 9); expect(term(-9)).toBe(1);
   });
 });
 

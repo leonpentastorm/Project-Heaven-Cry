@@ -19,7 +19,7 @@ function scene() {
   const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'old_overcast' } as any; c.patron = 'old_overcast';
   const [me, a1] = f.pcs; me.pos = '2,5'; a1.pos = '2,7'; f.foes[0].pos = '9,5';
   for (const u of f.cb.units) { u.hp = u.maxHp; u.conds = {}; u.shield = 0; delete u.shields; }
-  a1.hp = a1.maxHp = 5000; a1.armour = 0; a1.def = -40;
+  a1.hp = a1.maxHp = 5000; a1.armour = 0; a1.def = -40; a1.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */
   f.turn(me);
   const ally = (): Unit => f.unit(a1.id), chap = (): Unit => f.unit(me.id);
   return {

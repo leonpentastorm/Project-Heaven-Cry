@@ -21,7 +21,7 @@ const logHas = (cb: any, re: RegExp) => cb.log.some((l: string) => re.test(l));
 /** A Soul caster's fight (the stormcaller archetype and the soul kit), its turn begun, plenty of AP and MP. */
 function soulFight(spec: any = {}, foes: any[] = [{ at: 'E6' }], more: any[] = []) {
   const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', ...spec }, ...more], foes);
-  open(f.cb); f.pc.pos = '2,5'; f.foes.forEach((x: Unit, i: number) => { x.pos = (4 + i) + ',5'; x.def = 1; });
+  open(f.cb); f.pc.pos = '2,5'; f.foes.forEach((x: Unit, i: number) => { x.pos = (4 + i) + ',5'; x.def = 1; x.marginsTaken = -99; }); // rules 1.96: the dummies take no Margins (a held heart's Short and the shots are the tests')
   f.turn(f.pc); f.pc.ap = 9; f.pc.mg!.mp = 500; f.pc.mg!.strain = 0;
   return f;
 }
@@ -135,9 +135,10 @@ describe('Lore Master (items 6204 to 6207)', () => {
   });
   it('Rite in the Field: every fifth foe you drop yourself (third at II) makes the next Crystallise 0 AP; a friend\'s kills do not count', () => {
     const crystal = (tier: string, kills: number, byAlly = false) => {
-      const f = soulFight({ skills: { lore_master: 5 }, perks: { rite_in_the_field: tier } }, Array.from({ length: kills + 1 }, (_, i) => ({ at: 'E' + (6 + i) })), [{ name: 'Ally' }]);
+      // rules 1.96: Endurance 7 (the foes' opening shots now carry Margins and could drop a 60-HP caster before the kills are counted)
+      const f = soulFight({ skills: { lore_master: 5 }, attrs: { endurance: 7 }, perks: { rite_in_the_field: tier } }, Array.from({ length: kills + 1 }, (_, i) => ({ at: 'E' + (6 + i) })), [{ name: 'Ally', attrs: { endurance: 7 } }]);
       const killer = byAlly ? f.pcs[1] : f.pc;
-      for (let i = 0; i < kills; i++) { const foe = f.foes.find((x: Unit) => !x.dead && !x.downed)!; foe.hp = 1; foe.def = -50; f.unit(killer.id).pos = '2,5'; foe.pos = '3,5'; f.unit(killer.id).ap = 9;
+      for (let i = 0; i < kills; i++) { const foe = f.foes.find((x: Unit) => !x.dead && !x.downed)!; foe.hp = 1; foe.def = -50; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ f.unit(killer.id).pos = '2,5'; foe.pos = '3,5'; f.unit(killer.id).ap = 9;
         for (let n = 0; n < 9 && !f.unit(foe.id).dead; n++, f.unit(killer.id).jammed = false) withGame(f.g, () => resolveAttack(f.cb, f.g.rng, f.unit(killer.id), f.unit(foe.id), 'shot', null, { noAp: true })); // until it drops (a natural 1 misses)
         expect(f.unit(foe.id).dead).toBe(true); f.unit(foe.id).pos = '12,' + (2 + i); } // the body out of the way
       f.turn(f.pc); f.pc.ap = 9; open(f.cb); const ap = f.pc.ap; f.act({ type: 'combat/crystallise', unitId: f.pc.id } as any); return ap - f.pc.ap; };
@@ -279,7 +280,7 @@ describe('old saves (the Insight tables)', () => {
 function priestFight(spec: any = {}, friend: any = {}) {
   const f = fightWith([{ name: 'Faithful', level: 12, attrs: { virtue: 5 }, ...spec, skills: { faith: 5, ...(spec.skills || {}) } }, { name: 'Friend', level: 12, ...friend }], [{ at: 'F6' }], { level: 12 });
   const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'old_overcast' } as any; c.patron = 'old_overcast' as any; setDevotionXp(c, devotionThreshold(6)); c.devotion = 6;
-  const me = f.pc, al = f.pcs[1], foe = f.foe; me.pos = '2,5'; al.pos = '2,6'; al.maxHp = 5000; foe.pos = '6,5'; foe.hp = foe.maxHp = 5000; foe.armour = 0; foe.def = -40; // the friend has room for any heal
+  const me = f.pc, al = f.pcs[1], foe = f.foe; me.pos = '2,5'; al.pos = '2,6'; al.maxHp = 5000; foe.pos = '6,5'; foe.hp = foe.maxHp = 5000; foe.armour = 0; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ // the friend has room for any heal
   f.turn(me); f.unit(me.id).ap = 12;
   const pray = (kind: string, id: string, targetId?: string, tile?: string) => { f.g.rng.state = 4242; f.act({ type: 'faith/pray', unitId: me.id, kind, id, ...(targetId ? { targetId } : {}), ...(tile ? { tile } : {}) } as any, 'host'); };
   return { f, c, me, al, foe, pray };

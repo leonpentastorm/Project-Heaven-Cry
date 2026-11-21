@@ -168,7 +168,7 @@ describe('the Hymns that are not damage (items 1265 to 1268)', () => {
   it('Foreknowing: the next two attacks on the ally miss, the third is rolled', () => {
     const h = holy({ patron: 'counting_weaver', devotion: 3 }); h.pray('hymn', 'foreknowing', { targetId: h.ally.id });
     expect(h.ally.faith?.foreknown).toBe(2); expect(logHas(h.cb, /the next 2 attacks on Ally will miss/)).toBe(true);
-    h.ally.def = -99; // anything but a natural 1 would hit
+    h.ally.def = -99; h.ally.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ // anything but a natural 1 would hit
     const shoot = () => { h.g.rng.state = rngFor(15); h.bound(() => resolveAttack(h.cb, h.g.rng, h.foe, h.ally, 'shot', null, { free: true, noAp: true })); };
     shoot(); expect(h.ally.hp).toBe(2000); expect(h.ally.faith?.foreknown).toBe(1);
     shoot(); expect(h.ally.hp).toBe(2000); expect(h.ally.faith?.foreknown).toBeUndefined();

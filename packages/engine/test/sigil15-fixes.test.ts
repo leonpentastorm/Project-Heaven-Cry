@@ -15,7 +15,7 @@ function rig(words: string[], perks: Record<string, string> = {}, spec: any = { 
   const f = fightWith([{ ...spec, perks }], [{ tier: 'minion' }] as any);
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pc.pos = '3,5'; f.foe.pos = '10,5';
-  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; }
+  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; }
   const c = f.g.characters[f.pc.charId!]; c.sigils = [...words]; c.skills.brain_power = 10;
   (c as any).sigilGrowth = { study: 0, picksUsed: 0, free: 0, paid: [...ALL_PAID], toStudy: [], uses: {} };
   const u = f.turn(f.pc); u.ap = 60;

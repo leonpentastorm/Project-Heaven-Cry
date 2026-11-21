@@ -120,7 +120,7 @@ describe('the new forms (slice 3)', () => {
     const f = figFight([{ skills: { visualization: 1 }, weapon: 'service_pistol', forms: [] }], [{ tier: 'soldier', at: '5,4', classic: true }]);
     let u = f.turn(f.pc); f.picture(u, 'snare', '4,4'); u = f.unit(u.id); const s = f.figments(u)[0]; u.ap = 6;
     expect(u.mg!.vcharge).toBe(F.visualizer.charge - FORM.snare.charge);
-    f.foe.def = -50; // it hits
+    f.foe.def = -50; f.foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ // it hits
     f.order(u, s, 'figment_trip', { targetId: f.foe.id }); u = f.unit(u.id);
     expect(6 - u.ap).toBe(cost(VERB.figment_trip.site));
     expect(f.figments(u).length).toBe(0); // spent
@@ -153,7 +153,7 @@ describe('the new forms (slice 3)', () => {
     f.order(u, w, 'figment_interpose', { tile: '5,5' }); u = f.unit(u.id); expect(f.unit(w.id).pos).toBe('5,5'); expect(6 - u.ap).toBe(ORDER);
     // the enemy's own turn (combat/end-turn, its hostile phase) shoots the ally: no Defense on the ally, the Ward and the
     // caster out of its reach to hit (Defense 99), so the Ward's HP moves only by the redirect
-    f.unit(al.id).def = -50; f.unit(w.id).def = 99; f.unit(u.id).def = 99; f.foe.pos = '9,6';
+    f.unit(al.id).def = -50; f.unit(al.id).marginsTaken = -99; /* rules 1.96: the unmissable ally takes no Margins */ f.unit(w.id).def = 99; f.unit(u.id).def = 99; f.foe.pos = '9,6';
     const wHp = f.unit(w.id).hp, aHp = f.unit(al.id).hp;
     for (let i = 0; i < 24 && f.unit(w.id) && f.unit(w.id).hp === wHp; i++) { const a = active(f.cb)!; f.act({ type: 'combat/end-turn', unitId: a.id } as any); }
     expect(f.unit(al.id).hp, 'the enemy hit the ally').toBeLessThan(aHp); expect(f.unit(w.id).hp, 'its share landed on the Ward').toBeLessThan(wHp);

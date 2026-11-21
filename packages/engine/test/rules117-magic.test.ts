@@ -10,9 +10,9 @@
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import {
-  ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, evoke, previewEvoke, compileSpell, lineMult, LINE_MULT, lineMultFor, spellCritMult, capParts,
+  ARCHETYPES, MAPS, newCharacter, startCombat, refOf, d20, drawGlyph, evoke, previewEvoke, compileSpell, lineMult, LINE_MULT, lineMultFor, spellMargins, capParts, marginShareOf, marginsOf, RULES,
   STAGE_MULT, stageMult, SOUL_DAMAGE, SOUL_DAMAGE_ENEMY, outburstDamage, heldMult, previewOutburstPlan, previewPump, heartMagic, HEART_CASTERS, migrateDesign,
-  FEELINGS, FEELING, PLAIN_STEP, feelingStep, MODULE, RETIRED_MODULE, SOUL_RULES, SIGIL_GRAMMAR, CRIT_BASE, CRIT_MAX,
+  FEELINGS, FEELING, PLAIN_STEP, feelingStep, MODULE, RETIRED_MODULE, SOUL_RULES, SIGIL_GRAMMAR,
   type Sheet, type Combat, type Unit, type MapDef, type OutburstDesign,
 } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
@@ -34,7 +34,7 @@ function sigil(words: string[], foes: { at: string; tier?: string; sigils?: stri
   cb.objects = [];
   const u = cb.units.find((x) => x.charId === 'c1')!, es = cb.units.filter((x) => x.side === 'foe'), al = cb.units.find((x) => x.charId === 'a1');
   for (const x of cb.units.filter((q) => q.side === 'pc')) { x.ap = 99; x.mg!.words = [...words]; x.mg!.maxWords = 4; x.mg!.charge = 999; x.mg!.flux = -99; x.mg!.sigilMult = 1; x.mg!.sigilBoon = 1; x.mg!.deal = 1; x.mg!.elemMult = 1; x.mg!.healMult = 1; x.mg!.rangeBonus = 0; x.mg!.durBonus = 0; x.mg!.coreSave = 0; x.mg!.glyphAp = 1; x.hp = x.maxHp = 500; x.armour = 0; x.def = 10; }
-  for (const e of es) { e.def = -99; e.hp = e.maxHp = 500; e.armour = 0; e.sv = { body: -99, brain: -99, heart: -99 }; }
+  for (const e of es) { e.def = -99; e.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ e.hp = e.maxHp = 500; e.armour = 0; e.sv = { body: -99, brain: -99, heart: -99 }; }
   cb.mana = 15;
   return { cb, u, e: es[0], es, ally: al, rng: seed() };
 }
@@ -81,14 +81,17 @@ describe('Sigil: the Line multiplier (rules 1.17)', () => {
   });
 });
 
-describe('Sigil: a critical, the level gap, and the Elite and Boss guard (rules 1.17)', () => {
-  it('a critical is ×1.5 (the caster\'s own critical multiplier, never past ×2.0), not ×2', () => {
-    const s = sigil(['fire', 'seek']); const cm = spellCritMult(s.cb, s.u, s.e);
-    expect(cm).toBeGreaterThanOrEqual(CRIT_BASE); expect(cm).toBeLessThanOrEqual(CRIT_MAX); expect(cm).toBeLessThan(2);
-    expect(cast(s, ['fire', 'seek'], rollIs(20))).toBe(Math.round(scaled(30) * LINE_MULT[2] * cm) /* rules 1.95: the old derivation on the new data (the factor through scaled(), the gate's HP from data) */);
-    const half = sigil(['fire', 'seek']); half.e.critTaken = 0.5; // the target's Critical damage taken cuts the part above ×1
-    expect(spellCritMult(half.cb, half.u, half.e)).toBeCloseTo(1 + (cm - 1) / 2);
-    s.u.critTaken = 0; expect(spellCritMult(s.cb, s.e, s.u)).toBe(CRIT_BASE); // an enemy's
+describe('Sigil: Margins, the level gap, and the Elite and Boss guard (rules 1.17, 1.96)', () => {
+  it('a natural 20 is a critical: two Margins with the roll\'s own, each added to the Line multiplier (rules 1.96 item 8320)', () => {
+    const MG = (RULES as any).rolls.margins;
+    const s = sigil(['fire', 'seek']); draw(s.cb, s.rng, s.u, ['fire', 'seek'], ['5,5', '4,5']);
+    s.e.marginsTaken = 0; // this test is the Margins' own: the fixture's 'no Margins' is undone
+    const bonus = previewEvoke(s.cb, s.u, '4,5', s.e.pos).affected[0].roll!.bonus, m = marginsOf(20 + bonus, s.e.def, true), share = marginShareOf(null); // no game bound: the caster reads Perception 0
+    const hp = s.e.hp; expect(evoke(s.cb, rollIs(20), s.u, '4,5', s.e.pos)).toBeNull();
+    expect(hp - s.e.hp).toBe(Math.round(WD('fire') * (LINE_MULT[2] + share * m)));
+    const half = sigil(['fire', 'seek']); half.e.marginsTaken = -1; // the target's Margins taken: one fewer
+    expect(spellMargins(half.cb, half.u, half.e, 20 + bonus, true).n).toBe(m - 1);
+    s.u.marginsTaken = 0; expect(spellMargins(s.cb, s.e, s.u, 20, true).share).toBe(MG.per); // an enemy's
   });
   it('a spell\'s roll to hit reads the level gap: ±1 a level, like a weapon\'s', () => {
     const s = sigil(['fire', 'seek']); draw(s.cb, s.rng, s.u, ['fire', 'seek'], ['5,5', '4,5']);
@@ -108,7 +111,7 @@ describe('Sigil: a critical, the level gap, and the Elite and Boss guard (rules 
     const hurt = big('elite'); hurt.e.hp = 199; cast(hurt, ['fire', 'seek']); expect(hurt.e.dead).toBe(true);
     const soldier = big('soldier'); cast(soldier, ['fire', 'seek']); expect(soldier.e.dead).toBe(true);
     const below = big('elite'); below.e.level = 4; cast(below, ['fire', 'seek']); expect(below.e.dead).toBe(true); // 2 levels under the caster
-    const above = big('elite'); above.e.level = 8; above.e.def = -99; cast(above, ['fire', 'seek']); expect(above.e.hp).toBe(1);
+    const above = big('elite'); above.e.level = 8; above.e.def = -99; above.e.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ cast(above, ['fire', 'seek']); expect(above.e.hp).toBe(1);
   });
   it('TWICE: both missiles of one Evoke are held by the guard', () => {
     const words = ['fire', 'twice', 'seek'], s = big('boss', words); draw(s.cb, s.rng, s.u, words, ['5,5', '4,5', '3,5']);
@@ -125,7 +128,7 @@ function heart(foes: string[] = ['6,5'], allies: string[] = []) {
   const f = fightWith([{ archetype: 'stormcaller', kit: 'soul' }, ...allies.map(() => ({ archetype: 'stormcaller', kit: 'soul' }))], foes.map(() => ({ tier: 'minion' })));
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pcs.forEach((p, i) => { p.pos = i ? allies[i - 1] : '3,5'; }); f.foes.forEach((e, i) => { e.pos = foes[i]; });
-  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; (x as any).elemTaken = 0; (x as any).healRecv = 1; }
+  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.sv = { body: -99, brain: -99, heart: -99 } as any; x.hidden = false; (x as any).elemTaken = 0; (x as any).healRecv = 1; }
   for (const p of f.pcs) { Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBoon: 1, deal: 1, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } }); p.sk = {}; p.dbf = {}; }
   const u = f.turn(f.pc); u.ap = 60; f.g.rng.state = SEED;
   return f;
@@ -152,10 +155,10 @@ describe('Outburst: what rules 1.17 set and still stands', () => {
     // a fight saved before rules 1.17: the character's heart gets its base back the first time it is read
     delete me(g).mg!.soulBase; const d2 = give(g.pc); begin(g, d2); expect(me(g).mg!.soulBase).toBe(SOUL_DAMAGE);
   });
-  it('a critical is ×1.5 (to ×2.0 at most), not ×2; the roll reads the level gap', () => {
+  it('a natural 20 is two Margins with the roll\'s own, added to the stage\'s multiplier (rules 1.96); the roll reads the level gap', () => {
     const f = heart(); const d = give(f.pc); f.g.rng.state = rollIs(20).state;
-    const cm = withGame(f.g, () => spellCritMult(f.cb, me(f), f.foe)); expect(cm).toBeGreaterThanOrEqual(1.5); expect(cm).toBeLessThan(2);
-    begin(f, d, { aim: '6,5' }); expect(lost(f.foe)).toBe(Math.floor(SOUL_DAMAGE * 0.8 * cm));
+    const bonus = withGame(f.g, () => previewOutburstPlan(f.cb, me(f), d, '6,5')).affected[0].roll!.bonus, mg = withGame(f.g, () => spellMargins(f.cb, me(f), f.foe, 20 + bonus, true));
+    begin(f, d, { aim: '6,5' }); expect(lost(f.foe)).toBe(Math.floor(SOUL_DAMAGE * (0.8 + mg.share * mg.n)));
     const g = heart(); const e = give(g.pc); me(g).level = 6; g.foe.level = 6; (g.foe as any).lvlDmg = 1;
     const even = withGame(g.g, () => previewOutburstPlan(g.cb, me(g), e, '6,5')).affected[0].roll!.bonus;
     g.foe.level = 9; expect(withGame(g.g, () => previewOutburstPlan(g.cb, me(g), e, '6,5')).affected[0].roll!.bonus).toBe(even - 3);

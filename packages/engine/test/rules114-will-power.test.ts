@@ -15,7 +15,7 @@ const OD = 'skill:will_power.2#overdraw', AGAIN = 'perk:heart_overload#again', B
  * limit 20, 500 MP, an Emanator in hand, and the fight's free first Pump already spent (so a Pump costs its 1 AP). */
 function clean(f: F) {
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
-  for (const x of cb.units) { x.hp = x.maxHp = 999; x.armour = 0; x.def = -40; x.sv = { body: -40, brain: -40, heart: -40 } as any; x.hidden = false; }
+  for (const x of cb.units) { x.hp = x.maxHp = 999; x.armour = 0; x.def = -40; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.sv = { body: -40, brain: -40, heart: -40 } as any; x.hidden = false; }
   for (const x of cb.units) if (x.mg) Object.assign(x.mg, { emanator: true, mp: 500, mpMax: 500, soulMult: 1, soulBoon: 1, deal: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, firstUsed: true });
 }
 /** A fight with Soul casters (the first at C6) and one foe at F6, on the first caster's turn with 9 AP. */

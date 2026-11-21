@@ -40,7 +40,7 @@ import actionsJ from '../../../../data/actions.json';
 import rulesJ from '../../../../data/rules.json';
 import type { Character } from '../character';
 import type { Combat, Unit } from '../combat';
-import { emit, emitOwn, hookUsed, charOfUnit } from './hooks';
+import { emit, emitOwn, hookUsed, charOfUnit, statQuery } from './hooks';
 import { actionAp } from './core';
 import { COST_SITES, type CostSite } from './stats';
 import { briefCredit, AP_MAX } from './ap';
@@ -120,9 +120,29 @@ export function setResMax(id: string, fn: (u: Unit) => number): void { MAXES[id]
 export function resMaxOf(u: Unit | null | undefined, id: string, c?: Character | null, cb?: Combat | null): number {
   if (!u) return Infinity;
   if (MAXES[id]) return MAXES[id](u);
-  if (u.resMax?.[id] != null) return u.resMax[id];
+  if (u.resMax?.[id] != null) return u.resMax[id] + resMaxPlus(u, id, cb);
   const d = RESOURCES[id]; if (!d?.max) return Infinity;
-  const x = cell({ ...d, path: d.max }, holderOfRes(d, u, c, cb)); return x && x.o[x.k] != null ? Number(x.o[x.k]) : Infinity;
+  const x = cell({ ...d, path: d.max }, holderOfRes(d, u, c, cb)); return x && x.o[x.k] != null ? Number(x.o[x.k]) + resMaxPlus(u, id, cb) : Infinity;
+}
+/** Rules 1.96 item 8325 (08-primitives S5): what the sheet adds to the top of this resource, the stat `res_max:<id>`
+ * (a Push for one action, a perk). A door's Reach is the top itself (door.ts reachAt, written by the door's system). */
+export const resMaxPlus = (u: Unit, id: string, cb?: Combat | null): number => statQuery({ u, cb }, `res_max:${id}`).add;
+/** Rules 1.96 item 8327 (08-primitives S6): what this resource loses at a wear site: the site's own rule (`base`) plus
+ * the stat `wear:<id>` in its context (a move that keeps the counter answers it), never below 0. */
+export const wearOf = (u: Unit, id: string, base: number, ctx: Record<string, unknown> = {}, cb?: Combat | null): number => Math.max(0, base + statQuery({ u, cb }, `wear:${id}`, ctx).add);
+
+// ---------------------------------------------------------------------------------------------- what an action spent
+/** Rules 1.96 item 8326 (08-primitives S3): the units of each resource the unit's last action spent (pay's declared
+ * cost, spend, spendAll), read by the number sources cash:<res> and cash_share:<res>. Never saved: an action's own. */
+const SPENT = new WeakMap<Unit, Record<string, number>>();
+/** The units of this resource the unit's last action spent (0 when none). */
+export const spentOf = (u: Unit | null | undefined, id: string): number => (u ? SPENT.get(u)?.[id] || 0 : 0);
+const noteSpent = (u: Unit, id: string, n: number, fresh: boolean): void => { const m = fresh ? {} : { ...(SPENT.get(u) || {}) }; m[id] = (m[id] || 0) + n; SPENT.set(u, m); };
+/** Spend every unit of a resource but `keeps` (a cash-out: a beta's point 10 keeps 1), noted as the action's spend.
+ * Returns how many were spent. */
+export function spendAll(u: Unit, id: string, keeps = 0, c?: Character | null, cb?: Combat | null): number {
+  const n = Math.max(0, resLeft(u, id, c, cb) - Math.max(0, keeps)); if (n <= 0) { noteSpent(u, id, 0, true); return 0; }
+  resAdd(u, id, -n, c, cb); noteSpent(u, id, n, true); return n;
 }
 /** Rules 1.70 item 5543 (P2, `at: "limit"`): a resource's limit for a unit, where it differs from its most (Strain may
  * stand over its limit; Flux overloads past it). Registered by the system that owns the meter (magic.ts: Strain's
@@ -296,7 +316,7 @@ export function pay(cb: Combat | null | undefined, u: Unit, p: Priced | number, 
   }
   if (due) (u as any).ap = r10(u.ap - due);
   if (due) paidNote(cb, u, due);
-  if (typeof p !== 'number') for (const [id, n] of Object.entries(p.res)) if (n) resAdd(u, id, -n, o.c, cb);
+  if (typeof p !== 'number') { const res = Object.entries(p.res).filter(([, n]) => n); if (res.length) SPENT.set(u, Object.fromEntries(res)); for (const [id, n] of res) resAdd(u, id, -n, o.c, cb); } // rules 1.96: the action's spend (cash:<res>)
   return due;
 }
 /** rules 1.66 item 5203 (the review): the price a dry run paid. previewAction opens cb.apPaid on its copy; pay() adds
@@ -335,7 +355,7 @@ export function apMeter(cb: Combat | null | undefined, u: Unit): () => number {
  * nothing taken, when the unit has less. An action's own cost is declared instead (`res`), never spent in its run(). */
 export function spend(u: Unit | null | undefined, id: string, n: number, c?: Character | null, cb?: Combat | null): boolean {
   if (n <= 0) return true; if (!u || resLeft(u, id, c, cb) < n) return false;
-  resAdd(u, id, -n, c, cb); return true;
+  resAdd(u, id, -n, c, cb); noteSpent(u, id, n, false); return true;
 }
 
 // ---------------------------------------------------------------------------------------------- AP given and set

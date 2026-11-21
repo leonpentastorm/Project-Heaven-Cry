@@ -96,9 +96,8 @@ describe('the fight simulator', () => {
         expect(r.errors).toEqual([]);
         attacks += p.attacks; hits += p.hits; crits += p.crits; n++;
         // what a hit dealt: the engine's preview for a plain hit, or for a critical (Used to the Pain and the like are the target's, not here)
-        const plainHits = p.hits - p.crits;
-        expect(p.attackDmg - p.critDmg).toBe(plainHits * pv.hit);
-        if (p.crits) expect(p.critDmg).toBe(p.crits * pv.crit);
+        // rules 1.96: a hit with m Margins deals the preview's damage x (1 + its share x m), less armour
+        for (const [m, b] of Object.entries(p.byMargins || {})) expect(b.dmg, m + ' Margins').toBe(b.n * Math.max(1, Math.floor((pv as any).total * (1 + (pv as any).marginShare * Number(m))) - (pv as any).armour));
       }
       expect(attacks).toBeGreaterThan(60);
       // the hit rate over these attacks, against the preview's chance for the first shot of a turn (Recoil and Heat lower

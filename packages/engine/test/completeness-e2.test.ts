@@ -239,7 +239,7 @@ describe('Raised by Orks through the reducer (item 58)', () => {
   it('+20% on the holder\'s melee hit through combat/attack', () => {
     const dmg = (traits: string[]) => {
       const f = fightWith([{ traits, weapon: 'combat_knife' }], [{ at: 'C6' }], { seed: 'ORK' });
-      const u = f.turn(f.pc); u.pos = '5,5'; f.foe.pos = '6,5'; f.foe.def = -60; f.foe.armour = 0; f.foe.hp = f.foe.maxHp = 999;
+      const u = f.turn(f.pc); u.pos = '5,5'; f.foe.pos = '6,5'; f.foe.def = -60; f.foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ f.foe.armour = 0; f.foe.hp = f.foe.maxHp = 999;
       f.g.rng.state = rngFor(10).state; f.act({ type: 'combat/attack', unitId: u.id, targetId: f.foe.id, mode: 'melee' });
       return 999 - f.unit(f.foe.id).hp;
     };
@@ -325,7 +325,7 @@ describe('class moves: Vessel, Bard\'s Gift, Payload, Raise Cover (items 61-65)'
     s.act({ type: 'story/perk', charId: b.id, id: 'class:bard.gift', text: 'For you, ' + s.g.characters[ally.id].name });
     s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'F', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'boss', weapon: 'service_pistol', at: 'O10' }] } } } as any);
     const cb = s.g.combat!, bu = cb.units.find((u) => u.charId === b.id)!, au = cb.units.find((u) => u.charId === ally.id)!, foe = cb.units.find((u) => u.side === 'foe')!;
-    bu.pos = '2,2'; au.pos = '3,2'; foe.pos = '5,2'; foe.def = -40; const mp = bu.mg!.mp, strain = bu.mg!.strain || 0, allyStrain = au.mg?.strain || 0;
+    bu.pos = '2,2'; au.pos = '3,2'; foe.pos = '5,2'; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ const mp = bu.mg!.mp, strain = bu.mg!.strain || 0, allyStrain = au.mg?.strain || 0;
     cb.turn = cb.order.indexOf(au.id); au.ap = 6; delete cb.window;
     s.act({ type: 'combat/gift', unitId: au.id, aim: '5,2' } as any);
     const cb2 = s.g.combat!, b2 = cb2.units.find((u) => u.charId === b.id)!, a2 = cb2.units.find((u) => u.charId === ally.id)!;

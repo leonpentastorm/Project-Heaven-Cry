@@ -14889,3 +14889,57 @@ The lead's rulings 63 to 68 (`docs/design/growth/00-rulings.md` section K) close
       foci and off hand, so no second copy stands between); the MP prices and Syphon on the mp column with their
       restate (step 2d, `soul.json`); the lag factor of Survival's budget (step 4: until then `survival-encounter`'s
       reading of it is skipped).
+
+### Rules 1.96 (the pieces), 0.34: step 2a of the total rebalance: Margins, the door ladder, the cash-out source, a pool's top, wear, Grace, the squad's mark and gift (21 Nov 2026)
+
+Step 2 of the growth bible (`docs/design/growth/09-build-order.md`) is four lanes, one after another; this revision is
+its first, the general pieces (`08-primitives.md` S1, S2, S3, S5, S6, S10, S13 and the extensions an action's pair,
+`feed_flat`, a sum term's scope, and the families `mark` and `gift`). Every number is the bible's
+(`tools/balance/bible/*.json`). Everything is PROVISIONAL until played. As played after this revision:
+
+8320. **Margins replace the critical's multiplier** (ruling A7, ruling 48; `rules.json rolls.margins`). Every full 4
+      a roll beats the Defense or TN by is a Margin; a critical (a natural 20, or a natural in the attack's critical
+      range) lands and adds 2 more. Each Margin adds 25% plus 1% a point of the roller's Perception of the plain hit's
+      own damage (26% at Perception 1, 35% at 10), **added to the cash-out factor, never multiplied by it**: a plain
+      hit with 2 Margins at Perception 5 deals x1.6; a cash-out of x4 with the same deals x4.6. An enemy rolls
+      Margins as a character does, at Perception 0 (25% each). The critical as a word stays: a critical still forces
+      the injury roll, still fails two death saves on a Downed foe, and every item that reads "a critical" reads it.
+      Supersedes rules 1.15's x1.5 to x2.0 (`CRIT_BASE`, `CRIT_MAX`), Perception's +3% and Dexterity's +2% critical
+      damage, and rules 1.17's spell critical (Sigils and Outbursts now take two Margins on a natural 20, and the
+      Margins of their roll).
+8321. **Margins taken** (`gear_perks.margins_feeders.crit_taken`): a hit on you counts its Margins less your Margins
+      taken. Acuity (the skill with the id `analysis`) takes one off at 5 and one more at 10; Perception no longer
+      reduces it. Supersedes rules 1.13's critical damage taken (-10% a Perception point, -5% an Acuity point).
+8322. **One Shot's Breath Held** adds 1 Margin to that first shot if it hits (it was +25% on the critical).
+8323. **The critical range is one gear field** (`crit_range`, S13): a natural at or above it on an attack of its
+      modes is a critical. The CCEC marksman rifle's Steady Aim is `crit_range` 18 on Aimed Shots (it was the weapon op
+      `aimed_crit_min`).
+8324. **The door ladder** (S2; `skills.json` an alpha's `door_ladder`): each alpha skill names, by points, its door's
+      Reach (the most units its counter holds) and Bite (what each unit of a cash-out is worth), and the family gates
+      of ruling 13 (`needs`: Reach's step at 7 needs the beta at 4; the step at 10 the beta at 7 and the gamma at 4).
+      A step whose needs are not met is not held: the step below stands.
+8325. **A pool's top** (S5, the stat family `res_max:<resource>`): the top of a door's counter is the door's Reach
+      plus every `res_max` term on the sheet (a Push's one action, a perk). Read as a number source anywhere a number
+      may be read.
+8326. **The cash-out source** (S3; `rules.json output.cash_out`): a cash-out that spends n units of a counter is worth
+      S(n) = (g^n - 1) / (g - 1) at its door's own step g (n when g is 1), times the door's Bite, on top of the plain
+      action it replaces: x(1 + Bite x S(n)). `cash:<resource>` reads S(n) of the units the action spent and
+      `cash_share:<resource>` reads S(n) / n. A move's `keeps` leaves that many units behind.
+8327. **Wear** (S6, the stat family `wear:<resource>`): what a door's counter loses at each wear site (a tile walked,
+      a hit taken, a turn's end) is the site's rule plus the `wear` terms on the sheet; a move that keeps the counter
+      (the bible's keeps tags) states `wear` 0 for its context.
+8328. **Grace** (S10; `actions.json resources.grace`): prayer's in-fight counter, a resource like the others, its top
+      the stat `res_max:grace`. Nothing builds or spends it until step 2d.
+8329. **One pair to a hit, the beta's flat term, and a sum term's scope** (rulings 20, 30, 31): an amounts block or a
+      cash-out may name the `pair` it reads; a beta's feed is 1 + feed_flat x B + feed x A x B (every beta point counts
+      from the first); a sum term may name the `door` it belongs to, and a cash-out counts only its own door's terms and
+      the foe's one mark.
+8330. **The squad's one mark and one gift** (ruling 41; `scale.stack.squad`): every condition an ally lays on a foe that
+      makes it take more or be easier to hit is in the family `mark`; every condition an ally gives the attacker is in
+      the family `gift`. Laying one first ends the other of its family on that unit: a foe carries one mark and an
+      attacker one gift. A mark is +20% damage or +2 to be hit; a gift +20% damage or +2 to hit (the given Rage x1.2,
+      Exposed's, Corroded's, a foe's Rage's and Abandon's Defense at -2).
+8331. **Not in this revision** (each its lane's: 2b Body, 2c Mind, 2d Soul): the nine doors on their ladders (each
+      door's Reach, Bite and Push read from its row, its cash-outs on the source), the beta and gamma ladders, the
+      classes' own things and rank moves, solo behaviour (ruling 32). Until its lane, a door keeps its 0.33 counter, top
+      and cash-out.

@@ -45,7 +45,9 @@ import { emit } from './hooks';
 import { applyDamage, healUnit, grantShield, type DamageSrc, type DamageResult } from './damage';
 
 // ---------------------------------------------------------------------------------------------- the data
-export interface Term { v: number; label: string }
+export interface Term { v: number; label: string; /** rules 1.96 item 8329 (a sum term's scope, ruling 30): the door this term belongs to ('any': every door); a hit of another door does not count it */ door?: string }
+/** Rules 1.96 item 8329: does this term count on a hit of this door? (A term with no door, or a hit with none, always does.) */
+export const inScope = (t: Term, door?: string | null): boolean => !t.door || !door || t.door === 'any' || t.door === door;
 /** A damage, heal or shield profile (data/rules.json output.profiles): the slopes of its Stat term and the Level column it reads. */
 export interface Profile {
   /** A constant of the profile (×1 today; stage (b) re-pins a system here without touching its bases). */ k: number;
@@ -134,8 +136,8 @@ export const levelOf = (profile: string | null | undefined, level: number | null
 // Rules 1.95 (the scale; scale.json caps.vs_cap, ruling A10): the +100% cap on the target bonuses (VS_CAP) is gone: one sum
 // with no top; the floor stays.
 /** The one stacking rule: own multipliers multiply; target bonuses add, are held at −90% at least (no top), and multiply once. */
-export function stackDamage(mults: Term[], vs: Term[]): { mult: number; vsMult: number; total: number } {
-  const mult = mults.reduce((t, m) => t * m.v, 1), vsMult = 1 + Math.max(-0.9, vs.reduce((t, x) => t + x.v, 0));
+export function stackDamage(mults: Term[], vs: Term[], door?: string | null): { mult: number; vsMult: number; total: number } {
+  const mult = mults.filter((m) => inScope(m, door)).reduce((t, m) => t * m.v, 1), vsMult = 1 + Math.max(-0.9, vs.filter((x) => inScope(x, door)).reduce((t, x) => t + x.v, 0));
   return { mult, vsMult, total: mult * vsMult };
 }
 
@@ -150,6 +152,7 @@ export interface AmountSpec {
   /** Per-point parts that add to the base: { of: 'devotion', value: 4 } with ctx.counts.devotion. */ per?: { of: string; value: number }[];
   /** data/rules.json output.profiles (absent: no Stat and no Level term: the caller's number is already whole). */ profile?: string;
   /** The pair the Stat term reads, when it is not the profile's own (a weapon's `phys`). */ pair?: Pair;
+  /** Rules 1.96 item 8329: the door the hit is made through; a term naming another door does not count (ruling 30). */ door?: string;
   /** A rider's own flat amount on the same hit (an Outburst tone's bonus damage): added after the source's own
    * multipliers, before what items multiply by and the bonus against this target. Not `flat` (which is multiplied). */
   plus?: number;
@@ -189,10 +192,10 @@ export function openAmount(spec: AmountSpec, by: Unit | null, ctx: AmountCtx = {
 /** Close an amount: the base (with what items added; never under 0) times each multiplier in turn, then the bonus
  * against this target (the stacking rule). One order for every source (step a7). `raw` is the number before it is made whole. */
 export function closeAmount(a: Amount): { raw: number; amount: number; mult: number; vsMult: number; total: number } {
-  const st = stackDamage(a.mults, a.vs);
+  const door = a.spec.door, st = stackDamage(a.mults, a.vs, door), mv = (m: Term) => (inScope(m, door) ? m.v : 1); // rules 1.96 item 8329: a term of another door does not count
   let x = Math.max(0, a.base + a.add);
-  if (a.plus) { const at = Math.min(a.plusAt ?? a.mults.length, a.mults.length); a.mults.forEach((m, i) => { if (i === at) x += a.plus!; x *= m.v; }); if (at >= a.mults.length) x += a.plus; }
-  else for (const m of a.mults) x *= m.v;
+  if (a.plus) { const at = Math.min(a.plusAt ?? a.mults.length, a.mults.length); a.mults.forEach((m, i) => { if (i === at) x += a.plus!; x *= mv(m); }); if (at >= a.mults.length) x += a.plus; }
+  else for (const m of a.mults) x *= mv(m);
   const raw = x * st.vsMult;
   return { raw, amount: a.spec.round === 'round' ? Math.round(raw) : a.spec.round === 'none' ? raw : Math.floor(raw), ...st };
 }

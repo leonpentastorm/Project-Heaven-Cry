@@ -47,7 +47,7 @@ describe('Resonance, the perk (rules 1.14): what the rewrite kept', () => {
   /** Two Soul PCs side by side; a releases on round r, b on round r + 1; returns b's release multiplier. */
   function twoRounds(perksA: Record<string, string>, perksB: Record<string, string>) {
     const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks: perksA, name: 'A' }, { archetype: 'stormcaller', kit: 'soul', perks: perksB, name: 'B' }], [{ at: 'H6' }]);
-    open(f.cb); const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '2,6'; f.foe.pos = '5,5'; f.foe.hp = f.foe.maxHp = 9999; f.foe.def = -40;
+    open(f.cb); const [a, b] = f.pcs; a.pos = '2,5'; b.pos = '2,6'; f.foe.pos = '5,5'; f.foe.hp = f.foe.maxHp = 9999; f.foe.def = -40; f.foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */
     for (const p of [a, b]) { const m = f.unit(p.id).mg!; m.mp = 999; m.strainLimit = 30; }
     const ua = f.turn(a); ua.ap = 9; f.act({ type: 'combat/outburst', unitId: ua.id, design: ua.mg!.designs[0].id, aim: '5,5' });
     f.cb.round += 1; // the next round

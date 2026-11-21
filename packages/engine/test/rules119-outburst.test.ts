@@ -29,7 +29,7 @@ function heart(foes: string[] = ['6,5'], allies: string[] = [], spec: CharSpec =
   const f = fightWith([{ ...SOUL, ...spec }, ...allies.map(() => ({ ...SOUL }))], foes.map(() => ({ tier: 'minion' })));
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pcs.forEach((p, i) => { p.pos = i ? allies[i - 1] : '3,5'; }); f.foes.forEach((e, i) => { e.pos = foes[i]; });
-  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: o.saves ?? -99, brain: o.saves ?? -99, heart: o.saves ?? -99 } as any; x.hidden = false; (x as any).healRecv = 1; }
+  for (const x of [...f.pcs, ...f.foes]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.sv = { body: o.saves ?? -99, brain: o.saves ?? -99, heart: o.saves ?? -99 } as any; x.hidden = false; (x as any).healRecv = 1; }
   for (const p of f.pcs) { Object.assign(p.mg!, { emanator: true, mp: 9999, mpMax: 9999, soulMult: 1, soulBoon: 1, deal: 1, soulBase: 20, healMult: 1, will: 0, soulRange: 0, strain: 0, strainLimit: 20, costSave: 0, freePumps: 0, freePumpsMax: 0, freeUsed: 0, swellFree: false, firstUsed: true, feelings: FEELINGS.map((x) => x.id), debuff: { body: 0, brain: 0, heart: 0 } }); p.sk = {}; p.dbf = {}; }
   const u = f.turn(f.pc); u.ap = 60;
   return f;

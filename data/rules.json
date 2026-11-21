@@ -320,7 +320,7 @@
       "dodge": "max(0, athletics points from skills.json athletics per_point.numbers.defense_from, x its defense, + the armour dodge) (rules 1.82 item 7011)",
       "counter_bonus": "max(0, mod(raw_power))",
       "injury_resist_pct": "10*(endurance-1)",
-      "crit_damage_taken_pct": "-10*(perception-1) - 5*analysis (the skill named Acuity)",
+      "margins_taken": "rules 1.96 item 8321: a hit on you counts one Margin fewer at Acuity (the skill named analysis) 5 and one more fewer at 10 (skills.json analysis per_point.numbers.margins_taken_at)",
       "elemental_damage_taken_pct": "-6*pain_threshold (skills.json pain_threshold per_point.numbers.elemental_taken), every source together at most combat.elemental_taken_cap (rules 1.70 item 5540)",
       "ambush_damage_taken_pct": "-10*proficiency (the skill named Improvisation)",
       "healing_received_pct": "10*camaraderie",
@@ -359,7 +359,7 @@
       "sigil": "1.7 x Level.deal (rules 1.26: the aimed profile; output.profiles.sigil)",
       "soul": "1.55 x Level.deal (rules 1.26: the aimed profile; output.profiles.soul)",
       "healing_given": "1.392 x (1 + 0.06*(insight-1) + 0.06*empathy), never under half of a normal share's (rules 1.27: the landed profile; output.profiles.healing)",
-      "critical": "min(2.0, 1.5 + 0.03*(perception-1) + 0.02*dexterity + perks, traits and gear) (rules 1.15; provisional). An enemy: 1.5",
+      "margins": "rules 1.96 item 8320: each Margin adds rolls.margins.per + rolls.margins.per_perception x perception of the plain hit, added to the cash-out factor (the critical's multiplier is gone)",
       "ambush": "1.5 + 0.05*ingenuity",
       "blessing_power": "0.956 x (1 + 0.06*(virtue-1) + 0.06*faith) (rules 1.26: the landed profile; output.profiles.blessing)",
       "weapon": "1.5 x Level.deal (rules 1.26: the aimed profile, the same for every sheet, on bows, thrown charges and the foci's weapons; output.profiles.weapon). A melee blow reads output.profiles.melee (rules 1.56) and a gun shot output.profiles.gun (rules 1.61, R2): 1.275 x (1 + 0.0294118 x (the weapon's Attribute - 1)) x Level.deal"
@@ -783,7 +783,7 @@
           "natural 20",
           "natural 19-20 on an Aimed shot or an attack from Hidden"
         ],
-        "damage": "x critical multiplier (1.5, to 2.0 at most: rules 1.15), reduced by target crit_damage_taken",
+        "damage": "rules 1.96 item 8320: no multiplier of its own; a critical adds rolls.margins.natural_20 Margins (rolls.margins), less the target's Margins taken",
         "forces_injury_roll": true,
         "provisional": true
       },
@@ -955,7 +955,7 @@
       "braced_mult": 0.5
     },
     "gear_fields": {
-      "about": "Rules 1.56 (plan 0.29 primitive 2): the closed list of a weapon instance's number fields (character.ts gearNum). Each is a field of the weapon row (its own value, else `default`) and of a mod row (its change); `combine` sum adds every mod's to the weapon's, max takes the largest; a mod's `<field>_modes` limits its value to those attack modes.",
+      "about": "Rules 1.56 (plan 0.29 primitive 2): the closed list of a weapon instance's number fields (character.ts gearNum). Each is a field of the weapon row (its own value, else `default`) and of a mod row (its change); `combine` sum adds every mod's to the weapon's, max takes the largest, min the smallest (rules 1.96: crit_range); a row's or a mod's `<field>_modes` limits its value to those attack modes.",
       "recoil": {
         "combine": "sum",
         "default": 1,
@@ -981,6 +981,12 @@
         "combine": "max",
         "default": 0,
         "about": "the damage of a melee blow made with the gun instead of the fists' (the bayonet; the blow hits with the fists' skill)"
+      },
+      "crit_range": {
+        "combine": "min",
+        "default": 20,
+        "about": "rules 1.96 item 8323 (08-primitives S13): the lowest natural that is a critical (two Margins) on an attack of this weapon; a row's or a mod's `crit_range_modes` limits it to those attack modes (the CCEC marksman rifle's Steady Aim: 18 on aimed shots)",
+        "provisional": true
       }
     },
     "range_bands": {
@@ -1717,6 +1723,10 @@
   },
   "output": {
     "provisional": true,
+    "cash_out": {
+      "about": "Rules 1.96 item 8326 (08-primitives S3; the growth bible's scale.cash_out, ruling 63): a cash-out that spends n units of its door's counter is worth S(n) = (g^n - 1) / (g - 1) at the door's own step g (n when g is 1), times the door's one Bite, on top of the plain action: x(1 + Bite x S(n)). Each door's step and Bite are its alpha skill's door_ladder (skills.json: cash_step, rows[].bite); `step` is the law's first reading, the step of a cash-out no door owns. The sources cash:<resource> (S(n) of the units the action spent) and cash_share:<resource> (S(n) / n) read it (effects/triggers.ts sourceOf). PROVISIONAL.",
+      "step": 1.2
+    },
     "rules": "the unified damage formula, stage (a): a re-expression, no number moved (12 Nov 2026)",
     "formula": "amount = (base + flat) x Stat x Level x own multipliers x (1 + target bonuses, capped at +100%); dealt = max(1, floor(amount) - armour); healing and shields go to their sinks",
     "combine": {
@@ -2114,7 +2124,7 @@
           "line": "sigils.json grammar.line_mult (by glyph count; a character's Lines)",
           "sharpened": "sigils.json items[sharpen].damage_mult",
           "items": "the 'spell_mult' hook",
-          "critical": "rules 1.17: x1.5 to x2.0"
+          "critical": "rules 1.96 item 8320: no multiplier; a critical is two Margins (rolls.margins), added with the roll's Margins"
         }
       },
       "sigil_boon": {
@@ -2279,6 +2289,14 @@
       "soldier": 1,
       "elite": 2,
       "boss": 2
+    },
+    "margins": {
+      "about": "Rules 1.96 item 8320 (the growth bible's scale.margins, ruling A7 and ruling 48; 08-primitives S1): every full `step` a roll beats the Defense or TN by is a Margin; a critical (a natural 20, or a natural in the attack's critical range) lands and adds `natural_20` more. Each Margin adds (`per` + `per_perception` x the roller's Perception) of the plain hit's own damage, added to the cash-out factor, never multiplied by it. A unit with no sheet (an enemy) reads Perception 0. Read by packages/engine/src/rolls.ts (marginsOf, marginShare).",
+      "step": 4,
+      "per": 0.25,
+      "per_perception": 0.01,
+      "natural_20": 2,
+      "provisional": true
     }
   },
   "bosses": {

@@ -118,7 +118,7 @@ describe('Field Medic on the area map (item 41)', () => {
 describe('Humanity First in a fight, through combat/* (item 42)', () => {
   const shotLoss = (kind: string, trait: boolean) => {
     const f = fightWith([{ traits: trait ? ['humanity_first'] : [] }], [{ at: 'C6' }], { seed: 'HF' });
-    const u = f.turn(f.pc), foe = f.foe; foe.kind = kind; foe.def = -60; foe.armour = 0; u.pos = '2,5'; foe.pos = '4,5'; foe.hp = foe.maxHp = 500;
+    const u = f.turn(f.pc), foe = f.foe; foe.kind = kind; foe.def = -60; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ foe.armour = 0; u.pos = '2,5'; foe.pos = '4,5'; foe.hp = foe.maxHp = 500;
     f.g.rng.state = rngFor(10).state; f.act({ type: 'combat/attack', unitId: u.id, targetId: foe.id, mode: 'shot' });
     return 500 - f.unit(foe.id).hp;
   };

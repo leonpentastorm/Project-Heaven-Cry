@@ -24,7 +24,7 @@ function rig(foes: FoeSpec[], o: { three?: boolean; plain?: boolean } = {}) {
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = [];
   const at = ['5,4', '5,6', '5,5']; f.pcs.forEach((p, i) => { p.pos = at[i]; });
   const col = ['11,5', '11,4', '11,6', '11,3']; f.foes.forEach((e, i) => { e.pos = col[i]; });
-  for (const x of cb.units) { x.hp = x.maxHp = 200; x.armour = 0; x.shield = 0; x.hidden = false; (x as any).healRecv = 1; }
+  for (const x of cb.units) { x.hp = x.maxHp = 200; x.armour = 0; x.shield = 0; x.hidden = false; (x as any).healRecv = 1; x.downed = false; delete (x as any).saves; } // rules 1.96: the opening's shots carry Margins and may have Downed one: it is undone with the rest
   delete cb.fire; delete cb.doctrineSaid; // (the opening may have been played: nobody has fired yet)
   if (o.plain !== false) for (const e of f.foes) { e.techs = []; e.calls = []; } // plain attacks: the choice read is the target choice
   return f;

@@ -151,7 +151,7 @@ describe('Glyph Mason: an ally\'s Survey reach; the Keystone through two Evokes 
     const run = (mason: boolean) => {
       const f = fightWith([mason ? adv('glyph_mason') : {}, MIND], [{}]); open(f.cb); (f.cb as any).sigilV = 14;
       const [m, ally] = f.pcs; caster(f.unit(m.id), ['fire', 'push']); caster(f.unit(ally.id), ['fire', 'push']);
-      at(f, m, '4,2'); at(f, ally, '4,5'); const foe = at(f, f.foe, '4,1'); foe.def = -40; foe.hp = foe.maxHp = 999;
+      at(f, m, '4,2'); at(f, ally, '4,5'); const foe = at(f, f.foe, '4,1'); foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ foe.hp = foe.maxHp = 999;
       if (mason) { f.turn(m); act(f, f.unit(m.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', choice: 'fire' }); at(f, m, '8,8'); }
       else glyph(f.cb, f.unit(ally.id), 'fire', '4,2');
       // Rules 1.10: the ally extends the Mason's stroke on purpose (the picker), as a co-op Line.
@@ -167,7 +167,7 @@ describe('Glyph Mason: an ally\'s Survey reach; the Keystone through two Evokes 
   });
   it('the Keystone stays through an Evoke: a second Evoke the same turn finds it; rounds and scuffs don\'t take it', () => {
     const f = fightWith([adv('glyph_mason')], [{}]); open(f.cb); const u = f.turn(f.pc); at(f, u, '4,2'); caster(f.unit(u.id), ['fire', 'seek']);
-    const foe = at(f, f.foe, '1,2'); foe.def = -40; foe.hp = foe.maxHp = 999; f.unit(u.id).ap = 9;
+    const foe = at(f, f.foe, '1,2'); foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ foe.hp = foe.maxHp = 999; f.unit(u.id).ap = 9;
     act(f, f.unit(u.id), { type: 'combat/perk', id: 'class:glyph_mason.keystone', choice: 'fire' });
     for (let i = 0; i < 2; i++) {
       at(f, f.unit(u.id), '5,2'); act(f, f.unit(u.id), { type: 'combat/draw', word: 'seek', tile: '5,2' });

@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
 import {
-  FIGHT_TOOLS, ENEMY, ENEMY_LEVELS, enemyStats, levelGiven, fightLevel, levelGap, farBelow, levelCompanion, unitFromEnemy, critMult, CRIT_BASE, CRIT_MAX,
+  FIGHT_TOOLS, ENEMY, ENEMY_LEVELS, enemyStats, levelGiven, fightLevel, levelGap, farBelow, levelCompanion, unitFromEnemy, marginShareOf, marginsOf, RULES,
   attackDamage, previewAttack, resolveAttack, applyDamage, apply, npcsOf, squadLevel, d20, LOOT, PERKS, TRAITS, WEAPONS, RARITY, COMBAT_XP,
   newGame, ARCHETYPES, type GameState, type Unit, type Sheet,
 } from '../src';
@@ -122,33 +122,34 @@ describe('the level gap', () => {
   });
 });
 
-describe('critical hits: never under ×1.5, never over ×2.0', () => {
-  it('every perk, every trait, a Masterwork weapon, Perception 10 and Dexterity 10 on one sheet: ×1.97 on the sheet, ×2.0 at most on a hit', () => {
+describe('Margins (rules 1.96 item 8320): no floor and no cap of their own; the target\'s Margins taken', () => {
+  const MG = (RULES as any).rolls.margins;
+  it('every perk, every trait, a Celestial weapon, Perception 10 and Dexterity 10 on one sheet: each Margin is still per + per_perception x Perception', () => {
     const perks = Object.fromEntries(PERKS.map((p) => [p.id, p.tier === 'acquired' ? 'II' : p.tier]));
     const f = fightWith([{ level: 20, perks, traits: TRAITS.map((t) => t.id), attrs: { perception: 10 }, skills: { dexterity: 10 }, weapon: 'long_rifle' }], [{ tier: 'boss' }], { classic: true });
     const pc = f.pc, c = f.g.characters[pc.charId!]; c.weaponState = { ...(c.weaponState || {}), rarity: Object.keys(RARITY).slice(-1)[0] } as any;
-    const m = critMult(c); expect(m).toBeGreaterThanOrEqual(CRIT_BASE); expect(m).toBeLessThanOrEqual(CRIT_MAX);
-    pc.pos = '3,5'; f.foe.pos = '7,5';
+    expect(marginShareOf(c)).toBeCloseTo(MG.per + 10 * MG.per_perception, 9);
+    pc.pos = '3,5'; f.foe.pos = '7,5'; f.foe.marginsTaken = 0;
     withGame(f.g, () => {
-      for (const w of WEAPONS.filter((x) => x.category !== 'thrown')) { pc.weapon = w.id; const d = attackDamage(f.cb, pc, f.foe, /melee|unarmed/.test(w.category) ? 'melee' : 'shot', c, { crit: true }); expect(d.crit, w.id).toBeLessThanOrEqual(CRIT_MAX); expect(d.crit, w.id).toBeGreaterThanOrEqual(CRIT_BASE); }
+      for (const w of WEAPONS.filter((x) => x.category !== 'thrown')) { pc.weapon = w.id; const d = attackDamage(f.cb, pc, f.foe, /melee|unarmed/.test(w.category) ? 'melee' : 'shot', c, { crit: true, margins: MG.natural_20 }); expect(d.margins, w.id).toBeGreaterThanOrEqual(MG.natural_20); expect(d.share, w.id).toBeCloseTo(marginShareOf(c), 9); }
     });
   });
-  it('an old save\'s character with those points: the multiplier is worked out from the sheet each time, so it is the new one', () => {
+  it('an old save\'s character: the share is worked out from the sheet each time', () => {
     const f = fightWith([{ attrs: { perception: 10 }, skills: { dexterity: 10 }, traits: ['one_shot'] }], [{}]);
     const g: GameState = JSON.parse(JSON.stringify(f.g)); const c = Object.values(g.characters)[0];
-    expect(critMult(c)).toBeCloseTo(1.97, 3);
+    expect(marginShareOf(c)).toBeCloseTo(MG.per + 10 * MG.per_perception, 9);
   });
-  it('nothing takes it under ×1.5; a target\'s Critical damage taken cuts only the part above ×1', () => {
+  it('a target\'s Margins taken takes Margins off the hit, never under none', () => {
     const f = fightWith([{ attrs: { perception: 1 }, skills: { dexterity: 0 } }], [{}]); const pc = f.pc, foe = f.foe, c = f.g.characters[pc.charId!];
-    expect(critMult(c)).toBe(1.5);
-    withGame(f.g, () => { foe.critTaken = 0.5; expect(attackDamage(f.cb, pc, foe, 'shot', c, { crit: true }).crit).toBeCloseTo(1.25, 5); });
+    withGame(f.g, () => { foe.marginsTaken = -1; expect(attackDamage(f.cb, pc, foe, 'shot', c, { crit: true, margins: MG.natural_20 }).margins).toBe(MG.natural_20 - 1);
+      foe.marginsTaken = -9; expect(attackDamage(f.cb, pc, foe, 'shot', c, { crit: true, margins: MG.natural_20 }).margins).toBe(0); });
   });
-  it('an enemy of any tier and level, and a companion: ×1.5; what the card shows is what the hit does', () => {
+  it('an enemy of any tier and level: each Margin is per (no Perception); what the card shows is what the hit does', () => {
     for (const [tier, level] of [['vermin', 1], ['soldier', 12], ['boss', 20]] as const) {
-      const f = fightWith([{ level }], [{ tier, weapon: 'hellraiser_service_rifle' }]); const pc = f.pc, foe = f.foe; pc.pos = '3,5'; foe.pos = '7,5'; foe.ap = 6; pc.critTaken = 0;
+      const f = fightWith([{ level }], [{ tier, weapon: 'hellraiser_service_rifle' }]); const pc = f.pc, foe = f.foe; pc.pos = '3,5'; foe.pos = '7,5'; foe.ap = 6; pc.marginsTaken = 0;
       withGame(f.g, () => {
-        const pv = previewAttack(f.cb, foe, pc, 'shot'); expect(pv.dmg!.crit).toBe(1.5);
-        const want = Math.max(1, Math.floor(pv.dmg!.total * 1.5) - pv.dmg!.armour), hp0 = pc.hp + (pc.shield || 0);
+        const pv = previewAttack(f.cb, foe, pc, 'shot'); expect(pv.dmg!.share).toBe(MG.per);
+        const m = marginsOf(20 + pv.toHit!, pv.need!, true), want = Math.max(1, Math.floor(pv.dmg!.total * (1 + MG.per * m)) - pv.dmg!.armour), hp0 = pc.hp + (pc.shield || 0);
         const r = resolveAttack(f.cb, rngFor(20), foe, pc, 'shot', null); expect(r.crit).toBe(true); expect(hp0 - pc.hp - (pc.shield || 0)).toBe(Math.min(hp0, want));
       });
     }

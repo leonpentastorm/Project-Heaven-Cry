@@ -167,7 +167,7 @@ describe('item 6608: riders on the attack card', () => {
     const h = twoChaplains(); h.f.turn(h.me); h.f.unit(h.me).ap = 9;
     expect(note(h.f.g, h.me, h.foe)).toContain('On a hit: Smite, Judged');
     expect(h.f.cb.riders).toBeUndefined(); // the live fight is never written
-    h.f.unit(h.foe).def = -40; h.f.act({ type: 'combat/attack', unitId: h.me, targetId: h.foe, mode: 'shot' } as Action, 'host');
+    h.f.unit(h.foe).def = -40; h.f.unit(h.foe).marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ h.f.act({ type: 'combat/attack', unitId: h.me, targetId: h.foe, mode: 'shot' } as Action, 'host');
     expect(h.f.cb.log.some((l) => /\(Smite\)/.test(l))).toBe(true);
     expect(note(h.f.g, h.me, h.foe)).toContain('On a hit: Judged'); // once a turn: Smite's blow is spent, its Judged still rides
     h.f.turn(h.gun); expect(note(h.f.g, h.gun, h.foe).some((t: string) => /On a hit/.test(t))).toBe(false);

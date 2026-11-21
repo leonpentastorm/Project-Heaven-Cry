@@ -37,7 +37,7 @@ const open = (cb: any) => { cb.map = { ...cb.map, cover: [], full: [], solid: []
 /** A shooter (service rifle) at 2,5 against a big, easy soldier at 6,5, on the shooter's turn. */
 function gun(perks: Record<string, string> = {}, o: { skills?: Record<string, number> } = {}) {
   const f = fightWith([{ perks, weapon: 'hellraiser_service_rifle', skills: o.skills }], [{ at: 'G6' }]); open(f.cb);
-  f.pc.pos = '2,5'; f.foe.pos = '6,5'; f.foe.hp = f.foe.maxHp = 5000; f.foe.def = -40; f.foe.armour = 0;
+  f.pc.pos = '2,5'; f.foe.pos = '6,5'; f.foe.hp = f.foe.maxHp = 5000; f.foe.def = -40; f.foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ f.foe.armour = 0;
   const u = f.turn(f.pc); u.ap = 9; f.g.rng.state = calm();
   const shoot = () => f.act({ type: 'combat/attack', unitId: f.pc.id, targetId: f.foe.id, mode: 'shot' } as any);
   return { f, shoot };
@@ -85,7 +85,7 @@ describe('Answer in Kind (shrug_it_off): an enemy\'s blow that hurts you', () =>
   for (const tier of ['I', 'II'] as const) it(tier + ': the next turn\'s weapon attacks deal more; unhurt, nothing; it ends with that turn', () => {
     const { f, shoot } = gun({ shrug_it_off: tier });
     expect(termOf(tap(shoot).rows, 'shrug_it_off')).toEqual([]);
-    const u = f.pc; u.def = -99; u.hp = u.maxHp = 5000; u.resMax = { ...(u.resMax || {}), guard: 9 }; u.res = { ...(u.res || {}), guard: 0 };
+    const u = f.pc; u.def = -99; u.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ u.hp = u.maxHp = 5000; u.resMax = { ...(u.resMax || {}), guard: 9 }; u.res = { ...(u.res || {}), guard: 0 };
     f.foe.pos = '3,5'; GUARD.id = u.id; GUARD.at = null;
     f.act({ type: 'combat/end-turn', unitId: u.id } as any); GUARD.id = null; // the foe's turn: it shoots
     expect(f.pc.hp).toBeLessThan(5000);
@@ -229,7 +229,7 @@ describe('Running Hand (parallel_thought): the first glyph each turn', () => {
 // ============================================================================================================ Visualization
 function beast(perks: Record<string, string>, foeHp = 5000) {
   const f = figFight([{ skills: { visualization: 7 }, level: 5, weapon: 'service_pistol', perks }], [{ tier: 'soldier', at: '4,4', classic: true }]);
-  let u = f.turn(f.pc); f.picture(u, 'beast', '3,4'); u = f.unit(u.id); u.ap = 9; f.foe.pos = '4,4'; f.foe.hp = f.foe.maxHp = foeHp; f.foe.def = -40;
+  let u = f.turn(f.pc); f.picture(u, 'beast', '3,4'); u = f.unit(u.id); u.ap = 9; f.foe.pos = '4,4'; f.foe.hp = f.foe.maxHp = foeHp; f.foe.def = -40; f.foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */
   const b = f.figments(u)[0]; f.g.rng.state = calm();
   return { f, u, b, strike: () => f.order(f.unit(u.id), b, 'figment_strike', { targetId: f.foe.id }) };
 }
@@ -294,7 +294,7 @@ describe('Bitter Balm (lay_down_arms): a heal on yourself wounds each enemy Bond
 /** A Soul caster at 3,5 (Emanator, plenty of MP and AP) against one foe at 6,5 that is always hit. */
 function soul(perks: Record<string, string>) {
   const f = fightWith([{ archetype: 'stormcaller', kit: 'soul', perks }], [{ tier: 'minion' }]); open(f.cb); f.cb.mana = 15;
-  f.pc.pos = '3,5'; f.foe.pos = '6,5'; f.foe.hp = f.foe.maxHp = 5000; f.foe.armour = 0; f.foe.def = -99;
+  f.pc.pos = '3,5'; f.foe.pos = '6,5'; f.foe.hp = f.foe.maxHp = 5000; f.foe.armour = 0; f.foe.def = -99; f.foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */
   const u = f.turn(f.pc); u.ap = 60; Object.assign(u.mg!, { emanator: true, mp: 9999, mpMax: 9999, strain: 0, strainLimit: 99 });
   u.mg!.designs.push({ id: 'dz', name: 'Test bolt', school: 'damage', modules: [] } as any); f.g.rng.state = calm();
   return f;
@@ -325,7 +325,7 @@ describe('Resonance: each Release adds its step to the next, to its most', () =>
 function priest(perks: Record<string, string>) {
   const f = fightWith([{ name: 'Priest', perks, skills: { faith: 6 }, level: 6 }], [{ at: 'G6' }], { level: 6 });
   const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'nerukhan' }; c.patron = 'nerukhan'; setDevotionXp(c, devotionThreshold(6)); c.devotion = 6;
-  f.pc.pos = '2,5'; f.foe.pos = '6,5'; for (const u of f.cb.units) { u.conds = {}; u.shield = 0; } f.foe.hp = f.foe.maxHp = 2000; f.foe.armour = 0; f.foe.def = -40;
+  f.pc.pos = '2,5'; f.foe.pos = '6,5'; for (const u of f.cb.units) { u.conds = {}; u.shield = 0; } f.foe.hp = f.foe.maxHp = 2000; f.foe.armour = 0; f.foe.def = -40; f.foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */
   f.turn(f.pc); f.pc.ap = 9;
   return { f, get me() { return f.unit(f.pc.id); }, get foe() { return f.unit(f.foe.id); }, c,
     pray: (kind: string, id: string, x: any = {}) => f.act({ type: 'faith/pray', unitId: f.pc.id, kind, id, ...x } as any, 'host') };

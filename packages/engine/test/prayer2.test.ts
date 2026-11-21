@@ -26,7 +26,7 @@ function chap(o: Opt = {}) {
   const [me, a1, a2] = f.pcs, [f0, f1] = f.foes;
   me.pos = '2,5'; a1.pos = '2,6'; a2.pos = '9,9'; f0.pos = '6,5'; f1.pos = '7,5';
   for (const u of f.cb.units) { u.hp = u.maxHp; u.conds = {}; u.shield = 0; delete u.shields; }
-  for (const u of f.foes) { u.hp = u.maxHp = 2000; u.def = -40; u.armour = 0; }
+  for (const u of f.foes) { u.hp = u.maxHp = 2000; u.def = -40; u.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ u.armour = 0; }
   f.turn(me);
   return {
     f, get g() { return f.g; }, get cb() { return f.cb; }, get c(): Character { return f.g.characters[c.id]; },

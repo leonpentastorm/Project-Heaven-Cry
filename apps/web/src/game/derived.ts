@@ -4,7 +4,7 @@
 import { tilesN, unitFromCharacter, rngFor } from '@engine';
 import {
   SKILL, ATTRS, newCharacter, maxHp, maxMp, defense, initiativeBonus, movement, visionOf, carryLimit, saveBonus, SAVE_SKILL_OF,
-  healingMult, healReceivedMult, shieldReceivedMult, critMult, critTakenPct, ambushTakenPct, sigilRangeBonus, sigilCoreSaving, soulRangeBonus, readyDesigns,
+  healingMult, healReceivedMult, shieldReceivedMult, marginShareOf, marginsTakenOf, ambushTakenPct, sigilRangeBonus, sigilCoreSaving, soulRangeBonus, readyDesigns,
   type Character,
 } from '@engine';
 
@@ -36,8 +36,8 @@ export function derivedLines(c: Character): DerivedLine[] {
     { key: 'heal_given', k: 'Healing given', v: x2(healingMult(c)), from: and(at('insight'), sk('empathy')) },
     { key: 'heal_received', k: 'Healing received', v: x2(healReceivedMult(c)), from: sk('camaraderie') },
     { key: 'shield_received', k: 'Shields received', v: x2(shieldReceivedMult(c)), from: sk('conscience') },
-    { key: 'crit', k: 'Critical damage', v: x2(critMult(c)), from: and(at('perception'), sk('dexterity')) },
-    { key: 'crit_taken', k: 'Critical damage taken', v: pct(critTakenPct(c)), from: and(at('perception'), sk('analysis')) },
+    { key: 'margin', k: 'Each Margin', v: '+' + Math.round(marginShareOf(c) * 100) + '%', from: at('perception') }, // rules 1.96 item 8320
+    { key: 'margins_taken', k: 'Margins taken', v: String(marginsTakenOf(c)).replace('-', '−'), from: sk('analysis') }, // rules 1.96 item 8321
     { key: 'ambush_taken', k: 'Ambush damage taken', v: pct(ambushTakenPct(c)), from: sk('proficiency') },
     { key: 'sigil_range', k: 'Sigil range', v: '+' + tilesN(sigilRangeBonus(c)), from: sk('brain_power') },
     { key: 'sigil_cores', k: 'Core charge saved', v: sigilCoreSaving(c) + ' a Sigil', from: sk('brain_power') },

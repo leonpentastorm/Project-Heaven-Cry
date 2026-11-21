@@ -28,7 +28,7 @@ function prep(f: F, u: Unit, words: string[], maxWords = 4) {
   const m = f.unit(u.id).mg!; f.cb.objects = [];
   Object.assign(m, { words: [...words], maxWords, charge: 99, flux: 0, sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, healMult: 1, rangeBonus: 0, durBonus: 0, coreSave: 0, glyphAp: 1 });
   f.unit(u.id).ap = 9;
-  for (const e of f.foes) { const x = f.unit(e.id); x.def = -99; x.hp = x.maxHp = 999; x.armour = 0; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.pos = '15,10'; }
+  for (const e of f.foes) { const x = f.unit(e.id); x.def = -99; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.hp = x.maxHp = 999; x.armour = 0; x.sv = { body: -99, brain: -99, heart: -99 } as any; x.pos = '15,10'; }
   f.g.rng.state = plain();
 }
 const at = (f: F, u: Unit, pos: string) => { f.unit(u.id).pos = pos; f.unit(u.id).ap = 9; };
@@ -204,7 +204,7 @@ describe('Scribe Stored Spell under 1.4', () => {
   function fight(s: any, c: any) {
     s.act({ type: 'narrator/turn', turn: { narration: 'Fight!', combat: { name: 'T', map: 'yard16', difficulty: 'standard', enemies: [{ name: 'Foe', tier: 'soldier', weapon: 'service_pistol' }] } } } as any);
     const cb: Combat = s.g.combat!, u = cb.units.find((x) => x.charId === c.id)!, foe = cb.units.find((x) => x.side === 'foe')!;
-    cb.objects = []; Object.assign(u.mg!, { sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, rangeBonus: 0 }); u.pos = '8,2'; foe.pos = '2,2'; foe.def = -99; foe.hp = foe.maxHp = 999; foe.armour = 0;
+    cb.objects = []; Object.assign(u.mg!, { sigilMult: 1, sigilBoon: 1, deal: 1, elemMult: 1, rangeBonus: 0 }); u.pos = '8,2'; foe.pos = '2,2'; foe.def = -99; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ foe.hp = foe.maxHp = 999; foe.armour = 0;
     cb.turn = cb.order.indexOf(u.id); u.ap = 6; s.g.rng.state = plain();
     return { cb, u, foe };
   }

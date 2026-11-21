@@ -149,7 +149,7 @@ const sgn = (v) => (v >= 0 ? '+' : '−') + Math.abs(Math.round(v * 100) / 100);
 /** The to-hit sum and damage chain in words: "d20 +4 skill +2 aimed −2 range · dmg 20 ×1.2 Strength and Raw Power". */
 export function hitBreakdown(pv) {
   const terms = (pv.terms || []).map((t) => (t.v ? sgn(t.v) + ' ' : '') + t.label).join(' ');
-  const d = pv.dmg, dmg = d ? 'damage ' + d.base + (d.terms || []).map((t) => ' ' + sgn(t.v) + ' ' + t.label).join('') + (d.mults || []).filter((m) => m.label !== 'critical').map((m) => ' ×' + Math.round(m.v * 100) / 100 + ' ' + m.label).join('') + ' = ' + Math.floor(d.total) + (d.armour ? ' − armour ' + d.armour : '') + ' (critical ×' + Math.round(d.crit * 100) / 100 + ')' : '';
+  const d = pv.dmg, dmg = d ? 'damage ' + d.base + (d.terms || []).map((t) => ' ' + sgn(t.v) + ' ' + t.label).join('') + (d.mults || []).map((m) => ' ×' + Math.round(m.v * 100) / 100 + ' ' + m.label).join('') + ' = ' + Math.floor(d.total) + (d.armour ? ' − armour ' + d.armour : '') + ' (each Margin +' + Math.round(d.share * 100) + '%)' : '';
   return ['d20 ' + (terms || '+0'), dmg].filter(Boolean).join(' · ');
 }
 // ---------- combat feel: motion for this screen (every effect follows the shared game state, never a local click) ----------
@@ -1628,7 +1628,7 @@ export class CombatLogic extends DCLogic {
       breakdown: pv && pv.ok ? hitBreakdown(pv) : '',
       // 0.31.0 (U5): the preview and the target are one box: the roll line, then the damage line (the engine's preview,
       // before the target's armour and shields; the whole chain is the roll line's hover)
-      hasDmg: !!(pv && pv.ok && pv.dmg), dmgLine: pv && pv.ok && pv.dmg ? 'Damage ' + Math.floor(pv.dmg.total) + (pv.dmg.armour ? ' − armour ' + pv.dmg.armour : '') + ' · critical ×' + Math.round(pv.dmg.crit * 100) / 100 : '' } : null;
+      hasDmg: !!(pv && pv.ok && pv.dmg), dmgLine: pv && pv.ok && pv.dmg ? 'Damage ' + Math.floor(pv.dmg.total) + (pv.dmg.armour ? ' − armour ' + pv.dmg.armour : '') + ' · each Margin +' + Math.round(pv.dmg.share * 100) + '%' : '' } : null;
     const curOwner = cur ? playerOf(owner(cur)) : null;
     /** A unit's magic in a line: Evoker, heart, shield, conditions. */
     const magicLine = (u) => { const m = u.mg, cs = condChips(u, g); let t = '';

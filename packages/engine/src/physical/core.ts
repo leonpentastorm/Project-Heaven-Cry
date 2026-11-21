@@ -7,7 +7,7 @@ import { WEAPON } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery, statHeard, unitSkill } from '../effects/hooks';
 import { scaleOf, statOf } from '../effects/output';
 import { apDebt } from '../effects/ap';
-import { price, priced, whyNot, pay, refund } from '../effects/cost';
+import { price, priced, whyNot, pay, refund, wearOf } from '../effects/cost';
 import type { CostSite, StatId } from '../effects/stats';
 import type { HookName } from '../effects/types';
 import { applyCond, condOn, unitSave, unitStrength, withVia } from '../magic';
@@ -230,7 +230,8 @@ export function loseMomentum(cb: Combat, u: Unit, n: number): number {
 /** Rules 1.60 item 4605 (the beta feeds: Guts): Momentum worn off by a tile walked or a hit taken (physical/rules.ts),
  * divided by the Momentum loss's feed; the part kept is carried (effects/feed.ts feedCarry), so a whole point is kept
  * when it has been earned. A spend (Raise Shield's turn of Momentum into Guard) is not worn off: loseMomentum. */
-export function wearMomentum(cb: Combat, u: Unit, n: number): number {
+export function wearMomentum(cb: Combat, u: Unit, n: number, site = 'wear'): number {
+  n = wearOf(u, 'momentum', n, { site }, cb); if (n <= 0) return 0; // rules 1.96 item 8327 (S6): the sheet's wear:momentum at this site
   const kept = feedCarry(u, 'momentum_loss', n - n / feedOf(u, 'momentum_loss'));
   return loseMomentum(cb, u, n - kept);
 }

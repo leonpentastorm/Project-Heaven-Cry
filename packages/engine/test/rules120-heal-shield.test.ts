@@ -28,7 +28,7 @@ function rig(spec: CharSpec = {}, o: { level?: number } = {}) {
   const f = fightWith([{ ...SOUL, ...spec, ...(o.level ? { level: o.level } : {}) }, { ...SOUL }], [{ tier: 'minion' }]);
   const cb = f.cb; cb.map = { ...cb.map, cover: [], full: [], solid: [], difficult: [] } as any; cb.objects = []; cb.mana = 15;
   f.pcs[0].pos = '3,5'; f.pcs[1].pos = '4,5'; f.foe.pos = '12,5';
-  for (const x of [...f.pcs, f.foe]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.sv = { body: -99, brain: -99, heart: -99 } as any; (x as any).healRecv = 1; (x as any).shieldRecv = 1; }
+  for (const x of [...f.pcs, f.foe]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.sv = { body: -99, brain: -99, heart: -99 } as any; (x as any).healRecv = 1; (x as any).shieldRecv = 1; }
   for (const p of f.pcs) if (p.mg) { Object.assign(p.mg, { emanator: true, evoker: true, mp: 9999, mpMax: 9999, charge: 999, flux: -99, soulMult: 1, soulBoon: 1, deal: 1, sigilMult: 1, sigilBoon: 1, healMult: 1, strain: 0, strainLimit: 20, freePumps: 0, freePumpsMax: 0, freeUsed: 0, firstUsed: true, feelings: FEELINGS.map((q) => q.id), maxWords: 4, glyphAp: 1, coreSave: 0, rangeBonus: 0 }); }
   const u = f.turn(f.pc); u.ap = 60;
   return f;

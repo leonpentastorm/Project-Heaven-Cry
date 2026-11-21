@@ -50,6 +50,39 @@
       "attribute": "endurance",
       "core": "body",
       "slot": "alpha",
+      "door_ladder": {
+        "about": "rules 1.96 item 8324 (08-primitives S2; the growth bible's body.json guard door, rulings 13 and 63): the door's Reach (the most units its counter holds) and its one Bite (what each unit of a cash-out is worth), by points of this skill; a row's needs are the family gates (a step whose needs are not met is not held: the step below stands). cash_step: the door's own compounding of its units (S(n)). PROVISIONAL.",
+        "door": "guard",
+        "resource": "guard",
+        "cash_step": 1.0,
+        "rows": [
+          {
+            "points": 1,
+            "reach": 2,
+            "bite": 2.9869
+          },
+          {
+            "points": 4,
+            "reach": 3
+          },
+          {
+            "points": 7,
+            "reach": 4,
+            "needs": {
+              "pain_threshold": 4
+            }
+          },
+          {
+            "points": 10,
+            "reach": 6,
+            "needs": {
+              "pain_threshold": 7,
+              "sensory": 4
+            }
+          }
+        ],
+        "provisional": true
+      },
       "summary": "The tank.",
       "door_line": "Your door is Guard: plates around you that soak hits before your HP does. The Guard technique (with any weapon) and Brace raise plates; Challenge and Slam spend them.",
       "forks": [
@@ -771,6 +804,39 @@
       "attribute": "strength",
       "core": "body",
       "slot": "alpha",
+      "door_ladder": {
+        "about": "rules 1.96 item 8324 (08-primitives S2; the growth bible's body.json momentum door, rulings 13 and 63): the door's Reach (the most units its counter holds) and its one Bite (what each unit of a cash-out is worth), by points of this skill; a row's needs are the family gates (a step whose needs are not met is not held: the step below stands). cash_step: the door's own compounding of its units (S(n)). PROVISIONAL.",
+        "door": "momentum",
+        "resource": "momentum",
+        "cash_step": 1.1216,
+        "rows": [
+          {
+            "points": 1,
+            "reach": 3,
+            "bite": 0.5918
+          },
+          {
+            "points": 4,
+            "reach": 4
+          },
+          {
+            "points": 7,
+            "reach": 5,
+            "needs": {
+              "guts": 4
+            }
+          },
+          {
+            "points": 10,
+            "reach": 7,
+            "needs": {
+              "guts": 7,
+              "intimidation": 4
+            }
+          }
+        ],
+        "provisional": true
+      },
       "summary": "Hit harder, bend further, lift higher.",
       "door_line": "Your door is Momentum: the number on your token, built by landing melee hits and by Charge. Spend it all on a Finisher: Cleave hits a crowd, Break smashes a guard, Coup cuts down the wounded, and a Breaker's Launch throws a foe across the room.",
       "forks": [
@@ -1311,20 +1377,48 @@
       "attribute": "agility",
       "core": "body",
       "slot": "alpha",
+      "door_ladder": {
+        "about": "rules 1.96 item 8324 (08-primitives S2; the growth bible's body.json pressure door, rulings 13 and 63): the door's Reach (the most units its counter holds) and its one Bite (what each unit of a cash-out is worth), by points of this skill; a row's needs are the family gates (a step whose needs are not met is not held: the step below stands). cash_step: the door's own compounding of its units (S(n)). PROVISIONAL.",
+        "door": "pressure",
+        "resource": "pressure",
+        "cash_step": 1.3115,
+        "rows": [
+          {
+            "points": 1,
+            "reach": 2,
+            "bite": 0.4326
+          },
+          {
+            "points": 4,
+            "reach": 3
+          },
+          {
+            "points": 7,
+            "reach": 4,
+            "needs": {
+              "athletics": 4
+            }
+          },
+          {
+            "points": 10,
+            "reach": 5,
+            "needs": {
+              "athletics": 7,
+              "reaction_speed": 4
+            }
+          }
+        ],
+        "provisional": true
+      },
       "summary": "The quick hand. Guns, bows, thrown weapons and light blades; reloads, recoil, quick-draw.",
       "per_point": {
         "numbers": {
-          "hit": 1,
-          "crit": 0.02
+          "hit": 1
         },
         "rows": [
           {
             "at": "each",
             "text": "+{=per_point.numbers.hit} to hit: guns, light blades, thrown"
-          },
-          {
-            "at": "each",
-            "text": "+{=per_point.numbers.crit|pct}% critical damage"
           },
           {
             "at": "each",
@@ -1854,6 +1948,39 @@
       "attribute": "perception",
       "core": "mind",
       "slot": "alpha",
+      "door_ladder": {
+        "about": "rules 1.96 item 8324 (08-primitives S2; the growth bible's mind.json shadow door, rulings 13 and 63): the door's Reach (the most units its counter holds) and its one Bite (what each unit of a cash-out is worth), by points of this skill; a row's needs are the family gates (a step whose needs are not met is not held: the step below stands). cash_step: the door's own compounding of its units (S(n)). PROVISIONAL.",
+        "door": "shadow",
+        "resource": "shadow",
+        "cash_step": 1.4629,
+        "rows": [
+          {
+            "points": 1,
+            "reach": 2,
+            "bite": 0.4061
+          },
+          {
+            "points": 4,
+            "reach": 3
+          },
+          {
+            "points": 7,
+            "reach": 4,
+            "needs": {
+              "analysis": 4
+            }
+          },
+          {
+            "points": 10,
+            "reach": 5,
+            "needs": {
+              "analysis": 7,
+              "vigilant": 4
+            }
+          }
+        ],
+        "provisional": true
+      },
       "summary": "Stealth, sleight of hand, sticky fingers.",
       "door_line": "Your door is Shadow: a meter you fill while no enemy sees you. Hide where no enemy can see you (behind a wall, in smoke) to become Hidden: enemies can't target you, and your first attack is an ambush. Spend all your Shadow on a Break, one big attack from Hidden. Hidden ends when you attack, take a hit, or a foe ends its turn next to you.",
       "forks": [
@@ -2506,7 +2633,9 @@
         "numbers": {
           "feed": 0.01,
           "feed_at_double": 5,
-          "crit_taken": 0.05,
+          "margins_taken_from": 5,
+          "margins_taken_more_from": 10,
+          "margins_taken_each": -1,
           "range": 1
         },
         "rows": [
@@ -2515,8 +2644,12 @@
             "text": "+{=per_point.numbers.feed|pct}% foes' search difficulty while Hidden, up to +{=per_point.numbers.feed_at_double}"
           },
           {
-            "at": "each",
-            "text": "−{=per_point.numbers.crit_taken|pct}% critical damage taken"
+            "at": "at 5",
+            "text": "from {=per_point.numbers.margins_taken_from}: a hit on you counts {=per_point.numbers.margins_taken_each|abs} Margin fewer"
+          },
+          {
+            "at": "at 10",
+            "text": "from {=per_point.numbers.margins_taken_more_from}: a hit on you counts {=per_point.numbers.margins_taken_each|abs} more Margin fewer"
           },
           {
             "at": "each",
@@ -2833,6 +2966,39 @@
       "attribute": "intelligence",
       "core": "mind",
       "slot": "alpha",
+      "door_ladder": {
+        "about": "rules 1.96 item 8324 (08-primitives S2; the growth bible's mind.json sigils door, rulings 13 and 63): the door's Reach (the most units its counter holds) and its one Bite (what each unit of a cash-out is worth), by points of this skill; a row's needs are the family gates (a step whose needs are not met is not held: the step below stands). cash_step: the door's own compounding of its units (S(n)). PROVISIONAL.",
+        "door": "sigils",
+        "resource": "glyphs",
+        "cash_step": 1.5376,
+        "rows": [
+          {
+            "points": 1,
+            "reach": 2,
+            "bite": 0.7787
+          },
+          {
+            "points": 4,
+            "reach": 3
+          },
+          {
+            "points": 7,
+            "reach": 4,
+            "needs": {
+              "rumination": 4
+            }
+          },
+          {
+            "points": 10,
+            "reach": 5,
+            "needs": {
+              "rumination": 7,
+              "eloquence": 4
+            }
+          }
+        ],
+        "provisional": true
+      },
       "summary": "Raw processing speed for Sigils. Attack skill for Sigils that strike.",
       "door_line": "Your door is Sigils: spells written as glyphs on the ground. Draw one word on the tile you stand on, then move and draw the next, until {=door_numbers.line_min} to {=door_numbers.line_max} words make a straight row. Then Evoke it from beside the row: from an end it fires along the row, from the side it fires across it.",
       "forks": [
@@ -3429,6 +3595,39 @@
       "attribute": "expression",
       "core": "mind",
       "slot": "alpha",
+      "door_ladder": {
+        "about": "rules 1.96 item 8324 (08-primitives S2; the growth bible's mind.json figments door, rulings 13 and 63): the door's Reach (the most units its counter holds) and its one Bite (what each unit of a cash-out is worth), by points of this skill; a row's needs are the family gates (a step whose needs are not met is not held: the step below stands). cash_step: the door's own compounding of its units (S(n)). PROVISIONAL.",
+        "door": "figments",
+        "resource": "ties:owned",
+        "cash_step": 1.0,
+        "rows": [
+          {
+            "points": 1,
+            "reach": 1,
+            "bite": 1.25
+          },
+          {
+            "points": 4,
+            "reach": 2
+          },
+          {
+            "points": 7,
+            "reach": 3,
+            "needs": {
+              "proficiency": 4
+            }
+          },
+          {
+            "points": 10,
+            "reach": 4,
+            "needs": {
+              "proficiency": 7,
+              "charisma": 4
+            }
+          }
+        ],
+        "provisional": true
+      },
       "summary": "Shapes thought into images; pictures the Figments built of mana.",
       "door_line": "Your door is Figments: shapes you build out of mana. With the Visualizer in hand, Picture one: your ready designs are offered first, then every form you know.",
       "fork_runs_on": "Visualizer charge (the held count)",
@@ -3993,6 +4192,39 @@
       "attribute": "insight",
       "core": "soul",
       "slot": "alpha",
+      "door_ladder": {
+        "about": "rules 1.96 item 8324 (08-primitives S2; the growth bible's soul.json bonds door, rulings 13 and 63): the door's Reach (the most units its counter holds) and its one Bite (what each unit of a cash-out is worth), by points of this skill; a row's needs are the family gates (a step whose needs are not met is not held: the step below stands). cash_step: the door's own compounding of its units (S(n)). PROVISIONAL.",
+        "door": "bonds",
+        "resource": "bond",
+        "cash_step": 1.0,
+        "rows": [
+          {
+            "points": 1,
+            "reach": 1,
+            "bite": 1.25
+          },
+          {
+            "points": 4,
+            "reach": 2
+          },
+          {
+            "points": 7,
+            "reach": 3,
+            "needs": {
+              "camaraderie": 4
+            }
+          },
+          {
+            "points": 10,
+            "reach": 4,
+            "needs": {
+              "camaraderie": 7,
+              "implication": 4
+            }
+          }
+        ],
+        "provisional": true
+      },
       "summary": "Feeling what the other side feels, enemies included.",
       "door_line": "Your door is Bonds: tie yourself to a friend or a foe. Tend a Bonded friend; hurt a Bonded foe. A foe makes a Heart save to resist (an Elite at +{=door_numbers.save_elite}, a Boss at +{=door_numbers.save_boss}). While you hold it you have +{=door_numbers.hit} to hit it, and when you are hurt it takes {=door_numbers.share|pct}% of the blow for you. It takes {=door_numbers.echo|pct}% of every heal you give. Your damage is +{=door_numbers.per_bond|pct}% for each Bond you hold. Snap breaks a Bond: a foe takes Soul damage and is Dazed. While you hold any Bond you are Traced.",
       "forks": [
@@ -4613,6 +4845,39 @@
       "attribute": "determination",
       "core": "soul",
       "slot": "alpha",
+      "door_ladder": {
+        "about": "rules 1.96 item 8324 (08-primitives S2; the growth bible's soul.json outbursts door, rulings 13 and 63): the door's Reach (the most units its counter holds) and its one Bite (what each unit of a cash-out is worth), by points of this skill; a row's needs are the family gates (a step whose needs are not met is not held: the step below stands). cash_step: the door's own compounding of its units (S(n)). PROVISIONAL.",
+        "door": "outbursts",
+        "resource": "stage",
+        "cash_step": 1.0,
+        "rows": [
+          {
+            "points": 1,
+            "reach": 2,
+            "bite": 0.84
+          },
+          {
+            "points": 4,
+            "reach": 3
+          },
+          {
+            "points": 7,
+            "reach": 4,
+            "needs": {
+              "composure": 4
+            }
+          },
+          {
+            "points": 10,
+            "reach": 5,
+            "needs": {
+              "composure": 7,
+              "lore_master": 4
+            }
+          }
+        ],
+        "provisional": true
+      },
       "summary": "The strength of the soul, and of its link to its twin in the upper realm. Attack skill for Soul spells that strike.",
       "door_line": "Your door is Outbursts: Soul spells you charge, then release. Begin a design, Pump it up stage by stage, then Release it; each step adds Strain (the load on your heart), and MP pays. Go {=door_numbers.short_at_over} past your Strain limit and your heart shorts (a Mana Short): you are Stunned and anything you hold goes off wild. From your next turn you are in Mana Shock: each turn you end still over your limit costs {=door_numbers.shock_hp_share|pct}% of your max HP, until your heart calms or the fight ends.",
       "forks": [
@@ -5182,6 +5447,39 @@
       "attribute": "virtue",
       "core": "soul",
       "slot": "alpha",
+      "door_ladder": {
+        "about": "rules 1.96 item 8324 (08-primitives S2; the growth bible's soul.json prayer door, rulings 13 and 63): the door's Reach (the most units its counter holds) and its one Bite (what each unit of a cash-out is worth), by points of this skill; a row's needs are the family gates (a step whose needs are not met is not held: the step below stands). cash_step: the door's own compounding of its units (S(n)). PROVISIONAL.",
+        "door": "prayer",
+        "resource": "grace",
+        "cash_step": 1.5905,
+        "rows": [
+          {
+            "points": 1,
+            "reach": 2,
+            "bite": 0.386
+          },
+          {
+            "points": 4,
+            "reach": 3
+          },
+          {
+            "points": 7,
+            "reach": 4,
+            "needs": {
+              "conscience": 4
+            }
+          },
+          {
+            "points": 10,
+            "reach": 5,
+            "needs": {
+              "conscience": 7,
+              "authority": 4
+            }
+          }
+        ],
+        "provisional": true
+      },
       "summary": "The saints judge. You deliver.",
       "door_line": "Your door is prayer to your patron. A Whisper is quick and comes once a turn; a Hymn is strong and then must wait. Your patron watches what you do: each thing it likes raises your Devotion (your standing with it), each thing it hates lowers it.",
       "forks": [

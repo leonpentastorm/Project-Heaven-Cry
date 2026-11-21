@@ -37,6 +37,7 @@ import {
   previewAttack, previewTechnique, techniquePad, paths, apForTiles, dist, alive, WEAPON, isMelee, bindGame,
   previewOutburst, previewPump, previewOutburstPlan, heartReach, planEvoke, glyphCost, glyphApOf, groundCap, canStand, dir8, SIGIL,
   previewPrayer, patronOf, fulfilVow, WHISPERS, callPad, previewCall, lineOfSight, standable, TECHNIQUE, FEELING, weaponBraces, coverBonus,
+  MARGINS,
 } from '../../src';
 
 export type StepKind = 'attack' | 'technique' | 'move' | 'reload' | 'setup' | 'spell' | 'prayer' | 'call' | 'other';
@@ -51,7 +52,7 @@ const allowed = (x: Ctx, s: Step | null) => (s && !x.banned.has(keyOf(s)) ? s : 
 /** Expected damage of one attack preview: hit chance × damage after armour, the critical's extra counted. */
 export function expected(pv: any, critChance = 0.05): number {
   if (!pv || !pv.ok || !pv.dmg) return 0;
-  const hit = Math.max(1, Math.floor(pv.dmg.total) - pv.dmg.armour), crit = Math.max(1, Math.floor(pv.dmg.total * pv.dmg.crit) - pv.dmg.armour);
+  const hit = Math.max(1, Math.floor(pv.dmg.total) - pv.dmg.armour), crit = Math.max(1, Math.floor(pv.dmg.total * (1 + pv.dmg.share * MARGINS.natural_20)) - pv.dmg.armour);
   const p = pv.pct / 100, pc = Math.min(p, critChance);
   return (p - pc) * hit + pc * crit;
 }

@@ -6,7 +6,7 @@
 // Without the variable it only checks that the table builds.
 import { describe, it, expect } from 'vitest';
 import { writeFileSync } from 'node:fs';
-import { WEAPON, previewAttack, maxHp } from '../src';
+import { WEAPON, previewAttack, maxHp, MARGINS } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 
 const WEAPONS = ['service_pistol', 'frontier_hand_cannon', 'decrkm_smg', 'hellraiser_service_rifle', 'long_rifle', 'coach_gun', 'hellraiser_lmg', 'blackpoint_700', 'breacher_tube', 'recurve_bow', 'crossbow', 'combat_knife', 'sabre', 'maul', 'adamantile_greatsword', 'fists', 'hellraiser_servo_fist'];
@@ -24,8 +24,8 @@ function measure(weapon: string, b: any, tier: string) {
   const p = withGame(f.g, () => previewAttack(cb, pc, foe, mode));
   if (!p.ok || !p.dmg) return { weapon, build: b.id, tier, why: p.why || 'no damage' };
   const hit = Math.max(0, Math.round(p.dmg.total - Math.max(0, p.dmg.armour - p.dmg.pierce)));
-  const critRate = 0.05, ev = (p.pct / 100) * hit * (1 + critRate * (p.dmg.crit - 1));
-  return { weapon, cat: w.category, build: b.id, tier, ap: p.ap, pct: p.pct, hit, crit: Math.round(hit * p.dmg.crit), evPerAp: Math.round((ev / Math.max(1, p.ap)) * 10) / 10, toKill: hit > 0 ? Math.ceil(foe.maxHp / hit) : null, foeHp: foe.maxHp, pcHp: pc.maxHp };
+  const critRate = 0.05, ev = (p.pct / 100) * hit * (1 + critRate * p.dmg.share * MARGINS.natural_20);
+  return { weapon, cat: w.category, build: b.id, tier, ap: p.ap, pct: p.pct, hit, crit: Math.round(hit * (1 + p.dmg.share * MARGINS.natural_20)), evPerAp: Math.round((ev / Math.max(1, p.ap)) * 10) / 10, toKill: hit > 0 ? Math.ceil(foe.maxHp / hit) : null, foeHp: foe.maxHp, pcHp: pc.maxHp };
 }
 
 describe('the balance baseline', () => {

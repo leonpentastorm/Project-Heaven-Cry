@@ -116,9 +116,7 @@
       "text": "A Line's direct damage is multiplied by its length: ×{=by_glyphs.2} for two glyphs, ×{=by_glyphs.3} for three, ×{=by_glyphs.4} for four. Healing, shields, ranges and conditions are not changed."
     },
     "critical": {
-      "mult": 1.5,
-      "max": 2.0,
-      "text": "A natural 20 on a spell's roll to hit is a critical: ×1.5 damage, up to ×2.0 with everything on your sheet and gear, the same rule as a weapon's critical.",
+      "text": "Rules 1.96 item 8320: a spell's roll to hit takes Margins as a weapon's does (rules.json rolls.margins): every full 4 over the Defense is one, a natural 20 is a critical and adds two, and each adds its share of the spell to the Line's multiplier.",
       "provisional": true
     },
     "elite_guard": {

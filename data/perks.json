@@ -369,8 +369,8 @@
             }
           ],
           "ap_cost": null,
-          "text": "One injured limb no longer holds you back. While you hold Guard, a critical hit on you lands as an ordinary hit and leaves no injury.",
-          "short": "Holding Guard: a critical on you is an ordinary hit, no injury",
+          "text": "One injured limb no longer holds you back. While you hold Guard, a critical hit on you counts no Margins and leaves no injury.",
+          "short": "Holding Guard: a critical on you counts no Margins, no injury",
           "effects": [
             {
               "op": "stat_mod",
@@ -396,14 +396,14 @@
                 "k": "guard_move",
                 "move": "crit_turned"
               },
-              "say": "{self} sets against the blow: the critical lands as an ordinary hit (Numb).",
+              "say": "{self} sets against the blow: the critical counts no Margins (Numb).",
               "and": [
                 {
                   "op": "mark",
                   "flag": "crit_turned"
                 }
               ],
-              "replaces": "critical"
+              "replaces": "Margins"
             },
             {
               "op": "cancel",

@@ -157,7 +157,7 @@ describe('Guard, the first fork: Provoke and Cover Them', () => {
   function cover(picks: string[], o: { guard?: number; melee?: boolean } = {}) {
     const f = fightWith([tank(picks), { name: 'Back', weapon: 'service_pistol' }], [{ at: 'P6', weapon: o.melee ? 'combat_knife' : 'service_pistol' }]);
     const me = big(f, at(f, f.pc, '4,2')), ally = big(f, at(f, f.pcs[1], '4,4')); f.unit(me.id).res.guard = o.guard ?? 3;
-    const foe = big(f, at(f, f.foe, o.melee ? '4,5' : '9,4')); f.unit(foe.id).attack = 60;
+    const foe = big(f, at(f, f.foe, o.melee ? '4,5' : '9,4')); f.unit(foe.id).attack = 60; f.unit(me.id).marginsTaken = f.unit(ally.id).marginsTaken = -99; // rules 1.96: attack 60 makes every hit land; the fixture's hits count no Margins
     return { f, me, ally, foe };
   }
   it('Cover Them: a ranged hit on an ally within reach lands on the tank (a Guard spent, the reaction used), once a round', () => {

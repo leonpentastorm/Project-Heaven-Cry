@@ -75,7 +75,7 @@ describe('Measured Blow (rules 1.60 item 4623; rules 1.73 item 5808, Follow Thro
   const MB: any = CLASS_MOVE_POOL['fighter.finisher'], kept = MB.effects[1].value, back = MB.effects[2].value;
   const run = (strength: number, hp: number) => {
     const f = fightWith([{ classId: 'fighter', level: 12, attrs: { strength }, skills: { raw_power: 3 }, weapon: 'sabre' }], [{ at: 'F6' }]);
-    const me = at(f, f.pc, '4,2'), foe = at(f, f.foe, '5,2'); foe.hp = hp; foe.maxHp = 5000; foe.def = -40; foe.armour = 0;
+    const me = at(f, f.pc, '4,2'), foe = at(f, f.foe, '5,2'); foe.hp = hp; foe.maxHp = 5000; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ foe.armour = 0;
     const after: number[] = [];
     for (let i = 0; i < 2; i++) {
       if (f.unit(foe.id).dead) break;
@@ -102,7 +102,7 @@ describe('Deliver the Sinner (rules 1.60 item 4635): a patron\'s blow deals more
     const run = (marked: boolean) => {
       const f = fightWith([{ name: 'Faithful', skills: { faith: 5 }, attrs: { virtue: 5 }, level: 12 }], [{ at: 'F6' }], { level: 12 });
       const c = f.g.characters[f.pc.charId!]; c.belief = { kind: 'faithful', patron: 'old_overcast' } as any; c.patron = 'old_overcast' as any; setDevotionXp(c, devotionThreshold(6)); c.devotion = 6;
-      const me = at(f, f.pc, '2,5'), foe = at(f, f.foe, '6,5'); foe.hp = foe.maxHp = 5000; foe.armour = 0; foe.def = -40;
+      const me = at(f, f.pc, '2,5'), foe = at(f, f.foe, '6,5'); foe.hp = foe.maxHp = 5000; foe.armour = 0; foe.def = -40; foe.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */
       if (marked) withGame(f.g, () => applyCond(f.cb, f.g.rng, me, f.unit(foe.id), 'marked', 3, undefined, { skipSave: true }));
       f.turn(me); const hp = f.unit(foe.id).hp;
       f.act({ type: 'faith/pray', unitId: me.id, kind: 'whisper', id: 'rebuke', targetId: foe.id } as Action, 'host');

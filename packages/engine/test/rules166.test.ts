@@ -74,7 +74,7 @@ describe('D: the preview price (item 5203)', () => {
   const caster = (spec: any = {}) => {
     const f = fightWith([{ archetype: 'sigilist', kit: 'sigil', ...spec }], [{ at: 'E6', tier: 'minion', name: 'Foe 1' }]);
     open(f.cb); f.cb.mana = 15; f.pc.pos = '3,5'; f.foe.pos = '4,5';
-    for (const x of [f.pc, f.foe]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.hidden = false; }
+    for (const x of [f.pc, f.foe]) { x.hp = x.maxHp = 500; x.armour = 0; x.def = -99; x.marginsTaken = -99; /* rules 1.96: an unmissable fixture takes no Margins */ x.hidden = false; }
     f.turn(f.pc); f.pc.ap = 9; Object.assign(f.pc.mg!, { evoker: true, words: ['fire', 'seek', 'bind', 'condense'], charge: 999, glyphAp: 1, maxWords: 4, flux: -99 });
     return f;
   };
