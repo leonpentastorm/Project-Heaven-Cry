@@ -1,0 +1,38 @@
+{
+  "base": "e83f37bbbefd548acd7b40e8ae63f05f9947f830",
+  "head": "265f4d5ef41a82ef56de65b789f417cc86b99079",
+  "compare": {
+    "repository_full_name": "leonpentastorm/Project-Heaven-Cry",
+    "base": "e83f37bbbefd548acd7b40e8ae63f05f9947f830",
+    "head": "265f4d5ef41a82ef56de65b789f417cc86b99079",
+    "status": "ahead",
+    "ahead_by": 1,
+    "behind_by": 0,
+    "total_commits": 1,
+    "too_large": null,
+    "base_commit": {
+      "sha": "e83f37bbbefd548acd7b40e8ae63f05f9947f830",
+      "url": "https://api.github.com/repos/leonpentastorm/Project-Heaven-Cry/commits/e83f37bbbefd548acd7b40e8ae63f05f9947f830",
+      "html_url": "https://github.com/leonpentastorm/Project-Heaven-Cry/commit/e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+    },
+    "merge_base_commit": {
+      "sha": "e83f37bbbefd548acd7b40e8ae63f05f9947f830",
+      "url": "https://api.github.com/repos/leonpentastorm/Project-Heaven-Cry/commits/e83f37bbbefd548acd7b40e8ae63f05f9947f830",
+      "html_url": "https://github.com/leonpentastorm/Project-Heaven-Cry/commit/e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+    },
+    "files": [
+      {
+        "filename": "docs/design/handoffs/START-HERE.md",
+        "status": "modified",
+        "additions": 44,
+        "deletions": 453,
+        "changes": 497,
+        "previous_filename": null
+      }
+    ]
+  },
+  "inspection": "Only docs/design/handoffs/START-HERE.md changed. Read full replacement: release/rebalance handoff and numeric/engineering workflow notes, no gear prompt, image target, palette, maker silhouette, art hold or reference change. No branch merge/deployment or new document instructions adopted. Existing art work remains authorized.",
+  "art_briefs_changed": false,
+  "holds_changed": false,
+  "requires_redraw": false
+}

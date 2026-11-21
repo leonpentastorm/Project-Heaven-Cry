@@ -1,0 +1,65 @@
+{
+  "head": "909f89aadf71a7167f02ac584ddc30650934997f",
+  "job": {
+    "id": "weapon-parlour_pistol--fine",
+    "standard_id": "weapon-parlour_pistol",
+    "grade": "fine",
+    "label": "Parlour Pistol — Fine",
+    "path": "art/icons/gear/weapon-parlour_pistol--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-parlour_pistol.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-parlour_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-parlour_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Create the Fine-finish cosmetic variant of the attached fictional RPG parlour pistol inventory painting for Project Heaven Cry. This is a 2D digital game-art asset. FIRST attachment is the exact Standard geometry and registration reference: preserve the complete right-facing level two-shot over-and-under pocket pistol, its two short stacked round barrels and dark openings, brass muzzle rings, hinge band, exposed curved hammer, single trigger in its small rounded guard, existing brass scroll curves on the small frame, curved pearl-ivory grip and ONE grip screw. Keep every part/opening, proportions, camera, pose, scale and margins. SECOND attachment supplies Heavenprint ink and gouache brushwork only; no person or scene.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nApply those surface changes only to the first reference: even clean dark steel on both barrels, clean brass fittings and existing ornamental curves, clean ivory grip; one thin new uncoloured engraved contour along the upper side of the small frame, inside its existing surface. Retain existing ornament only; no new ornament, coloured inlay, repair, magazine or added part at Fine. Do not add, remove, relocate or resize a part or opening. Hand-painted opaque gouache and ink with broken directional strokes, selective dry-brush, charcoal shadows, warm ivory focal edges and upper-left light. Full transparent background,1024x1024RGBA, same framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logo, label, border, frame, flash, smoke or external glow. Exterior painted illustration only, no technical diagram, internal mechanism, measurements, assembly steps or operating instructions.",
+    "keep_line": "the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "2a9b4fe714ebfcc441c04a13f22eac2608cecb870846ad1178d22a2293f57c93",
+    "standard_sha256": "0c1368d1206cd634f28b22e78a67d53a5d540dbcb26739b7c98cd7e804eaefd0",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-parlour_pistol--fine--1795145062151.json",
+      "response": {
+        "id": "weapon-parlour_pistol--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 56ae837a-a224-4099-a83d-3fbcf0ab51ac. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    },
+    "prior_last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-parlour_pistol--fine--1795145062151.json",
+      "request_id": "56ae837a-a224-4099-a83d-3fbcf0ab51ac"
+    },
+    "prompt_revisions": [
+      {
+        "previous_prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same compact two-shot over-and-under pocket pistol pointing right, two short stacked round dark steel barrels with brass muzzle rings, small brass engraved side frame, high exposed hammer, one trigger in its small rounded guard and curved pearl-ivory grip with one screw. Keep both barrel openings dark, both barrels, hinge band, hammer, trigger/guard, existing ornamental curves and grip proportions exactly. No detachable magazine, no new text, no coloured accent.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+        "previous_sha256": "2a9b4fe714ebfcc441c04a13f22eac2608cecb870846ad1178d22a2293f57c93",
+        "reason": "Direct reference-first cosmetic edit retaining exact Fine block, explicit pistol identity and all visible Standard part locks. Earlier full request preserved.",
+        "changed_utc": "2026-11-21T16:09:29.383921+00:00"
+      }
+    ],
+    "active_prompt_sha256": "e1b720af7db0f147e1a05112b7aea03d682a7055b501a605b04231ff58cc6d7b",
+    "request_layout": "reference-first-cosmetic-direct"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-parlour_pistol.png": "0c1368d1206cd634f28b22e78a67d53a5d540dbcb26739b7c98cd7e804eaefd0",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 5,
+  "claim_comment": 7061326470,
+  "clock": {
+    "current_time": "2026-11-21 16:23:19 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7065394773,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "265f4d5ef41a82ef56de65b789f417cc86b99079"
+}

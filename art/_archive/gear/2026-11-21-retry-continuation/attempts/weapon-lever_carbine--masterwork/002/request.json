@@ -1,0 +1,55 @@
+{
+  "head": "909f89aadf71a7167f02ac584ddc30650934997f",
+  "job": {
+    "id": "weapon-lever_carbine--masterwork",
+    "standard_id": "weapon-lever_carbine",
+    "grade": "masterwork",
+    "label": "Lever Carbine — Masterwork",
+    "path": "art/icons/gear/weapon-lever_carbine--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lever_carbine.png",
+      "art/icons/gear/weapon-lever_carbine--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lever_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-lever_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Create the Masterwork-finish cosmetic variant of the attached fictional RPG lever-action carbine inventory painting for Project Heaven Cry. This is a 2D digital game-art asset. FIRST attachment fixes exact Standard geometry and registration: preserve the complete visible carbine outline, every part and opening, shallow muzzle-up-right diagonal, pose, camera, scale and margins. SECOND is the preceding grade: keep its surface additions except the specified current material changes. THIRD supplies Heavenprint ink and gouache brushwork only, never a person or scene.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nKeep the existing walnut stock and fore-end shapes, original brass receiver/bands/buttplate, two straight tubes, large lever loop, trigger, sights and TWO visible muzzle slots. Inlay the preceding Fine upper-receiver engraved route with ONE narrow continuous bright polished brass stripe. Refinish the same walnut surfaces as fine figured polished walnut and polish existing fasteners; no wear, no new ornament or repair. Apply only those surface changes to actual parts shown. Do not add, remove, resize or move any part or opening. Hand-painted opaque gouache and ink, broken directional strokes, selective dry-brush, charcoal shadows, warm ivory focal edges and upper-left light. Full transparent background,1024x1024RGBA, same framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logo, label, frame, border, flash, smoke or external glow. Exterior painted illustration only, no technical diagram, internal mechanism, measurements, assembly steps or operating instructions.",
+    "keep_line": "the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-lever_carbine--fine",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "c2a903ac98cea008269592162c827d59d63964c0bbd0e7b21a5b1237d54bbafc",
+    "standard_sha256": "240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07",
+    "retry_authorized_by_user": true,
+    "prompt_revisions": [
+      {
+        "previous_prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The SECOND image is the preceding grade candidate; retain prior additions except the specified grade finish change. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only. The new receiver inlay is bright brass. Keep it narrow; preserve the original accents.",
+        "previous_sha256": "c2a903ac98cea008269592162c827d59d63964c0bbd0e7b21a5b1237d54bbafc",
+        "reason": "Direct reference-first cosmetic edit retaining exact grade paragraph and every actual carbine-specific addition/part lock. All previous complete requests preserved.",
+        "changed_utc": "2026-11-21T16:15:40.004278+00:00"
+      }
+    ],
+    "active_prompt_sha256": "768f13ec324188e01c29e46419b41ff75f127889f6422e7e13df6a34df33d993",
+    "request_layout": "reference-first-cosmetic-direct"
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-lever_carbine.png": "240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07",
+    "art/icons/gear/weapon-lever_carbine--fine.png": "5272009720af7776011d5893bfa71539d9af78d6a4b168f486009c35874adbf3",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 2,
+  "claim_comment": 7061326470,
+  "clock": {
+    "current_time": "2026-11-21 16:22:35 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7065394773,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "265f4d5ef41a82ef56de65b789f417cc86b99079"
+}
