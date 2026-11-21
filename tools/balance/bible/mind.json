@@ -28,7 +28,14 @@
         "counter": {"resource": "shadow", "unit": "a Shadow", "starts_at": 0,
                     "broken_by": ["guard"],
                     "broken_by_why": "Shadow is built Hidden and worn by every turn that starts seen; the Guard door's verbs (Challenge, Called Out, Hold Their Eyes, Slam's Taunt) make every foe look at the wall, so a plan that names Guard cannot hold it (critic-player-3 3; ruling 49 (e))",
-                    "gains_per_turn": {"data": "rules.json:shadow.door_gains_per_turn"}},
+                    "gains_per_turn": {"data": "rules.json:shadow.door_gains_per_turn"},
+                    "fill_rule": {
+                      "per_turn_from_every_source": 2,
+                      "first_shade": "inside the cap (today it is outside it, skills.json ingenuity First Shade)",
+                      "full_meter_turns": 3,
+                      "ruling": "62",
+                      "why": "no more than 2 Shadow a turn from every source, First Shade included, so the full meter of 5 takes about three turns unseen without attacking (2, 4, 5); a Break on a part-filled meter pays for what it holds and no more (its formula reads n)"
+                    }},
         "builds": [
           {"by": "your turn ends Hidden and you made no attack", "units": 1},
           {"by": "a cover-to-cover move nobody sees, once a turn", "units": 1},
@@ -53,14 +60,55 @@
                   "pair": "perception x ingenuity (ruling 31: the Break reads its door's pair, not the gun's Agility and Dexterity)"},
         "cashouts": {
           "break": {
-            "name": "the Break", "from_point": 1, "ap": "the weapon's", "spends": "all", "min": 1, "rolls": true,
-            "formula": "1 + bite * cash(n)", "terms": ["bite", "cash"],
-            "ambush": {"text": "a Break from a fresh ambush: its +50% moves into the one sum (ruling A8), multiplying the whole blow",
-                       "sum": {"door": "shadow", "value": {"data": "rules.json:shadow.ambush_bonus"}, "group": "shadow:ambush"}},
-            "marked": {"today": "rules.json:shadow.marked_bonus (+0.15 against a foe you Marked)",
-                       "becomes": "the squad's one mark on the foe (scale.stack.scope.foe_mark), not a term of the Break's own"},
-            "why": "one weapon attack from Hidden that spends the whole meter, as today; each Shadow is worth a fifth more than the one before, so the player who waits in the dark is paid for the wait"
+            "name": "the Break",
+            "from_point": 1,
+            "ap": "the weapon's",
+            "spends": "all",
+            "min": 1,
+            "rolls": true,
+            "formula": "1 + bite * cash(n)",
+            "terms": [
+              "bite",
+              "cash"
+            ],
+            "ambush": {
+              "text": "a Break from a fresh ambush: its +50% moves into the one sum (ruling A8), multiplying the whole blow",
+              "sum": {
+                "door": "shadow",
+                "value": {
+                  "data": "rules.json:shadow.ambush_bonus"
+                },
+                "group": "shadow:ambush"
+              }
+            },
+            "marked": {
+              "today": "rules.json:shadow.marked_bonus (+0.15 against a foe you Marked)",
+              "becomes": "the squad's one mark on the foe (scale.stack.scope.foe_mark), not a term of the Break's own"
+            },
+            "why": "one weapon attack from Hidden that spends the whole meter, as today; each Shadow is worth a fifth more than the one before, so the player who waits in the dark is paid for the wait",
+            "ambush_for_the_lead": "the fresh ambush's +50% is in the door's own sum (the shadow:ambush term above): a full Break from a fresh ambush at skill 10 is 9 x 1.5 = 13.5 plain shots, not 9; ruling 62 names 9 for the Break; kept as it is (a reward is not cut), for the lead"
           }
+        },
+        "worth": {
+          "at_1": 3,
+          "at_10": 9,
+          "cash_out": "break",
+          "unit": "the character's own plain attacks: shots",
+          "formula": "1 + bite x S(n)",
+          "ruling": "I table; ruling 62 (about 9, and the meter takes about three turns unseen to fill)",
+          "shape": "rising: Bite at 1 from the skill-1 anchor, at 9 (held at 10) from the skill-10 anchor, at 6 the compounding between (b1 x (b9 / b1)^(5/8)); nothing a player holds is ever worth less",
+          "by_point": [
+            "1: Reach 2, Bite 0.909, a full break 3.00",
+            "2: Reach 2, Bite 0.909, a full break 3.00",
+            "3: Reach 2, Bite 0.909, a full break 3.00",
+            "4: Reach 3, Bite 0.909, a full break 4.31",
+            "5: Reach 3, Bite 0.909, a full break 4.31",
+            "6: Reach 3, Bite 1.010, a full break 4.68",
+            "7: Reach 4, Bite 1.010, a full break 6.42",
+            "8: Reach 4, Bite 1.010, a full break 6.42",
+            "9: Reach 4, Bite 1.075, a full break 6.77",
+            "10: Reach 5, Bite 1.075, a full break 9.00"
+          ]
         },
         "push": {"point": 8, "name": "Last Shade", "reach_plus": 1,
                  "price": "the Break that spends it leaves you Traced until the end of your next turn (conditions.json traced: always seen, no Hide)",
@@ -104,23 +152,55 @@
           "role": "alpha",
           "card": {"text": "+5% on every Break a point; Unseen Hand: from Hidden you roll with Ingenuity when it is higher", "slope": "@scale.cards.skill_slope"},
           "points": {
-            "1": {"exists": "the door: Break, Go to Ground, First Shade, Tagged, Unseen Hand; Tag, Stalk", "reach": 2, "bite": 0.4,
+            "1": {
+                  "exists": "the door: Break, Go to Ground, First Shade, Tagged, Unseen Hand; Tag, Stalk",
+                  "reach": 2,
+                  "bite": 0.909,
                   "new": "the meter holds 2 (was 1); the Bite on the cash-out sum",
-                  "felt": "your first Break spends two Shadow from the dark: about three shots in one, and you were never targeted while you built it"},
-            "2": {"exists": "Lift, Decoy; +1 to the roll foes need to spot you (every 2 points)", "numbers": {"spot": {"data": "skills.json:items[ingenuity].per_point.numbers.spot"}},
-                  "felt": "you empty a foe's pockets and throw a sound where you are not"},
+                  "bite_why": "the skill-1 anchor: a full break at Reach 2 worth 3.000 shots: (3.000 - 1) / S(2) 2.2000 = 0.909",
+                  "felt": "your first Break spends two Shadow from the dark: three shots in one, and you were never targeted while you built it"
+            },
+            "2": {
+                  "exists": "Lift, Decoy; +1 to the roll foes need to spot you (every 2 points)",
+                  "numbers": {
+                        "spot": {
+                              "data": "skills.json:items[ingenuity].per_point.numbers.spot"
+                        }
+                  },
+                  "felt": "you empty a foe's pockets and throw a sound where you are not"
+            },
             "3": {"exists": "perk step; Ghost Kill, Case", "felt": "a kill nobody saw puts you straight back in the dark"},
-            "4": {"exists": "fork: Light Fingers or Lend the Dark; spot +1", "reach": 3, "new": "Reach 3 (today's 'holds one more' at 5 moves here)",
-                  "felt": "three Shadow: a Break worth four shots"},
+            "4": {
+                  "exists": "fork: Light Fingers or Lend the Dark; spot +1",
+                  "reach": 3,
+                  "new": "Reach 3 (today's 'holds one more' at 5 moves here)",
+                  "felt": "three Shadow: a Break worth more than four shots"
+            },
             "5": {"exists": "Fade, Douse, Scout", "felt": "vanish in plain sight, and put out the lamp that showed you"},
-            "6": {"exists": "perk step; Cut the Strap; spot +1", "bite": 0.45, "felt": "every Shadow you spend bites an eighth harder"},
-            "7": {"exists": "perk step; Open Seam", "reach": 4, "needs": {"analysis": 4},
-                  "felt": "four Shadow, once your Analysis reads the room: a Break worth five shots and more"},
-            "8": {"exists": "fork: Lightkiller or Spotter; spot +1", "new": "the Push: Last Shade",
-                  "felt": "one Shadow past your Reach for the deepest Break of the fight, and a turn in the open after it"},
-            "9": {"exists": "perk step; Timing, Parting Cut", "bite": 0.5, "felt": "the last Shadow of a full meter is worth more than a shot on its own"},
-            "10": {"exists": "Mastered: Vanishing Act; spot +1", "reach": 5, "needs": {"analysis": 7, "vigilant": 4},
-                   "felt": "five Shadow once your Analysis is 7 and your Vigilant 4: a different machine from a 5, a Break that ends a fight's worst foe"}
+            "6": {"exists": "perk step; Cut the Strap; spot +1", "bite": 1.01, "bite_why": "between the anchors (rule I: the steps between follow the compounding): 0.909 x (1.075 / 0.909)^(5/8) = 1.010", "felt": "every Shadow you spend bites harder: a Break of three nearly five shots"},
+            "7": {
+                  "exists": "perk step; Open Seam",
+                  "reach": 4,
+                  "needs": {
+                        "analysis": 4
+                  },
+                  "felt": "four Shadow, once your Analysis reads the room: a Break worth more than six shots"
+            },
+            "8": {
+                  "exists": "fork: Lightkiller or Spotter; spot +1",
+                  "new": "the Push: Last Shade",
+                  "felt": "one Shadow past your Reach for the deepest Break of the fight, and a turn in the open after it"
+            },
+            "9": {"exists": "perk step; Timing, Parting Cut", "bite": 1.075, "bite_why": "the skill-10 anchor: a full break at Reach 5 (skill 10) worth 9.000 shots: (9.000 - 1) / S(5) 7.4416 = 1.075 (held from 9 to 10)", "felt": "the last Shadow of a full meter is worth more than a shot on its own: a Break of four nearly seven shots"},
+            "10": {
+                   "exists": "Mastered: Vanishing Act; spot +1",
+                   "reach": 5,
+                   "needs": {
+                          "analysis": 7,
+                          "vigilant": 4
+                   },
+                   "felt": "five Shadow once your Analysis is 7 and your Vigilant 4: three turns unseen buy a Break worth nine shots, the end of a fight's worst foe"
+            }
           }
         },
         "analysis": {
@@ -256,6 +336,28 @@
             "why": "ruling 40: each creature caught takes its share of the whole spell (words.spread_words), capped a hit; the total, every foe of the largest room, printed"
           }
         },
+        "worth": {
+          "at_1": 1.976,
+          "at_10": 11,
+          "cash_out": "evoke",
+          "unit": "the character's own plain attacks: plain hits (one STONE glyph each)",
+          "formula": "bite x S(n)",
+          "ruling": "I table; ruling 58 (a two-glyph Line repeated every turn sits a little under an Outburst turn of the same skill; only the all-in Line reaches about 11)",
+          "shape": "rising: Bite at 1 from the skill-1 anchor, at 9 (held at 10) from the skill-10 anchor, at 6 the compounding between (b1 x (b9 / b1)^(5/8)); nothing a player holds is ever worth less",
+          "by_point": [
+            "1: Reach 2, Bite 0.898, a full evoke 1.98",
+            "2: Reach 2, Bite 0.898, a full evoke 1.98",
+            "3: Reach 2, Bite 0.898, a full evoke 1.98",
+            "4: Reach 3, Bite 0.898, a full evoke 3.27",
+            "5: Reach 3, Bite 0.898, a full evoke 3.27",
+            "6: Reach 3, Bite 1.226, a full evoke 4.46",
+            "7: Reach 4, Bite 1.226, a full evoke 6.58",
+            "8: Reach 4, Bite 1.226, a full evoke 6.58",
+            "9: Reach 4, Bite 1.478, a full evoke 7.93",
+            "10: Reach 5, Bite 1.478, a full evoke 11.00"
+          ],
+          "derivation": "ruling 58: at skill 10 the all-in Line of five is 11, so Bite = 11 / S(5) = 1.478 and a two-glyph Line is 3.252; with one attack beside it (4 AP + 2 AP) the turn is 4.252 against an Outburst turn of 5 (a full Release, no AP left): 0.850 of it. The same share at skill 1 against the Outburst turn there (2.5 + one attack = 3.5): the Line is 0.850 x 3.5 - 1 = 1.976. PROVISIONAL: \"a little under\" read as the same share at both ends"
+        },
         "words": {
           "about": "How a Line's words read under the stack rule (scale.stack): length pays through Bite x the cash-out sum, so a word that only adds damage moves into the one sum, and a word that spreads the Line over many keeps its share as a factor of each creature caught (the Line's targets, as Cleave's).",
           "one_subject": {"today": "rules.json output.systems.sigil_damage and sigils.json grammar.repeats: the strongest damaging Subject in full and half of every other",
@@ -347,23 +449,50 @@
           "role": "alpha",
           "card": {"text": "+5% Sigil power a point; 3 more words held a point", "slope": "@scale.cards.skill_slope"},
           "points": {
-            "1": {"exists": "the door: draw, walk, Evoke (the Evoker opens it)", "reach": 2, "bite": 0.8,
+            "1": {
+                  "exists": "the door: draw, walk, Evoke (the Evoker opens it)",
+                  "reach": 2,
+                  "bite": 0.898,
                   "new": "the Line's length and the words held ride Brain Power (C19); the book of found spells",
-                  "felt": "a Line of two worth almost two glyphs, and seven words to hold"},
-            "2": {"exists": "+1 tile Sigil reach, +1 round a glyph lasts (every 2)", "new": "the first core saving (moved from 3), in place of Overclock, which moves to 8 (C17)",
-                  "felt": "a charge less on every Evoke: one more Line out of a core"},
+                  "bite_why": "the skill-1 anchor: a full evoke at Reach 2 worth 1.976 plain hits (one STONE glyph each): 1.976 / S(2) 2.2000 = 0.898",
+                  "felt": "a Line of two worth about two plain hits, and seven words to hold"
+            },
+            "2": {
+                  "exists": "+1 tile Sigil reach, +1 round a glyph lasts (every 2)",
+                  "new": "the first core saving (moved from 3), in place of Overclock, which moves to 8 (C17)",
+                  "felt": "a charge less on every Evoke: one more Line out of a core"
+            },
             "3": {"exists": "perk step", "felt": "a perk, and three more words to hold"},
-            "4": {"exists": "fork: Overflux or Clean Vent; the every-2 row", "reach": 3,
-                  "felt": "Lines of three: the third glyph is worth more than the first two together"},
+            "4": {
+                  "exists": "fork: Overflux or Clean Vent; the every-2 row",
+                  "reach": 3,
+                  "felt": "Lines of three: more than three plain hits in one Evoke"
+            },
             "5": {"exists": "Twin Draw; the second core saving", "felt": "two glyphs at a stroke, and a charge less again"},
-            "6": {"exists": "perk step; the every-2 row", "bite": 0.82, "felt": "every glyph of every Line bites harder, the long Line most"},
-            "7": {"exists": "perk step", "reach": 4, "needs": {"rumination": 4},
-                  "felt": "Lines of four, once your Rumination holds the Flux they cost"},
-            "8": {"exists": "fork: Written in Advance or Running Script; the every-2 row", "new": "the Push: Overclock (moved from 2)",
-                  "felt": "one glyph past your Reach, and the hand that wrote it burns"},
-            "9": {"exists": "perk step; the third core saving", "bite": 0.85, "felt": "the longest Line you write is worth a tenth more than at 1, a Line of five over six glyphs"},
-            "10": {"exists": "Mastered: Clean Draw; the Junction; the every-2 row", "reach": 5, "needs": {"rumination": 7, "eloquence": 4},
-                   "felt": "Lines of five once your Rumination is 7 and your Eloquence 4: a different machine from a 5, and nobody else writes them"}
+            "6": {"exists": "perk step; the every-2 row", "bite": 1.226, "bite_why": "between the anchors (rule I: the steps between follow the compounding): 0.898 x (1.478 / 0.898)^(5/8) = 1.226", "felt": "every glyph of every Line bites harder: a Line of three over four plain hits"},
+            "7": {
+                  "exists": "perk step",
+                  "reach": 4,
+                  "needs": {
+                        "rumination": 4
+                  },
+                  "felt": "Lines of four, once your Rumination holds the Flux they cost: more than six plain hits"
+            },
+            "8": {
+                  "exists": "fork: Written in Advance or Running Script; the every-2 row",
+                  "new": "the Push: Overclock (moved from 2)",
+                  "felt": "one glyph past your Reach, and the hand that wrote it burns"
+            },
+            "9": {"exists": "perk step; the third core saving", "bite": 1.478, "bite_why": "the skill-10 anchor: a full evoke at Reach 5 (skill 10) worth 11.000 plain hits (one STONE glyph each): 11.000 / S(5) 7.4416 = 1.478 (held from 9 to 10)", "felt": "the longest Line you write bites harder again: a Line of four about eight plain hits"},
+            "10": {
+                   "exists": "Mastered: Clean Draw; the Junction; the every-2 row",
+                   "reach": 5,
+                   "needs": {
+                          "rumination": 7,
+                          "eloquence": 4
+                   },
+                   "felt": "Lines of five once your Rumination is 7 and your Eloquence 4: eleven plain hits in one Evoke, and nobody else writes them"
+            }
           }
         },
         "rumination": {
@@ -495,11 +624,42 @@
                   "pair": "expression x visualization (ruling 31)"},
         "cashouts": {
           "curtain": {
-            "name": "Curtain", "from_point": 1, "ap": 1, "spends": "all", "min": 1, "rolls": true,
-            "formula": "bite * cash(n)", "terms": ["bite", "cash"],
+            "name": "Curtain",
+            "from_point": 1,
+            "ap": 1,
+            "spends": "all",
+            "min": 1,
+            "rolls": true,
+            "formula": "bite * cash(n)",
+            "terms": [
+              "bite",
+              "cash"
+            ],
             "refund": "none: Cash in and Let go keep the charge, so spending the board is a choice between a blow and the charge (critic-player 14)",
-            "why": "every Figment you hold within your projection range that can reach one foe converges on it at once, one roll, then comes apart; a board about to fall is spent for a blow instead of a Snap"
+            "why": "every Figment you hold within your projection range that can reach one foe converges on it at once, one roll, then comes apart; a board about to fall is spent for a blow instead of a Snap",
+            "spends_bodies": "ruling 56: every Figment the Curtain uses is gone, its charge with it (no refund); the Figments that did not converge stay on the board"
           }
+        },
+        "worth": {
+          "at_1": 2,
+          "at_10": 5,
+          "cash_out": "curtain",
+          "unit": "the character's own plain attacks: Figment strikes (a Beast's claws)",
+          "formula": "bite x S(n)",
+          "ruling": "I table; ruling 56 (the Figments' own attacks are the steady reward; the Curtain spends the Figments it uses)",
+          "shape": "falling: a unit is worth less as Reach grows, so Bite is set on the worth curve 2.000 x (5.000 / 2.000)^((p - 1) / 9) at every point where Reach or Bite steps (1, 4, 6, 7, 9, 10): the full cash-out climbs at every point; a part-filled one is worth a little less after a Reach step (for the lead)",
+          "by_point": [
+            "1: Reach 1, Bite 2.000, a full curtain 2.00",
+            "2: Reach 1, Bite 2.000, a full curtain 2.00",
+            "3: Reach 1, Bite 2.000, a full curtain 2.00",
+            "4: Reach 2, Bite 1.234, a full curtain 2.71",
+            "5: Reach 2, Bite 1.234, a full curtain 2.71",
+            "6: Reach 2, Bite 1.512, a full curtain 3.33",
+            "7: Reach 3, Bite 1.012, a full curtain 3.68",
+            "8: Reach 3, Bite 1.012, a full curtain 3.68",
+            "9: Reach 3, Bite 1.241, a full curtain 4.52",
+            "10: Reach 4, Bite 0.931, a full curtain 5.00"
+          ]
         },
         "push": {"point": 8, "name": "Overhold", "reach_plus": 1,
                  "price": "while you hold more than your Reach, the extra one drinks 2 charge at each of your turn starts beside the upkeep, and its fall Snaps you for 2 AP, not 1",
@@ -551,22 +711,53 @@
           "role": "alpha",
           "card": {"text": "+5% on every Figment's blows and HP a point; a tile of Figment reach; a form known a point (forms_known, kept)", "slope": "@scale.cards.skill_slope"},
           "points": {
-            "1": {"exists": "the door: Picture, Redraw, Let go, Glimmer, Cash in; 2 forms known", "reach": 1, "bite": 0.6,
+            "1": {
+                  "exists": "the door: Picture, Redraw, Let go, Glimmer, Cash in; 2 forms known",
+                  "reach": 1,
+                  "bite": 2.0,
                   "new": "the Curtain (ruling 18: a cash-out from point 1)",
-                  "felt": "one Figment on the field, and a Curtain when it is about to fall"},
+                  "bite_why": "the skill-1 anchor: a full curtain at Reach 1 worth 2.000 Figment strikes (a Beast's claws): 2.000 / S(1) 1.0000 = 2.000",
+                  "felt": "one Figment on the field, and a Curtain worth two of its strikes when it is about to fall"
+            },
             "2": {"exists": "Cash in; a form known (each point from here)", "felt": "a third form to Picture, and your charge back when you need it"},
             "3": {"exists": "perk step; two ready designs, one trait", "felt": "a perk, and two designs to Picture at a stroke"},
-            "4": {"exists": "fork: Hard Light or Sharp Light", "reach": 2, "new": "two held (today's at 5 moves here)",
-                  "felt": "two Figments at once: a Curtain of two hits harder than both alone"},
+            "4": {
+                  "exists": "fork: Hard Light or Sharp Light",
+                  "reach": 2,
+                  "bite": 1.234,
+                  "new": "two held (today's at 5 moves here)",
+                  "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(3/9) = 2.715 at Reach 2: 2.715 / S(2) 2.2000 = 1.234",
+                  "felt": "two Figments at once: a Curtain of two worth nearly three strikes"
+            },
             "5": {"exists": "three ready designs", "felt": "a third design, and a fifth form"},
-            "6": {"exists": "perk step", "bite": 0.75, "felt": "every Figment in a Curtain bites a quarter harder"},
-            "7": {"exists": "perk step; two traits a design", "reach": 3, "needs": {"proficiency": 4},
-                  "felt": "three held, once your Proficiency can feed them: a Curtain of three"},
-            "8": {"exists": "fork: Many Hands or Masterwork; four ready designs", "new": "the Push: Overhold",
-                  "felt": "one past your Reach, and it drinks your charge every turn it stands"},
-            "9": {"exists": "perk step; all ten forms known", "bite": 0.85, "felt": "every form there is, and the Curtain at its fullest bite"},
-            "10": {"exists": "Mastered: Solid Image; five ready designs", "reach": 4, "needs": {"proficiency": 7, "charisma": 4},
-                   "felt": "four held once your Proficiency is 7 and your Charisma 4: a stage nobody else can fill"}
+            "6": {"exists": "perk step", "bite": 1.512, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(5/9) = 3.326 at Reach 2: 3.326 / S(2) 2.2000 = 1.512", "felt": "every Figment in a Curtain bites harder: a Curtain of two over three strikes"},
+            "7": {
+                  "exists": "perk step; two traits a design",
+                  "reach": 3,
+                  "bite": 1.012,
+                  "needs": {
+                        "proficiency": 4
+                  },
+                  "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(6/9) = 3.684 at Reach 3: 3.684 / S(3) 3.6400 = 1.012",
+                  "felt": "three held, once your Proficiency can feed them: a Curtain of three nearly four strikes"
+            },
+            "8": {
+                  "exists": "fork: Many Hands or Masterwork; four ready designs",
+                  "new": "the Push: Overhold",
+                  "felt": "one past your Reach, and it drinks your charge every turn it stands"
+            },
+            "9": {"exists": "perk step; all ten forms known", "bite": 1.241, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(8/9) = 4.517 at Reach 3: 4.517 / S(3) 3.6400 = 1.241", "felt": "every form there is, and a Curtain of three worth four and a half strikes"},
+            "10": {
+                   "exists": "Mastered: Solid Image; five ready designs",
+                   "reach": 4,
+                   "bite": 0.931,
+                   "needs": {
+                          "proficiency": 7,
+                          "charisma": 4
+                   },
+                   "bite_why": "the skill-10 anchor: a full curtain at Reach 4 (skill 10) worth 5.000 Figment strikes (a Beast's claws): 5.000 / S(4) 5.3680 = 0.931",
+                   "felt": "four held once your Proficiency is 7 and your Charisma 4: a Curtain of four worth five strikes, the whole board spent"
+            }
           }
         },
         "proficiency": {

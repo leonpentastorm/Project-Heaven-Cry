@@ -23,7 +23,7 @@
         "id": "guard", "name": "Guard",
         "counter": {"resource": "guard", "unit": "a plate", "starts_at": 0},
         "builds": [
-          {"by": "the Guard technique", "units": 1, "ap": 1, "why": "one plate a use (two with a shield, four with a shield in each hand): raising the wall is an AP's work at every level"},
+          {"by": "the Guard technique", "units": "1 + (Durability - 1), +1 with a shield", "ap": 1, "why": "ruling 60: today's quick fill is kept (techniques.json rules.guard, physical/core.ts guardGain): one use fills the wall up to your Reach; late in the game the wall fills fast, and spending plates for a benefit is the advanced class's"},
           {"by": "Brace (the Bulwark's)", "units": "all", "ap": 2},
           {"by": "a Warn that lands (Sensory 2; 2 from Sensory 6)", "units": 1},
           {"by": "Hold Their Eyes (the Bulwark's): a blow from a Taunted foe, once a round from each", "units": 1},
@@ -57,6 +57,27 @@
             "terms": ["bite", "cash"],
             "why": "Ruling 45: the ring strikes as many foes beside you as Cleave's rule gives for the plates spent (1 + S(n) rounded down: one plate strikes 2, three plates 4, five or more every foe beside you), each a plain blow and the shove; the plates' weight lands on the one you face. The other foes beside you take the shove only. Ruling 40: capped a hit (the faced foe's), the total printed; the floor counts the total (a spread cash-out)."
           }
+        },
+        "worth": {
+          "at_1": 2,
+          "at_10": 3,
+          "cash_out": "slam",
+          "unit": "the character's own plain attacks: shield blows",
+          "formula": "1 + plate x bite x S(n) / plain (plate / plain = 0.1116: one plate soak over the ram plate blow, both on the deal column with the same pair, so the share is the same at every level)",
+          "ruling": "I table; ruling 60 (Guard keeps its quick fill; the base door's Slam stays modest; its reward is the soak)",
+          "shape": "falling: a unit is worth less as Reach grows, so Bite is set on the worth curve 2.000 x (3.000 / 2.000)^((p - 1) / 9) at every point where Reach or Bite steps (1, 4, 6, 7, 9, 10): the full cash-out climbs at every point; a part-filled one is worth a little less after a Reach step (for the lead)",
+          "by_point": [
+            "1: Reach 2, Bite 4.071, a full slam 2.00",
+            "2: Reach 2, Bite 4.071, a full slam 2.00",
+            "3: Reach 2, Bite 4.071, a full slam 2.00",
+            "4: Reach 3, Bite 3.173, a full slam 2.29",
+            "5: Reach 3, Bite 3.173, a full slam 2.29",
+            "6: Reach 3, Bite 3.704, a full slam 2.51",
+            "7: Reach 4, Bite 2.704, a full slam 2.62",
+            "8: Reach 4, Bite 2.704, a full slam 2.62",
+            "9: Reach 4, Bite 3.117, a full slam 2.87",
+            "10: Reach 6, Bite 1.804, a full slam 3.00"
+          ]
         },
         "push": {"point": 8, "name": "Overbrace", "reach_plus": 1, "price": "a share of your max HP at the start of your next turn when the extra plate was spent (nothing soaks it)", "price_kind": "share",
                  "numbers": {"hp_share": 0.1},
@@ -96,18 +117,23 @@
           "role": "alpha",
           "card": {"text": "+5% a plate soaks, a Slam and a shield blow; +1 to hit while holding Guard for a wall whose best melee skill is Durability", "slope": "@scale.cards.skill_slope"},
           "points": {
-            "1": {"exists": "the door: the Guard technique (+1 plate a use, gain_per_point retired); roll with Durability while holding Guard", "reach": 2, "bite": 1.5,
+            "1": {
+                  "exists": "the door: the Guard technique (today's gain kept: 1, +1 a Durability point above 1, +1 with a shield; ruling 60); roll with Durability while holding Guard",
+                  "reach": 2,
+                  "bite": 4.071,
                   "new": "Slam is the door's cash-out from point 1 (its gate moves from Durability 5 to 1): a plain shield blow plus the plates' weight",
-                  "felt": "two plates to hold and a Slam that hits harder than a plain blow from the first point"},
+                  "bite_why": "the skill-1 anchor: a full slam at Reach 2 worth 2.000 shield blows: (2.000 - 1) / (0.1116 x S(2) 2.2000) = 4.071",
+                  "felt": "two plates to hold, and a Slam worth two shield blows from the first point"
+            },
             "2": {"exists": "Challenge (1 AP, 1 plate: foes within 2 tiles Taunted)", "felt": "you can make them look at you"},
             "3": {"exists": "perk step", "felt": "the wall's first perk"},
-            "4": {"exists": "fork: Provoke or Cover Them", "reach": 3, "felt": "a third plate, and your wall's style chosen"},
+            "4": {"exists": "fork: Provoke or Cover Them", "reach": 3, "bite": 3.173, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (3.000 / 2.000)^(3/9) = 2.289 at Reach 3: (2.289 - 1) / (0.1116 x S(3) 3.6400) = 3.173", "felt": "a third plate, and your wall's style chosen: a full Slam is worth more than two blows"},
             "5": {"exists": "Slam's shove (today's Slam, kept at its point): every foe it strikes is pushed 1 tile and saves (Body) or is Off Balance", "felt": "your Slam starts moving them"},
-            "6": {"exists": "perk step", "bite": 1.75, "felt": "every plate thrown back lands harder"},
-            "7": {"exists": "perk step", "reach": 4, "needs": {"pain_threshold": 4}, "felt": "a fourth plate, if your body can take the weight"},
+            "6": {"exists": "perk step", "bite": 3.704, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (3.000 / 2.000)^(5/9) = 2.505 at Reach 3: (2.505 - 1) / (0.1116 x S(3) 3.6400) = 3.704", "felt": "every plate thrown back lands harder: a full Slam of three about two and a half blows"},
+            "7": {"exists": "perk step", "reach": 4, "bite": 2.704, "needs": {"pain_threshold": 4}, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (3.000 / 2.000)^(6/9) = 2.621 at Reach 4: (2.621 - 1) / (0.1116 x S(4) 5.3680) = 2.704", "felt": "a fourth plate, if your body can take the weight: each plate weighs a little less, the full Slam a little more"},
             "8": {"exists": "fork: Stand Fast or Drive", "new": "the Push: Overbrace", "felt": "one plate past your last, paid with a tenth of your own bar"},
-            "9": {"exists": "perk step", "bite": 2.0, "felt": "a full wall thrown back is five digits on one foe at level 20"},
-            "10": {"exists": "Mastered: Last Wall", "reach": 6, "needs": {"pain_threshold": 7, "sensory": 4}, "felt": "six plates once your Pain Threshold is 7 and your Sensory 4: half again what a 7 holds"}
+            "9": {"exists": "perk step", "bite": 3.117, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (3.000 / 2.000)^(8/9) = 2.868 at Reach 4: (2.868 - 1) / (0.1116 x S(4) 5.3680) = 3.117", "felt": "your full wall thrown back is worth nearly three blows"},
+            "10": {"exists": "Mastered: Last Wall", "reach": 6, "bite": 1.804, "needs": {"pain_threshold": 7, "sensory": 4}, "bite_why": "the skill-10 anchor: a full slam at Reach 6 (skill 10) worth 3.000 shield blows: (3.000 - 1) / (0.1116 x S(6) 9.9299) = 1.804", "felt": "six plates once your Pain Threshold is 7 and your Sensory 4: a full Slam worth three blows, and twice the wall to soak with"}
           }
         },
         "pain_threshold": {
@@ -228,6 +254,27 @@
                     "formula": "1", "save_harder": "floor(cash(n))", "terms": ["cash"],
                     "why": "a plain blow whose Body save is harder by S(n) rounded down (x3 -3, x5 -7, x7 -12), or Stunned; a Boss is Dazed as today"}
         },
+        "worth": {
+          "at_1": 3,
+          "at_10": 7,
+          "cash_out": "coup",
+          "unit": "the character's own plain attacks: blows",
+          "formula": "1 + bite x S(n)",
+          "ruling": "I table; ruling 57 (Weapon Arts come later: Momentum stands at the ledger's size)",
+          "shape": "falling: a unit is worth less as Reach grows, so Bite is set on the worth curve 3.000 x (7.000 / 3.000)^((p - 1) / 9) at every point where Reach or Bite steps (1, 4, 6, 7, 9, 10): the full cash-out climbs at every point; a part-filled one is worth a little less after a Reach step (for the lead)",
+          "by_point": [
+            "1: Reach 3, Bite 0.549, a full coup 3.00",
+            "2: Reach 3, Bite 0.549, a full coup 3.00",
+            "3: Reach 3, Bite 0.549, a full coup 3.00",
+            "4: Reach 4, Bite 0.555, a full coup 3.98",
+            "5: Reach 4, Bite 0.555, a full coup 3.98",
+            "6: Reach 4, Bite 0.709, a full coup 4.81",
+            "7: Reach 5, Bite 0.575, a full coup 5.28",
+            "8: Reach 5, Bite 0.575, a full coup 5.28",
+            "9: Reach 5, Bite 0.722, a full coup 6.37",
+            "10: Reach 7, Bite 0.465, a full coup 7.01"
+          ]
+        },
         "push": {"point": 8, "name": "Overswing", "reach_plus": 1, "price": "Off Balance until your next turn (skip_save)", "price_kind": "condition"},
         "marks": {
           "unit": "a chain step spent by a Finisher (Launch included) that lands on a worthy foe",
@@ -265,16 +312,16 @@
           "role": "alpha",
           "card": {"text": "+5% damage with the rows that hit with Raw Power; +1 to hit (heavy melee, bare hands)", "slope": "@scale.cards.skill_slope"},
           "points": {
-            "1": {"exists": "the door: Coup, Cleave, Break", "reach": 3, "bite": 0.25, "new": "the cash-out sum on every Finisher", "felt": "a x3 Coup is about two blows in one"},
+            "1": {"exists": "the door: Coup, Cleave, Break", "reach": 3, "bite": 0.549, "new": "the cash-out sum on every Finisher", "bite_why": "the skill-1 anchor: a full coup at Reach 3 worth 3.000 blows: (3.000 - 1) / S(3) 3.6400 = 0.549", "felt": "a full Coup of three steps is worth three blows"},
             "2": {"exists": "Grapple", "felt": "you can hold them where you want them"},
             "3": {"exists": "perk step", "felt": "the chain's first perk"},
-            "4": {"exists": "fork: Rolling Start or Grindstone", "reach": 4, "felt": "x4, and the way your chain builds chosen"},
+            "4": {"exists": "fork: Rolling Start or Grindstone", "reach": 4, "bite": 0.555, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 3.000 x (7.000 / 3.000)^(3/9) = 3.979 at Reach 4: (3.979 - 1) / S(4) 5.3680 = 0.555", "felt": "x4, and the way your chain builds chosen: a full Coup about four blows"},
             "5": {"exists": "Throw Down", "felt": "a Finisher that floors a held foe"},
-            "6": {"exists": "perk step", "bite": 0.30, "felt": "every step spent bites a fifth harder"},
-            "7": {"exists": "perk step", "reach": 5, "needs": {"guts": 4}, "felt": "x5 once your Guts is 4: a Coup worth three blows"},
+            "6": {"exists": "perk step", "bite": 0.709, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 3.000 x (7.000 / 3.000)^(5/9) = 4.806 at Reach 4: (4.806 - 1) / S(4) 5.3680 = 0.709", "felt": "every step spent bites harder: a full x4 Coup nearly five blows"},
+            "7": {"exists": "perk step", "reach": 5, "bite": 0.575, "needs": {"guts": 4}, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 3.000 x (7.000 / 3.000)^(6/9) = 5.279 at Reach 5: (5.279 - 1) / S(5) 7.4416 = 0.575", "felt": "x5 once your Guts is 4: a full Coup over five blows"},
             "8": {"exists": "fork: Spill or Headlong", "new": "the Push: Overswing", "felt": "one step past your Reach, and you stagger for it"},
-            "9": {"exists": "perk step", "bite": 0.35, "felt": "the whole chain hits a step harder again"},
-            "10": {"exists": "Mastered: Earthbreaker (restated by gear_perks as a Finisher row on the cash-out source)", "reach": 7, "needs": {"guts": 7, "intimidation": 4}, "felt": "x7 once your Guts is 7 and your Intimidation 4: a different machine from a 5"}
+            "9": {"exists": "perk step", "bite": 0.722, "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 3.000 x (7.000 / 3.000)^(8/9) = 6.373 at Reach 5: (6.373 - 1) / S(5) 7.4416 = 0.722", "felt": "the whole chain hits harder again: a full x5 Coup over six blows"},
+            "10": {"exists": "Mastered: Earthbreaker (restated by gear_perks as a Finisher row on the cash-out source)", "reach": 7, "bite": 0.465, "needs": {"guts": 7, "intimidation": 4}, "bite_why": "the skill-10 anchor: a full coup at Reach 7 (skill 10) worth 7.000 blows: (7.000 - 1) / S(7) 12.9159 = 0.465", "felt": "x7 once your Guts is 7 and your Intimidation 4: a Coup worth seven blows, a different machine from a 5"}
           }
         },
         "guts": {
@@ -392,6 +439,27 @@
           "flush_out": {"name": "Flush Out", "from_point": 5, "ap": 2, "spends": "all", "min": 2, "rolls": true,
                         "formula": "1", "terms": ["cash"], "why": "as a Take: the foe is driven from cover"}
         },
+        "worth": {
+          "at_1": 2,
+          "at_10": 5,
+          "cash_out": "dead_centre",
+          "unit": "the character's own plain attacks: shots",
+          "formula": "1 + bite x S(n)",
+          "ruling": "I table; ruling 57 (its reward is the turns it denies)",
+          "shape": "rising: Bite at 1 from the skill-1 anchor, at 9 (held at 10) from the skill-10 anchor, at 6 the compounding between (b1 x (b9 / b1)^(5/8)); nothing a player holds is ever worth less",
+          "by_point": [
+            "1: Reach 2, Bite 0.455, a full dead_centre 2.00",
+            "2: Reach 2, Bite 0.455, a full dead_centre 2.00",
+            "3: Reach 2, Bite 0.455, a full dead_centre 2.00",
+            "4: Reach 3, Bite 0.455, a full dead_centre 2.66",
+            "5: Reach 3, Bite 0.455, a full dead_centre 2.66",
+            "6: Reach 3, Bite 0.505, a full dead_centre 2.84",
+            "7: Reach 4, Bite 0.505, a full dead_centre 3.71",
+            "8: Reach 4, Bite 0.505, a full dead_centre 3.71",
+            "9: Reach 4, Bite 0.538, a full dead_centre 3.89",
+            "10: Reach 5, Bite 0.538, a full dead_centre 5.00"
+          ]
+        },
         "push": {"point": 8, "name": "Overpress", "reach_plus": 1, "price": "Overpressed for a round: you are Seen (always_seen) and your gun runs hot (heat_limit -2)", "price_kind": "condition"},
         "marks": {
           "unit": "a pip spent by your Takes and Flush Outs on worthy foes",
@@ -426,17 +494,25 @@
           "role": "alpha",
           "card": {"text": "+5% damage with Dexterity weapons (numbers.crit becomes damage: the critical is gone, A7); +1 to hit with them", "slope": "@scale.cards.skill_slope"},
           "points": {
-            "1": {"exists": "the door: hits lay Pressure", "reach": 2, "bite": 0.20, "new": "every Take spends all and pays on the cash-out sum, at the gun's AP", "felt": "you can make a foe flinch and cash it in"},
+            "1": {"exists": "the door: hits lay Pressure", "reach": 2, "bite": 0.455, "new": "every Take spends all and pays on the cash-out sum, at the gun's AP", "bite_why": "the skill-1 anchor: a full dead_centre at Reach 2 worth 2.000 shots: (2.000 - 1) / S(2) 2.2000 = 0.455", "felt": "you can make a foe flinch and cash it in: a full Take is two shots in one"},
             "2": {"exists": "Slide", "felt": "you shed the Pressure laid on you"},
             "3": {"exists": "perk step", "felt": "the shooter's first perk"},
-            "4": {"exists": "fork: Converging Fire or Walk It In", "reach": 3, "felt": "you can pin a foe down (Suppressed)"},
+            "4": {"exists": "fork: Converging Fire or Walk It In", "reach": 3, "felt": "you can pin a foe down (Suppressed), and a full Take is more than two and a half shots"},
             "5": {"exists": "Flush Out", "felt": "you drive them from cover"},
-            "6": {"exists": "perk step", "bite": 0.28, "felt": "every pip spent bites harder"},
-            "7": {"exists": "perk step", "reach": 4, "needs": {"athletics": 4}, "felt": "you Break a foe alone, once your Athletics is 4"},
+            "6": {"exists": "perk step", "bite": 0.505, "bite_why": "between the anchors (rule I: the steps between follow the compounding): 0.455 x (0.538 / 0.455)^(5/8) = 0.505", "felt": "every pip spent bites harder: a full Take nearly three shots"},
+            "7": {"exists": "perk step", "reach": 4, "needs": {"athletics": 4}, "felt": "you Break a foe alone, once your Athletics is 4: a full Take nearly four shots"},
             "8": {"exists": "fork: Through the Gap or Lockdown", "new": "the Push: Overpress", "felt": "one pip past the cap, with your gun hot and you Seen"},
-            "9": {"exists": "perk step", "bite": 0.36, "felt": "a full Take with any rifle is five digits at level 20"},
-            "10": {"exists": "Mastered: Trick Shot", "reach": 5, "needs": {"athletics": 7, "reaction_speed": 4}, "new": "Broken lasts: a foe at 5 is still Broken after its turn's fall",
-                   "felt": "once your Athletics is 7 and your Reaction Speed 4, your fifth pip Breaks an Elite and Suppresses a Boss, which nobody else can"}
+            "9": {"exists": "perk step", "bite": 0.538, "bite_why": "the skill-10 anchor: a full dead_centre at Reach 5 (skill 10) worth 5.000 shots: (5.000 - 1) / S(5) 7.4416 = 0.538 (held from 9 to 10)", "felt": "every pip bites harder again: a full Take with any rifle about four shots"},
+            "10": {
+                   "exists": "Mastered: Trick Shot",
+                   "reach": 5,
+                   "needs": {
+                          "athletics": 7,
+                          "reaction_speed": 4
+                   },
+                   "new": "Broken lasts: a foe at 5 is still Broken after its turn's fall",
+                   "felt": "once your Athletics is 7 and your Reaction Speed 4, your fifth pip Breaks an Elite and Suppresses a Boss, which nobody else can: a full Take is five shots"
+            }
           }
         },
         "athletics": {

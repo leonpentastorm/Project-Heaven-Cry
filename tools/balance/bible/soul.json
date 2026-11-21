@@ -124,6 +124,27 @@
             "why": "every Bond spent at once is worth more than the one before it; counted in total across the Bonds it breaks (ruling 29)"
           }
         },
+        "worth": {
+          "at_1": 2,
+          "at_10": 5,
+          "cash_out": "snap_all",
+          "unit": "the character's own plain attacks: plain attacks (a lone Snap at x1)",
+          "formula": "bite x S(n), counted in total across the Bonds",
+          "ruling": "I table (every turn)",
+          "shape": "falling: a unit is worth less as Reach grows, so Bite is set on the worth curve 2.000 x (5.000 / 2.000)^((p - 1) / 9) at every point where Reach or Bite steps (1, 4, 6, 7, 9, 10): the full cash-out climbs at every point; a part-filled one is worth a little less after a Reach step (for the lead)",
+          "by_point": [
+            "1: Reach 1, Bite 2.000, a full snap_all 2.00",
+            "2: Reach 1, Bite 2.000, a full snap_all 2.00",
+            "3: Reach 1, Bite 2.000, a full snap_all 2.00",
+            "4: Reach 2, Bite 1.234, a full snap_all 2.71",
+            "5: Reach 2, Bite 1.234, a full snap_all 2.71",
+            "6: Reach 2, Bite 1.512, a full snap_all 3.33",
+            "7: Reach 3, Bite 1.012, a full snap_all 3.68",
+            "8: Reach 3, Bite 1.012, a full snap_all 3.68",
+            "9: Reach 3, Bite 1.241, a full snap_all 4.52",
+            "10: Reach 4, Bite 0.931, a full snap_all 5.00"
+          ]
+        },
         "verbs": {
           "bond": {
             "ap": 1,
@@ -290,9 +311,10 @@
             "1": {
               "exists": "the door: Bond, Mend, Mend Yourself, the Threads",
               "reach": 1,
-              "bite": 1.0,
+              "bite": 2.0,
               "new": "Snap moves here from 2 (tending.json:534-539 tend.snap requires 2 to 1), one Bond or all of them",
-              "felt": "you tie a foe and pull the thread the same turn"
+              "bite_why": "the skill-1 anchor: a full snap_all at Reach 1 worth 2.000 plain attacks (a lone Snap at x1): 2.000 / S(1) 1.0000 = 2.000",
+              "felt": "you tie a foe and pull the thread the same turn: a Snap worth two plain attacks"
             },
             "2": {
               "exists": "(Snap moved to 1)",
@@ -308,7 +330,9 @@
             "4": {
               "exists": "fork: Keep the Thread or Short Thread",
               "reach": 2,
-              "felt": "two Bonds: a foe and a friend, and Snap All starts to pay more than two Snaps"
+              "bite": 1.234,
+              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(3/9) = 2.715 at Reach 2: 2.715 / S(2) 2.2000 = 1.234",
+              "felt": "two Bonds: a foe and a friend, and Snap All worth nearly three plain attacks"
             },
             "5": {
               "exists": "Shield",
@@ -318,16 +342,19 @@
             },
             "6": {
               "exists": "perk step; +3 Bond reach",
-              "bite": 1.4,
-              "felt": "every Bond you Snap is worth two fifths more, and you tie from further off"
+              "bite": 1.512,
+              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(5/9) = 3.326 at Reach 2: 3.326 / S(2) 2.2000 = 1.512",
+              "felt": "every Bond you Snap is worth more, and you tie from further off: Snap All of two over three"
             },
             "7": {
               "exists": "perk step",
               "reach": 3,
+              "bite": 1.012,
               "needs": {
                 "camaraderie": 4
               },
-              "felt": "a web of three once your Camaraderie is 4: Snap All of three is worth more than four lone Snaps"
+              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(6/9) = 3.684 at Reach 3: 3.684 / S(3) 3.6400 = 1.012",
+              "felt": "a web of three once your Camaraderie is 4: Snap All nearly four plain attacks"
             },
             "8": {
               "exists": "fork: Shared Pulse or Long Thread",
@@ -336,22 +363,25 @@
             },
             "9": {
               "exists": "perk step",
+              "bite": 1.241,
               "new": "Mend and Shield cost 15% less MP (in place of the flat cut, tending.json res.mp.steps)",
-              "bite": 1.8,
               "numbers": {
                 "mp_cut_share": 0.15
               },
               "mp_cut_why": "ruling 49 (check.py (h)): at a quarter less a level-20 Mender paid a Mend for every 2 AP of a whole fight, so the MP was no choice",
-              "felt": "a full Snap All reaches five digits at level 20, and your Mends are cheaper"
+              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.000 x (5.000 / 2.000)^(8/9) = 4.517 at Reach 3: 4.517 / S(3) 3.6400 = 1.241",
+              "felt": "Snap All of three worth four and a half plain attacks, and your Mends are cheaper"
             },
             "10": {
               "exists": "Mastered: Threads That Hold",
               "reach": 4,
+              "bite": 0.931,
               "needs": {
                 "camaraderie": 7,
                 "implication": 4
               },
-              "felt": "the fourth Bond once your Camaraderie is 7 and your Insinuation 4: a web nobody without the whole family can hold"
+              "bite_why": "the skill-10 anchor: a full snap_all at Reach 4 (skill 10) worth 5.000 plain attacks (a lone Snap at x1): 5.000 / S(4) 5.3680 = 0.931",
+              "felt": "the fourth Bond once your Camaraderie is 7 and your Insinuation 4: Snap All worth five plain attacks, a web nobody without the whole family can hold"
             }
           }
         },
@@ -795,7 +825,46 @@
             "targets": "@soul.attributes.determination.door.cashouts.release_wave.most_foes",
             "terms": ["bite", "cash", "feelings"],
             "why": "ruling 40: a Wave's cone three tiles long holds six tiles; no roll, the form's share; capped a hit, the total printed"
+          },
+          "double_release": {
+            "name": "a double Release (an Emanator or an Emanator-enabled weapon in each hand)",
+            "reading_of": "release",
+            "from_point": 1,
+            "ap": 1,
+            "spends": "all",
+            "rolls": true,
+            "formula": "@soul.attributes.determination.door.release_floor + bite * cash(n)",
+            "per_turn": 2,
+            "hands": "two Emanators, or an Emanator and an Emanator-enabled weapon (the Emanator katana), one in each hand",
+            "fill": "two Outbursts may be begun in one turn; filling both to the Reach takes more turns than filling one (each Begin, Pump and the free Pump is one heart's), so the double Release comes about every second turn",
+            "terms": [
+              "bite",
+              "cash"
+            ],
+            "why": "ruling 59: both hearts Released together are worth about 9 to 10 plain casts at skill 10 (2 x 5); one hand is about 5 a turn (ruling 55)",
+            "needs_primitive": "two held Outbursts at once (the engine holds one, magic.ts): not in 08-primitives.md; for the lead before step 2d"
           }
+        },
+        "worth": {
+          "at_1": 2.5,
+          "at_10": 5,
+          "cash_out": "release",
+          "unit": "the character's own plain attacks: plain casts (the Damage design at x1)",
+          "formula": "0.8 (the release floor) + bite x S(n)",
+          "ruling": "I table; rulings 55 and 59 (steady, never underwhelming; one Emanator about 5 a turn, two about 9 to 10 for a double Release)",
+          "shape": "falling: a unit is worth less as Reach grows, so Bite is set on the worth curve 2.500 x (5.000 / 2.500)^((p - 1) / 9) at every point where Reach or Bite steps (1, 4, 6, 7, 9, 10): the full cash-out climbs at every point; a part-filled one is worth a little less after a Reach step (for the lead)",
+          "by_point": [
+            "1: Reach 2, Bite 0.773, a full release 2.50",
+            "2: Reach 2, Bite 0.773, a full release 2.50",
+            "3: Reach 2, Bite 0.773, a full release 2.50",
+            "4: Reach 3, Bite 0.646, a full release 3.15",
+            "5: Reach 3, Bite 0.646, a full release 3.15",
+            "6: Reach 3, Bite 0.790, a full release 3.68",
+            "7: Reach 4, Bite 0.590, a full release 3.97",
+            "8: Reach 4, Bite 0.590, a full release 3.97",
+            "9: Reach 4, Bite 0.713, a full release 4.63",
+            "10: Reach 5, Bite 0.564, a full release 5.00"
+          ]
         },
         "verbs": {
           "begin": {
@@ -1031,8 +1100,9 @@
             "1": {
               "exists": "the door",
               "reach": 2,
-              "bite": 0.25,
-              "felt": "the door, a taste: a heart worked to stage 2 pays a third more than a quick one"
+              "bite": 0.773,
+              "bite_why": "the skill-1 anchor: a full release at Reach 2 worth 2.500 plain casts (the Damage design at x1): (2.500 - 0.8) / S(2) 2.2000 = 0.773",
+              "felt": "the door, a taste: a heart worked to stage 2 is worth two and a half plain casts"
             },
             "2": {
               "exists": "Overdraw; modules Size and Quiet",
@@ -1045,7 +1115,9 @@
             "4": {
               "exists": "fork: Ride the Edge or Slow Burn; modules Bloom and Volley",
               "reach": 3,
-              "felt": "stage 3: a full Release is worth most of two plain ones"
+              "bite": 0.646,
+              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.500 x (5.000 / 2.500)^(3/9) = 3.151 at Reach 3: (3.151 - 0.8) / S(3) 3.6400 = 0.646",
+              "felt": "stage 3: a full Release worth three plain casts"
             },
             "5": {
               "exists": "Two Schools",
@@ -1053,16 +1125,19 @@
             },
             "6": {
               "exists": "perk step; a module slot",
-              "bite": 0.3,
-              "felt": "every Pump is worth a fifth more"
+              "bite": 0.79,
+              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.500 x (5.000 / 2.500)^(5/9) = 3.676 at Reach 3: (3.676 - 0.8) / S(3) 3.6400 = 0.790",
+              "felt": "every Pump is worth more: a stage-3 Release over three and a half plain casts"
             },
             "7": {
               "exists": "perk step",
               "reach": 4,
+              "bite": 0.59,
               "needs": {
                 "composure": 4
               },
-              "felt": "stage 4 once your Composure is 4: what everyone had, now earned and compounding"
+              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.500 x (5.000 / 2.500)^(6/9) = 3.967 at Reach 4: (3.967 - 0.8) / S(4) 5.3680 = 0.590",
+              "felt": "stage 4 once your Composure is 4: a full Release about four plain casts"
             },
             "8": {
               "exists": "fork: Blood Price or Clean Break",
@@ -1071,17 +1146,20 @@
             },
             "9": {
               "exists": "perk step; a module slot",
-              "bite": 0.35,
-              "felt": "a full Release reaches five digits at level 20"
+              "bite": 0.713,
+              "bite_why": "on the worth curve between the anchors (rule I: the steps between follow the compounding), 2.500 x (5.000 / 2.500)^(8/9) = 4.627 at Reach 4: (4.627 - 0.8) / S(4) 5.3680 = 0.713",
+              "felt": "a full stage-4 Release worth four and a half plain casts"
             },
             "10": {
               "exists": "Mastered: The Twin Pays",
               "reach": 5,
+              "bite": 0.564,
               "needs": {
                 "composure": 7,
                 "lore_master": 4
               },
-              "felt": "stage 5 once your Composure is 7 and your Lore Master 4: a stage nobody without the whole family can hold"
+              "bite_why": "the skill-10 anchor: a full release at Reach 5 (skill 10) worth 5.000 plain casts (the Damage design at x1): (5.000 - 0.8) / S(5) 7.4416 = 0.564",
+              "felt": "stage 5 once your Composure is 7 and your Lore Master 4: a full Release worth five plain casts; with a focus in each hand, two hearts at once"
             }
           }
         },
@@ -1418,21 +1496,51 @@
           },
           "miracle": {
             "name": "the Miracle (The Sky Answers, the largest damage Miracle in data)",
-            "source": "patron: Faith 7 and Devotion 10, once a session",
+            "source": "patron: Faith 7 and Devotion 10; its price (five levels of Devotion) is its only limit (ruling 61: the once-a-session limit is removed)",
             "from_point": 7,
             "ap": 3,
             "spends": 0,
             "rolls": false,
-            "sky_base": {"data": "patrons.json:items[old_overcast].miracle.effects[0].value"},
+            "sky_base": {
+              "data": "patrons.json:items[old_overcast].miracle.effects[0].value"
+            },
             "area_tiles": 25,
-            "most_foes": {"data": "survival.json:max_foes[3]"},
+            "most_foes": {
+              "data": "survival.json:max_foes[3]"
+            },
             "base": "-@soul.attributes.virtue.door.cashouts.miracle.sky_base * @scale.factor.value * stat('blessing', A, S) * deal(L) * grade_dmg(G)",
             "formula": "1",
             "targets": "min(@soul.attributes.virtue.door.cashouts.miracle.area_tiles, @soul.attributes.virtue.door.cashouts.miracle.most_foes)",
             "saints_verdict": "the Saints' Verdict (130, every foe in sight) doubles against a foe that harmed the helpless: that double is restated as the door's judgement_helpless term (+30%, in the sum), as Judgement's was",
             "terms": [],
-            "why": "ruling 40: a Miracle strikes a 5 x 5; capped a hit, the total over the largest room printed. It spends no Grace: its price is five levels of Devotion (ruling 47)"
+            "why": "ruling 40: a Miracle strikes a 5 x 5; capped a hit, the total over the largest room printed. It spends no Grace: its price is five levels of Devotion (ruling 47)",
+            "limit": {
+              "once_a_session": false,
+              "data": "patrons.json prayer.miracle (the once-a-session rule goes in step 2d)",
+              "why": "ruling 61: the Miracle is rarer than a Weapon Art and breaks every scale; a faith build tuned to call two in a five-hour session is hard to reach and is rewarded for it"
+            }
           }
+        },
+        "worth": {
+          "at_1": 2,
+          "at_10": 7,
+          "cash_out": "hymn",
+          "unit": "the character's own plain attacks: bare Hymns (Judgement at no Grace)",
+          "formula": "1 + bite x S(n)",
+          "ruling": "I table; ruling 61 (the Hymn is the cash-out; the Miracle is apart and its once-a-session limit is removed)",
+          "shape": "rising: Bite at 1 from the skill-1 anchor, at 9 (held at 10) from the skill-10 anchor, at 6 the compounding between (b1 x (b9 / b1)^(5/8)); nothing a player holds is ever worth less",
+          "by_point": [
+            "1: Reach 2, Bite 0.455, a full hymn 2.00",
+            "2: Reach 2, Bite 0.455, a full hymn 2.00",
+            "3: Reach 2, Bite 0.455, a full hymn 2.00",
+            "4: Reach 3, Bite 0.455, a full hymn 2.66",
+            "5: Reach 3, Bite 0.455, a full hymn 2.66",
+            "6: Reach 3, Bite 0.650, a full hymn 3.37",
+            "7: Reach 4, Bite 0.650, a full hymn 4.49",
+            "8: Reach 4, Bite 0.650, a full hymn 4.49",
+            "9: Reach 4, Bite 0.806, a full hymn 5.33",
+            "10: Reach 5, Bite 0.806, a full hymn 7.00"
+          ]
         },
         "hymn_wait": {
           "formula": "max(floor_, ceil(base - per_faith * F - per_virtue * (V - 1)))",
@@ -1557,9 +1665,10 @@
             "1": {
               "exists": "Whispers",
               "reach": 2,
-              "bite": 0.15,
+              "bite": 0.455,
               "new": "Grace; a Whisper may spend it (the cash-out from point 1)",
-              "felt": "two Grace saved make one Whisper a third bigger"
+              "bite_why": "the skill-1 anchor: a full hymn at Reach 2 worth 2.000 bare Hymns (Judgement at no Grace): (2.000 - 1) / S(2) 2.2000 = 0.455",
+              "felt": "two Grace saved: a prayer that spends them is worth twice its bare self"
             },
             "2": {
               "exists": "Name the Sinner: a Whisper that Judges a foe; your prayers deal more to a Judged or Marked foe",
@@ -1578,7 +1687,7 @@
             "4": {
               "exists": "fork: Round of Blessings or Steadfast",
               "reach": 3,
-              "felt": "three Grace: a Hymn half again its size"
+              "felt": "three Grace: a Hymn worth two and a half bare Hymns"
             },
             "5": {
               "exists": "Witnessed",
@@ -1586,8 +1695,9 @@
             },
             "6": {
               "exists": "perk step",
-              "bite": 0.2,
-              "felt": "every step of Grace is worth a third more"
+              "bite": 0.65,
+              "bite_why": "between the anchors (rule I: the steps between follow the compounding): 0.455 x (0.806 / 0.455)^(5/8) = 0.650",
+              "felt": "every step of Grace is worth more: a Hymn of three over three bare Hymns"
             },
             "7": {
               "exists": "perk step",
@@ -1595,7 +1705,7 @@
               "needs": {
                 "conscience": 4
               },
-              "felt": "four Grace once your Conscience is 4: a Hymn about twice its size"
+              "felt": "four Grace once your Conscience is 4: a Hymn worth four and a half bare Hymns"
             },
             "8": {
               "exists": "fork: Benediction or Swift Psalm",
@@ -1604,8 +1714,9 @@
             },
             "9": {
               "exists": "perk step",
-              "bite": 0.25,
-              "felt": "a full Hymn reaches five digits at level 20"
+              "bite": 0.806,
+              "bite_why": "the skill-10 anchor: a full hymn at Reach 5 (skill 10) worth 7.000 bare Hymns (Judgement at no Grace): (7.000 - 1) / S(5) 7.4416 = 0.806 (held from 9 to 10)",
+              "felt": "a full Hymn of four worth more than five bare Hymns"
             },
             "10": {
               "exists": "Mastered: Judgement Day",
@@ -1614,7 +1725,7 @@
                 "conscience": 7,
                 "authority": 4
               },
-              "felt": "five Grace once your Conscience is 7 and your Authority 4: a saint's litany nobody without the whole family can hold"
+              "felt": "five Grace once your Conscience is 7 and your Authority 4: a saint's litany worth seven bare Hymns, nobody without the whole family can hold"
             }
           }
         },

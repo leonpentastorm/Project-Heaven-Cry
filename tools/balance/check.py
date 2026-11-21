@@ -18,6 +18,7 @@ nothing anywhere), computes every table and runs the checks:
   (f) SOLO       every move that needs an ally says what it does alone
   (g) MIGRATION  one revision stamp, one owner
   (h) COSTS      each caster door's core, charge or MP over one standard fight at levels 1, 10 and 20 (ruling 49)
+  (i) WORTH      each door's full cash-out in its own plain attacks at skill 1 and 10 against its worth anchors (rulings I, J)
 
 Run from the repo root (Windows: export PYTHONUTF8=1 first):
 
@@ -1025,6 +1026,36 @@ def check_costs():
         except (RefError, KeyError, TypeError, ValueError, StopIteration, IndexError) as e: result('h', 'FAIL', 'COSTS %s: cannot compute: %r' % (d.id, e))
     if not n_: result('h', 'FAIL', 'COSTS: no door states a resource_use (ruling 49)')
 
+# ------------------------------------------------------------------------------------------------ (i) WORTH
+def full_c(d, co, Sk):
+    """The cash-out factor C of one full cash-out at Sk points in the door's alpha (Reach with the family full, the Bite held
+    there), in the door's own plain hits (L 20, A 10, Relic: C does not read them for any door but through plain itself)."""
+    n = d.reach(Sk, {d.beta: 10, d.gamma: 10}) or 0
+    e = d.env(20, 10, Sk, 'relic', n=n, alpha=Sk); e['plain'] = d.plain(20, 10, Sk, 'relic')
+    return ev(co['formula'], e) * ev(co.get('base', 'plain'), e) / e['plain'], n
+def check_worth():
+    """Rulings I and J (00-rulings.md): a full cash-out is worth, in the character's own plain attacks, the door's `worth`
+    anchors at skill 1 and at skill 10; the full cash-out never falls from one point to the next (Law 1). A reading, set
+    from the anchors: FAIL only when the JSON's Bites do not give the anchors, or a point lowers the full cash-out."""
+    ds, _ = doors()
+    for d in ds:
+        w = d.d.get('worth')
+        if not isinstance(w, dict): result('i', 'FAIL', 'WORTH %s: the door states no worth (rulings I, J)' % d.id); continue
+        co = d.cashouts()[w['cash_out']]
+        try:
+            c1, n1 = full_c(d, co, 1); c10, n10 = full_c(d, co, 10)
+            row = [full_c(d, co, p)[0] for p in range(1, 11)]
+            falls = [p for p in range(2, 11) if row[p - 1] < row[p - 2] - 1e-9]
+            ok = abs(c1 - num(w['at_1'])) <= 0.01 and abs(c10 - num(w['at_10'])) <= 0.01 and not falls
+            result('i', 'PASS' if ok else 'FAIL', 'WORTH %s: a full %s is %.2f plain attacks at skill 1 (Reach %s; the table %s) and %.2f at 10 (Reach %s; the table %s); by point %s%s'
+                   % (d.id, w['cash_out'], c1, fmt(n1), fmt(num(w['at_1']), 2), c10, fmt(n10), fmt(num(w['at_10']), 2), ' / '.join('%.2f' % x for x in row),
+                      (': falls at %s' % falls) if falls else ''))
+            for k, c in d.cashouts().items():
+                if c.get('reading_of') == w['cash_out'] and num(c.get('per_turn', 1)) > 1:
+                    cc, _ = full_c(d, c, 10)
+                    print('        %s %s at skill 10: %.2f plain attacks (%s a turn)' % (d.id, k, cc * num(c['per_turn']), fmt(num(c['per_turn']))))
+        except (RefError, KeyError, TypeError, ValueError) as e: result('i', 'FAIL', 'WORTH %s: cannot compute: %r' % (d.id, e))
+
 # ------------------------------------------------------------------------------------------------ (f) SOLO, (g) MIGRATION
 def check_solo():
     files = [f for f in CORES + ['gear_perks'] if f in B.present]
@@ -1298,7 +1329,7 @@ def main(argv):
             except (Waiting, RefError) as e: print('WAITING or FAILED (%s): %r\n' % (name, e))
         return 0
     print('The growth bible checker: %s present; %s waiting\n' % (', '.join(f for f in FILES if f in B.present) or 'nothing', ', '.join(f for f in FILES if f not in B.present) or 'nothing'))
-    check_refs(); check_digits(); check_hits(); check_ladders(); check_spend(); check_hours(); check_clock(); check_costs(); check_solo(); check_migration()
+    check_refs(); check_digits(); check_hits(); check_ladders(); check_spend(); check_hours(); check_clock(); check_costs(); check_worth(); check_solo(); check_migration()
     c = collections.Counter(s for _, s, _ in RESULTS)
     print('\n%d PASS, %d FAIL, %d WAITING' % (c['PASS'], c['FAIL'], c['WAITING']))
     return 1 if c['FAIL'] else 0
