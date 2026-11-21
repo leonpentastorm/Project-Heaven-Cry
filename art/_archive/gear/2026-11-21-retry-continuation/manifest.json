@@ -866,6 +866,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-dock_cutter--celestial",
+      "path": "art/icons/gear/weapon-dock_cutter--celestial.png",
+      "sha256": "8eaa2d4fb4c1e0412af761a46b36699a03f3af1628e0d2d2a9901fe0f49fdd62",
+      "label": "Dock Cutter — Celestial",
+      "family": "weapon-dock_cutter",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-dock_cutter--celestial.png",
+        "sha256": "87eff57b08b61b8e5ad57c82319f8e1e2dd7b9186995df2718315475848755f0"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-dock_cutter--celestial.png",
+        "sha256": "8eaa2d4fb4c1e0412af761a46b36699a03f3af1628e0d2d2a9901fe0f49fdd62"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-dock_cutter--celestial.txt",
+        "sha256": "d124ba5313218bb32cdb7e069f0a1b122282879edc89504edc543ab9c6fe1bb0"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-dock_cutter.png",
+          "sha256": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb"
+        },
+        {
+          "path": "art/icons/gear/weapon-dock_cutter--relic.png",
+          "sha256": "272b3ed9c1f8844db4dcc0bb0f955ff1f4bd245c3a3d81ae235438b4f43a3ff5"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png",
+          "sha256": "b689a9d6b02ce0f67d407b3e27ce4048400afcbb61aebeee1e7417856fc5e44c"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-dock_cutter--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-dock_cutter--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-dock_cutter--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-dock_cutter--celestial.png"
+      },
+      "export_hashes": {
+        "256": "1c746b48265b02ace8f314483c71b2faa1a588512bad1a9e1804bd88247f19de",
+        "128": "efdfc496a383ff3971727b7c16a68e634bbd88a58889eb691b1f4869876526b2",
+        "64": "ef3e566b23d4285313a25062c2a93275ea733031d62de1c4d9fa25efcafe1509",
+        "32": "3cccf24c7d9bb118c377102327777d039704cee8d1c51a7c355df9bfaab0fe67"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-dock_cutter",
+      "outline": {
+        "solid_alpha_iou": 0.9722367558696047,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 21
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
