@@ -1,7 +1,7 @@
 {
-  "selected": 534,
+  "selected": 535,
   "requested": 871,
-  "remaining": 337,
+  "remaining": 336,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 379,
+      "selected": 380,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 277,
+    "grade": 276,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 73,
+    "service-blocked-or-preceding-grade-dependent": 72,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -517,14 +517,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-ork_machete--celestial.png",
       "standard": "weapon-ork_machete",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-ork_cleaver_glaive--celestial",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-ork_cleaver_glaive--celestial.png",
-      "standard": "weapon-ork_cleaver_glaive",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2791,7 +2783,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-ork_cleaver_glaive--relic",
+  "last_delivered": "weapon-ork_cleaver_glaive--celestial",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

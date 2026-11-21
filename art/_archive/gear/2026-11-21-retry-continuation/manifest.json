@@ -1402,6 +1402,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_cleaver_glaive--celestial",
+      "path": "art/icons/gear/weapon-ork_cleaver_glaive--celestial.png",
+      "sha256": "f166c5532d45bf05e5d2d3ba2e6f2f9d58c063e72d97eecb7025cdd1c9478e38",
+      "label": "Ork Cleaver Glaive — Celestial",
+      "family": "weapon-ork_cleaver_glaive",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-ork_cleaver_glaive--celestial.png",
+        "sha256": "8982f798cb8efa990e2afce144c4857b9a554a9b9a81ff1f5fdadfff73f5ab03"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-ork_cleaver_glaive--celestial.png",
+        "sha256": "f166c5532d45bf05e5d2d3ba2e6f2f9d58c063e72d97eecb7025cdd1c9478e38"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-ork_cleaver_glaive--celestial.txt",
+        "sha256": "e1a8892c913d1c232fe308254803811581b37629a1b10ef3403363d65ab53971"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_cleaver_glaive.png",
+          "sha256": "9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_cleaver_glaive--relic.png",
+          "sha256": "68671ad7d655e4cf9f0956310f790882331d69c9cc136b135492e6ee5b5a936b"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-ork_cleaver_glaive.png",
+          "sha256": "1d0e20b248d040c349b9a4c36ae7c20b1aefe9c0a4f13e6fe5566dfbabd64b75"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_cleaver_glaive--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_cleaver_glaive--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_cleaver_glaive--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_cleaver_glaive--celestial.png"
+      },
+      "export_hashes": {
+        "256": "b1ff6a848c29476384697d5a5da0bd658dd4d7dca9120a61889809be73c97a02",
+        "128": "c55114c4167cf81422bccd71825395a01124960e7546f02d99c8e021dd3e7ae6",
+        "64": "ad8cd1e52da3f21fe0413f0f133486a76dd56cd87ae11da8ebb5972c9dc388d3",
+        "32": "133dfcd66a056a00cde8a9e5fdca681b73090279e5fa86494899ce2a488fc4f4"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-ork_cleaver_glaive",
+      "outline": {
+        "solid_alpha_iou": 0.9582581404472342,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 30
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
