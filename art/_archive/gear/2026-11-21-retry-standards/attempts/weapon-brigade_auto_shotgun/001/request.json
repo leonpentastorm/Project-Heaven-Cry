@@ -1,0 +1,72 @@
+{
+  "head": "1d003c4ca323901b1dbe00c3d57350654156ef7b",
+  "job": {
+    "id": "weapon-brigade_auto_shotgun",
+    "data_id": "brigade_auto_shotgun",
+    "label": "Brigade auto-shotgun",
+    "path": "art/icons/gear/weapon-brigade_auto_shotgun.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.8,
+    "family": "repaint-weapon-brigade_auto_shotgun",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-brigade_auto_shotgun.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-brigade_auto_shotgun.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 14,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nA box-fed semi-automatic shotgun on the stamped long-stroke rifle's body. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 80% of the canvas width. Silhouette, kept exactly: the stamped receiver with a ribbed dust cover and a large lever safety on the right; a fat, straight box magazine; a short gas tube over the barrel; a thick barrel; a separate pistol grip; a side-folding stock, extended. Materials: dark steel and black polymer. Maker's touch: one small blank gilt boss on the stock and a thin brass-orange (#F68A38) trim line; no plates.\nAt 32 px: the stamped rifle body with a fat straight magazine and a thick barrel.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "a5fc9eba942a3b3deb76bc99dcf703a876b330ed9cf21ee4119a395c79d01d95",
+    "replace_existing": true,
+    "expected_previous_sha256": "d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-brigade_auto_shotgun.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-brigade_auto_shotgun.json",
+    "expected_previous_export_hashes": {
+      "32": "cfc1aa2ec250b91181f140c4ac38c3d8765de2f3bb9d7ee338ed233d72ff8930",
+      "64": "973fcbd6732076d3503c3217d80f71e4ea78543aa80fa1b5ba5f885693a616e5",
+      "128": "319e230179887f8db9572fe2ba02923d42fa344a9e2939529cb7f6346f53bb3e",
+      "256": "92fa796dcc2bee4b8889cdfff3fd6b049b805f533239ae906285c633e19d3571"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-brigade_auto_shotgun.png": "d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  "reference_hashes": {
+    "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-brigade_auto_shotgun.png": "d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574"
+  },
+  "reference_source_hashes": {
+    "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+    "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+    "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+  },
+  "attempt": 1,
+  "claim_comment": 7062596980,
+  "clock": {
+    "current_time": "2026-11-21 12:37:16 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7062596980,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

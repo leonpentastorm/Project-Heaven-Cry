@@ -1,0 +1,45 @@
+{
+  "id": "weapon-fowling_gun",
+  "data_id": "fowling_gun",
+  "label": "Fowling gun",
+  "path": "art/icons/gear/weapon-fowling_gun.png",
+  "kind": "weapon",
+  "grade": "standard",
+  "span": 0.85,
+  "family": "break-action-shotguns",
+  "family_references": [
+    "art/icons/gear/weapon-coach_gun.png",
+    "art/icons/gear/weapon-sawn_off.png"
+  ],
+  "references": [
+    "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+    "art/portraits/world/new-faces/orren-vask.png",
+    "art/icons/gear/weapon-coach_gun.png",
+    "art/icons/gear/weapon-sawn_off.png"
+  ],
+  "reference_sources": [
+    "art/sprites/objects/fuel-drum.png",
+    "art/sprites/objects/tool-rack.png",
+    "art/sprites/objects/field-lamp.png"
+  ],
+  "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+  "brief_number": 11,
+  "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, in the pose the description gives, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha; the object fills the width the description gives, inside the central 90% of the canvas. No text, no letters, no numbers, no logos, no maker marks, no borders, no frame, no hands and no figures. The name, maker and markings are invented: never a real brand, model name, logo or text. The silhouette must be bold and instantly readable first: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges and make the shape unmistakable when shrunk. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour is the single accent, a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. It must sit in one set with the attached paintings of its maker line: the same scale rule, the same shape language, the same accent. The object is:\n\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\n\nThe long side-by-side hammer game gun pattern. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width, longer than the coach gun. Silhouette, kept exactly: two very long slim side-by-side barrels, longer than the stock, with a raised rib between them and a single small bead at the muzzle; two exposed hammers on side-lock plates; a top lever behind the breech; double triggers in one trigger guard; a slim splinter fore-end; a slender straight-hand stock with a narrow wrist. Materials: dark browned steel barrels with a soft sheen, figured walnut. Maker's touch: one brass hinge pin.\nAt 32 px: against the coach gun, barrels far longer and slimmer; against the long rifle, two barrels and two hammers, no scope and no bolt.\nAvoid: a scope, a pump, a magazine tube, engraving of animals or scenes, a sling.\n\nThese are fictional RPG inventory paintings. The family paintings supply materials, wear, scale and maker identity. Draw the exact silhouette described in the brief. Material anchors and Orren supply brushwork only, no borrowed scene, camera, hand or figure. One complete painted object on a fully transparent background.",
+  "status": "pending",
+  "production_approved": false,
+  "implementation_ready": false,
+  "retry_authorized_by_user": true,
+  "original_prompt_sha256": "68e8911765d93c1b6f31059a04f9b075c41f520f95f58e8519e591eac86f73b0",
+  "expected_reference_hashes": {
+    "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/icons/gear/weapon-coach_gun.png": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5",
+    "art/icons/gear/weapon-sawn_off.png": "182449097f5759e63b764a0c3e22615aec2f9f69cf7967c48f7045a92765aabc"
+  },
+  "reference_catalog_hashes": {
+    "art/icons/gear/weapon-coach_gun.png": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5",
+    "art/icons/gear/weapon-sawn_off.png": "182449097f5759e63b764a0c3e22615aec2f9f69cf7967c48f7045a92765aabc"
+  },
+  "source_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/coordination/new-standard-imports/2026-11-19-file-06-queue.json",
+  "prompt_assembly": "Verbatim current File06 Base+GunPatternClause+entry11, then truthful context/reference priority. Sourcequeue stores paint block, not historical full prompt."
+}

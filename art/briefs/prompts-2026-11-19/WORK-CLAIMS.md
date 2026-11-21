@@ -68,3 +68,6 @@ Drifter3 exact expansion, sole-20261121-0109 issue3 comment7062519965: `weapon-d
 
 
 Repaint9 exact expansion, sole-20261121-0109 issue3 comment7062596980: `weapon-decrkm_smg`, `weapon-legion_pdw`, `weapon-mandestra_drum_gun`, `weapon-long_rifle`, `weapon-ccec_marksman_rifle`, `weapon-adamantile_battle_rifle`, `weapon-lumeri_scattergun`, `weapon-brigade_auto_shotgun`, `weapon-frontier_hand_cannon`. Standardqueue16 pending, all old masters/36 UIexport hashes/fullcatalog snapshots preserved. FirstFrontierHandCannon. Grade43 pending; unique5complete.569/871 selected,302remaining,59exactpendingreservations,243otherwiseunclaimed. Noactualquota/reset.
+
+
+Fowling Standard exact claim, sole-20261121-0109 issue3 comment7062719094: `weapon-fowling_gun`, File06#11, current KEPT CoachGun/SawnOff references verified. Standardqueue17pending; grade43pending; unique5complete.569/871selected,302remaining,60exactpendingreservations,242otherwiseunclaimed. Noquota/reset.

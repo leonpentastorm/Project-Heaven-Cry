@@ -2,7 +2,7 @@
   "run": "sole-20261121-0109",
   "branch": "art/2026-11-20-reset-continuation",
   "status": "active",
-  "expected_count": 16,
+  "expected_count": 17,
   "ids": [
     "weapon-arbalest",
     "weapon-hellraiser_twin_rotary",
@@ -19,9 +19,10 @@
     "weapon-adamantile_battle_rifle",
     "weapon-lumeri_scattergun",
     "weapon-brigade_auto_shotgun",
-    "weapon-frontier_hand_cannon"
+    "weapon-frontier_hand_cannon",
+    "weapon-fowling_gun"
   ],
-  "first": "weapon-frontier_hand_cannon",
+  "first": "weapon-fowling_gun",
   "comment": 7062068723,
   "expansion_history": [
     {
@@ -49,6 +50,13 @@
       ],
       "comment": 7062596980,
       "first": "weapon-frontier_hand_cannon"
+    },
+    {
+      "ids": [
+        "weapon-fowling_gun"
+      ],
+      "comment": 7062719094,
+      "first": "weapon-fowling_gun"
     }
   ],
   "claim_comments": {
@@ -67,6 +75,7 @@
     "weapon-adamantile_battle_rifle": 7062596980,
     "weapon-lumeri_scattergun": 7062596980,
     "weapon-brigade_auto_shotgun": 7062596980,
-    "weapon-frontier_hand_cannon": 7062596980
+    "weapon-frontier_hand_cannon": 7062596980,
+    "weapon-fowling_gun": 7062719094
   }
 }

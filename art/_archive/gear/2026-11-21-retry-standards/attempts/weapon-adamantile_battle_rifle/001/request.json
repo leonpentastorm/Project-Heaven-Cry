@@ -1,0 +1,72 @@
+{
+  "head": "1d003c4ca323901b1dbe00c3d57350654156ef7b",
+  "job": {
+    "id": "weapon-adamantile_battle_rifle",
+    "data_id": "adamantile_battle_rifle",
+    "label": "Adamantile battle rifle",
+    "path": "art/icons/gear/weapon-adamantile_battle_rifle.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.85,
+    "family": "repaint-weapon-adamantile_battle_rifle",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 11,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nThe tilting-breechblock metric battle rifle with the long slotted flash hider, the right arm of half the world's armies. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long slim receiver whose top cover tapers down at the back to a rear peep sight; a small folding cocking handle on the left side of the receiver, toward its front; a straight 20-round box magazine with a slight forward lean, set ahead of the trigger guard; a separate, steeply raked pistol grip; a slim handguard flaring wider at the back, with ventilation slots along it; a tall front sight post with two protective ears near the muzzle; a long slotted flash hider; a fixed stock in line with the receiver with a ribbed butt plate. No carry handle. Materials: dark steel and black furniture. Maker's touch: one small blank gilt boss at the heel of the stock and a thin brass-orange (#F68A38) trim line; no plates.\nAt 32 px: a long straight rifle with a straight magazine, a tall eared front sight and a long slotted flash hider.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "59320866c57ae43c92208f55ce4b1694053c15611b83dec9fcaf3f5ea6dd49cb",
+    "replace_existing": true,
+    "expected_previous_sha256": "5ceab3a2e8ca3857674057e3bcbd9240eb688d62a14e73f87333607eb03449a7",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-adamantile_battle_rifle.json",
+    "expected_previous_export_hashes": {
+      "32": "45af522c0dae41adf645268dc3095491b257c9b8da740b7697691772e911af38",
+      "64": "0a422d8876c0131acfcecc90766ef47f2be2ff8130a6fea657d4546e1e9b1e27",
+      "128": "3b5e302b3ccc5f6e80b927ee1a407db56a271e962234bf5bda1c06315628797d",
+      "256": "3c99ec2fe1612de7d018f5869cd8c702c00e14aa176915461c01d75ddd5b7389"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png": "5ceab3a2e8ca3857674057e3bcbd9240eb688d62a14e73f87333607eb03449a7"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  "reference_hashes": {
+    "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+    "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png": "5ceab3a2e8ca3857674057e3bcbd9240eb688d62a14e73f87333607eb03449a7"
+  },
+  "reference_source_hashes": {
+    "art/sprites/objects/fuel-drum.png": "d80ab497c3c19f6435fe8a6d8888c20378edd7c1c91911d94375233ac756fb8d",
+    "art/sprites/objects/tool-rack.png": "599d9b662921db9a312fe55a0f51719dd024b3a0e40d9731ff10eaac7bd5c616",
+    "art/sprites/objects/field-lamp.png": "dbc4564ae0fa2f3e25a76bf715315f0614bba3b7387f729aab7c22b134198819"
+  },
+  "attempt": 1,
+  "claim_comment": 7062596980,
+  "clock": {
+    "current_time": "2026-11-21 12:36:09 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7062596980,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}
