@@ -1,0 +1,20 @@
+{
+  "path": "art/_archive/gear/2026-11-21-retry-continuation/references/packed/weapon-service_pistol--relic.png",
+  "sha256": "69b59e9c3f1e7f7b12531306fc1fda92fc432943c5d4a27e58810103d0488168",
+  "dimensions": [
+    2048,
+    1072
+  ],
+  "method": "Two full-size1024x1024 originals composited over technical #10151F at (0,48)/(1024,48); no crop, resize or repaint. Original files unchanged.",
+  "sources": [
+    {
+      "path": "art/icons/gear/weapon-service_pistol.png",
+      "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181"
+    },
+    {
+      "path": "art/icons/gear/weapon-service_pistol--masterwork.png",
+      "sha256": "5a2cc0bf54808798d6cf7a17346d2b3f4c69d33c2dc7ceca9d0a118924dc7640"
+    }
+  ],
+  "new_picture_count": 0
+}

@@ -3149,8 +3149,7 @@
     "path": "art/icons/gear/weapon-service_pistol--relic.png",
     "kind": "weapon",
     "references": [
-      "art/icons/gear/weapon-service_pistol.png",
-      "art/icons/gear/weapon-service_pistol--masterwork.png",
+      "art/_archive/gear/2026-11-21-retry-continuation/references/packed/weapon-service_pistol--relic.png",
       "art/portraits/world/new-faces/orren-vask.png"
     ],
     "family": "weapon-service_pistol",
@@ -3162,8 +3161,8 @@
     "source_brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
     "source_brief_number": 2,
     "keep_line": "the same single right-facing level side-view service pistol repaint, broad straight dark steel slide with its current angular front bevel, dark circular muzzle, three rear sloping serration cuts, rectangular upper-side port and small original top sights, stepped lower frame/dust cover, short rectangular trigger guard with its single curved trigger, and downward-sloping blue-grey inset grip panel secured by TWO round metal pins over the same dark grip base. Preserve every slide corner, port, sight, screw, trigger gap, under-frame step and grip angle; the magazine remains flush at the bottom. The original muted steel-blue grip inset stays at its current place. No accessory rail addition, optic, enlarged magazine, logo, lettering or external effect.",
-    "prompt": "Create the Relic-finish cosmetic variant of the attached fictional RPG service pistol inventory painting for Project Heaven Cry. This is a 2D digital game-art asset. FIRST attachment fixes exact Standard geometry and registration: preserve the complete visible pistol outline, every existing part and opening, right-facing level pose, camera, scale and margins. SECOND is the preceding grade: retain its surface additions except the specified current finish change. THIRD supplies Heavenprint ink and gouache brushwork only, never a person or scene.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nKeep the preceding inlay route, now dull old gold; warm deep oiled blued-brown steel and darkened smooth original grip material. Retain THREE rear cuts, TWO grip pins and every dark opening. Add ONE small flush scrollwork panel beside the inlay on the existing upper-side surface, no letters or figures, and replace ONE existing lower grip pin with a different-metal pin of exactly the same size in the same hole. No extra hardware. Apply those surface changes only to the actual pistol shown. Do not add, remove, resize or move a part or opening. Hand-painted opaque gouache and ink, broken directional strokes and selective dry-brush, charcoal shadows, warm ivory focal edges, upper-left light. Full transparent background,1024x1024RGBA, same framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logo, label, frame, border, flash, smoke or external glow. This is an exterior painted illustration only, no technical diagram, internal mechanism, measurements, assembly steps or operating instructions.",
-    "status": "pending",
+    "prompt": "Paint ONE Relic Service Pistol inventory icon for the fictional RPG Project Heaven Cry. Only a2D digital painting. First attachment is a technical reference pair: LEFT Standard fixes exact visible geometry/pose/framing; RIGHT Masterwork supplies prior surface additions. Render one complete pistol only, with no panel, label, extra object or scene. Second attachment supplies Heavenprint brushwork only, no person.\n\nRelic appearance: same silhouette, THREE rear cuts, TWO grip pins, all dark openings, exact grip/guard and every part position. Keep the Masterwork upper-side inlay route, now painted dull old gold. Steel has warm deep oiled blued-brown patina, never rust; the original blue-grey grip is darker and glassy-smooth with age, preserving its blue identity. Existing brass fittings look old and cared for. ONE small flush rectangle of fine engraved scroll curves, no letters or figures, sits on the existing upper-side surface beside the inlay. ONE old repair: the existing LOWER grip pin appears contrasting plain steel instead of brass, exactly the same size in the same hole. No added pin, plate, fitting or damage. Keep every previous addition.\n\nOpaque Heavenprint gouache/ink, directional broken brushstrokes, selective dry-brush, charcoal shadows, restrained warm ivory focal edges and upper-left light. Transparent1024x1024RGBA, same reference framing and at least50px clear margin. No cast shadow, ground, hand, figure, text, numbers, letters, logo, real brand, border, frame, smoke, flash or external glow. Exterior artwork only; no diagram or instructions.",
+    "status": "delivered",
     "production_approved": false,
     "implementation_ready": false,
     "depends_on": "weapon-service_pistol--masterwork",
@@ -3186,10 +3185,55 @@
         "previous_sha256": "b3f853668601d8c6a38d18afaea1d28930636aa656b0982edf767c2ab39c3d46",
         "reason": "Direct item-specific cosmetic edit, retaining exact grade block and all actual pistol-specific additions. Omit generic class alternatives for parts absent from the reference; no false renaming, all prior requests preserved.",
         "changed_utc": "2026-11-21T16:07:58.702151+00:00"
+      },
+      {
+        "previous_prompt": "Create the Relic-finish cosmetic variant of the attached fictional RPG service pistol inventory painting for Project Heaven Cry. This is a 2D digital game-art asset. FIRST attachment fixes exact Standard geometry and registration: preserve the complete visible pistol outline, every existing part and opening, right-facing level pose, camera, scale and margins. SECOND is the preceding grade: retain its surface additions except the specified current finish change. THIRD supplies Heavenprint ink and gouache brushwork only, never a person or scene.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nKeep the preceding inlay route, now dull old gold; warm deep oiled blued-brown steel and darkened smooth original grip material. Retain THREE rear cuts, TWO grip pins and every dark opening. Add ONE small flush scrollwork panel beside the inlay on the existing upper-side surface, no letters or figures, and replace ONE existing lower grip pin with a different-metal pin of exactly the same size in the same hole. No extra hardware. Apply those surface changes only to the actual pistol shown. Do not add, remove, resize or move a part or opening. Hand-painted opaque gouache and ink, broken directional strokes and selective dry-brush, charcoal shadows, warm ivory focal edges, upper-left light. Full transparent background,1024x1024RGBA, same framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logo, label, frame, border, flash, smoke or external glow. This is an exterior painted illustration only, no technical diagram, internal mechanism, measurements, assembly steps or operating instructions.",
+        "previous_sha256": "71c355c1450ae5a3d69b1432a0c8c473d2c1a35422d1518414580446d7cb8a1c",
+        "previous_references": [
+          "art/icons/gear/weapon-service_pistol.png",
+          "art/icons/gear/weapon-service_pistol--masterwork.png",
+          "art/portraits/world/new-faces/orren-vask.png"
+        ],
+        "reason": "Clarify geometry-versus-finish reference roles in a single labelled technical pair. Both original images remain visible at full size with their original source hashes; item identity and complete grade/body constraints unchanged.",
+        "changed_utc": "2026-11-21T16:32:08.218674+00:00"
+      },
+      {
+        "previous_prompt": "Create one Relic-finish cosmetic variant of the fictional RPG service pistol inventory painting for Project Heaven Cry. This is a2D digital game-art asset. FIRST attachment is a labelled TECHNICAL REFERENCE PAIR, not the output composition: LEFT panel is the exact Standard geometry/pose/framing master; RIGHT panel is the preceding grade with surface additions to retain. Both are unchanged full-size originals. Produce ONE complete object only, matching the LEFT geometry and the requested higher finish, retaining prior additions from the RIGHT. SECOND attachment supplies Heavenprint ink/gouache brushwork only, never a person or scene. No reference panel, label or second object in the output.\n\nGrade: Relic. Keep the shape and the inlay. The steel darkens to a warm deep patina (oiled blued brown, never rust); the grip panels or stock are darkened and worn smooth by years of hands; the inlay becomes dull old gold, and one small flush panel of engraved scrollwork (no letters, no figures) sits on the receiver or slide beside it. Add one old repair that tells a story: a hand-fitted pin of a different metal, a grip panel replaced in an older material, or a stock bound with old wire. It still works perfectly.\n\nKeep the preceding inlay route, now dull old gold; warm deep oiled blued-brown steel and darkened smooth original grip material. Retain THREE rear cuts, TWO grip pins and every dark opening. Add ONE small flush scrollwork panel beside the inlay on the existing upper-side surface, no letters or figures, and replace ONE existing lower grip pin with a different-metal pin of exactly the same size in the same hole. No extra hardware. Apply those surface changes only to the actual pistol shown. Do not add, remove, resize or move a part or opening. Hand-painted opaque gouache and ink, broken directional strokes and selective dry-brush, charcoal shadows, warm ivory focal edges, upper-left light. Full transparent background,1024x1024RGBA, same framing and at least50px clear margin. No cast shadow, ground, scene, figure, hand, text, letters, numbers, logo, label, frame, border, flash, smoke or external glow. This is an exterior painted illustration only, no technical diagram, internal mechanism, measurements, assembly steps or operating instructions.",
+        "previous_sha256": "5f0b55b0578573f6bfd8a1f55350ca111117a3d178085066eeb343072dc934c2",
+        "reason": "Express the required Relic finish as painted visual appearance, retaining all original grade requirements, prior additions, item identity and exact single repair. Full source grade block/earlier requests preserved.",
+        "changed_utc": "2026-11-21T16:32:08.261129+00:00"
       }
     ],
-    "active_prompt_sha256": "71c355c1450ae5a3d69b1432a0c8c473d2c1a35422d1518414580446d7cb8a1c",
-    "request_layout": "reference-first-cosmetic-direct"
+    "active_prompt_sha256": "4000b181b79bea8120220980d517e05c48281ee4ac1c99386249a678b0bb475a",
+    "request_layout": "reference-first-painted-appearance",
+    "reference_sources": [
+      "art/icons/gear/weapon-service_pistol.png",
+      "art/icons/gear/weapon-service_pistol--masterwork.png"
+    ],
+    "reference_source_hashes": {
+      "art/icons/gear/weapon-service_pistol.png": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181",
+      "art/icons/gear/weapon-service_pistol--masterwork.png": "5a2cc0bf54808798d6cf7a17346d2b3f4c69d33c2dc7ceca9d0a118924dc7640"
+    },
+    "reference_packing": {
+      "path": "art/_archive/gear/2026-11-21-retry-continuation/references/packed/weapon-service_pistol--relic.png",
+      "sha256": "69b59e9c3f1e7f7b12531306fc1fda92fc432943c5d4a27e58810103d0488168",
+      "dimensions": [
+        2048,
+        1072
+      ],
+      "method": "Two full-size1024x1024 originals composited over technical #10151F at (0,48)/(1024,48); no crop, resize or repaint. Original files unchanged.",
+      "sources": [
+        {
+          "path": "art/icons/gear/weapon-service_pistol.png",
+          "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181"
+        },
+        {
+          "path": "art/icons/gear/weapon-service_pistol--masterwork.png",
+          "sha256": "5a2cc0bf54808798d6cf7a17346d2b3f4c69d33c2dc7ceca9d0a118924dc7640"
+        }
+      ],
+      "new_picture_count": 0
+    }
   },
   {
     "id": "weapon-service_pistol--celestial",

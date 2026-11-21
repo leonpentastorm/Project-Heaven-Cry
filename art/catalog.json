@@ -35354,6 +35354,42 @@
         "different_pixels_32": 6,
         "different_pixels_64": 19
       }
+    },
+    "weapon-service_pistol--relic": {
+      "label": "Service pistol repaint — Relic",
+      "path": "art/icons/gear/weapon-service_pistol--relic.png",
+      "sha256": "b0336dae8a38f980423c97515048cc759d63dce7b6b16efd929fdd15f1b0929a",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-service_pistol--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-service_pistol--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-service_pistol--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-service_pistol--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-service_pistol--relic.png",
+      "native_dimensions": [
+        1733,
+        908
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.3",
+      "collection": "2026-11-19-kept-blade-grades",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-service_pistol",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.9570006563655117,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 65
+      }
     }
   },
   "survival_art": {

@@ -3698,6 +3698,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-service_pistol--relic",
+      "path": "art/icons/gear/weapon-service_pistol--relic.png",
+      "sha256": "b0336dae8a38f980423c97515048cc759d63dce7b6b16efd929fdd15f1b0929a",
+      "label": "Service pistol repaint — Relic",
+      "family": "weapon-service_pistol",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-service_pistol--relic.png",
+        "sha256": "95113ca25618e4b25d509894f053e81a0ecb60d604d738609054221b00630917"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-service_pistol--relic.png",
+        "sha256": "b0336dae8a38f980423c97515048cc759d63dce7b6b16efd929fdd15f1b0929a"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-service_pistol--relic.txt",
+        "sha256": "73652b7ee049eaab858ff04d35c7ba9a38df60e339e6c68e6e3074892f9c44da"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/references/packed/weapon-service_pistol--relic.png",
+          "sha256": "69b59e9c3f1e7f7b12531306fc1fda92fc432943c5d4a27e58810103d0488168"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-service_pistol.png",
+          "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181"
+        },
+        {
+          "path": "art/icons/gear/weapon-service_pistol--masterwork.png",
+          "sha256": "5a2cc0bf54808798d6cf7a17346d2b3f4c69d33c2dc7ceca9d0a118924dc7640"
+        }
+      ],
+      "native_dimensions": [
+        1733,
+        908
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-service_pistol--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-service_pistol--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-service_pistol--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-service_pistol--relic.png"
+      },
+      "export_hashes": {
+        "256": "fd655dc77f95f007f6171f4bc26a238ee48315f86a7c291b1e2a69c27927d1f4",
+        "128": "f93a8e4560029ca389c422b8d0a0db4bb3c99973ce13d3c3c931b0ef4360619c",
+        "64": "75a728189734f5195e50ed41b2f74ae2b27eac61b51b6b5713890e73d835ef9d",
+        "32": "74eafa2acec1c3ceca8dc968a7c9f697ea9e6cf26dac632cfd55d0c6fd253bfb"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-service_pistol",
+      "outline": {
+        "solid_alpha_iou": 0.9570006563655117,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 7,
+        "different_pixels_64": 65
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
