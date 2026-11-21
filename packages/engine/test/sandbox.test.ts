@@ -1,4 +1,5 @@
 // The Proving Ground (practice mode): endless waves, infinite retry, the tools panel's actions, and no Narrator.
+import { ARMOUR } from '../src/character';
 import { describe, expect, it } from 'vitest';
 import {
   ARCHETYPES, type Sheet, type GameState, type Action, newGame, apply, RuleError, sandboxWave, PROVING_GROUND, SANDBOX_PORTRAIT, validateCampaign, zoneMap, active,
@@ -253,7 +254,7 @@ describe('the tools', () => {
     g = apply(g, { type: 'sandbox/give', charId: c.id, item: 'evoker', equip: true }, HOST);
     expect(charOf(g).offHand?.id).toBe('evoker'); expect(hasEvoker(charOf(g))).toBe(true); expect(pc(g).mg?.evoker).toBe(true);
     expect(() => apply(g, { type: 'sandbox/armour', charId: c.id, armourClass: 5 }, HOST)).toThrow(/Class 5 armour needs Pain Threshold 5/); // heavy armour's gate (rules 1.13)
-    g = apply(g, { type: 'sandbox/armour', charId: c.id, armourClass: 3 }, HOST); expect(pc(g).armour).toBeGreaterThanOrEqual(15);
+    g = apply(g, { type: 'sandbox/armour', charId: c.id, armourClass: 3 }, HOST); expect(pc(g).armour).toBeGreaterThanOrEqual(ARMOUR[3].value); // rules 1.95: Class 3's row (15 x the factor), at least
     expect(pc(g).ap).toBe(start().combat!.units.find((u) => u.side === 'pc')!.ap); // every tool above was free (item 690)
     // the player's own equip action mid-fight costs what it costs in any fight (rules 1.9, item 690): a two-handed draw 2 AP;
     // the tools above stayed free

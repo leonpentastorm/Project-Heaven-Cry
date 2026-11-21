@@ -121,7 +121,7 @@ const freeAt = (g: GameState, near: string, d: number): string => {
 };
 describe('Twin Discipline on the area map under 1.4', () => {
   it('a fused Line whose SEEK finds a token opens the fight with the cast; the hold is spent and the glyphs fade', () => {
-    const s = storyWith([{ perks: { twin_discipline: 'ultimate' }, archetype: 'stormcaller', kit: 'soul' }]); const c = s.chars[0];
+    const s = storyWith([{ perks: { twin_discipline: 'ultimate' }, archetype: 'stormcaller', kit: 'soul', attrs: { endurance: 10 } }]); const c = s.chars[0]; // rules 1.95: a bar that lives through the opened fight's first rounds (the fight would be lost before the test reads it)
     const ch = s.g.characters[c.id]; ch.mp = 500;
     ch.weapon = 'evoker_blade'; ch.loaded = 0; // a focus counts only in a hand (item 630): the blade (an Evoker) beside the Emanator
     ch.sigils = ['spark', 'seek']; ch.evoCharge = 10;

@@ -175,7 +175,7 @@ describe('rules 1.33 section 3: the verbs', () => {
   });
   it('Shield: a shield, on a Bonded ally only; Settle: Settled; Soothe: the newest Body condition (rules 1.75: Touch is cut; Settle and Soothe are Steady Hands\'s)', () => {
     const f = fight([{ skills: { empathy: 5, camaraderie: 5 }, perks: { steady_hands: 'II' } } as any, { name: 'Ally' }], [{ at: '12,9' }]), [u, al] = f.pcs();
-    u.pos = '3,3'; al.pos = '4,3'; f.turn(u);
+    u.pos = '3,3'; al.pos = '4,3'; f.turn(u); u.mg!.mp = u.mg!.mpMax = 999; // rules 1.95: the pool is on the new scale, the prices are restated in step 2d (MP is not what this proves)
     expect(f.pv(u, 'verb:tend.shield', { targetId: al.id }).ok).toBe(false); // rules 1.60 item 4638 (R20): a Bonded ally only
     f.act(u, 'verb:tend.bond', { targetId: al.id }); u.ap = 9;
     al.shield = 0; f.act(u, 'verb:tend.shield', { targetId: al.id }); expect(al.shield).toBeGreaterThan(0); u.ap = 9;
@@ -185,7 +185,7 @@ describe('rules 1.33 section 3: the verbs', () => {
   });
   it('Raise: a Downed ally next to you stands; Guide: an ally steps to the tile you pick (rules 1.75: Camaraderie perks\' actions); Let go ends a Bond', () => {
     const f = fight([{ skills: { empathy: 4, camaraderie: 5 }, perks: { nobody_left_behind: 'II', pull_together: 'II' } } as any, { name: 'Ally' }], [{ at: '12,9' }]), [u, al] = f.pcs();
-    u.pos = '3,3'; al.pos = '4,3'; f.turn(u); f.W(() => setDowned(al, true)); al.hp = 0;
+    u.pos = '3,3'; al.pos = '4,3'; f.turn(u); u.mg!.mp = u.mg!.mpMax = 999; f.W(() => setDowned(al, true)); al.hp = 0; // the MP as above
     expect(f.act(u, 'nobody_left_behind', { targetId: al.id, actionId: 'tend_raise' })).toBeNull(); expect(al.downed).toBe(false); expect(al.hp).toBeGreaterThanOrEqual(1);
     const to = ['5,3', '5,2', '4,2', '4,4', '5,4'].find((k) => f.W(() => canStand(f.cb(), k)))!;
     u.ap = 9; expect(f.act(u, 'pull_together', { targetId: al.id, tile: to, actionId: 'tend_guide' })).toBeNull(); expect(al.pos).toBe(to);

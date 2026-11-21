@@ -162,15 +162,17 @@ describe('rules 1.24: who pays MP for a Pump', () => {
 
 describe('rules 1.24: old saves', () => {
   it('an Emanator keeps its share of the pool, once: half stays half, full stays full', () => {
+    // rules 1.95: the pool is (40 + 12 a Determination point + 8 an Insight point) x the mp column (attributes.json), so
+    // every number below is read from maxMp and the share the old save held
     const c = char({ virtue: 5, determination: 3, insight: 2 }, { mp: 250 }); delete c.mpRev;
-    expect(maxMpOld(c)).toBe(500); expect(maxMp(c)).toBe(72);
+    expect(maxMpOld(c)).toBe(500); expect(maxMp(c)).toBe(40 + 12 * 2 + 8 * 1);
     const notes = migrateCharacterMp(c);
-    expect(c.mp).toBe(36 /* rules 1.95 (the scale): was 36 */); expect(c.mpRev).toBe(MP_REV); expect(notes).toEqual([c.name + '\'s Emanator now holds up to 275 MP (it was 500): Max MP comes from Determination and Insight now, not Virtue (rules 1.24).']);
-    expect(migrateCharacterMp(c)).toEqual([]); expect(c.mp).toBe(138);
+    expect(c.mp).toBe(Math.round(maxMp(c) * 250 / 500)); expect(c.mpRev).toBe(MP_REV); expect(notes).toEqual([c.name + '\'s Emanator now holds up to ' + maxMp(c) + ' MP (it was 500): Max MP comes from Determination and Insight now, not Virtue (rules 1.24).']);
+    const kept = c.mp; expect(migrateCharacterMp(c)).toEqual([]); expect(c.mp).toBe(kept); // once
     const full = char({ virtue: 2, determination: 7, insight: 3 }, { mp: 200 }); delete full.mpRev; // the old all-in caster: 200 of 200
-    migrateCharacterMp(full); expect(full.mp).toBe(maxMp(full)); expect(full.mp).toBe(600);
+    migrateCharacterMp(full); expect(full.mp).toBe(maxMp(full));
     const never = char({ virtue: 4 }); delete never.mpRev; delete never.mp; migrateCharacterMp(never); expect(never.mp).toBeUndefined(); expect(mpNow(never)).toBe(maxMp(never));
-    const over = char({ virtue: 2, determination: 1 }, { mp: 900 }); delete over.mpRev; migrateCharacterMp(over); expect(over.mp).toBe(100); // never above the pool
+    const over = char({ virtue: 2, determination: 1 }, { mp: 900 }); delete over.mpRev; migrateCharacterMp(over); expect(over.mp).toBe(maxMp(over)); // never above the pool
   });
   it('a new character is stamped and is never moved', () => {
     const c = char({ virtue: 6, determination: 2 }, { mp: 60 }); expect(c.mpRev).toBe(MP_REV); expect(migrateCharacterMp(c)).toEqual([]); expect(c.mp).toBe(60);
@@ -181,9 +183,9 @@ describe('rules 1.24: old saves', () => {
     const u0 = g0.combat.units.find((x: Unit) => x.side === 'pc'); u0.mg.mp = 200; u0.mg.mpMax = 400;
     const g = apply(g0, { type: 'combat/prone', unitId: u0.id } as any, 'host');
     const u = g.combat!.units.find((x: Unit) => x.side === 'pc')!;
-    expect(g.characters[c.id].mpRev).toBe(MP_REV); expect(maxMp(g.characters[c.id])).toBe(52);
-    expect(u.mg!.mpMax).toBe(52 /* rules 1.95 (the scale): was 52 */); expect(u.mg!.mp).toBe(88); expect(g.characters[c.id].mp).toBe(88);
-    expect(g.story.entries.some((e: any) => /Emanator now holds up to 175 MP \(it was 400\)/.test(e.text || ''))).toBe(true);
+    expect(g.characters[c.id].mpRev).toBe(MP_REV); const pool = maxMp(g.characters[c.id]); expect(pool).toBe(40 + 12 * 1 + 8 * 0); // rules 1.95
+    expect(u.mg!.mpMax).toBe(pool); expect(u.mg!.mp).toBe(Math.round(pool * 200 / 400)); expect(g.characters[c.id].mp).toBe(Math.round(pool * 200 / 400)); // half stays half
+    expect(g.story.entries.some((e: any) => new RegExp('Emanator now holds up to ' + pool + ' MP \\(it was 400\\)').test(e.text || ''))).toBe(true);
   });
 });
 

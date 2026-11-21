@@ -21,6 +21,7 @@
 //                                              build before rules 1.25 (every enemy on the most hurt)
 //       DEFENCE_OUT=<file>                     every line is also appended here as it is measured (vitest prints
 //                                              nothing until the run ends)
+import { scaled } from '../helpers/scale';
 import { describe, it, expect } from 'vitest';
 import { appendFileSync, readFileSync } from 'node:fs';
 import { useTable } from './fit';
@@ -40,7 +41,7 @@ const QUICK_RUN = !!process.env.BALANCE_QUICK;
 const MEASURE = !!process.env.BALANCE_MEASURE;
 describe('the defence step: the enemy table (rules 1.23)', () => {
   it('the Boss: its HP at level 1 as recorded, and never less at a higher level', () => {
-    expect(ENEMY.boss.hp).toBe(492 /* rules 1.95 (the scale): was BOSS_HP */);
+    expect(ENEMY.boss.hp).toBe(BOSS_HP);
     for (const lv of D_LEVELS) expect(enemyStats('boss', lv).hp).toBeGreaterThanOrEqual(BOSS_HP);
   });
   (QUICK_RUN ? it : it.skip)('quick run: one fight of each kind for each squad builds (level 6, ground with cover), and a pair under fire', () => {
@@ -102,5 +103,5 @@ describe('the defence step, measured', () => {
 /** The pairs also measured with the healer weight off (the control: what rules 1.20 measured). */
 const OFF_TOO = (process.env.DEFENCE_OFF_ROWS || 'mender,medic,pair,mender2,tank').split(',');
 /** The Boss's HP at level 1 (data/enemies.json; rules 1.23: refitted from 960). */
-const BOSS_HP = 820;
+const BOSS_HP = scaled(820); // rules 1.95: the recorded 820 x the factor (world.tiers_rule.hp_x)
 void SOLDIER_TURN; void FIGHTS;

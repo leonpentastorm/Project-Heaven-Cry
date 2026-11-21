@@ -1,6 +1,7 @@
 // STAY, as Leon ruled it (item 422, 8 Nov 2026): the spell strikes once when Evoked (or when its trap springs), then
 // stays as a field; the field takes whoever it has not affected yet at full, and whoever it has (its placing strike or an
 // earlier bite) at ×0.5; at most once per creature per round.
+import { SIGIL } from '../src/data';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import './helpers/yard16'; // the 16 × 11 practice square these tests name tiles on
@@ -54,17 +55,17 @@ describe('STAY (item 422): one strike, then the field', () => {
   });
   it('a creature the field has not affected walking in takes full; one it struck takes half; once per round', () => {
     const { cb, u, es, rng } = setup(['fire', 'seek', 'stay'], [{ at: '9,5' }, { at: '12,5' }]);
-    const [a, b] = es;
+    const [a, b] = es; const FULL = (SIGIL as any).fire.damage, HALF = Math.floor(FULL / 2); // rules 1.95: FIRE's row (30 x the factor)
     draw(cb, rng, u, ['fire', 'stay', 'seek'], ['4,5', '3,5', '2,5']); evoke(cb, rng, u, '2,5', '9,5');
     let hp = a.hp; magicTurnStart(cb, rng, a); expect(a.hp).toBe(hp); // the strike was this round's
     hp = a.hp; a.ap = 9; moveUnit(cb, a, '9,6', rng); moveUnit(cb, a, '9,5', rng); expect(a.hp).toBe(hp); // still this round
     cb.round++;
-    hp = a.hp; magicTurnStart(cb, rng, a); expect(hp - a.hp).toBe(9); // starts its turn there: half
+    hp = a.hp; magicTurnStart(cb, rng, a); expect(hp - a.hp).toBe(HALF); // starts its turn there: half
     a.ap = 9; moveUnit(cb, a, '9,6', rng); hp = a.hp; moveUnit(cb, a, '9,5', rng); expect(a.hp).toBe(hp); // once per round
-    cb.round++; a.ap = 9; moveUnit(cb, a, '9,6', rng); hp = a.hp; moveUnit(cb, a, '9,5', rng); expect(hp - a.hp).toBe(9 /* rules 1.95 (the scale): was 9 */); // walks back in: half
+    cb.round++; a.ap = 9; moveUnit(cb, a, '9,6', rng); hp = a.hp; moveUnit(cb, a, '9,5', rng); expect(hp - a.hp).toBe(HALF); // walks back in: half
     a.pos = '9,8';
-    const hb = b.hp; b.pos = '10,5'; b.ap = 9; moveUnit(cb, b, '9,5', rng); expect(hb - b.hp).toBe(18 /* rules 1.95 (the scale): was 18 */); // a newcomer: full
-    cb.round++; const hb2 = b.hp; magicTurnStart(cb, rng, b); expect(hb2 - b.hp).toBe(15); // then half
+    const hb = b.hp; b.pos = '10,5'; b.ap = 9; moveUnit(cb, b, '9,5', rng); expect(hb - b.hp).toBe(FULL); // a newcomer: full
+    cb.round++; const hb2 = b.hp; magicTurnStart(cb, rng, b); expect(hb2 - b.hp).toBe(HALF); // then half
   });
   it('a KIN field: the strike spares your side and hits the foe at full; after, half to it and nothing to your side', () => {
     const { cb, u, e, allies, rng } = setup(['fire', 'stay', 'spread', 'kin'], [{ at: '4,5' }], { allies: ['3,6'] });

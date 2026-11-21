@@ -2,6 +2,10 @@
 // patterns with no test, the Delivery and Burst mixes, the previews the screen reads (LEECH, NULL, LIGHT, turret reach,
 // Boon notes, COMMAND's move tiles), QUICKEN's log and KIN's refused aims. Every spell is drawn and Evoked with
 // apply() (combat/draw, combat/evoke with aim, aims, dest, order and orderTo), the same path a player's click takes.
+import { SIGIL } from '../src/data';
+import { amountBlock } from '../src/effects/amounts';
+import { MEND_GATE } from '../src/effects/output';
+const WD = (w: string): number => (SIGIL as any)[w].damage;
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { d20, previewEvoke, placedMagic, condOn, applyCond, objectsOf, type Combat, type Unit } from '../src';
@@ -46,12 +50,12 @@ describe('gap 1: the 29 words no reducer test drew, each drawn and Evoked throug
     for (const [w, dmg] of [['freeze', 25], ['shock', 30], ['stone', 35], ['gale', 15], ['acid', 15]] as const) {
       const f = rig([w, 'seek'], ['8,5']); line(f, [w, 'seek'], L2);
       evoke(f, '3,5', '8,5');
-      expect(500 - f.foe.hp, w).toBe(15 /* rules 1.95 (the scale): was dmg */);
+      expect(500 - f.foe.hp, w).toBe(WD(w)); void dmg; // rules 1.95: the word's row (its 0.33 damage x the factor)
       if (w === 'freeze') expect(condOn(f.foe, 'slowed')).toBe(true);
       if (w === 'gale') expect(f.foe.pos).toBe('10,5');
       if (w === 'acid') {
         expect(condOn(f.foe, 'corroded')).toBe(true); expect(f.foe.def).toBe(-101);
-        f.turn(f.foe); expect(500 - f.foe.hp).toBe(15 + 5); expect(logHas(f.cb, /corrodes/)).toBe(true);
+        f.turn(f.foe); expect(500 - f.foe.hp).toBe(WD('acid') + Math.floor(amountBlock('condition:corroded', 'tick').base)); expect(logHas(f.cb, /corrodes/)).toBe(true); // the tick's row, level 1
       }
     }
   });
@@ -136,7 +140,7 @@ describe('gap 2: the section 7 patterns, Evoked through apply()', () => {
     const pv = plan(f, '3,5', '5,5'); expect(pv.missiles[0].turret).toMatchObject({ range: 1, next: [f.pcs[1].id] });
     evoke(f, '3,5', '5,5');
     f.turn(f.pc);
-    expect(f.pcs[1].hp).toBe(409 /* rules 1.95 (the scale): was 400 + Math.ceil(0.2 * 0.5 * 145) */); expect(logHas(f.cb, new RegExp('Tester 2 heals ' + Math.ceil(0.2 * 0.5 * 145)))).toBe(true);
+    expect(f.pcs[1].hp).toBe(400 + Math.ceil(0.2 * 0.5 * MEND_GATE.hp!)); expect(logHas(f.cb, new RegExp('Tester 2 heals ' + Math.ceil(0.2 * 0.5 * MEND_GATE.hp!)))).toBe(true); // rules 1.95: the gate counts to 90
   });
   it('Acid rain, ACID · ARC · STAY · SPREAD: strikes once (15 × 0.8 × 0.6 = 7), then a 5 × 5 field; the one it struck, starting a turn in it, takes × 0.5 = 4 (+ 5 Corroded)', () => {
     const f = rig(['acid', 'arc', 'stay', 'spread'], ['9,6']); line(f, ['acid', 'arc', 'stay', 'spread'], L4);
@@ -208,13 +212,15 @@ describe('gaps 3–4: the Delivery and Burst mixes', () => {
   });
   it('CHAIN + LEECH: you heal from every jump (30 + 23 dealt → 26); the preview shows the heal before you Evoke (gap 6)', () => {
     const f = rig(['fire', 'seek', 'chain', 'leech'], ['8,5', '10,5']); f.pc.hp = 300; line(f, ['fire', 'chain', 'leech', 'seek'], L4);
-    const pv = plan(f, '3,5', '8,5'); expect(pv.affected.map((a) => a.dmg)).toEqual([18, 14]); expect(pv.leech).toMatchObject({ heal: 26, restored: 26 }); // rules 1.95 (the scale): was [30, 23]
+    const hit = WD('fire'), jump = Math.round(hit * 0.75), drink = Math.floor((hit + jump) / 2); // rules 1.95: FIRE's row, the jump x0.75, LEECH half
+    const pv = plan(f, '3,5', '8,5'); expect(pv.affected.map((a) => a.dmg)).toEqual([hit, jump]); expect(pv.leech).toMatchObject({ heal: drink, restored: drink });
     evoke(f, '3,5', '8,5');
-    expect(f.foes.map((e) => 500 - e.hp)).toEqual([30, 23]); expect(f.pc.hp).toBe(326); expect(logHas(f.cb, /drinks 26 HP \(LEECH\)/)).toBe(true);
+    expect(f.foes.map((e) => 500 - e.hp)).toEqual([hit, jump]); expect(f.pc.hp).toBe(300 + drink); expect(logHas(f.cb, new RegExp('drinks ' + drink + ' HP \\(LEECH\\)'))).toBe(true);
   });
   it('Vampiric bolt\'s preview: 15 if it hits, capped by what the target has left and by your missing HP', () => {
     const f = rig(['fire', 'seek', 'leech'], ['8,5']); f.pc.hp = 490; line(f, ['fire', 'leech', 'seek'], L3);
-    expect(plan(f, '3,5', '8,5').leech).toEqual({ heal: 15, restored: 10, expected: 14 }); // expected: a hit is 95% at best
+    const half = Math.floor(WD('fire') / 2); // rules 1.95: half of FIRE's row
+    expect(plan(f, '3,5', '8,5').leech).toEqual({ heal: half, restored: Math.min(half, 10), expected: Math.floor(Math.min(half, 10) * 0.95) }); // expected: a hit is 95% at best
     f.foe.hp = 8; expect(plan(f, '3,5', '8,5').leech!.heal).toBe(4); // 8 dealt at most
   });
   it('CONDENSE + PUSH: ×1.5 on the first tile (45), ×0.7 in the cone (21)', () => {

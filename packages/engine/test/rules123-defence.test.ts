@@ -11,6 +11,8 @@
 //   Split               a Split heal or shield is divided: ×0.8 each
 //   the Boss            its HP (the refit) and the enemy's Burst
 // The old bands (percent of a Soldier-turn, heal per AP) were withdrawn as limits (rules 1.94); balance/defence-measure.test.ts measures.
+import { scaled } from './helpers/scale';
+import { enemyLevelRow } from '../src/data';
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { ENEMY_LEVELS,
@@ -180,9 +182,13 @@ describe('rules 1.23: Split on a heal or a shield', () => {
 
 describe('rules 1.23: the Boss, and the enemy\'s Burst', () => {
   it('the Boss has 820 HP at level 1 (it was 960) and 6,957 at level 20 (rules 1.36: × scale); the Elite, the Soldier and every damage factor are unchanged', () => {
-    expect(ENEMY.boss.hp).toBe(492); expect(enemyStats('boss', 20).hp).toBe(68880 /* rules 1.95 (the scale): was 68880 */); expect(enemyStats('boss', 6).hp).toBe(1806 /* rules 1.95 (the scale): was Math.round(820 * ENEMY_LEVELS.table[5].hp_mult) */);
-    expect([ENEMY.elite.hp, ENEMY.soldier.hp, ENEMY.minion.hp]).toEqual([240, 140, 70]);
-    expect([ENEMY.soldier.damage, ENEMY.elite.damage, ENEMY.boss.damage]).toEqual([0.78, 1.05, 1.2]);
+    // rules 1.95 (world.tiers_rule): a tier's HP x the factor, its damage factor x 1.28 (both through the bible's rounding);
+    // a level's HP is the tier's x the enemy HP column (the one formula, levelled)
+    expect(ENEMY.boss.hp).toBe(scaled(820));
+    for (const L of [6, 20]) expect(enemyStats('boss', L).hp).toBe(Math.max(1, Math.round(ENEMY.boss.hp * enemyLevelRow(L).hp_mult)));
+    expect([ENEMY.elite.hp, ENEMY.soldier.hp, ENEMY.minion.hp]).toEqual([scaled(240), scaled(140), scaled(70)]);
+    const x = 1.28, d2 = (v: number) => Math.round(v * x * 1000) / 1000; // tools/balance/bible/world.json tiers_rule.damage_x
+    expect([ENEMY.soldier.damage, ENEMY.elite.damage, ENEMY.boss.damage].map((v) => Math.round(v * 1000) / 1000)).toEqual([d2(0.78), d2(1.05), d2(1.2)]);
   });
   // Rules 1.61 (the opening volley): the switch is on (item 1079's refit). OLD expectation (rules 1.23 to 1.56): an
   // enemy kept its own three-roll Burst and `enemy_same` was unset.

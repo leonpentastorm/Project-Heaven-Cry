@@ -4,6 +4,7 @@
 // Line of half-glyphs and its backlash as Touch on the victim, Fusion delivering an Outburst by the 1.4 area (Reach,
 // Burst, KIN), the Keystone cut on your own tile and joining a Line, Survey's 2-tile reach with the facing rule read from
 // where you stand, Foundation's 0-AP draws through the ordinary Draw, and the Grand forms of the 17 words new in 1.4.
+import { amountBlock } from '../src/effects/amounts';
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { SIGIL, d20, condOn, endTurn, glyphCost, previewEvoke, previewAttack, resolveAttack, applyDamage, moveUnit, objectsOf, emit, type Unit, type Combat, strokePick, type Character
@@ -261,12 +262,13 @@ describe('Grand Sigilist under 1.4', () => {
   it('LEECH (Bloodwell): a hit on an enemy inside heals the attacker 5, once a round per pair; WATCH (Sentinel) strikes 15 at your turn start and 10 at an enemy leaving', () => {
     const l = grand('leech', '5,2'); const a = l.unit(l.pcs[1].id); a.hp = 50;
     const hit = () => withGame(l.g, () => applyDamage(l.cb, l.unit(l.foe.id), 20, { by: l.unit(a.id), type: 'weapon', shield: true, credit: 'all' }));
-    hit(); expect(l.unit(a.id).hp).toBe(53); hit(); expect(l.unit(a.id).hp).toBe(53 /* rules 1.95 (the scale): was 53 */); expect(logHas(l.cb, /Bloodwell/)).toBe(true);
-    const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(990 /* rules 1.95 (the scale): was 999 - 15 */); expect(w.unit(w.foes[1].id).hp).toBe(999);
+    const EN = (n: string) => amountBlock('class:grand_sigilist.enlarge', n).base; // rules 1.95: Enlarge's rows (x the factor)
+    hit(); expect(l.unit(a.id).hp).toBe(50 + Math.floor(EN('bloodwell'))); hit(); expect(l.unit(a.id).hp).toBe(50 + Math.floor(EN('bloodwell'))); expect(logHas(l.cb, /Bloodwell/)).toBe(true);
+    const w = grand('watch', '5,2'); w.unit(w.foe.id).armour = 0; w.turn(w.pc.id); expect(w.unit(w.foe.id).hp).toBe(999 - Math.floor(EN('sentinel'))); expect(w.unit(w.foes[1].id).hp).toBe(999);
     const foe = w.turn(w.foe.id); w.unit(foe.id).ap = 6; withGame(w.g, () => moveUnit(w.cb, w.unit(foe.id), '8,2', w.g.rng));
     // The walk also passes Tester 2, whose opportunity attack now lands (spec item 561, Class Roster Rev 3): count it too.
     const oa = Number((w.cb.log.join(' ').match(/Tester 2 strikes Foe 1:[^·]*· (?:hit|CRITICAL), (\d+) damage/) || [])[1] || 0);
-    expect(w.unit(foe.id).hp).toBe(999 - 15 - 10 - oa); expect(logHas(w.cb, /as it leaves · 10 damage/)).toBe(true);
+    expect(w.unit(foe.id).hp).toBe(999 - Math.floor(EN('sentinel')) - Math.floor(EN('sentinel_leaving')) - oa); expect(logHas(w.cb, new RegExp('as it leaves · ' + Math.floor(EN('sentinel_leaving')) + ' damage'))).toBe(true);
   });
   it('WAIT (Minefield): an enemy walking in stops at the edge and takes 10; STEP (Fold): a move that stays inside costs 1 AP at most', () => {
     const f = grand('wait', '9,2'); const foe = f.turn(f.foe.id); f.unit(foe.id).armour = 0;
