@@ -1,0 +1,23 @@
+{
+  "label": "Legion PDW",
+  "path": "art/icons/gear/weapon-legion_pdw.png",
+  "sha256": "6d69f356c1f392d54de6a83bec57c2c388925b5f16b2ead6898b3a27e95e864c",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-legion_pdw.png",
+    "128": "art/icons/gear/exports/128/weapon-legion_pdw.png",
+    "64": "art/icons/gear/exports/64/weapon-legion_pdw.png",
+    "32": "art/icons/gear/exports/32/weapon-legion_pdw.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-legion_pdw.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 34,
+  "origin": "brief"
+}

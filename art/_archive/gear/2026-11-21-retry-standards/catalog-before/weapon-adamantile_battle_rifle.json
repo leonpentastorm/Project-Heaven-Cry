@@ -1,0 +1,23 @@
+{
+  "label": "Adamantile battle rifle",
+  "path": "art/icons/gear/weapon-adamantile_battle_rifle.png",
+  "sha256": "5ceab3a2e8ca3857674057e3bcbd9240eb688d62a14e73f87333607eb03449a7",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-adamantile_battle_rifle.png",
+    "128": "art/icons/gear/exports/128/weapon-adamantile_battle_rifle.png",
+    "64": "art/icons/gear/exports/64/weapon-adamantile_battle_rifle.png",
+    "32": "art/icons/gear/exports/32/weapon-adamantile_battle_rifle.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-adamantile_battle_rifle.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 31,
+  "origin": "brief"
+}

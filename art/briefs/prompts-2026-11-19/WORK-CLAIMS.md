@@ -65,3 +65,6 @@ Sole delivery: RimWallCorner File01#013 selected after joined-tile inspection an
 
 
 Drifter3 exact expansion, sole-20261121-0109 issue3 comment7062519965: `weapon-drifter_revolver--masterwork`, `weapon-drifter_revolver--relic`, `weapon-drifter_revolver--celestial`. Grade queue94:51 selected/43 pending; Standard7 pending. Total50 pending reservations,252 other missing requested pictures.569/871 selected. Standard/Fine unchanged; current exact BaseG+B2 blocks copied verbatim. Historical missing prompt is not invented.
+
+
+Repaint9 exact expansion, sole-20261121-0109 issue3 comment7062596980: `weapon-decrkm_smg`, `weapon-legion_pdw`, `weapon-mandestra_drum_gun`, `weapon-long_rifle`, `weapon-ccec_marksman_rifle`, `weapon-adamantile_battle_rifle`, `weapon-lumeri_scattergun`, `weapon-brigade_auto_shotgun`, `weapon-frontier_hand_cannon`. Standardqueue16 pending, all old masters/36 UIexport hashes/fullcatalog snapshots preserved. FirstFrontierHandCannon. Grade43 pending; unique5complete.569/871 selected,302remaining,59exactpendingreservations,243otherwiseunclaimed. Noactualquota/reset.

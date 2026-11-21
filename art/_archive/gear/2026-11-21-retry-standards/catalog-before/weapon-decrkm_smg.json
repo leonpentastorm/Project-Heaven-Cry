@@ -1,0 +1,23 @@
+{
+  "label": "Decrkm SMG",
+  "path": "art/icons/gear/weapon-decrkm_smg.png",
+  "sha256": "766f93557fddb09b779d93c042b3d7c23e1c7937101f78119087382729a2bd69",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-decrkm_smg.png",
+    "128": "art/icons/gear/exports/128/weapon-decrkm_smg.png",
+    "64": "art/icons/gear/exports/64/weapon-decrkm_smg.png",
+    "32": "art/icons/gear/exports/32/weapon-decrkm_smg.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-decrkm_smg.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 3,
+  "origin": "brief"
+}

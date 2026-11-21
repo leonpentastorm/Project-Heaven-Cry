@@ -2,7 +2,7 @@
   "run": "sole-20261121-0109",
   "branch": "art/2026-11-20-reset-continuation",
   "status": "active",
-  "expected_count": 7,
+  "expected_count": 16,
   "ids": [
     "weapon-arbalest",
     "weapon-hellraiser_twin_rotary",
@@ -10,9 +10,18 @@
     "weapon-smetanita_thumper",
     "weapon-breacher_tube",
     "weapon-hellraiser_lmg",
-    "weapon-blackpoint_700"
+    "weapon-blackpoint_700",
+    "weapon-decrkm_smg",
+    "weapon-legion_pdw",
+    "weapon-mandestra_drum_gun",
+    "weapon-long_rifle",
+    "weapon-ccec_marksman_rifle",
+    "weapon-adamantile_battle_rifle",
+    "weapon-lumeri_scattergun",
+    "weapon-brigade_auto_shotgun",
+    "weapon-frontier_hand_cannon"
   ],
-  "first": "weapon-hellraiser_service_rifle",
+  "first": "weapon-frontier_hand_cannon",
   "comment": 7062068723,
   "expansion_history": [
     {
@@ -25,6 +34,39 @@
       ],
       "comment": 7062068723,
       "first": "weapon-hellraiser_service_rifle"
+    },
+    {
+      "ids": [
+        "weapon-decrkm_smg",
+        "weapon-legion_pdw",
+        "weapon-mandestra_drum_gun",
+        "weapon-long_rifle",
+        "weapon-ccec_marksman_rifle",
+        "weapon-adamantile_battle_rifle",
+        "weapon-lumeri_scattergun",
+        "weapon-brigade_auto_shotgun",
+        "weapon-frontier_hand_cannon"
+      ],
+      "comment": 7062596980,
+      "first": "weapon-frontier_hand_cannon"
     }
-  ]
+  ],
+  "claim_comments": {
+    "weapon-arbalest": 7062068723,
+    "weapon-hellraiser_twin_rotary": 7062068723,
+    "weapon-hellraiser_service_rifle": 7062068723,
+    "weapon-smetanita_thumper": 7062068723,
+    "weapon-breacher_tube": 7062068723,
+    "weapon-hellraiser_lmg": 7062068723,
+    "weapon-blackpoint_700": 7062068723,
+    "weapon-decrkm_smg": 7062596980,
+    "weapon-legion_pdw": 7062596980,
+    "weapon-mandestra_drum_gun": 7062596980,
+    "weapon-long_rifle": 7062596980,
+    "weapon-ccec_marksman_rifle": 7062596980,
+    "weapon-adamantile_battle_rifle": 7062596980,
+    "weapon-lumeri_scattergun": 7062596980,
+    "weapon-brigade_auto_shotgun": 7062596980,
+    "weapon-frontier_hand_cannon": 7062596980
+  }
 }

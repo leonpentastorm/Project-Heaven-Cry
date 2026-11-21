@@ -392,5 +392,455 @@
     },
     "fresh_reference_dependency": null,
     "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  {
+    "id": "weapon-decrkm_smg",
+    "data_id": "decrkm_smg",
+    "label": "Decrkm SMG",
+    "path": "art/icons/gear/weapon-decrkm_smg.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.7,
+    "family": "repaint-weapon-decrkm_smg",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-decrkm_smg.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-decrkm_smg.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 5,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nA compact boxy telescoping-bolt submachine gun, the little SMG of every desert war. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width. Silhouette, kept exactly: a short, square, boxy stamped receiver; the straight magazine inserted through the pistol grip; a grip safety at the back of the grip; a short barrel with a knurled barrel nut at the front of the receiver; a ribbed top cover with a cocking knob on top; a folding metal stock folded forward under the receiver, its butt plate just behind the muzzle. Materials: gunmetal and worn black paint, black polymer grip. Maker's touch: none, no colour accent: bare worn gunmetal.\nAt 32 px: a small square box with the magazine coming out of the grip.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "7e645a4201f6714abc4d986fec22be281ee469a6f7589b4bc6f640094845abe0",
+    "replace_existing": true,
+    "expected_previous_sha256": "766f93557fddb09b779d93c042b3d7c23e1c7937101f78119087382729a2bd69",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-decrkm_smg.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-decrkm_smg.json",
+    "expected_previous_export_hashes": {
+      "256": "ba707801ef346a51c5f0048a9ab06657d9a7f5299f422cb8b58d362211d321d1",
+      "128": "e41f1201db6d7dcf8f2421781569e9c2c7fae9d0ab40b280cbbd3b69b85fe4de",
+      "64": "661303c6ad0aa3ce7e7f9746b4e469fd897a6f134a8d2fd85d218145810be573",
+      "32": "1628fb56699e58314963b2c541675a14d5fbb41e6bc19c4f68a1ad362ece77d5"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-decrkm_smg.png": "766f93557fddb09b779d93c042b3d7c23e1c7937101f78119087382729a2bd69"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  {
+    "id": "weapon-legion_pdw",
+    "data_id": "legion_pdw",
+    "label": "Legion PDW",
+    "path": "art/icons/gear/weapon-legion_pdw.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.7,
+    "family": "repaint-weapon-legion_pdw",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-legion_pdw.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-legion_pdw.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 6,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nThe compact modern personal defence weapon with the long magazine through the pistol grip, the folding front grip and the two-rod sliding stock. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width. Silhouette, kept exactly: a short, tall, slab-sided polymer receiver whose top line steps down at the front, the tall part ending above the trigger guard and the lower front sloping forward to a short barrel that sticks out a hand's width; a full-length rail along the top with a small flip-up rear sight at the back and a flip-up front sight at the front; a T-shaped charging handle at the very back of the top; a pistol grip set well back, raked slightly, with a long straight magazine inserted through it and sticking out a good way below the grip; a large squared trigger guard; a vertical front grip hinged under the front of the receiver, folded down; a telescoping stock of two thin parallel rods with a small flat butt plate, pulled out to full length behind the receiver. Materials: olive-grey polymer and dark steel, anonymous and mass-produced. Maker's touch: none, no colour accent.\nAt 32 px: a short tall box with a long magazine dropping out of the grip, a front grip hanging under it and two thin rods behind; nothing lies on top of it.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "ab6df4786fb91355d4e71777fd41825751f5c8dfcf13c5123cee78b85b4768c2",
+    "replace_existing": true,
+    "expected_previous_sha256": "6d69f356c1f392d54de6a83bec57c2c388925b5f16b2ead6898b3a27e95e864c",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-legion_pdw.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-legion_pdw.json",
+    "expected_previous_export_hashes": {
+      "256": "3f0f8f175ead077af3c123c88e76aedb7534349ad0e883baa2143adc8bbd963e",
+      "128": "68af83b2bed0980c05032f0a93c4bc148a7db55edc396d0549ad62414ac235a5",
+      "64": "5d7c0eb43a8000de7de8d0ca7a3248cd6c292c99a77d570232c0cf14ccff1521",
+      "32": "ba55647e761f2b7bee6a69a6d22ae40157e67f163d74825f8561a9d8e6d88a50"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-legion_pdw.png": "6d69f356c1f392d54de6a83bec57c2c388925b5f16b2ead6898b3a27e95e864c"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  {
+    "id": "weapon-mandestra_drum_gun",
+    "data_id": "mandestra_drum_gun",
+    "label": "Mandestra drum-gun",
+    "path": "art/icons/gear/weapon-mandestra_drum_gun.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.7,
+    "family": "repaint-weapon-mandestra_drum_gun",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-mandestra_drum_gun.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-mandestra_drum_gun.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 7,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nThe classic drum-fed submachine gun of the old gang wars. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 70% of the canvas width. Silhouette, kept exactly: a finned (ribbed) barrel with a slotted compensator on its tip; a vertical wooden front grip under the barrel; a big round drum magazine under the receiver just in front of the trigger guard; a flat-sided receiver with a cocking knob on top; a wooden pistol grip; a fixed wooden stock. Materials: lacquered red-black finish on the metal, dark wood. Maker's touch: brass plates on the face of the drum, blank.\nAt 32 px: a round drum, a vertical front grip and a finned barrel.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "17c3a34d11ba515a67b67116259cb93cf23966b57db10b430fb42831e3da4a09",
+    "replace_existing": true,
+    "expected_previous_sha256": "5e66c975478e57d858651ce349c38a7661f28f2afd2b893c91ad11b27d878d36",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-mandestra_drum_gun.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-mandestra_drum_gun.json",
+    "expected_previous_export_hashes": {
+      "256": "1a2cd8769ad99c275b9017cf717f25b1b2449b5d8e5606fca19e67b2c4090dd3",
+      "128": "70e886fb0bd24a9ee4caccc558907cc2dc40eb3a7b59f453ee6f968ffcc65dae",
+      "64": "c484d6954baf9430e4ec784f796418e8c3a5b0d65b84ecb00bf969835b4728e4",
+      "32": "f40bf3d49a366e4e49fd7c11874d126a81e43782e597f7986d48ec9988d0a647"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-mandestra_drum_gun.png": "5e66c975478e57d858651ce349c38a7661f28f2afd2b893c91ad11b27d878d36"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  {
+    "id": "weapon-long_rifle",
+    "data_id": "long_rifle",
+    "label": "Long rifle",
+    "path": "art/icons/gear/weapon-long_rifle.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.85,
+    "family": "repaint-weapon-long_rifle",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-long_rifle.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-long_rifle.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 8,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nThe classic military and police bolt-action precision rifle in a one-piece synthetic stock. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a one-piece synthetic stock with a straight comb, a near-vertical pistol grip, a deep wide fore-end and a thick rubber butt pad; a round cylindrical receiver with a turned-down bolt handle and a round knob on the right; a hinged floorplate flush under the stock, nothing hanging below; a long heavy round barrel, plain to a flat crown, no muzzle brake and no iron sights; a large long scope with tall adjustment turrets in two rings; a bipod folded under the front of the fore-end. Materials: matte olive-drab stock speckled darker, black matte steel, scuffed. Maker's touch: none, neutral matte.\nAt 32 px: a long heavy plain barrel, a big scope and a deep one-piece stock with no magazine showing.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "5cbce8d9c5bdc65d01d98fe01e0f1ca04132cd7fbd7847f72872a64827a62587",
+    "replace_existing": true,
+    "expected_previous_sha256": "ad7f4f3bf6366701a7b0886a3400574c0a9834e23c803cb47e66d0c470337831",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-long_rifle.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-long_rifle.json",
+    "expected_previous_export_hashes": {
+      "256": "e4ebd727b35523073d4bdbcb0e002c009c45ede48c6dd98d954517f2a461bba4",
+      "128": "6c2150ff83ef65d8d6a5b42207d007c5b01996117048011a4434dbacdd72d9e2",
+      "64": "778d15b88283e8d4bdb214e53dcce441d69547d130cfb02c3876e7872312d6e2",
+      "32": "5a9ad4136252e8bc0cf13d61a8ea2c2ed8a145187894cba946ba4f6b68b07ac0"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-long_rifle.png": "ad7f4f3bf6366701a7b0886a3400574c0a9834e23c803cb47e66d0c470337831"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  {
+    "id": "weapon-ccec_marksman_rifle",
+    "data_id": "ccec_marksman_rifle",
+    "label": "CCEC marksman rifle",
+    "path": "art/icons/gear/weapon-ccec_marksman_rifle.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.85,
+    "family": "repaint-weapon-ccec_marksman_rifle",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-ccec_marksman_rifle.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-ccec_marksman_rifle.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 10,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nThe classic long, slim short-stroke-piston semi-automatic marksman rifle. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long slim milled receiver; a short-stroke gas piston in a slim gas tube above a long thin barrel; a slotted flash hider; slotted handguards; a skeleton thumbhole stock with an open frame and a cheek rest; a long scope mounted offset on a side rail; a short, slightly curved 10-round box magazine. Materials: ivory polymer furniture, dark steel. Maker's touch: one thin blue-grey stripe (#5394AC) along the stock.\nAt 32 px: a long thin rifle with an open skeleton stock and a scope.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "7fe26f07a1c3cd731664682e64e67fa81eb0f1cab28dc7840e92e6df495fd9f2",
+    "replace_existing": true,
+    "expected_previous_sha256": "b7b78f5e26d3dd0b6b4af59a29183ceefc1674c3f3cf0c7a1826f08f8fe9b357",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-ccec_marksman_rifle.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-ccec_marksman_rifle.json",
+    "expected_previous_export_hashes": {
+      "256": "713e3888f7aef27dd8e056b8ece7e5bb6c352ea2184ef2e00d058415390f266e",
+      "128": "34866e14ccd7657851525feedf3393e800ca081908f2aeaca41041758c06463a",
+      "64": "d08ff0e89e9e3727a7b906a52b3ac576ce95a35cd04dd32fe8a30b9d5acd124d",
+      "32": "1bf85acc806ff7914e0353a973e696724b3a96ca16d08f17cc1512704ec334c8"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-ccec_marksman_rifle.png": "b7b78f5e26d3dd0b6b4af59a29183ceefc1674c3f3cf0c7a1826f08f8fe9b357"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  {
+    "id": "weapon-adamantile_battle_rifle",
+    "data_id": "adamantile_battle_rifle",
+    "label": "Adamantile battle rifle",
+    "path": "art/icons/gear/weapon-adamantile_battle_rifle.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.85,
+    "family": "repaint-weapon-adamantile_battle_rifle",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 11,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nThe tilting-breechblock metric battle rifle with the long slotted flash hider, the right arm of half the world's armies. Pose: rifle diagonal, about 16 degrees, muzzle up and right, filling about 85% of the canvas width. Silhouette, kept exactly: a long slim receiver whose top cover tapers down at the back to a rear peep sight; a small folding cocking handle on the left side of the receiver, toward its front; a straight 20-round box magazine with a slight forward lean, set ahead of the trigger guard; a separate, steeply raked pistol grip; a slim handguard flaring wider at the back, with ventilation slots along it; a tall front sight post with two protective ears near the muzzle; a long slotted flash hider; a fixed stock in line with the receiver with a ribbed butt plate. No carry handle. Materials: dark steel and black furniture. Maker's touch: one small blank gilt boss at the heel of the stock and a thin brass-orange (#F68A38) trim line; no plates.\nAt 32 px: a long straight rifle with a straight magazine, a tall eared front sight and a long slotted flash hider.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "59320866c57ae43c92208f55ce4b1694053c15611b83dec9fcaf3f5ea6dd49cb",
+    "replace_existing": true,
+    "expected_previous_sha256": "5ceab3a2e8ca3857674057e3bcbd9240eb688d62a14e73f87333607eb03449a7",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-adamantile_battle_rifle.json",
+    "expected_previous_export_hashes": {
+      "256": "3c99ec2fe1612de7d018f5869cd8c702c00e14aa176915461c01d75ddd5b7389",
+      "128": "3b5e302b3ccc5f6e80b927ee1a407db56a271e962234bf5bda1c06315628797d",
+      "64": "0a422d8876c0131acfcecc90766ef47f2be2ff8130a6fea657d4546e1e9b1e27",
+      "32": "45af522c0dae41adf645268dc3095491b257c9b8da740b7697691772e911af38"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-adamantile_battle_rifle.png": "5ceab3a2e8ca3857674057e3bcbd9240eb688d62a14e73f87333607eb03449a7"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  {
+    "id": "weapon-lumeri_scattergun",
+    "data_id": "lumeri_scattergun",
+    "label": "Lumeri scattergun",
+    "path": "art/icons/gear/weapon-lumeri_scattergun.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.8,
+    "family": "repaint-weapon-lumeri_scattergun",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-lumeri_scattergun.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-lumeri_scattergun.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 13,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nA pump-action combat shotgun, the shotgun in every patrol car. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 80% of the canvas width. Silhouette, kept exactly: a long tube magazine under the barrel; a ribbed pump fore-end on the tube; a receiver with a side ejection port; a bead front sight; a plain fixed stock with a straight wrist. Materials: ivory-painted wood, dark steel. Maker's touch: one thin Lumeri gold (#F2C46A) inlay line along the stock.\nAt 32 px: a long barrel over a tube, with a ribbed pump.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "944bcd819932533815ff3e69a83021bb52b597c15a4fba804f9692f578e9b09c",
+    "replace_existing": true,
+    "expected_previous_sha256": "1bc03bc277797f589a6d56cdeb00d488a046e14e120c783dfc59940bed80692b",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-lumeri_scattergun.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-lumeri_scattergun.json",
+    "expected_previous_export_hashes": {
+      "256": "78a69694e195ee6da326bc9b327aca9baff2529f5af0ce04434dbb966ecbb781",
+      "128": "bc7265fb854752274a50a55d4d960d473444d2b6b56d90b24379336e1e30e56a",
+      "64": "0924beaf8b38525fa4dc2cdfa33ee7366812903779c86eed9989dad5eb350c7f",
+      "32": "e0975ab701e4107dcd22ffbfcd5c7ae7049533cded9eb60306ec54355a70c163"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-lumeri_scattergun.png": "1bc03bc277797f589a6d56cdeb00d488a046e14e120c783dfc59940bed80692b"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  {
+    "id": "weapon-brigade_auto_shotgun",
+    "data_id": "brigade_auto_shotgun",
+    "label": "Brigade auto-shotgun",
+    "path": "art/icons/gear/weapon-brigade_auto_shotgun.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.8,
+    "family": "repaint-weapon-brigade_auto_shotgun",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-brigade_auto_shotgun.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-brigade_auto_shotgun.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 14,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nA box-fed semi-automatic shotgun on the stamped long-stroke rifle's body. Pose: diagonal, about 16 degrees, muzzle up and right, filling about 80% of the canvas width. Silhouette, kept exactly: the stamped receiver with a ribbed dust cover and a large lever safety on the right; a fat, straight box magazine; a short gas tube over the barrel; a thick barrel; a separate pistol grip; a side-folding stock, extended. Materials: dark steel and black polymer. Maker's touch: one small blank gilt boss on the stock and a thin brass-orange (#F68A38) trim line; no plates.\nAt 32 px: the stamped rifle body with a fat straight magazine and a thick barrel.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "a5fc9eba942a3b3deb76bc99dcf703a876b330ed9cf21ee4119a395c79d01d95",
+    "replace_existing": true,
+    "expected_previous_sha256": "d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-brigade_auto_shotgun.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-brigade_auto_shotgun.json",
+    "expected_previous_export_hashes": {
+      "256": "92fa796dcc2bee4b8889cdfff3fd6b049b805f533239ae906285c633e19d3571",
+      "128": "319e230179887f8db9572fe2ba02923d42fa344a9e2939529cb7f6346f53bb3e",
+      "64": "973fcbd6732076d3503c3217d80f71e4ea78543aa80fa1b5ba5f885693a616e5",
+      "32": "cfc1aa2ec250b91181f140c4ac38c3d8765de2f3bb9d7ee338ed233d72ff8930"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-brigade_auto_shotgun.png": "d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
+  },
+  {
+    "id": "weapon-frontier_hand_cannon",
+    "data_id": "frontier_hand_cannon",
+    "label": "Frontier hand cannon",
+    "path": "art/icons/gear/weapon-frontier_hand_cannon.png",
+    "kind": "weapon",
+    "grade": "standard",
+    "span": 0.8,
+    "family": "repaint-weapon-frontier_hand_cannon",
+    "family_references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-frontier_hand_cannon.png"
+    ],
+    "references": [
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png",
+      "art/portraits/world/new-faces/orren-vask.png",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-frontier_hand_cannon.png"
+    ],
+    "reference_sources": [
+      "art/sprites/objects/fuel-drum.png",
+      "art/sprites/objects/tool-rack.png",
+      "art/sprites/objects/field-lamp.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+    "brief_number": 17,
+    "source_queue": "art/_archive/gear/2026-11-19-repaint-continuation/queue.json",
+    "prompt": "Paint one game inventory icon in Heavenprint: hand-painted opaque gouache and ink with broken, directional brush strokes, selective dry-brush scumbling and restrained hatching where a contour or crease needs it, charcoal shadows, warm ivory accents on the focal edges, quiet low-detail areas. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss and no uniform digital sharpness. One single object, lit from one side (upper left), with a short soft painted shading on its own underside only: no ground, no cast shadow, no scene. Fully transparent background. Square canvas, 1024 x 1024 PNG with alpha. No text, no letters, no numbers, no logos, no rollmarks, no maker marks, no serials, no engraved words, no borders, no frame, no hands and no figures.\nThis weapon follows a well-known real firearm pattern faithfully: keep its overall layout and proportions, its magazine, belt or ammunition shape and curve, its gas system and sight layout, its stock and furniture style and its receiver's character exactly as that pattern has them, so that a gun enthusiast recognises the pattern instantly at 64 px. Do not invent a new silhouette, and do not add fantasy plates, spikes, crests or blades that change the outline. What must NOT appear: any real logo, rollmark, maker mark, text, letter, number or serial; no engraved words. The only departure from the pattern is the small maker's touch named at the end of the description (paint, inlay or a small metal fitting inside the outline, such as a band, a rivet, a tag or a small blank gilt boss; a boss or tag is a plain abstract shape with no device, letters or figure, so it is not a maker mark); it must not change the silhouette. The pattern rule governs a gun's silhouette only; the name, the maker and the markings stay invented.\nThe silhouette must be bold and instantly readable: the icon is shown at 64 px in a shop grid and at 32 px in a backpack row, so keep detail on one or two focal edges. Metal is painted in the palette's neutrals (charcoal, steel grey, warm ivory highlights); the maker's colour, where there is one, is a muted local paint, never a glow. Standard finish with honest wear; rarity is not shown. Avoid: text, letters, numbers or marks of any kind; a hand or a figure; muzzle flash, smoke or sparks; a glow; a second object; a coloured rarity border. The object is:\n\nA big double-action magnum revolver, the detective's hand cannon. Pose: side profile turned slightly toward the viewer, muzzle right, level, filling about 80% of the canvas width. Silhouette, kept exactly: a long barrel with a full-length underlug beneath it and a vented top rib; a large fluted six-chamber cylinder; an adjustable rear sight; an exposed hammer; a rubber-wrapped grip with finger grooves. Materials: dark polished steel, black rubber grip. Maker's touch: aged brass bands round the cylinder.\nAt 32 px: a long heavy barrel with a deep underlug and a big cylinder.\n\nReference priority: the old gun painting controls only its scale, palette, wear and maker accent. It is not a shape master: draw the new pattern described above. The material sprites establish brushwork only, not their overhead camera or objects. Fully transparent isolated inventory artwork, no scene, no hand or person.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "retry_authorized_by_user": true,
+    "original_prompt_sha256": "4baa372e952c71606a4bebb3bf7ae5446ec1de28810f49d265f4583f1933349e",
+    "replace_existing": true,
+    "expected_previous_sha256": "9f8ff0d261dd8ab6241f816c0927f09d57022c5eae737a27de4376210e0b75b0",
+    "previous_master_path": "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-frontier_hand_cannon.png",
+    "previous_catalog_snapshot": "art/_archive/gear/2026-11-21-retry-standards/catalog-before/weapon-frontier_hand_cannon.json",
+    "expected_previous_export_hashes": {
+      "256": "592b677b51a6d00bd5c4e603d98f68b975f6528db88010c9865e5824559e7dc2",
+      "128": "f66297d67049ce48cd7a82af2cec53f88adf88ab58f7aa4b3bb2046b55364801",
+      "64": "7c0dfbe43496a244e6e9163cdb5821d25b5f3c08ca3df5b2ce0c76eb6f6269e5",
+      "32": "e63b5f085f5efff3adadc489b593ddc1a14bb428c6eb43d1d2e526d48134cd3a"
+    },
+    "reference_catalog_hashes": {},
+    "expected_reference_hashes": {
+      "art/_archive/gear/2026-11-21-retry-standards/references/material-anchors.png": "0a2d05f8170ce76c3c6cffd96a30a1a640b17d6c29442545c003943cab2b7c8f",
+      "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8",
+      "art/_archive/gear/2026-11-21-retry-standards/references/before/weapon-frontier_hand_cannon.png": "9f8ff0d261dd8ab6241f816c0927f09d57022c5eae737a27de4376210e0b75b0"
+    },
+    "fresh_reference_dependency": null,
+    "dependency_check": "No missing family repaint prerequisite; current master is only a material/scale reference, new silhouette comes from exact File10 prompt."
   }
 ]

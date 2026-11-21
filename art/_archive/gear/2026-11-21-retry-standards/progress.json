@@ -8,7 +8,16 @@
     "weapon-smetanita_thumper",
     "weapon-breacher_tube",
     "weapon-hellraiser_lmg",
-    "weapon-blackpoint_700"
+    "weapon-blackpoint_700",
+    "weapon-decrkm_smg",
+    "weapon-legion_pdw",
+    "weapon-mandestra_drum_gun",
+    "weapon-long_rifle",
+    "weapon-ccec_marksman_rifle",
+    "weapon-adamantile_battle_rifle",
+    "weapon-lumeri_scattergun",
+    "weapon-brigade_auto_shotgun",
+    "weapon-frontier_hand_cannon"
   ],
   "image_quota": null,
   "project_distinct_count": 569,
@@ -150,5 +159,5 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T12:17:24.435883+00:00"
+  "updated_utc": "2026-11-21T12:29:33.227551+00:00"
 }

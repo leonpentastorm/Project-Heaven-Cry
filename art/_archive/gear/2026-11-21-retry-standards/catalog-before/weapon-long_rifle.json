@@ -1,0 +1,31 @@
+{
+  "label": "Long rifle",
+  "path": "art/icons/gear/weapon-long_rifle.png",
+  "sha256": "ad7f4f3bf6366701a7b0886a3400574c0a9834e23c803cb47e66d0c470337831",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-long_rifle.png",
+    "128": "art/icons/gear/exports/128/weapon-long_rifle.png",
+    "64": "art/icons/gear/exports/64/weapon-long_rifle.png",
+    "32": "art/icons/gear/exports/32/weapon-long_rifle.png"
+  },
+  "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P053.png",
+  "native_dimensions": [
+    1536,
+    1024
+  ],
+  "brief_number": 30,
+  "origin": "brief",
+  "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-long_rifle.png",
+  "previous_exports": {
+    "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-long_rifle.png",
+    "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-long_rifle.png",
+    "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-long_rifle.png",
+    "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-long_rifle.png"
+  },
+  "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-long_rifle.png"
+}

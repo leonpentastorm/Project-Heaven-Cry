@@ -1,0 +1,23 @@
+{
+  "label": "Mandestra drum-gun",
+  "path": "art/icons/gear/weapon-mandestra_drum_gun.png",
+  "sha256": "5e66c975478e57d858651ce349c38a7661f28f2afd2b893c91ad11b27d878d36",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-mandestra_drum_gun.png",
+    "128": "art/icons/gear/exports/128/weapon-mandestra_drum_gun.png",
+    "64": "art/icons/gear/exports/64/weapon-mandestra_drum_gun.png",
+    "32": "art/icons/gear/exports/32/weapon-mandestra_drum_gun.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-mandestra_drum_gun.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 36,
+  "origin": "brief"
+}

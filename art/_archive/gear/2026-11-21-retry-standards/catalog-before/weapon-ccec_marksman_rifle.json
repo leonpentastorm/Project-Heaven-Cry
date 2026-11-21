@@ -1,0 +1,31 @@
+{
+  "label": "CCEC marksman rifle",
+  "path": "art/icons/gear/weapon-ccec_marksman_rifle.png",
+  "sha256": "b7b78f5e26d3dd0b6b4af59a29183ceefc1674c3f3cf0c7a1826f08f8fe9b357",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-ccec_marksman_rifle.png",
+    "128": "art/icons/gear/exports/128/weapon-ccec_marksman_rifle.png",
+    "64": "art/icons/gear/exports/64/weapon-ccec_marksman_rifle.png",
+    "32": "art/icons/gear/exports/32/weapon-ccec_marksman_rifle.png"
+  },
+  "source_path": "art/_archive/survival/2026-11-13-gear-followups/native-renders/P054.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 32,
+  "origin": "brief",
+  "previous_path": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/weapon-ccec_marksman_rifle.png",
+  "previous_exports": {
+    "256": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/256/weapon-ccec_marksman_rifle.png",
+    "128": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/128/weapon-ccec_marksman_rifle.png",
+    "64": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/64/weapon-ccec_marksman_rifle.png",
+    "32": "art/_archive/survival/2026-11-13-gear-followups/superseded/icons/gear/exports/32/weapon-ccec_marksman_rifle.png"
+  },
+  "previous_source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-ccec_marksman_rifle.png"
+}

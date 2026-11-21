@@ -1,0 +1,23 @@
+{
+  "label": "Frontier hand cannon",
+  "path": "art/icons/gear/weapon-frontier_hand_cannon.png",
+  "sha256": "9f8ff0d261dd8ab6241f816c0927f09d57022c5eae737a27de4376210e0b75b0",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-frontier_hand_cannon.png",
+    "128": "art/icons/gear/exports/128/weapon-frontier_hand_cannon.png",
+    "64": "art/icons/gear/exports/64/weapon-frontier_hand_cannon.png",
+    "32": "art/icons/gear/exports/32/weapon-frontier_hand_cannon.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-frontier_hand_cannon.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 28,
+  "origin": "brief"
+}

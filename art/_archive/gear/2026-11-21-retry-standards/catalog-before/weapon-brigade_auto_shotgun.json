@@ -1,0 +1,23 @@
+{
+  "label": "Brigade auto-shotgun",
+  "path": "art/icons/gear/weapon-brigade_auto_shotgun.png",
+  "sha256": "d66b69b6d49fcbe995e91a25afd5765a741ca3e4cb92dda3b6bbdf262bbfc574",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-brigade_auto_shotgun.png",
+    "128": "art/icons/gear/exports/128/weapon-brigade_auto_shotgun.png",
+    "64": "art/icons/gear/exports/64/weapon-brigade_auto_shotgun.png",
+    "32": "art/icons/gear/exports/32/weapon-brigade_auto_shotgun.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-brigade_auto_shotgun.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 40,
+  "origin": "brief"
+}

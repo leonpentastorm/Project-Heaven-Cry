@@ -1,0 +1,23 @@
+{
+  "label": "Lumeri scattergun",
+  "path": "art/icons/gear/weapon-lumeri_scattergun.png",
+  "sha256": "1bc03bc277797f589a6d56cdeb00d488a046e14e120c783dfc59940bed80692b",
+  "width": 1024,
+  "height": 1024,
+  "background": "transparent",
+  "status": "review-candidate",
+  "production_approved": false,
+  "exports": {
+    "256": "art/icons/gear/exports/256/weapon-lumeri_scattergun.png",
+    "128": "art/icons/gear/exports/128/weapon-lumeri_scattergun.png",
+    "64": "art/icons/gear/exports/64/weapon-lumeri_scattergun.png",
+    "32": "art/icons/gear/exports/32/weapon-lumeri_scattergun.png"
+  },
+  "source_path": "art/_archive/gear/2026-11-13-complete/native-renders/weapon-lumeri_scattergun.png",
+  "native_dimensions": [
+    1254,
+    1254
+  ],
+  "brief_number": 37,
+  "origin": "brief"
+}
