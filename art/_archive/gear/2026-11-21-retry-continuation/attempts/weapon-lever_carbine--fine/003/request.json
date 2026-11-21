@@ -1,0 +1,55 @@
+{
+  "head": "820fba7e0d69a39302f2f3e17c71a975f2b2c58d",
+  "job": {
+    "id": "weapon-lever_carbine--fine",
+    "standard_id": "weapon-lever_carbine",
+    "grade": "fine",
+    "label": "Lever Carbine — Fine",
+    "path": "art/icons/gear/weapon-lever_carbine--fine.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-lever_carbine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-lever_carbine",
+    "family_references": [
+      "art/icons/gear/weapon-lever_carbine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.\n\nGrade: Fine. The same gun, refinished. An even, unscratched finish on the slide or receiver, its edges and the muzzle crown bright; the grip panels or stock clean; moving parts look freshly oiled. Add one thin engraved line along the side of the slide or receiver, following its top edge. Nothing else is added.\n\nThe FIRST image is the Standard shape and registration master. Preserve its silhouette, all empty openings, exact pose, scale and margins. The portrait supplies brushwork only, never a figure or scene. Keep original maker accents in their original places; do not confuse original paint or existing engraving with the new grade inlay. Full transparency. The muzzle and all barrel bores remain dark, without light, flash, haze or smoke. At64px Fine reads cleaner/lighter, Masterwork adds one clear accent inlay, Relic is warm darkest with one small flush scroll panel and just one repair, Celestial is pale with contained inlay light only.",
+    "keep_line": "the same short lever-action carbine on a shallow muzzle-up-right diagonal, slim walnut buttstock with dark brass-edged buttplate, large oval lever loop below the brass receiver, one curved trigger, long reddish walnut fore-end, straight barrel above a tubular magazine, brass fore-end bands, small iron sights and short slotted muzzle fitting. Preserve every tube length, loop opening, plate, rivet and screw, the walnut grain and original warm brass fittings. No new magazine or sights, no coloured accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": null,
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "349e119700786c543770b12ee5c04aac42269877e551c5ba66b94369ec43bce9",
+    "standard_sha256": "240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-lever_carbine--fine--1795145177391.json",
+      "response": {
+        "id": "weapon-lever_carbine--fine",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 0fc8148e-a161-47ed-96b1-077dc1cde539. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    },
+    "prior_last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-lever_carbine--fine--1795145177391.json",
+      "request_id": "0fc8148e-a161-47ed-96b1-077dc1cde539"
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-lever_carbine.png": "240ff2854ce3d39de7cb38c3cf375c319ddead321881ca66c3a8847c24393c07",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 3,
+  "claim_comment": 7061326470,
+  "clock": {
+    "current_time": "2026-11-21 11:09:44 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7061686317,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

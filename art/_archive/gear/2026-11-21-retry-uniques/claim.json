@@ -1,15 +1,37 @@
 {
   "run": "sole-20261121-0109",
   "branch": "art/2026-11-20-reset-continuation",
-  "status": "complete-delivered",
-  "expected_count": 3,
+  "status": "active-partial",
+  "expected_count": 5,
   "ids": [
     "weapon-grandmothers_teeth",
     "weapon-last_crossing",
-    "weapon-reveille"
+    "weapon-reveille",
+    "weapon-in_triplicate",
+    "weapon-encore"
   ],
-  "first": "weapon-last_crossing",
+  "first": "weapon-in_triplicate",
   "source_note": "Original exact peer prompts and errors preserved, user explicitly authorizes renewed faithful fiction-art attempts. Allapprovalflagsfalse.",
-  "comment": 7061559992,
-  "completion_comment": 7061686317
+  "comment": 7061761756,
+  "completion_comment": 7061686317,
+  "completion_history": [
+    {
+      "ids": [
+        "weapon-grandmothers_teeth",
+        "weapon-last_crossing",
+        "weapon-reveille"
+      ],
+      "comment": 7061686317,
+      "status": "complete-delivered"
+    }
+  ],
+  "expansion_history": [
+    {
+      "ids": [
+        "weapon-in_triplicate",
+        "weapon-encore"
+      ],
+      "comment": 7061761756
+    }
+  ]
 }

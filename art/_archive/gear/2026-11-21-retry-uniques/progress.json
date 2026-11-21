@@ -5,7 +5,10 @@
     "weapon-last_crossing",
     "weapon-reveille"
   ],
-  "remaining": [],
+  "remaining": [
+    "weapon-in_triplicate",
+    "weapon-encore"
+  ],
   "image_quota": null,
   "project_distinct_count": 567,
   "branch": "art/2026-11-20-reset-continuation",
