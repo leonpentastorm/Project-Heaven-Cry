@@ -214,7 +214,9 @@ describe('Survival, one stage (rules 1.41)', () => {
     // PHC-0007 since rules 1.90 (0.33: the approach removed, every fight walked in) on top of the 0.33 lanes (Rally and
     // Brief, Silent ON, the Heart adept's Bond): PHC-0002 now loses its sixth fight; a seed scan of PHC-0001 to PHC-0020 on
     // the merged release: 0007, 0010 and 0019 reach the boon; 0007 plays eight fights.
-    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0007', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0007', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
+    // PHC-0020 since rules 1.95 (0.34 step 1, the scale; the enemy levels and Survival's budget wait for step 4): PHC-0007
+    // now loses its eighth fight; a seed scan of PHC-0001 to PHC-0020: 0019 and 0020 reach the boon; 0020 plays nine fights.
+    const play = (reload: number[] = []) => { const r = new Rec(survivalRoom('PHC-0020', SQUAD, { test: true }), SQUAD, reload); r.must({ type: 'run/start', seed: 'PHC-0020', camp: 'recommended' }); playStage(r, SQUAD.length); return r; };
     const a = play(), b = play(), c = play([40]);
     expect(a.errors).toEqual([]);
     expect(a.done()).toEqual(b.done());

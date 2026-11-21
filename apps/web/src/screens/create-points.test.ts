@@ -3,6 +3,7 @@
 // and what to do; the last point can be undone and one attribute reset. No Core points anywhere on the step.
 import { describe, expect, it, vi } from 'vitest';
 import { validateSheet, BUDGET, FOG_CORE, SKILL, checkModOf } from '@engine';
+import attrsJ from '../../../../data/attributes.json';
 
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, location: { search: '', hash: '' } });
 vi.stubGlobal('location', { search: '', hash: '' });
@@ -200,11 +201,11 @@ describe('the points step: the same rows as level up', () => {
 
 describe('the points step: what the next point gives', () => {
   it('an attribute shows its per-point line in the game\'s numbers', () => {
-    const v = screen().renderVals();
-    expect(attrOf(v, 'endurance').next).toBe('+15 max HP · +10% to ignore an injury');
+    const v = screen().renderVals(), hp = (attrsJ as any).items.find((a: any) => a.id === 'endurance').derived.find((d: any) => d.stat === 'max_hp').per_point_above_1; // rules 1.95: the max_hp row's per point
+    expect(attrOf(v, 'endurance').next).toBe('+' + hp + ' max HP · +10% to ignore an injury');
     expect(attrOf(v, 'agility').next).toBe('+0.5 tile of movement an AP · +1 Initiative');
     expect(attrOf(v, 'virtue').next).toBe('Hymns return sooner'); // rules 1.24: Max MP left Virtue
-    expect(attrOf(v, 'endurance').upAria).toBe('Raise Endurance from 1 to 2 for 1 Attribute point. Gives +15 max HP · +10% to ignore an injury.');
+    expect(attrOf(v, 'endurance').upAria).toBe('Raise Endurance from 1 to 2 for 1 Attribute point. Gives +' + hp + ' max HP · +10% to ignore an injury.');
   });
   it('a skill shows the roll it gives as a chip (the engine\'s check modifier) and one line: what its next point gives (the road map)', () => {
     const l = screen();

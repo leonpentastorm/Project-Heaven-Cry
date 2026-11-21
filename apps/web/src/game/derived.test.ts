@@ -1,6 +1,6 @@
 // The character sheet's derived lines: every number is the engine's, and every line names the skill the rules read.
 import { describe, expect, it } from 'vitest';
-import { ARCHETYPES, SKILL, newCharacter, hpPerLevel, healingMult, healReceivedMult, shieldReceivedMult, saveBonus, critTakenPct, ambushTakenPct, sigilRangeBonus, sigilCoreSaving, soulRangeBonus, readyDesigns } from '@engine';
+import { ARCHETYPES, SKILL, newCharacter, healingMult, healReceivedMult, shieldReceivedMult, saveBonus, critTakenPct, ambushTakenPct, sigilRangeBonus, sigilCoreSaving, soulRangeBonus, readyDesigns } from '@engine';
 import { derivedLines, previewCharacter } from './derived';
 
 const make = (skills: Record<string, number>, attrs: Record<string, number> = {}) => {
@@ -13,7 +13,7 @@ describe('derivedLines', () => {
   it('names the skill behind each number as the rules have it now', () => {
     const c = make({});
     const from = Object.fromEntries(derivedLines(c).map((r) => [r.key, r.from]));
-    expect(from.hp_level).toBe('Pain Threshold');
+    expect(from.hp_pt).toBe('Pain Threshold');
     expect(from.heal_given).toBe('Insight and Empathy');
     expect(from.heal_received).toBe('Camaraderie');
     expect(from.shield_received).toBe('Conscience');
@@ -24,8 +24,9 @@ describe('derivedLines', () => {
     expect(from.soul_range).toBe('Will Power'); expect(from.ready_designs).toBe('Lore Master');
   });
   it('each number moves with its own skill and with no other (read from the engine)', () => {
+    // rules 1.95: Pain Threshold's line is a share of the bar a point
     const cases: [string, string, (c: any) => string][] = [
-      ['hp_level', 'pain_threshold', (c) => '+' + hpPerLevel(c)], ['heal_given', 'empathy', (c) => '×' + Math.round(healingMult(c) * 100) / 100],
+      ['hp_pt', 'pain_threshold', (c) => '+' + Math.round((SKILL as any).pain_threshold.per_point.numbers.hp_pct * c.skills.pain_threshold * 100) + '%'], ['heal_given', 'empathy', (c) => '×' + Math.round(healingMult(c) * 100) / 100],
       ['heal_received', 'camaraderie', (c) => '×' + Math.round(healReceivedMult(c) * 100) / 100], ['shield_received', 'conscience', (c) => '×' + Math.round(shieldReceivedMult(c) * 100) / 100],
       ['save_brain', 'rumination', (c) => '+' + saveBonus(c, 'brain')], ['crit_taken', 'analysis', (c) => '−' + Math.round(critTakenPct(c) * 100) + '%'],
       ['ambush_taken', 'proficiency', (c) => '−' + Math.round(ambushTakenPct(c) * 100) + '%'], ['sigil_range', 'brain_power', (c) => '+' + sigilRangeBonus(c) + ' tiles'],
@@ -38,7 +39,7 @@ describe('derivedLines', () => {
       expect(row(c, key).v, key + ' moved').not.toBe(row(zero, key).v);
     }
     // the old homes no longer move them
-    expect(row(make({ durability: 6 }), 'hp_level').v).toBe(row(zero, 'hp_level').v);
+    expect(row(make({ durability: 6 }), 'hp_pt').v).toBe(row(zero, 'hp_pt').v);
     expect(row(make({ camaraderie: 6 }), 'heal_given').v).toBe(row(zero, 'heal_given').v);
     expect(row(make({ charisma: 6 }), 'save_brain').v).toBe(row(zero, 'save_brain').v);
     expect(row(make({ lore_master: 6 }), 'soul_range').v).toBe(row(zero, 'soul_range').v);

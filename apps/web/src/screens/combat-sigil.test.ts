@@ -2,7 +2,7 @@
 // says whether it starts or extends a Line; Evoke shows the Line's panel, where to stand with arrows, the tinted area,
 // the hovered bolt and who it hits with numbers; Confirm sends what the preview showed; placed fields show on the grid.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, active, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, active, SIGIL, LINE_MULT, type GameState, type Sheet } from '@engine';
 
 let G: GameState; const ME = 'host';
 let snap: any = null;
@@ -70,14 +70,15 @@ describe('combat screen: Sigils (rules 1.4)', () => {
     l.state.hover = '8,5'; v = l.renderVals();
     expect(v.sel.text).toMatch(/Fires → \(along the Line\)/);
     expect(tileOf(v, '5,5').sg.some((m: any) => m.text === '→')).toBe(true); // the bolt path
-    expect(tileOf(v, '8,5').label).toMatch(/enemy: −56 HP · 95% to hit/); // FIRE 30 × 1.87 (a Line of 2, rules 1.26)
+    const two = Math.round((SIGIL as any).fire.damage * LINE_MULT[2]); // rules 1.95: FIRE's row (30 x the factor) × a Line of 2
+    expect(tileOf(v, '8,5').label).toMatch(new RegExp('enemy: −' + two + ' HP · 95% to hit'));
     expect(v.pad.sgAffected[0]).toMatchObject({ tag: 'ENEMY', name: 'Engineer' });
     expect(tileOf(v, '12,9').zoneStyle).toMatch(/rgba\(5, 7, 11, 0.5\)/); // outside the area: dimmed
     l.magicClick('8,5', pc()); v = l.renderVals();
     expect(l.state.evc.aims).toEqual(['8,5']); expect(v.sel.text).toMatch(/Confirm to Evoke/);
     const hp0 = e.hp; l.confirm();
     const after = (G.combat as any).units.find((x: any) => x.id === e.id);
-    expect(hp0 - after.hp).toBe(56);
+    expect(hp0 - after.hp).toBe(two);
   });
   it('a FIRE field stays on the grid tinted by its element, with rounds left', () => {
     fight(['fire', 'stay']);

@@ -52,8 +52,8 @@ describe('the data (rules 1.21): the numbers the spec gives', () => {
     const r = WHISPER.rebuke; expect(r.target).toBe('enemy'); expect(prayerDamage(r)).toBe(scaled(20)); expect(eff(r, 'stat_mod').damage_type).toBe('soul'); expect(r.scales_with).toBe('blessing_power');
   });
   it('Judgement 56 and ×1.3; Lightning Rod 56 and 23 (12 Nov 2026; 42, and 42 and 17, in rules 1.22); Thunderclap 20 within 2; The Saints\' Verdict 130 and ×2', () => {
-    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(scaled(56)); // rules 1.95: each prayer's base x the factor expect(eff(j, 'vs_status_damage').mult).toBe(1.3);
-    const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(scaled(56)); expect(eff(l, 'chain_damage').value).toBe(23); // the jump's 23: not in the bible's walk (step 1 hand-off, for the lead) expect(eff(l, 'chain_damage').range).toBe(2);
+    const j = hymn('nerukhan', 'judgement'); expect(prayerDamage(j)).toBe(scaled(56)); expect(eff(j, 'vs_status_damage').mult).toBe(1.3); // rules 1.95: each prayer's base x the factor
+    const l = hymn('old_overcast', 'lightning_rod'); expect(prayerDamage(l)).toBe(scaled(56)); expect(eff(l, 'chain_damage').value).toBe(23); expect(eff(l, 'chain_damage').range).toBe(2); // the jump's 23: not in the bible's walk (step 1 hand-off, for the lead)
     const t = hymn('old_overcast', 'thunderclap'); expect(prayerDamage(t)).toBe(scaled(20)); expect(eff(t, 'stat_mod').radius).toBe(2); expect(eff(t, 'stat_mod').damage_type).toBe('lightning');
     const v = FAITH_PATRON.nerukhan.miracle; expect(prayerDamage(v)).toBe(scaled(130)); expect(eff(v, 'damage_mult').value).toBe(2);
   });

@@ -1,6 +1,7 @@
 // Turn banners and the your-turn cut-in read a real fight: who is up, whose they are, and the four commands.
 import { describe, expect, it, vi } from 'vitest';
 import { ARCHETYPES, type Sheet, newCharacter, startCombat, WEAPON } from '@engine';
+import enemiesJ from '../../../../data/enemies.json';
 
 vi.stubGlobal('window', { scrollTo: () => {}, addEventListener: () => {}, removeEventListener: () => {}, dispatchEvent: () => true, location: { search: '', hash: '' } });
 vi.stubGlobal('location', { search: '', hash: '' });
@@ -153,7 +154,7 @@ describe('the drone\'s commands (spec 14 item 370)', () => {
     c.companions = [{ id: 'd1', kind: 'drone', name: 'Pip' }];
     const cb = startCombat('t', 'yard', [{ c, pos: '1,5' }], [{ name: 'Raider', tier: 'boss', weapon: 'service_pistol', at: 'D5' }], 'easy', { state: 4 }, []);
     const drone = cb.units.find((x: any) => x.companion === 'drone')!;
-    expect(drone.maxHp).toBe(30);
+    expect(drone.maxHp).toBe((enemiesJ as any).companions.find((x: any) => x.id === 'drone').hp); // rules 1.95: the drone's row (30 x the factor), level 1
     const acts = C.actionGroups(cb, drone, null).flatMap(([, items]) => items.map((it) => it[0]));
     expect([...new Set(acts)].sort()).toEqual(['move', 'shot']);
     expect(C.smartCommands(drone).map((x) => x.action)).toEqual(['shot', 'move']);

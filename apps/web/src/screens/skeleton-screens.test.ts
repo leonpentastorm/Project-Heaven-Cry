@@ -56,8 +56,8 @@ describe('the archetype step', () => {
   it('the Lock in step\'s stats are the engine\'s, each with the skill behind it', () => {
     const v = screen({ sampleName: 'T', sampleArch: 'bulwark', startStep: 'lockin' }).renderVals();
     const row = (k: string) => v.stats.find((r: any) => r.key === k);
-    expect(row('hp_level').from).toBe(SKILL.pain_threshold.name);
-    expect(row('hp_level').v).toBe('+' + (5 + 2 * (D.arch.items.find((x: any) => x.id === 'bulwark').preset.pain_threshold || 0)));
+    expect(row('hp_pt').from).toBe(SKILL.pain_threshold.name); // rules 1.95: Pain Threshold's share of the bar a point
+    expect(row('hp_pt').v).toBe('+' + Math.round((SKILL as any).pain_threshold.per_point.numbers.hp_pct * (D.arch.items.find((x: any) => x.id === 'bulwark').preset.pain_threshold || 0) * 100) + '%');
     expect(row('heal_given').from).toBe('Insight and ' + SKILL.empathy.name);
     expect(row('save_body').from).toBe(SKILL.guts.name);
   });

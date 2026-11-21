@@ -3,7 +3,7 @@
 // gives (so a renamed or re-homed skill can't leave a stale line here).
 import { tilesN, unitFromCharacter, rngFor } from '@engine';
 import {
-  SKILL, ATTRS, newCharacter, maxHp, hpPerLevel, maxMp, defense, initiativeBonus, movement, visionOf, carryLimit, saveBonus, SAVE_SKILL_OF,
+  SKILL, ATTRS, newCharacter, maxHp, maxMp, defense, initiativeBonus, movement, visionOf, carryLimit, saveBonus, SAVE_SKILL_OF,
   healingMult, healReceivedMult, shieldReceivedMult, critMult, critTakenPct, ambushTakenPct, sigilRangeBonus, sigilCoreSaving, soulRangeBonus, readyDesigns,
   type Character,
 } from '@engine';
@@ -21,7 +21,8 @@ export function derivedLines(c: Character): DerivedLine[] {
   const save = (fam: 'body' | 'brain' | 'heart', name: string): DerivedLine => ({ key: 'save_' + fam, k: name + ' save', v: signed(saveBonus(c, fam)), from: sk(SAVE_SKILL_OF[fam]) });
   return [
     { key: 'hp', k: 'Max HP', v: String(maxHp(c)), from: at('endurance') },
-    { key: 'hp_level', k: 'HP per level', v: '+' + hpPerLevel(c), from: sk('pain_threshold') },
+    // rules 1.95 (the scale, ruling A5): Pain Threshold gives a share of the whole bar a point (skills.json per_point.numbers.hp_pct), no longer HP a level
+    { key: 'hp_pt', k: 'Max HP from Pain Threshold', v: '+' + Math.round(Number((SKILL as any).pain_threshold?.per_point?.numbers?.hp_pct ?? 0) * (c.skills?.pain_threshold || 0) * 100) + '%', from: sk('pain_threshold') },
     { key: 'mp', k: 'Max MP', v: String(maxMp(c)), from: at('determination') + ' and ' + at('insight') }, // rules 1.24 (it was Virtue)
     { key: 'defense', k: 'Defense', v: String(defense(c)), from: sk('athletics') },
     // Items 2.0 lane A3 (design section 5, a screen fault): the Armour the fight uses, as the fight builds it (the body

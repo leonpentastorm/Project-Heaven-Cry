@@ -176,7 +176,7 @@ describe('damage follows what the weapon is aimed with', () => {
     const { PROFILES } = await import('../src'); const k = PROFILES.weapon.k, m = PROFILES.melee;
     // rules 1.61 (0.30, G1): a gun's row names the gun profile: its damage reads its Attribute (Agility 5 here), never the skill
     const g = PROFILES.gun;
-    expect(weaponMult(c, 'service_pistol')).toBeCloseTo(g.k * (1 + g.attr * 4) * (1 + g.skill * 6), 9); // rules 1.95 (scale.cards): Agility 5 and Dexterity 6, the brackets multiply expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity');
+    expect(weaponMult(c, 'service_pistol')).toBeCloseTo(g.k * (1 + g.attr * 4) * (1 + g.skill * 6), 9); expect(weaponMultLabel('service_pistol')).toBe('Agility and Dexterity'); // rules 1.95 (scale.cards): Agility 5 and Dexterity 6, the brackets multiply
     expect(weaponMult(c, 'recurve_bow')).toBeCloseTo(PROFILES.bow.k * (1 + PROFILES.bow.attr * 4) * (1 + PROFILES.bow.skill * (6 + 2)), 9); void k; // rules 1.95 (scale.factor.draw_bows): the bow profile, Agility 5, its draw on Dexterity 6 and Raw Power 2
     expect(weaponMult(c, 'sabre')).toBeCloseTo(m.k * (1 + m.attr * 4) * (1 + m.skill * 6), 9); expect(weaponMultLabel('sabre')).toBe('Agility and Dexterity'); // rules 1.12, item 953: light blades hit with the alpha
     expect(weaponMult(c, 'maul')).toBeCloseTo(m.k * (1 + m.attr * 2) * (1 + m.skill * 2), 9); expect(weaponMultLabel('maul')).toBe('Strength and Raw Power');

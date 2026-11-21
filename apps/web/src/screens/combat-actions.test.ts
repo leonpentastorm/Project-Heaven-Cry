@@ -3,7 +3,7 @@
 // confirms through the one action flow, rendered for real; and an action defined only in the engine (registerActions)
 // appears on the screen and works with no client change (the worked example of client-boundary-3-actions.md).
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, actionsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, addItems, clearAddedItems, addOwnedBlocks, clearOwnedBlocks, spawnOwned, withGame, type GameState, type Sheet, type ActionDescriptor } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, actionsFor, previewDescriptor, sendDescriptor, registerActions, nextStep, addItems, clearAddedItems, addOwnedBlocks, clearOwnedBlocks, spawnOwned, withGame, type GameState, type Sheet, type ActionDescriptor, maxHp } from '@engine';
 import { FLOW_PREVIEWS } from '../game/actionFlow';
 
 let G: GameState; const ME = 'host';
@@ -103,7 +103,7 @@ describe('every descriptor group renders and confirms on the one action flow', (
     root.unmount();
   }, 30000);
   it('Class moves (a Bulwark, id defender)', async () => {
-    const { u } = fight('acts-b', 'bulwark', 'medic', (c) => { c.classId = 'defender'; c.level = 12; c.attrs.durability = 8; });
+    const { u } = fight('acts-b', 'bulwark', 'medic', (c) => { c.classId = 'defender'; c.level = 12; c.attrs.durability = 8; c.hp = maxHp(c); }); // rules 1.95: a level-12 sheet starts on its level-12 bar (a level-12 foe drops the level-1 bar it was made with)
     const { el, root } = await mount();
     expect(await everyGroup(el, u.id)).toContain('class');
     root.unmount();

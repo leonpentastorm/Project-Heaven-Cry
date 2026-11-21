@@ -41,7 +41,7 @@ describe('Survival encounters (rules 1.41)', () => {
 
   // Rules 1.95 (0.34 step 1): the enemy table's columns part (HP x140 at level 20, damage x54), so one lag factor no longer
   // reads both within 3%; the bible's new lag factor (tools/balance/bible/world.json budget.lag_factor, the HP column's
-  // reading) is applied with Survival's budget in step 4 of docs/design/growth/09-build-order.md, which brings this test to it.
+  // reading) is applied with Survival's budget in step 4 of docs/design/growth/09-build-order.md, which brings this test to it (21 Nov 2026).
   it.skip('the lag factor matches the enemy level table within 3% (spec 5.2: HP and damage a level, one point to hit each way): step 4', () => {
     const t = (enemiesJ as any).levels.table, last = t[t.length - 1];
     const hp = Math.pow(1 / last.hp_mult, 1 / (t.length - 1)), dmg = Math.pow(1 / last.damage_mult, 1 / (t.length - 1));

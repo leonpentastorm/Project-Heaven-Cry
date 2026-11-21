@@ -4,7 +4,7 @@
 // them; a friend's card shows them exactly; a foe's shows its shields by name with a size word, never a number; Guard
 // is a line of its own (and stays the token's plates), never a segment.
 import { describe, expect, it, vi } from 'vitest';
-import { ARCHETYPES, apply, newGame, viewFor, active, RULES, shieldsView, type GameState, type Sheet } from '@engine';
+import { ARCHETYPES, apply, newGame, viewFor, active, RULES, shieldsView, withGame, type GameState, type Sheet } from '@engine';
 
 let G: GameState; const ME = 'host';
 let snap: any = null;
@@ -85,7 +85,7 @@ describe('shields on the token and the card', () => {
   });
   it('Guard is listed apart, "Guard N plates, each soaks S", and is never a segment of the strip; your own panel says it once (its row)', () => {
     const { u } = fight('ROOM-G'); u.resMax = { ...(u.resMax || {}), guard: 5 }; u.res = { ...(u.res || {}), guard: 3 }; u.shield = 20; snap = view();
-    const v = screen().renderVals(), t = tileOf(v, u), sv = shieldsView(G.combat as any, u);
+    const v = screen().renderVals(), t = tileOf(v, u), sv = withGame(G, () => shieldsView(G.combat as any, u)); // rules 1.95: a plate soaks on the holder's sheet (scale.plate), read with its game bound as the screen reads it
     expect(t.hasHpSh).toBe(true); expect(t.hpSeg).not.toContain('NaN'); expect(t.hasGuard).toBe(true);
     expect(t.t.sh.hasGuard).toBe(true); expect(t.t.sh.hasGuardLast).toBe(true); expect(t.t.sh.guardLine).toBe('Guard 3 plates, each soaks ' + sv.guard!.soak);
     // the headline is what an ordinary blow meets (a plate is kept back); the drop case is its own line

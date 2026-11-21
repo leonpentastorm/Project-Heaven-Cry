@@ -54,7 +54,7 @@ describe('Brain Power: the forks (rules 1.74 item 6021)', () => {
     const f = rig(['fire', 'seek'], ['4,5', '3,7'], bp(['fork.sigil.clean_vent', 'fork.sigil.written_in_advance']));
     const [near, far] = f.foes; f.pc.mg!.flux = 3;
     f.act({ type: 'combat/vent', unitId: f.pc.id } as any);
-    expect(f.unit(near.id).pos).toBe('5,5'); expect(dealt(f, near)).toBeGreaterThanOrEqual(Math.floor(FORK('fork.sigil.clean_vent').amounts.scorch.base)); // rules 1.95: a two-place base, the formula floors at the end expect(dealt(f, far)).toBe(0);
+    expect(f.unit(near.id).pos).toBe('5,5'); expect(dealt(f, near)).toBeGreaterThanOrEqual(Math.floor(FORK('fork.sigil.clean_vent').amounts.scorch.base)); expect(dealt(f, far)).toBe(0); // rules 1.95: a two-place base, the formula floors at the end
     f.unit(near.id).pos = '4,5'; const hp = f.unit(near.id).hp; f.pc.mg!.flux = 3;
     f.act({ type: 'combat/vent', unitId: f.pc.id } as any);
     expect(f.unit(near.id).pos).toBe('4,5'); expect(f.unit(near.id).hp).toBe(hp); // once a turn

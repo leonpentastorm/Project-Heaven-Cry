@@ -248,7 +248,7 @@ describe('Storm Hand: Infusion riders and Discharge (rules 1.5 section 8)', () =
     const z = sh('freeze'); z.f.unit(z.u.id).res = { ...(z.f.unit(z.u.id).res || {}), charges: 2 }; place(z.f, z.b, '3,6');
     seed(z.f, 10, 20, 20);
     A(z.f, z.f.unit(z.u.id), { type: 'combat/attack', targetId: z.a.id, mode: 'melee', mods: ['class:storm_hand.discharge#discharge'] });
-    expect(lost(z.f.unit(z.b.id))).toBe(2 * (amountBlock('class:storm_hand.discharge', 'damage').per as any[]).find((p) => p.of === 'charge').value); // rules 1.95: 2 Charges x the row's per-charge number expect(condOn(z.f.unit(z.b.id), 'slowed')).toBe(true);
+    expect(lost(z.f.unit(z.b.id))).toBe(2 * (amountBlock('class:storm_hand.discharge', 'damage').per as any[]).find((p) => p.of === 'charge').value); expect(condOn(z.f.unit(z.b.id), 'slowed')).toBe(true); // rules 1.95: 2 Charges x the row's per-charge number
     expect(fxOf(z.f.cb, 'explode').at(-1)).toMatchObject({ element: 'freeze', charges: 2, shake: true });
     expect(z.f.unit(z.u.id).res!.charges).toBe(0);
   });
@@ -276,14 +276,14 @@ describe('Storm Hand: Infusion riders and Discharge (rules 1.5 section 8)', () =
     const z = sh('spark'); z.f.unit(z.u.id).res = { ...(z.f.unit(z.u.id).res || {}), charges: 2 }; place(z.f, z.b, '3,6');
     seed(z.f, 10, 20, 20);
     A(z.f, z.f.unit(z.u.id), { type: 'combat/attack', targetId: z.a.id, mode: 'melee', mods: ['class:storm_hand.discharge#discharge'] });
-    expect(lost(z.f.unit(z.b.id))).toBe(2 * (amountBlock('class:storm_hand.discharge', 'damage').per as any[]).find((p) => p.of === 'charge').value); // rules 1.95: 2 Charges x the row's per-charge number expect(Object.keys(z.f.unit(z.b.id).conds || {}).length).toBe(0);
+    expect(lost(z.f.unit(z.b.id))).toBe(2 * (amountBlock('class:storm_hand.discharge', 'damage').per as any[]).find((p) => p.of === 'charge').value); expect(Object.keys(z.f.unit(z.b.id).conds || {}).length).toBe(0); // rules 1.95: 2 Charges x the row's per-charge number
     expect(fxOf(z.f.cb, 'explode').at(-1)).toMatchObject({ element: 'spark', charges: 2, shake: true }); expect(z.f.unit(z.u.id).res!.charges).toBe(0);
   });
   it('Discharge with Fire at 2 Charges: 40 and Fire\'s stage-2 rider (Burning 2 rounds) on each enemy beside the target', () => {
     const z = sh('fire'); z.f.unit(z.u.id).res = { ...(z.f.unit(z.u.id).res || {}), charges: 2 }; place(z.f, z.b, '3,6');
     seed(z.f, 10, 20, 20);
     A(z.f, z.f.unit(z.u.id), { type: 'combat/attack', targetId: z.a.id, mode: 'melee', mods: ['class:storm_hand.discharge#discharge'] });
-    expect(lost(z.f.unit(z.b.id))).toBe(2 * (amountBlock('class:storm_hand.discharge', 'damage').per as any[]).find((p) => p.of === 'charge').value); // rules 1.95: 2 Charges x the row's per-charge number expect(condOn(z.f.unit(z.b.id), 'burning')).toBe(true); expect(z.f.unit(z.b.id).conds!.burning).toBe(2);
+    expect(lost(z.f.unit(z.b.id))).toBe(2 * (amountBlock('class:storm_hand.discharge', 'damage').per as any[]).find((p) => p.of === 'charge').value); expect(condOn(z.f.unit(z.b.id), 'burning')).toBe(true); expect(z.f.unit(z.b.id).conds!.burning).toBe(2); // rules 1.95: 2 Charges x the row's per-charge number
     expect(fxOf(z.f.cb, 'explode').at(-1)).toMatchObject({ element: 'fire', charges: 2 });
   });
 });
