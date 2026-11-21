@@ -76,7 +76,7 @@
 "shelved/advanced/grand_sigilist/taken-crit": "F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "shelved/advanced/grand_sigilist/taken-low": "F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
 "shelved/advanced/gunslinger/ally-taken": "P1 uses.reaction|reaction.n0>1 uses.reaction|reaction.s0>r1; F2 attackedTurn0>true firstShotDone0>true firstShotTurn0>true shotsThisTurn0>1",
-"shelved/advanced/gunslinger/gunslinger.called_shot/called_shot": "P1 attackedTurn0>true faith.acted0>true firstShotDone0>true firstShotTurn0>true ps.class:marksman.fire_and_move.flags.fired0>true ps.skill:ingenuity.1.flags.struck0>true shotsThisTurn0>1",
+"shelved/advanced/gunslinger/gunslinger.called_shot/called_shot": "P1 attackedTurn0>true faith.acted0>true faith.apMark6>7 firstShotDone0>true firstShotTurn0>true ps.class:marksman.fire_and_move.flags.fired0>true ps.skill:ingenuity.1.flags.struck0>true shotsThisTurn0>1",
 "shelved/advanced/gunslinger/gunslinger.called_shot/called_shot/then-shot": "P1 ps.skill:ingenuity.3.flags.ghost0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true shotsThisTurn1>2",
 "shelved/advanced/gunslinger/marksman.duck_and_roll/duck_off": "P1 faith.acted0>true faith.apMark6>9 ps.class:marksman.duck_and_roll.policy0>off",
 "shelved/advanced/gunslinger/marksman.duck_and_roll/duck_off/then-shot": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true ps.class:marksman.fire_and_move.flags.fired0>true ps.skill:ingenuity.1.flags.struck0>true ps.skill:ingenuity.3.flags.ghost0>true ps.skill:ingenuity.3.flags.ghost_eyes0>true shotsThisTurn0>1",

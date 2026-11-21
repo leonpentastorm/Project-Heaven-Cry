@@ -97,7 +97,7 @@
 "class/guardian@I/shot-afraid": "P1 ap:9>7, F2 hp:308/308>277/308 conds:>fear2.judged1",
 "class/guardian@I/shot-attack": "P1 ap:9>7, F2 hp:308/308>277/308 conds:>judged1",
 "class/guardian@I/shot-crit": "P1 ap:9>7, F2 hp:308/308>205/308 conds:>judged1 mv:1.5>0.75 inj:0>1",
-"class/guardian@I/shot-primed": "P1 hp:118/196>40/196 ap:9>7, F2 hp:308/308>31/308 conds:>judged1",
+"class/guardian@I/shot-primed": "P1 hp:118/196>40/196 ap:9>7, F2 hp:308/308>25/308 conds:>judged1",
 "class/guardian@I/stats": "",
 "class/guardian@II/aimed-attack": "P1 ap:9>6, F2 hp:308/308>226/308 conds:>judged1",
 "class/guardian@II/blow": "P1 ap:9>7, F1 hp:308/308>285/308 conds:>judged1",

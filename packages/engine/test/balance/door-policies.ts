@@ -39,7 +39,7 @@
 //               that is not Prone and not a Boss, when the AP still pays two plain blows after; Breath (1 AP) once a
 //               turn with an AP left that buys no blow. Never Jab, Palm or Snatch, never a Flurry with a form (the
 //               rules forbid it). (A first version put a form on every blow: 3% clears against 68% plain; a strawman.)
-import { previewPerkAction, previewAttack, previewTechnique, techniquePad, TECHNIQUE, WEAPON, isMelee, dist, bindGame, paths, apForTiles, hideBlock, figmentsOf, canStand, RULES, patronOf, previewPrayer } from '../../src';
+import { previewPerkAction, previewAttack, previewTechnique, techniquePad, TECHNIQUE, WEAPON, isMelee, dist, bindGame, paths, apForTiles, hideBlock, figmentsOf, canStand, RULES, patronOf, previewPrayer, cashFactor } from '../../src';
 import { POLICIES, optimised, tank, gunner, prayer, prayerHarms, plainCands, techCands, best, fixOrMove, type Policy, type Ctx, type Step } from './policies';
 import { sigilRun, outburstRun, rigger, tactical, withFallback, keepRange, sigilHold } from './run-policies';
 
@@ -138,7 +138,7 @@ export const operative: Policy = (x) => {
   if (u.hidden) {
     const sh = res(u, 'shadow'), shMax = u.resMax?.shadow ?? sh;
     const tgts = x.foes.map((t) => ({ t, pv: shotPv(t) })).filter((q) => q.pv.ok);
-    const SH: any = (RULES as any).shadow, mult = (t: any, n: number) => 1 + SH.per_point * n + SH.ambush_bonus + (t.conds?.marked ? SH.marked_bonus : 0); // the Break's multiplier (rules.json shadow), for the choice only
+    const SH: any = (RULES as any).shadow, sk = (x.g.characters?.[u.charId!] as any)?.skills, mult = (_t: any, n: number) => cashFactor(sk, 'shadow', n) * (1 + SH.ambush_bonus); // the Break's multiplier (rules 1.99 item 8361: the cash-out and the ambush), for the choice only
     const breakOn = (q: any) => { if (!t0ok(q)) return null; return ok(x, { action: { type: 'combat/attack', targetId: q.t.id, mode, mods: BREAK }, kind: 'attack', label: 'Break' }); };
     const t0ok = (q: any) => q && u.ap >= q.pv.ap;
     const dmg = (q: any) => (q.pv.dmg ? Math.max(1, Math.floor(q.pv.dmg.total) - q.pv.dmg.armour) : 0);

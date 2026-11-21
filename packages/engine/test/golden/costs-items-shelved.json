@@ -109,7 +109,7 @@
 "shelved/advanced/grand_sigilist/taken-soul": "P1 res.guard3>2",
 "shelved/advanced/grand_sigilist/taken-true": "P1 res.guard3>2",
 "shelved/advanced/gunslinger/ally-taken": "P1 res.guard3>1; F2 ammo24>23 ap0>7 heat0>1",
-"shelved/advanced/gunslinger/gunslinger.called_shot/called_shot": "P1 ammo24>23 ap9>6 heat0>1; air mana15>20 | short: Needs 3 AP. | again: NO Target is out of the fight. | next: NO Target is out of the fight. | later: NO Target is out of the fight.",
+"shelved/advanced/gunslinger/gunslinger.called_shot/called_shot": "P1 ammo24>23 ap9>7 heat0>1; air mana15>20 | short: Needs 2 AP. | again: NO Target is out of the fight. | next: NO Target is out of the fight. | later: NO Target is out of the fight.",
 "shelved/advanced/gunslinger/gunslinger.called_shot/called_shot/then-shot": "P1 ammo23>22 ap9>7 heat1>2",
 "shelved/advanced/gunslinger/marksman.duck_and_roll/duck_off": "- | short: free | again: NO Already set. | next: NO Already set. | later: NO Already set.",
 "shelved/advanced/gunslinger/marksman.duck_and_roll/duck_off/then-shot": "P1 ammo24>23 ap9>7 heat0>1",
