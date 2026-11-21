@@ -283,5 +283,9 @@
       "source": "Verbatim current File08 BaseG plus dedicated B2.2-B2.4 blocks; historical error retained"
     }
   ],
-  "expected_count": 94
+  "expected_count": 94,
+  "producer_status": "stopped-service-blocked",
+  "ownership": "Retained by sole-20261121-0109; explicit resume required, no parallel producer, no implicit release.",
+  "quota_exhausted": false,
+  "reset": null
 }

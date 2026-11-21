@@ -16,3 +16,6 @@ Leon expressly replaced the earlier no-retry restriction: "Try until approve, un
 RunningScript was completed by placing the actual imagegen-drawn rune, with all158252 existing drawn RGBA pixels unchanged and only328 added-alpha pixels. RimCorner half-tile geometry passes; painted join variation remains disclosed. Exact remaining destinations: REMAINING-WORK.json.
 
 Each image is shown, inspected, exported to its mode-specific master and UI sizes, validated and separately pushed. Per-image live claims/remote deliveries prevent duplicates. Develop stays untouched. Targeted delivery checks cover actual materialized files; whole historical-library validation remains limited by this sparse checkout.
+
+
+21November service-block checkpoint:569/871 selected. Current continuation43 actual requests,1 selectedEncore,42 actualmoderationerrors acrossall28 independentreadyjobs. Noactualusage_limit_reached/reset. Exacthandoff: art/_archive/gear/2026-11-21-retry-continuation/SERVICE-BLOCK-HANDOFF-2026-11-21.md.60pendingexactreservations retained;242unclaimeddependentdestinations listed in coordination/FREE-UNCLAIMED-WORK.json.

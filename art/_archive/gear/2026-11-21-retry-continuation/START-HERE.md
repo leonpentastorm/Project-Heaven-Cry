@@ -1,3 +1,7 @@
+# Current STOP/SERVICE-BLOCKED checkpoint
+
+569/871 selected,302remaining.43 requests this continuation:1 new selected Encore,42 actual moderation errors. No usage_limit_reached or reset. Ownership60 pending IDs retained, no concurrent producer. Read SERVICE-BLOCK-HANDOFF-2026-11-21.md, liveissue3+ALLcomments and current remote deliveries before explicitRESUME. Grade94:51selected/43pending; Standard17pending; unique5complete.242othermissingIDs in coordination/FREE-UNCLAIMED-WORK.json. All approvalsfalse. User faithful retry authorization persists.
+
 # Current sole production — 21 November 2026
 
 569/871 selected and pushed;302 remaining. Run sole-20261121-0109, branch art/2026-11-20-reset-continuation. Grade queue94:51 selected/43 pending; exact17 expansion claim7062296286 plus Drifter3 claim7062519965. Unique5 lane complete, including Encore006 at2a72e81b4. Standard16 lane0 selected,16 pending; LMG waits for fresh ServiceRifle repaint. Total59 pending exact reservations;243 other requested pictures outside them. Read liveissue3 and ALL comments plus owner branches before EVERY render. Every selected picture shown/inspected/exported/validated/committed/PUSHED before next. All approvals false. Original prompts/errors/native bytes and previous exports preserved. No actual new usage_limit_reached/reset; moderation errors are not quota. Latest verified develop e83f37bb, proposal-doc-only change.

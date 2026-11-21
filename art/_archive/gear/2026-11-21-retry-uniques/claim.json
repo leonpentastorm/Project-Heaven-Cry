@@ -33,5 +33,9 @@
       ],
       "comment": 7061761756
     }
-  ]
+  ],
+  "producer_status": "complete",
+  "ownership": "Retained by sole-20261121-0109; explicit resume required, no parallel producer, no implicit release.",
+  "quota_exhausted": false,
+  "reset": null
 }

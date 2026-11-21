@@ -77,5 +77,9 @@
     "weapon-brigade_auto_shotgun": 7062596980,
     "weapon-frontier_hand_cannon": 7062596980,
     "weapon-fowling_gun": 7062719094
-  }
+  },
+  "producer_status": "stopped-service-blocked",
+  "ownership": "Retained by sole-20261121-0109; explicit resume required, no parallel producer, no implicit release.",
+  "quota_exhausted": false,
+  "reset": null
 }

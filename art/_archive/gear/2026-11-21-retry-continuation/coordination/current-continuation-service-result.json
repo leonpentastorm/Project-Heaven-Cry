@@ -1,0 +1,211 @@
+{
+  "baseline_commit": "30024b23b3774416987ae2b445d6c030488febbe",
+  "start_selected": 568,
+  "end_selected": 569,
+  "new_requests": 43,
+  "new_errors": 42,
+  "new_native_images": 1,
+  "new_selected": [
+    "weapon-encore"
+  ],
+  "ready_but_service_rejected": [
+    {
+      "id": "weapon-short_bow--fine",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-short_bow--fine/005/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 287a9ce5-7d20-4504-99d0-a0bab8cfa16f. safety_violations=[violence].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"input\\\",\\n      \\\"categories\\\": [\\n        \\\"violence\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 6
+    },
+    {
+      "id": "weapon-parlour_pistol--fine",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-parlour_pistol--fine/003/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 08a1a8f4-8952-42aa-8e72-94808dcf6363. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 4
+    },
+    {
+      "id": "weapon-lever_carbine--fine",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-lever_carbine--fine/004/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 8350ca06-960a-4e7a-a7e4-8abf1b46d8ec. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 5
+    },
+    {
+      "id": "weapon-sawn_off--fine",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-sawn_off--fine/005/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 504d57fa-2739-4d34-8f74-2dc6fc8d8225. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 6
+    },
+    {
+      "id": "weapon-legion_bullpup--masterwork",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-legion_bullpup--masterwork/005/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 5b776fcd-ec68-4e3b-92e9-014c1c4f6651. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 6
+    },
+    {
+      "id": "weapon-whisper_smg--fine",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_smg--fine/004/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 96875805-8658-4b7c-9ad5-ac7344396788. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 5
+    },
+    {
+      "id": "weapon-whisper_pistol--masterwork",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_pistol--masterwork/002/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID a7216b0a-f354-429d-a61d-f21fab616b84. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 3
+    },
+    {
+      "id": "weapon-whisper_carbine--fine",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-whisper_carbine--fine/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 0d9e6fc7-8a39-4011-ae01-6599106df05c. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-service_pistol--fine",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-service_pistol--fine/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID e49d4bb7-6187-4a94-9665-d43196427c7c. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-magistrate_pistol--masterwork",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-magistrate_pistol--masterwork/002/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 1a2ec923-e581-41c4-b5b6-8fdf19f61747. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 3
+    },
+    {
+      "id": "weapon-decrkm_autopistol--masterwork",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-decrkm_autopistol--masterwork/002/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 848dc1a6-997d-4534-bc63-b6e7028df956. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 3
+    },
+    {
+      "id": "weapon-drifter_revolver--masterwork",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-continuation",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-drifter_revolver--masterwork/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID d0d56806-38ad-46aa-8a9e-4f917a111742. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-arbalest",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-arbalest/006/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 26cb5bbc-6934-41d2-b1f0-0cd43a1d402f. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 7
+    },
+    {
+      "id": "weapon-hellraiser_twin_rotary",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-hellraiser_twin_rotary/003/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 1081cef1-c554-4baf-a00a-8682f4e8e240. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 4
+    },
+    {
+      "id": "weapon-hellraiser_service_rifle",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-hellraiser_service_rifle/003/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID b0b7010a-6762-4e71-8a4c-b93089d049f9. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 4
+    },
+    {
+      "id": "weapon-smetanita_thumper",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-smetanita_thumper/002/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 213d2a16-6d64-45e8-8e4f-0e2c73d1bafb. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 3
+    },
+    {
+      "id": "weapon-breacher_tube",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-breacher_tube/002/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 2d16db2b-06ed-4950-8bc0-ff5c2d5891b9. safety_violations=[violence].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"input\\\",\\n      \\\"categories\\\": [\\n        \\\"violence\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 3
+    },
+    {
+      "id": "weapon-blackpoint_700",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-blackpoint_700/002/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID bc00ac93-f093-4ab3-88a6-60c6e45f3127. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 3
+    },
+    {
+      "id": "weapon-decrkm_smg",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-decrkm_smg/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 29fd413d-4d46-4d95-aaa7-e9ff4bd16b6c. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-legion_pdw",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-legion_pdw/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 01497bf9-f295-47f0-9ec2-566dd0cf418b. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-mandestra_drum_gun",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-mandestra_drum_gun/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID ef631e3d-8919-4938-837c-01dbc83696ac. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-long_rifle",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-long_rifle/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID da52ef21-a90f-4c3d-b182-316e617c1bc1. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-ccec_marksman_rifle",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-ccec_marksman_rifle/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 9fd300d9-272a-4076-a0cf-d3cb875ca535. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-adamantile_battle_rifle",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-adamantile_battle_rifle/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 3d48afa0-52d8-4b98-acc4-00ea7bdb50c1. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-lumeri_scattergun",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-lumeri_scattergun/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 02bce06b-3665-4fad-8493-a74142cccda6. safety_violations=[violence].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"input\\\",\\n      \\\"categories\\\": [\\n        \\\"violence\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-brigade_auto_shotgun",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-brigade_auto_shotgun/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 13a425d0-161e-4711-a4fa-336141f08ee3. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-frontier_hand_cannon",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-frontier_hand_cannon/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 0c462bbc-d113-4a74-8191-703458a829b1. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    },
+    {
+      "id": "weapon-fowling_gun",
+      "delivery_root": "art/_archive/gear/2026-11-21-retry-standards",
+      "latest_error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-fowling_gun/001/error.json",
+      "latest_error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 67038d5d-eae8-49ec-908e-c034980e223d. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+      "next_attempt": 2
+    }
+  ],
+  "ready_count": 28,
+  "image_quota": null
+}

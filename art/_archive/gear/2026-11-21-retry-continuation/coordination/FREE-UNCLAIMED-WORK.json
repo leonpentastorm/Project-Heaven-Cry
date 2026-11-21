@@ -1,0 +1,1980 @@
+{
+  "project_selected": 569,
+  "requested": 871,
+  "remaining": 302,
+  "current_pending_claim_count": 60,
+  "unclaimed_count": 242,
+  "note": "These IDs are unclaimed, not automatically generation-ready. 204grades await missing requested Standards;34newforms need their File06/09/10 reference repaints;4uniques need missing Standards. Read exact brief/reference dependency before claiming.",
+  "records": [
+    {
+      "id": "weapon-snub_revolver",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-snub_revolver.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-decrkm_carbine",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-decrkm_carbine.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-legion_marksman_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-legion_marksman_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-mandestra_drum_pistol",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-mandestra_drum_pistol.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-mandestra_drum_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-mandestra_drum_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-hellraiser_trench_carbine",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-hellraiser_trench_carbine.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-adamantile_carbine",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-adamantile_carbine.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-adamantile_heavy_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-adamantile_heavy_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-brigade_shot_pistol",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-brigade_shot_pistol.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-brigade_drum_shotgun",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-brigade_drum_shotgun.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-lumeri_hand_scatter",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-lumeri_hand_scatter.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-lumeri_long_scatter",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-lumeri_long_scatter.png",
+      "brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-smetanita_snub_launcher",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-smetanita_snub_launcher.png",
+      "brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-smetanita_drum_launcher",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-smetanita_drum_launcher.png",
+      "brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-legion_throwaway_tube",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-legion_throwaway_tube.png",
+      "brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-legion_siege_tube",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-legion_siege_tube.png",
+      "brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-hellraiser_spinner",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-hellraiser_spinner.png",
+      "brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-blackpoint_carbine",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-blackpoint_carbine.png",
+      "brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-blackpoint_wall_gun",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-blackpoint_wall_gun.png",
+      "brief": "art/briefs/prompts-2026-11-19/09-heavy-and-strange.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-adcorp_line_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-adcorp_line_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-adcorp_short_carbine",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-adcorp_short_carbine.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-adcorp_designated_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-adcorp_designated_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-chezknov_battle_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-chezknov_battle_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-chezknov_machine_carbine",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-chezknov_machine_carbine.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-chezknov_precision_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-chezknov_precision_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-arsenal_piston_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-arsenal_piston_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-arsenal_courier_pdw",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-arsenal_courier_pdw.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-arsenal_heavy_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-arsenal_heavy_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-smetanita_service_pistol",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-smetanita_service_pistol.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-smetanita_pocket_pistol",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-smetanita_pocket_pistol.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-smetanita_hand_cannon",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-smetanita_hand_cannon.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-albert_town_service_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-albert_town_service_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-albert_town_brush_carbine",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-albert_town_brush_carbine.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-albert_town_stalking_rifle",
+      "kind": "standard",
+      "path": "art/icons/gear/weapon-albert_town_stalking_rifle.png",
+      "brief": "art/briefs/prompts-2026-11-19/10-rifle-analogues.md",
+      "status": "service-blocked-or-reference-dependent",
+      "eligible_for_retry": false,
+      "existing_old_painting_does_not_satisfy_repaint": false
+    },
+    {
+      "id": "weapon-frontier_hand_cannon--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-frontier_hand_cannon--fine.png",
+      "standard": "weapon-frontier_hand_cannon",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-frontier_hand_cannon--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-frontier_hand_cannon--masterwork.png",
+      "standard": "weapon-frontier_hand_cannon",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-frontier_hand_cannon--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-frontier_hand_cannon--relic.png",
+      "standard": "weapon-frontier_hand_cannon",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-frontier_hand_cannon--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-frontier_hand_cannon--celestial.png",
+      "standard": "weapon-frontier_hand_cannon",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-decrkm_smg--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-decrkm_smg--fine.png",
+      "standard": "weapon-decrkm_smg",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-decrkm_smg--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-decrkm_smg--masterwork.png",
+      "standard": "weapon-decrkm_smg",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-decrkm_smg--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-decrkm_smg--relic.png",
+      "standard": "weapon-decrkm_smg",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-decrkm_smg--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-decrkm_smg--celestial.png",
+      "standard": "weapon-decrkm_smg",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_pdw--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_pdw--fine.png",
+      "standard": "weapon-legion_pdw",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_pdw--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_pdw--masterwork.png",
+      "standard": "weapon-legion_pdw",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_pdw--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_pdw--relic.png",
+      "standard": "weapon-legion_pdw",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_pdw--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_pdw--celestial.png",
+      "standard": "weapon-legion_pdw",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_gun--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_gun--fine.png",
+      "standard": "weapon-mandestra_drum_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_gun--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_gun--masterwork.png",
+      "standard": "weapon-mandestra_drum_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_gun--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_gun--relic.png",
+      "standard": "weapon-mandestra_drum_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_gun--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_gun--celestial.png",
+      "standard": "weapon-mandestra_drum_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_service_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_service_rifle--fine.png",
+      "standard": "weapon-hellraiser_service_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_service_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_service_rifle--masterwork.png",
+      "standard": "weapon-hellraiser_service_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_service_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_service_rifle--relic.png",
+      "standard": "weapon-hellraiser_service_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_service_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_service_rifle--celestial.png",
+      "standard": "weapon-hellraiser_service_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_lmg--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_lmg--fine.png",
+      "standard": "weapon-hellraiser_lmg",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_lmg--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_lmg--masterwork.png",
+      "standard": "weapon-hellraiser_lmg",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_lmg--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_lmg--relic.png",
+      "standard": "weapon-hellraiser_lmg",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_lmg--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_lmg--celestial.png",
+      "standard": "weapon-hellraiser_lmg",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_battle_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_battle_rifle--fine.png",
+      "standard": "weapon-adamantile_battle_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_battle_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_battle_rifle--masterwork.png",
+      "standard": "weapon-adamantile_battle_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_battle_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_battle_rifle--relic.png",
+      "standard": "weapon-adamantile_battle_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_battle_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_battle_rifle--celestial.png",
+      "standard": "weapon-adamantile_battle_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-ccec_marksman_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-ccec_marksman_rifle--fine.png",
+      "standard": "weapon-ccec_marksman_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-ccec_marksman_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-ccec_marksman_rifle--masterwork.png",
+      "standard": "weapon-ccec_marksman_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-ccec_marksman_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-ccec_marksman_rifle--relic.png",
+      "standard": "weapon-ccec_marksman_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-ccec_marksman_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-ccec_marksman_rifle--celestial.png",
+      "standard": "weapon-ccec_marksman_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-long_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-long_rifle--fine.png",
+      "standard": "weapon-long_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-long_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-long_rifle--masterwork.png",
+      "standard": "weapon-long_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-long_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-long_rifle--relic.png",
+      "standard": "weapon-long_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-long_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-long_rifle--celestial.png",
+      "standard": "weapon-long_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_auto_shotgun--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_auto_shotgun--fine.png",
+      "standard": "weapon-brigade_auto_shotgun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_auto_shotgun--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_auto_shotgun--masterwork.png",
+      "standard": "weapon-brigade_auto_shotgun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_auto_shotgun--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_auto_shotgun--relic.png",
+      "standard": "weapon-brigade_auto_shotgun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_auto_shotgun--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_auto_shotgun--celestial.png",
+      "standard": "weapon-brigade_auto_shotgun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_scattergun--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_scattergun--fine.png",
+      "standard": "weapon-lumeri_scattergun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_scattergun--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_scattergun--masterwork.png",
+      "standard": "weapon-lumeri_scattergun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_scattergun--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_scattergun--relic.png",
+      "standard": "weapon-lumeri_scattergun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_scattergun--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_scattergun--celestial.png",
+      "standard": "weapon-lumeri_scattergun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-snub_revolver--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-snub_revolver--fine.png",
+      "standard": "weapon-snub_revolver",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-snub_revolver--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-snub_revolver--masterwork.png",
+      "standard": "weapon-snub_revolver",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-snub_revolver--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-snub_revolver--relic.png",
+      "standard": "weapon-snub_revolver",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-snub_revolver--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-snub_revolver--celestial.png",
+      "standard": "weapon-snub_revolver",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-decrkm_carbine--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-decrkm_carbine--fine.png",
+      "standard": "weapon-decrkm_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-decrkm_carbine--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-decrkm_carbine--masterwork.png",
+      "standard": "weapon-decrkm_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-decrkm_carbine--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-decrkm_carbine--relic.png",
+      "standard": "weapon-decrkm_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-decrkm_carbine--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-decrkm_carbine--celestial.png",
+      "standard": "weapon-decrkm_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_marksman_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_marksman_rifle--fine.png",
+      "standard": "weapon-legion_marksman_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_marksman_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_marksman_rifle--masterwork.png",
+      "standard": "weapon-legion_marksman_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_marksman_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_marksman_rifle--relic.png",
+      "standard": "weapon-legion_marksman_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_marksman_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_marksman_rifle--celestial.png",
+      "standard": "weapon-legion_marksman_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_pistol--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_pistol--fine.png",
+      "standard": "weapon-mandestra_drum_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_pistol--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_pistol--masterwork.png",
+      "standard": "weapon-mandestra_drum_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_pistol--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_pistol--relic.png",
+      "standard": "weapon-mandestra_drum_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_pistol--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_pistol--celestial.png",
+      "standard": "weapon-mandestra_drum_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_rifle--fine.png",
+      "standard": "weapon-mandestra_drum_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_rifle--masterwork.png",
+      "standard": "weapon-mandestra_drum_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_rifle--relic.png",
+      "standard": "weapon-mandestra_drum_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-mandestra_drum_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-mandestra_drum_rifle--celestial.png",
+      "standard": "weapon-mandestra_drum_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_trench_carbine--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_trench_carbine--fine.png",
+      "standard": "weapon-hellraiser_trench_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_trench_carbine--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_trench_carbine--masterwork.png",
+      "standard": "weapon-hellraiser_trench_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_trench_carbine--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_trench_carbine--relic.png",
+      "standard": "weapon-hellraiser_trench_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_trench_carbine--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_trench_carbine--celestial.png",
+      "standard": "weapon-hellraiser_trench_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_carbine--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_carbine--fine.png",
+      "standard": "weapon-adamantile_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_carbine--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_carbine--masterwork.png",
+      "standard": "weapon-adamantile_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_carbine--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_carbine--relic.png",
+      "standard": "weapon-adamantile_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_carbine--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_carbine--celestial.png",
+      "standard": "weapon-adamantile_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_heavy_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_heavy_rifle--fine.png",
+      "standard": "weapon-adamantile_heavy_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_heavy_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_heavy_rifle--masterwork.png",
+      "standard": "weapon-adamantile_heavy_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_heavy_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_heavy_rifle--relic.png",
+      "standard": "weapon-adamantile_heavy_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adamantile_heavy_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adamantile_heavy_rifle--celestial.png",
+      "standard": "weapon-adamantile_heavy_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-fowling_gun--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-fowling_gun--fine.png",
+      "standard": "weapon-fowling_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-fowling_gun--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-fowling_gun--masterwork.png",
+      "standard": "weapon-fowling_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-fowling_gun--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-fowling_gun--relic.png",
+      "standard": "weapon-fowling_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-fowling_gun--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-fowling_gun--celestial.png",
+      "standard": "weapon-fowling_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_shot_pistol--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_shot_pistol--fine.png",
+      "standard": "weapon-brigade_shot_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_shot_pistol--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_shot_pistol--masterwork.png",
+      "standard": "weapon-brigade_shot_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_shot_pistol--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_shot_pistol--relic.png",
+      "standard": "weapon-brigade_shot_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_shot_pistol--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_shot_pistol--celestial.png",
+      "standard": "weapon-brigade_shot_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_drum_shotgun--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_drum_shotgun--fine.png",
+      "standard": "weapon-brigade_drum_shotgun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_drum_shotgun--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_drum_shotgun--masterwork.png",
+      "standard": "weapon-brigade_drum_shotgun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_drum_shotgun--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_drum_shotgun--relic.png",
+      "standard": "weapon-brigade_drum_shotgun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-brigade_drum_shotgun--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-brigade_drum_shotgun--celestial.png",
+      "standard": "weapon-brigade_drum_shotgun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_hand_scatter--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_hand_scatter--fine.png",
+      "standard": "weapon-lumeri_hand_scatter",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_hand_scatter--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_hand_scatter--masterwork.png",
+      "standard": "weapon-lumeri_hand_scatter",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_hand_scatter--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_hand_scatter--relic.png",
+      "standard": "weapon-lumeri_hand_scatter",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_hand_scatter--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_hand_scatter--celestial.png",
+      "standard": "weapon-lumeri_hand_scatter",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_long_scatter--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_long_scatter--fine.png",
+      "standard": "weapon-lumeri_long_scatter",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_long_scatter--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_long_scatter--masterwork.png",
+      "standard": "weapon-lumeri_long_scatter",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_long_scatter--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_long_scatter--relic.png",
+      "standard": "weapon-lumeri_long_scatter",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-lumeri_long_scatter--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-lumeri_long_scatter--celestial.png",
+      "standard": "weapon-lumeri_long_scatter",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_short_carbine--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_short_carbine--fine.png",
+      "standard": "weapon-adcorp_short_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_short_carbine--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_short_carbine--masterwork.png",
+      "standard": "weapon-adcorp_short_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_short_carbine--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_short_carbine--relic.png",
+      "standard": "weapon-adcorp_short_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_short_carbine--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_short_carbine--celestial.png",
+      "standard": "weapon-adcorp_short_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_line_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_line_rifle--fine.png",
+      "standard": "weapon-adcorp_line_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_line_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_line_rifle--masterwork.png",
+      "standard": "weapon-adcorp_line_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_line_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_line_rifle--relic.png",
+      "standard": "weapon-adcorp_line_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_line_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_line_rifle--celestial.png",
+      "standard": "weapon-adcorp_line_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_designated_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_designated_rifle--fine.png",
+      "standard": "weapon-adcorp_designated_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_designated_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_designated_rifle--masterwork.png",
+      "standard": "weapon-adcorp_designated_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_designated_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_designated_rifle--relic.png",
+      "standard": "weapon-adcorp_designated_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-adcorp_designated_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-adcorp_designated_rifle--celestial.png",
+      "standard": "weapon-adcorp_designated_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_machine_carbine--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_machine_carbine--fine.png",
+      "standard": "weapon-chezknov_machine_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_machine_carbine--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_machine_carbine--masterwork.png",
+      "standard": "weapon-chezknov_machine_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_machine_carbine--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_machine_carbine--relic.png",
+      "standard": "weapon-chezknov_machine_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_machine_carbine--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_machine_carbine--celestial.png",
+      "standard": "weapon-chezknov_machine_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_battle_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_battle_rifle--fine.png",
+      "standard": "weapon-chezknov_battle_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_battle_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_battle_rifle--masterwork.png",
+      "standard": "weapon-chezknov_battle_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_battle_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_battle_rifle--relic.png",
+      "standard": "weapon-chezknov_battle_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_battle_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_battle_rifle--celestial.png",
+      "standard": "weapon-chezknov_battle_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_precision_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_precision_rifle--fine.png",
+      "standard": "weapon-chezknov_precision_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_precision_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_precision_rifle--masterwork.png",
+      "standard": "weapon-chezknov_precision_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_precision_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_precision_rifle--relic.png",
+      "standard": "weapon-chezknov_precision_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-chezknov_precision_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-chezknov_precision_rifle--celestial.png",
+      "standard": "weapon-chezknov_precision_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_courier_pdw--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_courier_pdw--fine.png",
+      "standard": "weapon-arsenal_courier_pdw",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_courier_pdw--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_courier_pdw--masterwork.png",
+      "standard": "weapon-arsenal_courier_pdw",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_courier_pdw--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_courier_pdw--relic.png",
+      "standard": "weapon-arsenal_courier_pdw",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_courier_pdw--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_courier_pdw--celestial.png",
+      "standard": "weapon-arsenal_courier_pdw",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_piston_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_piston_rifle--fine.png",
+      "standard": "weapon-arsenal_piston_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_piston_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_piston_rifle--masterwork.png",
+      "standard": "weapon-arsenal_piston_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_piston_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_piston_rifle--relic.png",
+      "standard": "weapon-arsenal_piston_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_piston_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_piston_rifle--celestial.png",
+      "standard": "weapon-arsenal_piston_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_heavy_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_heavy_rifle--fine.png",
+      "standard": "weapon-arsenal_heavy_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_heavy_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_heavy_rifle--masterwork.png",
+      "standard": "weapon-arsenal_heavy_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_heavy_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_heavy_rifle--relic.png",
+      "standard": "weapon-arsenal_heavy_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arsenal_heavy_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arsenal_heavy_rifle--celestial.png",
+      "standard": "weapon-arsenal_heavy_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_pocket_pistol--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_pocket_pistol--fine.png",
+      "standard": "weapon-smetanita_pocket_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_pocket_pistol--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_pocket_pistol--masterwork.png",
+      "standard": "weapon-smetanita_pocket_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_pocket_pistol--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_pocket_pistol--relic.png",
+      "standard": "weapon-smetanita_pocket_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_pocket_pistol--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_pocket_pistol--celestial.png",
+      "standard": "weapon-smetanita_pocket_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_service_pistol--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_service_pistol--fine.png",
+      "standard": "weapon-smetanita_service_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_service_pistol--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_service_pistol--masterwork.png",
+      "standard": "weapon-smetanita_service_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_service_pistol--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_service_pistol--relic.png",
+      "standard": "weapon-smetanita_service_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_service_pistol--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_service_pistol--celestial.png",
+      "standard": "weapon-smetanita_service_pistol",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_hand_cannon--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_hand_cannon--fine.png",
+      "standard": "weapon-smetanita_hand_cannon",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_hand_cannon--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_hand_cannon--masterwork.png",
+      "standard": "weapon-smetanita_hand_cannon",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_hand_cannon--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_hand_cannon--relic.png",
+      "standard": "weapon-smetanita_hand_cannon",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_hand_cannon--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_hand_cannon--celestial.png",
+      "standard": "weapon-smetanita_hand_cannon",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_brush_carbine--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_brush_carbine--fine.png",
+      "standard": "weapon-albert_town_brush_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_brush_carbine--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_brush_carbine--masterwork.png",
+      "standard": "weapon-albert_town_brush_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_brush_carbine--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_brush_carbine--relic.png",
+      "standard": "weapon-albert_town_brush_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_brush_carbine--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_brush_carbine--celestial.png",
+      "standard": "weapon-albert_town_brush_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_service_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_service_rifle--fine.png",
+      "standard": "weapon-albert_town_service_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_service_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_service_rifle--masterwork.png",
+      "standard": "weapon-albert_town_service_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_service_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_service_rifle--relic.png",
+      "standard": "weapon-albert_town_service_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_service_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_service_rifle--celestial.png",
+      "standard": "weapon-albert_town_service_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_stalking_rifle--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_stalking_rifle--fine.png",
+      "standard": "weapon-albert_town_stalking_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_stalking_rifle--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_stalking_rifle--masterwork.png",
+      "standard": "weapon-albert_town_stalking_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_stalking_rifle--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_stalking_rifle--relic.png",
+      "standard": "weapon-albert_town_stalking_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-albert_town_stalking_rifle--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-albert_town_stalking_rifle--celestial.png",
+      "standard": "weapon-albert_town_stalking_rifle",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arbalest--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arbalest--fine.png",
+      "standard": "weapon-arbalest",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arbalest--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arbalest--masterwork.png",
+      "standard": "weapon-arbalest",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arbalest--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arbalest--relic.png",
+      "standard": "weapon-arbalest",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-arbalest--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-arbalest--celestial.png",
+      "standard": "weapon-arbalest",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_thumper--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_thumper--fine.png",
+      "standard": "weapon-smetanita_thumper",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_thumper--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_thumper--masterwork.png",
+      "standard": "weapon-smetanita_thumper",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_thumper--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_thumper--relic.png",
+      "standard": "weapon-smetanita_thumper",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_thumper--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_thumper--celestial.png",
+      "standard": "weapon-smetanita_thumper",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-breacher_tube--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-breacher_tube--fine.png",
+      "standard": "weapon-breacher_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-breacher_tube--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-breacher_tube--masterwork.png",
+      "standard": "weapon-breacher_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-breacher_tube--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-breacher_tube--relic.png",
+      "standard": "weapon-breacher_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-breacher_tube--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-breacher_tube--celestial.png",
+      "standard": "weapon-breacher_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_700--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_700--fine.png",
+      "standard": "weapon-blackpoint_700",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_700--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_700--masterwork.png",
+      "standard": "weapon-blackpoint_700",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_700--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_700--relic.png",
+      "standard": "weapon-blackpoint_700",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_700--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_700--celestial.png",
+      "standard": "weapon-blackpoint_700",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_snub_launcher--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_snub_launcher--fine.png",
+      "standard": "weapon-smetanita_snub_launcher",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_snub_launcher--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_snub_launcher--masterwork.png",
+      "standard": "weapon-smetanita_snub_launcher",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_snub_launcher--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_snub_launcher--relic.png",
+      "standard": "weapon-smetanita_snub_launcher",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_snub_launcher--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_snub_launcher--celestial.png",
+      "standard": "weapon-smetanita_snub_launcher",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_drum_launcher--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_drum_launcher--fine.png",
+      "standard": "weapon-smetanita_drum_launcher",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_drum_launcher--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_drum_launcher--masterwork.png",
+      "standard": "weapon-smetanita_drum_launcher",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_drum_launcher--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_drum_launcher--relic.png",
+      "standard": "weapon-smetanita_drum_launcher",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-smetanita_drum_launcher--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-smetanita_drum_launcher--celestial.png",
+      "standard": "weapon-smetanita_drum_launcher",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_throwaway_tube--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_throwaway_tube--fine.png",
+      "standard": "weapon-legion_throwaway_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_throwaway_tube--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_throwaway_tube--masterwork.png",
+      "standard": "weapon-legion_throwaway_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_throwaway_tube--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_throwaway_tube--relic.png",
+      "standard": "weapon-legion_throwaway_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_throwaway_tube--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_throwaway_tube--celestial.png",
+      "standard": "weapon-legion_throwaway_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_siege_tube--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_siege_tube--fine.png",
+      "standard": "weapon-legion_siege_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_siege_tube--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_siege_tube--masterwork.png",
+      "standard": "weapon-legion_siege_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_siege_tube--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_siege_tube--relic.png",
+      "standard": "weapon-legion_siege_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-legion_siege_tube--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-legion_siege_tube--celestial.png",
+      "standard": "weapon-legion_siege_tube",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_spinner--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_spinner--fine.png",
+      "standard": "weapon-hellraiser_spinner",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_spinner--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_spinner--masterwork.png",
+      "standard": "weapon-hellraiser_spinner",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_spinner--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_spinner--relic.png",
+      "standard": "weapon-hellraiser_spinner",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_spinner--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_spinner--celestial.png",
+      "standard": "weapon-hellraiser_spinner",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_twin_rotary--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_twin_rotary--fine.png",
+      "standard": "weapon-hellraiser_twin_rotary",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_twin_rotary--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_twin_rotary--masterwork.png",
+      "standard": "weapon-hellraiser_twin_rotary",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_twin_rotary--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_twin_rotary--relic.png",
+      "standard": "weapon-hellraiser_twin_rotary",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-hellraiser_twin_rotary--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-hellraiser_twin_rotary--celestial.png",
+      "standard": "weapon-hellraiser_twin_rotary",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_carbine--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_carbine--fine.png",
+      "standard": "weapon-blackpoint_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_carbine--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_carbine--masterwork.png",
+      "standard": "weapon-blackpoint_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_carbine--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_carbine--relic.png",
+      "standard": "weapon-blackpoint_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_carbine--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_carbine--celestial.png",
+      "standard": "weapon-blackpoint_carbine",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_wall_gun--fine",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_wall_gun--fine.png",
+      "standard": "weapon-blackpoint_wall_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_wall_gun--masterwork",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_wall_gun--masterwork.png",
+      "standard": "weapon-blackpoint_wall_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_wall_gun--relic",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_wall_gun--relic.png",
+      "standard": "weapon-blackpoint_wall_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-blackpoint_wall_gun--celestial",
+      "kind": "grade",
+      "path": "art/icons/gear/weapon-blackpoint_wall_gun--celestial.png",
+      "standard": "weapon-blackpoint_wall_gun",
+      "status": "awaits-missing-requested-standard",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-second_thunder",
+      "kind": "unique",
+      "path": "art/icons/gear/weapon-second_thunder.png",
+      "status": "awaits-missing-requested-standard",
+      "standard": "weapon-frontier_hand_cannon",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-first_light",
+      "kind": "unique",
+      "path": "art/icons/gear/weapon-first_light.png",
+      "status": "awaits-missing-requested-standard",
+      "standard": "weapon-long_rifle",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-night_watch",
+      "kind": "unique",
+      "path": "art/icons/gear/weapon-night_watch.png",
+      "status": "awaits-missing-requested-standard",
+      "standard": "weapon-lumeri_scattergun",
+      "eligible_for_retry": false
+    },
+    {
+      "id": "weapon-unsaid",
+      "kind": "unique",
+      "path": "art/icons/gear/weapon-unsaid.png",
+      "status": "awaits-missing-requested-standard",
+      "standard": "weapon-chezknov_machine_carbine",
+      "eligible_for_retry": false
+    }
+  ]
+}
