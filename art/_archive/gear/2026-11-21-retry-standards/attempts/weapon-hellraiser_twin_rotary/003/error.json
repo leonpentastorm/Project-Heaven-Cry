@@ -1,0 +1,9 @@
+{
+  "id": "weapon-hellraiser_twin_rotary",
+  "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 1081cef1-c554-4baf-a00a-8682f4e8e240. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+  "clock": {
+    "current_time": "2026-11-21 12:08:58 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "request_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-hellraiser_twin_rotary/003/request.json"
+}

@@ -1,0 +1,9 @@
+{
+  "id": "weapon-magistrate_pistol--masterwork",
+  "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 1a2ec923-e581-41c4-b5b6-8fdf19f61747. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")",
+  "clock": {
+    "current_time": "2026-11-21 12:13:44 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "request_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-magistrate_pistol--masterwork/002/request.json"
+}

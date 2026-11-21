@@ -11,5 +11,70 @@
   "image_quota": null,
   "project_distinct_count": 569,
   "branch": "art/2026-11-20-reset-continuation",
-  "updated_utc": "2026-11-21T11:54:49.772082+00:00"
+  "updated_utc": "2026-11-21T12:17:24.433478+00:00",
+  "attempts": [
+    {
+      "id": "weapon-encore",
+      "attempt": 1,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/001/error.json",
+      "request_id": "2d8c92fa-b4bb-4445-a130-53462079b593",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-encore",
+      "attempt": 3,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/003/error.json",
+      "request_id": "01038742-e922-43ed-9944-5eb1869a8db9",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-encore",
+      "attempt": 4,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/004/error.json",
+      "request_id": "e611550d-1aea-46f2-9e33-487f18dcc6ba",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-encore",
+      "attempt": 5,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-encore/005/error.json",
+      "request_id": "56534576-5c8f-460f-8f52-932063d2a752",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-last_crossing",
+      "attempt": 1,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-last_crossing/001/error.json",
+      "request_id": "a1c010c6-161c-4dd7-943f-5e112df2d4ac",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-last_crossing",
+      "attempt": 3,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-last_crossing/003/error.json",
+      "request_id": "8f17851c-a005-4acf-b1b1-16ff651faad8",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-reveille",
+      "attempt": 1,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-uniques/attempts/weapon-reveille/001/error.json",
+      "request_id": "1f6b6554-069a-40bf-86c2-122cab279418",
+      "count_contribution": 0,
+      "retry_authorized": true
+    }
+  ]
 }

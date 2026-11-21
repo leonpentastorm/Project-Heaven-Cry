@@ -12,5 +12,143 @@
   ],
   "image_quota": null,
   "project_distinct_count": 569,
-  "branch": "art/2026-11-20-reset-continuation"
+  "branch": "art/2026-11-20-reset-continuation",
+  "attempts": [
+    {
+      "id": "weapon-arbalest",
+      "attempt": 1,
+      "outcome": "service-error",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-arbalest/001/error.json",
+      "request_id": null,
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-arbalest",
+      "attempt": 2,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-arbalest/002/error.json",
+      "request_id": "6b5fe15d-e10b-48e4-a549-3b26a5c8a3e9",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-arbalest",
+      "attempt": 3,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-arbalest/003/error.json",
+      "request_id": "3705784a-61a5-4509-9d0f-cbb610682c96",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-arbalest",
+      "attempt": 4,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-arbalest/004/error.json",
+      "request_id": "fadcdbc7-91c1-4104-a2f5-f1f787ea8f25",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-blackpoint_700",
+      "attempt": 1,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-blackpoint_700/001/error.json",
+      "request_id": "96820cd4-6e0a-491e-905b-b3b96673ba0d",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-blackpoint_700",
+      "attempt": 2,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-blackpoint_700/002/error.json",
+      "request_id": "bc00ac93-f093-4ab3-88a6-60c6e45f3127",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-breacher_tube",
+      "attempt": 1,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-breacher_tube/001/error.json",
+      "request_id": "410fb1a7-89fe-4511-b52c-810dc29cac07",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-breacher_tube",
+      "attempt": 2,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-breacher_tube/002/error.json",
+      "request_id": "2d16db2b-06ed-4950-8bc0-ff5c2d5891b9",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-hellraiser_service_rifle",
+      "attempt": 1,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-hellraiser_service_rifle/001/error.json",
+      "request_id": "a5602aec-ec62-4cb7-a8a3-cb14ba85ca73",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-hellraiser_service_rifle",
+      "attempt": 2,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-hellraiser_service_rifle/002/error.json",
+      "request_id": "72f41a55-5e36-48e4-96d3-875d0d831beb",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-hellraiser_twin_rotary",
+      "attempt": 1,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-hellraiser_twin_rotary/001/error.json",
+      "request_id": "365610b1-bee9-9eb9-b1dc-8d894be3bed3",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-hellraiser_twin_rotary",
+      "attempt": 2,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-hellraiser_twin_rotary/002/error.json",
+      "request_id": "2a526f44-898d-491c-808c-d78424821dda",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-hellraiser_twin_rotary",
+      "attempt": 3,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-hellraiser_twin_rotary/003/error.json",
+      "request_id": "1081cef1-c554-4baf-a00a-8682f4e8e240",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-smetanita_thumper",
+      "attempt": 1,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-smetanita_thumper/001/error.json",
+      "request_id": "93427138-90ee-4276-9fba-abe5133b10a8",
+      "count_contribution": 0,
+      "retry_authorized": true
+    },
+    {
+      "id": "weapon-smetanita_thumper",
+      "attempt": 2,
+      "outcome": "moderation_blocked",
+      "error_path": "art/_archive/gear/2026-11-21-retry-standards/attempts/weapon-smetanita_thumper/002/error.json",
+      "request_id": "213d2a16-6d64-45e8-8e4f-0e2c73d1bafb",
+      "count_contribution": 0,
+      "retry_authorized": true
+    }
+  ],
+  "updated_utc": "2026-11-21T12:17:24.435883+00:00"
 }

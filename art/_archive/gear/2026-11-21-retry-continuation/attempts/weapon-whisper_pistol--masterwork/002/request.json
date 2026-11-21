@@ -1,0 +1,64 @@
+{
+  "head": "2304c9eef065f5e74a459ea9720baa2e90c9d7cc",
+  "job": {
+    "id": "weapon-whisper_pistol--masterwork",
+    "standard_id": "weapon-whisper_pistol",
+    "grade": "masterwork",
+    "label": "Whisper pistol — Masterwork",
+    "path": "art/icons/gear/weapon-whisper_pistol--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-whisper_pistol.png",
+      "art/icons/gear/weapon-whisper_pistol--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-whisper_pistol",
+    "family_references": [
+      "art/icons/gear/weapon-whisper_pistol.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.3",
+    "source_brief": "art/briefs/prompts-2026-11-19/06-gun-forms.md",
+    "source_brief_number": 4,
+    "keep_line": "the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same single level side-view Whisper pistol, muzzle to viewer-right, one long uninterrupted straight matte-charcoal tube with its existing small rear cap, tiny low top notches/sights, plain round dark muzzle opening, compact steeply angled lower grip near the rear third, small trigger and open narrow guard below the rear tube, and tiny blank slate-blue plate with its fasteners at the bottom of the grip. Preserve the exact tube diameter and length, grip angle/length, sight positions, trigger gap and slate-blue plate placement. Retain the quiet near-black material identity and all dark openings. No slide added to the tube, no stock, front handle, separate second cylinder, optic, text or external light.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line with the item's accent colour (bright brass if it has no accent), so the side carries one continuous coloured stripe. The grip panels or stock are re-made in a finer material in exactly the same shapes (polished hardwood, ivory polymer or lacquer, in the item's own colours); the trigger, hammer, screws and pins are polished brass or bright steel; machining exact, every edge crisp. No wear.\n\nFIRST image is the ACTUAL Standard geometry and registration master; preserve its every opening, part, camera, view, scale and margins. SECOND image is the preceding grade candidate; retain its surface additions and their exact positions except the current grade-specific material change. The portrait supplies painted Heavenprint brushwork only; no person or scene. The generic grade block changes EXISTING surfaces only: do not add any stock, grip, tank, hose, pilot flame or fitting absent from this actual Standard. Fully transparent background; no cast shadow or outside light; minimum50px clear margin. The one continuous focal inlay is the existing muted slate-blue/steel-blue accent, along the preceding Fine contour; keep the original accent strictly at its current locations. No ornament or repair yet.",
+    "status": "pending",
+    "production_approved": false,
+    "implementation_ready": false,
+    "depends_on": "weapon-whisper_pistol--fine",
+    "standard_sha256": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
+    "standard_status": "review-candidate",
+    "prepared_at_utc": "2026-11-20T07:07:48.424819+00:00",
+    "current_data_item_present": false,
+    "generation_error": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_pistol--masterwork--1795160881940.json",
+    "last_attempt": {
+      "result": "moderation_blocked",
+      "response_path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_pistol--masterwork--1795160881940.json",
+      "request_id": "0a6d30b5-4c8b-440b-af31-dde22c317b72"
+    },
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "c9debd428dc7e4470792e9098d9bb332effd0990fe448cfb19fa1c154a264ef3",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-whisper_pistol--masterwork--1795160881940.json",
+      "response": {
+        "id": "weapon-whisper_pistol--masterwork",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID 0a6d30b5-4c8b-440b-af31-dde22c317b72. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-whisper_pistol.png": "e98d19fb768cae67930fc23d981faea536af5aafd151615fc9faaf66b3aa2323",
+    "art/icons/gear/weapon-whisper_pistol--fine.png": "17722607226048cca599ce81a3b96b9b8329661cd75b34287e22de95bde44e5a",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 2,
+  "claim_comment": 7062296286,
+  "clock": {
+    "current_time": "2026-11-21 12:16:00 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7062296286,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "e83f37bbbefd548acd7b40e8ae63f05f9947f830"
+}

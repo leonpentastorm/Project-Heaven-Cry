@@ -1,3 +1,9 @@
+# Current sole production — 21 November 2026
+
+569/871 selected and pushed;302 remaining. Run sole-20261121-0109, branch art/2026-11-20-reset-continuation. Grade queue91:51 selected/40 pending; exact17 expansion claim7062296286. Unique5 lane complete, including Encore006 at2a72e81b4. Standard7 lane0 selected,7 pending; LMG waits for fresh ServiceRifle repaint. Total47 pending exact reservations;255 other requested pictures outside them. Read liveissue3 and ALL comments plus owner branches before EVERY render. Every selected picture shown/inspected/exported/validated/committed/PUSHED before next. All approvals false. Original prompts/errors/native bytes and previous exports preserved. No actual new usage_limit_reached/reset; moderation errors are not quota. Latest verified develop e83f37bb, proposal-doc-only change.
+
+The dated paragraphs below are historical checkpoints. Current exact queue, progress.json, PRODUCTION-STATUS.md and REMAINING-WORK.json govern.
+
 # Current keptgun24 expansion
 
 559/871 pushed. Lane74grades:46selected/28pending. Runsole-20261121-0109 samebranch. New24keptgunclaim7061326470, firstweapon-parlour_pistol--fine. Prior4pending ShortBow; 3identicalnewFineinputrejections retained. Alloriginalpromptwords/sourceerrors/metadata preserved; everynewpicture candidatefalseapproval. Exactids+refs inqueue, claimcomments inclaim.json. Readliveissue3+allcomments andremotedeliveries beforeEVERYgeneration, pushEVERYselectedpicture. Noquotaresponseyet. Currentdevelope83f37bb proposalcurveonly.
