@@ -1,0 +1,46 @@
+{
+  "head": "90f19a9a43ed242fa646e21b1cdae269797dbeff",
+  "job": {
+    "id": "weapon-ork_machete--celestial",
+    "standard_id": "weapon-ork_machete",
+    "grade": "celestial",
+    "label": "Ork Machete — Celestial",
+    "path": "art/icons/gear/weapon-ork_machete--celestial.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--relic.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_machete",
+    "family_references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--fine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.\n\nGrade: Celestial. Keep the shape, the inlay line and the ornament's place. The blade and its fittings become a pale, unmarked, almost pearl-ivory material with no scratch, patina or tool mark; nails, welds, jags, saw notches and slots keep their shape in the pale material; the grip wrap is ivory cord. The inlay line and the seam where blade meets guard give a faint, contained ivory-gold light from inside, a lit line no wider than the inlay; nothing spills past the outline: no bloom, no halo, no rays, no sparks. As if made by someone with nothing to fear.\n\nThe FIRST attached image is the exact Standard shape and registration master. Preserve its entire alpha outline, empty holes, scale, original margins and45degree diagonal. Supporting portrait reference is brushwork only; never copy a person or scene. The second image is the preceding grade candidate: keep its surface additions while stepping its finish as specified. Full transparency; no ground, cast shadow, labels or decorative frame.",
+    "keep_line": "the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-ork_machete--relic",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "cb3570d50335b6634821e214f2df1b47361605c34fb8c265e6cb075bee5b482e",
+    "standard_sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "retry_authorized_by_user": true
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-ork_machete.png": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "art/icons/gear/weapon-ork_machete--relic.png": "57c04feaf80b5e52f5d22a48c76513c003939e4a232705020e78ba9dfcc6f5c1",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7055981184,
+  "clock": {
+    "current_time": "2026-11-21 02:59:21 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7056106119,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "d1e74279046a5df79b0ac6a507dd00b13748398b"
+}

@@ -1,7 +1,7 @@
 {
-  "selected": 549,
+  "selected": 550,
   "requested": 871,
-  "remaining": 322,
+  "remaining": 321,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 394,
+      "selected": 395,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 262,
+    "grade": 261,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 58,
+    "service-blocked-or-preceding-grade-dependent": 57,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -495,14 +495,6 @@
       "status": "service-blocked-or-reference-dependent",
       "eligible_for_retry": false,
       "existing_old_painting_does_not_satisfy_repaint": false
-    },
-    {
-      "id": "weapon-ork_machete--celestial",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-ork_machete--celestial.png",
-      "standard": "weapon-ork_machete",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
     },
     {
       "id": "weapon-war_pick--celestial",
@@ -2671,7 +2663,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-ork_machete--relic",
+  "last_delivered": "weapon-ork_machete--celestial",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

@@ -2333,6 +2333,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-ork_machete--celestial",
+      "path": "art/icons/gear/weapon-ork_machete--celestial.png",
+      "sha256": "be8a05f59908d4160285c4057c93fcc3e62c0f926ffd23b6faa4b8a4a90bf6f4",
+      "label": "Ork Machete — Celestial",
+      "family": "weapon-ork_machete",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-ork_machete--celestial.png",
+        "sha256": "b3f42182b319e057c6505a5f4f63b9e9f4f00f50df2fc0dda17c4860d71f4a99"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-ork_machete--celestial.png",
+        "sha256": "be8a05f59908d4160285c4057c93fcc3e62c0f926ffd23b6faa4b8a4a90bf6f4"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-ork_machete--celestial.txt",
+        "sha256": "311baeb15ff7f6434d786635d045582d7a846167fb5b8ccf7bf9d86148d8aac0"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-ork_machete.png",
+          "sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e"
+        },
+        {
+          "path": "art/icons/gear/weapon-ork_machete--relic.png",
+          "sha256": "57c04feaf80b5e52f5d22a48c76513c003939e4a232705020e78ba9dfcc6f5c1"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-ork_machete--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-ork_machete--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-ork_machete--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-ork_machete--celestial.png"
+      },
+      "export_hashes": {
+        "256": "cd10ce42b3d86bd316a20b294a5066c5f4a9d1b59aca1b8d16433b060354b433",
+        "128": "ad932db117867a6ccfc32bb651e4199744cce1192b644178579263ba1dfa2f03",
+        "64": "ab0dcb51ea33a249f39b78f978393c2d81dcc9395a9340c983768e34f46bed6e",
+        "32": "952b72d6405bc2ab671960305ab13cd2c39357c4309ee0262dfd1396635c2aba"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-ork_machete",
+      "outline": {
+        "solid_alpha_iou": 0.9309738795084709,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 8,
+        "different_pixels_64": 40
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
