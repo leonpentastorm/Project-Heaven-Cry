@@ -253,7 +253,7 @@ function setUp(owner: Unit, u: Unit, form: string, traits: string[], made: numbe
   const f = FORM[form], p = visPoints(owner), prof = RULES.output.profiles.figment;
   if (f.defense === 'owner') u.def = owner.def;
   u.attack = mod(p) + traits.reduce((s, t) => s + (FIG_TRAIT[t]?.roll || 0), 0); u.strength = u.attack;
-  u.lvlDmg = Math.round(prof.k * levelFactor(prof.level, owner.level ?? 1) * RULES.output.factors.figment * 1000) / 1000;
+  u.lvlDmg = Math.round(prof.k * levelFactor(prof.level, owner.level ?? 1) * 1000) / 1000; // rules 1.95: the Figment factor is folded into the figment profile's k
   u.kind = 'figment'; u.tier = undefined;
   if (f.glyph) u.short = f.glyph; // the token's fallback when the face does not resolve: its glyph (the form's `portrait`, ART-REQUESTS C6, is put on the unit by owned.ts spawnOwned)
   (u as any).held = { perks: [], traits: [], verbs: ['fig_' + form, ...traits.map((t) => 'figtrait_' + t)] };

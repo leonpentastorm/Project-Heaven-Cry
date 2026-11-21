@@ -5,7 +5,7 @@
 import { say, unsay, type Combat, type Unit, noteLoose, dropNailed, previewAttack, resolveAttack, asChain, attackApCost, cycleAp, isMelee, emitFx, alive, dist, checkOver, xy, key, moveBlockers, refOf, triggerOverwatch, paths, routeTo, sideSees, active, moveUnit, moveBlock, dropToPile, asVolley, canJam, neverJams, setOffJam, heatLimit, weaponBraced, displace, type DisplaceHow } from '../combat';
 import { WEAPON } from '../data';
 import { onHook, charOfUnit, emit, boundGame, bindGame, holdersOf, statQuery, statHeard, unitSkill } from '../effects/hooks';
-import { scaleOf } from '../effects/output';
+import { scaleOf, statOf } from '../effects/output';
 import { apDebt } from '../effects/ap';
 import { price, priced, whyNot, pay, refund } from '../effects/cost';
 import type { CostSite, StatId } from '../effects/stats';
@@ -15,7 +15,7 @@ import { resOf, resGain, resSpend, canReact, react, reactBlocked as reactBlocked
 import { attackEvent, stepEvent, setStrikeTech, setStrikeTechAp, setStrikeRider, strikeRider, pairs, withOffHand, offWear, weaponVia } from '../combat';
 import { type Rng } from '../rng';
 import { rollSave } from '../rolls';
-import { mod, holds as holdsGear, isShieldId, followsId } from '../character';
+import { mod, holds as holdsGear, isShieldId, followsId, bodyArmourArm } from '../character';
 import type { Character } from '../character';
 import { packOf } from '../character';
 import { packRef } from '../gear';
@@ -118,7 +118,14 @@ export const guardMax = (u: Unit) => u.resMax?.guard ?? 0;
 /** What one Guard point takes off a hit for this unit (rules.guard.soak, in HP: × the level scale, rules 1.36; × the
  * plate soak's beta feed, rules 1.60 item 4604: Pain Threshold). The one place it is worked out: the soak (guard.ts),
  * the panel's words (physView) and the door tab's line (effects/feed.ts) read it. A unit, or a sheet ({level, skills}). */
-export const guardSoak = (u: Pick<Unit, 'level'> & { skills?: any }): number => Math.max(1, Math.round(GR().soak * scaleOf(u.level) * feedOf(u, 'plate_soak')));
+// Rules 1.95 (the scale; tools/balance/bible/scale.json plate): the soak x the Guard door's Stat (Endurance x Durability, the
+// guard profile: a normal share soaks the row's number) x the worn armour's grade step x the deal column, then the feed.
+// An enemy (no sheet) soaks the row's number at its level.
+export const guardSoak = (u: Pick<Unit, 'level'> & { skills?: any; attrs?: any; wornState?: any }): number => {
+  const c: any = u.attrs ? u : charOfUnit(u as Unit);
+  const st = c ? statOf('guard', { attrs: c.attrs || {}, skills: c.skills || {} }) : 1, arm = c ? bodyArmourArm(c) : 1;
+  return Math.max(1, Math.round(GR().soak * st * arm * scaleOf(u.level) * feedOf(u, 'plate_soak')));
+};
 // What one plate soaks now, as the Guard meter and its hint say it: the door tab's plate_soak number (physical/guard.ts
 // registers it: a Reactive Plate holder's plate soaks the plate's own stat, fed; anyone else guardSoak), so the meter,
 // the tab and the damage path read one copy (rules 1.60 item 4604).

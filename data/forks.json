@@ -567,7 +567,7 @@
       "amounts": {
         "pulse": {
           "kind": "heal",
-          "base": 0.9375,
+          "base": 0.5625,
           "profile": "tend",
           "heal_kind": "tending",
           "provisional": true
@@ -931,7 +931,7 @@
       "amounts": {
         "spill": {
           "kind": "damage",
-          "base": 22,
+          "base": 13,
           "profile": "melee",
           "provisional": true
         }
@@ -1362,7 +1362,7 @@
       "amounts": {
         "scorch": {
           "kind": "damage",
-          "base": 6,
+          "base": 3.6,
           "profile": "flat",
           "type": "sigil",
           "provisional": true

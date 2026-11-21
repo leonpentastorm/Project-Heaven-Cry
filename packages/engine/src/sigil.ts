@@ -326,7 +326,7 @@ const SAVES: Record<string, Fam> = { body: 'body', brain: 'brain', heart: 'heart
 /** The targets the maths is balanced around (Leon, 10 Nov 2026): 350 a hit, 500 on a critical. Rules 1.17: they are
  * targets, not a limit: the engine no longer scales a spell down to them (the full Line is the Mage's peak and may pass
  * them). Kept for the screens and reports that name them. */
-export const SIGIL_CAP = 350, SIGIL_CAP_CRIT = 500;
+// Rules 1.95 (the scale; scale.json caps.sigil_cap): the dead Sigil cap (350, 500) is gone: it meant nothing on the new scale.
 /** Whose Lines take the Line multiplier (rules 1.17): a character, or a unit fighting for one (a companion, a twin). */
 const linesGrow = (u: Unit | null | undefined) => !!u && !!(u.charId || (u as any).ctrl);
 /** A spell's Line multiplier for this caster (1 for an enemy caster, or a spell with no caster). */

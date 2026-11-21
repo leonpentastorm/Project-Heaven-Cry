@@ -746,11 +746,11 @@
       "cover": {
         "half": {
           "to_hit": -5,
-          "hp": 30,
+          "hp": 11,
           "blocks_sight": false
         },
         "full": {
-          "hp": 80,
+          "hp": 29,
           "blocks_sight": true,
           "to_hit": -10,
           "note": "rules 1.61 (0.30, cover beside you; item 4960): full cover beside the target on the side facing the shooter (and the line misses it) takes this off the shot; on the line it still blocks sight. PROVISIONAL"
@@ -797,12 +797,12 @@
       "classes_about": "Rules 1.91 items 7950, 7951: the one copy of body armour (the typed table in code is gone). A save stores the class number: a class is appended, never inserted. penalty.no_sprint: no Sprint; armoured: counts as armour where a target's armour is asked (a unit with no sheet: at least the smallest armoured value); light_cap: the row whose value caps 'armour counts as at most Class I's' (Forlorn Hope); forge_fit: the Forge fits it (rules 1.91 item 7952); family, form: the tag fields (item 7900).",
       "classes": [
           { "class": 0, "name": "None", "value": 0, "penalty": {}, "weight_kg": 0, "price_credits": 0 },
-          { "class": 1, "name": "Light", "value": 5, "penalty": {}, "weight_kg": 4, "price_credits": 150, "light_cap": true, "forge_fit": true, "family": "vests", "form": "light", "line": "issue" },
-          { "class": 2, "name": "Medium", "value": 10, "penalty": {}, "weight_kg": 8, "price_credits": 400, "armoured": true, "forge_fit": true, "family": "vests", "form": "standard", "line": "issue" },
-          { "class": 3, "name": "Heavy", "value": 15, "penalty": { "movement": -0.5 }, "weight_kg": 12, "price_credits": 900, "armoured": true, "forge_fit": true, "family": "vests", "form": "heavy", "line": "issue" },
-          { "class": 4, "name": "Assault", "value": 20, "penalty": { "movement": -0.5, "dodge": -1 }, "weight_kg": 18, "price_credits": 1800, "armoured": true, "forge_fit": true, "family": "plate", "form": "standard", "line": "adamantile_brigade" },
-          { "class": 5, "name": "Juggernaut", "value": 25, "penalty": { "movement": -1, "no_sprint": true }, "weight_kg": 28, "price_credits": 4000, "armoured": true, "forge_fit": true, "family": "plate", "form": "heavy", "line": "adamantile_brigade" },
-          { "class": 6, "name": "Breacher plate", "value": 18, "penalty": { "movement": -0.5 }, "weight_kg": 14, "price_credits": 1400, "armoured": true, "family": "plate", "form": "light", "provisional": true, "line": "adamantile_brigade" }
+          { "class": 1, "name": "Light", "value": 3.0, "penalty": {}, "weight_kg": 4, "price_credits": 150, "light_cap": true, "forge_fit": true, "family": "vests", "form": "light", "line": "issue" },
+          { "class": 2, "name": "Medium", "value": 6.0, "penalty": {}, "weight_kg": 8, "price_credits": 400, "armoured": true, "forge_fit": true, "family": "vests", "form": "standard", "line": "issue" },
+          { "class": 3, "name": "Heavy", "value": 9.0, "penalty": { "movement": -0.5 }, "weight_kg": 12, "price_credits": 900, "armoured": true, "forge_fit": true, "family": "vests", "form": "heavy", "line": "issue" },
+          { "class": 4, "name": "Assault", "value": 12, "penalty": { "movement": -0.5, "dodge": -1 }, "weight_kg": 18, "price_credits": 1800, "armoured": true, "forge_fit": true, "family": "plate", "form": "standard", "line": "adamantile_brigade" },
+          { "class": 5, "name": "Juggernaut", "value": 15, "penalty": { "movement": -1, "no_sprint": true }, "weight_kg": 28, "price_credits": 4000, "armoured": true, "forge_fit": true, "family": "plate", "form": "heavy", "line": "adamantile_brigade" },
+          { "class": 6, "name": "Breacher plate", "value": 11, "penalty": { "movement": -0.5 }, "weight_kg": 14, "price_credits": 1400, "armoured": true, "family": "plate", "form": "light", "provisional": true, "line": "adamantile_brigade" }
       ],
       "other_slots": "head, hands, footwear etc. carry per-item effects",
       "other_slot_items": null,
@@ -1451,7 +1451,7 @@
         ],
         "charge": 5,
         "ap_at_agility_1_expression_1": 4,
-        "damage": 26,
+        "damage": 16,
         "range_tiles": 8
       },
       "data": "sigils.json",
@@ -1580,14 +1580,13 @@
     "area_share": 0.4,
     "text": "Healing and shields from Sigil magic, Outbursts, prayers and the medic's kit grow with the giver's level, by the same factor that raises what enemies deal (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20). Nothing limits how much a creature can be healed in a round. Enemies notice who is mending the squad and turn on them: Soldiers lean that way, Elites and Bosses go for the healer first. In an area shape a healing or shielding Outburst gives each ally ×0.4.",
     "gate": {
-      "hp": 145,
+      "hp": 90,
       "whisper": 0.1333,
       "hymn": 0.3333,
       "intervention": 0.3333,
       "provisional": true,
       "note": "Rules 1.36 (heal-shield-percent-spec.md section 4, Leon's 20%): every heal and shield action is at least a share of its target's max HP, counted up to hp x scale at the giver's level (the level 1 reference HP): 20% for a 2-AP action (the profiles' min_pct: mend, sigil_mend, soul_mend, tend), 13.3% for a Whisper and a 1-AP Raise, 33.3% for a Hymn and an intervention, times the action's own multipliers (stage, shape, Line, a heal in an area shape x0.4). It rounds up."
     },
-    "cap_pct": 0.5,
     "cap_note": "Rules 1.36: no single heal restores more than this share of its target's max HP (a Miracle is exempt; shields have no cap: one stands per layer)."
   },
   "gear_preview": {
@@ -1600,62 +1599,62 @@
   },
   "rarity": {
     "ladder": "rules 1.91 (items 7905, 7906): the rows are the one grade ladder: `order` (0 to 4), the word (`name`), `sold` (false: no shop and no Forge ever gives it, a Boss reward only) and every number; `arm` multiplies a graded worn piece's armour value only (1 for every grade until stage C fits it, PROVISIONAL). A grade is the instance's (GearState.rarity), never the row's.",
-    "rules": "rules 1.26 (the re-fit): Weapons v2, Rarity, moved from code into data. Rarity buys accuracy, durability and a mod slot; since the re-fit it adds no damage (Masterwork's old +10% damage is gone: the grade buys accuracy, durability and a mod slot. PROVISIONAL, spec item 1701)",
+    "rules": "rules 1.95 (the scale, step 1 of the 0.34 rebalance; tools/balance/bible/scale.json grades, ruling A9): the grade ladder adds damage and armour again: Fine +1 to hit and x1.15, Masterwork +2 and x1.3, Relic +3 and x1.5, Celestial +3 and x1.75; `arm` is the same step on a worn piece's armour value and on a plate's soak. A grade adds its mod slot and properties to the row's own in step 5 (ruling 54: no row loses a slot). PROVISIONAL",
     "provisional": true,
     "standard": {
       "name": "Standard",
       "order": 0,
       "sold": true,
       "acc": 0,
-      "dmg": 1,
+      "dmg": 1.0,
       "dur": 1,
       "price": 1,
       "marks": 0,
-      "arm": 1
+      "arm": 1.0
     },
     "fine": {
       "name": "Fine",
       "order": 1,
       "sold": true,
       "acc": 1,
-      "dmg": 1,
+      "dmg": 1.15,
       "dur": 1.25,
       "price": 3,
       "marks": 1,
-      "arm": 1
+      "arm": 1.15
     },
     "masterwork": {
       "name": "Masterwork",
       "order": 2,
       "sold": true,
       "acc": 2,
-      "dmg": 1,
+      "dmg": 1.3,
       "dur": 1.5,
       "price": 8,
       "marks": 2,
-      "arm": 1
+      "arm": 1.3
     },
     "relic": {
       "name": "Relic",
       "order": 3,
       "sold": true,
-      "acc": 2,
-      "dmg": 1,
+      "acc": 3,
+      "dmg": 1.5,
       "dur": 1.5,
       "price": 25,
       "marks": 3,
-      "arm": 1
+      "arm": 1.5
     },
     "celestial": {
       "name": "Celestial",
       "order": 4,
       "sold": false,
-      "acc": 2,
-      "dmg": 1,
+      "acc": 3,
+      "dmg": 1.75,
       "dur": 1.5,
       "price": 50,
       "marks": 4,
-      "arm": 1
+      "arm": 1.75
     }
   },
   "measure": {
@@ -1720,104 +1719,109 @@
     "provisional": true,
     "rules": "the unified damage formula, stage (a): a re-expression, no number moved (12 Nov 2026)",
     "formula": "amount = (base + flat) x Stat x Level x own multipliers x (1 + target bonuses, capped at +100%); dealt = max(1, floor(amount) - armour); healing and shields go to their sinks",
+    "combine": {
+      "rule": "multiply",
+      "note": "rules 1.95 (ruling A4): the attribute term and the skill term of a Stat multiply each other: k x (1 + attr x sum(Attribute - 1)) x (1 + skill x sum(Skill))"
+    },
     "level": {
       "deal": [
         1.0,
-        1.1119,
-        1.2363,
-        1.3746,
-        1.5284,
-        1.6993,
-        1.8894,
-        2.1008,
-        2.3359,
-        2.5972,
-        2.8877,
-        3.2108,
-        3.57,
-        3.9694,
-        4.4135,
-        4.9072,
-        5.4562,
-        6.0667,
-        6.7454,
-        7.5
-      ],
-      "scale": [
-        1.0,
-        1.0424,
-        1.1239,
-        1.1782,
-        1.2736,
-        1.3416,
-        1.4534,
-        1.5372,
-        1.6685,
-        1.7708,
-        1.9252,
-        2.0495,
-        2.2313,
-        2.4809,
-        2.7584,
-        3.067,
-        3.4102,
-        3.7917,
-        4.2159,
-        4.6875
+        1.2143,
+        1.4745,
+        1.7904,
+        2.1741,
+        2.6399,
+        3.2056,
+        3.8925,
+        4.7266,
+        5.7395,
+        6.9693,
+        8.4627,
+        10.2761,
+        12.478,
+        15.1518,
+        18.3986,
+        22.341,
+        27.1283,
+        32.9413,
+        40.0
       ],
       "mend": [
         1.0,
-        1.1018,
-        1.188,
-        1.3102,
-        1.5054,
-        1.5858,
-        1.8269,
-        2.0568,
-        2.2425,
-        2.5322,
-        2.9263,
-        3.312,
-        3.8289,
-        4.5177,
-        5.3265,
-        6.272,
-        7.3831,
-        8.6792,
-        10.1983,
-        11.9672
+        1.2278,
+        1.5072,
+        1.8501,
+        2.2707,
+        2.7866,
+        3.4193,
+        4.1953,
+        5.1468,
+        6.3134,
+        7.7437,
+        9.497,
+        11.6462,
+        14.2804,
+        17.5088,
+        21.465,
+        26.3128,
+        32.2525,
+        39.5296,
+        48.4444
       ],
-      "note": "One row a level, 1 to 20. Rules 1.36 (the level scale, Leon 13 Nov 2026): a plain rifle hit is 40 at level 1 and about 300 at level 20 (x7.5, geometric: 7.5^(1/19) a level). deal: what a character's level multiplies its damage by: 7.5^((level - 1)/19). scale: what everything measured in HP is multiplied by at that level: the new deal over the old (rules 1.26's 1, 1.067 ... 1.6): players' max HP and armour, enemies' HP, armour and damage (enemies.json levels.table), Guard's soak, Strain's burn, a feeling's HP price, objects and cover, the profiles with no column of their own (physical, elemental, healing, blessing). Every ratio stays: to-hit, Defense, percents, MP. mend (rules 1.36, heals and shields in percent of HP): what it multiplies healing and shields by: M(L) x scale(L), M = R(L)/R(1) x S_all(1)/S_all(L) held non-decreasing (heal-shield-percent-spec.md section 1), so an all-in heal turn is the same percent of the reference character's HP at every level. reference_hp: the reference character's max HP (the normal-share plain rifleman, smoothed: 145 at level 1, 2,086 at 20), the unit heals and shields are balanced in.",
-      "reference_hp": [
-        145,
-        159,
-        182,
-        203,
-        233,
-        260,
-        301,
-        338,
-        390,
-        441,
-        510,
-        578,
-        667,
-        786,
-        930,
-        1095,
-        1286,
-        1513,
-        1779,
-        2086
-      ]
+      "mp": [
+        1.0,
+        1.06,
+        1.12,
+        1.18,
+        1.24,
+        1.3,
+        1.36,
+        1.42,
+        1.48,
+        1.54,
+        1.6,
+        1.66,
+        1.72,
+        1.78,
+        1.84,
+        1.9,
+        1.96,
+        2.02,
+        2.08,
+        2.14
+      ],
+      "enemy_damage": [
+        1.0,
+        1.2336,
+        1.5218,
+        1.8773,
+        2.3159,
+        2.8569,
+        3.5243,
+        4.3476,
+        5.3633,
+        6.6162,
+        8.1618,
+        10.0685,
+        12.4206,
+        15.3222,
+        18.9017,
+        23.3174,
+        28.7646,
+        35.4843,
+        43.7739,
+        54.0
+      ],
+      "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance; tools/balance/bible/scale.json columns): one row a level, 1 to 20. deal: what a character deals and everything measured in a character's HP (max HP, armour, a plate, cover, objects) rides it, x1.214 a level, x40 at level 20 (40^((L - 1) / 19)); the old `scale` column is gone and scaleOf reads deal. mend: heals and shields, the normal bar's growth (deal x the HP bracket of a normal share). mp: max MP and every MP price, 1 + 0.06 x (L - 1). enemy_damage: a Figment's HP rides the enemy damage column (enemies.json levels.table damage_mult is the same). reference_hp is gone (no reader)."
     },
     "profiles": {
       "physical": {
-        "k": 1,
+        "k": 0.9615,
         "attr": 0.1,
         "skill": 0.05,
-        "level": "scale",
-        "pair": "physical"
+        "level": "deal",
+        "pair": "physical",
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.physical)"
       },
       "weapon": {
         "k": 1.5,
@@ -1825,157 +1829,175 @@
         "skill": 0,
         "level": "deal",
         "pair": "weapon",
-        "shape": "aimed"
+        "shape": "aimed",
+        "note": "rules 1.95: no slope (none (focus weapons, a beast's bite)); column deal"
       },
       "melee": {
-        "k": 1.15385,
-        "attr": 0.05,
-        "skill": 0,
+        "k": 1.1483,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "deal",
         "pair": "weapon",
         "shape": "struck",
-        "provisional": true,
-        "note": "rules 1.56 (Balance 2.0, Leon 15 Nov 2026: melee damage grows with Strength, finesse blades with Agility; the skill buys the hit only): the profile of a character's melee blow, named by the weapon (weapons.json phys.profile); its Attribute is the weapon's phys.scales_with. +attr a point of that Attribute over 1, no skill slope; k sets the all-in build (Attribute 7 at creation) at the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5), so a lower Attribute deals less than before 1.56 and a higher one more. PROVISIONAL (spec item 1.56-L6)"
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.melee)"
       },
       "gun": {
-        "k": 1.275,
-        "attr": 0.0294118,
-        "skill": 0,
+        "k": 0.8894,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "deal",
         "pair": "weapon",
-        "shape": "struck",
-        "provisional": true,
-        "note": "rules 1.61 (0.30, G1; Leon 16 Nov 2026: \"add damage per attribute like others, nerf the base dmg, not to a useless degree\"): the profile of a character's gun shot, named by the gun (weapons.json phys.profile: gun); its Attribute is the gun's phys.scales_with (Agility on every gun). +attr a point of that Attribute over 1, no skill slope (Dexterity buys the hit); k sets the all-in gunner (Agility 7 at creation, the profile's pin) at the weapon profile's 1.5 (k x (1 + attr x 6) = 1.5). The lead's ruling R2 (16 Nov 2026: the low end softer): k 1.275 so that Agility 1 deals x0.85 of what it dealt before 1.61 (G1 had k 1.15385, attr 0.05: x0.77), 3 x0.90, 5 x0.95, 7 x1.00, 10 x1.075. Its own dial, apart from the melee profile (not touched). An enemy's gun reads its tier and level, not this. PROVISIONAL (spec items 4700, 4721)"
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.gun)"
       },
       "sigil": {
-        "k": 1.7,
-        "attr": 0,
-        "skill": 0,
+        "k": 1.0897,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "deal",
         "pair": "sigil",
-        "shape": "aimed"
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.sigil)"
       },
       "elemental": {
-        "k": 1,
-        "attr": 0,
-        "skill": 0,
-        "level": "scale",
-        "pair": "elemental",
-        "shape": "aimed"
+        "k": 1.0897,
+        "attr": 0.1,
+        "skill": 0.05,
+        "level": "deal",
+        "pair": "sigil",
+        "shape": "aimed",
+        "note": "rules 1.95 (ruling 31: one pair to a hit): Expression's elemental line goes; an elemental part of a Line reads the Sigil pair (Intelligence x Brain Power) at the Sigil profile's numbers"
       },
       "soul": {
-        "k": 1.55,
-        "attr": 0,
-        "skill": 0,
+        "k": 0.9936,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "deal",
         "pair": "soul",
-        "shape": "aimed"
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.soul)"
       },
       "blessing": {
-        "k": 0.956,
-        "attr": 0.06,
-        "skill": 0.06,
-        "level": "scale",
+        "k": 0.8702,
+        "attr": 0.1,
+        "skill": 0.05,
+        "level": "deal",
         "pair": "blessing",
-        "shape": "landed"
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.blessing)"
       },
       "healing": {
-        "k": 1.392,
-        "attr": 0.06,
-        "skill": 0.06,
-        "level": "scale",
+        "k": 1.2671,
+        "attr": 0.1,
+        "skill": 0.05,
+        "level": "mend",
         "pair": "healing",
-        "shape": "landed",
-        "floor": 0.5
+        "floor": 0.5,
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column mend (tools/balance/bible/scale.json cards.profiles.healing)"
       },
       "mend": {
-        "k": 1.392,
-        "attr": 0.06,
-        "skill": 0.06,
+        "k": 1.2671,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "mend",
         "pair": "healing",
-        "shape": "landed",
         "floor": 0.5,
-        "min_pct": 0.2
+        "min_pct": 0.2,
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column mend (tools/balance/bible/scale.json cards.profiles.mend)"
       },
       "sigil_mend": {
-        "k": 1.629,
-        "attr": 0.06,
-        "skill": 0.06,
+        "k": 1.4828,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "mend",
         "pair": "sigil",
-        "shape": "landed",
         "floor": 0.5,
-        "min_pct": 0.2
+        "min_pct": 0.2,
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column mend (tools/balance/bible/scale.json cards.profiles.sigil_mend)"
       },
       "soul_mend": {
-        "k": 1.296,
-        "attr": 0.06,
-        "skill": 0.06,
+        "k": 1.1797,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "mend",
         "pair": "soul",
-        "shape": "landed",
         "floor": 0.5,
-        "min_pct": 0.2
+        "min_pct": 0.2,
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column mend (tools/balance/bible/scale.json cards.profiles.soul_mend)"
       },
       "blessing_mend": {
-        "k": 1.44,
-        "attr": 0.06,
-        "skill": 0.06,
+        "k": 1.3108,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "mend",
         "pair": "blessing",
-        "shape": "landed",
         "floor": 0.5,
-        "min_pct": 0.1333
+        "min_pct": 0.1333,
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column mend (tools/balance/bible/scale.json cards.profiles.blessing_mend)"
       },
       "flat": {
-        "k": 1,
+        "k": 1.0,
         "attr": 0,
         "skill": 0,
         "level": "deal",
-        "shape": "flat"
+        "note": "rules 1.95: no slope (none); column deal"
       },
       "figment": {
-        "k": 1.5,
-        "attr": 0,
-        "skill": 0,
+        "k": 0.8654,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "deal",
-        "pair": "elemental",
-        "shape": "aimed",
-        "provisional": true,
-        "note": "rules 1.34: an attack made through a Figment (its owner's level; the Figment factor is output.factors.figment)"
+        "pair": "figment",
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.figment)"
       },
       "figment_hp": {
-        "k": 0.35,
-        "attr": 0,
-        "skill": 0.15,
-        "level": null,
+        "k": 0.359,
+        "attr": 0.1,
+        "skill": 0.05,
+        "level": "enemy_damage",
         "pair": "figment_hp",
-        "provisional": true,
-        "note": "rules 1.36: the HP of a Figment, a share of its form's, by its maker's Visualization (k x (1 + skill x points)); its level growth is the enemy table's hp_mult (figments.json level.hp)"
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column enemy_damage (tools/balance/bible/scale.json cards.profiles.figment_hp)"
       },
       "repair": {
-        "k": 1.392,
-        "attr": 0.06,
-        "skill": 0.06,
+        "k": 1.2671,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "mend",
         "pair": "repair",
-        "shape": "landed",
         "floor": 0.5,
-        "provisional": true,
         "heal": false,
-    "note": "rules 1.34: a repair (Field Repair, Field Fix, Salvage) of a machine or a Figment. Rules 1.86 item 7403 (engine lane; the lead's ruling): heal false, a repair is not a heal: the one mend path gives it with no receiver healing multiplier, no heal cap and no heal hooks"
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column mend (tools/balance/bible/scale.json cards.profiles.repair)"
       },
       "note": "Stat = k x (1 + attr x (each Attribute of the pair - 1) + skill x each Skill of the pair). Rules 1.26 (the re-fit; Leon: no damage slope on rolled attacks, skill buys accuracy, level buys damage): every profile has one of three shapes. AIMED (an action that rolls to hit: a weapon, a Sigil Line, an Outburst): no slope, k a constant, the Level term deal. LANDED (an action that always lands: a prayer, a heal, a shield): 0.06 a point of Attribute over 1 and 0.06 a point of Skill (all in at 7/7 is 1.25 times a normal share at 4/4), k a constant. FLAT (what has no dealer's skill: a grenade, a tick, a trap a character sets): k 1, the Level term deal. Each k keeps its system's normal share at level 1 where it was (weapon 1.5, sigil 1.7, soul 1.55, healing 1.18, blessing 0.956). Rules 1.27 (the heal re-fit, Leon 12 Nov 2026): a healer's turn all in is 2.0 Soldier-turns (was 1.25), so the heal and shield profiles were scaled by 1.6 and trimmed: healing and mend, soul_mend (the Soul shields) and the Sigil boon's sigil_mend (a Sigil boon also multiplies by Healing given, so most of its rise came through healing); blessing_mend is the heal dial of a prayer (Blessing power times blessing_mend.k over blessing.k), capped where a Hymn turn heals 2.5 Soldier-turns at level 1. Each heal and shield profile has a floor: never under that share of a normal share's Stat term (output.floor_reference).",
       "tend": {
-        "k": 3.74,
-        "attr": 0.06,
-        "skill": 0.06,
+        "k": 3.4044,
+        "attr": 0.1,
+        "skill": 0.05,
         "level": "mend",
         "pair": "healing",
-        "shape": "landed",
         "floor": 0.5,
-        "min_pct": 0.2
+        "min_pct": 0.2,
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column mend (tools/balance/bible/scale.json cards.profiles.tend)"
+      },
+      "bow": {
+        "k": 0.9615,
+        "attr": 0.1,
+        "skill": 0.05,
+        "level": "deal",
+        "pair": "weapon",
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.bow)"
+      },
+      "thrown": {
+        "k": 0.6731,
+        "attr": 0.1,
+        "skill": 0.05,
+        "level": "deal",
+        "pair": "weapon",
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.thrown)"
+      },
+      "guard": {
+        "k": 0.641,
+        "attr": 0.1,
+        "skill": 0.05,
+        "level": "deal",
+        "pair": "guard",
+        "note": "rules 1.95 (the scale, step 1 of the 0.34 rebalance): Stat = k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill), the pair of the door that makes the hit (ruling 31); k pins a normal share (4 and 4) to the old profile at level 1 x the factor 0.6, folds the old output.factors; column deal (tools/balance/bible/scale.json cards.profiles.guard)"
       }
     },
     "floor_reference": {
@@ -1983,14 +2005,6 @@
       "skill": 4,
       "provisional": true,
       "note": "Rules 1.27 (the heal re-fit; spec item 1733): a landed heal or shield profile with a floor (output.profiles: healing, mend, sigil_mend, soul_mend, blessing_mend) never has a Stat term under floor x the Stat term of a normal share, which is this many points in each Attribute and Skill of its pair. A damage profile has no floor."
-    },
-    "factors": {
-      "note": "Rules 1.26 (the re-fit): a system's own named multiplier where it has no number of its own to carry its identity. melee: every melee blow a character strikes is multiplied by it (Leon, 12 Nov 2026: standing in reach pays). PROVISIONAL (spec item 1702)",
-      "melee": 1.35,
-      "thrown": 0.7,
-      "figment": 0.9,
-      "figment_note": "rules 1.34: every attack made through a Figment is multiplied by it; a Figment's other worth is the hits it soaks. PROVISIONAL (spec item 2160)",
-      "thrown_note": "thrown: every grenade, thrown or placed charge a character sets off (frag, incendiary, satchel): on the measured cluster an area of radius 2 catches 2.8 enemies, and an area is allowed its single-target worth plus half for each extra target; a frag at 40 was 1.5 times that (spec item 1710). PROVISIONAL"
     },
     "pairs": {
       "physical": {
@@ -2016,11 +2030,12 @@
       },
       "elemental": {
         "attrs": [
-          "expression"
+          "intelligence"
         ],
         "skills": [
-          "visualization"
-        ]
+          "brain_power"
+        ],
+        "note": "rules 1.95 (ruling 31): an elemental Sigil part reads the Line's own pair"
       },
       "soul": {
         "attrs": [
@@ -2059,6 +2074,24 @@
         "skills": [
           "visualization"
         ]
+      },
+      "figment": {
+        "attrs": [
+          "expression"
+        ],
+        "skills": [
+          "visualization"
+        ],
+        "note": "rules 1.95: the Figment door's pair (ruling 31); the elemental pair it read before is gone"
+      },
+      "guard": {
+        "attrs": [
+          "endurance"
+        ],
+        "skills": [
+          "durability"
+        ],
+        "note": "rules 1.95: a plate's soak reads the Guard door's pair (scale.json plate)"
       }
     },
     "systems": {
@@ -2220,7 +2253,7 @@
       "school_rider": {
         "heal": {
           "kind": "heal",
-          "base": 30,
+          "base": 18,
           "profile": "healing",
           "text": "the Buff school riding a shelved class's own strike (classes/soul.ts)",
           "provisional": true

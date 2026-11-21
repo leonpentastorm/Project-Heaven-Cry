@@ -469,7 +469,7 @@
         }
       ],
       "mod_slot": "underbarrel",
-      "melee_damage": 15
+      "melee_damage": 9.0
     },
     {
       "id": "mod_underslung",

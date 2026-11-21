@@ -14804,3 +14804,70 @@ The integration of Items 2.0 stage B (lane B1's 72 weapon rows) and the consolid
       `adcorp_designated_rifle` 34 (Shot 2 / Aimed Shot 3, as before). Section 7's † rows, `data/weapons.json`, the
       numbers file and the typing sheet say the same. The golden tables were recorded on purpose for these four rows
       only. PROVISIONAL with the other rules 1.92 numbers.
+
+### Rules 1.95 (the scale), 0.34: step 1 of the total rebalance: one factor, the level columns, the cards, HP and MP, the grades, the enemy table (21 Nov 2026)
+
+The growth bible (`docs/design/growth/`, one machine-readable source `tools/balance/bible/*.json`, its checker
+`tools/balance/check.py`) is applied in seven steps (`09-build-order.md`). This revision is step 1. Every number below is
+the bible's; this spec states the rules as played. Everything is PROVISIONAL until played.
+
+8300. **One factor, x0.6, on every flat number** (ruling A1): every weapon row's damage (a row whose level-1 hit by a
+      creation specialist at Fine would show three digits takes the largest step under the factor that keeps it two,
+      one factor for every such row of a category), and every flat damage, HP, heal, shield, armour, soak, cover, hazard,
+      tick and item number in data (the bible's walk, `scale.json factor.walk`; the table is `docs/design/growth/TABLES.md`,
+      "The factor x0.6"). Damage and HP move together, so every count of hits to drop a foe, to drop you and to heal you
+      stays what it was for a character who spread its points. Rounding: a weapon row half up to a whole number (never
+      under 1); an amount's base to two places; any other number whole from 10, else two places. Supersedes every
+      flat number of the rules before it that the factor touches (rules 1.26, 1.36, 1.92 numbers and the rest).
+8301. **The level columns** (ruling A2; `rules.json output.level`): **deal**, what a character deals and everything measured
+      in a character's HP (max HP, armour, a plate, cover, objects), x1.214 a level, x40 at level 20 (40^((L - 1) / 19)).
+      The `scale` column of rules 1.36 is gone: what read it reads deal. **mend**, heals and shields: the normal bar's
+      growth (deal x the HP bracket of a normal share), so a heal is the same share of a normal friend's bar at every
+      level. **mp**, max MP and every MP price on the mp rule: 1 + 0.06 x (L - 1). **enemy_damage**, what an enemy hits
+      for (and a Figment's HP): 54^((L - 1) / 19). Supersedes rules 1.36's columns and its `reference_hp`.
+8302. **The cards: one rule for all nine** (ruling A4). A Stat is k x (1 + 0.1 x (Attribute - 1)) x (1 + 0.05 x Skill):
+      the attribute term and the skill term multiply (`rules.json output.combine`). Every damage profile has the slopes
+      (melee, gun, bow, thrown, physical, guard, sigil, figment, soul, blessing, and the heal profiles); the `weapon` and
+      `flat` profiles have none. k pins a normal share (4 and 4) to the old profile's level-1 number x the factor. Agility's
+      +10% reaches every Dexterity weapon through the row's own pair (guns, bows, thrown, light blades); a draw bow's draw
+      moves onto the skill term (it reads Dexterity and Raw Power). A weapon's skill now buys damage as well as the hit
+      (supersedes rules 1.56 item 1's "the skill buys the hit only"). **One pair to a hit** (ruling 31): the elemental
+      line goes; an elemental part of a Line reads the Sigil pair (Intelligence and Brain Power) at the Sigil profile's
+      numbers; a Figment reads Expression and Visualization (its own pair). **The named factors fold into k** (melee
+      x1.35, thrown x0.7, the Figment's x0.9): `output.factors` is gone.
+8303. **A thrown or placed charge** a character sets off deals the row's damage on the thrown profile: its Stat from the
+      row's own pair and the deal column at the thrower's level, through the one formula (supersedes rules 1.26's
+      thrown factor on a flat number). An enemy's charge deals the row's number, as before.
+8304. **Character HP** (ruling A5): (60 + 10 x (Endurance - 1) + (level - 1)) x (1 + 6% x Pain Threshold) x the deal
+      column, perks and traits inside the bracket. About 60 for Endurance 1 and 120 for Endurance 7 at level 1, about
+      3,160 at level 20 for Endurance 1. Pain Threshold's card is +6% max HP a point (it was +2 HP a level). The numbers
+      are data (`attributes.json` endurance's max_hp row; `skills.json` pain_threshold `hp_pct`). Supersedes rules 1.36's
+      HP formula and its 100 + 15 a point.
+8305. **Max MP** (ruling A6): (40 + 12 x (Determination - 1) + 8 x (Insight - 1)) x the mp column at the character's level
+      (`attributes.json` determination's and insight's mp_max rows). Supersedes rules 1.24's 100 + 75 + 25.
+8306. **A plate** soaks the Guard row's soak (x the factor) x the Guard door's Stat (Endurance x Durability: a normal share
+      soaks the row's number) x the worn armour's grade step x the deal column, then Pain Threshold's feed. An enemy's
+      plate soaks the row's number at its level.
+8307. **Armour** is its class row's value (x the factor) x the worn piece's grade step (`arm`) x the deal column; cover's
+      HP is x the factor on the deal column at the fight's level.
+8308. **The grade ladder adds damage and armour again** (ruling A9; `rules.json rarity`): Fine +1 to hit and x1.15,
+      Masterwork +2 and x1.3, Relic +3 and x1.5, Celestial +3 and x1.75; armour takes the same step on its value (and on
+      a plate's soak). Supersedes rules 1.26's "rarity adds no damage" and rules 1.91 item 7954's arm of 1. A grade's mod
+      slot and properties ADD to the row's own (ruling 54); that half is built in step 5, and no row loses a slot.
+8309. **The enemy table** (ruling A3; `enemies.json levels`): an enemy's HP is its tier row's HP (x the factor) x
+      140^((L - 1) / 19); its armour x the deal column; its damage is the weapon's x its tier's damage factor (x1.28)
+      x 54^((L - 1) / 19). **Defense and the attack bonus never grow with level**, for characters or enemies: the only
+      way level touches the roll is the engine's +1 to hit a level of difference, up to 5. A tier's Defense is fixed:
+      Vermin 8, Minion 9, Soldier 11, Elite 14, Boss 15. Supersedes rules 1.15's and 1.36's table and its defense_plus
+      and attack_plus.
+8310. **Caps that only held a reward down go** (ruling A10): the +100% cap on the target bonuses (the floor at -90% stays),
+      the half-bar heal cap (the per-round brake stays), the dead Sigil cap (350 / 500). Caps a player sees as rules stay.
+8311. **Texts read their row.** Bleeding's, Burning's and Corroded's card reads its tick (`amounts.tick`); the second copy
+      of the tick in `effects` goes. The injury line for the torso reads the Bleeding row.
+8312. **Not in this step** (each named for the step that builds it, `09-build-order.md`): Margins in place of the critical
+      (step 2a; the critical, its cap and every feeder stand until then); the two buckets of the stack (step 2a, with a
+      sum term's scope: today's own multipliers still multiply); the ladders, Reach, Bite and the cash-out (step 2); the
+      self-paid HP prices as shares of your own bar (Strain's burn, a feeling's price, Shame's pour, the Flux overload,
+      Crawler blood: steps 2d, 2c and 5; until then they are their old number x the deal column); the restated moves
+      (Launch, Triage, Inspire's love, the Oil traits: their owners' steps); the grade's mod slot and properties, the
+      foci's and the off hand's grade (step 5); the migration of a live character onto the new numbers (step 6).

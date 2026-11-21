@@ -927,7 +927,7 @@
           "amounts": {
             "slam": {
               "kind": "damage",
-              "base": 12,
+              "base": 7.2,
               "profile": "melee",
               "provisional": true
             }
@@ -994,11 +994,11 @@
           "amounts": {
             "hurl": {
               "kind": "damage",
-              "base": 10,
+              "base": 6.0,
               "per": [
                 {
                   "of": "kg",
-                  "value": 0.25
+                  "value": 0.15
                 }
               ],
               "profile": "physical",
@@ -2172,7 +2172,7 @@
               "amounts": {
                 "strain": {
                   "kind": "damage",
-                  "base": 5,
+                  "base": 3.0,
                   "profile": "flat",
                   "type": "true",
                   "provisional": true
@@ -2341,7 +2341,7 @@
               "amounts": {
                 "cap": {
                   "kind": "heal",
-                  "base": 6.5,
+                  "base": 3.9,
                   "profile": "tend",
                   "provisional": true
                 }
@@ -2559,7 +2559,7 @@
               "amounts": {
                 "heal": {
                   "kind": "heal",
-                  "base": 3.1,
+                  "base": 1.86,
                   "profile": "tend",
                   "heal_kind": "tending",
                   "provisional": true,
@@ -2869,7 +2869,7 @@
               "amounts": {
                 "ward": {
                   "kind": "shield",
-                  "base": 10,
+                  "base": 6.0,
                   "profile": "blessing_mend",
                   "heal_kind": "blessing",
                   "provisional": true
@@ -2926,7 +2926,7 @@
               "amounts": {
                 "smite": {
                   "kind": "damage",
-                  "base": 20,
+                  "base": 12,
                   "profile": "blessing",
                   "type": "soul",
                   "armour": "none",
@@ -2935,7 +2935,7 @@
                 },
                 "smite_storm": {
                   "kind": "damage",
-                  "base": 20,
+                  "base": 12,
                   "profile": "blessing",
                   "type": "soul",
                   "element": "lightning",
@@ -3604,7 +3604,7 @@
           "amounts": {
             "amen": {
               "kind": "damage",
-              "base": 10,
+              "base": 6.0,
               "profile": "blessing",
               "type": "soul",
               "door": "prayer",
@@ -4853,7 +4853,7 @@
             "per": [
               {
                 "of": "charge",
-                "value": 10
+                "value": 6.0
               }
             ],
             "profile": "healing",
@@ -5119,7 +5119,7 @@
         "amounts": {
           "shield_turned": {
             "kind": "damage",
-            "base": 30,
+            "base": 18,
             "profile": "sigil",
             "type": "sigil",
             "text": "at most the shield it had",
@@ -5291,7 +5291,7 @@
         "amounts": {
           "sanctuary_cap": {
             "kind": "shield",
-            "base": 40,
+            "base": 24,
             "profile": "blessing_mend",
             "provisional": true
           }
@@ -5821,7 +5821,7 @@
         "amounts": {
           "repair": {
             "kind": "heal",
-            "base": 15,
+            "base": 9.0,
             "profile": "repair",
             "text": "a repair, not a heal: no healing multipliers",
             "provisional": true
@@ -6657,7 +6657,7 @@
           "amounts": {
             "shield": {
               "kind": "shield",
-              "base": 10,
+              "base": 6.0,
               "profile": "healing",
               "provisional": true
             }
@@ -6669,7 +6669,7 @@
           "effects": [
             {
               "op": "shield",
-              "value": 10,
+              "value": 6.0,
               "target": "allies_near_banner",
               "scale": "healing_given"
             }
@@ -6694,7 +6694,7 @@
           "amounts": {
             "heal": {
               "kind": "heal",
-              "base": 10,
+              "base": 6.0,
               "profile": "healing",
               "provisional": true
             }
@@ -6712,7 +6712,7 @@
             },
             {
               "op": "heal",
-              "value": 10,
+              "value": 6.0,
               "target": "allies_passed"
             }
           ],
@@ -6790,7 +6790,7 @@
           "amounts": {
             "damage": {
               "kind": "damage",
-              "base": 50,
+              "base": 30,
               "profile": "flat",
               "type": "physical",
               "provisional": true
@@ -7004,7 +7004,7 @@
             {
               "op": "state",
               "state": "barricade",
-              "hp": 40
+              "hp": 24
             }
           ],
           "adjudication": "engine",
@@ -7027,7 +7027,7 @@
           "amounts": {
             "damage": {
               "kind": "damage",
-              "base": 20,
+              "base": 12,
               "profile": "flat",
               "type": "physical",
               "provisional": true
@@ -7041,7 +7041,7 @@
             {
               "op": "state",
               "state": "turret",
-              "hp": 40
+              "hp": 24
             }
           ],
           "adjudication": "engine",
@@ -7240,14 +7240,14 @@
           "amounts": {
             "damage": {
               "kind": "damage",
-              "base": 10,
+              "base": 6.0,
               "profile": "elemental",
               "type": "elemental",
               "provisional": true
             },
             "fire_extra": {
               "kind": "damage",
-              "base": 5,
+              "base": 3.0,
               "profile": "elemental",
               "type": "elemental",
               "text": "Fire, when the hit is not a critical",
@@ -7255,7 +7255,7 @@
             },
             "arc": {
               "kind": "damage",
-              "base": 5,
+              "base": 3.0,
               "profile": "elemental",
               "type": "elemental",
               "text": "Shock, to one enemy next to the target",
@@ -7333,7 +7333,7 @@
               "per": [
                 {
                   "of": "charge",
-                  "value": 20
+                  "value": 12
                 }
               ],
               "profile": "elemental",
@@ -7402,7 +7402,7 @@
               "per": [
                 {
                   "of": "guard",
-                  "value": 10
+                  "value": 6.0
                 }
               ],
               "profile": "flat",
@@ -7440,7 +7440,7 @@
           "amounts": {
             "shield": {
               "kind": "shield",
-              "base": 20,
+              "base": 12,
               "profile": "healing",
               "provisional": true
             }
@@ -7452,7 +7452,7 @@
           "effects": [
             {
               "op": "shield",
-              "value": 20,
+              "value": 12,
               "target": "self",
               "scale": "healing_given",
               "when": "on_brace"
@@ -8240,88 +8240,88 @@
           "amounts": {
             "lava": {
               "kind": "damage",
-              "base": 10,
+              "base": 6.0,
               "profile": "flat",
               "type": "elemental",
               "provisional": true
             },
             "storm": {
               "kind": "damage",
-              "base": 15,
+              "base": 9.0,
               "profile": "flat",
               "type": "elemental",
               "provisional": true
             },
             "dome": {
               "kind": "shield",
-              "base": 20,
+              "base": 12,
               "profile": "flat",
               "provisional": true
             },
             "mend": {
               "kind": "heal",
-              "base": 10,
+              "base": 6.0,
               "profile": "healing",
               "provisional": true
             },
             "crush": {
               "kind": "damage",
-              "base": 10,
+              "base": 6.0,
               "profile": "flat",
               "type": "sigil",
               "provisional": true
             },
             "tripwire": {
               "kind": "damage",
-              "base": 10,
+              "base": 6.0,
               "profile": "flat",
               "type": "sigil",
               "provisional": true
             },
             "mortar": {
               "kind": "damage",
-              "base": 15,
+              "base": 9.0,
               "profile": "flat",
               "type": "sigil",
               "provisional": true
             },
             "mortar_splash": {
               "kind": "damage",
-              "base": 5,
+              "base": 3.0,
               "profile": "flat",
               "type": "sigil",
               "provisional": true
             },
             "sentinel": {
               "kind": "damage",
-              "base": 15,
+              "base": 9.0,
               "profile": "flat",
               "type": "sigil",
               "provisional": true
             },
             "sentinel_leaving": {
               "kind": "damage",
-              "base": 10,
+              "base": 6.0,
               "profile": "flat",
               "type": "sigil",
               "provisional": true
             },
             "bloodwell": {
               "kind": "heal",
-              "base": 5,
+              "base": 3.0,
               "profile": "flat",
               "provisional": true
             },
             "arc": {
               "kind": "damage",
-              "base": 10,
+              "base": 6.0,
               "profile": "flat",
               "type": "elemental",
               "provisional": true
             },
             "bloom": {
               "kind": "damage",
-              "base": 10,
+              "base": 6.0,
               "profile": "flat",
               "type": "sigil",
               "provisional": true
@@ -8675,7 +8675,7 @@
               "per": [
                 {
                   "of": "forms",
-                  "value": 10
+                  "value": 6.0
                 }
               ],
               "profile": "healing",
@@ -8714,7 +8714,7 @@
           "amounts": {
             "damage": {
               "kind": "damage",
-              "base": 15,
+              "base": 9.0,
               "profile": "soul",
               "type": "soul",
               "text": "each form, times its stage multiplier",

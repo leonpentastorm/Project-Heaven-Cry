@@ -3970,7 +3970,7 @@
       "amounts": {
         "repair": {
           "kind": "heal",
-          "base": 15,
+          "base": 9.0,
           "profile": "repair",
           "provisional": true
         }
@@ -7468,7 +7468,7 @@
       "amounts": {
         "heal": {
           "kind": "heal",
-          "base": 1.9,
+          "base": 1.14,
           "profile": "tend",
           "heal_kind": "tending",
           "provisional": true,
@@ -13374,7 +13374,7 @@
       "amounts": {
         "shield": {
           "kind": "shield",
-          "base": 15,
+          "base": 9.0,
           "profile": "flat",
           "text": "at least this",
           "provisional": true
@@ -13385,7 +13385,7 @@
           "per": [
             {
               "of": "armour_value",
-              "value": 3
+              "value": 1.8
             }
           ],
           "profile": "flat",

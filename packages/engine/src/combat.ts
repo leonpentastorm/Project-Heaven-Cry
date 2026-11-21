@@ -11,7 +11,7 @@ import { type Character, type PackItem, penalLimbs, plainRounds, gearEntry, isSh
 import { type Rng, die } from './rng';
 import { rollD20, rollVs, judge, rollFx, CONTEST_BASE, DEATH_SAVE_TN, toHitTerms } from './rolls';
 import { type MagicUnit, type Glyph, type Zone, type Trace, magicOf, magicTurnStart, magicRoundTick, zoneEnter, veilTiles, magicLit, SIGIL_REV, enemyMagic, enemyCast, enemyAvoidMagic, sigilSpot, condHit, condOn, condSource, condSkillMod, condTurnEnd, condSourcesCheck, endCond, applyCond, withVia, shiftMana, enemyScuff, noteDeaths, heartOverwatch, magicTurnEnd, calmFight, calmTend } from './magic';
-import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, VS_CAP, ambushReady, reveal, attackFromHidden, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
+import { type FoeTraits as FoeTraitsT, escapeGrapple as escapeGrappleT, recoverWeapon as recoverWeaponT, AMMO_TYPES, ammoId, damageTypeOf, isExplosive, radiusOf, isSilent, stackDamage, ambushReady, reveal, attackFromHidden, canReact, react, heldShotPaid, spendPaidShot, spotHidden, hideAction, hideBlock, companionUnits, applyFoeTraits, resGain, throwRangeOf, type FoeTraits } from './tactics';
 import { armFoe, aiSigilStep, aiClearBlock, aiRouteRisk, CASTER } from './ai-sigil';
 import { armHeart, aiSoulStep, HEART_CASTER } from './ai-soul';
 import { type MapObject, OBJ, makeObject, kindOf, blocksMove, blocksSight, coverKind, isDifficult, isTrap, hazardOf, lightOf } from './objects';
@@ -24,7 +24,7 @@ import { type OwnedBlock, tieCompanions } from './owned';
 import type { Held } from './effects/collect';
 import { applyDamage, healUnit, shieldTotal } from './effects/damage';
 import { itemAmount, amountSpecOf, amountHome } from './effects/amounts';
-import { openAmount, closeAmount, armourAgainst, landed, deal, term, factorOf, amountOf, scaleOf, mend } from './effects/output';
+import { openAmount, closeAmount, armourAgainst, landed, deal, term, amountOf, scaleOf, mend } from './effects/output';
 import { tendedLately, TEND_NOTICE, STIM_HEAL, STIM_PCT, mendFactorOf, kitHeal, flatLevelOf } from './effects/mending';
 import { turnAp, briefCredit, AP_BASE, AP_MIN } from './effects/ap';
 import { skillRollMod, immune, forbids } from './effects/core';
@@ -42,8 +42,6 @@ import { condMods, condDef } from './condtable';
 import { weaponSystem } from './physical/data';
 
 /** cover = half cover tiles, full = full cover tiles (spec: Cover). */
-/** Rules 1.26 (the re-fit): what a character's melee blow is multiplied by, melee's identity (data/rules.json output.factors.melee). */
-const MELEE_FACTOR: number = factorOf('melee');
 /** Recoil 2.0 (rules 1.56): the Dexterity relief step and the braced / Emplaced share (data/rules.json weapons_rules.recoil). */
 const RECOIL: { dex_relief_per: number; braced_mult: number } = (() => { const r: any = (RULES as any).weapons_rules?.recoil; if (!r || typeof r.dex_relief_per !== 'number' || typeof r.braced_mult !== 'number') throw new Error('data/rules.json weapons_rules.recoil needs dex_relief_per and braced_mult'); return r; })();
 export interface MapDef { id: string; name: string; w: number; h: number; solid: string[]; cover: string[]; full?: string[]; difficult: string[]; pcStart: string[]; foeStart: string[];
@@ -1534,7 +1532,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   const mults: Term[] = amt.mults, vs: Term[] = amt.vs;
   const M = (v: number, label: string) => { if (v !== 1) mults.push({ v, label }); };
   M(useW === w ? att.dmgMult || 1 : 1, 'rarity'); M(o.dmgMult || 1, 'weapon skill');
-  if (who && melee) M(MELEE_FACTOR, 'melee'); // rules 1.26: melee's own named multiplier (data/rules.json output.factors.melee)
+  // rules 1.95: melee's own named multiplier (rules 1.26) is folded into the melee profile's k (data/rules.json output.profiles.melee)
   if (melee && useW === w && att.maxDur) M((att.dur ?? 1) <= 0 ? 0.5 : worn ? 0.9 : 1, (att.dur ?? 1) <= 0 ? 'broken' : 'worn');
   if (ammo?.damage_mult) M(ammo.damage_mult, ammo.id.replace(/_/g, '-') + ' rounds');
   // Rules 1.15: a critical is ×1.5 (an enemy's too), to ×2.0 at most with everything together. An item adds to it through
@@ -1555,7 +1553,7 @@ export function attackDamage(cb: Combat, att: Unit, tgt: Unit, mode: AttackMode,
   if (ctx.critBonus) { critM = critOf(ctx.critBonus); critTerm.v = critM; }
   amt.add = ctx.add;
   const st = closeAmount(amt);
-  if (vs.length) mults.push({ v: Math.round(st.vsMult * 100) / 100, label: 'against this target (' + vs.map((x) => x.label).join(', ') + (vs.reduce((t, x) => t + x.v, 0) > VS_CAP ? '; capped at ×2' : '') + ')' });
+  if (vs.length) mults.push({ v: Math.round(st.vsMult * 100) / 100, label: 'against this target (' + vs.map((x) => x.label).join(', ') + ')' });
   const total = st.raw;
   const props = useW.properties || [];
   const ignoreAll = !!ctx.ignoreArmour || props.includes('ignores_armour') || !!ammo?.ignores_armor || fx.op === 'ignore_armour' && fx.value >= 99;

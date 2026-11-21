@@ -16,7 +16,7 @@
 //           there, nothing moves) or `mend` (the level factor of rules 1.20: the enemy table's damage column)
 //   own     the source's own multipliers, in the order the source lists them (technique, rarity, ammunition, critical,
 //           conditions, perks): they multiply
-//   target  "against this target" bonuses: fractions that ADD together, capped at +100% (VS_CAP)
+//   target  "against this target" bonuses: fractions that ADD together, held at -90% at least (rules 1.95: no top)
 //
 // ONE ORDER FOR EVERYTHING (step a7, spec item 1421): the base (with what items add) times each multiplier in turn, in
 // the order the source lists them, then the bonus against this target: ((base + flat) × m1) × m2 … × target. A weapon
@@ -74,8 +74,7 @@ const FLOOR_REF: { attribute: number; skill: number } = { attribute: Number(OUT.
 export const PAIRS: Record<string, Pair> = Object.fromEntries(Object.entries(OUT.pairs || {}).filter(([, p]: [string, any]) => p && Array.isArray(p.attrs) && Array.isArray(p.skills)).map(([id, p]: [string, any]) => [id, { attrs: [...p.attrs], skills: [...p.skills] }]));
 /** The profile of this id (data/rules.json output.profiles); an unknown or absent id is the flat profile (no Stat, no Level term). */
 export const profileOf = (id: string | null | undefined): Profile => PROFILES[id || ''] || FLAT;
-/** Rules 1.26 (the re-fit): a system's own named multiplier (data/rules.json output.factors: melee, thrown). Throws when the data has none: never a silent ×1. */
-export function factorOf(name: string): number { const v = Number(OUT.factors?.[name]); if (!Number.isFinite(v)) throw new Error('data/rules.json output.factors.' + name + ' is missing'); return v; }
+// Rules 1.95 (the scale): output.factors (melee, thrown, figment) are folded into their profiles' k and are gone (factorOf with them).
 const FLAT: Profile = { k: 1, attr: 0, skill: 0, level: null };
 /** The pair a profile reads: its own id in output.pairs, else the profile's default pair, else none. */
 export const pairOf = (id: string | null | undefined): Pair => PAIRS[id || ''] || PAIRS[profileOf(id).pair || ''] || { attrs: [], skills: [] };
@@ -86,14 +85,20 @@ export const pairOf = (id: string | null | undefined): Pair => PAIRS[id || ''] |
  * never under floor × what a normal share of the same pair gets (output.floor_reference), whatever the points. */
 export function statTerm(profile: string | Profile, attrs: number[], skills: number[]): number {
   const p = typeof profile === 'string' ? profileOf(profile) : profile;
-  let s = 1 + attrs.reduce((t, a) => t + p.attr * (a - 1), 0) + skills.reduce((t, k) => t + p.skill * k, 0);
+  let s = bracketOf(p, attrs.reduce((t, a) => t + (a - 1), 0), skills.reduce((t, k) => t + k, 0));
   if (p.floor) s = Math.max(s, p.floor * normalShareTerm(p, attrs.length, skills.length));
   return p.k === 1 ? s : s * p.k;
 }
+/** Rules 1.95 (ruling A4: the cards, one rule for all nine): the attribute term and the skill term of a Stat multiply each
+ * other when data/rules.json output.combine.rule is `multiply`: (1 + attr x the Attribute points over 1) x (1 + skill x
+ * the Skill points); else they add (1 + both), as before. */
+const MULTIPLY: boolean = OUT.combine?.rule === 'multiply';
+const bracketOf = (p: Profile, attrOver: number, skillPts: number): number =>
+  (MULTIPLY ? (1 + p.attr * attrOver) * (1 + p.skill * skillPts) : 1 + p.attr * attrOver + p.skill * skillPts);
 /** Rules 1.27: the bracket of a profile's Stat term (before k) for a normal share: output.floor_reference in each of
  * its pair's Attributes and Skills. */
 export function normalShareTerm(p: Profile, nAttrs: number, nSkills: number): number {
-  return 1 + nAttrs * p.attr * (FLOOR_REF.attribute - 1) + nSkills * p.skill * FLOOR_REF.skill;
+  return bracketOf(p, nAttrs * (FLOOR_REF.attribute - 1), nSkills * FLOOR_REF.skill);
 }
 /** The Stat term of a profile for a character, read from its sheet with the profile's pair (or the pair given). No
  * perks, traits or gear: a caller that lets items speak wraps it (character.ts fx). */
@@ -117,7 +122,7 @@ export function levelFactor(column: string | null | undefined, level: number | n
 }
 /** Rules 1.36 (the level scale): the factor everything measured in HP takes at this level (output.level.scale; ×1 at
  * level 1). Read at the one place each such number is read in code (max HP, armour, Guard's soak, Strain's burn…). */
-export const scaleOf = (level: number | null | undefined): number => levelFactor('scale', level ?? 1);
+export const scaleOf = (level: number | null | undefined): number => levelFactor('deal', level ?? 1); // rules 1.95: the scale column is gone; what is measured in a character's HP rides deal
 /** The Level term of a profile for a level. */
 export const levelOf = (profile: string | null | undefined, level: number | null | undefined): number => levelFactor(profileOf(profile).level, level);
 
@@ -126,10 +131,11 @@ export const levelOf = (profile: string | null | undefined, level: number | null
  * Judgement Day, Case Closed, Weak Point, Deliver the Sinner, Holy Ordnance, Moon Hunter, Humanity First, Ork Steel
  * each push {v: 0.15, label} (the bonus as a fraction) into ctx.vs on 'damage_out'. Situational self-multipliers
  * (Pain Eater, Brightest Light, the Ambush multiplier, Weakened) stay multiplicative in ctx.mults. */
-export const VS_CAP = 1.0;
-/** The one stacking rule: own multipliers multiply; target bonuses add, are held between −90% and +100%, and multiply once. */
+// Rules 1.95 (the scale; scale.json caps.vs_cap, ruling A10): the +100% cap on the target bonuses (VS_CAP) is gone: one sum
+// with no top; the floor stays.
+/** The one stacking rule: own multipliers multiply; target bonuses add, are held at −90% at least (no top), and multiply once. */
 export function stackDamage(mults: Term[], vs: Term[]): { mult: number; vsMult: number; total: number } {
-  const mult = mults.reduce((t, m) => t * m.v, 1), vsMult = 1 + Math.min(VS_CAP, Math.max(-0.9, vs.reduce((t, x) => t + x.v, 0)));
+  const mult = mults.reduce((t, m) => t * m.v, 1), vsMult = 1 + Math.max(-0.9, vs.reduce((t, x) => t + x.v, 0));
   return { mult, vsMult, total: mult * vsMult };
 }
 

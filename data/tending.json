@@ -664,7 +664,7 @@
       "amounts": {
         "snap": {
           "kind": "damage",
-          "base": 3.0,
+          "base": 1.8,
           "profile": "tend",
           "type": "soul",
           "armour": "none",
@@ -673,7 +673,7 @@
         },
         "snap_heal": {
           "kind": "heal",
-          "base": 3.0,
+          "base": 1.8,
           "profile": "tend",
           "heal_kind": "tending",
           "provisional": true
@@ -778,7 +778,7 @@
       "amounts": {
         "heal": {
           "kind": "heal",
-          "base": 3.75,
+          "base": 2.25,
           "profile": "tend",
           "heal_kind": "tending",
           "provisional": true
@@ -843,7 +843,7 @@
       "amounts": {
         "heal": {
           "kind": "heal",
-          "base": 3.75,
+          "base": 2.25,
           "profile": "tend",
           "heal_kind": "tending",
           "provisional": true
@@ -927,7 +927,7 @@
       "amounts": {
         "shield": {
           "kind": "shield",
-          "base": 4.5,
+          "base": 2.7,
           "profile": "tend",
           "heal_kind": "tending",
           "provisional": true

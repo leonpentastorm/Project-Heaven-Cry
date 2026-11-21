@@ -705,7 +705,7 @@
       "amounts": {
         "rig": {
           "kind": "damage",
-          "base": 25,
+          "base": 15,
           "profile": "flat",
           "type": "physical",
           "provisional": true

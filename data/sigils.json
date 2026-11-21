@@ -330,7 +330,7 @@
     "shape": "line of 2",
     "draw_charge": 3,
     "evoke_charge": 2,
-    "damage": 26,
+    "damage": 16,
     "range_tiles": 8,
     "ap_at_agility_1_expression_1": 4
   },
@@ -345,7 +345,7 @@
       "charge": 2,
       "flux": 1,
       "text": "Deals {=damage} Elemental damage. On a critical hit the target starts Burning.",
-      "damage": 30,
+      "damage": 18,
       "damage_type": "elemental",
       "element": "fire",
       "on_crit": {
@@ -377,7 +377,7 @@
       "charge": 2,
       "flux": 1,
       "text": "Deals {=damage} Elemental damage. The target is Slowed unless it passes a Body save.",
-      "damage": 25,
+      "damage": 15,
       "damage_type": "elemental",
       "element": "freeze",
       "applies": {
@@ -410,7 +410,7 @@
       "charge": 2,
       "flux": 1,
       "text": "Deals {=damage} Elemental damage. It ignores half cover.",
-      "damage": 30,
+      "damage": 18,
       "damage_type": "elemental",
       "element": "shock",
       "ignores": "half_cover",
@@ -440,7 +440,7 @@
       "charge": 2,
       "flux": 1,
       "text": "Deals {=damage} Sigil damage. Armour counts in full against it.",
-      "damage": 35,
+      "damage": 21,
       "damage_type": "sigil",
       "element": "stone",
       "new": false,
@@ -469,7 +469,7 @@
       "charge": 1,
       "flux": 1,
       "text": "Deals {=damage} Sigil damage and pushes the target {=push_tiles} tiles away from where the spell came from.",
-      "damage": 15,
+      "damage": 9.0,
       "damage_type": "sigil",
       "element": "gale",
       "push_tiles": 2,
@@ -499,7 +499,7 @@
       "charge": 1,
       "flux": 1,
       "text": "Deals {=damage} Elemental damage. It is the cheapest attack word.",
-      "damage": 15,
+      "damage": 9.0,
       "damage_type": "elemental",
       "element": "spark",
       "new": false,
@@ -528,7 +528,7 @@
       "charge": 2,
       "flux": 1,
       "text": "Deals {=damage} Elemental damage and leaves the target Corroded, with no save: 5 damage at the start of each of its turns and −2 Defense, for 3 rounds. A Body save at the end of each of its turns ends it early.",
-      "damage": 15,
+      "damage": 9.0,
       "damage_type": "elemental",
       "element": "acid",
       "applies": {
@@ -782,7 +782,7 @@
       "charge": 2,
       "flux": 1,
       "text": "The target gains a shield of {=shield} × your Sigil multiplier × your Healing given, until the end of the fight. It grows with your level, like healing. Shields don't add up: the bigger one stays.",
-      "shield": 4.3,
+      "shield": 2.58,
       "new": false,
       "grand": "Dome. Each ally who starts a turn in the area gets +2 Defense and a shield of 20. The shield doesn't add to one they already have.",
       "max_copies": null,
@@ -799,7 +799,7 @@
         ],
         "provisional": true
       },
-      "shield_enemy": 30
+      "shield_enemy": 18
     },
     {
       "id": "mend",
@@ -810,7 +810,7 @@
       "charge": 3,
       "flux": 1,
       "text": "Heals the target for 10 × your Sigil multiplier × your Healing given. It grows with your level (×1.13 at level 6, ×1.38 at level 12, ×1.82 at level 20).",
-      "heal": 15,
+      "heal": 9.0,
       "new": false,
       "grand": "Spring. Each ally who starts a turn in the area heals 10 × your Healing given.",
       "max_copies": null,
@@ -827,7 +827,7 @@
         ],
         "provisional": true
       },
-      "heal_enemy": 25
+      "heal_enemy": 15
     },
     {
       "id": "quicken",
@@ -1021,7 +1021,7 @@
       "flux": 1,
       "text": "A solid wall rises on each empty tile the spell covers. A wall blocks movement and sight, has 30 HP and lasts {=barrier.rounds} rounds plus your Sigil duration bonus. You can keep only one RAISE spell's walls standing: new walls replace the old ones.",
       "barrier": {
-        "hp": 30,
+        "hp": 18,
         "rounds": 3,
         "duration_bonus": true,
         "blocks": [
@@ -1417,7 +1417,7 @@
       "lasts_rounds": 2,
       "duration_bonus": true,
       "mult": 0.5,
-      "hp": 10,
+      "hp": 6.0,
       "defense": 10,
       "per_copy": {
         "rounds": 2

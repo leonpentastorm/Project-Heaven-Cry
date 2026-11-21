@@ -123,10 +123,10 @@
       "high_from_devotion": 7,
       "ends_witnessed": true,
       "amount": {
-        "base": 20,
-        "per_devotion": 4
+        "base": 12,
+        "per_devotion": 2.4
       },
-      "text": "While you are Witnessed, your patron acts on its own when its trigger happens, and then Witnessed ends. It can happen once a fight, or twice from Devotion 7. Its damage is 20 + 4 × your Devotion, × your Blessing power; Mother Ember's healing is 10 + 3 × your Devotion, × your Blessing power."
+      "text": "While you are Witnessed, your patron acts on its own when its trigger happens, and then Witnessed ends. It can happen once a fight, or twice from Devotion 7. Its damage is {=amount.base} + {=amount.per_devotion} × your Devotion, × your Blessing power; Mother Ember's healing is her own (her card says it)."
     },
     "provisional": true
   },
@@ -226,7 +226,7 @@
       "effects": [
         {
           "op": "heal",
-          "value": 8.5
+          "value": 5.1
         }
       ],
       "scales_with": "blessing_power",
@@ -241,7 +241,7 @@
       "effects": [
         {
           "op": "shield",
-          "value": 10
+          "value": 6.0
         }
       ],
       "scales_with": "blessing_power",
@@ -309,7 +309,7 @@
         {
           "op": "stat_mod",
           "stat": "hp",
-          "value": -20,
+          "value": -12,
           "damage_type": "soul"
         }
       ],
@@ -452,8 +452,8 @@
           {
             "op": "stat_mod",
             "stat": "hp",
-            "value": -20,
-            "per_devotion": -4,
+            "value": -12,
+            "per_devotion": -2.4,
             "damage_type": "soul",
             "target": "trigger_source"
           }
@@ -476,7 +476,7 @@
           "effects": [
             {
               "op": "shield",
-              "value": 34
+              "value": 20
             }
           ],
           "scales_with": "blessing_power",
@@ -493,7 +493,7 @@
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -56,
+              "value": -34,
               "damage_type": "soul"
             },
             {
@@ -519,7 +519,7 @@
             },
             {
               "op": "heal",
-              "value": 19
+              "value": 11
             }
           ],
           "scales_with": "blessing_power",
@@ -536,7 +536,7 @@
           {
             "op": "stat_mod",
             "stat": "hp",
-            "value": -130,
+            "value": -78,
             "damage_type": "soul",
             "target": "enemies_in_sight"
           },
@@ -1197,7 +1197,7 @@
           "effects": [
             {
               "op": "heal",
-              "value": 11,
+              "value": 6.6,
               "revive": true
             }
           ],
@@ -1235,7 +1235,7 @@
               "op": "execute",
               "hp_frac": 0.25,
               "save": "heart",
-              "boss_damage": 40
+              "boss_damage": 24
             }
           ],
           "adjudication": "engine",
@@ -1385,8 +1385,8 @@
         "effects": [
           {
             "op": "heal",
-            "value": 7,
-            "per_devotion": 2.1,
+            "value": 4.2,
+            "per_devotion": 1.26,
             "target": "trigger_ally"
           }
         ],
@@ -1409,7 +1409,7 @@
           "effects": [
             {
               "op": "heal",
-              "value": 28
+              "value": 17
             }
           ],
           "scales_with": "blessing_power",
@@ -1430,7 +1430,7 @@
               "effects": [
                 {
                   "op": "heal",
-                  "value": 9,
+                  "value": 5.4,
                   "when": "turn_start",
                   "scope": "allies"
                 }
@@ -1483,7 +1483,7 @@
           },
           {
             "op": "shield",
-            "value": 17,
+            "value": 10,
             "target": "allies"
           }
         ],
@@ -1616,8 +1616,8 @@
           {
             "op": "stat_mod",
             "stat": "hp",
-            "value": -20,
-            "per_devotion": -4,
+            "value": -12,
+            "per_devotion": -2.4,
             "damage_type": "lightning",
             "target": "nearest_other_enemy"
           }
@@ -1641,7 +1641,7 @@
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -20,
+              "value": -12,
               "damage_type": "lightning",
               "radius": 2
             },
@@ -1671,7 +1671,7 @@
             {
               "op": "stat_mod",
               "stat": "hp",
-              "value": -56,
+              "value": -34,
               "damage_type": "lightning"
             },
             {
@@ -1712,7 +1712,7 @@
           {
             "op": "stat_mod",
             "stat": "hp",
-            "value": -150,
+            "value": -90,
             "damage_type": "lightning",
             "area": "5x5",
             "filter": "enemies"

@@ -64,8 +64,10 @@
       "derived": [
         {
           "stat": "max_hp",
-          "formula": "100 + 15 × (Endurance − 1) + (level − 1) × HP per level",
-          "per_point_above_1": 15
+          "formula": "(60 + 10 × (Endurance − 1) + (level − 1)) × (1 + 6% × Pain Threshold) × the deal column (rules 1.95)",
+          "base": 60,
+          "per_point_above_1": 10,
+          "per_level": 1
         },
         {
           "stat": "injury_resist_pct",
@@ -217,8 +219,8 @@
         },
         {
           "stat": "mp_max",
-          "formula": "100 + 75 × (Determination − 1) + 25 × (Insight − 1) (rules 1.24)",
-          "per_point_above_1": 25,
+          "formula": "(40 + 12 × (Determination − 1) + 8 × (Insight − 1)) × the mp column (rules 1.95)",
+          "per_point_above_1": 8,
           "provisional": true
         }
       ]
@@ -246,9 +248,10 @@
         },
         {
           "stat": "mp_max",
-          "formula": "100 + 75 × (Determination − 1) + 25 × (Insight − 1) (rules 1.24; it was 100 + 100 × (Virtue − 1))",
-          "per_point_above_1": 75,
-          "provisional": true
+          "formula": "(40 + 12 × (Determination − 1) + 8 × (Insight − 1)) × the mp column (rules 1.95)",
+          "per_point_above_1": 12,
+          "provisional": true,
+          "base": 40
         }
       ]
     },

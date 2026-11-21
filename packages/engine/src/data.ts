@@ -33,6 +33,9 @@ export interface EnemyTier { id: string; name: string; hp: number; defense: numb
 export const SKILLS: SkillDef[] = (skillsJ as any).items;
 export const ATTRS: AttrDef[] = (attributesJ as any).items.map((a: any) => ({ id: a.id, name: a.name, core: a.core }));
 export const RULES: any = rulesJ;
+/** Rules 1.95 (the scale): an attribute's derived row by its stat (data/attributes.json items[].derived: max_hp's base,
+ * per_point_above_1 and per_level; mp_max's base and per_point_above_1), the one copy of those numbers. */
+export const attrDerived = (attr: string, stat: string): any => (((attributesJ as any).items.find((a: any) => a.id === attr)?.derived || []) as any[]).find((d: any) => d.stat === stat) || {};
 export const WEAPONS: WeaponDef[] = (weaponsJ as any).items;
 // Rules 1.91 item 7904: the hit skill is one key, phys.hits_with; a row with no `skill` gets it from there for the old
 // readers (the validator refuses a row where both are written and differ).

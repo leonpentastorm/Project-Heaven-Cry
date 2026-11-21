@@ -5,11 +5,11 @@
 // Every number here is provisional (spec 14, items 82 onward). Deterministic: dice come from the rng passed in.
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { WEAPON, RULES, ENEMY, type WeaponDef } from './data';
-import { factorOf } from './effects/output';
+import { amountOf } from './effects/output';
 import patronsJ from '../../../data/patrons.json';
 import enemiesJ from '../../../data/enemies.json';
 import actionsJ from '../../../data/actions.json';
-import { type Character, mod, prayerCooldown, gearNum } from './character';
+import { type Character, mod, prayerCooldown, gearNum, weaponMult } from './character';
 import { say, noteSeen, type Combat, type Unit, type Term, alwaysSeen, bossInTheOpen, dist, key, xy, refOf, lineOfSight, unitSees, sideSeesUnit, emitFx, fxFell, hurtUnit, sightFx, damageObject, objectsOf, alive, sightBlockers, standable, unitFromEnemy, levelCompanion } from './combat';
 import { type Rng } from './rng';
 import { rollD20, judge, rollFx, contest, CONTEST_BASE } from './rolls';
@@ -56,7 +56,7 @@ export function dropHeldShot(cb: Combat | null | undefined, u: Unit, why = 'lost
 export const isSilent = (u: Unit) => { const w = WEAPON[u.weapon]; return (w?.properties || []).includes('silent') || !!(w as any)?.phys?.props?.includes('silent') || gearNum(u.weapon, u.mods, 'silent') > 0; }; // rules 1.12: the Silent property counts; rules 1.56: a mod's `silent` (the suppressor)
 // The stacking rule (target bonuses add and are capped at +100%; own multipliers multiply) lives with the one formula:
 // effects/output.ts. Re-exported here for the callers that always took it from tactics.
-export { VS_CAP, stackDamage } from './effects/output';
+export { stackDamage } from './effects/output';
 
 // ---------- reactions (rules 1.28, Classes 3.0 P1: ONE door, react()) ----------
 // Every answer a unit makes outside its own turn goes through react(cb, u, {kind, event, spend, payer, window}, fn):
@@ -408,6 +408,14 @@ export function throwItem(cb: Combat, rng: Rng, u: Unit, item: string, tile: str
   if (u.hidden && !isSilent(u)) attackFromHidden(cb, u, 'threw ' + w.name.toLowerCase()); // rules 1.82 item 7012
   return null;
 }
+/** Rules 1.95 (the scale; 09-build-order step 1: the thrown path onto the one formula): what a thrown or placed charge a
+ * character sets off deals: the row's damage on the `thrown` profile (its Stat from the row's own pair, phys, and the
+ * deal column at the thrower's level), floored. An enemy's or a thing's charge deals the row's number, as before. */
+export function thrownDamage(by: Unit | null, item: string, dmg: number): number {
+  const who = charOfUnit(by);
+  if (!who || !by || !(WEAPON[item]?.properties || []).includes('consumable')) return dmg;
+  return amountOf({ kind: 'damage', base: dmg, profile: 'thrown' }, by, { stat: { v: weaponMult(who, item), label: 'thrown' } }).amount;
+}
 /** A thrown item goes off on a tile (credited to the thrower: kills, bleed, the barrels it sets off). */
 export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item: string, radius = radiusOf(WEAPON[item])): string {
   const w = WEAPON[item], who = unitsIn(cb, { shape: 'burst', at: tile, r: radius }, { downed: true });
@@ -432,7 +440,8 @@ export function blast(cb: Combat, rng: Rng, by: Unit | null, tile: string, item:
     }
     default: {
       const dmg = typeof w?.damage === 'number' ? w.damage : 0;
-      for (const v of who) { out += hurtUnit(v, dmg * (by?.charId && (w?.properties || []).includes('consumable') ? factorOf('thrown') : 1), false, cb, 'explosion', by); if (!v.dead && (w?.properties || []).includes('applies_burning')) out += applyCond(cb, rng, by, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
+      const hit = thrownDamage(by, item, dmg);
+      for (const v of who) { out += hurtUnit(v, hit, false, cb, 'explosion', by); if (!v.dead && (w?.properties || []).includes('applies_burning')) out += applyCond(cb, rng, by, v, 'burning', undefined, 'body', { skipSave: true, via: 'dexterity' }); }
       for (const o of [...objectsOf(cb)]) if (o.hp != null && o.hp > 0 && dist(o.pos, tile) <= radius) out += damageObject(cb, o.pos, dmg, 0, by);
       if ((w?.properties || []).includes('applies_burning') && standable(cb.map, tile)) cb.objects = [...objectsOf(cb), makeObject('fire_' + tile.replace(',', '_') + '_' + cb.round, 'fire', tile)];
       return out || ' · it goes off and finds no one';

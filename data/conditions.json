@@ -8,7 +8,7 @@
       "amounts": {
         "tick": {
           "kind": "damage",
-          "base": 5,
+          "base": 3.0,
           "profile": "flat",
           "type": "true",
           "provisional": true
@@ -20,15 +20,8 @@
       "family": "body",
       "save": false,
       "engine": "flag",
-      "text": "You take {=effects.0.value|abs} damage at the start of each of your turns, for {=duration.rounds} rounds. A stim ends it early.",
-      "effects": [
-        {
-          "op": "stat_mod",
-          "stat": "hp",
-          "value": -5,
-          "when": "turn_start"
-        }
-      ],
+      "text": "You take {=amounts.tick.base} damage at the start of each of your turns, for {=duration.rounds} rounds. A stim ends it early.",
+      "effects": [],
       "duration": {
         "rounds": 3
       },
@@ -44,7 +37,7 @@
       "amounts": {
         "tick": {
           "kind": "damage",
-          "base": 10,
+          "base": 6.0,
           "profile": "flat",
           "type": "true",
           "provisional": true
@@ -56,15 +49,8 @@
       "family": "body",
       "save": true,
       "engine": "table",
-      "text": "You take {=effects.0.value|abs} damage at the start of each of your turns until the fire is put out. You, or anyone next to you, can put it out for 1 AP.",
-      "effects": [
-        {
-          "op": "stat_mod",
-          "stat": "hp",
-          "value": -10,
-          "when": "turn_start"
-        }
-      ],
+      "text": "You take {=amounts.tick.base} damage at the start of each of your turns until the fire is put out. You, or anyone next to you, can put it out for 1 AP.",
+      "effects": [],
       "duration": {
         "until": "put_out"
       },
@@ -1190,7 +1176,7 @@
       "amounts": {
         "tick": {
           "kind": "damage",
-          "base": 5,
+          "base": 3.0,
           "profile": "flat",
           "type": "true",
           "provisional": true
@@ -1202,14 +1188,8 @@
       "family": "body",
       "save": true,
       "engine": "table",
-      "text": "You take {=effects.0.value|abs} damage at the start of each of your turns and have {=effects.1.value} Defense. Lasts {=duration.rounds} rounds. At the end of each of your turns you roll a Body save, and a success ends it early.",
+      "text": "You take {=amounts.tick.base} damage at the start of each of your turns and have {=effects.0.value} Defense. Lasts {=duration.rounds} rounds. At the end of each of your turns you roll a Body save, and a success ends it early.",
       "effects": [
-        {
-          "op": "stat_mod",
-          "stat": "hp",
-          "value": -5,
-          "when": "turn_start"
-        },
         {
           "op": "stat_mod",
           "stat": "defense",
@@ -2185,7 +2165,7 @@
       "amounts": {
         "spite": {
           "kind": "damage",
-          "base": 6,
+          "base": 3.6,
           "profile": "flat",
           "type": "soul",
           "provisional": true
@@ -2238,7 +2218,7 @@
       "amounts": {
         "spite": {
           "kind": "damage",
-          "base": 6,
+          "base": 3.6,
           "profile": "flat",
           "type": "soul",
           "provisional": true
@@ -2296,7 +2276,7 @@
       "amounts": {
         "shame": {
           "kind": "damage",
-          "base": 8,
+          "base": 4.8,
           "profile": "flat",
           "type": "soul",
           "provisional": true
@@ -2341,7 +2321,7 @@
       "amounts": {
         "shame": {
           "kind": "damage",
-          "base": 8,
+          "base": 4.8,
           "profile": "flat",
           "type": "soul",
           "provisional": true

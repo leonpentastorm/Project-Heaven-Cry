@@ -3,7 +3,8 @@
 import './datatext'; // fills the texts' {=placeholders} before any data is read
 import { numberOf } from './datatext';
 import patronsJ from '../../../data/patrons.json';
-import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, armourClassNumOf, ladderSchedule, ELEMENTAL_CAP } from './data';
+import conditionsJ from '../../../data/conditions.json';
+import { ATTRS, CLASSES, CORES, type CoreId, PERKS, PERK, SKILL, SKILLS, TRAITS, XP_TOTAL, WEAPON, ITEM, COUNTED, ROUND_KG, ARMOUR_KG, CALIBRE_NAME, SIGIL, SCHOOL, MODULE, TONE, RETIRED_MODULE, SOUL_REV, SOUL_RULES, CLASS, CLASS_MIGRATION, CLASS_RULES, RULES, ARMOUR_CLASSES, armourClassNumOf, ladderSchedule, ELEMENTAL_CAP, attrDerived } from './data';
 import { advancedActive, ADVANCED, REV2_CLASSES, revision2Classes, rawItem, instanceMods } from './effects/collect';
 import { statQuery, setRankRule, setHandsRule, sheetSource, type HandInstance } from './effects/hooks';
 import type { StatId } from './effects/stats';
@@ -772,7 +773,10 @@ export const injuryResistPct = (c: Character) => fx(c, 'injury_resist', 10 * (A(
  * weapon needs both arms, so any arm injury hurts it. The one test: the row's `hands` (the category list is gone). */
 export const oneHanded = (w: { hands?: string } | null | undefined): boolean => !!w && w.hands !== '2H';
 export const mainHandSide = (c: Pick<Sheet, 'identity'>): 'left' | 'right' => (/^l/i.test(c.identity?.hand || '') ? 'left' : 'right');
-export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP next turn', torso: 'Bleeding: 5 damage a turn for 3 rounds; a stim stops it', arm: '−2 to attacks with that arm, until treated', leg: 'Half Movement, until treated' };
+/** Rules 1.95 (the scale; scale.json factor.walk.typed_old_scale): the torso's line reads the Bleeding row (its tick and
+ * its rounds, data/conditions.json), never a number of its own. */
+const BLEED_ROW: any = ((conditionsJ as any).items as any[]).find((x) => x.id === 'bleeding') || {};
+export const injuryText: Record<InjuryLoc, string> = { head: 'Dazed: −2 AP next turn', torso: 'Bleeding: ' + (BLEED_ROW.amounts?.tick?.base ?? 0) + ' damage a turn for ' + (BLEED_ROW.duration?.rounds ?? 0) + ' rounds; a stim stops it', arm: '−2 to attacks with that arm, until treated', leg: 'Half Movement, until treated' };
 
 // ---------- derived stats (spec: Derived stats) ----------
 const P = (c: Character, id: string) => c.skills[id] || 0;
@@ -793,12 +797,19 @@ export const noSprintClass = (cls: number | null | undefined): boolean => !!ARMO
 export const armouredClass = (cls: number | null | undefined): boolean => !!ARMOUR[cls || 0]?.armoured;
 /** Rules 1.91 item 7954: the one reader of a character's body armour value: its class row's value x the grade's `arm`
  * (the plate's grade at wornState.torso_outer). Unscaled by level (armourOf scales it). */
+/** Rules 1.95 (ruling A9): the grade step of the body armour worn (its `arm`), which hardens a plate's soak as it hardens the armour value. */
+export const bodyArmourArm = (c: Pick<Character, 'wornState'>): number => armOf(wornGrade(c, ARMOUR_SLOT));
 export const bodyArmourValue = (c: Pick<Character, 'armourClass' | 'wornState'>): number => (ARMOUR[c.armourClass]?.value || 0) * armOf(wornGrade(c, ARMOUR_SLOT));
-// Skeleton 2.0 (rules 1.13): defence numbers sit on the betas. HP a level reads Pain Threshold (it was Durability).
-export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', 5 + 2 * P(c, 'pain_threshold'));
-/** Rules 1.36 (the level scale): max HP = round(scale(level) × (100 + 15 × (Endurance − 1) + (level − 1) × HP a level)),
- * perks and traits inside the bracket: a point of Endurance or Pain Threshold is the same share of the bar at every level. */
-export const maxHp = (c: Character) => Math.max(1, Math.round(scaleOf(c.level) * fx(c, 'hp', 100 + 15 * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c))));
+// Rules 1.95 (the scale, ruling A5): max HP = (base + per point x (Endurance - 1) + (level - 1) x HP a level) x (1 + Pain
+// Threshold's share x its points) x the deal column, every number data's (attributes.json endurance derived max_hp;
+// skills.json pain_threshold per_point.numbers.hp_pct). Perks and traits inside the bracket, as before.
+const HP_ROW = (): any => attrDerived('endurance', 'max_hp');
+/** HP a level (the `per_level` of the max_hp row), what items add to it inside (stat hp_per_level). */
+export const hpPerLevel = (c: Character) => fx(c, 'hp_per_level', Number(HP_ROW().per_level ?? 0));
+/** Pain Threshold's share of the bar a point (skills.json pain_threshold per_point.numbers.hp_pct). */
+const ptHpPct = (): number => Number((SKILL as any).pain_threshold?.per_point?.numbers?.hp_pct ?? 0);
+export const maxHp = (c: Character) => Math.max(1, Math.round(scaleOf(c.level) * (1 + ptHpPct() * P(c, 'pain_threshold'))
+  * fx(c, 'hp', Number(HP_ROW().base ?? 0) + Number(HP_ROW().per_point_above_1 ?? 0) * (A(c, 'endurance') - 1) + (c.level - 1) * hpPerLevel(c))));
 /** Rules 1.36: a character's armour (its Class, what gear and items add), in HP: × scale at the wearer's level. */
 export const armourOf = (c: Character, add = 0) => Math.round(scaleOf(c.level) * (bodyArmourValue(c) + add));
 /** Rules 1.36: the armour of a Class (a class row) at a level, plus what is added, × scale at that level (a Standard plate). */
@@ -857,8 +868,10 @@ export const healingMult = (c: Character) => fx(c, 'mult_heal_given', statOf('he
 /** Rules 1.24 (items 1340, 1341; PROVISIONAL): Max MP is 100 + 75 × (Determination − 1) + 25 × (Insight − 1): the
  * Outburst's own two attributes (Will Power's and Empathy's); 100 with neither raised, 1,000 with both at 10. Virtue
  * gives none. It was 100 + 100 × (Virtue − 1) (`maxMpOld`, kept for the one-time move of a save). */
-export const MP_BASE = 100, MP_PER_DETERMINATION = 75, MP_PER_INSIGHT = 25;
-export const maxMp = (c: Character) => fx(c, 'mp_max', MP_BASE + MP_PER_DETERMINATION * (A(c, 'determination') - 1) + MP_PER_INSIGHT * (A(c, 'insight') - 1));
+// Rules 1.95 (the scale, ruling A6): (base + per point x (Determination - 1) + per point x (Insight - 1)) x the mp column at
+// the character's level, every number data's (attributes.json determination and insight derived mp_max).
+export const MP_BASE = Number(attrDerived('determination', 'mp_max').base ?? 0), MP_PER_DETERMINATION = Number(attrDerived('determination', 'mp_max').per_point_above_1 ?? 0), MP_PER_INSIGHT = Number(attrDerived('insight', 'mp_max').per_point_above_1 ?? 0);
+export const maxMp = (c: Character) => Math.round(fx(c, 'mp_max', (MP_BASE + MP_PER_DETERMINATION * (A(c, 'determination') - 1) + MP_PER_INSIGHT * (A(c, 'insight') - 1)) * levelFactor('mp', c.level)));
 export const maxMpOld = (c: Character) => fx(c, 'mp_max', 100 + 100 * (A(c, 'virtue') - 1));
 /** The MP rule's revision (rules 1.24): a save from before it is moved once (migrateCharacterMp). */
 export const MP_REV = 124;

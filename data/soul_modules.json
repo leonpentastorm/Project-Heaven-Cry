@@ -109,8 +109,8 @@
     ]
   },
   "damage": {
-    "base": 37,
-    "enemy_base": 24,
+    "base": 22,
+    "enemy_base": 14,
     "soul_mult": "1.55 x Level.deal (rules 1.26: the aimed profile; rules.json output.profiles.soul)",
     "critical": {
       "mult": 1.5,
@@ -121,7 +121,7 @@
     "modes_note": "The Damage school's ways (finish, brand, drain) are the school's own `modes` (schools[damage].modes, 0.31.11), read by the engine and by the ways' lines."
   },
   "aura": {
-    "tick_damage": 5,
+    "tick_damage": 3.0,
     "radius": 1,
     "rider_stage": 1,
     "text": "While you hold an Outburst with an element, each enemy next to you at the start of your turn takes 5 Elemental damage and the element's stage 1 effect.",
@@ -184,7 +184,7 @@
       "name": "Damage",
       "base_cost": 20,
       "text": "Deals {=damage} damage, more with your Soul skills and more again with each stage you pump it to, in the way you pick. A Raw Outburst deals Soul damage, which ignores armour; one with an element deals Elemental damage, and armour counts half. A Bolt or Lance rolls Will Power against Defense; the area shapes hit without a roll.",
-      "damage": 40,
+      "damage": 24,
       "hit": "will_power_vs_defense",
       "options": [
         "strike",
@@ -234,12 +234,12 @@
         "heal_30"
       ],
       "duration_rounds": 2,
-      "heal": 11.3,
+      "heal": 6.78,
       "hit": "auto",
       "provisional": true,
       "identity": "The school that keeps your side standing.",
       "stack": "Shelved. Twice in one design: the same way heals half again as much, or lasts half again as long; a second way rides at half strength.",
-      "heal_enemy": 30,
+      "heal_enemy": 18,
       "area_mult": 0.4
     },
     {
@@ -842,7 +842,7 @@
         "skill": "camaraderie",
         "points": 2
       },
-      "shield": 7,
+      "shield": 4.2,
       "shield_mult_enemy": 0.7
     },
     {
@@ -1122,7 +1122,7 @@
         "skill": "camaraderie",
         "points": 2
       },
-      "shield": 4,
+      "shield": 2.4,
       "shield_of_power_enemy": 0.35
     },
     {
@@ -1136,7 +1136,7 @@
       "rules": "1.8",
       "adjudication": "engine",
       "rounds": 2,
-      "tick": 5,
+      "tick": 3.0,
       "gate": {
         "skill": "implication",
         "points": 2

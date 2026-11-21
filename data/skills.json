@@ -462,7 +462,7 @@
         "numbers": {
           "feed": 0.01,
           "elemental_taken": 0.06,
-          "hp_per_level": 2
+          "hp_pct": 0.06
         },
         "rows": [
           {
@@ -476,7 +476,7 @@
           },
           {
             "at": "each",
-            "text": "+{=per_point.numbers.hp_per_level} max HP a level"
+            "text": "+{=per_point.numbers.hp_pct|pct}% max HP"
           }
         ]
       },

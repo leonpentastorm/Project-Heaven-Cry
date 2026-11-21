@@ -282,7 +282,7 @@
     },
     {
       "id": "grenadiers_arm",
-      "amounts": {"damage": {"kind": "damage", "base": 10, "per": [{"of": "kg", "value": 0.25}], "profile": "physical", "type": "physical", "provisional": true}},
+      "amounts": {"damage": {"kind": "damage", "base": 6.0, "per": [{"of": "kg", "value": 0.15}], "profile": "physical", "type": "physical", "provisional": true}},
       "number": 5,
       "name": "Grenadier's Arm",
       "category": "Combat",
@@ -1694,7 +1694,7 @@
     },
     {
       "id": "factory_made",
-      "amounts": {"repair": {"kind": "heal", "base": 0, "per": [{"of": "improvisation", "value": 10}], "profile": "flat", "text": "Field Repair: a repair, not a heal", "provisional": true}},
+      "amounts": {"repair": {"kind": "heal", "base": 0, "per": [{"of": "improvisation", "value": 6.0}], "profile": "flat", "text": "Field Repair: a repair, not a heal", "provisional": true}},
       "number": 29,
       "name": "Factory Made",
       "category": "Origin",
@@ -1728,7 +1728,7 @@
         {
           "op": "repairable",
           "skill": "proficiency",
-          "hp_per_point": 10
+          "hp_per_point": 6.0
         },
         {
           "op": "heal_received_mult",
@@ -3407,7 +3407,7 @@
     },
     {
       "id": "drone_handler",
-      "amounts": {"repair": {"kind": "heal", "base": 0, "per": [{"of": "mastery", "value": 10}], "profile": "flat", "provisional": true}},
+      "amounts": {"repair": {"kind": "heal", "base": 0, "per": [{"of": "mastery", "value": 6.0}], "profile": "flat", "provisional": true}},
       "number": 64,
       "name": "Drone Handler",
       "category": "Tech",
@@ -3429,7 +3429,7 @@
         {
           "op": "companion",
           "id": "drone",
-          "hp": 30,
+          "hp": 18,
           "ap": 3,
           "controlled_by": "self"
         },
@@ -3929,7 +3929,7 @@
         {
           "op": "companion",
           "id": "beast",
-          "hp": 60,
+          "hp": 36,
           "ap": 4,
           "controlled_by": "empathy"
         },

@@ -99,7 +99,7 @@
     {
       "id": "double", "name": "Double", "icon": "figment-double", "owned_kind": "figment", "turn": "owner", "eyes": false, "lure": true,
       "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
-      "hp": 30, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
+      "hp": 18, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
       "actions": ["move"], "verbs": ["figment_draw_fire", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-double", "glyph": "◐",
@@ -109,7 +109,7 @@
     {
       "id": "eye", "name": "Eye", "icon": "figment-eye", "owned_kind": "figment", "turn": "owner", "eyes": true, "scouts": { "bonus": 2, "about": "rules 1.90 item 7812 (Leon, 20 Nov 2026): before a fight node's choice, a character who knows this form and could picture it now (the Visualizer carried, the form's charge in its loaded charge; nothing is spent) sends it ahead: the line-up is shown and this is the squad's ambush bonus (run/ambush.ts; the best scout counts)", "provisional": true },
       "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
-      "hp": 15, "defense": 15, "armour": 0, "attack_bonus": 0, "movement": 4, "weapon": "fists", "flies": true, "vision": 8, "dark_sight": true,
+      "hp": 9.0, "defense": 15, "armour": 0, "attack_bonus": 0, "movement": 4, "weapon": "fists", "flies": true, "vision": 8, "dark_sight": true,
       "actions": ["move"], "verbs": ["figment_stare", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-eye", "glyph": "◉",
@@ -120,7 +120,7 @@
     {
       "id": "wall", "name": "Wall", "icon": "figment-wall", "owned_kind": "figment", "turn": "owner", "eyes": false, "cover": "full",
       "opens": { "skill": "visualization", "min": 1 }, "charge": 3,
-      "hp": 60, "defense": 6, "armour": 5, "attack_bonus": 0, "movement": 1, "weapon": "fists",
+      "hp": 36, "defense": 6, "armour": 3.0, "attack_bonus": 0, "movement": 1, "weapon": "fists",
       "actions": ["move"], "verbs": ["figment_press", "figment_redraw", "figment_cash_in", "let_go"], "effects": [{ "op": "immunity", "to": "knockback" }],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-wall", "glyph": "▮",
@@ -131,7 +131,7 @@
     {
       "id": "beast", "name": "Beast", "icon": "figment-beast", "owned_kind": "figment", "turn": "owner", "eyes": false,
       "opens": { "skill": "visualization", "min": 1 }, "charge": 4,
-      "hp": 45, "defense": 12, "armour": 3, "attack_bonus": 0, "movement": 3, "weapon": "figment_claws",
+      "hp": 27, "defense": 12, "armour": 1.8, "attack_bonus": 0, "movement": 3, "weapon": "figment_claws",
       "actions": ["move"], "verbs": ["figment_strike", "figment_pounce", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-beast", "glyph": "◆",
@@ -142,7 +142,7 @@
     {
       "id": "blade", "name": "Blade", "icon": "figment-blade", "owned_kind": "figment", "turn": "owner", "eyes": false,
       "opens": { "skill": "visualization", "min": 1 }, "charge": 3,
-      "hp": 25, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 2, "weapon": "figment_edge",
+      "hp": 15, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 2, "weapon": "figment_edge",
       "actions": ["move"], "verbs": ["figment_cut", "figment_redraw", "figment_cash_in", "let_go"], "hold": { "reaction": "attack" },
       "upkeep": { "res": "vcharge", "n": 1 },
       "portrait": "figment-blade", "glyph": "✦",
@@ -152,7 +152,7 @@
     },
     {
       "id": "snare", "name": "Snare", "icon": "figment-snare", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 1 }, "charge": 1,
-      "hp": 10, "defense": 8, "armour": 0, "attack_bonus": 0, "movement": 1, "weapon": "figment_edge",
+      "hp": 6.0, "defense": 8, "armour": 0, "attack_bonus": 0, "movement": 1, "weapon": "figment_edge",
       "actions": ["move"], "verbs": ["figment_trip", "figment_redraw", "figment_cash_in", "let_go"],
       "hold": { "reaction": "attack" },
       "effects": [{ "op": "condition", "when": "hit", "condition": "pinned", "via": "visualization", "target": "target", "if": { "actor": "self" } }, { "op": "unmake", "when": "hit", "if": { "actor": "self" } }],
@@ -161,7 +161,7 @@
     },
     {
       "id": "hand", "name": "Hand", "icon": "figment-hand", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
-      "hp": 20, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 3, "weapon": "fists",
+      "hp": 12, "defense": 14, "armour": 0, "attack_bonus": 0, "movement": 3, "weapon": "fists",
       "flies": true,
       "actions": ["move"], "verbs": ["figment_hand_over", "figment_filch", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-hand", "glyph": "✋",
@@ -169,7 +169,7 @@
     },
     {
       "id": "ward", "name": "Ward", "icon": "figment-ward", "owned_kind": "figment", "turn": "owner", "eyes": false, "opens": { "skill": "visualization", "min": 1 }, "charge": 3,
-      "hp": 40, "defense": 12, "armour": 3, "attack_bonus": 0, "movement": 2, "weapon": "fists",
+      "hp": 24, "defense": 12, "armour": 1.8, "attack_bonus": 0, "movement": 2, "weapon": "fists",
       "actions": ["move"], "verbs": ["figment_interpose", "figment_redraw", "figment_cash_in", "let_go"],
       "effects": [{ "op": "redirect", "when": "taking", "share": 0.5, "if": { "target": "ally", "target_within": 1, "by_hit": true }, "limit": { "per": "per_round", "n": 1 } }],
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-ward", "glyph": "⛉",
@@ -179,7 +179,7 @@
     {
       "id": "husk", "name": "Husk", "icon": "figment-husk", "owned_kind": "figment", "turn": "owner", "eyes": false, "lure": true,
       "opens": { "skill": "visualization", "min": 1 }, "charge": 2,
-      "hp": 20, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
+      "hp": 12, "defense": "owner", "armour": 0, "attack_bonus": 0, "movement": "owner", "weapon": "fists",
       "actions": ["move"], "verbs": ["figment_burst", "figment_redraw", "figment_cash_in", "let_go"],
       "upkeep": { "res": "vcharge", "n": 1 }, "portrait": "figment-husk", "glyph": "◌",
       "short": "A hollow second you: {=hp} HP · lures like a Double · Bursts on everyone beside it",
@@ -187,7 +187,7 @@
     },
     {
       "id": "sentinel", "name": "Sentinel", "icon": "figment-sentinel", "owned_kind": "figment", "turn": "auto", "eyes": true, "opens": { "skill": "visualization", "min": 1 }, "charge": 4,
-      "hp": 30, "defense": 10, "armour": 3, "attack_bonus": 0, "movement": 0, "weapon": "service_pistol",
+      "hp": 18, "defense": 10, "armour": 1.8, "attack_bonus": 0, "movement": 0, "weapon": "service_pistol",
       "infinite_ammo": true,
       "vision": 8,
       "actions": ["move"], "verbs": ["figment_fix", "figment_redraw", "figment_cash_in", "let_go"],
@@ -199,7 +199,7 @@
   ],
   "turret": {
     "id": "scrap_turret", "name": "Scrap Turret", "icon": "figment-scrap-turret", "owned_kind": "machine", "kind": "turret", "turn": "auto", "eyes": true,
-    "hp": 40, "defense": 10, "armour": 5, "attack_bonus": 0, "movement": 0, "weapon": "service_pistol", "rounds": 3,
+    "hp": 24, "defense": 10, "armour": 3.0, "attack_bonus": 0, "movement": 0, "weapon": "service_pistol", "rounds": 3,
     "auto": { "verb": "shot", "target": "nearest_foe" }, "tags": ["electronic"],
     "glyph": "⌖",
     "text": "A turret built from scrap: {=hp} HP, Defense {=defense}, armour {=armour}, it does not move. At each of your turn starts for {=rounds} rounds it makes its weapon's plain attack at the nearest enemy it can reach.",
@@ -253,7 +253,7 @@
       "text": "It steps to a free tile next to an ally, within {=reach.tiles} tiles of it.", "provisional": true
     },
     {
-      "id": "figment_burst", "name": "Burst", "icon": "order-burst", "site": "figment_order", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "figment", "type": "explosive", "provisional": true } }, "effects": [{ "op": "deal", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" }, "say": "{self} bursts.", "fx": { "k": "stance", "what": "figment_order", "word": "BURST" } }, { "op": "unmake" }],
+      "id": "figment_burst", "name": "Burst", "icon": "order-burst", "site": "figment_order", "amounts": { "burst": { "kind": "damage", "base": 12, "profile": "figment", "type": "explosive", "provisional": true } }, "effects": [{ "op": "deal", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" }, "say": "{self} bursts.", "fx": { "k": "stance", "what": "figment_order", "word": "BURST" } }, { "op": "unmake" }],
       "text": "It bursts: {=amounts.burst.base} on every unit next to it, both sides, and it is gone (no charge back, no Snap).", "provisional": true
     },
     {
@@ -289,11 +289,11 @@
     { "id": "armoured", "name": "Armoured", "hp_mult": 1.5, "text": "+{=hp_mult|more}% HP", "provisional": true },
     { "id": "swift", "name": "Swift", "tiles": 2, "text": "+{=tiles} tiles an AP · its moves draw no opportunity attacks", "provisional": true },
     { "id": "loud", "name": "Loud", "weight": -1, "text": "Enemies treat it as the most hurt in reach", "provisional": true },
-    { "id": "volatile", "name": "Volatile", "amounts": { "burst": { "kind": "damage", "base": 20, "profile": "flat", "type": "explosive", "provisional": true } }, "within": 1,
+    { "id": "volatile", "name": "Volatile", "amounts": { "burst": { "kind": "damage", "base": 12, "profile": "flat", "type": "explosive", "provisional": true } }, "within": 1,
       "effects": [{ "op": "deal", "when": "downed", "amount": "burst", "targets": { "of": "self", "shape": "aura", "within": 1, "side": "any" } }], "text": "Destroyed: {=amounts.burst.base} to everyone within {=within} tile, both sides", "provisional": true },
     { "id": "tethered", "name": "Tethered", "range": 4, "text": "+{=range} projection range", "provisional": true },
     { "id": "mirror", "name": "Mirror", "lure": "pick", "text": "Lures as any unit of your side you pick", "provisional": true },
-    { "id": "barbed", "name": "Barbed", "amounts": { "barb": { "kind": "damage", "base": 10, "profile": "flat", "type": "true", "provisional": true } },
+    { "id": "barbed", "name": "Barbed", "amounts": { "barb": { "kind": "damage", "base": 6.0, "profile": "flat", "type": "true", "provisional": true } },
       "effects": [{ "op": "deal", "when": "damaged", "if": { "actor": "foe", "melee": true, "by_hit": true }, "amount": "barb", "target": "actor" }], "text": "Melee attackers take {=amounts.barb.base}", "provisional": true },
     { "id": "lasting", "name": "Lasting", "upkeep": 0, "text": "No upkeep", "provisional": true },
     { "id": "keen", "name": "Keen", "roll": 2, "vision": 4, "text": "+{=roll} to hit · an Eye sees {=vision} further", "provisional": true },

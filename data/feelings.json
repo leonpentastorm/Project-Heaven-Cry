@@ -55,7 +55,7 @@
             "feeling": "rage"
           }
         ],
-        "damage": 5,
+        "damage": 3.0,
         "when": "turn"
       },
       "adjudication": "engine",
@@ -213,7 +213,7 @@
             "feeling": "love"
           }
         ],
-        "heal": 5,
+        "heal": 3.0,
         "when": "turn"
       },
       "adjudication": "engine",
@@ -343,7 +343,7 @@
             "feeling": "spite"
           }
         ],
-        "damage": 5,
+        "damage": 3.0,
         "when": "turn",
         "only": "last_hurt"
       },
@@ -969,7 +969,7 @@
             "feeling": "guilt"
           }
         ],
-        "heal": 5,
+        "heal": 3.0,
         "when": "turn"
       },
       "adjudication": "engine",

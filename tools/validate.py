@@ -1333,8 +1333,9 @@ if isinstance(pat, dict) and pat.get("tags"):
     if not (isinstance(pf, int) and pf >= 1 and isinstance(pfh, int) and pfh >= pf and isinstance(hfd, int) and 1 <= hfd <= 10):
         errors.append("patrons: prayer.intervention needs per_fight (1 or more), per_fight_high (at least per_fight) and high_from_devotion (a level 1-10)")
     amt = piv.get("amount") or {}
-    if not (isinstance(amt.get("base"), int) and amt["base"] > 0 and isinstance(amt.get("per_devotion"), int) and amt["per_devotion"] >= 0):
-        errors.append("patrons: prayer.intervention.amount needs a whole base above 0 and a whole per_devotion (0 or more)")
+    # rules 1.95 (the scale): the base and per_devotion are on the new scale (x0.6, two places), no longer whole
+    if not (isinstance(amt.get("base"), (int, float)) and amt["base"] > 0 and isinstance(amt.get("per_devotion"), (int, float)) and amt["per_devotion"] >= 0):
+        errors.append("patrons: prayer.intervention.amount needs a base above 0 and a per_devotion (0 or more)")
     if ((pat.get("prayer") or {}).get("witnessed") or {}).get("until") != ["fight_end", "intervention"]:
         errors.append("patrons: prayer.witnessed.until must be [fight_end, intervention] (rules 1.6.3)")
     # rules 1.6.1 (Faith 2.1): Devotion XP, the curve rising from 0 to its 10 levels; the sources, tag caps and the
@@ -1457,14 +1458,14 @@ if isinstance(pat, dict) and pat.get("tags"):
         if iv.get("scale") not in (None, "devotion"):
             errors.append(f"patrons:{pid}: intervention.scale must be devotion (or absent)")
         if iv.get("scale") == "devotion":
-            nums = [e for e in iv.get("effects") or [] if isinstance(e.get("value"), int) and "per_devotion" in e]
+            nums = [e for e in iv.get("effects") or [] if isinstance(e.get("value"), (int, float)) and "per_devotion" in e]
             if not nums:
                 errors.append(f"patrons:{pid}: a Devotion-scaled intervention needs an effect with a value and per_devotion")
             for e in nums:
                 if e.get("op") == "heal":
                     continue  # rules 1.20: a healing intervention carries its own numbers (fitted to a Soldier's turn)
                 sign = -1 if e["value"] < 0 else 1
-                if abs(e["value"]) != amt.get("base") or e["per_devotion"] != sign * (amt.get("per_devotion") or 0):
+                if abs(abs(e["value"]) - (amt.get("base") or 0)) > 1e-9 or abs(e["per_devotion"] - sign * (amt.get("per_devotion") or 0)) > 1e-9:
                     errors.append(f"patrons:{pid}: intervention effect {e.get('op')} must be {amt.get('base')} + {amt.get('per_devotion')} × Devotion (prayer.intervention.amount)")
             if "Devotion" not in str(iv.get("text") or ""):
                 errors.append(f"patrons:{pid}: a Devotion-scaled intervention's text must say so")
@@ -1871,8 +1872,10 @@ if isinstance(tq, dict):
             _prof = ((((data.get("rules") or {}).get("output") or {}).get("profiles") or {}).get(ph["profile"]))
             if not isinstance(_prof, dict):
                 errors.append(f"{where}: phys.profile '{ph['profile']}' is not a profile in rules.json output.profiles")
-            elif _prof.get("skill"):
-                errors.append(f"{where}: phys.profile '{ph['profile']}' has a skill slope, and a weapon's skill buys the hit only (rules 1.56)")
+            # rules 1.95 (ruling A4 of the 0.34 rebalance) supersedes rules 1.56 item 1: every alpha gives +5% a point to what its door
+            # deals, so a weapon's profile now has a skill slope; a focus's weapon still reads none
+            elif (_prof.get("skill") or _prof.get("attr")) and w.get("category") == "mana":
+                errors.append(f"{where}: phys.profile '{ph['profile']}' has a slope, and a focus's weapon gets nothing from its user (rules 1.56 item 4)")
             elif _prof.get("attr") and w.get("category") == "mana":
                 errors.append(f"{where}: phys.profile '{ph['profile']}' has a slope, and a focus's weapon gets nothing from its user (rules 1.56 item 4)")
             elif _prof.get("attr") and not any(sc in attr_ids for sc in ph.get("scales_with") or []):

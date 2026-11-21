@@ -940,7 +940,7 @@
         "op": "deal",
         "amount": {
           "kind": "damage",
-          "base": 30,
+          "base": 18,
           "profile": "flat",
           "type": "physical"
         },
@@ -961,7 +961,7 @@
         "op": "mend",
         "amount": {
           "kind": "heal",
-          "base": 5,
+          "base": 3.0,
           "profile": "mend"
         },
         "target": "ally"
@@ -985,7 +985,7 @@
       ],
       "example": {
         "op": "heal",
-        "value": 20,
+        "value": 12,
         "target": "ally_adjacent",
         "scale": "healing_given"
       }
@@ -1614,7 +1614,7 @@
       "example": {
         "op": "companion",
         "id": "drone",
-        "hp": 30,
+        "hp": 18,
         "ap": 3,
         "controlled_by": "self"
       }
@@ -3656,7 +3656,7 @@
       ],
       "example": {
         "op": "rig_tile",
-        "damage": 30,
+        "damage": 18,
         "condition": "pinned",
         "save": "body"
       }

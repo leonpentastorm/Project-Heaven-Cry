@@ -6,7 +6,7 @@
 import { describe, expect, it } from 'vitest';
 import { scaleOf,
   RULES, ENEMY_LEVELS, enemyLevelRow, ARCHETYPES, ATTRS, newCharacter, WEAPON,
-  PROFILES, PAIRS, profileOf, pairOf, statTerm, statOf, levelFactor, levelOf, stackDamage, VS_CAP, openAmount, closeAmount, amountOf, armourAgainst, landed, deal, mend,
+  PROFILES, PAIRS, profileOf, pairOf, statTerm, statOf, levelFactor, levelOf, stackDamage, openAmount, closeAmount, amountOf, armourAgainst, landed, deal, mend,
   physicalMult, weaponMult, sigilMult, soulMult, elementalMult, healingMult, blessingPower, mendFactor, mendFactorOf, hurtUnit, harm,
   type Sheet, type Unit,
 } from '../src';
@@ -82,10 +82,10 @@ describe('the Stat term: k x (1 + attr x (Attribute - 1) + skill x Skill), read 
 });
 
 describe('the stacking rule: own multipliers multiply; target bonuses add, are capped, and multiply once', () => {
-  it('x1.3 with +50% is x1.95; the bonuses are held between -90% and +100%', () => {
+  it('x1.3 with +50% is x1.95; the bonuses are held at -90% at least, with no top (rules 1.95)', () => {
     const T = (...v: number[]) => v.map((x) => ({ v: x, label: 't' }));
     expect(stackDamage(T(1.3, 1.5), [])).toEqual({ mult: 1.3 * 1.5, vsMult: 1, total: 1.3 * 1.5 });
-    expect(stackDamage([], T(0.15, 0.3)).vsMult).toBe(1 + (0.15 + 0.3)); expect(stackDamage([], T(0.7, 0.6)).vsMult).toBe(1 + VS_CAP); expect(stackDamage([], T(-0.5, -0.6)).vsMult).toBe(1 + -0.9);
+    expect(stackDamage([], T(0.15, 0.3)).vsMult).toBe(1 + (0.15 + 0.3)); expect(stackDamage([], T(0.7, 0.6)).vsMult).toBe(1 + 0.7 + 0.6); // rules 1.95: no top expect(stackDamage([], T(-0.5, -0.6)).vsMult).toBe(1 + -0.9);
     expect(stackDamage(T(2), T(0.5)).total).toBe(3);
   });
 });
