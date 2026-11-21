@@ -1,7 +1,7 @@
 {
-  "selected": 547,
+  "selected": 548,
   "requested": 871,
-  "remaining": 324,
+  "remaining": 323,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 392,
+      "selected": 393,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 264,
+    "grade": 263,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 60,
+    "service-blocked-or-preceding-grade-dependent": 59,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -495,14 +495,6 @@
       "status": "service-blocked-or-reference-dependent",
       "eligible_for_retry": false,
       "existing_old_painting_does_not_satisfy_repaint": false
-    },
-    {
-      "id": "weapon-ork_machete--masterwork",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-ork_machete--masterwork.png",
-      "standard": "weapon-ork_machete",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
     },
     {
       "id": "weapon-ork_machete--relic",
@@ -2687,7 +2679,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-war_axe--celestial",
+  "last_delivered": "weapon-ork_machete--masterwork",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

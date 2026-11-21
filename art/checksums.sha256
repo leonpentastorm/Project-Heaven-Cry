@@ -3067,7 +3067,7 @@ f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/g
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
 1c23860bb2798975c015d48a2c2ea6290c2887763fa05fb7add8c704691553f2  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
-fc77a73525dcdbfb0960f6fab10b248dada350a8533a77c10adbc1983fec8569  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
+8cd701875327ab65a9719c1e51338f430779946ec9fa8f1a2783a42618c284b8  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
 f563f98f5775e55e5c80741a6779bdf120a1eb4a36ed4dec3f543574028db712  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/native.png
 d4641f47d5040bc171d64875d4fcc1c2ecba189d92b185a39c076e39d07b6bd0  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/prompt.txt
@@ -3528,7 +3528,7 @@ e0ca4ec468fb8582b7be239bdb55cd21a034954333e4f898c0262574d59b2bd2  art/_archive/g
 8a2ca5fb3717d151fdc6aa17dfc2187ff648d6bbc90a03780e45bee0807556b5  art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-grudge_plate.png
 05ec5670c5e5dd31f5c0b4ec1abec36becf03409804801ad7d6982d6f52d6dca  art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-return_clause.png
 049c3d37a67e3b7cecc4e6da18c2683f243e71fd02745068beb5a499b17d1c6a  art/_archive/gear/2026-11-21-retry-continuation/AUTHORIZATION.md
-43f7217e5d88c6d79f5a9dbac1f18a6d3596fa8ce466373b1c9d4d9555f6c7fd  art/_archive/gear/2026-11-21-retry-continuation/HANDOFF.md
+5b56d41b95d81a90b3e6dc5995f7bbca7ecee05db99bcdc4ccc4795f7001450d  art/_archive/gear/2026-11-21-retry-continuation/HANDOFF.md
 3560cfcce5e4e44c9b66e24386766aec7eb6a236c086fdbcc805373198bd3499  art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md
 f0108c5fd10150e56657ad11e398ecebd7bc86828abaeb5715eb13d035be5173  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-broadback_sabre--celestial/001/native.png
 4125c6a21dede181bd8563bbaf4fb853f5fddd2592cbae26b225f90b1a4ee706  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-broadback_sabre--celestial/001/request.json
@@ -3614,6 +3614,10 @@ c548ade1e098e92ae5e08449f952c1692524a9b76f1814a922b7c962745fe013  art/_archive/g
 b0ae286a9884bc11da2d6352bd89aef564698e893c36e20f9db426bd7d0f31cc  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_cleaver_glaive--relic/001/request.json
 234c7ac4bd0cb6f8c69aa0e4e9464787cb0083d2c4614f7abd091f92f0b579dc  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_cleaver_glaive--relic/001/review.json
 3c63f1f48ece73edc71d4f9a19c141b9eb6c5459c85e2e063db5e4e154cfb556  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_cleaver_glaive--relic/001/source.json
+22c6beb9338934cb5372783b180d4f16cad78f3261afc8d2a9fe118cd8720303  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_machete--masterwork/001/native.png
+d19de5b0e5042322a1ac851f38f96bafea662f46a60e177e70a91369daa86c56  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_machete--masterwork/001/request.json
+8f2854d84a14ede7201fe4adc7d23902c73a4386a1b88cecda6d7966de3c181b  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_machete--masterwork/001/review.json
+69f71d91f835f193a95619f9d20b6c5fe1683916a74ce440800e78f89a71a7a3  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-ork_machete--masterwork/001/source.json
 afe7fc49e12db2b860aee034ae0ae6126caa017877553fb05382c96aaa73def8  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-purifier_flamer--masterwork/001/error.json
 dec5cef3e5201a7d28120e4a35860faab6a5802b001cdf0ebcacbfed6e0e2f64  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-purifier_flamer--masterwork/001/request.json
 dadbb017dac75593026d68a7c6bf5dd56b8d59c3b05302cfe1135767e74bef44  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-purifier_flamer--masterwork/002/error.json
@@ -3704,7 +3708,7 @@ e49b88c1c8e8faccd29fab4de73c1d9e3b9d656d510539f826076b68a6323021  art/_archive/g
 c05f6994076392e6a4832ed3f1d4477cd8b4f8967d104588c8a53d2837bdd831  art/_archive/gear/2026-11-21-retry-continuation/coordination/peer-source-queue.json
 50599c48f6dd5181951f46d2dad9bc7eccef708af59327ace3bcf8e99c613674  art/_archive/gear/2026-11-21-retry-continuation/functions-delivery.js
 68196a471a836a5009470e7656750175f791b5f48fb105a28cb1229f1e3ed70c  art/_archive/gear/2026-11-21-retry-continuation/functions-driver.js
-3e8dfeaf95c8ff585da5767e4c0f742019ec9be1e2503e36e998f1df6bcde5f7  art/_archive/gear/2026-11-21-retry-continuation/manifest.json
+85242d96318dfe3d8d284833d7414e990752c23104be56c820461a238047fadf  art/_archive/gear/2026-11-21-retry-continuation/manifest.json
 a595e6537483204a35e9d6ab52cceae4136d7c6ffde4bfd189e604962ed391c7  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-broadback_sabre--celestial.png
 f9e0b792793b88c70344251eaa6fcee135319fe64bd454ed1f8b7c2e6b453fb5  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-broadback_sabre--relic.png
 8eaa2d4fb4c1e0412af761a46b36699a03f3af1628e0d2d2a9901fe0f49fdd62  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-dock_cutter--celestial.png
@@ -3724,6 +3728,7 @@ b75552c237291bdafcc06d704530ca92869359c75a3c3a76c62d46a63f116b79  art/_archive/g
 f166c5532d45bf05e5d2d3ba2e6f2f9d58c063e72d97eecb7025cdd1c9478e38  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-ork_cleaver_glaive--celestial.png
 09be7beeebd22a9bae4aba1b9c0f80e4a5323dac57f4c63073ad6694ee7cf556  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-ork_cleaver_glaive--masterwork.png
 68671ad7d655e4cf9f0956310f790882331d69c9cc136b135492e6ee5b5a936b  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-ork_cleaver_glaive--relic.png
+61cc3dbc68fc2bf940e80fa60e480fc407e30889921baf4a54f720c21594ae9b  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-ork_machete--masterwork.png
 e131722e0bbea33e70199971ff1be5371487fdec62bfe46c2c9923ba0bd4c706  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_draw--celestial.png
 3e231bfe46b8e95957e86617cfe83597792a0a9e86db21eb3f9f84de86b624f3  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_draw--fine.png
 d1ca6c1cae0fc8344f5c50709b9d9a1c5be30d5d929790f725f1e12eab3561b6  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-short_draw--masterwork.png
@@ -3740,7 +3745,7 @@ f198b06e6a02d5509dd869d376ff66174079c426a071646d6051d502709744f0  art/_archive/g
 d2d630bd80da3119bb73609f1a580a50cfc1bc440f410e4fd554f1c0bdcd3d34  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--masterwork.png
 f66556f6f6adf2bde268ff0c42c5ecde68b487c65d09efac50ed52fb9cff41cf  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--relic.png
 447d6ba2adcac9c3669eb716e7b9fbe7c29ae54a0bf26bb53f2b963aa48285e9  art/_archive/gear/2026-11-21-retry-continuation/previous-queue-snapshot.json
-da84cff9ffd77e9eea0badd7ece7526910f2de815b21cb93a0852a7488ee9e03  art/_archive/gear/2026-11-21-retry-continuation/progress.json
+b57088901cdba9e279670a1f5f5931fe3c1297b0ef2ac341b4176cc35cbadb7a  art/_archive/gear/2026-11-21-retry-continuation/progress.json
 e2059fb182a1ff5ce8fc89518dd982c62c1d75ddcfdc0b4b2027c67228a6f1be  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--celestial.txt
 11ccde30be710af79c602ced16bf0e2b7cf1592c8a43521c4582b32125fed74a  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--relic.txt
 d124ba5313218bb32cdb7e069f0a1b122282879edc89504edc543ab9c6fe1bb0  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-dock_cutter--celestial.txt
@@ -3760,6 +3765,7 @@ f328aa22b645ac9a4030bc961a27e93b367d2fa354c2896627901ea24453f578  art/_archive/g
 e1a8892c913d1c232fe308254803811581b37629a1b10ef3403363d65ab53971  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-ork_cleaver_glaive--celestial.txt
 916f750068d40539c0626ba3baf0b5364195e533548b98d6ff3ee9a9200adf1f  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-ork_cleaver_glaive--masterwork.txt
 8803a39dc0230b08a79f0301fdea3e2a632cbf809cfd1403597593a7b711f29a  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-ork_cleaver_glaive--relic.txt
+f2f4892f15d29e27b98d554e7576181c744312696dcde38222da248fd09202c7  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-ork_machete--masterwork.txt
 5534e1eaa6ca4d6ddc882ace2c4ce1cf75a460d85ea9e122031a60dcfa9271a9  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--celestial.txt
 3290c14bb1674e21dc47d7367d5959cf134d0bb84e08bae20362e687758a5a15  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--fine.txt
 18c71b4bce195eb8d6a14ec272d3c889f7c35d70461deec9978a6c9e2050e68f  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-short_draw--masterwork.txt
@@ -3775,7 +3781,7 @@ d06722e1dbb269c9e8d5cef2503e33f98a9e873f45df77d008d1feac51560ee7  art/_archive/g
 bc68a83c56a8024aa509dbc18cd09734ffcdd82548d35c4442ec53dc05ea409f  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_pick--fine.txt
 520700f0f271fc65c3d95ac75682d762bfd1e8383c1be74a0eeb4850ade08520  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_pick--masterwork.txt
 481c7c515ab83a68f6f0642c869be5fa9bd11cde1335b57478171f33d81a0669  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_pick--relic.txt
-f69af92845d128b550aba426d12eb233123d9a043fcaca09be49b61f0e1accfa  art/_archive/gear/2026-11-21-retry-continuation/queue.json
+b02c4449ee03a9ca53704f85d3334da5118787a07c38d50751cd675337ba5235  art/_archive/gear/2026-11-21-retry-continuation/queue.json
 6cde31ed81b8e5a107b264dd22bdd36abe9ea01b5ba46548afaf74d4f822a7ea  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-broadback_sabre-32px.png
 a296aaa10704f794668e90a1de0554f8c71762914c44c290bad3ca4aa9891172  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-broadback_sabre-64px.png
 b791d6b29d67ab56d9df5f87ecc8a6a68dd9c8acddf2d748f9026354e24949df  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-dock_cutter-32px.png
@@ -3790,6 +3796,8 @@ ae548df75d0c99cbadcb551b6ac19937125eaaac83003f57f990ed36d5b59be2  art/_archive/g
 b9fe1db15e0e48b0903c305d75979f3b404f9ec3bcdd7327c9019689afff4f50  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-long_draw-64px.png
 308d803173c1dc9de138e429941c0f93b76ca5225226c0cf3a44f5b6279974b4  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-ork_cleaver_glaive-32px.png
 dd3fb11d8146b44a24f8969acb7af0289b1eebc9ef1a465674f2d0a97ebcdb8c  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-ork_cleaver_glaive-64px.png
+3fdf9fa6d6469aba92625d748a0227e5db06248b6d137240016a5dcba5ce464f  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-ork_machete-32px.png
+22b2984547266370082d264a923cb9a90a0445777a555240ea78e84aad0af703  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-ork_machete-64px.png
 eea2628c2f49a4c98eeb5add3f038d18e413698545d92024d51a4759828f6897  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-short_draw-32px.png
 2104c160a65a595db0aa1212c6b19855fc6e1f84c99a259c9206c3c69f8ebc05  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-short_draw-64px.png
 a26c3c48579d26f2a09095b0c76bd0586503e66980af9c3c3d72090f9e2a20f1  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-war_axe-32px.png
@@ -3818,6 +3826,7 @@ ef1e57b66733eb22ca3ef078e1d3997e6d427c66f31ec0212aba28c9a9133181  art/_archive/g
 8982f798cb8efa990e2afce144c4857b9a554a9b9a81ff1f5fdadfff73f5ab03  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-ork_cleaver_glaive--celestial.png
 b3ec5bbf3d7d98ae9329bc1518ea06318c012fa2b7745517c3ad1fac2cdbce69  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-ork_cleaver_glaive--masterwork.png
 c548ade1e098e92ae5e08449f952c1692524a9b76f1814a922b7c962745fe013  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-ork_cleaver_glaive--relic.png
+22c6beb9338934cb5372783b180d4f16cad78f3261afc8d2a9fe118cd8720303  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-ork_machete--masterwork.png
 9140c3a9f0c9fdc19fc1fd90a8e6e0df02cf7de7ae8aa9828a555b013ce37a47  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_draw--celestial.png
 97b561f81aaefc271434935c860061d4a6d97bd6a23499d230fc1985e2647d5e  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_draw--fine.png
 06a0b56f1ece0504a6b8f89b29716ffb6517850e60ade3e1b9a9aeecc33f6ff4  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-short_draw--masterwork.png
@@ -7992,9 +8001,9 @@ c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/briefs/pro
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/briefs/prompts-2026-11-19/08-grades-and-uniques.md
 d35c91984152452f0484e327db6e6dadf34deaeab105bddf9b0dc9e4601323dd  art/briefs/prompts-2026-11-19/09-heavy-and-strange.md
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/briefs/prompts-2026-11-19/10-rifle-analogues.md
-5ce724325be502f5e70466f79c87347ef70dfc6fe2f73ad35ff31fc17f4d3e73  art/briefs/prompts-2026-11-19/PRODUCTION-STATUS.md
+82f1725c3c9e8a4285219a548a774ee2d1fb70de8966123f586127294c3e5b84  art/briefs/prompts-2026-11-19/PRODUCTION-STATUS.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/briefs/prompts-2026-11-19/README.md
-14b35f8ed7d928d44a5d6999b933dd5c982b0052e966480bb1fd1036f74cd341  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
+1c9f37c144309b6fc3beef850af19d3a84af2d7622ab4ede171b6f9913caa1d0  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
 15a16bf0d5e3166a424a0812d48ccf869542577351a7381a2987e32557e37746  art/briefs/prompts-2026-11-19/SCRAP-SENTINEL-REPLACEMENT-2026-11-21.md
 a4b3abf2b311d467f620b79238ad220f2a7fb8b27f8219954f8fa5a66794815a  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
 f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/title-screen.md
@@ -8003,7 +8012,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-9f8671fdef31a2e6f5e150639e17148fe4c6fbecf3840788240480b122e0f44d  art/catalog.json
+c2d2c946077c5a9701e268f1edc559b5ab24cfc9fa5d8d988fec8061acba8216  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -10352,6 +10361,7 @@ c55114c4167cf81422bccd71825395a01124960e7546f02d99c8e021dd3e7ae6  art/icons/gear
 7d7252558008f25018f215370107777b349b788b3a189884a71212130315c480  art/icons/gear/exports/128/weapon-ork_cleaver_glaive--relic.png
 1dddbc30f1aec1aece2f90ef2ffeb7d04b189b38f65b2d4a363db0c2c0d4075a  art/icons/gear/exports/128/weapon-ork_cleaver_glaive.png
 c72f7f4a5f0699482b6deea7898e87d309b9944e1327c8b6286b102265aca94d  art/icons/gear/exports/128/weapon-ork_machete--fine.png
+90906aafffef5ce052d34046968e7628d0b39bf5369c6cd050b3ffc37bca111a  art/icons/gear/exports/128/weapon-ork_machete--masterwork.png
 162b9775be992784470a0a3c7de0401c452e8f208d585ebea9de7fa390755b7b  art/icons/gear/exports/128/weapon-ork_machete.png
 0504da66407fb483da172f367fa67edb91bfbcad739a88b84e6d7088e9933016  art/icons/gear/exports/128/weapon-ork_rip_saw--celestial.png
 1ab193516ecfcb2311247b8a6de6f24d704ec0d540604637ff1c9537203d6381  art/icons/gear/exports/128/weapon-ork_rip_saw--fine.png
@@ -10983,6 +10993,7 @@ f60ac1da1966d11605f29950fc01bcc09af8468014417c384d3957f447c1bb41  art/icons/gear
 990195e21b46148a63eed5e7530cbe286f050dc51ea1ae1d14b53cab1f0a1c8e  art/icons/gear/exports/256/weapon-ork_cleaver_glaive--relic.png
 8c697a01126fb1e7281205568a40d24033988bf6b54156394a927a36b7daae17  art/icons/gear/exports/256/weapon-ork_cleaver_glaive.png
 e82118dd157f796cfa82eaf49018ecba135e4f1fc6c48cc6b5a896236c699f87  art/icons/gear/exports/256/weapon-ork_machete--fine.png
+0bac16776d51b3b5778ce9e8ac3ad7a62a085047e8c162d06c6c8113d9b04660  art/icons/gear/exports/256/weapon-ork_machete--masterwork.png
 dc258dd9467aeafeb68eb3e3a7c125c15ba60f5158fa5a176242ce56bd971c4b  art/icons/gear/exports/256/weapon-ork_machete.png
 3a2401b6b888e81919b3aff9e264ef33149ee1a722d8b5aa94d0d6411663310f  art/icons/gear/exports/256/weapon-ork_rip_saw--celestial.png
 3c8468c198656abd1ad47bb1ba4cf5dcd1e5b9f8cc89f0b2310923c6dac597bb  art/icons/gear/exports/256/weapon-ork_rip_saw--fine.png
@@ -11614,6 +11625,7 @@ bf2129184bdf3c35ef3ebb9d3ba866da14f8625588299c272abcf5435d3aa46b  art/icons/gear
 0f3423848185615faa97d1920c517142858a18003233221747241a27dfa359e9  art/icons/gear/exports/32/weapon-ork_cleaver_glaive--relic.png
 089da8f70ae8b967b6e9b43499c346cde23f57b594482b186d909e9ae29cff26  art/icons/gear/exports/32/weapon-ork_cleaver_glaive.png
 d2a730307fb36c01d0ec95de696b1f2b5c2af8b4211577ede3ffd82560ce4412  art/icons/gear/exports/32/weapon-ork_machete--fine.png
+d1dae58913d1b241053434ef92f830dc35e01195205654f92ec79766461909b7  art/icons/gear/exports/32/weapon-ork_machete--masterwork.png
 984c88db2919657919107184fe4675f6bd63b44c2d36dbcd20d2e6506d36abdf  art/icons/gear/exports/32/weapon-ork_machete.png
 252cdbd36bfa47925716f4984c9e5bbda3026c625fb10b39469c2a8ed4ef2376  art/icons/gear/exports/32/weapon-ork_rip_saw--celestial.png
 6ef212470e81c150d9a4288f15658b9d9d37755ccb5eca6511b00b3341b123ea  art/icons/gear/exports/32/weapon-ork_rip_saw--fine.png
@@ -12245,6 +12257,7 @@ ad8cd1e52da3f21fe0413f0f133486a76dd56cd87ae11da8ebb5972c9dc388d3  art/icons/gear
 59544fd3c71c8174a246640249ee4f83dd42657ba95099cbecf6d7ae4f647039  art/icons/gear/exports/64/weapon-ork_cleaver_glaive--relic.png
 e676f3a5a4122dcc601ed3fc36adc0b92e233ad22c367c04c0349b93600f2b83  art/icons/gear/exports/64/weapon-ork_cleaver_glaive.png
 5126bd15c83edff39baddbbc832db4cdf4bfcd9137a271a891d7bfc336c3456b  art/icons/gear/exports/64/weapon-ork_machete--fine.png
+c2cc22669fa61fe682bb80064fa24032aad002ca9bcf8600a09d29eafa88f5b0  art/icons/gear/exports/64/weapon-ork_machete--masterwork.png
 5c0409788f7d40e51e30576030389f92dcbb82c074c5a6250061566395afeaaa  art/icons/gear/exports/64/weapon-ork_machete.png
 9e68c5db86b56cde0f9c6c864d1557215d4070e07fb0612eb10b9687cdb5dd0b  art/icons/gear/exports/64/weapon-ork_rip_saw--celestial.png
 d1838782ffa296f9d5d432296dc14fc7e696c5fcf95e8627f470548ee53568ad  art/icons/gear/exports/64/weapon-ork_rip_saw--fine.png
@@ -12689,6 +12702,7 @@ f166c5532d45bf05e5d2d3ba2e6f2f9d58c063e72d97eecb7025cdd1c9478e38  art/icons/gear
 68671ad7d655e4cf9f0956310f790882331d69c9cc136b135492e6ee5b5a936b  art/icons/gear/weapon-ork_cleaver_glaive--relic.png
 9920514a607b3e7ee2f82adbebc40189f1b94862c30e0822e63e19af3d328543  art/icons/gear/weapon-ork_cleaver_glaive.png
 7fddba750ddf6906539e9b007e84ee436e8dc91da5a7ef22a469f96652bc80d0  art/icons/gear/weapon-ork_machete--fine.png
+61cc3dbc68fc2bf940e80fa60e480fc407e30889921baf4a54f720c21594ae9b  art/icons/gear/weapon-ork_machete--masterwork.png
 96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e  art/icons/gear/weapon-ork_machete.png
 39bc9ec8e6ec392836fa4662e2048619f7c53fc7d0f30bbcb825b9ae47a2e678  art/icons/gear/weapon-ork_rip_saw--celestial.png
 c84db806215bb0d3c44e1a068354b577aaa7333e94feea2c4fe03ab8f8d4f510  art/icons/gear/weapon-ork_rip_saw--fine.png

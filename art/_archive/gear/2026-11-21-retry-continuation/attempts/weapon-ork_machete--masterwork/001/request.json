@@ -1,0 +1,53 @@
+{
+  "head": "0b11c5902519fc1dcb2ee8c6c987ad90443e7dae",
+  "job": {
+    "id": "weapon-ork_machete--masterwork",
+    "standard_id": "weapon-ork_machete",
+    "grade": "masterwork",
+    "label": "Ork Machete — Masterwork",
+    "path": "art/icons/gear/weapon-ork_machete--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-ork_machete",
+    "family_references": [
+      "art/icons/gear/weapon-ork_machete.png",
+      "art/icons/gear/weapon-ork_machete--fine.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.1",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.\n\nGrade: Masterwork. Keep everything of the Fine grade. Lay a narrow inlay of the item's accent colour (bright brass if it has no accent) into the engraved line, so that it reads as one continuous coloured stripe along the blade. Re-make the guard and pommel in a finer material in exactly the same shapes, with sharper edges and a deeper polish; the grip wrap becomes a richer, darker leather or cord in an even pattern; the steel shows a faint, fine forging pattern. Exact edges everywhere (nails, welds, jags, saw notches and slots keep their shape), no wear, a calm sense of quality.\n\nThe FIRST attached image is the exact Standard shape and registration master. Preserve its entire alpha outline, empty holes, scale, original margins and45degree diagonal. Supporting portrait reference is brushwork only; never copy a person or scene. The second image is the preceding grade candidate: keep its surface additions while stepping its finish as specified. Full transparency; no ground, cast shadow, labels or decorative frame.",
+    "keep_line": "the same wide uneven machete with its curved belly, hooked point and large saw-like notches on the back, dark battered metal, ochre diagonal paint daubs, riveted collar, thick oily brown spiral leather grip with its same nails and rivets, squared hollow butt loop. Do not straighten or regularize any notch or add teeth. Ochre paint stays in place.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-ork_machete--fine",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "b05b3d4f767269a81bd4665d49e00ebbd8bfe5914cd324f3c315003a7fa7c644",
+    "standard_sha256": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "retry_authorized_by_user": true,
+    "prior_generation_error": {
+      "path": "art/_archive/gear/2026-11-19-kept-blade-grades/generation-failures/weapon-ork_machete--masterwork.json",
+      "response": {
+        "id": "weapon-ork_machete--masterwork",
+        "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID a7119952-823e-49ce-8047-04ff6ef4903d. safety_violations=[illicit].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"output\\\",\\n      \\\"categories\\\": [\\n        \\\"illicit\\\"\\n      ]\\n    }\\n  }\\n}\")"
+      }
+    }
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-ork_machete.png": "96b5beecc91fa27935eb26f1962cf426b0800fecde205f5b8e896defee6d8c7e",
+    "art/icons/gear/weapon-ork_machete--fine.png": "7fddba750ddf6906539e9b007e84ee436e8dc91da5a7ef22a469f96652bc80d0",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7055981184,
+  "clock": {
+    "current_time": "2026-11-21 02:56:15 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7056106119,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "d1e74279046a5df79b0ac6a507dd00b13748398b"
+}
