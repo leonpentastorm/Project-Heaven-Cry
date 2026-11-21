@@ -799,6 +799,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-dock_cutter--relic",
+      "path": "art/icons/gear/weapon-dock_cutter--relic.png",
+      "sha256": "272b3ed9c1f8844db4dcc0bb0f955ff1f4bd245c3a3d81ae235438b4f43a3ff5",
+      "label": "Dock Cutter — Relic",
+      "family": "weapon-dock_cutter",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-dock_cutter--relic.png",
+        "sha256": "ccbb152ff26dcd08776f849531c859fc631669dd66c8288c79477e821de3940a"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-dock_cutter--relic.png",
+        "sha256": "272b3ed9c1f8844db4dcc0bb0f955ff1f4bd245c3a3d81ae235438b4f43a3ff5"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-dock_cutter--relic.txt",
+        "sha256": "0faa747aef04d1486b196fa8b890bd501554c614cf95c04d803e53a9c6c4eb3f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-dock_cutter.png",
+          "sha256": "60a13828d153764839b15a60287b8910acd42806782b8d3b9f90d28301dac8cb"
+        },
+        {
+          "path": "art/icons/gear/weapon-dock_cutter--masterwork.png",
+          "sha256": "764a2d1550f462917131044b47ca9df87b4505f62195dbf1e439294190c3e127"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-dock_cutter.png",
+          "sha256": "b689a9d6b02ce0f67d407b3e27ce4048400afcbb61aebeee1e7417856fc5e44c"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-dock_cutter--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-dock_cutter--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-dock_cutter--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-dock_cutter--relic.png"
+      },
+      "export_hashes": {
+        "256": "c25ccf4957f81b758f088c55e92e2380a39338f44e1318cabf3d090533c4aca1",
+        "128": "82fa55b6a6e96f9d635d7961be79f1ec158d4b0ab038031fe81444c5f730d15f",
+        "64": "73fa5ec4de6344d97733a76bc46d8c438452226b12a6f82194417394a06f4bf2",
+        "32": "d45ce054ea1f7e9b4fba2561d79b96e4f0ca8f761c23bcd8df7e99362c986366"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-dock_cutter",
+      "outline": {
+        "solid_alpha_iou": 0.97734303660865,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 20
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

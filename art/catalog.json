@@ -33563,6 +33563,42 @@
         "different_pixels_32": 1,
         "different_pixels_64": 14
       }
+    },
+    "weapon-dock_cutter--relic": {
+      "label": "Dock Cutter — Relic",
+      "path": "art/icons/gear/weapon-dock_cutter--relic.png",
+      "sha256": "272b3ed9c1f8844db4dcc0bb0f955ff1f4bd245c3a3d81ae235438b4f43a3ff5",
+      "width": 1024,
+      "height": 1024,
+      "background": "transparent",
+      "status": "review-candidate",
+      "production_approved": false,
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-dock_cutter--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-dock_cutter--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-dock_cutter--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-dock_cutter--relic.png"
+      },
+      "source_path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-dock_cutter--relic.png",
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+      "brief_number": "A3.1",
+      "collection": "2026-11-21-retry-continuation",
+      "grade": "relic",
+      "origin": "image_gen; technical alpha cleanup and uniform registration only",
+      "standard_id": "weapon-dock_cutter",
+      "implementation_ready": false,
+      "outline": {
+        "solid_alpha_iou": 0.97734303660865,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 20
+      }
     }
   },
   "survival_art": {
