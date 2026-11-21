@@ -1,14 +1,11 @@
 // @ts-nocheck (a measuring tool)
-// The fit of the enemy table (rules 1.15) against the targets: see fit.ts for how to run it. In `npm run check` only
-// the quick test below runs (one fight of each kind at one level).
+// The enemy table (rules 1.15) on the measuring range: see fit.ts for how to run it. Nothing here runs in `npm run check`.
 import { describe, it, expect } from 'vitest';
 import { writeFileSync, mkdirSync, readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { fitLevel, fitLine, fitCards, useTable, tableNow } from './fit';
 import { LEVELS } from './builds';
-import skillsJ from '../../../../data/skills.json';
-const ATH_FROM = Number((skillsJ as any).items.find((x: any) => x.id === 'athletics').per_point.numbers.defense_from ?? 2);
 
 const OUT = process.env.BALANCE_FIT_OUT, TABLE = process.env.BALANCE_FIT_TABLE;
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..'), fromRepo = (p: string) => (p.startsWith('/') ? p : resolve(REPO, p));
@@ -16,20 +13,16 @@ const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..'), fr
 // The "quick run" smoke fights play whole simulated fights and assert only that they build: `npm run balance` runs them
 // (vitest.balance.config.ts sets BALANCE_QUICK); the engine's default run leaves them out. test/suite-shape.test.ts.
 const QUICK_RUN = !!process.env.BALANCE_QUICK;
+const MEASURE = !!process.env.BALANCE_MEASURE;
 describe('the fit of the enemy table', () => {
-  (TABLE ? it.skip : it)('the table holds the yardstick targets at every reference level (rules 1.15, the fitted table)', () => {
-    // the plain rifleman with a normal share against an enemy of its own level: hits that land to kill, and the chance to hit
+  // Rules 1.94 (Leon, 21 Nov 2026): the hit counts the table was once fitted to are not limits; they are printed
+  // (BALANCE_MEASURE=1, or `npm run balance`). The 5-levels-below rule is asserted where it is played (combat).
+  (MEASURE && !TABLE ? it : it.skip)('the plain rifleman against an enemy of its own level at every reference level: hits to kill and the chances to hit, printed', () => {
+    const rows: string[] = [];
     for (const lv of LEVELS) { const c = fitCards(lv);
-      expect(c.vermin.hitsToKill, 'Vermin, level ' + lv).toBe(1);
-      expect(c.minion.hitsToKill, 'Minion, level ' + lv).toBe(2);
-      expect(c.soldier.hitsToKill, 'Soldier, level ' + lv).toBe(4); expect(c.soldier.hitsToKillExact).toBeGreaterThanOrEqual(3.5);
-      expect(c.elite.hitsToKillExact, 'Elite, level ' + lv).toBeGreaterThan(6); expect(c.elite.hitsToKill).toBeLessThanOrEqual(8);
-      expect(c.boss.hitsToKill, 'Boss, level ' + lv).toBeGreaterThanOrEqual(20);
-      expect(c.soldier.yardPct, 'the chance to hit a Soldier, level ' + lv).toBe(65);
-      // rules 1.82 item 7011: Athletics' Defense from its first point (skills.json defense_from 1, was 2) gives the yardstick
-      // one more Defense, 5 points off the foe's chance; the enemy table's refit to 65 is owed to the balance lane
-      expect(c.soldier.foePct, 'a Soldier\'s chance to hit the yardstick, level ' + lv).toBe(65 - 5 * (2 - ATH_FROM));
-    }
+      rows.push('L' + lv + ': hits to kill Vermin ' + c.vermin.hitsToKill + ', Minion ' + c.minion.hitsToKill + ', Soldier ' + c.soldier.hitsToKill + ' (' + c.soldier.hitsToKillExact + '), Elite ' + c.elite.hitsToKill + ' (' + c.elite.hitsToKillExact + '), Boss ' + c.boss.hitsToKill
+        + ' · the rifleman hits a Soldier ' + c.soldier.yardPct + '%, a Soldier hits him ' + c.soldier.foePct + '%'); }
+    console.info('[fit] ' + rows.join('\n[fit] '));
   });
   (QUICK_RUN && !OUT ? it : it.skip)('quick run: every measurement of the fit builds (one fight each, level 6)', () => {
     const o = fitLevel(6, 1), line = fitLine(o);

@@ -2,7 +2,8 @@
 // THE FAITH MEASUREMENTS (rules 1.21, docs/design/handoffs/faith-fit.md; rules 1.22, faith-round-2.md). What a character who leads with prayer is
 // worth, patron by patron, against the plain rifle on the simulator's shooting range.
 //
-//   npm run check -- engine     the cheap tests below (a few seeded fights at level 6: seconds)
+//   npm run check -- engine     the Hymn's wait (4 seeded fights at level 6)
+//   BALANCE_MEASURE=1 (or npm run balance)   also prints the level-6 rows
 //   FAITH_MEASURE=1 npx vitest run --root packages/engine test/balance/faith-measure.test.ts --silent=false
 //     FAITH_MEASURE_PARTS=sheets,yard,inventory,rows,support,dabbler,miracle,limits   which parts (default: all)
 //     FAITH_MEASURE_N=8                 fights a row (default 8)
@@ -29,46 +30,37 @@ const hymnsAt = (patron: string, dv: number) => (FAITH_PATRON[patron].hymns || [
 
 /** Rules 1.22: the chance a round that the measured character's vow is fulfilled (the report states it; 0: no vow). */
 const VOW = process.env.FAITH_MEASURE_VOW != null ? Number(process.env.FAITH_MEASURE_VOW) : 0.4;
-describe('the Faith targets hold (rules 1.22)', () => {
-  const n = 8, lv = 6, y = rifleTurn(lv, 30);
-  // Leon, 12 Nov 2026: "faith range 80% for whisper only turn and about 125% for hymn, goes up with faith items later".
-  // Leon, later the same day, on "a Hymn is always better than a spell or an Outburst": "raise". The Hymn turn is about
-  // 150% (Judgement and Lightning Rod 56, the chain 23; measured 139 to 160% at levels 6 to 20, item 1389).
-  // Rebuke is held at 20 (a quiet turn of about 60 to 80% from level 6; item 1281), so the quiet band here starts under 80.
-  // Rules 1.31 (Classes 3.0 step 5): the Faith build earns the Chaplain at level 3, and its weapon hits carry Smite (20 ×
-  // Blessing power once a turn): the bands' tops below are the door's plus Smite (Hymn turn 175 → 200, quiet turn 110 →
-  // 130, the no-damage-Hymn patron 100 → 125, the Chaplain's own line). Measured, not fitted: the step 5 hand-off.
-  it('a prayer-led character sworn to a damage patron: a turn with a Hymn is about 150% of the plain rifle, a turn with only a Whisper about 60 to 80%, and the Hymn is not there every turn', () => {
-    // rules 1.56 (Leon, 15 Nov 2026): perk steps sit on top of the line; these targets are the line's (no perk steps)
+// Rules 1.94 (Leon, 21 Nov 2026): the lines these turns were once held to are withdrawn. The level-6 rows are printed
+// (BALANCE_MEASURE=1, or `npm run balance`); the default run asserts only the Hymn's wait, a rule a player sees.
+const MEASURE = !!process.env.BALANCE_MEASURE;
+describe('Faith on the range (rules 1.22), reported', () => {
+  const n = 8, lv = 6, y = MEASURE ? rifleTurn(lv, 30) : 1;
+  it('without a vow the Hymn waits 3 rounds at Faith 6: Hymns on turns 1, 4 and 7 of 8', () => {
+    const bare = prayerRow('no vow', faithBuild('old_overcast'), 'normal', lv, 4, y, { opts: { hymn: 'damage' } });
+    expect(bare.errors).toBe(0); expect(bare.hymns).toBe(0.38); // 3 of 8, as the row rounds it
+  }, 120000);
+  (MEASURE ? it : it.skip)('a prayer-led character sworn to a damage patron: a Hymn turn, a quiet turn and how often the Hymn comes, printed', () => {
+    // rules 1.56 (Leon, 15 Nov 2026): perk steps sit on top; these rows are measured with no perk steps
     STEPS.perks = false;
     try { for (const p of ['old_overcast', 'nerukhan']) {
       const r = prayerRow('prayer-led', faithBuild(p), 'normal', lv, n, y, { opts: { hymn: 'damage', vow: VOW } });
-      console.log('[targets] ' + fline(r));
+      console.info('[faith] L6 ' + p + ': ' + fline(r));
       expect(r.errors).toBe(0);
-      expect(r.pctHymnTurn, p + ', a Hymn turn, percent of the rifle').toBeGreaterThanOrEqual(125); expect(r.pctHymnTurn).toBeLessThanOrEqual(200);
-      expect(r.pctQuietTurn, p + ', a quiet turn, percent of the rifle').toBeGreaterThanOrEqual(45); expect(r.pctQuietTurn).toBeLessThanOrEqual(130); // the rifle half rises with the plain rifle's Level term (rules 1.26)
-      expect(r.hymns).toBeGreaterThanOrEqual(0.3); expect(r.hymns).toBeLessThanOrEqual(0.55); expect(r.whispers).toBeGreaterThan(0.8);
     }
-    // without the vow the wait is 3 rounds at Faith 6: Hymns on turns 1, 4 and 7 of 8
-    const bare = prayerRow('no vow', faithBuild('old_overcast'), 'normal', lv, 4, y, { opts: { hymn: 'damage' } });
-    expect(bare.hymns).toBe(0.38); // 3 of 8, as the row rounds it
     // Lightning Rod with a second enemy inside its chain
     const two = prayerRow('two targets', faithBuild('old_overcast'), 'normal', lv, n, y, { foes: 2, opts: { hymn: 'damage', vow: VOW } });
-    console.log('[targets] ' + fline(two)); expect(two.errors).toBe(0);
-    expect(two.pctHymnTurn, 'two targets, a Hymn turn').toBeGreaterThanOrEqual(145); expect(two.pctHymnTurn).toBeLessThanOrEqual(215);
+    console.info('[faith] L6 two targets: ' + fline(two)); expect(two.errors).toBe(0);
     } finally { STEPS.perks = true; }
   }, 120000);
-  it('a patron with no Hymn that deals damage still has the Whisper and the rifle: not under half a rifle, not over one', () => {
+  (MEASURE ? it : it.skip)('a patron with no Hymn that deals damage: the Whisper and the rifle, printed', () => {
     const r = prayerRow('prayer-led', faithBuild('mother_ember'), 'normal', lv, n, y, { opts: { hymn: 'any' } });
-    console.log('[targets] ' + fline(r));
+    console.info('[faith] L6 mother_ember: ' + fline(r));
     expect(r.errors).toBe(0);
-    if (HAS_REBUKE) { expect(r.pctRifle).toBeGreaterThanOrEqual(40); expect(r.pctRifle).toBeLessThanOrEqual(125); }
   }, 120000);
-  it('the gunner who dabbles (Faith 3 given free, Devotion 3) gains little', () => {
+  (MEASURE ? it : it.skip)('the gunner who dabbles (Faith 3 given free, Devotion 3), printed', () => {
     const nd = 16, base = prayerRow('rifle only', dabblerBuild(), 'normal', lv, nd, y, { opts: { hymn: 'none', whisper: 'none' } });
     const best = Math.max(...[{ hymn: 'none', order: 'weapon' }, { hymn: 'none' }, { hymn: 'damage' }].map((o) => prayerRow('dabbler', dabblerBuild(), 'normal', lv, nd, y, { opts: o }).perTurn));
-    console.log('[targets] the dabbler: rifle only ' + base.perTurn + ' a turn, the best with prayer ' + best);
-    expect(best).toBeLessThanOrEqual(base.perTurn * 1.15);
+    console.info('[faith] the dabbler: rifle only ' + base.perTurn + ' a turn, the best with prayer ' + best + ' (x' + (best / base.perTurn).toFixed(3) + ')');
   }, 120000);
 });
 
@@ -147,8 +139,8 @@ describe('the Faith measurements', () => {
   });
 });
 
-// Rules 1.56 prayer 2.0: the Chaplain's own turn with the Canticle sung every turn against the same turn unsung (the
-// class's line, balance.ceilings.chaplain_turn), patron by patron. FAITH_MEASURE=1 FAITH_MEASURE_PARTS=canticle.
+// Rules 1.56 prayer 2.0: the Chaplain's own turn with the Canticle sung every turn against the same turn unsung,
+// patron by patron. FAITH_MEASURE=1 FAITH_MEASURE_PARTS=canticle.
 describe("the Canticle (rules 1.56 prayer 2.0): the singer's own turn", () => {
   part('canticle')('a Chaplain sung and unsung, each patron, at the measured levels', () => {
     for (const lv of LEVELS.filter((l) => l >= 3)) for (const pt of PATRONS) {

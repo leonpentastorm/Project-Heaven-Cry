@@ -67,8 +67,7 @@ describe('rules 1.19: the 25 feelings', () => {
     expect((FEELING.relief.pour as any).strain_back).toBe(2);
   });
   it('a feeling\'s number is visibly bigger than a plain Pump\'s, or it is the price of what the feeling does', () => {
-    // the ones that buy the multiplier: at least 2.5 times a plain Pump
-    for (const id of ['rage', 'shame', 'pride', 'abandon']) expect(FEELING[id].step.base! / PLAIN_STEP, id).toBeGreaterThanOrEqual(2.5);
+    // (rules 1.94: the line that a feeling buying the multiplier is at least 2.5 times a plain Pump is withdrawn)
     // under a plain Pump: only the three whose effect is strong (the multiplier going down is the price)
     expect(FEELINGS.filter((f) => f.step.base! < PLAIN_STEP).map((f) => f.id).sort()).toEqual(['awe', 'calm', 'relief']);
     expect(FEELINGS.filter((f) => f.step.base! < 0).map((f) => f.id).sort()).toEqual(['calm', 'relief']);

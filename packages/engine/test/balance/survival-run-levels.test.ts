@@ -3,10 +3,8 @@
 // engine's own pay (`nodeXp`, the paid kinds `PAY_KINDS` of `run/rewards.ts`) and the shared `xp_total` (`levelForXp`), on many seeds.
 // For each map: the route with the most fights (plain, Elite and the gate), a typical route (the median count) and the
 // route with the fewest; where each reaches level 3 (the depth, or the Boss), and the level on arriving at the Boss.
-//  - THE GUARD (always on; rules 1.55 item 28, 0.28.2 Survival XP pace: docs/design/proposals/2026-11-xp-fit-0.29.md): the
-//    lead's targets read against the data's pay: level 3 at the Boss's door on 80% of most-fights routes and 50% of typical
-//    ones, no route above level 4 after the Boss, level 3 before the gate (`map.gate_row`) on at most 1% of routes and never
-//    before the row above it, and level 3 from the Boss on 99% of routes;
+//  - THE READING (BALANCE_MEASURE=1; rules 1.55 item 28, 0.28.2 Survival XP pace: docs/design/proposals/2026-11-xp-fit-0.29.md):
+//    the shares once held as the pace's targets, printed, never asserted (rules 1.94, Leon 21 Nov 2026);
 //  - THE TABLE (opt-in, SIM_LEVELS=1, SIM_LEVEL_SEEDS default 400): the measure for the hand-off.
 import { describe, expect, it } from 'vitest';
 import { writeFileSync } from 'node:fs';
@@ -43,17 +41,14 @@ function routes(seeds: number) {
   return out;
 }
 
-describe('Survival, levels by route (rules 1.55 item 28, 0.28.2 Survival XP pace): the guard', () => {
-  it('level 3 comes after the gate and at the Boss door on most-fights and typical routes; never past level 4 in stage 1', () => {
+// Rules 1.94 (Leon, 21 Nov 2026): the shares the XP pace was fitted to are withdrawn as limits; printed with BALANCE_MEASURE=1.
+describe.runIf(env.BALANCE_MEASURE)('Survival, levels by route (rules 1.55 item 28, 0.28.2 Survival XP pace): reported', () => {
+  it('where level 3 comes, and the level at the Boss door and after it, on 60 maps', () => {
     const rs = routes(60), all = rs.flatMap((r) => r.all), gate = SV.map.gate_row;
-    const share = (xs: any[], f: (w: any) => boolean) => xs.filter(f).length / xs.length;
-    expect(share(rs.map((r) => r.most), (w) => w.doorLevel >= 3)).toBeGreaterThanOrEqual(0.8);
-    expect(share(rs.map((r) => r.typical), (w) => w.doorLevel >= 3)).toBeGreaterThanOrEqual(0.5);
-    expect(Math.max(...all.map((w) => w.afterLevel))).toBeLessThanOrEqual(4);
-    // measured 15 Nov at base 35, per_depth 0 (200 maps): 0.2% of routes reach level 3 before the gate, the earliest at row 7
-    expect(share(all, (w) => w.at3 != null && w.at3 < gate)).toBeLessThanOrEqual(0.01);
-    expect(all.every((w) => w.at3 == null || w.at3 >= gate - 1), JSON.stringify(all.filter((w) => w.at3 != null && w.at3 < gate - 1).slice(0, 3))).toBe(true);
-    expect(share(all, (w) => w.afterLevel >= 3)).toBeGreaterThanOrEqual(0.99);
+    const share = (xs: any[], f: (w: any) => boolean) => Math.round(100 * xs.filter(f).length / xs.length);
+    (globalThis as any).console.info('[levels] level 3 at the Boss door: most-fights routes ' + share(rs.map((r) => r.most), (w) => w.doorLevel >= 3) + '%, typical ' + share(rs.map((r) => r.typical), (w) => w.doorLevel >= 3)
+      + '% · highest level after the Boss ' + Math.max(...all.map((w) => w.afterLevel)) + ' · level 3 before the gate on ' + share(all, (w) => w.at3 != null && w.at3 < gate) + '% of routes · level 3 from the Boss on ' + share(all, (w) => w.afterLevel >= 3) + '%');
+    expect(all.length).toBeGreaterThan(0);
   });
 });
 

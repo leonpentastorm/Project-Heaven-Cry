@@ -100,7 +100,7 @@ describe('rules 1.18: the long rifle\'s bolt', () => {
 });
 
 describe('rules 1.18: the weapon numbers', () => {
-  it('the guns that were over the ceiling, and the automatic guns whose Burst lost a roll', () => {
+  it('the guns rules 1.18 renumbered, and the automatic guns whose Burst lost a roll (a record of the numbers, re-recorded on purpose)', () => {
     const d = (id: string) => (WEAPON[id] as any).damage;
     expect(d('long_rifle')).toBe(47); expect(d('adamantile_battle_rifle')).toBe(30); expect(d('ccec_marksman_rifle')).toBe(33); // long_rifle: rules 1.60 item 4644 (48 → 47)
     expect(d('core_rifle')).toBe(29); expect(d('blackpoint_700')).toBe(66); expect(d('frontier_hand_cannon')).toBe(38);
@@ -108,8 +108,6 @@ describe('rules 1.18: the weapon numbers', () => {
     expect(d('decrkm_smg')).toBe(19); expect(d('legion_pdw')).toBe(20); expect(d('whisper_smg')).toBe(16); expect(d('mandestra_drum_gun')).toBe(19); expect(d('decrkm_autopistol')).toBe(17);
     expect(d('brigade_auto_shotgun')).toEqual({ within_4: 40, within_8: 24 });
   });
-  it('no automatic sidearm out-hits the service pistol with a plain shot, and no rifle at 2 AP a shot is above 33', () => {
-    for (const id of ['decrkm_smg', 'legion_pdw', 'whisper_smg', 'mandestra_drum_gun', 'decrkm_autopistol']) expect((WEAPON[id] as any).damage, id).toBeLessThanOrEqual((WEAPON.service_pistol as any).damage);
-    for (const w of Object.values(WEAPON) as any[]) if (w.category === 'rifle' && typeof w.damage === 'number' && attackApCost(w, 'shot') === 2) expect(w.damage, w.id).toBeLessThanOrEqual(33);
-  });
+  // (rules 1.94: the guards that no automatic sidearm out-hits the service pistol and that no 2-AP rifle shot passes 33
+  // are withdrawn as limits, Leon 21 Nov 2026)
 });

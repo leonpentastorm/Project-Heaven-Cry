@@ -1,6 +1,6 @@
 // Classes 3.0 step 6 (rules 1.32; shadow-spec.md section 7): Shadow's line, measured on the engine's own rolls. The
-// three-turn window with one Break (the spec's sequences) against the same character's nine plain shots, times the
-// plain rifle's all-in ceiling (rules.json balance.ceilings.plain.allin): the reading the spec's estimate makes.
+// three-turn window with one Break (the spec's sequences) against the same character's nine plain shots, in percent of
+// those shots (until rules 1.94 it was read times the plain rifle's all-in ceiling, 125, now withdrawn).
 // The character is the simulator's plain gun, all in (Dexterity full), with the spec's all-in Ingenuity added: an
 // UPPER bound for a real Shadow build, which shares its points. Off unless SHADOW_MEASURE=1 (it prints a table); the
 // guard below runs always: no Break (Execution included) takes a full-HP Elite or Boss at the character's level under 1 HP.
@@ -10,7 +10,7 @@ import { ACTIONS } from '../../src/actions';
 import { applyCond } from '../../src/magic';
 import { startFight } from './sim';
 
-const SH: any = (RULES as any).shadow, C: any = (RULES as any).balance.ceilings;
+const SH: any = (RULES as any).shadow;
 const MODS = ['skill:ingenuity.1#shadow.break'];
 const W = <T>(g: any, f: () => T): T => { const was = bindGame(g); try { return f(); } finally { bindGame(was); } };
 /** The spec's all-in Ingenuity by level (section 7's table). */
@@ -40,7 +40,7 @@ function windowPct(level: number, who: 'door' | 'operative', n: number) {
     if (who === 'door') { win += shot(x, { brk: Math.min(cap, 3) }) + shot(x); for (let k = 0; k < 3; k++) win += shot(x); }
     else { win += shot(x, { brk: Math.min(cap, 3) }) + shot(x, { marked: true }) * 2; for (let k = 0; k < 3; k++) win += shot(x, { marked: true }); }
   }
-  return Math.round((win / plain) * C.plain.allin);
+  return Math.round((win / plain) * 100);
 }
 
 /** Rules 1.56 Shadow 2.0 slice 1 (items 4332, 4333): the door's first three turns played as a level-1 door plays them,
@@ -60,19 +60,19 @@ function firstWindow(level: number, after: boolean, n: number) {
     win += shot(x, { brk: after ? first.value : 1 });
     for (let k = 0; k < t1 + t2 + 3; k++) win += shot(x);
   }
-  return Math.round((win / plain) * C.plain.allin);
+  return Math.round((win / plain) * 100);
 }
 
 describe('Shadow: the window (rules 1.32, item 1962)', () => {
   it.runIf((globalThis as any).process?.env?.SHADOW_MEASURE === '1')('Shadow 2.0 slice 1: the first window before and after (door_1, door_2)', () => {
     const n = Number((globalThis as any).process?.env?.SHADOW_N) || 40, rows: string[] = [];
     for (const L of [1, 5, 10, 20]) rows.push('L' + L + ': door_1 ' + firstWindow(L, false, n) + ', door_2 ' + firstWindow(L, true, n));
-    (globalThis as any).console.log('Shadow first window (line: door all in ' + C.shadow.door_allin + ', Operative ' + C.shadow.allin + ')' + String.fromCharCode(10) + rows.join(String.fromCharCode(10)));
+    (globalThis as any).console.log('Shadow first window, % of nine plain shots' + String.fromCharCode(10) + rows.join(String.fromCharCode(10)));
   });
   it.runIf((globalThis as any).process?.env?.SHADOW_MEASURE === '1')('measures the door and the Operative at levels 1, 5, 10, 20', () => {
     const n = Number((globalThis as any).process?.env?.SHADOW_N) || 40, rows: string[] = [];
     for (const L of [1, 5, 10, 20]) rows.push('L' + L + ': door ' + windowPct(L, 'door', n) + ', Operative ' + windowPct(L, 'operative', n));
-    (globalThis as any).console.log('Shadow window (line: Operative ' + C.shadow.allin + ', door all in ' + C.shadow.door_allin + ')\n' + rows.join('\n'));
+    (globalThis as any).console.log('Shadow window, % of nine plain shots\n' + rows.join('\n'));
   });
   it('the guard: a Break never takes a full-HP Elite or Boss at the character\'s level under 1 HP, nor Executes it', () => {
     for (const tier of ['elite', 'boss']) for (let i = 0; i < 6; i++) {

@@ -1,9 +1,9 @@
 // The Sigil damage balance pass (docs/design/balance-targets.md; spec items 587-590): Elemental power on the Physical
-// slope, Sigil and Elemental bonuses added (not multiplied), one main element per spell, and the 350 / 500 ceilings.
+// slope, Sigil and Elemental bonuses added (not multiplied), one main element per spell. (The 350 / 500 targets of 8 Nov were withdrawn as a cap by rules 1.17 and as a line by rules 1.94.)
 import { describe, expect, it } from 'vitest';
 import './helpers/grammar-only'; // rules 1.17: the Line multiplier is off here (these tests pin the grammar's own numbers)
 import { elementalMult, sigilMult, SIGIL, type Character } from '../src';
-import { sigilPower, sigilParts, capParts, SIGIL_CAP, SIGIL_CAP_CRIT } from '../src/sigil';
+import { sigilPower, sigilParts, capParts } from '../src/sigil';
 import { PROFILES } from '../src';
 
 const maxed = { sigilMult: 1 + 0.1 * 9 + 0.1 * 10, elemMult: 1 + 0.1 * 9 + 0.05 * 10 }; // Intelligence 10, Brain Power 10, Expression 10, Visualization 10
@@ -20,21 +20,8 @@ describe('Sigil balance', () => {
     expect(sigilParts(['fire', 'shock', 'stone'])).toEqual([{ w: 'stone', type: 'sigil', n: 35 }, { w: 'fire', type: 'elemental', n: 30 }]);
     expect(sigilParts(['fire', 'fire', 'fire']).reduce((n, p) => n + p.n, 0)).toBe(60);
   });
-  it('rules 1.17: 350 a hit and 500 on a critical are targets, not a limit: nothing is scaled down to them', () => {
+  it('rules 1.17: nothing is scaled down to 350 a hit or 500 on a critical (no cap)', () => {
     expect(capParts([200, 100], false)).toEqual([200, 100]);
     expect(capParts([400, 300], false)).toEqual([400, 300]); expect(capParts([800, 200], true)).toEqual([800, 200]);
-    expect(SIGIL_CAP).toBe(350); expect(SIGIL_CAP_CRIT).toBe(500);
-  });
-  it('a fully built caster\'s strongest single-target spell, before the Line multiplier, stays near the 350 target (was about 1,200)', () => {
-    // Every 4-glyph Line of damage words with CONDENSE (×1.5, the biggest single-target Burst), repeats at ×0.9 each.
-    const dmgWords = Object.values(SIGIL).filter((w: any) => w.damage).map((w: any) => w.id as string);
-    let best = 0, bestLine = '';
-    for (const a of dmgWords) for (const b of dmgWords) for (const c of dmgWords) {
-      const words = [a, b, c], repeats = words.length - new Set(words).size, m = 1.5 * Math.pow(0.9, repeats);
-      const raw = sigilParts(words).reduce((n, p) => n + p.n * m * sigilPower(maxed, p.type), 0);
-      if (raw > best) { best = raw; bestLine = words.join('·') + '·condense'; }
-    }
-    expect(best).toBeLessThan(SIGIL_CAP * 1.3); // with the full Line's ×1.8 on top, the Mage's peak passes the target (the peak rule)
-    expect(best).toBeGreaterThan(200); void bestLine;
   });
 });

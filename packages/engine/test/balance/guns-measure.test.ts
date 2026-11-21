@@ -3,12 +3,13 @@
 // rifle on the simulator's shooting range, in the hands of the optimised gun build (Marksman, Masterwork), played four
 // ways (guns-measure.ts ROTATIONS); a weapon's number is the best of the four.
 //
-//   npm run check -- engine                the cheap tests below (the cards, and a few seeded fights at level 6)
+//   npm run check -- engine                the cheap tests below (the cards; nothing held to a line)
+//   BALANCE_MEASURE=1 (or npm run balance)  also prints the card ratios and a few seeded fights at level 6
 //   GUNS_MEASURE=1 npx vitest run --root packages/engine test/balance/guns-measure.test.ts --silent=false
 //                                          the full tables, printed (levels 1, 3, 6, 9, 12, 20; normal share and all in)
 //   GUNS_MEASURE_N=24                      fights a cell (default 12)
 //   GUNS_MEASURE_LEVELS=6,12   GUNS_MEASURE_VARIANTS=normal   GUNS_MEASURE_RARITY=masterwork
-//   GUNS_MEASURE_WEAPONS=all | id,id       (default: the guns that matter for the ceiling, TOP_GUNS)
+//   GUNS_MEASURE_WEAPONS=all | id,id       (default: TOP_GUNS)
 //   GUNS_MEASURE_DUAL=id,id                the same gun in each hand
 //   GUNS_MEASURE_OUT=<folder>              also writes guns-measure-<tag>.json and .md there (GUNS_MEASURE_TAG, default "now")
 import { describe, it, expect } from 'vitest';
@@ -40,30 +41,35 @@ function cards(weapon: string, level = 6) {
   return { shot: { ap: shot.ap, perAp: expected(shot) / shot.ap }, burst: tech('burst'), dump: tech('mag_dump') };
 }
 
-// The targets (Leon, 11 Nov 2026; rules 1.18), pinned cheaply. The first two tests read the engine's cards (no dice);
-// the third plays a few seeded fights at level 6 with wide bands (the full run is the measurement).
-describe('the guns\' ceiling holds (rules 1.18)', () => {
-  it('a Burst is worth more than the Shot for its AP, by 5% to 25%, and is worse to hit; Mag Dump stays under +35%', () => {
+// What the cards read (rules 1.18), printed: the first two tests read the engine's cards (no dice) and assert only what
+// the rules say a technique is (a Burst is two rolls for 3 AP, the long rifle's shot 3 AP); the ratios are reported, never
+// held to a line (rules 1.94: the balance lines are withdrawn, Leon 21 Nov 2026). The third plays a few seeded fights at
+// level 6 and prints them (BALANCE_MEASURE=1, or `npm run balance`).
+const MEASURE = !!process.env.BALANCE_MEASURE;
+describe('the guns on the cards (rules 1.18), reported', () => {
+  it('a Burst is two rolls for at most 3 AP; what it and Mag Dump are worth for their AP against the Shot is printed', () => {
+    const out: string[] = [];
     for (const w of ['hellraiser_service_rifle', 'legion_bullpup']) {
       const c = cards(w);
       expect(c.burst.rolls, w).toBe(2); expect(c.burst.ap, w).toBeLessThanOrEqual(3);
       const perAp3 = c.burst.perAp * c.burst.ap / 3; // Fire Discipline makes one Burst a turn 2 AP: the card's own price is 3
-      expect(perAp3 / c.shot.perAp, w + ': Burst for its AP against the Shot').toBeGreaterThanOrEqual(1.05); expect(perAp3 / c.shot.perAp, w).toBeLessThanOrEqual(1.25);
-      if (c.dump) expect(c.dump.perAp / c.shot.perAp, w + ': Mag Dump for its AP against the Shot').toBeLessThanOrEqual(1.35);
+      out.push(w + ': Burst for its AP ' + (perAp3 / c.shot.perAp).toFixed(3) + ' x the Shot' + (c.dump ? ', Mag Dump ' + (c.dump.perAp / c.shot.perAp).toFixed(3) + ' x' : ''));
     }
+    if (MEASURE) console.info('[guns] ' + out.join(' · '));
   });
-  it('the slow big shot is no better for its AP than a 2 AP rifle: the long rifle within 85% to 112% of the service rifle\'s Shot', () => {
+  it('the long rifle\'s shot is 3 AP and the service rifle\'s 2; each rifle\'s Shot for its AP against the service rifle\'s is printed', () => {
     const rifle = cards('hellraiser_service_rifle').shot, long = cards('long_rifle').shot;
     expect(long.ap).toBe(3); expect(rifle.ap).toBe(2);
-    expect(long.perAp / rifle.perAp).toBeGreaterThanOrEqual(0.85); expect(long.perAp / rifle.perAp).toBeLessThanOrEqual(1.13); // 1.12 until rules 1.36: the level 6 Soldier's armour rounds up now (5 × 1.7038 = 8.52 → 9; it was 6.35 → 6), which costs the smaller hit more: 1.122
-    for (const w of ['adamantile_battle_rifle', 'ccec_marksman_rifle', 'core_rifle', 'lever_carbine']) { const c = cards(w).shot; expect(c.perAp / rifle.perAp, w).toBeLessThanOrEqual(1.2); }
+    const out = ['long_rifle ' + (long.perAp / rifle.perAp).toFixed(3)];
+    for (const w of ['adamantile_battle_rifle', 'ccec_marksman_rifle', 'core_rifle', 'lever_carbine']) { const c = cards(w).shot; out.push(w + ' ' + (c.perAp / rifle.perAp).toFixed(3)); }
+    if (MEASURE) console.info('[guns] Shot per AP against the service rifle: ' + out.join(' · '));
   });
-  it('on the range: the optimised rifles sit between the plain rifle and 150% of it (level 6, a few seeded fights)', () => {
+  (MEASURE ? it : it.skip)('on the range: the optimised rifles against the plain rifle (level 6, a few seeded fights), printed', () => {
     const N = 4, y = rifleYard(6, 12);
     for (const [w, rot] of [['hellraiser_service_rifle', 'gunner'], ['long_rifle', 'plain']] as const) {
       const r = ROTATIONS.find((q) => q.id === rot)!, row = gunRow(w, gunBuild(w, 'masterwork'), 'normal', 6, N, y, { policy: r.policy, opts: r.opts });
       expect(row.errors, w).toBe(0);
-      expect(row.pctRifle, w + ', percent of the plain rifle').toBeGreaterThanOrEqual(105); expect(row.pctRifle, w).toBeLessThanOrEqual(172);
+      console.info('[guns] L6 ' + w + ' (' + rot + '): ' + row.pctRifle + '% of the plain rifle');
     }
   }, 120000);
 });
@@ -92,7 +98,7 @@ describe('the gun measurements', () => {
         + '. Each cell: the best of the four ways · (plain shots only).\n\n| Gun | ' + levels.map((l) => 'Level ' + l).join(' | ') + ' |\n|---|' + levels.map(() => '---').join('|') + '|\n';
       for (const [k, cells] of Object.entries(table)) md += '| ' + k + ' | ' + cells.map((c: any) => (c ? '**' + c.best.pctRifle + '%** ' + c.best.rot + ' · (' + c.rows[0].pctRifle + '%)' : '–')).join(' | ') + ' |\n';
       const top = (special: boolean) => levels.map((_, i) => { let b: any = null; for (const [k, cells] of Object.entries(table)) { const c: any = cells[i]; if (!c || SPECIAL_AMMO.includes(c.weapon) !== special) continue; if (!b || c.best.pctRifle > b.pct) b = { pct: c.best.pctRifle, k }; } return b ? '**' + b.pct + '%** ' + b.k : '–'; });
-      md += '| THE CEILING (the best gun, the best way) | ' + top(false).join(' | ') + ' |\n| Special ammunition (allowed 150%) | ' + top(true).join(' | ') + ' |\n';
+      md += '| The best gun, the best way |' + top(false).join(' | ') + ' |\n| The best special ammunition |' + top(true).join(' | ') + ' |\n';
     }
     console.log(md);
     if (OUT) { const dir = fromRepo(OUT); mkdirSync(dir, { recursive: true }); writeFileSync(resolve(dir, 'guns-measure-' + TAG + '.json'), JSON.stringify(all, null, 1) + '\n'); writeFileSync(resolve(dir, 'guns-measure-' + TAG + '.md'), md); }

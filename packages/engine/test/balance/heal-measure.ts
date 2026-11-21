@@ -34,7 +34,7 @@ for (const t of ['soldier', 'elite']) if (!ENEMY['sim_bag_' + t]) { ENEMY['sim_b
 
 /** One Soldier-turn, as measured for the report (60 fights a level, two Soldiers on the rifleman; section 1 of the
  * hand-off). The cheap tests read this table; `soldierTurn` measures it again. */
-export const SOLDIER_TURN: Record<number, number> = Object.fromEntries(Object.entries((RULES as any).balance.yardsticks.soldier_turn).filter(([k]) => /^\d+$/.test(k)).map(([k, v]) => [Number(k), Number(v)])); // rules 1.36: data, in the level scale's units
+export const SOLDIER_TURN: Record<number, number> = Object.fromEntries(Object.entries((RULES as any).measure.soldier_turn).filter(([k]) => /^\d+$/.test(k)).map(([k, v]) => [Number(k), Number(v)])); // rules 1.36: data, in the level scale's units
 /** The plain rifleman's max HP at the reference levels (builds.ts 'plain_gun', normal share). */
 export const RIFLEMAN_HP: Record<number, number> = Object.fromEntries(Object.entries({ 1: 145, 3: 163, 6: 190, 9: 233, 12: 288, 20: 445 }).map(([k, v]) => [Number(k), Math.round(v * scaleOf(Number(k)))])); // the measured rifleman, × scale (rules 1.36)
 export function soldierTurn(level: number, n = 30, soldiers = 2) {

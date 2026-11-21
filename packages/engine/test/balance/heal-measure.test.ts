@@ -3,8 +3,7 @@
 // from Sigil, the Outburst and prayer are worth against one Soldier's turn, and how long a pair lasts under fire with
 // and without a supporter.
 //
-//   npm run check -- engine                the cheap tests below (the inventory is arithmetic on the engine's numbers;
-//                                          the fights are 3 a row at level 6: a few seconds)
+//   BALANCE_MEASURE=1 (or npm run balance)  a pair under fire at level 6, printed (3 fights a row)
 //   HEAL_MEASURE=1 npx vitest run --root packages/engine test/balance/heal-measure.test.ts --silent=false
 //                                          the full tables, printed: the yardstick, every source before and after, the
 //                                          pairs under fire (levels 1, 6, 12, 20)
@@ -12,7 +11,6 @@
 //   HEAL_MEASURE_PARTS=yard,inv,fire       only these parts        HEAL_MEASURE_ROWS=Faith   only the pairs whose name matches
 import { describe, it, expect } from 'vitest';
 import { inventory, invTable, invNums, underFire, fireLine, soldierTurn, SOLDIER_TURN, RIFLEMAN_HP, H_LEVELS } from './heal-measure';
-import { SIGIL, BUFF_HEAL, BOON_AREA, mendFactor, RULES, prayerMendDial } from '../../src';
 
 const FULL = !!process.env.HEAL_MEASURE, N = Math.max(1, Number(process.env.HEAL_MEASURE_N) || 12);
 const LV = (process.env.HEAL_MEASURE_LEVELS || '').split(',').map(Number).filter(Boolean), PARTS = (process.env.HEAL_MEASURE_PARTS || 'yard,inv,fire').split(',');
@@ -25,84 +23,16 @@ const SUPPORT: Record<string, any> = {
   pray: { build: 'faith_s', variant: 'normal', policy: 'pray_heal' }, prayShield: { build: 'faith_n', variant: 'normal', policy: 'pray_heal', opts: { whisper: 'protection' } },
 };
 const idleOf = (s: any) => ({ ...s, policy: 'idle', opts: undefined });
-// Rules 1.27 (the heal re-fit): every heal and shield rose by the healer's ceiling (data) over the 125 these bands were
-// set on (×1.6); Faith's by its heal dial (blessing_mend.k over blessing.k: ×1.51, capped). The bands below scale with them.
-const R = (RULES as any).balance.ceilings.healer_turn.allin / 125, FD = prayerMendDial();
-const within = (x: number, lo: number, hi: number, what: string) => { expect(x, what).toBeGreaterThanOrEqual(Math.floor(lo)); expect(x, what).toBeLessThanOrEqual(Math.ceil(hi)); };
+const MEASURE = !!process.env.BALANCE_MEASURE;
 
-// The bands (the hand-off, section 1.2), pinned on the engine's own numbers for the reference casters at levels 1, 6
-// and 20. They are a little wider than the report's, so that a later change that keeps a band does not break a test.
-// Rules 1.36 supersedes these bands (heals and shields in percent of the reference HP, not Soldier-turns, a gate and a cap): the new lines are held by
-// balance-contract.test.ts (the off-heal line), heal-pct.test.ts (the gate, the cap, the Recruit, the stim, the shield order) and the Tending measure.
-// The rules 1.20 bands stay here, skipped (13 Nov 2026: superseded by rules 1.36), as the record of what they were.
-describe.skip('the heal and shield bands hold (rules 1.20; superseded by rules 1.36)', () => {
-  it('the yardstick: a Soldier-turn is about 13% of the rifleman\'s HP at every level, and the level factor follows it', () => {
-    for (const lv of H_LEVELS) { const sh = SOLDIER_TURN[lv] / RIFLEMAN_HP[lv]; expect(sh, 'level ' + lv).toBeGreaterThan(0.12); expect(sh).toBeLessThan(0.145); }
-    expect([1, 6, 12, 20].map(mendFactor)).toEqual([1, 1.13, 1.38, 1.82]);
-  });
-  it('Outburst: a steady turn of healing is 65 to 130% of a Soldier-turn at a normal share (rules 1.26: 1.25 all in, ÷ 1.25), the biggest 85 to 170%, the quick heal about a third of a turn\'s; each ×1.6 since rules 1.27', () => {
-    for (const lv of [1, 6, 20]) {
-      const r = inventory('outburst_s', 'normal', lv);
-      const steady = row(r, /steady \(Rage and Love/).pctNow, big = row(r, /the biggest/).pctNow, quick = row(r, /stage 1 \(the quick/).pctNow;
-      within(steady, 65 * R, 130 * R, 'steady, level ' + lv);
-      within(big, 85 * R, 170 * R, 'biggest, level ' + lv); expect(big).toBeGreaterThan(steady);
-      within(quick, 25 * R, 60 * R, 'quick, level ' + lv);
-    }
-  });
-  it('Sigil: a 2-glyph MEND Line is 60 to 115% of a Soldier-turn; the full Line is the biggest single heal (170 to 280%; rules 1.26: MEND reads the landed sigil_mend Stat); each ×1.6 since rules 1.27', () => {
-    for (const lv of [1, 6, 20]) {
-      const r = inventory('sigil_s', 'normal', lv), two = row(r, /^MEND · SEEK/).pctNow, full = row(r, /^MEND · MEND · CONDENSE/).pctNow;
-      within(two, 60 * R, 115 * R, '2 glyphs, level ' + lv);
-      within(full, 170 * R, 280 * R, 'the full Line, level ' + lv);
-      expect(full).toBeGreaterThan(row(inventory('outburst_s', 'normal', lv), /the biggest/).pctNow); // the set-up earns the biggest single heal
-    }
-  });
-  it('a shield is about 1.2 times the heal of the same cost', () => {
-    expect((SIGIL.ward as any).shield / (SIGIL.mend as any).heal).toBeCloseTo(1.2, 1);
-    for (const lv of [1, 6, 20]) {
-      const o = inventory('outburst_s', 'normal', lv), ratio = row(o, /Inverse shield, steady/).now / row(o, /steady \(Rage and Love/).now;
-      expect(ratio, 'Inverse against the steady heal, level ' + lv).toBeGreaterThan(1.0); expect(ratio).toBeLessThan(1.45);
-      const f = inventory('faith_s', 'normal', lv), pr = row(f, /Saint's Shield/).now / row(f, /Warm Hands/).now;
-      expect(pr).toBeGreaterThan(1.1); expect(pr).toBeLessThan(1.35);
-    }
-  });
-  it('riders stay small, and an area gives all its allies together at most about 1.6 times the single heal', () => {
-    for (const lv of [1, 6, 20]) {
-      const o = inventory('outburst_s', 'normal', lv);
-      expect(row(o, /Love on a Damage Outburst: an ally/).pctNow).toBeLessThanOrEqual(50 * R); expect(row(o, /^Shell/).pctNow).toBeLessThanOrEqual(75 * R);
-      expect(row(o, /in an Aura, steady/).now * 4 / row(o, /steady \(Rage and Love/).now).toBeLessThanOrEqual(1.75);
-    }
-    expect(BOON_AREA * 4).toBeCloseTo(1.6, 5);
-  });
-  // Rules 1.22: the healing Hymn waits on its cooldown now and is 13 (10): 75 to 100% of a Soldier-turn a cast.
-  it('prayer: a Whisper is 28 to 45% of a Soldier-turn, a healing Hymn 75 to 100% (rules 1.22), the intervention 120 to 180%; each × Faith\'s heal dial since rules 1.27', () => {
-    for (const lv of [1, 6, 20]) {
-      const f = inventory('faith_s', 'normal', lv);
-      for (const w of [/Whisper: Health/, /Whisper: Protection/]) within(row(f, w).pctNow, 28 * FD, 45 * FD, String(w) + ' level ' + lv);
-      within(row(f, /Warm Hands/).pctNow, 75 * FD, 100 * FD, 'Warm Hands, level ' + lv);
-      within(row(f, /intervention/).pctNow, 120 * FD, 180 * FD, 'the intervention, level ' + lv);
-    }
-  });
-  it('all in passes the bands by about half (rules 1.23: there is no round limit to stay under any more)', () => {
-    for (const lv of [1, 6, 20]) {
-      const a = inventory('mender', 'allin', lv), steady = row(a, /steady \(Rage and Love/), big = row(a, /the biggest/);
-      expect(steady.pctNow, 'all in, level ' + lv).toBeLessThanOrEqual(240); expect(big.now).toBeLessThanOrEqual(Math.floor(RIFLEMAN_HP[lv] * 0.5)); // (still under half of the rifleman's HP in one heal)
-    }
-    expect(BUFF_HEAL).toBe(7);
-  });
-});
-describe('a healer under fire (rules 1.20; still held under rules 1.36)', () => {
-  it('under fire (level 6, 3 fights a row): a healer keeps a pair up longer under two Soldiers, and nothing keeps it up under four', () => {
+// Rules 1.94 (Leon, 21 Nov 2026): the heal and shield bands (rules 1.20, superseded by 1.36; the off-heal line of the
+// balance contract) are withdrawn as limits. What a healer does under fire is printed (BALANCE_MEASURE=1, or `npm run balance`).
+describe('a healer under fire (rules 1.20), reported', () => {
+  (MEASURE ? it : it.skip)('under fire (level 6, 3 fights a row): a pair with and without a healer, under two and four Soldiers, printed', () => {
     const idle2 = underFire('idle', idleOf(SUPPORT.heal), 6, 2, 3), heal2 = underFire('heal', SUPPORT.heal, 6, 2, 3), heal4 = underFire('heal', SUPPORT.heal, 6, 4, 3);
     const both4 = underFire('heal and shield', [SUPPORT.heal, SUPPORT.shield], 6, 4, 3);
     expect(idle2.errors + heal2.errors + heal4.errors + both4.errors).toBe(0);
-    expect(heal2.casts).toBeGreaterThan(1);
-    expect(heal2.firstDown).toBeGreaterThan(idle2.firstDown);
-    expect(heal4.neverDown, 'a healer under four Soldiers: somebody goes Down: ' + fireLine(heal4)).toBe(0);
-    // Rules 1.61 (the opening volley: the enemy's Burst is the characters' two rolls, item 1079's refit, the damage factors
-    // left as they were on purpose): a healer AND a shielder now hold a pair up under four Soldiers for the 10 rounds.
-    // OLD expectation (rules 1.20 to 1.56): somebody goes Down there too (neverDown 0). Held now: the shield adds to the heal.
-    expect(both4.firstDown, 'a healer and a shielder under four Soldiers outlast a healer alone: ' + fireLine(both4) + ' / ' + fireLine(heal4)).toBeGreaterThan(heal4.firstDown);
+    for (const r of [idle2, heal2, heal4, both4]) console.info('[fire] ' + fireLine(r));
   }, 240000);
 });
 

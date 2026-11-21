@@ -10,7 +10,7 @@
 //                       the level factor; out of a fight a Triage is three times a fight's
 //   Split               a Split heal or shield is divided: ×0.8 each
 //   the Boss            its HP (the refit) and the enemy's Burst
-// The bands (percent of a Soldier-turn, heal per AP) are pinned in balance/defence-measure.test.ts.
+// The old bands (percent of a Soldier-turn, heal per AP) were withdrawn as limits (rules 1.94); balance/defence-measure.test.ts measures.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import { ENEMY_LEVELS,

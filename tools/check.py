@@ -6,13 +6,14 @@ spec-table and screen-data checks, both type checks and both unit suites, run to
     npm run check -- engine  only what touches the engine (validator, engine tsc, engine tests)
     npm run check -- web     only the client (web tsc, the screen data's freshness, web tests)
     npm run check -- -t "Heart Overload"     both suites, only tests whose name matches
-    npm run check -- balance the balance simulator's folder with its smoke fights too (packages/engine/test/balance;
-                             a minute or two). The same as `npm run balance`.
+    npm run check -- balance the balance simulator's folder with its readings and smoke fights (packages/engine/test/balance;
+                             long). The same as `npm run balance`. Never part of a plain `npm run check`.
 
-The engine's unit suite runs packages/engine/test/balance: every balance target (guns, magic, heals, Faith, defence,
-the enemy table, the price list) fails a plain `npm run check` when a number moves. What it leaves out are the three
-"quick run" smoke fights (whole simulated fights that assert only "it builds"); `npm run balance` adds them: run that
-after a change to a simulator policy or the enemy AI, and before a merge of engine work.
+The engine's unit suite runs packages/engine/test/balance for what is not a line: the simulator is deterministic and
+legal and matches previewAttack, a run plays clean, the Elite and Boss guard. The balance lines are withdrawn (rules
+1.94, Leon 21 Nov 2026): the measures only PRINT what they read, behind BALANCE_MEASURE, which `npm run balance` sets
+(with BALANCE_QUICK for the "quick run" smoke fights). Nothing fails because a number moved; the golden tables still
+record the exact numbers (re-recorded only on purpose).
 
 Exit code 0 when all pass. Full logs are kept in .check/ (ignored by git) when something fails.
 """

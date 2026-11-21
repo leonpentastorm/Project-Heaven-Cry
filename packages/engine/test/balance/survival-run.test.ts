@@ -1,8 +1,8 @@
 // @ts-nocheck (a measuring tool)
 // Survival's simulated runs (survival-spec section 5.6, section 10 row 9; rules 1.49). Two parts:
-//  - THE GUARD (always on, in `npm run check`): a small seeded set of whole runs with generous bands on the headline
-//    results, so a later change that breaks the run curve is caught (a solo gunner at a normal share clears stage 1 about half the time since rules 1.61 R2, and
-//    is beaten by stage 4; a squad of four is beaten in stages 2 to 5; nobody runs dry; levels per stage);
+//  - THE GUARD (always on, in `npm run check`): a seeded set of whole runs that must play clean (no errors in stage 1,
+//    nobody runs dry); how many clear and the levels reached are printed with BALANCE_MEASURE=1, never held to a
+//    bar (rules 1.94, Leon 21 Nov 2026);
 //  - THE MEASURE (opt-in): SURVIVAL_SIM=1 plays the cells named in SIM_CELLS ("party:route,…"; default all) over
 //    SIM_SEEDS seeds (default 8) and writes every run to SIM_OUT (JSON) for survival-run-report.ts to tabulate.
 //    How to run it and what it printed: docs/design/handoffs/survival-steps-9-10.md.
@@ -39,18 +39,19 @@ describe('Survival, simulated runs (rules 1.49): the guard', () => {
   // Rules 1.81 item 6905 (the 0.32 fit, 20 Nov 2026, PROVISIONAL): re-measured on GUARD-1 to GUARD-40 after the 0.32
   // lanes and the fit: 25 of 40 clear stage 1 (62%, one standard error 7.7 points), 2 clear stage 4. OLD bar: 37% (14 of
   // 40), which no longer told a real loss from the noise. NEW bar: the measured share less one standard error, 55% (22).
-  const BAR = 0.55;
-  it('a solo gunner clears stage 1 on at least the measured share less its noise (rules 1.61 R3) and at most a quarter clear stage 4', () => {
+  // Rules 1.94 (Leon, 21 Nov 2026): the bars on how many seeds clear stage 1 and stage 4 (the last one 55%, re-set to each
+  // measured share) are withdrawn as limits. The counts are printed; the run must play clean and never run dry.
+  it('a solo gunner\'s runs play clean: stage 1 without errors, never a fight entered with an empty gun (the clears and levels are printed)', () => {
     const runs = SEEDS.map((seed) => simRun({ party: 'solo_gunner', route: 'gear', seed, maxStages: 4 }));
     // a fight that stalls past stage 1 is a simulator limit, listed not failed (8 seeds: develop's GUARD-4 stalls at stage 3
     // holding 618 rounds; with rules 1.55 GUARD-5 stalls at stage 4 with an empty gun, the 0.29 simulator item: it never
-    // makes rounds or picks magazines up); stage 1, the question here, must run clean
+    // makes rounds or picks magazines up); stage 1 must run clean
     for (const r of runs) expect(r.errors.filter((e) => !/levelup/.test(e) && !/did not end in \d+ rounds \(stage [2-9]/.test(e)), r.seed).toEqual([]);
-    expect(runs.filter((r) => r.cleared >= 1).length, runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth).join('; ')).toBeGreaterThanOrEqual(Math.floor(SEEDS.length * BAR));
-    const ends = runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth + ' cleared ' + r.cleared).join('; ');
-    expect(runs.filter((r) => r.cleared >= 4).length, ends).toBeLessThanOrEqual(Math.floor(SEEDS.length / 4));
-    // levels per stage (rules 1.54 item 9, survival-spec 14.4: level 3 after stage 1's Boss; 139 of 139 measured)
-    for (const r of runs) if (r.stages[0].cleared) expect(r.stages[0].level[0]).toBe(3);
+    if (env.BALANCE_MEASURE) (globalThis as any).console.info('[survival] solo gunner, gear route, ' + SEEDS.length + ' seeds: stage 1 cleared ' + runs.filter((r) => r.cleared >= 1).length + ', stage 4 cleared ' + runs.filter((r) => r.cleared >= 4).length
+      + ' · ' + runs.map((r) => r.seed + ' ' + r.how + ' ' + r.stage + '.' + r.depth + ' cleared ' + r.cleared).join('; '));
+    // levels per stage (rules 1.54 item 9, survival-spec 14.4: level 3 after stage 1's Boss), printed: the pace is the
+    // progression's to design, not a line (rules 1.94)
+    if (env.BALANCE_MEASURE) (globalThis as any).console.info('[survival] level after stage 1: ' + runs.filter((r) => r.stages[0].cleared).map((r) => r.stages[0].level[0]).join(' '));
     // a gunner on Bursts never runs dry between shops (restored in 0.29 P2: rules 1.55 item 19 gives no magazines after a
     // fight, and the simulator now walks the field for its dropped magazines, makes rounds from materials once it holds
     // the ammo maker, buys rounds and magazines and sells what it cannot use; measured 15 Nov on the eight seeds: no fight

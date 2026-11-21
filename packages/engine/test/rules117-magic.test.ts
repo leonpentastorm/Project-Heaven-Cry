@@ -6,7 +6,7 @@
 //   Outburst  the stage table (×0.8, then +0.4 a stage), the Damage base (28 for a character, 18 for an enemy caster),
 //             a critical ×1.5, the level gap, every feeling's step and cost (none under a plain Pump's +0.4 but Relief),
 //             Calm, Shame, Relief, Love and Guilt as their cards now say, Abandon once, and the repriced modules.
-// The targets themselves (percent of the plain rifle) are pinned cheaply in balance/magic-measure.test.ts.
+// What a Line and an Outburst deal against the plain rifle is measured (printed, never held to a line: rules 1.94) in balance/magic-measure.test.ts.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import {

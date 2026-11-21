@@ -9,7 +9,7 @@
 //   the round limit    WITHDRAWN by rules 1.23 (Leon, 12 Nov 2026): nothing limits a round's healing (pinned here as
 //                      gone; the rest of rules 1.23 is in rules123-defence.test.ts)
 //   shields            the bigger one stands; a point of shield is a point of HP (taken after armour)
-// The bands themselves (percent of a Soldier-turn) are pinned in balance/heal-measure.test.ts.
+// The old bands (percent of a Soldier-turn) were withdrawn as limits (rules 1.94); balance/heal-measure.test.ts measures.
 import { describe, expect, it } from 'vitest';
 import './helpers/yard16';
 import {

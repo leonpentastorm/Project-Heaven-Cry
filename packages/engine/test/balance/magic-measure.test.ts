@@ -2,7 +2,8 @@
 // THE MAGIC MEASUREMENTS (rules 1.17; docs/design/handoffs/damage-step-magic.md). What a Sigil Line of 2, 3 and 4
 // glyphs and an Outburst at each stage are worth against the plain rifle, on the simulator's shooting range.
 //
-//   npm run check -- engine                the cheap tests below (3 seeded fights a pattern, level 6: a few seconds)
+//   npm run check -- engine                the Elite and Boss guard (3 seeded fights, level 6)
+//   BALANCE_MEASURE=1 (or npm run balance)  also prints the level-6 patterns (3 seeded fights a pattern)
 //   MAGIC_MEASURE=1 npx vitest run --root packages/engine test/balance/magic-measure.test.ts --silent=false
 //                                          the full tables, printed (levels 1, 3, 6, 9, 12, 20; normal share and all in)
 //   MAGIC_MEASURE_N=20                     fights a row (default 10)
@@ -17,25 +18,24 @@ import { measureLevel, sigilVsTiers, table, line, M_LEVELS, rifle, pattern } fro
 const FULL = !!process.env.MAGIC_MEASURE, OUT = process.env.MAGIC_MEASURE_OUT, TAG = process.env.MAGIC_MEASURE_TAG || 'now';
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '../../../..'), fromRepo = (p: string) => (p.startsWith('/') ? p : resolve(REPO, p));
 
-// The targets (Leon, 11 Nov 2026; rules 1.17), each pinned cheaply: a few seeded fights at level 6 with a normal share.
-// The bands are wide on purpose (the full run is the measurement; these only catch a change that breaks a target).
-describe('the magic targets hold (rules 1.17)', () => {
-  const N = 3, y = rifle(6, N);
+// A few seeded fights at level 6 with a normal share, printed (BALANCE_MEASURE=1, or `npm run balance`): rules 1.94
+// withdrew the lines these were once held to (Leon, 21 Nov 2026). The Elite and Boss guard is a rule a player sees
+// (rules 1.15 item 4, 1.17) and stays asserted in the default run.
+const MEASURE = !!process.env.BALANCE_MEASURE;
+describe('magic on the range (rules 1.17), reported', () => {
+  const N = 3, y = MEASURE ? rifle(6, N) : 0;
   const sig = (g: number) => pattern(g + ' glyphs', 'sigil', 'normal', 6, N, { glyphs: g }, /^Evoke /, y);
-  it('Sigil: a full Line lands at 150% to 200% of the plain rifle over the same turns; a 2-glyph Line is about on par with the rifle and under the full Line', () => {
+  (MEASURE ? it : it.skip)('Sigil: a 2-glyph and a full Line against the plain rifle over the same turns, printed', () => {
     const two = sig(2), four = sig(4);
     expect(four.errors + two.errors).toBe(0);
-    expect(four.pctRifle, 'a 4-glyph Line, percent of the rifle').toBeGreaterThanOrEqual(135); expect(four.pctRifle).toBeLessThanOrEqual(215);
-    expect(two.pctRifle, 'a 2-glyph Line, percent of the rifle').toBeGreaterThanOrEqual(70); expect(two.pctRifle).toBeLessThanOrEqual(125);
-    expect(two.pctRifle).toBeLessThan(four.pctRifle);
-    expect(four.perCast).toBeGreaterThan(two.perCast * 1.6); // the biggest single hit
+    console.info('[magic] L6 normal: a 4-glyph Line ' + four.pctRifle + '% of the rifle (' + four.perCast + ' a cast), a 2-glyph Line ' + two.pctRifle + '% (' + two.perCast + ' a cast)');
   }, 120000);
-  it('Sigil: an Elite and a Boss of the caster\'s level are never taken out by one Evoke; a Soldier can be', () => {
+  it('Sigil: an Elite and a Boss of the caster\'s level are never taken out by one Evoke (the Elite and Boss guard)', () => {
     const t = sigilVsTiers(6, 'normal', 3);
     expect(t.elite.biggest).toBeLessThan(t.elite.hp); expect(t.boss.biggest).toBeLessThan(t.boss.hp);
-    expect(t.elite.castsToKillAvg).toBeGreaterThanOrEqual(2); expect(t.boss.castsToKillAvg).toBeGreaterThanOrEqual(4);
+    if (MEASURE) console.info('[magic] Evokes to kill at the average: Elite ' + t.elite.castsToKillAvg + ', Boss ' + t.boss.castsToKillAvg);
   }, 120000);
-  it('Outburst at a normal share (rules 1.26: all in on 135 and 165, a normal share ÷ 1.25): steady play about 105% of the plain rifle; the biggest Release about 130% and above steady play', () => {
+  (MEASURE ? it : it.skip)('Outburst at a normal share: steady play, a new caster and the biggest Release against the plain rifle, printed', () => {
     const steady = pattern('steady', 'outburst', 'normal', 6, N, { feelings: 'early' }, /^Release /, y);
     const fresh = pattern('steady, a new caster', 'outburst', 'normal', 6, N, null, /^Release /, y);
     // Rules 1.19: one free Pump a turn, so the biggest Release takes the whole turn (Begin 2, four Pumps with one free, Release 1): a
@@ -43,10 +43,7 @@ describe('the magic targets hold (rules 1.17)', () => {
     const peak1 = pattern('peak', 'outburst', 'normal', 6, N * 10, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 1);
     const peak = peak1.casts ? peak1 : pattern('peak', 'outburst', 'normal', 6, N * 10, { feel: true, feelings: 'all' }, /^Release /, y, 'sim_range_soldier', 2);
     expect(steady.errors + fresh.errors + peak.errors).toBe(0);
-    expect(steady.pctRifle, 'steady play, percent of the rifle').toBeGreaterThanOrEqual(80); expect(steady.pctRifle).toBeLessThanOrEqual(135);
-    expect(fresh.pctRifle, 'a new caster, percent of the rifle').toBeGreaterThanOrEqual(75); expect(fresh.pctRifle).toBeLessThanOrEqual(130);
-    expect(peak.pctRifle, 'the biggest Release, percent of the rifle').toBeGreaterThanOrEqual(95); expect(peak.pctRifle).toBeLessThanOrEqual(170);
-    expect(peak.perCast).toBeGreaterThan(steady.perCast); console.log('[targets] steady ' + steady.pctRifle + '% fresh ' + fresh.pctRifle + '% peak ' + peak.pctRifle + '% (' + peak.perCast + ' a cast vs ' + steady.perCast + ')');
+    console.info('[magic] L6 normal: steady ' + steady.pctRifle + '% fresh ' + fresh.pctRifle + '% peak ' + peak.pctRifle + '% (' + peak.perCast + ' a cast vs ' + steady.perCast + ')');
   }, 120000);
 });
 

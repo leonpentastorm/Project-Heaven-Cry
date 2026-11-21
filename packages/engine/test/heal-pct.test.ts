@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { RULES, levelFactor, scaleOf, mendFactor, statOf, profileOf, gatePct, gatedAmount, mendSized, outburstHeal, newCharacter, maxHp, ARCHETYPES, type Unit } from '../src';
 import { fightWith, withGame } from './helpers/perkfight';
 
-const L: any = (RULES as any).output.level, M: any = (RULES as any).mending, B: any = (RULES as any).balance;
+const L: any = (RULES as any).output.level, M: any = (RULES as any).mending;
 const unit = (o: Partial<Unit>): Unit => ({ id: 'x', side: 'pc', level: 1, hp: 1, maxHp: 100, ...o } as Unit);
 
 describe('rules 1.36: the level scale', () => {
@@ -48,7 +48,7 @@ describe('rules 1.36: heals and shields in percent of HP', () => {
     const m: any = { soulBase: 40, soulMult: 1, soulBoon: statOf('soul_mend', c), deal: 1, healMult: 1, mend: mendFactor(1) }, d: any = { id: 'b', school: 'buff', option: 'heal', modules: [] };
     const t = unit({ maxHp: 125 }), by = unit({});
     const quick = gatedAmount('heal', outburstHeal(m, d, 1.0), { of: 'soul_mend', own: 1.0 }, t, by), full = gatedAmount('heal', outburstHeal(m, d, 1.6), { of: 'soul_mend', own: 1.6 }, t, by);
-    expect(quick).toBe(B.yardsticks.heal_floor.recruit); expect(quick).toBe(25); expect(full).toBe(40);
+    expect(quick).toBe(25); expect(full).toBe(40);
   });
   it('a stim heals 20% of its target\'s max HP (the gate alone, the whole bar counted)', () => {
     expect(M.medic.stim).toBe(0); expect(M.medic.stim_pct).toBe(0.2);
@@ -60,9 +60,5 @@ describe('rules 1.36: heals and shields in percent of HP', () => {
     const f = fightWith([{ level: 5 }, { level: 5 }], [{ tier: 'minion' }]), [me, al] = f.pcs; al.hp = 1; (al as any).healRecv = 1;
     const r = withGame(f.g, () => mendSized(f.cb, me, al, 'heal', 1, { of: 'whisper' }, { healKind: 'blessing' }));
     expect(r.restored).toBe(Math.ceil(gatePct('whisper') * Math.min(al.maxHp, 145 * scaleOf(5))));
-  });
-  it('the shield order (Leon: Faith\'s is the strongest): Faith, then the Mender\'s Tending shield, then the Sigil WARD Line and the Outburst\'s Inverse', () => {
-    const o = B.ceilings.shield_order; expect(o.faith).toBe(1);
-    expect(o.tending_shield).toBeLessThan(o.faith); expect(o.sigil_ward_line).toBeLessThan(o.tending_shield); expect(o.outburst_inverse).toBeLessThan(o.tending_shield);
   });
 });

@@ -3,7 +3,8 @@
 // Soldier's turn, whole fights against the targets of rules 1.15 (the Boss refit), and the pairs under fire with the
 // enemy AI's healer weight on and off. Rules 1.25 (the fire doctrine) is fitted and measured with the same instruments.
 //
-//   npm run check -- engine          the cheap tests below (arithmetic on the engine's numbers; one fight of each kind)
+//   npm run check -- engine          the Boss's recorded HP
+//   BALANCE_MEASURE=1 (or npm run balance)   also prints the pairs under fire at level 6
 //   DEFENCE_MEASURE=1 npx vitest run --root packages/engine test/balance/defence-measure.test.ts --silent=false
 //       DEFENCE_PARTS=medic,yard,fights,fire   which parts (default all four)
 //       DEFENCE_N=10                           fights a cell (default 10)
@@ -25,41 +26,20 @@ import { appendFileSync, readFileSync } from 'node:fs';
 import { useTable } from './fit';
 import { fightRow, fightLine, pairFire, pairLine, yardFire, medicRow, medicLine, healerWeight, reflexRow, reflexLine, PAIRS, SQUADS, FIGHTS, TARGET, D_LEVELS, SOLDIER_TURN } from './defence-measure';
 import { yardOf } from './refit-measure';
-import { ENEMY, TECHNIQUE, enemyStats, TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL, RULES } from '../../src';
-// Rules 1.27 (the heal re-fit): the kit rose with Healing given by the healer's ceiling (data) over the 125 these bands
-// were set on (×1.6); its bases did not move.
-const R = (RULES as any).balance.ceilings.healer_turn.allin / 125;
-
+import { ENEMY, TECHNIQUE, enemyStats } from '../../src';
 const FULL = !!process.env.DEFENCE_MEASURE, N = Math.max(1, Number(process.env.DEFENCE_N) || 10);
 const list = (k: string, d: string) => (process.env[k] || d).split(',').filter(Boolean);
 const LV = list('DEFENCE_LEVELS', '').map(Number), PARTS = list('DEFENCE_PARTS', 'medic,yard,fights,fire');
 const say = (s: string) => { console.log(s); if (process.env.DEFENCE_OUT) appendFileSync(process.env.DEFENCE_OUT, s + '\n'); };
 
-// Rules 1.36 supersedes the kit's bands: a stim is 20% of its target's max HP (the gate alone; heal-pct.test.ts) and Triage
-// is the Mender's Tending (the Tending measure, balance.ceilings.tending_turn). Kept, skipped (13 Nov 2026: superseded by rules 1.36), as the record.
-describe.skip('the defence step: the medic\'s kit against the yardstick (rules 1.23; superseded by rules 1.36)', () => {
-  it('Triage in the medic\'s hands is 20 to 40% of a Soldier-turn for 2 AP, ×1.6 since rules 1.27 (a normal share; the healer\'s turn is 2.0 Soldier-turns all in, 1.6 at a normal share): a bit under the same character\'s magic, per AP', () => {
-    for (const lv of D_LEVELS) { const r = medicRow('medic', 'mender', 'normal', lv);
-      expect(r.triagePct, 'Triage, level ' + lv).toBeGreaterThanOrEqual(20 * R); expect(r.triagePct).toBeLessThanOrEqual(40 * R);
-      expect(r.magicPerAp, 'the steady Outburst heal an AP, level ' + lv).not.toBe(null); expect(r.triagePerAp).toBeLessThan(r.magicPerAp!); expect(r.triagePerAp).toBeGreaterThanOrEqual(r.magicPerAp! * 0.7); }
-  });
-  it('a dose (a stim, a thrown stim) in the medic\'s hands is 25 to 50% for 1 AP; in anyone\'s hands 12 to 35% (rules 1.26); each ×1.6 since rules 1.27', () => {
-    for (const lv of D_LEVELS) { const m = medicRow('medic', 'mender', 'normal', lv), a = medicRow('anyone', 'plain_gun', 'normal', lv);
-      expect(m.stimPct, 'the medic, level ' + lv).toBeGreaterThanOrEqual(25 * R); expect(m.stimPct).toBeLessThanOrEqual(50 * R);
-      expect(a.healGiven).toBeLessThan(1.1 * R); expect(a.stimPct, 'anyone, level ' + lv).toBeGreaterThanOrEqual(12 * R); expect(a.stimPct).toBeLessThanOrEqual(35 * R); }
-  });
-  it('before rules 1.23 the same kit was 150 to 180% and 225 to 265% at level 1 to 12 in the medic\'s hands: no level factor', () => {
-    const b1 = medicRow('medic', 'mender', 'normal', 1).before, b20 = medicRow('anyone', 'plain_gun', 'normal', 20).before;
-    expect(b1.triagePct).toBeGreaterThan(100); expect(b1.stimPct).toBeGreaterThan(150); expect(b20.triagePct).toBeLessThan(40 * R); // the old bases with today's Healing given (rules 1.26: the landed profile, about 0.75 of the old one)
-    expect([TRIAGE_HEAL, STIM_HEAL, RALLY_HEAL]).toEqual([5, 6, 6]);
-  });
-});
-
 // The "quick run" smoke fights play whole simulated fights and assert only that they build: `npm run balance` runs them
 // (vitest.balance.config.ts sets BALANCE_QUICK); the engine's default run leaves them out. test/suite-shape.test.ts.
 const QUICK_RUN = !!process.env.BALANCE_QUICK;
+// Rules 1.94 (Leon, 21 Nov 2026): the defence lines (how long a pair lasts, the idle pair's 4.2 rounds) are withdrawn as
+// limits; the pairs under fire are printed (BALANCE_MEASURE=1, or `npm run balance`).
+const MEASURE = !!process.env.BALANCE_MEASURE;
 describe('the defence step: the enemy table (rules 1.23)', () => {
-  it('the Boss: HP at level 1, and still at least 20 of the yardstick\'s hits at every level', () => {
+  it('the Boss: its HP at level 1 as recorded, and never less at a higher level', () => {
     expect(ENEMY.boss.hp).toBe(BOSS_HP);
     for (const lv of D_LEVELS) expect(enemyStats('boss', lv).hp).toBeGreaterThanOrEqual(BOSS_HP);
   });
@@ -67,35 +47,20 @@ describe('the defence step: the enemy table (rules 1.23)', () => {
     for (const sq of Object.keys(SQUADS)) { const r = fightRow(sq, sq === 'healer' ? 'standard' : 'boss', 6, 'cover', 1); expect(r.errors, fightLine(r)).toBe(0); expect(fightLine(r)).not.toMatch(/undefined|NaN/); }
     const on = pairFire('medic', PAIRS.medic.seconds, 6, 2, 2), off = pairFire('medic', PAIRS.medic.seconds, 6, 2, 2, { focus: false });
     expect(on.errors + off.errors).toBe(0); expect(pairLine(on)).not.toMatch(/undefined|NaN/);
-    // (Rules 1.25: the Soldiers spread, one each, so one of them is on the medic from round 1; alone in the open under a
-    // Soldier she is Down in about two rounds and gives one dose. The supporter who gets to work is the one behind a
-    // tank: the Soldiers share out the front first, and nobody goes Down in ten rounds.)
     const tank = pairFire('tank', PAIRS.tank.seconds, 6, 2, 2, { first: PAIRS.tank.first });
-    expect(tank.errors).toBe(0); expect(tank.casts, 'the healer behind a tank heals: ' + pairLine(tank)).toBeGreaterThan(4);
-    expect(tank.firstDown, 'a tank kept up by a dedicated healer holds two Soldiers: ' + pairLine(tank)).toBeGreaterThanOrEqual(9);
+    expect(tank.errors).toBe(0); expect(pairLine(tank)).not.toMatch(/undefined|NaN/);
     expect(ENEMY.soldier.healer_focus).toBe(0.5); // (pairFire puts the weight back)
   }, 240000);
-  // Rules 1.25 (the fire doctrine; spec items 1400 to 1412). Before the bug sweep of 12 Nov 2026 this read "with the
-  // healer weight the healer takes the fire the rifleman took"; after it (every enemy on the most hurt) both Soldiers
-  // shot the healer from round 1, weight on or off, and the pair lasted 3.1 rounds. Soldiers now spread: one each.
-  it('under fire (level 6, 4 fights): two Soldiers spread, so a healer in the open gets to heal, and still draws the most fire', () => {
+  // Rules 1.25 (the fire doctrine; spec items 1400 to 1412): Soldiers spread, one each.
+  (MEASURE ? it : it.skip)('under fire (level 6, 4 fights): a healer in the open with two Soldiers, the healer weight on and off, printed', () => {
     const on = pairFire('mender', PAIRS.mender.seconds, 6, 2, 4), off = pairFire('mender', PAIRS.mender.seconds, 6, 2, 4, { focus: false });
     expect(on.errors + off.errors).toBe(0);
-    // 6.5 rounds at 10 fights a cell (rules 1.23 measured 6.1; 3.1 with every enemy on the most hurt)
-    expect(on.firstDown, 'on: ' + pairLine(on)).toBeGreaterThanOrEqual(4.5); expect(on.casts, pairLine(on)).toBeGreaterThanOrEqual(4);
-    expect(on.healerTaken).toBeGreaterThan(on.firstTaken); expect(off.healerTaken).toBeGreaterThan(off.firstTaken);
-    expect(on.healerFirst, 'she is still the first Down more often than the rifleman: ' + pairLine(on)).toBeGreaterThanOrEqual(on.firstFirst);
+    console.info('[fire] on: ' + pairLine(on) + '\n[fire] off: ' + pairLine(off));
   }, 240000);
-  // NOT MET by rules 1.25, and pinned as it is: the table was fitted with this pair at 4.8 rounds, which was both
-  // Soldiers' Bursts landing on the armoured rifleman (he was first in the fight's list). One each puts a whole Soldier
-  // on the unarmoured caster, and alone under one Soldier she lasts 2.5 rounds at this level.
-  it('under fire (level 6, 4 fights): the idle pair is not back at 4.8 rounds; one Soldier is enough for an idle caster', () => {
+  (MEASURE ? it : it.skip)('under fire (level 6, 4 fights): the idle pair, printed', () => {
     const idle = pairFire('idle', PAIRS.idle.seconds, 6, 2, 4);
     expect(idle.errors).toBe(0);
-    // Rules 1.61 (the opening volley: the enemy's Burst is the characters' two rolls, item 1079's refit, with the damage
-    // factors left as they were on purpose): 3.5 rounds. OLD bound (rules 1.25 to 1.56): at most 3.2 (2.1 at 10 fights a cell).
-    expect(idle.firstDown, pairLine(idle)).toBeGreaterThanOrEqual(1.5); expect(idle.firstDown, pairLine(idle)).toBeLessThanOrEqual(4.2);
-    expect(idle.healerFirst).toBeGreaterThanOrEqual(75);
+    console.info('[fire] idle: ' + pairLine(idle));
   }, 240000);
 });
 

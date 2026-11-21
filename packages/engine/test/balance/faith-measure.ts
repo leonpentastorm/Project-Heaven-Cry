@@ -47,7 +47,7 @@ export function doorFaithBuild(patron: string): string {
   return id;
 }
 /** Rules 1.31: the Chaplain's own sheet (chaplain-spec.md section 7): Faith all in, then Dexterity (the weapon carries
- * Smite), the rest as the Faith build. The class's line, `balance.ceilings.chaplain_turn`. */
+ * Smite), the rest as the Faith build. */
 export function chaplainBuild(patron = 'old_overcast'): string {
   const id = 'chaplain:' + patron;
   if (!BUILD[id]) { const f = BUILD[faithBuild(patron)]; const def = { ...f, id, label: 'Chaplain, Faith all in + Dexterity (' + (FAITH_PATRON[patron]?.name || patron) + ')', allin: ['faith', 'dexterity', ...f.allin.filter((s: string) => s !== 'faith' && s !== 'dexterity')] }; BUILDS.push(def); BUILD[id] = def; }
@@ -141,7 +141,7 @@ export function inventory(): InvRow[] {
 /** One Soldier-turn, the heal and shield pass's yardstick (docs/design/handoffs/heal-shield-pass.md, section 1.1: what
  * one Soldier of the fight's level takes off the plain rifleman in one of its turns, two Soldiers firing, 60 fights a
  * level). `soldierTurn` above is this file's own cross-check of it (one Soldier, fewer fights: it reads lower). */
-export const SOLDIER_TURN: Record<number, number> = Object.fromEntries(Object.entries((RULES as any).balance.yardsticks.soldier_turn).filter(([k]) => /^\d+$/.test(k)).map(([k, v]) => [Number(k), Number(v)])); // rules 1.36: data, in the level scale's units
+export const SOLDIER_TURN: Record<number, number> = Object.fromEntries(Object.entries((RULES as any).measure.soldier_turn).filter(([k]) => /^\d+$/.test(k)).map(([k, v]) => [Number(k), Number(v)])); // rules 1.36: data, in the level scale's units
 /** Rules 1.20: prayer heals and shields grow with the caster's level (×1 when the engine has no such rule). */
 const mend = (level: number): number => (typeof (ENGINE as any).mendFactor === 'function' ? (ENGINE as any).mendFactor(level) : 1);
 const entryOf = (id: string): any => (WHISPERS as any[]).find((w) => w.id === id) || (FAITH_PATRONS as any[]).flatMap((p) => p.hymns || []).find((h) => h.id === id);

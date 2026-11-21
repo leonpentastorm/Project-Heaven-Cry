@@ -25,7 +25,6 @@ describe('figments: the data', () => {
     expect(ACT.resources.vcharge.path).toBe('mg.vcharge');
     for (const s of ['picture', 'let_go', 'figment_strike', 'figment_pounce', 'figment_cut', 'figment_stare']) expect(typeof cost(s)).toBe('number');
     expect(R.output.profiles.figment.level).toBe('deal'); expect(R.output.factors.figment).toBeGreaterThan(0);
-    expect(R.balance.ceilings.figments.allin).toBeGreaterThan(R.balance.ceilings.figments.door_allin);
     for (const t of (ENEMIESJ as any).items) expect('owned_weight' in t && 'double_save' in t).toBe(true);
   });
   it('the ladder (rules 1.56; rules 1.70 item 5541: forms are learned, never opened by a level): held 1 at 1, 2 at 5, 3 at 7; forms known 2 at 1, +1 a point, all ten at 9', () => {
