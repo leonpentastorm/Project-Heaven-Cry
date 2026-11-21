@@ -1,0 +1,9 @@
+{
+  "id": "weapon-parlour_pistol--fine",
+  "error": "image generation failed: http 400 Bad Request: Some(\"{\\n  \\\"error\\\": {\\n    \\\"message\\\": \\\"Your request was rejected by the safety system. If you believe this is an error, contact us at help.openai.com and include the request ID ddea1e82-278a-4004-80f8-6f318223ac41. safety_violations=[violence].\\\",\\n    \\\"type\\\": \\\"image_generation_user_error\\\",\\n    \\\"param\\\": null,\\n    \\\"code\\\": \\\"moderation_blocked\\\",\\n    \\\"moderation_details\\\": {\\n      \\\"moderation_stage\\\": \\\"input\\\",\\n      \\\"categories\\\": [\\n        \\\"violence\\\"\\n      ]\\n    }\\n  }\\n}\")",
+  "clock": {
+    "current_time": "2026-11-21 10:34:37 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "request_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-parlour_pistol--fine/001/request.json"
+}

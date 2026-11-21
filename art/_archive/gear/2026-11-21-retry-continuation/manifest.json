@@ -2965,6 +2965,64 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-coach_gun--fine",
+      "path": "art/icons/gear/weapon-coach_gun--fine.png",
+      "sha256": "3918f0e0dc5ff9c294f83c13db8602f85936e05ebf68a28319323f77fb64ff3d",
+      "label": "Coach Gun — Fine",
+      "family": "weapon-coach_gun",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-coach_gun--fine.png",
+        "sha256": "a49588f313bb0ff4098939d626463fdd64aab0323aaf5f3b48bf9877e6e01fea"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-coach_gun--fine.png",
+        "sha256": "3918f0e0dc5ff9c294f83c13db8602f85936e05ebf68a28319323f77fb64ff3d"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-coach_gun--fine.txt",
+        "sha256": "a5692185cd35ef243fc86eddafc82eda3b201091b9cfeb07901fc923d1ffdc37"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-coach_gun.png",
+          "sha256": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-coach_gun--fine.png",
+        "128": "art/icons/gear/exports/128/weapon-coach_gun--fine.png",
+        "64": "art/icons/gear/exports/64/weapon-coach_gun--fine.png",
+        "32": "art/icons/gear/exports/32/weapon-coach_gun--fine.png"
+      },
+      "export_hashes": {
+        "256": "ff84df2c449914c36e7609d17c6a643e219190c4175e90e986a8af6270ee86f6",
+        "128": "8aa91e79c2bde9dd4f2971d7354c0e1eafd8989e102030826d3c4a1c717b5cb3",
+        "64": "ba461557ed6b4daa911c2c442668610a041030300b77167f64050233ca14ccb2",
+        "32": "8d2d17d81c044b20c79789f6f5f8c8ba962731176c584b91a531b3217b111a63"
+      },
+      "grade": "fine",
+      "standard_id": "weapon-coach_gun",
+      "outline": {
+        "solid_alpha_iou": 0.9799507400501807,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 14
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

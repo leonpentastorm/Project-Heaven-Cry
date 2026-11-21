@@ -1,7 +1,7 @@
 {
-  "selected": 559,
+  "selected": 560,
   "requested": 871,
-  "remaining": 312,
+  "remaining": 311,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 404,
+      "selected": 405,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 252,
+    "grade": 251,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 48,
+    "service-blocked-or-preceding-grade-dependent": 47,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -613,14 +613,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-sawn_off--celestial.png",
       "standard": "weapon-sawn_off",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-coach_gun--fine",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-coach_gun--fine.png",
-      "standard": "weapon-coach_gun",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2591,7 +2583,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-purifier_flamer--celestial",
+  "last_delivered": "weapon-coach_gun--fine",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {
