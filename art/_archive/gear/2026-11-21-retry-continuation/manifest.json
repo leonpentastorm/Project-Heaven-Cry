@@ -2019,6 +2019,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-war_axe--masterwork",
+      "path": "art/icons/gear/weapon-war_axe--masterwork.png",
+      "sha256": "4f731c97ffb5e54dc613d16474c9d8222ab90593ba05aec49a812b10ad5358cf",
+      "label": "War Axe — Masterwork",
+      "family": "weapon-war_axe",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-war_axe--masterwork.png",
+        "sha256": "72fccb588d763d6caef671b9b55671bcbeabf79ae29b95e826527320ba12e87c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_axe--masterwork.png",
+        "sha256": "4f731c97ffb5e54dc613d16474c9d8222ab90593ba05aec49a812b10ad5358cf"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_axe--masterwork.txt",
+        "sha256": "e8081d259555e24814654d1db508a91e3c8ccb6805bca5ca00465c7ef0f6f70f"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-war_axe.png",
+          "sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770"
+        },
+        {
+          "path": "art/icons/gear/weapon-war_axe--fine.png",
+          "sha256": "7ff2021eac1083670cf364b51d75e5530522129639132751bba49dc3c2baa796"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-war_axe--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-war_axe--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-war_axe--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-war_axe--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "2d59a6e4baba3588895b5ef6f1870dcc333161d30d67355be0ded22b76bdbd8c",
+        "128": "5c0f634d59257586d8a947bb3af90d80fabf9ef163019347c624a8b0e5e253c2",
+        "64": "bcbd1bbd67539c17e3ab89017ea641bd7a4421845f123086ca2f61024e719273",
+        "32": "9c3b92a68a134405b0e6aeefff282f10a5d4b56a27a100cacd2b11f76f8b3987"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-war_axe",
+      "outline": {
+        "solid_alpha_iou": 0.906765462397055,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 9,
+        "different_pixels_64": 53
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

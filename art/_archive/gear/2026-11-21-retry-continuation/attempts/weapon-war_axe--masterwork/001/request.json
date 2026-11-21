@@ -1,0 +1,45 @@
+{
+  "head": "4583dd41e42ac7c61f15280ceed619bcb2849275",
+  "job": {
+    "id": "weapon-war_axe--masterwork",
+    "standard_id": "weapon-war_axe",
+    "grade": "masterwork",
+    "label": "War Axe — Masterwork",
+    "path": "art/icons/gear/weapon-war_axe--masterwork.png",
+    "kind": "weapon",
+    "references": [
+      "art/icons/gear/weapon-war_axe.png",
+      "art/icons/gear/weapon-war_axe--fine.png",
+      "art/portraits/world/new-faces/orren-vask.png"
+    ],
+    "family": "weapon-war_axe",
+    "family_references": [
+      "art/icons/gear/weapon-war_axe.png"
+    ],
+    "brief": "art/briefs/prompts-2026-11-19/08-grades-and-uniques.md",
+    "brief_number": "A3.2",
+    "prompt": "Repaint the attached game inventory icon as a higher grade of the very same object. This is the same item, not a new one: keep exactly its silhouette and outline, every part and where it sits, its proportions and lengths, the camera angle, the pose and the diagonal, the scale in the frame and the margins, the light from the upper left and the short painted shading on its own underside. Keep the maker's signature parts named below exactly as they are. Change only the surface: finish, material, wear, inlay and ornament, as the grade below says, and keep every addition inside the existing outline (flush, inlaid, engraved, stitched or wrapped on). Same style as the attached painting: Heavenprint, hand-painted opaque gouache and ink with broken directional brush strokes, dry-brush scumbling, charcoal shadows, warm ivory highlights on the focal edges. Not line art, not flat ink, not a photograph, not a 3D render, no airbrushed gloss. Fully transparent background, square 1024 x 1024 PNG with alpha, no ground, no cast shadow, no scene. No text, letters, numbers, logos or real heraldry; the maker's own blank crest, seal plate or tag stays exactly as it is, and no new symbol is added. No hands, no figures. No frame, no border, no coloured rim: the game draws the grade frame. Do not add parts that change the outline: no new spikes, guards, blades, rails, scopes, gems standing proud, ribbons, tassels, chains, wings, auras, smoke or sparks. It must read at 64 px in a shop grid and at 32 px in a backpack row as the same item as the attached one, one grade higher.\n\nThe maker’s signature parts are: the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.\n\nGrade: Masterwork. Keep everything of the Fine grade. Inlay the engraved line on the head with the item's accent colour (bright brass if it has no accent), so the head carries one clear coloured stripe. The haft becomes a finer, darker, straight-grained wood (or a finer steel tube where it is metal), with two flat metal strips laid along it below the head, flush with its surface; the butt cap and the socket are re-made in the same shapes with crisp edges. Exact edges, no wear.\n\nThe FIRST image is the Standard shape and registration master: preserve all alpha openings, pose, exact scale and margins. The portrait is brushwork only, no figure or scene. The second image is the preceding grade candidate, preserving the earlier surface additions. Full transparency, no cast shadow or decorative frame.",
+    "keep_line": "the same asymmetric axe head: one broad curved left blade, a smaller curved blade at lower-right, the short pointed rear spike at upper-right, the upper blade point and the same angular plate/openings around the socket. Preserve the precise unequal blade shapes, all rivets and gaps, long wooden haft, its spaced steel bands and square metal butt cap. Dark steel and warm wood, no colour accent.",
+    "status": "pending",
+    "production_approved": false,
+    "depends_on": "weapon-war_axe--fine",
+    "original_queue": "art/_archive/gear/2026-11-19-kept-blade-grades/queue.json",
+    "original_prompt_sha256": "5a354ffeae42974ab17d9b342fc6f04d22e0efd757835e13d3013b6f501d6be3",
+    "standard_sha256": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770",
+    "retry_authorized_by_user": true
+  },
+  "reference_hashes": {
+    "art/icons/gear/weapon-war_axe.png": "ed4558f9f65cff415bcd94fab5fe58f1c56914cec7e1cff5f619ee5151334770",
+    "art/icons/gear/weapon-war_axe--fine.png": "7ff2021eac1083670cf364b51d75e5530522129639132751bba49dc3c2baa796",
+    "art/portraits/world/new-faces/orren-vask.png": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+  },
+  "attempt": 1,
+  "claim_comment": 7055981184,
+  "clock": {
+    "current_time": "2026-11-21 02:49:54 UTC"
+  },
+  "run": "sole-20261121-0109",
+  "latest_comment": 7056106119,
+  "peer": "3f50be29283f413056b49024914c1b12cda9f359",
+  "develop": "d1e74279046a5df79b0ac6a507dd00b13748398b"
+}
