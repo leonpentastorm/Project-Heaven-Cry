@@ -122,3 +122,14 @@ Unanswered and left as the game has them today: a solo shooter's pips shed each 
 60. **Guard fills fast late in the game, and that is fine.** The place its plates get spent is the advanced class: its skills remove Guard in exchange for a benefit, so a late-game wall spawns plates, does something with them, and spawns more. In 0.34 Guard keeps its quick fill; the base door's Slam stays modest. Noted for the advanced classes.
 61. **Prayer's cash-out is the Hymn.** **The Miracle is rarer than a Weapon Art and should break every scale.** **Its once-a-session limit is removed**: a faith build tuned to the point of two Miracles in a five-hour session is hard to reach and is rewarded for it. Its price stays (Faith 7 and Devotion 10 to call it; it costs five levels of Devotion), and that price is the limit.
 62. **Shadow's full Break is worth about 9, and it must take real set-up time to get there**, "or else it will be stealth archer all over the place again". The meter fills over turns of staying unseen without attacking (first rule: no more than 2 Shadow a turn from every source, so the full meter of 5 takes about three turns; a Break on a part-filled meter pays for what it holds and no more).
+
+## K. The lead's rulings after build step 1 (21 Nov 2026)
+
+Step 1 (the scale) is built and pushed at `566de7b1d` with the gate RED: 97 engine tests and 9 web tests still expect the old scale. It is finished before step 2 starts.
+
+63. **A cash-out is never worth less than the plain action it replaces, and a door's Bite never falls as its Reach grows.** Where the two anchors of section I (the worth at skill 1 and at skill 10) cannot both be met with one compounding of a fifth, that door gets its own compounding step (at least 1: every unit worth the same) and ONE Bite, fitted to the skill-10 worth; the skill-1 worth is then what follows, never under one plain action plus a quarter for each unit spent. The table's numbers are first readings, not limits.
+64. **Shadow's "about 9" is the full Break from a fresh ambush**, ambush included (not 9 with the ambush on top).
+65. **Syphon and every MP price ride the mp column** as the bible states, so MP is still a choice at level 20.
+66. **Two Emanators:** approved as the smallest general piece: a held Outburst belongs to the focus it was begun with, so a character holds one for each Emanator in hand. Listed in 08-primitives.md.
+67. The exports `thrownDamage`, `attrDerived` and `bodyArmourArm` stand for now and are read at the consolidation step.
+68. **A test expectation is never re-recorded blind.** Each of the about 200 expectations re-recorded in step 1 is checked against its derivation; a test that proves a rule is rewritten to compute its expectation from data, not to hold a new typed number.
