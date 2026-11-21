@@ -10,11 +10,13 @@ import { applyCond } from '../src/magic';
 import { perkActionsFor } from '../src/effects/actions';
 import { allVerbs } from '../src/effects/collect';
 import { numberOf, dataRef } from '../src/datatext';
+import { doorLadderOf, reachAt, cashFactor } from '../src/door';
 
 const SH: any = (RULES as any).shadow;
 const DOOR: any = (SKILL.ingenuity as any).unlocks['1'];
 const BREAK: any = DOOR.toggles[0];
-const TERM: any = BREAK.effects[0].value;
+const LAD = doorLadderOf('ingenuity')!; // rules 1.99 item 8360: the meter's top is Ingenuity's Reach
+const reachOf = (skills: Record<string, number>) => reachAt(skills, LAD);
 const VERB = (id: string) => allVerbs().find((v: any) => v.id === id) as any;
 const door = (ing: number, extra: CharSpec = {}): CharSpec => ({ ...extra, skills: { ingenuity: ing, ...(extra.skills || {}) }, attrs: { perception: Math.max(ing, 3), ...(extra.attrs || {}) } });
 const operative = (ing = 7, extra: CharSpec = {}): CharSpec => ({ ...door(ing, extra), classId: 'infiltrator', level: 12, attrs: { perception: 8, ...(extra.attrs || {}) } });
@@ -28,18 +30,20 @@ const endTurn = (f: F, u: Unit) => f.act({ type: 'combat/end-turn', unitId: u.id
 const foeAt = (f: F, pos: string, blind = false) => { const t = f.unit(f.foe.id); t.pos = pos; if (blind) t.vision = 1; return t; };
 
 describe('2.2 the meter', () => {
-  it('anyone with Ingenuity has it: the cap by points from rules.json shadow.cap_by_points; none at 0', () => {
-    for (const [pts, cap] of Object.entries(SH.cap_by_points) as [string, number][]) {
-      const f = fightWith([door(+pts)], [{}]);
-      expect(f.unit(f.pc.id).resMax?.shadow).toBe(cap);
+  it('anyone with Ingenuity has it: the top is Ingenuity Reach on its door ladder (with the family gates); none at 0', () => {
+    for (const r of LAD.rows) for (const fam of [{}, r.needs || {}]) {
+      const skills = { ingenuity: r.points, ...fam }, f = fightWith([door(r.points, { skills })], [{}]);
+      expect(f.unit(f.pc.id).resMax?.shadow).toBe(reachOf(skills));
       expect(shadow(f, f.pc)).toBe(0);
     }
+    expect(reachOf({ ingenuity: 10 })).toBeLessThan(reachOf({ ingenuity: 10, analysis: 7, vigilant: 4 })); // ruling 13: the top needs the family
     const f0 = fightWith([{ skills: { ingenuity: 0 } }], [{}]);
     expect(f0.unit(f0.pc.id).resMax?.shadow).toBeUndefined();
   });
-  it('the Operative holds operative_cap_add more and starts each fight with operative_start', () => {
+  it('the Operative holds the same Reach as anyone (its +1 retired, ruling C16) and starts each fight with operative_start', () => {
     const f = fightWith([operative(7)], [{}]);
-    expect(f.unit(f.pc.id).resMax?.shadow).toBe(SH.cap_by_points['7'] + SH.operative_cap_add);
+    expect(f.unit(f.pc.id).resMax?.shadow).toBe(reachOf({ ingenuity: 7 }));
+    expect(SH.operative_cap_add).toBeUndefined();
     expect(shadow(f, f.pc)).toBe(SH.operative_start);
     const tc: any = (CLASS.infiltrator as any).gain.find((m: any) => m.id === 'tradecraft');
     expect(tc.effects[0].value).toBe(SH.operative_start);
@@ -75,9 +79,9 @@ describe('2.3 gains and 2.4 losses', () => {
   });
   it('e: a gain at the cap is lost, not banked', () => {
     const f = fightWith([door(1)], [{}]); foeAt(f, '14,5', true);
-    const u = f.turn(f.pc); hideNow(f, u); setShadow(f, u, SH.cap_by_points['1']);
+    const u = f.turn(f.pc); hideNow(f, u); setShadow(f, u, reachOf({ ingenuity: 1 }));
     endTurn(f, u);
-    expect(shadow(f, u)).toBe(SH.cap_by_points['1']);
+    expect(shadow(f, u)).toBe(reachOf({ ingenuity: 1 }));
   });
   it('2.4 b: −1 at the start of your turn while an enemy sees you', () => {
     const f = fightWith([door(7)], [{}]); foeAt(f, '6,4');
@@ -99,20 +103,24 @@ describe('2.5 the Break', () => {
   };
   const mods = ['skill:ingenuity.1#' + BREAK.id];
   const mults = (f: F, u: Unit, t: Unit, m: string[]) => withGame(f.g, () => { f.cb.mods = m; try { return previewAttack(f.cb, u, t, 'shot', { ambush: true }).dmg!.mults; } finally { delete f.cb.mods; } });
-  it('one term `shadow` = 1 + per_point a point + the ambush; it replaces the ambush term (never both)', () => {
-    const { f, u, t } = ready(3);
-    const off = mults(f, u, t, []), on = mults(f, u, t, mods);
-    expect(off.find((m: any) => m.label === 'ambush')?.v).toBe(1 + SH.ambush_bonus);
-    expect(on.find((m: any) => m.label === 'ambush')).toBeUndefined();
-    const term = on.find((m: any) => m.label === 'shadow');
-    expect(term?.v).toBeCloseTo(1 + 3 * SH.per_point + SH.ambush_bonus, 6);
-    expect(TERM.per.map((p: any) => p.value)).toEqual([SH.per_point, SH.ambush_bonus, SH.marked_bonus]);
+  // rules 1.99 item 8361: the Break is the door's cash-out: 1 + Bite x S(n) of the Shadow held, at the door's own step,
+  // in the hit's cash-out term (the Margins add to it); a fresh ambush is the attack's own multiplier on top (ruling 64)
+  it('the cash-out term is cashFactor of the Shadow held; the ambush stays its own multiplier', () => {
+    for (const n of [1, 2, 3]) {
+      const { f, u, t } = ready(n);
+      const off = mults(f, u, t, []), on = mults(f, u, t, mods);
+      expect(off.find((m: any) => m.label === 'ambush')?.v).toBe(1 + SH.ambush_bonus);
+      expect(on.find((m: any) => m.label === 'ambush')?.v).toBe(1 + SH.ambush_bonus);
+      const term = on.find((m: any) => /cash-out/.test(m.label));
+      expect(term?.v).toBeCloseTo(cashFactor({ ingenuity: 7 }, 'shadow', n), 6);
+    }
+    expect(SH.per_point).toBeUndefined(); expect(SH.marked_bonus).toBeUndefined();
   });
-  it('against an enemy you Marked: + marked_bonus', () => {
+  it('against an enemy you Marked: the squad mark (no Break term of its own)', () => {
     const { f, u, t } = ready(3);
+    const a = mults(f, u, t, mods).find((m: any) => /cash-out/.test(m.label))?.v;
     withGame(f.g, () => applyCond(f.cb, f.g.rng, u, t, 'marked', undefined, undefined, { skipSave: true }));
-    const term = mults(f, u, t, mods).find((m: any) => m.label === 'shadow');
-    expect(term?.v).toBeCloseTo(1 + 3 * SH.per_point + SH.ambush_bonus + SH.marked_bonus, 6);
+    expect(mults(f, u, t, mods).find((m: any) => /cash-out/.test(m.label))?.v).toBeCloseTo(a!, 6);
   });
   it('spent when the action ends, and you are revealed even with a silent weapon', () => {
     const { f, u, t } = ready(2, { weapon: 'hellraiser_service_rifle' });
@@ -142,9 +150,9 @@ describe('the verbs (data/shadow.json)', () => {
       expect(has(n)).toBe(true); expect(has(n - 1)).toBe(false);
     }
   });
-  it('a verb\'s Shadow cost is at most the cap at its Ingenuity', () => {
+  it('a verb\'s Shadow cost is at most the Reach at its Ingenuity', () => {
     for (const v of byPoints()) {
-      const g: any = v.effects.find((e: any) => e.op === 'grant_action'), cap = Object.entries(SH.cap_by_points).reduce((n: number, [p, c]: any) => (v.requires[0].min >= +p ? c : n), 0);
+      const g: any = v.effects.find((e: any) => e.op === 'grant_action'), cap = reachOf({ ingenuity: Math.max(1, v.requires[0].min) });
       expect(g.res?.shadow ?? 0).toBeLessThanOrEqual(cap);
     }
   });

@@ -111,7 +111,10 @@ describe('Athletics feeds the Pressure you shed at a turn\'s end (item 4606), an
 });
 
 describe('Acuity feeds the spot TN against you (item 4607)', () => {
-  for (const [b, add] of [[1, 1], [10, 5]] as const) it('Ingenuity 10, Acuity ' + b + ': a foe needs ' + add + ' more (round(feed_at_double x (feed - 1)))', () => {
+  // rules 1.99 item 8364 (ruling 20): feed_flat whole steps an Analysis point, plus round(feed_at_double x feed x alpha x beta)
+  const acuityAdd = (b: number) => Math.round(FLAT('analysis') * b) + Math.round((SKILL as any).analysis.per_point.numbers.feed_at_double * STEP('analysis') * ALPHA * b);
+  for (const b of [1, 10]) it('Ingenuity 10, Acuity ' + b + ': a foe needs feed_flat x Acuity + round(feed_at_double x feed x Ingenuity x Acuity) more', () => {
+    const add = acuityAdd(b);
     const f = fight({ ingenuity: ALPHA, analysis: b }, { foeAt: 'H5' }), u = f.unit(f.pc.id), z = fight({ ingenuity: ALPHA, analysis: 0 }, { foeAt: 'H5' }), u0 = z.unit(z.pc.id);
     const tn = (g: F, v: Unit) => { v.hidden = true; SPOT.tn = NaN; g.bound(() => spotHidden(g.cb, g.g.rng, g.unit(g.foe.id), v)); return SPOT.tn; };
     const a = tn(f, u), b0 = tn(z, u0);

@@ -276,11 +276,7 @@
           },
           "resource": "shadow",
           "value": 1,
-          "limit": {
-            "per": "per_turn",
-            "n": 1,
-            "key": "fingers"
-          },
+          "limit": [{"per": "per_turn", "n": 1, "key": "fingers"}, {"per": "per_turn", "n": {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]}, "shared": "shadow_gain"}],
           "label": "Light Fingers",
           "fx": {
             "k": "stance",

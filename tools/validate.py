@@ -2346,7 +2346,9 @@ def check_trigger_effect(e, w):
         if not isinstance(cond, dict): errors.append(f"{w}: `if` must be an object of predicates")
         else:
             for k, v in cond.items(): check_pred(k, v, w)
-    lim = e.get("limit")
+    # rules 1.99 item 8362: a limit may be a list of limits (every one must have room; each is taken)
+    for lim in (e.get("limit") if isinstance(e.get("limit"), list) and e.get("limit") else [e.get("limit")]): check_one_limit(lim, w)
+def check_one_limit(lim, w):
     if isinstance(lim, dict) and isinstance(lim.get("n"), dict): check_number_block(lim["n"], f"{w}.limit.n")  # a limit's n may read one number of the data (rule:, tech_rule:, cond:)
     if lim is not None and not (isinstance(lim, dict) and (isinstance(lim.get("cooldown"), (int, float)) or "reaction" in lim or (lim.get("per") in LIMIT_SCOPES and (isinstance(lim.get("n", 1), int) or isinstance(lim.get("n"), dict))))):
         errors.append(f"{w}: an item op's limit is {{ per: {sorted(LIMIT_SCOPES)}, n }}, {{ cooldown: rounds }} or {{ reaction: 1 or 2, kind }}")
@@ -2527,16 +2529,16 @@ if TRIG:
     # slope; the door's Break term and the Operative's start read the same numbers as rules.json shadow
     _SHR = (data.get("rules") or {}).get("shadow") or {}
     _RESIDS = set(((data.get("actions") or {}).get("resources") or {}).keys())
-    def _sh_cap(n):
-        return max([v for k, v in (_SHR.get("cap_by_points") or {}).items() if n >= int(k)] or [0])
+    _ING_LAD = next((x.get("door_ladder") for x in items("skills") if x.get("id") == "ingenuity"), None) or {}
+    def _sh_cap(n):  # rules 1.99 item 8360: the meter tops at Ingenuity's Reach (its door ladder; the family gates are the sheet's)
+        return max([r.get("reach") or 0 for r in _ING_LAD.get("rows") or [] if n >= (r.get("points") or 0)] or [0])
     for _x in (data.get("shadow") or {}).get("items") or []:
         _g = next((e for e in _x.get("effects") or [] if isinstance(e, dict) and e.get("op") == "grant_action"), {})
-        # rules 1.74 item 6011: a verb may be gated by a class (the Operative's: its cap adds operative_cap_add) as well as
-        # by Ingenuity points (the skill entry's min, wherever it stands in the list)
+        # rules 1.74 item 6011: a verb may be gated by a class as well as by Ingenuity points (the skill entry's min,
+        # wherever it stands in the list); rules 1.99 item 8360: the Operative's +1 is retired (ruling C16)
         _req = [r for r in _x.get("requires") or [] if isinstance(r, dict)]
         _need = next((r.get("min", 0) for r in _req if r.get("skill") == "ingenuity"), 0)
-        _add = (_SHR.get("operative_cap_add") or 0) if any(r.get("class") == "infiltrator" for r in _req) else 0
-        if ((_g.get("res") or {}).get("shadow") or 0) > _sh_cap(_need) + _add: errors.append(f"shadow:{_x.get('id')}: costs more Shadow than the cap at Ingenuity {_need}")
+        if ((_g.get("res") or {}).get("shadow") or 0) > _sh_cap(max(1, _need)): errors.append(f"shadow:{_x.get('id')}: costs more Shadow than the Reach at Ingenuity {_need}")
     def _walk_res(o, w):
         if isinstance(o, dict):
             if isinstance(o.get("of"), str) and o["of"].startswith("res:") and o["of"][4:] not in _RESIDS: errors.append(f"{w}: number block source {o['of']} names no actions.json resource")
@@ -2551,10 +2553,13 @@ if TRIG:
     _door = ((_ing.get("unlocks") or {}).get("1") or {})
     _brk = next((t for t in _door.get("toggles") or [] if t.get("id") == "shadow.break"), None)
     if _SHR and _brk:
-        _per = {p.get("of"): p.get("value") for e in _brk.get("effects") or [] if isinstance(e.get("value"), dict) for p in e["value"].get("per") or []}
-        if _per != {"res:shadow": _SHR.get("per_point"), "event:ambush": _SHR.get("ambush_bonus"), "target:marked": _SHR.get("marked_bonus")}: errors.append("skills:ingenuity.1: the Break's term must read rules.json shadow per_point, ambush_bonus, marked_bonus")
+        # rules 1.99 item 8361: the Break pays on the cash-out term (damage_mult cash: shadow, value 1) and spends all but
+        # the door's keep; the ambush is the attack's own multiplier (never replaced)
+        if not any(e.get("op") == "damage_mult" and e.get("cash") == "shadow" and e.get("value") == 1 and "replaces" not in e for e in _brk.get("effects") or []): errors.append("skills:ingenuity.1: the Break is a damage_mult with cash: shadow and value 1, replacing nothing (rules 1.99 item 8361)")
+        if not any(e.get("op") == "resource" and e.get("resource") == "shadow" and e.get("value") == "all" and e.get("keeps") == "door" for e in _brk.get("effects") or []): errors.append("skills:ingenuity.1: the Break spends all its Shadow but the door's keep (resource shadow all, keeps: door)")
         _GAINS = {"base": 0, "per": [{"of": "rule:shadow.door_gains_per_turn", "value": 1}]}  # the one number, read (0.32 consolidation)
-        if any((e.get("limit") or {}).get("shared") == "shadow_gain" and (e["limit"].get("n") != _GAINS) for e in _door.get("effects") or []): errors.append("skills:ingenuity.1: the gains' shared limit reads rules.json shadow.door_gains_per_turn (n: {base: 0, per: [{of: rule:shadow.door_gains_per_turn, value: 1}]})")
+        def _lims(e): l = e.get("limit"); return l if isinstance(l, list) else [l] if isinstance(l, dict) else []
+        if any(l.get("shared") == "shadow_gain" and l.get("n") != _GAINS for e in _door.get("effects") or [] for l in _lims(e)): errors.append("skills:ingenuity.1: the gains' shared limit reads rules.json shadow.door_gains_per_turn (n: {base: 0, per: [{of: rule:shadow.door_gains_per_turn, value: 1}]})")
         # rules 1.77 item 6504: Stalk's gain counts under the same shared limit, of the same size
         _stk = next((x for x in (data.get("shadow") or {}).get("items") or [] if x.get("id") == "shadow.stalk"), None)
         for _g in (_stk or {}).get("effects") or []:

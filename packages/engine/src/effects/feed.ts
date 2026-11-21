@@ -38,9 +38,11 @@ function pts(x: any, sk: string): number {
 export function doorFeed(x: any, door: string): number { const f = BY_DOOR[door]; if (!f) return 1; const b = pts(x, f.beta); return 1 + f.flat * b + f.per * pts(x, door) * b; }
 /** The feed of the door whose number this carrier is. */
 export const feedOf = (x: any, carrier: string): number => doorFeed(x, feedRow(carrier).door);
-/** A whole step for a number that rounds (a TN, a reach): round(at_double x (feed - 1)), at_double the row's own number
- * (per_point.numbers.feed_at_double: what the step is when the feed is doubled). */
-export const feedStep = (x: any, carrier: string): number => Math.round(feedRow(carrier).atDouble * (feedOf(x, carrier) - 1));
+/** A whole step for a number that rounds (a TN, a reach): round(at_double x the product term), at_double the row's own
+ * number (per_point.numbers.feed_at_double: what the step is when the feed is doubled), plus feed_flat whole steps a
+ * beta point (rules 1.99 item 8364, ruling 20: on a whole step the flat term is whole points: Analysis +1 search TN a
+ * point from the first). */
+export const feedStep = (x: any, carrier: string): number => { const f = feedRow(carrier), b = pts(x, f.beta); return Math.round(f.atDouble * f.per * pts(x, f.door) * b) + Math.round(f.flat * b); };
 /** A count a turn (Momentum lost, Pressure shed) moved by a fraction: the whole part of `gain` with what was carried
  * from before; the rest is kept on the unit (Unit.feedCarry) for the next time, so every beta point counts. */
 export function feedCarry(u: Unit, carrier: string, gain: number): number {

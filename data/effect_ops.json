@@ -5348,10 +5348,11 @@
           "value",
           "round",
           "pool",
-          "replaces"
+          "replaces",
+          "cash"
         ],
         "changes_state": false,
-        "about": "multiply the amount being dealt or taken (taking: round \"up\" rounds it up; pool: the holder's zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush; Margins: the hit counts none) is taken out and this one stands in its place, so the two never multiply: Shadow's Break, rules 1.32)"
+        "about": "multiply the amount being dealt or taken (taking: round \"up\" rounds it up; pool: the holder's zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush; Margins: the hit counts none) is taken out and this one stands in its place, so the two never multiply: Shadow's Break, rules 1.32; cash: on dealing, a resource whose door pays this hit: the cash-out factor of the units the holder holds of it now, less its beta keep (door.ts cashFactor, keepsOf), goes into the hit cash-out term, which the Margins add to: Shadow Break, rules 1.99 item 8361)"
       },
       "damage_mod": {
         "on": [

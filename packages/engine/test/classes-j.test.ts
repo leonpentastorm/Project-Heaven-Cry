@@ -8,7 +8,8 @@ import './helpers/yard16'; // the 16 × 11 practice square these tests name tile
 import { apply, defense, moveUnit, resolveAttack, previewAttack, applyDamage, applyCond, condOn, d20, emit, emitStory, refOf, objectsOf, endTurn, healingMult, type Unit, type Combat, type Character } from '../src';
 import { fightWith, storyWith, withGame } from './helpers/perkfight';
 import { useRevision2Classes, SIG } from './helpers/legacy';
-import { SIGIL } from '../src/data';
+import { SIGIL, CLASS_MOVE_POOL } from '../src/data';
+import { CONDITION_ROWS as CONDITIONS } from '../src/condtable';
 import { amountBlock } from '../src/effects/amounts';
 
 // rules 1.95 (the scale): every number below is its row's (sigils.json word damage, the class rows' amounts), read here
@@ -57,12 +58,12 @@ describe('Gunslinger', () => {
     const pc = f.turn(at(f.pc, '2,5')); at(f.foe, '8,5');
     expect(() => f.act({ type: 'combat/perk', unitId: pc.id, id: 'gunslinger.six_for_six', targetId: f.foe.id } as any)).toThrow(/4 tiles/);
   });
-  it('Called Shot: 3 AP, −2 to hit (named in the breakdown), and the leg injury without a critical', () => {
+  it('Called Shot: its data AP (rules 1.99 item 8366), −2 to hit (named in the breakdown), and the leg injury without a critical', () => {
     const f = fightWith([cls('gunslinger', { weapon: 'service_pistol' })], [{ at: 'O10' }]);
     const pc = f.turn(at(f.pc, '2,5')); const foe = tough(at(f.foe, '5,5')); const mv = foe.movement; pc.ap = 6;
     seed(f, 10);
     f.act({ type: 'combat/perk', unitId: pc.id, id: 'gunslinger.called_shot', targetId: foe.id, choice: 'leg' } as any);
-    expect(f.pc.ap).toBe(3);
+    expect(f.pc.ap).toBe(6 - (CLASS_MOVE_POOL as any)['gunslinger.called_shot'].ap_cost);
     expect(f.foe.movement).toBe(mv / 2); expect((f.foe.injuries || []).some((i) => i.loc === 'leg')).toBe(true);
     expect(logHas(f.cb, /CALLED SHOT: \w+ leg/)).toBe(true);
     // the head: Dazed
@@ -195,8 +196,10 @@ describe('CCEC Ballistician', () => {
     };
     const plain = (() => { const f = fightWith([cls('ccec_ballistician', { weapon: 'long_rifle' })], [{ at: 'O10' }]); const pc = f.turn(at(f.pc, '2,5')); const foe = tough(at(f.foe, '6,5')); seed(f, 10); f.act({ type: 'combat/attack', unitId: pc.id, targetId: foe.id, mode: 'aimed' } as any); return 999 - f.foe.hp; })();
     const triple = shot('soldier'), boss = shot('boss');
-    expect(triple).toBeGreaterThanOrEqual(3 * plain - 2); expect(triple).toBeLessThanOrEqual(3 * plain + 2);
-    expect(boss).toBeGreaterThanOrEqual(2 * plain - 2); expect(boss).toBeLessThan(triple);
+    // rules 1.99 item 8365: Marked is the squad's mark, its damage_mult on the foe's taking (conditions.json marked)
+    const M = (CONDITIONS as any[]).find((r) => r.id === 'marked').effects.find((e: any) => e.op === 'damage_mult').value as number;
+    expect(triple).toBeGreaterThanOrEqual(3 * plain * M - 3); expect(triple).toBeLessThanOrEqual(3 * plain * M + 3);
+    expect(boss).toBeGreaterThanOrEqual(2 * plain * M - 3); expect(boss).toBeLessThan(triple);
     expect(() => shot('soldier', true)).toThrow(/moved/);
   });
 });

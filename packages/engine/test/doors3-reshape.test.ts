@@ -9,6 +9,7 @@ import './helpers/yard16';
 import { CLASS, CLASS_MOVE_POOL, SKILL, applyCond, condOn, setDevotionXp, devotionThreshold, type Unit, type Action } from '../src';
 import { fightWith, withGame, type CharSpec } from './helpers/perkfight';
 import { onHook } from '../src/effects/hooks';
+import { CONDITION_ROWS } from '../src/condtable';
 
 let SAVES: 'pass' | 'fail' | null = null;
 onHook('save', (ctx: any) => { if (SAVES === 'pass') ctx.pass = true; if (SAVES === 'fail') ctx.fail = true; });
@@ -110,6 +111,8 @@ describe('Deliver the Sinner (rules 1.60 item 4635): a patron\'s blow deals more
     };
     const plain = run(false), more = run(true); 
     expect(plain).toBeGreaterThan(0);
-    expect(Math.abs(more - plain * (1 + bonus))).toBeLessThanOrEqual(1);
+    // rules 1.99 item 8365: Marked is also the squad's one mark, its damage_mult on the foe's taking (conditions.json marked)
+    const M = (CONDITION_ROWS as any[]).find((r) => r.id === 'marked').effects.find((e: any) => e.op === 'damage_mult').value as number;
+    expect(Math.abs(more - plain * (1 + bonus) * M)).toBeLessThanOrEqual(2);
   });
 });

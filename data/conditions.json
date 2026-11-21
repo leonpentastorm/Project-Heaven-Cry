@@ -512,7 +512,7 @@
       "family": null,
       "save": false,
       "engine": "table",
-      "text": "The squad of whoever Marked you gets +{=effects.0.value} to hit you, and you can't become Hidden. It lasts until the fight ends or the Mark is lifted.",
+      "text": "The squad of whoever Marked you gets +{=effects.0.value} to hit you and its hits on you deal +{=effects.2.value|more}%, and you can't become Hidden. It lasts until the fight ends or the Mark is lifted.",
       "effects": [
         {
           "op": "attack_mod",
@@ -522,6 +522,16 @@
         {
           "op": "forbid",
           "action": "hide"
+        },
+        {
+          "op": "damage_mult",
+          "when": "taking",
+          "if": {
+            "hostile": true
+          },
+          "value": 1.2,
+          "label": "Marked",
+          "note": "rules 1.99 item 8365 (ruling 41, the growth bible's mind.json infiltrator Mark: the squad's one mark, +20% to the squad's hits on the foe, @scale.stack.squad.mark.damage; the +1 to hit is kept, ruling 52)"
         }
       ],
       "duration": {

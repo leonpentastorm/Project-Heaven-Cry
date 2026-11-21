@@ -2641,17 +2641,9 @@
     ]
   },
   "shadow": {
-    "about": "rules 1.32 (shadow-spec.md): Perception's door, through Ingenuity. The meter on the unit (res.shadow): its cap by Ingenuity points, the Operative's own add and start, and the Break's one multiplier (1 + per_point a point spent + ambush_bonus on a fresh ambush + marked_bonus against an enemy you Marked). The door item (skills.json ingenuity.1) carries the Break's numbers; the validator holds them equal to these.",
-    "cap_by_points": {
-      "1": 1,
-      "5": 2,
-      "7": 3
-    },
-    "operative_cap_add": 1,
+    "about": "rules 1.32 (shadow-spec.md): Perception's door, through Ingenuity. The meter on the unit (res.shadow). Rules 1.99 items 8360 and 8361: its top is Ingenuity's Reach and the Break pays on the cash-out term (skills.json ingenuity door_ladder: Reach, the one Bite, the door's own step); the cap by points, the Operative's +1 (ruling C16), the Break's per_point and the Marked bonus (now the squad's one mark, ruling 41) are retired. Kept: the Operative's start, the fresh ambush's multiplier (ambush_bonus: character.ts ambushMult, x1.5 on the whole blow, ruling 64) and the gains a turn from every source (ruling 62).",
     "operative_start": 1,
     "ambush_bonus": 0.5,
-    "per_point": 0.6,
-    "marked_bonus": 0.15,
     "door_gains_per_turn": 2,
     "provisional": true
   },

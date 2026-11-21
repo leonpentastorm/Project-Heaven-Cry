@@ -2071,7 +2071,7 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Break: spend it all on one weapon attack from Hidden. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once. Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy. Unseen Hand: an attack you make from Hidden rolls with Ingenuity when that is higher than the weapon's own skill (never added on top). Parting Cut (Ingenuity {=unlocks.1.toggles.0.effects.2.if.self_skill.ingenuity}): a Break that spends at least {=unlocks.1.toggles.0.effects.2.if.self_res.shadow.at_least} Shadow and drops its target leaves you Hidden again when no enemy's eyes reach you after it (no fresh ambush).",
+          "text": "You build Shadow while unseen (at most {=unlocks.1.effects.0.limit.n} a turn): +{=unlocks.1.effects.0.value} when your turn ends Hidden with no attack made, +{=unlocks.1.effects.1.value} for a move from cover to cover unseen (once a turn), +{=unlocks.1.effects.2.value} for a kill nobody saw. While an enemy sees you, {=unlocks.1.effects.3.value} at the start of your turn. Your meter holds your Reach: {=door_ladder.rows.0.reach} Shadow from Ingenuity {=door_ladder.rows.0.points}, {=door_ladder.rows.1.reach} from {=door_ladder.rows.1.points}, {=door_ladder.rows.2.reach} from {=door_ladder.rows.2.points} with Analysis {=door_ladder.rows.2.needs.analysis}, {=door_ladder.rows.3.reach} from {=door_ladder.rows.3.points} with Analysis {=door_ladder.rows.3.needs.analysis} and Vigilant {=door_ladder.rows.3.needs.vigilant}. Break: spend it all on one weapon attack from Hidden; the blow gains {=door_ladder.rows.0.bite} of itself for the first Shadow spent, each Shadow after worth {=door_ladder.cash_step} times the one before (a part-filled meter pays for what it holds), and a fresh ambush multiplies the whole blow. Go to Ground: Hide costs you {=unlocks.1.effects.8.value|abs} AP less (at least {=unlocks.1.effects.8.min}). First Shade: your first Hide of a fight, holding no Shadow, gives {=unlocks.1.effects.9.value} at once (one of the turn's gains). Tagged: +{=unlocks.1.effects.10.value} to hit from Hidden on a Marked enemy. Unseen Hand: an attack you make from Hidden rolls with Ingenuity when that is higher than the weapon's own skill (never added on top). Parting Cut (Ingenuity {=unlocks.1.toggles.0.effects.2.if.self_skill.ingenuity}): a Break that spends at least {=unlocks.1.toggles.0.effects.2.if.self_res.shadow.at_least} Shadow and drops its target leaves you Hidden again when no enemy's eyes reach you after it (no fresh ambush).",
           "player": "+{=.effects.0.value} for a turn ended Hidden · +{=.effects.1.value} for a cover-to-cover move · +{=.effects.2.value} for an unseen kill. Go to Ground: Hide costs {=.effects.8.value|abs} AP less · First Shade: +{=.effects.9.value} Shadow on your first Hide · Tagged: +{=.effects.10.value} to hit a Marked foe · Unseen Hand: attacks from Hidden roll with Ingenuity when higher",
           "effects": [
             {
@@ -2232,11 +2232,26 @@
                   "shadow"
                 ]
               },
-              "limit": {
-                "per": "per_combat",
-                "n": 1,
-                "key": "first"
-              },
+              "limit": [
+                {
+                  "per": "per_combat",
+                  "n": 1,
+                  "key": "first"
+                },
+                {
+                  "per": "per_turn",
+                  "n": {
+                    "base": 0,
+                    "per": [
+                      {
+                        "of": "rule:shadow.door_gains_per_turn",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "shared": "shadow_gain"
+                }
+              ],
               "label": "First Shade",
               "fx": {
                 "k": "stance",
@@ -2290,30 +2305,16 @@
                 {
                   "op": "damage_mult",
                   "when": "dealing",
-                  "label": "shadow",
-                  "replaces": "ambush",
-                  "value": {
-                    "base": 1,
-                    "per": [
-                      {
-                        "of": "res:shadow",
-                        "value": 0.6
-                      },
-                      {
-                        "of": "event:ambush",
-                        "value": 0.5
-                      },
-                      {
-                        "of": "target:marked",
-                        "value": 0.15
-                      }
-                    ]
-                  }
+                  "label": "Break",
+                  "cash": "shadow",
+                  "value": 1,
+                  "note": "rules 1.99 item 8361: the cash-out factor of the Shadow held (1 + Ingenuity's Bite x S(n) at the door's own step, skills.json door_ladder), less Analysis 10's keep; the Margins add to it; a fresh ambush is the attack's own multiplier on top (ruling 64)"
                 },
                 {
                   "op": "resource",
                   "resource": "shadow",
                   "value": "all",
+                  "keeps": "door",
                   "when": "acted",
                   "and": [
                     {
@@ -2503,7 +2504,7 @@
           "name": "Fork: Light Fingers or Lend the Dark",
           "category": "Fork",
           "mastery": 0,
-          "text": "The door's first fork: Light Fingers (Lift is cheaper, and an unseen Lift feeds your Shadow) or Lend the Dark (hide an unseen ally). Chosen once, kept for good.",
+          "text": "Your Shadow holds {=door_ladder.rows.1.reach}. The door's first fork: Light Fingers (Lift is cheaper, and an unseen Lift feeds your Shadow) or Lend the Dark (hide an unseen ally). Chosen once, kept for good.",
           "effects": [],
           "adjudication": "engine",
           "provisional": true,
@@ -2517,8 +2518,8 @@
           "item": true,
           "adjudication": "engine",
           "provisional": true,
-          "text": "Your Shadow holds one more, and the big verb of the door opens: Fade (step to cover and go Hidden even while seen). Scout: before a fight you go ahead alone, so the squad sees who is waiting before it chooses, and its ambush roll takes +{=unlocks.5.effects.0.value} (the best scout counts, never two).",
-          "player": "Shadow holds more · Scout: see who waits before a fight, ambush roll +{=.effects.0.value} · New move: Fade (slip back into Hidden)",
+          "text": "The big verb of the door opens: Fade (step to cover and go Hidden even while seen). Scout: before a fight you go ahead alone, so the squad sees who is waiting before it chooses, and its ambush roll takes +{=unlocks.5.effects.0.value} (the best scout counts, never two).",
+          "player": "Scout: see who waits before a fight, ambush roll +{=.effects.0.value} · New move: Fade (slip back into Hidden)",
           "effects": [{ "op": "stat_mod", "stat": "ambush_scout", "value": 2, "label": "Scout", "note": "rules 1.90 item 7812 (Leon, 20 Nov 2026: \"give the full ingenuity guy that scouting tag too\"): a squad holding a scout sees the line-up before the choice, and this is its bonus on the ambush roll (run/ambush.ts; the best scout counts)", "provisional": true }],
           "source": "rules 1.74 item 6000"
         },
@@ -2542,8 +2543,8 @@
         "7": {
           "name": "Mastery 3",
           "mastery": 3,
-          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Your Shadow holds one more, and the Shadow verb of this rung opens: Open Seam (lower a foe's Defense).",
-          "player": "Shadow holds more · New move: Open Seam (lower Defense)",
+          "text": "A perk step in this skill: one of its two perks at Tier I, or a Tier I upgraded to Tier II. Your Shadow holds {=door_ladder.rows.2.reach} once your Analysis is {=door_ladder.rows.2.needs.analysis}, and the Shadow verb of this rung opens: Open Seam (lower a foe's Defense).",
+          "player": "Shadow holds {=door_ladder.rows.2.reach} (with Analysis {=door_ladder.rows.2.needs.analysis}) · New move: Open Seam (lower Defense)",
           "effects": [
             {
               "op": "perk_choice",
@@ -2583,7 +2584,7 @@
         "10": {
           "name": "Mastered",
           "mastery": 5,
-          "text": "You gain this skill's Mastered perk. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
+          "text": "You gain this skill's Mastered perk. Your Shadow holds {=door_ladder.rows.3.reach} once your Analysis is {=door_ladder.rows.3.needs.analysis} and your Vigilant {=door_ladder.rows.3.needs.vigilant}. Resisting this skill's Overreach now costs {=unlocks.10.resist_echo} Echo.",
           "effects": [
             {
               "op": "perk_choice",
@@ -2675,16 +2676,19 @@
       "per_point": {
         "numbers": {
           "feed": 0.01,
+          "feed_flat": 1,
           "feed_at_double": 5,
           "margins_taken_from": 5,
           "margins_taken_more_from": 10,
           "margins_taken_each": -1,
-          "range": 1
+          "range": 1,
+          "keeps_from": 10,
+          "keeps": 1
         },
         "rows": [
           {
             "at": "each",
-            "text": "+{=per_point.numbers.feed|pct}% foes' search difficulty while Hidden, up to +{=per_point.numbers.feed_at_double}"
+            "text": "+{=per_point.numbers.feed_flat} to the roll foes need to find you while Hidden, and the search grows with your Ingenuity (+{=per_point.numbers.feed|pct}% a point of each, up to +{=per_point.numbers.feed_at_double})"
           },
           {
             "at": "at 5",
@@ -2693,6 +2697,10 @@
           {
             "at": "at 10",
             "text": "from {=per_point.numbers.margins_taken_more_from}: a hit on you counts {=per_point.numbers.margins_taken_each|abs} more Margin fewer"
+          },
+          {
+            "at": "at 10",
+            "text": "from {=per_point.numbers.keeps_from}: your Break keeps {=per_point.numbers.keeps} Shadow (the next one starts a Shadow up)"
           },
           {
             "at": "each",
@@ -2900,6 +2908,54 @@
           ],
           "adjudication": "engine",
           "source": "rules 1.74: the free passive The Tell is now a perk (detectives_eye)"
+        },
+        "6": {
+          "name": "The eye in the dark",
+          "category": "Active Skill",
+          "mastery": 0,
+          "item": true,
+          "adjudication": "engine",
+          "provisional": true,
+          "text": "With the Shadow door open (Ingenuity {=unlocks.6.effects.0.if.self_skill.ingenuity}), a Spot you make while Hidden gives you {=unlocks.6.effects.0.value} Shadow (one of the turn's gains): pointing out a foe from the dark builds your next Break.",
+          "player": "Spot from Hidden: +{=.effects.0.value} Shadow",
+          "effects": [
+            {
+              "op": "resource",
+              "resource": "shadow",
+              "value": 1,
+              "when": "acted",
+              "if": {
+                "action_id": [
+                  "call.spot"
+                ],
+                "self_has": [
+                  "hidden"
+                ],
+                "self_skill": {
+                  "ingenuity": 1
+                }
+              },
+              "limit": {
+                "per": "per_turn",
+                "n": {
+                  "base": 0,
+                  "per": [
+                    {
+                      "of": "rule:shadow.door_gains_per_turn",
+                      "value": 1
+                    }
+                  ]
+                },
+                "shared": "shadow_gain"
+              },
+              "fx": {
+                "k": "stance",
+                "what": "shadow_gain"
+              },
+              "say": "{self} calls the mark from the dark: Shadow {res:shadow}."
+            }
+          ],
+          "source": "rules 1.99 item 8367 (the growth bible's mind.json vigilant point 6)"
         },
         "7": {
           "name": "Mastery 3",

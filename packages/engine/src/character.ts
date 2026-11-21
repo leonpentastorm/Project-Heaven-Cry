@@ -1273,13 +1273,12 @@ export const counterBonus = (c: Character) => Math.max(0, fx(c, 'counter', mod(P
 /** Throwing range: 6 + 0.5 × Dexterity tiles (the Derived stats formula; spec item 17). */
 export const throwRange = (c: Character) => Math.floor(fx(c, 'throw_range', 6 + 0.5 * P(c, 'dexterity')));
 /** Ambush multiplier: 1.5 + 0.05 × Ingenuity. */
-/** Shadow's numbers (rules 1.32; data/rules.json shadow, provisional): the meter's cap by Ingenuity, the Operative's add
- * and start, the Break's term. */
-export const SHADOW_RULES: { cap_by_points: Record<string, number>; operative_cap_add: number; operative_start: number; ambush_bonus: number; per_point: number; marked_bonus: number; door_gains_per_turn: number } = (RULES as any).shadow;
+/** Shadow's numbers (rules 1.32; data/rules.json shadow, provisional): the Operative's start, the ambush, the gains a
+ * turn. Rules 1.99 item 8360: the meter's top is Ingenuity's Reach (door.ts reachOfRes; the cap by points and the
+ * Operative's +1 are retired, ruling C16). */
+export const SHADOW_RULES: { operative_start: number; ambush_bonus: number; door_gains_per_turn: number } = (RULES as any).shadow;
 /** The Ambush multiplier: a flat 1 + the ambush bonus (×1.5; rules 1.32: Ingenuity's slope went into Shadow's Break). */
 export const ambushMult = (c: Character) => fx(c, 'ambush_mult', 1 + SHADOW_RULES.ambush_bonus);
-/** Shadow's cap for an Ingenuity (rules 1.32): the highest rung reached of rules.json shadow.cap_by_points (0 below the first). */
-export const shadowCap = (points: number): number => Object.entries(SHADOW_RULES.cap_by_points).reduce((n, [at, v]) => (points >= +at ? Math.max(n, v) : n), 0);
 /** Blessing power: 1 + 0.1 × Faith. */
 export const blessingPower = (c: Character) => fx(c, 'blessing_power', statOf('blessing', c));
 /** The Hymn cooldown's numbers (rules 1.22; patrons.json prayer.hymn.cooldown_rule; PROVISIONAL). */
@@ -1891,8 +1890,8 @@ const RES_RULES: Record<string, (c: Character) => ClassResource> = {
   supplies: (c) => ({ id: 'supplies', max: 3 + Math.floor(P(c, 'proficiency') / 2), persist: true }),
   toxins: (c) => ({ id: 'toxins', max: 2 + Math.floor(P(c, 'ingenuity') / 3), persist: true }),
   charges: () => ({ id: 'charges', max: 3, persist: false }),
-  // Shadow (rules 1.32): a class that brings it (the Operative) holds operative_cap_add more than the door gives
-  shadow: (c) => ({ id: 'shadow', max: shadowCap(P(c, 'ingenuity')) + SHADOW_RULES.operative_cap_add, persist: false }),
+  // Shadow (rules 1.99 item 8360): the meter tops at Ingenuity's Reach for everyone, the Operative too (ruling C16)
+  shadow: (c) => ({ id: 'shadow', max: reachOfRes(c.skills as any, 'shadow'), persist: false }),
   // rules 1.33: the Mender's Ledger, at most its move's amount block `cap` (classes.json bard.ledger: base × the tend Stat × the mend level factor)
   ledger: (c) => ({ id: 'ledger', max: ledgerCap(c), persist: false }),
 };
@@ -1913,7 +1912,7 @@ export function classResources(c: Character): ClassResource[] {
   if (pool > 0) { const own = out.find((r) => r.id === 'guard'); if (own) own.max = Math.max(own.max, pool); else out.push({ id: 'guard', max: pool, persist: false }); }
   // Rules 1.32, Perception's door: anyone with Ingenuity has a Shadow meter, built the way Guard is (a class that brings
   // Shadow, the Operative, keeps its own larger one).
-  const sh = shadowCap(P(c, 'ingenuity'));
+  const sh = reachOfRes(c.skills as any, 'shadow'); // rules 1.99 item 8360: Ingenuity's Reach (with its family gates)
   if (sh > 0 && !out.some((r) => r.id === 'shadow')) out.push({ id: 'shadow', max: sh, persist: false });
   return out;
 }

@@ -1553,7 +1553,7 @@
       "resource": {
         "id": "marks",
         "max": 3,
-        "rule": "You start each fight with Shadow and hold one more than your Ingenuity gives. You can keep up to 3 enemies Marked at once. You carry 2 toxin doses, +1 for every 3 points of Ingenuity, restocked when you rest."
+        "rule": "You start each fight with Shadow. You can keep up to 3 enemies Marked at once. You carry 2 toxin doses, +1 for every 3 points of Ingenuity, restocked when you rest."
       },
       "resources": [
         "marks",
@@ -1696,7 +1696,7 @@
             "start": 1,
             "gain": 1
           },
-          "text": "You start each fight with {=numbers.start} Shadow, and your Shadow holds one more than your Ingenuity gives. Your Analyze Reads its target: your side sees its next action. Once a turn, Analyzing an enemy that can't see you gives {=numbers.gain} Shadow.",
+          "text": "You start each fight with {=numbers.start} Shadow. Your Analyze Reads its target: your side sees its next action. Once a turn, Analyzing an enemy that can't see you gives {=numbers.gain} Shadow (one of the turn's gains).",
           "effects": [
             {
               "op": "resource",
@@ -1727,11 +1727,26 @@
                 ],
                 "target_sees_self": false
               },
-              "limit": {
-                "per": "per_turn",
-                "n": 1,
-                "key": "eye"
-              },
+              "limit": [
+                {
+                  "per": "per_turn",
+                  "n": 1,
+                  "key": "eye"
+                },
+                {
+                  "per": "per_turn",
+                  "n": {
+                    "base": 0,
+                    "per": [
+                      {
+                        "of": "rule:shadow.door_gains_per_turn",
+                        "value": 1
+                      }
+                    ]
+                  },
+                  "shared": "shadow_gain"
+                }
+              ],
               "say": "{self} reads {target} unseen: Shadow {res:shadow}."
             }
           ],
@@ -6329,7 +6344,8 @@
         {
           "id": "called_shot",
           "name": "Called Shot",
-          "ap_cost": 3,
+          "ap_cost": 2,
+          "ap_note": "rules 1.99 item 8366 (the growth bible's mind.json infiltrator rank III: a shot and an injury for one shot's AP; was 3)",
           "uses": "at_will",
           "text": "Costs {=ap_cost} AP. With any weapon (a shot, a throw, or a strike in reach), name the head, an arm or a leg and attack at {=effects.0.value} to hit, or with no penalty while the target can't see you. A hit causes that injury without needing a critical hit: head, Dazed; arm, −2 to attacks with that arm; leg, half Movement. A target with Injury resistance can still resist it.",
           "effects": [

@@ -51,7 +51,7 @@ import { amountBlock, numberOf, isNumberBlock, type AmountBlock } from './amount
 import { resOf } from '../tactics';
 import { patronIdOf } from '../belief'; // (no global hooks: faith.ts's load order stays as it was)
 import { resLeft, spentOf, spendAll } from './cost';
-import { cashSumOf } from '../door';
+import { cashSumOf, cashFactor, keepsOf } from '../door';
 import { dmgIs, DAMAGE_WORDS } from './dmgwords';
 import { hurlRun } from '../hurl';
 import { heldBy } from '../held';
@@ -405,8 +405,12 @@ const pick = (ev: Ev, e: any): Unit | null => (e.target === 'actor' ? ev.actor :
 /** Who an op acts as: the holder, or (rules 1.33, `by: "source"` on a condition row's op) whoever gave the row. */
 const giverOfOp = (ev: Ev, e: any): Unit => (e.by === 'source' && ev.h.source && !ev.h.source.dead ? ev.h.source : ev.self);
 
-O('damage_mult', ['dealing', 'taking'], false, ['value', 'round', 'pool', 'replaces'], 'multiply the amount being dealt or taken (taking: round "up" rounds it up; pool: the holder\'s zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush; Margins: the hit counts none) is taken out and this one stands in its place, so the two never multiply: Shadow\'s Break, rules 1.32)', (ev, e, label) => {
-  if (ev.trig.hook === 'damage_out') { if (typeof e.replaces === 'string') for (let i = ev.ctx.mults.length - 1; i >= 0; i--) if (ev.ctx.mults[i].label === e.replaces) ev.ctx.mults.splice(i, 1); if (e.replaces === 'Margins') ev.ctx.noMargins = true; ev.ctx.mults.push({ v: e.value, label }); return; } // rules 1.96 item 8320: the Margins' term is set after the items speak, so replacing it takes the hit's Margins away
+O('damage_mult', ['dealing', 'taking'], false, ['value', 'round', 'pool', 'replaces', 'cash'], 'multiply the amount being dealt or taken (taking: round "up" rounds it up; pool: the holder\'s zone of that kind the target stands in gives what is prevented, and ends when spent; replaces: on dealing, the named term of the attack (its label: ambush; Margins: the hit counts none) is taken out and this one stands in its place, so the two never multiply: Shadow\'s Break, rules 1.32; cash: on dealing, a resource whose door pays this hit: the cash-out factor of the units the holder holds of it now, less its beta keep (door.ts cashFactor, keepsOf), goes into the hit cash-out term, which the Margins add to: Shadow Break, rules 1.99 item 8361)', (ev, e, label) => {
+  if (ev.trig.hook === 'damage_out') {
+    if (typeof e.replaces === 'string') for (let i = ev.ctx.mults.length - 1; i >= 0; i--) if (ev.ctx.mults[i].label === e.replaces) ev.ctx.mults.splice(i, 1); if (e.replaces === 'Margins') ev.ctx.noMargins = true; // rules 1.96 item 8320: the Margins' term is set after the items speak, so replacing it takes the hit's Margins away
+    if (typeof e.cash === 'string') { const sk = ev.h.c?.skills as any, n = Math.max(0, resNow(ev, e.cash) - keepsOf(sk, e.cash)); ev.ctx.cash = (Number(ev.ctx.cash) || 1) * cashFactor(sk, e.cash, n); } // rules 1.99 item 8361: the units held pay (a part-filled meter pays for what it holds)
+    if (typeof e.cash !== 'string' || e.value !== 1) ev.ctx.mults.push({ v: e.value, label }); return; // a cash-out's own value 1 adds no term
+  }
   const was = ev.ctx.dmg; let now = e.round === 'up' ? Math.ceil(was * e.value) : was * e.value;
   if (typeof e.pool === 'string' && ev.target) { // P10: a zone's pool caps what it prevents
     const z = zonesAt(ev.cb, ev.target.pos, e.pool, 'self', ev.self).find((x) => x.pool != null);
@@ -445,7 +449,7 @@ O('resource', ANY, true, ['resource', 'value', 'keeps'], 'give (or take) a class
   if (e.resource === 'echo') { if (ev.h.c) gainEcho(ev.h.c, e.value, label); return; }
   const own = u.resMax?.[e.resource] != null || !RESOURCES[e.resource];
   // P3: "all" (spend all of it) and "zero" (lose all of it): take what the unit has now
-  if (e.value === 'all') { (ev as any).gain = -spendAll(u, e.resource, Number(e.keeps) || 0, ev.h.c, ev.cb); return; } // rules 1.96 item 8326 (S3): a spend of all, noted for cash:<res> (keeps: units left behind)
+  if (e.value === 'all') { (ev as any).gain = -spendAll(u, e.resource, e.keeps === 'door' ? keepsOf(ev.h.c?.skills as any, e.resource) : Number(e.keeps) || 0, ev.h.c, ev.cb); return; } // rules 1.96 item 8326 (S3): a spend of all, noted for cash:<res> (keeps: units left behind; "door", rules 1.99 item 8361: the door's beta keep, door.ts keepsOf)
   const n = e.value === 'zero' ? -(own ? resOf(u, e.resource) : resLeft(u, e.resource, ev.h.c, ev.cb)) : e.value;
   (ev as any).gain = own ? resGain(u, e.resource, n) : resGive(ev.cb, u, e.resource, n, { by: ev.self, c: ev.h.c, why: label });
 });
@@ -758,6 +762,9 @@ export function selectUnits(ev: Ev, t: TargetSet): Unit[] {
 export const LIMIT_SCOPES = ['per_turn', 'per_round', 'per_combat', 'per_scene', 'per_session', 'per_rest'];
 function limitOk(ev: Ev, lim: any, take: boolean): boolean {
   if (!lim) return true;
+  // rules 1.99 item 8362: a list of limits: every one must have room, and each is taken (First Shade's once a fight
+  // under the door's two gains a turn)
+  if (Array.isArray(lim)) { if (!lim.every((l) => limitOk(ev, l, false))) return false; if (take) lim.forEach((l) => limitOk(ev, l, true)); return true; }
   // rules 1.33: a key may name the pick ({choice}); rules 1.77 item 6504: `shared` names a counter every item of the
   // holder that names it counts under (Stalk's gain under the Shadow door's two a turn), not the item's own
   const h = { ...ev.h, u: ev.self, cb: ev.cb }, key = typeof lim.shared === 'string' ? 'shared:' + lim.shared : lim.key ? ev.h.key + '#' + withChoice(String(lim.key), ev) : undefined;
@@ -783,7 +790,7 @@ export function triggerProblem(e: any): string | null {
   if (e.if != null) { if (typeof e.if !== 'object' || Array.isArray(e.if)) return '`if` must be an object'; for (const k of Object.keys(e.if)) if (!PREDICATES[k]) return 'unknown predicate ' + k; }
   for (const x of [e, ...(Array.isArray(e.and) ? e.and : [])]) if (x.targets != null) { const why = targetsProblem(x.targets); if (why) return why; }
   for (const x of [e, ...(Array.isArray(e.and) ? e.and : [])]) if (x.delay != null && (typeof x.delay !== 'object' || !(DELAY_UNTIL as readonly string[]).includes(x.delay.until))) return 'delay is {until: ' + DELAY_UNTIL.join(' | ') + ', n?}';
-  if (e.limit != null) { const l = e.limit; if (typeof l !== 'object' || (typeof l.cooldown !== 'number' && !LIMIT_SCOPES.includes(l.per) && typeof l.reaction !== 'number')) return 'limit must be { per, n }, { cooldown } or { reaction, kind }'; if (typeof l.reaction === 'number' && !REACT_KINDS.includes(l.kind)) return 'a reaction limit names its kind (' + REACT_KINDS.join(', ') + ')'; }
+  if (e.limit != null) for (const l of Array.isArray(e.limit) ? e.limit : [e.limit]) { if (typeof l !== 'object' || (typeof l.cooldown !== 'number' && !LIMIT_SCOPES.includes(l.per) && typeof l.reaction !== 'number')) return 'limit must be { per, n }, { cooldown } or { reaction, kind }'; if (typeof l.reaction === 'number' && !REACT_KINDS.includes(l.kind)) return 'a reaction limit names its kind (' + REACT_KINDS.join(', ') + ')'; }
   return null;
 }
 /** The triggers whose lines react to a blow (rules 1.58, N4): a rider's own item alone answers them. */
