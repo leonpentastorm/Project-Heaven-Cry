@@ -3067,7 +3067,7 @@ f831e049a6e3ba97904dde8385c7296ef43a3da20120d1ff9a57280ff0f6c99a  art/_archive/g
 f0e0e1e89a10e4aa97a086ee4cbdbe07f906d3bf4b5abb64bbb4cc2dbff08d4d  art/_archive/gear/2026-11-20-reset-continuation/BASELINE.json
 1c23860bb2798975c015d48a2c2ea6290c2887763fa05fb7add8c704691553f2  art/_archive/gear/2026-11-20-reset-continuation/HANDOFF.md
 19fc95cc7cdf4be816ed45816c27460f4d2e49ce0a6a7aecf0035b22c8eb34f5  art/_archive/gear/2026-11-20-reset-continuation/SCHEDULE.json
-6cfbf85040030e7cedc77e919feb6ee477e8e772db72181945ad829eb4c0f9db  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
+10002be1a99b18c5faae1973ca8f7127a6d363641b630d6aab3b2e13e4219e39  art/_archive/gear/2026-11-20-reset-continuation/START-HERE.md
 a7b325462bf2bf4140d8262c881df9e366170df3d670223f0036646ff3e3d637  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/metadata.json
 f563f98f5775e55e5c80741a6779bdf120a1eb4a36ed4dec3f543574028db712  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/native.png
 d4641f47d5040bc171d64875d4fcc1c2ecba189d92b185a39c076e39d07b6bd0  art/_archive/gear/2026-11-20-reset-continuation/attempts/armour-ballistic_helmet--celestial/01-quality-review/prompt.txt
@@ -3528,7 +3528,7 @@ e0ca4ec468fb8582b7be239bdb55cd21a034954333e4f898c0262574d59b2bd2  art/_archive/g
 8a2ca5fb3717d151fdc6aa17dfc2187ff648d6bbc90a03780e45bee0807556b5  art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-grudge_plate.png
 05ec5670c5e5dd31f5c0b4ec1abec36becf03409804801ad7d6982d6f52d6dca  art/_archive/gear/2026-11-20-sole-uniques/sources/v1/shield-return_clause.png
 049c3d37a67e3b7cecc4e6da18c2683f243e71fd02745068beb5a499b17d1c6a  art/_archive/gear/2026-11-21-retry-continuation/AUTHORIZATION.md
-fb3b000f1802a39d16ebada82627ddbaed6c1cd29221b19a063ee4eb8314e6c5  art/_archive/gear/2026-11-21-retry-continuation/HANDOFF.md
+0e8b98ac26c71144f6770838c04db53e23f39d6cf496875c23f488d270db562b  art/_archive/gear/2026-11-21-retry-continuation/HANDOFF.md
 507d925c23a69c6700747c91ca4510389b340658bd45a59736a00e8c3498d291  art/_archive/gear/2026-11-21-retry-continuation/START-HERE.md
 f0108c5fd10150e56657ad11e398ecebd7bc86828abaeb5715eb13d035be5173  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-broadback_sabre--celestial/001/native.png
 4125c6a21dede181bd8563bbaf4fb853f5fddd2592cbae26b225f90b1a4ee706  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-broadback_sabre--celestial/001/request.json
@@ -3542,6 +3542,10 @@ a49588f313bb0ff4098939d626463fdd64aab0323aaf5f3b48bf9877e6e01fea  art/_archive/g
 9531923f9db9de18904510bcd218b5a85ae3562c6ce801ec460e254210bc82e6  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-coach_gun--fine/001/request.json
 13cbd7b3579a3654ca2ecf415fc94ae4fd39e8cfe57a593efae7d81d117c51a0  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-coach_gun--fine/001/review.json
 3f6b414d34e994f2036f214bcbb541bb71c837afe0a1a8a0ea23fa545ece894e  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-coach_gun--fine/001/source.json
+e9ab0704003bcc8aee98b4dcb109d69a31d8f288bd2fd1e37a1b6d9c8ada16f0  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-coach_gun--masterwork/001/native.png
+a706548aa504005d3c6cbe543092d00754985396b252f26b2257fc06ca23d158  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-coach_gun--masterwork/001/request.json
+18217449b147dd54d30a93e667b458a045b69229b09d62b08da9a18fb04d7557  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-coach_gun--masterwork/001/review.json
+d766bdeae5f40a5f0bd49abded1dfd2305717dfb60c53f9fd109b06da4143c6f  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-coach_gun--masterwork/001/source.json
 8681ffd0927d72b8c4f71530daaa2e4263485469a3ac6102b6cc177f53c23ee7  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--celestial/001/native.png
 652bc2fe0886ba04b990712e0453e13ff1449de499a6b519cc7018b96355cf5b  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--celestial/001/request.json
 fb0808b0277d66c1c58d076c562e0d8a525581292a06334a39b3a0eebab0cc50  art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-crossbow--celestial/001/review.json
@@ -3803,10 +3807,11 @@ e49b88c1c8e8faccd29fab4de73c1d9e3b9d656d510539f826076b68a6323021  art/_archive/g
 c05f6994076392e6a4832ed3f1d4477cd8b4f8967d104588c8a53d2837bdd831  art/_archive/gear/2026-11-21-retry-continuation/coordination/peer-source-queue.json
 50599c48f6dd5181951f46d2dad9bc7eccef708af59327ace3bcf8e99c613674  art/_archive/gear/2026-11-21-retry-continuation/functions-delivery.js
 3a9198eb79fdaad749552f641ad18596d175aab132d9eb929081803fc3df4725  art/_archive/gear/2026-11-21-retry-continuation/functions-driver.js
-fd6aae4a3ad3586a0629100ebabb9cbffed1f2942c1a7198ba565bc7c233c56e  art/_archive/gear/2026-11-21-retry-continuation/manifest.json
+bce189cc6116a909640e7a203ccdac9abc443472ee9f192958bb703a21fb0861  art/_archive/gear/2026-11-21-retry-continuation/manifest.json
 a595e6537483204a35e9d6ab52cceae4136d7c6ffde4bfd189e604962ed391c7  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-broadback_sabre--celestial.png
 f9e0b792793b88c70344251eaa6fcee135319fe64bd454ed1f8b7c2e6b453fb5  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-broadback_sabre--relic.png
 3918f0e0dc5ff9c294f83c13db8602f85936e05ebf68a28319323f77fb64ff3d  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-coach_gun--fine.png
+de7dc7847e02a58b56dd23c609f3b8bfe74bef5a6f00c8887a2c8ed5111a3fed  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-coach_gun--masterwork.png
 3239f5298a91cd2ebaa210296f6f6942f2d1c5044b97a3b1f6e2505853529a0f  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-crossbow--celestial.png
 821367b46b7e72052477b7b8e7d013da41f55063c0e6e68063cb5ad8139c2ad1  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-crossbow--masterwork.png
 92634f743d9f5079497be0ffe4254e150e4ae38e0b77661d3dfc608f6775f626  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-crossbow--relic.png
@@ -3852,10 +3857,11 @@ aa9fb3aa1790fc110c089ffa1376d239677dbff535eadd1815120ab5a41cb8e4  art/_archive/g
 d2d630bd80da3119bb73609f1a580a50cfc1bc440f410e4fd554f1c0bdcd3d34  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--masterwork.png
 f66556f6f6adf2bde268ff0c42c5ecde68b487c65d09efac50ed52fb9cff41cf  art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-war_pick--relic.png
 447d6ba2adcac9c3669eb716e7b9fbe7c29ae54a0bf26bb53f2b963aa48285e9  art/_archive/gear/2026-11-21-retry-continuation/previous-queue-snapshot.json
-de0f467b580a3e52596f171d4d9827cf36fe7e9dcbc28118de15ddd4f2fba02b  art/_archive/gear/2026-11-21-retry-continuation/progress.json
+247560afaa0ffee6cb9fc0783376055dcd8b7f180e5fb7416c1f9d6779e3e392  art/_archive/gear/2026-11-21-retry-continuation/progress.json
 e2059fb182a1ff5ce8fc89518dd982c62c1d75ddcfdc0b4b2027c67228a6f1be  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--celestial.txt
 11ccde30be710af79c602ced16bf0e2b7cf1592c8a43521c4582b32125fed74a  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-broadback_sabre--relic.txt
 a5692185cd35ef243fc86eddafc82eda3b201091b9cfeb07901fc923d1ffdc37  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-coach_gun--fine.txt
+ee3c462c6c78eefdd389f8d20c4257646552a764fe6b672e1cf209896b761542  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-coach_gun--masterwork.txt
 d865f21b0816a35e3bf32d499e524604dbfffb6f90ecd7001386e69bb275af10  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-crossbow--celestial.txt
 85107a62453e1c971927fdc977b597056e8e2abf9e9139cbd2e87c0ae8f83f79  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-crossbow--masterwork.txt
 0bd96f84eff9cb8bdef5d67b9fa8c98befb8aa020929d004a36e5615944ced9c  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-crossbow--relic.txt
@@ -3900,11 +3906,11 @@ d06722e1dbb269c9e8d5cef2503e33f98a9e873f45df77d008d1feac51560ee7  art/_archive/g
 bc68a83c56a8024aa509dbc18cd09734ffcdd82548d35c4442ec53dc05ea409f  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_pick--fine.txt
 520700f0f271fc65c3d95ac75682d762bfd1e8383c1be74a0eeb4850ade08520  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_pick--masterwork.txt
 481c7c515ab83a68f6f0642c869be5fa9bd11cde1335b57478171f33d81a0669  art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-war_pick--relic.txt
-90db2813185f720e111a8254715e623c4f4846115084ac4266215c7c40322df6  art/_archive/gear/2026-11-21-retry-continuation/queue.json
+be8568e2c13e5c8582895aabfe937e166eaadfdc3d6fbfea478a3df90b6b1f19  art/_archive/gear/2026-11-21-retry-continuation/queue.json
 6cde31ed81b8e5a107b264dd22bdd36abe9ea01b5ba46548afaf74d4f822a7ea  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-broadback_sabre-32px.png
 a296aaa10704f794668e90a1de0554f8c71762914c44c290bad3ca4aa9891172  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-broadback_sabre-64px.png
-b17f3a3b21b250ff35f927162c6b8ceb22c5a41aa88f01d26837ca57adb64f4f  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-coach_gun-32px.png
-aaf61d7f7e16e991a2cec2697105cc902ba845919183dfa0112574fbc58aedc8  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-coach_gun-64px.png
+5efef8cc4a727ca0db47d2b70e93a51ca626f45c6e321b092c92f9b238b44d34  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-coach_gun-32px.png
+f276da7ef661008b6d5a75ab5fee7740a9a52b902d9e65ca061a7e4a7c34339a  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-coach_gun-64px.png
 73189e0454d674ac6347e1c45aecbffc5a48639d260b752e8373ffcc3cde66d6  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-crossbow-32px.png
 c1dbee688303d59adcea9dd7e7d7a12809b095dd3d318d9b9b41651a8070320f  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-crossbow-64px.png
 b791d6b29d67ab56d9df5f87ecc8a6a68dd9c8acddf2d748f9026354e24949df  art/_archive/gear/2026-11-21-retry-continuation/reviews/weapon-dock_cutter-32px.png
@@ -3937,6 +3943,7 @@ ba504fb2d3a29125f30304e56180956c9dad839776b0b27dd07a113d326c38d4  art/_archive/g
 f0108c5fd10150e56657ad11e398ecebd7bc86828abaeb5715eb13d035be5173  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-broadback_sabre--celestial.png
 28f22c6ebb2d33ce3f6015325a8ffb5488ce13779a4a29f5e6fc687a69406c7f  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-broadback_sabre--relic.png
 a49588f313bb0ff4098939d626463fdd64aab0323aaf5f3b48bf9877e6e01fea  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-coach_gun--fine.png
+e9ab0704003bcc8aee98b4dcb109d69a31d8f288bd2fd1e37a1b6d9c8ada16f0  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-coach_gun--masterwork.png
 57a193eaec38bd312fda396ed949ac4db50b4dd2794e1ec02de78cad7f78952a  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-crossbow--celestial.png
 39c6cb68d967311edf55825d60cabdd4e0a364870a2693d7a0757ad9c83223b7  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-crossbow--masterwork.png
 36f89f300139505aa64c3bee5f4ec843e1929e3532011a06d8b14a99857893fd  art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-crossbow--relic.png
@@ -8140,9 +8147,9 @@ c78a50e58a83e71393d0bae840cabcb91c4688bd9871196b3194aefd6f2659fb  art/briefs/pro
 59b1f0128a6b0d3e59524bcc2679c5d85a52c80a9dd7745443a9518c6c0129f4  art/briefs/prompts-2026-11-19/08-grades-and-uniques.md
 d35c91984152452f0484e327db6e6dadf34deaeab105bddf9b0dc9e4601323dd  art/briefs/prompts-2026-11-19/09-heavy-and-strange.md
 4b6b1ef35939c18621e7e723a61d6f2fd78001a0352a060aa76f70b94e3ced56  art/briefs/prompts-2026-11-19/10-rifle-analogues.md
-30377f04350a70cc06b9b38ca00c58d0b6bcafa4c18347915ddb549fac073595  art/briefs/prompts-2026-11-19/PRODUCTION-STATUS.md
+f67b65c34fef90e8f06922e5e8dd0d72b05e18c60a43dba157e7f25a8483f9ea  art/briefs/prompts-2026-11-19/PRODUCTION-STATUS.md
 e12f6122a82a9b29f1907a30dce5bd07d235a63b430126913fcc097357f2a0af  art/briefs/prompts-2026-11-19/README.md
-4fc3ce8109cf5bcd649653af89e1e0914f67227be0a1cc15f3d4370dbbf3c554  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
+8a5b2a631e3bab2d055a5934982b05428155570527ff00fd2ddfc546f980806a  art/briefs/prompts-2026-11-19/REMAINING-WORK.json
 15a16bf0d5e3166a424a0812d48ccf869542577351a7381a2987e32557e37746  art/briefs/prompts-2026-11-19/SCRAP-SENTINEL-REPLACEMENT-2026-11-21.md
 cd3f2b55854873965a7b3841202dd6ee62477b013c9b475ba0b4b9bdf164f38f  art/briefs/prompts-2026-11-19/WORK-CLAIMS.md
 f6f2606114fcf8dc1cc8f542b552748665e7aa25580ba9b66917e94fd647c44b  art/briefs/title-screen.md
@@ -8151,7 +8158,7 @@ dfac4c563b999e924c25e4391f559614fbc3e9ee2fb7a07327e4421c2932b95a  art/briefs/tit
 d4757d376413fca299fe5c1315c25af1b00e305eb74fc0a9fc89ca64a069c2f2  art/briefs/wick-narrator-3d.md
 3a8cf8f872dbfb8ff27ad9ae3a4b229c28312b1c9b380a89d635a1f168e5f88e  art/briefs/wick-production-icons.md
 65f9e206967fef8806a77325cfc43fb4bc5cf712dc59f5b67e3ff7165bdc62c7  art/briefs/wick-test-icons.md
-367f2a50bfdfad00c0baa4618ecd020c6714a660b9b1fc7658143a45ba9cf1df  art/catalog.json
+7c1f55103df3d139f0aa620cf6ab1f321f8cf73ad2a92e8399ee65c2907b3b54  art/catalog.json
 e3e5c685a5b2d8096adb97cab5eea7ee5889f1d57dedafb38c9bb5ff4a2a4fb2  art/emblems/ahoc/ahoc-seal-2020-original.png
 2ebf4deb21c71f9c464eb2ea2fe2d4b1e04e10c12920d86c5ce7e21d6f95e3ef  art/emblems/ahoc/ahoc-seal-white.png
 1cb48168780147010d3de9e03dd704f2a9bcf9b8e8225aeee037efad9a65782a  art/emblems/doors/bond.png
@@ -10329,6 +10336,7 @@ d085e06a11ae4413f5d433bf645c3b9d5844c174745d18a1e0df6a0c014367ba  art/icons/gear
 970c0498a4aee6f04b6bad6c8462d814802ee2975f24bf29d57cd7d8c6fde1e0  art/icons/gear/exports/128/weapon-broadback_sabre.png
 34866e14ccd7657851525feedf3393e800ca081908f2aeaca41041758c06463a  art/icons/gear/exports/128/weapon-ccec_marksman_rifle.png
 8aa91e79c2bde9dd4f2971d7354c0e1eafd8989e102030826d3c4a1c717b5cb3  art/icons/gear/exports/128/weapon-coach_gun--fine.png
+f4d0a795323c4ab3478a2d26fd6cff795562aabc5fdc582c460dbd9ed93f4463  art/icons/gear/exports/128/weapon-coach_gun--masterwork.png
 e85a591573128ae362e625b4ab71c3c44d0b78aad41866288ef9f7b4292ef9f4  art/icons/gear/exports/128/weapon-coach_gun.png
 8e9ab1315f59e91aae9cd76f63d37b2c8a15a4e3e28cc9636764e318324d9494  art/icons/gear/exports/128/weapon-combat_knife--celestial.png
 c968dcaaa95d88c039eee1587d11d1c1f24350296fceaeed2d875f96705f3bdb  art/icons/gear/exports/128/weapon-combat_knife--fine.png
@@ -10973,6 +10981,7 @@ f50582df01ae55b8f7e9435f508a491df584bd4aff3b8362f1cd1843b6e00cc4  art/icons/gear
 b68fbb7c2b81d6edb1672803c773730837afdc0288db0013d960154ae8c9ae6b  art/icons/gear/exports/256/weapon-broadback_sabre.png
 713e3888f7aef27dd8e056b8ece7e5bb6c352ea2184ef2e00d058415390f266e  art/icons/gear/exports/256/weapon-ccec_marksman_rifle.png
 ff84df2c449914c36e7609d17c6a643e219190c4175e90e986a8af6270ee86f6  art/icons/gear/exports/256/weapon-coach_gun--fine.png
+a623db1714e72a024198a015ef70a74ecb5a0e9096a30e6f414862f68ff62b95  art/icons/gear/exports/256/weapon-coach_gun--masterwork.png
 25cbe91e58a0d507c07ef0ec0dfdfd87f23194bd3822cf17cee53fa1a24cc9ab  art/icons/gear/exports/256/weapon-coach_gun.png
 5039b8dc516f864671f9d378e9c68e372a060e8a6f8e469dc7fefa4edd1a1749  art/icons/gear/exports/256/weapon-combat_knife--celestial.png
 6afe2cc68ce14b500aab3b760cef4b4f7910d47fcdf144d39f281ea4d7583ece  art/icons/gear/exports/256/weapon-combat_knife--fine.png
@@ -11617,6 +11626,7 @@ b90eab215d19c4787b0d3b34f0a56fbf82257f2e571254d935952d030f73e9cb  art/icons/gear
 e3e1b3bca132bf02b4cde30e7988955a100a145d35d2c22608e15229e307f134  art/icons/gear/exports/32/weapon-broadback_sabre.png
 1bf85acc806ff7914e0353a973e696724b3a96ca16d08f17cc1512704ec334c8  art/icons/gear/exports/32/weapon-ccec_marksman_rifle.png
 8d2d17d81c044b20c79789f6f5f8c8ba962731176c584b91a531b3217b111a63  art/icons/gear/exports/32/weapon-coach_gun--fine.png
+08fb818358141ab1e961ee8093fdf42f7599884d255543380ef4d539242ee925  art/icons/gear/exports/32/weapon-coach_gun--masterwork.png
 900ea5a9c16a605cfa65a9b7700a8f5cbb7f9db963949f06e1bd7283f201df3e  art/icons/gear/exports/32/weapon-coach_gun.png
 f223182d6f59c7cc3e9ae343c14510a4f6dcfbc367edb28eeba98a2acc343730  art/icons/gear/exports/32/weapon-combat_knife--celestial.png
 8b6150767c3f8da48fa253c41e3e6a03e23903f74fde6538935f568e3e34519a  art/icons/gear/exports/32/weapon-combat_knife--fine.png
@@ -12261,6 +12271,7 @@ bfa4befd56c3172b8743d99949ddc0c004818000c6e89437cb8526823a8d9c17  art/icons/gear
 9d9b392bb85c355b7f5c3b8012e9119fdcdea0dd235d57a0fc73112aab0e1552  art/icons/gear/exports/64/weapon-broadback_sabre.png
 d08ff0e89e9e3727a7b906a52b3ac576ce95a35cd04dd32fe8a30b9d5acd124d  art/icons/gear/exports/64/weapon-ccec_marksman_rifle.png
 ba461557ed6b4daa911c2c442668610a041030300b77167f64050233ca14ccb2  art/icons/gear/exports/64/weapon-coach_gun--fine.png
+76579c647e7b6a89397a904ea28b7323ea9e0854c98c8e2031363ced5da685e4  art/icons/gear/exports/64/weapon-coach_gun--masterwork.png
 7e7855b75a91e3eb4654fd471b2361f867bce8c005092c01a0433c3e43bce8b6  art/icons/gear/exports/64/weapon-coach_gun.png
 6e07400f74163bf5362fd7bf8798ac835fbd84301082e582644c9cc24a0742be  art/icons/gear/exports/64/weapon-combat_knife--celestial.png
 0f097d652790ec28c8c40aeedc265dcf75f5f3fca87505283b27a91677567e63  art/icons/gear/exports/64/weapon-combat_knife--fine.png
@@ -12718,6 +12729,7 @@ f9e0b792793b88c70344251eaa6fcee135319fe64bd454ed1f8b7c2e6b453fb5  art/icons/gear
 1f2b6fda647cc87a2663bdf40753bf26ee337b3d4e051b7284bd6a1d7a66bef7  art/icons/gear/weapon-broadback_sabre.png
 b7b78f5e26d3dd0b6b4af59a29183ceefc1674c3f3cf0c7a1826f08f8fe9b357  art/icons/gear/weapon-ccec_marksman_rifle.png
 3918f0e0dc5ff9c294f83c13db8602f85936e05ebf68a28319323f77fb64ff3d  art/icons/gear/weapon-coach_gun--fine.png
+de7dc7847e02a58b56dd23c609f3b8bfe74bef5a6f00c8887a2c8ed5111a3fed  art/icons/gear/weapon-coach_gun--masterwork.png
 e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5  art/icons/gear/weapon-coach_gun.png
 422ce0bb53aa2355fac1a777ff3ad92661b5f83375c30ae4e407478a03188189  art/icons/gear/weapon-combat_knife--celestial.png
 7e1b4cfb254b9e04c9aecdd4a7ad7b1275dc5febb6faad4a9ad873a2b57ad588  art/icons/gear/weapon-combat_knife--fine.png

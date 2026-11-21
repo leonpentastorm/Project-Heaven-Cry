@@ -3023,6 +3023,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-coach_gun--masterwork",
+      "path": "art/icons/gear/weapon-coach_gun--masterwork.png",
+      "sha256": "de7dc7847e02a58b56dd23c609f3b8bfe74bef5a6f00c8887a2c8ed5111a3fed",
+      "label": "Coach Gun — Masterwork",
+      "family": "weapon-coach_gun",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-coach_gun--masterwork.png",
+        "sha256": "e9ab0704003bcc8aee98b4dcb109d69a31d8f288bd2fd1e37a1b6d9c8ada16f0"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-coach_gun--masterwork.png",
+        "sha256": "de7dc7847e02a58b56dd23c609f3b8bfe74bef5a6f00c8887a2c8ed5111a3fed"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-coach_gun--masterwork.txt",
+        "sha256": "ee3c462c6c78eefdd389f8d20c4257646552a764fe6b672e1cf209896b761542"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-coach_gun.png",
+          "sha256": "e9037207350ec04dec8811a02b6620c07aec100628d9c22eb03ceca791ce85f5"
+        },
+        {
+          "path": "art/icons/gear/weapon-coach_gun--fine.png",
+          "sha256": "3918f0e0dc5ff9c294f83c13db8602f85936e05ebf68a28319323f77fb64ff3d"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-coach_gun--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-coach_gun--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-coach_gun--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-coach_gun--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "a623db1714e72a024198a015ef70a74ecb5a0e9096a30e6f414862f68ff62b95",
+        "128": "f4d0a795323c4ab3478a2d26fd6cff795562aabc5fdc582c460dbd9ed93f4463",
+        "64": "76579c647e7b6a89397a904ea28b7323ea9e0854c98c8e2031363ced5da685e4",
+        "32": "08fb818358141ab1e961ee8093fdf42f7599884d255543380ef4d539242ee925"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-coach_gun",
+      "outline": {
+        "solid_alpha_iou": 0.9634385019000403,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 1,
+        "different_pixels_64": 22
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

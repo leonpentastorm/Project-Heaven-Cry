@@ -49,7 +49,8 @@
     "weapon-crossbow--celestial",
     "weapon-repeating_crossbow--relic",
     "weapon-repeating_crossbow--celestial",
-    "weapon-coach_gun--fine"
+    "weapon-coach_gun--fine",
+    "weapon-coach_gun--masterwork"
   ],
   "remaining": [
     "weapon-short_bow--fine",
@@ -68,7 +69,6 @@
     "weapon-sawn_off--masterwork",
     "weapon-sawn_off--relic",
     "weapon-sawn_off--celestial",
-    "weapon-coach_gun--masterwork",
     "weapon-coach_gun--relic",
     "weapon-coach_gun--celestial",
     "weapon-legion_bullpup--fine",
@@ -93,7 +93,7 @@
       "retry_authorized": true
     }
   ],
-  "updated_utc": "2026-11-21T10:38:18.801122+00:00",
-  "project_distinct_count": 560,
+  "updated_utc": "2026-11-21T10:40:00.156206+00:00",
+  "project_distinct_count": 561,
   "total": 74
 }
