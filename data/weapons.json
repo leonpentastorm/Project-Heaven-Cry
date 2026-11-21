@@ -6060,10 +6060,9 @@
         "single"
       ],
       "ap_cost": {
-        "single": 3,
-        "aimed": 4
+        "single": 2,
+        "aimed": 3
       },
-      "cycle_ap": 1,
       "ammo": "rifle",
       "weight_kg": 6.5,
       "accuracy": 0,
@@ -6563,7 +6562,7 @@
       "form": "long",
       "line": "adcorp",
       "weapon_art": null,
-      "damage": 33,
+      "damage": 34,
       "damage_type": "physical",
       "range_tiles": 22,
       "recoil": 1,
@@ -6750,10 +6749,9 @@
         "single"
       ],
       "ap_cost": {
-        "single": 3,
-        "aimed": 4
+        "single": 2,
+        "aimed": 3
       },
-      "cycle_ap": 1,
       "ammo": "rifle",
       "weight_kg": 5,
       "accuracy": 0,
@@ -6930,10 +6928,9 @@
         "single"
       ],
       "ap_cost": {
-        "single": 3,
-        "aimed": 4
+        "single": 2,
+        "aimed": 3
       },
-      "cycle_ap": 1,
       "ammo": ".50 frontier",
       "weight_kg": 6,
       "accuracy": 0,

@@ -1873,8 +1873,8 @@
     "single"
    ],
    "ap_cost": {
-    "single": 3,
-    "aimed": 4
+    "single": 2,
+    "aimed": 3
    },
    "ammo": "rifle",
    "weight_kg": 6.5,
@@ -1910,7 +1910,6 @@
     "rate": 0.9,
     "mag": "box_mag"
    },
-   "cycle_ap": 1,
    "grants": {
     "name": "Armour-Breaker",
     "text": "Shots ignore {=grants.effect.value} points of the target's armour.",
@@ -2384,7 +2383,7 @@
    "form": "long",
    "line": "adcorp",
    "weapon_art": null,
-   "damage": 33,
+   "damage": 34,
    "damage_type": "physical",
    "range_tiles": 22,
    "recoil": 1,
@@ -2574,8 +2573,8 @@
     "single"
    ],
    "ap_cost": {
-    "single": 3,
-    "aimed": 4
+    "single": 2,
+    "aimed": 3
    },
    "ammo": "rifle",
    "weight_kg": 5,
@@ -2609,7 +2608,6 @@
     "sound": "gun_sniper",
     "mag": "box_mag"
    },
-   "cycle_ap": 1,
    "second_skill": "ingenuity",
    "text": "",
    "lore": "",
@@ -2757,8 +2755,8 @@
     "single"
    ],
    "ap_cost": {
-    "single": 3,
-    "aimed": 4
+    "single": 2,
+    "aimed": 3
    },
    "ammo": ".50 frontier",
    "weight_kg": 6,
@@ -2794,7 +2792,6 @@
     "rate": 0.9,
     "mag": "box_mag"
    },
-   "cycle_ap": 1,
    "second_skill": "brain_power",
    "text": "",
    "lore": "",
