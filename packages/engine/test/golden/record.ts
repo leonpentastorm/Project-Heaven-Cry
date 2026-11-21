@@ -111,7 +111,7 @@ export function recordBuilds(T: Table, variants: string[] = VARIANTS) {
     const g0 = fightOf([built.c, ...(b.id === 'faith' || b.id === 'outburst' || b.id === 'sigil' ? [JSON.parse(JSON.stringify(MATE[L] ||= buildCharacter('plain_gun', 'normal', L).c))] : [])], TIERS.map((tier) => ({ tier })), { level: L, seed: key });
     const u0 = pcs(g0)[0], c = charOf(g0, u0), melee = isMeleeW(u0.weapon), mode = attackMode(u0.weapon);
     T[key + '/sheet'] = W(g0, () => ['weapon ' + u0.weapon + ' x' + r3(A.weaponMult(c, u0.weapon)), 'rarity ' + r3(u0.dmgMult || 1), 'sigil ' + r3(A.sigilMult(c)), 'elemental ' + r3(A.elementalMult(c)), 'soul ' + r3(A.soulMult(c)),
-      'healing ' + r3(A.healingMult(c)), 'blessing ' + r3(A.blessingPower(c)), 'crit ' + r3(A.critMult(c)), 'mend ' + r3(A.mendFactorOf(u0)), 'hp ' + u0.maxHp, 'armour ' + u0.armour, 'def ' + u0.def,
+      'healing ' + r3(A.healingMult(c)), 'blessing ' + r3(A.blessingPower(c)), 'margin ' + r3(A.marginShareOf(c)), 'mend ' + r3(A.mendFactorOf(u0)), 'hp ' + u0.maxHp, 'armour ' + u0.armour, 'def ' + u0.def,
       ...(u0.mg ? ['unit sigil ' + r3(u0.mg.sigilMult ?? 0) + ' elem ' + r3(u0.mg.elemMult ?? 0) + ' soul ' + r3(u0.mg.soulMult ?? 0) + ' heal ' + r3(u0.mg.healMult ?? 0) + ' base ' + (u0.mg.soulBase ?? '')] : [])].join(', '));
     for (const tier of TIERS) {
       const g = clone(g0), u = pcs(g)[0], t = foes(g).find((x) => x.tier === tier)!;

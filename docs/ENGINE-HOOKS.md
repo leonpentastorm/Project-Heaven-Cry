@@ -883,7 +883,7 @@ Families: `body`, `brain`, `heart`.
 | `GRANT_SCOPES` | `GRANT_SCOPES` | Rules 1.33: the surfaces a grant_action's `scope` may name (default: combat and the area map). |
 | `PRAYER_KINDS` | `PRAYER_KINDS` | The prayers a grant_action may be. |
 | `setPrayerDoor` | `setPrayerDoor(p: typeof PRAYER)` | faith.ts's prayer door for a verb that is a prayer (verbPrayerWhy, verbPray). |
-| `holderNumber` | `holderNumber(h: Holder, x: unknown): number \| null` | A number of an action's shape for this holder (rules 1.33: a number block's `skill:<id>`, `res:<id>` and (rules 1.60) `feed:<door>` read the holder: a door's ladder, as Bond's reach 6, 9 from Empathy 6). |
+| `holderNumber` | `holderNumber(h: Holder, x: unknown): number \| null` | A number of an action's shape for this holder (rules 1.33: a number block's `skill:<id>`, `res:<id>`, `res_max:<id>` (rules 1.96: the pool's top) and (rules 1.60) `feed:<door>` read the holder: a door's ladder… |
 | `reachWhy` | `reachWhy(h: Holder, reach: any, t: Unit \| null \| undefined): string \| null` | Why this holder can't aim its action at this unit by its `reach` (null: it can). |
 | `tileReachWhy` | `tileReachWhy(h: Holder, reach: any, tile: string \| null \| undefined): string \| null` | Why this holder can't aim its action at this tile by a reach with `tile: true` (Classes 3.0 step 5, rules 1.31: Sanctuary): within `tiles` of the holder, and (sight) a tile its eyes reach. null: it can. |
 | `defaultActions` | `defaultActions(info: ItemInfo): ActionDef[]` | The default actions of an item, from its data. |

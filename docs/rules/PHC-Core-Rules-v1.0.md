@@ -14943,3 +14943,18 @@ its first, the general pieces (`08-primitives.md` S1, S2, S3, S5, S6, S10, S13 a
       door's Reach, Bite and Push read from its row, its cash-outs on the source), the beta and gamma ladders, the
       classes' own things and rank moves, solo behaviour (ruling 32). Until its lane, a door keeps its 0.33 counter, top
       and cash-out.
+
+#### Rules 1.96 continued (step 2a as built), 0.34 (21 Nov 2026)
+
+8332. **What a rule-less unit reads.** An enemy (a unit with no sheet) rolls Margins at Perception 0: each is 25% of
+      its plain hit (rules.json rolls.margins.per). A hit on a character counts the character's Margins taken (Acuity);
+      a hit on an enemy counts none taken.
+8333. **The screen shows Margins.** The attack and spell lines name the Margins a hit counted ("hit (2 Margins), 31
+      damage"; "CRITICAL (3 Margins)"); the attack card's damage line names what each Margin is worth ("each Margin
+      +29%"). A preview shows the plain hit: the roll's Margins come on top of it.
+8334. **The attack roll may set the Margins** as it may set the hit (the 'attack_roll' hook's `margins`). Numb II takes
+      the Margins of a critical on you while you hold Guard (its row replaces the term `Margins`; it no longer turns the
+      critical into an ordinary hit by the multiplier, which is gone): its card says so.
+8335. **Not tagged yet, for their lanes:** given Edge (Inspire lays it beside the feeling: ruling 41 makes the two one
+      gift, which is Inspire's restatement in step 2d) and the Chaplain's Canticle verses (the song is one gift: step 2d).
+      Until then they stand beside a gift as before.

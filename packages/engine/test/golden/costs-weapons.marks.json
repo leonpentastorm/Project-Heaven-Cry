@@ -783,7 +783,7 @@
 "weapon/throwing_darts/melee/elite": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true uses.skill:dexterity.1>foe-3|per_turn.n0>1 uses.skill:dexterity.1>foe-3|per_turn.s0>t1.3",
 "weapon/throwing_darts/melee/minion": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true uses.skill:dexterity.1>foe-1|per_turn.n0>1 uses.skill:dexterity.1>foe-1|per_turn.s0>t1.3",
 "weapon/throwing_darts/melee/soldier": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true uses.skill:dexterity.1>foe-2|per_turn.n0>1 uses.skill:dexterity.1>foe-2|per_turn.s0>t1.3",
-"weapon/throwing_darts/melee/vermin": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true uses.skill:dexterity.1>foe-0|per_turn.n0>1 uses.skill:dexterity.1>foe-0|per_turn.s0>t1.3",
+"weapon/throwing_darts/melee/vermin": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true",
 "weapon/throwing_javelins/melee/boss": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true uses.skill:dexterity.1>foe-4|per_turn.n0>1 uses.skill:dexterity.1>foe-4|per_turn.s0>t1.3",
 "weapon/throwing_javelins/melee/elite": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true uses.skill:dexterity.1>foe-3|per_turn.n0>1 uses.skill:dexterity.1>foe-3|per_turn.s0>t1.3",
 "weapon/throwing_javelins/melee/minion": "P1 attackedTurn0>true firstShotDone0>true firstShotTurn0>true uses.skill:dexterity.1>foe-1|per_turn.n0>1 uses.skill:dexterity.1>foe-1|per_turn.s0>t1.3",

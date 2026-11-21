@@ -358,7 +358,7 @@
 "tech/hamstring/sabre/elite": "n1 F2 +slowed2 || n1 F2 +slowed2 || n1 F2 +slowed2 || n1 F2 +slowed2 || n1 F2 +slowed2",
 "tech/hamstring/sabre/soldier": "n1 F1 +slowed2 || n1 F1 +slowed2 || n1 F1 +slowed2 || n1 F1 +slowed2 || n1 F1 +slowed2",
 "tech/heavy_bolt/blackpoint_700/elite": "n2  || n2  || n2  || n2  || n2 ",
-"tech/heavy_bolt/blackpoint_700/soldier": "n2  || n2  || n2  || n2  || n2 ",
+"tech/heavy_bolt/blackpoint_700/soldier": "n1  || n1  || n1  || n1  || n1 ",
 "tech/heavy_bolt/core_rifle/elite": "n2  || n2  || n2  || n2  || n2 ",
 "tech/heavy_bolt/core_rifle/soldier": "n2  || n2  || n2  || n2  || n2 ",
 "tech/heavy_bolt/crossbow/elite": "n2  || n2  || n2  || n2  || n2 ",

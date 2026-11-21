@@ -76,6 +76,7 @@ describe('combat screen: Sigils (rules 1.4)', () => {
     expect(tileOf(v, '12,9').zoneStyle).toMatch(/rgba\(5, 7, 11, 0.5\)/); // outside the area: dimmed
     l.magicClick('8,5', pc()); v = l.renderVals();
     expect(l.state.evc.aims).toEqual(['8,5']); expect(v.sel.text).toMatch(/Confirm to Evoke/);
+    (G.combat as any).units.find((x: any) => x.id === e.id).marginsTaken = -99; // rules 1.96: the screen promises the plain hit; the roll's Margins come on top of it
     const hp0 = e.hp; l.confirm();
     const after = (G.combat as any).units.find((x: any) => x.id === e.id);
     expect(hp0 - after.hp).toBe(two);

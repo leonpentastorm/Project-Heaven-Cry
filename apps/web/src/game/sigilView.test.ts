@@ -118,6 +118,7 @@ describe('Evoke (spec 9.3–9.8)', () => {
     v = evokeView(cb, u, '2,5', k.choice!);
     expect(v.ok).toBe(true); expect(v.payload).toEqual({ tile: '2,5', aim: '8,5' });
     // what the screen promised is what the engine does
+    e.marginsTaken = -99; // rules 1.96: the screen promises the plain hit; the roll's Margins come on top of it (tested in the engine)
     const hp0 = e.hp; expect(evoke(cb, rng, u, '2,5', '8,5')).toBeNull(); expect(hp0 - e.hp).toBe(two);
   });
   it('a bolt stopped by a creature on the way shows the stop; burst tiles and the CONDENSE core', () => {
