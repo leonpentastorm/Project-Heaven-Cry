@@ -1,7 +1,7 @@
 {
-  "selected": 552,
+  "selected": 553,
   "requested": 871,
-  "remaining": 319,
+  "remaining": 318,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 397,
+      "selected": 398,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 259,
+    "grade": 258,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 55,
+    "service-blocked-or-preceding-grade-dependent": 54,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -2097,14 +2097,6 @@
       "eligible_for_retry": false
     },
     {
-      "id": "weapon-crossbow--relic",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-crossbow--relic.png",
-      "standard": "weapon-crossbow",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
       "id": "weapon-crossbow--celestial",
       "kind": "grade",
       "path": "art/icons/gear/weapon-crossbow--celestial.png",
@@ -2647,7 +2639,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-crossbow--masterwork",
+  "last_delivered": "weapon-crossbow--relic",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

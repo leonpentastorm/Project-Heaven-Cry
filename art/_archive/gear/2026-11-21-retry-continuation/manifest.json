@@ -2523,6 +2523,68 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-crossbow--relic",
+      "path": "art/icons/gear/weapon-crossbow--relic.png",
+      "sha256": "92634f743d9f5079497be0ffe4254e150e4ae38e0b77661d3dfc608f6775f626",
+      "label": "Crossbow — Relic",
+      "family": "weapon-crossbow",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-crossbow--relic.png",
+        "sha256": "36f89f300139505aa64c3bee5f4ec843e1929e3532011a06d8b14a99857893fd"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-crossbow--relic.png",
+        "sha256": "92634f743d9f5079497be0ffe4254e150e4ae38e0b77661d3dfc608f6775f626"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-crossbow--relic.txt",
+        "sha256": "0bd96f84eff9cb8bdef5d67b9fa8c98befb8aa020929d004a36e5615944ced9c"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-crossbow.png",
+          "sha256": "213cb5ab37c7cb73072531cdfee190b207be460536998eab66a0355f5dd1ff5b"
+        },
+        {
+          "path": "art/icons/gear/weapon-crossbow--masterwork.png",
+          "sha256": "821367b46b7e72052477b7b8e7d013da41f55063c0e6e68063cb5ad8139c2ad1"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-crossbow--relic.png",
+        "128": "art/icons/gear/exports/128/weapon-crossbow--relic.png",
+        "64": "art/icons/gear/exports/64/weapon-crossbow--relic.png",
+        "32": "art/icons/gear/exports/32/weapon-crossbow--relic.png"
+      },
+      "export_hashes": {
+        "256": "63cb4468e03c391e76e502130c52ba766511cc846096d8f5d23d818b0cff89ba",
+        "128": "9c438fa0916c24dc3d94bf0eafb8168521a56ab6ee0c177e5d8fbb8bf47ba5a2",
+        "64": "b991c2e8ef0718a27bf8b64e42e4e73fbcedd3105de8efc1ebe06bc2fcfbc97f",
+        "32": "6d9000871f6f199573dfafd826e838b6740dd7e77f4fdca575b49ecd3c035ed8"
+      },
+      "grade": "relic",
+      "standard_id": "weapon-crossbow",
+      "outline": {
+        "solid_alpha_iou": 0.9042598453795465,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 16,
+        "different_pixels_64": 82
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }
