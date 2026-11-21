@@ -1,7 +1,7 @@
 {
-  "selected": 575,
+  "selected": 576,
   "requested": 871,
-  "remaining": 296,
+  "remaining": 295,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 415,
+      "selected": 416,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 241,
+    "grade": 240,
     "unique": 4
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 37,
+    "service-blocked-or-preceding-grade-dependent": 36,
     "awaits-missing-requested-standard": 208
   },
   "live_claims": "https://github.com/leonpentastorm/Project-Heaven-Cry/issues/3",
@@ -660,14 +660,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-whisper_smg--celestial.png",
       "standard": "weapon-whisper_smg",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-service_pistol--masterwork",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-service_pistol--masterwork.png",
-      "standard": "weapon-service_pistol",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2462,7 +2454,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-lever_carbine--fine",
+  "last_delivered": "weapon-service_pistol--masterwork",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {

@@ -3631,6 +3631,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-service_pistol--masterwork",
+      "path": "art/icons/gear/weapon-service_pistol--masterwork.png",
+      "sha256": "5a2cc0bf54808798d6cf7a17346d2b3f4c69d33c2dc7ceca9d0a118924dc7640",
+      "label": "Service pistol repaint — Masterwork",
+      "family": "weapon-service_pistol",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-service_pistol--masterwork.png",
+        "sha256": "17b1d516a1c883c5ef5bcc4e17d79545a83a0af07b9d42292a109afda32c343c"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-service_pistol--masterwork.png",
+        "sha256": "5a2cc0bf54808798d6cf7a17346d2b3f4c69d33c2dc7ceca9d0a118924dc7640"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-service_pistol--masterwork.txt",
+        "sha256": "4d120c9229ba41fe30fc72c0b1279a2bb804631d88af759a396518950b5dd44c"
+      },
+      "references": [
+        {
+          "path": "art/_archive/gear/2026-11-21-retry-continuation/references/packed/weapon-service_pistol--masterwork.png",
+          "sha256": "7e03f7cd97204a7891f3f57b5ff4c388e841463f604bee696fc51027d214e654"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/icons/gear/weapon-service_pistol.png",
+          "sha256": "736165f625402f56f11f08dcf55b99db85b69f52474951d26b38b5292145b181"
+        },
+        {
+          "path": "art/icons/gear/weapon-service_pistol--fine.png",
+          "sha256": "0278aa7951e7a5b4bb3e8f01bffa4fe2dca41f3a45e47d960ff4523e7e1ebf95"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-service_pistol--masterwork.png",
+        "128": "art/icons/gear/exports/128/weapon-service_pistol--masterwork.png",
+        "64": "art/icons/gear/exports/64/weapon-service_pistol--masterwork.png",
+        "32": "art/icons/gear/exports/32/weapon-service_pistol--masterwork.png"
+      },
+      "export_hashes": {
+        "256": "50572102fb47053ecb6ab30326a03814653f6995e8cdfc526fd3f81143d2165b",
+        "128": "dcf51d21b6bd547b35a0501f267ddeb987cded29b40121ef6d8f10c7ccb9e05e",
+        "64": "d56bde24bbcb2d51f1c32e3633fd76428ec70fe67e5d335dd98f613e8ece3269",
+        "32": "5ed82bf189924a7d178ee7b52538a7c3014177a758c536b720597941a94168d3"
+      },
+      "grade": "masterwork",
+      "standard_id": "weapon-service_pistol",
+      "outline": {
+        "solid_alpha_iou": 0.973521003078489,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 6,
+        "different_pixels_64": 19
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

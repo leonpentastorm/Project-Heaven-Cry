@@ -1,0 +1,9 @@
+{
+  "id": "weapon-service_pistol--masterwork",
+  "selected_for_delivery": true,
+  "status": "review-candidate",
+  "production_approved": false,
+  "implementation_ready": false,
+  "visual_review": "Native inspected against technical pair containing unchanged Standard and Fine originals: one complete right-facing pistol, same three rear cuts, dark muzzle/side opening, two grip pins, original trigger/guard and lower frame. Fine contour now one continuous narrow steel-blue inlay; same-blue grip appears finer polished lacquer, existing fittings/pins/trigger polished brass/steel, clean unmarked surfaces. No ornament or repair. Actual paired reference and both original source paths/hashes retained in manifest; no exact-outline or artistic approval claimed, measured drift remains review-required.",
+  "source_path": "art/_archive/gear/2026-11-21-retry-continuation/attempts/weapon-service_pistol--masterwork/006/native.png"
+}
