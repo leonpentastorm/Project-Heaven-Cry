@@ -3213,7 +3213,7 @@ Ruled by Leon on 11 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md` se
 
 ### The targets
 
-1. **Sigil is the biggest single hit in the game.** A full Line (4 glyphs) Evoked lands at **150% to 200%** of what the plain rifle deals over the turns the Line took. Shorter Lines sit lower: a 2-glyph Line cast every turn is about on par with the rifle, 3 glyphs between the two.
+1. **Sigil is the biggest single hit in the game.** *(Withdrawn as a limit by rules 1.94.)* A full Line (4 glyphs) Evoked lands at **150% to 200%** of what the plain rifle deals over the turns the Line took. Shorter Lines sit lower: a 2-glyph Line cast every turn is about on par with the rifle, 3 glyphs between the two.
 2. **An Elite and a Boss are never taken out by one Evoke at equal level.**
 3. **Outburst is the steady school:** about **125%** of the plain rifle in normal play, about **150%** with the biggest Pump possible.
 4. **No feeling is a worse Pump than a plain one.** A Pump with a feeling is better than a plain Pump in one clear way, and what it costs is in proportion.
@@ -3228,7 +3228,7 @@ Ruled by Leon on 11 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md` se
 | Damage | ×1.7 | ×1.75 | ×1.8 |
 
    It multiplies with everything in "Grammar and cost" item 6 (the Subjects' sum × Reach × Burst × Delivery × 0.9 a repeated glyph × the Sigil and Elemental multipliers × a critical). It is damage only: healing, shields, ranges, rounds and the numbers of conditions are not changed. A field, a turret and a trap carry it (they are the same words). **Only characters and the units that fight for them** (a companion, a twin) get it: an enemy caster's damage comes from the enemy table (rules 1.15) and is not changed by this revision.
-2. **No ceiling.** The limit of 350 a hit and 500 on a critical inside Sigil magic (item 590) is gone. They are the targets the maths is balanced around (Leon's ruling 3 of the balance pass), and the full Line is the Mage's peak move, which may pass them.
+2. **No ceiling.** The limit of 350 a hit and 500 on a critical inside Sigil magic (item 590) is gone. They are the targets the maths is balanced around (Leon's ruling 3 of the balance pass), and the full Line is the Mage's peak move, which may pass them. *(Withdrawn as a limit by rules 1.94.)*
 3. **A critical is ×1.5, to ×2.0 at most:** the weapon's rule (rules 1.15, Critical hits), read from the caster's own sheet (Perception +3% a point above 1, Dexterity +2% a point, perks and gear), cut by the target's Critical damage taken. An enemy caster's critical is ×1.5. It was ×2.
 4. **The level gap.** A spell's roll to hit gets +1 for each level the caster is above an enemy and −1 for each level below, to 5 levels, like a weapon attack. Saves still do not read the gap.
 5. **Elites and Bosses.** One Evoke never takes an Elite or a Boss **at or above the caster's level** from **full HP** to nothing: it is left on 1 HP, and the log says so. Every missile and chain jump of that Evoke is held by it. An Elite or Boss that is already hurt, or below the caster's level, or hit by a field, a turret or a trap, has no such guard. It is for characters' spells only. *(12 Nov 2026: this is now one rule for every action, not only an Evoke: rules 1.15, "The level gap", point 4.)*
@@ -3305,15 +3305,17 @@ Sigil's AP (the Glyph AP, the walk between glyphs, the core change), the words' 
 
 ## Rules revision 1.18 (balance pass, the guns step): the guns' ceiling
 
+*(The ceilings, lines and targets of this revision are withdrawn as limits by rules 1.94; its rules and numbers stand.)*
+
 Ruled by Leon on 11 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md`, section 12 answers 1 to 3 and the closing ruling); measured and fitted with the simulator (`packages/engine/test/balance/guns-measure.test.ts`); the report is `docs/design/handoffs/damage-step-guns.md`. **Every number here is provisional** (section 14, items 1069 to 1088). The yardstick for every percentage is the plain rifle (service rifle, standard, plain shots, a normal share of points, no perks) at the same level on the simulator's shooting range, over the same 8 turns. Where this section and an older one disagree (Actions, the weapon tables, Physical techniques), this section wins.
 
 ### The targets
 
-1. **An optimised gun deals a bit under 150% of the plain rifle.** Optimised is Leon's definition: the best rotation of techniques, a Masterwork weapon, the build's perks and its class. The aim is 135 to 148% from level 6.
+1. **An optimised gun deals a bit under 150% of the plain rifle.** *(Withdrawn as a limit by rules 1.94.)* Optimised is Leon's definition: the best rotation of techniques, a Masterwork weapon, the build's perks and its class. The aim is 135 to 148% from level 6.
 2. **A gun whose price is its ammunition may reach the full 150%.** That is a gun whose round costs 40 credits or more: the .700 Blackpoint, the thumper, the flamer, the breacher tube (a rifle round costs 2).
 3. **A technique beats the plain Shot for its AP by 10 to 25% when its condition is met; a Burst deals more than the Shot for its AP and is worse to hit** (answers 2 and 3).
 4. **The plain rifle does not move, and neither does what enemies deal** (the enemy table of rules 1.15).
-5. Guns end below a full Sigil Line (150 to 200%, rules 1.17) and level with the biggest Outburst (150%). *(Rules 1.19 (item 1222): the Outburst is about 135% steady and 165% at its biggest.)*
+5. Guns end below a full Sigil Line (150 to 200%, rules 1.17) and level with the biggest Outburst (150%). *(Withdrawn as a limit by rules 1.94.)* *(Rules 1.19 (item 1222): the Outburst is about 135% steady and 165% at its biggest.)*
 
 ### What made 170 to 224%
 
@@ -3370,14 +3372,14 @@ At 65% to hit, a Burst is worth about 1.7 Shots for the AP of 1.5: +13% for its 
 | Decrkm auto-pistol | 14 | **17** | the same |
 | Brigade auto-shotgun | 35 within 4 tiles, 20 within 8 | **40, 24** | the same |
 
-No rifle that fires a Shot for 2 AP deals more than 33. No automatic sidearm out-hits the service pistol (20) with a plain shot. Not changed: the service rifle (30), the lever carbine (32), the bullpup (28), the machine gun (25), the rotary (22), every pistol, revolver, shotgun, bow, launcher and thrown weapon.
+No rifle that fires a Shot for 2 AP deals more than 33. *(Withdrawn as a limit by rules 1.94.)* No automatic sidearm out-hits the service pistol (20) with a plain shot. *(Withdrawn as a limit by rules 1.94.)* Not changed: the service rifle (30), the lever carbine (32), the bullpup (28), the machine gun (25), the rotary (22), every pistol, revolver, shotgun, bow, launcher and thrown weapon.
 
 ### Not changed, on purpose
 
-1. **Masterwork** (+2 to hit, +10% damage): it is the largest single piece of the ceiling and the same rule for blades.
+1. **Masterwork** (+2 to hit, +10% damage): it is the largest single piece of the ceiling and the same rule for blades. *(Withdrawn as a limit by rules 1.94.)*
 2. **Fire Discipline** (one Burst a turn for 2 AP), **Speed Loader**, **Dead Centre** (+50%, a Pressed target, one Take a turn): with a two-roll Burst they add up to what the target allows.
 3. **Heat and jams.** Clearing a jam still sets Heat to 0 for 2 AP.
-4. **Melee.** The optimised blade measures 112 to 126% of the plain rifle (target: 150%).
+4. **Melee.** The optimised blade measures 112 to 126% of the plain rifle (target: 150%). *(Withdrawn as a limit by rules 1.94.)*
 5. **Special rounds** (armour-piercing, hollow-point, incendiary, Enhanced): not measured in this step.
 
 ### Measured
@@ -3406,7 +3408,7 @@ This revision replaces, in rules 1.5, 1.8 and 1.17: the stage table, the Damage 
 ### 1. A plain Pump is +0.2
 
 1. **The stage table** is ×0.8 at stage 0 and **+0.2 for every stage: ×0.8, ×1.0, ×1.2, ×1.4, ×1.6.** (Rules 1.17: +0.4 a stage, to ×2.4.) A snap cast stays ×0.8.
-2. **The Damage school's base is 40** for a character (28 in rules 1.17; it was 36 when this revision was first fitted, to 125% steady and 150% at the peak. Leon, 12 Nov 2026: with the best gun at about 145% every turn the Outburst felt weak, so steady play goes to about 135% and the biggest Release to about 165%; item 1222). An enemy caster's is **24** (18), so its Outbursts deal about what the enemy table was fitted with: stage 0: 19 (was 14), stage 1: 24 (22), stage 2: 29 (29), stage 3: 34 (36), stage 4: 38 (43), before its Soul multiplier.
+2. **The Damage school's base is 40** for a character (28 in rules 1.17; it was 36 when this revision was first fitted, to 125% steady and 150% at the peak. Leon, 12 Nov 2026: with the best gun at about 145% every turn the Outburst felt weak, so steady play goes to about 135% and the biggest Release to about 165%; *(Withdrawn as a limit by rules 1.94.)* item 1222). An enemy caster's is **24** (18), so its Outbursts deal about what the enemy table was fitted with: stage 0: 19 (was 14), stage 1: 24 (22), stage 2: 29 (29), stage 3: 34 (36), stage 4: 38 (43), before its Soul multiplier.
 3. A feeling poured into a Pump has **its own step in place of the plain +0.2**. The Release's multiplier is the table's, plus (step − 0.2) for each feeling Pump. Stages from the swell, Feeding, Overdraw and Heart Surge are plain.
 4. Heart Surge past stage 4 reads one more step of the table: ×1.8 (×2.8 in rules 1.17). The Buff school's heal reads the table as before (30 × the multiplier; its base is not raised): at stage 1 it heals 30, what it healed before rules 1.17 (36 in rules 1.17); at stage 4 with plain Pumps 48 (72), and with Rage and three +0.3 feelings 66 (81). Rules 1.17 had raised healing 9 to 20% as a side effect of its table; this gives that back (item 1204). *(Superseded by rules 1.60 item 4634.)*
 
@@ -3718,7 +3720,7 @@ Built on 12 Nov 2026 from Leon's question ("I also see nothing listed on Faith y
 
 **Superseded in part by rules 1.22** (the next section): the Hymn is no longer prayed every turn, the target is Leon's later one (a Whisper-only turn about 80% of the plain rifle, a Hymn turn about 125%), and Rebuke, Judgement and Lightning Rod have new numbers. What follows is the 1.21 record.
 
-**The target** is Leon's ruling of 12 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md`, section 16): the Outburst is steady at about 135% of the plain rifle and about 165% at its peak, and a prayer-led build is about level with it. (The step was first fitted to the Outburst's earlier 125% and 150%; that fit is kept in the report, section 4, and is four numbers away.)
+**The target** is Leon's ruling of 12 Nov 2026 (`docs/design/proposals/2026-11-balance-pass.md`, section 16): *(Withdrawn as a limit by rules 1.94.)* the Outburst is steady at about 135% of the plain rifle and about 165% at its peak, and a prayer-led build is about level with it. (The step was first fitted to the Outburst's earlier 125% and 150%; that fit is kept in the report, section 4, and is four numbers away.)
 
 ### 1. What was found
 
@@ -3779,7 +3781,7 @@ Damage a turn as a percent of the plain rifle's (normal share, same level), on t
 | All in: Old Overcast | 107% | 94% | 139% | 142% | 124% | 150% |
 | All in: Nerukhan | 54% | 49% | 137% | 142% | 122% | 149% |
 
-1. **Target: steady play about 135% (the Outburst's), the Hymn's peak about 165%.** From Devotion 5 (about session 4) Old Overcast is at 127 to 143% on one enemy (135% on average over the four levels) and 159 to 177% when the chain has a second (167%); Nerukhan at 127 to 144% (135%), and by arithmetic 152 to 171% against an enemy that harmed the helpless (Judgement ×1.3; not run in the simulator).
+1. **Target: steady play about 135% (the Outburst's), the Hymn's peak about 165%.** *(Withdrawn as a limit by rules 1.94.)* From Devotion 5 (about session 4) Old Overcast is at 127 to 143% on one enemy (135% on average over the four levels) and 159 to 177% when the chain has a second (167%); Nerukhan at 127 to 144% (135%), and by arithmetic 152 to 171% against an enemy that harmed the helpless (Judgement ×1.3; not run in the simulator).
 2. **Not met at Devotion 3** (levels 1 to about 5): Old Overcast 89 to 91% on one enemy, about 100% on two; every other patron is under the rifle in damage. A new devotee's first Hymn is a small one.
 3. **The six patrons with no damage Hymn** deal 41 to 93% of a rifle while they pray a support Hymn every turn. What the Hymn is worth is not something the simulator counts; the report prices each one (estimates).
 4. **The gunner who dabbles** (the plain rifleman given Faith 3 and Devotion 3 for nothing, 40 fights a cell): with 6 AP he has no AP for a Whisper after three shots, and trading a shot for prayers costs him damage (Whisper first: 108 / 96 / 86 / 99 / 90 / 89% against his own 107 / 96 / 90 / 109 / 105 / 106% with the rifle alone). What he gains is Rebuke on a turn that leaves 1 AP over (after a step, say): 20 damage, about a quarter of a rifle's turn at level 1 and a sixth at level 12, since his Faith stays 3.
@@ -3847,7 +3849,7 @@ One Whisper a turn, 1 AP, for anyone with Faith 3, as before.
 
 ### 4. The Hymns, refitted to the cooldown
 
-Leon's target is a turn with a Hymn at about 125% of the plain rifle, without items.
+Leon's target is a turn with a Hymn at about 125% of the plain rifle, without items. *(Withdrawn as a limit by rules 1.94.)*
 
 | Prayer | Rules 1.21 or 1.20 | Rules 1.22 |
 |---|---|---|
@@ -4182,6 +4184,8 @@ Chosen so the rules 1.15 and 1.23 measurements come back without changing the ta
 
 ## Rules revision 1.26 (the re-fit): every ceiling is what an all-in build reaches; skill buys accuracy, level buys damage
 
+*(The ceilings, lines and targets of this revision are withdrawn as limits by rules 1.94; its rules and numbers stand.)*
+
 > **Superseded in part by rules 1.36** (the level scale): the `deal` column (item 1703) is 7.5^((level − 1)/19), and everything measured in HP is × `scale`; every ratio of this revision (its ceilings in percent of a rifle-turn, its tolerances) stands unchanged.
 
 
@@ -4205,6 +4209,8 @@ Built on 12 Nov 2026, stage (b) of `docs/design/proposals/2026-11-unified-damage
 
 ### 2. Each system's dial, and where it now sits
 
+*(The ceilings, lines and targets of this revision are withdrawn as limits by rules 1.94; its rules and numbers stand.)*
+
 | System | Ceiling (all in) | Its dial in data | Was | Now |
 |---|---|---|---|---|
 | Plain rifle | 125% all in (100% normal share by definition) | `output.profiles.weapon.k` × `output.level.deal` | slopes 0.1 / 0.05 | k 1.5, no slope, the deal column |
@@ -4216,7 +4222,7 @@ Built on 12 Nov 2026, stage (b) of `docs/design/proposals/2026-11-unified-damage
 | A healer's turn | 1.25 Soldier-turns | `output.profiles.healing.k` (and `mend`) | 1 + 0.1 (Insight − 1) + 0.1 Empathy | 0.87 × (1 + 0.06 (Insight − 1) + 0.06 Empathy) | *(Superseded by rules 1.27: 2.0 Soldier-turns all in; Healing given 1.392 × (…))*
 | Grenades and charges a character throws or sets | the budget rule (section 4) | `output.factors.thrown`: consumables only | ×1 | **×0.7** |
 
-**One constant per system, no ladder** (a call made for Leon, item 1712): the all-in measure averages on its ceiling over levels 1, 5, 10 and 20 within ±12%, and no level is more than 25% off. All in is a little over early and a little under late, because the all-in build's head start is accuracy, which the normal build catches by level 13. The ladder the proposal preferred (class rank III and the Mastered perk carrying the last 25%) needs those moves designed and measured first (PATCH-TALLY 10, row 5).
+**One constant per system, no ladder** (a call made for Leon, item 1712): the all-in measure averages on its ceiling over levels 1, 5, 10 and 20 within ±12%, and no level is more than 25% off. *(Withdrawn as a limit by rules 1.94.)* All in is a little over early and a little under late, because the all-in build's head start is accuracy, which the normal build catches by level 13. The ladder the proposal preferred (class rank III and the Mastered perk carrying the last 25%) needs those moves designed and measured first (PATCH-TALLY 10, row 5).
 
 ### 3. Flat things grow with level
 
@@ -4238,7 +4244,7 @@ A grenade, a blast's splash, a charge, a trap, a hazard, a barrel, and the ticks
 
 1. Rarity's numbers moved from `character.ts` into `data/rules.json rarity` (the table in Weapons v2, Rarity, now reads: Masterwork **+2 accuracy, +50% durability, +1 mod slot**; the +10% damage is gone).
 2. The enemy AI's estimate of a field's bite (ai-sigil.ts `biteOf`) counts the owner's Line multiplier and Level term, as the engine deals it; it left the Line out, so a field that kills was read as one that nearly does.
-3. The balance contract and its guard (`npm run check`).
+3. The balance contract and its guard (`npm run check`). *(Withdrawn as a limit by rules 1.94.)*
 
 ## Rules revision 1.27 (the heal re-fit): a healer's turn is worth two Soldier-turns, and the untrained have a floor
 
@@ -4254,7 +4260,7 @@ Built on 12 Nov 2026 from Leon's report on live 0.23.0 ("a recruit at level 0 so
 
 ### 2. The ruling
 
-1. **A healer's turn, all in, is worth 2.0 Soldier-turns** (it was 1.25); a normal share 1.6 (the ratio of 1.25 stays). `data/rules.json balance.ceilings.healer_turn.allin` **200**.
+1. **A healer's turn, all in, is worth 2.0 Soldier-turns** (it was 1.25); a normal share 1.6 (the ratio of 1.25 stays). `data/rules.json balance.ceilings.healer_turn.allin` **200**. *(Withdrawn as a limit by rules 1.94.)*
 2. **Every heal and every shield** that goes through the heal and shield profiles was scaled by 2.0 ÷ 1.25 = **×1.6** by its dial (`output.profiles`) and re-measured (`test/balance/heal-measure.ts`); each dial was trimmed so its system's all-in average over levels 1, 5, 10 and 20 sits on 200, each level within the contract's ±25%:
 
 | Dial | Was | ×1.6 | Now | What it moves | All in, levels 1 / 5 / 10 / 20 (percent of a Soldier-turn) |
@@ -4557,7 +4563,7 @@ Sanctuary's MP, Strain, once a scene and Soul cast (its handler; its story half 
 
 ### 5. The balance line
 
-The Chaplain's own line is **125% of a rifle-turn all in** (`rules.json balance.ceilings.chaplain_turn`; Leon). The
+The Chaplain's own line is **125% of a rifle-turn all in** (`rules.json balance.ceilings.chaplain_turn`; Leon). *(Withdrawn as a limit by rules 1.94.)* The
 measured table is in `docs/design/handoffs/classes-3.0-step-5.md`. Shield sizes (Ward 10, Sanctuary's 11) are step 7b's
 to re-fit through `amounts.ward.base` and `amounts.sanctuary_cap.base` (Faith's shield is to be the strongest: Leon).
 
@@ -4655,7 +4661,7 @@ last-seen tile is the 0.25.0 rule, unchanged.
 
 ### 6. Balance
 
-The line: **a three-turn window with one Break, the Operative all in = 125%** of a rifle-turn (the door all in
+The line: **a three-turn window with one Break, the Operative all in = 125%** *(Withdrawn as a limit by rules 1.94.)* of a rifle-turn (the door all in
 125 ÷ 1.15 = 109, the door at a normal share 87; `rules.json balance.ceilings.shadow`). The dial is
 `rules.json shadow.per_point`, fitted only after measuring (not refitted in this step). Items 1962 to 1965.
 
@@ -4788,7 +4794,7 @@ you first) is the enemy step's (Classes 3.0 step 9). Item 2038.
 
 ### 8. Balance lines
 
-`balance.ceilings.tending_turn` 200 (the Mender's healing turn in Soldier-turns × 100; dial `output.profiles.tend.k`),
+`balance.ceilings.tending_turn` 200 *(Withdrawn as a limit by rules 1.94.)* (the Mender's healing turn in Soldier-turns × 100; dial `output.profiles.tend.k`),
 `mender_offence` 70 and `mender_window` 100 (percent of a rifle-turn; dials `bond.per_bond`, the Ledger's factor).
 Measured in the step 7 hand-off, not refitted here. Items 2039 to 2041.
 ## Rules revision 1.34: Figments, the Visualizer and the Rigger (Classes 3.0, step 8)
@@ -4896,7 +4902,7 @@ Leave the class (keys kept in the move pool, shelved): Silver Tongue, Blind and 
 
 ### 6. The balance line
 
-`rules.json balance.ceilings.figments`: the Rigger all in **150** (two Figments), the door all in 130, at a normal share
+`rules.json balance.ceilings.figments`: the Rigger all in **150** (two Figments) *(Withdrawn as a limit by rules 1.94.)*, the door all in 130, at a normal share
 104; the Rigger at a normal share 120. Dial: `output.factors.figment` (0.9), then `figments.json level.hp`. Measured in
 `docs/design/handoffs/classes-3.0-step-8.md`.
 
@@ -4978,7 +4984,7 @@ is `docs/design/handoffs/classes-3.0-step-7b.md`.
 2. **The heal Level term** is its own column, `output.level.mend` = M(L) × scale(L) (M keeps an all-in heal turn on
    the same percent at every level: 1 at level 1, 1.51 at 5, 2.53 at 10, 11.97 at 20); it no longer reads the enemy
    table.
-3. **The lines, all in** (`rules.json balance`): the Mender's turn through Bonds 65 (a door user about 59); an
+3. **The lines, all in** (`rules.json balance`) *(Withdrawn as a limit by rules 1.94.)*: the Mender's turn through Bonds 65 (a door user about 59); an
    off-heal (the Outburst's Buff school, steady; a Sigil MEND Line of three glyphs) 45; a Whisper 15; a Hymn's turn 65
    at most, about 45 averaged over its wait.
 4. **The gate:** every heal and shield action gives at least a share of its target's max HP, counted up to 145 ×
@@ -5117,7 +5123,7 @@ PROVISIONAL (items 2500 onward).
    for each Bond held, anyone with an Attuner in hand): the Mender all in measured 79 solo and 84 in a squad against its
    line of 70 (rules 1.33), and measures 68 and 71 after (8 fights a cell for the yardstick). The door user all in
    measures 67 (its line 61, +10%: the door and the class differ only by the Mender's moves, which the steady line does
-   not use). The balance contract's guard now holds the Mender's healing turn, the door's Tending turn and the Mender's
+   not use). *(Withdrawn as a limit by rules 1.94.)* The balance contract's guard now holds the Mender's healing turn, the door's Tending turn and the Mender's
    offence (`balance.ceilings.tending_turn`, `mender_offence`).
 4. **Classes 3.0 measured** (levels 1, 5, 10, 20, all in; the table in `docs/design/balance-contract.md` section 3 and
    the step 11 hand-off). On their lines: the plain rifle, the best gun (the Skirmisher, 159 against 145), melee, the
@@ -6189,7 +6195,7 @@ as a reward pick, and mods moved into data, are 0.29).
    a run, in words. A quiver's enchantment keeps its free fit (rules 1.53). Buying a mod at the Forge puts it in the
    pack as before; fitting it is the second step. A campaign and the Proving Ground keep the free fit. Not yet covered:
    the extra slot of Gun Nut, Blade Recluse and Overhaul (`extra_mod`) is still fitted free (0.29).
-17. **The mod ceiling (rules 1.18), measured, not changed.** The red dot on the Frontier hand cannon (151 / 156% of the
+17. **The mod ceiling (rules 1.18), measured, not changed.** *(Withdrawn as a limit by rules 1.94.)* The red dot on the Frontier hand cannon (151 / 156% of the
    plain rifle at levels 6 / 12; with Gun Nut and both optics 161 / 160) and the red dot and extended magazine on the
    Brigade auto-shotgun (150 at level 6) pass the 145% ceiling. The numbers that do it (the red dot's band, the extended
    magazine's +50%) are typed in engine code, not data, so they are left for 0.29, when mods move into data.
@@ -6662,7 +6668,7 @@ Leon (15 Nov 2026): *"revamp all perks in the alpha section, make sure those 2 p
 
 **Rulings.**
 1. **Saves keep the ids** (Leon). Every alpha perk keeps its id and a held step keeps its tier; a character holding an old perk holds the new one. There is no re-pick.
-2. **Perk steps sit on top of a class's damage line** (Leon). No class or perk is trimmed to fit under a ceiling. The balance contract (`rules.json balance`) holds the line, so it measures its builds with no perk steps.
+2. **Perk steps sit on top of a class's damage line** (Leon). No class or perk is trimmed to fit under a ceiling. The balance contract (`rules.json balance`) holds the line, so it measures its builds with no perk steps. *(Withdrawn as a limit by rules 1.94.)*
 3. **The Mender's damage for each Bond stays** (Leon).
 4. **The old effects are dropped** (the lead) and listed in `docs/design/move-pool.md`: Stonewall's cover, Shrug It Off's cleanse, Breaching Strike's wall-slam, Iron Grip's redirect and drag, Both Hands, Running Reload, Sleight of Hand's plant, Shadow Step's cover-to-cover move and stay-Hidden roll, Hold the Stroke's ground cap, Parallel Thought, Mirage's projections, Blueprint, Shared Breath, Lay Down Arms, Heart Overload's free Begin (a candidate Channeler rank move), Litany's ally saves, Holy Ordnance (a future Relic property).
 5. **No perk asks the Narrator anything** (`adjudication: engine` on all 18).
@@ -6693,7 +6699,7 @@ Leon (15 Nov 2026): *"revamp all perks in the alpha section, make sure those 2 p
 26. **Unbroken Litany** (`litany`, Faith): your first Hymn or Miracle each fight costs 1 AP less (a Whisper does not spend it); II: and the wait between your Hymns is 1 round shorter (never under the floor rules 1.22 sets for items).
 27. **Solid Image** (Visualization's Mastered perk), reworded onto Glimmer (the lead, 16 Nov 2026): once a fight, for 0 AP, your Glimmer becomes a real Double until your next turn starts, at no charge (outside the held count, no upkeep; made through the one door that makes a Figment). The enemies the Glimmer fooled stay fooled, and their blows now land on its body. It keeps the old perk's shape and limits (once a fight, free, until your next turn starts); Mirage's wall half went with Mirage. The form and the rounds are fields of its effect (`perks.json solid_image`).
 28. **The 15.7 rule (no alpha gives or takes AP inside a turn) is retired for the alpha perks** (the lead, 16 Nov 2026): Leon's order is that both alpha perks of a skill serve its door's damage, and one of the two is a tempo lever (item 4 of the design: "one damage lever and one tempo or resource lever"). Wake of the Kill's 1 AP on a Figment's kill (once a turn) is accepted as designed. The betas and the unlocks keep 15.7.
-29. **The Outburst's level-5 peak band** (lead's ruling of 16 Nov 2026, PROVISIONAL): the Outburst's level-5 peak sits about 2 percent over its band because one base dial cannot put both the steady turn and the peak on their lines. The damage base stays 37 (36 drops the steady turn under its band), and the peak's per-level top is 212, not 206 (`rules.json balance.ceilings.outburst_peak.level_hi`); to be refitted with the feelings' steps in the Balance 2.0 number pass. Begin's AP and the stage table are unchanged (section 14, item 4231).
+29. **The Outburst's level-5 peak band** *(Withdrawn as a limit by rules 1.94.)* (lead's ruling of 16 Nov 2026, PROVISIONAL): the Outburst's level-5 peak sits about 2 percent over its band because one base dial cannot put both the steady turn and the peak on their lines. The damage base stays 37 (36 drops the steady turn under its band), and the peak's per-level top is 212, not 206 (`rules.json balance.ceilings.outburst_peak.level_hi`); to be refitted with the feelings' steps in the Balance 2.0 number pass. Begin's AP and the stage table are unchanged (section 14, item 4231).
 
 ## Rules 1.56 (Balance 2.0), Bonds 2.0 slice 1
 
@@ -7269,7 +7275,7 @@ Leon (16 Nov 2026): *"the balance number i laid out was always about how much a 
 
 1. **R1, the yardstick is pinned.** The balance yardstick (100%) is the plain rifle at a normal share (the simulator's `plain_gun`, normal) with its shot read at the gun profile's **pin**: the profile at Attribute 7, the creation ceiling, where the gun profile equals the flat weapon profile's x1.5, whatever the build's own Agility. It is one reference in data (`rules.json balance.yardsticks.rifle`: build, variant, profile, pin), read by every measure through one function (`test/balance/sim.ts atYardPin`). The enemy table stays fitted to it (rules 1.15: a Soldier is 4 of its hits at every reference level).
 2. **R2, the gun profile's low end is softer.** `rules.json output.profiles.gun`: **k 1.275, +0.0294118 a point of Agility over 1** (was k 1.15385, +0.05: item 4700), so Agility 7 still deals exactly x1.5 (k x (1 + 6 x 0.0294118) = 1.5) and every point adds 0.0375 to the stat (2.5% of x1.5). Against what every gun dealt before G1: Agility 1 **x0.85** (G1: x0.77), 3 x0.90 (x0.85), 5 x0.95 (x0.92), 7 x1.00 (x1.00), 10 **x1.075** (x1.12). The melee profile is not touched.
-3. **R3, the guards.** Green from R1 alone: the enemy table's fit (a Soldier takes 4 of the yardstick's hits at levels 1 and 3 again; 5 under G1) and the Outburst rows (ob level 20 111%, obPeak level 5 210%, inside their bands). Re-set because they encoded a fact before G1 that G1 changes on purpose: the gun ceiling (item 4722) and the Survival solo gunner (item 4723). **Not green, and not re-set (for the lead):** the Whisper row at level 20 (120% against its 114% top), the Chaplain row at level 20 (158% against 156%) and the Mender's offence (mean 59% against 70% +- 12%). Measured with every character's gun read at the pin (as every gun was before G1) the three are inside their bands (113%, 150%, 70%): the faith build's rifle above Agility 7 and the Mender's revolver at a low Agility move them, which is G1's own change; but the ruling named the Whisper and Mender rows as yardstick-only, so they stop here for a ruling (item 4725).
+3. **R3, the guards.** *(Withdrawn as a limit by rules 1.94.)* Green from R1 alone: the enemy table's fit (a Soldier takes 4 of the yardstick's hits at levels 1 and 3 again; 5 under G1) and the Outburst rows (ob level 20 111%, obPeak level 5 210%, inside their bands). Re-set because they encoded a fact before G1 that G1 changes on purpose: the gun ceiling (item 4722) and the Survival solo gunner (item 4723). **Not green, and not re-set (for the lead):** the Whisper row at level 20 (120% against its 114% top), the Chaplain row at level 20 (158% against 156%) and the Mender's offence (mean 59% against 70% +- 12%). Measured with every character's gun read at the pin (as every gun was before G1) the three are inside their bands (113%, 150%, 70%): the faith build's rifle above Agility 7 and the Mender's revolver at a low Agility move them, which is G1's own change; but the ruling named the Whisper and Mender rows as yardstick-only, so they stop here for a ruling (item 4725).
 4. **R4, the simulator's policies do not stall** (test code, no rule): every policy (the doors', the run's casters, the gunner) has a dry-gun fallback: reload, then a weapon from the pack that can fight, then a pile's rounds, magazines or weapon (picked up beside it, or walked to), then the fists; the Sigilist walks a new Line away from its target while a melee foe is within 5 tiles. The re-measure is in `docs/design/proposals/2026-11-party-fit.md` section 11.
 5. **R5, the gear card's percent stands from the pin.** The weapon card's "Damage: Agility · N%" line (rules 1.55, consolidation 0.29 ruling i) prints the hit's multiplier against the flat weapon profile's x1.5 (the pin, Attribute 7 = +0%), for guns and melee alike, by the one function that prints it (`gearpreview.ts skillLines`): a gun at Agility 1 reads -15% (it read +15% under G1, and would read +28% under R2), at Agility 10 +8%; a maul at Strength 7 +0%.
 
@@ -9887,7 +9893,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1071. **Burst, Quick −3 and Heavy braced −1 (rules 1.18):** a Quick weapon's second roll is at −3; a Heavy weapon's, while Braced, Prone or Emplaced, at −1. Both apply by the weapon's property, not by a choice of line (an SMG is Quick and Auto: it splits and has the −3).
 1072. **Mag Dump: three rolls at most, each −4 more (rules 1.18).** It was four rolls, each −1 more: four rolls for 4 AP, twice the Shot's rate. Its Pressure (a roll for an Auto weapon, a hit for others) is one less at the top.
 1073. **The long rifle's bolt (rules 1.18):** `cycle_ap` 1: Shot 3 AP, Aimed Shot 4 AP, +1 AP on every technique that fires a round. Damage 48 (was 50). A Shot was 2 AP, which made a 50-damage round cost what a 30-damage round costs. Only the long rifle has a bolt; the Blackpoint, the marksman rifle and the lever carbine do not.
-1074. **Rifle and hand cannon damage (rules 1.18):** battle rifle 30 (was 38), marksman rifle 33 (was 40), core rifle 29 (was 32), Frontier hand cannon 38 (was 40). Set so each rifle's best rotation lands inside the ceiling; the three are told apart by what they do (5 armour ignored and a two-roll Burst; range 22 and criticals on an Aimed Shot; Elemental damage past armour with no Heat), not by damage.
+1074. **Rifle and hand cannon damage (rules 1.18):** battle rifle 30 (was 38), marksman rifle 33 (was 40), core rifle 29 (was 32), Frontier hand cannon 38 (was 40). *(Withdrawn as a limit by rules 1.94.)* Set so each rifle's best rotation lands inside the ceiling; the three are told apart by what they do (5 armour ignored and a two-roll Burst; range 22 and criticals on an Aimed Shot; Elemental damage past armour with no Heat), not by damage.
 1075. **The special-ammunition class (rules 1.18):** a gun whose round costs 40 credits or more may reach 150% (Leon: "ludicrously expensive ammunition"). The line at 40 credits is this revision's reading, not Leon's number. The .700 Blackpoint deals 66 (was 90): 131 to 143% (180 to 196% before).
 1076. **Heavy Bolt +40% (rules 1.18)** (was +50%): the crossbow fired it every turn for 140 to 154%. It measures 111 to 135% now.
 1077. **The automatic guns whose Burst lost a roll (rules 1.18):** SMG 19 (was 15), PDW 20 (16), whisper SMG 16 (13), drum gun 19 (15), auto-pistol 17 (14), auto-shotgun 40 and 24 (35 and 20). Set so their Burst rotation stays about where it was (60 to 100% of the plain rifle): they were under the ceiling before and are not meant to pay for it. Their plain shots are stronger by the same amount; none passes the service pistol's 20. An enemy carrying one deals more with a plain shot (a Minion with an SMG: 19, a service pistol: 20).
@@ -10138,8 +10144,8 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1708. **The landed Stat of a boon or a Soul shield (rules 1.26, PROVISIONAL):** MEND and WARD read `sigil_mend` (1.2 × (1 + 0.06 (Intelligence − 1) + 0.06 Brain Power)) where they read the Sigil multiplier; Inverse and Shell read `soul_mend` (0.81 × (1 + 0.06 (Determination − 1) + 0.06 Will Power)) where they read the Soul multiplier. Without it they would have lost their growth with the aimed profile. Inverse is about 1.2 to 1.5 times the same caster's steady heal; a full MEND Line 182 to 271% of a Soldier-turn. *(Superseded by rules 1.27: sigil_mend 1.17, soul_mend 1.296, items 1732 and 1734)*
 1709. **Flat things grow with level (rules 1.26; Leon, 12 Nov 2026):** grenades, charges, a blast's splash, traps, hazards, barrels and the Bleeding, Burning and Corroded ticks take a Level term: the maker's level through the flat profile (a character), its tier and level (an enemy or a companion), or the fight's level through the enemy table's damage column (nobody). A Bleeding of 5 a round is 8 at level 20 from a character.
 1710. **The thrown factor ×0.7 (rules 1.26, PROVISIONAL):** every consumable a character throws, lobs or sets off (frag, incendiary, satchel; `output.factors.thrown`). A frag at 40 on the measured cluster (2.8 enemies in radius 2) was 1.5 times the budget rule's allowance for 2 AP of the plain tier with the credits allowance; 28 is inside it. An enemy's grenade and a launcher's shell (the thumper, the breacher tube) keep their numbers.
-1711. **The balance contract (rules 1.26):** `data/rules.json balance` (the ceilings, the ratio 1.25, the tolerances, the yardsticks), `docs/design/balance-contract.md`, and the guard `packages/engine/test/balance-contract.test.ts` in `npm run check` (about 20 seconds): each system all in, levels 1, 5, 10, 20, six seeded fights a cell, the average within ±12% of its ceiling and each level within ±25% (the Hymn turn's low end 55%, the Whisper turn's high end 140%).
-1712. **One constant per system, no ladder (rules 1.26; a call made for Leon):** the proposal's ladder (rank III and the Mastered perk carrying the last 25% between levels 7 and 13) is not built: those moves are not designed or measured. All in is therefore a little over its ceiling early and a little under late (the best gun 164% at level 1, 135% at level 20). Leon to confirm, or to have the ladder designed with the class moves.
+1711. **The balance contract (rules 1.26):** *(Withdrawn as a limit by rules 1.94.)* `data/rules.json balance` (the ceilings, the ratio 1.25, the tolerances, the yardsticks), `docs/design/balance-contract.md`, and the guard `packages/engine/test/balance-contract.test.ts` in `npm run check` (about 20 seconds): each system all in, levels 1, 5, 10, 20, six seeded fights a cell, the average within ±12% of its ceiling and each level within ±25% (the Hymn turn's low end 55%, the Whisper turn's high end 140%).
+1712. **One constant per system, no ladder (rules 1.26; a call made for Leon):** *(Withdrawn as a limit by rules 1.94.)* the proposal's ladder (rank III and the Mastered perk carrying the last 25% between levels 7 and 13) is not built: those moves are not designed or measured. All in is therefore a little over its ceiling early and a little under late (the best gun 164% at level 1, 135% at level 20). Leon to confirm, or to have the ladder designed with the class moves.
 1713. **The all-in ÷ normal ratio is the roll's (rules 1.26):** with no slope on an aimed action the ratio is what +3 to hit is worth: the plain rifle 1.25 at level 1, 1.09 at 5, 1.11 at 10, 1.0 at 20 (measured). A landed action keeps 1.25 by its slope (the healer 1.30 at level 1).
 1714. **Melee does not hold the ratio (rules 1.26, not fitted):** the greatsword all in is 1.05 times a normal share at level 1 and 1.0 from level 5: a melee blow almost always lands against a Soldier's Defense, so the Skill's accuracy buys little. A second dial for melee (the critical, Momentum, or a slope on a melee blow alone) is Leon's call; until then both shares sit near the ceiling.
 1715. **The cluster (rules 1.26, measured):** 2.47 / 2.31 / 2.50 enemies within 1 tile of an enemy at levels 1, 6, 12 on open ground (1.75 to 3.17 in cover); within 2: 2.70 to 2.88; within 3: 2.92 to 2.99; another enemy within 3 tiles 100% of the time on open ground. Kept as 2.4, 2.8, 2.95 and 2.0 in `balance.yardsticks.area.cluster`. Four enemies, the reference squad, `refit-measure.ts cluster`.
@@ -10149,12 +10155,12 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1719. **Damage over time (rules 1.26):** counts in full for 2 rounds, ×0.75 for longer. Bleeding (3 rounds since the bug sweep) of 5 a round × the Level term is about 11% of a rifle-turn at level 1 a wound: inside a rider's worth; not changed. The breacher tube's splash of 60 was not measured on a group (on one target the tube is 22 to 40% of the rifle, rules 1.18): not changed.
 1720. **Elites and damage types (rules 1.26, measured, not fitted):** on an Elite (armour 10 to 16), as a percent of the plain rifle on the same Elite, all in at levels 5 and 10: the best gun 141 / 161%, a full Line 124 / 162%, the Outburst steady 162 / 174%, a Hymn turn 112 / 189%, the greatsword 143 / 155%. The Outburst and prayers ignore armour and gain about a quarter there over the range; the proposal held 135% for that reason. No change.
 1721. **Mana arms and melee beyond one build (rules 1.26, measured, not fitted):** the core rifle all in 143 to 152% (the gun ceiling), the spellslinger pistol 118 to 128%, the censer gun 120 to 123%; heavy melee 103 to 168% by weapon (the maul at the ceiling), light blades 81 to 155%. Inside their ceilings.
-1722. **A shield is ×1.2 of the heal (rules 1.26, kept):** `balance.ceilings.shield.of_heal`.
+1722. **A shield is ×1.2 of the heal (rules 1.26, kept):** *(Withdrawn as a limit by rules 1.94.)* `balance.ceilings.shield.of_heal`.
 1723. **The AI's estimate of a field (rules 1.26):** a field's bite is read with its owner's Line multiplier and Level term (it left the Line out). The test that pins the walk-round now uses a Minion the field would kill.
 1724. **Not measured in rules 1.26:** class moves (rank by rank), perks, Mastered perks, traits, weapon mastery, special rounds and mods, Calls, squad buffs, reactions and held actions, stealth openers, defence (armour), enemy casters, Overdraw and Heart Overload, consumables other than grenades. PATCH-TALLY section 10 lists them; the budget rule in the contract is how each is priced when it is.
 1725. **Boss HP after the re-fit (rules 1.26, measured, not changed):** the boss fight on open ground, six fights a cell, levels 1 / 6 / 12 / 20: 6.8 / 5.3 / 6.3 / 7.7 rounds (the Sigil squad), 7.0 / 7.3 / 7.7 / 7.5 (guns), 7.8 / 7.5 / 6.7 / 6.5 (Outburst), 10.4 / 10.2 / 10.5 / 10.7 (the healer squad); every fight won but one healer-squad fight at level 1. Rules 1.25 measured 6.3 to 7.4: where it was, still under the 8 to 10 rounds target. The standard fight 4.3 to 6.0 rounds (target 4 to 6; 5.8 to 7.0 with the healer squad).
 1726. **The off-hand weapon's own Clear jam and Shoot an object (lead's call, Leon to confirm; 12 Nov 2026, after live 0.23.0):** with a weapon in each hand, the off-hand gun has its own Clear jam (2 AP, then items; it resets Heat) and the off-hand weapon its own Shoot an object (its attack AP, at least 1; its rounds, range and damage), the main hand's price and rule (Hands 5d). Each gun keeps its own jam: before this an off-hand fumble in a paired attack jammed the main gun, and one in an off-hand technique was forgotten, so a jammed off-hand gun could never be cleared. Not changed here: an off-hand technique still checks the pooled-Heat jam on the main gun only (the paired attack checks it on the gun that fires; superseded by item 1745). Engine: `clearJam` / `shootCover` with hand `off`, `offJammed` on the fighter; the Attack tab lists both in the off-hand area. Proof: `packages/engine/test/dual-jam.test.ts`; the cost tables gained only new lines (`clear-off`, `shoot-cover-off`). *(Superseded in part by item 1742: with two guns there is one Clear jam, in the Both area.)*
-1730. **A healer's turn is 2.0 Soldier-turns all in (rules 1.27, PROVISIONAL; 1.25 in rules 1.26):** a normal share 1.6. `balance.ceilings.healer_turn.allin` 200. Why: a rifle turn removes about a whole Soldier for the rest of the fight, a heal undoes one turn of it; and Leon allows a dedicated healer to keep a tank up.
+1730. **A healer's turn is 2.0 Soldier-turns all in (rules 1.27, PROVISIONAL; 1.25 in rules 1.26):** a normal share 1.6. `balance.ceilings.healer_turn.allin` 200. *(Withdrawn as a limit by rules 1.94.)* Why: a rifle turn removes about a whole Soldier for the rest of the fight, a heal undoes one turn of it; and Leon allows a dedicated healer to keep a tank up.
 1731. **Healing given 1.392 × (1 + 0.06 (Insight − 1) + 0.06 Empathy) (rules 1.27, PROVISIONAL; 0.87 in rules 1.26):** `output.profiles.healing.k` and `mend.k` ×1.6. The Soul healer's steady turn all in: 234 / 211 / 195 / 158% of a Soldier-turn at levels 1, 5, 10, 20 (average 200); a normal share 179 / 185 / 179 / 158%.
 1732. **The Sigil boon's Stat 1.17 × (1 + 0.06 (Intelligence − 1) + 0.06 Brain Power) (rules 1.27, PROVISIONAL; 1.2 in rules 1.26):** scaled to 1.92 and trimmed, because a boon also multiplies by Healing given, which carried the ×1.6. MEND · CONDENSE · SEEK all in: 235 / 212 / 196 / 158% (average 200). WARD moves with it.
 1733. **The floor for the untrained (rules 1.27, PROVISIONAL):** each heal and shield profile has `floor` 0.5; its Stat term is never under half of a normal share's (`output.floor_reference`: 4 in each Attribute and Skill of the pair). Damage profiles have none. With today's slopes it binds nowhere (no points is 70% of a normal share on one Stat term); a Sigil boon by a caster with nothing in either of its two terms is 49.6% of one with 4 and 4 in both, each term inside its floor.
@@ -10237,7 +10243,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1929. **Verdict (rules 1.31; was Judgement; key `lumeri_templar.judgement` kept; Suggested):** any weapon's plain attack (a strike, a throw, else a shot); the "melee or scattergun" gate is gone; 4 AP, 10 Devotion XP, once a fight, × (1 + Blessing power) unchanged. PROVISIONAL.
 1930. **Blessed Arms (rules 1.31; was Blessed Shells; Suggested; key kept):** words and tag only (any weapon, as built); the story action "Bless your weapon". PROVISIONAL.
 1931. **Will Shield and Command leave (rules 1.31):** Will Shield (`guardian.will_shield`) is replaced by Ward and deleted with its handler; Command (an order is Authority's Call) is deleted with its handler. The old Sanctuary's combat handler is deleted; its story half is a Narrator action with no MP. PROVISIONAL.
-1932. **The Chaplain's line (rules 1.31; `rules.json balance.ceilings.chaplain_turn` 125):** the Chaplain's weapon turn with Smite, Faith all in + Dexterity, 125% of a rifle-turn (the plain rifle all in). Measured in the step 5 hand-off. PROVISIONAL.
+1932. **The Chaplain's line (rules 1.31; `rules.json balance.ceilings.chaplain_turn` 125):** *(Withdrawn as a limit by rules 1.94.)* the Chaplain's weapon turn with Smite, Faith all in + Dexterity, 125% of a rifle-turn (the plain rifle all in). Measured in the step 5 hand-off. PROVISIONAL.
 1933. **General engine rows (rules 1.31 section 4):** a prayer grant's item ops run when answered (any item); `reach.tile`; the zone `pool` from an amount block; predicates `not_patron`, `answered`; `say` `{patron}`; `deal` hands its amount to `{then}`; amount `element`; stat `patron_presence`. PROVISIONAL.
 1950. **The Shadow meter (rules 1.32 section 2.1; `rules.json shadow.cap_by_points` {1: 1, 5: 2, 7: 3}):** anyone with Ingenuity has `res.shadow`, 0 to its cap; 0 at the start of a fight, when Downed and at the fight's end. PROVISIONAL.
 1951. **Shadow's gains (rules 1.32 section 2.2; `door_gains_per_turn` 2):** +1 at a turn's end Hidden with no attack rolled; +1 once a turn for a move or Sprint from cover to cover, Hidden, ending out of view; +1 for a kill after which you are not Seen; at most 2 a turn together; a gain at the cap is lost. PROVISIONAL.
@@ -10251,7 +10257,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 1959. **The Operative's rank III (rules 1.32 section 4.4):** Execution never on a guard-held hit nor on an Elite or Boss at full HP at the action's start (combat.ts `fullAtAction`); Called Shot moves in, with any weapon (its plain mode), its −2 (`attack_mod`) dropped while the target can't see you. PROVISIONAL.
 1960. **Field Fix leaves the Operative (rules 1.32 section 4.5):** its key `infiltrator.field_fix` and handler stay, in the move pool (status shelved, `future_home` the Rigger, step 8). PROVISIONAL.
 1961. **Skulk enemies (rules 1.32 section 5; `FOE_TAGS` `skulk`):** a Vermin, Minion or Soldier tagged so Hides on its turn when it is out of every enemy's view and has no shot, and ambushes from it at ×1.5. PROVISIONAL.
-1962. **Shadow's line (rules 1.32 section 6; `balance.ceilings.shadow`):** a three-turn window with one Break, the Operative all in, 125% of a rifle-turn; the door all in 109, at a normal share 87. PROVISIONAL.
+1962. **Shadow's line (rules 1.32 section 6; `balance.ceilings.shadow`):** *(Withdrawn as a limit by rules 1.94.)* a three-turn window with one Break, the Operative all in, 125% of a rifle-turn; the door all in 109, at a normal share 87. PROVISIONAL.
 1963. **Shadow's verbs (rules 1.32 section 3; `data/shadow.json`):** Lift (3; 2 AP), Read Intent (3; 1 AP, reach 8), Cut the Strap (3; 1 AP, 1 Shadow), Fade (5; 2 AP, 2 Shadow), Open Seam (5; 1 AP, 1 Shadow, reach 8), Foul the Action (5; 1 AP, 1 Shadow), Timing (7; 1 AP, 1 Shadow, reach 8, a 2-round cooldown a target), Plant (7; 2 AP, 1 Shadow), Disable (7; 2 AP, 1 Shadow, 1 round), Hijack (9; 2 AP, 2 Shadow, 1 round). Reach 8 is the spec's example number (section 10). PROVISIONAL.
 1964. **Exposed and Off Balance (rules 1.32 section 3; `conditions.json`):** Exposed Defense −2 for 1 round (a state, no save); Off Balance −1 AP on the next turn (body; Timing gives it with no save). PROVISIONAL.
 1965. **Still Breath (rules 1.32 section 3; Ingenuity 5's unlock):** spot rolls against you −2 while you stand next to cover (predicate `by_cover` gains the word `here`). PROVISIONAL.
@@ -10336,7 +10342,7 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2135. **Sleight (rules 1.34):** with one of your Figments (was your False Image) or a standing ally within 6. PROVISIONAL.
 2136. **Scrap Turret (rules 1.34; `trickster.scrap_turret`; was Jury-Rig):** 3 AP, once a scene, one at a time; `figments.json turret` 40 HP, Defense 10, armour 5; 3 rounds; d20 + Improvisation modifier; the weapon profile at the owner's level. PROVISIONAL. *(Superseded by rules 1.60 item 4633.)*
 2137. **Leave the Rigger (rules 1.34):** Silver Tongue, Blind and Slow, Rewrite (shelved in the move pool); Read to the Operative. PROVISIONAL.
-2140. **The figments ceiling (rules 1.34; `rules.json balance.ceilings.figments`):** the Rigger all in 150, the door all in 130, door normal 104, Rigger normal 120 (Leon's budget reading). PROVISIONAL.
+2140. **The figments ceiling (rules 1.34; `rules.json balance.ceilings.figments`):** *(Withdrawn as a limit by rules 1.94.)* the Rigger all in 150, the door all in 130, door normal 104, Rigger normal 120 (Leon's budget reading). PROVISIONAL.
 2200. **The katana's family and damage (rules 1.35):** a light blade (Dexterity, 2 AP), 28 damage, the sabre's. *(Superseded by item 5007: 23, with the sabre.)* Lead's numbers, Leon to confirm. PROVISIONAL.
 2201. **The katana's weight and price (rules 1.35):** 1.4 kg, 500 credits; durability 250, mod slots edge and grip, no requirement. Lead's numbers, Leon to confirm. PROVISIONAL.
 2202. **The katana lends Draw Cut (rules 1.35):** its `phys.teaches`; no weapon skill of its own; in no loot table (as the sabre). Lead's numbers, Leon to confirm. PROVISIONAL.
@@ -10372,10 +10378,10 @@ The data pack handles each of these provisionally, as noted, so the engine can b
 2325. **`output.profiles.tend.k` 3.74 (rules 1.36):** the Mender's healing turn through Bonds at 65% of the reference HP (measured 70 / 64 / 65 / 65). PROVISIONAL.
 2326. **Sanctuary's pool 40 × Blessing power (heal dial, Level) (rules 1.36):** Faith's strongest shield, about two full assaults. PROVISIONAL.
 2327. **Ward stays 10 (rules 1.31, Leon).** PROVISIONAL.
-2328. **The shields' order (rules 1.36):** `balance.ceilings.shield_order`: Faith 1, the Mender's Tending shield 0.36, the Sigil WARD Line 0.33, the Outburst's Inverse 0.33 (each its strongest single use against Faith's). The builder's shares, Leon to confirm. PROVISIONAL.
+2328. **The shields' order (rules 1.36):** *(Withdrawn as a limit by rules 1.94.)* `balance.ceilings.shield_order`: Faith 1, the Mender's Tending shield 0.36, the Sigil WARD Line 0.33, the Outburst's Inverse 0.33 (each its strongest single use against Faith's). The builder's shares, Leon to confirm. PROVISIONAL.
 2329. **The Ledger's cap 6.5 (rules 1.36):** its HP as before under `tend.k` 3.74; the factor 0.7 and the echo 0.20 kept. PROVISIONAL.
 2330. **`shadow.per_point` 0.7 (rules 1.36):** the door all in about 13% under the Operative (measured 107 and 121, 24 fights a cell). PROVISIONAL.
-2331. **The balance contract's heal lines (rules 1.36):** `healer_turn` 45 in percent of the reference HP (was 200 Soldier-turns), `hymn_heal_cap` 65, `hymn_avg` 45, `whisper` 15; `tending_turn` 65 (door 59). PROVISIONAL.
+2331. **The balance contract's heal lines (rules 1.36):** *(Withdrawn as a limit by rules 1.94.)* `healer_turn` 45 in percent of the reference HP (was 200 Soldier-turns), `hymn_heal_cap` 65, `hymn_avg` 45, `whisper` 15; `tending_turn` 65 (door 59). PROVISIONAL.
 2332. **Yardsticks (rules 1.36):** `soldier_turn` × scale; `full_assault` 55 / 85 / 158 / 708 at levels 1 / 5 / 10 / 20; `heal_floor` 18 / 27 / 44 / 178 and the Recruit's 25. PROVISIONAL.
 2333. **The Emanator katana is still not built (rules 1.36):** the focus list (`FOCUS_IDS`, `packages/engine/src/character.ts`) reads a `focus` block only on items.json entries and keeps the mana arms (evoker_blade, emanator_gauntlet …) as ids typed in `FOCUS_BASE`; a weapons.json entry with a `focus` block is not read. Needs FOCUS_IDS to read weapons.json too (one general line). Leon to confirm. PROVISIONAL.
 2334. **The Chaplain's level 20 (rules 1.36): not refitted.** The named dial, Smite's base, is held equal to Rebuke's 20 by the validator (rules 1.31: Smite is Rebuke's size), and one constant cannot flatten one level. Measured 113 / 134 / 127 / 150 (mean 131, inside 125 ± 12%; level 20 inside ± 25%). Leon to rule. PROVISIONAL.
@@ -11435,7 +11441,7 @@ make all the deceision right, the target is FUN and REWARD for the effort you pu
     sword wall 19), with no stall (14 before). PROVISIONAL: 15, 20, 20, 0.4.
 4617. **Shield Bash (A2):** `techniques.json shield_bash.numbers.mult` 2.5 → 1.0: ×1 of the new line, the same damage as
     before (15, 20, 20). PROVISIONAL.
-4618. **The balance contract and the feeds:** the contract holds each door's line with every feed at ×1 (as it takes no
+4618. **The balance contract and the feeds:** *(Withdrawn as a limit by rules 1.94.)* the contract holds each door's line with every feed at ×1 (as it takes no
     perk steps: a feed is a reward on top of the line), and reports the line with the feeds beside it
     (`balance-contract.test.ts`). With Composure's feed the simulator's peak Outburst policy holds a stage-4 Release into
     a second turn where it released in the first, so the one-turn peak row reads lower (114% against 177% unfed): a
@@ -11651,8 +11657,8 @@ only when both of its options are built**: a step with one option is not offered
 
 4720. **The pinned yardstick (R1):** `rules.json balance.yardsticks.rifle` = build `plain_gun`, variant `normal`, profile `gun`, pin 7: the plain rifle at a normal share with its shot at the gun profile's value at Attribute 7 (x1.5). One definition (`test/balance/sim.ts atYardPin`), read by every yardstick: `refit-measure.ts yardOf` (the balance contract, the Mender offence), `fit.ts fitCards` (the enemy table's fit), `guns-measure.ts rifleYard`, `faith-measure.ts rifleTurn`, `magic-measure.ts rifle` (its normal share), `niche-measure.ts yardOf`, `price-list.test.ts yardstick`. Before: the same build, its shot at its own Agility (4 at level 1: x0.885 under G1; 10 from level 12: x1.115). PROVISIONAL.
 4721. **The gun profile, softer at the low end (R2):** `rules.json output.profiles.gun` k **1.275**, attr **0.0294118** (old: k 1.15385, attr 0.05, item 4700). Agility 1 / 3 / 5 / 7 / 10 deal x0.85 / 0.90 / 0.95 / 1.00 / 1.075 of the flat x1.5 (G1: x0.77 / 0.85 / 0.92 / 1.00 / 1.12). The melee profile unchanged. PROVISIONAL.
-4722. **The gun ceiling's guard (R3):** `rules.json balance.ceilings.gun.at_pin`: the contract holds the gun row measured with the gun profile at the yardstick's pin inside 145% +- 12% (mean) and 109 to 181% (a level), and the row as played under that band times the gun profile's rise from the pin to the level's Attribute ceiling (`attrCapAt`: x1.025 at level 1 to x1.075 at 20). OLD expectation: the row as played inside the band (it read 174% under G1, 169% under R1 and R2, from the all-in gunner's Agility 8 to 10, on purpose). Measured now: at the pin 164 / 171 / 167 / 145% (levels 1, 5, 10, 20; mean 162), as played 164 / 175 / 181 / 157%. PROVISIONAL.
-4723. **The Survival solo gunner's guard (R3):** the guard runs `plain_gun` at a normal share (Agility 4 at level 1, x0.90 since R2). OLD bar: 5 of 8 seeds clear stage 1 (two thirds; 60% measured before G1). Measured with R2 and R4 on GUARD-1 to GUARD-40: 18 of 40 clear stage 1 (45%, one standard error 7.9 points), none clears stage 4, none stalls. NEW bar: 37% of the 8 seeds rounded down, 2 of 8 (the measured share less one standard error); GUARD-1 to 8 clear 4. PROVISIONAL.
+4722. **The gun ceiling's guard (R3):** *(Withdrawn as a limit by rules 1.94.)* `rules.json balance.ceilings.gun.at_pin`: the contract holds the gun row measured with the gun profile at the yardstick's pin inside 145% +- 12% (mean) and 109 to 181% (a level), and the row as played under that band times the gun profile's rise from the pin to the level's Attribute ceiling (`attrCapAt`: x1.025 at level 1 to x1.075 at 20). OLD expectation: the row as played inside the band (it read 174% under G1, 169% under R1 and R2, from the all-in gunner's Agility 8 to 10, on purpose). Measured now: at the pin 164 / 171 / 167 / 145% (levels 1, 5, 10, 20; mean 162), as played 164 / 175 / 181 / 157%. PROVISIONAL.
+4723. **The Survival solo gunner's guard (R3):** *(Withdrawn as a limit by rules 1.94.)* the guard runs `plain_gun` at a normal share (Agility 4 at level 1, x0.90 since R2). OLD bar: 5 of 8 seeds clear stage 1 (two thirds; 60% measured before G1). Measured with R2 and R4 on GUARD-1 to GUARD-40: 18 of 40 clear stage 1 (45%, one standard error 7.9 points), none clears stage 4, none stalls. NEW bar: 37% of the 8 seeds rounded down, 2 of 8 (the measured share less one standard error); GUARD-1 to 8 clear 4. PROVISIONAL.
 4724. **Green from R1 alone:** the enemy table's fit (`step1-fit.test.ts`: Soldier 4 hits, Minion 2, Vermin 1, Elite 6 to 8, Boss 20 or more, 65% both ways, at levels 1, 3, 6, 9, 12, 20), the Outburst rows (ob 124 / 128 / 120 / 111%, obPeak 147 / 210 / 172 / 180%), the Whisper row at level 10 (64%; 58% under G1).
 4725. *(Settled by rules 1.61, item 4736: the three rows are held at the pin.)* **Open, for the lead (R3: not re-set):** the Whisper row at level 20, 120% (its top 114%: `whisper_turn` 80 x level_hi 1.42); the Chaplain row at level 20, 158% (its top 156%); the Mender's offence, mean 59% (67 / 57 / 53 / 59%) against 70% +- 12%. With every character's gun at the pin: 113%, 150%, 70% (mean; 81 / 70 / 62 / 65%). Cause: the gun in those turns (the faith build's rifle at Agility 8 to 10; the Mender's revolver at a low Agility), G1's own change. Re-setting them as item 4722 does is a line each in the contract if the lead rules so.
 4726. **The gear card's percent (R5):** `gearpreview.ts skillLines` prints round((weaponMult / the weapon profile's Stat - 1) x 100)%: 0 at the pin. It printed weaponMult - 1 (a gun at Agility 1 read +15% under G1, +28% under R2, though it deals less than before G1).
@@ -12173,7 +12179,7 @@ picking UI in the same change") is made a contract of the engine's action descri
 4963. **The shot that shows (item 3):** `rules.json combat.attack.attack_reveal.until` **"attacker_turn_start"**: `combat.ts showAttacker` marks a unit that makes an attack (a weapon attack or a technique's strike, a Sigil spell's roll, an Outburst's or a soul bolt's roll) as seen by its target's side (`Unit.shownTo`) until `beginTurn` starts its own next turn; `visibility` and `sideSeesUnit` read it (not the sight words data reads: item 4970), so the fog draws the token and the other side may shoot back; the log names it the first time ("X gives itself away at E7"). Set before the roll (the shooter is drawn when its shot is rolled) and again after it (a Hidden attacker its attack revealed). A Hidden unit is untouched (both sight functions keep `!t.hidden`): Shadow's rules decide (a silent shot from Hidden stays Hidden; an ambusher's first shot is rolled from Hidden). `sideSees` (the enemy AI's and the attack checks' sight) reads it too, so a revealed character is shot back. Measured: enemy gun rolls from a shooter the screen did not draw, 0 to 9% before, **0** from a shooter that was not Hidden after (77 of 7,493 remain, every one an ambusher's first shot from Hidden). It works both ways: the solo Chaplain (a rifle at Agility 1 that fires from beyond the foes' sight) cleared stage 1 in 35% of 20 seeds, was 65%; for the lead. PROVISIONAL.
 4964. **Focus memory (item 4):** `rules.json combat.focus_memory.per_attacker` **1** (a share of max HP added to the doctrine's key for each other unit of the enemy's side that attacked the target this round; a technique's want x 1 / (1 + 1 x attackers)), overridable per tier by `enemies.json focus_memory` (no row sets it today); `finish_share` **0.25** (a target at or under a quarter of its max HP takes no penalty). Read by `combat.ts doctrineOf` / `enemyRank` and `physical/ai.ts aiTechnique` (the one doctrine); a Taunt or Challenge first, as before. The intent and the log say "it spreads its fire" when the memory turned a foe. It adds to the tiers' `fire_spread` and `technique_spread` (items 1400 to 1404, 4555). PROVISIONAL.
 4965. **Not met, for the lead (item 4):** the target "the most-shot member takes under about 60% of shots" is **not reached**: measured (20 seeds) duos 63 to 86% (before 66 to 88%), trios 61 to 70% (64 to 76%), fours 56 to 60% (63 to 67%): the fours reach about half, the duos do not. A sweep of `per_attacker` 0 / 1 / 2 / 4 saturates at 1 (duo Skirmisher 88 / 86 / 86 / 86%, the mixed trio 68 / 66 / 65 / 65%): a third of a duo's rolls have only one target in reach (line, range), and the first foe to act in a round has no memory to read, so it takes the most hurt from the round before. The honest best value is 1; what would move it further is a new primitive (item 4969).
-4966. **The Mender's offence floor (the last review's finding):** `rules.json balance.ceilings.mender_offence.played_floor` **52.5** (new; the row as played had a ceiling and no floor): the band's own low edge at one level (allin 70 x (1 − tolerance.level 0.25)); measured on this build as played 67 / 57 / 53 / 59 at levels 1 / 5 / 10 / 20. Checked in `balance-contract.test.ts`. PROVISIONAL.
+4966. **The Mender's offence floor (the last review's finding):** *(Withdrawn as a limit by rules 1.94.)* `rules.json balance.ceilings.mender_offence.played_floor` **52.5** (new; the row as played had a ceiling and no floor): the band's own low edge at one level (allin 70 x (1 − tolerance.level 0.25)); measured on this build as played 67 / 57 / 53 / 59 at levels 1 / 5 / 10 / 20. Checked in `balance-contract.test.ts`. PROVISIONAL.
 4967. **The guards moved on purpose:** the Survival replay guard plays **PHC-0007** again (PHC-0011 never cleared: seven fights, then the run's end; of PHC-0001 to PHC-0016 on this build PHC-0007 is the one that clears: eight fights, the boon, no errors) and now requires the boon; the solo gunner's guard plays **40** seeds (GUARD-1 to GUARD-40; was 8) on the same bar (37%: 14 of 40). The technique-spread guard of item 4555 sets `focus_memory` 0 as well for its OLD expectation (the default memory spreads too).
 4968. **Replays re-recorded on purpose:** 24 of the 29 (REPLAY_RECORD; listed in the commit): cover beside you, the shot that shows and focus memory change what the AI does in every fight with cover or a gun. The golden damage tables did not move.
 4969. **Needs a new primitive (not built; for the lead):** (a) focus memory that carries past the round (the share of its side's rolls the target took last round), the only lever left on the first foe of each round; (b) an enemy that moves for an angle on an unattacked character when its only reachable target is already under fire (a third of a duo's rolls have one target in reach); (c) by the 45-degree arc, a pillar beside the target that does not face the shot counts nothing: 8 to 83 rolls a cell still come past one (25 to 71% hit). Items 4960 to 4969 are rules 1.61 cover beside you's.
@@ -13465,7 +13471,7 @@ aiRouteRisk`); their per-turn marks are `uses()` cells on the unit. **Every numb
 6703. **The side's memory past the round (spec 4969 a).** `rules.json combat.focus_memory.carry`: each attacker of the
       round before counts this share of an attacker in the doctrine's spread (`alliesOn`), so the first foe of a round
       spreads its fire too. **Built and OFF (0):** any carry from 0.25 to 0.5 moved the enemy table's guard
-      (`test/balance/defence-measure`: the idle pair's first Down, 4.2 rounds at most, measured 5). For the lead.
+      (`test/balance/defence-measure`: the idle pair's first Down, 4.2 rounds at most, measured 5) *(Withdrawn as a limit by rules 1.94.)*. For the lead.
 6704. *(Not used.)*
 6705. **Focus memory per enemy (item 2).** An enemy remembers the one it last attacked (a plain attack or a technique)
       and keeps it for `ai.focus.rounds` **2** rounds: that target counts as more hurt by `keep` **0.3** of its max HP,
@@ -13978,7 +13984,7 @@ for those systems. Every number here is PROVISIONAL (section 14).
     naming; four 30 of 40 against 32. The player's rule is unchanged: name the Elite or the Boss.
 7503. **balance: Silent is ON** (`rules.json combat.hidden_attack.gives: tile`; item 7012 by Leon's later word): an attack
     from Hidden that is not silent gives the attacker's tile away and keeps it Hidden. Measured, the nine doors at stage
-    1 on 40 seeds, solo and in four, with the switch at `reveal` and at `tile`: every door within 3 clears of its number
+    1 on 40 seeds, solo and in four, with the switch at `reveal` and at `tile`: every door within 3 clears of its number *(Withdrawn as a limit by rules 1.94.)*
     before the switch (the table is in the measures), so nothing the switch touches was tuned. The tests that pinned the
     reveal now pin the tile (twelve, in ten files; the FOUND event of a reveal is pinned with the switch set to `reveal`).
 7504. **balance: Athletics' Defense from the first point, measured, still OFF** (item 7011; `defense_from` 2; it waits on
@@ -14769,3 +14775,26 @@ The integration of Items 2.0 stage B (lane B1's 72 weapon rows) and the consolid
       The section 7 tables above, `data/weapons.json`, the numbers file and the typing sheet carry the same numbers; the
       re-measure is in `docs/design/handoffs/0.34-MEASURES.md` ("after the lead's first fit").
       Reverted: every damage and the votive torch magazine in this item went back to the designed numbers, now the ones in the section 7 tables, `data/weapons.json`, the numbers file and the typing sheet. The one change kept is the Blackpoint carbine's magazine, 3 (a one-round magazine made it reload after every shot); its damage is the designed 54. No second fit is owed.
+
+### Rules 1.94 (balance is design, not a line), 0.34: the balance contract withdrawn (21 Nov 2026)
+
+8200. **The balance contract, its ceilings, lines, bands, tolerance and guards are withdrawn** (Leon, 21 Nov 2026: "delete
+      all the ceiling in the data and balance like a game designer would. I gave you those numbers as shorthand for what
+      I want the reward to be and now you balance it like a spreadsheet. What is the point of having a class or weapon or
+      upgrade system if everything is just a derivative to hit a % number?"; and on 19 Nov: "ceilings are a relative
+      measure of the effort a class puts in and the fun it gets back, not a hard line."). The percentages in rules 1.17,
+      1.18, 1.19, 1.26, 1.56 and the fits that followed were shorthand for how a reward should feel; they are not limits,
+      nothing is fitted to them and no test fails on them. A measuring tool reads and reports. A number changes only for
+      a reason a player would feel.
+      What went: `data/rules.json balance` (the ceilings of every system, `tolerance`, `ratio_allin_to_normal`, the
+      yardsticks' `cost` allowances and `tiers` with their "allowed = ..." rule, `heal_floor`); every test that failed when
+      a number left a line, band or bar (the contract's guard, the measures' bands, rules 1.18's 33 guard, the Survival
+      solo gunner's clear bars and the XP pace's shares, the enemy table's hit counts, the shield order, the feelings'
+      2.5x step); the validator's check that Smite's base equals Rebuke's. What stays: the units a measure reports in
+      (`rules.json measure`: the plain rifle at its pin, the Soldier-turn, the readings of control, areas, damage over
+      time and the full assault, the levels), marked "not targets"; the measures themselves, which print behind
+      `BALANCE_MEASURE` (`npm run balance`), never in `npm run check`; the golden tables (exact records, re-recorded only
+      on purpose); every cap the engine reads (listed for the lead in
+      `docs/design/proposals/2026-11-21-caps-the-engine-reads.md`; none changed). Every number the game plays with is
+      unchanged except the four rows of item 8201. Each earlier sentence that stated a ceiling or line as a rule carries
+      "(Withdrawn as a limit by rules 1.94.)".

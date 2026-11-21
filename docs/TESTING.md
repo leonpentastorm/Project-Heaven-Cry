@@ -11,7 +11,7 @@ change with the cheapest tool that proves it. **Start at the top of this table a
 | Only the engine or the data | `npm run check -- engine` | under 1 min | Validator, engine types, engine tests |
 | Only the client | `npm run check -- web` | about 1.5 min | Web types, the screen data's freshness (`protodata.json` against `data/*.json`; when it says STALE, run `python3 design/canvas-build/build.py --web`), web tests |
 | One rule, and you want only its tests | `npm run check -- -t "Heart Overload"` | seconds | Both suites, only tests whose name matches |
-| A simulator policy or the enemy AI; and before any merge of engine work | `npm run balance` (or `npm run check -- balance`) | a minute or two | The balance simulator's folder (`packages/engine/test/balance/`) with its three "quick run" smoke fights (whole simulated fights for every table, squad and measurement). Every balance TARGET (guns, magic, heals, Faith, defence, the enemy table, the price list) is in `npm run check` already: a number that moves fails there |
+| A simulator policy or the enemy AI; and when you want to READ what a change does to the numbers | `npm run balance` (or `npm run check -- balance`) | long | The balance simulator's folder (`packages/engine/test/balance/`) with its readings (`BALANCE_MEASURE`: each measure prints what it reads, in the units of `data/rules.json measure`) and its "quick run" smoke fights. Nothing in it fails because a number moved: the balance lines are withdrawn (rules 1.94, Leon 21 Nov 2026); the exact numbers are recorded by the golden tables |
 | A number or a rule, and you want to SEE what the game does | `npm run try -- '<scenario>'` | 3 s | A fight played through the real rules: the log lines and every unit's HP, AP, meters and conditions after each step. No browser, no new test file. `npm run try -- --help` has the fields and examples |
 | A screen, a button, anything a player clicks | `npm run e2e -- <suite>` | 1 to 3 min a suite | The suite's checks in a real browser. It builds, starts and stops the server itself. `apps/web/e2e/README.md` lists every suite and what it looks at |
 | Any change to the client, before you say "done" | `npm run e2e -- smoke` | 3 to 5 min | Five suites that catch most breakage: an old save opens, creation's points step, perks in play, two players through a whole session, a long enemy phase in order |
@@ -167,18 +167,20 @@ change with the cheapest tool that proves it. **Start at the top of this table a
   regenerated; the test's header says which commit wrote each: one by the live 0.22.0 build with a 511-line archive,
   two by `develop` the day before the performance work) are loaded and played on. A change to the saved shape adds a
   migration and a new fixture beside them.
-- **The balance simulator** (`packages/engine/test/balance/*.test.ts`): its targets are in the engine's default run
-  (and so in `npm run check`). Its three "quick run" smoke fights are not: `npm run balance` runs the folder with
-  them (`BALANCE_QUICK`, set by `packages/engine/vitest.balance.config.ts`). One file with its report switches:
-  `HEAL_MEASURE=1 npx vitest run --root packages/engine test/balance/heal-measure.test.ts --silent=false` (the commands
-  in the hand-offs still work as written). `test/suite-shape.test.ts` fails if the folder leaves the default run.
-- **The balance contract** (`packages/engine/test/balance-contract.test.ts`, inside `npm run check`, about 20 s; rules 1.26):
-  each system all in at levels 1, 5, 10, 20 (six seeded fights a cell) against its ceiling in `data/rules.json balance`;
-  a failure names the system, the level and the dial in data. The full measurement:
+- **The balance simulator** (`packages/engine/test/balance/*.test.ts`): what is not a line runs in the engine's
+  default run (and so in `npm run check`): the simulator is deterministic and legal and matches previewAttack, a run
+  plays clean, the Elite and Boss guard. The readings wait for `BALANCE_MEASURE` and the three "quick run" smoke
+  fights for `BALANCE_QUICK`; `npm run balance` sets both (`packages/engine/vitest.balance.config.ts`). The balance
+  lines are withdrawn (rules 1.94, Leon 21 Nov 2026): a measure prints, nothing is fitted to it, no test fails on it.
+  One file with its report switches: `HEAL_MEASURE=1 npx vitest run --root packages/engine test/balance/heal-measure.test.ts --silent=false`
+  (the commands in the hand-offs still work as written). `test/suite-shape.test.ts` guards the switches.
+- **Each system on the range** (`packages/engine/test/balance/systems-measure.test.ts`, once the balance contract):
+  each system all in at the levels of `data/rules.json measure.levels` (six seeded fights a cell), printed in the
+  units of `measure`. The full measurement:
   `REFIT_MEASURE=1 npx vitest run --root packages/engine test/balance/refit-measure.test.ts --silent=false` (`REFIT_N`,
-  `REFIT_LEVELS`, `REFIT_VARIANTS`, `REFIT_SYSTEMS`; `REFIT_CLUSTER=1` for the many-targets yardstick). How to fit a
-  new system: `docs/design/balance-contract.md` section 6. `python3 tools/golden_diff.py --rev <base> [--table t --grep re]`
-  lists what moved in the golden tables before you re-record them.
+  `REFIT_LEVELS`, `REFIT_VARIANTS`, `REFIT_SYSTEMS`; `REFIT_CLUSTER=1` for the many-targets reading).
+  `python3 tools/golden_diff.py --rev <base> [--table t --grep re]` lists what moved in the golden tables before you
+  re-record them.
 - `packages/engine/test/balance-baseline.test.ts`: the plain attack of sample weapons against each enemy tier
   (`BALANCE_OUT=<file>`).
 - `window.__phc` in the browser: `getState()`, `act(action)`, `setNarrator({ scripted: true })` (a Narrator that

@@ -103,7 +103,7 @@ name below, with its signature, its one-line purpose and an example use, is in t
 | A number inside a text | Never type a digit. Write `{=path}`, with an optional format after a bar (`abs`, `signed`, `pct`, `more`, `less`), naming a field of the same item, e.g. `{=effects.0.value}`, `{=.ap}`. If the number has no field, add the field the engine reads and bind to it. A new data file with texts goes in the list at the bottom of `datatext.ts`; a new text key in `TEXT_KEYS` of `tools/text_numbers.py` | `packages/engine/src/datatext.ts`, `tools/text_numbers.py`. Bind old bare numbers with `tools/once/bind_text_numbers.py`, then `python3 tools/validate.py data --shrink-text-baseline` | the validator (`tools/text_numbers.json`: `allow` and a baseline that only shrinks), `python3 tools/text_numbers.py --mutate`, `test/datatext.test.ts` | H:text-number-truth section 8.a; `data/CONVENTIONS.md` "Text" |
 | What a guest may see (fog) | A unit or a field naming one by id: nothing to do. A new thing on the grid that belongs to a side: add its list to the destructuring in `fogFight` and keep it for `me`'s side (the other side only on `vis.tiles`). A new fx event: name units by `unit`/`target`, tiles as `'x,y'` strings, `only: side` for one side's eyes, a walk carries `sight`. A secret that is not about sight: filter in `viewFor` by `playerId` | `fogFight` (`fog.ts`, called once by `viewFor` in `game.ts`); client reads `fightSight(cb)` / `cb.fog`. Never filter by sight on the client | `test/fog-view.test.ts` (add a line that searches the guest's serialised view), `boundary.test.ts`, `apps/web/e2e/two-players.mjs` | H:client-boundary-2-fog "How to add something a player must not see" |
 | A line in the fight log | `say(cb, line)` (`log.ts`, re-exported by `combat.ts` and `kit.ts`; null-safe). Name units by their `name` in the text: `say` finds them and records, per side, whether that side sees each one NOW (write the line where it happens, after the move or hit it reports, not batched at the end). A line whose units the text can't name (or the Narrator's own words): `sayOf(cb, [ids], line)`, `[]` for nobody. At the top: `sayAt(cb, 0, line)`; take one back: `unsay(cb, i)`. Never `cb.log.push`, `unshift` or `splice` | `say`, `sayOf`, `sayAt`, `unsay`; `fogLog` (`fog.ts`) decides per viewer (spec item 1600 a: a line about none the side saw is not sent; one that also names a seen unit is sent with the unseen as "something unseen", their tiles as "somewhere unseen") | `lint-foundations.test.ts` (the log is written through say), `test/fog-view.test.ts` "the log", `two-players.mjs` `fogLeaks` | H:client-boundary-2-fog "The log" |
-| A new system's balance, or a new weapon, word, school, prayer | Give it an amount and a profile; one dial in data named in `rules.json` `balance.ceilings.<system>.dial`; price one use with the budget rule; measure with `test/balance/refit-measure.ts`; fit with the dial only; add its ceiling to `rules.json balance` and its row to `SYS` in `test/balance-contract.test.ts` | `REFIT_MEASURE=1 REFIT_SYSTEMS=<yours> npx vitest run --root packages/engine test/balance/refit-measure.test.ts --silent=false` | `test/balance-contract.test.ts` (in `npm run check`, ~20 s; a failure names system, level and dial); `python3 tools/golden_diff.py --rev <base>` lists what moved | `docs/design/balance-contract.md` section 6; H:balance-refit section 7 |
+| A new system's balance, or a new weapon, word, school, prayer | Give it an amount and a profile, its numbers in data; measure it with `test/balance/refit-measure.ts` (and add its row to `SYSTEMS` in `test/balance/systems-measure.test.ts` to read it beside the others). No line to fit to (rules 1.94, Leon 21 Nov 2026): a number is set for how the reward should feel, and changes for a reason a player would notice | `REFIT_MEASURE=1 REFIT_SYSTEMS=<yours> npx vitest run --root packages/engine test/balance/refit-measure.test.ts --silent=false` | the golden tables record its exact numbers; `python3 tools/golden_diff.py --rev <base>` lists what moved | `CLAUDE.md` "Balance is design, not a line" |
 | A speed-sensitive change | Follow section 6 of H:engine-performance-1 (no whole-map walk for one tile, build a set once per query, nothing per unit x per handler on a hook, no `JSON.stringify` in a hot path, a perk or relic is an item never a global `onHook`) | `counted(fn)` and `work(name)` in `kit.ts` | A test about speed counts work (`expect(work.planEvoke).toBeLessThan(n)`), never milliseconds. Replay guard | H:engine-performance-1 sections 6, 3 |
 
 ## 3. Where the numbers and ops live (quick map)
@@ -116,7 +116,7 @@ name below, with its signature, its one-line purpose and an example use, is in t
   move to `engine` wherever a trigger can be detected.
 - One table each: conditions `data/conditions.json` (loader `condtable.ts`), actions and costs `data/actions.json`
   (`actions.ts`), perk cards `data/perk_cards.json`, forced movement `data/rules.json` `forced_movement`, the damage
-  formula `data/rules.json` `output`, the balance contract `data/rules.json` `balance`.
+  formula `data/rules.json` `output`, the units a measure reports in `data/rules.json` `measure` (not targets: rules 1.94).
 - Data files with `{=...}` texts are filled at load by `packages/engine/src/datatext.ts`; `protodata.json` for the
   web is built by `python3 design/canvas-build/build.py --web` (`npm run check -- web` says STALE when it is out of date).
 
@@ -152,7 +152,6 @@ and say why. A failing golden table prints the action, what it was and what it i
 | Client boundary | `apps/web/src/game/boundary.test.ts` | A client file computes a cost, range or legality, calls `visibility(`, filters by sight, builds a `combat/*` action literal (except `end-turn`, `say`, `attempt`, `search`, `read`), or `actionFlow.ts` imports more than `actionsFor`, `previewDescriptor`, `stepOn` and types | Ask the engine; add the missing answer in `descriptors.ts` |
 | Fog | `test/fog-view.test.ts` | The guest's serialised view (its log included) holds an unseen hostile's id, name or tile | Fix `fogFight` / `viewFor`; a log line: write it with `say` where it happens |
 | Descriptors | `test/descriptors.test.ts`, `apps/web/src/screens/combat-actions.test.ts` | An action is unreachable or differs from what the old flow dispatched | Fix the system's `list` / `send` |
-| Balance contract | `test/balance-contract.test.ts` | A system's all-in average (levels 1/5/10/20) left its band (+/-12%, each level +/-25%) | Fit the named dial in data; never add a literal |
 | Suite shape | `test/suite-shape.test.ts`, `apps/web/src/e2e-groups.test.ts` | The balance folder left the default run, or a browser suite is in no group | Put it back / add the suite to `apps/web/e2e/groups.json` |
 | Balance simulator smoke | `npm run balance` (not in `npm run check`) | A simulator policy or the enemy AI broke a whole simulated fight | Run it after such a change and before a merge |
 
@@ -202,11 +201,9 @@ From the "what is left" sections. None is a bug in what exists; each is where th
   level is inside the enemy table (`level: null`). Sigil rounds, everything else floors; a ruling on "floor everywhere"
   is open.
 
-**Balance** (H:balance-refit section 4; `docs/design/balance-contract.md` section 7)
-- Not held by the contract: class moves, perks, Mastered perks, traits, weapon mastery, special rounds and mods, Calls
-  and squad buffs, reactions, stealth openers, armour, enemy casters and the enemy Burst, Overdraw and Heart Overload.
-  The melee ratio of 1.25 and Sigil's normal-share ratio cannot be held with one dial; CHAIN is 17% over its area rule;
-  Boss HP was re-run and left.
+**Balance** (rules 1.94, 21 Nov 2026): the balance contract and its lines are withdrawn; nothing is held to a line.
+  The measures in `test/balance/` read and print (`npm run balance`); the caps the engine still reads are listed in
+  `docs/design/proposals/2026-11-21-caps-the-engine-reads.md`.
 
 **Performance and saves** (H:engine-performance-1 sections 4, 6)
 - The finished fight's duplicate objects are still in the saved state (the fight screen draws all of it). A read is not

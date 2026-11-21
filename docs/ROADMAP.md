@@ -139,7 +139,7 @@ Tests only (`packages/engine/test/balance/`): no engine source, no data, no game
 
 ### Enemy AI (`wip/0.32-ai`; hand-off `docs/design/handoffs/0.32-ENEMY-AI.md`; spec rules 1.79, items 6700 to 6714)
 
-- **The side's memory past the round (spec 4969 a).** Built and OFF (`rules.json combat.focus_memory.carry` 0): any carry from 0.25 moves the defence-measure guard (the idle pair's first Down 4.2 rounds at most; measured 5). Waiting on Leon 24 (lead's pick: off). [S] [built, off; 19 Nov 2026] [rules 1.79 item 6703]
+- **The side's memory past the round (spec 4969 a).** Built and OFF (`rules.json combat.focus_memory.carry` 0): any carry from 0.25 moves the idle pair's first Down (defence-measure: 5 rounds, was under 4.2; that bound is withdrawn by rules 1.94). Waiting on Leon 24 (lead's pick: off). [S] [built, off; 19 Nov 2026] [rules 1.79 item 6703]
 - **Enemy door verbs, the rest.** Built: the general door step, Challenge, Tag, Ghost Kill, Whispers (rules 1.83, `b78b40b5b`); Tug, Bond and Snap on the Heart adept through what a unit with no character holds (`unitGrip`, `gripHolds`), Slam on the Heartfire elite at Durability 5 (rules 1.86 items 7400-7402, `dc6ee7467`, `2982cc410`). Owed: a Figment order (no enemy Pictures yet). [M] [partly; 20 Nov 2026] [rules 1.79 item 6711; rules 1.83; rules 1.86]
 
 #### Built in 0.32 (live in 0.32.0)
@@ -209,14 +209,14 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 - **The guard's bar** to the measured share (25 of 40, bar 55%). Item 6905, `88c73cff1`; the account `docs/design/handoffs/0.32-FIT.md`.
 
 - **The Sigilist bot's clear rate.** The bot holds cover, stands up when Prone and pre-draws on its own tile (rules 1.87 item 7500, `62e4c891a`): 14 to 16 of 160 solo. It still reaches 6 of 40 solo against the Channeler's 18 (48 HP a turn against 83): the limit is the Line's shape (it starts on the target's exact row, column or diagonal and takes a step a glyph), a rules question for Leon, or the bot aiming a Line at a target one lane off its axis, reading the lane geometry from the engine. [M] [open; measured 20 Nov 2026] [0.33-LANE-BALANCE.md]
-- **Class lines, the rest.** Skirmisher 159 against 145; Hymn 138 against 150; the healer stall at level 20. (The Figments door and Rigger dials moved to Items 2.0, below.) [M] [open; 20 Nov 2026] [START-HERE Balance 2.0 4]
-- **Shape's free Pump** stays at +0.12; the Outburst peak band is refitted (rules 1.81 item 6903: one Release, 90): to rule whether it moves. [S-M] [open; 20 Nov 2026] [SESSION-TODO V]
-- **0.30's PROVISIONAL numbers never fitted.** Now measured (`0.32-MEASURES.md`, `measures-032.ts`): two shields at ranks I to III, Drive's −2 and plate-back, the follow strike's −2, Afterword, the feeds' 0.01. Owed: the fit. [M] [measured, not fitted; 19 Nov 2026] [CHANGELOG 0.30.0]
-- **Balance 2.0 leftovers.** The rifle contract holds 4 guns plus greatsword and sabre (guns-measure covers all guns separately); the repair rate of 10% is nearly free; the XP and stage fit is PROVISIONAL because the simulator never makes or sells materials; level 3 before the first Boss on only 42% of routes. [L] [open; checked in code 19 Nov 2026] [START-HERE; SURVIVAL-PICKUP; verification]
+- **The healer stall at level 20.** [M] [open; 20 Nov 2026] [START-HERE Balance 2.0 4] (The class lines it was listed with are withdrawn, rules 1.94.)
+- **Shape's free Pump** stays at +0.12: to rule whether it moves, for a reason a player would feel (the peak band it was read against is withdrawn, rules 1.94). [S-M] [open; 20 Nov 2026] [SESSION-TODO V]
+- **0.30's PROVISIONAL numbers never fitted.** Now measured (`0.32-MEASURES.md`, `measures-032.ts`): two shields at ranks I to III, Drive's −2 and plate-back, the follow strike's −2, Afterword, the feeds' 0.01. No fit to a line is owed (rules 1.94); a number moves only for a reason a player would feel. [M] [measured; 19 Nov 2026] [CHANGELOG 0.30.0]
+- **Balance 2.0 leftovers.** The repair rate of 10% is nearly free; the XP and stage fit is PROVISIONAL because the simulator never makes or sells materials; level 3 before the first Boss on only 42% of routes. [L] [open; checked in code 19 Nov 2026] [START-HERE; SURVIVAL-PICKUP; verification]
 - **Athletics' Defense from the first point: waiting on Leon.** Measured and OFF (`skills.json defense_from` 2): on the defence guard's idle pair, 40 fights, the first Down after 4.9 rounds at 2 and 5.3 at 1 (rules 1.87 item 7504, `412ad7698`). Turning it on is one data word and the guard's bound. (Silent is ON since rules 1.87 item 7503: every door within 3 clears.) [S] [built, OFF; 20 Nov 2026] [0.33-LANE-BALANCE.md]
 - **Survival cells that fell in 0.33.** `four_casters` 20 to 13 clears (not the surprise rule, not Rally and Brief: the cell uses the old run rigger; cause not found); the old run policy's `solo_rigger` 18 to 12 (the surprise in the approach, now OFF: re-measure). The door classes held. [S] [open; measured 20 Nov 2026] [0.33-MEASURES.md]
 - **The Shade's Silent Kill log line under Silent ON.** A loud kill from Hidden says "stays in the dark (Silent Kill)" because the Shade is still Hidden; the class is shelved. Also: with Silent ON a seen kill from Hidden keeps the killer Hidden, so Ghost Kill only matters for a kill made from out of view but not Hidden (a design note for Leon). [S] [open; 20 Nov 2026] [0.33-LANE-BALANCE.md; 0.33 integration]
-- **The Outburst peak row counts a two-turn Release as two turns** in 0.33's measuring tool (obPeak halved on paper, the Release's damage is 0.32's): read the contract's obPeak band with that. [S] [open; 20 Nov 2026] [0.33-MEASURES.md]
+- **The Outburst peak row counts a two-turn Release as two turns** in 0.33's measuring tool (obPeak halved on paper, the Release's damage is 0.32's): read its obPeak reading with that. [S] [open; 20 Nov 2026] [0.33-MEASURES.md]
 
 ### End of release
 
@@ -255,7 +255,9 @@ What is left of the list (the built ones are under "Built in 0.32" below):
 
 ## 0.34: Items 2.0 (built, NOT LIVE: waits for Leon's word)
 
-On `wip/release-0.34` (rules 1.91 to 1.93; hand-offs `docs/design/handoffs/0.34-LANE-*.md`; the class measure `docs/design/handoffs/0.34-MEASURES.md`). Nothing of it is live; it goes live only on Leon's word for this release.
+On `wip/release-0.34` (rules 1.91 to 1.94; hand-offs `docs/design/handoffs/0.34-LANE-*.md`; the class measure `docs/design/handoffs/0.34-MEASURES.md`). Nothing of it is live; it goes live only on Leon's word for this release.
+
+- **The progression curve, redesigned** (the lead's design, `docs/design/proposals/2026-11-21-the-curve.md`): open. The balance contract and its lines were withdrawn first (rules 1.94, 21 Nov 2026); the caps the engine still reads are listed in `docs/design/proposals/2026-11-21-caps-the-engine-reads.md`.
 
 Built (merged from `wip/0.34-b0`, which holds lanes A1 to A5 and B0, and `wip/0.34-b2`):
 
@@ -336,10 +338,7 @@ Nothing starts until Leon says so and 0.32 is live. Preconditions only; the cont
 - **Leon rules the staging** (A engine and screens, B content, C Weapon Arts). [S] [open; from documents only] [SESSION-TODO Q]
 - **Audits before design.** The armour slot audit (the lead has not verified the slot list); items with an icon and no engine use (ration pack, chalk and wax, prayer beads, cigarettes have no reader; flare and torch unverified); the Forge realign check (can per-weapon state override `scales_with`?). [M] [open; from documents only] [SESSION-TODO P, Q]
 - **Still open design inputs.** The gun family forms; shield families (Heavy's movement number is PROVISIONAL); the melee family table and in-world names for borrowed weapon words; each gun variant's second skill; the unique concepts; armour grade pictures under S1. [L] [open; from documents only] [SESSION-TODO X]
-- **Fit with Items 2.0 and Weapon Arts** (the weapon-side fits the 0.33 balance lane left on purpose, Leon's word; the baseline is `docs/design/handoffs/0.33-MEASURES.md`):
-  - **The Dexterity melee line as a whole.** Sabre and katana are over 165% all-in at level 10. [S-M] [open] [spec 5527]
-  - **Gun ceilings with mods fitted.** Guns reach 162-195% against the 145% line; Leon ruled 19 Nov that ceilings are a relative measure of the effort a class puts in and the fun it gives back, not a hard line. [M] [open] [SESSION-TODO D; 0.29.0 known]
-  - **The Figments door and Rigger class lines.** The dials exist (`classes.json` base `dials`, rules 1.82 item 7003, `46d546376`), every one 1: fit them (Figments door 119 and Rigger 123 against 130 and 150). [M] [open] [START-HERE Balance 2.0 4]
+- **Owed with Items 2.0 and Weapon Arts** (what the 0.33 balance lane left on purpose, Leon's word; the baseline is `docs/design/handoffs/0.33-MEASURES.md`):
   - **The Mender's solo kit.** 8 of 40 in 0.33 with 21 stalled: its revolver runs dry and it still melees an Elite with an empty gun on the Empathy sheet's fists (rules 1.81 item 6907; the empty gun stays as it is, Leon 20 Nov). [M] [open; measured 20 Nov 2026] [0.33-MEASURES.md]
 
 ## Later
@@ -375,7 +374,7 @@ Direct questions. Where the lead gave a recommendation, it is built as stated un
 9. **Outburst "What it does" ways.** They cannot be earned beyond the starting spell. Lead: Strike free with the Damage school; Finish, Brand and Drain learned like modules; the other schools' ways checked the same (built as recommended unless Leon says otherwise). [SESSION-TODO T]
 10. **Hand's Hand stim.** It spends a stim on a full-HP ally for +0. Fix how? [START-HERE 16 Nov (c)]
 11. **0.29 rulings.** Does a held Outburst swell on a turn you gained Guard? Lead: no (built as recommended unless Leon says otherwise). Make bare-handed Outbursts harmful (+2 Strain a stage)? One row-order rule for fight tabs? [START-HERE 16 Nov (b)]
-12. **Tank kit and guns.** The tank's free Buckler against the budget (the budget stays 300, ruled 19 Nov), and 3x healing cost. Guns reach 195% with both perks: refit the perks, or accept it under your "ceilings are relative" ruling? [morning-report-0.29.0 s10]
+12. **Tank kit and guns.** The tank's free Buckler against the budget (the budget stays 300, ruled 19 Nov), and 3x healing cost. [morning-report-0.29.0 s10]
 13. **Virtue sheet.** Hymns at Faith 3 put two things on level 3 (recommended: keep, built as recommended unless Leon says otherwise); Foresight's combat tier II; Real Power merged into Rank Has Privileges II. [virtue.md 8]
 14. **Strength sheet.** Charge Carries +2 or +1 (measure first)? Throw Down as the big verb at 5 (recommended: yes)? Raw Power 1 gating Momentum (recommended: no)? Recommendations built unless Leon says otherwise. [strength.md 8]
 15. **Shadow numbers** (the Shadow lane's three, built as stated): Prone makes enemies see you 4 tiles less far (12 to 8 lit, 6 to 2 dark)? The works and the rim get 1 to 2 lamps (were 0 to 1: a pitch-black works ran GUARD-36 dry)? Widen Douse from lamps to fires and terminals (one data word, `shadow.douse`)? [0.32-LANE-SHADOW.md]
@@ -387,8 +386,8 @@ Direct questions. Where the lead gave a recommendation, it is built as stated un
 21. **Silent against the standing rules.** Built per your later word behind a switch, shipped OFF until the balance lane measures it (rules 1.82 item 7012; `rules.json combat.hidden_attack.gives`, at reveal); each standing rule it touches is resolved in the spec (the Break keeps its reveal, Vanish II has nothing left to change, Parting Cut and Ghost Kill stand, the Silent module gives nothing away). Turn it on? [0.33-LANE-RULES.md]
 22. **Ambush numbers from play:** TN 12/16/20, the solo fumble 15% of max HP, the scout's +2, Tremor +1/+2; measured: always ambushing loses about 70% of rolls for a squad with no Operative. (Surprise, rules 1.82 item 7004, is closed: superseded by the ambush, rules 1.90.) [0.33-LANE-AMBUSH.md]
 23. **Stand Behind Me.** Built as the lead's pick, a call made for Leon (rules 1.82 item 7006): the Bulwark's rank III ceiling move (a ranged attack on the ally behind you lands on your plates). [0.33-LANE-RULES.md]
-24. **Enemy fire memory carried into the next round** (rules 1.79 item 6703; `rules.json combat.focus_memory.carry`, built and off): any carry from 0.25 fails the idle-pair bound in `test/balance/defence-measure` (first Down at round 5 against 4.2). Keep it off? Lead's pick: off.
-25. **The old weapon rows over their lines on the new measure** (`0.34-WEAPON-MEASURES.md`): guns 19 of 74 over 145% all in, melee 42 of 51 over 125%. The lines were set on older tools. Lead's proposal: re-draw the lines when Weapon Arts are designed, not nerf 40 weapons now. [0.34 weapon measure]
+24. **Enemy fire memory carried into the next round** (rules 1.79 item 6703; `rules.json combat.focus_memory.carry`, built and off): any carry from 0.25 moves the idle pair's first Down in `test/balance/defence-measure` to round 5 (the 4.2 bound is withdrawn, rules 1.94). Keep it off? Lead's pick: off.
+25. *(Withdrawn by rules 1.94, 21 Nov 2026: the lines it asked about are gone; no weapon is fitted to one.)*
 26. **Strike shields earn as much Guard as the Guard family in pairs** (the two-shield measure in `0.34-WEAPON-MEASURES.md`): the Strike family is meant to trade Guard for its follow strike. A ruling on whether that is wanted. [0.34 weapon measure]
 27. **The shotgun pistols read as weak sidearms** (the Brigade shot pistol, the Lumeri hand scatter: 26 to 44% of the rifle, 54 to 71% under their family's base form): kept as sidearms, or lifted? [0.34 weapon measure]
 

@@ -1,5 +1,14 @@
 # The balance contract (rules 1.26, 12 Nov 2026; the healer's ceiling: rules 1.27)
 
+> **SUPERSEDED (rules 1.94, 21 Nov 2026).** The balance contract, its ceilings, lines, bands, tolerance and guards are
+> withdrawn (Leon, 21 Nov 2026: "delete all the ceiling in the data and balance like a game designer would. I gave you
+> those numbers as shorthand for what I want the reward to be and now you balance it like a spreadsheet. What is the
+> point of having a class or weapon or upgrade system if everything is just a derivative to hit a % number?"; and on
+> 19 Nov: "ceilings are a relative measure of the effort a class puts in and the fun it gets back, not a hard line.").
+> The percentages here were shorthand for how a reward should feel; they are not limits, nothing is fitted to them and
+> no test fails on them. A measuring tool reads and reports. A number changes only for a reason a player would feel.
+> This page is kept as the record. The units a measure reports in are in `data/rules.json measure`.
+
 The floor every later system, class, weapon, Weapon Art and mode is balanced to. Leon's rulings (12 Nov 2026) are the
 contract; this page says what they mean in numbers, where each number lives, and how to measure something new against
 them. The numbers themselves are in **`data/rules.json` `balance`** (read by the guard) and the spec's rules 1.26 (items

@@ -1,5 +1,14 @@
 # Damage balance targets (Leon, 8 Nov 2026)
 
+> **SUPERSEDED (rules 1.94, 21 Nov 2026).** The balance contract, its ceilings, lines, bands, tolerance and guards are
+> withdrawn (Leon, 21 Nov 2026: "delete all the ceiling in the data and balance like a game designer would. I gave you
+> those numbers as shorthand for what I want the reward to be and now you balance it like a spreadsheet. What is the
+> point of having a class or weapon or upgrade system if everything is just a derivative to hit a % number?"; and on
+> 19 Nov: "ceilings are a relative measure of the effort a class puts in and the fun it gets back, not a hard line.").
+> The percentages here were shorthand for how a reward should feel; they are not limits, nothing is fitted to them and
+> no test fails on them. A measuring tool reads and reports. A number changes only for a reason a player would feel.
+> This page is kept as the record. The units a measure reports in are in `data/rules.json measure`.
+
 The frame for the damage balance pass that follows Outburst 2.0. Every damage number in the spec is checked against it.
 
 ## Ceilings
