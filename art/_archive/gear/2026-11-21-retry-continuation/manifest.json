@@ -1067,6 +1067,73 @@
       },
       "status": "review-candidate",
       "production_approved": false
+    },
+    {
+      "id": "weapon-kemizuchi_side_sword--celestial",
+      "path": "art/icons/gear/weapon-kemizuchi_side_sword--celestial.png",
+      "sha256": "274ca5383c2501857a1ac76ceea54bb10f663006bb28593b524b4a5aa259b00b",
+      "label": "Kemizuchi Side Sword — Celestial",
+      "family": "weapon-kemizuchi_side_sword",
+      "source": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/sources/v1/weapon-kemizuchi_side_sword--celestial.png",
+        "sha256": "94a70ec1f38ce670205856ca74470903f955fb41bcb4a6414ceb804a2edc6af6"
+      },
+      "master": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/masters/v1/weapon-kemizuchi_side_sword--celestial.png",
+        "sha256": "274ca5383c2501857a1ac76ceea54bb10f663006bb28593b524b4a5aa259b00b"
+      },
+      "prompt": {
+        "path": "art/_archive/gear/2026-11-21-retry-continuation/prompts/weapon-kemizuchi_side_sword--celestial.txt",
+        "sha256": "a806c22f5d153c972276b0413d242df43fe3c85fedae30fc672ffe36448f9129"
+      },
+      "references": [
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_side_sword.png",
+          "sha256": "ab263efaac50ca2d6289353002bcf9226a7f17c9d9dcbebd6faee5346f32f5d6"
+        },
+        {
+          "path": "art/icons/gear/weapon-kemizuchi_side_sword--relic.png",
+          "sha256": "aa5089a9fc9ba1867e514622a8d7dd6580c5bea55041b7435b665d6d1b078ce9"
+        },
+        {
+          "path": "art/portraits/world/new-faces/orren-vask.png",
+          "sha256": "b8ae59f79b8ae320e9ca9f19c6a4c7d20a79654ed99c1af8ba3db869c0d7a1e8"
+        }
+      ],
+      "reference_sources": [
+        {
+          "path": "art/_archive/gear/2026-11-19-melee-armour/sources/v1/weapon-kemizuchi_side_sword.png",
+          "sha256": "77cb7f7c217c2dcfe16d884006634aa99f23fec5f35ce477cd5ae12a23eb02c6"
+        }
+      ],
+      "native_dimensions": [
+        1254,
+        1254
+      ],
+      "exports": {
+        "256": "art/icons/gear/exports/256/weapon-kemizuchi_side_sword--celestial.png",
+        "128": "art/icons/gear/exports/128/weapon-kemizuchi_side_sword--celestial.png",
+        "64": "art/icons/gear/exports/64/weapon-kemizuchi_side_sword--celestial.png",
+        "32": "art/icons/gear/exports/32/weapon-kemizuchi_side_sword--celestial.png"
+      },
+      "export_hashes": {
+        "256": "05707e15ab0797051c5e69187b5b2e0c141b3ac7dedacb439c13d5aff267ceb4",
+        "128": "dfe353f76d38b2a06e9d264fa009bfd496b9b6fb242a0c25f04b10264922d8c2",
+        "64": "5c7dc11e34d1466bd710b5d7c26dd6341d6c1243a9cbf7cb610f63ad6a46f2b9",
+        "32": "75ebf66f36e0b468b73d32be02a39b7b75158f0267c05baf3db446328c2ca071"
+      },
+      "grade": "celestial",
+      "standard_id": "weapon-kemizuchi_side_sword",
+      "outline": {
+        "solid_alpha_iou": 0.9554610564010743,
+        "exact_solid_outline": false,
+        "review_required": true,
+        "registration": "uniform scale and translation to Standard bbox; no warp, masking or redrawn pixels",
+        "different_pixels_32": 2,
+        "different_pixels_64": 8
+      },
+      "status": "review-candidate",
+      "production_approved": false
     }
   ]
 }

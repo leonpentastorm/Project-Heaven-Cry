@@ -1,7 +1,7 @@
 {
-  "selected": 529,
+  "selected": 530,
   "requested": 871,
-  "remaining": 342,
+  "remaining": 341,
   "counts": {
     "icons_tiles": {
       "selected": 88,
@@ -12,7 +12,7 @@
       "total": 104
     },
     "grades": {
-      "selected": 374,
+      "selected": 375,
       "total": 656
     },
     "uniques": {
@@ -26,12 +26,12 @@
   "new_image_quota": null,
   "by_kind": {
     "standard": 51,
-    "grade": 282,
+    "grade": 281,
     "unique": 9
   },
   "by_status": {
     "service-blocked-or-reference-dependent": 51,
-    "service-blocked-or-preceding-grade-dependent": 78,
+    "service-blocked-or-preceding-grade-dependent": 77,
     "awaits-missing-requested-standard": 208,
     "service-blocked": 5
   },
@@ -533,14 +533,6 @@
       "kind": "grade",
       "path": "art/icons/gear/weapon-broadback_sabre--celestial.png",
       "standard": "weapon-broadback_sabre",
-      "status": "service-blocked-or-preceding-grade-dependent",
-      "eligible_for_retry": false
-    },
-    {
-      "id": "weapon-kemizuchi_side_sword--celestial",
-      "kind": "grade",
-      "path": "art/icons/gear/weapon-kemizuchi_side_sword--celestial.png",
-      "standard": "weapon-kemizuchi_side_sword",
       "status": "service-blocked-or-preceding-grade-dependent",
       "eligible_for_retry": false
     },
@@ -2831,7 +2823,7 @@
     "run": "sole-20261121-0109",
     "limits": "Faithful actualfiction briefs; no moderation-evasion prompt changes; preserve all returned errors and prior versions; held content unchanged."
   },
-  "last_delivered": "weapon-kemizuchi_side_sword--relic",
+  "last_delivered": "weapon-kemizuchi_side_sword--celestial",
   "current_run": "sole-20261121-0109",
   "scope_replacements": [
     {
